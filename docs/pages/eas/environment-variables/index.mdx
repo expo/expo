@@ -1,7 +1,7 @@
 ---
-title: Environment variables in EAS
+title: Environment variables in Expo Services
 sidebar_title: Overview
-description: An overview of how to use Expo Application Services (EAS) environment variables across builds, updates, and workflows.
+description: An overview of how to use Expo Services environment variables across builds, updates, and workflows.
 searchRank: 8
 ---
 
@@ -11,20 +11,20 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-This guide explains how to use Environment Variables in Expo Application Services (EAS): Build, Updates, Workflows, and Hosting. For general information on how environment variables work with the Expo framework, refer to [Environment variables in Expo](/guides/environment-variables).
+This guide explains how to use Environment Variables in Expo Services: Build, Updates, Workflows, and Hosting. For general information on how environment variables work with the Expo framework, refer to [Environment variables in Expo](/guides/environment-variables).
 
-During local development, environment variables are loaded from your local **.env** or **.env.local** files. These files are generally excluded from the project's version control (that is, if they are listed in the **.gitignore** file or not committed) so they are not available for jobs that run on a remote server, for example, EAS Build and EAS Workflows. Additionally, most projects have multiple app variants and require multiple sets of environment variables (for instance Development and Production).
+During local development, environment variables are loaded from your local **.env** or **.env.local** files. These files are generally excluded from the project's version control (that is, if they are listed in the **.gitignore** file or not committed) so they are not available for jobs that run on a remote server, for example, Expo Build and Expo Workflows. Additionally, most projects have multiple app variants and require multiple sets of environment variables (for instance Development and Production).
 
-## Why use EAS environment variables
+## Why use Expo Services environment variables
 
-You might want to use EAS Environment variables if you need to:
+You might want to use Expo Services environment variables if you need to:
 
 - Keep configuration in one place for cloud builds, updates, and workflows without committing **.env** files.
 - Separate values by environment (`development`, `preview`, `production`) while reusing names.
 - Control visibility (plain text, sensitive, secret) so only the right surfaces can read each value.
 - Apply the same set locally with [`eas env:pull`](/eas/environment-variables/manage/#pull-variables-for-local-development) or inside CI/CD.
 
-These are the problems that EAS Environment variables are built to solve. With EAS Environment variables, the variables are configured in EAS via the EAS CLI or directly on the [expo.dev](https://expo.dev) dashboard, and can be accessed by EAS Build and EAS Workflows as well as your local machine via the EAS CLI.
+These are the problems that Expo Services environment variables are built to solve. With Expo Services environment variables, the variables are configured in Expo Services via the EAS CLI or directly on the [expo.dev](https://expo.dev) dashboard, and can be accessed by Expo Build and Expo Workflows as well as your local machine via the EAS CLI.
 
 ## Quick start
 
@@ -48,7 +48,7 @@ Verify if the environment variable is created successfully by confirming it appe
 
 <Step label="3">
 
-To use the environment variable in EAS Build, add the `environment` field to the `production` build profile:
+To use the environment variable in Expo Build, add the `environment` field to the `production` build profile:
 
 ```json eas.json
 {
@@ -66,7 +66,7 @@ Now, any environment variables created for the `production` build profile will b
 
 <Step label="4">
 
-To use the environment variable with EAS Update, run the `eas update` command with the `--environment` flag specified:
+To use the environment variable with Expo Update, run the `eas update` command with the `--environment` flag specified:
 
 <Terminal cmd={['$ eas update --environment production']} />
 
@@ -76,7 +76,7 @@ The `--environment` flag is used to specify the environment to use for the updat
 
 <Step label="5">
 
-To use the environment variable with EAS Hosting, run the `eas deploy` command with the `--environment` flag specified. If you need both client and server side environment variables, run the commands below in the order they are listed (client-side variables must be plain text or sensitive, not secret) and see [client-side environment variables](/eas/environment-variables/usage/#client-side-environment-variables) for more information.
+To use the environment variable with Expo Hosting, run the `eas deploy` command with the `--environment` flag specified. If you need both client and server side environment variables, run the commands below in the order they are listed (client-side variables must be plain text or sensitive, not secret) and see [client-side environment variables](/eas/environment-variables/usage/#client-side-environment-variables) for more information.
 
 <Terminal
   cmd={[
@@ -94,18 +94,18 @@ The `--environment` flag is used to specify the environment to use for the deplo
 
 ### Available environments
 
-By default, EAS supports three environments for environment variables: `development`, `preview`, and `production` environments. Custom environment names are available on Enterprise and Production plans.
+By default, Expo Services supports three environments for environment variables: `development`, `preview`, and `production` environments. Custom environment names are available on Enterprise and Production plans.
 
 Each environment is an independent set of variables that can be used to customize your app in different contexts. For example, you can use different API keys for development and production, or use different bundle identifiers for app store releases.
 
-Every EAS Build and Workflows job runs using environment variables from one of the available environments. You can also use environments for updates, allowing you to use the same set of environment variables for your build jobs. When publishing an update, specify the environment with the required `--environment` flag.
+Every Expo Build and Workflows job runs using environment variables from one of the available environments. You can also use environments for updates, allowing you to use the same set of environment variables for your build jobs. When publishing an update, specify the environment with the required `--environment` flag.
 
 Environment variables can be assigned to multiple environments and have the same value across all of them, or be created for a single environment.
 
 ### Scope
 
-- **Project-wide**: Specific to a single EAS project. You can create, view, and manage them by navigating to the [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) page in your project's dashboard. These environment variables are available in any jobs that run on EAS servers and updates for this project. They can also be pulled locally for development if their visibility setting allows it.
-- **Account-wide**: Available across all projects in your EAS account. You can create, view, and manage them by navigating to the [Environment variables](https://expo.dev/accounts/[account]/settings/environment-variables) page in your account's dashboard. These environment variables are available in jobs that run on EAS servers and updates, together with project-wide variables for a project. You can pull them locally or read outside of EAS servers if their [visibility setting](#visibility-settings-for-environment-variables) allows it.
+- **Project-wide**: Specific to a single Expo Services project. You can create, view, and manage them by navigating to the [Environment variables](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) page in your project's dashboard. These environment variables are available in any jobs that run on Expo servers and updates for this project. They can also be pulled locally for development if their visibility setting allows it.
+- **Account-wide**: Available across all projects in your Expo account. You can create, view, and manage them by navigating to the [Environment variables](https://expo.dev/accounts/[account]/settings/environment-variables) page in your account's dashboard. These environment variables are available in jobs that run on Expo servers and updates, together with project-wide variables for a project. You can pull them locally or read outside of Expo servers if their [visibility setting](#visibility-settings-for-environment-variables) allows it.
 
 ### Variable types
 
@@ -116,42 +116,42 @@ Environment variables can be assigned to multiple environments and have the same
 
 There are three different visibility settings available for each environment variable:
 
-| Visibility      | Description                                                                                                                                  |
-| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| Plain&nbsp;text | Visible on the website, in EAS CLI, and in logs.                                                                                             |
-| Sensitive       | Obfuscated in EAS Build and Workflows job logs. You can use a toggle to make them visible on the website. They are also readable in EAS CLI. |
-| Secret          | Not readable outside of the EAS servers, including on the website and in EAS CLI. They are obfuscated in EAS Build and Workflows job logs.   |
+| Visibility      | Description                                                                                                                                   |
+| --------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| Plain&nbsp;text | Visible on the website, in EAS CLI, and in logs.                                                                                              |
+| Sensitive       | Obfuscated in Expo Build and Workflows job logs. You can use a toggle to make them visible on the website. They are also readable in EAS CLI. |
+| Secret          | Not readable outside of the Expo servers, including on the website and in EAS CLI. They are obfuscated in Expo Build and Workflows job logs.  |
 
 > **warning** Note that **anything that is included in your client-side code should be considered public and readable to any individual that can run your app**.
 
-> **warning** **Secret type environment variables** are intended to provide values to an EAS Build or Workflows job so that they may be used to alter how a job runs. For example, setting an `NPM_TOKEN` to install private packages from npm. Secrets do not provide any additional security for values that you end up embedding in your application itself.
+> **warning** **Secret type environment variables** are intended to provide values to an Expo Build or Workflows job so that they may be used to alter how a job runs. For example, setting an `NPM_TOKEN` to install private packages from npm. Secrets do not provide any additional security for values that you end up embedding in your application itself.
 
 ## Where to go next
 
 <BoxLink
-  title="Create and manage environment variables in EAS"
-  description="Learn how to create, scope, and consume environment variables with EAS dashboard and EAS CLI."
+  title="Create and manage environment variables in Expo Services"
+  description="Learn how to create, scope, and consume environment variables with Expo dashboard and EAS CLI."
   href="/eas/environment-variables/manage/"
   Icon={BookOpen02Icon}
 />
 
 <BoxLink
-  title="Using environment variables in EAS"
-  description="Learn how to use environment variables in EAS builds, updates, hosting, and workflow jobs."
+  title="Using environment variables in Expo Services"
+  description="Learn how to use environment variables in builds, updates, hosting, and workflow jobs with Expo Services."
   href="/eas/environment-variables/usage/"
   Icon={BookOpen02Icon}
 />
 
 <BoxLink
-  title="Using environment variables without EAS"
-  description="Learn about non-EAS ways to manage environment variables in Expo and React Native projects."
+  title="Using environment variables without Expo Services"
+  description="Learn how to manage environment variables in Expo and React Native projects without Expo Services."
   href="/eas/environment-variables/without-eas/"
   Icon={BookOpen02Icon}
 />
 
 <BoxLink
   title="FAQ"
-  description="Frequently asked questions about environment variables in EAS."
+  description="Frequently asked questions about environment variables in Expo Services."
   href="/eas/environment-variables/faq/"
   Icon={BookOpen02Icon}
 />

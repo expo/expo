@@ -1,15 +1,15 @@
 ---
 title: Protected resources
-description: Learn how to restrict who can interact with sensitive EAS resources, such as the update channel your production app uses.
+description: Learn how to restrict who can interact with sensitive Expo Services resources, such as the update channel your production app uses.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 
-You can mark some EAS resources as protected. Only members with the Release Manager, Admin, or Owner [role](/accounts/account-types/#manage-access) can take protected actions on these resources. This is similar to the concept of protected branches on Git hosting services like GitHub, where only members with elevated permissions can push to them.
+You can mark some Expo Services resources as protected. Only members with the Release Manager, Admin, or Owner [role](/accounts/account-types/#manage-access) can take protected actions on these resources. This is similar to the concept of protected branches on Git hosting services like GitHub, where only members with elevated permissions can push to them.
 
 ## Protected channels
 
-When you protect an [EAS Update](/eas-update/how-it-works/) channel, only Release Managers, Admins, and Owners can:
+When you protect an [Expo Update](/eas-update/how-it-works/) channel, only Release Managers, Admins, and Owners can:
 
 - Publish updates to a branch the channel points to. This includes `eas update`, republishing, and rollbacks.
 - Rename or delete a branch the channel points to.
@@ -33,13 +33,13 @@ Members with other roles can still view a protected channel and its branches. De
 
 Only Release Managers, Admins, and Owners can run these commands. Run either command without a channel name to pick one from a list. Both commands require EAS CLI 24.0.0 or later.
 
-> **info** When you [transfer a project](/accounts/account-types/#transfer-projects-between-accounts) to another account, EAS removes protection from all of its channels. Protect them again in the new account if needed.
+> **info** When you [transfer a project](/accounts/account-types/#transfer-projects-between-accounts) to another account, Expo Services removes protection from all of its channels. Protect them again in the new account if needed.
 
-### EAS Workflows and protected channels
+### Expo Workflows and protected channels
 
-> **warning** [EAS Workflows](/eas/workflows/introduction/) jobs run with at most Developer-level permissions. Jobs therefore can't interact with protected channels, such as publishing to a branch that a protected channel points to or starting or completing a rollout on one, even when the run is started by a Release Manager, Admin, Owner, or robot with one of those roles. We're exploring a way to let you opt specific jobs into higher permissions.
+> **warning** [Expo Workflows](/eas/workflows/introduction/) jobs run with at most Developer-level permissions. Jobs therefore can't interact with protected channels, such as publishing to a branch that a protected channel points to or starting or completing a rollout on one, even when the run is started by a Release Manager, Admin, Owner, or robot with one of those roles. We're exploring a way to let you opt specific jobs into higher permissions.
 
-If your workflow interacts with a protected channel, remove protection from that channel with `eas channel:unprotect`, or run those commands, such as `eas update`, outside EAS Workflows with an access token for a user or robot with the Release Manager role or higher.
+If your workflow interacts with a protected channel, remove protection from that channel with `eas channel:unprotect`, or run those commands, such as `eas update`, outside Expo Workflows with an access token for a user or robot with the Release Manager role or higher.
 
 ## Coming soon
 

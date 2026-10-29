@@ -1,7 +1,7 @@
 ---
 title: Workflows REST API
 sidebar_title: REST API
-description: Trigger a workflow and check its status from your own systems with the EAS REST API.
+description: Trigger a workflow and check its status from your own systems with the Expo REST API.
 ---
 
 import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
@@ -9,11 +9,11 @@ import { Dataflow03Icon } from '@expo/styleguide-icons/outline/Dataflow03Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 
-The EAS REST API exposes endpoints for triggering a workflow and reading run details. All endpoints live under `https://api.expo.dev`. Requests and responses are JSON.
+The Expo REST API exposes endpoints for triggering a workflow and reading run details. All endpoints live under `https://api.expo.dev`. Requests and responses are JSON.
 
 ## Authentication
 
-Both endpoints require an EAS access token, sent as a bearer token in the `Authorization` header.
+Both endpoints require an Expo access token, sent as a bearer token in the `Authorization` header.
 
 For production integrations, create a [robot user](/accounts/programmatic-access/#robot-users-and-access-tokens) on the account that owns the project and give it a scoped role. The token then represents the robot user, not a person. You can revoke it without affecting any user. A [personal access token](/accounts/programmatic-access/#personal-access-tokens) also works for one-off scripts.
 
@@ -32,12 +32,12 @@ Resolves the workflow file on the given Git ref, validates `inputs` against the 
 
 ### Request body
 
-| Field      | Type          | Required | Description                                                                                                                    |
-| ---------- | ------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| `appId`    | string (UUID) | Yes      | The EAS project ID. Find it on the project page or in [app config](/workflow/configuration/) under `extra.eas.projectId`.      |
-| `gitRef`   | string        | Yes      | A branch name (`main`), tag (`v1.0.0`), commit SHA, or fully qualified ref (`refs/heads/main`, `refs/tags/v1.0.0`).            |
-| `fileName` | string        | Yes      | The workflow file name only, such as **deploy.yml**. Do not include the **.eas/workflows/** prefix or any other path segments. |
-| `inputs`   | object        | No       | Values for inputs declared under `on.workflow_dispatch.inputs` in the workflow file. Validated against the declared schema.    |
+| Field      | Type          | Required | Description                                                                                                                         |
+| ---------- | ------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| `appId`    | string (UUID) | Yes      | The Expo Services project ID. Find it on the project page or in [app config](/workflow/configuration/) under `extra.eas.projectId`. |
+| `gitRef`   | string        | Yes      | A branch name (`main`), tag (`v1.0.0`), commit SHA, or fully qualified ref (`refs/heads/main`, `refs/tags/v1.0.0`).                 |
+| `fileName` | string        | Yes      | The workflow file name only, such as **deploy.yml**. Do not include the **.eas/workflows/** prefix or any other path segments.      |
+| `inputs`   | object        | No       | Values for inputs declared under `on.workflow_dispatch.inputs` in the workflow file. Validated against the declared schema.         |
 
 ### Response
 
@@ -143,7 +143,7 @@ Each entry in `jobs` includes its own `status`, one of:
 | `canceled`        | The job was canceled. Terminal.                                      |
 | `skipped`         | The job was skipped because a required upstream job did not succeed. |
 
-`outputs` contains any values the job sets with `outputs:` in the workflow file. Any referenced secrets appear as placeholders in the response. Jobs of `type: build` include `buildId`, and jobs of `type: submission` include `submissionId`. Each ID links to the underlying EAS Build or EAS Submit record.
+`outputs` contains any values the job sets with `outputs:` in the workflow file. Any referenced secrets appear as placeholders in the response. Jobs of `type: build` include `buildId`, and jobs of `type: submission` include `submissionId`. Each ID links to the underlying Expo Build or Expo Submit record.
 
 ### Example
 

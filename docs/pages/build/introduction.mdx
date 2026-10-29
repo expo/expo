@@ -1,7 +1,7 @@
 ---
-title: EAS Build
+title: Expo Build
 sidebar_title: Introduction
-description: EAS Build is a hosted service for building app binaries for your Expo and React Native projects.
+description: Expo Build is a hosted service for building app binaries for your Expo and React Native projects.
 ---
 
 import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
@@ -13,11 +13,11 @@ import { FAQ } from '~/ui/components/FAQ';
 import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
 
-**EAS Build** is a hosted Expo Application Services (EAS) service that builds app binaries (also called [standalone apps](/more/glossary-of-terms/#standalone-app)) for your Expo and React Native projects.
+**Expo Build** is a hosted Expo Services service that builds app binaries (also called [standalone apps](/more/glossary-of-terms/#standalone-app)) for your Expo and React Native projects.
 
-EAS Build makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using [ad hoc](/build/internal-distribution/) and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+Expo Build makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using [ad hoc](/build/internal-distribution/) and/or enterprise "universal" provisioning), deeply integrates with Expo Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
 
-EAS Build is also designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
+Expo Build is also designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
 
 ## Quick start
 
@@ -27,7 +27,7 @@ To build your app, run the following command:
 
 <Terminal cmd={['$ eas build --platform all']} />
 
-This command sends your project to EAS Build and produces installable binaries for Android and iOS. You can also build for one platform at a time by passing in `--platform android` or `--platform ios` as desired. For complete setup instructions, see [Create your first build](/build/setup/).
+This command sends your project to Expo Build and produces installable binaries for Android and iOS. You can also build for one platform at a time by passing in `--platform android` or `--platform ios` as desired. For complete setup instructions, see [Create your first build](/build/setup/).
 
 ### Expo Skills for AI agents
 
@@ -40,21 +40,21 @@ If you use an AI agent, install [Expo Skills](/skills/) to teach it how to creat
 - Cloud builds for Android and iOS with consistent environments
 - Automatically provision and manage app signing credentials or use your own
 - Share [internal distribution](/build/internal-distribution/) builds with a URL
-- Automate builds with [build profiles](/build/eas-json/#build-profiles) in **eas.json** (named sets of build settings) and integrations with [EAS Workflows](/eas/workflows/get-started/) or [CI pipelines](/build/building-on-ci/)
-- Auto-submit successful builds to app stores via [`--auto-submit`](/build/automate-submissions/) and EAS Submit
+- Automate builds with [build profiles](/build/eas-json/#build-profiles) in **eas.json** (named sets of build settings) and integrations with [Expo Workflows](/eas/workflows/get-started/) or [CI pipelines](/build/building-on-ci/)
+- Auto-submit successful builds to app stores via [`--auto-submit`](/build/automate-submissions/) and Expo Submit
 - First-class [`expo-updates` integration](/build/updates/) with per-profile channels and [runtime version](/eas-update/runtime-versions/) guidance
-- Reuse [development builds](/develop/development-builds/introduction/) across your team. When two team members run `eas build:dev` and the project fingerprint matches, the existing build is downloaded from EAS instead of creating a new one
+- Reuse [development builds](/develop/development-builds/introduction/) across your team. When two team members run `eas build:dev` and the project fingerprint matches, the existing build is downloaded from Expo Build instead of creating a new one
 - Faster builds via [dependency caching and custom cache paths](/build-reference/caching/)
 - Install builds and updates on devices with [Expo Orbit](https://expo.dev/orbit)
 
-## When to use EAS Build
+## When to use Expo Build
 
 | Scenario                                                                             | Recommendation |
 | ------------------------------------------------------------------------------------ | -------------- |
 | Build production-ready binaries for app stores                                       | <YesIcon />    |
 | Share builds with testers via [internal distribution](/build/internal-distribution/) | <YesIcon />    |
 | Consistent builds across team members without local environment setup                | <YesIcon />    |
-| Automate builds from CI or [EAS Workflows](/eas/workflows/get-started/)              | <YesIcon />    |
+| Automate builds from CI or [Expo Workflows](/eas/workflows/get-started/)             | <YesIcon />    |
 | Managed app signing credentials                                                      | <YesIcon />    |
 | Debugging native code locally                                                        | <NoIcon />     |
 
@@ -68,15 +68,15 @@ Use [internal distribution](/build/internal-distribution/) to share builds with 
 
 </Collapsible>
 
-<Collapsible summary="Can I use EAS Build with existing React Native projects?">
+<Collapsible summary="Can I use Expo Build with existing React Native projects?">
 
-Yes. EAS Build works with existing React Native projects created with `npx react-native init` or similar tools. See [Overview of using Expo with existing React Native apps](/bare/overview/) for more information.
+Yes. Expo Build works with existing React Native projects created with `npx react-native init` or similar tools. See [Overview of using Expo with existing React Native apps](/bare/overview/) for more information.
 
 </Collapsible>
 
-<Collapsible summary="Does EAS Build handle app signing credentials?">
+<Collapsible summary="Does Expo Build handle app signing credentials?">
 
-Yes. EAS Build can generate and manage Android [keystores](/app-signing/app-credentials/#android), iOS [provisioning profiles](/app-signing/app-credentials/#ios) and [distribution certificates](/app-signing/app-credentials/#ios), or use credentials you provide. See [App signing credentials](/app-signing/app-credentials/) for more information.
+Yes. Expo Build can generate and manage Android [keystores](/app-signing/app-credentials/#android), iOS [provisioning profiles](/app-signing/app-credentials/#ios) and [distribution certificates](/app-signing/app-credentials/#ios), or use credentials you provide. See [App signing credentials](/app-signing/app-credentials/) for more information.
 
 </Collapsible>
 
@@ -86,9 +86,9 @@ Yes. Use [local builds](/build-reference/local-builds/) with `eas build --local`
 
 </Collapsible>
 
-<Collapsible summary="Can I use EAS Build with EAS Workflows or CI pipelines?">
+<Collapsible summary="Can I use Expo Build with Expo Workflows or CI pipelines?">
 
-Yes. EAS Build integrates with [EAS Workflows](/eas/workflows/get-started/) using the `build` job type. Add a build job to your workflow configuration, for example:
+Yes. Expo Build integrates with [Expo Workflows](/eas/workflows/get-started/) using the `build` job type. Add a build job to your workflow configuration, for example:
 
 ```yaml
 jobs:
@@ -109,13 +109,13 @@ jobs:
       profile: ${{ github.ref_name == 'main' && 'production' || 'preview' }}
 ```
 
-For more information and other usage examples, see the [EAS Workflows build job](/eas/workflows/pre-packaged-jobs#build).
+For more information and other usage examples, see the [Expo Workflows build job](/eas/workflows/pre-packaged-jobs#build).
 
-EAS Build supports [builds from GitHub](/build/building-from-github/) and [building on CI](/build/building-on-ci/) with any provider.
+Expo Build supports [builds from GitHub](/build/building-from-github/) and [building on CI](/build/building-on-ci/) with any provider.
 
 </Collapsible>
 
-<Collapsible summary="What build server infrastructure does EAS Build use?">
+<Collapsible summary="What build server infrastructure does Expo Build use?">
 
 Android builds run on Linux runners hosted in Google Cloud Platform, and iOS builds run on macOS runners hosted in Expo's macOS cloud. See [Build server infrastructure](/build-reference/infrastructure/).
 
@@ -134,14 +134,14 @@ Android builds run on Linux runners hosted in Google Cloud Platform, and iOS bui
 
 <BoxLink
   title="Share your apps with internal testers"
-  description="EAS Build can help share preview builds of your app with a single URL."
+  description="Expo Build can help share preview builds of your app with a single URL."
   href="/build/internal-distribution"
   Icon={Cube01Icon}
 />
 
 <BoxLink
   title="Automate submissions"
-  description="Learn how EAS Build can take your successful builds and handle uploading them to app stores automatically."
+  description="Learn how Expo Build can take your successful builds and handle uploading them to app stores automatically."
   href="/build/automate-submissions"
   Icon={Cube01Icon}
 />
@@ -155,14 +155,14 @@ Android builds run on Linux runners hosted in Google Cloud Platform, and iOS bui
 
 <BoxLink
   title="Run builds locally or on your own infrastructure"
-  description="EAS Build is a hosted service, and it can also run on your own machine, for example, to debug or to comply with company security policies."
+  description="Expo Build is a hosted service, and it can also run on your own machine, for example, to debug or to comply with company security policies."
   href="/build-reference/local-builds"
   Icon={Cube01Icon}
 />
 
 <BoxLink
   title="Limitations"
-  description="EAS Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
+  description="Expo Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
   href="/build-reference/limitations"
   Icon={Cube01Icon}
 />

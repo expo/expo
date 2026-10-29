@@ -1,5 +1,5 @@
 ---
-title: Custom functions in EAS Workflows
+title: Custom functions in Expo Workflows
 sidebar_title: Custom functions
 description: Learn how to define reusable step sequences with custom functions.
 ---
@@ -12,7 +12,7 @@ For the **function.yml** schema, see [Custom functions](/eas/workflows/syntax/#c
 
 ## How it works
 
-Create a directory for your custom function with a **function.yml** file inside it. EAS Workflows also accepts **function.yaml**. EAS Workflows resolves the path you pass to `uses` relative to your EAS project directory:
+Create a directory for your custom function with a **function.yml** file inside it. Expo Workflows also accepts **function.yaml**. Expo Workflows resolves the path you pass to `uses` relative to your Expo Services project directory:
 
 <FileTree
   files={[
@@ -22,7 +22,7 @@ Create a directory for your custom function with a **function.yml** file inside 
   ]}
 />
 
-The **.eas/functions/&lt;name&gt;** path in the example above is only one option. The `uses` value must start with `./` or `../` and point to a directory containing a **function.yml** or **function.yaml** file. A path that starts with `../` can point outside the EAS project directory, but the custom function must remain within the repository.
+The **.eas/functions/&lt;name&gt;** path in the example above is only one option. The `uses` value must start with `./` or `../` and point to a directory containing a **function.yml** or **function.yaml** file. A path that starts with `../` can point outside the Expo Services project directory, but the custom function must remain within the repository.
 
 A relative `working_directory` on a step inside the custom function resolves from the job's default working directory, not the directory containing **function.yml**.
 
@@ -36,19 +36,19 @@ You can use custom functions in:
 
 Pass inputs at the call site with `with:`. Inside the function, read an input with `${{ inputs.<name> }}`.
 
-Define function outputs with `outputs` in **function.yml**. EAS Workflows exposes each output as a string. Read outputs as `${{ steps.<call_id>.outputs.<name> }}`. Use the `id` from the call step. The caller cannot reference the function's internal step identifiers.
+Define function outputs with `outputs` in **function.yml**. Expo Workflows exposes each output as a string. Read outputs as `${{ steps.<call_id>.outputs.<name> }}`. Use the `id` from the call step. The caller cannot reference the function's internal step identifiers.
 
 Expressions use the following scopes:
 
 - Inside the function, `steps.*` references resolve against the function's own steps.
-- EAS Workflows evaluates the call step's `with`, `env`, and `if` values in the caller's scope.
+- Expo Workflows evaluates the call step's `with`, `env`, and `if` values in the caller's scope.
 - Every step in the function inherits the call step's `env` values. In nested calls, inner values override outer values with the same name.
-- EAS Workflows evaluates input defaults and expressions inside the function in the function's scope.
+- Expo Workflows evaluates input defaults and expressions inside the function in the function's scope.
 - The call step's `if` gates the whole function as a single unit.
 
 ## Nesting
 
-A custom function can call other custom functions and built-in `eas/*` functions. Currently, custom functions cannot call `eas/build` or `eas/maestro_test`. EAS Workflows resolves every nested path relative to the EAS project directory, not the directory containing the calling function.
+A custom function can call other custom functions and built-in `eas/*` functions. Currently, custom functions cannot call `eas/build` or `eas/maestro_test`. Expo Workflows resolves every nested path relative to the Expo Services project directory, not the directory containing the calling function.
 
 You can nest custom functions up to 10 levels deep. A custom function cannot call itself, either directly or through other custom functions.
 

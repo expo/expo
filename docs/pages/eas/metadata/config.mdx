@@ -1,21 +1,21 @@
 ---
-title: Configuring EAS Metadata
+title: Configuring Expo Metadata
 sidebar_title: store.config.json
-description: Learn about different ways to configure EAS Metadata.
+description: Learn about different ways to configure Expo Metadata.
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 
-> **important** **EAS Metadata** is in [beta](/more/release-statuses/#beta) and subject to breaking changes.
+> **important** **Expo Metadata** is in [beta](/more/release-statuses/#beta) and subject to breaking changes.
 
-EAS Metadata is configured by a **store.config.json** file at the _root of your project_.
+Expo Metadata is configured by a **store.config.json** file at the _root of your project_.
 
 You can configure the path or name of the store config file with the **eas.json** [`metadataPath`](/eas/json/#metadatapath) property.
-Besides the default JSON format, EAS Metadata also supports more dynamic config using JavaScript files.
+Besides the default JSON format, Expo Metadata also supports more dynamic config using JavaScript files.
 
 ## Static store config
 
-The default store config type for EAS Metadata is a simple JSON file.
+The default store config type for Expo Metadata is a simple JSON file.
 The code snippet below shows an example store config with basic App Store information written in English (U.S.).
 
 You can find all configuration options in the [store config schema](/eas/metadata/schema/).
@@ -43,7 +43,7 @@ You can find all configuration options in the [store config schema](/eas/metadat
 
 ## Dynamic store config
 
-At times, Metadata properties can benefit from dynamic values. For example, the Metadata **copyright notice** should contain the current year. This can be automated with EAS Metadata.
+At times, Metadata properties can benefit from dynamic values. For example, the Metadata **copyright notice** should contain the current year. This can be automated with Expo Metadata.
 
 To generate content dynamically, start by creating a JavaScript config file **store.config.js**. Then, use the [`metadataPath`](/eas/json/#metadatapath) property in the **eas.json** file to pick the JS config file.
 
@@ -78,7 +78,7 @@ module.exports = config;
 ## Store config with external content
 
 When using external services for localizations, you have to fetch external content.
-EAS Metadata supports synchronous and asynchronous functions exported from dynamic store config files.
+Expo Metadata supports synchronous and asynchronous functions exported from dynamic store config files.
 The function results are awaited before validating and syncing with the stores.
 
 > The **store.config.js** function is evaluated in Node.js. If you need special values, like secrets, use environment variables.

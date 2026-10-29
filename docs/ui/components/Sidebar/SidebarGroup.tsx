@@ -224,21 +224,21 @@ function getIconElement(iconName?: string) {
       return DataIcon;
     case 'Development process':
       return CodeSquare01Icon;
-    case 'EAS Build':
+    case 'Expo Build':
       return Cube01Icon;
-    case 'EAS Submit':
+    case 'Expo Submit':
       return EasSubmitIcon;
-    case 'EAS Update':
+    case 'Expo Update':
       return LayersTwo02Icon;
-    case 'EAS Metadata':
+    case 'Expo Metadata':
       return EasMetadataIcon;
-    case 'EAS Insights':
+    case 'Expo Insights':
       return DataIcon;
-    case 'EAS Workflows':
+    case 'Expo Workflows':
       return Dataflow03Icon;
-    case 'EAS Hosting':
+    case 'Expo Hosting':
       return Cloud01Icon;
-    case 'EAS Observe':
+    case 'Expo Observe':
       return ActivityIcon;
     case 'Expo Modules API':
       return CpuChip01Icon;
