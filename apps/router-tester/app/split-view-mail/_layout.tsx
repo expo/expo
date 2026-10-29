@@ -37,6 +37,7 @@ export default function Layout() {
   const [press, setPress] = useState({ title: '', count: 0 });
   const [search, setSearch] = useState('');
   const [unreadOnly, setUnreadOnly] = useState(false);
+  const [buttonStates, setButtonStates] = useState(false);
 
   const button = (title: string, icon?: SFSymbol): SplitViewToolbarItem => ({
     title,
@@ -114,6 +115,12 @@ export default function Layout() {
                 testID="split-view-mail-icons"
                 value={iconButtons}
                 onValueChange={setIconButtons}
+              />
+              <ToggleRow
+                label="Selected Unread, disabled Archive"
+                testID="split-view-mail-button-states"
+                value={buttonStates}
+                onValueChange={setButtonStates}
               />
               <ToggleRow
                 label="Three columns"
@@ -194,11 +201,11 @@ export default function Layout() {
             showHeaders
               ? {
                   title: alternateTitles ? 'Message' : (message?.sender ?? 'Mail'),
-                  leftToolbar: [button('Unread', 'envelope.badge')],
+                  leftToolbar: [{ ...button('Unread', 'envelope.badge'), selected: buttonStates }],
                   rightToolbar: [
                     button('Search', 'magnifyingglass'),
                     button('Move', 'folder'),
-                    button('Archive', 'archivebox'),
+                    { ...button('Archive', 'archivebox'), disabled: buttonStates },
                     button('Forward', 'arrowshape.turn.up.right'),
                     button('Reply All', 'arrowshape.turn.up.left.2'),
                   ],

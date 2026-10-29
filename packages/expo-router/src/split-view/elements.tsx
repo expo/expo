@@ -23,6 +23,18 @@ export interface SplitViewToolbarItem {
    * Menu that opens when the button is pressed.
    */
   menu?: SplitViewMenu;
+  /**
+   * Whether the button cannot be pressed.
+   * @default false
+   */
+  disabled?: boolean;
+  /**
+   * Whether the button is in a selected state.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/isselected) for more information
+   * @default false
+   */
+  selected?: boolean;
 }
 
 export interface SplitViewMenu {
