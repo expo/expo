@@ -146,7 +146,9 @@ env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
 [ -s agent-output/evidence/verdict.md ] || echo 'FAIL: The agent did not write a verdict.' > agent-output/evidence/verdict.md
 VERDICT=$(head -n 1 agent-output/evidence/verdict.md)
 
-SITE_URL=$(npx --yes eas-simulator-evidence@0.2.4 run agent-output/evidence --stop \
+SITE_URL=$(env -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN -u CLAUDE_CODE_OAUTH_TOKEN -u ANTHROPIC_API_KEY \
+  -u CODEX_API_KEY -u CURSOR_API_KEY -u XAI_API_KEY \
+  npx --yes eas-simulator-evidence@0.2.4 run agent-output/evidence --stop \
   --subject "QA Swarm: $PLATFORM $FLOW" --verdict-file agent-output/evidence/verdict.md \
   --build-id "$BUILD_ID" --deploy-alias "qa-$PLATFORM-$FLOW-evidence" | tail -n 1)
 
@@ -163,7 +165,7 @@ The script does these tasks in this order:
 
 1. It finds the flow file for the platform.
 2. It starts a session with the build. Then it writes the prompt, and runs the agent in the `device` mode.
-3. It uses [eas-simulator-evidence](https://github.com/jacobhammerle/eas-simulator-evidence) to stop the session and build an evidence site. The site has the verdict, the screenshots, the action timeline, the performance charts, and the session recording. The tool deploys the site to [EAS Hosting](/eas/hosting/introduction/).
+3. It uses [eas-simulator-evidence](https://github.com/jacobhammerle/eas-simulator-evidence) to stop the session and build an evidence site. The site has the verdict, the screenshots, the action timeline, the performance charts, and the session recording. The tool deploys the site to [EAS Hosting](/eas/hosting/introduction/). It uses `EXPO_TOKEN`, the robot token from the device controller, to stop the session and deploy the site. The script removes the other tokens and the key of your agent from its environment. Read the code of version 0.2.4 before you use it, because the tool runs with the robot token.
 4. It ends with the verdict. The job of the lane passes only for a `PASS` verdict.
 
 > **warning** An evidence site on EAS Hosting is public. Each person who has the link can see the screenshots and the recording. To keep the evidence private, remove `--deploy-alias` from the command, and upload the folder that the tool builds to a private host.
