@@ -169,6 +169,8 @@ on:
 
 Runs your workflow when you create or update a pull request that targets one of the matching branches.
 
+The run uses the workflow files and the code from the head commit of the pull request branch, not from the base branch. So a pull request can change the workflow that its own run uses.
+
 > **info** Pull requests opened from a fork of the connected repository do not trigger `pull_request` workflow runs.
 
 With the `branches` list, you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']`, only pull requests to merge into the main branch trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow triggers on pull request events to all branches. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it).
