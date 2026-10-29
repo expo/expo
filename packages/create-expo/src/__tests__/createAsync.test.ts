@@ -6,7 +6,7 @@ import { downloadAndExtractExampleAsync } from '../Examples';
 import { extractAndPrepareTemplateAppAsync, installPodsAsync } from '../Template';
 import { createAsync, logNodeInstallWarning, setupDependenciesAsync } from '../createAsync';
 import { SwiftPMUnsupportedError } from '../error';
-import { formatSelfCommand, installDependenciesAsync } from '../resolvePackageManager';
+import { installDependenciesAsync } from '../resolvePackageManager';
 
 jest.mock('fs');
 jest.mock('ora');
