@@ -11,7 +11,6 @@ Each time a workflow is triggered, EAS creates a workflow run. Use the EAS dashb
 A workflow run has one of the following statuses:
 
 - **New**: EAS created the run, but it has not started yet.
-- **Waiting**: Another run in the same concurrency group is active. This run has no jobs until it can start.
 - **In progress**: One or more jobs are running.
 - **Action required**: A job is waiting for a manual action, such as an approval.
 - **Success**: All jobs completed successfully.
@@ -32,7 +31,7 @@ You can also use EAS CLI to view a run. Run `eas workflow:view` to select a rece
 
 Open a run with a non-terminal status and select **Cancel workflow**. Jobs that already completed keep their final status. EAS stops the remaining work and marks the run as canceled.
 
-To cancel a run with EAS CLI, run `eas workflow:cancel WORKFLOW_RUN_ID`. You can provide multiple workflow run IDs. If you do not provide an ID, select one or more in-progress runs from the prompt.
+To cancel a run with EAS CLI, run `eas workflow:cancel WORKFLOW_RUN_ID`. You can provide multiple workflow run IDs. If you do not provide an ID, select one or more in-progress or queued runs from the prompt.
 
 ## Re-run a workflow
 

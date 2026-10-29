@@ -121,15 +121,14 @@ Returns the workflow run and the jobs it contains. Use this endpoint to poll for
 
 The run's `status` is one of:
 
-| Value             | Meaning                                                                        |
-| ----------------- | ------------------------------------------------------------------------------ |
-| `new`             | The run is queued and has not started yet.                                     |
-| `waiting`         | Another run in the same concurrency group is active. This run has no jobs yet. |
-| `in-progress`     | At least one job is running.                                                   |
-| `action-required` | The run is paused and waiting on a manual action, such as approval.            |
-| `success`         | The run finished and every job succeeded. Terminal.                            |
-| `failure`         | The run finished with at least one failed job. Terminal.                       |
-| `canceled`        | The run was canceled before it finished. Terminal.                             |
+| Value             | Meaning                                                             |
+| ----------------- | ------------------------------------------------------------------- |
+| `new`             | The run is queued and has not started yet.                          |
+| `in-progress`     | At least one job is running.                                        |
+| `action-required` | The run is paused and waiting on a manual action, such as approval. |
+| `success`         | The run finished and every job succeeded. Terminal.                 |
+| `failure`         | The run finished with at least one failed job. Terminal.            |
+| `canceled`        | The run was canceled before it finished. Terminal.                  |
 
 Each entry in `jobs` includes its own `status`, one of:
 
