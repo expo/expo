@@ -90,10 +90,8 @@ internal class MetadataInjectingPlayer(
     }
   }
 
-  // Every callback is forwarded by hand: Kotlin's `by` delegation skips the default methods of a
-  // Java interface, and all of Player.Listener's are. Delegated, the session never heard of a
-  // timeline change, a track change or an error, and its controller crashed the app ("Invalid
-  // PlayerInfo update") once a playlist moved to an item added after the session was made.
+  // Every callback is forwarded by hand. Kotlin's `by` delegation doesn't forward the default
+  // methods of a Java interface, and every Player.Listener method is one.
   @Suppress("DEPRECATION", "OVERRIDE_DEPRECATION")
   private inner class MetadataForwardingListener(
     private val listener: Player.Listener
