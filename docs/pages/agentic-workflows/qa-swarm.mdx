@@ -397,6 +397,8 @@ When all the lanes finish, the page of the workflow run on expo.dev shows the **
 
 The job of a lane fails when its verdict is not `PASS`, so the workflow run shows each failed lane. The screenshots and the log of the agent are also in the artifacts of each lane job.
 
+> **warning** The verdict of the agent can be wrong. A `FAIL` can come from what the flow tells the agent, or does not tell it, and not from the app. Read the evidence site before you report a bug. To fix a false `FAIL`, add the missing facts to the flow.
+
 ## Post the report on a pull request
 
 To post the report on a PR, add the `GITHUB_TOKEN` and `GITHUB_REPOSITORY` variables from [Add a GitHub token to EAS](/agentic-workflows/setup/#add-a-github-token-to-eas) to the **preview** environment. Then add this job to **.eas/workflows/qa-swarm.yml**:

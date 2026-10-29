@@ -357,6 +357,8 @@ To open these links, sign in to an Expo account that can view the project.
 
 When the verdict is not `PASS`, the `result` job fails, and the workflow run shows the failure. To test the PR again, push a new commit to its branch.
 
+> **warning** The verdict of the agent can be wrong. A `FAIL` can come from what the prompt tells the agent, or does not tell it, and not from the app. A false `FAIL` also fails the PR check. Before you make this check required, read the evidence of some runs. A person must read the evidence and decide, as with any other report. To fix a false `FAIL`, add facts about your app to the prompt in [Add the prompt](#add-the-prompt).
+
 ## Next steps
 
 <BoxLink
