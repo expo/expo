@@ -20,14 +20,6 @@ struct DevServer: Hashable {
   let bundleIdentifier: String?
   let username: String?
 
-  static func == (lhs: Self, rhs: Self) -> Bool {
-    return lhs.url == rhs.url
-  }
-
-  func hash(into hasher: inout Hasher) {
-    hasher.combine(url)
-  }
-
   static func < (lhs: Self, rhs: Self) -> Bool {
     return lhs.url < rhs.url
   }
