@@ -85,7 +85,7 @@ internal final class MailComposingSession: NSObject, MFMailComposeViewController
 }
 
 private func findMimeType(forAttachment attachment: URL) -> String {
-  if let utType = UTType(filenameExtension: attachment.pathExtension),
+  if let utType = UTType(tag: attachment.pathExtension, tagClass: .filenameExtension, conformingTo: nil),
      let mimeType = utType.preferredMIMEType {
     return mimeType
   }
