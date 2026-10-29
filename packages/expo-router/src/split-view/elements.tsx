@@ -188,6 +188,12 @@ export interface SplitViewHeader {
    * @default true
    */
   backVisible?: boolean;
+  /**
+   * Whether the navigation bar of the column is hidden. The navigation bar also holds the button that shows and hides
+   * the sidebar, so a hidden navigation bar removes that button.
+   * @default false
+   */
+  hidden?: boolean;
 }
 
 export interface SplitViewColumnProps {
