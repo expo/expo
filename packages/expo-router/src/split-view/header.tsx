@@ -3,10 +3,11 @@ import { SplitViewNativeHeader } from './native';
 import type { SplitViewNativeToolbarItem } from './native.types';
 
 export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
-  const { title, largeTitle, leftToolbar, rightToolbar, searchBar } = header;
+  const { title, subtitle, largeTitle, leftToolbar, rightToolbar, searchBar } = header;
   return (
     <SplitViewNativeHeader
       title={title}
+      subtitle={subtitle}
       largeTitle={largeTitle}
       leftToolbarItems={toNativeToolbarItems('left', leftToolbar)}
       rightToolbarItems={toNativeToolbarItems('right', rightToolbar)}
