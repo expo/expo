@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process';
-import { mkdtemp, readFile, readdir, realpath, rm } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
@@ -12,6 +12,17 @@ let cli: string;
 
 async function run(...args: string[]) {
   return exec(process.execPath, [cli, ...args], { cwd: host, env: { ...process.env, CI: '1' } });
+}
+
+async function contents(root: string): Promise<Record<string, string>> {
+  const result: Record<string, string> = {};
+  for (const path of await readdir(root, { recursive: true, withFileTypes: true })) {
+    if (path.isFile()) {
+      const absolute = join(path.parentPath, path.name);
+      result[absolute.slice(root.length + 1)] = await readFile(absolute, 'utf8');
+    }
+  }
+  return result;
 }
 
 beforeAll(async () => {
@@ -86,38 +97,20 @@ describe('Running the packed CLI outside the Expo checkout', () => {
       await mkdir(join(host, path, '..'), { recursive: true });
       await writeFile(join(host, path), content);
     }
-    const report = JSON.parse((await run('skill', '--json')).stdout);
-    expect(report).toMatchObject({
-      platform: 'android',
-      selection: { activity: 'example.MainActivity' },
-    });
-    expect(report.guide).toContain('PermissionAwareActivity');
-    expect(report.changes).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          path: 'app/src/main/java/example/MainApplication.kt',
-          after: expect.stringContaining('ReactApplication by expo'),
-        }),
-        expect.objectContaining({
-          path: 'app/src/main/java/example/MainActivity.kt',
-          after: expect.stringContaining('AppCompatActivity'),
-        }),
-        expect.objectContaining({
-          path: 'app/src/main/AndroidManifest.xml',
-          after: expect.stringContaining('android:name="example.MainApplication"'),
-        }),
-        expect.objectContaining({
-          path: 'app/src/main/res/values/themes.xml',
-          after: expect.stringContaining('Theme.AppCompat'),
-        }),
-      ])
-    );
-    expect(await contents(host)).toEqual(fixture);
-    await expect(run('init')).rejects.toMatchObject({
+    const failure = await run('init').catch((error) => error);
+    expect(failure).toMatchObject({
       code: 1,
       stderr: expect.stringContaining('--configure-host'),
-      stdout: expect.stringContaining(report.preview),
     });
+    for (const instruction of [
+      'MainApplication.kt',
+      'ReactApplication by expo',
+      'AppCompatActivity',
+      'Theme.AppCompat',
+    ]) {
+      expect(failure.stdout).toContain(instruction);
+    }
+    expect(failure.stdout).not.toContain('Native setup completed.');
     expect(await contents(host)).toEqual(fixture);
   });
 });

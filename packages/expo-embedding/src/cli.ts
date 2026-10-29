@@ -6,10 +6,10 @@ import { parseArgs } from 'node:util';
 import { prepareAndroidWorkspace } from './android';
 import { prepareAndroid, hoistAndroidDependencies, initializeAndroid } from './android-setup';
 import { exists, readJSON } from './files';
+import { printIntegrationInstructions } from './integration';
 import { prepareIos, initializeIos } from './ios';
 import { findAppRoot } from './scaffold';
 import { prepareExpoProject, installDependencies, installPackages } from './setup';
-import { printIntegrationInstructions } from './integration';
 import { usage } from './usage';
 
 async function main(): Promise<void> {
@@ -71,7 +71,7 @@ async function main(): Promise<void> {
     throw new Error('Use --configure-host only with Android setup.');
 
   const ios = platform === 'ios' ? await prepareIos(root, packageRoot, values) : undefined;
-  const hostChanges = platform === 'android' ? await prepareAndroid(root, values) : [];
+  const android = platform === 'android' ? await prepareAndroid(root, values) : undefined;
   await prepareExpoProject(root, command, frozen, platform);
   if (platform === 'android') await prepareAndroidWorkspace(root, frozen);
   const manager = await installDependencies(
@@ -83,7 +83,7 @@ async function main(): Promise<void> {
   if (command === 'install') await installPackages(root, manager, packages);
   try {
     if (ios) await initializeIos(ios, packageRoot);
-    else await initializeAndroid(root, packageRoot, hostChanges);
+    else await initializeAndroid(root, packageRoot, android!.changes);
   } catch (error) {
     if (command === 'install') {
       throw new Error(
@@ -93,11 +93,17 @@ async function main(): Promise<void> {
     }
     throw error;
   }
-  if (ios && command === 'init') {
+  if (command === 'init') {
     await printIntegrationInstructions(packageRoot, {
       root,
-      platform: 'ios',
-      selection: { project: ios.project, target: ios.target },
+      platform,
+      selection: ios
+        ? { project: ios.project, target: ios.target }
+        : {
+            activity: android!.activity.activityName,
+            application: android!.application.applicationName,
+          },
+      preview: android?.changes.length ? android.preview : undefined,
     });
   }
 }

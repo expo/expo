@@ -177,7 +177,7 @@ If the manifest has no Application name, setup also previews creation of an app-
 
 For an existing Kotlin Application, setup can add composition to a simple class declaration while keeping its superclass and other interfaces. It forwards lifecycle callbacks immediately after their direct `super` calls and preserves the surrounding code. Custom constructors, conditional `super` calls, member/import collisions, Java Applications, unresolved manifest placeholders and existing React Native integrations require manual wiring. An Application already wired with the documented composition pattern is preserved.
 
-For an agent, first run `npx expo-embedding skill --platform android` to inspect the proposed host changes and complete integration guide. `--json` includes exact before/after contents and relative paths. It shares the same planner as setup and does not prompt or write files. Its text preview is for review, not an apply-ready patch; generated Gradle changes and manual Activity delegate/scene wiring are described in the guide.
+Agents can run `npx expo-embedding init --platform android --configure-host` when host migration is authorized. Setup previews the planned host changes before applying them. After successful setup, it prints the selected Application and Activity, applied host edits, and the complete integration guide. The agent then completes Activity delegate wiring and scene placement while preserving existing UI and callbacks. Repeat init also prints the guide; verify existing wiring instead of duplicating it.
 
 For an agent or CI run, explicitly authorize the combined Application and Activity changes:
 

@@ -19,7 +19,7 @@ type HostOptions = {
   'migrate-activity'?: string;
 };
 
-export async function planAndroidHost(root: string, options: HostOptions) {
+async function planAndroidHost(root: string, options: HostOptions) {
   if (options.project || options.target)
     throw new Error(
       'Android currently supports the standard :app module. Omit --project and --target.'
@@ -38,11 +38,9 @@ export async function planAndroidHost(root: string, options: HostOptions) {
   };
 }
 
-export async function prepareAndroid(
-  root: string,
-  options: HostOptions
-): Promise<HostFileChange[]> {
-  const { activity, application, changes, preview } = await planAndroidHost(root, options);
+export async function prepareAndroid(root: string, options: HostOptions) {
+  const plan = await planAndroidHost(root, options);
+  const { activity, application, changes, preview } = plan;
   if (changes.length) process.stdout.write(`Proposed Android host changes:\n${preview}`);
   await approveHostConfiguration(activity, application, {
     configureHost: options['configure-host'],
@@ -61,7 +59,7 @@ export async function prepareAndroid(
       }
     },
   });
-  return changes;
+  return plan;
 }
 
 export async function hoistAndroidDependencies(root: string, frozen: boolean): Promise<void> {
