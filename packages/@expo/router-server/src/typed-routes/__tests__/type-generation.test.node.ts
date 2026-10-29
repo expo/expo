@@ -206,6 +206,65 @@ describe(getWatchHandler, () => {
   });
 });
 
+describe('getWatchHandler with Windows paths', () => {
+  const originalAppRoot = process.env.EXPO_ROUTER_APP_ROOT;
+  let handler: ReturnType<typeof getWatchHandler>;
+  const fn = jest.fn();
+
+  beforeAll(() => {
+    process.env.EXPO_ROUTER_APP_ROOT = 'C:\\repo\\apps\\expo\\src\\app';
+  });
+  afterAll(() => {
+    process.env.EXPO_ROUTER_APP_ROOT = originalAppRoot;
+  });
+
+  beforeEach(() => {
+    const ctx = requireContext('FAKE_INPUT', true, /\.[tj]sx?$/, {
+      './index.ts': true,
+      './fruit/banana.ts': true,
+    });
+    jest.isolateModules(() => {
+      jest.doMock('node:path', () => jest.requireActual('node:path').win32);
+      const { getWatchHandler: getWin32WatchHandler } =
+        require('../index') as typeof import('../index');
+      jest.dontMock('node:path');
+      handler = getWin32WatchHandler('C:\\repo\\apps\\expo\\.expo\\types', {
+        ctx,
+        regenerateFn: () => {
+          fn(getTypedRoutesDeclarationFile(ctx));
+        },
+      });
+    });
+  });
+
+  it('will ignore files outside the app dir', () => {
+    handler('C:\\repo\\packages\\api\\src\\seed.ts', 'add');
+
+    expect(fn).not.toHaveBeenCalled();
+  });
+
+  it('will ignore files on another drive', () => {
+    handler('D:\\repo\\packages\\api\\src\\seed.ts', 'add');
+
+    expect(fn).not.toHaveBeenCalled();
+  });
+
+  it('adds nested routes with POSIX keys', () => {
+    handler(`${process.env.EXPO_ROUTER_APP_ROOT}\\(app)\\sessions\\[id]\\index.tsx`, 'add');
+
+    const { href } = getGeneratedRoutesFromOutput(fn.mock.lastCall?.[0] ?? '');
+    expect(href).toContain('`/sessions/${Router.SingleRoutePart<T>}`');
+    expect(href).not.toContain('/sessions/[id]/index');
+  });
+
+  it('deletes nested routes', () => {
+    handler(`${process.env.EXPO_ROUTER_APP_ROOT}\\fruit\\banana.ts`, 'delete');
+
+    const { href } = getGeneratedRoutesFromOutput(fn.mock.lastCall?.[0] ?? '');
+    expect(href).not.toContain('/fruit/banana');
+  });
+});
+
 describe(getTypedRoutesDeclarationFile, () => {
   it('can generate a file with the correct template', () => {
     const context = requireContext('FAKE_INPUT', true, /\.[tj]sx?$/, {
