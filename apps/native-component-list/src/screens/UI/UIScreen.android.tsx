@@ -35,6 +35,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'CompositionLocalProvider component',
+    route: 'ui/composition-local-provider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./CompositionLocalProviderScreen'));
+    },
+  },
+  {
     name: 'Card component',
     route: 'ui/card',
     options: {},
@@ -299,6 +307,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'BottomSheet in a list',
+    route: 'ui/bottom-sheet-in-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BottomSheetInListScreen'));
+    },
+  },
+  {
     name: 'BottomSheet component',
     route: 'ui/bottomsheet',
     options: {},
@@ -443,11 +459,35 @@ export const UIScreens = [
     },
   },
   {
+    name: 'TopAppBar component',
+    route: 'ui/top-app-bar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./TopAppBarScreen'));
+    },
+  },
+  {
     name: 'Extending Expo UI',
     route: 'ui/extending',
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ExtendingExpoUIScreen'));
+    },
+  },
+  {
+    name: 'Host in a Pressable',
+    route: 'ui/host-in-pressable',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HostInPressableScreen'));
+    },
+  },
+  {
+    name: 'RNHostView in a clickable',
+    route: 'ui/rnhostview-in-clickable',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./RNHostViewInClickableScreen'));
     },
   },
   {

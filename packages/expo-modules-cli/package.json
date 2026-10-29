@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-cli",
-  "version": "0.3.0",
+  "version": "0.3.2",
   "description": "Command-line tools for developing Expo modules.",
   "keywords": [
     "cli",
@@ -38,13 +38,14 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "commander": "^14.0.3"
+    "@babel/parser": "^7.20.0",
+    "arg": "^5.0.2"
   },
   "devDependencies": {
+    "@babel/types": "^7.20.0",
     "@expo/internal-scripts": "workspace:*",
     "@types/jest": "^30.0.0",
-    "@types/node": "^22.14.0",
-    "expo-modules-macros": "0.21.0"
+    "@types/node": "^22.14.0"
   },
   "engines": {
     "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"

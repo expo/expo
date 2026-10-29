@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- [iOS] Keep pods that resolve Swift packages through React Native's `spm_dependency` (such as `@stripe/stripe-react-native`) and their dependencies as dynamic frameworks when precompiled modules are enabled. ([#52017](https://github.com/expo/expo/pull/52017) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.14
+
+### Patch Changes
+
+- [iOS] Fix precompiled modules falling back to source builds on Ruby 2.6 (macOS system Ruby) by polyfilling `Enumerable#filter_map`. ([#50388](https://github.com/expo/expo/pull/50388) by [@vitalyster](https://github.com/vitalyster))
+
 ## 58.0.13
 
 ### Patch Changes

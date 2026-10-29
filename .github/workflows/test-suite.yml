@@ -21,6 +21,7 @@ on:
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths: *trigger_paths
 
 concurrency:
@@ -132,47 +133,55 @@ jobs:
             pnpm-lock.yaml,
             "!packages/**/{ios,android}/**",
             "!apps/bare-expo/**/{ios,android}/**"
+      - name: 📝 Note skipped jobs
+        if: github.event.pull_request.draft
+        run: echo "The build and e2e jobs don't run on draft pull requests. Mark the pull request ready for review to run them." >> "$GITHUB_STEP_SUMMARY"
   ios-build:
-    runs-on: macos-26
+    runs-on: blacksmith-6vcpu-macos-26
     needs: detect-platform-changes
-    if: needs.detect-platform-changes.outputs.should_build_ios == 'true'
+    # Draft pull requests skip the build jobs, and so the e2e jobs that need them.
+    # Marking the pull request ready for review runs them.
+    if: >-
+      needs.detect-platform-changes.outputs.should_build_ios == 'true' &&
+      (github.event_name != 'pull_request' || !github.event.pull_request.draft)
     permissions:
       # REQUIRED: Allow updating fingerprint in action caches
       actions: write
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version: 1.x
       - name: 🔨 Switch to Xcode 26.4.1
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: 💎 Setup Ruby and install gems
-        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
-        with:
-          bundler-cache: true
-          ruby-version: 3.2.2
-      - name: Setup ccache
-        uses: ./.github/actions/setup-ccache
       - name: 🔨 Install pnpm
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           install: false
-      - name: 🔨 Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 24
-          cache: 'pnpm'
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          ccache: 'true'
-          bare-expo-pods: 'true'
-          ccache-variant: 'e2e-release'
+      - parallel:
+          - name: 🏗️ Setup Bun
+            uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+            with:
+              bun-version: 1.x
+          - name: 💎 Setup Ruby and install gems
+            uses: ruby/setup-ruby@26e5b7d197ebf60545ee9667bcbace0be11ccaec # v1.334.0
+            with:
+              bundler-cache: true
+              ruby-version: 3.4.11
+          - name: Setup ccache
+            uses: ./.github/actions/setup-ccache
+          - name: 🔨 Setup Node
+            uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+            with:
+              node-version: 24
+              cache: 'pnpm'
+          - name: ♻️ Restore caches
+            uses: ./.github/actions/expo-caches
+            id: expo-caches
+            with:
+              ccache: 'true'
+              bare-expo-pods: 'true'
+              ccache-variant: 'e2e-release'
       - name: Reset ccache stats
         run: ccache -z
       - name: 📦 Install node modules
@@ -240,46 +249,61 @@ jobs:
   ios-test-e2e:
     needs: [ios-build, detect-platform-changes]
     if: needs.detect-platform-changes.outputs.should_test_ios == 'true'
-    runs-on: macos-26
+    runs-on: blacksmith-6vcpu-macos-26
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version: 1.x
       - name: 🔨 Switch to Xcode 26.4.1
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: 🌠 Download builds
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: bare-expo-ios-builds
-          path: apps/bare-expo/ios/build/BareExpo.app
-      - name: 🧹 Cleanup unused simulator runtimes
-        run: |
-          xcrun simctl list devices -j | jq -r '.devices | to_entries[] | select(.key | contains("iOS") | not) | .value[].udid' | xargs -r -n1 xcrun simctl delete
-          xcrun simctl list devices --json
-          xcrun simctl erase all
-          xcrun simctl shutdown all
-          sudo xcodebuild -runFirstLaunch
-      - name: 🍺 Install Maestro
-        uses: ./.github/actions/setup-maestro
-        with:
-          version: 2.6.1
       - name: 🔨 Install pnpm
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           install: false
-      - name: 🔨 Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 24
-          cache: 'pnpm'
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
+      - parallel:
+          - name: 🏗️ Setup Bun
+            uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+            with:
+              bun-version: 1.x
+          - name: 🌠 Download builds
+            uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+            with:
+              name: bare-expo-ios-builds
+              path: apps/bare-expo/ios/build/BareExpo.app
+          # Blacksmith's macOS VMs have no audio output device. Without one, AVPlayer can't build its
+          # audio pipeline (CoreAudio error -66680), so player items never become ready to play and
+          # the expo-video flows fail. BlackHole is a virtual output device; coreaudiod restarts to load it.
+          # The installer runs as root, so it's pinned by checksum rather than installed through Homebrew.
+          - name: 🔊 Add a virtual audio output device
+            env:
+              BLACKHOLE_VERSION: 0.6.1
+              BLACKHOLE_SHA256: c829afa041a9f6e1b369c01953c8f079740dd1f02421109855829edc0d3c1988
+            run: |
+              pkg="$RUNNER_TEMP/BlackHole2ch.pkg"
+              curl -fsSL -o "$pkg" "https://existential.audio/downloads/BlackHole2ch-$BLACKHOLE_VERSION.pkg"
+              echo "$BLACKHOLE_SHA256  $pkg" | shasum -a 256 -c -
+              sudo installer -pkg "$pkg" -target /
+              sudo killall coreaudiod || true
+          - name: 🧹 Cleanup unused simulator runtimes
+            run: |
+              xcrun simctl list devices -j | jq -r '.devices | to_entries[] | select(.key | contains("iOS") | not) | .value[].udid' | xargs -r -n1 xcrun simctl delete
+              xcrun simctl list devices --json
+              xcrun simctl erase all
+              xcrun simctl shutdown all
+              sudo xcodebuild -runFirstLaunch
+          - name: 🍺 Install Maestro
+            uses: ./.github/actions/setup-maestro
+            with:
+              version: 2.6.1
+          - name: 🔨 Setup Node
+            uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+            with:
+              node-version: 24
+              cache: 'pnpm'
+          - name: ♻️ Restore caches
+            uses: ./.github/actions/expo-caches
+            id: expo-caches
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
         env:
@@ -342,9 +366,11 @@ jobs:
           fi
 
   android-build:
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     needs: detect-platform-changes
-    if: needs.detect-platform-changes.outputs.should_build_android == 'true'
+    if: >-
+      needs.detect-platform-changes.outputs.should_build_android == 'true' &&
+      (github.event_name != 'pull_request' || !github.event.pull_request.draft)
     permissions:
       # REQUIRED: Allow updating fingerprint in action caches
       actions: write
@@ -353,38 +379,39 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a # v1.8.1
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version: 1.x
-      - name: 🔨 Use JDK 17
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-      - name: Setup ccache
-        uses: ./.github/actions/setup-ccache
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🔨 Install pnpm
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           install: false
-      - name: 🔨 Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 24
-          cache: 'pnpm'
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          ccache: 'true'
-          gradle: 'true'
-          react-native-gradle-downloads: 'true'
+      - parallel:
+          - name: 🏗️ Setup Bun
+            uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+            with:
+              bun-version: 1.x
+          - name: 🔨 Use JDK 17
+            uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+            with:
+              distribution: 'temurin'
+              java-version: '17'
+          - name: Setup ccache
+            uses: ./.github/actions/setup-ccache
+          - name: 🔨 Setup Node
+            uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+            with:
+              node-version: 24
+              cache: 'pnpm'
+          - name: ♻️ Restore caches
+            uses: ./.github/actions/expo-caches
+            id: expo-caches
+            with:
+              ccache: 'true'
+              gradle: 'true'
+              react-native-gradle-downloads: 'true'
       - name: Reset ccache stats
         run: ccache -z
       - name: 📦 Install node modules
@@ -443,43 +470,44 @@ jobs:
   android-test-e2e:
     needs: [android-build, detect-platform-changes]
     if: needs.detect-platform-changes.outputs.should_test_android == 'true'
-    runs-on: ubuntu-24.04
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     strategy:
       matrix:
         api-level: [36]
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        uses: useblacksmith/checkout@25227e61ff9dafe400e22fa487b673eac4e4409a # v1.8.1
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version: 1.x
-      - name: 🌠 Download builds
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          name: bare-expo-android-builds
-          path: apps/bare-expo/android/app/build/outputs/apk/release
-      - name: 🍺 Install Maestro
-        uses: ./.github/actions/setup-maestro
-        with:
-          # Pinned to 2.4.0 — 2.5.0+ replaces TCP port forwarding with a direct ADB
-          # socket gRPC connection that fails (UNAVAILABLE / tcp:7001 closed) against
-          # the Android emulator in CI.
-          version: 2.4.0
       - name: 🔨 Install pnpm
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           install: false
-      - name: 🔨 Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 24
-          cache: 'pnpm'
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
+      - parallel:
+          - name: 🏗️ Setup Bun
+            uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+            with:
+              bun-version: 1.x
+          - name: 🌠 Download builds
+            uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+            with:
+              name: bare-expo-android-builds
+              path: apps/bare-expo/android/app/build/outputs/apk/release
+          - name: 🍺 Install Maestro
+            uses: ./.github/actions/setup-maestro
+            with:
+              # Pinned to 2.4.0 — 2.5.0+ replaces TCP port forwarding with a direct ADB
+              # socket gRPC connection that fails (UNAVAILABLE / tcp:7001 closed) against
+              # the Android emulator in CI.
+              version: 2.4.0
+          - name: 🔨 Setup Node
+            uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+            with:
+              node-version: 24
+              cache: 'pnpm'
+          - name: ♻️ Restore caches
+            uses: ./.github/actions/expo-caches
+            id: expo-caches
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
         env:

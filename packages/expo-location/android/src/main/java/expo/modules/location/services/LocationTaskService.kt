@@ -6,20 +6,22 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Binder
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 
 class LocationTaskService : Service() {
   private var mChannelId: String? = null
   private var mKillService = false
-  private lateinit var mParentContext: Context
   private val mServiceId = sServiceId++
   private val mBinder: IBinder = ServiceBinder()
+
+  var isPromoted = false
+    private set
 
   inner class ServiceBinder : Binder() {
     val service: LocationTaskService
@@ -36,19 +38,29 @@ class LocationTaskService : Service() {
     if (extras != null) {
       mChannelId = extras.getString("appId") + ":" + extras.getString("taskName")
       mKillService = extras.getBoolean("killService", false)
+      extras.getBundle("serviceOptions")?.let {
+        try {
+          startForeground(it)
+        } catch (e: RuntimeException) {
+          if (!isStartRejected(e)) {
+            throw e
+          }
+          Log.w(TAG, "Foreground location service could not enter the foreground", e)
+          stop()
+        }
+      }
     }
     return START_REDELIVER_INTENT
-  }
-
-  fun setParentContext(context: Context) {
-    // Background location logic is still outside LocationTaskService,
-    // so we have to save parent context in order to make sure it won't be destroyed by the OS.
-    mParentContext = context
   }
 
   fun stop() {
     stopForeground(STOP_FOREGROUND_REMOVE)
     stopSelf()
+  }
+
+  override fun onDestroy() {
+    isPromoted = false
+    super.onDestroy()
   }
 
   override fun onTaskRemoved(rootIntent: Intent) {
@@ -61,6 +73,7 @@ class LocationTaskService : Service() {
   fun startForeground(serviceOptions: Bundle) {
     val notification = buildServiceNotification(serviceOptions)
     startForeground(mServiceId, notification)
+    isPromoted = true
   }
 
   //region private
@@ -80,7 +93,7 @@ class LocationTaskService : Service() {
       builder.setColorized(false)
     }
 
-    mParentContext.packageManager.getLaunchIntentForPackage(mParentContext.packageName)?.let {
+    packageManager.getLaunchIntentForPackage(packageName)?.let {
       it.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
       // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
       val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
@@ -93,9 +106,8 @@ class LocationTaskService : Service() {
     }
 
     val iconsResId = try {
-      val packageManager = mParentContext.packageManager
       val ai = packageManager.getApplicationInfo(
-        mParentContext.packageName,
+        packageName,
         android.content.pm.PackageManager.GET_META_DATA
       )
       if (ai.metaData?.containsKey(META_DATA_FOREGROUND_SERVICE_ICON_KEY) == true) {
@@ -104,7 +116,7 @@ class LocationTaskService : Service() {
         getDefaultNotificationIcon()
       }
     } catch (e: Exception) {
-      android.util.Log.e("expo-location", "Could not fetch default notification icon.", e)
+      Log.e(TAG, "Could not fetch default notification icon.", e)
       getDefaultNotificationIcon()
     }
 
@@ -133,7 +145,7 @@ class LocationTaskService : Service() {
    * requires small notification icons to be monochrome.
    */
   private fun getDefaultNotificationIcon(): Int {
-    return mParentContext.resources.getIdentifier("notification_icon", "drawable", mParentContext.packageName)
+    return resources.getIdentifier("notification_icon", "drawable", packageName)
       .takeIf { it != 0 } ?: applicationInfo.icon
   }
 
@@ -146,8 +158,14 @@ class LocationTaskService : Service() {
   } //endregion
 
   companion object {
+    private const val TAG = "LocationTaskService"
     private var sServiceId = 481756
     const val META_DATA_FOREGROUND_SERVICE_ICON_KEY: String =
       "expo.modules.location.foreground_service_icon"
+
+    // ForegroundServiceStartNotAllowedException and BackgroundServiceStartNotAllowedException are IllegalStateExceptions.
+    internal fun isStartRejected(e: RuntimeException): Boolean {
+      return e is SecurityException || e is IllegalStateException
+    }
   }
 }

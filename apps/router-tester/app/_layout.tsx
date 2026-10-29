@@ -22,8 +22,7 @@ export default function Layout() {
         ...DefaultTheme,
         colors: {
           ...DefaultTheme.colors,
-          text: '#0F0',
-          background: '#00f',
+          background: '#fff',
         },
       }}>
       <Stack screenOptions={{ headerShown: false }} />

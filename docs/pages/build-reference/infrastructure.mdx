@@ -36,6 +36,8 @@ When selecting an image for the build you can use the full name provided below o
 
 > **info** **Note:** If you do not provide `image` in **eas.json**, your build by default will use the `auto` alias.
 
+> **warning** Apps built on Xcode 27 images, including `latest`, launch on iOS 27 only if they use the UIKit scene life cycle. On SDK 57, enable `ios.enableSceneSupport` in [`expo-build-properties`](/versions/v57.0.0/sdk/build-properties/), or use `auto` or `sdk-57`. On older SDKs, use `auto` or your `sdk-` alias.
+
 ## Android build server configurations
 
 Android builders run on virtual machines in an isolated environment. Every build gets its own dedicated VM instance.

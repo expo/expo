@@ -279,6 +279,8 @@ export default function CustomColorsExample() {
 
 </ComponentExample>
 
+> **info** On Android with 3-button navigation, the system draws a translucent contrast scrim over the navigation bar. As a result, the navigation bar does not take the sheet's `containerColor`. The sheet uses the navigation bar contrast setting of your app. To remove the scrim, set [`enforceContrast`](../../navigation-bar/#configuration-in-app-config) to `false` in the `expo-navigation-bar` config plugin. This setting applies to the whole app.
+
 ### Custom drag handle
 
 Use `ModalBottomSheet.DragHandle` slot to provide a custom drag handle, or set `showDragHandle={false}` to hide it entirely.

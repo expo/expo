@@ -1,6 +1,6 @@
 {
   "name": "bare-expo",
-  "version": "0.0.9",
+  "version": "0.0.14",
   "private": true,
   "main": "index",
   "scripts": {
@@ -65,13 +65,13 @@
     "native-component-list": "workspace:*",
     "react": "^19.3.0",
     "react-dom": "19.3.0",
-    "react-native": "0.88.0",
+    "react-native": "0.88.1",
     "react-native-gesture-handler": "~3.3.0",
     "react-native-keyboard-controller": "^1.22.7",
     "react-native-pager-view": "9.0.7",
     "react-native-reanimated": "4.7.1",
     "react-native-safe-area-context": "~5.10.1",
-    "react-native-screens": "4.30.0",
+    "react-native-screens": "4.30.1",
     "react-native-svg": "15.16.0",
     "react-native-view-shot": "6.1.1",
     "react-native-webview": "14.0.1",

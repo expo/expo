@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.5
+
+### Patch Changes
+
+- [iOS] Fix `GlassView` drawing no glass when it fades in after React Native recycles the parent of an earlier `GlassView` into its content. ([#52000](https://github.com/expo/expo/pull/52000) by [@expo-tuft](https://github.com/apps/expo-tuft))
+
 ## 58.0.4
 
 ### Patch Changes

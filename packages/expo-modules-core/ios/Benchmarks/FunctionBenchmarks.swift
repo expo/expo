@@ -93,6 +93,34 @@ extension Benchmarks {
   }
 }
 
+/// Benchmarks for encoding an array of records in Swift, with no JavaScript call around it.
+extension Benchmarks {
+  @Test(arguments: [10, 1000])
+  func `encode an array of records`(count: Int) async throws {
+    try await recordBenchmarkCase { runtime in
+      let points = (0..<count).map { BenchmarkPoint(x: Double($0), y: Double($0)) }
+      try benchmark("[Record].encode: \(count) records", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try [BenchmarkPoint].encode(points, in: runtime)
+        }
+      }
+    }
+  }
+}
+
+/// Runs one case with the runtime of a new app context.
+private func recordBenchmarkCase(
+  _ measure: @escaping @JavaScriptActor (JavaScriptRuntime) throws -> Void
+) async throws {
+  try await benchmarkCase {
+    let appContext = AppContext.create()
+    let runtime = try appContext.runtime
+    try withExtendedLifetime(appContext) {
+      try measure(runtime)
+    }
+  }
+}
+
 @Record
 private struct BenchmarkPoint {
   var x: Double = 0

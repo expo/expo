@@ -1,5 +1,6 @@
 package expo.modules.kotlin.sharedobjects
 
+import com.facebook.react.modules.core.ReactChoreographer
 import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.InvalidSharedObjectIdException
@@ -85,6 +86,19 @@ class SharedObjectRegistry(runtime: Runtime) {
   }
 
   internal fun delete(id: SharedObjectId) {
+    val native = synchronized(this) { pairs[id]?.first } ?: return
+    if (native.releasesAfterPendingViewUpdates) {
+      val choreographer = runCatching { ReactChoreographer.getInstance() }.getOrNull()
+      if (choreographer != null) {
+        // Runs after Fabric's `DISPATCH_UI` callback, which applies the queued view updates.
+        choreographer.postFrameCallback(ReactChoreographer.CallbackType.IDLE_EVENT) { remove(id) }
+        return
+      }
+    }
+    remove(id)
+  }
+
+  private fun remove(id: SharedObjectId) {
     synchronized(this) {
       pairs.remove(id)
     }?.let { (native, _) ->

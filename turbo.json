@@ -83,7 +83,11 @@
         "!android/prebuilt/**",
         "node_modules/react-native/package.json",
         "$TURBO_ROOT$/tools/android-precompile/**",
-        "$TURBO_ROOT$/tools/src/prebuilds/**"
+        "$TURBO_ROOT$/tools/src/prebuilds/**",
+        "$TURBO_ROOT$/tools/src/commands/PrebuildAndroidPackageForPublish.ts",
+        "$TURBO_ROOT$/packages/expo-modules-core/expo-module-gradle-plugin/**",
+        "!$TURBO_ROOT$/packages/expo-modules-core/expo-module-gradle-plugin/**/build/**",
+        "!$TURBO_ROOT$/packages/expo-modules-core/expo-module-gradle-plugin/**/.gradle/**"
       ],
       "passThroughEnv": ["JAVA_HOME", "GRADLE_USER_HOME", "ANDROID_HOME", "ANDROID_SDK_ROOT"],
       "outputs": [".expo-prebuild-android/**"],

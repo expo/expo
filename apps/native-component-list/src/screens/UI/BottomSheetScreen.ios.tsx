@@ -5,6 +5,7 @@ import {
   Host,
   List,
   Picker,
+  Rectangle,
   RNHostView,
   Section,
   Text,
@@ -250,17 +251,15 @@ export default function BottomSheetScreen() {
       {/* Material Background Sheet */}
       <BottomSheet
         isPresented={showBackgroundMaterial}
-        onIsPresentedChange={setShowBackgroundMaterial}>
-        <Group
-          modifiers={[
-            presentationDetents(['medium', 'large']),
-            presentationBackground({ type: 'material', material: 'ultraThin' }),
-          ]}>
+        onIsPresentedChange={setShowBackgroundMaterial}
+        presentationBackground={
+          <Rectangle modifiers={[foregroundStyle({ type: 'material', material: 'ultraThin' })]} />
+        }>
+        <Group modifiers={[presentationDetents(['medium', 'large'])]}>
           <VStack modifiers={[padding({ all: 20 })]}>
             <Text>Ultra thin material sheet background</Text>
             <Text modifiers={[foregroundStyle('secondaryLabel')]}>
-              The material follows the color scheme. iOS 26 renders it as a flat color rather than a
-              translucent blur
+              A material in the presentationBackground view stays a translucent blur on iOS 26
             </Text>
             <Button label="Close" onPress={() => setShowBackgroundMaterial(false)} />
           </VStack>

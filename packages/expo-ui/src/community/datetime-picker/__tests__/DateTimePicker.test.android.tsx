@@ -3,10 +3,14 @@ import { render } from '@testing-library/react-native';
 import { DateTimePicker } from '..';
 
 const mockNativeViewFn = jest.fn();
+const mockHostFn = jest.fn();
 
-// Host reads the native Material palette; these tests only look at the picker's props.
+// Host reads the native Material palette; these tests only look at the props it receives.
 jest.mock('../../../jetpack-compose/Host', () => ({
-  Host: ({ children }: { children: React.ReactNode }) => children,
+  Host: ({ children, ...props }: { children: React.ReactNode }) => {
+    mockHostFn(props);
+    return children;
+  },
 }));
 
 jest.mock('expo', () => ({
@@ -23,6 +27,7 @@ jest.mock('expo', () => ({
 
 beforeEach(() => {
   mockNativeViewFn.mockClear();
+  mockHostFn.mockClear();
 });
 
 function getNativeProps(viewName: string) {
@@ -40,6 +45,14 @@ describe('DateTimePicker (Android)', () => {
     );
   });
 
+  it('has no container color when inline, like iOS', async () => {
+    await render(<DateTimePicker value={value} presentation="inline" />);
+
+    expect(getNativeProps('DateTimePickerView')).toEqual(
+      expect.objectContaining({ elementColors: { containerColor: 'transparent' } })
+    );
+  });
+
   it('keeps the dialog title and headline', async () => {
     await render(<DateTimePicker value={value} presentation="dialog" />);
 
@@ -48,4 +61,15 @@ describe('DateTimePicker (Android)', () => {
     expect(props).not.toHaveProperty('showTitle');
     expect(props).not.toHaveProperty('showHeadline');
   });
+
+  it.each(['inline', 'dialog'] as const)(
+    'applies themeVariant as the %s picker color scheme',
+    async (presentation) => {
+      await render(
+        <DateTimePicker value={value} presentation={presentation} themeVariant="dark" />
+      );
+
+      expect(mockHostFn).toHaveBeenCalledWith(expect.objectContaining({ colorScheme: 'dark' }));
+    }
+  );
 });

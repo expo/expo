@@ -87,6 +87,8 @@ export function getTestModules() {
     modules.push(require('./tests/ExpoUIMeasurement'));
     modules.push(require('./tests/ExpoUIHostSize'));
     modules.push(require('./tests/ExpoUIRNHostViewSize'));
+    modules.push(require('./tests/ExpoUIRNHostViewBounded'));
+    modules.push(require('./tests/ExpoUIUniversalSize'));
     modules.push(require('./tests/AppMetrics'));
     modules.push(require('./tests/Blob'));
     modules.push(require('./tests/FileSystem'));

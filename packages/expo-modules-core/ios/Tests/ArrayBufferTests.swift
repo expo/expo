@@ -53,6 +53,26 @@ struct ArrayBufferTests {
       #expect(arrayBuffer.isNativeBacked == true)
       #expect(cleanupCalled == false)
     }
+
+    @Test
+    func `wrapping Data without copy frees its bytes when the buffer is released`() {
+      var isFreed = false
+      autoreleasepool {
+        do {
+          let size = 1024
+          let data = Data(
+            bytesNoCopy: UnsafeMutableRawPointer.allocate(byteCount: size, alignment: 1),
+            count: size,
+            deallocator: .custom({ pointer, _ in
+              pointer.deallocate()
+              isFreed = true
+            })
+          )
+          _ = ArrayBuffer.wrap(dataWithoutCopy: data)
+        }
+        #expect(isFreed == true)
+      }
+    }
   }
 
   // MARK: - Copying

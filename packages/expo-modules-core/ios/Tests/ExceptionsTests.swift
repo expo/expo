@@ -139,7 +139,7 @@ struct ExceptionsTests {
 
   @Test
   func `async function throw exposes the code to JS`() async throws {
-    let appContext = AppContext.create()
+    let appContext = TestAppContext()
     let runtime = try appContext.runtime
     Self.registerTestModule(on: appContext)
 
@@ -151,7 +151,7 @@ struct ExceptionsTests {
 
   @Test
   func `async function reject exposes the code to JS`() async throws {
-    let appContext = AppContext.create()
+    let appContext = TestAppContext()
     let runtime = try appContext.runtime
     Self.registerTestModule(on: appContext)
 
@@ -203,7 +203,7 @@ struct ExceptionsTests {
 
   @Test
   func `async function reject with a code and a description exposes the description to JS`() async throws {
-    let appContext = AppContext.create()
+    let appContext = TestAppContext()
     let runtime = try appContext.runtime
     Self.registerTestModule(on: appContext)
 

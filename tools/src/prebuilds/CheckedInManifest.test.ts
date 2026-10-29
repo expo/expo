@@ -8,10 +8,12 @@ import { afterEach, it, type TestContext } from 'node:test';
 import { getExpoRepositoryRootDir } from '../Directories';
 import {
   isFirstPartyPackagePath,
+  resolveCheckedInHeaderDirectoriesAsync,
   resolveCheckedInManifestAsync,
   resolveCheckedInManifestRoot,
 } from './CheckedInManifest';
 import { ExternalPackage, type SPMPackageSource } from './ExternalPackage';
+import { collectAndCopyHeaderFilesFromBuiltFrameworksAsync } from './Frameworks';
 import type {
   SPMConfig,
   SPMPackageDependencyConfig,
@@ -584,6 +586,86 @@ it('product dependency: rejects .product moduleAliases instead of silently dropp
       '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote", moduleAliases: ["Remote": "RemoteAlias"])], path: "ios")'
     ),
     /: dependency "Remote" declares moduleAliases, which the generated dependency format cannot preserve\./
+  );
+});
+
+const STAND_IN_PACKAGES =
+  '.package(path: "../direct/ExpoModulesCoreHeaders"), .package(path: "../direct/xcframeworks")';
+const CORE_HEADERS = '.product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders")';
+const REACT_HEADERS = '.product(name: "ReactHeaders", package: "xcframeworks")';
+
+function withStandIns(mainDependencies: string) {
+  const input = fixture(
+    `.target(name: "Main", dependencies: [${mainDependencies}], path: "ios")`,
+    undefined,
+    { dependencies: STAND_IN_PACKAGES }
+  );
+  input.product.externalDependencies = ['expo-modules-core/ExpoModulesCore', 'React'];
+  return input;
+}
+
+it('direct stand-ins: replaces each stand-in product with its spm.config.json dependency', async () => {
+  const input = withStandIns(`${CORE_HEADERS}, ${REACT_HEADERS}`);
+  assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, [
+    'expo-modules-core/ExpoModulesCore',
+    'React',
+  ]);
+});
+
+for (const [dependency, configName, otherConfigName] of [
+  [CORE_HEADERS, 'expo-modules-core/ExpoModulesCore', 'React'],
+  [REACT_HEADERS, 'React', 'expo-modules-core/ExpoModulesCore'],
+] as const) {
+  it(`direct stand-ins: requires externalDependencies to list "${configName}"`, async () => {
+    const input = withStandIns(dependency);
+    input.product.externalDependencies = [otherConfigName];
+    await rejectsManifest(
+      input,
+      new RegExp(`: it names unknown dependency "${configName}", which the generated package`)
+    );
+  });
+}
+
+it('direct stand-ins: drops a stand-in package that no target depends on', async () => {
+  const input = withStandIns('');
+  await assert.doesNotReject(resolve(input.root, input.product));
+});
+
+const REMOTE_XCFRAMEWORKS_URL = 'https://example.com/xcframeworks.git';
+
+for (const productName of ['ReactHeaders', 'ReactNative']) {
+  it(`direct stand-ins: leaves .product "${productName}" of a remote package named like a stand-in`, async () => {
+    const input = withPackages(
+      `.package(url: "${REMOTE_XCFRAMEWORKS_URL}", exact: "1.2.3")`,
+      [remote(undefined, REMOTE_XCFRAMEWORKS_URL, productName)],
+      `.target(name: "Main", dependencies: [.product(name: "${productName}", package: "xcframeworks")], path: "ios")`
+    );
+    assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, [productName]);
+  });
+}
+
+it('direct stand-ins: keeps the platform condition of a stand-in product', async () => {
+  await rejectsManifest(
+    withStandIns(
+      '.product(name: "ReactHeaders", package: "xcframeworks", condition: .when(platforms: [.iOS]))'
+    ),
+    /: dependency "React" has a platform condition, but the generated dependency format cannot preserve it\./
+  );
+});
+
+it('direct stand-ins: rejects stand-in moduleAliases like any other .product moduleAliases', async () => {
+  await rejectsManifest(
+    withStandIns(
+      '.product(name: "ReactHeaders", package: "xcframeworks", moduleAliases: ["ReactHeaders": "ReactAlias"])'
+    ),
+    /: dependency "ReactHeaders" declares moduleAliases, which the generated dependency format cannot preserve\./
+  );
+});
+
+it('direct stand-ins: rejects a product of a stand-in package that has no stand-in', async () => {
+  await rejectsManifest(
+    withStandIns('.product(name: "ReactNative", package: "xcframeworks")'),
+    /: it depends on \.product\(name: "ReactNative", package: "xcframeworks"\), but et prebuild can stand in only for \.product\(name: "ReactHeaders", package: "xcframeworks"\) from that package when it builds a direct manifest, because the local path package does not resolve from the package directory\. Use \.product\(name: "ReactHeaders", package: "xcframeworks"\) instead, or depend on "ReactNative" by name and list it in externalDependencies in spm\.config\.json\.$/
   );
 });
 
@@ -1264,6 +1346,128 @@ it('prefixes implicit C public headers and builds through the source symlink', a
   assert.match(
     execFileSync('swift', ['build', ...options], { encoding: 'utf8', env }),
     /Build complete!/
+  );
+});
+
+function cFixture(publicHeadersPath?: string, files: Record<string, string> = {}) {
+  const declaration =
+    publicHeadersPath == null ? '' : `, publicHeadersPath: "${publicHeadersPath}"`;
+  const input = fixture(`.target(name: "Main", path: "native"${declaration})`, {
+    'native/Thing.c': 'int thing(void) { return 1; }',
+    ...files,
+  });
+  input.product.targets[0].type = 'objc';
+  (input.product.targets[0] as SourceTarget).linkedFrameworks = [];
+  return input;
+}
+
+it('header directories: maps a C target to its public headers directory in the sources', async () => {
+  const input = cFixture('headers', { 'native/headers/Thing.h': 'int thing(void);' });
+  assert.deepEqual(
+    await resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
+    new Map([['Main', fs.realpathSync.native(path.join(input.root, 'native/headers'))]])
+  );
+});
+
+it('header directories: frameworks copy the public headers from the sources, not the generated include directory', async () => {
+  const input = cFixture('headers', { 'native/headers/Thing.h': 'int thing(void);' });
+  const generatedHeaders = SPMGenerator.getHeaderFilesPath(
+    input.pkg,
+    input.product,
+    input.product.targets[0]
+  );
+  fs.mkdirSync(generatedHeaders, { recursive: true });
+  fs.writeFileSync(path.join(generatedHeaders, 'Stale.h'), 'int stale(void);');
+  const xcframework = path.join(input.root, 'Fixture.xcframework');
+
+  const { headerFiles } = await collectAndCopyHeaderFilesFromBuiltFrameworksAsync(
+    input.pkg,
+    input.product,
+    xcframework
+  );
+
+  assert.deepEqual(headerFiles, ['Thing.h']);
+  assert.deepEqual(fs.readdirSync(path.join(xcframework, 'Headers')), ['Thing.h']);
+});
+
+it('header directories: rejects a C target with no publicHeadersPath and no include/ directory', async () => {
+  const input = cFixture();
+  const missingPath = path.join(fs.realpathSync.native(input.root), 'native/include');
+  await assert.rejects(
+    resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
+    (error: Error) => {
+      assertManifestDiagnostic(
+        error,
+        /does not exist, so Package\.swift declares no public headers .* Set publicHeadersPath on target "Main" in Package\.swift .*or add an include\/ directory/,
+        'Main'
+      );
+      assert.ok(
+        error.message.includes(`public headers directory ${missingPath} does not exist`),
+        error.message
+      );
+      return true;
+    }
+  );
+});
+
+it('header directories: rejects a C target whose declared publicHeadersPath is missing', async () => {
+  const input = cFixture('headers/');
+  const missingPath = path.join(fs.realpathSync.native(input.root), 'native/headers');
+  await assert.rejects(
+    resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
+    (error: Error) => {
+      assertManifestDiagnostic(error, / or fix publicHeadersPath on target "Main"/, 'Main');
+      assert.ok(
+        error.message.includes(
+          `the publicHeadersPath "headers" declared in Package.swift does not exist at ${missingPath}`
+        ),
+        error.message
+      );
+      assert.doesNotMatch(error.message, /declares no public headers|include\//);
+      return true;
+    }
+  );
+});
+
+for (const [label, publicHeadersPath, file] of [
+  ['declared publicHeadersPath', 'headers', 'native/headers'],
+  ['default include/ path', undefined, 'native/include'],
+] as const) {
+  it(`header directories: rejects a C target whose ${label} is a file`, async () => {
+    const input = cFixture(publicHeadersPath, { [file]: 'int thing(void);' });
+    const filePath = path.join(fs.realpathSync.native(input.root), file);
+    await assert.rejects(
+      resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
+      (error: Error) => {
+        assertManifestDiagnostic(
+          error,
+          / is a file, not a directory, .* Set publicHeadersPath on target "Main" in Package\.swift to the directory that holds its public headers\.$/,
+          'Main'
+        );
+        assert.ok(
+          error.message.includes(`public headers path ${filePath} is a file`),
+          error.message
+        );
+        assert.doesNotMatch(error.message, /does not exist/);
+        return true;
+      }
+    );
+  });
+}
+
+it('header directories: rejects a C target whose public headers spm.config.json disables', async () => {
+  const input = cFixture(undefined, { 'native/include/Thing.h': 'int thing(void);' });
+  (input.product.targets[0] as SourceTarget).publicHeaders = false;
+  await assert.rejects(
+    resolveCheckedInHeaderDirectoriesAsync(input.pkg, input.product),
+    (error: Error) => {
+      assertManifestDiagnostic(
+        error,
+        /spm\.config\.json sets "publicHeaders": false for this target, .* Remove "publicHeaders": false /,
+        'Main'
+      );
+      return true;
+    }
   );
 });
 
@@ -1971,6 +2175,13 @@ for (const [rule, dumped] of [
     );
   });
 }
+
+it('rejects a dumped manifest whose targets is not a list as naming an unknown target', async () => {
+  const input = fixture();
+  await withSwiftOnPath(stubSwiftDump(input, {}, { targets: null }), () =>
+    rejectsManifest(input, /: the product references an unknown target /)
+  );
+});
 
 // Swift rejects absolute sources, excludes and resources itself, so our guard never sees them
 // from a real manifest. It stays as defence in depth for dumps we do not control; the four

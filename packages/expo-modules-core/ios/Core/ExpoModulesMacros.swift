@@ -36,6 +36,16 @@ public enum JSOptions {
   /// The call sends the module or shared object off the JavaScript thread, so in Swift 6 language
   /// mode the enclosing class must be `Sendable`.
   case concurrent
+
+  /// Binds a synchronous function a second time under the given JavaScript name, as a function that
+  /// returns a promise and runs the body on the concurrent thread pool, for example
+  /// `@JS("textSync", .withAsync("text"))`. The body must be safe to run on any thread, since the
+  /// variant isn't isolated to the JavaScript thread. Only valid on a synchronous function that isn't
+  /// isolated to a global actor, and the name must be a string literal.
+  ///
+  /// The variant sends the module or shared object off the JavaScript thread, so in Swift 6 language
+  /// mode the enclosing class must be `Sendable`.
+  case withAsync(String)
 }
 
 /// Marker macro applied to module / shared-object members that should be exposed to JavaScript.
@@ -58,6 +68,9 @@ public enum JSOptions {
 ///
 ///     @JS("doWork", .concurrent)
 ///     func performHeavyWork() async throws { ... }
+///
+///     @JS("textSync", .withAsync("text"))
+///     func text(path: String) throws -> String { ... }
 ///
 /// Also emits a never-called `_assertTypesConformance_<member>` peer that statically asserts every
 /// type crossing the JS boundary conforms to the JS-convertible protocol, so a non-conforming type
@@ -94,11 +107,9 @@ public macro Event(_ name: String? = nil, sync: Bool = false) =
   #externalMacro(module: "ExpoModulesMacros", type: "EventMacro")
 
 /// Member macro applied to a `Module` subclass. Scans the class body for declarations
-/// marked with `@JS` and synthesizes a framework-internal `_synthesizedDefinition()` method.
-/// `expo-modules-core` calls it automatically and merges the result into the module's
-/// definition, so the user doesn't have to reference it from `definition()`. `@JS` functions are
-/// additionally bound directly into the module's JS object by a synthesized
-/// `_decorateModule(object:in:)`.
+/// marked with `@JS` and binds them directly into the module's JS object by a synthesized
+/// `_decorateModule(object:in:)`. The `@SharedObject` classes in the `classes:` argument are
+/// emitted as a `_classTypes` static, and core adds their JavaScript classes to the module's JS object.
 ///
 /// The module's JavaScript name is synthesized into a `_jsName` static and read by core, so there
 /// is no `Name(…)` DSL entry. It defaults to the class name; pass `@ExpoModule("CustomName")` to
@@ -114,8 +125,8 @@ public macro Event(_ name: String? = nil, sync: Bool = false) =
 @attached(
   member,
   names:
-    named(_jsName), named(_synthesizedDefinition), named(appContext), named(init),
-    named(_decorateModule))
+    named(_jsName), named(_classTypes), named(appContext), named(init),
+    named(_decorateModule), named(_assertTypesConformance))
 @attached(memberAttribute)
 @attached(extension, conformances: AnyModule)
 public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
@@ -123,15 +134,16 @@ public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
 
 /// Member macro applied to a `SharedObject` subclass. Scans the class body for declarations
 /// marked with `@JS` (including a single `@JS init(...)` for the JS constructor) and
-/// synthesizes a `_synthesizedClassDefinition()` static method returning a `ClassDefinition`.
-/// The companion `@ExpoModule(classes: [Foo.self])` wires the class into the module's
-/// exposed surface.
+/// binds them through overrides of the `SharedObject` hooks below. The class's JavaScript name
+/// is emitted as a `_jsName` override. The companion `@ExpoModule(classes: [Foo.self])` wires the
+/// class into the module's exposed surface.
 ///
 /// `@JS` methods and properties are bound directly onto the class prototype by an override of
-/// `_decorateSharedObject(prototype:in:)`, and a single `@JS init(...)` becomes an override
-/// of `_constructSharedObject(this:arguments:in:)` that builds the native instance from the
-/// JS arguments. Core calls both when building the class, so the synthesized `Class(…)` block carries
-/// no DSL entries for the `@JS` members.
+/// `_decorateSharedObject(prototype:in:)`, `static` and `class` ones onto the class itself by an
+/// override of `_decorateSharedObject(constructor:in:)`, and a single `@JS init(...)` becomes an
+/// override of `_constructSharedObject(this:arguments:in:)` that builds the native instance from the
+/// JS arguments. Core calls them when building the class. The class must be a `SharedObject`
+/// subclass, direct or not, or the `_jsName` override doesn't compile.
 ///
 /// Usage:
 ///
@@ -149,7 +161,8 @@ public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
 @attached(
   member,
   names:
-    named(_synthesizedClassDefinition), named(_decorateSharedObject), named(_constructSharedObject))
+    named(_jsName), named(_decorateSharedObject), named(_constructSharedObject),
+    named(_assertTypesConformance))
 @attached(memberAttribute)
 public macro SharedObject(_ name: String? = nil) =
   #externalMacro(module: "ExpoModulesMacros", type: "SharedObjectMacro")
@@ -183,7 +196,7 @@ public macro SharedObject(_ name: String? = nil) =
 @attached(
   member,
   names: named(init), named(from), named(toDictionary), named(toObject), named(decode), named(encode),
-  named(_assertTypesConformance))
+  named(_assertTypesConformance), named(_PropNames))
 @attached(extension, conformances: Record)
 public macro Record() =
   #externalMacro(module: "ExpoModulesMacros", type: "RecordMacro")

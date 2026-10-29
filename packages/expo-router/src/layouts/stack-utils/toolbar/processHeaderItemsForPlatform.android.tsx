@@ -70,9 +70,11 @@ function HeaderToolbarHostBase({
     () => ({
       tintColor: colors?.tintColor ?? headerProps?.tintColor,
       backgroundColor: colors?.backgroundColor ?? headerProps?.backgroundColor,
+      buttonContainerColor: colors?.buttonContainerColor,
     }),
     [
       colors?.backgroundColor,
+      colors?.buttonContainerColor,
       colors?.tintColor,
       headerProps?.tintColor,
       headerProps?.backgroundColor,

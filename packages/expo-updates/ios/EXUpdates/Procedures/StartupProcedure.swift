@@ -113,7 +113,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
 
     delegate?.startupProcedureDidLaunch(self)
 
-    ErrorRecovery.writeErrorOrExceptionToLog(error, logger)
+    ErrorRecovery.writeErrorOrExceptionToLog(error, logger, code: .initializationError)
   }
 
   // MARK: - AppLoaderTaskDelegate

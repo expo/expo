@@ -1,7 +1,8 @@
 import { Link, useNavigation, usePathname } from 'expo-router';
 import { useDrawerStatus } from 'expo-router/drawer';
 import { DrawerActions } from 'expo-router/react-navigation';
-import { Text, View, Pressable } from 'react-native';
+import { Text, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Home() {
   const pathname = usePathname();
@@ -9,7 +10,9 @@ export default function Home() {
   const drawerStatus = useDrawerStatus();
 
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 }}>
+    <SafeAreaView
+      edges={['left', 'right']}
+      style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16 }}>
       <Text testID="e2e-screen">Home screen</Text>
       <Text testID="e2e-pathname">{pathname}</Text>
       <Text testID="e2e-drawer-status">{drawerStatus}</Text>
@@ -24,6 +27,6 @@ export default function Home() {
           <Text style={{ color: '#fff' }}>Go to Second</Text>
         </Pressable>
       </Link>
-    </View>
+    </SafeAreaView>
   );
 }
