@@ -81,7 +81,7 @@ Environment variables are not the only thing a job can interpolate. The same `${
 
 ### `github`
 
-Git context for the workflow run. Manual runs from an uploaded project archive report `event_name: workflow_dispatch` and have empty Git fields. Manual runs from a GitHub ref report `event_name: workflow_dispatch` and include the commit, ref, and linked repository, but no `github.event` object. Use the top-level `inputs` context to read inputs for either type of manual run.
+Git and trigger details for the workflow run. Available fields depend on how the run starts.
 
 ```js
 github {
@@ -95,34 +95,13 @@ github {
   label,              // Label name, for pull_request_labeled events
   repository,         // Linked repository, e.g. expo/expo
   repository_owner,   // Linked repository owner, e.g. expo
-  event {             // Webhook payload plus workflow fields
-    action,
-    head_commit { message, id },   // Only for push and schedule events
-    pull_request {
-      number,
-      title,
-      body,
-      state,          // 'open' or 'closed'
-      draft,
-      merged,
-      html_url,
-      user { login },
-      labels,         // Array of { name }
-      head { ref, sha },   // Source branch
-      base { ref, sha },   // Target branch
-      created_at,
-      updated_at,
-      merged_at,
-      // ... and other fields from the GitHub Pull Request webhook payload
-    },
-    inputs,           // workflow_dispatch inputs
-    schedule,         // Cron expression, for scheduled runs
-    number,
-  }
+  event,              // Event-specific fields, when available
 }
 ```
 
-For runs triggered by GitHub, `event` includes the stored [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). Fields depend on the event: pull request webhooks provide the listed pull request details; pull request comment webhooks provide `event.issue` and `event.comment`, with only `number` added to `event.pull_request`. Scheduled and manual runs have no webhook payload. However, scheduled runs have a generated `github.event` object, and manual runs from an uploaded project archive have `github.event.inputs`. Manual runs from a GitHub ref have no `github.event` object. Repository fields are available when the run has Git context and a linked GitHub repository. For a detailed field reference and examples, see [`github`](/eas/workflows/syntax/#github) in the Syntax guide.
+Manual runs report `event_name: workflow_dispatch`. Runs from a GitHub ref include Git details; runs from an uploaded project archive have empty Git fields. Read manual inputs from the top-level `inputs` context.
+
+See [`github`](/eas/workflows/syntax/#github) in the Syntax guide for event fields and examples.
 
 ### `inputs`
 

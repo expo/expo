@@ -888,7 +888,7 @@ jobs:
 
 #### `github`
 
-To ease the migration from GitHub Actions to EAS Workflows we expose some context fields you may find useful.
+Git and trigger details for the workflow run. `triggering_actor` identifies the Expo user or robot who started the run.
 
 ```ts
 type GitHubContext = {
@@ -939,17 +939,21 @@ type GitHubContext = {
 };
 ```
 
-> **info** For runs triggered by GitHub, `event` includes the stored [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For pull request webhooks, `event.pull_request` includes fields from GitHub's Pull Request webhook payload, such as `github.event.pull_request.title` and `github.event.pull_request.body`. For edited pull request events, `github.event.changes` contains the fields that changed, such as `github.event.changes.base.ref.from` when the base branch changed. For `pull_request_comment` events, `event.comment.body` contains the comment text, and `event.pull_request.number` and `event.number` contain the pull request number. The type above lists a few useful fields, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
+For GitHub triggers, `event` contains the stored [webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads) plus workflow fields:
 
-For pull request comment webhooks, `event.issue` and `event.comment` contain the issue and comment details. Only `number` is added to `event.pull_request`. Scheduled and manual runs have no webhook payload, but some still have a generated `github.event` object:
+- Pull request events include details such as `event.pull_request.title` and `event.pull_request.body`.
+- Edited pull request events include `event.changes`, such as `event.changes.base.ref.from`.
+- Pull request comment events include `event.issue` and `event.comment`. `event.pull_request` contains only `number`, also available as `event.number`.
 
-| Run source                                  | `github.event_name` | `github.event`                                            |
-| ------------------------------------------- | ------------------- | --------------------------------------------------------- |
-| Schedule                                    | `schedule`          | Generated fields: `schedule`, `inputs`, and `head_commit` |
-| Manual run from an uploaded project archive | `workflow_dispatch` | Contains `inputs`                                         |
-| Manual run from a GitHub ref                | `workflow_dispatch` | Not available                                             |
+Scheduled and manual runs have no webhook payload. Manual runs report `event_name: workflow_dispatch`. Their available fields differ:
 
-Manual runs from an uploaded project archive report `event_name: workflow_dispatch` and have empty Git fields. Manual runs from a GitHub ref report `event_name: workflow_dispatch` and include the commit, ref, and linked repository, but no `github.event` object. Repository fields are available when the run has Git context and a linked GitHub repository. `triggering_actor` identifies the Expo user or robot who started the run. Use the top-level `inputs` context to read inputs for either type of manual run.
+| Run source                          | Git fields     | `github.event`                                    |
+| ----------------------------------- | -------------- | ------------------------------------------------- |
+| Schedule                            | Commit and ref | Generated `schedule`, `inputs`, and `head_commit` |
+| Manual run from a GitHub ref        | Commit and ref | Not available                                     |
+| Manual run from an uploaded archive | Empty          | Contains `inputs`                                 |
+
+Repository fields require Git context and a linked GitHub repository. For manual inputs, use the top-level `inputs` context.
 
 Example:
 
