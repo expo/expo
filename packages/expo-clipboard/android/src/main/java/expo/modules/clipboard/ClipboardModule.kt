@@ -11,190 +11,152 @@ import android.text.Html.FROM_HTML_MODE_LEGACY
 import android.text.Spanned
 import android.text.TextUtils
 import android.util.Log
-import androidx.core.os.bundleOf
+import com.facebook.react.bridge.LifecycleEventListener
+import com.facebook.react.bridge.ReactContext
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.kotlin.functions.Coroutine
-
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
+import io.github.expo.modules.v2.Enumerable
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.Record
+import io.github.expo.modules.v2.react.androidContext
+import io.github.expo.modules.v2.react.reactContextOrNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 
-private const val moduleName = "ExpoClipboard"
 private val TAG = ClipboardModule::class.java.simpleName
 
 // this must match the one from `res/xml/clipboard_provider_paths.xml`
 const val CLIPBOARD_DIRECTORY_NAME = ".clipboard"
 const val CLIPBOARD_CHANGED_EVENT_NAME = "onClipboardChanged"
 
-private enum class ContentType(val jsName: String) {
+internal enum class ContentType(val jsName: String) : Enumerable {
   PLAIN_TEXT("plain-text"),
   HTML("html"),
   IMAGE("image")
 }
 
+@Record
+internal data class ClipboardChangedEvent(val contentTypes: List<ContentType>)
+
+@ExpoModule("ExpoClipboard")
 class ClipboardModule : Module() {
-  override fun definition() = ModuleDefinition {
-    Name(moduleName)
-
-    // region Strings
-    AsyncFunction("getStringAsync") { options: GetStringOptions ->
-      val item = clipboardManager.firstItem
-      when (options.preferredFormat) {
-        StringFormat.PLAIN -> item?.coerceToPlainText(context)
-        StringFormat.HTML -> item?.coerceToHtmlText(context)
-      } ?: ""
-    }
-
-    AsyncFunction("setStringAsync") { content: String, options: SetStringOptions ->
-      val clip = when (options.inputFormat) {
-        StringFormat.PLAIN -> ClipData.newPlainText(null, content)
-        StringFormat.HTML -> {
-          // HTML clip requires complementary plain text content
-          val plainText = plainTextFromHtml(content)
-          ClipData.newHtmlText(null, plainText, content)
-        }
-      }.applyIsSensitive(options.isSensitive)
-      clipboardManager.setPrimaryClip(clip)
-      return@AsyncFunction true
-    }
-
-    AsyncFunction<Boolean>("hasStringAsync") {
-      clipboardManager
-        .primaryClipDescription
-        ?.hasTextContent
-        ?: false
-    }
-    // endregion
-
-    // region Images
-    AsyncFunction("getImageAsync") Coroutine { options: GetImageOptions ->
-      val imageUri = clipboardManager
-        .takeIf { clipboardHasItemWithType("image/*") }
-        ?.firstItem
-        ?.uri
-        .ifNull {
-          return@Coroutine null
-        }
-
-      try {
-        val imageResult = imageFromContentUri(context, imageUri, options)
-        return@Coroutine imageResult.toBundle()
-      } catch (err: Throwable) {
-        err.printStackTrace()
-        throw when (err) {
-          is CodedException -> err
-          is SecurityException -> NoPermissionException(err)
-          else -> PasteFailureException(err, kind = "image")
-        }
-      }
-    }
-
-    AsyncFunction("setImageAsync") Coroutine { imageData: String, options: SetImageOptions ->
-      try {
-        val clip = clipDataFromBase64Image(context, imageData, clipboardCacheDir)
-          .applyIsSensitive(options.isSensitive)
-        clipboardManager.setPrimaryClip(clip)
-      } catch (err: Throwable) {
-        err.printStackTrace()
-        throw when (err) {
-          is CodedException -> err
-          else -> CopyFailureException(err, kind = "image")
-        }
-      }
-    }
-
-    AsyncFunction<Boolean>("hasImageAsync") {
-      clipboardManager.primaryClipDescription?.hasMimeType("image/*") == true
-    }
-    //endregion
-
-    // region Events
-    Events(CLIPBOARD_CHANGED_EVENT_NAME)
-
-    OnCreate {
-      clipboardEventEmitter = ClipboardEventEmitter()
-      clipboardEventEmitter.attachListener()
-    }
-
-    OnDestroy {
-      clipboardEventEmitter.detachListener()
-    }
-
-    OnActivityEntersBackground {
-      clipboardEventEmitter.pauseListening()
-    }
-
-    OnActivityEntersForeground {
-      clipboardEventEmitter.resumeListening()
-    }
-    // endregion
+  // region Strings
+  @JS
+  suspend fun getStringAsync(options: GetStringOptions): String = withContext(Dispatchers.IO) {
+    val item = clipboardManager.firstItem
+    when (options.preferredFormat) {
+      StringFormat.PLAIN -> item?.coerceToPlainText(androidContext)
+      StringFormat.HTML -> item?.coerceToHtmlText(androidContext)
+    } ?: ""
   }
 
-  private val context
-    get() = requireNotNull(appContext.reactContext) {
-      "React Application Context is null"
+  @JS
+  suspend fun setStringAsync(content: String, options: SetStringOptions): Boolean = withContext(Dispatchers.IO) {
+    val clip = when (options.inputFormat) {
+      StringFormat.PLAIN -> ClipData.newPlainText(null, content)
+      StringFormat.HTML -> {
+        // HTML clip requires complementary plain text content
+        val plainText = plainTextFromHtml(content)
+        ClipData.newHtmlText(null, plainText, content)
+      }
+    }.applyIsSensitive(options.isSensitive)
+    clipboardManager.setPrimaryClip(clip)
+    true
+  }
+
+  @JS
+  suspend fun hasStringAsync(): Boolean = withContext(Dispatchers.IO) {
+    clipboardManager
+      .primaryClipDescription
+      ?.hasTextContent
+      ?: false
+  }
+  // endregion
+
+  // region Images
+  @JS
+  suspend fun getImageAsync(options: GetImageOptions): ClipboardImage? = withContext(Dispatchers.IO) {
+    val imageUri = clipboardManager
+      .takeIf { clipboardHasItemWithType("image/*") }
+      ?.firstItem
+      ?.uri
+      .ifNull {
+        return@withContext null
+      }
+
+    try {
+      imageFromContentUri(androidContext, imageUri, options).toClipboardImage()
+    } catch (err: Throwable) {
+      err.printStackTrace()
+      throw when (err) {
+        is CodedException -> err
+        is SecurityException -> NoPermissionException(err)
+        else -> PasteFailureException(err, kind = "image")
+      }
     }
+  }
+
+  @JS
+  suspend fun setImageAsync(imageData: String, options: SetImageOptions): Unit = withContext(Dispatchers.IO) {
+    try {
+      val clip = clipDataFromBase64Image(androidContext, imageData, clipboardCacheDir)
+        .applyIsSensitive(options.isSensitive)
+      clipboardManager.setPrimaryClip(clip)
+    } catch (err: Throwable) {
+      err.printStackTrace()
+      throw when (err) {
+        is CodedException -> err
+        else -> CopyFailureException(err, kind = "image")
+      }
+    }
+  }
+
+  @JS
+  suspend fun hasImageAsync(): Boolean = withContext(Dispatchers.IO) {
+    clipboardManager.primaryClipDescription?.hasMimeType("image/*") == true
+  }
+  //endregion
+
+  // region Events
+  @Event(name = CLIPBOARD_CHANGED_EVENT_NAME)
+  private val onClipboardChanged = event<ClipboardChangedEvent>(
+    onStartObserving = ::startListening,
+    onStopObserving = ::stopListening
+  )
+
+  override fun onDestroy() {
+    stopListening()
+  }
+
+  private fun startListening() {
+    val emitter = clipboardEventEmitter
+      ?: ClipboardEventEmitter(
+        clipboardManager = runCatching { clipboardManager }.getOrNull(),
+        reactContext = reactContextOrNull,
+        onChange = { onClipboardChanged(it) }
+      ).also { clipboardEventEmitter = it }
+    emitter.attachListener()
+  }
+
+  private fun stopListening() {
+    clipboardEventEmitter?.detachListener()
+  }
+  // endregion
 
   private val clipboardManager: ClipboardManager
-    get() = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+    get() = androidContext.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
       ?: throw ClipboardUnavailableException()
 
   private val clipboardCacheDir: File by lazy {
-    File(context.cacheDir, CLIPBOARD_DIRECTORY_NAME).also { it.mkdirs() }
+    File(androidContext.cacheDir, CLIPBOARD_DIRECTORY_NAME).also { it.mkdirs() }
   }
 
-  // region Clipboard event emitter
-  private lateinit var clipboardEventEmitter: ClipboardEventEmitter
-
-  private inner class ClipboardEventEmitter {
-    private var isListening = true
-    private var timestamp = -1L
-    fun resumeListening() {
-      isListening = true
-    }
-
-    fun pauseListening() {
-      isListening = false
-    }
-
-    fun attachListener() = maybeClipboardManager?.addPrimaryClipChangedListener(listener).ifNull {
-      Log.e(TAG, "'CLIPBOARD_SERVICE' unavailable. Events won't be received")
-    }
-
-    fun detachListener() = maybeClipboardManager?.removePrimaryClipChangedListener(listener)
-
-    private val listener = ClipboardManager.OnPrimaryClipChangedListener {
-      if (!appContext.hasActiveReactInstance) {
-        return@OnPrimaryClipChangedListener
-      }
-
-      maybeClipboardManager.takeIf { isListening }
-        ?.primaryClipDescription
-        ?.let { clip ->
-          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (timestamp == clip.timestamp) {
-              return@OnPrimaryClipChangedListener
-            }
-            timestamp = clip.timestamp
-          }
-
-          this@ClipboardModule.sendEvent(
-            CLIPBOARD_CHANGED_EVENT_NAME,
-            bundleOf(
-              "contentTypes" to listOfNotNull(
-                ContentType.PLAIN_TEXT.takeIf { clip.hasTextContent },
-                ContentType.HTML.takeIf { clip.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) },
-                ContentType.IMAGE.takeIf { clip.hasMimeType("image/*") }
-              ).map { it.jsName }
-            )
-          )
-        }
-    }
-
-    private val maybeClipboardManager = runCatching { clipboardManager }.getOrNull()
-  }
-  // endregion
+  // Created when the first listener subscribes, because the module has no context before.
+  private var clipboardEventEmitter: ClipboardEventEmitter? = null
 
   // region Utilities
 
@@ -218,6 +180,62 @@ class ClipboardModule : Module() {
 
   // endregion
 }
+
+// region Clipboard event emitter
+internal class ClipboardEventEmitter(
+  private val clipboardManager: ClipboardManager?,
+  private val reactContext: ReactContext?,
+  private val onChange: (ClipboardChangedEvent) -> Unit
+) : LifecycleEventListener {
+  private var isListening = true
+  private var timestamp = -1L
+
+  override fun onHostResume() {
+    isListening = true
+  }
+
+  override fun onHostPause() {
+    isListening = false
+  }
+
+  override fun onHostDestroy() = Unit
+
+  fun attachListener() {
+    reactContext?.addLifecycleEventListener(this)
+    clipboardManager?.addPrimaryClipChangedListener(listener).ifNull {
+      Log.e(TAG, "'CLIPBOARD_SERVICE' unavailable. Events won't be received")
+    }
+  }
+
+  fun detachListener() {
+    reactContext?.removeLifecycleEventListener(this)
+    clipboardManager?.removePrimaryClipChangedListener(listener)
+  }
+
+  private val listener = ClipboardManager.OnPrimaryClipChangedListener {
+    clipboardManager.takeIf { isListening }
+      ?.primaryClipDescription
+      ?.let { clip ->
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+          if (timestamp == clip.timestamp) {
+            return@OnPrimaryClipChangedListener
+          }
+          timestamp = clip.timestamp
+        }
+
+        onChange(
+          ClipboardChangedEvent(
+            contentTypes = listOfNotNull(
+              ContentType.PLAIN_TEXT.takeIf { clip.hasTextContent },
+              ContentType.HTML.takeIf { clip.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) },
+              ContentType.IMAGE.takeIf { clip.hasMimeType("image/*") }
+            )
+          )
+        )
+      }
+  }
+}
+// endregion
 
 internal fun ClipData.applyIsSensitive(isSensitive: Boolean): ClipData {
   if (!isSensitive) {
