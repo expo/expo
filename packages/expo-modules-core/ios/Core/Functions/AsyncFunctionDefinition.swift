@@ -17,7 +17,7 @@ internal protocol AnyAsyncFunctionDefinition: AnyFunctionDefinition {
 /**
  The default queue used for module's async function calls.
  */
-private let defaultQueue = DispatchQueue(label: "expo.modules.AsyncFunctionQueue", qos: .userInitiated)
+internal let asyncFunctionQueue = DispatchQueue(label: "expo.modules.AsyncFunctionQueue", qos: .userInitiated)
 
 /**
  Represents a function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
@@ -139,7 +139,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
     let supportsAsyncScheduling = (try? appContext.runtime.supportsAsyncScheduling) ?? false
 
     if supportsAsyncScheduling {
-      let queue = queue ?? defaultQueue
+      let queue = queue ?? asyncFunctionQueue
       dispatchOnQueueUntilViewRegisters(appContext: appContext, arguments: nativeArguments, queue: queue, bodyBlock)
     } else {
       bodyBlock()
