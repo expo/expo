@@ -60,6 +60,10 @@ You can attach `.expoHost(expo)` to `ContentView()` instead and put the scene in
 
 Open the app's `.xcodeproj` and press Run. The initial native build takes longer; subsequent builds are incremental. JavaScript is embedded, so Metro is optional. Native targets live in the generated `.expo-source/ExpoEmbedding.xcodeproj`. Xcode uses a generated local codegen helper, independent of the CLI's installation location. Bun is not required. Expo native code builds from the installed packages in `expo/node_modules`; React Native and Hermes use their prebuilt runtime artifacts.
 
+`ExpoHost()` defaults to `.automatic`: Debug checks Metro asynchronously when the first scene mounts, and uses the embedded bundle if the server is unavailable, belongs to another project, or does not respond within one second. Release always uses the embedded bundle without a network check. Start `npx expo start` (or `bunx expo start`) in `expo/`, then relaunch the app to develop with Fast Refresh. All scenes share the selected bundle for that host. Starting or stopping Metro does not replace a running scene or reset its state.
+
+Use `ExpoHost(bundleSource: .embedded)` to force offline behavior, including in Debug. `.developmentServer` requires this project's Metro server and reports an error when it cannot connect. Automatic fallback covers server discovery; compilation and runtime errors from a selected Metro bundle remain visible. On a device, allow local network access and ensure the development machine is reachable. The resolver uses React Native's saved server address, the build machine's address for device builds, or localhost for the simulator, with the host's `RCTMetroPort` override when present.
+
 `npm pack` bundles the TypeScript CLI, the `@bacons/xcode` project parser/serializer, and the native metadata reader into Node JavaScript. It also includes Swift templates and build helpers. Consumers do not need TypeScript, esbuild, Bun, Ruby, or the source checkout. The generator assigns stable identifiers to generated targets and retains the host project's unrelated objects.
 
 ## Add dependencies or refresh setup

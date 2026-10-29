@@ -1,5 +1,5 @@
 import { execFile } from 'node:child_process';
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, realpath, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { promisify } from 'node:util';
@@ -69,7 +69,7 @@ describe('Generating iOS host integration', () => {
     await rm(root, { recursive: true, force: true });
   });
 
-  async function bundle() {
+  async function bundle(configuration = 'Debug') {
     await configureSourceProject(options, plan);
     const project = await Project.open(
       join(root, '.expo-source/ExpoEmbedding.xcodeproj/project.pbxproj')
@@ -83,7 +83,9 @@ describe('Generating iOS host integration', () => {
         EXPO_APP_ROOT: root,
         CONFIGURATION: 'Debug',
         PLATFORM_NAME: 'iphonesimulator',
-        EXPO_RUNTIME_CONFIGURATION: 'Debug',
+        EXPO_RUNTIME_CONFIGURATION: configuration,
+        CONFIGURATION_BUILD_DIR: root,
+        UNLOCALIZED_RESOURCES_FOLDER_PATH: 'framework',
         ENTRY_FILE: '',
       },
     });
@@ -96,6 +98,14 @@ describe('Generating iOS host integration', () => {
   it('should stop before bundling when entry resolution fails', async () => {
     await rm(join(root, 'expo/features.js'));
     await expect(bundle()).rejects.toMatchObject({ code: 42 });
+  });
+
+  it('should identify the Metro project only in development configurations', async () => {
+    await bundle();
+    const identity = join(root, 'framework/expo-project-root.txt');
+    expect((await readFile(identity, 'utf8')).trim()).toBe(await realpath(join(root, 'expo')));
+    await bundle('Release');
+    await expect(readFile(identity)).rejects.toMatchObject({ code: 'ENOENT' });
   });
 
   it('should preserve target search paths and linker flags across repeat setup', async () => {

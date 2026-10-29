@@ -66,6 +66,8 @@ private final class ExpoSceneViewController: UIViewController {
   private let host: ExpoHost
   private let name: String
   private var props: [String: Any]
+  private var loadingTask: Task<Void, Never>?
+  private var reactView: UIView?
 
   init(host: ExpoHost, name: String, props: [String: Any]) {
     self.host = host
@@ -80,13 +82,28 @@ private final class ExpoSceneViewController: UIViewController {
   }
 
   override func loadView() {
-    do {
-      view = try host.loadView(name: name, props: props)
-    } catch {
-      let label = UILabel()
-      label.numberOfLines = 0
-      label.text = error.localizedDescription
-      view = label
+    view = UIView()
+    loadingTask = Task { [weak self] in
+      guard let self else { return }
+      do {
+        let root = try await host.loadView(name: name, props: props)
+        guard !Task.isCancelled else {
+          (root as? RCTSurfaceHostingProxyRootView)?.surface.stop()
+          return
+        }
+        reactView = root
+        root.frame = view.bounds
+        root.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(root)
+        (root as? RCTSurfaceHostingProxyRootView)?.appProperties = props
+      } catch {
+        guard !Task.isCancelled else { return }
+        let label = UILabel(frame: view.bounds)
+        label.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        label.numberOfLines = 0
+        label.text = error.localizedDescription
+        view.addSubview(label)
+      }
     }
   }
 
@@ -95,11 +112,14 @@ private final class ExpoSceneViewController: UIViewController {
       return
     }
     self.props = props
-    (viewIfLoaded as? RCTSurfaceHostingProxyRootView)?.appProperties = props
+    (reactView as? RCTSurfaceHostingProxyRootView)?.appProperties = props
   }
 
   func unmount() {
-    (viewIfLoaded as? RCTSurfaceHostingProxyRootView)?.surface.stop()
+    loadingTask?.cancel()
+    loadingTask = nil
+    (reactView as? RCTSurfaceHostingProxyRootView)?.surface.stop()
+    reactView = nil
     // SwiftUI can query the controller's view again while removing it.
     view = UIView()
   }

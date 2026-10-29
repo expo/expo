@@ -305,6 +305,7 @@ export async function configureSourceProject(
   const hostRoot = join(gen, 'Host');
   for (const name of [
     'ExpoHost.swift',
+    'ExpoBundleResolver.swift',
     'ExpoScene.swift',
     'ReactNativeDelegate.swift',
     'ExpoAppDelegate.swift',
@@ -331,6 +332,13 @@ export BUNDLE_COMMAND=export:embed
 export SOURCEMAP_FILE="\${SOURCEMAP_FILE:-$EXPO_APP_ROOT/.expo-source/sourcemaps/$CONFIGURATION-$PLATFORM_NAME/main.jsbundle.map}"
 mkdir -p "$(dirname "$SOURCEMAP_FILE")"
 export CONFIGURATION="$EXPO_RUNTIME_CONFIGURATION"
+METRO_PROJECT_FILE="$CONFIGURATION_BUILD_DIR/$UNLOCALIZED_RESOURCES_FOLDER_PATH/expo-project-root.txt"
+if [ "$CONFIGURATION" = Debug ]; then
+  mkdir -p "$(dirname "$METRO_PROJECT_FILE")"
+  (cd "$PROJECT_ROOT" && pwd -P) > "$METRO_PROJECT_FILE"
+else
+  rm -f "$METRO_PROJECT_FILE"
+fi
 export FORCE_BUNDLING=1
 unset SKIP_BUNDLING
 export REACT_NATIVE_PATH=${shellQuote(rn)}

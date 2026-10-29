@@ -9,6 +9,7 @@ import UIKit
 @MainActor
 public final class ExpoHost: ObservableObject {
   public enum BundleSource {
+    case automatic
     case embedded
     #if DEBUG
     case developmentServer
@@ -19,9 +20,10 @@ public final class ExpoHost: ObservableObject {
   private let turboModuleClasses: [String: AnyClass]
   private var delegate: ReactNativeDelegate?
   private var factory: ExpoReactNativeFactory?
+  private var factoryTask: Task<Void, Error>?
 
   public init(
-    bundleSource: BundleSource = .embedded,
+    bundleSource: BundleSource = .automatic,
     turboModuleClasses: [String: AnyClass] = [:]
   ) {
     self.bundleSource = bundleSource
@@ -32,8 +34,12 @@ public final class ExpoHost: ObservableObject {
     name: String,
     props: [AnyHashable: Any],
     launchOptions: [AnyHashable: Any]? = nil
-  ) throws -> UIView {
-    let factory = try getFactory()
+  ) async throws -> UIView {
+    if factoryTask == nil {
+      factoryTask = Task { try await self.makeFactory() }
+    }
+    try await factoryTask!.value
+    guard let factory else { throw CancellationError() }
     return factory.rootViewFactory.view(
       withModuleName: name,
       initialProperties: props,
@@ -44,36 +50,51 @@ public final class ExpoHost: ObservableObject {
   }
 
   func reset() {
+    factoryTask?.cancel()
+    factoryTask = nil
     // RCTHost's C++ declarations hide the public reactHost property from Swift.
     factory?.rootViewFactory.setValue(nil, forKey: "reactHost")
     factory = nil
     delegate = nil
   }
 
-  private func getFactory() throws -> ExpoReactNativeFactory {
-    if let factory {
-      return factory
-    }
-
-    let bundleURL: URL
-    switch bundleSource {
-    case .embedded:
-      let bundle = Bundle(for: ExpoHost.self)
-      guard let url = bundle.url(forResource: "main", withExtension: "jsbundle") else {
-        throw HostError.missingBundle(bundle.bundlePath)
-      }
-      bundleURL = url
+  private func resolveBundleURL() async throws -> URL {
+    let bundle = Bundle(for: ExpoHost.self)
     #if DEBUG
-    case .developmentServer:
-      guard let url = RCTBundleURLProvider.sharedSettings().jsBundleURL(
-        forBundleRoot: ".expo/.virtual-metro-entry"
-      ) else {
-        throw HostError.missingDevelopmentServer
+    if bundleSource != .embedded {
+      let provider = RCTBundleURLProvider.sharedSettings()
+      let deviceHost = bundle.url(forResource: "ip", withExtension: "txt")
+        .flatMap { try? String(contentsOf: $0, encoding: .utf8).trimmingCharacters(in: .whitespacesAndNewlines) }
+      let location = provider.jsLocation ?? deviceHost ?? "localhost"
+      if var server = URLComponents(string: "\(provider.packagerScheme)://\(location)") {
+        if server.port == nil {
+          server.port = (Bundle.main.object(forInfoDictionaryKey: "RCTMetroPort") as? Int) ?? 8081
+        }
+        if let url = server.url,
+           let projectFile = bundle.url(forResource: "expo-project-root", withExtension: "txt"),
+           let projectRoot = try? String(contentsOf: projectFile, encoding: .utf8).trimmingCharacters(in: .newlines),
+           await ExpoBundleResolver.isMatchingMetro(url, projectRoot: projectRoot) {
+          server.path = "/.expo/.virtual-metro-entry.bundle"
+          server.queryItems = [
+            URLQueryItem(name: "platform", value: "ios"),
+            URLQueryItem(name: "dev", value: "true"),
+            URLQueryItem(name: "minify", value: "false")
+          ]
+          if let bundleURL = server.url { return bundleURL }
+        }
       }
-      bundleURL = url
-    #endif
+      if bundleSource == .developmentServer { throw HostError.missingDevelopmentServer }
     }
+    #endif
+    guard let url = bundle.url(forResource: "main", withExtension: "jsbundle") else {
+      throw HostError.missingBundle(bundle.bundlePath)
+    }
+    return url
+  }
 
+  private func makeFactory() async throws {
+    let bundleURL = try await resolveBundleURL()
+    try Task.checkCancellation()
     let delegate = ReactNativeDelegate(turboModuleClasses: turboModuleClasses, bundleURL: bundleURL)
     delegate.dependencyProvider = RCTAppDependencyProvider()
     let factory = ExpoReactNativeFactory(delegate: delegate)
@@ -82,7 +103,6 @@ public final class ExpoHost: ObservableObject {
     _ = ExpoModulesProvider()
 
 
-    return factory
   }
 
   private enum HostError: LocalizedError {
@@ -94,7 +114,7 @@ public final class ExpoHost: ObservableObject {
       case .missingBundle(let path):
         return "Expo could not load main.jsbundle from \(path). Rebuild the brownfield framework with embedded bundling enabled."
       case .missingDevelopmentServer:
-        return "Expo could not resolve the development server. Run npx expo start or use ExpoHost(bundleSource: .embedded)."
+        return "Expo could not reach this project's Metro server within one second. Run npx expo start in expo/, check device connectivity, or use ExpoHost(bundleSource: .automatic) for embedded fallback."
       }
     }
   }
