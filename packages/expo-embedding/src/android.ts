@@ -225,6 +225,7 @@ export async function configureAndroidProject(
       'Android embedding requires Hermes and the New Architecture. Remove the false override in gradle.properties and rerun init.'
     );
   const replacements: Record<string, string> = {
+    METRO_PROJECT_ROOT: quote(JSON.stringify(await realpath(expo))),
     ROOT: quote(root),
     EXPO: quote(expo),
     NODE: quote(node),

@@ -10,7 +10,7 @@ import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import expo.modules.ApplicationLifecycleDispatcher
 
 class ExpoApplicationDelegate(
-  private val bundleSource: ExpoHost.BundleSource = ExpoHost.BundleSource.Embedded,
+  private val bundleSource: ExpoHost.BundleSource = ExpoHost.BundleSource.Automatic,
 ) : ReactApplication {
   private var application: Application? = null
   private var initializedHost: ExpoHost? = null

@@ -104,6 +104,8 @@ Edit `expo/App.tsx`. The generated entry registers `Main`. Register additional n
 
 Sync Gradle and Run in Android Studio, or run `./gradlew :app:assembleDebug`. Debug and Release embed JavaScript and assets; Metro is optional. Node must be available on the Gradle daemon's PATH, including when started by Android Studio.
 
+Keep `ExpoApplicationDelegate()` for automatic selection. Start `npx expo start` or `bunx expo start` in `expo/` and relaunch: Debug uses a matching Metro server or falls back to embedded content after one second; Release always stays embedded. Use `adb reverse tcp:8081 tcp:8081` for a USB-connected device. The generated library enables Debug-only cleartext HTTP, subject to the host's network security policy. Use `BundleSource.Embedded` for deterministic offline tests. All scenes share the initial selection; starting or stopping Metro does not reset a running scene. Verify Fast Refresh after building, and verify fallback with Metro stopped or serving another project.
+
 Run `npx expo-embedding install expo-sqlite expo-video` or `bunx expo-embedding install expo-sqlite expo-video` to install modules and refresh the native integration in one step. Sync Gradle and rebuild afterward. Config plugins are not applied; add required permissions and other native settings manually.
 
 For local CLI development only, build the package and use `node /path/to/expo/packages/expo-embedding/bin/expo-embedding.js <command>` with the same options. An app-root CLI devDependency is optional; pin a CLI version for repeatable CI.

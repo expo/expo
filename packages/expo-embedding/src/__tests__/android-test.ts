@@ -167,6 +167,12 @@ describe('Embedding Expo in Android projects', () => {
     );
     expect(existsSync(join(hostDirectory, 'ExpoApplicationDelegate.kt'))).toBe(true);
     expect(readFileSync(join(hostDirectory, 'Other.kt'), 'utf8')).toBe('other host source');
+    const library = readFileSync(join(root, '.expo-source/android/library/build.gradle'), 'utf8');
+    const metroRoot = await fs.realpath(join(root, 'expo'));
+    expect(library).toContain(JSON.stringify(JSON.stringify(metroRoot)));
+    expect(library).toContain(
+      "release { buildConfigField 'String', 'METRO_PROJECT_ROOT', '\"\"' }"
+    );
     const files = [
       'settings.gradle.kts',
       'build.gradle.kts',

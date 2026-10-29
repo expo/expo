@@ -8,7 +8,11 @@ android {
   defaultConfig {
     minSdk 24
   }
-  buildFeatures { compose = true }
+  buildFeatures { compose = true; buildConfig = true }
+  buildTypes {
+    debug { buildConfigField 'String', 'METRO_PROJECT_ROOT', @@METRO_PROJECT_ROOT@@ }
+    release { buildConfigField 'String', 'METRO_PROJECT_ROOT', '""' }
+  }
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_17
     targetCompatibility JavaVersion.VERSION_17

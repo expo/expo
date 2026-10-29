@@ -10,29 +10,35 @@ import java.io.IOException
 class ExpoHost(
   application: Application,
   packages: List<ReactPackage>,
-  bundleSource: BundleSource = BundleSource.Embedded,
+  bundleSource: BundleSource = BundleSource.Automatic,
 ) {
-  enum class BundleSource { Embedded, DevelopmentServer }
+  enum class BundleSource { Automatic, Embedded, DevelopmentServer }
+  private val developmentEnabled = BuildConfig.DEBUG &&
+    application.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
 
   init {
-    require(bundleSource == BundleSource.Embedded || application.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0) {
+    require(bundleSource != BundleSource.DevelopmentServer || developmentEnabled) {
       "Metro is only available in debuggable applications. Use BundleSource.Embedded for release builds."
     }
-    if (bundleSource == BundleSource.Embedded) {
+    if (bundleSource != BundleSource.DevelopmentServer) {
       try {
         application.assets.open("index.android.bundle").close()
       } catch (cause: IOException) {
         throw IllegalStateException(
-          "ExpoHost could not open the embedded asset index.android.bundle. Run expo-embedding init and rebuild the app with the generated JavaScript bundling task enabled.",
+          "ExpoHost could not open the embedded asset index.android.bundle. Run npx expo-embedding init and rebuild the app with the generated JavaScript bundling task enabled.",
           cause,
         )
       }
     }
   }
 
-  val reactHost: ReactHost = ExpoReactHostFactory.getDefaultReactHost(
-    context = application,
-    packageList = packages,
-    useDevSupport = bundleSource == BundleSource.DevelopmentServer,
-  )
+  val reactHost: ReactHost = if (bundleSource == BundleSource.Automatic && developmentEnabled) {
+    createAutomaticReactHost(application, packages)
+  } else {
+    ExpoReactHostFactory.getDefaultReactHost(
+      context = application,
+      packageList = packages,
+      useDevSupport = bundleSource == BundleSource.DevelopmentServer,
+    )
+  }
 }
