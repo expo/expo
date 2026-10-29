@@ -54,11 +54,11 @@ Writing the clipboard does not paste. Focus the intended field before pasting. K
 
 ## Restart an installed app
 
-Use `app.launch` to restart an installed app. Replace `com.example.app` with the installed build's bundle identifier, which can differ from your project's app config:
+Use `app.launch` to restart an installed app. Replace `com.example.app` with the installed build's bundle identifier, which can differ from your project's [app config](/workflow/configuration/):
 
 <Terminal cmd={['$ eas simulator:control app.launch com.example.app --id <session-id>']} />
 
-To pass launch arguments, use a JSON array of strings. These flags belong to your app; your app defines what they do:
+To pass launch arguments, use a JSON array of strings. Your app defines what these arguments do:
 
 <Terminal
   cmd={[
@@ -95,6 +95,8 @@ Launch arguments are optional. When you omit them, use `openUrl=` so the URL doe
 />
 
 The app starts before the URL opens. If opening the URL fails, the app can stay running with the new arguments. Inspect the device before retrying.
+
+### Open a deep link without a restart
 
 To send a deep link without restarting the app, use `app.openUrl`:
 
