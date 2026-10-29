@@ -29,18 +29,32 @@ type TechArticleInput = {
   url: string;
 };
 
+function toISODateTime(date: string) {
+  const parsed = new Date(date.replace(/(\d+)(st|nd|rd|th)/, '$1'));
+  if (Number.isNaN(parsed.getTime())) {
+    return undefined;
+  }
+
+  const year = parsed.getFullYear();
+  const month = String(parsed.getMonth() + 1).padStart(2, '0');
+  const day = String(parsed.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}T00:00:00Z`;
+}
+
 export function buildTechArticleSchema({
   title,
   description,
   modificationDate,
   url,
 }: TechArticleInput) {
+  const dateModified = modificationDate ? toISODateTime(modificationDate) : undefined;
+
   return {
     '@context': 'https://schema.org',
     '@type': 'TechArticle',
     headline: title,
     ...(description ? { description } : {}),
-    ...(modificationDate ? { dateModified: modificationDate } : {}),
+    ...(dateModified ? { dateModified } : {}),
     publisher: websiteSchema.publisher,
     url,
   };
