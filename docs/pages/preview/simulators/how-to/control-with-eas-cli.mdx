@@ -49,7 +49,7 @@ You do not need to restart the app to change its permission state. Some framewor
   cmd={['$ eas simulator:control permissions.list com.example.app --id <session-id> --json']}
 />
 
-On iOS 27.1, an app that has never requested notification permission may still need its normal request flow after a grant. Call `UNUserNotificationCenter.requestAuthorization` from the app, or `Notifications.requestPermissionsAsync()` with [expo-notifications](/versions/latest/sdk/notifications/). This initializes notification capabilities; restarting alone does not. Service authorization does not confirm notification delivery.
+On iOS 27.1, an app that has never requested notification permission may still need its normal request flow after a grant. Call `UNUserNotificationCenter.requestAuthorization` from the app, or `Notifications.requestPermissionsAsync()` with [expo-notifications](/versions/latest/sdk/notifications/). This initializes notification capabilities. Restarting alone does not. Service authorization does not confirm notification delivery.
 
 ## Tap and enter text
 
