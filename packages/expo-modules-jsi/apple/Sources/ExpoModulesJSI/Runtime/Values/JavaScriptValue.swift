@@ -812,6 +812,8 @@ extension JavaScriptValue: JSIRepresentable {
 // MARK: - Errors
 
 extension JavaScriptValue {
+  // `@frozen` so client modules, which call the typed-throwing `as…()` conversions, know its size instead
+  // of asking the type's metadata accessor for it before each call.
   @frozen
   public struct TypeError: Error, CustomStringConvertible {
     @usableFromInline
