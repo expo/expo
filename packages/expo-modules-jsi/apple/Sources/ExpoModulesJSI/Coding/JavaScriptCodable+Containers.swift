@@ -38,8 +38,31 @@ extension Array: JavaScriptDecodable where Element: JavaScriptDecodable {
       return [try Element.decode(value, in: runtime)]
     }
     // Each element is lent out unowned, so it's decoded without a `JavaScriptValue` per element.
-    return try value.getArray(in: runtime).mapUnowned { element in
-      return try Element.decode(element, in: runtime)
+    return try decodeElements(of: value.getArray(in: runtime), in: runtime)
+  }
+
+  /// Decodes every element of `array`, with one closure call per element.
+  @inlinable
+  internal static func decodeElements(of array: borrowing JavaScriptArray, in runtime: borrowing JavaScriptRuntime)
+    throws -> [Element]
+  {
+    // Nonisolated, so the closure that the array initializer gets has no executor check. The isolation
+    // that `Element.decode` needs is entered once, without a check. Everything runs synchronously on
+    // this thread, so the buffer and the count can cross into the isolated closure unchecked.
+    let count = array.length
+    return try [Element](unsafeUninitializedCapacity: count) { buffer, initializedCount in
+      nonisolated(unsafe) let base = buffer.baseAddress
+      nonisolated(unsafe) var initialized = 0
+      // Also when `Element.decode` throws, so the elements decoded so far are deinitialized.
+      defer {
+        initializedCount = initialized
+      }
+      try JavaScriptActor.assumeIsolated {
+        try array.forEachUnowned(count: count) { element in
+          (base.unsafelyUnwrapped + initialized).initialize(to: try Element.decode(element, in: runtime))
+          initialized += 1
+        }
+      }
     }
   }
 }
