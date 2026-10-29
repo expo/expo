@@ -378,6 +378,23 @@ it('passes the SplitView.Column header to the native header as flat props', asyn
   });
 });
 
+it('passes the SplitView.Column header subtitle to the native header', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column header={{ title: 'Inbox', subtitle: '3 unread' }} />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].subtitle).toBe('3 unread');
+});
+
 it('passes the toolbar item menu to the native header with an id for each action', async () => {
   await renderRouter(
     {
