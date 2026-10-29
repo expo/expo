@@ -6,7 +6,10 @@ import type { BottomTabViewState } from '../types';
 
 export function useAnimatedHashMap({ routes, index }: BottomTabViewState) {
   const refs = React.useRef<Record<string, Animated.Value>>({});
+  const focusedKeyRef = React.useRef<string | undefined>(undefined);
   const previous = refs.current;
+  const previousFocusedKey = focusedKeyRef.current;
+  focusedKeyRef.current = routes[index]?.key;
   const routeKeys = Object.keys(previous);
 
   if (
