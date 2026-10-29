@@ -8,62 +8,59 @@ struct HomeTabView: View {
   @State private var showingInfoDialog = false
 
   var body: some View {
-    VStack(spacing: 0) {
-      DevLauncherNavigationHeader()
+    ScrollView {
+      VStack(spacing: 20) {
+        if viewModel.hasStoredCrash {
+          crashReportBanner
+        }
 
-      ScrollView {
-        VStack(spacing: 20) {
-          if viewModel.hasStoredCrash {
-            crashReportBanner
-          }
+        #if !targetEnvironment(simulator)
+        if viewModel.permissionStatus == .denied {
+          NetworkPermissionsBanner()
+        }
+        #endif
 
-          #if !targetEnvironment(simulator)
-          if viewModel.permissionStatus == .denied {
-            NetworkPermissionsBanner()
-          }
-          #endif
+        DevServersView(showingInfoDialog: $showingInfoDialog)
 
-          DevServersView(showingInfoDialog: $showingInfoDialog)
-
-          if !viewModel.recentlyOpenedApps.isEmpty {
-            VStack(alignment: .leading, spacing: 0) {
-              HStack {
-                Text("recently opened".uppercased())
-                  .font(.caption)
-                  .foregroundColor(.primary.opacity(0.6))
-                Spacer()
-                Button("reset".uppercased()) {
-                  viewModel.clearRecentlyOpenedApps()
-                }
-                #if os(tvOS)
-                .font(.system(size: 24))
-                #else
-                .font(.system(size: 12))
-                #endif
+        if !viewModel.recentlyOpenedApps.isEmpty {
+          VStack(alignment: .leading, spacing: 0) {
+            HStack {
+              Text("recently opened".uppercased())
+                .font(.caption)
+                .foregroundColor(.primary.opacity(0.6))
+              Spacer()
+              Button("reset".uppercased()) {
+                viewModel.clearRecentlyOpenedApps()
               }
-
-              LazyVStack(spacing: 6) {
-                ForEach(viewModel.recentlyOpenedApps) { app in
-                  RecentlyOpenedAppRow(app: app) {
-                    viewModel.openApp(url: app.url)
-                  }
-                }
-              }
-              .padding(.top)
+              #if os(tvOS)
+              .font(.system(size: 24))
+              #else
+              .font(.system(size: 12))
+              #endif
             }
+
+            LazyVStack(spacing: 6) {
+              ForEach(viewModel.recentlyOpenedApps) { app in
+                RecentlyOpenedAppRow(app: app) {
+                  viewModel.openApp(url: app.url)
+                }
+              }
+            }
+            .padding(.top)
           }
         }
-        .padding()
       }
-      #if !os(tvOS)
-      .refreshable {
-        await viewModel.refreshDevServers()
-      }
-      #endif
+      .padding()
     }
+    #if !os(tvOS)
+    .refreshable {
+      await viewModel.refreshDevServers()
+    }
+    #endif
     #if os(tvOS)
     .background()
     #endif
+    .devLauncherToolbar()
     .onAppear {
       viewModel.loadRecentlyOpenedApps()
     }

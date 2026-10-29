@@ -8,9 +8,29 @@ struct AccountSheet: View {
   @State private var showingLogoutConfirmation = false
 
   var body: some View {
-    VStack(spacing: 0) {
-      accountScreenHeader
+    NavigationStack {
+      content
+        .navigationTitle("Account")
+        #if os(iOS)
+        .navigationBarTitleDisplayMode(.inline)
+        #endif
+        .toolbar {
+          ToolbarItem(placement: .cancellationAction) {
+            Button {
+              dismiss()
+            } label: {
+              Image(systemName: "xmark")
+            }
+            .accessibilityLabel("Close")
+          }
+          .verticalBarPreferred()
+        }
+    }
+    .presentationDetents(viewModel.isAuthenticated ? [.medium, .large] : [.large])
+  }
 
+  private var content: some View {
+    VStack(spacing: 0) {
       if !viewModel.isAuthenticated {
         Spacer()
         Image("expo-go-logo", bundle: getDevLauncherBundle())
@@ -33,31 +53,6 @@ struct AccountSheet: View {
     #if !os(tvOS) && !os(macOS)
     .background(Color(.systemGroupedBackground))
     #endif
-    .presentationDetents(viewModel.isAuthenticated ? [.medium, .large] : [.large])
-  }
-
-  private var accountScreenHeader: some View {
-    VStack(spacing: 8) {
-      HStack {
-        Text("Account")
-          .font(.title2)
-          .fontWeight(.semibold)
-
-        Spacer()
-
-        Button {
-          dismiss()
-        }
-        label: {
-          Image(systemName: "xmark")
-            .font(.system(size: 16, weight: .medium))
-            .foregroundColor(.primary)
-            .frame(width: 44, height: 44)
-        }
-      }
-      .padding(.horizontal, 20)
-      .padding(.top, 8)
-    }
   }
 
   private var userAccountSelector: some View {
