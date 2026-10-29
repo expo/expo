@@ -20,8 +20,8 @@ enum class EnumWithString(val value: String) : Enumerable {
   VALUE3("value3")
 }
 
-enum class EnumWithBody(val value: String) : Enumerable {
-  VALUE1("value1") {
-    override fun toString() = "custom"
-  }
+enum class EnumWithRenamedParameter(p0: String) : Enumerable {
+  VALUE1("value1");
+
+  val value = p0
 }

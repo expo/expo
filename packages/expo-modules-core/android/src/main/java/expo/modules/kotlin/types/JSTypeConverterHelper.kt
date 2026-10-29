@@ -17,8 +17,11 @@ import java.io.File
 import java.lang.reflect.Modifier
 import java.net.URI
 import java.net.URL
+import kotlin.reflect.KProperty1
+import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.isAccessible
 
 /**
@@ -261,13 +264,34 @@ fun BooleanArray.toJSValue(containerProvider: JSTypeConverterProvider.ContainerP
 }
 
 fun Enum<*>.toJSValue(): Any? {
-  val fields = declaringJavaClass.declaredFields
-    .filter { !Modifier.isStatic(it.modifiers) && !it.isSynthetic }
-  return when (fields.size) {
-    0 -> name
-    1 -> fields.first().apply { isAccessible = true }.get(this)
-    else -> throw IllegalStateException("Enum '$javaClass' cannot be used as return type (incompatible with JS)")
+  val primaryConstructor = requireNotNull(this::class.primaryConstructor) {
+    "Cannot convert enum without the primary constructor to js value"
   }
+
+  if (primaryConstructor.parameters.isEmpty()) {
+    return this.name
+  } else if (primaryConstructor.parameters.size == 1) {
+    val parameterName = primaryConstructor.parameters.first().name!!
+
+    @Suppress("UNCHECKED_CAST")
+    val parameterProperty = this::class.declaredMemberProperties
+      .find { it.name == parameterName } as? KProperty1<Enum<*>, *>
+
+    // Minifiers can rename the parameter in the Kotlin metadata (for example, to `p0`) and keep the property name.
+    if (parameterProperty == null) {
+      val fields = declaringJavaClass.declaredFields
+        .filter { !Modifier.isStatic(it.modifiers) && !it.isSynthetic }
+      return when (fields.size) {
+        0 -> name
+        1 -> fields.first().apply { isAccessible = true }.get(this)
+        else -> throw IllegalStateException("Enum '$javaClass' cannot be used as return type (incompatible with JS)")
+      }
+    }
+
+    return parameterProperty.get(this)
+  }
+
+  throw IllegalStateException("Enum '$javaClass' cannot be used as return type (incompatible with JS)")
 }
 
 fun URL.toJSValue(): String {
