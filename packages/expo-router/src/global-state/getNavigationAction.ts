@@ -68,6 +68,7 @@ export function getNavigateAction(
         singular,
         __internal__PreviewKey: previewKey,
         ...(options.__internal__popToNavigator ? { pop: true } : undefined),
+        ...(options.splitViewColumnName && { splitViewColumnName: options.splitViewColumnName }),
       },
     },
     withAnchor,

@@ -6,6 +6,12 @@ export type StoreRedirects = readonly [RegExp, RedirectConfig, boolean];
 export type ReactNavigationState = NavigationState | PartialState<NavigationState>;
 export type FocusedRouteState = NonNullable<ReturnType<typeof useStateForPath>>;
 
+/**
+ * Column of a `SplitView`. The first `SplitView.Column` is `primary`, the second is `supplementary`, and the
+ * column with the current route is `secondary`.
+ */
+export type SplitViewColumnName = 'primary' | 'supplementary' | 'secondary';
+
 export type LinkToOptions = {
   event?: string;
 
@@ -35,12 +41,22 @@ export type LinkToOptions = {
    */
   dangerouslySingular?: SingularOptions;
 
+  /**
+   * The `SplitView` column to show after the navigation. A compact `SplitView` shows the column at once. An expanded
+   * one shows it after the next collapse. Without this option, the navigation does not change the column.
+   *
+   * @platform ios
+   */
+  splitViewColumnName?: SplitViewColumnName;
+
   __internal__PreviewKey?: string;
   __internal__previewId?: string;
   __internal__popToNavigator?: boolean;
 };
 
 export type NavigationOptions = Omit<LinkToOptions, 'event' | '__internal__popToNavigator'>;
+
+export type SetParamsOptions = Pick<LinkToOptions, 'splitViewColumnName'>;
 
 export type TransitionOptions = Pick<LinkToOptions, 'inTransition'>;
 
