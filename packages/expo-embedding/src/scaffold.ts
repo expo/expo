@@ -46,6 +46,7 @@ export async function scaffoldExpoProject(
           private: true,
           main: 'index.js',
           dependencies: versions,
+          devDependencies: { typescript: '~6.0.3', '@types/react': '~19.3.0' },
         },
         null,
         2

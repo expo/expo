@@ -21,6 +21,7 @@ describe('Scaffolding Expo in SwiftUI projects', () => {
     const manifest = JSON.parse(readFileSync(join(root, 'expo/package.json'), 'utf8'));
     expect(manifest.dependencies).toEqual(versions);
     expect(manifest.main).toBe('index.js');
+    expect(manifest.devDependencies).toEqual({ typescript: '~6.0.3', '@types/react': '~19.3.0' });
     expect(readFileSync(join(root, 'expo/index.js'), 'utf8')).toContain("registerComponent('Main'");
     expect(existsSync(join(root, 'expo/Native/ExpoExampleModule.swift'))).toBe(true);
     expect(readFileSync(join(root, 'expo/react-native.config.js'), 'utf8')).toContain('ios: null');
