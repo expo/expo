@@ -11,6 +11,7 @@ import type {
   TabRouterOptions,
   useNavigationBuilder,
 } from '../react-navigation/native';
+import type { NavigatorContextValue } from '../views/Navigator';
 import type { TriggerMap } from './common';
 
 export type ExpoTabsProps = ExpoTabsNavigatorOptions;
@@ -97,6 +98,15 @@ export const TabContext = createContext<TabContextValue>({});
  * @hidden
  */
 export const TabTriggerMapContext = createContext<TriggerMap>({});
+/**
+ * @hidden
+ */
+export const TabTriggerNavigatorContext = createContext<
+  | (Pick<NavigatorContextValue, 'state' | 'navigation' | 'contextKey'> & {
+      hiddenRoutes: Record<string, boolean>;
+    })
+  | null
+>(null);
 /**
  * @hidden
  */

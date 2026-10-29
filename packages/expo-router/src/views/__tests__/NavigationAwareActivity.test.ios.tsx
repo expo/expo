@@ -425,6 +425,58 @@ test('uses headless tab trigger activity settings', async () => {
   expectActivityModes({ index: ['hidden'], disabled: [] });
 });
 
+test('updates headless tab activity when the Tabs setting changes', async () => {
+  let enableActivity = () => {};
+
+  function Layout() {
+    const [enabled, setEnabled] = React.useState(false);
+    enableActivity = () => setEnabled(true);
+    return (
+      <HeadlessTabs activityEnabled={enabled}>
+        <TabSlot />
+        <TabList>
+          <TabTrigger name="index" href="/" />
+        </TabList>
+      </HeadlessTabs>
+    );
+  }
+
+  await renderRouter({
+    _layout: Layout,
+    index: () => <View testID="index" />,
+  });
+
+  expectActivityModes({ index: [] });
+  await act(() => enableActivity());
+  expectActivityModes({ index: ['visible'] });
+});
+
+test('updates headless tab activity when a trigger setting changes', async () => {
+  let enableActivity = () => {};
+
+  function Layout() {
+    const [enabled, setEnabled] = React.useState(false);
+    enableActivity = () => setEnabled(true);
+    return (
+      <HeadlessTabs>
+        <TabSlot />
+        <TabList>
+          <TabTrigger name="index" href="/" activityEnabled={enabled} />
+        </TabList>
+      </HeadlessTabs>
+    );
+  }
+
+  await renderRouter({
+    _layout: Layout,
+    index: () => <View testID="index" />,
+  });
+
+  expectActivityModes({ index: [] });
+  await act(() => enableActivity());
+  expectActivityModes({ index: ['visible'] });
+});
+
 test('wraps route modules but not layout modules', async () => {
   await renderRouter(
     {
