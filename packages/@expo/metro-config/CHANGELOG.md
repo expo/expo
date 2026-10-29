@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix invalid CSS transformer output when (unstable) graph optimization is enabled ([#52126](https://github.com/expo/expo/pull/52126) by [@kitten](https://github.com/kitten))
+- Avoid a deprecation warning when displaying CSS code frames. ([#52523](https://github.com/expo/expo/pull/52523) by [@LuisPeixoto](https://github.com/LuisPeixoto))
 
 ### 💡 Others
 
