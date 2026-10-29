@@ -44,6 +44,7 @@ export default function Layout() {
   const [alternateTitles, setAlternateTitles] = useState(false);
   const [largeTitle, setLargeTitle] = useState(true);
   const [showSubtitle, setShowSubtitle] = useState(false);
+  const [titleColors, setTitleColors] = useState(false);
   const [iconButtons, setIconButtons] = useState(true);
   const [threeColumns, setThreeColumns] = useState(true);
   const [showInspector, setShowInspector] = useState(false);
@@ -77,6 +78,8 @@ export default function Layout() {
                   title: alternateTitles ? 'Folders' : 'Mailboxes',
                   subtitle: showSubtitle ? '3 unread' : undefined,
                   largeTitle,
+                  titleStyle: titleColors ? { color: 'red' } : undefined,
+                  largeTitleStyle: titleColors ? { color: 'blue' } : undefined,
                   rightToolbar: [button('Edit')],
                   searchBar: {
                     placeholder: 'Search mailboxes',
@@ -132,6 +135,12 @@ export default function Layout() {
                 testID="split-view-mail-subtitle"
                 value={showSubtitle}
                 onValueChange={setShowSubtitle}
+              />
+              <ToggleRow
+                label="Title colors"
+                testID="split-view-mail-title-colors"
+                value={titleColors}
+                onValueChange={setTitleColors}
               />
               <ToggleRow
                 label="Icon buttons"

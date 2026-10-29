@@ -14,6 +14,12 @@ public class SplitViewModule: Module {
       Prop("largeTitle") { (view: SplitViewHeaderView, largeTitle: Bool?) in
         view.largeTitle = largeTitle ?? false
       }
+      Prop("titleColor") { (view: SplitViewHeaderView, color: UIColor?) in
+        view.titleColor = color
+      }
+      Prop("largeTitleColor") { (view: SplitViewHeaderView, color: UIColor?) in
+        view.largeTitleColor = color
+      }
       Prop("leftToolbarItems") { (view: SplitViewHeaderView, items: [SplitViewToolbarItemRecord]?) in
         view.leftToolbarItems = items ?? []
       }

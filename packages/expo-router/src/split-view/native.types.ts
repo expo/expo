@@ -1,3 +1,4 @@
+import type { ColorValue } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type {
@@ -29,6 +30,8 @@ export interface SplitViewNativeHeaderProps {
   title?: string;
   subtitle?: string;
   largeTitle?: boolean;
+  titleColor?: ColorValue;
+  largeTitleColor?: ColorValue;
   leftToolbarItems?: SplitViewNativeToolbarItem[];
   rightToolbarItems?: SplitViewNativeToolbarItem[];
   onToolbarItemPress: (event: { nativeEvent: { id: string } }) => void;
