@@ -12,7 +12,7 @@ import { getLocaleFromPath, messages } from '~/common/i18n';
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import { useNProgress } from '~/common/useNProgress';
 import { DocumentationPageWrapper } from '~/components/DocumentationPageWrapper';
-import { websiteSchema } from '~/constants/structured-data';
+import { buildWebsiteSchema } from '~/constants/structured-data';
 import { useAnalyticsPageTracking } from '~/providers/Analytics';
 import { CodeBlockSettingsProvider } from '~/providers/CodeBlockSettingsProvider';
 import { CometlyPixel } from '~/providers/CometlyPixel';
@@ -73,7 +73,7 @@ export default function App({ Component, pageProps }: AppProps) {
   useAnalyticsPageTracking();
   return (
     <>
-      <StructuredData id="website" data={websiteSchema} />
+      <StructuredData id="website" data={buildWebsiteSchema(locale)} />
       <HreflangAlternates />
       {/* oxlint-disable-next-line react/no-unknown-property */}
       <style jsx global>{`
