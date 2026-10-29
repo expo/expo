@@ -14,7 +14,7 @@ class SensorSubscription(
   private val context: Context,
   private val sensorType: Int,
   private val listener: SensorEventListener2,
-  var updateInterval: Long = 100L
+  var updateInterval: Long = DefaultUpdateInterval
 ) : SensorEventListener2 by listener {
   private var mSensor: Sensor? = null
   private val mSensorManager: SensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -51,12 +51,12 @@ class SensorSubscription(
       return true
     }
 
-    return try {
-      context.packageManager.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)?.run {
-        requestedPermissions?.contains(Manifest.permission.HIGH_SAMPLING_RATE_SENSORS)
-      } ?: false
-    } catch (e: PackageManager.NameNotFoundException) {
-      false
-    }
+    return runCatching {
+      context
+        .packageManager
+        .getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
+        ?.run { requestedPermissions?.contains(Manifest.permission.HIGH_SAMPLING_RATE_SENSORS) }
+        ?: false
+    }.getOrDefault(false)
   }
 }

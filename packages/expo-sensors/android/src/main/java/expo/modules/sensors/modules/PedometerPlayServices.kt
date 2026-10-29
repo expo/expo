@@ -12,6 +12,12 @@ import com.google.android.gms.fitness.data.LocalField
 import com.google.android.gms.fitness.request.LocalDataReadRequest
 import com.google.android.gms.tasks.Task
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.sensors.NotSupportedException
+import expo.modules.sensors.ReadDataFailedException
+import expo.modules.sensors.TaskCancelledException
+import expo.modules.sensors.TaskFailedException
+import expo.modules.sensors.TaskTimeoutException
+import expo.modules.sensors.TaskTimeoutSeconds
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
