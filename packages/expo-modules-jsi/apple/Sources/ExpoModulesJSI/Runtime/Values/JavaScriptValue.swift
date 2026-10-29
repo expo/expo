@@ -812,12 +812,16 @@ extension JavaScriptValue: JSIRepresentable {
 // MARK: - Errors
 
 extension JavaScriptValue {
+  @frozen
   public struct TypeError: Error, CustomStringConvertible {
+    @usableFromInline
     let type: any ~Copyable.Type
     /// A specific explanation that replaces the generic message, when the failure needs one.
+    @usableFromInline
     var reason: String? = nil
     /// Where inside the converted value the failure happened, such as `.user.tags[1]`. Empty when it's
     /// the value itself.
+    @usableFromInline
     var path: String = ""
 
     public var description: String {
