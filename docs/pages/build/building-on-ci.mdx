@@ -56,26 +56,6 @@ When a commit is pushed to the main branch, this workflow will create Android an
 
 ## Configuring your app for other CI services
 
-{/* TODO: We can probably leave this out -- users can figure out on their own if they want to do this or use npx */}
-
-{/* ### Make EAS CLI available in your CI environment */}
-
-{/* To interact with the EAS API, we need to install EAS CLI. You can use an environment with this library preinstalled, or you can add it to the project as a development dependency. */}
-
-{/* The latter is the easiest way, but may increase the installation time. */}
-
-{/* For vendors that charge you per minute, it might be worth creating a prebuilt environment. */}
-
-{/* To install EAS CLI in your project, run: */}
-
-{/* ```sh */}
-
-{/* npm install --save-dev eas-cli */}
-
-{/* ``` */}
-
-{/* > **info** Make sure to update this dependency frequently to stay up to date with the EAS API interface. */}
-
 ### Provide a personal access token to authenticate with your Expo account on CI
 
 Next, we need to ensure that we can authenticate ourselves on CI as the owner of the app. This is possible by storing a personal access token in the `EXPO_TOKEN` environment variable in the CI settings.
