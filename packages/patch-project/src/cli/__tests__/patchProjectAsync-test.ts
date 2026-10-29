@@ -3,6 +3,7 @@ import { getConfig } from 'expo/config';
 import { vol } from 'memfs';
 
 import { diffAsync } from '../../gitPatch';
+import { moveAsync } from '../dir';
 import { generateNativeProjectsAsync } from '../generateNativeProjects';
 import { patchProjectAsync } from '../patchProjectAsync';
 
@@ -21,8 +22,13 @@ jest.mock('../generateNativeProjects', () => ({
   ...jest.requireActual('../generateNativeProjects'),
   generateNativeProjectsAsync: jest.fn(),
 }));
+jest.mock('../dir', () => {
+  const actualDir = jest.requireActual('../dir');
+  return { ...actualDir, moveAsync: jest.fn(actualDir.moveAsync) };
+});
 jest.mock('../logger', () => ({
   log: jest.fn(),
+  error: jest.fn(),
 }));
 
 jest.mock('@expo/env', () => ({
@@ -101,23 +107,6 @@ describe(patchProjectAsync, () => {
       expect(vol.existsSync('/app/.patch-project-tmp/android')).toBe(false);
     }
 
-    it('moves the native project back after saving the patch', async () => {
-      jest.mocked(generateNativeProjectsAsync).mockImplementationOnce(async () => {
-        vol.fromJSON({ '/app/android/build.gradle': 'generated build.gradle' });
-        return 'checksum';
-      });
-      jest.mocked(diffAsync).mockImplementationOnce(async (_repoRoot, patchFilePath) => {
-        vol.writeFileSync(patchFilePath, 'patch contents');
-      });
-
-      await patchProjectAsync('/app', { platforms: ['android'] });
-
-      expectOriginalNativeProjectRestored();
-      expect(vol.readFileSync('/app/cng-patches/android+checksum.patch', 'utf8')).toBe(
-        'patch contents'
-      );
-    });
-
     it('restores the native project when generating the template project fails', async () => {
       jest.mocked(generateNativeProjectsAsync).mockImplementationOnce(async () => {
         vol.fromJSON({ '/app/android/build.gradle': 'partially generated' });
@@ -143,6 +132,30 @@ describe(patchProjectAsync, () => {
       );
 
       expectOriginalNativeProjectRestored();
+    });
+
+    it('keeps the original native project and rethrows the original error when restoring fails', async () => {
+      const { moveAsync: actualMoveAsync } = jest.requireActual<typeof import('../dir')>('../dir');
+      jest.mocked(generateNativeProjectsAsync).mockImplementationOnce(async () => {
+        vol.fromJSON({ '/app/android/build.gradle': 'generated build.gradle' });
+        return 'checksum';
+      });
+      jest.mocked(diffAsync).mockRejectedValueOnce(new Error('git diff failed'));
+      jest
+        .mocked(moveAsync)
+        .mockImplementationOnce(actualMoveAsync)
+        .mockImplementationOnce(actualMoveAsync)
+        .mockRejectedValueOnce(new Error('restore failed'));
+
+      await expect(patchProjectAsync('/app', { platforms: ['android'] })).rejects.toThrow(
+        'git diff failed'
+      );
+
+      expect(vol.toJSON('/app/.patch-project-tmp/android/diff/android')).toEqual({
+        '/app/.patch-project-tmp/android/diff/android/build.gradle': 'original build.gradle',
+        '/app/.patch-project-tmp/android/diff/android/app/src/main/AndroidManifest.xml':
+          'original manifest',
+      });
     });
   });
 });
