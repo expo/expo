@@ -74,6 +74,21 @@ export default function DocumentationNestedScrollLayout({
     };
   }, [layoutRef, getSidebarScrollTop, getContentScrollTop]);
 
+  useEffect(() => {
+    // The layout is taller than the viewport on iOS. overflow: hidden on the root does not stop
+    // hash links and scrollIntoView from scrolling the document and hiding the header.
+    const resetDocumentScroll = () => {
+      if (window.scrollY !== 0) {
+        window.scrollTo(0, 0);
+      }
+    };
+    resetDocumentScroll();
+    window.addEventListener('scroll', resetDocumentScroll);
+    return () => {
+      window.removeEventListener('scroll', resetDocumentScroll);
+    };
+  }, []);
+
   const scrollHandler = () => {
     if (onContentScroll) {
       onContentScroll(getContentScrollTop());
@@ -81,7 +96,9 @@ export default function DocumentationNestedScrollLayout({
   };
 
   return (
-    <div className="mx-auto flex h-dvh w-full flex-col overflow-hidden">
+    <div
+      data-nested-scroll-layout
+      className="mx-auto flex h-(--nested-scroll-layout-height) w-full flex-col overflow-hidden">
       <div className="max-lg:sticky">{header}</div>
       <div className="mx-auto flex h-[calc(100dvh-60px)] w-full items-center justify-between">
         <div className="relative h-full max-lg:hidden">
@@ -147,14 +164,14 @@ export default function DocumentationNestedScrollLayout({
         </div>
         <div
           className={mergeClasses(
-            'relative flex h-[calc(100dvh-60px)] w-full overflow-hidden',
+            'relative flex h-[calc(var(--nested-scroll-layout-height)-60px)] w-full self-start overflow-hidden',
             'max-lg:overflow-auto',
             isMobileMenuVisible && 'hidden'
           )}>
           <ScrollContainer ref={contentRef} scrollHandler={scrollHandler}>
             <div
               className={mergeClasses(
-                'mx-auto max-w-screen-xl transition-[padding,max-width,margin] duration-200 ease-out will-change-[padding,max-width,margin]',
+                'mx-auto max-w-screen-xl pb-[calc(var(--nested-scroll-layout-height)-100dvh)] transition-[padding,max-width,margin] duration-200 ease-out will-change-[padding,max-width,margin]',
                 isChatExpanded && 'max-lg:max-w-screen-xl max-lg:pr-0 max-lg:pl-0'
               )}>
               {children}
