@@ -1,8 +1,8 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-10-28T08:09:34.086Z",
-    "cliVersion": "27.0.0"
+    "fetchedAt": "2026-10-29T08:09:36.594Z",
+    "cliVersion": "27.1.0"
   },
   "totalCommands": 168,
   "commands": [
@@ -798,8 +798,8 @@
     },
     {
       "command": "eas workflow:cancel",
-      "description": "cancel one or more workflow runs. If no workflow run IDs are provided, you will be prompted to select IN_PROGRESS runs to cancel",
-      "usage": "USAGE\n  $ eas workflow:cancel [--non-interactive]\n\nFLAGS\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  cancel one or more workflow runs. If no workflow run IDs are provided, you will be prompted to select IN_PROGRESS runs\n  to cancel"
+      "description": "cancel one or more workflow runs. If no workflow run IDs are provided, you will be prompted to select in-progress or queued runs to cancel",
+      "usage": "USAGE\n  $ eas workflow:cancel [--non-interactive]\n\nFLAGS\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  cancel one or more workflow runs. If no workflow run IDs are provided, you will be prompted to select in-progress or\n  queued runs to cancel"
     },
     {
       "command": "eas workflow:create [NAME]",
