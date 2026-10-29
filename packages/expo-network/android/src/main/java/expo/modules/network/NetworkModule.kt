@@ -3,25 +3,36 @@ package expo.modules.network
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
-import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
+import io.github.expo.modules.v2.Enumerable
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.Record
+import io.github.expo.modules.v2.react.androidContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.net.Inet4Address
 
 private val TAG = NetworkModule::class.java.simpleName
 
 internal const val NETWORK_STATE_EVENT_NAME = "onNetworkStateChanged"
 
+@Record
+data class NetworkState(
+  val type: NetworkModule.NetworkStateType,
+  val isInternetReachable: Boolean,
+  val isConnected: Boolean
+)
+
+@ExpoModule("ExpoNetwork")
 class NetworkModule : Module() {
-  private val context: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
   private val connectivityManager: ConnectivityManager
-    get() = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    get() = androidContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
   private val mainHandler = Handler(Looper.getMainLooper())
   private val DELAY_MS = 250
   private var isNetworkCallbackRegistered = false
@@ -53,19 +64,20 @@ class NetworkModule : Module() {
       // Note: android.net.Network.equals() compares by netId, so the check
       // below is a reliable "same network" comparison.
       //
-      // We still post to the main looper because sendEvent must run on the
-      // main thread; we just skip the artificial delay.
+      // We still post to the main looper, so this emission is ordered with
+      // the debounced one; we just skip the artificial delay.
       mainHandler.removeCallbacks(emitRunnable)
       mainHandler.post {
         try {
           val activeNetwork = connectivityManager.activeNetwork
           if (activeNetwork == null || activeNetwork == lostNetwork) {
-            val result = Bundle().apply {
-              putString("type", NetworkStateType.NONE.value)
-              putBoolean("isInternetReachable", false)
-              putBoolean("isConnected", false)
-            }
-            sendEvent(NETWORK_STATE_EVENT_NAME, result)
+            onNetworkStateChanged(
+              NetworkState(
+                type = NetworkStateType.NONE,
+                isInternetReachable = false,
+                isConnected = false
+              )
+            )
           } else {
             emitNetworkState()
           }
@@ -78,8 +90,7 @@ class NetworkModule : Module() {
           // The runnable may outlive the module if the React context is torn
           // down between the ConnectivityManager.NetworkCallback firing and
           // the posted runnable executing. In that case, the `connectivityManager`
-          // getter throws `ReactContextLost` when it
-          // attempts to resolve `appContext.reactContext`. Since
+          // getter throws when it attempts to resolve `androidContext`. Since
           // unregisterNetworkCallback only prevents future callbacks and
           // cannot cancel a runnable that is already in the queue, we must
           // catch teardown-time exceptions here to avoid crashing the
@@ -94,51 +105,63 @@ class NetworkModule : Module() {
     }
   }
 
-  override fun definition() = ModuleDefinition {
-    Name("ExpoNetwork")
+  @Event(name = NETWORK_STATE_EVENT_NAME)
+  private val onNetworkStateChanged = event<NetworkState>(
+    onStartObserving = ::registerNetworkCallback,
+    onStopObserving = ::unregisterNetworkCallback
+  )
 
-    Events(NETWORK_STATE_EVENT_NAME)
+  override fun onDestroy() {
+    unregisterNetworkCallback()
+  }
 
-    OnCreate {
-      try {
-        connectivityManager.registerDefaultNetworkCallback(networkCallback)
-        isNetworkCallbackRegistered = true
-      } catch (e: SecurityException) {
-        Log.w(TAG, "expo-network cannot observe internet reachability: missing ACCESS_NETWORK_STATE permission", e)
-      } catch (e: RuntimeException) {
-        Log.e(TAG, "expo-network cannot observe internet reachability, too many callbacks registered!", e)
-      }
+  @JS
+  suspend fun getNetworkStateAsync(): NetworkState = withContext(Dispatchers.IO) {
+    fetchNetworkState()
+  }
+
+  @JS
+  suspend fun getIpAddressAsync(): String = withContext(Dispatchers.IO) {
+    getIpAddress()
+  }
+
+  @JS
+  suspend fun isAirplaneModeEnabledAsync(): Boolean = withContext(Dispatchers.IO) {
+    Settings.Global.getInt(androidContext.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
+  }
+
+  @Synchronized
+  private fun registerNetworkCallback() {
+    if (isNetworkCallbackRegistered) {
+      return
     }
-
-    OnDestroy {
-      mainHandler.removeCallbacks(emitRunnable)
-      if (isNetworkCallbackRegistered) {
-        try {
-          connectivityManager.unregisterNetworkCallback(networkCallback)
-        } catch (e: SecurityException) {
-          Log.w(TAG, "expo-network could not unregister network callback: missing ACCESS_NETWORK_STATE permission", e)
-        } catch (e: Exception) {
-          Log.w(TAG, "expo-network could not unregister network callback during teardown", e)
-        } finally {
-          isNetworkCallbackRegistered = false
-        }
-      }
-    }
-
-    AsyncFunction("getNetworkStateAsync") {
-      return@AsyncFunction fetchNetworkState()
-    }
-
-    AsyncFunction<String>("getIpAddressAsync") {
-      return@AsyncFunction getIpAddress()
-    }
-
-    AsyncFunction<Boolean>("isAirplaneModeEnabledAsync") {
-      return@AsyncFunction Settings.Global.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
+    try {
+      connectivityManager.registerDefaultNetworkCallback(networkCallback)
+      isNetworkCallbackRegistered = true
+    } catch (e: SecurityException) {
+      Log.w(TAG, "expo-network cannot observe internet reachability: missing ACCESS_NETWORK_STATE permission", e)
+    } catch (e: RuntimeException) {
+      Log.e(TAG, "expo-network cannot observe internet reachability, too many callbacks registered!", e)
     }
   }
 
-  enum class NetworkStateType(val value: String) {
+  @Synchronized
+  private fun unregisterNetworkCallback() {
+    mainHandler.removeCallbacks(emitRunnable)
+    if (isNetworkCallbackRegistered) {
+      try {
+        connectivityManager.unregisterNetworkCallback(networkCallback)
+      } catch (e: SecurityException) {
+        Log.w(TAG, "expo-network could not unregister network callback: missing ACCESS_NETWORK_STATE permission", e)
+      } catch (e: Exception) {
+        Log.w(TAG, "expo-network could not unregister network callback during teardown", e)
+      } finally {
+        isNetworkCallbackRegistered = false
+      }
+    }
+  }
+
+  enum class NetworkStateType(val value: String) : Enumerable {
     NONE("NONE"),
     UNKNOWN("UNKNOWN"),
     CELLULAR("CELLULAR"),
@@ -155,8 +178,7 @@ class NetworkModule : Module() {
 
   private fun emitNetworkState() {
     try {
-      val networkState = fetchNetworkState()
-      sendEvent(NETWORK_STATE_EVENT_NAME, networkState)
+      onNetworkStateChanged(fetchNetworkState())
     } catch (e: SecurityException) {
       Log.w(TAG, "expo-network could not read network state: missing ACCESS_NETWORK_STATE permission", e)
     } catch (e: Exception) {
@@ -176,10 +198,8 @@ class NetworkModule : Module() {
     mainHandler.postDelayed(emitRunnable, delay.toLong())
   }
 
-  private fun fetchNetworkState(): Bundle {
-    val result = Bundle()
-
-    try {
+  private fun fetchNetworkState(): NetworkState {
+    return try {
       val network = connectivityManager.activeNetwork
       val isInternetReachable = isInternetReachable(connectivityManager)
 
@@ -190,19 +210,17 @@ class NetworkModule : Module() {
         null
       }
 
-      result.apply {
-        putString("type", connectionType?.value ?: NetworkStateType.NONE.value)
-        putBoolean("isInternetReachable", isInternetReachable)
-        putBoolean("isConnected", connectionType != null && connectionType.isDefined)
-      }
-      return result
+      NetworkState(
+        type = connectionType ?: NetworkStateType.NONE,
+        isInternetReachable = isInternetReachable,
+        isConnected = connectionType != null && connectionType.isDefined
+      )
     } catch (e: Exception) {
-      result.apply {
-        putString("type", NetworkStateType.UNKNOWN.value)
-        putBoolean("isInternetReachable", false)
-        putBoolean("isConnected", false)
-      }
-      return result
+      NetworkState(
+        type = NetworkStateType.UNKNOWN,
+        isInternetReachable = false,
+        isConnected = false
+      )
     }
   }
 

@@ -4,7 +4,6 @@
     "modules": ["NetworkModule"]
   },
   "android": {
-    "modules": ["expo.modules.network.NetworkModule"],
     "publication": {
       "groupId": "host.exp.exponent",
       "artifactId": "expo.modules.network",

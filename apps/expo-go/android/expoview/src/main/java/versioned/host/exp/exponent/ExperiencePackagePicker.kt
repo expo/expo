@@ -51,7 +51,6 @@ import expo.modules.medialibrary.MediaLibraryModule
 import expo.modules.medialibrary.next.MediaLibraryNextModule
 import expo.modules.navigationbar.NavigationBarModule
 import expo.modules.navigationbar.NavigationBarPackage
-import expo.modules.network.NetworkModule
 import expo.modules.notifications.NotificationsPackage
 import expo.modules.notifications.badge.BadgeModule
 import expo.modules.notifications.notifications.background.ExpoBackgroundNotificationTasksModule
@@ -179,7 +178,6 @@ object ExperiencePackagePicker : ModulesProvider {
     MediaLibraryModule::class.java to null,
     MediaLibraryNextModule::class.java to null,
     NavigationBarModule::class.java to null,
-    NetworkModule::class.java to null,
     ScreenCaptureModule::class.java to null,
     ScreenOrientationModule::class.java to null,
     // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,
