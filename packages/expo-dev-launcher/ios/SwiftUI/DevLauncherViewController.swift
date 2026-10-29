@@ -16,13 +16,18 @@ import ExpoModulesCore
     updateTopSafeAreaInset()
   }
 
+  // Some hosts (e.g. SwiftUI or brownfield apps) do not pass the window's safe area down to the launcher.
   private func updateTopSafeAreaInset() {
-    let hostingViewInset = hostingController?.view.safeAreaInsets.top ?? 0
+    guard let hostingController else {
+      return
+    }
+    let additionalInset = hostingController.additionalSafeAreaInsets.top
+    let inheritedInset = hostingController.view.safeAreaInsets.top - additionalInset
     let windowInset = view.window?.safeAreaInsets.top ?? 0
-    let newInset: CGFloat = hostingViewInset > 0 ? 0 : windowInset
+    let newInset: CGFloat = inheritedInset > 0 ? 0 : windowInset
 
-    if newInset != viewModel.topSafeAreaInset {
-      viewModel.topSafeAreaInset = newInset
+    if newInset != additionalInset {
+      hostingController.additionalSafeAreaInsets.top = newInset
     }
   }
 #endif

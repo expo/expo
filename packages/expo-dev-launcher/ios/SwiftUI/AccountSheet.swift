@@ -33,6 +33,7 @@ struct AccountSheet: View {
     #if !os(tvOS) && !os(macOS)
     .background(Color(.systemGroupedBackground))
     #endif
+    .presentationDetents(viewModel.isAuthenticated ? [.medium, .large] : [.large])
   }
 
   private var accountScreenHeader: some View {
