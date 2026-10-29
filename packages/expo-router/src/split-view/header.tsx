@@ -30,10 +30,12 @@ function toNativeToolbarItems(
   side: 'left' | 'right',
   items: SplitViewToolbarItem[] | undefined
 ): SplitViewNativeToolbarItem[] | undefined {
-  return items?.map(({ title, icon, menu }, index) => ({
+  return items?.map(({ title, icon, menu, disabled, selected }, index) => ({
     id: `${side}.${index}`,
     title,
     icon,
+    disabled,
+    selected,
     menu: menu && {
       title: menu.title,
       items: menu.items.map(({ title, icon, destructive, disabled, isOn }, actionIndex) => ({
