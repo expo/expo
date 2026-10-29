@@ -10,14 +10,18 @@ protocol NavigationItemCustomizer: NSObjectProtocol {
 
 // Writes the header of a react-native-screens split column. The column passes its navigation item
 // when this view is mounted as its direct child.
-class SplitViewHeaderView: ExpoView, NavigationItemCustomizer {
+class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelegate {
   var headerTitle: String?
   var largeTitle = false
   var leftToolbarItems: [SplitViewToolbarItemRecord] = []
   var rightToolbarItems: [SplitViewToolbarItemRecord] = []
+  var searchBar: SplitViewSearchBarRecord?
   let onToolbarItemPress = EventDispatcher()
+  let onSearchBarChangeText = EventDispatcher()
+  let onSearchBarSearchButtonPress = EventDispatcher()
 
   private weak var navigationItem: UINavigationItem?
+  private var searchController: UISearchController?
 
   func configureNavigationItem(_ navigationItem: UINavigationItem) {
     self.navigationItem = navigationItem
@@ -32,6 +36,8 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer {
       navigationItem.leftItemsSupplementBackButton = false
       navigationItem.leftBarButtonItems = nil
       navigationItem.rightBarButtonItems = nil
+      navigationItem.searchController = nil
+      searchController = nil
       self.navigationItem = nil
     }
   }
@@ -53,6 +59,42 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer {
     navigationItem.leftItemsSupplementBackButton = true
     navigationItem.leftBarButtonItems = barButtonItems(leftToolbarItems, side: .left)
     navigationItem.rightBarButtonItems = barButtonItems(rightToolbarItems, side: .right)
+    applySearchBar(to: navigationItem)
+  }
+
+  func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+    onSearchBarChangeText(["text": searchText])
+  }
+
+  // Cancel clears the text without calling `textDidChange`.
+  func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+    onSearchBarChangeText(["text": ""])
+  }
+
+  func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+    onSearchBarSearchButtonPress(["text": searchBar.text ?? ""])
+  }
+
+  private func applySearchBar(to navigationItem: UINavigationItem) {
+    if let searchBar {
+      // Reuses the controller, so the search text and the active state survive prop updates.
+      let controller = searchController ?? makeSearchController()
+      controller.searchBar.placeholder = searchBar.placeholder
+      searchController = controller
+    } else {
+      searchController = nil
+    }
+    if navigationItem.searchController !== searchController {
+      navigationItem.searchController = searchController
+    }
+  }
+
+  private func makeSearchController() -> UISearchController {
+    let controller = UISearchController(searchResultsController: nil)
+    // The column shows the results itself.
+    controller.obscuresBackgroundDuringPresentation = false
+    controller.searchBar.delegate = self
+    return controller
   }
 
   private func barButtonItems(_ items: [SplitViewToolbarItemRecord], side: ToolbarSide) -> [UIBarButtonItem] {
