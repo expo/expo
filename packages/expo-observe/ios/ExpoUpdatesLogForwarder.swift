@@ -14,9 +14,9 @@ internal final class ExpoUpdatesLogForwarder: UpdatesLogEntryListener {
 
   func setEnabled(_ enabled: Bool) {
     if enabled {
-      UpdatesLogEntryListenerRegistry.shared.add(self)
+      UpdatesLogEntryListenerRegistry.sharedInstance.add(self)
     } else {
-      UpdatesLogEntryListenerRegistry.shared.remove(self)
+      UpdatesLogEntryListenerRegistry.sharedInstance.remove(self)
     }
   }
 
