@@ -75,8 +75,8 @@ export default function DocumentationNestedScrollLayout({
   }, [layoutRef, getSidebarScrollTop, getContentScrollTop]);
 
   useEffect(() => {
-    // Same condition as the iOS rules for this layout in global.css.
-    if (!window.CSS?.supports('-webkit-touch-callout', 'none')) {
+    // pages/_document.tsx adds the ios-webkit class.
+    if (!document.documentElement.classList.contains('ios-webkit')) {
       return;
     }
     // overflow: hidden on the root does not stop hash links and scrollIntoView from scrolling
