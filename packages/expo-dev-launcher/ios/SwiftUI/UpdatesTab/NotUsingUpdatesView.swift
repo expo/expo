@@ -7,7 +7,7 @@ struct NotUsingUpdatesView: View {
         .resizable()
         .scaledToFit()
         .frame(width: 44, height: 44)
-        .foregroundColor(.orange)
+        .foregroundStyle(Color.orange)
 
       VStack(spacing: 8) {
         Text("EAS Update not configured")
@@ -22,7 +22,7 @@ struct NotUsingUpdatesView: View {
         if let destination = URL(string: "https://docs.expo.dev/eas-update/getting-started/") {
           Link("Learn more about EAS Update", destination: destination)
             .font(.system(size: 14))
-            .foregroundColor(.blue)
+            .foregroundStyle(Color.blue)
         }
       }
     }

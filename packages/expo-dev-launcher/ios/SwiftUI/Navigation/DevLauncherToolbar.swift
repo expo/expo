@@ -63,7 +63,7 @@ private struct AccountAvatar: View {
         .overlay(
           Image(systemName: "building.2")
             .font(.system(size: 12))
-            .foregroundColor(color.foreground)
+            .foregroundStyle(color.foreground)
         )
     } else if let profilePhoto,
       !profilePhoto.isEmpty,
@@ -78,7 +78,7 @@ private struct AccountAvatar: View {
           .overlay(
             Image(systemName: "person")
               .font(.system(size: 14))
-              .foregroundColor(.secondary)
+              .foregroundStyle(Color.secondary)
           )
       }
       .frame(width: 28, height: 28)
@@ -94,7 +94,7 @@ private struct AccountAvatar: View {
         .overlay(
           Text(firstLetter)
             .font(.system(size: 12, weight: .medium))
-            .foregroundColor(color.foreground)
+            .foregroundStyle(color.foreground)
         )
     }
   }

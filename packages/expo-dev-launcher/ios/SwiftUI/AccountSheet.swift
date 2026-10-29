@@ -68,7 +68,7 @@ struct AccountSheet: View {
                 }
               }
             }
-            .cornerRadius(12)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
           }
         }
       }
@@ -84,12 +84,12 @@ struct AccountSheet: View {
     label: {
       Text("Log out")
         .font(.headline)
-        .foregroundColor(.red)
+        .foregroundStyle(Color.red)
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
     }
     .background(Color.expoSecondarySystemBackground)
-    .cornerRadius(12)
+    .clipShape(RoundedRectangle(cornerRadius: 12))
     .confirmationDialog(
       "Are you sure you want to log out?",
       isPresented: $showingLogoutConfirmation,
@@ -106,7 +106,7 @@ struct AccountSheet: View {
     VStack(spacing: 16) {
       Text("Log in or create an account to view local development servers and more.")
         .font(.system(size: 14))
-        .foregroundColor(.secondary)
+        .foregroundStyle(Color.secondary)
 
       #if os(tvOS)
       VStack(spacing: 8) {
@@ -140,13 +140,13 @@ struct AccountSheet: View {
           .font(.headline)
           .fontWeight(.semibold)
       }
-      .foregroundColor(Color.expoSystemBackground)
+      .foregroundStyle(Color.expoSystemBackground)
       .frame(maxWidth: .infinity)
       .padding(.vertical, 12)
       .animation(.easeInOut(duration: 0.2), value: viewModel.isAuthenticating)
     }
     .background(Color.primary)
-    .cornerRadius(12)
+    .clipShape(RoundedRectangle(cornerRadius: 12))
     .disabled(viewModel.isAuthenticating)
   }
 
@@ -160,12 +160,12 @@ struct AccountSheet: View {
       Text("Sign up")
         .font(.headline)
         .fontWeight(.semibold)
-        .foregroundColor(.black.opacity(0.7))
+        .foregroundStyle(Color.black.opacity(0.7))
         .frame(maxWidth: .infinity)
         .padding(.vertical, 12)
     }
     .background(Color(.white))
-    .cornerRadius(12)
+    .clipShape(RoundedRectangle(cornerRadius: 12))
     .disabled(viewModel.isAuthenticating)
   }
 
@@ -180,7 +180,7 @@ struct AccountSheet: View {
         VStack(alignment: .leading, spacing: 2) {
           Text(account.ownerUserActor?.username ?? account.name)
             .font(.headline)
-            .foregroundColor(.primary)
+            .foregroundStyle(Color.primary)
             .multilineTextAlignment(.leading)
         }
 
@@ -189,7 +189,7 @@ struct AccountSheet: View {
         if viewModel.selectedAccountId == account.id {
           Image(systemName: "checkmark.circle.fill")
             .font(.system(size: 16, weight: .medium))
-            .foregroundColor(.green)
+            .foregroundStyle(Color.green)
         }
       }
       .padding(.horizontal, 16)
@@ -216,7 +216,7 @@ struct AccountSheet: View {
         .overlay(
           Image(systemName: "building.2")
             .font(.system(size: 18))
-            .foregroundColor(color.foreground)
+            .foregroundStyle(color.foreground)
         )
     } else if let profilePhoto,
       let url = URL(string: profilePhoto) {
@@ -232,7 +232,7 @@ struct AccountSheet: View {
           .overlay(
             Image(systemName: "person")
               .font(.system(size: 18))
-              .foregroundColor(.secondary)
+              .foregroundStyle(Color.secondary)
           )
       }
       .frame(width: 32, height: 32)
@@ -248,7 +248,7 @@ struct AccountSheet: View {
         .overlay(
           Text(firstLetter)
             .font(.system(size: 18, weight: .medium))
-            .foregroundColor(color.foreground)
+            .foregroundStyle(color.foreground)
         )
     }
   }
