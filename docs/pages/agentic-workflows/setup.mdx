@@ -519,6 +519,27 @@ GitHub shows the owner of the token as the author of each PR that Issue to PR op
 
 </Step>
 
+## Test the setup by hand
+
+Before you add a workflow, you can test the build and the controller from your computer. This test uses agent-device on iOS.
+
+Create a build with the profile from [Add a build profile for the remote device](#add-a-build-profile-for-the-remote-device):
+
+<Terminal cmd={['$ eas build --platform ios --profile preview']} />
+
+Then run these commands in your project directory. The `simulator:start` command fails outside a project directory. Replace `<build ID>` with the ID of the build, and `<app ID>` with the `ios.bundleIdentifier` of your app:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform ios --build-id <build ID>',
+    '$ eas simulator:exec npx --yes agent-device@latest open <app ID> --platform ios',
+    '$ eas simulator:exec npx --yes agent-device@latest snapshot -i',
+    '$ eas simulator:stop',
+  ]}
+/>
+
+The `simulator:start` command writes the session details to **.env.eas-simulator**. The `simulator:exec` command reads this file, so it does not need an Expo login. The `snapshot -i` command lists the elements on the screen, such as buttons and text. If the list shows your app, the build and the controller work.
+
 ## Use a monorepo
 
 The guides show each file at the root of the app. In a monorepo, the app is in a subdirectory of the repository, such as **apps/my-app**. The jobs run in that directory, so most files work without a change. Make these changes:
