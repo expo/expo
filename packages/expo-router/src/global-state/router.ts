@@ -19,6 +19,7 @@ import type {
   LinkToOptions,
   NavigationOptions,
   NavigationTransitionMode,
+  SetParamsOptions,
   TransitionOptions,
 } from './types';
 
@@ -46,7 +47,7 @@ export function reload() {
 function prefetchImpl(
   enqueue: (intent: RoutingIntent) => void,
   href: Href,
-  options?: NavigationOptions
+  options?: Omit<NavigationOptions, 'splitViewColumnName'>
 ) {
   return linkToImpl(enqueue, resolveHref(href), { ...options, event: 'PRELOAD' });
 }
@@ -83,7 +84,7 @@ function dismissImpl(
 function dismissToImpl(
   enqueue: (intent: RoutingIntent) => void,
   href: Href,
-  options?: NavigationOptions
+  options?: Omit<NavigationOptions, 'splitViewColumnName'>
 ) {
   return linkToImpl(enqueue, resolveHref(href), { ...options, event: 'POP_TO' });
 }
@@ -155,13 +156,20 @@ export function canDismiss(): boolean {
 }
 
 export function setParams(
-  params: Record<string, undefined | string | number | (string | number)[]> = {}
+  params: Record<string, undefined | string | number | (string | number)[]> = {},
+  options?: SetParamsOptions
 ) {
   if (emitDomSetParams(params)) {
     return;
   }
   assertIsMounted();
-  return (navigationRef.current!.setParams as any)(params);
+  return navigationRef.current!.dispatch({
+    type: 'SET_PARAMS',
+    payload: {
+      params,
+      ...(options?.splitViewColumnName && { splitViewColumnName: options.splitViewColumnName }),
+    },
+  });
 }
 
 function linkToImpl(
@@ -253,7 +261,7 @@ export type ImperativeRouter = {
   /**
    * Dismisses screens until the provided href is reached. If the href is not found, it will instead replace the current screen with the provided `href`.
    */
-  dismissTo: (href: Href, options?: NavigationOptions) => void;
+  dismissTo: (href: Href, options?: Omit<NavigationOptions, 'splitViewColumnName'>) => void;
   /**
    * Returns to the first screen of the closest stack, dismissing all screens
    * above it.
@@ -268,7 +276,10 @@ export type ImperativeRouter = {
   /**
    * Updates the current route's query params.
    */
-  setParams: <T extends RoutePath>(params: Partial<RouteInputParams<T>>) => void;
+  setParams: <T extends RoutePath>(
+    params: Partial<RouteInputParams<T>>,
+    options?: SetParamsOptions
+  ) => void;
   /**
    * Reloads the currently mounted route in experimental server mode. This can be used to re-fetch data.
    * @hidden
@@ -277,7 +288,7 @@ export type ImperativeRouter = {
   /**
    * Prefetches a route in the background before navigating to it.
    */
-  prefetch: (href: Href, options?: NavigationOptions) => void;
+  prefetch: (href: Href, options?: Omit<NavigationOptions, 'splitViewColumnName'>) => void;
   /**
    * Configures which queued navigation operations use React transitions. The default is
    * `preload-only`; `never` cannot be overridden by individual operations.

@@ -17,4 +17,8 @@ type SplitV5Components = {
 export const Split: typeof ScreensExperimental.Split & SplitV5Components =
   screensV5.Split ?? ScreensExperimental.Split;
 // react-native-screens 4.x and 5 export `SafeAreaView` only from `experimental`.
-export { SafeAreaView, type SplitHostProps } from 'react-native-screens/experimental';
+export {
+  SafeAreaView,
+  type SplitHostCommands,
+  type SplitHostProps,
+} from 'react-native-screens/experimental';
