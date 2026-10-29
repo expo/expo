@@ -73,7 +73,7 @@
     "@react-navigation/native": "^7.0.0",
     "expo": "*",
     "expo-router": "*",
-    "expo-updates": "*",
+    "expo-updates": "workspace:^",
     "react": "*",
     "react-native": "*",
     "react-native-reanimated": ">=4.7.0"
