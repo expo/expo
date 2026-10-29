@@ -50,10 +50,6 @@ internal final class MotionActivityStreamer {
 }
 
 extension CMMotionActivity {
-  /**
-   * Converts this reading into the `MotionActivityObject` wire format shared by the foreground
-   * `watchMotionActivityAsync` event and the background `MotionActivityTaskConsumer`.
-   */
   func toMotionActivityDict() -> [String: Any] {
     // CMMotionActivity reports one confidence value for the whole reading.
     // Detected entries receive that confidence; undetected entries receive 0 (Low).
