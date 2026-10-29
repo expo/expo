@@ -169,28 +169,31 @@ set -euo pipefail
 : "${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is not set. Add it to the preview environment.}"
 
 PROJECT_DIR=$(pwd)
+REPO_DIR=$(git rev-parse --show-toplevel)
+APP_PATH=$(git rev-parse --show-prefix)
 WORK_DIR=/tmp/agent-change
+APP_DIR="$WORK_DIR/$APP_PATH"
 BRANCH="agent/issue-$ISSUE_NUMBER"
 GITHUB_HELPER="$PROJECT_DIR/.eas/agents/github.mjs"
 PUSH_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
 
 git clone --depth 1 "$PUSH_URL" "$WORK_DIR"
 git -C "$WORK_DIR" remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
-ln -s "$PROJECT_DIR/node_modules" "$WORK_DIR/node_modules"
+ln -s "$REPO_DIR/node_modules" "$WORK_DIR/node_modules"
 printf 'node_modules\nagent-output/\n' >> "$WORK_DIR/.git/info/exclude"
-mkdir -p "$WORK_DIR/agent-output"
+mkdir -p "$APP_DIR/agent-output"
 
 {
   cat .eas/agents/make-change.md
   printf '\n## Issue #%s\n\n' "$ISSUE_NUMBER"
   node "$GITHUB_HELPER" issue "$ISSUE_NUMBER"
-} > "$WORK_DIR/agent-output/prompt.md"
+} > "$APP_DIR/agent-output/prompt.md"
 
-cd "$WORK_DIR"
+cd "$APP_DIR"
 env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
   timeout 20m bash .eas/agents/run-agent.sh agent-output/prompt.md change || true
 
-if [ -n "$(git status --porcelain -- .eas .github)" ]; then
+if [ -n "$(git -C "$WORK_DIR" status --porcelain -- "${APP_PATH}.eas" .github)" ]; then
   echo "The agent changed files in .eas or .github. The job does not open a pull request." >&2
   exit 1
 fi
@@ -226,7 +229,7 @@ The script does these tasks in this order:
 
 1. It clones the default branch, and removes the GitHub token from the remote URL of the clone.
 2. It reads the issue and the comments from the owners, members, and collaborators of the repository. Then it writes the prompt for the agent.
-3. It removes the Expo and GitHub tokens from the environment, and runs the agent in the `change` mode.
+3. It removes the Expo and GitHub tokens from the environment, and runs the agent in the `change` mode in the app directory of the clone.
 4. If the agent changed a file in **.eas** or **.github**, it stops and does not open a PR.
 5. If the agent changed no file, it adds a comment with the reason to the issue, and stops.
 6. It commits the change, pushes the branch, and opens a PR. Then it adds a comment with the PR link to the issue.

@@ -166,6 +166,8 @@ If your `preview` profile already makes builds for physical devices, `ios.simula
 
 The workflows start on GitHub events and post comments on PRs. Connect your GitHub repository to the EAS project. See [Automate workflows with GitHub events](/eas/workflows/get-started/#automate-workflows-with-github-events).
 
+If the app is in a subdirectory of the repository, such as **apps/my-app**, set the **Base directory** to that path. See [Configure your repository settings](/build/building-from-github/#configure-your-repository-settings) and [Use a monorepo](#use-a-monorepo).
+
 </Step>
 
 <Step label="3">
@@ -483,6 +485,24 @@ The job removes the GitHub token from the environment of the agent. An agent tha
 GitHub shows the owner of the token as the author of each PR that Issue to PR opens. GitHub does not let an author approve their own PR. If your repository requires a review, another person must approve these PRs. To keep your own approval, create the token with a separate GitHub account for the agent.
 
 </Step>
+
+## Use a monorepo
+
+The guides show each file at the root of the app. In a monorepo, the app is in a subdirectory of the repository, such as **apps/my-app**. The jobs run in that directory, so most files work without a change. Make these changes:
+
+- Put **.eas** and the other files of the guides in the app directory, such as **apps/my-app/.eas/agents/run-agent.sh**. Put the GitHub Action of Issue to PR in **.github/workflows** at the root of the repository.
+- The `eas/upload_artifact` step reads `path` from the root of the repository. In each of these steps, put the app directory in front of the path. For example, use `apps/my-app/agent-output/evidence/**/*`. In Issue to PR, use `/tmp/agent-change/apps/my-app/agent-output/**/*`.
+- The GitHub Action of Issue to PR runs its commands at the root of the repository. Run them in the app directory:
+
+  ```yaml .github/workflows/agent-label.yml
+  jobs:
+    start:
+      defaults:
+        run:
+          working-directory: apps/my-app
+  ```
+
+The job script of Issue to PR finds the root of the repository and the app directory with Git, so it needs no change.
 
 ## What the agent can do
 
