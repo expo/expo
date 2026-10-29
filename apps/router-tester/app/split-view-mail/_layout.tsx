@@ -36,6 +36,7 @@ export default function Layout() {
   const [showInspector, setShowInspector] = useState(false);
   const [press, setPress] = useState({ title: '', count: 0 });
   const [search, setSearch] = useState('');
+  const [unreadOnly, setUnreadOnly] = useState(false);
 
   const button = (title: string, icon?: SFSymbol): SplitViewToolbarItem => ({
     title,
@@ -135,7 +136,34 @@ export default function Layout() {
               showHeaders
                 ? {
                     title: alternateTitles ? 'Gmail' : 'Inbox Gmail',
-                    rightToolbar: [button('Filter', 'line.3.horizontal.decrease.circle')],
+                    rightToolbar: [
+                      {
+                        title: 'Filter',
+                        icon: iconButtons ? 'line.3.horizontal.decrease.circle' : undefined,
+                        menu: {
+                          title: 'Filter by',
+                          items: [
+                            {
+                              title: 'Unread',
+                              icon: 'envelope.badge',
+                              isOn: unreadOnly,
+                              onPress: () => {
+                                setUnreadOnly((value) => !value);
+                                setPress((p) => ({ title: 'Unread', count: p.count + 1 }));
+                              },
+                            },
+                            { title: 'Flagged', icon: 'flag', disabled: true },
+                            {
+                              title: 'Delete All',
+                              icon: 'trash',
+                              destructive: true,
+                              onPress: () =>
+                                setPress((p) => ({ title: 'Delete All', count: p.count + 1 })),
+                            },
+                          ],
+                        },
+                      },
+                    ],
                   }
                 : undefined
             }>

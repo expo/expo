@@ -16,9 +16,54 @@ export interface SplitViewToolbarItem {
    */
   icon?: SFSymbol;
   /**
-   * Called when the button is pressed.
+   * Called when the button is pressed. Not called when `menu` is set.
    */
-  onPress: () => void;
+  onPress?: () => void;
+  /**
+   * Menu that opens when the button is pressed.
+   */
+  menu?: SplitViewMenu;
+}
+
+export interface SplitViewMenu {
+  /**
+   * Title shown at the top of the menu.
+   */
+  title?: string;
+  /**
+   * Actions shown in the menu.
+   */
+  items: SplitViewMenuAction[];
+}
+
+export interface SplitViewMenuAction {
+  /**
+   * Title of the action.
+   */
+  title: string;
+  /**
+   * SF Symbol shown next to the title.
+   */
+  icon?: SFSymbol;
+  /**
+   * Called when the action is pressed.
+   */
+  onPress?: () => void;
+  /**
+   * Whether the action is shown as destructive.
+   * @default false
+   */
+  destructive?: boolean;
+  /**
+   * Whether the action cannot be pressed.
+   * @default false
+   */
+  disabled?: boolean;
+  /**
+   * Whether the action shows a checkmark.
+   * @default false
+   */
+  isOn?: boolean;
 }
 
 export interface SplitViewSearchBar {
