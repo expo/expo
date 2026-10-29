@@ -19,7 +19,7 @@ struct ErrorView: View {
 
         Text("This development build encountered the following error:")
           .font(.body)
-          .foregroundColor(.secondary)
+          .foregroundStyle(Color.secondary)
           .multilineTextAlignment(.leading)
       }
       .frame(maxWidth: .infinity, alignment: .leading)
@@ -32,7 +32,7 @@ struct ErrorView: View {
     }
     .background(Color.expoSystemBackground)
     #if !os(macOS)
-    .navigationBarHidden(true)
+    .toolbar(.hidden, for: .navigationBar)
     #endif
   }
 
@@ -47,14 +47,14 @@ struct ErrorView: View {
         } else {
           Text(error.message)
             .font(.system(.caption, design: .monospaced))
-            .foregroundColor(.primary)
+            .foregroundStyle(Color.primary)
         }
       }
       .padding()
       .frame(maxWidth: .infinity, alignment: .leading)
     }
     .background(Color.expoSystemGray6)
-    .cornerRadius(8)
+    .clipShape(RoundedRectangle(cornerRadius: 8))
   }
 
   private var errorText: String {
@@ -76,22 +76,22 @@ struct ErrorView: View {
       Button(action: onReload) {
         Text("Reload")
           .font(.headline)
-          .foregroundColor(Color.expoSystemBackground)
+          .foregroundStyle(Color.expoSystemBackground)
           .frame(maxWidth: .infinity)
           .padding()
           .background(Color.primary)
-          .cornerRadius(8)
+          .clipShape(RoundedRectangle(cornerRadius: 8))
       }
 
       HStack(spacing: 6) {
         Button(action: onGoHome) {
           Text("Go home")
             .font(.headline)
-            .foregroundColor(.primary)
+            .foregroundStyle(Color.primary)
             .frame(maxWidth: .infinity)
             .padding()
             .background(Color.expoSystemGray5)
-            .cornerRadius(8)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
 
         #if !os(tvOS)
@@ -109,11 +109,11 @@ struct ErrorView: View {
         }) {
           Text(copied ? "Copied!" : "Copy")
             .font(.headline)
-            .foregroundColor(.primary)
+            .foregroundStyle(Color.primary)
             .frame(maxWidth: .infinity)
             .padding()
             .background(Color.expoSystemGray5)
-            .cornerRadius(8)
+            .clipShape(RoundedRectangle(cornerRadius: 8))
         }
         #endif
       }

@@ -27,7 +27,7 @@ struct HomeTabView: View {
             HStack {
               Text("recently opened".uppercased())
                 .font(.caption)
-                .foregroundColor(.primary.opacity(0.6))
+                .foregroundStyle(Color.primary.opacity(0.6))
               Spacer()
               Button("reset".uppercased()) {
                 viewModel.clearRecentlyOpenedApps()
@@ -77,14 +77,14 @@ struct HomeTabView: View {
     label: {
       Text("The last time you tried to open an app the development build crashed. Tap to get more information.")
         .font(.body)
-        .foregroundColor(.primary)
+        .foregroundStyle(Color.primary)
         .multilineTextAlignment(.leading)
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
     }
     .buttonStyle(PlainButtonStyle())
     .background(Color.expoSecondarySystemGroupedBackground)
-    .cornerRadius(18)
+    .clipShape(RoundedRectangle(cornerRadius: 18))
   }
 }
 
@@ -100,26 +100,26 @@ struct NetworkPermissionsBanner: View {
       HStack {
         Image(systemName: "wifi.exclamationmark")
           .font(.title2)
-          .foregroundColor(.orange)
+          .foregroundStyle(Color.orange)
         VStack(alignment: .leading, spacing: 4) {
           Text("Local Network Access Disabled")
             .font(.subheadline)
             .fontWeight(.semibold)
-            .foregroundColor(.primary)
+            .foregroundStyle(Color.primary)
           Text("Dev servers can't be discovered. Tap to open Settings and enable Local Network access.")
             .font(.footnote)
-            .foregroundColor(.secondary)
+            .foregroundStyle(Color.secondary)
             .multilineTextAlignment(.leading)
         }
         Spacer()
         Image(systemName: "gear")
-          .foregroundColor(.secondary)
+          .foregroundStyle(Color.secondary)
       }
       .padding()
     }
     .buttonStyle(PlainButtonStyle())
     .background(Color.expoSecondarySystemGroupedBackground)
-    .cornerRadius(18)
+    .clipShape(RoundedRectangle(cornerRadius: 18))
   }
 }
 // swiftlint:enable closure_body_length
