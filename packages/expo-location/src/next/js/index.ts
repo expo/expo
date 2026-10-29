@@ -23,6 +23,7 @@ export {
   useNotificationPermissions,
 } from './Permissions';
 export { LocationUpdatesHandle, defineLocationTask } from './LocationUpdatesHandle';
+export { GeofencingHandle, defineGeofencingTask } from './GeofencingHandle';
 export {
   ensureBackgroundSessionStarted,
   stopBackgroundSession,
