@@ -100,7 +100,7 @@ struct DevServersView: View {
             .font(.system(size: 14))
             #endif
           Spacer()
-          if viewModel.isLoadingServer && viewModel.devServers.isEmpty {
+          if viewModel.loadingServerURL != nil && viewModel.devServers.isEmpty {
             ProgressView()
           }
         }
@@ -221,10 +221,10 @@ struct DevServersView: View {
     } label: {
       Text("Connect")
         .font(.headline)
-        .foregroundColor(.white)
+        .foregroundColor(Color.expoSystemBackground)
         .frame(maxWidth: .infinity)
         .padding()
-        .background(urlText.isEmpty ? Color.gray : Color.black)
+        .background(urlText.isEmpty ? Color.gray : Color.primary)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     .disabled(urlText.isEmpty)
@@ -289,7 +289,7 @@ struct DevServerRow: View {
         Spacer()
 
         Group {
-          if viewModel.isLoadingServer {
+          if viewModel.loadingServerURL == server.url {
             ProgressView()
               .controlSize(.small)
           } else {

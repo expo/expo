@@ -15,6 +15,7 @@ private let networkPermissionGrantedKey = "expo.devlauncher.hasGrantedNetworkPer
 private let filterByBundleIdentifierKey = "expo.devlauncher.nsd.filterByBundleIdentifier"
 private let filterByUsernameKey = "expo.devlauncher.nsd.filterByUsername"
 private let filterBySlugKey = "expo.devlauncher.nsd.filterBySlug"
+private let updatesPageSizeKey = "expo.devlauncher.updatesPageSize"
 
 enum LocalNetworkPermissionStatus: Equatable, Sendable {
   case unknown
@@ -57,6 +58,11 @@ class DevLauncherViewModel: ObservableObject {
       UserDefaults.standard.set(autoLaunchMostRecent, forKey: "EXDevLauncherTryToLaunchLastBundle")
     }
   }
+  @Published var updatesPageSize = UserDefaults.standard.object(forKey: updatesPageSizeKey) as? Int ?? 10 {
+    didSet {
+      UserDefaults.standard.set(updatesPageSize, forKey: updatesPageSizeKey)
+    }
+  }
   @Published var isAuthenticated = false
   @Published var isAuthenticating = false
   @Published var user: User? {
@@ -65,7 +71,7 @@ class DevLauncherViewModel: ObservableObject {
     }
   }
   @Published var selectedAccountId: String?
-  @Published var isLoadingServer: Bool = false
+  @Published var loadingServerURL: String?
   @Published var isLoadingLocalBundle: Bool = false
   @Published var permissionStatus: LocalNetworkPermissionStatus = .unknown
 
@@ -229,20 +235,20 @@ class DevLauncherViewModel: ObservableObject {
       return
     }
 
-    isLoadingServer = true
+    loadingServerURL = url
 
     EXDevLauncherController.sharedInstance().loadApp(
       bundleUrl,
       onSuccess: { [weak self] in
         DispatchQueue.main.async {
-          self?.isLoadingServer = false
+          self?.loadingServerURL = nil
         }
       },
       onError: { [weak self] error in
         let message = DevLauncherLoadErrorMessage.message(for: error as NSError, url: url)
         EXDevLauncherRemoteLogsManager.reportError(message, toServerAt: bundleUrl)
         DispatchQueue.main.async {
-          self?.isLoadingServer = false
+          self?.loadingServerURL = nil
           self?.showErrorAlert(message)
         }
       })
