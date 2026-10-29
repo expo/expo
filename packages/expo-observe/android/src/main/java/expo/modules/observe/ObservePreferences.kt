@@ -19,7 +19,9 @@ data class PersistedConfig(
   val dispatchingEnabled: Boolean? = null,
   val dispatchInDebug: Boolean? = null,
   val sampleRate: Double? = null,
-  val errorSampleRate: Double? = null
+  val errorSampleRate: Double? = null,
+  val ignoredMetrics: List<String> = emptyList(),
+  val ignoredEvents: List<String> = emptyList()
 )
 
 /**

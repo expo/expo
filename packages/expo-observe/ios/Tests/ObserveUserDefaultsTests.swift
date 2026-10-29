@@ -65,6 +65,26 @@ struct ObserveUserDefaultsTests {
   }
 
   @Test
+  func `ignored names persist and omitted lists reset them`() {
+    ObserveUserDefaults.setConfig(
+      PersistedConfig(ignoredMetrics: ["expo.app_startup.tti"], ignoredEvents: ["custom.event"])
+    )
+    #expect(ObserveUserDefaults.config?.ignoredMetrics == ["expo.app_startup.tti"])
+    #expect(ObserveUserDefaults.config?.ignoredEvents == ["custom.event"])
+    ObserveUserDefaults.setConfig(PersistedConfig())
+    #expect(ObserveUserDefaults.config?.ignoredMetrics == [])
+    #expect(ObserveUserDefaults.config?.ignoredEvents == [])
+  }
+
+  @Test
+  func `old persisted JSON decodes with empty ignored lists`() throws {
+    let oldData = Data(#"{"dispatchingEnabled":true,"sampleRate":0.5}"#.utf8)
+    let config = try JSONDecoder().decode(PersistedConfig.self, from: oldData)
+    #expect(config.ignoredMetrics == [])
+    #expect(config.ignoredEvents == [])
+  }
+
+  @Test
   func `dispatchInDebug defaults to nil`() {
     #expect(ObserveUserDefaults.config?.dispatchInDebug == nil)
   }

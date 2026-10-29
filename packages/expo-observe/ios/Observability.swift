@@ -49,8 +49,13 @@ internal struct ObservabilityManager {
         rate: config?.errorSampleRate ?? config?.sampleRate
       )
 
-      await dispatchMetrics(shouldDispatch: shouldDispatch)
-      await dispatchLogs(shouldDispatch: shouldDispatch, shouldDispatchErrors: shouldDispatchErrors)
+      await dispatchMetrics(
+        shouldDispatch: shouldDispatch, ignoredMetrics: Set(config?.ignoredMetrics ?? [])
+      )
+      await dispatchLogs(
+        shouldDispatch: shouldDispatch, shouldDispatchErrors: shouldDispatchErrors,
+        ignoredEvents: Set(config?.ignoredEvents ?? [])
+      )
       await dispatchTraces(shouldDispatch: shouldDispatch)
     }
   }
@@ -83,7 +88,7 @@ internal struct ObservabilityManager {
     )
   }
 
-  private static func dispatchMetrics(shouldDispatch: Bool) async {
+  private static func dispatchMetrics(shouldDispatch: Bool, ignoredMetrics: Set<String>) async {
     guard let endpointUrl = metricsEndpointUrl else {
       return
     }
@@ -116,7 +121,7 @@ internal struct ObservabilityManager {
       },
       rowId: { $0.id },
       send: { metrics in
-        let events = try buildEvents(forMetrics: metrics)
+        let events = try buildEvents(forMetrics: filteredMetrics(metrics, ignoredMetrics: ignoredMetrics))
         guard !events.isEmpty else {
           return nil
         }
@@ -154,7 +159,9 @@ internal struct ObservabilityManager {
     )
   }
 
-  private static func dispatchLogs(shouldDispatch: Bool, shouldDispatchErrors: Bool) async {
+  private static func dispatchLogs(
+    shouldDispatch: Bool, shouldDispatchErrors: Bool, ignoredEvents: Set<String>
+  ) async {
     guard let endpointUrl = logsEndpointUrl else {
       return
     }
@@ -189,7 +196,7 @@ internal struct ObservabilityManager {
       },
       rowId: { $0.id },
       send: { fetchedLogs in
-        let logs = sampledLogs(fetchedLogs, shouldDispatch: shouldDispatch)
+        let logs = sampledLogs(fetchedLogs, shouldDispatch: shouldDispatch, ignoredEvents: ignoredEvents)
         guard !logs.isEmpty else {
           return nil
         }
@@ -393,8 +400,19 @@ internal struct ObservabilityManager {
     return Self.shouldDispatch(config: config, isDev: isDev, isInSample: isInSample(rate: rate))
   }
 
-  internal nonisolated static func sampledLogs(_ logs: [LogRow], shouldDispatch: Bool) -> [LogRow] {
-    return shouldDispatch ? logs : logs.filter { errorLogNames.contains($0.name) }
+  internal nonisolated static func filteredMetrics(
+    _ metrics: [MetricRow], ignoredMetrics: Set<String>
+  ) -> [MetricRow] {
+    return metrics.filter {
+      !ignoredMetrics.contains(exportedMetricName(category: $0.category, name: $0.name))
+    }
+  }
+
+  internal nonisolated static func sampledLogs(
+    _ logs: [LogRow], shouldDispatch: Bool, ignoredEvents: Set<String> = []
+  ) -> [LogRow] {
+    let eligible = shouldDispatch ? logs : logs.filter { errorLogNames.contains($0.name) }
+    return eligible.filter { !ignoredEvents.contains($0.name) }
   }
 
   private static func isInSample(rate: Double?) -> Bool {
