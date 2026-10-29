@@ -164,8 +164,14 @@ class DevLauncherViewModel: ObservableObject {
       username: user?.username
     )
 
-    devServers = filtered.sorted(by: <)
-    hiddenDevServerCount = allDevServers.count - filtered.count
+    let sorted = filtered.sorted(by: <)
+    if sorted != devServers {
+      devServers = sorted
+    }
+    let hiddenCount = allDevServers.count - filtered.count
+    if hiddenCount != hiddenDevServerCount {
+      hiddenDevServerCount = hiddenCount
+    }
   }
 
   private func extractPort(from url: String) -> String? {
