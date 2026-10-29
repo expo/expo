@@ -35,6 +35,15 @@ struct SplitViewToolbarItemRecord: Record {
   @Field var id: String = ""
   @Field var title: String = ""
   @Field var icon: String?
+  @Field var xcassetName: String?
+  @Field var imageRenderingMode: ImageRenderingMode?
+  @Field var tintColor: UIColor?
+  @Field var badgeConfiguration: BadgeConfigurationRecord?
+  @Field var barButtonItemStyle: BarItemStyle?
+  @Field var sharesBackground: Bool = true
+  @Field var hidesSharedBackground: Bool = false
+  @Field var accessibilityLabel: String?
+  @Field var accessibilityHint: String?
   @Field var menu: SplitViewMenuRecord?
   @Field var disabled: Bool = false
   @Field var selected: Bool = false

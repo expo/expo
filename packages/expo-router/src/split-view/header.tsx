@@ -28,22 +28,55 @@ export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
 }
 
 function toNativeToolbarItems(side: 'left' | 'right', items: SplitViewToolbarItem[] | undefined) {
-  return items?.map(({ title, icon, menu, disabled, selected }, index) => ({
-    id: `${side}.${index}`,
-    title,
-    icon,
-    disabled,
-    selected,
-    menu: menu && {
-      title: menu.title,
-      items: menu.items.map(({ title, icon, destructive, disabled, isOn }, actionIndex) => ({
-        id: `${side}.${index}.${actionIndex}`,
+  return items?.map(
+    (
+      {
         title,
         icon,
-        destructive,
+        menu,
         disabled,
-        isOn,
-      })),
-    },
-  }));
+        selected,
+        tintColor,
+        badge,
+        variant,
+        separateBackground,
+        hidesSharedBackground,
+        iconRenderingMode,
+        accessibilityLabel,
+        accessibilityHint,
+      },
+      index
+    ) => {
+      const xcassetName = typeof icon === 'object' ? icon.xcasset : undefined;
+      return {
+        id: `${side}.${index}`,
+        title,
+        icon: typeof icon === 'string' ? icon : undefined,
+        xcassetName,
+        imageRenderingMode: xcassetName
+          ? (iconRenderingMode ?? (tintColor !== undefined ? 'template' : 'original'))
+          : undefined,
+        tintColor,
+        badgeConfiguration: badge && { ...badge.style, value: badge.value?.toString() },
+        barButtonItemStyle: variant === 'done' ? 'prominent' : variant,
+        sharesBackground: separateBackground === undefined ? undefined : !separateBackground,
+        hidesSharedBackground,
+        accessibilityLabel,
+        accessibilityHint,
+        disabled,
+        selected,
+        menu: menu && {
+          title: menu.title,
+          items: menu.items.map(({ title, icon, destructive, disabled, isOn }, actionIndex) => ({
+            id: `${side}.${index}.${actionIndex}`,
+            title,
+            icon,
+            destructive,
+            disabled,
+            isOn,
+          })),
+        },
+      };
+    }
+  );
 }

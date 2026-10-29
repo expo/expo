@@ -1,5 +1,5 @@
 import { Children, isValidElement, type ReactNode } from 'react';
-import type { NativeSyntheticEvent } from 'react-native';
+import type { ColorValue, NativeSyntheticEvent } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -8,13 +8,55 @@ import { SplitViewColumnHeader } from './header';
 
 export interface SplitViewToolbarItem {
   /**
-   * Title of the button. When `icon` is set, it is used as the accessibility label.
+   * Title of the button. When `icon` is set and `accessibilityLabel` is not, it is used as the accessibility label.
    */
   title: string;
   /**
-   * SF Symbol shown instead of the title.
+   * SF Symbol or Xcode asset catalog image shown instead of the title.
    */
-  icon?: SFSymbol;
+  icon?: SFSymbol | { xcasset: string };
+  /**
+   * Controls how the `xcasset` icon is rendered.
+   *
+   * - `'template'`: applies the tint color to the icon
+   * - `'original'`: preserves the original colors of the icon
+   *
+   * @default 'template' when `tintColor` is set, otherwise 'original'
+   */
+  iconRenderingMode?: 'template' | 'original';
+  tintColor?: ColorValue;
+  /**
+   * Badge shown on the button. Without `value`, the badge is a dot.
+   * @platform ios 26+
+   */
+  badge?: {
+    value?: string | number;
+    style?: {
+      color?: ColorValue;
+      backgroundColor?: ColorValue;
+      fontFamily?: string;
+      fontSize?: number;
+      fontWeight?: string;
+    };
+  };
+  /**
+   * @default 'plain'
+   */
+  variant?: 'plain' | 'done' | 'prominent';
+  /**
+   * Whether the button has its own background instead of sharing it with the adjacent buttons.
+   * @platform ios 26+
+   * @default false
+   */
+  separateBackground?: boolean;
+  /**
+   * Whether the background of the button is hidden.
+   * @platform ios 26+
+   * @default false
+   */
+  hidesSharedBackground?: boolean;
+  accessibilityLabel?: string;
+  accessibilityHint?: string;
   /**
    * Called when the button is pressed. Not called when `menu` is set.
    */
