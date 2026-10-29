@@ -42,11 +42,12 @@ permissions:
   issues: write
   pull-requests: read
 
-# GHA groups queue when cancel-in-progress is false — defense in depth; the
-# server-side mint enforces per-target serialization regardless.
+# Share the target queue with comments and reviews. The server-side mint
+# also enforces per-target serialization.
 concurrency:
   group: verify-target-${{ inputs.target }}
   cancel-in-progress: false
+  queue: max
 
 jobs:
   verify:
