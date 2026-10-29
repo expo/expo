@@ -8,6 +8,9 @@ public class SplitViewModule: Module {
       Prop("title") { (view: SplitViewHeaderView, title: String?) in
         view.headerTitle = title
       }
+      Prop("subtitle") { (view: SplitViewHeaderView, subtitle: String?) in
+        view.headerSubtitle = subtitle
+      }
       Prop("largeTitle") { (view: SplitViewHeaderView, largeTitle: Bool?) in
         view.largeTitle = largeTitle ?? false
       }

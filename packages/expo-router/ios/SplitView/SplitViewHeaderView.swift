@@ -12,6 +12,7 @@ protocol NavigationItemCustomizer: NSObjectProtocol {
 // when this view is mounted as its direct child.
 class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelegate {
   var headerTitle: String?
+  var headerSubtitle: String?
   var largeTitle = false
   var leftToolbarItems: [SplitViewToolbarItemRecord] = []
   var rightToolbarItems: [SplitViewToolbarItemRecord] = []
@@ -32,6 +33,9 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     super.didMoveToSuperview()
     if superview == nil, let navigationItem {
       navigationItem.title = nil
+      if #available(iOS 26.0, *) {
+        navigationItem.subtitle = nil
+      }
       navigationItem.largeTitleDisplayMode = .never
       navigationItem.leftItemsSupplementBackButton = false
       navigationItem.leftBarButtonItems = nil
@@ -47,6 +51,9 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
       return
     }
     navigationItem.title = headerTitle
+    if #available(iOS 26.0, *) {
+      navigationItem.subtitle = headerSubtitle
+    }
     // `.automatic` would follow the previous item, which is another column when the split view is collapsed.
     let largeTitleDisplayMode: UINavigationItem.LargeTitleDisplayMode = largeTitle ? .always : .never
     if navigationItem.largeTitleDisplayMode != largeTitleDisplayMode {
