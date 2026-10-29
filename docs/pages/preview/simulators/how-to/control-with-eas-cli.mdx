@@ -163,6 +163,6 @@ For an installed app's data container, use its bundle identifier and a path rela
 
 Uploads do not update data the app has already loaded into memory. If the app reads the file at startup, [restart it](#restart-an-installed-app) after the transfer.
 
-App data transfers accept regular files up to 10 MiB. The upload reads a local file and refuses folders. It does not replace an existing app file unless you pass `overwrite=true`. `app.file.read` requires `--output` with a local filename. Keep the paths inside the app's data container; do not use `..` or absolute paths.
+App data transfers accept regular files up to 10 MiB. The upload reads a local file and refuses folders. It does not replace an existing app file unless you pass `overwrite=true`. `app.file.read` requires `--output` with a local filename. Keep the paths inside the app's data container. Do not use `..` or absolute paths.
 
 Run commands that change the device one at a time. If a command times out, inspect the device before retrying: the action might already have run.
