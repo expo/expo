@@ -51,6 +51,7 @@ struct HomeTabView: View {
         }
       }
       .padding()
+      .maxContentWidth()
     }
     #if !os(tvOS)
     .refreshable {

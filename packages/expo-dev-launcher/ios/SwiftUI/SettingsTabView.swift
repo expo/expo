@@ -53,6 +53,7 @@ struct SettingsTabView: View {
         }
       }
       .padding()
+      .maxContentWidth()
     }
     .frame(maxWidth: .infinity, maxHeight: .infinity)
     #if os(tvOS)

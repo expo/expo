@@ -7,14 +7,17 @@ struct UpdatesTabView: View {
 
   var body: some View {
     ScrollView {
-      if !viewModel.isLoggedIn {
-        NotSignedInView()
-          .padding()
-      } else if !viewModel.structuredBuildInfo.usesEASUpdates {
-        NotUsingUpdatesView()
-      } else {
-        UpdatesListView()
+      Group {
+        if !viewModel.isLoggedIn {
+          NotSignedInView()
+            .padding()
+        } else if !viewModel.structuredBuildInfo.usesEASUpdates {
+          NotUsingUpdatesView()
+        } else {
+          UpdatesListView()
+        }
       }
+      .maxContentWidth()
     }
     #if os(tvOS)
     .background()

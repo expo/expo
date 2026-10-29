@@ -53,6 +53,16 @@ extension View {
   func systemGroupedBackground() -> some View {
     return self.background(Color.expoSystemGroupedBackground)
   }
+
+  @ViewBuilder
+  func maxContentWidth() -> some View {
+#if os(iOS)
+    frame(maxWidth: 600)
+      .frame(maxWidth: .infinity)
+#else
+    self
+#endif
+  }
 }
 
 func getDevLauncherBundle() -> Bundle? {
