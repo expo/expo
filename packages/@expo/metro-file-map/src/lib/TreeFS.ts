@@ -292,9 +292,13 @@ export default class TreeFS implements MutableFileSystem {
     let rootNode: DirectoryNode = this.#rootNode;
     let prefix: string = '';
     if (subpath != null && subpath !== '') {
-      const lookupResult = this.#lookup(subpath);
-      if (!lookupResult.exists || !isDirectory(lookupResult.node)) {
+      const lookupResult = this.#lookupNoFollow(subpath);
+      if (!lookupResult.exists) {
         // Directory doesn't exist, nothing to compare - all files are new
+        return { changedFiles, removedFiles };
+      }
+      if (!isDirectory(lookupResult.node)) {
+        removedFiles.add(lookupResult.canonicalPath);
         return { changedFiles, removedFiles };
       }
       rootNode = lookupResult.node;

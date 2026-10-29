@@ -558,6 +558,28 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
     });
 
+    test.each([
+      ['regular file', p('bar.js'), p('bar.js/file.js')],
+      ['symlink', p('link-to-foo'), p('link-to-foo/file.js')],
+    ])('removes a %s replaced by a directory during a subpath recrawl', (_, subpath, filePath) => {
+      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
+        [filePath, [123, 0, 0, null, 0, null]],
+      ]);
+
+      const difference = tfs.getDifference(newFiles, { subpath });
+      expect(difference).toEqual({
+        changedFiles: newFiles,
+        removedFiles: new Set([subpath]),
+      });
+
+      for (const removedPath of difference.removedFiles) {
+        tfs.remove(removedPath);
+      }
+      tfs.bulkAddOrModify(difference.changedFiles);
+      expect(tfs.exists(p(`/project/${filePath}`))).toBe(true);
+      expect(tfs.exists(p('/project/foo/another.js'))).toBe(true);
+    });
+
     test('with empty subpath behaves like no subdirectory specified', () => {
       const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
         [p('foo/another.js'), [123, 0, 0, null, 0, null]],
