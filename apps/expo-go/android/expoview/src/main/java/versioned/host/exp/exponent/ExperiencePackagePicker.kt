@@ -4,7 +4,6 @@ import expo.modules.asset.AssetModule
 import expo.modules.audio.AudioModule
 import expo.modules.backgroundfetch.BackgroundFetchModule
 import expo.modules.backgroundtask.BackgroundTaskModule
-import expo.modules.battery.BatteryModule
 import expo.modules.blob.BlobModule
 import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
@@ -136,7 +135,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ExpoBackgroundNotificationTasksModule::class.java to null,
     // End of Notifications
     AesCryptoModule::class.java to null,
-    BatteryModule::class.java to null,
     BackgroundFetchModule::class.java to null,
     BackgroundTaskModule::class.java to null,
     BlobModule::class.java to null,
