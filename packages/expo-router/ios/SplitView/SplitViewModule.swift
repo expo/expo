@@ -38,6 +38,9 @@ public class SplitViewModule: Module {
       Prop("backVisible") { (view: SplitViewHeaderView, backVisible: Bool?) in
         view.backVisible = backVisible ?? true
       }
+      Prop("hidden") { (view: SplitViewHeaderView, hidden: Bool?) in
+        view.navigationBarHidden = hidden ?? false
+      }
       Events("onToolbarItemPress", "onSearchBarChangeText", "onSearchBarSearchButtonPress")
       OnViewDidUpdateProps { (view: SplitViewHeaderView) in view.apply() }
     }
