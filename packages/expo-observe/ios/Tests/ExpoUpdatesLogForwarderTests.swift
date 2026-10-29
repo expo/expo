@@ -29,11 +29,11 @@ struct ExpoUpdatesLogForwarderTests {
     let sent = SentEntries()
     let forwarder = ExpoUpdatesLogForwarder { entry in sent.append(entry) }
 
-    UpdatesLogEntryListenerRegistry.shared.notify(["message": "before \(marker)"])
+    UpdatesLogEntryListenerRegistry.sharedInstance.notify(["message": "before \(marker)"])
     forwarder.setEnabled(true)
-    UpdatesLogEntryListenerRegistry.shared.notify(["message": "enabled \(marker)"])
+    UpdatesLogEntryListenerRegistry.sharedInstance.notify(["message": "enabled \(marker)"])
     forwarder.setEnabled(false)
-    UpdatesLogEntryListenerRegistry.shared.notify(["message": "after \(marker)"])
+    UpdatesLogEntryListenerRegistry.sharedInstance.notify(["message": "after \(marker)"])
 
     #expect(sent.messages(containing: marker) == ["enabled \(marker)"])
   }
