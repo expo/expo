@@ -193,7 +193,6 @@ export default defineConfig([
     files: ['**/*.mdx'],
     languageOptions: {
       ...mdx.flat.languageOptions,
-      globals: { ...mdx.flat.languageOptions?.globals, props: 'readonly' },
       parserOptions: { extensions: ['.js', '.md', '.mdx'] },
     },
     rules: {
