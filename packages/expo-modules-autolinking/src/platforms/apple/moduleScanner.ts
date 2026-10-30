@@ -42,6 +42,8 @@ interface ScanWarning {
 export interface ScanModulesOutput {
   schemaVersion: number;
   modules: ScannedModule[];
+  /** The `@SharedObject` classes. They have the same fields as modules. */
+  sharedObjects?: ScannedModule[];
   warnings: ScanWarning[];
   stats: { filesScanned: number; filesParsed: number; durationMs: number };
 }
@@ -166,6 +168,12 @@ export async function scanExpoModulesAsync(
   return output;
 }
 
+/** The scanned classes of each package, by package name. */
+export interface ScannedNativeTypes {
+  modules: Record<string, ModuleIosConfig[]>;
+  sharedObjects: Record<string, string[]>;
+}
+
 /**
  * Groups the scanned modules by the package with the longest root containing their source file.
  * Leaves out classes that aren't `public` or `open` or don't compile for the platform, and lists
@@ -176,50 +184,90 @@ export function groupScannedModules(
   packageRoots: Record<string, string>,
   platform: SupportedPlatform
 ): Record<string, ModuleIosConfig[]> {
+  const grouped: Record<string, ModuleIosConfig[]> = {};
+  const warnedClasses = new Set<string>();
+
+  groupScannedClasses(output.modules, packageRoots, platform, (module) => {
+    // Only `internal` warns: it's the default, so likely a mistake. A lower level is an opt-out.
+    if (module.accessLevel === 'internal' && !warnedClasses.has(module.file + module.name)) {
+      console.warn(
+        `warning: The @ExpoModule class '${module.name}' (${module.file}) is internal, so the generated modules provider cannot reference it. Declare it public to link it automatically, or use a lower access level such as private to opt it out of linking.`
+      );
+      warnedClasses.add(module.file + module.name);
+    }
+  }).forEach(([packageName, className]) => {
+    // A null name keeps the module's own name, as for config-declared string entries.
+    (grouped[packageName] ??= []).push({ name: null, class: className });
+  });
+  return grouped;
+}
+
+/**
+ * Groups the scanned shared object classes by package, with the same rules as `groupScannedModules`.
+ * A class that isn't `public` or `open` is left out without a warning, because a module can still
+ * use it through the `Class` definition component.
+ */
+export function groupScannedSharedObjects(
+  output: ScanModulesOutput,
+  packageRoots: Record<string, string>,
+  platform: SupportedPlatform
+): Record<string, string[]> {
+  const grouped: Record<string, string[]> = {};
+  groupScannedClasses(output.sharedObjects ?? [], packageRoots, platform, () => {}).forEach(
+    ([packageName, className]) => {
+      (grouped[packageName] ??= []).push(className);
+    }
+  );
+  return grouped;
+}
+
+/**
+ * Returns `[packageName, className]` pairs for the scanned classes that compile for the platform and
+ * are `public` or `open`, once per package. Each class goes to the package with the longest root that
+ * contains its source file. Calls `onInaccessible` for each class left out for its access level.
+ */
+function groupScannedClasses(
+  classes: ScannedModule[],
+  packageRoots: Record<string, string>,
+  platform: SupportedPlatform,
+  onInaccessible: (scannedClass: ScannedModule) => void
+): [string, string][] {
   const targetPlatformName = SCANNER_PLATFORM_NAMES[platform];
   const rootEntries = Object.entries(packageRoots).sort(
     ([, rootA], [, rootB]) => rootB.length - rootA.length
   );
-  const grouped: Record<string, ModuleIosConfig[]> = {};
+  const result: [string, string][] = [];
   const seenClassesByPackage: Record<string, Set<string>> = {};
-  const warnedClasses = new Set<string>();
 
-  for (const module of output.modules) {
+  for (const scannedClass of classes) {
     // Skip a malformed entry instead of failing the whole scan.
-    if (typeof module.file !== 'string' || typeof module.name !== 'string') {
+    if (typeof scannedClass.file !== 'string' || typeof scannedClass.name !== 'string') {
       continue;
     }
     // An empty list is a condition the scanner couldn't evaluate (it already warned), so skip it
     // for the umbrella platform too.
     if (
-      !module.platforms?.length ||
-      (targetPlatformName && !module.platforms.includes(targetPlatformName))
+      !scannedClass.platforms?.length ||
+      (targetPlatformName && !scannedClass.platforms.includes(targetPlatformName))
     ) {
       continue;
     }
-    if (module.accessLevel !== 'public' && module.accessLevel !== 'open') {
-      // Only `internal` warns: it's the default, so likely a mistake. A lower level is an opt-out.
-      if (module.accessLevel === 'internal' && !warnedClasses.has(module.file + module.name)) {
-        console.warn(
-          `warning: The @ExpoModule class '${module.name}' (${module.file}) is internal, so the generated modules provider cannot reference it. Declare it public to link it automatically, or use a lower access level such as private to opt it out of linking.`
-        );
-        warnedClasses.add(module.file + module.name);
-      }
+    if (scannedClass.accessLevel !== 'public' && scannedClass.accessLevel !== 'open') {
+      onInaccessible(scannedClass);
       continue;
     }
-    const owner = rootEntries.find(([, root]) => isPathInside(module.file, root));
+    const owner = rootEntries.find(([, root]) => isPathInside(scannedClass.file, root));
     if (!owner) {
       continue;
     }
     const packageName = owner[0];
     seenClassesByPackage[packageName] ??= new Set<string>();
     const seenClasses = seenClassesByPackage[packageName];
-    if (seenClasses.has(module.name)) {
+    if (seenClasses.has(scannedClass.name)) {
       continue;
     }
-    seenClasses.add(module.name);
-    // A null name keeps the module's own name, as for config-declared string entries.
-    (grouped[packageName] ??= []).push({ name: null, class: module.name });
+    seenClasses.add(scannedClass.name);
+    result.push([packageName, scannedClass.name]);
   }
-  return grouped;
+  return result;
 }

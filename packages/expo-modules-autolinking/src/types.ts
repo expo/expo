@@ -85,6 +85,8 @@ export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
    * and lists the modules that a package declares in its config in `getModuleClasses()`.
    */
   modulesFromScan?: boolean;
+  /** Names of the `@SharedObject` classes that the package exports next to its modules. */
+  sharedObjects?: string[];
   pods: ModuleIosPodspecInfo[];
   flags: Record<string, any> | undefined;
   swiftModuleNames: string[];

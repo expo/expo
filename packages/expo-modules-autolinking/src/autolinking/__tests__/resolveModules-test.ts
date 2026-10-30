@@ -27,9 +27,12 @@ const autolinkingOptions = {
 describe(resolveModulesAsync, () => {
   it('hands the scan results to resolveModuleAsync through extraOutput', async () => {
     const scannedModules = { 'expo-clipboard': [{ name: null, class: 'ClipboardModule' }] };
+    const scannedSharedObjects = { 'expo-clipboard': ['ClipboardItem'] };
     const resolveModuleAsync = jest.fn().mockResolvedValue({ packageName: 'expo-clipboard' });
     mockGetLinkingImplementation.mockReturnValue({
-      scanNativeModulesAsync: jest.fn().mockResolvedValue(scannedModules),
+      scanNativeModulesAsync: jest
+        .fn()
+        .mockResolvedValue({ modules: scannedModules, sharedObjects: scannedSharedObjects }),
       resolveModuleAsync,
     } as any);
 
@@ -38,7 +41,7 @@ describe(resolveModulesAsync, () => {
     expect(resolveModuleAsync).toHaveBeenCalledWith(
       'expo-clipboard',
       searchResults['expo-clipboard'],
-      expect.objectContaining({ scannedModules })
+      expect.objectContaining({ scannedModules, scannedSharedObjects })
     );
   });
 

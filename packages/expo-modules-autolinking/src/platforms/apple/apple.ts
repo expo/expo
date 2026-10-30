@@ -22,8 +22,10 @@ import { listFilesInDirectories, fileExistsAsync } from '../../utils';
 import {
   collectPackageRoots,
   groupScannedModules,
+  groupScannedSharedObjects,
   loadModulesScanner,
   scanExpoModulesAsync,
+  type ScannedNativeTypes,
 } from './moduleScanner';
 
 const APPLE_PROPERTIES_FILE = 'Podfile.properties.json';
@@ -69,7 +71,7 @@ export function getSwiftModuleNames(
 export async function scanNativeModulesAsync(
   searchResults: SearchResults,
   platform: SupportedPlatform
-): Promise<Record<string, ModuleIosConfig[]> | null> {
+): Promise<ScannedNativeTypes | null> {
   // The scanner is a macOS binary.
   if (process.platform !== 'darwin') {
     return null;
@@ -89,7 +91,13 @@ export async function scanNativeModulesAsync(
 
   const packageRoots = collectPackageRoots(searchResults);
   const output = await scanExpoModulesAsync(scanner, packageRoots);
-  return output ? groupScannedModules(output, packageRoots, platform) : null;
+  if (!output) {
+    return null;
+  }
+  return {
+    modules: groupScannedModules(output, packageRoots, platform),
+    sharedObjects: groupScannedSharedObjects(output, packageRoots, platform),
+  };
 }
 
 /**
@@ -113,6 +121,7 @@ export async function resolveModuleAsync(
   extraOutput: {
     flags?: Record<string, any>;
     scannedModules?: Record<string, ModuleIosConfig[]> | null;
+    scannedSharedObjects?: Record<string, string[]> | null;
   }
 ): Promise<ModuleDescriptorIos | null> {
   const podspecFiles = await findPodspecFiles(revision);
@@ -138,6 +147,10 @@ export async function resolveModuleAsync(
     declaresModules ? configModules : null,
     extraOutput.scannedModules?.[packageName] ?? []
   );
+  // Declaring the modules in the config opts the package out of scanning, so shared objects too.
+  const sharedObjects = declaresModules
+    ? []
+    : [...(extraOutput.scannedSharedObjects?.[packageName] ?? [])].sort();
 
   return {
     packageName,
@@ -150,6 +163,7 @@ export async function resolveModuleAsync(
     appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
     reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
     debugOnly: revision.config?.appleDebugOnly() ?? false,
+    ...(sharedObjects.length > 0 ? { sharedObjects } : {}),
     ...(coreFeatures.length > 0 ? { coreFeatures } : {}),
   };
 }
@@ -220,6 +234,7 @@ async function generatePackageListFileContentAsync(
   const iosModules = modules.filter(
     (module) =>
       module.modules.length ||
+      module.sharedObjects?.length ||
       module.appDelegateSubscribers.length ||
       module.reactDelegateHandlers.length
   );
@@ -241,7 +256,7 @@ async function generatePackageListFileContentAsync(
   if (isTargetInInlineModulesTargets(params)) {
     const inlineModules = await getIosInlineModulesClassNames(params);
     modulesClassNames = modulesClassNames.concat(inlineModules.modules);
-    addToPackage(packages, LOCAL_PACKAGE_NAME, inlineModules.expoModules);
+    addToPackage(packages, LOCAL_PACKAGE_NAME, inlineModules.expoModules, []);
   }
 
   const debugOnlyModulesClassNames = getModuleClassNames(debugOnlyModules);
@@ -341,6 +356,7 @@ ${indent.repeat(2)}]`;
 
 interface PackageExports {
   modules: ModuleIosConfig[];
+  sharedObjects: string[];
 }
 
 /**
@@ -354,13 +370,18 @@ function getModuleClassNames(modules: ModuleDescriptorIos[]): ModuleIosConfig[] 
 }
 
 /**
- * Groups the modules that `scan-modules` found by the package they are exported in: the npm package name,
- * or the name that the descriptor overrides it with (for example, for local modules).
+ * Groups the modules and the shared object classes that `scan-modules` found by the package they are exported in:
+ * the npm package name, or the name that the descriptor overrides it with (for example, for local modules).
  */
 function groupByPackage(modules: ModuleDescriptorIos[]): Map<string, PackageExports> {
   const packages = new Map<string, PackageExports>();
-  for (const module of modules.filter((module) => module.modulesFromScan)) {
-    addToPackage(packages, module.exportedPackageName ?? module.packageName, module.modules);
+  for (const module of modules) {
+    addToPackage(
+      packages,
+      module.exportedPackageName ?? module.packageName,
+      module.modulesFromScan ? module.modules : [],
+      module.sharedObjects ?? []
+    );
   }
   return packages;
 }
@@ -368,13 +389,15 @@ function groupByPackage(modules: ModuleDescriptorIos[]): Map<string, PackageExpo
 function addToPackage(
   packages: Map<string, PackageExports>,
   packageName: string,
-  modules: ModuleIosConfig[]
+  modules: ModuleIosConfig[],
+  sharedObjects: string[]
 ) {
-  if (!modules.length) {
+  if (!modules.length && !sharedObjects.length) {
     return;
   }
-  const exports = packages.get(packageName) ?? { modules: [] };
+  const exports = packages.get(packageName) ?? { modules: [], sharedObjects: [] };
   exports.modules.push(...modules);
+  exports.sharedObjects.push(...sharedObjects);
   packages.set(packageName, exports);
 }
 
@@ -385,10 +408,13 @@ function generatePackages(
   const commonPackages = formatPackages(packages);
   if (debugOnlyPackages.size > 0) {
     const allPackages = new Map(
-      [...packages].map(([packageName, { modules }]) => [packageName, { modules: [...modules] }])
+      [...packages].map(([packageName, { modules, sharedObjects }]) => [
+        packageName,
+        { modules: [...modules], sharedObjects: [...sharedObjects] },
+      ])
     );
-    for (const [packageName, { modules }] of debugOnlyPackages) {
-      addToPackage(allPackages, packageName, modules);
+    for (const [packageName, { modules, sharedObjects }] of debugOnlyPackages) {
+      addToPackage(allPackages, packageName, modules, sharedObjects);
     }
     return wrapInDebugConfigurationCheck(
       2,
@@ -419,9 +445,15 @@ function formatPackages(packages: Map<string, PackageExports>): string {
     return '[:]';
   }
   const sortedPackages = [...packages].sort(([a], [b]) => comparePackageNames(a, b));
-  const entries = sortedPackages.map(([packageName, { modules }]) => {
-    const moduleClassNames = formatInlineArrayOfClassNames(modules.map((module) => module.class));
-    return `\n${indent.repeat(3)}"${packageName}": ExpoPackage(\n${indent.repeat(4)}modules: ${moduleClassNames}\n${indent.repeat(3)})`;
+  const entries = sortedPackages.map(([packageName, { modules, sharedObjects }]) => {
+    const args: string[] = [];
+    if (modules.length) {
+      args.push(`modules: ${formatInlineArrayOfClassNames(modules.map((module) => module.class))}`);
+    }
+    if (sharedObjects.length) {
+      args.push(`sharedObjects: ${formatInlineArrayOfClassNames(sharedObjects)}`);
+    }
+    return `\n${indent.repeat(3)}"${packageName}": ExpoPackage(\n${indent.repeat(4)}${args.join(`,\n${indent.repeat(4)}`)}\n${indent.repeat(3)})`;
   });
   return `[${entries.join(',')}\n${indent.repeat(2)}]`;
 }

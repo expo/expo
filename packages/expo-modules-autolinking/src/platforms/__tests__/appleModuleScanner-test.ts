@@ -3,6 +3,7 @@ import { vol } from 'memfs';
 import {
   collectPackageRoots,
   groupScannedModules,
+  groupScannedSharedObjects,
   hasModuleAnnotations,
   scanExpoModulesAsync,
   type ModulesScanner,
@@ -479,5 +480,46 @@ describe(hasModuleAnnotations, () => {
 
   it('returns false for a missing directory', () => {
     expect(hasModuleAnnotations('/nonexistent')).toBe(false);
+  });
+});
+
+describe(groupScannedSharedObjects, () => {
+  it('groups public shared objects by package and leaves out the rest without a warning', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation();
+    const output = scannerOutput({
+      sharedObjects: [
+        {
+          name: 'ClipboardItem',
+          jsName: 'ClipboardItem',
+          accessLevel: 'public',
+          file: '/app/node_modules/expo-clipboard/ios/ClipboardItem.swift',
+          platforms: ALL_PLATFORMS,
+        },
+        {
+          name: 'CameraSession',
+          jsName: 'CameraSession',
+          accessLevel: 'internal',
+          file: '/app/node_modules/expo-camera/ios/CameraSession.swift',
+          platforms: ALL_PLATFORMS,
+        },
+        {
+          name: 'TVOnlyItem',
+          jsName: 'TVOnlyItem',
+          accessLevel: 'public',
+          file: '/app/node_modules/expo-clipboard/ios/TVOnlyItem.swift',
+          platforms: ['tvOS'],
+        },
+      ],
+    });
+
+    expect(groupScannedSharedObjects(output, packageRoots, 'ios')).toEqual({
+      'expo-clipboard': ['ClipboardItem'],
+    });
+    // A module can still use an internal shared object through the `Class` definition component.
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('returns no shared objects for output without the list', () => {
+    expect(groupScannedSharedObjects(scannerOutput({}), packageRoots, 'ios')).toEqual({});
   });
 });

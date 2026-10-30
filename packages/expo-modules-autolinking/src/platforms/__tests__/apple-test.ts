@@ -219,6 +219,36 @@ describe(resolveModuleAsync, () => {
     expect(result?.modulesFromScan).toBe(true);
   });
 
+  it('uses scanned shared objects, unless the config declares the modules', async () => {
+    const name = 'expo-clipboard';
+    const pkgDir = path.join('node_modules', name);
+
+    vol.fromJSON({ [`ios/ExpoClipboard.podspec`]: '' }, pkgDir);
+
+    const extraOutput = {
+      scannedModules: { [name]: [{ name: null, class: 'ClipboardModule' }] },
+      scannedSharedObjects: { [name]: ['ClipboardItem', 'ClipboardHistory'] },
+    };
+    const revision = { name: '', path: pkgDir, version: '0.0.1' };
+
+    const scanned = await resolveModuleAsync(
+      name,
+      { ...revision, config: new ExpoModuleConfig({ platforms: ['apple'] }) },
+      extraOutput
+    );
+    expect(scanned?.sharedObjects).toEqual(['ClipboardHistory', 'ClipboardItem']);
+
+    const declared = await resolveModuleAsync(
+      name,
+      {
+        ...revision,
+        config: new ExpoModuleConfig({ platforms: ['apple'], apple: { modules: [] } }),
+      },
+      extraOutput
+    );
+    expect(declared?.sharedObjects).toBeUndefined();
+  });
+
   it('orders scanned modules by code unit, independent of the host locale', async () => {
     const name = 'expo-clipboard';
     const pkgDir = path.join('node_modules', name);

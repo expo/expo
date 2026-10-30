@@ -29,10 +29,10 @@ export async function resolveModulesAsync(
   const platformLinking = getLinkingImplementationForPlatform(autolinkingOptions.platform);
   // One scan for all packages, passed down through `extraOutput`. A failed scan never fails
   // resolution.
-  let scannedModules = null;
+  let scanned = null;
   if (scanNativeModules && 'scanNativeModulesAsync' in platformLinking) {
     try {
-      scannedModules = await platformLinking.scanNativeModulesAsync(
+      scanned = await platformLinking.scanNativeModulesAsync(
         searchResults,
         scanPlatform ?? autolinkingOptions.platform
       );
@@ -41,10 +41,14 @@ export async function resolveModulesAsync(
         `warning: Scanning for native modules failed, only modules declared in the module config will be linked: ${error.message ?? error}`
       );
     }
-    onScanResult?.(scannedModules != null);
+    onScanResult?.(scanned != null);
   }
   // Additional output property for Cocoapods flags
-  const extraOutput = { flags: autolinkingOptions.flags, scannedModules };
+  const extraOutput = {
+    flags: autolinkingOptions.flags,
+    scannedModules: scanned?.modules ?? null,
+    scannedSharedObjects: scanned?.sharedObjects ?? null,
+  };
 
   const moduleDescriptorList = await taskAll(
     Object.entries(searchResults),

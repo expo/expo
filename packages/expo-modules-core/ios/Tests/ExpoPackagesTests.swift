@@ -4,6 +4,21 @@ import Testing
 
 @testable import ExpoModulesCore
 
+@SharedObject
+private final class PackagedCounter: SharedObject {
+  @JS
+  init(value: Int) {}
+
+  @JS
+  func ping() -> String {
+    return "pong"
+  }
+}
+
+// Lists `PackagedCounter` in `classes:`, so the module and the package export the same class.
+@ExpoModule(classes: [PackagedCounter.self])
+private final class CounterModule: Module {}
+
 @Suite("ExpoPackages")
 @JavaScriptActor
 struct ExpoPackagesTests {
@@ -26,6 +41,7 @@ struct ExpoPackagesTests {
     appContext.moduleRegistry.register(holder: mockModuleHolder(appContext, packageName: "expo-audio") {
       Name("Audio")
     })
+    appContext.moduleRegistry.register(package: ExpoPackage(sharedObjects: [PackagedCounter.self]), named: "expo-audio")
     appContext.moduleRegistry.register(holder: mockModuleHolder(appContext, packageName: ExpoPackage.localPackageName) {
       Name("LocalModule")
     })
@@ -80,7 +96,7 @@ struct ExpoPackagesTests {
   @Test
   func `package lists its modules and classes`() throws {
     let names = try runtime.eval("Object.keys(expo.packages['expo-audio']).join(',')").asString()
-    #expect(names == "Audio,AudioModule,AudioPlayer")
+    #expect(names == "Audio,AudioModule,PackagedCounter,AudioPlayer")
   }
 
   @Test
@@ -97,5 +113,45 @@ struct ExpoPackagesTests {
     #expect(throws: (any Error).self) {
       try runtime.eval("expo.packages['expo-audio'].AudioPlayer = {}")
     }
+  }
+
+  @Test
+  func `package returns its shared object class`() throws {
+    #expect(try runtime.eval("typeof expo.packages['expo-audio'].PackagedCounter").asString() == "function")
+    #expect(try runtime.eval("new expo.packages['expo-audio'].PackagedCounter(1).ping()").asString() == "pong")
+  }
+
+  @Test
+  func `package returns the same shared object class`() throws {
+    #expect(
+      try runtime.eval("expo.packages['expo-audio'].PackagedCounter === expo.packages['expo-audio'].PackagedCounter")
+        .asBool() == true
+    )
+  }
+
+  @Test
+  func `native instance gets the class of the package before JS reads the class`() throws {
+    let encoded = try PackagedCounter.encode(PackagedCounter(value: 1), in: runtime)
+    try runtime.global().setProperty("counter", value: encoded)
+    #expect(try runtime.eval("counter.ping()").asString() == "pong")
+    #expect(try runtime.eval("counter instanceof expo.packages['expo-audio'].PackagedCounter").asBool() == true)
+  }
+
+  @Test
+  func `module classes and the package return the same class when the package is read first`() throws {
+    appContext.moduleRegistry.register(module: CounterModule(appContext: appContext), name: nil)
+    #expect(
+      try runtime.eval("expo.packages['expo-audio'].PackagedCounter === expo.modules.CounterModule.PackagedCounter")
+        .asBool() == true
+    )
+  }
+
+  @Test
+  func `module classes and the package return the same class when the module is read first`() throws {
+    appContext.moduleRegistry.register(module: CounterModule(appContext: appContext), name: nil)
+    #expect(
+      try runtime.eval("expo.modules.CounterModule.PackagedCounter === expo.packages['expo-audio'].PackagedCounter")
+        .asBool() == true
+    )
   }
 }

@@ -18,7 +18,7 @@ private final class MacroEmittingObject: SharedObject {
   var onTicked: (ProgressEvent) -> Void
 }
 
-@ExpoModule(classes: [MacroEmittingObject.self])
+@ExpoModule
 private final class MacroEmitter: Module {
   @Event
   var onProgress: (ProgressEvent) -> Void
@@ -48,6 +48,7 @@ private struct MacroEventTests {
     appContext = AppContext.create()
     module = MacroEmitter(appContext: appContext)
     appContext.moduleRegistry.register(module: module, name: nil)
+    appContext.moduleRegistry.register(package: ExpoPackage(sharedObjects: [MacroEmittingObject.self]), named: "test")
   }
 
   @Test

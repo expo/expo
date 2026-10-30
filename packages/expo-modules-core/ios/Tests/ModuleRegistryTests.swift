@@ -190,6 +190,18 @@ struct ModuleRegistryTests {
   }
 
   @Test
+  func `registers shared object classes of a package`() {
+    class TestSharedObject: SharedObject {}
+
+    let moduleRegistry = appContext.moduleRegistry
+    moduleRegistry.register(package: ExpoPackage(sharedObjects: [TestSharedObject.self]), named: "expo-test")
+
+    #expect(moduleRegistry.hasPackage(named: "expo-test"))
+    #expect(moduleRegistry.packageNames == ["expo-test"])
+    #expect(moduleRegistry.sharedObjectTypes(inPackage: "expo-test").map { ObjectIdentifier($0) } == [ObjectIdentifier(TestSharedObject.self)])
+  }
+
+  @Test
   func `concurrent registrations are thread safe`() async {
     let iterations = 1000
     let initialModulesCount = appContext.moduleRegistry.getModuleNames().count

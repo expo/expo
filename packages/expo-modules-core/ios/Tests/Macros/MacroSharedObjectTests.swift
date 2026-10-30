@@ -113,8 +113,7 @@ private final class MacroUnconstructableCounter: SharedObject {
   }
 }
 
-@ExpoModule(
-  classes: [MacroCounter.self, MacroNamedCounter.self, MacroUnconstructableCounter.self])
+@ExpoModule
 private final class MacroSharedObjectModule: Module {}
 
 @Suite("Macro shared object")
@@ -134,21 +133,25 @@ private struct MacroSharedObjectTests {
   private func register(_ module: AnyModule) {
     // `name: nil` so module naming falls through to the macro-synthesized `_jsName`.
     appContext.moduleRegistry.register(module: module, name: nil)
+    appContext.moduleRegistry.register(
+      package: ExpoPackage(sharedObjects: [MacroCounter.self, MacroNamedCounter.self, MacroUnconstructableCounter.self]),
+      named: "macro-test"
+    )
   }
 
   // MARK: - Class exposure
 
   @Test
-  func `class is exposed under the module by its name`() throws {
+  func `class is exposed in the package by its name`() throws {
     register(MacroSharedObjectModule(appContext: appContext))
-    #expect(try runtime.eval("typeof expo.modules.MacroSharedObjectModule.MacroCounter").asString() == "function")
+    #expect(try runtime.eval("typeof expo.packages['macro-test'].MacroCounter").asString() == "function")
   }
 
   @Test
   func `class name honors the @SharedObject argument`() throws {
     register(MacroSharedObjectModule(appContext: appContext))
-    #expect(try runtime.eval("typeof expo.modules.MacroSharedObjectModule.RenamedCounter").asString() == "function")
-    #expect(try runtime.eval("'MacroNamedCounter' in expo.modules.MacroSharedObjectModule").asBool() == false)
+    #expect(try runtime.eval("typeof expo.packages['macro-test'].RenamedCounter").asString() == "function")
+    #expect(try runtime.eval("expo.packages['macro-test'].MacroNamedCounter === undefined").asBool() == true)
   }
 
   @Test
@@ -157,7 +160,7 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
     let tag = try runtime.eval(
       """
-      Object.prototype.toString.call(new expo.modules.MacroSharedObjectModule.MacroCounter(1))
+      Object.prototype.toString.call(new expo.packages['macro-test'].MacroCounter(1))
       """)
     #expect(try tag.asString() == "[object MacroCounter]")
   }
@@ -167,7 +170,7 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
     let tag = try runtime.eval(
       """
-      class JSCounter extends expo.modules.MacroSharedObjectModule.MacroCounter {}
+      class JSCounter extends expo.packages['macro-test'].MacroCounter {}
       Object.prototype.toString.call(new JSCounter(1))
       """)
     #expect(try tag.asString() == "[object JSCounter]")
@@ -184,7 +187,7 @@ private struct MacroSharedObjectTests {
       """
       (() => {
         try {
-          new expo.modules.MacroSharedObjectModule.MacroUnconstructableCounter()
+          new expo.packages['macro-test'].MacroUnconstructableCounter()
           return false
         } catch (error) {
           return String(error).includes('MacroUnconstructableCounter')
@@ -199,7 +202,7 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
     let value = try runtime.eval(
       """
-      object = new expo.modules.MacroSharedObjectModule.MacroCounter(7)
+      object = new expo.packages['macro-test'].MacroCounter(7)
       object.current
       """)
     #expect(try value.asInt() == 7)
@@ -208,7 +211,7 @@ private struct MacroSharedObjectTests {
   @Test
   func `an instance made with new reads its ID from the prototype getter`() throws {
     register(MacroSharedObjectModule(appContext: appContext))
-    try runtime.eval("object = new expo.modules.MacroSharedObjectModule.MacroCounter(7)")
+    try runtime.eval("object = new expo.packages['macro-test'].MacroCounter(7)")
     let hasOwnId = try runtime.eval("Object.prototype.hasOwnProperty.call(object, '__expo_shared_object_id__')")
     #expect(try hasOwnId.asBool() == false)
     #expect(try runtime.eval("object.__expo_shared_object_id__").asInt() > 0)
@@ -221,7 +224,7 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
     let value = try runtime.eval(
       """
-      object = new expo.modules.MacroSharedObjectModule.MacroCounter(10)
+      object = new expo.packages['macro-test'].MacroCounter(10)
       object.increment(5)
       """)
     #expect(try value.asInt() == 15)
@@ -232,7 +235,7 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
     let value = try runtime.eval(
       """
-      object = new expo.modules.MacroSharedObjectModule.MacroCounter(0)
+      object = new expo.packages['macro-test'].MacroCounter(0)
       object.increment(1)
       object.increment(2)
       object.increment(3)
@@ -243,7 +246,7 @@ private struct MacroSharedObjectTests {
   @Test
   func `honors the @SharedObject name override on a bound method`() throws {
     register(MacroSharedObjectModule(appContext: appContext))
-    #expect(try runtime.eval("new expo.modules.MacroSharedObjectModule.RenamedCounter('x').ping()").asString() == "pong")
+    #expect(try runtime.eval("new expo.packages['macro-test'].RenamedCounter('x').ping()").asString() == "pong")
   }
 
   // MARK: - @JS properties
@@ -253,7 +256,7 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
     let value = try runtime.eval(
       """
-      object = new expo.modules.MacroSharedObjectModule.MacroCounter(42)
+      object = new expo.packages['macro-test'].MacroCounter(42)
       object.current
       """)
     #expect(try value.asInt() == 42)
@@ -264,7 +267,7 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
     let value = try runtime.eval(
       """
-      object = new expo.modules.MacroSharedObjectModule.MacroCounter(0)
+      object = new expo.packages['macro-test'].MacroCounter(0)
       object.label = 'hello'
       object.label
       """)
@@ -278,31 +281,31 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
     let value = try runtime.eval(
       """
-      object = expo.modules.MacroSharedObjectModule.MacroCounter.make(3)
-      object instanceof expo.modules.MacroSharedObjectModule.MacroCounter ? object.increment(4) : -1
+      object = expo.packages['macro-test'].MacroCounter.make(3)
+      object instanceof expo.packages['macro-test'].MacroCounter ? object.increment(4) : -1
       """)
     #expect(try value.asInt() == 7)
-    #expect(try runtime.eval("'make' in expo.modules.MacroSharedObjectModule.MacroCounter.prototype").asBool() == false)
+    #expect(try runtime.eval("'make' in expo.packages['macro-test'].MacroCounter.prototype").asBool() == false)
   }
 
   @Test
   func `binds a static async @JS method that returns a promise`() async throws {
     register(MacroSharedObjectModule(appContext: appContext))
-    let result = try await runtime.evalAsync("expo.modules.MacroSharedObjectModule.MacroCounter.makeLater(5)")
+    let result = try await runtime.evalAsync("expo.packages['macro-test'].MacroCounter.makeLater(5)")
     #expect(try await result.asInt() == 5)
   }
 
   @Test
   func `binds a static @JS property on the constructor`() throws {
     register(MacroSharedObjectModule(appContext: appContext))
-    #expect(try runtime.eval("expo.modules.MacroSharedObjectModule.MacroCounter.maximum").asInt() == 100)
+    #expect(try runtime.eval("expo.packages['macro-test'].MacroCounter.maximum").asInt() == 100)
   }
 
   @Test
   func `a static and an instance @JS member can share a name`() throws {
     register(MacroSharedObjectModule(appContext: appContext))
-    #expect(try runtime.eval("expo.modules.MacroSharedObjectModule.MacroCounter.current").asString() == "static")
-    #expect(try runtime.eval("new expo.modules.MacroSharedObjectModule.MacroCounter(9).current").asInt() == 9)
+    #expect(try runtime.eval("expo.packages['macro-test'].MacroCounter.current").asString() == "static")
+    #expect(try runtime.eval("new expo.packages['macro-test'].MacroCounter(9).current").asInt() == 9)
   }
 
   // MARK: - Non-primitive decode/encode
@@ -312,7 +315,7 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
     let result = try runtime.eval(
       """
-      object = new expo.modules.MacroSharedObjectModule.MacroCounter(10)
+      object = new expo.packages['macro-test'].MacroCounter(10)
       object.shift({ x: 3, y: 4 })
       """).asObject()
     #expect(try result.getProperty("x").asInt() == 3)
@@ -325,7 +328,7 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
     let clamped = try runtime.eval(
       """
-      object = new expo.modules.MacroSharedObjectModule.MacroCounter(100)
+      object = new expo.packages['macro-test'].MacroCounter(100)
       object.clamp(40)
       """)
     #expect(try clamped.asInt() == 40)
@@ -335,7 +338,7 @@ private struct MacroSharedObjectTests {
     #expect(passthrough.isNull() == true)
 
     // Omitting the trailing argument hits the arity-0 branch and returns nil.
-    let omitted = try runtime.eval("new expo.modules.MacroSharedObjectModule.MacroCounter(7).clamp()")
+    let omitted = try runtime.eval("new expo.packages['macro-test'].MacroCounter(7).clamp()")
     #expect(omitted.isNull() == true)
   }
 
@@ -344,8 +347,8 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
     let value = try runtime.eval(
       """
-      a = new expo.modules.MacroSharedObjectModule.MacroCounter(10)
-      b = new expo.modules.MacroSharedObjectModule.MacroCounter(5)
+      a = new expo.packages['macro-test'].MacroCounter(10)
+      b = new expo.packages['macro-test'].MacroCounter(5)
       a.added(b).current
       """)
     #expect(try value.asInt() == 15)
@@ -358,7 +361,7 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
     let code = try runtime.eval(
       """
-      object = new expo.modules.MacroSharedObjectModule.MacroCounter(0)
+      object = new expo.packages['macro-test'].MacroCounter(0)
       try { object.validate() } catch (error) { error.code }
       """)
     #expect(try code.asString() == "E_TEST_CODE")
@@ -372,7 +375,7 @@ private struct MacroSharedObjectTests {
   func `release() releases the native object of a frozen JS object`() throws {
     register(MacroSharedObjectModule(appContext: appContext))
     let registrySizeBefore = appContext.sharedObjectRegistry.size
-    let jsObject = try runtime.eval("object = new expo.modules.MacroSharedObjectModule.MacroCounter(1)").asObject()
+    let jsObject = try runtime.eval("object = new expo.packages['macro-test'].MacroCounter(1)").asObject()
     let nativeObject = try SharedObject.native(from: jsObject)
     try runtime.eval("Object.freeze(object); object.release()")
     #expect(nativeObject.sharedObjectId == 0)
@@ -384,7 +387,7 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
     try runtime.eval(
       """
-      object = new expo.modules.MacroSharedObjectModule.MacroCounter(1)
+      object = new expo.packages['macro-test'].MacroCounter(1)
       Object.freeze(object)
       object.release()
       object.release()
@@ -396,7 +399,7 @@ private struct MacroSharedObjectTests {
     register(MacroSharedObjectModule(appContext: appContext))
     let code = try runtime.eval(
       """
-      object = new expo.modules.MacroSharedObjectModule.MacroCounter(1)
+      object = new expo.packages['macro-test'].MacroCounter(1)
       Object.freeze(object)
       object.release()
       try { object.increment(1); 'no error' } catch (error) { error.code }
@@ -410,7 +413,7 @@ private struct MacroSharedObjectTests {
     let jsObject = try runtime.eval(
       """
       calls = 0
-      object = new expo.modules.MacroSharedObjectModule.MacroCounter(1)
+      object = new expo.packages['macro-test'].MacroCounter(1)
       object.addListener('ping', () => { calls += 1 })
       Object.freeze(object)
       """).asObject()

@@ -240,9 +240,35 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   /// - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
   internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
     let runtime = try self.runtime
-    return classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
+    if let object = classRegistry.withPrototype(nativeClassId: nativeClassId, { (prototype: borrowing JavaScriptObject) in
       return runtime.createObject(prototype: prototype)
+    }) {
+      return object
     }
+    // The class of a shared object that a package exports is built when it is first needed, which can be
+    // when native code passes an instance to JavaScript before JavaScript reads the class.
+    guard let exportedType = moduleRegistry.sharedObjectType(for: nativeClassId) else {
+      return nil
+    }
+    return try JavaScriptActor.assumeIsolated {
+      _ = try getSharedObjectClass(exportedType)
+      return classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
+        return runtime.createObject(prototype: prototype)
+      }
+    }
+  }
+
+  /// Returns the JavaScript class of a `@SharedObject` class, and builds it on the first call. The class is
+  /// built once for the runtime, so modules that list it in `_classTypes` and the package that exports it
+  /// return the same object.
+  @JavaScriptActor
+  internal func getSharedObjectClass(_ type: SharedObject.Type) throws -> JavaScriptObject {
+    if let klass = classRegistry.withPrototype(nativeClassId: ObjectIdentifier(type), { (prototype: borrowing JavaScriptObject) in
+      return prototype.getProperty("constructor").getObject()
+    }) {
+      return klass
+    }
+    return try JavaScriptBindings.buildSharedObjectClass(type, appContext: self)
   }
 
   // MARK: - Legacy modules
@@ -392,25 +418,32 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   /**
    Returns the names of the modules and shared object classes of the given package. Module names come first,
-   then the classes defined in the modules. A class whose name is already taken by a module or another class
-   in the package is left out and logged.
+   then the shared object classes that the package exports, then the classes defined in the modules.
+   A class whose name is already taken by a module or another class in the package is left out and logged.
    */
   func packageExportNames(inPackage packageName: String) -> [String] {
     let holders = moduleRegistry.moduleHolders(inPackage: packageName)
     var names = holders.map(\.name)
     var seenNames = Set(names)
 
+    func add(className: String, from owner: String) {
+      if seenNames.insert(className).inserted {
+        names.append(className)
+      } else {
+        log.error(
+          "Class '\(className)' from \(owner) is not available in 'expo.packages[\"\(packageName)\"]', "
+            + "because another module or class in the '\(packageName)' package already has this name. "
+            + "Rename the class or the module so that each name in the package is unique."
+        )
+      }
+    }
+
+    for sharedObjectType in moduleRegistry.sharedObjectTypes(inPackage: packageName) {
+      add(className: sharedObjectType._jsName, from: "package \'\(packageName)\'")
+    }
     for holder in holders {
       for className in holder.definition.classes.keys.sorted() {
-        if seenNames.insert(className).inserted {
-          names.append(className)
-        } else {
-          log.error(
-            "Class '\(className)' from module '\(holder.name)' is not available in 'expo.packages[\"\(packageName)\"]', "
-              + "because another module or class in the '\(packageName)' package already has this name. "
-              + "Rename the class or the module so that each name in the package is unique."
-          )
-        }
+        add(className: className, from: "module '\(holder.name)'")
       }
     }
     return names
@@ -421,11 +454,15 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    in the package with the given name. The order of precedence is the same as in `packageExportNames(inPackage:)`.
    */
   @JavaScriptActor
-  func packageExport(named exportName: String, inPackage packageName: String) -> JavaScriptValue? {
+  func packageExport(named exportName: String, inPackage packageName: String) throws -> JavaScriptValue? {
     let holders = moduleRegistry.moduleHolders(inPackage: packageName)
 
     if let holder = holders.first(where: { $0.name == exportName }) {
       return holder.getJavaScriptValue()
+    }
+    let sharedObjectTypes = moduleRegistry.sharedObjectTypes(inPackage: packageName)
+    if let sharedObjectType = sharedObjectTypes.first(where: { $0._jsName == exportName }) {
+      return try getSharedObjectClass(sharedObjectType).asValue()
     }
     if let holder = holders.first(where: { $0.definition.classes[exportName] != nil }) {
       // Classes are installed on the module object, so the class is the same object as `module[exportName]`.
@@ -683,14 +720,14 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   }
 
   /// Finds the `@SharedObject` class for a given native type identifier among the classes that modules
-  /// register in `_classTypes`.
+  /// register in `_classTypes` and the classes that packages export.
   private func findClassType(for typeId: ObjectIdentifier) -> SharedObject.Type? {
     for module in moduleRegistry {
       if let classType = type(of: module.module)._classTypes.first(where: { ObjectIdentifier($0) == typeId }) {
         return classType
       }
     }
-    return nil
+    return moduleRegistry.sharedObjectType(for: typeId)
   }
 
   /**

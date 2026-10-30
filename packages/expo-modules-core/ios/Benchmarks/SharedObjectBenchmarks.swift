@@ -103,10 +103,10 @@ extension Benchmarks {
   @Test
   func `emit: Int payload from a @SharedObject`() async throws {
     try await moduleBenchmarkCase { appContext in
-      return SharedObjectBenchmarkModule(appContext: appContext)
+      return makeSharedObjectBenchmarkModule(appContext)
     } _: { _, runtime in
       let counterObject = try runtime.eval([
-        "var counter = new expo.modules.SharedObjectBenchmarkModule.BenchmarkCounter(0)",
+        "var counter = new expo.packages.benchmarks.BenchmarkCounter(0)",
         "counter.addListener('count', () => {})",
         "counter"
       ]).asObject()
@@ -160,7 +160,7 @@ private final class BenchmarkCounter: SharedObject {
   }
 }
 
-@ExpoModule(classes: [BenchmarkCounter.self])
+@ExpoModule
 private final class SharedObjectBenchmarkModule: Module {
   @JS
   func makeCounter(value: Int) -> BenchmarkCounter {
@@ -183,6 +183,13 @@ private final class SharedObjectBenchmarkModule: Module {
   }
 }
 
+/// Creates `SharedObjectBenchmarkModule` and exports `BenchmarkCounter` in the `benchmarks` package.
+@JavaScriptActor
+private func makeSharedObjectBenchmarkModule(_ appContext: AppContext) -> SharedObjectBenchmarkModule {
+  appContext.moduleRegistry.register(package: ExpoPackage(sharedObjects: [BenchmarkCounter.self]), named: "benchmarks")
+  return SharedObjectBenchmarkModule(appContext: appContext)
+}
+
 /// Runs one case with `SharedObjectBenchmarkModule` registered and a JavaScript driver that runs `body`
 /// in a loop, with the module in `m`, the class in `Counter` and one instance in `counter`.
 private func sharedObjectBenchmarkCase(
@@ -190,11 +197,11 @@ private func sharedObjectBenchmarkCase(
   _ measure: @escaping @JavaScriptActor (borrowing JavaScriptFunction, JavaScriptRuntime) throws -> Void
 ) async throws {
   try await moduleBenchmarkCase { appContext in
-    return SharedObjectBenchmarkModule(appContext: appContext)
+    return makeSharedObjectBenchmarkModule(appContext)
   } _: { _, runtime in
     let run = try javaScriptDriver(
       runtime,
-      setup: "var m = expo.modules.SharedObjectBenchmarkModule; var Counter = m.BenchmarkCounter; var counter = new Counter(0);",
+      setup: "var m = expo.modules.SharedObjectBenchmarkModule; var Counter = expo.packages.benchmarks.BenchmarkCounter; var counter = new Counter(0);",
       body: body
     )
     try measure(run, runtime)

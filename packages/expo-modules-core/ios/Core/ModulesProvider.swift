@@ -3,7 +3,7 @@ import Foundation
 /**
  The native exports of one npm package that are declared with the Expo Modules API 2.0 macros: its modules
  and shared object classes. A modules provider returns the packages keyed by the npm package name, and that name
- is the JS name of the package, for example `expo.packages['expo-audio'].AudioModule`.
+ is the JS name of the package, for example `expo.packages['expo-audio'].AudioPlayer`.
  Local and inline modules are in the `$local` package.
  */
 public struct ExpoPackage {

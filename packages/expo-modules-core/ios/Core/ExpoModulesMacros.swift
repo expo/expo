@@ -108,8 +108,8 @@ public macro Event(_ name: String? = nil, sync: Bool = false) =
 
 /// Member macro applied to a `Module` subclass. Scans the class body for declarations
 /// marked with `@JS` and binds them directly into the module's JS object by a synthesized
-/// `_decorateModule(object:in:)`. The `@SharedObject` classes in the `classes:` argument are
-/// emitted as a `_classTypes` static, and core adds their JavaScript classes to the module's JS object.
+/// `_decorateModule(object:in:)`. Autolinking exports the package's `public` `@SharedObject` classes
+/// next to its modules, for example `expo.packages['my-package'].Cache`.
 ///
 /// The module's JavaScript name is synthesized into a `_jsName` static and read by core, so there
 /// is no `Name(…)` DSL entry. It defaults to the class name; pass `@ExpoModule("CustomName")` to
@@ -134,14 +134,30 @@ public macro Event(_ name: String? = nil, sync: Bool = false) =
     named(_decorateModule), named(_assertTypesConformance))
 @attached(memberAttribute)
 @attached(extension, conformances: AnyModule, Sendable)
-public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
+public macro ExpoModule(_ name: String? = nil) =
+  #externalMacro(module: "ExpoModulesMacros", type: "ExpoModuleMacro")
+
+/// Variant of `@ExpoModule` that also adds the given `@SharedObject` classes to the module's JS object.
+/// The classes are emitted as a `_classTypes` static.
+@available(
+  *, deprecated,
+  message: "Remove the 'classes' argument and declare the shared object classes 'public'. Autolinking exports them next to the modules of the package."
+)
+@attached(
+  member,
+  names:
+    named(_jsName), named(_classTypes), named(appContext), named(init),
+    named(_decorateModule), named(_assertTypesConformance))
+@attached(memberAttribute)
+@attached(extension, conformances: AnyModule, Sendable)
+public macro ExpoModule(_ name: String? = nil, classes: [Any.Type]) =
   #externalMacro(module: "ExpoModulesMacros", type: "ExpoModuleMacro")
 
 /// Member macro applied to a `SharedObject` subclass. Scans the class body for declarations
 /// marked with `@JS` (including a single `@JS init(...)` for the JS constructor) and
 /// binds them through overrides of the `SharedObject` hooks below. The class's JavaScript name
-/// is emitted as a `_jsName` override. The companion `@ExpoModule(classes: [Foo.self])` wires the
-/// class into the module's exposed surface.
+/// is emitted as a `_jsName` override. Autolinking exports the class next to the modules of its package,
+/// for example `expo.packages['my-package'].Cache`, so the class must be `public`.
 ///
 /// `@JS` methods and properties are bound directly onto the class prototype by an override of
 /// `_decorateSharedObject(prototype:in:)`, `static` and `class` ones onto the class itself by an
@@ -156,7 +172,7 @@ public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
 /// Usage:
 ///
 ///     @SharedObject
-///     final class Cache: SharedObject {
+///     public final class Cache: SharedObject {
 ///       @JS
 ///       init(name: String) { self.name = name }
 ///

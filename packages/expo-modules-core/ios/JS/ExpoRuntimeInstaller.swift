@@ -128,7 +128,7 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
 
     return runtime.createHostObject(
       get: { [weak appContext] exportName in
-        return appContext?.packageExport(named: exportName, inPackage: packageName) ?? .undefined()
+        return try appContext?.packageExport(named: exportName, inPackage: packageName) ?? .undefined()
       },
       set: { exportName, _ in
         throw ReadOnlyExpoPackagesPropertyException("expo.packages[\"\(packageName)\"].\(exportName)")

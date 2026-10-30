@@ -139,7 +139,7 @@ public final class ModuleHolder {
 
       // Install the `@SharedObject` classes the `@ExpoModule` macro registers by type.
       for classType in type(of: module)._classTypes {
-        object.setProperty(classType._jsName, value: try JavaScriptBindings.buildSharedObjectClass(classType, appContext: appContext))
+        object.setProperty(classType._jsName, value: try appContext.getSharedObjectClass(classType))
       }
 
       // Install the `@JS` members the `@ExpoModule` macro binds directly into the JS object
