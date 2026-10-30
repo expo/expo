@@ -46,7 +46,6 @@ function getZoomTransitionSourceIdentifier(
 export function ZoomTransitionTarget({ route, children }: ZoomTransitionTargetProps) {
   const isPreview = useIsPreview();
   const presentation = use(ScreenPresentationContext);
-  // Use the user's setting because `gestureEnabled` is forced to false while custom dismissal bounds are active.
   const gestureEnabled = use(DescriptorsContext)[route.key]?.options?.gestureEnabled;
   const sourceIdentifier = getZoomTransitionSourceIdentifier(route, isPreview);
   const isUnsupportedPreview =
