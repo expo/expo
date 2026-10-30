@@ -4,7 +4,7 @@ API_LEVEL=$1
 emulator_name="bare-expo"
 ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT:-$ANDROID_HOME}
 
-if $ANDROID_SDK_ROOT/tools/android list avd | grep -q $emulator_name; then
+if $ANDROID_SDK_ROOT/emulator/emulator -list-avds | grep -qx $emulator_name; then
     echo " ☛  Found an existing an emulator named ${emulator_name}"
     exit 0;
 fi
@@ -15,9 +15,9 @@ then
 elif [ $API_LEVEL -eq 24 ]
 then
     PACKAGE="system-images;android-24;default;x86_64"
-elif [ $API_LEVEL -eq 34 ]
+elif [ $API_LEVEL -eq 36 ]
 then
-    PACKAGE="system-images;android-34;google_apis;arm64-v8a"
+    PACKAGE="system-images;android-36;google_apis;arm64-v8a"
 fi
 
 echo uname -a
@@ -61,7 +61,7 @@ skin.name = pixel_7
 abi.type=arm64
 skin.path = ${HOME}/Library/Android/sdk/skins/pixel_7
 avd.ini.encoding=UTF-8
-image.sysdir.1=system-images/android-34/google_apis/arm64-v8a/
+image.sysdir.1=system-images/android-${API_LEVEL}/google_apis/arm64-v8a/
 tag.id=default
 tag.display=
 EOF

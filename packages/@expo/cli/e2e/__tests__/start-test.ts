@@ -80,8 +80,11 @@ it('runs `npx expo start --help`', async () => {
       Setting CI=1 turns off file watching and Fast Refresh, so code changes won't reach
       the app until the dev server restarts. Don't set it for local development.
 
-      Run without the interactive UI and keep Fast Refresh by redirecting output:
-        $ npx expo start > expo.log 2>&1
+      Inspect structured events from running or stopped expo start processes:
+        $ npx expo command:ps "start" --json
+        $ npx expo command:events <session-id>
+      Add --tail to follow live events. See the command overview for usage and examples:
+        $ npx expo command --help
     "
   `);
 });

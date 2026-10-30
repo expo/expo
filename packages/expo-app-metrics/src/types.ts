@@ -580,12 +580,13 @@ export interface ExpoAppMetricsModuleType {
    * Reports an unhandled JavaScript error, recorded natively as a `js.exception` log event following
    * OpenTelemetry's exception conventions. Called by the global `ErrorUtils` handler that
    * `installErrorHandler` installs and by `AppMetricsErrorBoundary`; the `source` field records
-   * which path captured the error.
+   * which path captured the error. An integration that reports errors for a library uses the
+   * `integration` source.
    *
    * @private This API is unstable and may change without notice.
    */
   reportError(error: {
-    source: 'global' | 'errorBoundary' | 'reportedByUser';
+    source: 'global' | 'errorBoundary' | 'reportedByUser' | 'integration';
     type?: string;
     message: string;
     stacktrace?: string;

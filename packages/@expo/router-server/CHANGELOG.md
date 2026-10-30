@@ -1,5 +1,54 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- [Internal] The renderer no longer rebuilds the route tree to resolve the page's `pathname` and `params`. ([#51961](https://github.com/expo/expo/pull/51961) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.16
+
+No changes in this release.
+
+## 58.0.15
+
+No changes in this release.
+
+## 58.0.14
+
+### Patch Changes
+
+- Reduced the size of the generated `Href` type so large apps no longer fail with TS2590 (`Expression produces a union type that is too complex to represent`). ([#51598](https://github.com/expo/expo/pull/51598) by [@Ubax](https://github.com/Ubax))
+
+## 58.0.13
+
+No changes in this release.
+
+## 58.0.12
+
+### Patch Changes
+
+- Pass the current `pathname` and `params` props to the `+html` component. ([#51255](https://github.com/expo/expo/pull/51255) by [@Ubax](https://github.com/Ubax))
+- Use the streaming renderer for SSG output. ([#46526](https://github.com/expo/expo/pull/46526) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.11
+
+No changes in this release.
+
+## 58.0.10
+
+No changes in this release.
+
+## 58.0.9
+
+No changes in this release.
+
+## 58.0.8
+
+### Patch Changes
+
+- Keep large, completed Suspense content visible without JavaScript during streaming SSR. ([#49878](https://github.com/expo/expo/pull/49878) by [@kev-flex](https://github.com/kev-flex))
+
 ## 58.0.7
 
 ### Patch Changes

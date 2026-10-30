@@ -8,7 +8,7 @@ export enum AlbumType {
 }
 
 /**
- * Lightweight metadata for a single album, returned by [`Album.getAlbumsMetadata`](#albumgetalbumsmetadata).
+ * Lightweight metadata for a single album, returned by [`Album.getAlbumsMetadata`](#getalbumsmetadata).
  *
  * Contains fields that can be read cheaply from the media store, without instantiating an
  * [`Album`](#album) per entry. Use an [`Album`](#album) instance when you need heavier data such as

@@ -6,7 +6,7 @@ import versions from '~/public/static/constants/versions.json';
 import diffInfo from '~/public/static/diffs/template-bare-minimum/diffInfo.json';
 import { DiffBlock } from '~/ui/components/Snippet';
 import { PermalinkedSnippetHeader } from '~/ui/components/Snippet/PermalinkedSnippetHeader';
-import { RawH3, RawH4 } from '~/ui/components/Text';
+import { P, RawH3, RawH4 } from '~/ui/components/Text';
 
 import { NativeUpgradePromptCallout } from './NativeUpgradePromptCallout';
 import { VersionSelector, BETA_MAJOR_VERSION } from './VersionSelector';
@@ -76,6 +76,11 @@ export const TemplateBareMinimumDiffViewer = () => {
           <RawH3>
             Native code changes from SDK {fromVersion} to {toVersion}
           </RawH3>
+          {diff === '' ? (
+            <P>
+              No native code changes from SDK {fromVersion} to {toVersion}.
+            </P>
+          ) : null}
           <NativeUpgradePromptCallout
             fromVersion={fromVersion as string}
             toVersion={toVersion as string}

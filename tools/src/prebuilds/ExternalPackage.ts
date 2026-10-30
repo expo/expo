@@ -2,8 +2,9 @@ import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
-import { getExternalPackagesDir, getPrecompileDir } from '../Directories';
+import { getExpoRepositoryRootDir, getExternalPackagesDir } from '../Directories';
 import { Package } from '../Packages';
+import { getPackageBuildDir } from './MonorepoLayout';
 import { SPMConfig } from './SPMConfig.types';
 import { resolvePackagePath } from './resolvePackage';
 
@@ -101,7 +102,7 @@ export class ExternalPackage implements SPMPackageSource {
     this.configPath = configPath;
     this.packageName = packageName;
     this.path = resolvePackagePath(packageName);
-    this.buildPath = path.join(getPrecompileDir(), '.build', packageName);
+    this.buildPath = getPackageBuildDir(getExpoRepositoryRootDir(), packageName);
 
     const spmConfigPath = path.join(configPath, SPMConfigFileName);
     if (!fs.existsSync(spmConfigPath)) {

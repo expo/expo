@@ -1,20 +1,30 @@
 import {
+  Box,
   Button,
   Checkbox,
   Column,
   DropdownMenu,
+  DropdownMenuGroup,
+  DropdownMenuPopup,
   HorizontalDivider,
   DropdownMenuItem,
   Host,
   Icon,
   RNHostView,
   Row,
+  SelectableDropdownMenuItem,
+  Spacer,
   Switch,
   Text as ComposeText,
   FilledTonalButton,
   OutlinedButton,
 } from '@expo/ui/jetpack-compose';
-import { background, combinedClickable, paddingAll } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  background,
+  combinedClickable,
+  height,
+  paddingAll,
+} from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
 import { View, Text, Alert, Pressable } from 'react-native';
 
@@ -48,6 +58,8 @@ export default function DropdownMenuScreen() {
   const [shadowMenuExpanded, setShadowMenuExpanded] = React.useState(false);
   const [shadowElevation, setShadowElevation] = React.useState<number | undefined>(undefined);
   const [roundedMenuExpanded, setRoundedMenuExpanded] = React.useState(false);
+  const [popupMenuExpanded, setPopupMenuExpanded] = React.useState(false);
+  const [popupSortOrder, setPopupSortOrder] = React.useState('Newest');
 
   React.useEffect(() => {
     if (sectionsMenuExpanded === false) {
@@ -465,6 +477,50 @@ export default function DropdownMenuScreen() {
               </DropdownMenuItem>
             </DropdownMenu.Items>
           </DropdownMenu>
+        </Host>
+      </Section>
+      <Section title="DropdownMenuPopup with groups">
+        <Host matchContents>
+          <Box>
+            <OutlinedButton onClick={() => setPopupMenuExpanded(true)}>
+              <ComposeText>{`Sort: ${popupSortOrder}`}</ComposeText>
+            </OutlinedButton>
+            <DropdownMenuPopup
+              expanded={popupMenuExpanded}
+              onDismissRequest={() => setPopupMenuExpanded(false)}>
+              <DropdownMenuGroup>
+                {['Newest', 'Oldest', 'Popular'].map((label) => (
+                  <SelectableDropdownMenuItem
+                    key={label}
+                    selected={popupSortOrder === label}
+                    onClick={() => {
+                      setPopupSortOrder(label);
+                      setPopupMenuExpanded(false);
+                    }}>
+                    <SelectableDropdownMenuItem.Text>
+                      <ComposeText>{label}</ComposeText>
+                    </SelectableDropdownMenuItem.Text>
+                    <SelectableDropdownMenuItem.SelectedLeadingIcon>
+                      <Icon source={checkIcon} size={20} />
+                    </SelectableDropdownMenuItem.SelectedLeadingIcon>
+                  </SelectableDropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+              <Spacer modifiers={[height(2)]} />
+              <DropdownMenuGroup>
+                <DropdownMenuItem onClick={() => setPopupMenuExpanded(false)}>
+                  <DropdownMenuItem.Text>
+                    <ComposeText>Settings</ComposeText>
+                  </DropdownMenuItem.Text>
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setPopupMenuExpanded(false)}>
+                  <DropdownMenuItem.Text>
+                    <ComposeText>Log out</ComposeText>
+                  </DropdownMenuItem.Text>
+                </DropdownMenuItem>
+              </DropdownMenuGroup>
+            </DropdownMenuPopup>
+          </Box>
         </Host>
       </Section>
     </ScrollPage>

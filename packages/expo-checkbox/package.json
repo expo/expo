@@ -31,12 +31,12 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/react-native": "^14.0.1",
-    "@types/react": "~19.3.0",
-    "expo-module-scripts": "workspace:*"
+    "@types/react": "~19.3.0"
   },
   "peerDependencies": {
     "react": "*",
@@ -49,6 +49,6 @@
     }
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

@@ -22,10 +22,10 @@ This page walks you through creating your first EAS Workflow: development builds
 
     <Terminal
       cmd={{
-        npm: ['$ npx create-expo-app@latest'],
-        yarn: ['$ yarn create expo-app'],
-        pnpm: ['$ pnpm create expo-app'],
-        bun: ['$ bun create expo'],
+        npm: ['$ npx create-expo-app@latest --template default@sdk-58'],
+        yarn: ['$ yarn create expo-app --template default@sdk-58'],
+        pnpm: ['$ pnpm create expo-app --template default@sdk-58'],
+        bun: ['$ bun create expo --template default@sdk-58'],
       }}
     />
 
@@ -55,6 +55,8 @@ Run the workflow with the following command:
 <Terminal cmd={['$ eas workflow:run .eas/workflows/build.yml']} />
 
 Once you do, you can watch your workflow run on your project's [workflows page](https://expo.dev/accounts/[account]/projects/[projectName]/workflows).
+
+If a job fails, you can [re-run the workflow from its failed jobs](/eas/workflows/manage-workflow-runs/#re-run-from-failed-jobs) without repeating successful work.
 
 </Step>
 

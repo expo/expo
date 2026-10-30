@@ -10,7 +10,7 @@ final class BlurEffectView: UIVisualEffectView {
   @Clamping(lowerBound: 0.01, upperBound: 1)
   var intensity: Double = 0.5 {
     didSet {
-      setNeedsDisplay()
+      setNeedsEffectUpdate()
     }
   }
 
@@ -22,10 +22,11 @@ final class BlurEffectView: UIVisualEffectView {
 
   private var visualEffect: UIVisualEffect = UIBlurEffect(style: TintStyle.default.toBlurEffect()) {
     didSet {
-      setNeedsDisplay()
+      setNeedsEffectUpdate()
     }
   }
   private var animator: UIViewPropertyAnimator?
+  private var needsEffectUpdate = true
 
   init() {
     super.init(effect: nil)
@@ -37,9 +38,24 @@ final class BlurEffectView: UIVisualEffectView {
     animator?.stopAnimation(true)
   }
 
-  override func draw(_ rect: CGRect) {
-    super.draw(rect)
+  // Apply the effect after layout, not in `draw(_:)`. UIKit skips `draw(_:)` while the view is 0×0 and does not
+  // call it again when the view gets a size, which happens when SwiftUI hosts the view, for example in `MaskedView`.
+  override func layoutSubviews() {
+    super.layoutSubviews()
 
+    guard needsEffectUpdate, !bounds.isEmpty else {
+      return
+    }
+    needsEffectUpdate = false
+    updateEffect()
+  }
+
+  private func setNeedsEffectUpdate() {
+    needsEffectUpdate = true
+    setNeedsLayout()
+  }
+
+  private func updateEffect() {
     // BlurView intensity relies on running an animation and making it partially complete. This means that there
     // is a continually running animation, which makes detox hang (it waits for the animation to finish indefinitely).
     // We can detect if detoxServer is running and in that case replace smooth intensity value with an on/off behaviour.

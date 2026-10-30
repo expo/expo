@@ -18,6 +18,7 @@ import {
 import { datePickerStyle } from './datePickerStyle';
 import { environment } from './environment';
 import { gaugeStyle } from './gaugeStyle';
+import { onHingeChange } from './hingeObservation';
 import { progressViewStyle } from './progressViewStyle';
 import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
 import { id, scrollPosition } from './scrollPosition';
@@ -1457,6 +1458,16 @@ export const font = (params: {
     | 'footnote'
     | 'caption'
     | 'caption2';
+  /**
+   * Draws both lowercase and uppercase letters as small capitals.
+   * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/font/smallcaps()).
+   */
+  smallCaps?: boolean;
+  /**
+   * The space between lines of text, relative to the font's standard leading.
+   * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/font/leading(_:)).
+   */
+  leading?: 'standard' | 'tight' | 'loose';
 }) => createModifier('font', params);
 /**
  * A standard size for Dynamic Type, from `xSmall` through the five
@@ -1734,6 +1745,15 @@ export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grou
 export const listStyle = (style: ListStyle) => createModifier('listStyle', { style });
 
 /**
+ * Sets the label that a list's section index shows for this `Section`. People tap or drag along
+ * the index to scroll the list to the section. On versions before iOS 26 it does nothing.
+ * @param label - The label for the section, usually a single letter.
+ * @platform ios 26.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/sectionindexlabel(_:)).
+ */
+export const sectionIndexLabel = (label: string) => createModifier('sectionIndexLabel', { label });
+
+/**
  * Adds a luminance to alpha effect to this view.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/SwiftUI/View/luminanceToAlpha()).
  */
@@ -1896,6 +1916,7 @@ export type BuiltInModifier =
   | ReturnType<typeof scrollPosition>
   | ReturnType<typeof onScrollPhaseChange>
   | NonNullable<ReturnType<typeof useScrollGeometryChange>>
+  | ReturnType<typeof onHingeChange>
   | ReturnType<typeof moveDisabled>
   | ReturnType<typeof deleteDisabled>
   | ReturnType<typeof environment>
@@ -1997,8 +2018,10 @@ export * from './presentationModifiers';
 export * from './environment';
 export type { ShapeStyle } from './shapeStyle';
 export * from './scrollPosition';
+export * from './searchable';
 export * from './symbolEffect';
 export * from './scrollObservation';
+export * from './hingeObservation';
 export * from './widgets';
 export type {
   TimingAnimationParams,

@@ -4,15 +4,13 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-jest.mock('../cli', () => ({ runDumpPackage: jest.fn() }));
-const { runDumpPackage } = require('../cli');
-
 const {
   parseDumpedManifest,
   renderSourceManifest,
   pureSwiftManifest,
   emitSourceManifestPackage,
   emitPureSwiftSourcePackage,
+  emitExpoModulesJSIHeadersPackage,
   raiseFloor,
   spmPackageIdentity,
   documentedPackage,
@@ -270,18 +268,15 @@ describe('macro plugin flags', () => {
     });
 
     it('carries the flags through emitSourceManifestPackage', () => {
-      runDumpPackage.mockReturnValue(
+      emitSourceManifestPackage(
+        moduleRoot,
+        { frameworkSearchPath: '/abs/interfaces', outDir, macroFlags: MACRO_FLAGS },
         JSON.stringify({
           name: 'TestModule',
           products: [{ name: 'TestModule', type: { library: ['automatic'] }, targets: ['Main'] }],
           targets: [{ name: 'Main', type: 'regular', path: 'Main', dependencies: [] }],
         })
       );
-      emitSourceManifestPackage(moduleRoot, {
-        frameworkSearchPath: '/abs/interfaces',
-        outDir,
-        macroFlags: MACRO_FLAGS,
-      });
 
       expect(
         fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8')
@@ -349,8 +344,8 @@ describe('implicit target source paths', () => {
     fs.mkdirSync(outDir, { recursive: true });
   });
 
-  const emit = () =>
-    emitSourceManifestPackage(moduleRoot, { frameworkSearchPath: '/abs/interfaces', outDir });
+  const emit = (dump) =>
+    emitSourceManifestPackage(moduleRoot, { frameworkSearchPath: '/abs/interfaces', outDir }, dump);
   const emittedManifest = () =>
     fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8');
 
@@ -360,9 +355,8 @@ describe('implicit target source paths', () => {
 
   it('resolves a target with no explicit path to its predefined source directory', () => {
     fs.mkdirSync(path.join(moduleRoot, 'Sources', 'Example'), { recursive: true });
-    runDumpPackage.mockReturnValue(dumpWithoutPath);
 
-    expect(emit().ok.packageDep).toEqual({
+    expect(emit(dumpWithoutPath).ok.packageDep).toEqual({
       name: 'TestModule',
       path: path.join(outDir, 'expo-source', 'TestModule'),
     });
@@ -370,20 +364,18 @@ describe('implicit target source paths', () => {
   });
 
   it('leaves an explicit path untouched', () => {
-    runDumpPackage.mockReturnValue(
+    emit(
       JSON.stringify({
         name: 'TestModule',
         products: [{ name: 'TestModule', type: { library: ['automatic'] }, targets: ['Example'] }],
         targets: [{ name: 'Example', type: 'regular', path: 'ios/Example', dependencies: [] }],
       })
     );
-    emit();
     expect(emittedManifest()).toContain('path: "root/ios/Example"');
   });
 
   it('skips the module and names the unresolved targets instead of emitting root/undefined', () => {
-    runDumpPackage.mockReturnValue(dumpWithoutPath);
-    const result = emit();
+    const result = emit(dumpWithoutPath);
 
     expect(result.ok).toBeUndefined();
     expect(result.refusal).toEqual({
@@ -539,14 +531,17 @@ describe('single-target packages with sources directly in a predefined directory
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(target, content);
   };
-  const emit = () =>
-    emitSourceManifestPackage(moduleRoot, { frameworkSearchPath: '/abs/interfaces', outDir });
+  const emit = (targetNames) =>
+    emitSourceManifestPackage(
+      moduleRoot,
+      { frameworkSearchPath: '/abs/interfaces', outDir },
+      dumpTargets(targetNames)
+    );
 
   it('resolves the only target to the bare predefined directory holding its sources', () => {
     write('Sources/File.swift');
-    runDumpPackage.mockReturnValue(dumpTargets(['RootSrc']));
 
-    expect(emit().refusal).toBeUndefined();
+    expect(emit(['RootSrc']).refusal).toBeUndefined();
     expect(
       fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8')
     ).toContain('path: "root/Sources"');
@@ -555,9 +550,8 @@ describe('single-target packages with sources directly in a predefined directory
   it('prefers Sources/<target name> over the bare directory', () => {
     write('Sources/File.swift');
     write('Sources/RootSrc/File.swift');
-    runDumpPackage.mockReturnValue(dumpTargets(['RootSrc']));
 
-    emit();
+    emit(['RootSrc']);
     expect(
       fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8')
     ).toContain('path: "root/Sources/RootSrc"');
@@ -565,16 +559,17 @@ describe('single-target packages with sources directly in a predefined directory
 
   it('never resolves the targets of a multi-target package to the shared bare directory', () => {
     write('Sources/File.swift');
-    runDumpPackage.mockReturnValue(dumpTargets(['A', 'B']));
 
-    expect(emit().refusal).toEqual({ reason: 'unresolvable-target-path', targetNames: ['A', 'B'] });
+    expect(emit(['A', 'B']).refusal).toEqual({
+      reason: 'unresolvable-target-path',
+      targetNames: ['A', 'B'],
+    });
   });
 
   it('accepts a predefined directory whose sources are nested below it', () => {
     write('Sources/Nested/File.swift');
-    runDumpPackage.mockReturnValue(dumpTargets(['RootSrc']));
 
-    expect(emit().refusal).toBeUndefined();
+    expect(emit(['RootSrc']).refusal).toBeUndefined();
     expect(
       fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8')
     ).toContain('path: "root/Sources"');
@@ -582,9 +577,8 @@ describe('single-target packages with sources directly in a predefined directory
 
   it('ignores a predefined directory with no source files at any depth', () => {
     write('Sources/Nested/README.md', '# docs\n');
-    runDumpPackage.mockReturnValue(dumpTargets(['RootSrc']));
 
-    expect(emit().refusal).toEqual({
+    expect(emit(['RootSrc']).refusal).toEqual({
       reason: 'unresolvable-target-path',
       targetNames: ['RootSrc'],
     });
@@ -1089,12 +1083,11 @@ describe('the minimum floor a checked-in manifest is raised to', () => {
   });
 
   const emitted = (declared, minimum) => {
-    runDumpPackage.mockReturnValue(dumpWithIos(declared));
-    emitSourceManifestPackage(moduleRoot, {
-      frameworkSearchPath: '/abs/interfaces',
-      outDir,
-      minimumIosDeploymentTarget: minimum,
-    });
+    emitSourceManifestPackage(
+      moduleRoot,
+      { frameworkSearchPath: '/abs/interfaces', outDir, minimumIosDeploymentTarget: minimum },
+      dumpWithIos(declared)
+    );
     return fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8');
   };
 
@@ -1218,12 +1211,11 @@ describe('dependencies on targets the generated package cannot declare', () => {
     const moduleRoot = path.join(tmp, 'module');
     const outDir = path.join(tmp, 'out');
     fs.mkdirSync(path.join(moduleRoot, 'ios', 'Src'), { recursive: true });
-    runDumpPackage.mockReturnValue(dumpWithBinaryTarget);
-
-    const result = emitSourceManifestPackage(moduleRoot, {
-      frameworkSearchPath: '/abs/interfaces',
-      outDir,
-    });
+    const result = emitSourceManifestPackage(
+      moduleRoot,
+      { frameworkSearchPath: '/abs/interfaces', outDir },
+      dumpWithBinaryTarget
+    );
 
     expect(result.ok).toBeUndefined();
     expect(result.refusal).toEqual({
@@ -1893,15 +1885,12 @@ let package = Package(
     const emittedManifestPath = () =>
       path.join(outDir, 'expo-source', 'TestModule', 'Package.swift');
     const emittedManifest = () => fs.readFileSync(emittedManifestPath(), 'utf8');
-    const emit = (dump, react, satisfiedDependencies) => {
-      runDumpPackage.mockReturnValue(dump);
-      return emitSourceManifestPackage(moduleRoot, {
-        react,
-        frameworkSearchPath: '/abs/interfaces',
-        outDir,
-        satisfiedDependencies,
-      });
-    };
+    const emit = (dump, react, satisfiedDependencies) =>
+      emitSourceManifestPackage(
+        moduleRoot,
+        { react, frameworkSearchPath: '/abs/interfaces', outDir, satisfiedDependencies },
+        dump
+      );
 
     // A package can export several products; only the ones a precompiled framework
     // provides go, and the package stays while anything still depends on it.
@@ -2237,5 +2226,108 @@ let package = Package(
         dependencies: [{ form: 'collides-with-injected', identity: 'reactnative', target: null }],
       });
     });
+  });
+});
+
+describe('emitExpoModulesJSIHeadersPackage', () => {
+  let tmp;
+  let outDir;
+
+  const xcframeworkAt = (name) => {
+    const xcframework = path.join(tmp, name, 'ExpoModulesJSIHeaders.xcframework');
+    fs.mkdirSync(xcframework, { recursive: true });
+    fs.writeFileSync(path.join(xcframework, 'Info.plist'), '<plist/>');
+    return xcframework;
+  };
+
+  beforeEach(() => {
+    tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-jsi-headers-'));
+    outDir = path.join(tmp, 'out');
+  });
+
+  afterEach(() => {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  });
+
+  it('declares the headers as a binary target beside a target that links the real framework', () => {
+    const headers = xcframeworkAt('npm');
+    const pkgDir = emitExpoModulesJSIHeadersPackage(headers, outDir);
+
+    expect(pkgDir).toBe(path.join(outDir, 'ExpoModulesJSIHeaders'));
+    const manifest = fs.readFileSync(path.join(pkgDir, 'Package.swift'), 'utf8');
+    expect(manifest).toContain('name: "ExpoModulesJSIHeaders"');
+    expect(manifest).toContain(
+      '.library(name: "ExpoModulesJSIHeaders", targets: ["ExpoModulesJSIHeaders", "ExpoModulesJSILink"])'
+    );
+    expect(manifest).toContain(
+      '.binaryTarget(name: "ExpoModulesJSIHeaders", path: "ExpoModulesJSIHeaders.xcframework")'
+    );
+    expect(manifest).toMatch(
+      /\.target\(\s*name: "ExpoModulesJSILink",\s*path: "ExpoModulesJSILink",\s*linkerSettings: \[\.linkedFramework\("ExpoModulesJSI"\)\]\s*\)/
+    );
+    expect(fs.readlinkSync(path.join(pkgDir, 'ExpoModulesJSIHeaders.xcframework'))).toBe(headers);
+    expect(
+      fs.readFileSync(path.join(pkgDir, 'ExpoModulesJSILink', 'ExpoModulesJSILink.swift'), 'utf8')
+    ).toBe('');
+  });
+
+  it('replaces the previous emission on a re-run, leaving no stale files', () => {
+    emitExpoModulesJSIHeadersPackage(xcframeworkAt('first'), outDir);
+    const pkgDir = path.join(outDir, 'ExpoModulesJSIHeaders');
+    fs.writeFileSync(path.join(pkgDir, 'stale.txt'), 'left by an older plugin');
+    const second = xcframeworkAt('second');
+
+    emitExpoModulesJSIHeadersPackage(second, outDir);
+
+    expect(fs.readlinkSync(path.join(pkgDir, 'ExpoModulesJSIHeaders.xcframework'))).toBe(second);
+    expect(fs.readdirSync(pkgDir).sort()).toEqual([
+      'ExpoModulesJSIHeaders.xcframework',
+      'ExpoModulesJSILink',
+      'Package.swift',
+    ]);
+    // The old symlink target is untouched: removing the link must not follow it.
+    expect(
+      fs.existsSync(path.join(tmp, 'first', 'ExpoModulesJSIHeaders.xcframework', 'Info.plist'))
+    ).toBe(true);
+  });
+});
+
+describe('the ExpoModulesJSIHeaders dependency of emitted source packages', () => {
+  let tmp;
+  let moduleRoot;
+  let outDir;
+
+  const emitted = (emitContext) => {
+    emitPureSwiftSourcePackage(
+      { moduleRoot, product: 'ExpoAsset' },
+      { frameworkSearchPath: '/abs/interfaces', outDir, ...emitContext }
+    );
+    return fs.readFileSync(path.join(outDir, 'expo-source', 'ExpoAsset', 'Package.swift'), 'utf8');
+  };
+
+  beforeEach(() => {
+    tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-spm-jsi-dep-'));
+    moduleRoot = path.join(tmp, 'module');
+    outDir = path.join(tmp, 'out');
+    fs.mkdirSync(path.join(moduleRoot, 'ios'), { recursive: true });
+    fs.writeFileSync(path.join(moduleRoot, 'ios', 'A.swift'), '// swift\n');
+  });
+
+  afterEach(() => {
+    fs.rmSync(tmp, { recursive: true, force: true });
+  });
+
+  it('is declared on the package and every target when the headers package exists', () => {
+    const manifest = emitted({ jsiHeadersPkgPath: '/abs/out/ExpoModulesJSIHeaders' });
+    expect(manifest).toContain(
+      '.package(name: "ExpoModulesJSIHeaders", path: "/abs/out/ExpoModulesJSIHeaders")'
+    );
+    expect(manifest).toContain(
+      '.product(name: "ExpoModulesJSIHeaders", package: "ExpoModulesJSIHeaders")'
+    );
+  });
+
+  it('is absent when there is no headers package', () => {
+    expect(emitted({})).not.toContain('ExpoModulesJSIHeaders');
   });
 });

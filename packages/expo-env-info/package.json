@@ -46,11 +46,11 @@
     "envinfo": "^7.8.1"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/envinfo": "^7.8.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@vercel/ncc": "^0.38.4",
-    "expo-module-scripts": "workspace:*",
     "memfs": "^3.6.0"
   },
   "preferGlobal": true,

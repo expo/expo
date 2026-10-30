@@ -1,5 +1,30 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- [iOS] Fixed blurry close-ups on iPhones with a macro-capable ultra-wide camera by using the multi-lens back camera by default. ([#51801](https://github.com/expo/expo/pull/51801) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.11
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.23. ([#51823](https://github.com/expo/expo/pull/51823) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.10
+
+### Patch Changes
+
+- [Internal] Bump precompiled artifacts due to ABI breakage in expo-modules-jsi, which makes `JavaScriptValue` a non-copyable struct. ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.9
+
+### Patch Changes
+
+- [Android] Fixed barcode scanning stopping after the camera delivers a frame without an image. Also fixed a leak of the ML Kit barcode scanner each time the camera is recreated or unmounted. ([#51050](https://github.com/expo/expo/pull/51050) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fixed `recordAsync()` never settling when it is called while a recording is already active. It now rejects with an error. ([#51049](https://github.com/expo/expo/pull/51049) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.8
 
 ### Patch Changes

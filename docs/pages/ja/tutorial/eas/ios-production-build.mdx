@@ -46,10 +46,10 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 - **Select platform**（プラットフォームを選んでください）iOS を選びます。
 - **Which build profile do you want to configure?**（どのビルドプロファイルを設定しますか？）production を選びます。
 - **Do you want to log in to your Apple account?**（Apple アカウントにログインしますか？）<kbd>Y</kbd> を押します。これで Apple Developer アカウントにログインします。
-- **What do you want to do?**（何をしますか？）**Build credentials** を選び、**All: Set up all the required credentials to build your project**（プロジェクトのビルドに必要な認証情報をすべてセットアップする）を選びます。
+- **What do you want to do?**（何をしますか？）**Build Credentials** を選び、**All: Set up all the required credentials to build your project**（プロジェクトのビルドに必要な認証情報をすべてセットアップする）を選びます。
 - 続いて、以前の Distribution Certificate を再利用するか尋ねられます。<kbd>Y</kbd> を押します。
 - **Generate a new Apple Provisioning Profile?**（新しい Apple プロビジョニングプロファイルを生成しますか？）<kbd>Y</kbd> を押します。これが本番アプリ用のプロビジョニングプロファイルになります。
-- プロファイルが作成されたら、<kbd>Ctrl</kbd> + <kbd>C</kbd> で EAS CLI を終了します。
+- EAS CLI が認証情報をセットアップしたら、<kbd>Ctrl</kbd> + <kbd>C</kbd> で EAS CLI を終了します。
 
 </Step>
 
@@ -61,7 +61,9 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 <Terminal cmd={['$ eas build --platform ios']} />
 
-このコマンドでビルドがキューに入ります。EAS ダッシュボードで **Build Number** が自動的にインクリメントされていることに注目してください。
+> **info** **このプロジェクトで初めて iOS ビルドを作成する場合のみ:** EAS CLI が **iOS app only uses standard/exempt encryption?**（この iOS アプリは標準的な、または適用除外の暗号化のみを使いますか？）と尋ねます。<kbd>Y</kbd> を押してデフォルト値を選びます。このアプリは適用除外ではない暗号化を使っていないため、EAS CLI が [アプリ設定](/workflow/configuration/) に `ios.infoPlist.ITSAppUsesNonExemptEncryption: false` を追加します。この値によって、TestFlight や App Store にアプリをリリースする際のコンプライアンスチェックが処理されます。自分のアプリが適用除外ではない暗号化を使っている場合は、<kbd>N</kbd> を押し、続く質問で確認します。その場合、EAS CLI はアプリ設定を変更しません。暗号化のステータスは App Store Connect で設定します。
+
+このコマンドでビルドがキューに入ります。EAS ダッシュボードの **Version** 列に、自動的にインクリメントされたビルド番号が括弧内に表示されていることに注目してください（例: `1.0.0 (2)`）。
 
 </Step>
 
@@ -90,9 +92,6 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 - **[Apps](https://appstoreconnect.apple.com/apps)** をクリックすると、アプリのアイコンが見えます。
 - アプリ名をクリックし、ナビゲーションタブのメニューから **TestFlight** をクリックします。提出直後の場合、TestFlight で配布できるようになるまで Apple の処理に数分かかることがあります。
-
-> **info** **[iOS 実機向け開発ビルドの章](/ja/tutorial/eas/ios-development-build-for-devices/) を飛ばした場合のみ:** **iOS app only uses standard/exempt encryption?**（この iOS アプリは標準的な、または適用除外の暗号化のみを使いますか？）と尋ねられます。<kbd>Y</kbd> を押してデフォルト値を選びます。このアプリは暗号化を使っていないため、**Info.plist** ファイルの `ITSAppUsesNonExemptEncryption` が `NO` に設定され、TestFlight や Apple App Store にリリースする際のコンプライアンスチェックが処理されます。自分のアプリをリリースする際に暗号化を使っている場合は、`N` を選べば次回からこの質問を省略できます。
-
 - App Store Connect の **Internal Testing** でテストグループを作成します。これでテストユーザーを招待できます。
 
 <ContentSpotlight
@@ -119,7 +118,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 これでアプリがデバイスにダウンロードされ、テストできるようになります。
 
-> **Note**: 内部テストと同じように、TestFlight で外部テスターを招待するグループも作成できます。内部テストの上限が 100 名なのに対し、TestFlight では最大 10,000 名のテスターにテストリリースを外部共有でき、公開用の共有リンクも提供されます。手順の詳細は [TestFlight で iOS アプリを配布する](/submit/testflight/) を参照してください。
+> **info** 内部テストと同じように、TestFlight で外部テスターを招待するグループも作成できます。内部テストの上限が 100 名なのに対し、TestFlight では最大 10,000 名のテスターにテストリリースを外部共有でき、公開用の共有リンクも提供されます。手順の詳細は [TestFlight で iOS アプリを配布する](/submit/testflight/) を参照してください。
 
 </Step>
 
@@ -165,7 +164,7 @@ App Store への提出に向けてアプリを準備するには、**App Store**
 
 <Terminal cmd={['$ eas build --platform ios --auto-submit']} />
 
-> **Note:** このコマンドは内部テスト用にビルドを TestFlight へ自動アップロードしますが、App Store の審査へ自動的に提出はしません。一般公開の準備ができたら、TestFlight から App Store へビルドを手動で昇格させる必要があります。詳しくは [アプリストアへのデフォルトの提出動作](/build/automate-submissions/#default-submission-behavior-for-app-stores) を参照してください。
+> **info** このコマンドは内部テスト用にビルドを TestFlight へ自動アップロードしますが、App Store の審査には提出しません。一般公開の準備ができたら、TestFlight から App Store へビルドを手動で昇格させる必要があります。詳しくは [アプリストアへのデフォルトの提出動作](/build/automate-submissions/#default-submission-behavior-for-app-stores) を参照してください。
 
 </Step>
 

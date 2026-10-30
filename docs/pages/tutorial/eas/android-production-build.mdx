@@ -52,7 +52,7 @@ To create an Android production build using the default `production` profile, op
 
 <Terminal cmd={['$ eas build --platform android']} />
 
-The above command will queue the build. Notice in the EAS dashboard that the **Version Code** is auto-incremented.
+The above command queues the build. Notice in the EAS dashboard that the **Version** column shows the auto-incremented version code in parentheses, for example, `1.0.0 (2)`.
 
 </Step>
 
@@ -126,7 +126,7 @@ After EAS has created a production build:
 
 <ContentSpotlight
   alt="Downloading the aab file"
-  src="/static/images/tutorial/eas/play-store-07.png"
+  src="/static/images/tutorial/eas/android-production-build-artifact.webp"
 />
 
 - Return to Google Play Console and go to **Test and release** > **Testing** > **Internal testing**.
@@ -222,7 +222,7 @@ After following the Google Service Account guide steps, we can upload the downlo
 - Under **Service Credentials**, click **Add a Google Service Account Key**.
 
 <ContentSpotlight
-  alt="Uploading the Google Service Account key to EAS dashboard under Change Google Service Account Key"
+  alt="Add a Google Service Account Key button under Service Credentials in EAS dashboard"
   src="/static/images/tutorial/eas/credentials-02.png"
   className="max-w-[640px]"
 />
@@ -261,7 +261,7 @@ Let's set the track to `internal` in **eas.json**.
 }
 ```
 
-In the above snippet, we're adding [`track`](/eas/json/#track) property and setting its value to `internal`. This will enable the `eas submit` command to upload our production build and release it for internal testing on the Google Play Store.
+In the above snippet, we're adding [`track`](/eas/json/#track) property and setting its value to `internal`, which is also the default value. With this value, the `eas submit` command uploads our production build and releases it for internal testing on the Google Play Store.
 
 - Now run the `eas submit` command to release a new internal testing version:
 

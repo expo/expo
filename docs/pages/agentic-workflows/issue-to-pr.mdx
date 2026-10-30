@@ -1,0 +1,420 @@
+---
+title: Build a feature from an issue with an AI agent
+sidebar_title: Issue to PR
+description: Add an agentic workflow in which a coding agent builds what a GitHub issue asks for and opens a pull request that Agentic CI tests.
+---
+
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
+
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+import { IssueToPrDiagram } from '~/scenes/eas/agentic-workflows/AgenticWorkflowDiagram';
+
+> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+Issue to PR is an automated workflow in which a coding agent changes your code for a GitHub issue and opens a pull request (PR). Then [Agentic CI](/agentic-workflows/agentic-ci/) tests the PR on a remote Android Emulator or iOS Simulator. You review a PR that has a verdict and evidence.
+
+## How Issue to PR works
+
+When a person adds the `agent` label to an issue, these steps run. The highlighted steps run on EAS Workflows and Expo Simulators:
+
+<IssueToPrDiagram />
+
+1. A GitHub Action starts the Issue to PR workflow on EAS.
+2. A coding agent reads the issue and its comments, and changes the code.
+3. The workflow pushes the change to the branch `agent/issue-<number>`, and opens a PR that closes the issue.
+4. Agentic CI tests the PR on an Expo Simulators session, and posts the verdict on the PR.
+
+Only people who can add labels to issues can start the agent. Read each issue before you add the label, because the agent follows the text of the issue.
+
+<AgentPrompt
+  title="Add Issue to PR with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Add the Issue to PR workflow to my Expo project. Use https://docs.expo.dev/agentic-workflows/issue-to-pr.md as the source for each step and each file.
+
+1. Check each step on https://docs.expo.dev/agentic-workflows/setup.md, and check that the Agentic CI workflow from https://docs.expo.dev/agentic-workflows/agentic-ci.md is in the project. Do each step that is not done. Use the version of .eas/agents/run-agent.sh for the agent that I name.
+2. Create each file that the page shows, at the same path and with the same content.
+3. When a step needs a token, an account, or a choice, stop and ask me. Do not print or save a token.
+4. Run `eas workflow:validate .eas/workflows/issue-to-pr.yml`.
+5. Commit the files, but do not push them. Tell me which files you added and which commands I must run.
+```
+
+</AgentPrompt>
+
+## Set up your project
+
+Follow [Set up a project for agentic workflows](/agentic-workflows/setup/) one time for your project, including [Add a GitHub token to EAS](/agentic-workflows/setup/#add-a-github-token-to-eas). See [What the agent can do](/agentic-workflows/setup/#what-the-agent-can-do) to learn which limits apply to the agent.
+
+Issue to PR needs [Agentic CI](/agentic-workflows/agentic-ci/), because Agentic CI tests each PR that the agent opens. Add Agentic CI first.
+
+## Add the Issue to PR workflow
+
+<Step label="1">
+
+### Add the GitHub helper
+
+The job script uses this file to read the issue, open the PR, and add comments:
+
+```js .eas/agents/github.mjs
+import { readFile } from 'node:fs/promises';
+
+const repository = process.env.GITHUB_REPOSITORY;
+const token = process.env.GITHUB_TOKEN;
+
+if (!repository || !token) {
+  console.error(
+    'GITHUB_REPOSITORY or GITHUB_TOKEN is not set. Add both to the preview environment of the EAS project.'
+  );
+  process.exit(1);
+}
+
+async function request(method, path, body) {
+  const response = await fetch(`https://api.github.com${path}`, {
+    method,
+    headers: {
+      accept: 'application/vnd.github+json',
+      authorization: `Bearer ${token}`,
+      'content-type': 'application/json',
+      'x-github-api-version': '2022-11-28',
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!response.ok) {
+    throw new Error(
+      `GitHub returned ${response.status} for ${method} ${path}: ${await response.text()}\nCheck that GITHUB_TOKEN can read and write contents, issues, and pull requests in ${repository}.`
+    );
+  }
+  return response.json();
+}
+
+const repo = `/repos/${repository}`;
+const [command, ...args] = process.argv.slice(2);
+
+switch (command) {
+  case 'issue': {
+    const issue = await request('GET', `${repo}/issues/${args[0]}`);
+    const comments = await request('GET', `${repo}/issues/${args[0]}/comments?per_page=50`);
+    console.log(
+      JSON.stringify(
+        {
+          title: issue.title,
+          body: issue.body,
+          comments: comments
+            .filter(comment =>
+              ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(comment.author_association)
+            )
+            .map(comment => comment.body),
+        },
+        null,
+        2
+      )
+    );
+    break;
+  }
+  case 'comment': {
+    await request('POST', `${repo}/issues/${args[0]}/comments`, {
+      body: await readFile(args[1], 'utf8'),
+    });
+    break;
+  }
+  case 'open-pull-request': {
+    const [branch, title, bodyFile] = args;
+    const owner = repository.split('/')[0];
+    const open = await request('GET', `${repo}/pulls?state=open&head=${owner}:${branch}`);
+    if (open.length > 0) {
+      console.log(open[0].html_url);
+      break;
+    }
+    const { default_branch: base } = await request('GET', repo);
+    const pullRequest = await request('POST', `${repo}/pulls`, {
+      head: branch,
+      base,
+      title,
+      body: await readFile(bodyFile, 'utf8'),
+    });
+    console.log(pullRequest.html_url);
+    break;
+  }
+  case 'author-email': {
+    const user = await request('GET', '/user');
+    console.log(`${user.id}+${user.login}@users.noreply.github.com`);
+    break;
+  }
+  default:
+    console.error(
+      `Unknown command "${command}". Use issue, comment, open-pull-request, or author-email.`
+    );
+    process.exit(1);
+}
+```
+
+</Step>
+
+<Step label="2">
+
+### Add the job script
+
+```sh .eas/agents/make-change.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${ISSUE_NUMBER:?No issue number. Pass -F issue_number=<number>.}"
+: "${GITHUB_TOKEN:?GITHUB_TOKEN is not set. Add it to the preview environment.}"
+: "${GITHUB_REPOSITORY:?GITHUB_REPOSITORY is not set. Add it to the preview environment.}"
+
+PROJECT_DIR=$(pwd)
+REPO_DIR=$(git rev-parse --show-toplevel)
+APP_PATH=$(git rev-parse --show-prefix)
+WORK_DIR=/tmp/agent-change
+APP_DIR="$WORK_DIR/$APP_PATH"
+BRANCH="agent/issue-$ISSUE_NUMBER"
+GITHUB_HELPER="$PROJECT_DIR/.eas/agents/github.mjs"
+PUSH_URL="https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+
+git clone --depth 1 "$PUSH_URL" "$WORK_DIR"
+git -C "$WORK_DIR" remote set-url origin "https://github.com/${GITHUB_REPOSITORY}.git"
+ln -s "$REPO_DIR/node_modules" "$WORK_DIR/node_modules"
+printf 'node_modules\nagent-output/\n' >> "$WORK_DIR/.git/info/exclude"
+mkdir -p "$APP_DIR/agent-output"
+
+{
+  cat .eas/agents/make-change.md
+  printf '\n## Issue #%s\n\n' "$ISSUE_NUMBER"
+  node "$GITHUB_HELPER" issue "$ISSUE_NUMBER"
+} > "$APP_DIR/agent-output/prompt.md"
+
+cd "$APP_DIR"
+env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
+  timeout 20m bash .eas/agents/run-agent.sh agent-output/prompt.md change || true
+
+if [ -n "$(git -C "$WORK_DIR" status --porcelain -- "${APP_PATH}.eas" .github)" ]; then
+  echo "The agent changed files in .eas or .github. The job does not open a pull request." >&2
+  exit 1
+fi
+
+if [ -z "$(git status --porcelain)" ]; then
+  {
+    printf '## Issue to PR\n\nThe agent did not change any file.\n\n'
+    cat agent-output/summary.md 2> /dev/null || true
+  } > /tmp/comment.md
+  node "$GITHUB_HELPER" comment "$ISSUE_NUMBER" /tmp/comment.md
+  exit 1
+fi
+
+TITLE=$(head -n 1 agent-output/summary.md 2> /dev/null || true)
+TITLE=${TITLE:-"Change for issue #$ISSUE_NUMBER"}
+{
+  tail -n +2 agent-output/summary.md 2> /dev/null || true
+  printf '\n\nCloses #%s\n' "$ISSUE_NUMBER"
+} > /tmp/pull-request.md
+
+AUTHOR_EMAIL=$(node "$GITHUB_HELPER" author-email)
+git checkout -b "$BRANCH"
+git add -A
+git -c user.name="EAS agent" -c user.email="$AUTHOR_EMAIL" commit -m "$TITLE"
+git push --force "$PUSH_URL" "HEAD:refs/heads/$BRANCH"
+PR_URL=$(node "$GITHUB_HELPER" open-pull-request "$BRANCH" "$TITLE" /tmp/pull-request.md)
+
+printf '## Issue to PR\n\nThe agent opened %s.\n' "$PR_URL" > /tmp/comment.md
+node "$GITHUB_HELPER" comment "$ISSUE_NUMBER" /tmp/comment.md
+```
+
+The script does these tasks in this order:
+
+1. It clones the default branch, and removes the GitHub token from the remote URL of the clone.
+2. It reads the issue and the comments from the owners, members, and collaborators of the repository. Then it writes the prompt for the agent.
+3. It removes the Expo and GitHub tokens from the environment, and runs the agent in the `change` mode in the app directory of the clone.
+4. If the agent changed a file in **.eas** or **.github**, it stops and does not open a PR.
+5. If the agent changed no file, it adds a comment with the reason to the issue, and stops.
+6. It commits the change, pushes the branch, and opens a PR. Then it adds a comment with the PR link to the issue.
+
+</Step>
+
+<Step label="3">
+
+### Add the prompt
+
+The job script adds the issue and its comments to the end of this prompt:
+
+```md .eas/agents/make-change.md|wrap
+You make one change in this Expo project. The issue at the end of this prompt describes the change.
+
+1. Read the issue and its comments.
+2. Make the smallest change that does what the issue asks. Use the style of the code around the change.
+3. Do not add dependencies. Do not change files in .eas, .github, or node_modules.
+4. If the project has a tsconfig.json file, run `npx tsc --noEmit`. Fix each error that your change causes. Do not fix errors that were there before your change.
+5. Write the file agent-output/summary.md. Line 1 is a pull request title. Then describe the change in two to five sentences. Tell what a user sees, because Agentic CI tests that.
+
+If you cannot make the change, do not change any file. Then write line 1 of agent-output/summary.md as "No change: <reason>".
+```
+
+The PR description comes from the summary of the agent. Agentic CI tests what the description says.
+
+</Step>
+
+<Step label="4">
+
+### Add the EAS workflow
+
+```yaml .eas/workflows/issue-to-pr.yml
+name: Issue to PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: The number of the issue that the agent works on
+        type: string
+        required: true
+
+jobs:
+  change:
+    environment: preview
+    env:
+      ISSUE_NUMBER: ${{ inputs.issue_number }}
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - name: Make the change and open a pull request
+        run: bash .eas/agents/make-change.sh
+      - uses: eas/upload_artifact
+        if: ${{ always() }}
+        with:
+          type: other
+          name: issue-to-pr-log
+          path: /tmp/agent-change/agent-output/**/*
+```
+
+</Step>
+
+<Step label="5">
+
+### Add the GitHub Action
+
+EAS Workflows does not start on issue events. This GitHub Action starts the EAS workflow when a person adds the `agent` label to an issue:
+
+```yaml .github/workflows/agent-label.yml
+name: Start the agent
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  start:
+    if: github.event.label.name == 'agent'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npx --yes eas-cli@latest workflow:run .eas/workflows/issue-to-pr.yml --ref ${{ github.sha }} -F issue_number=${{ github.event.issue.number }} --non-interactive
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+```
+
+The Action installs the dependencies with `npm ci`, because EAS CLI reads the app config. If your project uses another package manager, change this command. For example, for Bun, replace the `npm ci` step with these steps:
+
+```yaml
+- uses: oven-sh/setup-bun@v2
+- run: bun install --frozen-lockfile
+```
+
+With `--ref`, EAS runs the workflow from the last commit of your default branch on GitHub. EAS CLI does not upload the project.
+
+</Step>
+
+<Step label="6">
+
+### Add the secret and the label
+
+The GitHub Action needs an Expo token. Create a second token for the robot user from the setup, and add it as a repository secret. The command asks for the value:
+
+<Terminal cmd={['$ gh secret set EXPO_TOKEN']} />
+
+Then create the `agent` label:
+
+<Terminal cmd={['$ gh label create agent --description "Start the coding agent"']} />
+
+</Step>
+
+<Step label="7">
+
+### Push the workflow
+
+<Terminal
+  cmd={[
+    '$ git add .eas/agents/github.mjs .eas/agents/make-change.sh .eas/agents/make-change.md .eas/workflows/issue-to-pr.yml .github/workflows/agent-label.yml',
+    '$ git commit -m "Add Issue to PR"',
+    '$ git push',
+  ]}
+/>
+
+</Step>
+
+## Start the agent on an issue
+
+Create an issue that asks for one small feature. Tell the agent where the feature goes and what a user sees:
+
+<Terminal
+  cmd={[
+    '$ gh issue create --title "Add a reset button to the counter" --body "On the home screen, add a Reset button next to the counter. A tap sets the count to 0."',
+  ]}
+/>
+
+The command prints the address of the issue. The address ends with the issue number. Add the `agent` label to the issue:
+
+<Terminal cmd={['$ gh issue edit <number> --add-label agent']} />
+
+The GitHub Action starts the Issue to PR workflow on EAS.
+
+## Read the result
+
+When the agent finishes, the issue gets an **Issue to PR** comment with a link to the PR:
+
+- The branch of the PR is `agent/issue-<number>`.
+- The description of the PR is the summary of the agent, and ends with `Closes #<number>`.
+
+Then Agentic CI tests the PR, and posts an **Agentic CI** comment with the verdict. To try the feature yourself, select **Try this build in your browser** in that comment.
+
+If the agent changes no file, the issue gets a comment with the reason. If the agent changes a file in **.eas** or **.github**, the job fails. The issue gets no comment. The log of the agent is in the Issue to PR workflow run. The Claude Code runner saves it in the artifacts, and the other runners print it to the job log.
+
+To ask for another version, change the text of the issue. Then remove the label and add it again:
+
+<Terminal
+  cmd={[
+    '$ gh issue edit <number> --remove-label agent',
+    '$ gh issue edit <number> --add-label agent',
+  ]}
+/>
+
+## Next steps
+
+<BoxLink
+  title="Triage a bug report with an AI agent"
+  description="Bug triage: a coding agent reproduces a bug from a GitHub issue or TestFlight feedback on a remote Android Emulator or iOS Simulator."
+  href="/agentic-workflows/bug-triage/"
+  Icon={Star06Icon}
+/>
+
+<BoxLink
+  title="Test pull requests with an AI agent"
+  description="Agentic CI: a coding agent tests each pull request on a remote Android Emulator or iOS Simulator and posts a verdict with evidence."
+  href="/agentic-workflows/agentic-ci/"
+  Icon={Star06Icon}
+/>
+
+<BoxLink
+  title="Run Expo Simulators sessions in CI"
+  description="Start, use, and always stop sessions from GitHub Actions, EAS Workflows, or another CI system."
+  href="/preview/simulators/how-to/run-in-ci/"
+  Icon={Cloud01Icon}
+/>

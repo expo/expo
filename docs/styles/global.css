@@ -32,6 +32,24 @@
     appearance: unset;
   }
 
+  /* iOS Safari 26+ draws in-flow content under its floating toolbar, down to the screen
+     edge. 100lvh stops above the toolbar area, and env(safe-area-inset-bottom) is 0, so on
+     iOS the layout uses the screen height that pages/_document.tsx sets. The content
+     padding (layout height - 100dvh) keeps the page end above the toolbar. pages/_document.tsx
+     adds the ios-webkit class. */
+  [data-nested-scroll-layout] {
+    --nested-scroll-layout-height: 100dvh;
+  }
+
+  .ios-webkit [data-nested-scroll-layout] {
+    --nested-scroll-layout-height: max(100lvh, var(--nested-scroll-layout-screen-height, 0px));
+  }
+
+  /* On iOS the layout is taller than the viewport. Without this, the document scrolls. */
+  html.ios-webkit:has([data-nested-scroll-layout]) {
+    overflow: hidden;
+  }
+
   #__next[aria-hidden] {
     filter: none !important;
   }
@@ -160,6 +178,16 @@ div.tippy-box {
 
 .tippy-content a {
   @apply text-palette-white;
+}
+
+/* Cookie banner */
+
+/* iOS Safari fills the area under its toolbar with one color when a fixed element touches the
+   bottom edge, and it clips fixed elements at the layout viewport bottom, which cuts the card
+   shadow. The document does not scroll with the nested scroll layout, so an absolute root stays
+   in place. */
+html.ios-webkit:has([data-nested-scroll-layout]) [data-testid='cookie-banner-root'] {
+  position: absolute;
 }
 
 /* Diff */

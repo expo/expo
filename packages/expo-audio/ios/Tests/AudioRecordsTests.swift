@@ -1,5 +1,6 @@
 import Testing
 import AVFoundation
+import ExpoModulesCore
 
 @testable import ExpoAudio
 
@@ -33,5 +34,18 @@ struct AudioRecordsTests {
   ] as [(AudioStreamFileFormat, String)])
   func `exposes the file extension matching the format`(format: AudioStreamFileFormat, expected: String) {
     #expect(format.fileExtension == expected)
+  }
+
+  @Test func `defaults the lock screen skip intervals to ten seconds`() {
+    let options = LockScreenOptions()
+
+    #expect(options.seekForwardIntervalSeconds == 10.0)
+    #expect(options.seekBackwardIntervalSeconds == 10.0)
+  }
+
+  @Test func `plays in silent mode when the audio mode omits playsInSilentMode`() throws {
+    let mode = try AudioMode(from: [:], appContext: AppContext())
+
+    #expect(mode.playsInSilentMode == true)
   }
 }

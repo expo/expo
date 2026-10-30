@@ -1,5 +1,12 @@
 export const TALKS = [
   {
+    title: "Your Biggest User Isn't Human: Designing DevTools for AI Agents",
+    event: 'Agent Conf 2026',
+    description: 'David Mokos',
+    videoId: 'mkJlmG1rkBg',
+    uploadDate: '2026-09-21',
+  },
+  {
     title: 'The future of mobile development with Expo',
     event: 'Chain React 2026',
     description: 'Charlie Cheever',
@@ -186,6 +193,12 @@ export const TALKS = [
 
 export const PODCASTS = [
   {
+    title: 'State of React Native',
+    event: 'This Dot Media',
+    videoId: 'dx-5GCUX14o',
+    uploadDate: '2026-09-30',
+  },
+  {
     title: 'Expo SDK 54, Expo Router v6 & Expo UI Beta for iOS with Beto Moedano',
     event: 'Rocket Ship #081',
     description: 'Alberto Moedano',
@@ -338,6 +351,12 @@ export const PODCASTS = [
 ] as Talk[];
 
 export const LIVE_STREAMS = [
+  {
+    title: 'Agentic CI for Expo apps with TesterArmy',
+    event: 'Expo Live Stream',
+    videoId: 'yrtWWbhTsHE',
+    uploadDate: '2026-10-05',
+  },
   {
     title: 'How is your app actually doing in production? | Introducing Observe',
     event: 'Expo Live Stream',
@@ -521,6 +540,25 @@ export const LIVE_STREAMS = [
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
+  {
+    title: 'Introduction to Verification Engineering',
+    event: 'Expo Tutorials',
+    videoId: '2OFB4B7Vy10',
+    uploadDate: '2026-10-04',
+  },
+  {
+    title: 'What if your app could fix itself?',
+    event: 'Expo Tutorials',
+    videoId: 'MUFlnOXi-o4',
+    uploadDate: '2026-09-22',
+  },
+  {
+    title: 'What we learned using only Expo apps for 24 hours',
+    event: 'Expo Tutorials',
+    description: 'Jon Samp',
+    videoId: 'JRH6_rjCy_g',
+    uploadDate: '2026-09-10',
+  },
   {
     title: 'From React Web to React Native in 60 Seconds',
     event: 'Expo Tutorials',

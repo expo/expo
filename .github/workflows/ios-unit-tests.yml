@@ -3,6 +3,7 @@ name: iOS Unit Tests
 on:
   workflow_dispatch: {}
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     paths: &trigger_paths
       - .github/workflows/ios-unit-tests.yml
       - packages/**/ios/**
@@ -24,7 +25,9 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-26
+    # Draft pull requests skip this paid macOS job. Marking the pull request ready for review runs it.
+    if: github.event_name != 'pull_request' || !github.event.pull_request.draft
+    runs-on: blacksmith-6vcpu-macos-26
     timeout-minutes: 75
     steps:
       - name: 👀 Checkout
@@ -40,41 +43,43 @@ jobs:
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: 💎 Setup Ruby and install gems
-        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
-        with:
-          bundler-cache: true
-          ruby-version: 3.2.2
-      - name: 🧹 Cleanup unused simulator runtimes
-        run: |
-          xcrun simctl list devices -j | jq -r '.devices | to_entries[] | select(.key | contains("iOS") | not) | .value[].udid' | xargs -r -n1 xcrun simctl delete
-          xcrun simctl list devices --json
-          xcrun simctl erase all
-          xcrun simctl shutdown all
-          sudo xcodebuild -runFirstLaunch
       - name: 🔨 Install pnpm
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           install: false
-      - name: 🔨 Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 24
-          cache: 'pnpm'
-      - name: Setup ccache
-        uses: ./.github/actions/setup-ccache
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          ccache: 'true'
-          bare-expo-pods: 'true'
-          # Unit tests build Debug, while Test Suite e2e builds the same app Release. They'd
-          # otherwise share one cache entry, and whichever saved it first would decide which
-          # React.xcframework the other restored. A Release framework in a Debug build fails
-          # to link, since Debug ExpoModulesCore references debug-only Fabric symbols.
-          bare-expo-pods-configuration: 'Debug'
-          ccache-variant: 'unit-tests-debug'
+      # These steps don't depend on each other.
+      - parallel:
+          - name: 💎 Setup Ruby and install gems
+            uses: ruby/setup-ruby@26e5b7d197ebf60545ee9667bcbace0be11ccaec # v1.334.0
+            with:
+              bundler-cache: true
+              ruby-version: 3.4.11
+          - name: 🧹 Reset simulators
+            run: |
+              xcrun simctl list devices --json
+              xcrun simctl erase all
+              xcrun simctl shutdown all
+              sudo xcodebuild -runFirstLaunch
+          - name: 🔨 Setup Node
+            uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+            with:
+              node-version: 24
+              cache: 'pnpm'
+          - name: Setup ccache
+            uses: ./.github/actions/setup-ccache
+          - name: ♻️ Restore caches
+            uses: ./.github/actions/expo-caches
+            id: expo-caches
+            with:
+              ccache: 'true'
+              bare-expo-pods: 'true'
+              # Unit tests build Debug, while Test Suite e2e builds the same app Release. They'd
+              # otherwise share one cache entry, and whichever saved it first would decide which
+              # React.xcframework the other restored. A Release framework in a Debug build fails
+              # to link, since Debug ExpoModulesCore references debug-only Fabric symbols.
+              bare-expo-pods-configuration: 'Debug'
+              ccache-variant: 'unit-tests-debug'
+              expo-modules-jsi-xcframework: 'true'
       - name: Reset ccache stats
         run: ccache -z
       - name: 📦 Install node modules

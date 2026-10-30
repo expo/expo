@@ -306,8 +306,8 @@ class MyUiModule : Module() {
     Name("MyUi")
 
     OnCreate {
-      ModifierRegistry.register("customBorder") { map, _, _, _ ->
-        customBorderModifier(recordFromMap<CustomBorderParams>(map))
+      ModifierRegistry.register("customBorder") { map, _, converterContext, _ ->
+        customBorderModifier(recordFromMap<CustomBorderParams>(map, converterContext))
       }
     }
 
@@ -324,7 +324,7 @@ class MyUiModule : Module() {
 }
 ```
 
-The `register` lambda receives the raw map sent from JavaScript, the current `ComposableScope` (use it for scope-dependent modifiers like `weight` or `align`), the `AppContext`, and an event dispatcher. Most modifiers only need `map` and convert it via `recordFromMap<T>(map)`.
+The `register` lambda receives the raw map sent from JavaScript, the current `ComposableScope` (use it for scope-dependent modifiers like `weight` or `align`), a `ConverterContext`, and an event dispatcher. Most modifiers only need the map and the `ConverterContext`, which they pass to `recordFromMap<T>(map, converterContext)`.
 
 </Step>
 

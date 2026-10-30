@@ -571,6 +571,8 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     self.sourceUrl = bundleUrl;
 
 #if RCT_DEV
+    // Release the old interceptor first: its deinit clears the shared delegate that the new one sets.
+    self.networkInterceptor = nil;
     self.networkInterceptor = [[EXDevLauncherNetworkInterceptor alloc] initWithBundleUrl:bundleUrl];
 #endif
 
@@ -747,11 +749,6 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
     return nil;
   }
 
-  NSDateFormatter *formatter = [NSDateFormatter new];
-  formatter.dateStyle = NSDateFormatterMediumStyle;
-  formatter.timeStyle = NSDateFormatterNoStyle;
-  NSString *formattedDate = [formatter stringFromDate:expiration];
- 
   NSCalendar *calendar = [NSCalendar currentCalendar];
   NSDate *today = [calendar startOfDayForDate:[NSDate date]];
   NSDate *expirationDay = [calendar startOfDayForDate:expiration];

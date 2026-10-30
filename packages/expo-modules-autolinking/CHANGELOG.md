@@ -1,5 +1,53 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- [iOS] Keep pods that resolve Swift packages through React Native's `spm_dependency` (such as `@stripe/stripe-react-native`) and their dependencies as dynamic frameworks when precompiled modules are enabled. ([#52017](https://github.com/expo/expo/pull/52017) by [@chrfalch](https://github.com/chrfalch))
+
+## 58.0.14
+
+### Patch Changes
+
+- [iOS] Fix precompiled modules falling back to source builds on Ruby 2.6 (macOS system Ruby) by polyfilling `Enumerable#filter_map`. ([#50388](https://github.com/expo/expo/pull/50388) by [@vitalyster](https://github.com/vitalyster))
+
+## 58.0.13
+
+### Patch Changes
+
+- Fix autolinking choosing a different copy of a duplicated native module between runs when it is reachable at more than one dependency depth, which also made the `@expo/fingerprint` hash unstable. A resolved module no longer lists its own path among its duplicates. ([#51477](https://github.com/expo/expo/pull/51477) by [@jszumski](https://github.com/jszumski))
+- Updated dependencies. ([#51535](https://github.com/expo/expo/pull/51535))
+  - @expo/require-utils@58.0.4
+
+## 58.0.12
+
+### Patch Changes
+
+- [iOS] Detect native module classes annotated with the `@ExpoModule` macro and add them to the generated modules provider automatically, without listing them in `expo-module.config.json`. Generating the modules provider runs the scanner from `expo-modules-macros` once over all package sources and links only the classes that compile for the target platform. When the scan fails, packages that declare their modules still link them, and the build fails if a package relies on the scan for its module classes. ([#49784](https://github.com/expo/expo/pull/49784) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.11
+
+### Patch Changes
+
+- Add @expo/platforms and consume it across tooling. ([#49418](https://github.com/expo/expo/pull/49418) by [@douglowder](https://github.com/douglowder))
+- [iOS] Fixed `pod install` failing with precompiled modules and `useFrameworks: "dynamic"` when a pod depends on React only through `React`, `ReactCommon`, or another pod that depends on them ([#50640](https://github.com/expo/expo/issues/50640)). ([#50956](https://github.com/expo/expo/pull/50956) by [@chrfalch](https://github.com/chrfalch))
+- Updated dependencies. ([#49418](https://github.com/expo/expo/pull/49418))
+  - @expo/platforms@58.0.1
+
+## 58.0.10
+
+### Patch Changes
+
+- [iOS] Register inline modules declared with the `@ExpoModule` macro, and load the Expo Modules macro plugin in the app target so they compile. ([#51047](https://github.com/expo/expo/pull/51047) by [@mrevanzak](https://github.com/mrevanzak))
+
+## 58.0.9
+
+### Patch Changes
+
+- Updated dependencies. ([#51076](https://github.com/expo/expo/pull/51076), [#51080](https://github.com/expo/expo/pull/51080), [#51089](https://github.com/expo/expo/pull/51089))
+  - @expo/require-utils@58.0.3
+
 ## 58.0.8
 
 ### Patch Changes
@@ -68,6 +116,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [iOS] Preserve inherited Expo configuration flags from Xcode configuration (xcconfig) files instead of duplicating them in Xcode projects during autolinking. ([#48461](https://github.com/expo/expo/pull/48461) by [@gaetanob-sportsbet](https://github.com/gaetanob-sportsbet))
 - [iOS] Re-anchor the project-level `REACT_NATIVE_PATH` build setting to `$(SRCROOT)` when React Native's ccache integration is enabled, so the `CC`/`LD` ccache wrapper paths resolve in targets not integrated with CocoaPods (e.g. custom share or widget extensions), which previously failed with `unable to spawn process '/../../node_modules/react-native/scripts/xcode/ccache-clang.sh'`. ([#47596](https://github.com/expo/expo/pull/47596) by [@AbbanMustafa](https://github.com/AbbanMustafa))
 - [iOS] Fix `HEADER_SEARCH_PATHS` corruption for pod targets whose existing build setting is an array: interpolating the array into a string rendered it as `["…", "…"]`, producing unresolvable include paths. Surfaced as `'React/RCTSurfaceTouchHandler.h' file not found` when building `@expo/ui` with `use_frameworks! :linkage => :dynamic`. ([#48665](https://github.com/expo/expo/pull/48665) by [@Lanchez](https://github.com/Lanchez))
 - [Android] Fix autolinking pure C++ React Native modules published without `includesGeneratedCode: true`. ([#48514](https://github.com/expo/expo/pull/48514) by [@satya164](https://github.com/satya164))

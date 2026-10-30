@@ -1,5 +1,31 @@
 # Changelog
 
+## 58.0.18
+
+### Patch Changes
+
+- Updated dependencies. ([#51946](https://github.com/expo/expo/pull/51946))
+  - @expo/env@2.5.3
+
+## 58.0.17
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.16
+
+### Patch Changes
+
+- Updated dependencies. ([#51321](https://github.com/expo/expo/pull/51321))
+  - @expo/env@2.5.2
+
+## 58.0.15
+
+### Patch Changes
+
+- Update `@expo/code-signing-certificates` to `^0.0.7`. ([#51085](https://github.com/expo/expo/pull/51085) by [@kitten](https://github.com/kitten))
+
 ## 58.0.14
 
 ### Patch Changes

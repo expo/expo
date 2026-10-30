@@ -96,6 +96,7 @@ function ToolbarContent(props: ToolbarContentProps) {
  * ```
  *
  * @platform ios
+ * @platform tvos
  */
 export function ToolbarItem({
   placement = 'automatic',
@@ -125,6 +126,7 @@ export function ToolbarItem({
  * ```
  *
  * @platform ios
+ * @platform tvos
  */
 function ToolbarComponent(props: ToolbarProps) {
   const { modifiers, children, ...restProps } = props;

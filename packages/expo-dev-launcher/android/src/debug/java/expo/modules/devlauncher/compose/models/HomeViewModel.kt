@@ -14,6 +14,7 @@ import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorInstance
+import expo.modules.devlauncher.logs.DevLauncherRemoteLogManager
 import expo.modules.devlauncher.services.ErrorRegistryService
 import expo.modules.devlauncher.services.NsdPreferences
 import expo.modules.devlauncher.services.PackagerInfo
@@ -143,8 +144,10 @@ class HomeViewModel : ViewModel(), DefaultLifecycleObserver {
           try {
             devLauncherController.loadApp(action.url.toUri(), mainActivity = null)
           } catch (e: Exception) {
+            val message = e.message ?: "Unknown error"
+            DevLauncherRemoteLogManager.reportError(devLauncherController.httpClient, action.url.toUri(), message)
             _state.value = _state.value.copy(
-              loadingError = e.message ?: "Unknown error"
+              loadingError = message
             )
           }
         }

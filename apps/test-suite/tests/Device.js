@@ -163,8 +163,9 @@ export async function test(t) {
         if (isDevice) {
           t.expect(deviceName).toBeDefined();
           t.expect(typeof deviceName).toEqual('string');
-        } else {
-          t.expect(deviceName).toBeNull();
+        } else if (deviceName !== null) {
+          // Emulators on API 32+ return the `device_name` global setting.
+          t.expect(typeof deviceName).toEqual('string');
         }
       });
 
