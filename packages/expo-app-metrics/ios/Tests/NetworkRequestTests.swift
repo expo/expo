@@ -1,3 +1,4 @@
+import AVFoundation
 import Foundation
 import Testing
 
@@ -1295,6 +1296,29 @@ struct NetworkRequestTaskSwizzlingTests {
     }.value
     #expect(recorded == nil)
   }
+
+  #if !os(tvOS)
+  /// `AVAssetDownloadTask` is a `URLSessionTask` too, so the swizzled `resume` fires on it, but its
+  /// `originalRequest` getter raises an Objective-C exception that Swift can't catch.
+  @Test
+  func `resumes asset download tasks`() {
+    let configuration = URLSessionConfiguration.background(withIdentifier: "NetworkRequestTaskSwizzlingTests.asset")
+    let session = AVAssetDownloadURLSession(
+      configuration: configuration,
+      assetDownloadDelegate: nil,
+      delegateQueue: nil
+    )
+    defer { session.invalidateAndCancel() }
+    let asset = AVURLAsset(url: URL(string: "https://fake.invalid.test/never-downloads.m3u8")!)
+    let task = session.makeAssetDownloadTask(
+      downloadConfiguration: AVAssetDownloadConfiguration(asset: asset, title: "test")
+    )
+
+    task.resume()
+
+    #expect(task.state == .running)
+  }
+  #endif
 
   /// Requests marked with `ExpoRequestInterceptorProtocol.requestId` are dev-launcher inner replays —
   /// the swizzle must skip them so we don't double-record every request in dev-client builds. Drive
