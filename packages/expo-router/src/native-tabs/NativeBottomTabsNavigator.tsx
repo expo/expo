@@ -1,14 +1,6 @@
 'use client';
 
-import React, {
-  Children,
-  use,
-  useCallback,
-  useMemo,
-  useRef,
-  useState,
-  type ReactNode,
-} from 'react';
+import React, { Children, use, useCallback, useMemo, useRef, useState } from 'react';
 
 import { createBaseTabProps } from '../layouts/createBaseTabProps';
 import {
@@ -29,7 +21,7 @@ import type {
 import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { useWarnOnce } from '../useDeprecated';
-import { isChildOfType } from '../utils/children';
+import { getAllChildrenNotOfType, isChildOfType } from '../utils/children';
 import { isProtectedReactElement } from '../views/Protected';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabTrigger } from './NativeTabTrigger';
@@ -112,7 +104,6 @@ function NativeTabsContent({
   navigateSync,
   isPreloaded: _isPreloaded,
   isRemovalPrevented: _isRemovalPrevented,
-  tabConfigurationKey,
   // These per-tab style props are folded into `screenOptions` by `NativeTabsNavigatorWrapper` and
   // read back per-tab from `descriptors`. Pull them out of `rest` so they aren't forwarded to
   // `NativeTabsView` as top-level props.
@@ -159,6 +150,7 @@ function NativeTabsContent({
       ),
     [descriptors, visibleRoutes]
   );
+  const tabConfigurationKey = visibleTabs.map((tab) => tab.name).join(';');
   usePreloadPlaceholderRoutes({
     routes: visibleRoutes,
     descriptors,
@@ -263,51 +255,19 @@ const NativeTabsNavigatorWithContext = createStandardRouterNavigator<
   createProps: createNativeTabsProps,
 });
 
-// `Protected` stays wrapped. The navigator's screen filter reads `guard` and records `redirectTo`.
-function partitionNativeTabsChildren(children: ReactNode) {
-  const navigatorChildren: ReactNode[] = [];
-  const nonTriggerChildren: ReactNode[] = [];
-
-  Children.forEach(children, (child) => {
-    if (isChildOfType(child, NativeTabTrigger)) {
-      if (!child.props.hidden) {
-        navigatorChildren.push(child);
-      }
-      return;
-    }
-
-    if (isProtectedReactElement(child)) {
-      navigatorChildren.push(child);
-      return;
-    }
-
-    nonTriggerChildren.push(child);
-  });
-
-  return {
-    navigatorChildren,
-    nonTriggerChildren,
-    tabConfigurationKey: getVisibleTriggerNames(children).join(';'),
-  };
-}
-
-function getVisibleTriggerNames(children: ReactNode, excluded = false): string[] {
-  return Children.toArray(children).flatMap((child) => {
-    if (isProtectedReactElement(child)) {
-      return getVisibleTriggerNames(child.props.children, excluded || !child.props.guard);
-    }
-
-    if (isChildOfType(child, NativeTabTrigger) && !excluded && !child.props.hidden) {
-      return [child.props.name ?? ''];
-    }
-
-    return [];
-  });
-}
-
 export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
-  const { navigatorChildren, nonTriggerChildren, tabConfigurationKey } = useMemo(
-    () => partitionNativeTabsChildren(props.children),
+  // `Protected` stays wrapped. The navigator's screen filter reads `guard` and records `redirectTo`.
+  const navigatorChildren = useMemo(
+    () =>
+      Children.toArray(props.children).filter(
+        (child) =>
+          (isChildOfType(child, NativeTabTrigger) && !child.props.hidden) ||
+          isProtectedReactElement(child)
+      ),
+    [props.children]
+  );
+  const nonTriggerChildren = useMemo(
+    () => getAllChildrenNotOfType(props.children, NativeTabTrigger),
     [props.children]
   );
 
@@ -380,7 +340,6 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
         {...props}
         children={navigatorChildren}
         nonTriggerChildren={nonTriggerChildren}
-        tabConfigurationKey={tabConfigurationKey}
         screenOptions={screenOptions}
         // Passed to TabRouter
         backBehavior={backBehavior}
