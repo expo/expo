@@ -438,22 +438,40 @@ export default function SelectableDropdownMenuExample() {
 
 ### Group and item shapes
 
-By default, a `DropdownMenuGroup` has the shape of a single group, and a `SelectableDropdownMenuItem` has the shape of a single item. To make the groups and items look like one stack, pass the position of each one. Set the `shapes` prop of a `DropdownMenuGroup` or a `SelectableDropdownMenuItem`, or the `shape` prop of a `DropdownMenuItem`, to its `index` and `count`. Compose's `MenuDefaults.groupShape(index, count)` and `MenuDefaults.itemShape(index, count)` then give the first element rounder top corners and the last element rounder bottom corners. A `DropdownMenuItem` without `shape` is the original Material 3 menu item.
+By default, each `DropdownMenuGroup` and `SelectableDropdownMenuItem` has the shape of a single element. To join them into one stack, set the position of each element as `{ index, count }`:
+
+- `shapes` on `DropdownMenuGroup`: the position of the group in the menu.
+- `shape` on `DropdownMenuItem`, or `shapes` on `SelectableDropdownMenuItem`: the position of the item in its group.
+
+The first element gets rounder top corners, and the last element gets rounder bottom corners. A `DropdownMenuItem` without `shape` is the original Material 3 menu item.
 
 ```tsx
-<DropdownMenuGroup shapes={{ index: 0, count: 2 }}>
-  {options.map((option, index) => (
-    <SelectableDropdownMenuItem
-      key={option}
-      selected={sortOrder === option}
-      shapes={{ index, count: options.length }}
-      onClick={() => setSortOrder(option)}>
-      <SelectableDropdownMenuItem.Text>
-        <Text>{option}</Text>
-      </SelectableDropdownMenuItem.Text>
-    </SelectableDropdownMenuItem>
-  ))}
-</DropdownMenuGroup>
+<DropdownMenuPopup
+  expanded={isExpanded}
+  onDismissRequest={() => setIsExpanded(false)}>
+  {/* Group 1 of 2, with 2 items */}
+  <DropdownMenuGroup shapes={{ index: 0, count: 2 }}>
+    <DropdownMenuItem shape={{ index: 0, count: 2 }}>
+      <DropdownMenuItem.Text>
+        <Text>Edit</Text>
+      </DropdownMenuItem.Text>
+    </DropdownMenuItem>
+    <DropdownMenuItem shape={{ index: 1, count: 2 }}>
+      <DropdownMenuItem.Text>
+        <Text>Share</Text>
+      </DropdownMenuItem.Text>
+    </DropdownMenuItem>
+  </DropdownMenuGroup>
+  <Spacer modifiers={[height(2)]} />
+  {/* Group 2 of 2, with 1 item */}
+  <DropdownMenuGroup shapes={{ index: 1, count: 2 }}>
+    <DropdownMenuItem shape={{ index: 0, count: 1 }}>
+      <DropdownMenuItem.Text>
+        <Text>Settings</Text>
+      </DropdownMenuItem.Text>
+    </DropdownMenuItem>
+  </DropdownMenuGroup>
+</DropdownMenuPopup>
 ```
 
 ## API
