@@ -48,4 +48,31 @@ internal enum UpdatesErrorCode: Int {
       return "Unknown"
     }
   }
+
+  // The URL loading errors that mean the device could not reach the server.
+  private static let serverUnreachableURLErrorCodes: Set<URLError.Code> = [
+    .notConnectedToInternet,
+    .networkConnectionLost,
+    .timedOut,
+    .cannotFindHost,
+    .cannotConnectToHost,
+    .dnsLookupFailed,
+    .dataNotAllowed,
+    .internationalRoamingOff
+  ]
+
+  /**
+   The code for a failed update or asset load: `updateServerUnreachable` when the device could not
+   reach the server, and `code` for any other failure.
+   */
+  static func forLoadFailure(_ error: Error, otherwise code: UpdatesErrorCode) -> UpdatesErrorCode {
+    var current: Error? = error
+    while let error = current {
+      if let urlError = error as? URLError, serverUnreachableURLErrorCodes.contains(urlError.code) {
+        return .updateServerUnreachable
+      }
+      current = (error as? UpdatesError)?.cause
+    }
+    return code
+  }
 }

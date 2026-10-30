@@ -271,7 +271,11 @@ class DatabaseLauncher(
           null
         }
       } catch (e: Exception) {
-        logger.error("Failed to load asset from disk or network", e, UpdatesErrorCode.AssetsFailedToLoad)
+        logger.error(
+          "Failed to load asset from disk or network",
+          e,
+          UpdatesErrorCode.forLoadFailure(e, otherwise = UpdatesErrorCode.AssetsFailedToLoad)
+        )
         if (asset.isLaunchAsset) {
           launchAssetException = e
         }

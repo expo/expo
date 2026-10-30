@@ -351,7 +351,7 @@ open class AppLoader: NSObject {
     let assetKey = asset.key ?? asset.filename
     logger.warn(
       message: "Failed to download asset \(assetKey): \(error.localizedDescription)",
-      code: UpdatesErrorCode.assetsFailedToLoad,
+      code: UpdatesErrorCode.forLoadFailure(error, otherwise: .assetsFailedToLoad),
       updateId: updateResponseContainingManifest?.manifestUpdateResponsePart?.updateManifest.loggingId(),
       assetId: assetKey
     )

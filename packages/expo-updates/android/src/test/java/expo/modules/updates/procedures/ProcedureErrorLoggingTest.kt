@@ -27,6 +27,8 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.File
 import java.io.IOException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.util.Date
 
 @RunWith(RobolectricTestRunner::class)
@@ -80,7 +82,27 @@ class ProcedureErrorLoggingTest {
     procedure.run(procedureContext)
 
     Assert.assertTrue(result is IUpdatesController.CheckForUpdateResult.ErrorResult)
-    assertOneErrorEntryContaining("HTTP 500: server exploded")
+    assertOneErrorEntry("UpdateFailedToLoad", "HTTP 500: server exploded")
+  }
+
+  @Test
+  fun `a check that cannot reach the server logs UpdateServerUnreachable`() = runTest {
+    val config = createUpdatesConfiguration()
+    val procedure = CheckForUpdateProcedure(
+      context,
+      config,
+      database,
+      logger,
+      createFileDownloaderFailingWith(
+        IOException("Failed to download remote update", UnknownHostException("Unable to resolve host \"u.expo.dev\""))
+      ),
+      SelectionPolicyFactory.createFilterAwarePolicy(config.getRuntimeVersion(), config),
+      null
+    ) {}
+
+    procedure.run(procedureContext)
+
+    assertOneErrorEntry("UpdateServerUnreachable", "Unable to resolve host")
   }
 
   @Test
@@ -102,10 +124,30 @@ class ProcedureErrorLoggingTest {
     procedure.run(procedureContext)
 
     Assert.assertTrue(result is IUpdatesController.FetchUpdateResult.ErrorResult)
-    assertOneErrorEntryContaining("HTTP 500: server exploded")
+    assertOneErrorEntry("UpdateFailedToLoad", "HTTP 500: server exploded")
   }
 
-  private fun assertOneErrorEntryContaining(text: String) {
+  @Test
+  fun `a fetch that times out logs UpdateServerUnreachable`() = runTest {
+    val config = createUpdatesConfiguration()
+    val procedure = FetchUpdateProcedure(
+      context,
+      config,
+      logger,
+      database,
+      temporaryFolder.newFolder(),
+      createFileDownloaderFailingWith(IOException("Failed to download remote update", SocketTimeoutException("timeout"))),
+      SelectionPolicyFactory.createFilterAwarePolicy(config.getRuntimeVersion(), config),
+      null,
+      this
+    ) {}
+
+    procedure.run(procedureContext)
+
+    assertOneErrorEntry("UpdateServerUnreachable", "timeout")
+  }
+
+  private fun assertOneErrorEntry(code: String, text: String) {
     // The persistent file log handler writes asynchronously.
     Thread.sleep(500)
     val errors = UpdatesLogReader(logsDirectory)
@@ -114,15 +156,19 @@ class ProcedureErrorLoggingTest {
       .filter { it.level == "error" }
     Assert.assertEquals("Expected one error entry, got: $errors", 1, errors.size)
     val error = errors.single()
-    Assert.assertEquals("UpdateFailedToLoad", error.code)
+    Assert.assertEquals(code, error.code)
     Assert.assertTrue("Expected \"$text\" in: ${error.message}", error.message.contains(text))
   }
 
-  private fun createFileDownloaderFailingWithHttp500(): FileDownloader {
-    val error = IOException(
-      "Failed to download remote update",
-      IOException("Remote update request not successful", IOException("HTTP 500: server exploded"))
+  private fun createFileDownloaderFailingWithHttp500(): FileDownloader =
+    createFileDownloaderFailingWith(
+      IOException(
+        "Failed to download remote update",
+        IOException("Remote update request not successful", IOException("HTTP 500: server exploded"))
+      )
     )
+
+  private fun createFileDownloaderFailingWith(error: Exception): FileDownloader {
     return mockk {
       coEvery { downloadRemoteUpdate(any()) } throws error
     }

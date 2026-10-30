@@ -42,7 +42,7 @@ class FetchUpdateProcedure(
       throw e
     } catch (e: Exception) {
       val message = "Failed to download new update: ${e.localizedMessageWithCauseLocalizedMessage()}"
-      logger.error(message, e, UpdatesErrorCode.UpdateFailedToLoad)
+      logger.error(message, e, UpdatesErrorCode.forLoadFailure(e, otherwise = UpdatesErrorCode.UpdateFailedToLoad))
       procedureContext.processStateEvent(UpdatesStateEvent.DownloadError(message))
       callback(IUpdatesController.FetchUpdateResult.ErrorResult(e))
     } finally {
