@@ -57,7 +57,8 @@ enum class ErrorSource(val rawValue: String) : Enumerable {
   GLOBAL("global"),
   ERROR_BOUNDARY("errorBoundary"),
   REPORTED_BY_USER("reportedByUser"),
-  INTEGRATION("integration")
+  INTEGRATION("integration"),
+  UNHANDLED_REJECTION("unhandledRejection")
 }
 
 /**
