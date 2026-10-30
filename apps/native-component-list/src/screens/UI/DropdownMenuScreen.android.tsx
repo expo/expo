@@ -50,6 +50,7 @@ export default function DropdownMenuScreen() {
   const [shadowElevation, setShadowElevation] = React.useState<number | undefined>(undefined);
   const [roundedMenuExpanded, setRoundedMenuExpanded] = React.useState(false);
   const [groupedMenuExpanded, setGroupedMenuExpanded] = React.useState(false);
+  const [groupedSubmenuExpanded, setGroupedSubmenuExpanded] = React.useState(false);
   const [groupedSortOrder, setGroupedSortOrder] = React.useState<'Newest' | 'Oldest' | 'Popular'>(
     'Newest'
   );
@@ -372,6 +373,33 @@ export default function DropdownMenuScreen() {
                     <Icon source={settingsIcon} size={24} />
                   </DropdownMenuItem.TrailingIcon>
                 </DropdownMenuItem>
+                <DropdownMenu
+                  expanded={groupedSubmenuExpanded}
+                  onDismissRequest={() => setGroupedSubmenuExpanded(false)}>
+                  <DropdownMenu.Trigger>
+                    <DropdownMenuItem onClick={() => setGroupedSubmenuExpanded(true)}>
+                      <DropdownMenuItem.Text>
+                        <ComposeText>More</ComposeText>
+                      </DropdownMenuItem.Text>
+                    </DropdownMenuItem>
+                  </DropdownMenu.Trigger>
+                  <DropdownMenu.Items>
+                    <DropdownMenuGroup>
+                      {['Help', 'Send feedback'].map((option) => (
+                        <DropdownMenuItem
+                          key={option}
+                          onClick={() => {
+                            setGroupedSubmenuExpanded(false);
+                            setGroupedMenuExpanded(false);
+                          }}>
+                          <DropdownMenuItem.Text>
+                            <ComposeText>{option}</ComposeText>
+                          </DropdownMenuItem.Text>
+                        </DropdownMenuItem>
+                      ))}
+                    </DropdownMenuGroup>
+                  </DropdownMenu.Items>
+                </DropdownMenu>
                 <DropdownMenuItem
                   elementColors={{ textColor: '#B3261E', trailingIconColor: '#B3261E' }}
                   onClick={() => setGroupedMenuExpanded(false)}>

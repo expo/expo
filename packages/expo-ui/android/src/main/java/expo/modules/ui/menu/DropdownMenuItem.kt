@@ -1,6 +1,7 @@
 package expo.modules.ui.menu
 
 import android.graphics.Color
+import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MenuDefaults
@@ -49,6 +50,14 @@ internal fun isMenuItem(view: Any?): Boolean {
   return (view as? ExpoComposeView<*>)?.props is DropdownMenuItemProps
 }
 
+/**
+ * A submenu is a `DropdownMenu` whose trigger is a `DropdownMenuItem`. In a group, it takes the
+ * place of an item.
+ */
+private fun isSubmenu(view: Any?): Boolean {
+  return (view as? ExpoComposeView<*>)?.props is DropdownMenuProps
+}
+
 @Composable
 fun FunctionalComposableScope.DropdownMenuItemContent(
   props: DropdownMenuItemProps,
@@ -63,14 +72,16 @@ fun FunctionalComposableScope.DropdownMenuItemContent(
   val defaultColors = MenuDefaults.itemColors()
 
   // In a `DropdownMenuGroup`, the item is a Material 3 Expressive item, shaped by its position among the group's items.
-  val group = view.parent as? ViewGroup
+  // A submenu's trigger item sits in its `DropdownMenu`, which is the group's child, so it takes that menu's position.
+  val groupChild: View = (view.parent as? View)?.takeIf { isSubmenu(it) } ?: view
+  val group = groupChild.parent as? ViewGroup
   if (group != null && isMenuGroup(group)) {
-    val items = (0..<group.size).map { group.getChildAt(it) }.filter { isMenuItem(it) }
+    val items = (0..<group.size).map { group.getChildAt(it) }.filter { isMenuItem(it) || isSubmenu(it) }
     val text: @Composable () -> Unit = { textSlotView?.renderSlot() }
     val leadingIcon = leadingSlotView?.let { slot -> @Composable { slot.renderSlot() } }
     val trailingContent = trailingSlotView?.let { slot -> @Composable { slot.renderSlot() } }
     val modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher)
-    val shapes = MenuDefaults.itemShape(index = items.indexOf(view), count = items.size)
+    val shapes = MenuDefaults.itemShape(index = items.indexOf(groupChild), count = items.size)
     val selected = props.selected
 
     if (selected != null) {

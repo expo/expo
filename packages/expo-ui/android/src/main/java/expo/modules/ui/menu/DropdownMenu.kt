@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuPopup
+import androidx.compose.material3.MenuAnchorPosition
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -33,9 +34,14 @@ fun FunctionalComposableScope.DropdownMenuContent(
     Children(UIComposableScope(), filter = { !isSlotView(it) })
 
     if (itemsSlotView != null && isGrouped) {
+      // A menu in a group is a submenu, which opens beside its trigger item, like Compose's cascading menus.
+      val isSubmenu = isMenuGroup(view.parent)
       DropdownMenuPopup(
         expanded = props.expanded,
         onDismissRequest = onDismissRequest,
+        popupPositionProvider = MenuDefaults.rememberDropdownMenuPopupPositionProvider(
+          if (isSubmenu) MenuAnchorPosition.End else MenuAnchorPosition.Below
+        ),
         properties = PopupProperties(
           focusable = props.properties.focusable,
           dismissOnBackPress = props.properties.dismissOnBackPress,
