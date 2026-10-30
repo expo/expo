@@ -493,6 +493,7 @@ export const eas = [
     makePage('eas/workflows/manage-workflow-runs.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),
+    makePage('eas/workflows/reusable-workflows.mdx'),
     makePage('eas/workflows/custom-functions.mdx'),
     makePage('eas/workflows/environment.mdx'),
     makePage('eas/workflows/automating-eas-cli.mdx'),
