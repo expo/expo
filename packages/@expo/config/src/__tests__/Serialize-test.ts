@@ -27,6 +27,19 @@ describe.each([
   ['serializeSkippingMods', serializeSkippingMods],
   ['serializeAfterStaticPlugins', serializeAfterStaticPlugins],
 ])('%s prototype protection', (_name, serialize) => {
+  it('serializes null-prototype objects with an own hasOwnProperty value', () => {
+    const props = Object.assign(Object.create(null), { hasOwnProperty: 'data' });
+    const input = Object.assign(Object.create(null), {
+      extra: props,
+      plugins: [['expo-font', props]],
+    });
+
+    expect(serialize(input)).toEqual({
+      extra: { hasOwnProperty: 'data' },
+      plugins: [['expo-font', { hasOwnProperty: 'data' }]],
+    });
+  });
+
   it('ignores an own __proto__ property', () => {
     const input = JSON.parse('{"__proto__":{"injected":true},"safe":true}');
 
