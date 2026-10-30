@@ -372,6 +372,12 @@ PODS:
     - ExpoModulesTestCore
   - ExpoCrypto (58.0.7):
     - ExpoModulesCore
+  - ExpoCrypto/Benchmarks (58.0.7):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+  - ExpoCrypto/Tests (58.0.7):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoDevice (58.0.5):
     - ExpoModulesCore
   - ExpoDocumentPicker (58.0.4):
@@ -3404,6 +3410,8 @@ DEPENDENCIES:
   - ExpoContacts (from `../../../packages/expo-contacts/ios`)
   - ExpoContacts/Tests (from `../../../packages/expo-contacts/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
+  - ExpoCrypto/Benchmarks (from `../../../packages/expo-crypto/ios`)
+  - ExpoCrypto/Tests (from `../../../packages/expo-crypto/ios`)
   - ExpoDevice (from `../../../packages/expo-device/ios`)
   - ExpoDocumentPicker (from `../../../packages/expo-document-picker/ios`)
   - "ExpoDomWebView (from `../../../packages/@expo/dom-webview/ios`)"
@@ -4140,7 +4148,7 @@ SPEC CHECKSUMS:
   ExpoCellular: 3b8740bc9cf771700dd2356543c4930f2e9c8b96
   ExpoClipboard: 244adf0a38b60ec7105e217042dd266a722f5a5e
   ExpoContacts: e406e96e4f37d3df65e22ecb66b3200cb15b9390
-  ExpoCrypto: 33ede543a3747abbef071c3bd747135ccc4e4fd5
+  ExpoCrypto: c8b680ce5abbed5599ac7e13ce1373641466cd6b
   ExpoDevice: 77a9816436a09a0bfc00f5ace649c6ccb219b96d
   ExpoDocumentPicker: af0917aa6f1b54ab3a0f47977935a1e20ffb1537
   ExpoDomWebView: b2a6d681b9d34c23b1f584321386ca8da1d36afb
