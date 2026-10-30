@@ -1,3 +1,4 @@
+import { validate, ValidationError } from '@expo/schema-utils';
 import { constants as bufferConstants } from 'node:buffer';
 
 import type { DevToolsPluginOutput } from './DevToolsPlugin.schema';
@@ -59,19 +60,9 @@ export class DevToolsPluginCliExtensionResults {
     txt: string,
     level: 'info' | 'warning' | 'error' = 'info'
   ): DevToolsPluginOutput {
-    // Validate against schema
+    let output: unknown;
     try {
-      const result = DevToolsPluginOutputSchema.safeParse(JSON.parse(txt));
-      if (!result.success) {
-        return [
-          {
-            type: 'text',
-            text: `Invalid JSON: ${result.error.issues.map((issue) => issue.message).join(', ')}`,
-            level: 'error',
-          },
-        ];
-      }
-      return result.data;
+      output = JSON.parse(txt);
     } catch {
       // Not JSON, treat as plain text
       const lines = txt.split('\n');
@@ -82,6 +73,21 @@ export class DevToolsPluginCliExtensionResults {
         }
       }
       return results;
+    }
+    try {
+      validate(DevToolsPluginOutputSchema, output);
+      return output;
+    } catch (error) {
+      if (!(error instanceof ValidationError)) throw error;
+      // Conditional schemas include a parent error; report the failing field.
+      const issue = error.errors[error.errors.length - 1]!;
+      return [
+        {
+          type: 'text',
+          text: `Invalid JSON: ${issue.path || 'output'}: ${issue.message}`,
+          level: 'error',
+        },
+      ];
     }
   }
 }

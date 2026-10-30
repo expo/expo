@@ -4,7 +4,7 @@ import resolveFrom from 'resolve-from';
 import { AsyncNgrok } from './AsyncNgrok';
 import { AsyncWsTunnel } from './AsyncWsTunnel';
 import { Bonjour } from './Bonjour';
-import DevToolsPluginManager from './DevToolsPluginManager';
+import DevToolsPluginManager from './devtools/DevToolsPluginManager';
 import { DevelopmentSession } from './DevelopmentSession';
 import type { CreateURLOptions } from './UrlCreator';
 import { UrlCreator } from './UrlCreator';

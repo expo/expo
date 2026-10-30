@@ -1,13 +1,13 @@
-import { Log } from '../../../log';
+import { Log } from '../../../../log';
 import DevToolsPluginManager from '../DevToolsPluginManager';
 
-jest.mock('../../../log');
+jest.mock('../../../../log');
 
-jest.mock('../../../events', () => ({
+jest.mock('../../../../events', () => ({
   events: jest.fn(() => jest.fn()),
 }));
 
-const { events } = require('../../../events') as { events: jest.Mock };
+const { events } = require('../../../../events') as { events: jest.Mock };
 const mockEvent = events.mock.results[0]!.value as jest.Mock;
 
 // Mock the autolinking module

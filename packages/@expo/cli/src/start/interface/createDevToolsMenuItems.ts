@@ -5,8 +5,8 @@ import * as Log from '../../log';
 import { openBrowserAsync } from '../../utils/open';
 import type { ExpoChoice } from '../../utils/prompts';
 import { selectAsync } from '../../utils/prompts';
-import type { DevToolsPlugin } from '../server/DevToolsPlugin';
-import type { DevToolsPluginCommand } from '../server/DevToolsPlugin.schema';
+import type { DevToolsPlugin } from '../server/devtools/DevToolsPlugin';
+import type { DevToolsPluginCommand } from '../server/devtools/DevToolsPlugin.schema';
 
 const debug = require('debug')('expo:start:devtools') as typeof console.log;
 

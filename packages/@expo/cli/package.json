@@ -105,8 +105,7 @@
     "terminal-link": "^2.1.1",
     "toqr": "^0.1.1",
     "wrap-ansi": "^7.0.0",
-    "ws": "^8.12.1",
-    "zod": "^3.25.76"
+    "ws": "^8.12.1"
   },
   "taskr": {
     "requires": [
@@ -115,10 +114,14 @@
   },
   "peerDependencies": {
     "expo": "*",
+    "expo-mcp": "*",
     "expo-router": "*",
     "react-native": "*"
   },
   "peerDependenciesMeta": {
+    "expo-mcp": {
+      "optional": true
+    },
     "expo-router": {
       "optional": true
     },
@@ -172,6 +175,7 @@
     "node-html-parser": "^6.1.5",
     "playwright": "^1.59.0",
     "taskr": "^1.1.0",
-    "tree-kill": "^1.2.2"
+    "tree-kill": "^1.2.2",
+    "zod": "^3.25.76"
   }
 }

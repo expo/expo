@@ -1,5 +1,7 @@
-import { DevToolsPlugin } from '../DevToolsPlugin';
-import type { DevToolsPluginInfo } from '../DevToolsPlugin.schema';
+import { z } from 'zod';
+
+import { DevToolsPlugin } from '../../devtools/DevToolsPlugin';
+import type { DevToolsPluginInfo } from '../../devtools/DevToolsPlugin.schema';
 import { createMCPDevToolsExtensionSchema } from '../createMCPDevToolsExtensionSchema';
 
 describe(createMCPDevToolsExtensionSchema, () => {
@@ -27,7 +29,7 @@ describe(createMCPDevToolsExtensionSchema, () => {
   } as DevToolsPluginInfo;
 
   it('generates correct schema for plugin with commands and parameters', () => {
-    const schema = createMCPDevToolsExtensionSchema(new DevToolsPlugin(mockPlugin, ''));
+    const schema = createMCPDevToolsExtensionSchema(new DevToolsPlugin(mockPlugin, ''), z);
     const parameters = {
       command: 'task',
       name: 'task 1',
@@ -49,7 +51,7 @@ describe(createMCPDevToolsExtensionSchema, () => {
     } as DevToolsPlugin;
 
     expect(() => {
-      createMCPDevToolsExtensionSchema(pluginWithoutCommands);
+      createMCPDevToolsExtensionSchema(pluginWithoutCommands, z);
     }).toThrow(
       'Plugin no-commands-plugin has no commands defined. Please define at least one command.'
     );

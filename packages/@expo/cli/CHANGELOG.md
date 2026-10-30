@@ -14,6 +14,7 @@
 ### 💡 Others
 
 - Warn when Worklets Bundle Mode is detected in the Metro configuration. ([#52450](https://github.com/expo/expo/pull/52450) by [@kitten](https://github.com/kitten))
+- Remove the Zod production dependency by using schema-utils for DevTools validation and loading Zod from the optional MCP integration Declare `expo-mcp` as an optional peer dependency. ([#52599](https://github.com/expo/expo/pull/52599) by [@kitten](https://github.com/kitten))
 
 ## 57.0.32 — 2026-10-21
 

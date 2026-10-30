@@ -11,7 +11,7 @@ import { selectAsync } from '../../utils/prompts';
 import { printQRCode } from '../../utils/qr';
 import { getDependencyCheckMessage } from '../checkDependenciesOnStart';
 import type { DevServerManager } from '../server/DevServerManager';
-import type { DevToolsPlugin } from '../server/DevToolsPlugin';
+import type { DevToolsPlugin } from '../server/devtools/DevToolsPlugin';
 import {
   openJsInspector,
   queryAllInspectorAppsAsync,
