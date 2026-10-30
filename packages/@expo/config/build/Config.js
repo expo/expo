@@ -72,6 +72,13 @@ function _slugify() {
   };
   return data;
 }
+function _util() {
+  const data = require("util");
+  _util = function () {
+    return data;
+  };
+  return data;
+}
 function _getConfig() {
   const data = require("./getConfig");
   _getConfig = function () {
@@ -382,7 +389,7 @@ async function modifyConfigAsync(projectRoot, modifications, readOptions = {}, w
 
     // Verify that the dynamic config is using the static config
     const newConfig = getConfig(projectRoot, readOptions);
-    const newConfighasModifications = isMatchingObject(modifications, newConfig.exp);
+    const newConfighasModifications = hasConfigModifications(modifications, newConfig.exp);
     if (newConfighasModifications) {
       return {
         type: 'success',
@@ -405,6 +412,22 @@ async function modifyConfigAsync(projectRoot, modifications, readOptions = {}, w
 }
 
 /**
+ * Append the source items to the target array, then remove duplicate entries, keeping the first
+ * occurrence. Used only for `updates`, whose arrays are sets: `eas update:configure` sends the
+ * existing `updates` object back with a new `url`, and the default merge would write each existing
+ * entry twice. Other arrays keep the default merge, because plugins can depend on it.
+ */
+function mergeArraysWithoutDuplicates(target, source) {
+  const result = [];
+  for (const item of [...target, ...source]) {
+    if (!result.some(existing => (0, _util().isDeepStrictEqual)(existing, item))) {
+      result.push(item);
+    }
+  }
+  return result;
+}
+
+/**
  * Merge the config modifications, using an optional possible top-level `expo` object.
  * Note, changes in the plugins are merged differently to avoid duplicate entries.
  */
@@ -412,7 +435,13 @@ function mergeConfigModifications(config, {
   plugins,
   ...modifications
 }) {
-  const modifiedExpoConfig = !config.rootConfig.expo ? (0, _deepmerge().default)(config.rootConfig, modifications) : (0, _deepmerge().default)(config.rootConfig.expo, modifications);
+  const baseConfig = config.rootConfig.expo || config.rootConfig;
+  const modifiedExpoConfig = (0, _deepmerge().default)(baseConfig, modifications);
+  if (isPlainObject(modifications.updates)) {
+    modifiedExpoConfig.updates = (0, _deepmerge().default)(isPlainObject(baseConfig.updates) ? baseConfig.updates : {}, modifications.updates, {
+      arrayMerge: mergeArraysWithoutDuplicates
+    });
+  }
   if (plugins?.length) {
     // When adding plugins, ensure the config has a plugin list
     if (!modifiedExpoConfig.plugins) {
@@ -466,13 +495,43 @@ function mergeConfigModifications(config, {
   };
   return finalizedConfig;
 }
-function isMatchingObject(expectedValues, actualValues) {
+function isPlainObject(value) {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+/**
+ * `updates` arrays are merged as sets (see `mergeArraysWithoutDuplicates`), so they are compared
+ * as sets. Arrays everywhere else are compared item by item, in order.
+ */
+function hasConfigModifications(modifications, config) {
+  const {
+    updates,
+    ...otherModifications
+  } = modifications;
+  if (!isMatchingObject(otherModifications, config)) {
+    return false;
+  }
+  if (!('updates' in modifications)) {
+    return true;
+  }
+  if (!isPlainObject(updates)) {
+    return isMatchingObject({
+      updates
+    }, config);
+  }
+  return isPlainObject(config.updates) && isMatchingObject(updates, config.updates, true);
+}
+function isMatchingObject(expectedValues, actualValues, matchArraysAsSets = false) {
   for (const key in expectedValues) {
     if (!expectedValues.hasOwnProperty(key)) {
       continue;
     }
-    if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
-      if (!isMatchingObject(expectedValues[key], actualValues[key])) {
+    if (matchArraysAsSets && Array.isArray(expectedValues[key])) {
+      if (!isMatchingArray(expectedValues[key], actualValues[key])) {
+        return false;
+      }
+    } else if (typeof expectedValues[key] === 'object' && actualValues[key] !== null) {
+      if (!isMatchingObject(expectedValues[key], actualValues[key], matchArraysAsSets)) {
         return false;
       }
     } else {
@@ -482,6 +541,17 @@ function isMatchingObject(expectedValues, actualValues) {
     }
   }
   return true;
+}
+
+/**
+ * An expected array matches when each of its items is in the actual array, regardless of order or
+ * repeated items.
+ */
+function isMatchingArray(expectedItems, actualItems) {
+  if (!Array.isArray(actualItems)) {
+    return false;
+  }
+  return expectedItems.every(expected => actualItems.some(actual => typeof expected === 'object' && expected !== null ? typeof actual === 'object' && actual !== null && isMatchingObject(expected, actual, true) : expected === actual));
 }
 function ensureConfigHasDefaultValues({
   projectRoot,
