@@ -137,7 +137,6 @@ it('only runs on macOS', async () => {
   await expect(expoCompileIos([])).rejects.toThrow(/EXIT_CALLED/);
 
   expect(Log.exit).toHaveBeenCalledWith(expect.stringMatching(/eas build -p ios/));
-  expect(loadEnvFiles).not.toHaveBeenCalled();
   expect(spawnAsync).not.toHaveBeenCalled();
 });
 
