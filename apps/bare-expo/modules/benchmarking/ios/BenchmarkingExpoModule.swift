@@ -1,5 +1,7 @@
 import ExpoModulesCore
 import ExpoModulesJSI
+import QuartzCore
+import UIKit
 
 struct Point: Record {
   @Field
@@ -23,6 +25,12 @@ final class SharedPoint: SharedObject {
 @ExpoModule
 public final class BenchmarkingExpoModule: Module {
   public func definition() -> ModuleDefinition {
+    OnCreate {
+      // Attach the JS-thread decode timing observer to expo-modules-core (no-op cost in core when
+      // unset; only this benchmark module sets it).
+      ViewPropsBenchmark.installDecodeObserver()
+    }
+
     Function("nothing") {}
     Function("nothingOptimized", nothingOptimized())
 
@@ -90,6 +98,26 @@ public final class BenchmarkingExpoModule: Module {
         return point.y
       }
     }
+
+    // MARK: - View-props benchmark
+    //
+    // `getViewPropsBenchmark` / `resetViewPropsBenchmark` read the process-wide counters that
+    // expo-modules-core accumulates around view-prop decode (JS thread) and apply (main
+    // thread). Drive one of the two benchmark views with changing props, then read the totals.
+    // The counters are shared, so the screen mounts a single view per run.
+
+    Function("resetViewPropsBenchmark") {
+      ViewPropsBenchmark.reset()
+    }
+
+    Function("getViewPropsBenchmark") { () -> [String: Any] in
+      return ViewPropsBenchmark.snapshot()
+    }
+
+    // Same props, two routes: `BenchmarkView` has them decoded on the JavaScript thread,
+    // `LegacyBenchmarkView` takes the dictionary path every existing view uses.
+    benchmarkView(BenchmarkView.self)
+    benchmarkView(LegacyBenchmarkView.self)
 
     // MARK: - runtime.execute() benchmarks
     //
@@ -217,5 +245,34 @@ public final class BenchmarkingExpoModule: Module {
   @JS
   private func passthroughSynthesizedRecord(point: SynthesizedPoint) -> SynthesizedPoint {
     return point
+  }
+}
+
+/// Builds the benchmark view definition for one of the `BenchmarkView` subclasses. Generic so the
+/// prop set is written once: `ViewDefinitionBuilder` only accepts props typed to the block's own
+/// view class, so a base-typed prop set can't be shared across two `View(...)` blocks directly.
+private func benchmarkView<ViewType: BenchmarkView>(_ viewType: ViewType.Type) -> ViewDefinition<ViewType> {
+  return View(viewType) {
+    Prop("color") { (view: ViewType, color: UIColor) in
+      view.color = color
+    }
+    Prop("decoration") { (view: ViewType, decoration: BenchmarkStyle) in
+      view.decoration = decoration
+    }
+    Prop("values") { (view: ViewType, values: [Double]) in
+      view.values = values
+    }
+    Prop("count") { (view: ViewType, count: Int) in
+      view.count = count
+    }
+    Prop("ratio") { (view: ViewType, ratio: Double) in
+      _ = ratio
+    }
+    Prop("title") { (view: ViewType, title: String) in
+      view.title = title
+    }
+    Prop("subtitle") { (view: ViewType, subtitle: String) in
+      view.accessibilityHint = subtitle
+    }
   }
 }

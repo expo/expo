@@ -81,12 +81,17 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   // MARK: - ExpoFabricViewInterface
 
   @MainActor
-  public override func updateProps(_ props: [String: Any]) {
+  open override func updateProps(_ props: [String: Any]) {
     guard let context = appContext, let propsDict = viewManagerPropDict else {
       return
     }
-    for (key, prop) in propsDict {
-      let newValue = props[key] as Any
+    // Iterate the props actually present in this update, not every declared prop. A removed prop
+    // arrives as an explicit null value (a present key), so this still resets it; an absent key
+    // carries no information and must not be treated as a change to nil.
+    for (key, newValue) in props {
+      guard let prop = propsDict[key] else {
+        continue
+      }
       let convertedNewValue = Conversions.fromNSObject(newValue)
       let previousValue = previousProps[key]
 
@@ -98,6 +103,64 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
         try? prop.set(value: convertedNewValue, onView: self, appContext: context)
 
         previousProps[key] = convertedNewValue
+      }
+    }
+  }
+
+  /// Whether this view applies props through `applyDecodedProps(_:)`, and can therefore have
+  /// them decoded from their JavaScript values on the JavaScript thread instead of being lowered
+  /// to a dictionary and decoded on the main thread.
+  ///
+  /// `false` by default: views built with the `Prop` definition DSL and SwiftUI hosting views apply
+  /// props from the lowered dictionary (`updateProps(_:)` / `updateRawProps`), and that path is
+  /// left untouched. A view class opts in by overriding this to `true`; it then receives its props
+  /// only through `applyDecodedProps(_:)`, because the decoded props object skips the dictionary
+  /// lowering entirely. The decision is read once per view class at component registration, so it
+  /// must be a constant of the class, not of any instance.
+  open class var receivesDecodedProps: Bool {
+    return false
+  }
+
+  /**
+   Applies view props that were decoded straight from their JavaScript values on the
+   JavaScript thread (see the JSI view-props decoding design). The values are already in
+   their native representation, so this only runs each prop's setter; no `cast` happens
+   here. Decoded and undecoded props are disjoint, so any remaining props are applied
+   separately by `updateProps(_:)`.
+   */
+  @MainActor
+  @objc
+  open override func applyDecodedProps(_ decodedProps: Any) {
+    // Typed as `Any` to match the Objective-C `id` parameter (see `ExpoFabricViewObjC.h` for why
+    // the header can't reference `EXDecodedViewProps` directly); always a `DecodedViewProps`.
+    guard let decodedProps = decodedProps as? DecodedViewProps else {
+      return
+    }
+    guard let context = appContext, let propsDict = viewManagerPropDict else {
+      return
+    }
+    for (key, value) in decodedProps.values {
+      guard let prop = propsDict[key] else {
+        continue
+      }
+      let previousValue = previousProps[key]
+
+      if !Conversions.areValuesEqual(previousValue, value) {
+        do {
+          try prop.applyDecoded(value: value, onView: self, appContext: context)
+          // Record as previous only on success, so a value that failed to apply is retried on the
+          // next update rather than short-circuited by `areValuesEqual`.
+          previousProps[key] = value
+        } catch {
+          // TODO: React Native's `convertRawProp` resets a prop to its default value when
+          // conversion fails; here (and on the legacy `updateProps` path) we only log and leave
+          // the prop at its previous value. This also covers prop *removal*: a removed prop arrives
+          // as an explicit JS `null`, which resets an optional prop (via `Optional.isNil`) but makes
+          // a non-optional prop's `cast` throw and land here, so it keeps its stale value instead of
+          // resetting. Align both paths with RN's reset-to-default behavior, and add a
+          // set-then-remove test on a non-optional prop.
+          log.error("Applying decoded prop '\(key)' failed: \(error.localizedDescription)")
+        }
       }
     }
   }
@@ -119,7 +182,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   /**
    Returns a bool value whether the view supports prop with the given name.
    */
-  public override func supportsProp(withName name: String) -> Bool {
+  open override func supportsProp(withName name: String) -> Bool {
     return viewManagerPropDict?.index(forKey: name) != nil
   }
 
@@ -168,6 +231,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     if let viewClass = viewClassesRegistry[className] {
       inject(appContext: appContext)
       injectInitializer(appContext: appContext, moduleName: moduleName, viewName: viewName, toViewClass: viewClass)
+      configurePropsDecoding(appContext: appContext, moduleName: moduleName, viewName: viewName, className: className, viewClass: viewClass)
       return viewClass
     }
     guard let viewClass = objc_allocateClassPair(ExpoFabricView.self, className, 0) else {
@@ -175,6 +239,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     }
     inject(appContext: appContext)
     injectInitializer(appContext: appContext, moduleName: moduleName, viewName: viewName, toViewClass: viewClass)
+    configurePropsDecoding(appContext: appContext, moduleName: moduleName, viewName: viewName, className: className, viewClass: viewClass)
 
     // Save the allocated view class in the registry for the later use (e.g. when the app is reloaded).
     viewClassesRegistry[className] = viewClass
@@ -188,6 +253,40 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
     let appContextBlock: @convention(block) () -> AppContext? = { weakAppContext }
     let appContextBlockImp: IMP = imp_implementationWithBlock(appContextBlock)
     class_replaceMethod(object_getClass(ExpoFabricView.self), #selector(appContextFromClass), appContextBlockImp, "@@:")
+  }
+
+  /// Decides, once per dynamic view class, whether its props are decoded on the JavaScript thread.
+  ///
+  /// The dynamic class is only a shim around the concrete view (`injectInitializer` makes its
+  /// initializer return an instance of the view the definition creates), so the capability is read
+  /// from the definition's view type and stamped onto the shim as `+viewReceivesDecodedProps`.
+  /// `+componentDescriptorProvider` reads that to pick the component descriptor, and the props
+  /// dictionary is registered with the decoder only for classes that opt in. Runs before the class
+  /// is handed to `RCTComponentViewFactory`, which is what queries the descriptor. Best-effort:
+  /// leaves the class on the dictionary path if the module or view definition can't be resolved.
+  internal static func configurePropsDecoding(
+    appContext: AppContext,
+    moduleName: String,
+    viewName: String,
+    className: String,
+    viewClass: AnyClass
+  ) {
+    let viewDefinition = appContext.moduleRegistry
+      .get(moduleHolderForName: moduleName)?
+      .definition
+      .views[viewName]
+    let decodesProps = viewDefinition?.receivesDecodedProps ?? false
+
+    // Stamped on every registration (not only when `true`) so a reload that lands a different
+    // definition under the same class name doesn't keep a stale answer.
+    let decodesPropsBlock: @convention(block) () -> Bool = { decodesProps }
+    let decodesPropsImp: IMP = imp_implementationWithBlock(decodesPropsBlock)
+    class_replaceMethod(object_getClass(viewClass), #selector(ExpoFabricViewObjC.viewReceivesDecodedProps), decodesPropsImp, "B@:")
+
+    guard decodesProps, let viewDefinition else {
+      return
+    }
+    ViewPropsJSIDecoder.register(propsDict: viewDefinition.propsDict(), forClassName: className)
   }
 
   internal static func injectInitializer(appContext: AppContext, moduleName: String, viewName: String, toViewClass viewClass: AnyClass) {
