@@ -5,6 +5,7 @@ import * as Log from '../log';
 import { getOperationLog } from '../start/doctor/dependencies/getVersionedPackages';
 import type { getVersionedDependenciesAsync } from '../start/doctor/dependencies/validateDependenciesVersions';
 import { groupBy } from '../utils/array';
+import { SilentError } from '../utils/errors';
 import { applyPluginsAsync } from './applyPlugins';
 import { installExpoPackageAsync } from './installExpoPackage';
 
@@ -72,10 +73,17 @@ export async function fixPackagesAsync(
 
     await packageManager.addAsync([...packageManagerArguments, ...versionedPackages]);
 
-    await applyPluginsAsync(
-      projectRoot,
-      dependencies.map((dep) => dep.packageName)
-    );
+    try {
+      await applyPluginsAsync(
+        projectRoot,
+        dependencies.map((dep) => dep.packageName)
+      );
+    } catch (error) {
+      // A SilentError means the config could not be edited and the manual edit is already logged.
+      if (!(error instanceof SilentError)) {
+        throw error;
+      }
+    }
   }
 
   if (devDependencies.length) {
