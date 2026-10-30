@@ -14,26 +14,21 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.util.Log
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * Foreground service machinery (notification/channel/icon building, `onTaskRemoved` opt-out,
  * binder plumbing) shared by [LocationTaskService] and [MotionActivityTaskService].
  *
  * Each subclass is still its own Android `Service` component, registered separately in the
- * manifest with its own notification id range - they run as independent foreground services
- * that can be active at the same time without colliding over one notification slot.
+ * manifest - they run as independent foreground services that can be active at the same time.
+ * A counter shared by all subclasses gives each instance its own notification id.
  */
 internal abstract class BaseForegroundTaskService : Service() {
   private var mChannelId: String? = null
   private var mKillService = false
-  private val mServiceId by lazy { nextServiceId() }
+  private val mServiceId = sServiceId.getAndIncrement()
   private val mBinder: IBinder = ServiceBinder()
-
-  /**
-   * A per-subclass, monotonically increasing id. Each subclass seeds its own counter far enough
-   * apart from its siblings' that two task services can never end up sharing a notification id.
-   */
-  protected abstract fun nextServiceId(): Int
 
   /** Shown as the notification channel's description in system settings. */
   protected abstract val channelDescription: String
@@ -173,6 +168,7 @@ internal abstract class BaseForegroundTaskService : Service() {
 
   companion object {
     private const val TAG = "BaseForegroundTaskService"
+    private val sServiceId = AtomicInteger(481756)
     const val META_DATA_FOREGROUND_SERVICE_ICON_KEY: String =
       "expo.modules.location.foreground_service_icon"
 
