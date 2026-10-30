@@ -1,21 +1,113 @@
-import { z } from 'zod';
+import type { JSONSchema } from '@expo/schema-utils';
 
-const CommandParameterSchema = z.object({
-  name: z.string().min(1),
-  type: z.enum(['text', 'number', 'confirm']),
-  description: z.string().optional(),
-});
+export type DevToolsPluginCommandParameter = {
+  name: string;
+  type: 'text' | 'number' | 'confirm';
+  description?: string;
+};
 
-export type DevToolsPluginCommandParameter = z.infer<typeof CommandParameterSchema>;
+const CommandParameterSchema: JSONSchema<DevToolsPluginCommandParameter> = {
+  type: 'object',
+  required: ['name', 'type'],
+  properties: {
+    name: { type: 'string', minLength: 1 },
+    type: { enum: ['text', 'number', 'confirm'] },
+    description: { type: 'string' },
+  },
+};
 
-const CommandSchema = z.object({
-  name: z.string().min(1),
-  title: z.string().min(1),
-  environments: z.array(z.enum(['cli', 'mcp'])).readonly(),
-  parameters: z.array(CommandParameterSchema).optional(),
-});
+export type DevToolsPluginCommand = {
+  name: string;
+  title: string;
+  environments: readonly ('cli' | 'mcp')[];
+  parameters?: DevToolsPluginCommandParameter[];
+};
 
-export type DevToolsPluginCommand = z.infer<typeof CommandSchema>;
+const CommandSchema: JSONSchema<DevToolsPluginCommand> = {
+  type: 'object',
+  required: ['name', 'title', 'environments'],
+  properties: {
+    name: { type: 'string', minLength: 1 },
+    title: { type: 'string', minLength: 1 },
+    environments: { type: 'array', items: { enum: ['cli', 'mcp'] } },
+    parameters: { type: 'array', items: CommandParameterSchema },
+  },
+};
+
+export type DevToolsPluginCliExtensions = {
+  description: string;
+  commands: DevToolsPluginCommand[];
+  entryPoint: string;
+};
+
+const CliExtensionsSchema: JSONSchema<DevToolsPluginCliExtensions> = {
+  type: 'object',
+  required: ['description', 'commands', 'entryPoint'],
+  properties: {
+    description: { type: 'string' },
+    commands: { type: 'array', items: CommandSchema, minItems: 1 },
+    entryPoint: { type: 'string', minLength: 1 },
+  },
+};
+
+export type DevToolsPluginInfo = {
+  packageName: string;
+  packageRoot: string;
+  webpageRoot?: string;
+  bannerTitle?: boolean | string;
+  serverEntryPoint?: string;
+  cliExtensions?: DevToolsPluginCliExtensions;
+};
+
+export const PluginSchema: JSONSchema<DevToolsPluginInfo> = {
+  type: 'object',
+  required: ['packageName', 'packageRoot'],
+  properties: {
+    packageName: { type: 'string', minLength: 1 },
+    packageRoot: { type: 'string', minLength: 1 },
+    webpageRoot: { type: 'string' },
+    bannerTitle: { type: ['boolean', 'string'], minLength: 1 },
+    serverEntryPoint: { type: 'string' },
+    cliExtensions: CliExtensionsSchema,
+  },
+};
+
+export type DevToolsPluginOutput = (
+  | { type: 'text'; text: string; url?: string; level: 'info' | 'warning' | 'error' }
+  | { type: 'audio'; url: string; text?: string }
+  | { type: 'image'; url: string; text?: string }
+)[];
+
+export const DevToolsPluginOutputSchema: JSONSchema<DevToolsPluginOutput> = {
+  type: 'array',
+  items: {
+    type: 'object',
+    allOf: [
+      {
+        required: ['type'],
+        properties: { type: { enum: ['text', 'audio', 'image'] } },
+      },
+      {
+        if: { properties: { type: { enum: ['text'] } } },
+        then: {
+          required: ['text', 'level'],
+          properties: {
+            text: { type: 'string' },
+            url: { type: 'string' },
+            level: { enum: ['info', 'warning', 'error'] },
+          },
+        },
+        else: {
+          required: ['url'],
+          properties: {
+            url: { type: 'string', format: 'url' },
+            text: { type: 'string' },
+          },
+        },
+      },
+    ],
+  },
+};
 
 export type DevToolsPluginExecutorArguments = {
   command: string;
@@ -23,45 +115,3 @@ export type DevToolsPluginExecutorArguments = {
   args?: Record<string, string | number | boolean> | undefined;
   onOutput?: (output: DevToolsPluginOutput) => void;
 };
-
-const CliExtensionsSchema = z.object({
-  description: z.string(),
-  commands: z.array(CommandSchema).min(1),
-  entryPoint: z.string().min(1),
-});
-
-export type DevToolsPluginCliExtensions = z.infer<typeof CliExtensionsSchema>;
-
-export const PluginSchema = z.object({
-  packageName: z.string().min(1),
-  packageRoot: z.string().min(1),
-  webpageRoot: z.string().optional(),
-  bannerTitle: z.union([z.boolean(), z.string().min(1)]).optional(),
-  serverEntryPoint: z.string().optional(),
-  cliExtensions: CliExtensionsSchema.optional(),
-});
-
-export type DevToolsPluginInfo = z.infer<typeof PluginSchema>;
-
-const DevToolsPluginOutputLinesSchema = z.union([
-  z.object({
-    type: z.literal('text'),
-    text: z.string(),
-    url: z.string().optional(),
-    level: z.enum(['info', 'warning', 'error']),
-  }),
-  z.object({
-    type: z.literal('audio'),
-    url: z.string().url(),
-    text: z.string().optional(),
-  }),
-  z.object({
-    type: z.literal('image'),
-    url: z.string().url(),
-    text: z.string().optional(),
-  }),
-]);
-
-export const DevToolsPluginOutputSchema = z.array(DevToolsPluginOutputLinesSchema);
-
-export type DevToolsPluginOutput = z.infer<typeof DevToolsPluginOutputSchema>;
