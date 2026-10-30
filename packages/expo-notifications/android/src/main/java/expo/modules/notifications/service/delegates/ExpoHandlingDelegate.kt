@@ -7,8 +7,11 @@ import android.os.Build
 import android.util.Log
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ProcessLifecycleOwner
+import expo.modules.notifications.notifications.DataOnlyPresentationSetting
 import expo.modules.notifications.notifications.NotificationManager
 import expo.modules.notifications.notifications.NotificationSerializer
+import expo.modules.notifications.notifications.PendingDataOnlyPresentationWarning
+import expo.modules.notifications.notifications.hasTitleOrText
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationResponse
 import expo.modules.notifications.service.NotificationForwarderActivity
@@ -129,22 +132,21 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
       getListeners().forEach {
         it.onNotificationReceived(notification)
       }
-    } else if (notification.shouldPresent()) {
+    } else if (notification.notificationRequest.content.hasTitleOrText()) {
       // only data-only notifications reach this point and we present them if they fall into the documented exception:
       // https://docs.expo.dev/push-notifications/what-you-need-to-know/#headless-background-notifications
       // this call can not be triggered by expo push service, only when using FCM directly.
       // We keep this because we used to document this as a valid use case.
+      val setting = DataOnlyPresentationSetting.read(context)
+      if (!setting.shouldPresent) {
+        return
+      }
       NotificationsService.present(context, notification)
+      setting.deprecationWarning(presented = true)?.let {
+        Log.w("expo-notifications", it)
+        PendingDataOnlyPresentationWarning(context).record()
+      }
     }
-  }
-
-  /**
-   * If the app is backgrounded, a notification is only presented if
-   * the title and or text is present. If both are null or empty, this is a "data-only" or "silent"
-   * notification that should not be presented to the user.
-   */
-  private fun Notification.shouldPresent(): Boolean {
-    return !(notificationRequest.content.title.isNullOrEmpty() && notificationRequest.content.text.isNullOrEmpty())
   }
 
   override fun handleNotificationResponse(notificationResponse: NotificationResponse) {
