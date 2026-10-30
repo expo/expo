@@ -65,7 +65,6 @@ class AudioRecorder(
       "resume" -> if (notificationOptions.showPauseResume && isPaused) {
         record()
       }
-      "stop" -> stopRecording()
     }
   }
 

@@ -309,8 +309,7 @@ export type RecordingNotificationOptions = {
   channelDescription?: string;
   /**
    * Drawable resource name included in the native build. Keep the resource when resource shrinking is enabled.
-   * Falls back to `expo.modules.audio.foreground_service_icon` manifest metadata, the `notification_icon`
-   * drawable, then the system microphone icon.
+   * Falls back to the `notification_icon` drawable, then the system microphone icon.
    */
   smallIcon?: string;
   /** Notification accent color, for example `'#4f66f6'`. */
@@ -419,9 +418,11 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
 /**
  * Event types that an `AudioRecorder` can emit.
  *
- * For recording status, use `useAudioRecorderState()` or the `statusListener` parameter in `useAudioRecorder()`.
+ * These events are used internally by `expo-audio` hooks to provide real-time status updates.
+ * Use `useAudioRecorderState()` or the `statusListener` parameter in `useAudioRecorder()` instead of subscribing directly.
  */
 export type RecordingEvents = {
+  /** Fired when the recorder's status changes (start/stop/pause/error, and so on). */
   recordingStatusUpdate: (status: RecordingStatus) => void;
 };
 

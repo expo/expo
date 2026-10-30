@@ -8,7 +8,6 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.pm.ServiceInfo
 import android.net.Uri
 import android.os.Build
@@ -297,13 +296,6 @@ internal fun getRecordingNotificationIcon(context: Context, smallIcon: String?):
     }
     Log.w(TAG, "Recording notification icon '$smallIcon' was not found. Include the drawable in the native build and keep it when shrinking resources. Using a fallback icon.")
   }
-  val metadataIcon = try {
-    context.packageManager.getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
-      .metaData?.getInt("expo.modules.audio.foreground_service_icon", 0) ?: 0
-  } catch (e: PackageManager.NameNotFoundException) {
-    0
-  }
-  return metadataIcon.takeIf { it != 0 }
-    ?: context.resources.getIdentifier("notification_icon", "drawable", context.packageName).takeIf { it != 0 }
+  return context.resources.getIdentifier("notification_icon", "drawable", context.packageName).takeIf { it != 0 }
     ?: android.R.drawable.ic_btn_speak_now
 }
