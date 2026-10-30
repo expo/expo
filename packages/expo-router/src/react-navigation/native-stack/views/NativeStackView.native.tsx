@@ -135,7 +135,7 @@ const SceneView = ({
   } = options;
   const screenNativeProps = unstable_nativeProps;
   const routeNode = useRouteNode();
-  // The screen's gestureEnabled can be overridden for custom zoom dismissal bounds.
+  // Use the user's setting because `gestureEnabled` is forced to false while custom dismissal bounds are active.
   const rawGestureEnabled = use(DescriptorsContext)[route.key]?.options?.gestureEnabled;
 
   useWarnOnce(
