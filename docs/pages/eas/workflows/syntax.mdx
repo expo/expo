@@ -79,7 +79,7 @@ If the rendered text is longer than 255 characters, EAS truncates it to 254 char
 
 ## `on`
 
-The `on` key defines which GitHub events trigger the workflow. Any workflow can be triggered with the `eas workflow:run` command, regardless of the `on` key.
+The `on` key defines the events that start a workflow run. A workflow can start on GitHub events, on a [schedule](#onschedulecron), or on [App Store Connect events](#onapp_store_connect). You can also start any workflow manually with `eas workflow:run` or the [REST API](/eas/workflows/rest-api/), regardless of the `on` key. To accept inputs for a manual run, use [`on.workflow_dispatch.inputs`](#onworkflow_dispatchinputs).
 
 ```yaml
 on:
