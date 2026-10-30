@@ -1776,6 +1776,16 @@ export const resizable = (
 ) => createModifier('resizable', { ...capInsets, resizingMode });
 
 /**
+ * Sets the mode that SwiftUI uses to render the image. In `template` mode, SwiftUI ignores the image's
+ * color information and fills its opaque pixels with the foreground style, as it does for SF Symbols.
+ * In `original` mode, SwiftUI keeps the image's colors. Without a mode, SwiftUI uses the image's default.
+ * @param mode - The rendering mode.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/image/renderingmode(_:)).
+ */
+export const renderingMode = (mode?: 'template' | 'original') =>
+  createModifier('renderingMode', { mode });
+
+/**
  * Configures the view's title for purposes of navigation, using a string.
  * @param title - The title to display.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/navigationtitle(_:)).
@@ -1959,6 +1969,7 @@ export type BuiltInModifier =
   | ReturnType<typeof listStyle>
   | ReturnType<typeof contentTransition>
   | ReturnType<typeof resizable>
+  | ReturnType<typeof renderingMode>
   | ReturnType<typeof symbolEffect>
   | ReturnType<typeof widgetAccentedRenderingMode>
   | ReturnType<typeof widgetURL>
