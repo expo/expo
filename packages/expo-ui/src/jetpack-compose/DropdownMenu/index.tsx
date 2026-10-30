@@ -130,7 +130,7 @@ export interface DropdownMenuPopupProps {
   expanded?: boolean;
 
   /**
-   * Callback fired when the menu requests to be dismissed (e.g. tapping outside).
+   * Callback fired when the menu requests to be dismissed (for example, tapping outside).
    * Must be provided when `expanded` is `true` to allow the menu to close.
    */
   onDismissRequest?: () => void;
@@ -241,10 +241,9 @@ DropdownMenu.Items = Items;
 export { DropdownMenu };
 
 /**
- * A Material 3 Expressive menu that wraps Compose's `DropdownMenuPopup`. The menu is anchored to
- * its parent, so put it in a `Box` next to the component that opens it. Unlike `DropdownMenu`, it
- * has no container. Put `DropdownMenuGroup` components in it, and put a `Spacer` between the
- * groups.
+ * A Material 3 Expressive menu that wraps Compose's `DropdownMenuPopup`. The menu anchors to its
+ * parent, so it goes in a `Box` next to the component that opens it. Unlike `DropdownMenu`, it
+ * has no container. It holds `DropdownMenuGroup` components, with a `Spacer` between the groups.
  *
  * @platform android
  */
@@ -262,7 +261,7 @@ export function DropdownMenuPopup(props: DropdownMenuPopupProps) {
 }
 
 /**
- * A group of menu items that wraps Compose's `DropdownMenuGroup`. Use it in a
+ * A group of menu items that wraps Compose's `DropdownMenuGroup`, for use in a
  * `DropdownMenuPopup`.
  *
  * @platform android
@@ -279,6 +278,7 @@ export function DropdownMenuGroup(props: DropdownMenuGroupProps) {
 }
 
 export { DropdownMenuItem } from './DropdownMenuItem';
+export type { DropdownMenuItemProps, DropdownMenuItemElementColors } from './DropdownMenuItem';
 export { SelectableDropdownMenuItem } from './SelectableDropdownMenuItem';
 export type {
   SelectableDropdownMenuItemProps,

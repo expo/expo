@@ -85,7 +85,8 @@ function TextSlot(props: { children: React.ReactNode }) {
 }
 
 /**
- * A leading icon slot for `SelectableDropdownMenuItem`, shown while the item is not selected.
+ * A leading icon slot for `SelectableDropdownMenuItem`. When the item also has a
+ * `SelectedLeadingIcon`, this icon shows only while the item is not selected.
  *
  * @platform android
  */
@@ -121,8 +122,8 @@ function SupportingText(props: { children: React.ReactNode }) {
 }
 
 /**
- * A Material 3 Expressive menu item that wraps Compose's `SelectableDropdownMenuItem`. Use it for
- * a choice of one option. A selected item gets a highlighted container and shows its
+ * A Material 3 Expressive menu item that wraps Compose's `SelectableDropdownMenuItem`, for a
+ * choice of one option. A selected item gets a highlighted container and shows its
  * `SelectedLeadingIcon`.
  *
  * @platform android
