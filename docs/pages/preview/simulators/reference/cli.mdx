@@ -26,6 +26,7 @@ To manage sessions without EAS CLI, use the [Expo Simulators REST API](/preview/
 | [`simulator:availability`](#simulatoravailability) | Check whether the current project's account can use Expo Simulators      |
 | [`simulator:start`](#simulatorstart)               | Create a session and wait for its controller configuration               |
 | [`simulator`](#simulatorstart)                     | Same command as `simulator:start`                                        |
+| [`simulator:control`](#simulatorcontrol)           | Run a supported device action on a running iOS session                   |
 | [`simulator:exec`](#simulatorexec)                 | Run another command with **.env.eas-simulator** loaded                   |
 | [`simulator:events`](#simulatorevents)             | Show recorded activity or follow activity from a running session         |
 | [`simulator:egress`](#simulatoregress)             | Run the local egress client for a session started with `--egress local`  |
@@ -41,7 +42,7 @@ The `--json` flag is optional. It prints a stable, machine-readable result for a
 
 ## `simulator:start`
 
-The session type determines which interface EAS provisions with the remote device. Every type includes a browser preview. Choose agent-device, Argent, or Appium to add programmatic control, or choose `web-preview-only` for the browser preview only:
+The session type determines which interface EAS provisions with the remote device. Every type includes a browser preview. Choose agent-device, Argent, or Appium to add programmatic control, or choose `web-preview-only` for the browser preview and direct iOS controls:
 
 <Tabs>
 
@@ -167,6 +168,24 @@ EAS saves the setting with the session, and `simulator:get` prints the kind of l
 Without `--non-interactive` or `--json`, the start command stays attached in an interactive terminal and polls the session. Press <kbd>Ctrl</kbd> + <kbd>C</kbd> once to stop it. EAS CLI resets **.env.eas-simulator** after it confirms the session ended. When `CI` is set or standard input is not a terminal, such as in an agent shell, the command runs non-interactively even without the flag.
 
 With `--non-interactive` or `--json`, the command returns after the controller is ready. You must stop the session separately.
+
+## `simulator:control`
+
+Discover direct actions on a running iOS session, then run an action from its catalog:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control --id <session-id> --json',
+    '$ eas simulator:control appearance.set dark --id <session-id>',
+    '$ eas simulator:control screenshot.capture --output ./screen.png --id <session-id>',
+  ]}
+/>
+
+The command uses the session's preview server and works with private links. It supports iOS sessions, including `web-preview-only`. Android sessions use a controller. Omit the action to list available actions. Their names and arguments depend on the serve-sim version running in the session.
+
+`--id` selects the session. Without it, the command reads the ID from **.env.eas-simulator** or the shell environment. `--output` saves a returned file on your computer. `--json` returns the catalog or the action result as JSON and implies non-interactive mode.
+
+For session selection and action discovery, see [Control a remote iOS Simulator with EAS CLI](/preview/simulators/how-to/control-with-eas-cli/).
 
 ## `simulator:exec`
 
