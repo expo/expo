@@ -1,6 +1,15 @@
 'use client';
 
-import React, { Children, use, useCallback, useMemo, useRef, type ReactNode } from 'react';
+import React, {
+  Children,
+  use,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ReactNode,
+} from 'react';
 
 import { createBaseTabProps } from '../layouts/createBaseTabProps';
 import {
@@ -76,6 +85,26 @@ export function createNativeTabsProps(
   };
 }
 
+// Store the previous key in state, so the effect warns once per change, also in StrictMode.
+function useWarnOnTabConfigurationChange(tabConfigurationKey: string) {
+  const [tabKeys, setTabKeys] = useState({
+    previous: tabConfigurationKey,
+    current: tabConfigurationKey,
+  });
+  if (process.env.NODE_ENV !== 'production' && tabKeys.current !== tabConfigurationKey) {
+    setTabKeys({ previous: tabKeys.current, current: tabConfigurationKey });
+  }
+  useEffect(() => {
+    if (process.env.NODE_ENV !== 'production' && tabKeys.previous !== tabKeys.current) {
+      const formatTabs = (key: string) => `[${key.split(';').join(', ')}]`;
+      console.warn(
+        `NativeTabs remounted and reset all tab state because the visible tabs changed from ${formatTabs(tabKeys.previous)} to ${formatTabs(tabKeys.current)}. ` +
+          'To keep tab state, keep the same visible tabs, or move the condition to a parent layout, for example a `Protected` guard around the tabs layout.'
+      );
+    }
+  }, [tabKeys]);
+}
+
 function NativeTabsContent({
   state,
   routeNames,
@@ -139,6 +168,8 @@ function NativeTabsContent({
     preload,
     lazyByDefault: false,
   });
+
+  useWarnOnTabConfigurationChange(tabConfigurationKey);
 
   const provenanceRef = useRef(0);
 

@@ -28,7 +28,13 @@ jest.mock('react-native-screens', () => {
 const TabsScreen = Tabs.Screen as jest.MockedFunction<(props: TabsScreenProps) => ReactNode>;
 const TabsHost = Tabs.Host as jest.MockedFunction<(props: TabsHostProps) => ReactNode>;
 
-afterEach(() => router.setTransitionMode('preload-only'));
+let warnSpy: jest.SpyInstance | undefined;
+
+afterEach(() => {
+  router.setTransitionMode('preload-only');
+  warnSpy?.mockRestore();
+  warnSpy = undefined;
+});
 
 function renderedScreenKeys() {
   return TabsScreen.mock.calls.map((call) => call[0].screenKey);
@@ -150,7 +156,42 @@ describe('NativeTabs Protected', () => {
     expect(screen.queryByTestId('settings')).toBeNull();
   });
 
+  it('warns when a guard flip changes the visible tabs', async () => {
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await renderRouter({
+      _layout: function Layout() {
+        const [allowed, setAllowed] = useState(false);
+        return (
+          <>
+            <Button testID="allow" title="Allow" onPress={() => setAllowed(true)} />
+            <NativeTabs>
+              <NativeTabs.Trigger name="index" />
+              <Stack.Protected guard={allowed}>
+                <NativeTabs.Trigger name="settings" />
+              </Stack.Protected>
+            </NativeTabs>
+          </>
+        );
+      },
+      index: () => <View testID="index" />,
+      settings: () => <View testID="settings" />,
+    });
+
+    expect(warnSpy).not.toHaveBeenCalled();
+
+    await act(() => fireEvent.press(screen.getByTestId('allow')));
+
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      'NativeTabs remounted and reset all tab state because the visible tabs changed from [index] to [index, settings]. ' +
+        'To keep tab state, keep the same visible tabs, or move the condition to a parent layout, for example a `Protected` guard around the tabs layout.'
+    );
+  });
+
   it('shows the trigger after the guard flips to true', async () => {
+    // The guard flip changes the visible tabs, which logs a remount warning.
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const onMount = jest.fn();
 
     function ScreenWithMount({ testID }: { testID: string }) {
