@@ -71,8 +71,11 @@ public class ScreenOrientationModule: Module, ScreenOrientationController {
     }
 
     AsyncFunction("getOrientationAsync") {
+      if screenOrientationRegistry.currentScreenOrientation == .unknown {
+        screenOrientationRegistry.updateCurrentScreenOrientation()
+      }
       return ModuleOrientation.from(orientation: screenOrientationRegistry.currentScreenOrientation).rawValue
-    }
+    }.runOnQueue(.main)
 
     OnCreate {
       screenOrientationRegistry.registerController(self)
