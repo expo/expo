@@ -347,6 +347,9 @@ private struct MeasuredChild {
   var canCompress: Bool
   var priority: Double
   var maxMain: CGFloat
+  /// Main size of a flexible child at a zero offer, such as the minimum length of a `Spacer`.
+  /// Zero for other children.
+  var minMain: CGFloat
 }
 
 private struct MeasuredChildren {
@@ -504,7 +507,8 @@ private struct StackConfiguration {
           flexible: false,
           canCompress: false,
           priority: subview.priority,
-          maxMain: mainLength(size, axis: axis)
+          maxMain: mainLength(size, axis: axis),
+          minMain: 0
         ))
         continue
       }
@@ -515,6 +519,9 @@ private struct StackConfiguration {
       let idealMain = mainLength(ideal, axis: axis)
       let maxMain = mainLength(maxed, axis: axis)
       let flexible = offeredMain != nil && (maxMain.isInfinite || maxMain > idealMain + 1)
+      let minMain = flexible
+        ? mainLength(subview.sizeThatFits(proposedSize(main: 0, cross: crossProposal, axis: axis)), axis: axis)
+        : 0
       children.append(MeasuredChild(
         size: ideal,
         proposal: idealProposal,
@@ -522,7 +529,8 @@ private struct StackConfiguration {
         flexible: flexible,
         canCompress: !flexible,
         priority: subview.priority,
-        maxMain: maxMain
+        maxMain: maxMain,
+        minMain: minMain
       ))
     }
 
@@ -549,7 +557,8 @@ private struct StackConfiguration {
     let fixedMain = children.reduce(CGFloat(0)) { total, child in
       child.flexible ? total : total + mainLength(child.size, axis: axis)
     }
-    let overflow = fixedMain + spacings.reduce(0, +) - offeredMain
+    let flexibleMinimum = children.reduce(CGFloat(0)) { $0 + $1.minMain }
+    let overflow = fixedMain + flexibleMinimum + spacings.reduce(0, +) - offeredMain
     guard overflow > 1 else { return }
 
     var candidates: [CompressionCandidate] = []
@@ -584,7 +593,7 @@ private struct StackConfiguration {
       }
       return total + mainLength(item.element.size, axis: axis)
     }
-    var available = max(0, offeredMain - spacings.reduce(0, +) - reserved)
+    var available = max(0, offeredMain - spacings.reduce(0, +) - reserved - flexibleMinimum)
     for (position, candidate) in candidates.enumerated() {
       let rest = candidates[(position + 1)...]
       let peers = rest.prefix { $0.priority == candidate.priority }.count + 1
@@ -603,7 +612,8 @@ private struct StackConfiguration {
   }
 
   /// Flexible children share the space left by the others.
-  /// A higher priority goes first.
+  /// A higher priority goes first, and leaves room for the minimum of every child after it, as in `HStack`.
+  /// A `Spacer` reports the lowest priority, so it keeps its minimum length.
   /// Among equals, the least flexible goes first, so a capped child leaves the rest to a `Spacer`.
   private func growChildren(
     _ children: inout [MeasuredChild],
@@ -624,7 +634,9 @@ private struct StackConfiguration {
     var remaining = max(0, offeredMain - fixedMain - spacings.reduce(0, +))
     for (position, index) in order.enumerated() {
       let peers = order[(position + 1)...].prefix { children[$0].priority == children[index].priority }.count + 1
-      let share = peers == 1 ? remaining : (remaining / CGFloat(peers)).rounded(.down)
+      let laterMinimum = order[(position + peers)...].reduce(CGFloat(0)) { $0 + children[$1].minMain }
+      let available = max(0, remaining - laterMinimum)
+      let share = peers == 1 ? available : (available / CGFloat(peers)).rounded(.down)
       let proposal = proposedSize(main: share, cross: children[index].crossProposal, axis: axis)
       let size = subviews[index].sizeThatFits(proposal)
       children[index].size = size
