@@ -152,6 +152,15 @@ export interface SplitViewHeader {
    */
   largeTitle?: boolean;
   /**
+   * Style of the title in the navigation bar.
+   */
+  titleStyle?: { color?: ColorValue };
+  /**
+   * Style of the large title, shown when `largeTitle` is `true`.
+   * When `color` is not set, the large title uses the `titleStyle` color.
+   */
+  largeTitleStyle?: { color?: ColorValue };
+  /**
    * Buttons shown on the leading side of the navigation bar.
    */
   leftToolbar?: SplitViewToolbarItem[];
