@@ -91,6 +91,7 @@ public final class SharingModule: Module {
 
     Function("clearSharedPayloads") {
       try UserDefaults(suiteName: appGroupId)?.removeObject(forKey: SHARE_INTO_DEFAULTS_KEY)
+      try ShareIntoFileStore(appGroupId: appGroupId)?.removeAll()
     }
   }
 
