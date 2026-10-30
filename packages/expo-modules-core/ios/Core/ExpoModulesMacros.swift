@@ -115,6 +115,11 @@ public macro Event(_ name: String? = nil, sync: Bool = false) =
 /// is no `Name(…)` DSL entry. It defaults to the class name; pass `@ExpoModule("CustomName")` to
 /// override it.
 ///
+/// The class gets an `@unchecked Sendable` conformance when it isn't `Sendable` yet, because native
+/// code calls the module from more than one thread (for example a `.withAsync` variant runs on the
+/// concurrent thread pool). Keep mutable state that more than one thread uses behind a lock or an
+/// actor.
+///
 /// Usage:
 ///
 ///     @ExpoModule
@@ -128,7 +133,7 @@ public macro Event(_ name: String? = nil, sync: Bool = false) =
     named(_jsName), named(_classTypes), named(appContext), named(init),
     named(_decorateModule), named(_assertTypesConformance))
 @attached(memberAttribute)
-@attached(extension, conformances: AnyModule)
+@attached(extension, conformances: AnyModule, Sendable)
 public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
   #externalMacro(module: "ExpoModulesMacros", type: "ExpoModuleMacro")
 
@@ -144,6 +149,9 @@ public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
 /// override of `_constructSharedObject(this:arguments:in:)` that builds the native instance from the
 /// JS arguments. Core calls them when building the class. The class must be a `SharedObject`
 /// subclass, direct or not, or the `_jsName` override doesn't compile.
+///
+/// Like `@ExpoModule`, the macro adds an `@unchecked Sendable` conformance when the class isn't
+/// `Sendable` yet.
 ///
 /// Usage:
 ///
@@ -164,18 +172,21 @@ public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
     named(_jsName), named(_decorateSharedObject), named(_constructSharedObject),
     named(_assertTypesConformance))
 @attached(memberAttribute)
+@attached(extension, conformances: Sendable)
 public macro SharedObject(_ name: String? = nil) =
   #externalMacro(module: "ExpoModulesMacros", type: "SharedObjectMacro")
 
 /// Member + extension macro applied to a record `struct` or `class`. Every non-`static`,
 /// non-`private`/`fileprivate`, non-`lazy`, non-computed stored property is part of the record — no
 /// `@Field` wrapper needed — and the macro synthesizes the whole conversion surface from each
-/// property's static type: a memberwise `init`, the `from(object:appContext:)` /
-/// `from(dictionary:appContext:)` factories, the `toDictionary(appContext:)` /
-/// `toObject(appContext:)` write side, and the `JavaScriptDecodable` / `JavaScriptEncodable`
-/// conversions `decode(_:in:)` and `encode(_:in:)`. The type is auto-conformed to `Record`; the
-/// synthesized methods override `Record`'s reflection-based defaults, so it stays usable anywhere a
-/// `Record` argument is expected.
+/// property's static type: a memberwise `init`, `from(object:appContext:)`,
+/// `toDictionary(appContext:)` / `toObject(appContext:)`, and the `JavaScriptDecodable` /
+/// `JavaScriptEncodable` conversions `decode(_:in:)` and `encode(_:in:)`. The type is auto-conformed to
+/// `Record`; the synthesized methods override `Record`'s reflection-based defaults, so it stays usable
+/// anywhere a `Record` argument is expected.
+///
+/// A record converts only from and to JavaScript values. The synthesized `from(dictionary:appContext:)`
+/// throws `RecordDictionaryConversionException`, so a record can't be created from a native dictionary.
 ///
 /// `decode(_:in:)` and `encode(_:in:)` use the runtime they receive and don't need an app context, so
 /// the record converts on any runtime. A class with an inheritance clause doesn't get them, so it
