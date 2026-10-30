@@ -41,4 +41,5 @@ export interface SplitViewNativeHeaderProps {
   backButtonDisplayMode?: SplitViewHeader['backButtonDisplayMode'];
   backTitle?: SplitViewHeader['backTitle'];
   backVisible?: SplitViewHeader['backVisible'];
+  hidden?: SplitViewHeader['hidden'];
 }

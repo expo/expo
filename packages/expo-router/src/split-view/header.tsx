@@ -14,6 +14,7 @@ export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
     backButtonDisplayMode,
     backTitle,
     backVisible,
+    hidden,
   } = header;
   return (
     <SplitViewNativeHeader
@@ -40,6 +41,7 @@ export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
       backButtonDisplayMode={backButtonDisplayMode}
       backTitle={backTitle}
       backVisible={backVisible}
+      hidden={hidden}
     />
   );
 }
