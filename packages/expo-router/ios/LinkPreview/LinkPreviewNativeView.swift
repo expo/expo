@@ -100,6 +100,7 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
             directChild.removeInteraction(interaction)
           }
         }
+        self.directChild = nil
         super.unmountChildComponentView(child, index: index)
       } else {
         logger?.warn(
