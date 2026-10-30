@@ -2,7 +2,7 @@ import { events } from '2g';
 import type { SerializedError } from '2g';
 import type { ModuleDescriptorDevTools } from 'expo-modules-autolinking/exports';
 
-import { Log } from '../../log';
+import { Log } from '../../../log';
 import { DevToolsPlugin } from './DevToolsPlugin';
 
 export const DevToolsPluginEndpoint = '/_expo/plugins';

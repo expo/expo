@@ -1,7 +1,7 @@
 import { spawn, type ChildProcessWithoutNullStreams } from 'child_process';
 import path from 'path';
 
-import { isPathInside } from '../../utils/dir';
+import { isPathInside } from '../../../utils/dir';
 import type {
   DevToolsPluginExecutorArguments,
   DevToolsPluginInfo,

@@ -1,13 +1,15 @@
-import { Log } from '../../../log';
-import type { DevServerManager } from '../DevServerManager';
-import { DevToolsPlugin } from '../DevToolsPlugin';
-import type { DevToolsPluginCommand } from '../DevToolsPlugin.schema';
-import { DevToolsPluginCliExtensionExecutor } from '../DevToolsPluginCliExtensionExecutor';
+import { z } from 'zod';
+
+import { Log } from '../../../../log';
+import type { DevServerManager } from '../../DevServerManager';
+import { DevToolsPlugin } from '../../devtools/DevToolsPlugin';
+import type { DevToolsPluginCommand } from '../../devtools/DevToolsPlugin.schema';
+import { DevToolsPluginCliExtensionExecutor } from '../../devtools/DevToolsPluginCliExtensionExecutor';
 import type { McpServer } from '../MCP';
 import { addMcpCapabilities } from '../MCPDevToolsPluginCLIExtensions';
 
-jest.mock('../DevToolsPluginCliExtensionExecutor');
-jest.mock('../../../log', () => ({
+jest.mock('../../devtools/DevToolsPluginCliExtensionExecutor');
+jest.mock('../../../../log', () => ({
   Log: {
     error: jest.fn(),
     log: jest.fn(),
@@ -48,7 +50,7 @@ describe(addMcpCapabilities, () => {
     const registerTool = jest.fn();
     const mcpServer = { registerTool } as unknown as McpServer;
 
-    await addMcpCapabilities(mcpServer, devServerManager);
+    await addMcpCapabilities(mcpServer, devServerManager, z);
 
     expect(queryPluginsAsync).toHaveBeenCalledTimes(1);
     expect(registerTool).toHaveBeenCalledTimes(1);
@@ -85,7 +87,7 @@ describe(addMcpCapabilities, () => {
     ] as const;
     executeMock.mockResolvedValue(pluginOutput);
 
-    await addMcpCapabilities(mcpServer, devServerManager);
+    await addMcpCapabilities(mcpServer, devServerManager, z);
 
     const [, , handler] = registerTool.mock.calls[0];
     const result = await handler({
@@ -143,7 +145,7 @@ describe(addMcpCapabilities, () => {
     const error = new Error('Execution exploded');
     executeMock.mockRejectedValue(error);
 
-    await addMcpCapabilities(mcpServer, devServerManager);
+    await addMcpCapabilities(mcpServer, devServerManager, z);
     const [, , handler] = registerTool.mock.calls[0];
     const response = await handler({
       parameters: { command: 'failing-command' },
@@ -185,7 +187,7 @@ describe(addMcpCapabilities, () => {
     const registerTool = jest.fn();
     const mcpServer = { registerTool } as unknown as McpServer;
 
-    await addMcpCapabilities(mcpServer, devServerManager);
+    await addMcpCapabilities(mcpServer, devServerManager, z);
 
     expect(queryPluginsAsync).toHaveBeenCalledTimes(1);
     expect(registerTool).not.toHaveBeenCalled();
@@ -196,8 +198,8 @@ describe(addMcpCapabilities, () => {
     // not the mocked one. A bypassed-schema scenario (future MCP client variant, internal misuse,
     // protocol-level smuggling) must still be rejected before any spawn occurs.
     const { DevToolsPluginCliExtensionExecutor: ActualExecutor } = jest.requireActual<
-      typeof import('../DevToolsPluginCliExtensionExecutor')
-    >('../DevToolsPluginCliExtensionExecutor');
+      typeof import('../../devtools/DevToolsPluginCliExtensionExecutor')
+    >('../../devtools/DevToolsPluginCliExtensionExecutor');
     // Fake child that immediately fires `close(0)` so, if the executor IS reached without
     // throwing at validate, the handler resolves and assertions run deterministically
     // (instead of timing out the test).
@@ -229,7 +231,7 @@ describe(addMcpCapabilities, () => {
     const registerTool = jest.fn();
     const mcpServer = { registerTool } as unknown as McpServer;
 
-    await addMcpCapabilities(mcpServer, devServerManager);
+    await addMcpCapabilities(mcpServer, devServerManager, z);
     const [, , handler] = registerTool.mock.calls[0];
 
     // Smuggle a CLI-only command name past the schema by invoking the handler directly.
@@ -257,7 +259,7 @@ describe(addMcpCapabilities, () => {
     const mcpServer = { registerTool } as unknown as McpServer;
     executeMock.mockResolvedValue([]);
 
-    await addMcpCapabilities(mcpServer, devServerManager);
+    await addMcpCapabilities(mcpServer, devServerManager, z);
 
     const [, toolDefinition, handler] = registerTool.mock.calls[0];
     const schema = toolDefinition.inputSchema.parameters;
@@ -289,7 +291,7 @@ describe(addMcpCapabilities, () => {
     const registerTool = jest.fn();
     const mcpServer = { registerTool } as unknown as McpServer;
 
-    await addMcpCapabilities(mcpServer, devServerManager);
+    await addMcpCapabilities(mcpServer, devServerManager, z);
 
     expect(registerTool).toHaveBeenCalledTimes(1);
     const [, toolDefinition, handler] = registerTool.mock.calls[0];
