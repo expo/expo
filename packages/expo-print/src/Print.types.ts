@@ -91,6 +91,10 @@ export type FilePrintOptions = {
    */
   html?: string;
   /**
+   * Basename for the generated PDF in the app cache directory.
+   */
+  fileName?: string;
+  /**
    * Alternative to default option that uses [UIMarkupTextPrintFormatter](https://developer.apple.com/documentation/uikit/uimarkuptextprintformatter)
    * instead of WebView, but it doesn't display images.
    * @platform ios

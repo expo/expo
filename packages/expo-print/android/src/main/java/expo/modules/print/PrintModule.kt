@@ -83,14 +83,19 @@ class PrintModule : Module() {
 
     // Create the files on IO thread
     withContext(Dispatchers.IO) {
+      val fileName = options.fileName
+      if (fileName != null && !Regex("^[A-Za-z0-9_-]+\\.pdf$").matches(fileName)) {
+        throw FileNotFoundException()
+      }
       try {
-        filePath = FileUtils.generateFilePath(context)
+        filePath = fileName?.let { File(context.cacheDir, it).path } ?: FileUtils.generateFilePath(context)
       } catch (e: IOException) {
         throw UnexpectedPrintException("An unknown I/O exception occurred ", e)
       }
       try {
         outputFile = File(filePath)
-        outputFile.createNewFile()
+        if (fileName == null) outputFile.createNewFile()
+        else if (!outputFile.createNewFile()) throw FileNotFoundException()
         fileDescriptor = ParcelFileDescriptor.open(outputFile, ParcelFileDescriptor.MODE_TRUNCATE or ParcelFileDescriptor.MODE_WRITE_ONLY)
       } catch (e: IOException) {
         throw FileNotFoundException(e)
