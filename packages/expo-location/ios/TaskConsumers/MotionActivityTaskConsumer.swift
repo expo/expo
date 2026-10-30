@@ -3,9 +3,10 @@
 import CoreMotion
 import ExpoModulesCore
 
-class MotionActivityTaskConsumer: NSObject, EXTaskConsumerInterface {
-  var task: EXTaskInterface?
-  private let streamer = MotionActivityStreamer()
+final class MotionActivityTaskConsumer: NSObject, EXTaskConsumerInterface {
+  // Weak: `EXTask` holds this consumer strongly.
+  weak var task: EXTaskInterface?
+  private var streamTask: Task<Void, Never>?
 
   func taskType() -> String {
     return "motionActivity"
@@ -13,19 +14,25 @@ class MotionActivityTaskConsumer: NSObject, EXTaskConsumerInterface {
 
   func didRegisterTask(_ task: EXTaskInterface) {
     self.task = task
-
-    Task {
+    streamTask = Task { @MainActor [weak task] in
+      let streamer = MotionActivityStreamer()
+      defer { streamer.stopStreaming() }
       do {
         for try await activity in try streamer.streamMotionActivity() {
-          self.task?.execute(withData: ["activity": activity.toMotionActivityDict()], withError: nil)
+          task?.execute(withData: ["activity": activity.toMotionActivityDict()], withError: nil)
         }
       } catch {
-        self.task?.execute(withData: nil, withError: error as NSError)
+        task?.execute(withData: nil, withError: error as NSError)
       }
     }
   }
 
   func didUnregister() {
-    streamer.stopStreaming()
+    streamTask?.cancel()
+    streamTask = nil
+  }
+
+  deinit {
+    streamTask?.cancel()
   }
 }
