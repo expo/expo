@@ -1,6 +1,6 @@
 'use client';
 
-import React, { Children, use, useCallback, useMemo, useRef, useState } from 'react';
+import React, { use, useCallback, useMemo, useRef, useState } from 'react';
 
 import { createBaseTabProps } from '../layouts/createBaseTabProps';
 import {
@@ -21,8 +21,8 @@ import type {
 import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { useWarnOnce } from '../useDeprecated';
-import { getAllChildrenNotOfType, isChildOfType } from '../utils/children';
-import { isProtectedReactElement } from '../views/Protected';
+import { filterAllowedChildrenElements, getAllChildrenNotOfType } from '../utils/children';
+import { Protected } from '../views/Protected';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabTrigger } from './NativeTabTrigger';
 import { NativeTabsView } from './NativeTabsView';
@@ -259,10 +259,8 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
   // `Protected` stays wrapped. The navigator's screen filter reads `guard` and records `redirectTo`.
   const navigatorChildren = useMemo(
     () =>
-      Children.toArray(props.children).filter(
-        (child) =>
-          (isChildOfType(child, NativeTabTrigger) && !child.props.hidden) ||
-          isProtectedReactElement(child)
+      filterAllowedChildrenElements(props.children, [NativeTabTrigger, Protected]).filter(
+        (child) => !('hidden' in child.props && child.props.hidden)
       ),
     [props.children]
   );
