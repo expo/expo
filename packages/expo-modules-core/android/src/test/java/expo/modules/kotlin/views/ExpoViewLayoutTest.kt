@@ -59,32 +59,28 @@ class ExpoViewLayoutTest {
   }
 
   @Test
-  fun `lays out from the post when no frame follows`() {
-    val (_, view) = attachedView()
-
-    view.requestLayout()
-    shadowOf(Looper.getMainLooper()).idle()
-
-    Truth.assertThat(view.measureCount).isEqualTo(1)
-
-    view.requestLayout()
-    shadowOf(Looper.getMainLooper()).idle()
-
-    Truth.assertThat(view.measureCount).isEqualTo(2)
-  }
-
-  @Test
-  fun `schedules again after the view detaches before drawing`() {
+  fun `lays out before the next draw after the view reattaches in the same loop`() {
     val (parent, view) = attachedView()
 
     view.requestLayout()
     parent.removeView(view)
-    shadowOf(Looper.getMainLooper()).idle()
     parent.addView(view)
-    view.measureCount = 0
-
     view.requestLayout()
     view.viewTreeObserver.dispatchOnPreDraw()
+
+    Truth.assertThat(view.measureCount).isEqualTo(1)
+  }
+
+  @Test
+  fun `lays out before the next draw after forceLayout`() {
+    val (_, view) = attachedView()
+
+    view.forceLayout()
+    view.viewTreeObserver.dispatchOnPreDraw()
+
+    Truth.assertThat(view.measureCount).isEqualTo(1)
+
+    shadowOf(Looper.getMainLooper()).idle()
 
     Truth.assertThat(view.measureCount).isEqualTo(1)
   }

@@ -85,7 +85,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
   // A measure pass skipped while detached is cached by Android, so the same specs will not measure
   // the Compose content again. Set when that happens, so the first attach can request a new pass.
   // React Native can attach this view from inside its own `layout()`, which clears the forced-layout
-  // flag when it returns, so the request is posted.
+  // flag when it returns, so the scheduled layout forces the measure when it runs.
   private var needsLayoutOnAttach = false
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -121,7 +121,7 @@ abstract class ExpoComposeView<T : ComposeProps>(
     super.onAttachedToWindow()
     if (needsLayoutOnAttach) {
       needsLayoutOnAttach = false
-      post { requestLayout() }
+      scheduleLayout(forceMeasure = true)
     }
     if (!withHostingView) {
       validateHostingAncestor()
