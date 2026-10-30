@@ -25,6 +25,7 @@ import expo.modules.location.LocationHelpers
 import expo.modules.location.services.BaseForegroundTaskService
 import expo.modules.location.services.BaseForegroundTaskService.ServiceBinder
 import expo.modules.location.services.MotionActivityTaskService
+import java.util.concurrent.atomic.AtomicInteger
 
 class MotionActivityTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsInterface?) : TaskConsumer(context, taskManagerUtils), TaskConsumerInterface {
   private var mTask: TaskInterface? = null
@@ -60,7 +61,7 @@ class MotionActivityTaskConsumer(context: Context, taskManagerUtils: TaskManager
     val task = mTask ?: return
     val result = ActivityRecognitionResult.extractResult(intent) ?: return
     val activity = LocationHelpers.motionActivityRecordFromResult(result)
-    val context = context.applicationContext
+    val context = context?.applicationContext ?: return
 
     taskManagerUtils.scheduleJob(context, task, listOf(activity.toPersistableBundle()))
   }
@@ -69,28 +70,34 @@ class MotionActivityTaskConsumer(context: Context, taskManagerUtils: TaskManager
     val task = mTask ?: return false
     val data = taskManagerUtils.extractDataFromJobParams(params)
 
-    for (persistableActivityBundle in data) {
-      val bundle = Bundle().apply {
-        putBundle("activity", persistableActivityBundle.toDeepBundle())
-      }
-      task.execute(bundle, null) { jobService.jobFinished(params, false) }
+    if (data.isEmpty()) {
+      jobService.jobFinished(params, false)
+      return true
     }
 
-    // Returning `true` indicates that the job is still running, but in async mode.
-    // In that case we're obligated to call `jobService.jobFinished` as soon as the async block finishes.
+    val remainingExecutions = AtomicInteger(data.size)
+    for (persistableActivityBundle in data) {
+      val bundle = Bundle().apply {
+        putBundle("activity", persistableActivityBundle.toBundle())
+      }
+      task.execute(bundle, null) {
+        if (remainingExecutions.decrementAndGet() == 0) {
+          jobService.jobFinished(params, false)
+        }
+      }
+    }
     return true
   }
 
   //endregion
   //region private
 
-  // `Bundle.putAll(PersistableBundle)` only copies the top level - nested PersistableBundle
-  // values (e.g. `activities`, and each activity type within it) stay PersistableBundle
-  // instances, which the bridge can't serialize. Rebuild the tree with real Bundles instead.
-  private fun PersistableBundle.toDeepBundle(): Bundle {
-    val bundle = Bundle().apply { putAll(this@toDeepBundle) }
+  // `Bundle.putAll(PersistableBundle)` copies nested PersistableBundle values by reference,
+  // which results in a malformed Bundle whose nested bundles cannot be read back.
+  private fun PersistableBundle.toBundle(): Bundle {
+    val bundle = Bundle().apply { putAll(this@toBundle) }
     for (key in keySet()) {
-      getPersistableBundle(key)?.let { bundle.putBundle(key, it.toDeepBundle()) }
+      getPersistableBundle(key)?.let { bundle.putBundle(key, it.toBundle()) }
     }
     return bundle
   }
@@ -113,6 +120,7 @@ class MotionActivityTaskConsumer(context: Context, taskManagerUtils: TaskManager
 
   private fun stopMotionActivityUpdates() {
     mPendingIntent?.let {
+      val context = context ?: return
       ActivityRecognition.getClient(context).removeActivityUpdates(it)
       it.cancel()
     }
@@ -122,10 +130,8 @@ class MotionActivityTaskConsumer(context: Context, taskManagerUtils: TaskManager
     return taskManagerUtils.createTaskIntent(context, mTask)
   }
 
-  // A foreground service keeps this task's process (and JS engine) alive across an app kill,
-  // the same way background location does. Without it, activity updates that arrive while the
-  // app is killed are only delivered once the process happens to be woken up for another reason,
-  // e.g. the user reopening the app.
+  // A foreground service running lifts the background execution limits, so activity updates aren't throttled.
+  // It also raises the process priority so the system is less likely to kill it.
   private fun maybeStartForegroundService() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       return
@@ -171,6 +177,11 @@ class MotionActivityTaskConsumer(context: Context, taskManagerUtils: TaskManager
             mService = (service as? ServiceBinder)?.service
             mService?.let {
               it.startForeground(serviceOptions)
+              // The task was unregistered while this bind was pending: didUnregister() found no
+              // service to stop. Stop it now.
+              if (mTask == null) {
+                stopForegroundService()
+              }
             }
           }
 
