@@ -2169,9 +2169,6 @@ importers:
       '@expo/require-utils':
         specifier: workspace:^57.0.6
         version: link:../require-utils
-      deepmerge:
-        specifier: ^4.3.1
-        version: 4.3.1
       getenv:
         specifier: ^2.0.0
         version: 2.0.0
@@ -18899,9 +18896,7 @@ snapshots:
       metro-runtime: 0.84.5
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
@@ -21894,6 +21889,7 @@ snapshots:
     transitivePeerDependencies:
       - '@cfworker/json-schema'
       - bufferutil
+      - supports-color
       - utf-8-validate
 
   expo-three@7.0.1(expo-asset@packages+expo-asset)(expo-file-system@packages+expo-file-system)(expo-font@packages+expo-font)(expo-modules-core@packages+expo-modules-core)(react-native@0.86.3(@babel/core@7.29.0)(@react-native/jest-preset@0.86.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)(three@0.137.5):

@@ -36,7 +36,6 @@
     "@expo/config-types": "workspace:^57.0.2",
     "@expo/json-file": "workspace:^11.0.1",
     "@expo/require-utils": "workspace:^57.0.6",
-    "deepmerge": "^4.3.1",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
     "resolve-workspace-root": "^2.0.0",

@@ -9,8 +9,11 @@
 ### 🐛 Bug fixes
 
 - Avoid duplicate entries in `updates` arrays, such as `updates.assetPatternsToBeBundled`, when `modifyConfigAsync` merges modifications. ([#50575](https://github.com/expo/expo/pull/50575) by [@douglowder](https://github.com/douglowder))
+- Prevent prototype pollution for config modifications ([#52602](https://github.com/expo/expo/pull/52602) by [@kitten](https://gthub.com/kitten))
 
 ### 💡 Others
+
+- [Internal] Drop and replace `deepmerge` dependency. ([#52602](https://github.com/expo/expo/pull/52602) by [@kitten](https://gthub.com/kitten))
 
 ## 57.0.10 — 2026-10-06
 
