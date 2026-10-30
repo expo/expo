@@ -2,12 +2,12 @@
 
 import * as React from 'react';
 
-import type { RoutingIntent } from './routingQueue';
+import type { QueuedRoutingIntent, RoutingIntent } from './routingQueue';
 import { PendingIntentsContext, RoutingQueueApiContext } from './routingQueueContext';
 import type { NavigationTransitionMode } from './types';
 
 type Props = {
-  processIntent: (intent: RoutingIntent) => void;
+  processIntent: (intent: QueuedRoutingIntent, inTransition: boolean) => void;
 };
 
 export function shouldUseTransition(
@@ -31,7 +31,7 @@ function isPreloadIntent(intent: RoutingIntent): boolean {
 export function RoutingQueueDrainer({ processIntent }: Props) {
   const intents = React.use(PendingIntentsContext);
   const { dequeue, startTransition, transitionMode } = React.use(RoutingQueueApiContext)!;
-  const lastProcessed = React.useRef<RoutingIntent[] | undefined>(undefined);
+  const lastProcessed = React.useRef<QueuedRoutingIntent[] | undefined>(undefined);
 
   React.useEffect(() => {
     if (intents.length === 0 || lastProcessed.current === intents) {
@@ -44,12 +44,13 @@ export function RoutingQueueDrainer({ processIntent }: Props) {
     // "Bundling..." toast for async routes). Design a fallback UX for pending navigation.
     // Dequeue urgently so a later enqueue is not rebased on a stale queue.
     dequeue(intents);
+    const inTransition = shouldUseTransition(intents, transitionMode);
     const process = () => {
       for (const intent of intents) {
         // Only catches errors thrown while dispatching. The navigation reducer runs
         // during the next render, so errors from it surface there, not here.
         try {
-          processIntent(intent);
+          processIntent(intent, inTransition);
         } catch (error) {
           const message =
             typeof error === 'object' && error != null && 'message' in error
@@ -62,7 +63,7 @@ export function RoutingQueueDrainer({ processIntent }: Props) {
       }
     };
 
-    if (shouldUseTransition(intents, transitionMode)) {
+    if (inTransition) {
       startTransition(process);
     } else {
       process();

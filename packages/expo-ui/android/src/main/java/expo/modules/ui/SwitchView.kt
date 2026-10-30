@@ -41,6 +41,7 @@ data class SwitchColors(
 data class SwitchProps(
   val value: Boolean = false,
   val enabled: Boolean = true,
+  val nativeClickable: Boolean = true,
   val colors: SwitchColors = SwitchColors(),
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
@@ -54,7 +55,11 @@ fun FunctionalComposableScope.SwitchContent(
 
   Switch(
     checked = props.value,
-    onCheckedChange = onCheckedChange,
+    onCheckedChange = if (props.nativeClickable) {
+      onCheckedChange
+    } else {
+      null
+    },
     modifier = ModifierRegistry.applyModifiers(props.modifiers, appContext, composableScope, globalEventDispatcher),
     enabled = props.enabled,
     thumbContent = thumbContentSlotView?.let {

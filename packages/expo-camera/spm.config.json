@@ -53,10 +53,7 @@
           "name": "ExpoCameraBarcodeScanning",
           "path": "ios/barcode-scanning",
           "pattern": "**/*.swift",
-          "dependencies": ["ExpoCamera", "ZXingObjC"],
-          "compilerFlags": {
-            "swift": ["-DZXINGOBJC_USE_SUBSPECS", "-DZXINGOBJC_PDF417", "-DZXINGOBJC_ONED"]
-          }
+          "dependencies": ["ExpoCamera", "ZXingObjC"]
         }
       ]
     }

@@ -27,6 +27,25 @@ describe(parsePlatformHeader, () => {
     // Handles arrays
     expect(parsePlatformHeader(asRequest({ url: '?platform=ios&platform=android' }))).toBe('ios');
   });
+  it(`parses from 'platform' query parameter in a path-only URL`, () => {
+    expect(parsePlatformHeader(asRequest({ url: '/index.bundle?dev=true&platform=android' }))).toBe(
+      'android'
+    );
+    expect(parsePlatformHeader(asRequest({ url: '/?platform=ios#hash' }))).toBe('ios');
+    expect(parsePlatformHeader(asRequest({ url: '/?platform=%69os' }))).toBe('ios');
+  });
+  it(`falls back to the header when the 'platform' query parameter is empty`, () => {
+    expect(
+      parsePlatformHeader(
+        asRequest({ url: '/?platform=', headers: { 'expo-platform': 'android' } })
+      )
+    ).toBe('android');
+  });
+  it(`does not throw for an invalid absolute request url`, () => {
+    expect(() =>
+      parsePlatformHeader(asRequest({ url: 'http://localhost:99999/?platform=ios', headers: {} }))
+    ).not.toThrow();
+  });
 
   for (const header of ['expo-platform', 'exponent-platform']) {
     it(`parses from '${header}' header`, () => {

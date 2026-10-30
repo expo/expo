@@ -1,14 +1,68 @@
 # Changelog
 
-## Unpublished
+## 58.0.15
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Updated dependencies. ([#51670](https://github.com/expo/expo/pull/51670), [#51669](https://github.com/expo/expo/pull/51669))
+  - expo-dev-launcher@58.0.15
 
-### 🐛 Bug fixes
+## 58.0.14
 
-### 💡 Others
+### Patch Changes
+
+- Updated dependencies.
+  - expo-dev-launcher@58.0.14
+
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies. ([#51360](https://github.com/expo/expo/pull/51360))
+  - expo-dev-launcher@58.0.13
+
+## 58.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#51131](https://github.com/expo/expo/pull/51131), [#51130](https://github.com/expo/expo/pull/51130))
+  - expo-dev-launcher@58.0.12
+  - expo-dev-menu@58.0.11
+
+## 58.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#50951](https://github.com/expo/expo/pull/50951))
+  - expo-dev-launcher@58.0.11
+
+## 58.0.10
+
+### Patch Changes
+
+- Updated dependencies. ([#50900](https://github.com/expo/expo/pull/50900))
+  - expo-dev-menu@58.0.10
+  - expo-dev-launcher@58.0.10
+
+## 58.0.9
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - expo-dev-launcher@58.0.9
+  - expo-dev-menu@58.0.9
+  - expo-dev-menu-interface@58.0.1
+  - expo-manifests@58.0.1
+  - expo-updates-interface@58.0.1
+
+## 58.0.8 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.7 — 2026-09-25
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.6 — 2026-09-23
 

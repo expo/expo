@@ -12,6 +12,8 @@ import java.io.Serializable;
  *
  */
 public class NotificationAction implements Parcelable, Serializable {
+  private static final long serialVersionUID = -5940729619296967063L;
+
   private final String mIdentifier;
   private final String mTitle;
   private final boolean mOpensAppToForeground;

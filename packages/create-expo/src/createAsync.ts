@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import type { SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -12,10 +14,10 @@ import {
 } from './Examples';
 import * as Template from './Template';
 import { configureWorkspacesAsync } from './configureWorkspaces';
+import { SwiftPMUnsupportedError } from './error';
 import { generateAgentFiles } from './generateAgentFiles';
 import { promptTemplateAsync } from './legacyTemplates';
 import { Log } from './log';
-import { applySdkVersionToTemplateAsync } from './promptSdkVersion';
 import type { PackageManagerName } from './resolvePackageManager';
 import {
   configurePackageManager,
@@ -23,6 +25,7 @@ import {
   resolvePackageManager,
 } from './resolvePackageManager';
 import { assertFolderEmpty, assertValidName, resolveProjectRootAsync } from './resolveProjectRoot';
+import { resolveTemplate } from './resolveTemplate';
 import {
   AnalyticsEventPhases,
   AnalyticsEventTypes,
@@ -30,6 +33,7 @@ import {
   initializeAnalyticsIdentityAsync,
   track,
 } from './telemetry';
+import { env } from './utils/env';
 import { initGitRepoAsync } from './utils/git';
 import { withSectionLog } from './utils/log';
 
@@ -39,7 +43,11 @@ export type Options = {
   example?: string | true;
   yes: boolean;
   agentsMd: boolean;
+  /** Set up iOS with Swift Package Manager instead of CocoaPods (preview). */
+  swiftpm?: boolean;
 };
+
+const SWIFTPM_PREBUILD_ARGS = ['expo', 'prebuild', '--platform', 'ios'];
 
 const debug = require('debug')('expo:init:create') as typeof console.log;
 
@@ -58,7 +66,10 @@ async function resolveProjectRootArgAsync(
   }
 }
 
-export async function setupDependenciesAsync(projectRoot: string, props: Pick<Options, 'install'>) {
+export async function setupDependenciesAsync(
+  projectRoot: string,
+  props: Pick<Options, 'install' | 'swiftpm'>
+) {
   const shouldInstall = props.install;
   const packageManager = resolvePackageManager();
 
@@ -73,11 +84,17 @@ export async function setupDependenciesAsync(projectRoot: string, props: Pick<Op
   // Install dependencies
   let podsInstalled: boolean = false;
   let nodeModulesInstalled: boolean = false;
-  const needsPodsInstalled = await fs.existsSync(path.join(projectRoot, 'ios'));
+  const needsPodsInstalled = !props.swiftpm && fs.existsSync(path.join(projectRoot, 'ios'));
+  let swiftPMSetUp = false;
   if (shouldInstall) {
     nodeModulesInstalled = await installNodeDependenciesAsync(projectRoot, packageManager);
     if (needsPodsInstalled) {
       podsInstalled = await installCocoaPodsAsync(projectRoot);
+    }
+    // Prebuild runs from the project's node modules, and SwiftPM needs Xcode, so like
+    // CocoaPods this is skipped outside macOS.
+    if (props.swiftpm && nodeModulesInstalled && process.platform === 'darwin') {
+      swiftPMSetUp = await runSwiftPMSetupAsync(projectRoot);
     }
   }
   const cdPath = getChangeDirectoryPath(projectRoot);
@@ -86,6 +103,34 @@ export async function setupDependenciesAsync(projectRoot: string, props: Pick<Op
   // The install can also fail without stopping the command, so check the result and not the flag.
   if (!nodeModulesInstalled) {
     logNodeInstallWarning(cdPath, packageManager, needsPodsInstalled && !podsInstalled);
+  }
+  if (props.swiftpm) {
+    logSwiftPMWarning(cdPath, swiftPMSetUp);
+  }
+}
+
+async function runSwiftPMSetupAsync(projectRoot: string): Promise<boolean> {
+  try {
+    await withSectionLog(
+      async () => {
+        await spawnAsync('npx', SWIFTPM_PREBUILD_ARGS, {
+          cwd: projectRoot,
+          stdio: env.EXPO_DEBUG ? 'inherit' : 'pipe',
+        });
+      },
+      {
+        pending: chalk.bold('Setting up Swift Package Manager for iOS.'),
+        success: 'Set up Swift Package Manager for iOS.',
+        error: () =>
+          'Setting up Swift Package Manager for iOS failed. The app is still created. Run the command below to finish the setup.',
+      }
+    );
+    return true;
+  } catch (error) {
+    debug('Error setting up Swift Package Manager: %O', error);
+    const { stderr } = error as Partial<SpawnResult>;
+    Log.error(stderr || chalk.red((error as Error).message));
+    return false;
   }
 }
 
@@ -112,14 +157,10 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
 
   const projectRoot = await resolveProjectRootArgAsync(inputPath, props);
 
-  resolvedTemplate = await applySdkVersionToTemplateAsync(
-    resolvedTemplate ?? 'expo-template-default',
-    {
-      yes: props.yes,
-      showAlternatives: !props.template,
-      projectName: path.basename(projectRoot),
-    }
-  );
+  resolvedTemplate = await resolveTemplate({
+    template: resolvedTemplate ?? 'default',
+    projectName: path.basename(projectRoot),
+  });
 
   await fs.promises.mkdir(projectRoot, { recursive: true });
 
@@ -137,13 +178,13 @@ async function createTemplateAsync(inputPath: string, props: Options): Promise<v
     async () => {
       await Template.extractAndPrepareTemplateAppAsync(projectRoot, {
         npmPackage: resolvedTemplate,
+        swiftpm: props.swiftpm,
       });
     },
     {
       pending: chalk.bold('Locating project files.'),
       success: 'Downloaded and extracted project files.',
-      error: (error) =>
-        `Something went wrong in downloading and extracting the project files: ${error.message}`,
+      error: (error) => formatExtractionError(error, 'project'),
     }
   );
 
@@ -231,13 +272,14 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
 
   await withSectionLog(
     async () => {
-      await downloadAndExtractExampleAsync(projectRoot, resolvedExample);
+      await downloadAndExtractExampleAsync(projectRoot, resolvedExample, {
+        swiftpm: props.swiftpm,
+      });
     },
     {
       pending: chalk.bold('Locating example files...'),
       success: 'Downloaded and extracted example files.',
-      error: (error) =>
-        `Something went wrong in downloading and extracting the example files: ${error.message}`,
+      error: (error) => formatExtractionError(error, 'example'),
     }
   );
 
@@ -259,6 +301,13 @@ async function createExampleAsync(inputPath: string, props: Options): Promise<vo
     debug(`Error initializing git: %O`, error);
     // todo: check if git is installed, bail out
   }
+}
+
+function formatExtractionError(error: Error, files: 'project' | 'example'): string {
+  if (error instanceof SwiftPMUnsupportedError) {
+    return error.message;
+  }
+  return `Something went wrong in downloading and extracting the ${files} files: ${error.message}`;
 }
 
 function getChangeDirectoryPath(projectRoot: string): string {
@@ -325,6 +374,18 @@ export function logNodeInstallWarning(
     console.log(`  npx pod-install`);
   }
   console.log();
+}
+
+function logSwiftPMWarning(cdPath: string, isSetUp: boolean): void {
+  console.log(
+    `\n⚠️  This project uses Swift Package Manager for iOS instead of CocoaPods. This is a preview, enabled by \`experiments.swiftPackageManager\` in app.json. Do not run \`pod install\` in this project.\n`
+  );
+  if (!isSetUp) {
+    console.log(`To finish setting up iOS, run:\n`);
+    console.log(`  cd ${cdPath || '.'}${path.sep}`);
+    console.log(`  npx ${SWIFTPM_PREBUILD_ARGS.join(' ')}`);
+    console.log();
+  }
 }
 
 function getDeprecatedExampleErrorMessage(example: string, metadata: ExamplesMetadata) {

@@ -84,6 +84,7 @@ open class DevMenuManager: NSObject {
 
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   var canLaunchDevMenuOnStart = true
+  var canShowFloatingActionButton = true
   @objc public var isReactAppRunning = false
 
   private let appContextLock = NSLock()
@@ -617,6 +618,7 @@ open class DevMenuManager: NSObject {
       }
 
       let shouldShow = DevMenuPreferences.showFloatingActionButton
+        && self.canShowFloatingActionButton
         && !self.isVisible
         && self.isReactAppRunning
         && !self.isNavigatingHome

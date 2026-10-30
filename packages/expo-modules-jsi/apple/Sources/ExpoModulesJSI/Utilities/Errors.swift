@@ -30,4 +30,20 @@ internal struct FatalError {
         + "Check that its null-setter short-circuit is still in place."
     )
   }
+
+  /// Stops program execution when `Reflect.defineProperty` throws, for example when the descriptor isn't
+  /// valid or a proxy trap throws. `defineProperty` doesn't throw, so its callers are expected to pass a
+  /// valid descriptor.
+  internal static func definePropertyFailed(_ name: String, _ error: any Error) -> Never {
+    fatalError("Reflect.defineProperty threw while defining '\(name)': \(error).")
+  }
+
+  /// Stops program execution when the runtime has no `Reflect.defineProperty` function, which every
+  /// JavaScript engine provides unless the global `Reflect` has been replaced.
+  internal static func definePropertyUnavailable(_ error: any Error) -> Never {
+    fatalError(
+      "Couldn't look up Reflect.defineProperty in the JavaScript runtime: \(error). "
+        + "Check whether the global Reflect has been replaced."
+    )
+  }
 }

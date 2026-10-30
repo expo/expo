@@ -79,6 +79,10 @@ internal enum PresentationStyle: String, Enumerable {
     case .overCurrentContext:
       return .overCurrentContext
     case .popover:
+      // On iPadOS 27, SFSafariViewController never loads the URL inside a popover.
+      if #available(iOS 27, *), UIDevice.current.userInterfaceIdiom == .pad {
+        return .formSheet
+      }
       return .popover
     case .none:
       return .none

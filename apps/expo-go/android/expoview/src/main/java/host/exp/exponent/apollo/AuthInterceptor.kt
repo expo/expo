@@ -8,7 +8,7 @@ import host.exp.exponent.services.SessionRepository
 
 class AuthInterceptor(private val sessionRepository: SessionRepository) : HttpInterceptor {
   override suspend fun intercept(request: HttpRequest, chain: HttpInterceptorChain): HttpResponse {
-    val sessionSecret = sessionRepository.getSessionSecret()
+    val sessionSecret = sessionRepository.getActiveSessionSecret()
       ?: return chain.proceed(request)
 
     val newRequest = request.newBuilder()

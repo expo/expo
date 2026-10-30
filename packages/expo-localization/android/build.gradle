@@ -4,17 +4,19 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '58.0.1'
+version = '58.0.5'
 
 android {
   namespace "expo.modules.localization"
   defaultConfig {
     versionCode 22
-    versionName "58.0.1"
+    versionName "58.0.5"
   }
 }
 
 dependencies {
   implementation "androidx.core:core-ktx:1.17.0"
   implementation 'com.facebook.react:react-android'
+  testImplementation 'junit:junit:4.13.2'
+  testImplementation "org.robolectric:robolectric:4.16"
 }

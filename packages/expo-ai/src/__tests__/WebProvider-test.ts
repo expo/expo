@@ -68,7 +68,13 @@ class FakeBrowserModel implements BrowserLanguageModel {
 
 const globals = ['window', 'LanguageModel', 'isSecureContext'] as const;
 const originalGlobals = globals.map((key) => Object.getOwnPropertyDescriptor(globalThis, key));
+// In jsdom (the web preset) `window` is unforgeable, so it can neither be redefined nor deleted.
+// It already points at the test's global object there, so only stub it where that is possible.
+const stubbableGlobals = globals.filter(
+  (key) => Object.getOwnPropertyDescriptor(globalThis, key)?.configurable !== false
+);
 function setGlobal(key: (typeof globals)[number], value: unknown) {
+  if (!stubbableGlobals.includes(key)) return;
   Object.defineProperty(globalThis, key, { value, writable: true, configurable: true });
 }
 let provider: BrowserLanguageModels;
@@ -112,6 +118,7 @@ beforeEach(() => {
 });
 afterEach(() => {
   globals.forEach((key, index) => {
+    if (!stubbableGlobals.includes(key)) return;
     const descriptor = originalGlobals[index];
     if (descriptor) Object.defineProperty(globalThis, key, descriptor);
     else Reflect.deleteProperty(globalThis, key);
@@ -129,17 +136,14 @@ it('builds the browser provider and its sessions on the shared core classes', as
   expect(session.listenerCount('onText')).toBe(0);
 });
 
-it.each(['window', 'LanguageModel', 'isSecureContext'] as const)(
-  'reports unavailable without %s',
-  async (key) => {
-    setGlobal(key, key === 'isSecureContext' ? false : undefined);
-    expect(JSON.parse(await provider.getAvailabilityAsync([], null))).toMatchObject({
-      status: 'unavailable',
-    });
-    await expect(open()).rejects.toMatchObject({ code: 'ERR_MODEL_UNAVAILABLE' });
-    expect(api.create).not.toHaveBeenCalled();
-  }
-);
+it.each(stubbableGlobals)('reports unavailable without %s', async (key) => {
+  setGlobal(key, key === 'isSecureContext' ? false : undefined);
+  expect(JSON.parse(await provider.getAvailabilityAsync([], null))).toMatchObject({
+    status: 'unavailable',
+  });
+  await expect(open()).rejects.toMatchObject({ code: 'ERR_MODEL_UNAVAILABLE' });
+  expect(api.create).not.toHaveBeenCalled();
+});
 
 it.each(['downloadable', 'downloading', 'unavailable'] as const)(
   'does not create or download for %s readiness',
@@ -618,6 +622,80 @@ it('uses browser constraints for tool protocol turns while preserving approval a
   expect(completions).toHaveLength(2);
   expect(completions.every(([, options]) => options.responseConstraint !== undefined)).toBe(true);
   expect(completions[1]![0]).toContain('local-receipt');
+});
+
+const boundedSchema: ModelSchema = {
+  type: 'object',
+  properties: {
+    score: { type: 'number', minimum: 0, maximum: 1 },
+    counts: { type: 'array', items: { type: 'integer', minimum: 1 } },
+    detail: {
+      type: 'object',
+      properties: { level: { type: 'integer', maximum: 5 } },
+      required: ['level'],
+      additionalProperties: false,
+    },
+  },
+  required: ['score', 'counts', 'detail'],
+  additionalProperties: false,
+};
+
+it('constrains bounded schemas with their bounds', async () => {
+  const reply = { score: 0.5, counts: [1, 2], detail: { level: 5 } };
+  configureClone = (clone) => clone.prompt.mockResolvedValueOnce(JSON.stringify(reply));
+  await expect(generateAsync('Rate this', { schema: boundedSchema })).resolves.toMatchObject({
+    value: reply,
+    format: 'constrained',
+    provider: 'browser-prompt-api',
+  });
+  const completions = models.flatMap((model) => model.prompt.mock.calls);
+  expect(completions).toHaveLength(1);
+  expect(completions[0]![1].responseConstraint).toEqual(boundedSchema);
+});
+
+it('rejects a browser reply that breaks a numeric bound', async () => {
+  const outOfBounds = JSON.stringify({ score: 1.5, counts: [1], detail: { level: 1 } });
+  configureClone = (clone) => clone.prompt.mockResolvedValueOnce(outOfBounds);
+  await expect(generateAsync('Rate this', { schema: boundedSchema })).rejects.toMatchObject({
+    code: 'ERR_RESPONSE_INVALID',
+  });
+
+  const session = await open();
+  configureClone = (clone) => clone.prompt.mockResolvedValueOnce(outOfBounds);
+  await expect(generate(session, 'bounded', { schema: boundedSchema })).rejects.toMatchObject({
+    code: 'ERR_RESPONSE_INVALID',
+  });
+  expect(session.acceptResult('bounded')).toBe(false);
+  session.dispose();
+});
+
+it('constrains bounded tool arguments with their bounds and rejects out-of-bound arguments', async () => {
+  const execute = jest.fn().mockResolvedValue('saved');
+  const outOfBounds = { type: 'tool', id: 'save-1', calls: { save: { amount: 99 } } };
+  configureClone = (clone) => clone.prompt.mockResolvedValueOnce(JSON.stringify(outOfBounds));
+  await expect(
+    generateAsync('Save an amount', {
+      tools: [
+        {
+          name: 'save',
+          description: 'Save an amount.',
+          inputSchema: {
+            type: 'object',
+            properties: { amount: { type: 'integer', minimum: 1, maximum: 10 } },
+            required: ['amount'],
+            additionalProperties: false,
+          },
+          execute,
+        },
+      ],
+    })
+  ).rejects.toMatchObject({ code: 'ERR_RESPONSE_INVALID' });
+  expect(execute).not.toHaveBeenCalled();
+  const completions = models.flatMap((model) => model.prompt.mock.calls);
+  expect(completions).toHaveLength(1);
+  expect(JSON.stringify(completions[0]![1].responseConstraint)).toContain(
+    '"amount":{"type":"integer","minimum":1,"maximum":10}'
+  );
 });
 
 it('routes public preparation cancellation and ignores late download progress', async () => {

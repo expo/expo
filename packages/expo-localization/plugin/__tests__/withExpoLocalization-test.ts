@@ -2,6 +2,7 @@ import { AndroidConfig } from 'expo/config-plugins';
 
 import {
   convertBcp47ToResourceQualifier,
+  getResourceQualifiers,
   setAndroidSupportsRtl,
   setResourceConfigurations,
 } from '../src/withExpoLocalization';
@@ -53,6 +54,28 @@ describe('converts locales to BCP-47 format', () => {
     expect(convertBcp47ToResourceQualifier('es-419')).toBe('b+es+419');
     expect(convertBcp47ToResourceQualifier('zh-Hant-TW')).toBe('b+zh+Hant+TW');
   });
+
+  it('should use the legacy language codes Android resolves resources with', () => {
+    expect(convertBcp47ToResourceQualifier('he')).toBe('b+iw');
+    expect(convertBcp47ToResourceQualifier('he-IL')).toBe('b+iw+IL');
+    expect(convertBcp47ToResourceQualifier('id')).toBe('b+in');
+    expect(convertBcp47ToResourceQualifier('id-ID')).toBe('b+in+ID');
+    expect(convertBcp47ToResourceQualifier('yi')).toBe('b+ji');
+  });
+});
+
+describe('getResourceQualifiers', () => {
+  it('returns a single qualifier for non-Chinese locales', () => {
+    expect(getResourceQualifiers('fr')).toEqual(['b+fr']);
+    expect(getResourceQualifiers('he')).toEqual(['b+iw']);
+    expect(getResourceQualifiers('zh')).toEqual(['b+zh']);
+    expect(getResourceQualifiers('zh-TW')).toEqual(['b+zh+TW']);
+  });
+
+  it('keeps the region qualifiers libraries use for Chinese scripts', () => {
+    expect(getResourceQualifiers('zh-Hans')).toEqual(['b+zh+Hans', 'zh-rCN']);
+    expect(getResourceQualifiers('zh-Hant')).toEqual(['b+zh+Hant', 'zh-rTW', 'zh-rHK']);
+  });
 });
 
 const buildGradle = `android {
@@ -69,6 +92,16 @@ describe('setResourceConfigurations', () => {
     const result = setResourceConfigurations(buildGradle, ['b+en', 'b+fr']);
     expect(result).toContain('resourceConfigurations += ["b+en", "b+fr"]');
   });
+
+  it.each(['1.0.0-beta.1', '0.0.0-dryrun.22', '2.1.0-rc.1+build.5'])(
+    'inserts resourceConfigurations when versionName is "%s"',
+    (version) => {
+      const gradle = buildGradle.replace('versionName "1.0.0"', `versionName "${version}"`);
+      const result = setResourceConfigurations(gradle, ['b+en', 'b+fr']);
+      expect(result).toContain('resourceConfigurations += ["b+en", "b+fr"]');
+      expect(result).toContain(`versionName "${version}"`);
+    }
+  );
 
   it('is idempotent across repeated prebuilds without --clean', () => {
     const once = setResourceConfigurations(buildGradle, ['b+en', 'b+fr']);

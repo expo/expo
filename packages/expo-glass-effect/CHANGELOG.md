@@ -1,14 +1,22 @@
 # Changelog
 
-## Unpublished
+## 58.0.5
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- [iOS] Fix `GlassView` drawing no glass when it fades in after React Native recycles the parent of an earlier `GlassView` into its content. ([#52000](https://github.com/expo/expo/pull/52000) by [@expo-tuft](https://github.com/apps/expo-tuft))
 
-### 🐛 Bug fixes
+## 58.0.4
 
-### 💡 Others
+### Patch Changes
+
+- Type the `ref` prop of `GlassView` and `GlassContainer` as the `View` instance type. With the strict React Native types, a ref from `useRef<ComponentRef<typeof View>>()` now type-checks. ([#51639](https://github.com/expo/expo/pull/51639) by [@juliusmarminge](https://github.com/juliusmarminge))
+
+## 58.0.3
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
 ## 58.0.2 — 2026-09-22
 

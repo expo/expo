@@ -88,6 +88,10 @@ class Env {
   get EXPO_NO_REDIRECT_PAGE() {
     return boolish('EXPO_NO_REDIRECT_PAGE', false);
   }
+  /** Append the reserved `__expo_*` params that keep the dev menu closed to Expo Go and development build launch URLs. Unset defaults to the inverse of `isInteractive()`. */
+  get EXPO_NO_DEV_MENU(): boolean {
+    return boolish('EXPO_NO_DEV_MENU', false);
+  }
   /** Disable printing the QR code in the interactive Terminal UI. */
   get EXPO_NO_QR_CODE(): boolean {
     return boolish('EXPO_NO_QR_CODE', false);
@@ -127,10 +131,6 @@ class Env {
   get EXPO_PACKAGER_PROXY_URL(): string {
     // Read from the pre-dotenv env — overrides dev server URL served to clients.
     return getOriginalEnvValue('EXPO_PACKAGER_PROXY_URL') || '';
-  }
-
-  get EXPO_UNSTABLE_TUNNEL_V2(): boolean {
-    return boolish('EXPO_UNSTABLE_TUNNEL_V2', false);
   }
 
   /**

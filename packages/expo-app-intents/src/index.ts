@@ -3,8 +3,10 @@ import { useEffect, useRef } from 'react';
 
 import type {
   AppEntityIdentifierModifier,
+  AppIntentDonationFilter,
   AppIntentEntity,
   AppIntentInvocation,
+  AppIntentJSONValue,
   AppIntentsHandler,
 } from './ExpoAppIntents.types';
 import ExpoAppIntents from './ExpoAppIntentsModule';
@@ -264,6 +266,61 @@ export async function refreshShortcutsAsync(): Promise<void> {
     throw new UnavailabilityError('expo-app-intents', 'refreshShortcutsAsync');
   }
   return ExpoAppIntents.refreshShortcutsAsync();
+}
+
+/**
+ * Tells the system that the user just performed an App Intent's action in your app, for example
+ * ordering food from a screen rather than through Siri. The system learns from donations and can
+ * suggest the action later on the Lock Screen, in Siri Suggestions, and in Spotlight.
+ *
+ * The `name` must be registered from app-target Swift with
+ * `AppIntentDonationRegistry.shared.register(_:as:)`, on an intent that conforms to
+ * `DonatableAppIntent`. Native code converts `params` to the `DonationParams` record of that intent,
+ * and the intent builds itself from the record in its `init(donationParams:)`.
+ *
+ * The returned promise is fulfilled with an ID for the donation, which
+ * [`deleteDonationsAsync()`](#appintentsdeletedonationsasyncfilter) accepts, or with `null` when
+ * App Intents are unavailable. It is rejected when no intent is registered as `name`, when `params`
+ * misses a required field of the record or has a field of the wrong type, when the intent cannot be
+ * built from the record, or when the system fails to record the donation.
+ *
+ * > **Note:** The ID is the system's donation identifier in its encoded form. Store it only for as
+ * > long as you need it. An iOS update may change how the system encodes identifiers, and an ID
+ * > stored before such an update may then be rejected. To delete donations without stored IDs,
+ * > delete by `intent` or by `entity`.
+ *
+ * @platform ios
+ */
+export async function donateIntentAsync(
+  name: string,
+  params?: Record<string, AppIntentJSONValue>
+): Promise<string | null> {
+  if (!ExpoAppIntents) {
+    return null;
+  }
+  return ExpoAppIntents.donateIntentAsync(name, params);
+}
+
+/**
+ * Deletes donations made with [`donateIntentAsync()`](#appintentsdonateintentasyncname-params), so
+ * the system stops suggesting them. Delete donations when what they refer to is gone, for example
+ * after the user deletes an order, or when the user signs out.
+ *
+ * The returned promise is fulfilled with the IDs of the deleted donations, or with an empty array
+ * when App Intents are unavailable. It is rejected when `filter` names an intent or entity that is
+ * not registered, contains an ID that cannot be read, or contains an entity `id` that cannot be
+ * converted to the ID type of that entity. In those cases nothing is deleted. With `ids`, every ID
+ * is attempted. When the system fails to delete one or more of them, the promise is rejected with
+ * an error that lists the deleted IDs and the IDs that were not deleted. With `intent` or
+ * `entity`, the promise is rejected with the system error when the system fails to delete.
+ *
+ * @platform ios
+ */
+export async function deleteDonationsAsync(filter: AppIntentDonationFilter): Promise<string[]> {
+  if (!ExpoAppIntents) {
+    return [];
+  }
+  return ExpoAppIntents.deleteDonationsAsync(filter);
 }
 
 /**

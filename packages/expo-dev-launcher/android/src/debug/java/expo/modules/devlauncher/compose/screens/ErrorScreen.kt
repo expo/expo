@@ -108,7 +108,11 @@ fun ErrorScreen(
 
         Box(modifier = Modifier.weight(1f)) {
           ActionButton(
-            if (copied) "Copied!" else "Copy",
+            if (copied) {
+              "Copied!"
+            } else {
+              "Copy"
+            },
             foreground = NewAppTheme.colors.buttons.secondary.foreground,
             background = NewAppTheme.colors.buttons.secondary.background,
             modifier = Modifier.padding(vertical = NewAppTheme.spacing.`2`),

@@ -1,6 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
+#import <ExpoModulesCore/EXDefines.h>
 
 NS_SWIFT_NAME(JSUtils)
 @interface EXJSUtils : NSObject
@@ -26,3 +27,18 @@ NS_SWIFT_NAME(JSUtils)
     argumentCount:(NSUInteger)argumentCount;
 
 @end
+
+EX_EXTERN_C_BEGIN
+
+/**
+ Same as `+[EXJSUtils emitEvent:runtimePointer:objectPointer:argumentsPointer:argumentCount:]`, but the event
+ name is a null-terminated UTF-8 string, and the call needs no Objective-C message.
+ */
+void EXJSUtilsEmitEvent(const char *_Nonnull eventName,
+                        void *_Nonnull runtimePointer,
+                        const void *_Nonnull objectPointer,
+                        const void *_Nullable argumentsPointer,
+                        size_t argumentCount)
+  NS_SWIFT_NAME(emitJSEvent(utf8Name:runtimePointer:objectPointer:argumentsPointer:argumentCount:));
+
+EX_EXTERN_C_END

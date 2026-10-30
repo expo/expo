@@ -38,12 +38,16 @@ internal object FrameRateMonitor {
     // API 26: https://android.googlesource.com/platform/libcore/+/refs/tags/android-8.0.0_r1/ojluni/src/main/java/java/util/concurrent/CopyOnWriteArrayList.java
     //   (both implemented)
     val matches = recorders.filter { ref -> ref.get().let { it === recorder || it == null } }
-    if (matches.isNotEmpty()) recorders.removeAll(matches)
+    if (matches.isNotEmpty()) {
+      recorders.removeAll(matches)
+    }
     stopMonitoringIfEmpty()
   }
 
   private fun startMonitoringIfNeeded(activity: Activity) {
-    if (listener != null) return
+    if (listener != null) {
+      return
+    }
 
     currentActivity = WeakReference(activity)
     val newListener = Window.OnFrameMetricsAvailableListener { _, frameMetrics, _ ->
@@ -59,7 +63,9 @@ internal object FrameRateMonitor {
 
   private fun stopMonitoringIfEmpty() {
     removeReleasedRecorders()
-    if (recorders.isNotEmpty()) return
+    if (recorders.isNotEmpty()) {
+      return
+    }
 
     listener?.let { l ->
       currentActivity?.get()?.window?.removeOnFrameMetricsAvailableListener(l)
@@ -70,7 +76,9 @@ internal object FrameRateMonitor {
 
   private fun removeReleasedRecorders() {
     val stale = recorders.filter { it.get() == null }
-    if (stale.isNotEmpty()) recorders.removeAll(stale)
+    if (stale.isNotEmpty()) {
+      recorders.removeAll(stale)
+    }
   }
 
   internal fun dispatchFrame(frameDurationMs: Long) {

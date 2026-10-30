@@ -55,7 +55,7 @@ export function validatePathConfig(config: unknown, root = true) {
         validationErrors
       )}\n\nYou can only specify the following properties:\n${formatToList(
         validation
-      )}\n\nIf you want to specify configuration for screens, you need to specify them under a 'screens' property.\n\nSee https://reactnavigation.org/docs/configuring-links for more details on how to specify a linking configuration.`
+      )}\n\nIf you want to specify configuration for screens, you need to specify them under a 'screens' property.\n\nExpo Router generates its linking configuration from files in the app directory.`
     );
   }
 

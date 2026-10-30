@@ -3,10 +3,27 @@
 import SwiftUI
 import ExpoModulesCore
 
-/// Coordinate space anchored at the `Host`, so hosted React Native views can report where SwiftUI
-/// actually placed them. Name it last in the chain: Yoga measures a hosted view from the `Host`
-/// component view, so any `Host` inset or alignment has to be inside this space, not outside it.
+/// Coordinate space anchored at the `Host`'s SwiftUI root, which macOS measures hosted React Native
+/// views from. iOS uses `HostingViewReference` instead, because this space starts after the
+/// safe-area inset that `UIHostingController` applies to the root.
 internal let expoHostCoordinateSpace = "expo.ui.host"
+
+/// The enclosing `Host`'s UIKit view, which Yoga laid out. iOS measures hosted React Native views
+/// from it.
+internal final class HostingViewReference {
+  weak var view: UIView?
+}
+
+private struct HostingViewEnvironmentKey: EnvironmentKey {
+  static let defaultValue: HostingViewReference? = nil
+}
+
+extension EnvironmentValues {
+  var expoHostingView: HostingViewReference? {
+    get { self[HostingViewEnvironmentKey.self] }
+    set { self[HostingViewEnvironmentKey.self] = newValue }
+  }
+}
 
 internal enum ExpoColorScheme: String, Enumerable {
   case light
@@ -43,10 +60,15 @@ internal final class HostViewProps: ExpoSwiftUI.ViewProps, ExpoSwiftUI.SafeAreaC
   @Field var layoutDirection: ExpoLayoutDirection = .leftToRight
   @Field var matchContentsHorizontal = false
   @Field var matchContentsVertical = false
+  @Field var alignment: AlignmentOptions?
   @Field var ignoreSafeArea: ExpoSwiftUI.IgnoreSafeArea?
   @Field var modifiers: ModifierArray?
   var onLayoutContent = EventDispatcher()
-  weak var hostingView: UIView?
+  let hostingViewReference = HostingViewReference()
+  var hostingView: UIView? {
+    get { hostingViewReference.view }
+    set { hostingViewReference.view = newValue }
+  }
 }
 
 struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
@@ -54,7 +76,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
 
   var body: some View {
     let layoutDirection = props.layoutDirection.toLayoutDirection()
-    let alignment: Alignment = layoutDirection == .rightToLeft ? .topTrailing : .topLeading
+    let alignment = physicalAlignment(props.alignment?.toAlignment() ?? .topLeading, layoutDirection: layoutDirection)
     let fillHorizontal = !props.useViewportSizeMeasurement && !props.matchContentsHorizontal
     let fillVertical = !props.useViewportSizeMeasurement && !props.matchContentsVertical
     let pinHorizontal = !props.useViewportSizeMeasurement && props.matchContentsHorizontal
@@ -68,6 +90,8 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       HostLayout {
         Children()
       }
+      .environment(\.expoHostingView, props.hostingViewReference)
+      .environment(\.universalPercentageParent, true)
       .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
@@ -90,6 +114,8 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
       ZStack(alignment: alignment) {
         Children()
       }
+      .environment(\.expoHostingView, props.hostingViewReference)
+      .environment(\.universalPercentageParent, true)
       .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
@@ -114,6 +140,24 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
 }
 
 /**
+ Mirrors the horizontal edge of `alignment` for a right-to-left `Host`. `FillAlignmentModifier` sits
+ outside `LayoutDirectionModifier`, so it reads leading and trailing in the hosting controller's
+ own direction.
+ */
+private func physicalAlignment(_ alignment: Alignment, layoutDirection: LayoutDirection) -> Alignment {
+  guard layoutDirection == .rightToLeft else {
+    return alignment
+  }
+  if alignment.horizontal == .leading {
+    return Alignment(horizontal: .trailing, vertical: alignment.vertical)
+  }
+  if alignment.horizontal == .trailing {
+    return Alignment(horizontal: .leading, vertical: alignment.vertical)
+  }
+  return alignment
+}
+
+/**
  A Layout designed for the `useViewportSizeMeasurement` behavior.
  If parent's proposedViewSize is zero or nil, it will try to use the viewport size to expand its children size.
  */
@@ -123,16 +167,11 @@ private struct ViewportSizeMeasurementLayout: Layout {
   weak var hostingView: UIView?
 
   func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-    let maxSize = safeAreaSize()
-    let proposalWidth = proposal.width ?? 0
-    let proposalHeight = proposal.height ?? 0
-    let availableWidth = proposalWidth > 0 ? proposalWidth : maxSize.width
-    let availableHeight = proposalHeight > 0 ? proposalHeight : maxSize.height
-
+    let offered = measurementProposal(for: proposal)
     var resultWidth: CGFloat = 0
     var resultHeight: CGFloat = 0
     for view in subviews {
-      let size = view.dimensions(in: ProposedViewSize(width: availableWidth, height: availableHeight))
+      let size = view.dimensions(in: offered)
       resultWidth = max(resultWidth, size.width)
       resultHeight = max(resultHeight, size.height)
     }
@@ -140,20 +179,32 @@ private struct ViewportSizeMeasurementLayout: Layout {
   }
 
   func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+    // A child percentage applies to this proposal.
+    // Offering `bounds` would use the measured result and apply the fraction again.
+    let offered = measurementProposal(for: proposal)
     let isRTL = layoutDirection == .rightToLeft
     for subview in subviews {
       let origin: CGPoint
       if isRTL {
-        let size = subview.dimensions(in: ProposedViewSize(bounds.size))
+        let size = subview.dimensions(in: offered)
         origin = CGPoint(x: bounds.maxX - size.width, y: bounds.minY)
       } else {
         origin = bounds.origin
       }
-      subview.place(
-        at: origin,
-        proposal: ProposedViewSize(bounds.size)
-      )
+      subview.place(at: origin, proposal: offered)
     }
+  }
+
+  /// A zero or nil axis uses the safe area.
+  /// Placement offers this same size, so a percentage is applied once.
+  private func measurementProposal(for proposal: ProposedViewSize) -> ProposedViewSize {
+    let maxSize = safeAreaSize()
+    let proposalWidth = proposal.width ?? 0
+    let proposalHeight = proposal.height ?? 0
+    return ProposedViewSize(
+      width: proposalWidth > 0 ? proposalWidth : maxSize.width,
+      height: proposalHeight > 0 ? proposalHeight : maxSize.height
+    )
   }
 
   private func safeAreaSize() -> CGSize {

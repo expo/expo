@@ -71,6 +71,40 @@ export default function HostExample() {
 
 </ComponentExample>
 
+### Placing components inside React Native views
+
+`Host` renders its universal children with Jetpack Compose on Android and SwiftUI on iOS. A React Native view inside `Host`, such as `View` or `ScrollView`, switches back to React Native rendering. To use a universal component inside that view, wrap the component in a new `Host`. Do this even when a `Host` higher in the tree wraps the view.
+
+```tsx ReactNativeLayoutExample.tsx
+import { useState } from 'react';
+import { ScrollView, Text, View, useColorScheme } from 'react-native';
+import { Host, Switch } from '@expo/ui';
+
+export default function ReactNativeLayoutExample() {
+  const colorScheme = useColorScheme();
+  const [enabled, setEnabled] = useState(false);
+
+  return (
+    <ScrollView>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: 16,
+        }}>
+        <Text style={{ color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>Notifications</Text>
+        <Host matchContents>
+          <Switch value={enabled} onValueChange={setEnabled} />
+        </Host>
+      </View>
+    </ScrollView>
+  );
+}
+```
+
+To place React Native views inside a universal layout, use [`RNHostView`](rnhostview).
+
 ### Match contents sizing
 
 Use `matchContents` to let `Host` size itself to fit its content. On Android and iOS, this is forwarded to the platform-native `Host` (see [Jetpack Compose](../jetpack-compose/host)/[SwiftUI](../swift-ui/host) for the exact platform semantics). On web, it applies `alignSelf: 'flex-start'` to the underlying `View` so the host shrinks to fit its children instead of being stretched by its parent.

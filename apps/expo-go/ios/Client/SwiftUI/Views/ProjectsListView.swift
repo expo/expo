@@ -79,6 +79,7 @@ class ProjectsListViewModel: ObservableObject {
   private let accountName: String
   private var endCursor: String?
   private let pageSize = 20
+  private var fetchGeneration = 0
 
   init(accountName: String) {
     self.accountName = accountName
@@ -101,8 +102,14 @@ class ProjectsListViewModel: ObservableObject {
   }
 
   private func fetchProjects() async {
+    fetchGeneration += 1
+    let generation = fetchGeneration
     isLoading = true
-    defer { isLoading = false }
+    defer {
+      if generation == fetchGeneration {
+        isLoading = false
+      }
+    }
 
     let isFirstPage = endCursor == nil
     var variables: [String: Any] = [
@@ -119,6 +126,7 @@ class ProjectsListViewModel: ObservableObject {
         Queries.getProjectsList(),
         variables: variables
       )
+      guard generation == fetchGeneration else { return }
 
       let connection = response.data.account.byName.appsPaginated
       let newProjects = connection.edges.map { $0.node.toExpoProject() }
@@ -132,7 +140,7 @@ class ProjectsListViewModel: ObservableObject {
       hasMore = connection.pageInfo?.hasNextPage ?? false
       endCursor = connection.pageInfo?.endCursor
     } catch {
-      if (error as? APIError)?.isCancellation == true {
+      if (error as? APIError)?.isCancellation == true || generation != fetchGeneration {
         return
       }
       self.error = error

@@ -89,13 +89,22 @@ class AudioStream(
   }
 
   fun stop() {
-    if (!isStreaming) return
+    if (!isStreaming) {
+      return
+    }
     isStreaming = false
     captureJob?.cancel()
     captureJob = null
-    audioRecord?.stop()
-    audioRecord?.release()
+    val recorder = audioRecord
     audioRecord = null
+    try {
+      recorder?.stop()
+    } catch (e: IllegalStateException) {
+      // The recorder is not initialized, so there is nothing to stop. It still has to be released.
+      appContext?.jsLogger?.warn("AudioStream: failed to stop the AudioRecord", e)
+    } finally {
+      recorder?.release()
+    }
     emitStatus()
 
     // Auto-finalize any in-progress file recording.
@@ -139,7 +148,11 @@ class AudioStream(
     val currentChannels = channels
     AudioStreamFileRecordingResult().apply {
       uri = writer.file.toURI().toURL()
-      duration = if (currentSampleRate > 0) frames.toDouble() / currentSampleRate else 0.0
+      duration = if (currentSampleRate > 0) {
+        frames.toDouble() / currentSampleRate
+      } else {
+        0.0
+      }
       size = totalSize
       sampleRate = currentSampleRate
       channels = currentChannels
@@ -177,8 +190,16 @@ class AudioStream(
     }
 
     val resolvedMinBuffer = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioEncoding)
-    val bytesPerSample = if (isInt16) 2 else 4
-    val channelCount = if (options.channels == 2) 2 else 1
+    val bytesPerSample = if (isInt16) {
+      2
+    } else {
+      4
+    }
+    val channelCount = if (options.channels == 2) {
+      2
+    } else {
+      1
+    }
     val desiredBufferSize = sampleRate * channelCount * bytesPerSample * DEFAULT_BUFFER_DURATION_MS / 1000
     val bufferSize = maxOf(resolvedMinBuffer, desiredBufferSize)
 

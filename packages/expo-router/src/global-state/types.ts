@@ -37,9 +37,10 @@ export type LinkToOptions = {
 
   __internal__PreviewKey?: string;
   __internal__previewId?: string;
+  __internal__popToNavigator?: boolean;
 };
 
-export type NavigationOptions = Omit<LinkToOptions, 'event'>;
+export type NavigationOptions = Omit<LinkToOptions, 'event' | '__internal__popToNavigator'>;
 
 export type TransitionOptions = Pick<LinkToOptions, 'inTransition'>;
 

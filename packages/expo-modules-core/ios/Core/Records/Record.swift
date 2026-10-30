@@ -30,8 +30,9 @@ public protocol Record: Convertible, JavaScriptDecodable, JavaScriptEncodable {
 
   /**
    Reads the record's members from a `[String: Any]` dictionary. The `@Field`-based default goes
-   through reflection (`init()` + `update(withDict:)`); the `@Record` macro overrides it with a
-   direct, statically-typed factory.
+   through reflection (`init()` + `update(withDict:)`). The `@Record` macro overrides it with a
+   factory that throws `RecordDictionaryConversionException`, since a macro record converts only from
+   JavaScript values.
    */
   static func from(dictionary: Dict, appContext: AppContext) throws -> Self
 
@@ -70,13 +71,24 @@ public final class RecordPropertyRequiredException: GenericException<String>, @u
 }
 
 /**
+ Thrown by a synthesized record's `from(dictionary:appContext:)`. A `@Record` type converts only from
+ and to JavaScript values, through its `decode` and `encode`, so it can't be created from a native
+ dictionary. The parameter is the name of the record type.
+ */
+public final class RecordDictionaryConversionException: GenericException<String>, @unchecked Sendable {
+  override public var reason: String {
+    return "Cannot create '\(param)' from a native dictionary, because a @Record type converts only from JavaScript values. Receive the value as a JavaScript argument, or create it with its memberwise initializer"
+  }
+}
+
+/**
  Provides the default implementation of `Record` protocol.
  */
 public extension Record {
   static func convert(from value: Any?, appContext: AppContext) throws -> Self {
     if let value = value as? Dict {
-      // `from(dictionary:)` dispatches dynamically — reflection for `@Field` records, the
-      // synthesized factory for `@Record` ones — so both read correctly off a dictionary.
+      // `from(dictionary:)` dispatches dynamically: reflection for `@Field` records, and for `@Record`
+      // ones the synthesized factory, which throws `RecordDictionaryConversionException`.
       return try Self.from(dictionary: value, appContext: appContext)
     }
     // It's possible that the current implementation tries to convert a value that is already of the desired type.
@@ -102,8 +114,8 @@ public extension Record {
   }
 
   static func from(dictionary: Dict, appContext: AppContext) throws -> Self {
-    // Reflection-based default for `@Field` records. The `@Record` macro synthesizes a direct,
-    // statically-typed override that takes precedence over this. Delegates to `init(from:appContext:)`
+    // Reflection-based default for `@Field` records. The `@Record` macro synthesizes an override that
+    // throws, which takes precedence over this. Delegates to `init(from:appContext:)`
     // so any custom dictionary initializer a record provides still runs.
     return try Self(from: dictionary, appContext: appContext)
   }
@@ -230,10 +242,7 @@ internal func recordFieldValueToJSValue(
 
   convertedValue = Conversions.convertFunctionResult(value, appContext: appContext)
   if Optional.isNil(convertedValue) {
-    return .null
-  }
-  if let jsValue = convertedValue as? JavaScriptValue {
-    return jsValue
+    return .null()
   }
   return try Conversions.unknownToJavaScriptValue(convertedValue, appContext: appContext)
 }

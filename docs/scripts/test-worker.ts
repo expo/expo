@@ -1,6 +1,7 @@
 /* oxlint-disable no-console */
 import { spawn, type ChildProcess } from 'node:child_process';
 import fs from 'node:fs';
+import http from 'node:http';
 import os from 'node:os';
 import path from 'node:path';
 
@@ -506,6 +507,31 @@ async function testDeletedPageRedirectsAsync(): Promise<void> {
   console.log('✓ Accept: text/markdown request passes through page redirects');
 }
 
+async function testRemovedSdkRedirectsAsync(): Promise<void> {
+  console.log('\n--- Testing removed SDK 54 and expo-av redirects ---');
+
+  const cases = [
+    { from: '/versions/latest/sdk/av', to: '/versions/latest/sdk/audio' },
+    { from: '/versions/latest/sdk/av.md', to: '/versions/latest/sdk/audio.md' },
+    { from: '/versions/latest/sdk/audio-av', to: '/versions/latest/sdk/audio' },
+    { from: '/versions/latest/sdk/video-av', to: '/versions/latest/sdk/video' },
+    { from: '/versions/v54.0.0', to: '/versions/latest' },
+    { from: '/versions/v54.0.0/sdk/camera', to: '/versions/latest/sdk/camera' },
+  ];
+
+  for (const { from, to } of cases) {
+    const response = await fetch(`${BASE_URL}${from}`, { redirect: 'manual' });
+    const location = response.headers.get('location') ?? '';
+
+    if (response.status !== 301 || !location.endsWith(to)) {
+      throw new Error(
+        `Expected ${from} to 301 to ${to}, got: HTTP ${response.status} -> ${location}`
+      );
+    }
+    console.log(`✓ ${from} redirects to ${to}`);
+  }
+}
+
 async function testAgentDiscoveryRedirectsAsync(): Promise<void> {
   console.log('\n--- Testing agent discovery redirects ---');
 
@@ -545,24 +571,35 @@ async function testHtmlNotFoundAsync(): Promise<void> {
   console.log(`✓ Nonexistent HTML page returns HTTP ${response.status} (not a server error)`);
 }
 
+function navigateAsync(path: string, headers: http.OutgoingHttpHeaders = {}) {
+  return new Promise<http.IncomingMessage>((resolve, reject) => {
+    http
+      .get(
+        `${BASE_URL}${path}`,
+        { headers: { 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Dest': 'document', ...headers } },
+        response => {
+          resolve(response.resume());
+        }
+      )
+      .on('error', reject);
+  });
+}
+
 async function testUrlRecoveryAsync(): Promise<void> {
   console.log('\n--- Testing URL recovery with the mock AI binding ---');
   for (const path of ['/router/basics/tabs/', '/router/layouts/tabs']) {
-    const response = await fetch(`${BASE_URL}${path}`, { redirect: 'manual' });
-    if (
-      response.status !== 302 ||
-      response.headers.get('location') !== `${BASE_URL}${NATIVE_TABS}`
-    ) {
-      throw new Error(`Expected recovery redirect for ${path}, got ${response.status}`);
+    const response = await navigateAsync(path);
+    if (response.statusCode !== 302 || response.headers.location !== `${BASE_URL}${NATIVE_TABS}`) {
+      throw new Error(`Expected recovery redirect for ${path}, got ${response.statusCode}`);
     }
-    const markdown = await fetch(`${BASE_URL}${path}`, { headers: { Accept: 'text/markdown' } });
-    if (markdown.status !== 200 || !(await markdown.text()).includes('# Native tabs')) {
+    const markdown = await navigateAsync(path, { Accept: 'text/markdown' });
+    if (markdown.headers.location !== `${BASE_URL}${NATIVE_TABS}`) {
       throw new Error(`Expected recovered Markdown for ${path}`);
     }
   }
   for (const path of ['/router/basics/tabs.md', '/router/layouts/tabs/index.md']) {
-    const response = await fetch(`${BASE_URL}${path}`);
-    if (response.status !== 200 || !(await response.text()).includes('# Native tabs')) {
+    const response = await navigateAsync(path);
+    if (response.headers.location !== `${BASE_URL}${NATIVE_TABS}index.md`) {
       throw new Error(`Expected recovered Markdown for ${path}`);
     }
   }
@@ -582,6 +619,7 @@ async function mainAsync(): Promise<void> {
     await testAcceptQualityValuesAsync();
     await testUpgradePairNegotiationAsync();
     await testDeletedPageRedirectsAsync();
+    await testRemovedSdkRedirectsAsync();
     await testAgentDiscoveryRedirectsAsync();
     await testHtmlNotFoundAsync();
     await testUrlRecoveryAsync();

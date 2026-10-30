@@ -39,7 +39,11 @@ object ThumbhashEncoder {
       avg_b /= avg_a
     }
     val hasAlpha = avg_a < w * h
-    val l_limit = if (hasAlpha) 5 else 7 // Use fewer luminance bits if there's alpha
+    val l_limit = if (hasAlpha) {
+      5
+    } else {
+      7 // Use fewer luminance bits if there's alpha
+    }
     val lx = Math.max(1, Math.round((l_limit * w).toFloat() / Math.max(w, h).toFloat()))
     val ly = Math.max(1, Math.round((l_limit * h).toFloat() / Math.max(w, h).toFloat()))
     val l = FloatArray(w * h) // luminance
@@ -65,7 +69,11 @@ object ThumbhashEncoder {
     val l_channel = Channel(Math.max(3, lx), Math.max(3, ly)).encode(w, h, l)
     val p_channel = Channel(3, 3).encode(w, h, p)
     val q_channel = Channel(3, 3).encode(w, h, q)
-    val a_channel = if (hasAlpha) Channel(5, 5).encode(w, h, a) else null
+    val a_channel = if (hasAlpha) {
+      Channel(5, 5).encode(w, h, a)
+    } else {
+      null
+    }
 
     // Write the constants
     val isLandscape = w > h
@@ -74,18 +82,40 @@ object ThumbhashEncoder {
         or (Math.round(31.5f + 31.5f * p_channel.dc) shl 6)
         or (Math.round(31.5f + 31.5f * q_channel.dc) shl 12)
         or (Math.round(31.0f * l_channel.scale) shl 18)
-        or if (hasAlpha) 1 shl 23 else 0
+        or if (hasAlpha) {
+          1 shl 23
+        } else {
+          0
+        }
       )
     val header16 = (
-      (if (isLandscape) ly else lx)
+      (
+        if (isLandscape) {
+          ly
+        } else {
+          lx
+        }
+        )
         or (Math.round(63.0f * p_channel.scale) shl 3)
         or (Math.round(63.0f * q_channel.scale) shl 9)
-        or if (isLandscape) 1 shl 15 else 0
+        or if (isLandscape) {
+          1 shl 15
+        } else {
+          0
+        }
       )
-    val ac_start = if (hasAlpha) 6 else 5
+    val ac_start = if (hasAlpha) {
+      6
+    } else {
+      5
+    }
     val ac_count = (
       l_channel.ac.size + p_channel.ac.size + q_channel.ac.size +
-        if (hasAlpha) a_channel!!.ac.size else 0
+        if (hasAlpha) {
+          a_channel!!.ac.size
+        } else {
+          0
+        }
       )
     val hash = ByteArray(ac_start + (ac_count + 1) / 2)
     hash[0] = header24.toByte()
@@ -105,7 +135,9 @@ object ThumbhashEncoder {
     ac_index = l_channel.writeTo(hash, ac_start, ac_index)
     ac_index = p_channel.writeTo(hash, ac_start, ac_index)
     ac_index = q_channel.writeTo(hash, ac_start, ac_index)
-    if (hasAlpha) a_channel!!.writeTo(hash, ac_start, ac_index)
+    if (hasAlpha) {
+      a_channel!!.writeTo(hash, ac_start, ac_index)
+    }
 
     return hash
   }
@@ -137,7 +169,11 @@ object ThumbhashEncoder {
     init {
       var n = 0
       for (cy in 0 until ny) {
-        var cx = if (cy > 0) 0 else 1
+        var cx = if (cy > 0) {
+          0
+        } else {
+          1
+        }
         while (cx * ny < nx * (ny - cy)) {
           n++
           cx++
@@ -168,7 +204,9 @@ object ThumbhashEncoder {
           cx++
         }
       }
-      if (scale > 0) for (i in ac.indices) ac[i] = 0.5f + 0.5f / scale * ac[i]
+      if (scale > 0) {
+        for (i in ac.indices) ac[i] = 0.5f + 0.5f / scale * ac[i]
+      }
       return this
     }
 

@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`updateVirtualMetroEntryIos should update the \`AppDelegate.swift\` for virtual-metro-point 1`] = `
 "import UIKit

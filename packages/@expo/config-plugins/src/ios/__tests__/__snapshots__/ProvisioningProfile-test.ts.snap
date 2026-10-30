@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget configures the project.pbxproj file for multitarget projects 1`] = `
 "// !$*UTF8*$!

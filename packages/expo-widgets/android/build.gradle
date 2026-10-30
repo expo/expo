@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'expo.modules.widgets'
-version = '58.0.6'
+version = '58.0.23'
 
 def expoWidgetsPackageDirFile = project.projectDir.parentFile
 def expoWidgetsPackageDir = expoWidgetsPackageDirFile.absolutePath
@@ -39,7 +39,8 @@ android {
   namespace "expo.modules.widgets"
   defaultConfig {
     versionCode 1
-    versionName '58.0.6'
+    versionName '58.0.23'
+    consumerProguardFiles("proguard-rules.pro")
 
     externalNativeBuild {
       cmake {
@@ -143,6 +144,10 @@ dependencies {
   implementation 'com.facebook.react:react-android'
   implementation 'com.facebook.react:hermes-android'
   implementation expoModule.getExpoDependency("expo-ui")
-  api 'io.github.jakex7.peek:peek-emittables:0.3.0'
+  api 'io.github.expo.peek:peek-emittables:0.3.2'
   implementation "androidx.glance:glance:1.2.0"
+  // Glance requests work-runtime-ktx 2.7.1, which still bundles the Kotlin extensions WorkManager 2.8+
+  // moved into work-runtime, so any 2.8+ in the graph duplicates those classes in release builds.
+  // The 2.10.5 work-runtime-ktx artifact is an empty shim.
+  implementation 'androidx.work:work-runtime-ktx:2.10.5'
 }

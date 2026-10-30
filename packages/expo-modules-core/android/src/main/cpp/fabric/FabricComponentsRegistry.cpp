@@ -58,10 +58,14 @@ void FabricComponentsRegistry::registerComponentsRegistry(
       propMap.emplace(propName, converter);
     }
 
-    statePropMap.insert_or_assign(
-      flavor,
-      propMap
-    );
+    {
+      // Released before `add` below, which constructs descriptors that take the shared lock.
+      std::unique_lock lock(statePropMapMutex);
+      statePropMap.insert_or_assign(
+        flavor,
+        propMap
+      );
+    }
 
     providerRegistry->add(react::ComponentDescriptorProvider{
       reinterpret_cast<react::ComponentHandle>(componentName),

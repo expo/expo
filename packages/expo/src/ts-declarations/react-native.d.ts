@@ -1,10 +1,3 @@
-declare module 'react-native/Libraries/NativeModules/specs/NativeSourceCode' {
-  namespace SourceCode {
-    function getConstants(): { scriptURL: string };
-  }
-  export default SourceCode;
-}
-
 declare module 'react-native/Libraries/Network/FormData' {
   type FormDataValue = string | { name?: string; type?: string; uri: string };
 
