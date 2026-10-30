@@ -29,6 +29,7 @@ enum LocalNetworkPermissionStatus: Equatable, Sendable {
 class DevLauncherViewModel: ObservableObject {
   @Published var recentlyOpenedApps: [RecentlyOpenedApp] = []
   @Published var buildInfo: [AnyHashable: Any] = [:]
+  @Published var appIcon: UIImage?
   @Published var updatesConfig: [AnyHashable: Any] = [:]
   @Published var currentError: EXDevLauncherAppError?
   @Published var showingCrashReport = false
@@ -192,6 +193,9 @@ class DevLauncherViewModel: ObservableObject {
     let controller = EXDevLauncherController.sharedInstance()
     self.buildInfo = controller.getBuildInfo()
     self.updatesConfig = controller.getUpdatesConfig(nil)
+    if let path = buildInfo["appIcon"] as? String, let url = URL(string: path), url.isFileURL {
+      self.appIcon = UIImage(contentsOfFile: url.path)
+    }
 
     loadRecentlyOpenedApps()
     loadMenuPreferences()
