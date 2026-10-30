@@ -26,6 +26,19 @@ extension ToolbarContent {
     self
 #endif
   }
+
+  @ToolbarContentBuilder
+  func sharedBackgroundHidden() -> some ToolbarContent {
+#if os(iOS) || os(macOS)
+    if #available(iOS 26.0, macOS 26.0, *) {
+      sharedBackgroundVisibility(.hidden)
+    } else {
+      self
+    }
+#else
+    self
+#endif
+  }
 }
 
 private struct AccountButton: View {

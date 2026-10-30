@@ -2,6 +2,7 @@
 // swiftlint:disable closure_body_length
 
 import SwiftUI
+import ExpoModulesCore
 
 struct HomeTabView: View {
   @EnvironmentObject var viewModel: DevLauncherViewModel
@@ -10,6 +11,8 @@ struct HomeTabView: View {
   var body: some View {
     ScrollView {
       VStack(spacing: 20) {
+        DevelopmentBuildCaption()
+
         if viewModel.hasStoredCrash {
           crashReportBanner
         }
@@ -62,6 +65,15 @@ struct HomeTabView: View {
     .background()
     #endif
     .devLauncherToolbar()
+    .toolbar {
+      if let appIcon = viewModel.appIcon {
+        ToolbarItem(placement: .navigation) {
+          AppIconImage(image: appIcon)
+        }
+        .sharedBackgroundHidden()
+      }
+    }
+    .modifier(DevelopmentBuildSubtitle())
     .onAppear {
       viewModel.loadRecentlyOpenedApps()
     }
@@ -85,6 +97,59 @@ struct HomeTabView: View {
     .buttonStyle(PlainButtonStyle())
     .background(Color.expoSecondarySystemGroupedBackground)
     .clipShape(RoundedRectangle(cornerRadius: 18))
+  }
+}
+
+private struct AppIconImage: View {
+  let image: UIImage
+
+  var body: some View {
+    Image(uiImage: image)
+      .resizable()
+      .scaledToFit()
+      .frame(width: 28, height: 28)
+      .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
+      .accessibilityHidden(true)
+  }
+}
+
+private struct DevelopmentBuildSubtitle: ViewModifier {
+  func body(content: Content) -> some View {
+#if os(iOS)
+    if #available(iOS 26.0, *) {
+      content.navigationSubtitle("Development Build")
+    } else {
+      content
+    }
+#elseif os(macOS)
+    content.navigationSubtitle("Development Build")
+#else
+    content
+#endif
+  }
+}
+
+private struct DevelopmentBuildCaption: View {
+  var body: some View {
+    if showsCaption {
+      Text("Development Build")
+        .font(.subheadline)
+        .foregroundStyle(Color.secondary)
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+  }
+
+  private var showsCaption: Bool {
+#if os(iOS)
+    if #available(iOS 26.0, *) {
+      return false
+    }
+    return true
+#elseif os(tvOS)
+    return true
+#else
+    return false
+#endif
   }
 }
 
