@@ -1,13 +1,16 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { use, useMemo, useState } from 'react';
 
+import { DescriptorsContext } from '../../fork/native-stack/descriptors-context';
 import {
   getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
 } from '../../navigationParams';
+import { ScreenPresentationContext } from '../../react-navigation/native-stack/utils/ScreenPresentationContext';
+import { useWarnOnce } from '../../useDeprecated';
 import { isModalPresentation } from '../../utils/stackPresentation';
 import { useIsPreview } from '../preview/PreviewRouteContext';
 import { LinkZoomTransitionEnabler } from '../preview/native';
@@ -21,7 +24,6 @@ import { isZoomTransitionEnabled } from './zoom-transition-enabled';
 
 function getZoomTransitionSourceIdentifier(
   route: ZoomTransitionTargetProps['route'],
-  presentation: ZoomTransitionTargetProps['presentation'],
   isPreview: boolean
 ): string | null {
   if (!isZoomTransitionEnabled() || isPreview) {
@@ -38,27 +40,26 @@ function getZoomTransitionSourceIdentifier(
     return null;
   }
 
-  if (
-    params[INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME] &&
-    !isModalPresentation({ presentation })
-  ) {
-    console.warn(
-      '[expo-router] Zoom transition with link preview is only supported for screens presented modally. Please set the screen presentation to "fullScreenModal" or another modal presentation style.'
-    );
-    return null;
-  }
-
   return identifier;
 }
 
-export function ZoomTransitionTarget({
-  route,
-  presentation,
-  gestureEnabled,
-  children,
-}: ZoomTransitionTargetProps) {
+export function ZoomTransitionTarget({ route, children }: ZoomTransitionTargetProps) {
   const isPreview = useIsPreview();
-  const identifier = getZoomTransitionSourceIdentifier(route, presentation, isPreview);
+  const presentation = use(ScreenPresentationContext);
+  // Use the user's setting because `gestureEnabled` is forced to false while custom dismissal bounds are active.
+  const gestureEnabled = use(DescriptorsContext)[route.key]?.options?.gestureEnabled;
+  const sourceIdentifier = getZoomTransitionSourceIdentifier(route, isPreview);
+  const isUnsupportedPreview =
+    !!sourceIdentifier &&
+    !!getInternalExpoRouterParams(route.params)[
+      INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME
+    ] &&
+    !isModalPresentation({ presentation });
+  useWarnOnce(
+    '[expo-router] Zoom transition with link preview is only supported for screens presented modally. Please set the screen presentation to "fullScreenModal" or another modal presentation style.',
+    isUnsupportedPreview
+  );
+  const identifier = isUnsupportedPreview ? null : sourceIdentifier;
   const [dismissalBoundsRect, setDismissalBoundsRect] = useState<DismissalBoundsRect | null>(null);
   const value = useMemo<ZoomTransitionTargetContextValueType>(
     () => ({ identifier, gestureEnabled, setDismissalBoundsRect }),

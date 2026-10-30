@@ -1,4 +1,4 @@
-let enabled = process.env.EXPO_OS === 'ios';
+let enabled = true;
 
 export function disableZoomTransition() {
   enabled = false;

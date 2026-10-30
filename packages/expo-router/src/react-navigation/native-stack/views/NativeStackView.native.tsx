@@ -11,7 +11,6 @@ import {
 } from 'react-native-screens';
 
 import { useRouteNode } from '../../../Route';
-import { DescriptorsContext } from '../../../fork/native-stack/descriptors-context';
 import { ZoomTransitionTarget } from '../../../link/zoom/ZoomTransitionTarget';
 import { useWarnOnce } from '../../../useDeprecated';
 import {
@@ -135,8 +134,6 @@ const SceneView = ({
   } = options;
   const screenNativeProps = unstable_nativeProps;
   const routeNode = useRouteNode();
-  // Use the user's setting because `gestureEnabled` is forced to false while custom dismissal bounds are active.
-  const rawGestureEnabled = use(DescriptorsContext)[route.key]?.options?.gestureEnabled;
 
   useWarnOnce(
     `Route "${route.name}" uses presentation "${options.presentation}" but is the first screen in its native stack, so it is rendered as a card. Add unstable_settings.anchor to the stack layout to place a non-modal screen before this route.`,
@@ -456,12 +453,7 @@ const SceneView = ({
               ) : null}
               <HeaderShownContext.Provider value={isParentHeaderShown || headerShown !== false}>
                 <HeaderBackContext.Provider value={headerBack}>
-                  <ZoomTransitionTarget
-                    route={route}
-                    presentation={presentation}
-                    gestureEnabled={rawGestureEnabled}>
-                    {render()}
-                  </ZoomTransitionTarget>
+                  <ZoomTransitionTarget route={route}>{render()}</ZoomTransitionTarget>
                 </HeaderBackContext.Provider>
               </HeaderShownContext.Provider>
             </HeaderHeightContext.Provider>

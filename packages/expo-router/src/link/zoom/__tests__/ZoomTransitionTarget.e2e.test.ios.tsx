@@ -89,7 +89,7 @@ function IndexWithZoomLink() {
   );
 }
 
-describe('ZoomTransitionEnabler with gestureEnabled', () => {
+describe('ZoomTransitionTarget with gestureEnabled', () => {
   beforeEach(() => {
     MockedLinkZoomTransitionEnabler.mockClear();
   });
@@ -232,9 +232,15 @@ it('does not provide a zoom target for a preview navigation to a card', async ()
   const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   try {
     await navigateViaPreviewZoomLink();
+    await act(() => router.setParams({ rerender: 'true' }));
     expect(onIdentifier).toHaveBeenLastCalledWith(null);
     expect(screen.getByTestId('zoom-target-child')).toBeVisible();
     expect(screen.queryByTestId('link-zoom-transition-alignment-rect-detector')).toBeNull();
+    expect(consoleWarnSpy.mock.calls).toEqual([
+      [
+        '[expo-router] Zoom transition with link preview is only supported for screens presented modally. Please set the screen presentation to "fullScreenModal" or another modal presentation style.',
+      ],
+    ]);
   } finally {
     consoleWarnSpy.mockRestore();
   }
@@ -365,7 +371,7 @@ describe('zoom target context', () => {
     expect(getLastDismissalBoundsRect()).toBeNull();
   });
 
-  it('warns for preview zoom when the first screen requests modal presentation', async () => {
+  it('does not enable preview zoom when the first screen requests modal presentation', async () => {
     let routeKey: string | undefined;
     const onIdentifier = jest.fn();
 
@@ -398,9 +404,6 @@ describe('zoom target context', () => {
         })
       );
 
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        '[expo-router] Zoom transition with link preview is only supported for screens presented modally. Please set the screen presentation to "fullScreenModal" or another modal presentation style.'
-      );
       expect(onIdentifier).toHaveBeenLastCalledWith(null);
       expect(MockedLinkZoomTransitionEnabler).not.toHaveBeenCalled();
     } finally {
