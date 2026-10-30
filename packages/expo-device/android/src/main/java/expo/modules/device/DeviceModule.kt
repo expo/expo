@@ -143,7 +143,7 @@ class DeviceModule : Module() {
   suspend fun isRootedExperimentalAsync(): Boolean = withContext(Dispatchers.IO) {
     val isDevice = !isRunningOnEmulator
 
-    val containsTestKeys = isDevice && Build.TAGS?.contains("test-keys") == true
+    val containsTestKeys = isDevice && "test-keys" in Build.TAGS.orEmpty()
     val hasSuperuserApk = File("/system/app/Superuser.apk").exists()
     val hasSu = isDevice && File("/system/xbin/su").exists()
 
