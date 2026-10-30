@@ -52,7 +52,9 @@ export default function DatePickerExample() {
       style={{ width: '100%' }}>
       <DateTimePicker
         onDateSelected={date => {
-          setSelectedDate(date);
+          if (date !== null) {
+            setSelectedDate(date);
+          }
         }}
         displayedComponents="date"
         initialDate={selectedDate.toISOString()}
@@ -86,7 +88,9 @@ export default function TimePickerExample() {
       style={{ width: '100%' }}>
       <DateTimePicker
         onDateSelected={date => {
-          setSelectedDate(date);
+          if (date !== null) {
+            setSelectedDate(date);
+          }
         }}
         displayedComponents="hourAndMinute"
         initialDate={selectedDate.toISOString()}
@@ -102,6 +106,8 @@ export default function TimePickerExample() {
 ### Input variant
 
 Use `variant="input"` to display the picker as a text input field instead of the default picker UI.
+
+`onDateSelected` receives `null` when the date input is incomplete or invalid. Handle `null` before calling `Date` methods. The following example keeps the last valid date.
 
 <ComponentExample
   title="InputVariantExample.tsx"
@@ -122,7 +128,9 @@ export default function InputVariantExample() {
       style={{ width: '100%' }}>
       <DateTimePicker
         onDateSelected={date => {
-          setSelectedDate(date);
+          if (date !== null) {
+            setSelectedDate(date);
+          }
         }}
         displayedComponents="date"
         initialDate={selectedDate.toISOString()}
@@ -152,7 +160,9 @@ export default function CalendarOnlyExample() {
       style={{ width: '100%' }}>
       <DateTimePicker
         onDateSelected={date => {
-          setSelectedDate(date);
+          if (date !== null) {
+            setSelectedDate(date);
+          }
         }}
         displayedComponents="date"
         initialDate={selectedDate.toISOString()}
