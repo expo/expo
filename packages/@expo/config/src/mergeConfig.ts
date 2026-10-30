@@ -22,19 +22,8 @@ function getEnumerableKeys(value: any): PropertyKey[] {
   ];
 }
 
-function hasProperty(value: any, key: PropertyKey): boolean {
-  // NOTE(@kitten): Match deepmerge's unboxed `in` check. Boxing primitives can drop keys such
-  // as `length` when replacing a string with an object. Throwing proxy checks also mean absent.
-  try {
-    return key in value;
-  } catch {
-    return false;
-  }
-}
-
 export function mergeConfig<T>(target: Partial<T>, source: Partial<T>, arrayMerge?: ArrayMerge): T {
   function clone(value: any): any {
-    // NOTE(@kitten): A null-prototype target keeps the inherited-property guard from dropping own data keys.
     return isMergeable(value)
       ? merge(Array.isArray(value) ? [] : Object.create(null), value)
       : value;
@@ -55,18 +44,13 @@ export function mergeConfig<T>(target: Partial<T>, source: Partial<T>, arrayMerg
       }
     }
     for (const key of getEnumerableKeys(source)) {
-      // Do not merge inherited or non-enumerable properties from the target.
-      if (
-        hasProperty(target, key) &&
-        !(
-          Object.prototype.hasOwnProperty.call(target, key) &&
-          Object.prototype.propertyIsEnumerable.call(target, key)
-        )
-      ) {
-        continue;
-      }
+      // NOTE(@kitten): Treat inherited target values as absent so own data keys are not dropped or merged into prototypes.
+      const hasOwnValue =
+        target != null &&
+        Object.hasOwn(target, key) &&
+        Object.prototype.propertyIsEnumerable.call(target, key);
       result[key] =
-        hasProperty(target, key) && isMergeable(source[key])
+        hasOwnValue && isMergeable(source[key])
           ? merge(target[key], source[key])
           : clone(source[key]);
     }

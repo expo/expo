@@ -1,6 +1,23 @@
 import { mergeConfig } from '../mergeConfig';
 
 describe(mergeConfig, () => {
+  it('adds reserved-name keys without merging inherited target values', () => {
+    const inherited = { constructor: { inherited: true } };
+    const data = {
+      constructor: { prototype: { safe: true } },
+      toString: 'keep',
+      hasOwnProperty: 'keep',
+    };
+
+    const result = mergeConfig<Record<string, any>>(
+      { extra: Object.create(inherited) },
+      { extra: data }
+    );
+
+    expect(result.extra).toEqual(data);
+    expect(inherited.constructor).toEqual({ inherited: true });
+  });
+
   it('preserves keys that also exist on Object.prototype when cloning either input', () => {
     const data = { constructor: 'keep', toString: 'keep', hasOwnProperty: 'keep' };
 
