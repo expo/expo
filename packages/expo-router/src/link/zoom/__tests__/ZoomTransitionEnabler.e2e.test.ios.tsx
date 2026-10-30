@@ -449,6 +449,26 @@ it('does not loop when the dismissal hook shares a screen with inline options af
   expect(screen.getByTestId('dest-page')).toBeVisible();
 });
 
+it('does not loop when the dismissal hook shares a screen with inline options after zoom navigation', async () => {
+  await renderRouter({
+    _layout: () => <Stack />,
+    index: IndexWithZoomLink,
+    dest: function Destination() {
+      usePreventZoomTransitionDismissal({
+        unstable_dismissalBoundsRect: { maxX: 44 },
+      });
+      return (
+        <View testID="dest-page">
+          <Stack.Screen options={{ title: 'Destination' }} />
+        </View>
+      );
+    },
+  });
+
+  await navigateViaZoomLink();
+  expect(getLastDismissalBoundsRect()).toEqual({ maxX: 44 });
+});
+
 it('keeps a preloaded screen mounted and preserves its inline title when zoom activates', async () => {
   const onMount = jest.fn();
   const onUnmount = jest.fn();
