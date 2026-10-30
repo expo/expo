@@ -59,23 +59,7 @@ class AudioStream: SharedObject {
       )
     }
 
-    let needsConversion = hardwareFormat.sampleRate != targetSampleRate
-      || hardwareFormat.channelCount != targetChannels
-      || hardwareFormat.commonFormat != commonFormat
-
-    if needsConversion {
-      guard let conv = AVAudioConverter(from: hardwareFormat, to: targetFormat) else {
-        sampleRate = hardwareFormat.sampleRate
-        channels = Int(hardwareFormat.channelCount)
-        setupTapWithoutConversion(engine: engine, inputNode: inputNode, format: hardwareFormat)
-        self.audioEngine = engine
-        try startEngine(engine)
-        isStreaming = true
-        emitStatus()
-        return
-      }
-      self.converter = conv
-    }
+    self.converter = try AudioStream.makeConverter(from: hardwareFormat, to: targetFormat)
 
     sampleRate = targetSampleRate
     channels = Int(targetChannels)
@@ -184,16 +168,18 @@ class AudioStream: SharedObject {
     )
   }
 
-  private func setupTapWithoutConversion(engine: AVAudioEngine, inputNode: AVAudioInputNode, format: AVAudioFormat) {
-    let bufferSize = AVAudioFrameCount(format.sampleRate * 0.1)
-    inputNode.installTap(onBus: 0, bufferSize: bufferSize, format: format) {
-      [weak self] (buffer, when) in
-      guard let self else { return }
-      if self.startTimestamp == nil {
-        self.startTimestamp = when
-      }
-      self.emitBuffer(buffer: buffer, when: when)
+  static func makeConverter(from inputFormat: AVAudioFormat, to targetFormat: AVAudioFormat) throws -> AVAudioConverter? {
+    if inputFormat == targetFormat {
+      return nil
     }
+    guard let converter = AVAudioConverter(from: inputFormat, to: targetFormat) else {
+      throw AudioStreamException(
+        "The audio input (\(Int(inputFormat.sampleRate)) Hz, \(inputFormat.channelCount) ch) cannot be converted to the requested format "
+        + "(\(Int(targetFormat.sampleRate)) Hz, \(targetFormat.channelCount) ch). "
+        + "Check that a microphone is connected and that the app has microphone permission, or request a different sample rate or channel count"
+      )
+    }
+    return converter
   }
 
   private func convertAndEmit(
