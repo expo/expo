@@ -377,7 +377,7 @@ declare module 'xcode' {
     /**
      * Checks whether there is a file with given `filePath` in the project.
      */
-    hasFile(filePath): PBXFile | false;
+    hasFile(filePath: string): PBXFile | false;
     addTarget(
       name: unknown,
       type: unknown,
