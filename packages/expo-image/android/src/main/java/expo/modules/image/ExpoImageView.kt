@@ -13,6 +13,7 @@ import android.view.ViewConfiguration
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.graphics.transform
 import androidx.core.view.isVisible
+import com.bumptech.glide.load.resource.gif.GifDrawable
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.records.ContentPosition
@@ -124,6 +125,8 @@ class ExpoImageView(
   }
 
   override fun setImageDrawable(drawable: Drawable?) {
+    // Glide's GifDrawable loops forever unless it is told to use the loop count stored in the GIF.
+    (drawable as? GifDrawable)?.setLoopCount(GifDrawable.LOOP_INTRINSIC)
     super.setImageDrawable(drawable)
 
     updateImageRenderingLayer()
