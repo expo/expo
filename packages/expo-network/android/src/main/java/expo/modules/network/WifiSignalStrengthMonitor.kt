@@ -51,14 +51,14 @@ internal class WifiSignalStrengthMonitor(
   }
 
   fun getStrength(capabilities: NetworkCapabilities): Int {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
       getStrengthFromCapabilities(capabilities)
     } else {
       getStrengthForLegacy()
     }
   }
 
-  @RequiresApi(Build.VERSION_CODES.Q)
+  @RequiresApi(Build.VERSION_CODES.S)
   fun getStrengthFromCapabilities(capabilities: NetworkCapabilities): Int {
     val transportInfo = capabilities.transportInfo ?: return getErrorValue()
     if (transportInfo !is WifiInfo) {
