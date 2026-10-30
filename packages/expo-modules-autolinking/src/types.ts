@@ -15,7 +15,12 @@ export type PackageRevision = {
   version: string;
   config?: ExpoModuleConfig;
   duplicates?: PackageRevision[];
+  /** Whether the package was found in the app's `nativeModulesDir` (local modules). */
+  isLocal?: boolean;
 };
+
+/** Name of the package that local modules and inline modules are exported in. It can't be the name of an npm package. */
+export const LOCAL_PACKAGE_NAME = '$local';
 
 export type SearchResults = {
   [moduleName: string]: PackageRevision;
@@ -51,6 +56,11 @@ export interface ModuleAndroidAarProjectInfo extends AndroidGradleAarProjectDesc
 
 export interface CommonNativeModuleDescriptor {
   packageName: string;
+  /**
+   * Name of the package that the modules are exported in, when it differs from `packageName`.
+   * Local modules use `LOCAL_PACKAGE_NAME`.
+   */
+  exportedPackageName?: string;
   coreFeatures?: string[];
 }
 

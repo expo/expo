@@ -84,6 +84,10 @@ data class ExpoModule(
   val packageVersion: String,
   val projects: List<GradleProject> = emptyList(),
   val plugins: List<GradlePlugin> = emptyList(),
+  /**
+   * Name of the package that the modules are exported in when it differs from [packageName], for example `$local` for local modules.
+   */
+  val exportedPackageName: String? = null,
 )
 
 @Serializable

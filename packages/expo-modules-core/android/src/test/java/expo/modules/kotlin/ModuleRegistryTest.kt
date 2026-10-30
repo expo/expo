@@ -20,7 +20,64 @@ class M2 : Module() {
   }
 }
 
+class AudioModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("AudioModule")
+  }
+}
+
+class Audio : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("Audio")
+  }
+}
+
+class SameNamePackageModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("SameName")
+  }
+}
+
+class SameNameLocalModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("SameName")
+  }
+}
+
 class ModuleRegistryTest {
+  private fun createPackagedRegistry(): ModuleRegistry {
+    val provider = object : ModulesProvider {
+      override fun getModulesMap(): Map<Class<out Module>, String?> {
+        return mapOf(
+          AudioModule::class.java to null,
+          Audio::class.java to null,
+          M1::class.java to null,
+          M2::class.java to null
+        )
+      }
+
+      override fun getModulePackageNames(): Map<Class<out Module>, String> {
+        return mapOf(
+          AudioModule::class.java to "expo-audio",
+          Audio::class.java to "expo-audio",
+          M1::class.java to ModulesProvider.LOCAL_PACKAGE_NAME
+        )
+      }
+    }
+    return ModuleRegistry(WeakReference(mockk())).register(provider)
+  }
+
+  @Test
+  fun `should list package names`() {
+    val moduleRegistry = createPackagedRegistry()
+
+    // The local package comes first.
+    Truth.assertThat(moduleRegistry.getPackageNames())
+      .containsExactly(ModulesProvider.LOCAL_PACKAGE_NAME, "expo-audio")
+      .inOrder()
+    Truth.assertThat(moduleRegistry.hasPackage("expo-audio")).isTrue()
+    Truth.assertThat(moduleRegistry.hasPackage("expo-video")).isFalse()
+  }
 
   @Test
   fun `should register all classes from provider`() {
@@ -43,6 +100,64 @@ class ModuleRegistryTest {
 
     Truth.assertThat(moduleRegistry.getModule("m1")).isInstanceOf(M1::class.java)
     Truth.assertThat(moduleRegistry.getModule("m2")).isInstanceOf(M2::class.java)
+  }
+
+  @Test
+  fun `should assign package names from provider`() {
+    val provider = object : ModulesProvider {
+      override fun getModulesMap(): Map<Class<out Module>, String?> {
+        return mapOf(
+          M1::class.java to null,
+          M2::class.java to null
+        )
+      }
+
+      override fun getModulePackageNames(): Map<Class<out Module>, String> {
+        return mapOf(M1::class.java to "expo-test")
+      }
+    }
+    val moduleRegistry = ModuleRegistry(WeakReference(mockk()))
+
+    moduleRegistry.register(provider, defaultPackageName = ModulesProvider.LOCAL_PACKAGE_NAME)
+
+    Truth.assertThat(moduleRegistry.getModuleHolder("m1")?.packageName).isEqualTo("expo-test")
+    Truth.assertThat(moduleRegistry.getModuleHolder("m2")?.packageName).isEqualTo("\$local")
+  }
+
+  @Test
+  fun `should not assign a package name without one from provider`() {
+    val provider = object : ModulesProvider {
+      override fun getModulesMap(): Map<Class<out Module>, String?> {
+        return mapOf(M1::class.java to null)
+      }
+    }
+    val moduleRegistry = ModuleRegistry(WeakReference(mockk()))
+
+    moduleRegistry.register(provider)
+
+    Truth.assertThat(moduleRegistry.getModuleHolder("m1")?.packageName).isNull()
+  }
+
+  @Test
+  fun `should register local modules last, so they win`() {
+    val provider = object : ModulesProvider {
+      override fun getModulesMap(): Map<Class<out Module>, String?> {
+        return mapOf(
+          SameNameLocalModule::class.java to null,
+          SameNamePackageModule::class.java to null
+        )
+      }
+
+      override fun getModulePackageNames(): Map<Class<out Module>, String> {
+        return mapOf(
+          SameNameLocalModule::class.java to ModulesProvider.LOCAL_PACKAGE_NAME,
+          SameNamePackageModule::class.java to "z-package"
+        )
+      }
+    }
+    val moduleRegistry = ModuleRegistry(WeakReference(mockk())).register(provider)
+
+    Truth.assertThat(moduleRegistry.getModuleHolder("SameName")?.module).isInstanceOf(SameNameLocalModule::class.java)
   }
 
   @Test

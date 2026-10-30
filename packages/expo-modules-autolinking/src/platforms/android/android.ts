@@ -3,7 +3,12 @@ import path from 'path';
 
 import type { AutolinkingOptions } from '../../commands/autolinkingOptions';
 import { taskAll } from '../../concurrency';
-import type { ExtraDependencies, ModuleDescriptorAndroid, PackageRevision } from '../../types';
+import {
+  LOCAL_PACKAGE_NAME,
+  type ExtraDependencies,
+  type ModuleDescriptorAndroid,
+  type PackageRevision,
+} from '../../types';
 import { maybeRealpath, scanFilesRecursively } from '../../utils';
 
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
@@ -137,6 +142,7 @@ export async function resolveModuleAsync(
 
   return {
     packageName,
+    ...(revision.isLocal ? { exportedPackageName: LOCAL_PACKAGE_NAME } : {}),
     projects,
     ...(plugins?.length > 0 ? { plugins } : {}),
     ...(coreFeatures.length > 0 ? { coreFeatures } : {}),

@@ -90,6 +90,21 @@ class ExpoModulesPackageList : ModulesProvider {
     } 
     )
 
+    val modulePackageNames: Map<Class<out Module>, String> = mapOf(
+    ${
+      modules
+        .flatMap { module ->
+          val packageName = module.exportedPackageName ?: module.packageName
+          module.projects.flatMap { project ->
+            project.modules.map { (classifier, _) ->
+              "      ${classifier}::class.java to ${kotlinStringLiteral(packageName)}"
+            }
+          }
+        }
+        .joinToString(",\n")
+    }
+    )
+
     @JvmStatic
     fun getPackageList(): List<Package> {
       return packagesList
@@ -98,6 +113,10 @@ class ExpoModulesPackageList : ModulesProvider {
 
   override fun getModulesMap(): Map<Class<out Module>, String?> {
     return modulesMap
+  }
+
+  override fun getModulePackageNames(): Map<Class<out Module>, String> {
+    return modulePackageNames
   }
   
   override fun getServices(): List<Class<out expo.modules.kotlin.services.Service>> {
@@ -117,4 +136,13 @@ class ExpoModulesPackageList : ModulesProvider {
 
 """.trimIndent()
   }
+}
+
+/**
+ * Returns the given value as a Kotlin string literal. `$` is escaped, because it starts a string template,
+ * and the local modules package is named `$local`.
+ */
+internal fun kotlinStringLiteral(value: String): String {
+  val escaped = value.replace("\\", "\\\\").replace("\"", "\\\"").replace("$", "\\$")
+  return "\"$escaped\""
 }

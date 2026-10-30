@@ -1,12 +1,60 @@
 import Foundation
 
 /**
+ The native exports of one npm package. A modules provider returns the packages keyed by the npm package name,
+ and that name is the JS name of the package. Local and inline modules are in the `$local` package.
+ */
+public struct ExpoPackage {
+  /**
+   Name of the package of local and inline modules. It can't be the name of an npm package.
+   */
+  public static let localPackageName = "$local"
+
+  /**
+   Returns the packages in the order to register them: the npm packages by name, then the local package.
+   The module registered last wins when two modules have the same name, so the app's own modules win,
+   and the result is the same on every launch.
+   */
+  static func inRegistrationOrder(_ packages: [String: ExpoPackage]) -> [(name: String, package: ExpoPackage)] {
+    return packages
+      .map { (name: $0.key, package: $0.value) }
+      .sorted { lhs, rhs in
+        if (lhs.name == localPackageName) != (rhs.name == localPackageName) {
+          return rhs.name == localPackageName
+        }
+        return lhs.name < rhs.name
+      }
+  }
+
+  /**
+   Module classes of the package.
+   */
+  public let modules: [AnyModule.Type]
+
+  /**
+   Names that override the module names, keyed by the module class. A module without an entry uses
+   the name it declares.
+   */
+  public let moduleNames: [ObjectIdentifier: String]
+
+  public init(modules: [AnyModule.Type] = [], moduleNames: [ObjectIdentifier: String] = [:]) {
+    self.modules = modules
+    self.moduleNames = moduleNames
+  }
+}
+
+/**
  Swift protocol defining the requirements for modules providers.
  */
 public protocol ModulesProviderProtocol {
   typealias ExpoModuleTupleType = (module: AnyModule.Type, name: String?)
 
   func getModuleClasses() -> [ExpoModuleTupleType]
+
+  /**
+   The packages that provide native exports, keyed by the npm package name.
+   */
+  var packages: [String: ExpoPackage] { get }
 
   /**
    Returns an array of classes that hooks into `ExpoAppDelegate` to receive app delegate events.
@@ -30,8 +78,18 @@ public protocol ModulesProviderProtocol {
 open class ModulesProvider: NSObject, ModulesProviderProtocol {
   public override required init() {}
 
+  /**
+   Returns the modules of all packages, in the order they are registered in. Providers that don't return packages
+   can override it to return the modules directly.
+   */
   open func getModuleClasses() -> [ExpoModuleTupleType] {
-    return []
+    return ExpoPackage.inRegistrationOrder(packages).flatMap { _, package in
+      package.modules.map { (module: $0, name: package.moduleNames[ObjectIdentifier($0)]) }
+    }
+  }
+
+  open var packages: [String: ExpoPackage] {
+    return [:]
   }
 
   open func getAppDelegateSubscribers() -> [ExpoAppDelegateSubscriber.Type] {

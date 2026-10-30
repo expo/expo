@@ -29,6 +29,22 @@ describe(resolveModuleAsync, () => {
     expect(result).toEqual(null);
   });
 
+  it('should export local modules in the local package', async () => {
+    const name = 'local-module';
+    const pkgDir = path.join('modules', name);
+    const result = await resolveModuleAsync(name, {
+      name,
+      path: pkgDir,
+      version: '',
+      config: new ExpoModuleConfig({
+        platforms: ['android'],
+        android: { path: 'android' },
+      }),
+      isLocal: true,
+    });
+    expect(result).toMatchObject({ packageName: 'local-module', exportedPackageName: '$local' });
+  });
+
   it('should resolve android/build.gradle', async () => {
     const name = 'react-native-third-party';
     const pkgDir = path.join('node_modules', name);

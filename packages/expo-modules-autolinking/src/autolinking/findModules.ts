@@ -8,6 +8,7 @@ import {
   mergeResolutionResults,
 } from '../dependencies';
 import { createMemoizer } from '../memoize';
+import { isPathInside, maybeRealpath } from '../utils';
 import type { PackageRevision, SearchResults, SupportedPlatform } from '../types';
 
 export async function resolveExpoModule(
@@ -64,7 +65,11 @@ export async function findModulesAsync({
     ? [autolinkingOptions.nativeModulesDir, ...autolinkingOptions.searchPaths]
     : autolinkingOptions.searchPaths;
 
-  return memoizer.withMemoizer(async () => {
+  const nativeModulesDir = autolinkingOptions.nativeModulesDir
+    ? await maybeRealpath(autolinkingOptions.nativeModulesDir)
+    : null;
+
+  const searchResults = await memoizer.withMemoizer(async () => {
     return filterMapResolutionResult(
       mergeResolutionResults(
         await Promise.all([
@@ -75,4 +80,15 @@ export async function findModulesAsync({
       (resolution) => resolveExpoModule(resolution, autolinkingOptions.platform, excludeNames)
     );
   });
+
+  if (nativeModulesDir) {
+    for (const revision of Object.values(searchResults)) {
+      // `isPathInside` is false for `nativeModulesDir` itself, which is a package when
+      // create-expo-module's example app sets it to `../`. That package keeps its own name.
+      if (isPathInside(revision.path, nativeModulesDir)) {
+        revision.isLocal = true;
+      }
+    }
+  }
+  return searchResults;
 }

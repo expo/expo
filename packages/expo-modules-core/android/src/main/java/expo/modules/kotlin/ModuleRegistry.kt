@@ -21,12 +21,16 @@ class ModuleRegistry(
 
   private var isReadyForPostingEvents = false
 
-  fun <T : Module> register(module: T, name: String?) = trace("ModuleRegistry.register(${module.javaClass})") {
+  fun <T : Module> register(
+    module: T,
+    name: String?,
+    packageName: String? = null
+  ) = trace("ModuleRegistry.register(${module.javaClass})") {
     requireNotNull(appContextHolder.get()) { "Cannot register a module to an invalid app context." }
 
     module._appContextHolder = appContextHolder
 
-    val holder = ModuleHolder(module, name)
+    val holder = ModuleHolder(module, name, packageName)
 
     module.coroutineScopeDelegate = lazy {
       CoroutineScope(
@@ -39,11 +43,19 @@ class ModuleRegistry(
     registry[holder.name] = holder
   }
 
-  fun register(provider: ModulesProvider) = apply {
-    provider.getModulesMap().forEach { (classifier, name) ->
-      val module = classifier.getDeclaredConstructor().newInstance()
-      register(module, name)
-    }
+  /**
+   * Registers modules exported by the given provider. Modules without a package name from the provider get [defaultPackageName].
+   * Local modules are registered last, so they win over the modules of npm packages with the same name.
+   */
+  fun register(provider: ModulesProvider, defaultPackageName: String? = null) = apply {
+    val packageNames = provider.getModulePackageNames()
+    provider.getModulesMap().entries
+      .map { (classifier, name) -> Triple(classifier, name, packageNames[classifier] ?: defaultPackageName) }
+      .sortedBy { (_, _, packageName) -> packageName == ModulesProvider.LOCAL_PACKAGE_NAME }
+      .forEach { (classifier, name, packageName) ->
+        val module = classifier.getDeclaredConstructor().newInstance()
+        register(module, name, packageName)
+      }
   }
 
   fun register(vararg modules: Module) = apply {
@@ -61,6 +73,21 @@ class ModuleRegistry(
   }
 
   fun getModuleHolder(name: String): ModuleHolder<*>? = registry[name]
+
+  /**
+   * Returns the names of the packages of the registered modules, without duplicates. The local package comes first,
+   * and the others are sorted.
+   */
+  fun getPackageNames(): List<String> =
+    registry.values
+      .mapNotNull { it.packageName }
+      .distinct()
+      .sortedWith(compareBy<String> { it != ModulesProvider.LOCAL_PACKAGE_NAME }.thenBy { it })
+
+  /**
+   * Returns whether any registered module is in the package with the given name.
+   */
+  fun hasPackage(packageName: String): Boolean = registry.values.any { it.packageName == packageName }
 
   @Suppress("UNCHECKED_CAST")
   fun <T : Module> getModuleHolder(module: T): ModuleHolder<T>? =

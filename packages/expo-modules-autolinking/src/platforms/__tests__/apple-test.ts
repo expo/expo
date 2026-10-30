@@ -4,6 +4,7 @@ import path from 'path';
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
 import {
   formatArrayOfReactDelegateHandler,
+  generateModulesProviderAsync,
   getSwiftModuleNames,
   resolveExtraBuildDependenciesAsync,
   resolveModuleAsync,
@@ -163,6 +164,27 @@ describe(resolveModuleAsync, () => {
       reactDelegateHandlers: [],
       debugOnly: false,
     });
+  });
+
+  it('should export local modules in the local package', async () => {
+    const name = 'local-module';
+    const pkgDir = path.join('modules', name);
+
+    vol.fromJSON({ [`ios/LocalModule.podspec`]: '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name,
+        path: pkgDir,
+        version: '',
+        config: new ExpoModuleConfig({ platforms: ['ios'] }),
+        isLocal: true,
+      },
+      {}
+    );
+
+    expect(result).toMatchObject({ packageName: 'local-module', exportedPackageName: '$local' });
   });
 
   it('uses scanned modules when the config declares none', async () => {
@@ -390,5 +412,39 @@ describe(resolveExtraBuildDependenciesAsync, () => {
   it('should return null if Podfile.properties.json not found', async () => {
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/macos');
     expect(extraBuildDeps).toBe(null);
+  });
+});
+
+describe(generateModulesProviderAsync, () => {
+  function descriptor(packageName: string, moduleClass: string, exportedPackageName?: string) {
+    return {
+      packageName,
+      ...(exportedPackageName ? { exportedPackageName } : {}),
+      pods: [],
+      flags: undefined,
+      swiftModuleNames: [],
+      modules: [{ name: null, class: moduleClass }],
+      appDelegateSubscribers: [],
+      reactDelegateHandlers: [],
+      debugOnly: false,
+    };
+  }
+
+  it('lists the local package first and the other packages sorted', async () => {
+    const targetPath = '/app/ios/Pods/ExpoModulesProvider.swift';
+    await generateModulesProviderAsync(
+      [
+        descriptor('expo-camera', 'CameraModule'),
+        descriptor('my-local-module', 'MyLocalModule', '$local'),
+        descriptor('@expo/ui', 'ExpoUIModule'),
+      ],
+      targetPath,
+      null,
+      { watchedDirectories: [], inlineModulesTargets: { targets: [] }, targetPath, appRoot: '/app' }
+    );
+
+    const content = vol.readFileSync(targetPath, 'utf8') as string;
+    const keys = [...content.matchAll(/"([^"]+)": ExpoPackage\(/g)].map((match) => match[1]);
+    expect(keys).toEqual(['$local', '@expo/ui', 'expo-camera']);
   });
 });

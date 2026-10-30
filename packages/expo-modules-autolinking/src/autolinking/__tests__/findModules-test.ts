@@ -639,6 +639,71 @@ describe(findModulesAsync, () => {
     expect(result).toEqual({
       'local-expo-module': expectAnyModule(),
     });
+    expect(result['local-expo-module']!.isLocal).toBe(true);
+  });
+
+  /**
+   * /app
+   *   ├── /app/modules/local-expo-module
+   *   ╚══ /node_modules/expo-module
+   */
+  it('should only mark modules from "modules/" sub-directory as local', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedRoot('app', {
+          pkgDependencies: {
+            'expo-module': '*',
+          },
+        }),
+        modules: {
+          'local-expo-module': mockedModule('local-expo-module'),
+        },
+        node_modules: {
+          'expo-module': mockedModule('expo-module'),
+        },
+      },
+      projectRoot
+    );
+
+    const result = await findModulesAsync({
+      appRoot: projectRoot,
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+        nativeModulesDir: path.join(projectRoot, 'modules'),
+      },
+    });
+
+    expect(result['local-expo-module']!.isLocal).toBe(true);
+    expect(result['expo-module']!.isLocal).toBeUndefined();
+  });
+
+  /**
+   * /app (`nativeModulesDir: ../` from create-expo-module's example app)
+   *   └── /app/example
+   */
+  it('should not mark the package at "nativeModulesDir" itself as local', async () => {
+    vol.fromNestedJSON(
+      {
+        ...mockedModule('expo-module'),
+        example: mockedRoot('expo-module-example'),
+      },
+      projectRoot
+    );
+
+    const result = await findModulesAsync({
+      appRoot: path.join(projectRoot, 'example'),
+      autolinkingOptions: {
+        ...BASE_AUTOLINKING_OPTIONS,
+        platform: 'ios',
+        nativeModulesDir: projectRoot,
+      },
+    });
+
+    expect(result).toEqual({
+      'expo-module': expectAnyModule(),
+    });
+    expect(result['expo-module']!.isLocal).toBeUndefined();
   });
 
   /**

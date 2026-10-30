@@ -143,7 +143,7 @@ class AppContext(
     try {
       val inlineModulesList = Class.forName("inline.modules.ExpoInlineModulesList").getConstructor()
         .newInstance() as ModulesProvider
-      registry.register(inlineModulesList)
+      registry.register(inlineModulesList, defaultPackageName = ModulesProvider.LOCAL_PACKAGE_NAME)
     } catch (_: ClassNotFoundException) {
     }
   }

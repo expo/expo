@@ -17,7 +17,12 @@ import kotlinx.coroutines.launch
 
 class ModuleHolder<T : Module>(
   val module: T,
-  private val _name: String?
+  private val _name: String?,
+  /**
+   * Name of the package that the module is exported in: the name of the npm package that provides it, or `$local` for local and inline modules.
+   * It is `null` for modules that were not registered from a modules provider.
+   */
+  val packageName: String? = null
 ) {
   val definition = module.definition()
 
