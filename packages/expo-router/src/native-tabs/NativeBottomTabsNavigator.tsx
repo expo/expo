@@ -4,7 +4,6 @@ import React, {
   Children,
   use,
   useCallback,
-  useEffect,
   useMemo,
   useRef,
   useState,
@@ -29,6 +28,7 @@ import type {
 } from '../standard-navigation/types';
 import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
+import { useWarnOnce } from '../useDeprecated';
 import { isChildOfType } from '../utils/children';
 import { isProtectedReactElement } from '../views/Protected';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
@@ -85,7 +85,7 @@ export function createNativeTabsProps(
   };
 }
 
-// Store the previous key in state, so the effect warns once per change, also in StrictMode.
+// Store the previous key in state, so the warning sees the change, also in StrictMode.
 function useWarnOnTabConfigurationChange(tabConfigurationKey: string) {
   const [tabKeys, setTabKeys] = useState({
     previous: tabConfigurationKey,
@@ -94,15 +94,12 @@ function useWarnOnTabConfigurationChange(tabConfigurationKey: string) {
   if (process.env.NODE_ENV !== 'production' && tabKeys.current !== tabConfigurationKey) {
     setTabKeys({ previous: tabKeys.current, current: tabConfigurationKey });
   }
-  useEffect(() => {
-    if (process.env.NODE_ENV !== 'production' && tabKeys.previous !== tabKeys.current) {
-      const formatTabs = (key: string) => `[${key.split(';').join(', ')}]`;
-      console.warn(
-        `NativeTabs remounted and reset all tab state because the visible tabs changed from ${formatTabs(tabKeys.previous)} to ${formatTabs(tabKeys.current)}. ` +
-          'To keep tab state, keep the same visible tabs, or move the condition to a parent layout, for example a `Protected` guard around the tabs layout.'
-      );
-    }
-  }, [tabKeys]);
+  const formatTabs = (key: string) => `[${key.split(';').join(', ')}]`;
+  useWarnOnce(
+    `NativeTabs remounted and reset all tab state because the visible tabs changed from ${formatTabs(tabKeys.previous)} to ${formatTabs(tabKeys.current)}. ` +
+      'To keep tab state, keep the same visible tabs, or move the condition to a parent layout, for example a `Protected` guard around the tabs layout.',
+    tabKeys.previous !== tabKeys.current
+  );
 }
 
 function NativeTabsContent({
