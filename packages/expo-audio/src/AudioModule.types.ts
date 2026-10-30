@@ -460,7 +460,7 @@ export declare class AudioRecorder extends SharedObject<RecordingEvents> {
  * Event types that an `AudioRecorder` can emit.
  *
  * These events are used internally by `expo-audio` hooks to provide real-time status updates.
- * Use `useAudioRecorderState()` or the `statusListener` parameter in `useAudioRecorder()` instead of subscribing directly.
+ * For recording status, use `useAudioRecorderState()` or the `statusListener` parameter in `useAudioRecorder()` instead of subscribing directly.
  */
 export type RecordingEvents = {
   /**
