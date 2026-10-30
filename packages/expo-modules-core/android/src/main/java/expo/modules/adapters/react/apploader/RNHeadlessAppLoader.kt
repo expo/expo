@@ -73,7 +73,7 @@ class RNHeadlessAppLoader @DoNotStrip constructor() : HeadlessAppLoader {
     }
   }
 
-  override fun isRunning(appScopeKey: String?): Boolean {
+  override fun isRunningInHeadlessMode(appScopeKey: String?): Boolean {
     val reactContext = appRecords[appScopeKey] ?: return false
     return !reactContext.hasCurrentActivity()
   }
