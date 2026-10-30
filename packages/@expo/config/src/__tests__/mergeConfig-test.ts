@@ -1,6 +1,18 @@
 import { mergeConfig } from '../mergeConfig';
 
 describe(mergeConfig, () => {
+  it('rejects circular references without rejecting shared data', () => {
+    const circular: Record<string, any> = {};
+    circular.items = [circular];
+
+    expect(() => mergeConfig(circular, {})).toThrow(/circular reference/);
+    expect(() => mergeConfig({}, circular)).toThrow(/circular reference/);
+
+    const shared = { value: 1 };
+    const data = { first: shared, second: [shared, shared] };
+    expect(mergeConfig({}, data)).toEqual(data);
+  });
+
   it('adds reserved-name keys without merging inherited target values', () => {
     const inherited = { constructor: { inherited: true } };
     const data = {

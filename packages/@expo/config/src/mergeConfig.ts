@@ -1,3 +1,5 @@
+import { ConfigError } from './Errors';
+
 type ArrayMerge = (target: any[], source: any[]) => any[];
 
 function isMergeable(value: any): boolean {
@@ -23,10 +25,25 @@ function getEnumerableKeys(value: any): PropertyKey[] {
 }
 
 export function mergeConfig<T>(target: Partial<T>, source: Partial<T>, arrayMerge?: ArrayMerge): T {
+  // NOTE(@kitten): Track active clones only; shared objects in separate branches are valid.
+  const ancestors = new WeakSet<object>();
+
   function clone(value: any): any {
-    return isMergeable(value)
-      ? merge(Array.isArray(value) ? [] : Object.create(null), value)
-      : value;
+    if (!isMergeable(value)) {
+      return value;
+    }
+    if (ancestors.has(value)) {
+      throw new ConfigError(
+        'Cannot merge the Expo config because it contains a circular reference. Remove circular references from the config and its modifications.',
+        'INVALID_CONFIG'
+      );
+    }
+    ancestors.add(value);
+    try {
+      return merge(Array.isArray(value) ? [] : Object.create(null), value);
+    } finally {
+      ancestors.delete(value);
+    }
   }
 
   function merge(target: any, source: any): any {
