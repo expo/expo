@@ -139,6 +139,9 @@ class Coordinates(
   fun toBundle() = Bundle().apply { putCoordinateFields() }
 }
 
+fun Coordinates.areValid(): Boolean =
+  latitude in -90.0..90.0 && longitude in -180.0..180.0
+
 fun PersistableBundle.toCoordinates(): Coordinates = Coordinates(
   getDouble("latitude"),
   getDouble("longitude")

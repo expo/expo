@@ -15,6 +15,11 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.location.next.geocoding.GeocodeOptions
+import expo.modules.location.next.geocoding.GeocodingQuery
+import expo.modules.location.next.geocoding.InvalidCoordinatesException
+import expo.modules.location.next.geocoding.geocode
+import expo.modules.location.next.geocoding.ReverseGeocodeOptions
 import expo.modules.location.next.locationForegroundService.BackgroundSessionOptions
 import expo.modules.location.next.locationForegroundService.BackgroundSessionState
 import expo.modules.location.next.locationForegroundService.LocationForegroundService
@@ -130,6 +135,30 @@ class LocationModuleNext : Module() {
 
     AsyncFunction("getBackgroundPermissions") Coroutine { ->
       return@Coroutine permissionsManager.getLocationPermissions(background = true)
+    }
+
+    AsyncFunction("geocode") Coroutine { address: String, options: GeocodeOptions? ->
+      if (address.isBlank()) {
+        return@Coroutine emptyList()
+      }
+      return@Coroutine geocode(
+        context,
+        appContext.jsLogger,
+        GeocodingQuery.ByAddress(address),
+        options?.locale
+      )
+    }
+
+    AsyncFunction("reverseGeocode") Coroutine { coordinates: Coordinates, options: ReverseGeocodeOptions? ->
+      if (!coordinates.areValid()) {
+        throw InvalidCoordinatesException()
+      }
+      return@Coroutine geocode(
+        context,
+        appContext.jsLogger,
+        GeocodingQuery.ByCoordinates(coordinates),
+        options?.locale
+      )
     }
 
     AsyncFunction("requestNotificationPermissions") Coroutine { ->

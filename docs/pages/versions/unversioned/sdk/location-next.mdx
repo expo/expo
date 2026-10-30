@@ -130,7 +130,7 @@ async function getFreshPosition() {
 
 <Collapsible summary="Find the address of the current location">
 
-On iOS, use `reverseGeocode` to turn the device's coordinates into an address. Set `locale` to request the address in a specific language.
+Use `reverseGeocode` to turn the device's coordinates into an address. Set `locale` to request the address in a specific language. On Android, the device must have a geocoding backend, which Google Play services provides.
 
 ```tsx
 import { Location } from 'expo-location/next';
