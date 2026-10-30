@@ -131,6 +131,25 @@ describe('NativeTabs Protected', () => {
     expect(screen.queryByTestId('admin')).toBeNull();
   });
 
+  it('hides a hidden trigger inside Stack.Protected when guard is true', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+          <Stack.Protected guard>
+            <NativeTabs.Trigger name="settings" hidden />
+          </Stack.Protected>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      settings: () => <View testID="settings" />,
+    });
+
+    expect(renderedScreenKeys()).not.toContain('settings');
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen.queryByTestId('settings')).toBeNull();
+  });
+
   it('shows the trigger after the guard flips to true', async () => {
     const onMount = jest.fn();
 

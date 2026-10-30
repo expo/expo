@@ -239,20 +239,17 @@ const NativeTabsNavigatorWithContext = createStandardRouterNavigator<
 function partitionNativeTabsChildren(children: ReactNode) {
   const navigatorChildren: ReactNode[] = [];
   const nonTriggerChildren: ReactNode[] = [];
-  const visibleTriggerNames: string[] = [];
 
   Children.forEach(children, (child) => {
     if (isChildOfType(child, NativeTabTrigger)) {
       if (!child.props.hidden) {
         navigatorChildren.push(child);
-        visibleTriggerNames.push(child.props.name ?? '');
       }
       return;
     }
 
     if (isProtectedReactElement(child)) {
       navigatorChildren.push(child);
-      appendVisibleTriggerNames(child.props.children, !child.props.guard, visibleTriggerNames);
       return;
     }
 
@@ -262,20 +259,21 @@ function partitionNativeTabsChildren(children: ReactNode) {
   return {
     navigatorChildren,
     nonTriggerChildren,
-    tabConfigurationKey: visibleTriggerNames.join(';'),
+    tabConfigurationKey: getVisibleTriggerNames(children).join(';'),
   };
 }
 
-function appendVisibleTriggerNames(children: ReactNode, excluded: boolean, names: string[]) {
-  Children.forEach(children, (child) => {
+function getVisibleTriggerNames(children: ReactNode, excluded = false): string[] {
+  return Children.toArray(children).flatMap((child) => {
     if (isProtectedReactElement(child)) {
-      appendVisibleTriggerNames(child.props.children, excluded || !child.props.guard, names);
-      return;
+      return getVisibleTriggerNames(child.props.children, excluded || !child.props.guard);
     }
 
     if (isChildOfType(child, NativeTabTrigger) && !excluded && !child.props.hidden) {
-      names.push(child.props.name ?? '');
+      return [child.props.name ?? ''];
     }
+
+    return [];
   });
 }
 
