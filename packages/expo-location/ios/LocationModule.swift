@@ -110,12 +110,7 @@ public final class LocationModule: Module {
           for try await heading in try streamer.streamDeviceHeading() {
             sendEvent(EVENT_HEADING_CHANGED, [
               "watchId": watchId,
-              "heading": [
-                "trueHeading": heading.trueHeading,
-                "magHeading": heading.magneticHeading,
-                "accuracy": normalizeAccuracy(heading.headingAccuracy),
-                "headingAccuracy": heading.headingAccuracy < 0 ? nil : heading.headingAccuracy
-              ]
+              "heading": exportHeading(heading)
             ])
           }
         } catch let exception as Exception {

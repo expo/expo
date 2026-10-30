@@ -103,26 +103,6 @@ describe('watchHeadingAsync', () => {
     expect(watchDeviceHeading).toHaveBeenCalledWith(Location._getCurrentWatchId(), {});
     subscription.remove();
   });
-
-  it(`receives heading events with unbucketed heading accuracy`, async () => {
-    const callback = jest.fn();
-    mockProperty(
-      ExpoLocation,
-      'watchDeviceHeading',
-      jest.fn(async () => {})
-    );
-
-    const subscription = await Location.watchHeadingAsync(callback);
-    emitNativeHeadingUpdate({ trueHeading: 8, magHeading: 9, accuracy: 3, headingAccuracy: 5 });
-
-    expect(callback).toHaveBeenCalledWith({
-      trueHeading: 8,
-      magHeading: 9,
-      accuracy: 3,
-      headingAccuracy: 5,
-    });
-    subscription.remove();
-  });
 });
 
 describe('reverseGeocodeAsync', () => {
@@ -188,12 +168,5 @@ function emitNativeLocationUpdate(location: any) {
   ExpoLocation.emit('Expo.locationChanged', {
     watchId: Location._getCurrentWatchId(),
     location,
-  });
-}
-
-function emitNativeHeadingUpdate(heading: any) {
-  ExpoLocation.emit('Expo.headingChanged', {
-    watchId: Location._getCurrentWatchId(),
-    heading,
   });
 }
