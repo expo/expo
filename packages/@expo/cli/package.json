@@ -168,10 +168,14 @@
   },
   "peerDependencies": {
     "expo": "*",
+    "expo-mcp": "*",
     "expo-router": "*",
     "react-native": "*"
   },
   "peerDependenciesMeta": {
+    "expo-mcp": {
+      "optional": true
+    },
     "expo-router": {
       "optional": true
     },

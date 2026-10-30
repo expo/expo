@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import type { z as Zod } from 'zod';
 
 import type { DevToolsPluginCommandParameter, DevToolsPluginInfo } from './DevToolsPlugin.schema';
 
@@ -34,7 +34,7 @@ import type { DevToolsPluginCommandParameter, DevToolsPluginInfo } from './DevTo
  * }
  * ```
  */
-export function createMCPDevToolsExtensionSchema(plugin: DevToolsPluginInfo) {
+export function createMCPDevToolsExtensionSchema(plugin: DevToolsPluginInfo, z: typeof Zod) {
   if (plugin.cliExtensions == null || plugin.cliExtensions?.commands.length === 0) {
     throw new Error(
       `Plugin ${plugin.packageName} has no commands defined. Please define at least one command.`
@@ -76,7 +76,7 @@ export function createMCPDevToolsExtensionSchema(plugin: DevToolsPluginInfo) {
   }
 
   // Build parameters with descriptions that indicate which command(s) they belong to
-  const allParameters: Record<string, z.ZodTypeAny> = {};
+  const allParameters: Record<string, Zod.ZodTypeAny> = {};
   for (const [paramName, commandList] of Object.entries(parameterCommandMap)) {
     const baseDescription = parameterDescriptions[paramName];
     const commandsUsingParam =
@@ -89,7 +89,7 @@ export function createMCPDevToolsExtensionSchema(plugin: DevToolsPluginInfo) {
       ? `${baseDescription} (Used by: ${commandsUsingParam})`
       : `Parameter for: ${commandsUsingParam}`;
 
-    allParameters[paramName] = paramTypeToZod(parameterTypes[paramName]!)
+    allParameters[paramName] = paramTypeToZod(parameterTypes[paramName]!, z)
       .optional()
       .describe(fullDescription);
   }
@@ -114,7 +114,7 @@ export function createMCPDevToolsExtensionSchema(plugin: DevToolsPluginInfo) {
   return schema;
 }
 
-function paramTypeToZod(type: DevToolsPluginCommandParameter['type']) {
+function paramTypeToZod(type: DevToolsPluginCommandParameter['type'], z: typeof Zod) {
   switch (type) {
     case 'number':
       return z.number();

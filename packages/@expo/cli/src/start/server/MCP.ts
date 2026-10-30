@@ -2,14 +2,15 @@ import type {
   McpServerProxy,
   TunnelMcpServerProxy as TunnelMcpServerProxyType,
 } from '@expo/mcp-tunnel' with { 'resolution-mode': 'import' };
-import { loadModule } from '@expo/require-utils';
+import { loadModule, resolveFrom } from '@expo/require-utils';
 import path from 'node:path';
-import resolveFrom from 'resolve-from';
 
 import { getAccessToken, getSession } from '../../api/user/UserSettings';
 import { Log } from '../../log';
 import { env } from '../../utils/env';
 import { installExitHooks } from '../../utils/exit';
+import type { DevServerManager } from './DevServerManager';
+import { addMcpCapabilities as addDevToolsPluginCapabilities } from './MCPDevToolsPluginCLIExtensions';
 import { debugEvent } from './devtoolsEvents';
 
 /**
@@ -26,26 +27,38 @@ export type McpServer = Omit<McpServerProxy, 'close'> & {
  * Create the MCP server
  */
 export async function maybeCreateMCPServerAsync({
-  projectRoot,
+  devServerManager,
   devServerUrl,
 }: {
-  projectRoot: string;
+  devServerManager: DevServerManager;
   devServerUrl: string;
 }): Promise<McpServer | null> {
   const mcpServer = env.EXPO_UNSTABLE_MCP_SERVER;
   if (!mcpServer) {
     return null;
   }
-  const mcpPackagePath = resolveFrom.silent(projectRoot, 'expo-mcp');
-  if (!mcpPackagePath) {
+  const { projectRoot } = devServerManager;
+  let mcpPackagePath: string;
+  try {
+    mcpPackagePath = require.resolve('expo-mcp', { paths: [__dirname, projectRoot] });
+  } catch {
     Log.error(
       'Missing the `expo-mcp` package in the project. To enable the MCP integration, add the `expo-mcp` package to your project.'
     );
     return null;
   }
-  const mcpTunnelPackagePath = resolveFrom.silent(path.dirname(mcpPackagePath), '@expo/mcp-tunnel');
+  const mcpTunnelPackagePath = resolveFrom(path.dirname(mcpPackagePath), '@expo/mcp-tunnel');
   if (!mcpTunnelPackagePath) {
     Log.error('Unable to resolve the `@expo/mcp-tunnel` package');
+    return null;
+  }
+
+  // TODO(@kitten): Move the Zod dependency and MCP schema construction into expo-mcp.
+  const zodPackagePath = resolveFrom(path.dirname(mcpPackagePath), 'zod');
+  if (!zodPackagePath) {
+    Log.error(
+      'Unable to resolve Zod from `expo-mcp`. Reinstall your project dependencies to enable MCP.'
+    );
     return null;
   }
 
@@ -64,6 +77,7 @@ export async function maybeCreateMCPServerAsync({
     const { TunnelMcpServerProxy } = (await loadModule(mcpTunnelPackagePath)) as {
       TunnelMcpServerProxy: typeof TunnelMcpServerProxyType;
     };
+    const { z } = (await loadModule(zodPackagePath)) as typeof import('zod');
 
     const logger = {
       ...Log,
@@ -78,6 +92,7 @@ export async function maybeCreateMCPServerAsync({
       devServerUrl,
     });
     addMcpCapabilities(serverProxy, projectRoot);
+    await addDevToolsPluginCapabilities(serverProxy, devServerManager, z);
 
     const removeExitHook = installExitHooks(async () => {
       await serverProxy.close();

@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 import { Log } from '../../../log';
 import type { DevServerManager } from '../DevServerManager';
 import { DevToolsPlugin } from '../DevToolsPlugin';
@@ -48,7 +50,7 @@ describe(addMcpCapabilities, () => {
     const registerTool = jest.fn();
     const mcpServer = { registerTool } as unknown as McpServer;
 
-    await addMcpCapabilities(mcpServer, devServerManager);
+    await addMcpCapabilities(mcpServer, devServerManager, z);
 
     expect(queryPluginsAsync).toHaveBeenCalledTimes(1);
     expect(registerTool).toHaveBeenCalledTimes(1);
@@ -85,7 +87,7 @@ describe(addMcpCapabilities, () => {
     ] as const;
     executeMock.mockResolvedValue(pluginOutput);
 
-    await addMcpCapabilities(mcpServer, devServerManager);
+    await addMcpCapabilities(mcpServer, devServerManager, z);
 
     const [, , handler] = registerTool.mock.calls[0];
     const result = await handler({
@@ -143,7 +145,7 @@ describe(addMcpCapabilities, () => {
     const error = new Error('Execution exploded');
     executeMock.mockRejectedValue(error);
 
-    await addMcpCapabilities(mcpServer, devServerManager);
+    await addMcpCapabilities(mcpServer, devServerManager, z);
     const [, , handler] = registerTool.mock.calls[0];
     const response = await handler({
       parameters: { command: 'failing-command' },
@@ -185,7 +187,7 @@ describe(addMcpCapabilities, () => {
     const registerTool = jest.fn();
     const mcpServer = { registerTool } as unknown as McpServer;
 
-    await addMcpCapabilities(mcpServer, devServerManager);
+    await addMcpCapabilities(mcpServer, devServerManager, z);
 
     expect(queryPluginsAsync).toHaveBeenCalledTimes(1);
     expect(registerTool).not.toHaveBeenCalled();
@@ -229,7 +231,7 @@ describe(addMcpCapabilities, () => {
     const registerTool = jest.fn();
     const mcpServer = { registerTool } as unknown as McpServer;
 
-    await addMcpCapabilities(mcpServer, devServerManager);
+    await addMcpCapabilities(mcpServer, devServerManager, z);
     const [, , handler] = registerTool.mock.calls[0];
 
     // Smuggle a CLI-only command name past the schema by invoking the handler directly.
@@ -257,7 +259,7 @@ describe(addMcpCapabilities, () => {
     const mcpServer = { registerTool } as unknown as McpServer;
     executeMock.mockResolvedValue([]);
 
-    await addMcpCapabilities(mcpServer, devServerManager);
+    await addMcpCapabilities(mcpServer, devServerManager, z);
 
     const [, toolDefinition, handler] = registerTool.mock.calls[0];
     const schema = toolDefinition.inputSchema.parameters;
@@ -289,7 +291,7 @@ describe(addMcpCapabilities, () => {
     const registerTool = jest.fn();
     const mcpServer = { registerTool } as unknown as McpServer;
 
-    await addMcpCapabilities(mcpServer, devServerManager);
+    await addMcpCapabilities(mcpServer, devServerManager, z);
 
     expect(registerTool).toHaveBeenCalledTimes(1);
     const [, toolDefinition, handler] = registerTool.mock.calls[0];

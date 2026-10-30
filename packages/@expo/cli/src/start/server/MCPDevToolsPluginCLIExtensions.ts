@@ -6,7 +6,11 @@ import type { McpServer } from './MCP';
 import { createMCPDevToolsExtensionSchema } from './createMCPDevToolsExtensionSchema';
 import { debugEvent } from './devtoolsEvents';
 
-export async function addMcpCapabilities(mcpServer: McpServer, devServerManager: DevServerManager) {
+export async function addMcpCapabilities(
+  mcpServer: Pick<McpServer, 'registerTool'>,
+  devServerManager: DevServerManager,
+  z: typeof import('zod').z
+) {
   const plugins = await devServerManager.devtoolsPluginManager.queryPluginsAsync();
 
   for (const plugin of plugins) {
@@ -29,7 +33,7 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
         },
       };
 
-      const schema = createMCPDevToolsExtensionSchema(mcpPlugin);
+      const schema = createMCPDevToolsExtensionSchema(mcpPlugin, z);
 
       debugEvent('mcp_extension_installed', {
         packageName: plugin.packageName,
