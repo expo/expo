@@ -120,6 +120,9 @@ export async function getCellSignalStrengthAsync(): Promise<number> {
 
 /**
  * Gets the current Wi-Fi signal strength on Android.
+ *
+ * > **Note:** After the device disconnects from Wi-Fi, this method returns `0`, not `INVALID_SIGNAL_STRENGTH`.
+ *
  * @platform android
  * @returns A promise fulfilled with a number in the range [0, 4], or `INVALID_SIGNAL_STRENGTH` if
  *   unavailable.
@@ -143,6 +146,7 @@ export function addCellSignalStrengthListener(
 
 /**
  * Adds a listener that fires whenever the Wi-Fi signal strength changes.
+ * When the device disconnects from Wi-Fi, the listener receives a strength of `0`.
  * @platform android
  */
 export function addWifiSignalStrengthListener(
@@ -198,6 +202,7 @@ export function useCellSignalStrength(): number {
 /**
  * Returns the current Wi-Fi signal strength and subscribes to updates.
  * The value is in the range [0, 4], or -1 if unavailable.
+ * After the device disconnects from Wi-Fi, the value is `0`, not -1.
  * @platform android
  */
 export function useWifiSignalStrength(): number {
