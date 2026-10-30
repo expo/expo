@@ -48,6 +48,7 @@ internal struct DatePickerView: ExpoSwiftUI.View {
       // Graphical style on macOS: https://github.com/expo/expo/issues/47062
       .frame(minWidth: isGraphicalStyle ? 320 : nil)
       .if(props.title == nil && !hasChildren) { $0.labelsHidden() }
+      .modifier(MeasureAgainAfterAppear())
   }
 
 #if os(iOS)
