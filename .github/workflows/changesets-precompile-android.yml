@@ -37,23 +37,23 @@ jobs:
       - name: 🔑 Verify Turbo cache credentials
         run: test -n "$TURBO_TOKEN" || (echo "TURBO_TOKEN is not set" >&2; exit 1)
       - name: 🔨 Install pnpm
-        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        uses: pnpm/setup@fa36a5ef7dcdefc3a7cb25655c122e00cf6e636e # v3.1.2
         with:
           install: false
       - name: ⬢ Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 24
           cache: 'pnpm'
       - name: 🔨 Use JDK 17
-        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
         with:
           distribution: 'temurin'
           java-version: '17'
       - name: ♻️ Restore Gradle caches
         # Writable, unlike expo-caches on PRs: this workflow only runs for same-repo release
         # branches and manual dispatches, and later runs reuse the downloaded dependencies.
-        uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
+        uses: gradle/actions/setup-gradle@3f5f9adaf7d9fecd50b5935e54106014257a94e6 # v6.4.0
         with:
           cache-read-only: false
       - name: ➕ Add `bin` to GITHUB_PATH
