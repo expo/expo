@@ -70,7 +70,8 @@ export function BaseExpoRouterLink({
     );
   }
 
-  const forwardedProps = { ...props, ...hrefAttrs, ...rest };
+  // Forward the wrapper as `onPress` so a child that fires only `onPress` also navigates.
+  const forwardedProps = { ...props, ...hrefAttrs, ...rest, onPress };
   // React DOM warns about `onPress` on a DOM element. On web, `onClick` below calls it.
   // Other children keep `onPress`: React Native Web's `Pressable` replaces `onClick` with its own handler.
   const { onPress: _onPress, ...domProps } = forwardedProps;
