@@ -98,7 +98,12 @@ extension Array: JavaScriptEncodable where Element: JavaScriptEncodable {
 
 // MARK: - Optional
 
-extension Optional: JavaScriptDecodable where Wrapped: JavaScriptDecodable {
+// The wrapped type may be non-copyable, such as `JavaScriptObject`, so that a non-copyable optional
+// decodes like any other optional, for example as an optional argument. `@_preInverseGenerics` keeps the
+// symbols the members had before `~Copyable` was allowed, so binaries built against an older version
+// still link.
+extension Optional: JavaScriptDecodable where Wrapped: JavaScriptDecodable & ~Copyable {
+  @_preInverseGenerics
   @inlinable
   public static var decodableKinds: JavaScriptValueKinds {
     return Wrapped.decodableKinds.union([.null, .undefined])
@@ -106,6 +111,7 @@ extension Optional: JavaScriptDecodable where Wrapped: JavaScriptDecodable {
 
   // Optional copies nothing itself, so it overrides the zero-copy overload too and forwards the
   // borrowed value straight through — a wrapped primitive argument stays fully zero-copy.
+  @_preInverseGenerics
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -117,6 +123,7 @@ extension Optional: JavaScriptDecodable where Wrapped: JavaScriptDecodable {
     return try Wrapped.decode(value, in: runtime)
   }
 
+  @_preInverseGenerics
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
