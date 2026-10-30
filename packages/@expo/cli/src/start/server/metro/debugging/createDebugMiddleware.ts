@@ -56,7 +56,11 @@ export function createDebugMiddleware({
   const debuggerWebsocketEndpoint = websocketEndpoints['/inspector/debug'] as WebSocketServer;
 
   // NOTE(cedric): add a temporary websocket to handle Network-related CDP events
-  websocketEndpoints['/inspector/network'] = createNetworkWebsocket(debuggerWebsocketEndpoint);
+  // TODO: Remove along with `EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR` once Expo's networking
+  // modules report through React Native's core network reporting
+  if (!env.EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR) {
+    websocketEndpoints['/inspector/network'] = createNetworkWebsocket(debuggerWebsocketEndpoint);
+  }
 
   // Explicitly limit debugger websocket to loopback requests
   debuggerWebsocketEndpoint.on('connection', (socket, request) => {
