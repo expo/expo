@@ -67,7 +67,7 @@ Writing the clipboard does not paste. Focus the intended field before pasting. K
 
 By default, events are 40 milliseconds apart. To change the wait before an event, add `delayMs` to it, from 0 to 1000. A gesture has 2 to 256 events and lasts at most 30 seconds. The command waits until the simulator finishes the gesture input.
 
-## Set the location, orientation, and buttons
+## Simulate location, rotation, and button presses
 
 <Terminal
   cmd={[
@@ -85,7 +85,7 @@ By default, events are 40 milliseconds apart. To change the wait before an event
 
 ### Fold iPhone Duo
 
-On iPhone Duo, `hinge.set` folds or unfolds the device. Pass `fold`, `half`, `unfold`, or an angle from 0 to 180 degrees. `hinge.get` reads the current hinge state:
+On iPhone Duo, `hinge.set` folds or unfolds the device. Pass `fold`, `half`, `unfold`, or an angle in degrees, from 0 (folded) to 180 (unfolded). `hinge.get` reads the current hinge state:
 
 <Terminal
   cmd={[
