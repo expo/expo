@@ -1,6 +1,9 @@
+import { createElement, Fragment } from 'react';
+
 import {
   createUniversalLayoutModifier,
   getUserSizingOverrides,
+  hasPercentageSize,
   omitUserOverridden,
   omitUserOverriddenDimensions,
   resetUniversalDimensionWarningsForTests,
@@ -162,5 +165,44 @@ describe('createUniversalLayoutModifier', () => {
       $type: 'universalLayout',
       widthPoints: 0,
     });
+  });
+});
+
+describe('hasPercentageSize', () => {
+  function Child(_: { style?: object; children?: unknown }) {
+    return null;
+  }
+
+  it('is false when no size is a percentage', () => {
+    const children = [
+      createElement(Child, { key: 'a', style: { width: 100 } }),
+      createElement(Child, { key: 'b' }),
+      'text',
+    ];
+    expect(hasPercentageSize({ width: 200 }, children)).toBe(false);
+  });
+
+  it('is true for a percentage on the stack', () => {
+    expect(hasPercentageSize({ height: '40%' }, null)).toBe(true);
+  });
+
+  it('is true for a percentage on a child', () => {
+    expect(hasPercentageSize(undefined, createElement(Child, { style: { width: '50%' } }))).toBe(
+      true
+    );
+  });
+
+  it('is true for a percentage on a child inside a fragment', () => {
+    const children = createElement(
+      Fragment,
+      null,
+      createElement(Child, { style: { height: '25%' } })
+    );
+    expect(hasPercentageSize(undefined, children)).toBe(true);
+  });
+
+  it('is false for a percentage on a grandchild', () => {
+    const children = createElement(Child, null, createElement(Child, { style: { width: '50%' } }));
+    expect(hasPercentageSize(undefined, children)).toBe(false);
   });
 });

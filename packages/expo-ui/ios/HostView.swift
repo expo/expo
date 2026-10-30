@@ -180,11 +180,12 @@ private struct ViewportSizeMeasurementLayout: Layout {
   }
 
   func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-    // A child percentage applies to this proposal.
-    // Offering `bounds` would use the measured result and apply the fraction again.
-    let offered = measurementProposal(for: proposal)
+    let measured = measurementProposal(for: proposal)
     let isRTL = layoutDirection == .rightToLeft
     for subview in subviews {
+      // A child percentage applies to this proposal.
+      // Offering `bounds` would use the measured result and apply the fraction again.
+      let offered = subview[UniversalLayoutDimensionsKey.self].hasFraction ? measured : ProposedViewSize(bounds.size)
       let origin: CGPoint
       if isRTL {
         let size = subview.dimensions(in: offered)
@@ -197,7 +198,7 @@ private struct ViewportSizeMeasurementLayout: Layout {
   }
 
   /// A zero or nil axis uses the safe area.
-  /// Placement offers this same size, so a percentage is applied once.
+  /// Placement offers this same size to a percentage child, so the percentage is applied once.
   private func measurementProposal(for proposal: ProposedViewSize) -> ProposedViewSize {
     let maxSize = safeAreaSize()
     let proposalWidth = proposal.width ?? 0

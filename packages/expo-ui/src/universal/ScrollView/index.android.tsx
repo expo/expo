@@ -2,6 +2,7 @@ import { Column, Row } from '@expo/ui/jetpack-compose';
 import { horizontalScroll, verticalScroll } from '@expo/ui/jetpack-compose/modifiers';
 
 import { useUniversalLifecycle } from '../hooks';
+import { hasPercentageSize } from '../modifierUtils';
 import { transformToModifiers } from '../transformStyle';
 import type { ScrollViewProps } from './types';
 
@@ -33,14 +34,20 @@ export function ScrollView({
   // The cross axis still resolves.
   if (direction === 'horizontal') {
     return (
-      <Row resolvesChildPercentages modifiers={[...modifiers, horizontalScroll()]}>
+      <Row
+        resolvesChildPercentages
+        usesPercentageLayout={hasPercentageSize(undefined, children)}
+        modifiers={[...modifiers, horizontalScroll()]}>
         {children}
       </Row>
     );
   }
 
   return (
-    <Column resolvesChildPercentages modifiers={[...modifiers, verticalScroll()]}>
+    <Column
+      resolvesChildPercentages
+      usesPercentageLayout={hasPercentageSize(undefined, children)}
+      modifiers={[...modifiers, verticalScroll()]}>
       {children}
     </Column>
   );

@@ -52,7 +52,10 @@ data class LayoutProps(
   val floatingToolbarExitAlwaysScrollBehavior: FloatingToolbarExitAlwaysScrollBehavior? = null,
   val modifiers: ModifierList = emptyList(),
   // Universal `Row` and `Column` set this. Compose `Row` and `Column` leave it false.
-  val resolvesChildPercentages: Boolean = false
+  val resolvesChildPercentages: Boolean = false,
+  // Universal `Row` and `Column` set this only when they or a child have a percentage size.
+  // Otherwise they keep the Compose layout.
+  val usesPercentageLayout: Boolean = false
 ) : ComposeProps
 
 @Composable
@@ -71,7 +74,7 @@ internal fun FunctionalComposableScope.RowContent(props: LayoutProps) {
         Modifier
       }
     )
-  if (props.resolvesChildPercentages) {
+  if (props.resolvesChildPercentages && props.usesPercentageLayout) {
     UniversalRow(
       horizontalArrangement = props.horizontalArrangement?.toComposeArrangement() ?: Arrangement.Start,
       verticalAlignment = props.verticalAlignment?.toComposeAlignment() ?: Alignment.Top,
@@ -118,7 +121,7 @@ internal fun FunctionalComposableScope.ColumnContent(props: LayoutProps) {
         Modifier
       }
     )
-  if (props.resolvesChildPercentages) {
+  if (props.resolvesChildPercentages && props.usesPercentageLayout) {
     UniversalColumn(
       verticalArrangement = props.verticalArrangement?.toComposeArrangement() ?: Arrangement.Top,
       horizontalAlignment = props.horizontalAlignment?.toComposeAlignment() ?: Alignment.Start,
