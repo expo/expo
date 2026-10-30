@@ -283,7 +283,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
             }
             self.logger.error(
               cause: downloadAssetError,
-              code: .assetsFailedToLoad,
+              code: UpdatesErrorCode.forLoadFailure(downloadAssetError, otherwise: .assetsFailedToLoad),
               updateId: self.launchedUpdate?.loggingId(),
               assetId: downloadAssetAsset.key ?? downloadAssetAsset.filename
             )

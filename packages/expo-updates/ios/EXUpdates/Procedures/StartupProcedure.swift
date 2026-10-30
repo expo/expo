@@ -204,7 +204,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       }
       logger.error(
         cause: UpdatesError.startupProcedureDidFinishBackgroundUpdateWithStatusWithError(cause: error),
-        code: .updateFailedToLoad,
+        code: UpdatesErrorCode.forLoadFailure(error, otherwise: .updateFailedToLoad),
         updateId: update?.loggingId(),
         assetId: nil
       )
@@ -313,7 +313,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       self.remoteLoadStatus = updateResponse != nil ? .NewUpdateLoaded : .Idle
       self.errorRecovery.notify(newRemoteLoadStatus: self.remoteLoadStatus)
     } error: { error in
-      self.logger.error(cause: error, code: .updateFailedToLoad)
+      self.logger.error(cause: error, code: UpdatesErrorCode.forLoadFailure(error, otherwise: .updateFailedToLoad))
       self.remoteLoadStatus = .Idle
       self.errorRecovery.notify(newRemoteLoadStatus: self.remoteLoadStatus)
     }
