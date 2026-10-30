@@ -101,7 +101,7 @@ For an iOS session, read the logs of the installed apps with EAS CLI. Start foll
 
 <Terminal cmd={['$ eas simulator:logs --follow']} />
 
-After the session stops, download the saved app logs with `--output`. For each device, EAS keeps only the first 30 minutes of app logs. See [`simulator:logs`](/preview/simulators/reference/cli/#simulatorlogs).
+After the session stops, download the saved app logs with `--id <session-id> --output <path>`. The saved logs cover only the first 30 minutes of the session. See [`simulator:logs`](/preview/simulators/reference/cli/#simulatorlogs).
 
 agent-device also has a `logs` command that collects the logs of the app that it opened. Logging is off by default. Open a log window for one reproduction instead of collecting all logs. Read the version-matched help for the syntax:
 
