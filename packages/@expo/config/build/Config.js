@@ -37,13 +37,6 @@ function _requireUtils() {
   };
   return data;
 }
-function _deepmerge() {
-  const data = _interopRequireDefault(require("deepmerge"));
-  _deepmerge = function () {
-    return data;
-  };
-  return data;
-}
 function _glob() {
   const data = require("glob");
   _glob = function () {
@@ -89,6 +82,13 @@ function _getConfig() {
 function _getExpoSDKVersion() {
   const data = require("./getExpoSDKVersion");
   _getExpoSDKVersion = function () {
+    return data;
+  };
+  return data;
+}
+function _mergeConfig() {
+  const data = require("./mergeConfig");
+  _mergeConfig = function () {
     return data;
   };
   return data;
@@ -371,7 +371,7 @@ async function modifyConfigAsync(projectRoot, modifications, readOptions = {}, w
   }
 
   // Attempt to write to a function-like dynamic config, when used with a static config
-  if (config.staticConfigPath && config.dynamicConfigObjectType === 'function' && !modifications.hasOwnProperty('plugins') // We don't know what plugins are in dynamic configs
+  if (config.staticConfigPath && config.dynamicConfigObjectType === 'function' && !Object.hasOwn(modifications, 'plugins') // We don't know what plugins are in dynamic configs
   ) {
     const outputConfig = mergeConfigModifications(config, modifications);
     if (isDryRun) {
@@ -436,11 +436,9 @@ function mergeConfigModifications(config, {
   ...modifications
 }) {
   const baseConfig = config.rootConfig.expo || config.rootConfig;
-  const modifiedExpoConfig = (0, _deepmerge().default)(baseConfig, modifications);
+  const modifiedExpoConfig = (0, _mergeConfig().mergeConfig)(baseConfig, modifications);
   if (isPlainObject(modifications.updates)) {
-    modifiedExpoConfig.updates = (0, _deepmerge().default)(isPlainObject(baseConfig.updates) ? baseConfig.updates : {}, modifications.updates, {
-      arrayMerge: mergeArraysWithoutDuplicates
-    });
+    modifiedExpoConfig.updates = (0, _mergeConfig().mergeConfig)(isPlainObject(baseConfig.updates) ? baseConfig.updates : {}, modifications.updates, mergeArraysWithoutDuplicates);
   }
   if (plugins?.length) {
     // When adding plugins, ensure the config has a plugin list
@@ -457,7 +455,7 @@ function mergeConfigModifications(config, {
       if (!pluginName) continue;
 
       // Add the plugin if it doesn't exist yet, including its properties
-      if (!(pluginName in existingPlugins)) {
+      if (!Object.hasOwn(existingPlugins, pluginName)) {
         modifiedExpoConfig.plugins.push(plugin);
         continue;
       }
@@ -479,7 +477,7 @@ function mergeConfigModifications(config, {
 
           // Merge the props to the existing plugin properties
           if (Array.isArray(existingPlugin) && existingPlugin[0]) {
-            return [existingPlugin[0], (0, _deepmerge().default)(existingPlugin[1] ?? {}, pluginProps)];
+            return [existingPlugin[0], (0, _mergeConfig().mergeConfig)(existingPlugin[1] ?? {}, pluginProps)];
           }
           return existingPlugin;
         });
@@ -523,7 +521,7 @@ function hasConfigModifications(modifications, config) {
 }
 function isMatchingObject(expectedValues, actualValues, matchArraysAsSets = false) {
   for (const key in expectedValues) {
-    if (!expectedValues.hasOwnProperty(key)) {
+    if (!Object.hasOwn(expectedValues, key)) {
       continue;
     }
     if (matchArraysAsSets && Array.isArray(expectedValues[key])) {

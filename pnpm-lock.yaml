@@ -2152,9 +2152,6 @@ importers:
       '@expo/require-utils':
         specifier: workspace:^56.1.8
         version: link:../require-utils
-      deepmerge:
-        specifier: ^4.3.1
-        version: 4.3.1
       getenv:
         specifier: ^2.0.0
         version: 2.0.0
@@ -18930,9 +18927,7 @@ snapshots:
       metro-runtime: 0.84.5
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
