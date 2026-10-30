@@ -2,8 +2,10 @@ import { vol } from 'memfs';
 import path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
+import * as iosInlineModules from '../../inlineModules/iosInlineModules';
 import {
   formatArrayOfReactDelegateHandler,
+  generateModulesProviderAsync,
   getSwiftModuleNames,
   resolveExtraBuildDependenciesAsync,
   resolveModuleAsync,
@@ -165,6 +167,27 @@ describe(resolveModuleAsync, () => {
     });
   });
 
+  it('should export local modules in the local package', async () => {
+    const name = 'local-module';
+    const pkgDir = path.join('modules', name);
+
+    vol.fromJSON({ [`ios/LocalModule.podspec`]: '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name,
+        path: pkgDir,
+        version: '',
+        config: new ExpoModuleConfig({ platforms: ['ios'] }),
+        isLocal: true,
+      },
+      {}
+    );
+
+    expect(result).toMatchObject({ packageName: 'local-module', exportedPackageName: '$local' });
+  });
+
   it('uses scanned modules when the config declares none', async () => {
     const name = 'expo-clipboard';
     const pkgDir = path.join('node_modules', name);
@@ -193,6 +216,7 @@ describe(resolveModuleAsync, () => {
       { name: null, class: 'ClipboardModule' },
       { name: null, class: 'ClipboardPasteButtonModule' },
     ]);
+    expect(result?.modulesFromScan).toBe(true);
   });
 
   it('orders scanned modules by code unit, independent of the host locale', async () => {
@@ -249,6 +273,7 @@ describe(resolveModuleAsync, () => {
     );
 
     expect(result?.modules).toEqual([]);
+    expect(result?.modulesFromScan).toBeUndefined();
   });
 
   it('ignores scanned modules when the config declares any, as an explicit override', async () => {
@@ -390,5 +415,129 @@ describe(resolveExtraBuildDependenciesAsync, () => {
   it('should return null if Podfile.properties.json not found', async () => {
     const extraBuildDeps = await resolveExtraBuildDependenciesAsync('/app/macos');
     expect(extraBuildDeps).toBe(null);
+  });
+});
+
+describe(generateModulesProviderAsync, () => {
+  function descriptor(packageName: string, moduleClass: string, exportedPackageName?: string) {
+    return {
+      packageName,
+      ...(exportedPackageName ? { exportedPackageName } : {}),
+      pods: [],
+      flags: undefined,
+      swiftModuleNames: [],
+      modules: [{ name: null, class: moduleClass }],
+      modulesFromScan: true,
+      appDelegateSubscribers: [],
+      reactDelegateHandlers: [],
+      debugOnly: false,
+    };
+  }
+
+  it('lists modules declared with the macro in packages and the others in getModuleClasses()', async () => {
+    const targetPath = '/app/ios/Pods/ExpoModulesProvider.swift';
+    await generateModulesProviderAsync(
+      [
+        { ...descriptor('expo-camera', 'CameraModule'), modulesFromScan: false },
+        descriptor('expo-audio', 'AudioModule'),
+      ],
+      targetPath,
+      null,
+      { watchedDirectories: [], inlineModulesTargets: { targets: [] }, targetPath, appRoot: '/app' }
+    );
+
+    const content = vol.readFileSync(targetPath, 'utf8') as string;
+    const packages = content.slice(
+      content.indexOf('override var packages'),
+      content.indexOf('getModuleClasses()')
+    );
+    const moduleClasses = content.slice(
+      content.indexOf('getModuleClasses()'),
+      content.indexOf('getAppDelegateSubscribers()')
+    );
+    expect(moduleClasses).toContain('(module: CameraModule.self, name: nil)');
+    expect(moduleClasses).not.toContain('AudioModule');
+    expect(packages).toContain('"expo-audio": ExpoPackage(');
+    expect(packages).not.toContain('CameraModule');
+  });
+
+  it('lists the local package first and the other packages sorted', async () => {
+    const targetPath = '/app/ios/Pods/ExpoModulesProvider.swift';
+    await generateModulesProviderAsync(
+      [
+        descriptor('expo-camera', 'CameraModule'),
+        descriptor('my-local-module', 'MyLocalModule', '$local'),
+        descriptor('@expo/ui', 'ExpoUIModule'),
+      ],
+      targetPath,
+      null,
+      { watchedDirectories: [], inlineModulesTargets: { targets: [] }, targetPath, appRoot: '/app' }
+    );
+
+    const content = vol.readFileSync(targetPath, 'utf8') as string;
+    const keys = [...content.matchAll(/"([^"]+)": ExpoPackage\(/g)].map((match) => match[1]);
+    expect(keys).toEqual(['$local', '@expo/ui', 'expo-camera']);
+  });
+
+  it('lists the debug-only packages only in the debug configuration', async () => {
+    const targetPath = '/app/ios/Pods/ExpoModulesProvider.swift';
+    await generateModulesProviderAsync(
+      [
+        descriptor('expo-camera', 'CameraModule'),
+        { ...descriptor('expo-dev-tools', 'DevToolsModule'), debugOnly: true },
+        { ...descriptor('expo-camera-dev', 'CameraDevModule'), debugOnly: true },
+      ],
+      targetPath,
+      null,
+      { watchedDirectories: [], inlineModulesTargets: { targets: [] }, targetPath, appRoot: '/app' }
+    );
+
+    const content = vol.readFileSync(targetPath, 'utf8') as string;
+    const packages = content.slice(
+      content.indexOf('override var packages'),
+      content.indexOf('getModuleClasses()')
+    );
+    const [debugBlock, releaseBlock] = packages
+      .slice(packages.indexOf('#if EXPO_CONFIGURATION_DEBUG'), packages.indexOf('#endif'))
+      .split('#else');
+    const keys = (block: string) =>
+      [...block.matchAll(/"([^"]+)": ExpoPackage\(/g)].map((match) => match[1]);
+    expect(keys(debugBlock!)).toEqual(['expo-camera', 'expo-camera-dev', 'expo-dev-tools']);
+    expect(keys(releaseBlock!)).toEqual(['expo-camera']);
+  });
+
+  it('merges the inline modules declared with the macro into the local package', async () => {
+    jest.spyOn(iosInlineModules, 'getIosInlineModulesClassNames').mockResolvedValue({
+      modules: [{ class: 'InlineDslModule', name: null }],
+      expoModules: [{ class: 'InlineExpoModule', name: null }],
+    });
+    const targetPath = '/app/ios/Pods/ExpoModulesProvider.swift';
+    await generateModulesProviderAsync(
+      [descriptor('my-local-module', 'MyLocalModule', '$local')],
+      targetPath,
+      null,
+      {
+        watchedDirectories: ['app'],
+        inlineModulesTargets: { targets: ['App'] },
+        targetPath,
+        targetName: 'App',
+        appRoot: '/app',
+      }
+    );
+
+    const content = vol.readFileSync(targetPath, 'utf8') as string;
+    const packages = content.slice(
+      content.indexOf('override var packages'),
+      content.indexOf('getModuleClasses()')
+    );
+    const moduleClasses = content.slice(
+      content.indexOf('getModuleClasses()'),
+      content.indexOf('getAppDelegateSubscribers()')
+    );
+    expect([...packages.matchAll(/"([^"]+)": ExpoPackage\(/g)]).toHaveLength(1);
+    expect(packages).toContain('"$local": ExpoPackage(');
+    expect(packages).toContain('modules: [MyLocalModule.self, InlineExpoModule.self]');
+    expect(moduleClasses).toContain('(module: InlineDslModule.self, name: nil)');
+    expect(moduleClasses).not.toContain('InlineExpoModule');
   });
 });
