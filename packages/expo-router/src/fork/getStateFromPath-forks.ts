@@ -251,6 +251,16 @@ const joinPaths = (...paths: string[]): string =>
     .filter(Boolean)
     .join('/');
 
+/**
+ * Returns a key for the order that `getRouteConfigSorter` gives. The order uses only the groups in
+ * `previousSegments` and their positions, so other segments do not change the key.
+ */
+export function getRouteConfigSorterKey(previousSegments: string[] = []) {
+  return previousSegments
+    .map((segment) => (segment.startsWith('(') && segment.endsWith(')') ? segment : ''))
+    .join('/');
+}
+
 export function getRouteConfigSorter(previousSegments: string[] = []) {
   return function sortConfigs(a: RouteConfig, b: RouteConfig) {
     // Sort config so that:
