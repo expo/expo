@@ -1,5 +1,5 @@
 import { screen } from '@testing-library/react-native';
-import { useEffect, type PropsWithChildren } from 'react';
+import { use, useEffect, type PropsWithChildren } from 'react';
 import { View, Text } from 'react-native';
 import { ScreenStackItem as _ScreenStackItem } from 'react-native-screens';
 
@@ -16,7 +16,6 @@ import type { NavigationProp } from '../../../react-navigation/native';
 import { renderRouter } from '../../../testing-library';
 import { useNavigation } from '../../../useNavigation';
 import { Redirect } from '../../Redirect';
-import { ZoomTransitionEnabler } from '../../zoom/ZoomTransitionEnabler';
 import { usePreventZoomTransitionDismissal } from '../../zoom/usePreventZoomTransitionDismissal';
 import { ZoomTransitionTargetContext } from '../../zoom/zoom-transition-context';
 import { HrefPreview } from '../HrefPreview';
@@ -548,23 +547,12 @@ describe('usePreventZoomTransitionDismissal in preview', () => {
   });
 });
 
-describe('ZoomTransitionEnabler in preview', () => {
-  it('does not render LinkZoomTransitionEnabler', async () => {
-    const routeWithZoomParams = {
-      key: 'preview-key',
-      name: 'preview',
-      params: {
-        __internal_expo_router_zoom_transition_source_id: 'source-123',
-        __internal_expo_router_zoom_transition_screen_id: 'preview-key',
-      },
-    };
-
+describe('Zoom target in preview', () => {
+  it('does not provide a zoom target or render a native enabler', async () => {
+    const onIdentifier = jest.fn();
     function PreviewScreen() {
-      return (
-        <View testID="preview">
-          <ZoomTransitionEnabler route={routeWithZoomParams} />
-        </View>
-      );
+      onIdentifier(use(ZoomTransitionTargetContext).identifier);
+      return <View testID="preview" />;
     }
 
     await renderRouter({
@@ -579,53 +567,7 @@ describe('ZoomTransitionEnabler in preview', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('preview')).toBeVisible();
+    expect(onIdentifier).toHaveBeenLastCalledWith(null);
     expect(MockedLinkZoomTransitionEnabler).not.toHaveBeenCalled();
-  });
-
-  it('does not call addEnabler or setDismissalBoundsRect', async () => {
-    const addEnabler = jest.fn();
-    const removeEnabler = jest.fn();
-    const setDismissalBoundsRect = jest.fn();
-    const routeWithZoomParams = {
-      key: 'preview-key',
-      name: 'preview',
-      params: {
-        __internal_expo_router_zoom_transition_source_id: 'source-123',
-        __internal_expo_router_zoom_transition_screen_id: 'preview-key',
-      },
-    };
-
-    function PreviewScreen() {
-      return (
-        <ZoomTransitionTargetContext
-          value={{
-            identifier: 'source-123',
-            dismissalBoundsRect: null,
-            setDismissalBoundsRect,
-            addEnabler,
-            removeEnabler,
-            hasEnabler: false,
-          }}>
-          <View testID="preview">
-            <ZoomTransitionEnabler route={routeWithZoomParams} />
-          </View>
-        </ZoomTransitionTargetContext>
-      );
-    }
-
-    await renderRouter({
-      _layout: () => <Stack />,
-      index: () => (
-        <View testID="index">
-          <HrefPreview href="/preview" />
-        </View>
-      ),
-      preview: PreviewScreen,
-    });
-
-    expect(screen.getByTestId('index')).toBeVisible();
-    expect(screen.getByTestId('preview')).toBeVisible();
-    expect(addEnabler).not.toHaveBeenCalled();
-    expect(setDismissalBoundsRect).not.toHaveBeenCalled();
   });
 });

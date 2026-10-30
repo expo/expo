@@ -1,14 +1,31 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
-import { use, useState } from 'react';
+import { use, useEffect, useState, type ComponentProps } from 'react';
 import { Text, View } from 'react-native';
+import { ScreenStackItem as _ScreenStackItem } from 'react-native-screens';
 
 import { internalNavigationEvents } from '../../../global-state/internalNavigationEvents';
 import { router } from '../../../imperative-api';
 import Stack from '../../../layouts/Stack';
+import { useRoute } from '../../../react-navigation/native';
 import { renderRouter } from '../../../testing-library';
 import { Pressable } from '../../../views/Pressable';
 import { Link } from '../../Link';
+import { usePreventZoomTransitionDismissal } from '../usePreventZoomTransitionDismissal';
 import { ZoomTransitionTargetContext } from '../zoom-transition-context';
+
+jest.mock('react-native-screens', () => {
+  const actualScreens: typeof import('react-native-screens') = jest.requireActual(
+    'react-native-screens'
+  );
+  return {
+    ...actualScreens,
+    ScreenStackItem: jest.fn((props: ComponentProps<typeof _ScreenStackItem>) => (
+      <actualScreens.ScreenStackItem {...props} />
+    )),
+  };
+});
+
+const MockedScreenStackItem = jest.mocked(_ScreenStackItem);
 
 jest.mock('../../preview/native', () => {
   const { View } = require('react-native');
@@ -32,10 +49,10 @@ jest.mock('../../preview/native', () => {
   };
 });
 
-jest.mock('../ZoomTransitionEnabler', () => {
+jest.mock('../zoom-transition-enabled', () => {
   const originalModule = jest.requireActual(
-    '../ZoomTransitionEnabler'
-  ) as typeof import('../ZoomTransitionEnabler');
+    '../zoom-transition-enabled'
+  ) as typeof import('../zoom-transition-enabled');
   return {
     ...originalModule,
     isZoomTransitionEnabled: () => true,
@@ -80,6 +97,7 @@ describe('ZoomTransitionEnabler with gestureEnabled', () => {
 
   it('allows dismissal gesture when no gestureEnabled is set', async () => {
     await renderRouter({
+      _layout: () => <Stack />,
       index: IndexWithZoomLink,
       dest: () => <View testID="dest-page" />,
     });
@@ -189,75 +207,297 @@ async function navigateViaPreviewZoomLink() {
   expect(screen.getByTestId('dest-page')).toBeVisible();
 }
 
-describe('hasEnabler tracking', () => {
-  let onHasEnabler: jest.Mock;
+it('does not provide a zoom target for a preview navigation to a card', async () => {
+  const onIdentifier = jest.fn();
 
-  function DestWithEnablerTracker({ onHasEnabler }: { onHasEnabler: (v: boolean) => void }) {
-    const { hasEnabler } = use(ZoomTransitionTargetContext);
-    onHasEnabler(hasEnabler);
-    return <View testID="dest-page" />;
+  function Destination() {
+    onIdentifier(use(ZoomTransitionTargetContext).identifier);
+    usePreventZoomTransitionDismissal({
+      unstable_dismissalBoundsRect: { minX: 10, maxX: 200 },
+    });
+    return (
+      <View testID="dest-page">
+        <Link.AppleZoomTarget>
+          <View testID="zoom-target-child" />
+        </Link.AppleZoomTarget>
+      </View>
+    );
   }
 
+  await renderRouter({
+    _layout: () => <Stack />,
+    index: () => <View testID="index-page" />,
+    dest: Destination,
+  });
+
+  const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  try {
+    await navigateViaPreviewZoomLink();
+    expect(onIdentifier).toHaveBeenLastCalledWith(null);
+    expect(screen.getByTestId('zoom-target-child')).toBeVisible();
+    expect(screen.queryByTestId('link-zoom-transition-alignment-rect-detector')).toBeNull();
+  } finally {
+    consoleWarnSpy.mockRestore();
+  }
+});
+
+describe('zoom target context', () => {
   beforeEach(() => {
     MockedLinkZoomTransitionEnabler.mockClear();
-    onHasEnabler = jest.fn();
   });
 
-  it('hasEnabler is true in a screen with zoom transition', async () => {
+  it('provides the source identifier in a zoom destination', async () => {
+    const onIdentifier = jest.fn();
+
+    function Destination() {
+      onIdentifier(use(ZoomTransitionTargetContext).identifier);
+      return <View testID="dest-page" />;
+    }
+
     await renderRouter({
+      _layout: () => <Stack />,
       index: IndexWithZoomLink,
-      dest: () => <DestWithEnablerTracker onHasEnabler={onHasEnabler} />,
+      dest: Destination,
     });
 
     await navigateViaZoomLink();
-    expect(onHasEnabler).toHaveBeenCalledWith(true);
+    expect(onIdentifier).toHaveBeenLastCalledWith(expect.any(String));
+    expect(MockedLinkZoomTransitionEnabler).toHaveBeenCalled();
   });
 
-  it('hasEnabler is true in a modal destination without preview', async () => {
-    await renderRouter({
-      _layout: () => (
-        <Stack>
-          <Stack.Screen name="dest" options={{ presentation: 'modal' }} />
-        </Stack>
-      ),
-      index: IndexWithZoomLink,
-      dest: () => <DestWithEnablerTracker onHasEnabler={onHasEnabler} />,
-    });
+  it('enables preview zoom when an undeclared screen resolves as modal above a modal', async () => {
+    const onIdentifier = jest.fn();
 
-    await navigateViaZoomLink();
-    expect(onHasEnabler).toHaveBeenCalledWith(true);
-  });
+    function Destination() {
+      onIdentifier(use(ZoomTransitionTargetContext).identifier);
+      return <View testID="dest-page" />;
+    }
 
-  it('hasEnabler is true in a modal destination with preview', async () => {
-    await renderRouter({
-      _layout: () => (
-        <Stack>
-          <Stack.Screen name="dest" options={{ presentation: 'modal' }} />
-        </Stack>
-      ),
-      index: () => <View testID="index-page" />,
-      dest: () => <DestWithEnablerTracker onHasEnabler={onHasEnabler} />,
-    });
-
-    await navigateViaPreviewZoomLink();
-    expect(onHasEnabler).toHaveBeenCalledWith(true);
-  });
-
-  it('hasEnabler is false when non-modal and preview', async () => {
     const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      await renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          </Stack>
+        ),
+        index: () => <View testID="index-page" />,
+        modal: () => <View testID="modal-page" />,
+        dest: Destination,
+      });
+
+      await act(() => router.push('/modal'));
+      await navigateViaPreviewZoomLink();
+      expect(onIdentifier).toHaveBeenLastCalledWith('preview-source');
+      expect(MockedLinkZoomTransitionEnabler).toHaveBeenCalled();
+      expect(consoleWarnSpy).not.toHaveBeenCalledWith(
+        '[expo-router] Zoom transition with link preview is only supported for screens presented modally. Please set the screen presentation to "fullScreenModal" or another modal presentation style.'
+      );
+    } finally {
+      consoleWarnSpy.mockRestore();
+    }
+  });
+
+  it('uses custom dismissal bounds over gestureEnabled false', async () => {
     await renderRouter({
-      index: () => <View testID="index-page" />,
-      dest: () => <DestWithEnablerTracker onHasEnabler={onHasEnabler} />,
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="dest" options={{ gestureEnabled: false }} />
+        </Stack>
+      ),
+      index: IndexWithZoomLink,
+      dest: function Destination() {
+        usePreventZoomTransitionDismissal({
+          unstable_dismissalBoundsRect: { minX: 10, maxX: 200 },
+        });
+        return <View testID="dest-page" />;
+      },
     });
 
-    await navigateViaPreviewZoomLink();
-    // Non-modal + preview navigation should warn and not enable zoom transition
-    expect(consoleWarnSpy).toHaveBeenCalledWith(
-      expect.stringContaining(
-        'Zoom transition with link preview is only supported for screens presented modally'
-      )
-    );
-    expect(onHasEnabler).not.toHaveBeenCalledWith(true);
-    consoleWarnSpy.mockRestore();
+    await navigateViaZoomLink();
+    expect(getLastDismissalBoundsRect()).toEqual({ minX: 10, maxX: 200 });
   });
+
+  it('blocks dismissal with gestureEnabled false when the hook has no custom bounds', async () => {
+    await renderRouter({
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="dest" options={{ gestureEnabled: false }} />
+        </Stack>
+      ),
+      index: IndexWithZoomLink,
+      dest: function Destination() {
+        usePreventZoomTransitionDismissal();
+        return <View testID="dest-page" />;
+      },
+    });
+
+    await navigateViaZoomLink();
+    expect(getLastDismissalBoundsRect()).toEqual({ maxX: 0, maxY: 0 });
+  });
+
+  it('restores dismissal when bounds are removed despite the internal gesture override', async () => {
+    await renderRouter({
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="dest" options={{ gestureEnabled: true }} />
+        </Stack>
+      ),
+      index: IndexWithZoomLink,
+      dest: function Destination() {
+        const [bounds, setBounds] = useState<{ maxX: number } | undefined>({ maxX: 44 });
+        usePreventZoomTransitionDismissal({
+          unstable_dismissalBoundsRect: bounds,
+        });
+        return (
+          <View testID="dest-page">
+            <Pressable testID="remove-bounds" onPress={() => setBounds(undefined)}>
+              <Text>Remove bounds</Text>
+            </Pressable>
+          </View>
+        );
+      },
+    });
+
+    await navigateViaZoomLink();
+    expect(getLastDismissalBoundsRect()).toEqual({ maxX: 44 });
+
+    await act(() => fireEvent.press(screen.getByTestId('remove-bounds')));
+    expect(getLastDismissalBoundsRect()).toBeNull();
+  });
+
+  it('warns for preview zoom when the first screen requests modal presentation', async () => {
+    let routeKey: string | undefined;
+    const onIdentifier = jest.fn();
+
+    function Destination() {
+      routeKey = useRoute().key;
+      onIdentifier(use(ZoomTransitionTargetContext).identifier);
+      return <View testID="dest-page" />;
+    }
+
+    const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      await renderRouter(
+        {
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="dest" options={{ presentation: 'modal' }} />
+            </Stack>
+          ),
+          dest: Destination,
+        },
+        { initialUrl: '/dest' }
+      );
+
+      expect(routeKey).toBeDefined();
+      await act(() =>
+        router.setParams({
+          __internal_expo_router_zoom_transition_source_id: 'preview-source',
+          __internal_expo_router_zoom_transition_screen_id: routeKey,
+          __internal__expo_router_is_preview_navigation: 'true',
+        })
+      );
+
+      expect(consoleWarnSpy).toHaveBeenCalledWith(
+        '[expo-router] Zoom transition with link preview is only supported for screens presented modally. Please set the screen presentation to "fullScreenModal" or another modal presentation style.'
+      );
+      expect(onIdentifier).toHaveBeenLastCalledWith(null);
+      expect(MockedLinkZoomTransitionEnabler).not.toHaveBeenCalled();
+    } finally {
+      consoleWarnSpy.mockRestore();
+    }
+  });
+
+  it('passes dismissal bounds to the native enabler on the first zoom navigation', async () => {
+    await renderRouter({
+      _layout: () => <Stack />,
+      index: IndexWithZoomLink,
+      dest: function Destination() {
+        usePreventZoomTransitionDismissal({
+          unstable_dismissalBoundsRect: { maxX: 44 },
+        });
+        return <View testID="dest-page" />;
+      },
+    });
+
+    await navigateViaZoomLink();
+    expect(getLastDismissalBoundsRect()).toEqual({ maxX: 44 });
+  });
+});
+
+it('does not loop when the dismissal hook shares a screen with inline options after plain navigation', async () => {
+  await renderRouter({
+    _layout: () => <Stack />,
+    index: () => (
+      <Link href="/dest">
+        <Text testID="plain-link">Open</Text>
+      </Link>
+    ),
+    dest: function Destination() {
+      usePreventZoomTransitionDismissal({
+        unstable_dismissalBoundsRect: { maxX: 44 },
+      });
+      return (
+        <View testID="dest-page">
+          <Stack.Screen options={{ title: 'Destination' }} />
+        </View>
+      );
+    },
+  });
+
+  await act(() => fireEvent.press(screen.getByTestId('plain-link')));
+  expect(screen.getByTestId('dest-page')).toBeVisible();
+});
+
+it('keeps a preloaded screen mounted and preserves its inline title when zoom activates', async () => {
+  const onMount = jest.fn();
+  const onUnmount = jest.fn();
+  let preloadedKey: string | undefined;
+
+  function Destination() {
+    useEffect(() => {
+      onMount();
+      return () => onUnmount();
+    }, []);
+    return (
+      <View testID="dest-page">
+        <Stack.Screen options={{ title: 'Custom title' }} />
+      </View>
+    );
+  }
+
+  await renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Screen name="dest" options={{ presentation: 'fullScreenModal' }} />
+      </Stack>
+    ),
+    index: () => <View testID="index-page" />,
+    dest: Destination,
+  });
+
+  const unsubscribe = internalNavigationEvents.addListener('routePreloaded', ({ routeKey }) => {
+    preloadedKey = routeKey;
+  });
+  await act(() => router.prefetch('/dest'));
+  unsubscribe();
+
+  expect(preloadedKey).toBeDefined();
+  expect(onMount).toHaveBeenCalledTimes(1);
+
+  await act(() =>
+    router.navigate(
+      {
+        pathname: '/dest',
+        params: { __internal_expo_router_zoom_transition_source_id: 'zoom-source' },
+      },
+      { __internal__PreviewKey: preloadedKey }
+    )
+  );
+
+  expect(screen.getByTestId('dest-page')).toBeVisible();
+  expect(MockedScreenStackItem.mock.lastCall?.[0].headerConfig?.title).toBe('Custom title');
+  expect(onMount).toHaveBeenCalledTimes(1);
+  expect(onUnmount).not.toHaveBeenCalled();
 });
