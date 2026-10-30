@@ -98,7 +98,7 @@ Hinge actions return an error on a device that does not fold.
 
 ## Install an app
 
-`app.install` uploads a file from your computer and installs it on the simulator. Pass an **.ipa** file that contains an iOS Simulator build. A device build does not install:
+`app.install` uploads a file from your computer and installs it on the simulator. Pass an **.ipa** file that contains an iOS Simulator build, not a device build:
 
 <Terminal cmd={['$ eas simulator:control app.install ./MyApp.ipa --id <session-id>']} />
 
@@ -106,7 +106,7 @@ The upload accepts a file, not a folder. To install a **.app** folder, put it in
 
 <Terminal cmd={['$ mkdir Payload && cp -R MyApp.app Payload/', '$ zip -qry MyApp.ipa Payload']} />
 
-You can also install a **.app** folder with the controller's install command. See [Install an app on a remote Android Emulator or iOS Simulator](/preview/simulators/how-to/install-your-app/#install-a-local-build).
+A controller can also install a **.app** folder. See [Install a local build](/preview/simulators/how-to/install-your-app/#install-a-local-build).
 
 ## Restart an installed app
 
@@ -166,13 +166,13 @@ To send a deep link without restarting the app, use `app.openUrl`:
 
 For a custom scheme URL, the simulator host approves the scheme for the app before it opens the URL. If that approval fails, the Simulator can ask for confirmation. Check that the app shows the expected screen before sending more input.
 
-Without approval, a link with a custom scheme can show the system **Open in** dialog, for example when the link opens from Safari. To approve a scheme for an app before such a link opens, use `app.approveUrlScheme`:
+A custom scheme URL that another tool opens with `simctl openurl` can show the system **Open in** dialog. To approve a scheme for an app before such a URL opens, use `app.approveUrlScheme`:
 
 <Terminal
   cmd={['$ eas simulator:control app.approveUrlScheme com.example.app myapp --id <session-id>']}
 />
 
-Pass the scheme without `://`. `http` and `https` links do not need approval.
+Pass the scheme without `://`. `http` and `https` links do not need approval. The approval covers only URLs that `simctl openurl` opens. A link in Safari can still ask for confirmation.
 
 ## Save a screenshot on your computer
 

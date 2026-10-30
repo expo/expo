@@ -21,7 +21,7 @@ A new Expo Simulators session starts with a blank device. To put your app on it,
 | EAS Build fingerprint      | `--build-fingerprint <hash>`      | The most recent finished, non-expired build with the fingerprint hash that you pass.                                                       |
 | Application archive URL    | `--application-archive-url <url>` | A build that another system made and published to a URL.                                                                                   |
 | Expo Go                    | `--expo-go`                       | A project that you can test in Expo Go. See [Test your project in Expo Go on a remote simulator](/preview/simulators/works-with/expo-go/). |
-| Local build, after startup | No start flag                     | A **.app** or **.apk** on your computer. See [Install a local build](#install-a-local-build).                                              |
+| Local build, after startup | No start flag                     | A **.app**, **.apk**, or iOS Simulator **.ipa** on your computer. See [Install a local build](#install-a-local-build).                     |
 
 The four start flags are mutually exclusive. Pass at most one of them. A session without an application source starts with a blank device.
 
@@ -29,10 +29,10 @@ The four start flags are mutually exclusive. Pass at most one of them. A session
 
 A remote device is a simulator or an emulator, not a physical phone. Build for that target:
 
-| Platform | Required build                                                                                     | Fails to install                     |
-| -------- | -------------------------------------------------------------------------------------------------- | ------------------------------------ |
-| Android  | An **.apk**. With EAS Build, [build an APK](/build-reference/apk/).                                | An **.aab**.                         |
-| iOS      | An iOS Simulator build. With EAS Build, set [`ios.simulator: true`](/build-reference/simulators/). | A device build, such as an **.ipa**. |
+| Platform | Required build                                                                                     | Fails to install                                           |
+| -------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------- |
+| Android  | An **.apk**. With EAS Build, [build an APK](/build-reference/apk/).                                | An **.aab**.                                               |
+| iOS      | An iOS Simulator build. With EAS Build, set [`ios.simulator: true`](/build-reference/simulators/). | A device build, such as an **.ipa** for a physical device. |
 
 This EAS Build profile creates an installable build for both platforms:
 
@@ -175,7 +175,7 @@ A local upload takes longer for a large build. When the build is at a URL, the r
   ]}
 />
 
-In an iOS session, you can also install an **.ipa** file that contains a Simulator build with [`eas simulator:control app.install`](/preview/simulators/how-to/control-with-eas-cli/#install-an-app).
+In an iOS session, you can also install an **.ipa** file that contains an iOS Simulator build with [`eas simulator:control app.install`](/preview/simulators/how-to/control-with-eas-cli/#install-an-app).
 
 ## Find the app identifier
 
