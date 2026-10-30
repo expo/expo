@@ -9,6 +9,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.UUID
 import kotlin.text.indexOf
 import kotlin.text.substring
 
@@ -56,14 +57,16 @@ class ResolvingShareIntentDataParser {
 
     private fun resolveUri(context: Context, uri: Uri, mimeType: String): ResolvedSharePayload {
       val contentResolver = context.contentResolver
-      val fileName = getFileName(contentResolver, uri) ?: "unknown"
+      val fileName = getFileName(contentResolver, uri)?.let(::sanitizeFileName) ?: "unknown"
       val fileSize = getFileSize(contentResolver, uri)
       val specificMimeType = contentResolver.getType(uri) ?: mimeType
       val type = ShareType.fromMimeType(specificMimeType)
 
-      // Copy to cache dir to ensure access
-      val file = File(context.cacheDir, fileName)
+      // Copy to cache dir to ensure access. The sending app chooses the file name, so each copy
+      // gets its own directory to keep it from replacing other files in the cache.
+      val file = File(File(context.cacheDir, "expo-sharing/${UUID.randomUUID()}"), fileName)
       try {
+        file.parentFile?.mkdirs()
         contentResolver.openInputStream(uri)?.use { input ->
           FileOutputStream(file).use { output ->
             input.copyTo(output)
@@ -100,6 +103,11 @@ class ResolvingShareIntentDataParser {
       }
 
       return name ?: uri.lastPathSegment
+    }
+
+    // `DISPLAY_NAME` and the URI path come from the sending app and can contain `../`.
+    private fun sanitizeFileName(name: String): String? {
+      return name.substringAfterLast('/').takeUnless { it.isEmpty() || it == "." || it == ".." }
     }
 
     private fun getFileSize(resolver: ContentResolver, uri: Uri): Long? {
