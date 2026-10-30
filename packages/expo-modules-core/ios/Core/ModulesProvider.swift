@@ -2,7 +2,8 @@ import Foundation
 
 /**
  The native exports of one npm package. A modules provider returns the packages keyed by the npm package name,
- and that name is the JS name of the package. Local and inline modules are in the `$local` package.
+ and that name is the JS name of the package, for example `expo.packages['expo-audio'].AudioModule`.
+ Local and inline modules are in the `$local` package.
  */
 public struct ExpoPackage {
   /**

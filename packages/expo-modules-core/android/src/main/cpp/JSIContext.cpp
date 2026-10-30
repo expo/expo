@@ -132,6 +132,76 @@ jni::local_ref<jni::JArrayClass<jni::JString>> JSIContext::getModulesName() cons
   return callGetJavaScriptModulesNames();
 }
 
+bool JSIContext::hasPackage(const std::string &packageName) const {
+  if (javaPart_ == nullptr) {
+    throw std::runtime_error("hasPackage: JSIContext was prepared to be deallocated.");
+  }
+
+  const static auto method = expo::JSIContext::javaClassLocal()
+    ->getMethod<jboolean(std::string)>(
+      "hasPackage"
+    );
+  auto jniPackageName = jni::make_jstring(packageName);
+  auto result = jni::Environment::current()->CallBooleanMethod(javaPart_.get(), method.getId(),
+                                                               jniPackageName.get());
+  throwPendingJniExceptionAsCppException();
+  return static_cast<bool>(result);
+}
+
+jni::local_ref<jni::JArrayClass<jni::JString>> JSIContext::getPackageNames() const {
+  if (javaPart_ == nullptr) {
+    throw std::runtime_error("getPackageNames: JSIContext was prepared to be deallocated.");
+  }
+
+  const static auto method = expo::JSIContext::javaClassLocal()
+    ->getMethod<jni::local_ref<jni::JArrayClass<jni::JString>>()>(
+      "getPackageNames"
+    );
+  auto result = jni::Environment::current()->CallObjectMethod(javaPart_.get(), method.getId());
+  throwPendingJniExceptionAsCppException();
+  return jni::adopt_local(static_cast<jni::JniType<jni::JArrayClass<jni::JString>>>(result));
+}
+
+std::optional<std::string> JSIContext::getPackageExportOwner(
+  const std::string &packageName,
+  const std::string &exportName
+) const {
+  if (javaPart_ == nullptr) {
+    throw std::runtime_error("getPackageExportOwner: JSIContext was prepared to be deallocated.");
+  }
+
+  const static auto method = expo::JSIContext::javaClassLocal()
+    ->getMethod<jni::local_ref<jni::JString>(std::string, std::string)>(
+      "getPackageExportOwner"
+    );
+  auto jniPackageName = jni::make_jstring(packageName);
+  auto jniExportName = jni::make_jstring(exportName);
+  auto result = jni::Environment::current()->CallObjectMethod(javaPart_.get(), method.getId(),
+                                                              jniPackageName.get(), jniExportName.get());
+  throwPendingJniExceptionAsCppException();
+  auto owner = jni::adopt_local(static_cast<jstring>(result));
+  if (owner == nullptr) {
+    return std::nullopt;
+  }
+  return owner->toStdString();
+}
+
+jni::local_ref<jni::JArrayClass<jni::JString>> JSIContext::getPackageExportNames(const std::string &packageName) const {
+  if (javaPart_ == nullptr) {
+    throw std::runtime_error("getPackageExportNames: JSIContext was prepared to be deallocated.");
+  }
+
+  const static auto method = expo::JSIContext::javaClassLocal()
+    ->getMethod<jni::local_ref<jni::JArrayClass<jni::JString>>(std::string)>(
+      "getPackageExportNames"
+    );
+  auto jniPackageName = jni::make_jstring(packageName);
+  auto result = jni::Environment::current()->CallObjectMethod(javaPart_.get(), method.getId(),
+                                                              jniPackageName.get());
+  throwPendingJniExceptionAsCppException();
+  return jni::adopt_local(static_cast<jni::JniType<jni::JArrayClass<jni::JString>>>(result));
+}
+
 jni::local_ref<JavaScriptValue::javaobject> JSIContext::evaluateScript(
   jni::JString script
 ) {

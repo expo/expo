@@ -172,6 +172,25 @@ public final class ModuleRegistry: Sequence {
     }
   }
 
+  /**
+   Returns whether any registered module or shared object class is in the package with the given name.
+   */
+  public func hasPackage(named packageName: String) -> Bool {
+    return registry.withLock { registry in
+      return registry.values.contains { $0.packageName == packageName }
+    }
+  }
+
+  /**
+   Returns the holders of the modules in the package with the given name, sorted by the module name.
+   */
+  public func moduleHolders(inPackage packageName: String) -> [ModuleHolder] {
+    let holders = registry.withLock { registry in
+      return registry.values.filter { $0.packageName == packageName }
+    }
+    return holders.sorted { $0.name < $1.name }
+  }
+
   public func makeIterator() -> IndexingIterator<[ModuleHolder]> {
     return registry.withLock { registry in
       return registry.map({ $1 }).makeIterator()

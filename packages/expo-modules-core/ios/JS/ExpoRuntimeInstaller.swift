@@ -70,6 +70,83 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
     // Define the `global.expo.modules` object as a non-configurable, read-only and enumerable property.
     coreObject.defineProperty("modules", value: modulesHostObject, options: [.enumerable])
   }
+
+  /**
+   Installs `expo.packages`, the host object that returns the native exports of each npm package
+   (its modules and shared object classes) by the package name, for example `expo.packages['expo-audio']`.
+   */
+  @JavaScriptActor
+  internal func installExpoPackagesHostObject() throws {
+    let coreObject = try runtime.global().getPropertyAsObject(globalCoreObjectPropertyName)
+
+    if coreObject.hasProperty("packages") {
+      // Host object already installed
+      return
+    }
+    let runtime = self.runtime
+    let packageObjects = PackageObjectsCache()
+
+    let packagesHostObject = runtime.createHostObject(
+      get: { [weak appContext] packageName in
+        guard let appContext else {
+          return .undefined()
+        }
+        if let packageObject = packageObjects.store[packageName]?.withUnwrappedValue({ $0.copy() }) {
+          return packageObject
+        }
+        guard appContext.moduleRegistry.hasPackage(named: packageName) else {
+          return .undefined()
+        }
+        let packageObject = Self.createPackageObject(packageName, appContext: appContext, runtime: runtime)
+        packageObjects.store[packageName] = packageObject.refToValue()
+        return packageObject.asValue()
+      },
+      set: { packageName, _ in
+        throw ReadOnlyExpoPackagesPropertyException("expo.packages[\"\(packageName)\"]")
+      },
+      getPropertyNames: { [weak appContext] in
+        return appContext?.moduleRegistry.packageNames ?? []
+      }
+    )
+
+    // Define the `global.expo.packages` object as a non-configurable, read-only and enumerable property.
+    coreObject.defineProperty("packages", value: packagesHostObject, options: [.enumerable])
+  }
+
+  /**
+   Creates the object that is installed as `expo.packages[packageName]`. It returns the modules
+   and shared object classes of the package by their names.
+   */
+  @JavaScriptActor
+  private static func createPackageObject(
+    _ packageName: String,
+    appContext: AppContext,
+    runtime: JavaScriptRuntime
+  ) -> JavaScriptObject {
+    // Logs name collisions once, when the package object is created.
+    _ = appContext.packageExportNames(inPackage: packageName)
+
+    return runtime.createHostObject(
+      get: { [weak appContext] exportName in
+        return appContext?.packageExport(named: exportName, inPackage: packageName) ?? .undefined()
+      },
+      set: { exportName, _ in
+        throw ReadOnlyExpoPackagesPropertyException("expo.packages[\"\(packageName)\"].\(exportName)")
+      },
+      getPropertyNames: { [weak appContext] in
+        return appContext?.packageExportNames(inPackage: packageName) ?? []
+      }
+    )
+  }
+}
+
+/**
+ Caches the package objects of `expo.packages` for one runtime, so each access returns the same object.
+ */
+private final class PackageObjectsCache {
+  // Objects are kept behind `JavaScriptValue.Ref` because `JavaScriptValue` is ~Copyable and cannot be a
+  // Dictionary value.
+  var store: [String: JavaScriptValue.Ref] = [:]
 }
 
 /**
@@ -86,4 +163,16 @@ internal final class ReadOnlyExpoModulesPropertyException: GenericException<Stri
   // `Exception.message` is the `description`, which is just `reason` here (no cause chain).
   // Override it explicitly so the JS-facing error stays the bare `reason`.
   override var message: String { reason }
+}
+
+/**
+ Raised when JavaScript code attempts to assign to `expo.packages[...]` or to an export of a package.
+ The parameter is the path that JavaScript assigned to.
+ */
+internal final class ReadOnlyExpoPackagesPropertyException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    "Cannot assign to '\(param)': "
+      + "the `expo.packages` object is owned by the native runtime and its bindings cannot be replaced from JavaScript. "
+      + "Define or override behavior inside the native module instead."
+  }
 }

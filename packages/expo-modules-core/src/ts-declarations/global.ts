@@ -41,6 +41,12 @@ declare namespace ExpoGlobal {
   /** Host object that is used to access native Expo modules. */
   export let modules: Record<string, any>;
 
+  /**
+   * Host object that is used to access the native modules and shared object classes of each npm package,
+   * for example `expo.packages['expo-audio'].AudioPlayer`.
+   */
+  export let packages: Record<string, any>;
+
   // Natively defined JS classes
   export { EventEmitter };
   export { SharedObject };

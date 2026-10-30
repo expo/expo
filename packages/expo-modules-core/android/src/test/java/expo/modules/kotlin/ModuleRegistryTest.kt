@@ -23,6 +23,9 @@ class M2 : Module() {
 class AudioModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("AudioModule")
+    Class("AudioPlayer")
+    // Clashes with the `Audio` module, so it is not available in the package.
+    Class("Audio")
   }
 }
 
@@ -77,6 +80,28 @@ class ModuleRegistryTest {
       .inOrder()
     Truth.assertThat(moduleRegistry.hasPackage("expo-audio")).isTrue()
     Truth.assertThat(moduleRegistry.hasPackage("expo-video")).isFalse()
+  }
+
+  @Test
+  fun `should list modules and classes in package`() {
+    val moduleRegistry = createPackagedRegistry()
+
+    Truth.assertThat(moduleRegistry.getPackageExportNames("expo-audio"))
+      .containsExactly("Audio", "AudioModule", "AudioPlayer")
+      .inOrder()
+    Truth.assertThat(moduleRegistry.getPackageExportNames(ModulesProvider.LOCAL_PACKAGE_NAME)).containsExactly("m1")
+  }
+
+  @Test
+  fun `should return owners of package exports`() {
+    val moduleRegistry = createPackagedRegistry()
+
+    Truth.assertThat(moduleRegistry.getPackageExportOwner("expo-audio", "AudioModule")).isEqualTo("AudioModule")
+    Truth.assertThat(moduleRegistry.getPackageExportOwner("expo-audio", "AudioPlayer")).isEqualTo("AudioModule")
+    // The module takes precedence over the class with the same name.
+    Truth.assertThat(moduleRegistry.getPackageExportOwner("expo-audio", "Audio")).isEqualTo("Audio")
+    Truth.assertThat(moduleRegistry.getPackageExportOwner("expo-audio", "m1")).isNull()
+    Truth.assertThat(moduleRegistry.getPackageExportOwner("expo-audio", "m2")).isNull()
   }
 
   @Test

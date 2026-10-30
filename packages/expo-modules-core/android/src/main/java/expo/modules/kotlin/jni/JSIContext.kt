@@ -136,6 +136,40 @@ class JSIContext @DoNotStrip internal constructor(
       ?: emptyArray()
   }
 
+  /**
+   * Returns an array that contains names of the packages in `expo.packages`.
+   */
+  @Suppress("unused")
+  @DoNotStrip
+  fun getPackageNames(): Array<String> {
+    return runtimeHolder.get()?.appContext?.registry?.getPackageNames()?.toTypedArray() ?: emptyArray()
+  }
+
+  @Suppress("unused")
+  @DoNotStrip
+  fun hasPackage(packageName: String): Boolean {
+    return runtimeHolder.get()?.appContext?.registry?.hasPackage(packageName) ?: false
+  }
+
+  /**
+   * Returns the name of the module that provides the module or shared object class with the given name in the package.
+   */
+  @Suppress("unused")
+  @DoNotStrip
+  fun getPackageExportOwner(packageName: String, exportName: String): String? {
+    return runtimeHolder.get()?.appContext?.registry?.getPackageExportOwner(packageName, exportName)
+  }
+
+  /**
+   * Returns an array that contains names of modules and shared object classes in the package.
+   */
+  @Suppress("unused")
+  @DoNotStrip
+  fun getPackageExportNames(packageName: String): Array<String> {
+    return runtimeHolder.get()?.appContext?.registry?.getPackageExportNames(packageName)?.toTypedArray()
+      ?: emptyArray()
+  }
+
   @Suppress("unused")
   @DoNotStrip
   fun registerSharedObject(native: Any, js: JavaScriptObject) {

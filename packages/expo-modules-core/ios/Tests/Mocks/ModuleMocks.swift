@@ -31,8 +31,17 @@ class CustomModule: Module {
 
 typealias MockedDefinitionFunc = (CustomModule) -> ModuleDefinition
 
-func mockModuleHolder(_ appContext: AppContext, @ModuleDefinitionBuilder _ definitionBody: @escaping () -> ModuleDefinition) -> ModuleHolder {
-  return ModuleHolder(appContext: appContext, module: CustomModule(appContext: appContext, { _ in definitionBody() }), name: nil)
+func mockModuleHolder(
+  _ appContext: AppContext,
+  packageName: String? = nil,
+  @ModuleDefinitionBuilder _ definitionBody: @escaping () -> ModuleDefinition
+) -> ModuleHolder {
+  return ModuleHolder(
+    appContext: appContext,
+    module: CustomModule(appContext: appContext, { _ in definitionBody() }),
+    name: nil,
+    packageName: packageName
+  )
 }
 
 func mockModuleHolder(_ appContext: AppContext, @ModuleDefinitionBuilder _ definitionBody: @escaping (CustomModule) -> ModuleDefinition) -> ModuleHolder {

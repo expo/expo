@@ -89,6 +89,47 @@ class ModuleRegistry(
    */
   fun hasPackage(packageName: String): Boolean = registry.values.any { it.packageName == packageName }
 
+  /**
+   * Returns the holders of the modules in the package with the given name, sorted by the module name.
+   */
+  fun getModuleHolders(packageName: String): List<ModuleHolder<*>> =
+    registry.values.filter { it.packageName == packageName }.sortedBy { it.name }
+
+  /**
+   * Returns the names of the modules and shared object classes in the package with the given name. Module names
+   * come first. A class whose name is already taken by a module or another class in the package is left out and logged.
+   */
+  fun getPackageExportNames(packageName: String): List<String> {
+    val holders = getModuleHolders(packageName)
+    val names = holders.mapTo(mutableListOf()) { it.name }
+    val seenNames = names.toMutableSet()
+
+    for (holder in holders) {
+      for (className in holder.definition.classData.map { it.name }.sorted()) {
+        if (seenNames.add(className)) {
+          names.add(className)
+        } else {
+          logger.error(
+            "Class '$className' from module '${holder.name}' is not available in 'expo.packages[\"$packageName\"]', " +
+              "because another module or class in the '$packageName' package already has this name. " +
+              "Rename the class or the module so that each name in the package is unique."
+          )
+        }
+      }
+    }
+    return names
+  }
+
+  /**
+   * Returns the name of the module that provides a module or a shared object class with the given name
+   * in the package with the given name. For a module, it is the export name itself. Modules take precedence over classes.
+   */
+  fun getPackageExportOwner(packageName: String, exportName: String): String? {
+    val holders = getModuleHolders(packageName)
+    return holders.firstOrNull { it.name == exportName }?.name
+      ?: holders.firstOrNull { holder -> holder.definition.classData.any { it.name == exportName } }?.name
+  }
+
   @Suppress("UNCHECKED_CAST")
   fun <T : Module> getModuleHolder(module: T): ModuleHolder<T>? =
     registry.values.find { it.module === module } as? ModuleHolder<T>

@@ -198,6 +198,15 @@ void MainRuntimeInstaller::installModules(
       "modules",
       expoModulesObject
     );
+
+  // Define the `global.expo.packages` object.
+  auto expoPackages = std::make_shared<ExpoPackagesHostObject>(jsiContext, expoModules);
+  hostObject
+    ->setProperty(
+      runtime,
+      "packages",
+      jsi::Object::createFromHostObject(runtime, expoPackages)
+    );
 }
 
 jni::local_ref<JavaScriptModuleObject::javaobject> MainRuntimeInstaller::getCoreModule(

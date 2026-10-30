@@ -14,6 +14,8 @@
 
 #include <ReactCommon/CallInvoker.h>
 
+#include <optional>
+
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;
@@ -61,6 +63,30 @@ public:
    * Gets names of all available modules.
    */
   [[nodiscard]] jni::local_ref<jni::JArrayClass<jni::JString>> getModulesName() const;
+
+  /**
+   * Returns whether any module is in the package with the given name.
+   */
+  [[nodiscard]] bool hasPackage(const std::string &packageName) const;
+
+  /**
+   * Gets the names of all packages, which are the keys of `expo.packages`.
+   */
+  [[nodiscard]] jni::local_ref<jni::JArrayClass<jni::JString>> getPackageNames() const;
+
+  /**
+   * Gets the name of the module that provides the module or shared object class with the given name in the package.
+   * For a module, it is the export name itself.
+   */
+  [[nodiscard]] std::optional<std::string> getPackageExportOwner(
+    const std::string &packageName,
+    const std::string &exportName
+  ) const;
+
+  /**
+   * Gets names of the modules and shared object classes in the package.
+   */
+  [[nodiscard]] jni::local_ref<jni::JArrayClass<jni::JString>> getPackageExportNames(const std::string &packageName) const;
 
   /**
    * Exposes a `JavaScriptRuntime::evaluateScript` function to Kotlin

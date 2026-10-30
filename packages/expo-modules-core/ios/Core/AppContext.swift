@@ -390,6 +390,50 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     return moduleRegistry.get(moduleHolderForName: moduleName)?.getJavaScriptValue()
   }
 
+  /**
+   Returns the names of the modules and shared object classes of the given package. Module names come first,
+   then the classes defined in the modules. A class whose name is already taken by a module or another class
+   in the package is left out and logged.
+   */
+  public func packageExportNames(inPackage packageName: String) -> [String] {
+    let holders = moduleRegistry.moduleHolders(inPackage: packageName)
+    var names = holders.map(\.name)
+    var seenNames = Set(names)
+
+    for holder in holders {
+      for className in holder.definition.classes.keys.sorted() {
+        if seenNames.insert(className).inserted {
+          names.append(className)
+        } else {
+          log.error(
+            "Class '\(className)' from module '\(holder.name)' is not available in 'expo.packages[\"\(packageName)\"]', "
+              + "because another module or class in the '\(packageName)' package already has this name. "
+              + "Rename the class or the module so that each name in the package is unique."
+          )
+        }
+      }
+    }
+    return names
+  }
+
+  /**
+   Returns a JavaScript object that represents a module or a shared object class with the given name
+   in the package with the given name. The order of precedence is the same as in `packageExportNames(inPackage:)`.
+   */
+  @JavaScriptActor
+  public func packageExport(named exportName: String, inPackage packageName: String) -> JavaScriptValue? {
+    let holders = moduleRegistry.moduleHolders(inPackage: packageName)
+
+    if let holder = holders.first(where: { $0.name == exportName }) {
+      return holder.getJavaScriptValue()
+    }
+    if let holder = holders.first(where: { $0.definition.classes[exportName] != nil }) {
+      // Classes are installed on the module object, so the class is the same object as `module[exportName]`.
+      return holder.getJavaScriptValue()?.getObject().getProperty(exportName)
+    }
+    return nil
+  }
+
   // MARK: - Modules registration
 
   /**
@@ -508,6 +552,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
     // Install the modules host object as the `global.expo.modules`.
     try installer.installExpoModulesHostObject()
+
+    // Install the packages host object as the `global.expo.packages`.
+    try installer.installExpoPackagesHostObject()
   }
 
   @MainActor
@@ -542,6 +589,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
       // Install the modules host object as the `global.expo.modules`.
       try installer.installExpoModulesHostObject()
+
+      // Install the packages host object as the `global.expo.packages`.
+      try installer.installExpoPackagesHostObject()
 
       // Install module class prototypes so SharedObject properties are accessible in worklets.
       try installModuleClasses(in: uiRuntime)

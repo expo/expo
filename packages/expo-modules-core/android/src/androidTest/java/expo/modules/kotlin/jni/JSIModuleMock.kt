@@ -46,6 +46,7 @@ internal inline fun withJSIInterop(
   vararg modules: Module,
   numberOfReloads: Int = 1,
   jsHeapAccessExecutor: JSHeapAccessExecutor? = null,
+  packageName: String? = null,
   block: JSIContext.(methodQueue: TestScope) -> Unit
 ) {
   val (appContextMock, runtimeContext) = defaultAppContextMock()
@@ -73,7 +74,7 @@ internal inline fun withJSIInterop(
 
     val registry = ModuleRegistry(appContextMock.weak()).apply {
       modules.forEach {
-        register(it, null)
+        register(it, null, packageName)
       }
     }
     val sharedObjectRegistry = SharedObjectRegistry(appContextMock.runtime)
