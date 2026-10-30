@@ -119,7 +119,7 @@ export const Footer = ({
         </div>
         <NewsletterSignUp />
       </div>
-      <PrivacyChoicesButton />
+      <PrivacyChoicesButton fallbackHref="https://expo.dev/privacy/cookies" />
     </footer>
   );
 };
