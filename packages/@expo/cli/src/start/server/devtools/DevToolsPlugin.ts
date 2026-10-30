@@ -1,7 +1,7 @@
 import { validate, ValidationError } from '@expo/schema-utils';
 import type { WebSocketServer } from 'ws';
 
-import { isPathInside, maybeRealpathSync } from '../../utils/dir';
+import { isPathInside, maybeRealpathSync } from '../../../utils/dir';
 import type { DevToolsPluginInfo } from './DevToolsPlugin.schema';
 import { PluginSchema } from './DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from './DevToolsPluginCliExtensionExecutor';

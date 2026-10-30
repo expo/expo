@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
-import { DevToolsPlugin } from '../DevToolsPlugin';
-import type { DevToolsPluginInfo } from '../DevToolsPlugin.schema';
 import { createMCPDevToolsExtensionSchema } from '../createMCPDevToolsExtensionSchema';
+import { DevToolsPlugin } from '../devtools/DevToolsPlugin';
+import type { DevToolsPluginInfo } from '../devtools/DevToolsPlugin.schema';
 
 describe(createMCPDevToolsExtensionSchema, () => {
   const mockPlugin: DevToolsPluginInfo = {

@@ -4,8 +4,8 @@ import * as Log from '../../log';
 import { openBrowserAsync } from '../../utils/open';
 import type { ExpoChoice } from '../../utils/prompts';
 import { selectAsync } from '../../utils/prompts';
-import type { DevToolsPlugin } from '../server/DevToolsPlugin';
-import type { DevToolsPluginCommand } from '../server/DevToolsPlugin.schema';
+import type { DevToolsPlugin } from '../server/devtools/DevToolsPlugin';
+import type { DevToolsPluginCommand } from '../server/devtools/DevToolsPlugin.schema';
 import { cliExtensionMenuItemHandler } from './cliExtensionMenuItemHandler';
 
 export interface MoreToolMenuItem extends ExpoChoice<string> {

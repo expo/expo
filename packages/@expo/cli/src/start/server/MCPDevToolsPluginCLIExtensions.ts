@@ -1,9 +1,9 @@
 import { Log } from '../../log';
 import type { DevServerManager } from './DevServerManager';
-import type { DevToolsPluginInfo } from './DevToolsPlugin.schema';
-import { DevToolsPluginCliExtensionExecutor } from './DevToolsPluginCliExtensionExecutor';
 import type { McpServer } from './MCP';
 import { createMCPDevToolsExtensionSchema } from './createMCPDevToolsExtensionSchema';
+import type { DevToolsPluginInfo } from './devtools/DevToolsPlugin.schema';
+import { DevToolsPluginCliExtensionExecutor } from './devtools/DevToolsPluginCliExtensionExecutor';
 import { debugEvent } from './devtoolsEvents';
 
 export async function addMcpCapabilities(
