@@ -781,20 +781,20 @@ describe(modifyConfigAsync, () => {
       );
     });
 
-    it('adds plugin entry without props', async () => {
+    it.each(['expo-router', 'constructor'])('adds plugin %s without props', async (plugin) => {
       createProject('/plugins-modification-add-simple', {
         'app.json': JSON.stringify(appFile),
       });
 
       await expect(
         modifyConfigAsync('/plugins-modification-add-simple', {
-          plugins: ['expo-router'],
+          plugins: [plugin],
         })
       ).resolves.toMatchObject({
         type: 'success',
         config: {
           ...appFile,
-          plugins: ['expo-router'],
+          plugins: [plugin],
         },
       });
     });

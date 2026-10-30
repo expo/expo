@@ -410,7 +410,7 @@ function mergeConfigModifications(
       if (!pluginName) continue;
 
       // Add the plugin if it doesn't exist yet, including its properties
-      if (!(pluginName in existingPlugins)) {
+      if (!Object.hasOwn(existingPlugins, pluginName)) {
         modifiedExpoConfig.plugins.push(plugin);
         continue;
       }
