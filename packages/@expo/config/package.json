@@ -62,7 +62,6 @@
     "@expo/json-file": "workspace:^",
     "@expo/platforms": "workspace:^",
     "@expo/require-utils": "workspace:^",
-    "deepmerge": "^4.3.1",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
     "resolve-workspace-root": "^2.0.0",
