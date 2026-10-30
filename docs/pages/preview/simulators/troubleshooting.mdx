@@ -89,7 +89,7 @@ The session waits for available concurrency on your account. Sessions use the sa
 
 ### A browser preview session stopped while someone used it
 
-Controller activity from agent-device, Argent, or Appium resets the idle timer. On iOS, browser input also resets it. Watching the preview does not, and Android browser input does not. For a session that a person only watches, or an Android session that a person controls in the browser preview, omit `--max-idle-time-minutes` and use `--max-duration-minutes` to limit it.
+Controller activity from agent-device, Argent, or Appium resets the idle timer. On iOS, browser input in the preview also resets it. Watching the preview does not reset it. Browser input on Android does not reset it. Use `--max-duration-minutes`, not `--max-idle-time-minutes`, to limit a session that a person only watches, or an Android session that a person controls in the browser preview.
 
 ## Controller and tunnel problems
 
