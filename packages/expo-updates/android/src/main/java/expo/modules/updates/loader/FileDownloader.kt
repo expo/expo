@@ -100,6 +100,8 @@ class FileDownloader(
 
   data class FileDownloadResult(val file: File, val hash: ByteArray)
   data class AssetDownloadResult(val assetEntity: AssetEntity, val isNew: Boolean)
+  class AssetHttpResponseException(val statusCode: Int, body: String) :
+    IOException("HTTP response error $statusCode: $body")
 
   @VisibleForTesting
   internal suspend fun downloadAssetAndVerifyHashAndWriteToPath(
@@ -119,7 +121,10 @@ class FileDownloader(
       val response = downloadData(request, progressListener)
       val hash = response.use { resp ->
         if (!resp.isSuccessful) {
-          throw IOException("Asset download request not successful", IOException(resp.body?.string() ?: "Unknown error"))
+          throw IOException(
+            "Asset download request not successful",
+            AssetHttpResponseException(resp.code, resp.body?.string() ?: "Unknown error")
+          )
         }
 
         val responseBody = resp.body
