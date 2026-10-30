@@ -22,7 +22,8 @@ function serializeAndEvaluate(val) {
   } else if (typeof val === 'object') {
     const output = {};
     for (const property in val) {
-      if (val.hasOwnProperty(property)) {
+      // NOTE(@kitten): Filter __proto__ in each object serializer to avoid invoking the prototype setter.
+      if (property !== '__proto__' && Object.hasOwn(val, property)) {
         output[property] = serializeAndEvaluate(val[property]);
       }
     }
@@ -35,7 +36,7 @@ function serializeSkippingMods(val) {
   if (typeof val === 'object' && !Array.isArray(val)) {
     const output = {};
     for (const property in val) {
-      if (val.hasOwnProperty(property)) {
+      if (property !== '__proto__' && Object.hasOwn(val, property)) {
         if (property === 'mods' || property === 'plugins') {
           // Don't serialize mods or plugins
           output[property] = val[property];
@@ -58,7 +59,7 @@ function serializeAndEvaluatePlugin(val) {
   } else if (typeof val === 'object') {
     const output = {};
     for (const property in val) {
-      if (val.hasOwnProperty(property)) {
+      if (property !== '__proto__' && Object.hasOwn(val, property)) {
         output[property] = serializeAndEvaluatePlugin(val[property]);
       }
     }
@@ -71,7 +72,7 @@ function serializeAfterStaticPlugins(val) {
   if (typeof val === 'object' && !Array.isArray(val)) {
     const output = {};
     for (const property in val) {
-      if (val.hasOwnProperty(property)) {
+      if (property !== '__proto__' && Object.hasOwn(val, property)) {
         if (property === 'mods') {
           // Don't serialize mods
           output[property] = val[property];

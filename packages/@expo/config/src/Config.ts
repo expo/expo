@@ -1,7 +1,6 @@
 import { ModConfig } from '@expo/config-plugins';
 import JsonFile, { JSONObject } from '@expo/json-file';
 import { resolveFrom } from '@expo/require-utils';
-import deepMerge from 'deepmerge';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
@@ -22,6 +21,7 @@ import {
 } from './Config.types';
 import { getDynamicConfig, getStaticConfig } from './getConfig';
 import { getExpoSDKVersion } from './getExpoSDKVersion';
+import { mergeConfig } from './mergeConfig';
 import { withConfigPlugins } from './plugins/withConfigPlugins';
 import { withInternal } from './plugins/withInternal';
 import { getRootPackageJsonPath } from './resolvePackageJson';
@@ -335,7 +335,7 @@ export async function modifyConfigAsync(
   if (
     config.staticConfigPath &&
     config.dynamicConfigObjectType === 'function' &&
-    !modifications.hasOwnProperty('plugins') // We don't know what plugins are in dynamic configs
+    !Object.hasOwn(modifications, 'plugins') // We don't know what plugins are in dynamic configs
   ) {
     const outputConfig = mergeConfigModifications(config, modifications);
 
@@ -400,12 +400,12 @@ function mergeConfigModifications(
   { plugins, ...modifications }: Partial<ExpoConfig>
 ): AppJSONConfig {
   const baseConfig: Partial<ExpoConfig> = config.rootConfig.expo || config.rootConfig;
-  const modifiedExpoConfig: ExpoConfig = deepMerge(baseConfig, modifications);
+  const modifiedExpoConfig = mergeConfig<ExpoConfig>(baseConfig, modifications);
   if (isPlainObject(modifications.updates)) {
-    modifiedExpoConfig.updates = deepMerge(
+    modifiedExpoConfig.updates = mergeConfig(
       isPlainObject(baseConfig.updates) ? baseConfig.updates : {},
       modifications.updates,
-      { arrayMerge: mergeArraysWithoutDuplicates }
+      mergeArraysWithoutDuplicates
     );
   }
 
@@ -429,7 +429,7 @@ function mergeConfigModifications(
       if (!pluginName) continue;
 
       // Add the plugin if it doesn't exist yet, including its properties
-      if (!(pluginName in existingPlugins)) {
+      if (!Object.hasOwn(existingPlugins, pluginName)) {
         modifiedExpoConfig.plugins.push(plugin);
         continue;
       }
@@ -453,7 +453,7 @@ function mergeConfigModifications(
 
           // Merge the props to the existing plugin properties
           if (Array.isArray(existingPlugin) && existingPlugin[0]) {
-            return [existingPlugin[0], deepMerge(existingPlugin[1] ?? {}, pluginProps)];
+            return [existingPlugin[0], mergeConfig(existingPlugin[1] ?? {}, pluginProps)];
           }
 
           return existingPlugin;
@@ -500,7 +500,7 @@ function isMatchingObject<T extends Record<string, any>>(
   matchArraysAsSets = false
 ): boolean {
   for (const key in expectedValues) {
-    if (!expectedValues.hasOwnProperty(key)) {
+    if (!Object.hasOwn(expectedValues, key)) {
       continue;
     }
 
