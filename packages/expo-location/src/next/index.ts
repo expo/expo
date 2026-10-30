@@ -31,4 +31,7 @@ export {
   type BackgroundSessionOptions,
   type BackgroundSessionStatus,
   type BackgroundTaskStatus,
+  type Address,
+  type GeocodeOptions,
+  type ReverseGeocodeOptions,
 } from './types';

@@ -27,3 +27,4 @@ export {
   stopBackgroundSession,
   getBackgroundSessionStatus,
 } from './BackgroundSession';
+export { geocode, reverseGeocode } from './geocoding';
