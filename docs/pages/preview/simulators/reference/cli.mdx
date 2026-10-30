@@ -248,6 +248,9 @@ The response includes:
 - The expo.dev simulator session URL
 - Controller connection configuration
 - Session artifacts, when present, with each artifact's `id`, `name`, `filename`, `fileSizeBytes`, `metadata`, and `downloadUrl`. `fileSizeBytes` appears only after the session stops
+- `errors`, with the reasons that an errored session failed. Each error has an `errorCode` and a `message`, and can have a `docsUrl`. The array is empty for a session that did not fail
+
+Without `--json`, the command prints these reasons after the session details. When a session fails before it is ready, `simulator:start` also prints them.
 
 ## `simulator:list`
 
