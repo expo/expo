@@ -17,10 +17,14 @@ export interface SplitButtonLayoutProps {
    */
   modifiers?: ModifierConfig[];
   /**
-   * A `SplitButtonLayout.LeadingButton` and a `SplitButtonLayout.TrailingButton`.
+   * The `SplitButtonLayout.LeadingButton` and `SplitButtonLayout.TrailingButton` slots.
    */
   children: React.ReactNode;
 }
+
+type SlotProps = {
+  children: React.ReactNode;
+};
 
 export interface SplitButtonLeadingButtonProps {
   /**
@@ -105,47 +109,60 @@ const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeVi
 );
 
 /**
- * The leading button of a `SplitButtonLayout`, which runs the primary action.
+ * The leading button of a split button, which runs the primary action.
+ * Put it in the `SplitButtonLayout.LeadingButton` slot.
  * Wraps `SplitButtonDefaults.LeadingButton`.
  */
 function SplitButtonLeadingButton(props: SplitButtonLeadingButtonProps) {
   const { onClick, modifiers, ...restProps } = props;
   return (
-    <SlotNativeView slotName="leadingButton">
-      <SplitButtonLeadingButtonNativeView
-        modifiers={modifiers}
-        {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-        {...restProps}
-        enabled={props.enabled ?? true}
-        onButtonPressed={onClick ? () => onClick() : undefined}
-      />
-    </SlotNativeView>
+    <SplitButtonLeadingButtonNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      enabled={props.enabled ?? true}
+      onButtonPressed={onClick ? () => onClick() : undefined}
+    />
   );
 }
 
 /**
- * The trailing button of a `SplitButtonLayout`, which usually opens a `DropdownMenu` of related actions.
+ * The trailing button of a split button, which usually opens a `DropdownMenu` of related actions.
+ * Put it in the `SplitButtonLayout.TrailingButton` slot.
  * Wraps `SplitButtonDefaults.TrailingButton`.
  */
 function SplitButtonTrailingButton(props: SplitButtonTrailingButtonProps) {
   const { onCheckedChange, modifiers, ...restProps } = props;
   return (
-    <SlotNativeView slotName="trailingButton">
-      <SplitButtonTrailingButtonNativeView
-        modifiers={modifiers}
-        {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-        {...restProps}
-        enabled={props.enabled ?? true}
-        onCheckedChange={
-          onCheckedChange ? ({ nativeEvent: { checked } }) => onCheckedChange(checked) : undefined
-        }
-      />
-    </SlotNativeView>
+    <SplitButtonTrailingButtonNativeView
+      modifiers={modifiers}
+      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+      {...restProps}
+      enabled={props.enabled ?? true}
+      onCheckedChange={
+        onCheckedChange ? ({ nativeEvent: { checked } }) => onCheckedChange(checked) : undefined
+      }
+    />
   );
 }
 
 /**
- * A Material 3 split button: a leading button for the primary action and a trailing button,
+ * Leading button slot for `SplitButtonLayout`. Usually holds a `SplitButtonLeadingButton`.
+ */
+function SplitButtonLayoutLeadingButton(props: SlotProps) {
+  return <SlotNativeView slotName="leadingButton">{props.children}</SlotNativeView>;
+}
+
+/**
+ * Trailing button slot for `SplitButtonLayout`. Usually holds a `SplitButtonTrailingButton`,
+ * or a `DropdownMenu` whose trigger is a `SplitButtonTrailingButton`.
+ */
+function SplitButtonLayoutTrailingButton(props: SlotProps) {
+  return <SlotNativeView slotName="trailingButton">{props.children}</SlotNativeView>;
+}
+
+/**
+ * A Material 3 split button layout: a leading button for the primary action and a trailing button,
  * usually for a menu of related actions. Both buttons take the same height.
  */
 function SplitButtonLayout(props: SplitButtonLayoutProps) {
@@ -159,7 +176,7 @@ function SplitButtonLayout(props: SplitButtonLayoutProps) {
   );
 }
 
-SplitButtonLayout.LeadingButton = SplitButtonLeadingButton;
-SplitButtonLayout.TrailingButton = SplitButtonTrailingButton;
+SplitButtonLayout.LeadingButton = SplitButtonLayoutLeadingButton;
+SplitButtonLayout.TrailingButton = SplitButtonLayoutTrailingButton;
 
-export { SplitButtonLayout };
+export { SplitButtonLayout, SplitButtonLeadingButton, SplitButtonTrailingButton };

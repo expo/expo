@@ -19,7 +19,7 @@ Expo UI SplitButtonLayout matches the official Jetpack Compose [`SplitButtonLayo
 
 ### Split button with a menu
 
-Put a `SplitButtonLayout.LeadingButton` and a `SplitButtonLayout.TrailingButton` in the layout. Put a [`DropdownMenu`](./dropdownmenu) inside the trailing button so the menu opens below it. Set `checked` on the trailing button while the menu is expanded: Material 3 then changes its shape to show that the menu is open.
+`SplitButtonLayout` has two slots: `SplitButtonLayout.LeadingButton` and `SplitButtonLayout.TrailingButton`. Put a `SplitButtonLeadingButton` in the leading slot. To open a menu from the trailing button, put a [`DropdownMenu`](./dropdownmenu) in the trailing slot and use a `SplitButtonTrailingButton` as its trigger, so the menu opens below the button. Set `checked` on the trailing button while the menu is expanded: Material 3 then changes its shape to show that the menu is open.
 
 ```tsx SplitButtonWithMenu.tsx
 import {
@@ -28,6 +28,8 @@ import {
   Host,
   Icon,
   SplitButtonLayout,
+  SplitButtonLeadingButton,
+  SplitButtonTrailingButton,
   Text,
 } from '@expo/ui/jetpack-compose';
 import { rotate } from '@expo/ui/jetpack-compose/modifiers';
@@ -41,22 +43,26 @@ export default function SplitButtonWithMenu() {
   return (
     <Host matchContents>
       <SplitButtonLayout>
-        <SplitButtonLayout.LeadingButton
-          onClick={() => console.log('Send')}>
-          <Text>Send</Text>
+        <SplitButtonLayout.LeadingButton>
+          <SplitButtonLeadingButton
+            onClick={() => console.log('Send')}>
+            <Text>Send</Text>
+          </SplitButtonLeadingButton>
         </SplitButtonLayout.LeadingButton>
-        <SplitButtonLayout.TrailingButton
-          checked={expanded}
-          onCheckedChange={setExpanded}>
+        <SplitButtonLayout.TrailingButton>
           <DropdownMenu
             expanded={expanded}
             onDismissRequest={() => setExpanded(false)}>
             <DropdownMenu.Trigger>
-              <Icon
-                source={DROP_DOWN_ICON}
-                contentDescription="Send options"
-                modifiers={[rotate(expanded ? 180 : 0)]}
-              />
+              <SplitButtonTrailingButton
+                checked={expanded}
+                onCheckedChange={setExpanded}>
+                <Icon
+                  source={DROP_DOWN_ICON}
+                  contentDescription="Send options"
+                  modifiers={[rotate(expanded ? 180 : 0)]}
+                />
+              </SplitButtonTrailingButton>
             </DropdownMenu.Trigger>
             <DropdownMenu.Items>
               <DropdownMenuItem onClick={() => setExpanded(false)}>
@@ -73,6 +79,8 @@ export default function SplitButtonWithMenu() {
 }
 ```
 
+The slots accept other content too. For example, wrap the trailing button in a [`TooltipBox`](./tooltip) to show a tooltip on long press.
+
 ### Full-width split button
 
 The layout measures the trailing button first and gives the leading button the remaining width. Apply `fillMaxWidth()` to both the layout and the leading button to make the split button span its container.
@@ -82,6 +90,8 @@ import {
   Host,
   Icon,
   SplitButtonLayout,
+  SplitButtonLeadingButton,
+  SplitButtonTrailingButton,
   Text,
 } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
@@ -94,16 +104,20 @@ export default function FullWidthSplitButton() {
       matchContents={{ vertical: true }}
       style={{ width: '100%' }}>
       <SplitButtonLayout modifiers={[fillMaxWidth()]}>
-        <SplitButtonLayout.LeadingButton
-          onClick={() => console.log('Merge')}
-          modifiers={[fillMaxWidth()]}>
-          <Text>Squash and merge</Text>
+        <SplitButtonLayout.LeadingButton>
+          <SplitButtonLeadingButton
+            onClick={() => console.log('Merge')}
+            modifiers={[fillMaxWidth()]}>
+            <Text>Squash and merge</Text>
+          </SplitButtonLeadingButton>
         </SplitButtonLayout.LeadingButton>
-        <SplitButtonLayout.TrailingButton checked={false}>
-          <Icon
-            source={DROP_DOWN_ICON}
-            contentDescription="Merge options"
-          />
+        <SplitButtonLayout.TrailingButton>
+          <SplitButtonTrailingButton checked={false}>
+            <Icon
+              source={DROP_DOWN_ICON}
+              contentDescription="Merge options"
+            />
+          </SplitButtonTrailingButton>
         </SplitButtonLayout.TrailingButton>
       </SplitButtonLayout>
     </Host>
