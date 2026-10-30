@@ -43,14 +43,14 @@ The tokens in these values give access to the remote device. Keep them secret. S
 | ------------------------------------------ | -------------- | -------- | -------- | ------------------ |
 | Start flags install and launch the app     | Yes            | Yes      | Yes      | Yes                |
 | Controller activity resets the idle timer  | Yes            | Yes      | Yes      | No                 |
-| Supports `--max-idle-time-minutes`         | Yes            | Yes      | Yes      | No                 |
+| Supports `--max-idle-time-minutes`         | Yes            | Yes      | Yes      | iOS only           |
 | Activity appears in `eas simulator:events` | Yes            | Yes      | Yes      | No                 |
 
 Notes:
 
 - The start flags are `--build-id`, `--build-fingerprint`, `--application-archive-url`, `--expo-go`, `--launch-arg`, and `--open-url`. To connect an Appium client, see [Run Appium tests on a remote Android Emulator or iOS Simulator](/preview/simulators/works-with/appium/).
-- Controller activity from agent-device, Argent, or Appium resets the idle timer. Browser preview activity does not. For sessions that a person controls in the browser preview, use `--max-duration-minutes` to limit the session. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
-- A `web-preview-only` session does not report activity, so it does not support an idle timeout.
+- Controller activity from agent-device, Argent, or Appium resets the idle timer. On iOS, browser input in the preview also resets it. Watching the preview does not reset it. For sessions that a person only watches, or controls on Android, use `--max-duration-minutes` to limit the session. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
+- An Android `web-preview-only` session does not report activity, so it does not support an idle timeout.
 
 ## Choose a session type
 
