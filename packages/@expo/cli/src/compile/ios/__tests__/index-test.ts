@@ -134,9 +134,10 @@ it('refuses production before loading env files', async () => {
 it('only runs on macOS', async () => {
   mockPlatform('win32');
 
-  await expect(expoCompileIos(['--dev'])).rejects.toThrow(/EXIT_CALLED/);
+  await expect(expoCompileIos([])).rejects.toThrow(/EXIT_CALLED/);
 
   expect(Log.exit).toHaveBeenCalledWith(expect.stringMatching(/eas build -p ios/));
+  expect(loadEnvFiles).not.toHaveBeenCalled();
   expect(spawnAsync).not.toHaveBeenCalled();
 });
 
