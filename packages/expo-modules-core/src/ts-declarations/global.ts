@@ -1,7 +1,7 @@
-import { EventEmitter } from './EventEmitter';
-import { NativeModule } from './NativeModule';
-import { SharedObject } from './SharedObject';
-import { SharedRef } from './SharedRef';
+import type { EventEmitter as EventEmitterClass, EventsMap } from './EventEmitter';
+import type { NativeModule as NativeModuleClass } from './NativeModule';
+import type { SharedObject as SharedObjectClass } from './SharedObject';
+import type { SharedRef as SharedRefClass } from './SharedRef';
 
 type ViewConfig = {
   validAttributes: Record<string, any>;
@@ -41,11 +41,22 @@ declare namespace ExpoGlobal {
   /** Host object that is used to access native Expo modules. */
   export let modules: Record<string, any>;
 
-  // Natively defined JS classes
-  export { EventEmitter };
-  export { SharedObject };
-  export { SharedRef };
-  export { NativeModule };
+  // Natively defined JS classes. Keep the imports type-only: their modules export no values, so a
+  // value import stays in the emitted JavaScript and esbuild fails with "No matching export".
+  export const EventEmitter: typeof EventEmitterClass;
+  export type EventEmitter<TEventsMap extends EventsMap = Record<never, never>> =
+    EventEmitterClass<TEventsMap>;
+  export const SharedObject: typeof SharedObjectClass;
+  export type SharedObject<TEventsMap extends EventsMap = Record<never, never>> =
+    SharedObjectClass<TEventsMap>;
+  export const SharedRef: typeof SharedRefClass;
+  export type SharedRef<
+    TNativeRefType extends string = 'unknown',
+    TEventsMap extends EventsMap = Record<never, never>,
+  > = SharedRefClass<TNativeRefType, TEventsMap>;
+  export const NativeModule: typeof NativeModuleClass;
+  export type NativeModule<TEventsMap extends EventsMap = Record<never, never>> =
+    NativeModuleClass<TEventsMap>;
 
   // Properties
 
