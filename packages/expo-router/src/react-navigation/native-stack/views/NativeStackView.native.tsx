@@ -12,17 +12,8 @@ import {
 
 import { useRouteNode } from '../../../Route';
 import { DescriptorsContext } from '../../../fork/native-stack/descriptors-context';
-import { useIsPreview } from '../../../link/preview/PreviewRouteContext';
 import { ZoomTransitionTarget } from '../../../link/zoom/ZoomTransitionTarget';
-import { isZoomTransitionEnabled } from '../../../link/zoom/zoom-transition-enabled';
-import {
-  getInternalExpoRouterParams,
-  INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
-  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
-  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
-} from '../../../navigationParams';
 import { useWarnOnce } from '../../../useDeprecated';
-import { isModalPresentation } from '../../../utils/stackPresentation';
 import {
   getDefaultHeaderHeight,
   getHeaderTitle,
@@ -74,38 +65,6 @@ type SceneViewProps = {
 };
 
 const useNativeDriver = Platform.OS !== 'web';
-
-function getZoomTransitionSourceIdentifier(
-  route: Route<string>,
-  presentation: NativeStackDescriptor['options']['presentation'],
-  isPreview: boolean
-): string | null {
-  if (!isZoomTransitionEnabled() || isPreview) {
-    return null;
-  }
-
-  const params = getInternalExpoRouterParams(route.params);
-  const identifier = params[INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME];
-  if (
-    typeof identifier !== 'string' ||
-    !identifier ||
-    params[INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME] !== route.key
-  ) {
-    return null;
-  }
-
-  if (
-    params[INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME] &&
-    !isModalPresentation({ presentation })
-  ) {
-    console.warn(
-      '[expo-router] Zoom transition with link preview is only supported for screens presented modally. Please set the screen presentation to "fullScreenModal" or another modal presentation style.'
-    );
-    return null;
-  }
-
-  return identifier;
-}
 
 const SceneView = ({
   index,
@@ -176,7 +135,7 @@ const SceneView = ({
   } = options;
   const screenNativeProps = unstable_nativeProps;
   const routeNode = useRouteNode();
-  const isPreview = useIsPreview();
+  // The screen's gestureEnabled can be overridden for custom zoom dismissal bounds.
   const rawGestureEnabled = use(DescriptorsContext)[route.key]?.options?.gestureEnabled;
 
   useWarnOnce(
@@ -225,12 +184,6 @@ const SceneView = ({
     // for navigator with first screen as `modal` and the next as `card`
     presentation = 'card';
   }
-
-  const zoomTransitionSourceIdentifier = getZoomTransitionSourceIdentifier(
-    route,
-    presentation,
-    isPreview
-  );
 
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
@@ -504,7 +457,8 @@ const SceneView = ({
               <HeaderShownContext.Provider value={isParentHeaderShown || headerShown !== false}>
                 <HeaderBackContext.Provider value={headerBack}>
                   <ZoomTransitionTarget
-                    identifier={zoomTransitionSourceIdentifier}
+                    route={route}
+                    presentation={presentation}
                     gestureEnabled={rawGestureEnabled}>
                     {render()}
                   </ZoomTransitionTarget>

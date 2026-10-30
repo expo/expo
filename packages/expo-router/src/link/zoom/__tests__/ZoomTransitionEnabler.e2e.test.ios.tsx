@@ -14,9 +14,8 @@ import { usePreventZoomTransitionDismissal } from '../usePreventZoomTransitionDi
 import { ZoomTransitionTargetContext } from '../zoom-transition-context';
 
 jest.mock('react-native-screens', () => {
-  const actualScreens: typeof import('react-native-screens') = jest.requireActual(
-    'react-native-screens'
-  );
+  const actualScreens: typeof import('react-native-screens') =
+    jest.requireActual('react-native-screens');
   return {
     ...actualScreens,
     ScreenStackItem: jest.fn((props: ComponentProps<typeof _ScreenStackItem>) => (
