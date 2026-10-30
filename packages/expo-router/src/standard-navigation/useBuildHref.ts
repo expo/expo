@@ -26,7 +26,6 @@ export function useBuildHref() {
           {
             name: route.name,
             params: route.params,
-            // The full navigator state has multiple routes; path resolution selects its active route.
             state: route.state as FocusedRouteState | undefined,
           },
         ],
