@@ -414,6 +414,7 @@ const transform: Transform = (fileInfo, api) => {
 
   // Rewrite supported imports even when other imports need manual migration.
   let didRewrite = false;
+  const rewrittenImportSources = new Set<string>();
   for (const path of mappablePaths) {
     const specifiers = (path.node.specifiers ?? []) as ImportSpecifierWithKind[];
     // Skip imports we cannot safely rewrite (default/namespace style). These are
@@ -422,7 +423,9 @@ const transform: Transform = (fileInfo, api) => {
       continue;
     }
     const sourceModule = path.node.source.value as string;
-    path.node.source.value = IMPORT_MAP[sourceModule];
+    const targetModule = IMPORT_MAP[sourceModule]!;
+    path.node.source.value = targetModule;
+    rewrittenImportSources.add(targetModule);
     didRewrite = true;
   }
 
@@ -441,7 +444,7 @@ const transform: Transform = (fileInfo, api) => {
 
   const groups = groupPathsBySource(root.find(j.ImportDeclaration).paths());
   for (const [importPath, groupPaths] of groups.entries()) {
-    if (groupPaths.length > 1 && importPath.startsWith('expo-router')) {
+    if (groupPaths.length > 1 && rewrittenImportSources.has(importPath)) {
       mergeGroup(j, groupPaths);
     }
   }

@@ -1,3 +1,4 @@
+import j from 'jscodeshift';
 import { applyTransform } from 'jscodeshift/dist/testUtils';
 
 import transform from '../sdk-56-expo-router-react-navigation-replace';
@@ -610,6 +611,24 @@ describe('re-exports', () => {
   test('rewrites a named re-export', () => {
     const output = run(`export { NavigationContainer } from '@react-navigation/native';`);
     expect(output).toBe(`export { NavigationContainer } from "expo-router/react-navigation";`);
+  });
+
+  test('leaves existing expo-router imports separate when only a re-export changes', () => {
+    const input = [
+      `import * as Router from 'expo-router';`,
+      `import { Link } from 'expo-router';`,
+      `export { useNavigation } from '@react-navigation/native';`,
+    ].join('\n');
+    const output = run(input);
+
+    expect(() => j(output)).not.toThrow();
+    expect(output).toBe(
+      [
+        `import * as Router from 'expo-router';`,
+        `import { Link } from 'expo-router';`,
+        `export { useNavigation } from "expo-router/react-navigation";`,
+      ].join('\n')
+    );
   });
 
   test('rewrites a type-only named re-export', () => {
