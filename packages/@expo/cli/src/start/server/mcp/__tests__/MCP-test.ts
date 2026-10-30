@@ -1,8 +1,8 @@
 import { loadModule, resolveFrom } from '@expo/require-utils';
 
-import { Log } from '../../../log';
-import * as ExitHooks from '../../../utils/exit';
-import type { DevServerManager } from '../DevServerManager';
+import { Log } from '../../../../log';
+import * as ExitHooks from '../../../../utils/exit';
+import type { DevServerManager } from '../../DevServerManager';
 import { maybeCreateMCPServerAsync } from '../MCP';
 
 const mockResolve = jest.spyOn(
@@ -27,8 +27,8 @@ jest.mock('@expo/require-utils', () => ({
   loadModule: jest.fn(),
   resolveFrom: jest.fn(),
 }));
-jest.mock('../../../log');
-jest.mock('../../../utils/exit');
+jest.mock('../../../../log');
+jest.mock('../../../../utils/exit');
 
 describe(maybeCreateMCPServerAsync, () => {
   const mockLoadModule = loadModule as jest.MockedFunction<typeof loadModule>;

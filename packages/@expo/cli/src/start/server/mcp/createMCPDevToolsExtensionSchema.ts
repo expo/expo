@@ -3,7 +3,7 @@ import type { z as Zod } from 'zod';
 import type {
   DevToolsPluginCommandParameter,
   DevToolsPluginInfo,
-} from './devtools/DevToolsPlugin.schema';
+} from '../devtools/DevToolsPlugin.schema';
 
 /**
  * Creates an MCP-compatible JSON schema for a DevTools plugin's CLI extensions.

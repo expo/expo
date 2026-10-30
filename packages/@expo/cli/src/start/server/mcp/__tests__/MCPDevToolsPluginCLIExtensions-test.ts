@@ -1,15 +1,15 @@
 import { z } from 'zod';
 
-import { Log } from '../../../log';
-import type { DevServerManager } from '../DevServerManager';
+import { Log } from '../../../../log';
+import type { DevServerManager } from '../../DevServerManager';
+import { DevToolsPlugin } from '../../devtools/DevToolsPlugin';
+import type { DevToolsPluginCommand } from '../../devtools/DevToolsPlugin.schema';
+import { DevToolsPluginCliExtensionExecutor } from '../../devtools/DevToolsPluginCliExtensionExecutor';
 import type { McpServer } from '../MCP';
 import { addMcpCapabilities } from '../MCPDevToolsPluginCLIExtensions';
-import { DevToolsPlugin } from '../devtools/DevToolsPlugin';
-import type { DevToolsPluginCommand } from '../devtools/DevToolsPlugin.schema';
-import { DevToolsPluginCliExtensionExecutor } from '../devtools/DevToolsPluginCliExtensionExecutor';
 
-jest.mock('../devtools/DevToolsPluginCliExtensionExecutor');
-jest.mock('../../../log', () => ({
+jest.mock('../../devtools/DevToolsPluginCliExtensionExecutor');
+jest.mock('../../../../log', () => ({
   Log: {
     error: jest.fn(),
     log: jest.fn(),
@@ -198,8 +198,8 @@ describe(addMcpCapabilities, () => {
     // not the mocked one. A bypassed-schema scenario (future MCP client variant, internal misuse,
     // protocol-level smuggling) must still be rejected before any spawn occurs.
     const { DevToolsPluginCliExtensionExecutor: ActualExecutor } = jest.requireActual<
-      typeof import('../devtools/DevToolsPluginCliExtensionExecutor')
-    >('../devtools/DevToolsPluginCliExtensionExecutor');
+      typeof import('../../devtools/DevToolsPluginCliExtensionExecutor')
+    >('../../devtools/DevToolsPluginCliExtensionExecutor');
     // Fake child that immediately fires `close(0)` so, if the executor IS reached without
     // throwing at validate, the handler resolves and assertions run deterministically
     // (instead of timing out the test).

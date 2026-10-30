@@ -20,7 +20,7 @@ import { resolvePortsAsync } from './resolveOptions';
 import type { BundlerStartOptions } from './server/BundlerDevServer';
 import type { MultiBundlerStartOptions } from './server/DevServerManager';
 import { DevServerManager } from './server/DevServerManager';
-import { maybeCreateMCPServerAsync } from './server/MCP';
+import { maybeCreateMCPServerAsync } from './server/mcp/MCP';
 import { openPlatformsAsync } from './server/openPlatforms';
 import type { PlatformBundlers } from './server/platformBundlers';
 import { getPlatformBundlers } from './server/platformBundlers';

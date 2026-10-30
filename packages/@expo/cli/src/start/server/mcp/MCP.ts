@@ -5,13 +5,13 @@ import type {
 import { loadModule, resolveFrom } from '@expo/require-utils';
 import path from 'node:path';
 
-import { getAccessToken, getSession } from '../../api/user/UserSettings';
-import { Log } from '../../log';
-import { env } from '../../utils/env';
-import { installExitHooks } from '../../utils/exit';
-import type { DevServerManager } from './DevServerManager';
+import { getAccessToken, getSession } from '../../../api/user/UserSettings';
+import { Log } from '../../../log';
+import { env } from '../../../utils/env';
+import { installExitHooks } from '../../../utils/exit';
+import type { DevServerManager } from '../DevServerManager';
+import { debugEvent } from '../devtoolsEvents';
 import { addMcpCapabilities as addDevToolsPluginCapabilities } from './MCPDevToolsPluginCLIExtensions';
-import { debugEvent } from './devtoolsEvents';
 
 /**
  * The MCP server
