@@ -1020,7 +1020,7 @@ type GitHubContext = {
   sha: string;
   ref: string; // e.g. refs/heads/main
   ref_name: string; // e.g. main
-  ref_type: 'branch' | 'tag' | 'other';
+  ref_type: 'branch' | 'tag' | 'other' | ''; // Empty without Git context
   commit_message?: string; // Only available for push and schedule events
   label?: string;
   repository?: string;
@@ -1037,11 +1037,11 @@ type GitHubContext = {
     };
     pull_request?: {
       number: number;
-      title: string;
-      body: string | null;
-      state: 'open' | 'closed';
-      draft: boolean;
-      merged: boolean | null;
+      title?: string;
+      body?: string | null;
+      state?: 'open' | 'closed';
+      draft?: boolean;
+      merged?: boolean | null;
       // ... Other fields from the GitHub Pull Request webhook payload
     };
     comment?: {
@@ -1062,9 +1062,11 @@ type GitHubContext = {
 };
 ```
 
-> **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes fields from GitHub's Pull Request webhook payload, such as `github.event.pull_request.title` and `github.event.pull_request.body`. For edited pull request events, `github.event.changes` contains the fields that changed, such as `github.event.changes.base.ref.from` when the base branch changed. For `pull_request_comment` events, `event.comment.body` contains the comment text, and `event.pull_request.number` and `event.number` contain the pull request number. The type above lists a few useful fields, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
+> **info** For GitHub triggers, `event` includes the stored [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For pull request webhooks, `event.pull_request` includes fields from GitHub's Pull Request webhook payload, such as `github.event.pull_request.title` and `github.event.pull_request.body`. For edited pull request events, `github.event.changes` contains the fields that changed, such as `github.event.changes.base.ref.from` when the base branch changed. For `pull_request_comment` events, `event.comment.body` contains the comment text, and `event.pull_request.number` and `event.number` contain the pull request number. Other pull request details are in `event.issue`, not `event.pull_request`. The type above lists a few useful fields, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
 
-If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
+Manual runs use `event_name: workflow_dispatch`. Runs from a GitHub ref include Git and repository fields; runs from an uploaded project archive have empty Git fields. Use the top-level `inputs` context for manual inputs. `triggering_actor` identifies the Expo user or robot who started the run.
+
+Scheduled runs have generated `event.schedule`, `event.inputs`, and `event.head_commit` fields. Manual archive runs have `event.inputs`; manual GitHub-ref runs have no `event` object.
 
 Example:
 
