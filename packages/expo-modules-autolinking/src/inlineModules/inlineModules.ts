@@ -9,11 +9,13 @@ import { maybeRealpath, scanFilesRecursively } from '../utils';
  * For a given project contains information about all of the inline modules inside.
  * - files: array of files and the watchedDirectories they come from
  * - swiftModuleClassNames: array of swift inline modules class names.
+ * - swiftExpoModuleClassNames: the swift inline modules declared with the `@ExpoModule` macro.
  * - kotlinClasses: array of kotlin inline modules in format `<package>.<className>`
  */
 export interface InlineModulesMirror {
   files: { filePath: string; watchedDir: string }[];
   swiftModuleClassNames: string[];
+  swiftExpoModuleClassNames: string[];
   kotlinClasses: string[];
 }
 
@@ -25,8 +27,9 @@ export interface InlineModulesScanOptions {
 const nativeExtensions = ['.kt', '.swift'];
 // Checks for func definition() -> <anything>ModuleDefinition. <anything> because ExpoModulesCore.ModuleDefinition is a valid usage
 const swiftModuleDefinitionRegex = /\bfunc\s+definition\s*\(\s*\)\s*->\s*[\w.]*ModuleDefinition\b/;
-// Expo Modules 2.0 classes declare `@ExpoModule` instead of a `definition()` DSL.
-const swiftExpoModuleMacroRegex = /@ExpoModule\b/;
+// Expo Modules 2.0 classes declare `@ExpoModule` instead of a `definition()` DSL. The attribute is at the start
+// of a line, possibly after other attributes, so a mention in a comment doesn't count.
+const swiftExpoModuleAttributeRegex = /^[ \t]*(?:@\w+(?:\([^)\n]*\))?[ \t]+)*@ExpoModule\b/m;
 // Checks for `override fun definition() = <anything>ModuleDefinition`
 const kotlinModuleDefinitionRegex =
   /\boverride\s+fun\s+definition\s*\(\s*\)\s*=\s*[\w.]*ModuleDefinition\b/;
@@ -95,14 +98,36 @@ export function getSwiftModuleClassName(absoluteFilePath: string): string {
   return path.basename(absoluteFilePath, path.extname(absoluteFilePath));
 }
 
-export async function hasSwiftModuleDefinition(absoluteFilePath: string): Promise<boolean> {
+interface SwiftInlineModuleInfo {
+  /** Whether the file defines an inline module. */
+  hasModuleDefinition: boolean;
+  /** Whether the module is declared with the `@ExpoModule` macro (Expo Modules API 2.0). */
+  declaredWithMacro: boolean;
+}
+
+/**
+ * Reads a Swift file once and derives whether it defines an inline module and whether the module is declared
+ * with the `@ExpoModule` macro.
+ */
+export async function getSwiftInlineModuleInfo(
+  absoluteFilePath: string
+): Promise<SwiftInlineModuleInfo> {
+  let contents: string;
   try {
-    const contents = await fs.promises.readFile(absoluteFilePath, 'utf8');
-    return swiftModuleDefinitionRegex.test(contents) || swiftExpoModuleMacroRegex.test(contents);
+    contents = await fs.promises.readFile(absoluteFilePath, 'utf8');
   } catch {
     warn(`Swift inline module '${absoluteFilePath}' could not be opened.`);
-    return false;
+    return { hasModuleDefinition: false, declaredWithMacro: false };
   }
+  const declaredWithMacro = swiftExpoModuleAttributeRegex.test(contents);
+  return {
+    hasModuleDefinition: declaredWithMacro || swiftModuleDefinitionRegex.test(contents),
+    declaredWithMacro,
+  };
+}
+
+export async function hasSwiftModuleDefinition(absoluteFilePath: string): Promise<boolean> {
+  return (await getSwiftInlineModuleInfo(absoluteFilePath)).hasModuleDefinition;
 }
 
 /**
@@ -115,6 +140,7 @@ export async function getMirrorStateObject(
   const inlineModulesMirror: InlineModulesMirror = {
     kotlinClasses: [],
     swiftModuleClassNames: [],
+    swiftExpoModuleClassNames: [],
     files: [],
   };
 
@@ -145,9 +171,16 @@ export async function getMirrorStateObject(
           }
           inlineModulesMirror.kotlinClasses.push(classNameWithPackage);
         }
-      } else if (ext === '.swift' && (await hasSwiftModuleDefinition(absoluteFilePath))) {
-        const swiftClassName = getSwiftModuleClassName(absoluteFilePath);
-        inlineModulesMirror.swiftModuleClassNames.push(swiftClassName);
+      } else if (ext === '.swift') {
+        const { hasModuleDefinition, declaredWithMacro } =
+          await getSwiftInlineModuleInfo(absoluteFilePath);
+        if (hasModuleDefinition) {
+          const swiftClassName = getSwiftModuleClassName(absoluteFilePath);
+          inlineModulesMirror.swiftModuleClassNames.push(swiftClassName);
+          if (declaredWithMacro) {
+            inlineModulesMirror.swiftExpoModuleClassNames.push(swiftClassName);
+          }
+        }
       }
       inlineModulesMirror.files.push({
         filePath: absoluteFilePath,
@@ -158,5 +191,6 @@ export async function getMirrorStateObject(
   // Sort the kotlin and swift classes as later we want to use them to generate module providers and it's better to do it consistently for caching.
   inlineModulesMirror.kotlinClasses.sort();
   inlineModulesMirror.swiftModuleClassNames.sort();
+  inlineModulesMirror.swiftExpoModuleClassNames.sort();
   return inlineModulesMirror;
 }

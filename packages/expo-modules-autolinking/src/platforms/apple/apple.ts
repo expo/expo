@@ -7,15 +7,16 @@ import {
   getIosInlineModulesClassNames,
   isTargetInInlineModulesTargets,
 } from '../../inlineModules/iosInlineModules';
-import type {
-  AppleCodeSignEntitlements,
-  ExtraDependencies,
-  ModuleDescriptorIos,
-  ModuleIosConfig,
-  ModuleIosPodspecInfo,
-  PackageRevision,
-  SearchResults,
-  SupportedPlatform,
+import {
+  LOCAL_PACKAGE_NAME,
+  type AppleCodeSignEntitlements,
+  type ExtraDependencies,
+  type ModuleDescriptorIos,
+  type ModuleIosConfig,
+  type ModuleIosPodspecInfo,
+  type PackageRevision,
+  type SearchResults,
+  type SupportedPlatform,
 } from '../../types';
 import { listFilesInDirectories, fileExistsAsync } from '../../utils';
 import {
@@ -132,15 +133,20 @@ export async function resolveModuleAsync(
       ?.appleModules()
       .map((module) => (typeof module === 'string' ? { name: null, class: module } : module)) ?? [];
 
+  const declaresModules = revision.config?.declaresAppleModules() ?? false;
+  const modules = pickModules(
+    declaresModules ? configModules : null,
+    extraOutput.scannedModules?.[packageName] ?? []
+  );
+
   return {
     packageName,
+    ...(revision.isLocal ? { exportedPackageName: LOCAL_PACKAGE_NAME } : {}),
     pods,
     swiftModuleNames,
     flags: extraOutput.flags,
-    modules: pickModules(
-      revision.config?.declaresAppleModules() ? configModules : null,
-      extraOutput.scannedModules?.[packageName] ?? []
-    ),
+    modules,
+    ...(!declaresModules && modules.length > 0 ? { modulesFromScan: true } : {}),
     appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
     reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
     debugOnly: revision.config?.appleDebugOnly() ?? false,
@@ -170,6 +176,45 @@ interface GenerateModulesProviderParams {
   targetPath: string;
   targetName?: string;
   appRoot: string;
+  /** Version of the installed `expo-modules-core`. The provider has `packages` only when it supports them. */
+  coreVersion?: string | null;
+}
+
+/**
+ * The first `expo-modules-core` version with `ExpoPackage` and `ModulesProvider.packages`. A provider that overrides
+ * `packages` doesn't compile against an older core.
+ */
+const MIN_CORE_VERSION_WITH_PACKAGES = '58.0.30';
+
+/**
+ * Returns whether the `expo-modules-core` version supports `packages` in the modules provider. A missing version,
+ * or one that can't be parsed, doesn't. A prerelease of the minimum version doesn't either.
+ */
+export function coreSupportsPackages(coreVersion: string | null | undefined): boolean {
+  const version = parseVersion(coreVersion);
+  const minVersion = parseVersion(MIN_CORE_VERSION_WITH_PACKAGES)!;
+  if (!version) {
+    return false;
+  }
+  for (let i = 0; i < 3; i++) {
+    if (version.numbers[i] !== minVersion.numbers[i]) {
+      return version.numbers[i]! > minVersion.numbers[i]!;
+    }
+  }
+  return !version.prerelease;
+}
+
+function parseVersion(
+  version: string | null | undefined
+): { numbers: number[]; prerelease: boolean } | null {
+  const match = version?.match(/^(\d+)\.(\d+)\.(\d+)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$/);
+  if (!match) {
+    return null;
+  }
+  return {
+    numbers: [Number(match[1]), Number(match[2]), Number(match[3])],
+    prerelease: !!match[4],
+  };
 }
 /**
  * Generates Swift file that contains all autolinked Swift packages.
@@ -232,14 +277,18 @@ async function generatePackageListFileContentAsync(
   let modulesClassNames = ([] as ModuleIosConfig[])
     .concat(...modulesToImport.map((module) => module.modules))
     .filter(Boolean);
+  const packages = groupByPackage(modulesToImport);
 
   if (isTargetInInlineModulesTargets(params)) {
-    modulesClassNames = modulesClassNames.concat(await getIosInlineModulesClassNames(params));
+    const inlineModules = await getIosInlineModulesClassNames(params);
+    modulesClassNames = modulesClassNames.concat(inlineModules.modules);
+    addToPackage(packages, LOCAL_PACKAGE_NAME, inlineModules.expoModules);
   }
 
   const debugOnlyModulesClassNames = ([] as ModuleIosConfig[])
     .concat(...debugOnlyModules.map((module) => module.modules))
     .filter(Boolean);
+  const debugOnlyPackages = groupByPackage(debugOnlyModules);
 
   const appDelegateSubscribers = ([] as string[]).concat(
     ...modulesToImport.map((module) => module.appDelegateSubscribers)
@@ -269,7 +318,7 @@ ${generateCommonImportList(swiftModules)}
 ${generateDebugOnlyImportList(debugOnlySwiftModules)}
 @objc(${className})
 internal class ${className}: ModulesProvider {
-  public override func getModuleClasses() -> [ExpoModuleTupleType] {
+${coreSupportsPackages(params.coreVersion) ? generatePackagesProperty(packages, debugOnlyPackages) : ''}  public override func getModuleClasses() -> [ExpoModuleTupleType] {
 ${generateModuleClasses(modulesClassNames, debugOnlyModulesClassNames)}
   }
 
@@ -329,6 +378,97 @@ function formatArrayOfModuleTuples(modules: ModuleIosConfig[]): string {
 ${indent.repeat(2)}]`;
 }
 
+interface PackageExports {
+  modules: ModuleIosConfig[];
+}
+
+/**
+ * Groups the modules that `scan-modules` found by the package they are exported in: the npm package name,
+ * or the name that the descriptor overrides it with (for example, for local modules).
+ */
+function groupByPackage(modules: ModuleDescriptorIos[]): Map<string, PackageExports> {
+  const packages = new Map<string, PackageExports>();
+  for (const module of modules.filter((module) => module.modulesFromScan)) {
+    addToPackage(packages, module.exportedPackageName ?? module.packageName, module.modules);
+  }
+  return packages;
+}
+
+function addToPackage(
+  packages: Map<string, PackageExports>,
+  packageName: string,
+  modules: ModuleIosConfig[]
+) {
+  if (!modules.length) {
+    return;
+  }
+  const exports = packages.get(packageName) ?? { modules: [] };
+  exports.modules.push(...modules);
+  packages.set(packageName, exports);
+}
+
+/**
+ * Generates the `packages` property, followed by an empty line.
+ */
+function generatePackagesProperty(
+  packages: Map<string, PackageExports>,
+  debugOnlyPackages: Map<string, PackageExports>
+): string {
+  return `${indent}public override var packages: [String: ExpoPackage] {
+${generatePackages(packages, debugOnlyPackages)}
+${indent}}
+
+`;
+}
+
+function generatePackages(
+  packages: Map<string, PackageExports>,
+  debugOnlyPackages: Map<string, PackageExports>
+): string {
+  const commonPackages = formatPackages(packages);
+  if (debugOnlyPackages.size > 0) {
+    const allPackages = new Map(
+      [...packages].map(([packageName, { modules }]) => [packageName, { modules: [...modules] }])
+    );
+    for (const [packageName, { modules }] of debugOnlyPackages) {
+      addToPackage(allPackages, packageName, modules);
+    }
+    return wrapInDebugConfigurationCheck(
+      2,
+      `return ${formatPackages(allPackages)}`,
+      `return ${commonPackages}`
+    );
+  } else {
+    return `${indent.repeat(2)}return ${commonPackages}`;
+  }
+}
+
+/**
+ * Orders the package names with the local package first, then the others by code unit, independent of the host locale.
+ */
+function comparePackageNames(a: string, b: string): number {
+  if ((a === LOCAL_PACKAGE_NAME) !== (b === LOCAL_PACKAGE_NAME)) {
+    return a === LOCAL_PACKAGE_NAME ? -1 : 1;
+  }
+  return a < b ? -1 : a > b ? 1 : 0;
+}
+
+/**
+ * Formats the packages to a Swift dictionary of `ExpoPackage` keyed by the package name, with the local
+ * package first.
+ */
+function formatPackages(packages: Map<string, PackageExports>): string {
+  if (!packages.size) {
+    return '[:]';
+  }
+  const sortedPackages = [...packages].sort(([a], [b]) => comparePackageNames(a, b));
+  const entries = sortedPackages.map(([packageName, { modules }]) => {
+    const moduleClassNames = formatInlineArrayOfClassNames(modules.map((module) => module.class));
+    return `\n${indent.repeat(3)}"${packageName}": ExpoPackage(\n${indent.repeat(4)}modules: ${moduleClassNames}\n${indent.repeat(3)})`;
+  });
+  return `[${entries.join(',')}\n${indent.repeat(2)}]`;
+}
+
 function generateClasses(classNames: string[], debugOnlyClassName: string[]): string {
   const commonClassNames = formatArrayOfClassNames(classNames);
   if (debugOnlyClassName.length > 0) {
@@ -348,6 +488,13 @@ function generateClasses(classNames: string[], debugOnlyClassName: string[]): st
 function formatArrayOfClassNames(classNames: string[]): string {
   return `[${classNames.map((className) => `\n${indent.repeat(3)}${className}.self`).join(',')}
 ${indent.repeat(2)}]`;
+}
+
+/**
+ * Formats an array of class names to a Swift array on one line, for example `[FooModule.self, BarModule.self]`.
+ */
+function formatInlineArrayOfClassNames(classNames: string[]): string {
+  return `[${classNames.map((className) => `${className}.self`).join(', ')}]`;
 }
 
 function generateReactDelegateHandlers(
