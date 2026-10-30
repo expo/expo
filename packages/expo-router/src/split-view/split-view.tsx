@@ -1,8 +1,24 @@
-import React, { isValidElement, use, type ReactElement, type ReactNode } from 'react';
+import React, {
+  isValidElement,
+  use,
+  useImperativeHandle,
+  useState,
+  type ReactElement,
+  type ReactNode,
+} from 'react';
 
-import { Split, type SplitHostProps } from '../optional-libraries/react-native-screens';
-import { IsWithinNativeNavigator } from '../standard-navigation';
-import { Slot } from '../views/Navigator';
+import { useRouteNode } from '../Route';
+import type { SplitViewColumnName } from '../global-state/types';
+import {
+  Split,
+  type SplitHostCommands,
+  type SplitHostProps,
+} from '../optional-libraries/react-native-screens';
+import { getValidInitialRouteName } from '../routeNode';
+import { createStandardRouterNavigator, IsWithinNativeNavigator } from '../standard-navigation';
+import { useWarnOnce } from '../useDeprecated';
+import { Slot, SlotContent } from '../views/Navigator';
+import { SplitViewContentRouter } from './SplitViewContentRouter';
 import {
   getSplitColumnChildren,
   SplitViewColumn,
@@ -10,7 +26,10 @@ import {
   SplitViewInspector,
   type SplitViewColumnProps,
   type SplitViewContentProps,
+  type SplitViewHeader,
 } from './elements';
+import { SplitViewContext, type SplitViewState } from './useSplitView';
+import { getColumnEventProps, useSplitViewColumns } from './useSplitViewColumns';
 
 /**
  * For full list of supported props, see [`SplitHostProps`](http://github.com/software-mansion/react-native-screens/blob/main/src/components/gamma/split/SplitHost.types.ts#L117)
@@ -31,6 +50,23 @@ export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
 
 let didWarnMissingContent = false;
 
+// Indexed by the number of SplitView.Column children.
+const COLUMN_NAMES: readonly (readonly SplitViewColumnName[])[] = [
+  ['secondary'],
+  ['primary', 'secondary'],
+  ['primary', 'supplementary', 'secondary'],
+];
+
+const INACTIVE_SPLIT_VIEW: SplitViewState = {
+  show: () => {},
+  isCollapsed: false,
+  compactColumn: undefined,
+};
+
+const SplitViewContentSlot = createStandardRouterNavigator(SlotContent, SplitViewContentRouter, {
+  activityDefaultThreshold: 1,
+});
+
 function SplitViewNavigator({
   children,
   activityEnabled,
@@ -45,7 +81,11 @@ function SplitViewNavigator({
     console.warn(
       'SplitView is only supported on iOS. The SplitView will behave like a Slot navigator on other platforms.'
     );
-    return <Slot activityEnabled={activityEnabled} />;
+    return (
+      <SplitViewContext value={INACTIVE_SPLIT_VIEW}>
+        <Slot activityEnabled={activityEnabled} />
+      </SplitViewContext>
+    );
   }
 
   const allChildrenArray = React.Children.toArray(children);
@@ -83,7 +123,11 @@ function SplitViewNavigator({
 
   if (numberOfSidebars + numberOfInspectors === 0) {
     console.warn('No SplitView.Column and SplitView.Inspector found in SplitView.');
-    return <Slot activityEnabled={activityEnabled} />;
+    return (
+      <SplitViewContext value={INACTIVE_SPLIT_VIEW}>
+        <Slot activityEnabled={activityEnabled} />
+      </SplitViewContext>
+    );
   }
 
   if (
@@ -97,9 +141,47 @@ function SplitViewNavigator({
     );
   }
 
+  // Native cannot change the number of columns, so a new number of columns or inspectors mounts a new host.
+  return (
+    <SplitViewHost
+      key={`${numberOfSidebars}-${numberOfInspectors}`}
+      columnChildren={columnChildren}
+      inspectorChildren={inspectorChildren}
+      contentHeader={contentChildren[0]?.props.header}
+      activityEnabled={activityEnabled}
+      disableHorizontalSafeAreaInsets={disableHorizontalSafeAreaInsets}
+      {...splitViewHostProps}
+    />
+  );
+}
+
+interface SplitViewHostProps extends Omit<SplitViewProps, 'children'> {
+  columnChildren: ReactElement<SplitViewColumnProps>[];
+  inspectorChildren: ReactElement<SplitViewColumnProps>[];
+  contentHeader: SplitViewHeader | undefined;
+}
+
+function SplitViewHost({
+  columnChildren,
+  inspectorChildren,
+  contentHeader,
+  activityEnabled,
+  disableHorizontalSafeAreaInsets,
+  ref,
+  topColumnForCollapsing,
+  onCollapse,
+  onExpand,
+  ...splitViewHostProps
+}: SplitViewHostProps) {
+  useAnchorWarning();
+  const columnNames = COLUMN_NAMES[columnChildren.length]!;
+  const [host, setHost] = useState<SplitHostCommands | null>(null);
+  useImperativeHandle(ref, () => ({ show: (column) => host?.show(column) }), [host]);
+  const { context, dispatch } = useSplitViewColumns(columnNames, topColumnForCollapsing, host);
+
   // Split.Host gives a column index only to direct children whose type is Split.Column.
-  const columns = columnChildren.map((child) => (
-    <Split.Column key={child.key}>
+  const columns = columnChildren.map((child, index) => (
+    <Split.Column key={child.key} {...getColumnEventProps(dispatch, columnNames[index]!)}>
       {getSplitColumnChildren(child.props, disableHorizontalSafeAreaInsets)}
     </Split.Column>
   ));
@@ -108,23 +190,46 @@ function SplitViewNavigator({
       {getSplitColumnChildren(child.props, disableHorizontalSafeAreaInsets)}
     </Split.Inspector>
   ));
-  const contentHeader = contentChildren[0]?.props.header;
 
-  // The key is needed, because number of columns cannot be changed dynamically
   return (
     <IsWithinNativeNavigator value>
-      <Split.Host key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
-        {columns}
-        <Split.Column>
-          {/* TODO(@ubax): Replace Slot with NativeStack (ENG-28658) */}
-          {getSplitColumnChildren(
-            { children: <Slot activityEnabled={activityEnabled} />, header: contentHeader },
-            disableHorizontalSafeAreaInsets
-          )}
-        </Split.Column>
-        {inspectors}
-      </Split.Host>
+      <SplitViewContext value={context}>
+        <Split.Host
+          ref={setHost}
+          {...splitViewHostProps}
+          topColumnForCollapsing={context.compactColumn}
+          onCollapse={(event) => {
+            dispatch({ type: 'collapse' });
+            onCollapse?.(event);
+          }}
+          onExpand={(event) => {
+            dispatch({ type: 'expand' });
+            onExpand?.(event);
+          }}>
+          {columns}
+          <Split.Column {...getColumnEventProps(dispatch, 'secondary')}>
+            {/* TODO(@ubax): Replace the slot with NativeStack (ENG-28658) */}
+            {getSplitColumnChildren(
+              {
+                children: <SplitViewContentSlot activityEnabled={activityEnabled} />,
+                header: contentHeader,
+              },
+              disableHorizontalSafeAreaInsets
+            )}
+          </Split.Column>
+          {inspectors}
+        </Split.Host>
+      </SplitViewContext>
     </IsWithinNativeNavigator>
+  );
+}
+
+function useAnchorWarning() {
+  const routeNode = useRouteNode();
+  const anchor = getValidInitialRouteName(routeNode);
+  useWarnOnce(
+    `The SplitView layout at "${routeNode?.contextKey}" sets the anchor "${anchor}", but SplitView keeps only the current route on iOS. The anchor applies only to the first navigation. Remove the anchor.`,
+    anchor !== undefined
   );
 }
 

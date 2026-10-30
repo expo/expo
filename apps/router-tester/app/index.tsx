@@ -26,8 +26,9 @@ const HomeIndex = () => {
           <CaseLink href="/tabs" text="Native Tabs" />
           <CaseLink href="/tabs-form-sheet/home" text="Native Tabs Form Sheet" />
           <CaseLink href="/link-preview" text="Link Preview" />
-          <CaseLink href="/split-view" text="Split View" />
-          <CaseLink href="/split-view-mail" text="Split View Mail" />
+          <CaseLink href="/split-view" text="Split View" replace />
+          <CaseLink href="/split-view-mail" text="Split View Mail" replace />
+          <CaseLink href="/split-view-navigation" text="Split View Navigation" replace />
           <CaseLink href="/toolbar" text="Toolbar" />
           <CaseLink href="/header-items" text="Header Items" />
         </Section>
@@ -81,14 +82,23 @@ function Section({ title, children }: { title: string; children: React.ReactNode
   );
 }
 
-function CaseLink({ href, text }: { href: Href; text: string }) {
+function CaseLink({ href, text, replace }: { href: Href; text: string; replace?: boolean }) {
+  const button = (
+    <Pressable accessibilityRole="button" accessibilityLabel={text} style={styles.button}>
+      <Text style={styles.buttonText}>{text}</Text>
+    </Pressable>
+  );
+  // A preview loads the route into the root Stack, and Link does not support a preview with `replace`.
+  if (replace) {
+    return (
+      <Link href={href} replace asChild>
+        {button}
+      </Link>
+    );
+  }
   return (
     <Link href={href} asChild>
-      <Link.Trigger>
-        <Pressable accessibilityRole="button" accessibilityLabel={text} style={styles.button}>
-          <Text style={styles.buttonText}>{text}</Text>
-        </Pressable>
-      </Link.Trigger>
+      <Link.Trigger>{button}</Link.Trigger>
       <Link.Preview />
     </Link>
   );
