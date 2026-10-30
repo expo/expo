@@ -40,6 +40,22 @@ struct UpdatesErrorCodeTests {
   }
 
   @Test
+  func `asset failures group by code and HTTP status`() {
+    let failures = [
+      AssetLoadFailure(assetKey: "a", error: .fileDownloaderHTTPResponseError(statusCode: 404, body: "not found")),
+      AssetLoadFailure(assetKey: "b", error: .fileDownloaderUnknownError(cause: URLError(.timedOut))),
+      AssetLoadFailure(assetKey: "c", error: .fileDownloaderHTTPResponseError(statusCode: 404, body: "not found")),
+      AssetLoadFailure(assetKey: "d", error: .fileDownloaderHTTPResponseError(statusCode: 500, body: "server exploded")),
+      AssetLoadFailure(assetKey: "e", error: .fileDownloaderUnknownError(cause: URLError(.notConnectedToInternet)))
+    ]
+
+    let groups = UpdatesErrorCode.groups(of: failures)
+
+    #expect(groups.map { $0.code } == [.assetsFailedToLoad, .updateServerUnreachable, .assetsFailedToLoad])
+    #expect(groups.map { $0.failures.map { $0.assetKey } } == [["a", "c"], ["b", "e"], ["d"]])
+  }
+
+  @Test
   func `any other failure keeps the given code`() {
     let httpError = UpdatesError.fetchUpdateProcedureFailed(
       cause: UpdatesError.fileDownloaderHTTPResponseError(statusCode: 500, body: "server exploded")
