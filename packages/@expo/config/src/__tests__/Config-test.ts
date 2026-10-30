@@ -701,7 +701,7 @@ describe(modifyConfigAsync, () => {
 
     await expect(
       modifyConfigAsync('/static-dynamic-function-extra.eas', {
-        extra: { eas: { projectId: 'test-project' } },
+        extra: { eas: { projectId: 'test-project', hasOwnProperty: 'keep' } },
       })
     ).resolves.toMatchObject({
       type: 'success',
@@ -712,6 +712,7 @@ describe(modifyConfigAsync, () => {
           eas: {
             someProperty: 'dynamic-property',
             projectId: 'test-project',
+            hasOwnProperty: 'keep',
           },
         },
       },

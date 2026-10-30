@@ -316,7 +316,7 @@ export async function modifyConfigAsync(
   if (
     config.staticConfigPath &&
     config.dynamicConfigObjectType === 'function' &&
-    !modifications.hasOwnProperty('plugins') // We don't know what plugins are in dynamic configs
+    !Object.hasOwn(modifications, 'plugins') // We don't know what plugins are in dynamic configs
   ) {
     const outputConfig = mergeConfigModifications(config, modifications);
 
@@ -481,7 +481,7 @@ function isMatchingObject<T extends Record<string, any>>(
   matchArraysAsSets = false
 ): boolean {
   for (const key in expectedValues) {
-    if (!expectedValues.hasOwnProperty(key)) {
+    if (!Object.hasOwn(expectedValues, key)) {
       continue;
     }
 
