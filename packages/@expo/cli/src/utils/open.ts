@@ -159,8 +159,10 @@ export async function openBrowserAsync(target: string): Promise<boolean> {
   // WSL: when the user hasn't overridden BROWSER, route through Windows `cmd.exe` so
   // the URL opens in the user's Windows browser. Falls through to `xdg-open` otherwise.
   if (!browserApp && isWsl()) {
-    await spawnAsync('/mnt/c/Windows/System32/cmd.exe', ['/c', 'start', '""', target], {
+    const escapedTarget = target.replace(/&/g, '^&');
+    await spawnAsync('/mnt/c/Windows/System32/cmd.exe', ['/c', 'start', '""', escapedTarget], {
       stdio: 'ignore',
+      windowsVerbatimArguments: true,
     });
     return true;
   }
@@ -182,8 +184,12 @@ async function spawnWindowsStartAsync(
   // interpreted as a title argument.
   const startArgs = ['/c', 'start', '""'];
   if (browserApp) startArgs.push(browserApp);
-  startArgs.push(target, ...browserArgs);
-  await spawnAsync(cmd, startArgs, { stdio: 'ignore' });
+  const escapedTarget = target.replace(/&/g, '^&');
+  startArgs.push(escapedTarget, ...browserArgs);
+  await spawnAsync(cmd, startArgs, {
+    stdio: 'ignore',
+    windowsVerbatimArguments: true,
+  });
 }
 
 function isWsl(): boolean {
