@@ -101,10 +101,15 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     return items.map { item in
       // With an image, the button shows only the image and uses the title as its accessibility label.
       let image = item.icon.flatMap { UIImage(systemName: $0) }
+      let barButtonItem: UIBarButtonItem
       if let menu = item.menu {
-        return UIBarButtonItem(title: item.title, image: image, primaryAction: nil, menu: makeMenu(menu))
+        barButtonItem = UIBarButtonItem(title: item.title, image: image, primaryAction: nil, menu: makeMenu(menu))
+      } else {
+        barButtonItem = UIBarButtonItem(primaryAction: makeAction(id: item.id, title: item.title, image: image))
       }
-      return UIBarButtonItem(primaryAction: makeAction(id: item.id, title: item.title, image: image))
+      barButtonItem.isEnabled = !item.disabled
+      barButtonItem.isSelected = item.selected
+      return barButtonItem
     }
   }
 
