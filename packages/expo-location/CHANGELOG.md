@@ -111,6 +111,8 @@ _This version does not introduce any user-facing changes._
 
 ## 58.0.5 — 2026-09-22
 
+- [Android, iOS] Add `startMotionActivityUpdatesAsync`, `stopMotionActivityUpdatesAsync` and `hasStartedMotionActivityUpdatesAsync` for receiving motion activity updates via a background task. ([#49653](https://github.com/expo/expo/pull/49653) by [@Guccio163](https://github.com/Guccio163))
+
 ### 🐛 Bug fixes
 
 - [iOS] Exclude the CoreMotion features from the build when `motionUsagePermission: false` is set in `app.json`. ([#49409](https://github.com/expo/expo/pull/49409) by [@Wenszel](https://github.com/Wenszel))

@@ -77,6 +77,8 @@
         {
           "isAndroidBackgroundLocationEnabled": true,
           "isIosBackgroundLocationEnabled": true,
+          "isAndroidMotionActivityEnabled": true,
+          "isAndroidMotionActivityForegroundServiceEnabled": true,
           "androidForegroundServiceIcon": "./assets/location_service_icon.png"
         }
       ],

@@ -194,6 +194,21 @@ export type LocationTaskOptions = LocationOptions & {
 };
 
 // @needsAudit
+/**
+ * Type representing background motion activity task options.
+ */
+export type MotionActivityTaskOptions = {
+  /**
+   * Configuration for running motion activity updates through a foreground service, the same
+   * way `LocationTaskOptions.foregroundService` keeps background location updates running. When
+   * omitted, updates are only guaranteed to be delivered while the OS happens to keep the app
+   * process alive.
+   * @platform android
+   */
+  foregroundService?: LocationTaskServiceOptions;
+};
+
+// @needsAudit
 export type LocationTaskServiceOptions = {
   /**
    * Title of the foreground service notification.
