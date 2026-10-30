@@ -1,6 +1,17 @@
 import { mergeConfig } from '../mergeConfig';
 
 describe(mergeConfig, () => {
+  it('preserves keys that also exist on Object.prototype when cloning either input', () => {
+    const data = { constructor: 'keep', toString: 'keep', hasOwnProperty: 'keep' };
+
+    const result = mergeConfig<Record<string, any>>({ extra: data }, { other: data });
+
+    expect(result).toEqual({ extra: data, other: data });
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    expect(Object.getPrototypeOf(result.extra)).toBe(Object.prototype);
+    expect(Object.getPrototypeOf(result.other)).toBe(Object.prototype);
+  });
+
   it('ignores an own __proto__ property when copying the target', () => {
     const target = JSON.parse('{"__proto__":{"injected":true},"safe":true}');
 

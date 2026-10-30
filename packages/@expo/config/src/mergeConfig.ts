@@ -34,7 +34,10 @@ function hasProperty(value: any, key: PropertyKey): boolean {
 
 export function mergeConfig<T>(target: Partial<T>, source: Partial<T>, arrayMerge?: ArrayMerge): T {
   function clone(value: any): any {
-    return isMergeable(value) ? merge(Array.isArray(value) ? [] : {}, value) : value;
+    // NOTE(@kitten): A null-prototype target keeps the inherited-property guard from dropping own data keys.
+    return isMergeable(value)
+      ? merge(Array.isArray(value) ? [] : Object.create(null), value)
+      : value;
   }
 
   function merge(target: any, source: any): any {
