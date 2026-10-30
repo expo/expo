@@ -115,7 +115,7 @@ github {
       merged_at,
       // ... and other fields from the GitHub Pull Request webhook payload
     },
-    inputs,           // workflow_dispatch inputs
+    inputs,           // workflow_dispatch or workflow_call inputs
     schedule,         // Cron expression, for scheduled runs
     number,
   }
@@ -126,7 +126,7 @@ The `event` object contains the full [GitHub webhook payload](https://docs.githu
 
 ### `inputs`
 
-A record of the inputs provided when you start the workflow manually with [`workflow_dispatch`](/eas/workflows/syntax/#onworkflow_dispatchinputs). Empty when the workflow is triggered another way.
+A record of the inputs provided when you start the workflow manually with [`workflow_dispatch`](/eas/workflows/syntax/#onworkflow_dispatchinputs). In a [called run](/eas/workflows/reusable-workflows/#context-of-a-called-run), it contains the inputs of that run. Empty when the workflow is triggered another way.
 
 ```yaml
 jobs:
