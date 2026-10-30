@@ -49,11 +49,10 @@ extension Benchmarks {
 
   @Test
   func `raw C: select one row by id`() async throws {
-    try await sqliteBenchmarkCase { appContext in
+    try await benchmarkCase {
       let database = try openDatabase()
-      let runtime = try appContext.runtime
       let statement = try prepare("SELECT \(BenchmarkSchema.selectColumns) FROM t WHERE id = ?", in: database)
-      benchmark("raw C: select 1 row by id", runtime: runtime) { iterations in
+      benchmark("raw C: select 1 row by id", runtime: nil) { iterations in
         for i in 0..<iterations {
           exsqlite3_bind_int64(statement, 1, Int64(i % BenchmarkSchema.rowCount) + 1)
           _ = exsqlite3_step(statement)
@@ -68,11 +67,10 @@ extension Benchmarks {
 
   @Test
   func `raw C: select 100 rows`() async throws {
-    try await sqliteBenchmarkCase { appContext in
+    try await benchmarkCase {
       let database = try openDatabase()
-      let runtime = try appContext.runtime
       let statement = try prepare("SELECT \(BenchmarkSchema.selectColumns) FROM t WHERE id <= 100", in: database)
-      benchmark("raw C: select 100 rows, read every cell", runtime: runtime) { iterations in
+      benchmark("raw C: select 100 rows, read every cell", runtime: nil) { iterations in
         for _ in 0..<iterations {
           while exsqlite3_step(statement) == SQLITE_ROW {
             readRow(statement)
@@ -87,14 +85,13 @@ extension Benchmarks {
 
   @Test
   func `raw C: insert with bound parameters`() async throws {
-    try await sqliteBenchmarkCase { appContext in
+    try await benchmarkCase {
       let database = try openDatabase()
-      let runtime = try appContext.runtime
       let statement = try prepare(
         "INSERT INTO t (int_value, real_value, text_value, null_value) VALUES (?, ?, ?, ?)",
         in: database
       )
-      benchmark("raw C: insert with 4 bound parameters", runtime: runtime) { iterations in
+      benchmark("raw C: insert with 4 bound parameters", runtime: nil) { iterations in
         for i in 0..<iterations {
           exsqlite3_bind_int64(statement, 1, Int64(i))
           exsqlite3_bind_double(statement, 2, 1.5)
@@ -112,11 +109,10 @@ extension Benchmarks {
 
   @Test
   func `raw C: prepare and finalize`() async throws {
-    try await sqliteBenchmarkCase { appContext in
+    try await benchmarkCase {
       let database = try openDatabase()
-      let runtime = try appContext.runtime
       let source = "SELECT \(BenchmarkSchema.selectColumns) FROM t WHERE id = 1"
-      benchmark("raw C: prepare + finalize", runtime: runtime) { iterations in
+      benchmark("raw C: prepare + finalize", runtime: nil) { iterations in
         for _ in 0..<iterations {
           var statement: OpaquePointer?
           exsqlite3_prepare_v2(database.pointer, source, -1, &statement, nil)
@@ -131,11 +127,10 @@ extension Benchmarks {
 
   @Test
   func `Swift: prepare and finalize through the shared objects`() async throws {
-    try await sqliteBenchmarkCase { appContext in
+    try await benchmarkCase {
       let database = try openDatabase()
-      let runtime = try appContext.runtime
       let source = "SELECT \(BenchmarkSchema.selectColumns) FROM t WHERE id = 1"
-      try benchmark("Swift: prepareSync + finalizeSync", runtime: runtime) { iterations in
+      try benchmark("Swift: prepareSync + finalizeSync", runtime: nil) { iterations in
         for _ in 0..<iterations {
           let statement = NativeStatement()
           try database.prepareSync(statement: statement, source: source)
@@ -148,12 +143,11 @@ extension Benchmarks {
 
   @Test
   func `Swift: column names of a prepared statement`() async throws {
-    try await sqliteBenchmarkCase { appContext in
+    try await benchmarkCase {
       let database = try openDatabase()
-      let runtime = try appContext.runtime
       let statement = NativeStatement()
       try database.prepareSync(statement: statement, source: "SELECT \(BenchmarkSchema.selectColumns) FROM t")
-      try benchmark("Swift: getColumnNamesSync (5 columns)", runtime: runtime) { iterations in
+      try benchmark("Swift: getColumnNamesSync (5 columns)", runtime: nil) { iterations in
         for _ in 0..<iterations {
           _ = try statement.getColumnNamesSync()
         }
@@ -165,10 +159,9 @@ extension Benchmarks {
 
   @Test
   func `Swift: exec a trivial statement`() async throws {
-    try await sqliteBenchmarkCase { appContext in
+    try await benchmarkCase {
       let database = try openDatabase()
-      let runtime = try appContext.runtime
-      try benchmark("Swift: execSync('SELECT 1')", runtime: runtime) { iterations in
+      try benchmark("Swift: execSync('SELECT 1')", runtime: nil) { iterations in
         for _ in 0..<iterations {
           try database.execSync(source: "SELECT 1")
         }
