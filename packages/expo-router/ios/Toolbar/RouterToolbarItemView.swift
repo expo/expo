@@ -25,7 +25,8 @@ class RouterToolbarItemView: RouterViewWithLogger {
 
   @ReactiveProp var selected: Bool = false
   @ReactiveProp var possibleTitles: Set<String>?
-  @ReactiveProp var badgeConfiguration: BadgeConfiguration?
+  // Changing the badge in place does not update an item that is already in the toolbar (seen on iOS 27.1)
+  @ReactiveProp(needsFullRebuild: true) var badgeConfiguration: BadgeConfiguration?
   @ReactiveProp var titleStyle: TitleStyle?
   @ReactiveProp var routerAccessibilityLabel: String?
   @ReactiveProp var routerAccessibilityHint: String?
