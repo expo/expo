@@ -2224,9 +2224,6 @@ importers:
       ws:
         specifier: ^8.12.1
         version: 8.19.0
-      zod:
-        specifier: ^3.25.76
-        version: 3.25.76
     devDependencies:
       '@babel/core':
         specifier: ^7.20.0
@@ -2369,6 +2366,9 @@ importers:
       tree-kill:
         specifier: ^1.2.2
         version: 1.2.2
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
 
   packages/@expo/config:
     dependencies:
