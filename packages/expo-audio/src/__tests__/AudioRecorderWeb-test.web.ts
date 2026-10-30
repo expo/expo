@@ -17,7 +17,11 @@ class FakeMediaRecorder extends EventTarget {
     this.dispatchEvent(new Event('start'));
   }
   stop() {
+    if (this.state === 'inactive') {
+      return;
+    }
     this.state = 'inactive';
+    this.emitData(0);
     this.dispatchEvent(new Event('stop'));
   }
   pause() {
@@ -48,6 +52,7 @@ jest.mock('../AudioUtils.web', () => ({
 
 // Import after the globals are in place.
 const { AudioRecorderWeb } = require('../AudioRecorder.web');
+const { getUserMedia } = require('../AudioUtils.web');
 
 function mockMediaDevices() {
   Object.defineProperty(navigator, 'mediaDevices', {
@@ -164,5 +169,41 @@ describe('AudioRecorderWeb duration limit', () => {
 
     expect(stopSpy).toHaveBeenCalledTimes(1);
     expect(recorder.isRecording).toBe(false);
+  });
+});
+
+describe('AudioRecorderWeb stop', () => {
+  beforeEach(() => {
+    mockMediaDevices();
+    URL.createObjectURL = jest.fn(() => 'blob:recording');
+  });
+
+  it('resolves every stop() call that runs during a stop', async () => {
+    const recorder = new AudioRecorderWeb({});
+    await recorder.prepareToRecordAsync();
+    const emitSpy = jest.spyOn(recorder, 'emit');
+    recorder.record();
+
+    await expect(Promise.all([recorder.stop(), recorder.stop()])).resolves.toEqual([
+      undefined,
+      undefined,
+    ]);
+    expect(recorder.uri).toBe('blob:recording');
+    expect(emitSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('releases the microphone when a prepared recorder stops before it records', async () => {
+    const track = { stop: jest.fn() };
+    jest.mocked(getUserMedia).mockResolvedValueOnce({
+      getAudioTracks: () => [track],
+      getTracks: () => [track],
+    } as unknown as MediaStream);
+    const recorder = new AudioRecorderWeb({});
+    await recorder.prepareToRecordAsync();
+
+    const stopped = recorder.stop();
+
+    expect(track.stop).toHaveBeenCalledTimes(1);
+    await expect(stopped).resolves.toBeUndefined();
   });
 });

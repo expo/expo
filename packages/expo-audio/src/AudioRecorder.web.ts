@@ -31,6 +31,7 @@ export class AudioRecorderWeb
 
   private options: Partial<RecordingOptions>;
   private mediaRecorder: MediaRecorder | null = null;
+  private stopPromise: Promise<void> | null = null;
   private mediaRecorderUptimeOfLastStartResume = 0;
   private mediaRecorderIsRecording = false;
   private timeoutIds: ReturnType<typeof setTimeout>[] = [];
@@ -157,7 +158,14 @@ export class AudioRecorderWeb
     this.record({ atTime: seconds });
   }
 
-  async stop(): Promise<void> {
+  stop(): Promise<void> {
+    this.stopPromise ??= this.stopRecording().finally(() => {
+      this.stopPromise = null;
+    });
+    return this.stopPromise;
+  }
+
+  private async stopRecording(): Promise<void> {
     if (this.mediaRecorder === null) {
       throw new Error(
         'Cannot start an audio recording without initializing a MediaRecorder. Run prepareToRecordAsync() before attempting to start an audio recording.'
@@ -166,6 +174,13 @@ export class AudioRecorderWeb
 
     this.clearTimeouts();
     this.durationLimitMillis = null;
+
+    // MediaRecorder.stop() fires no events when the recorder never started.
+    if (this.mediaRecorder.state === 'inactive') {
+      this.mediaRecorder = null;
+      this.releaseStream();
+      return;
+    }
 
     const dataPromise = new Promise<Blob>((resolve) =>
       this.mediaRecorder?.addEventListener('dataavailable', (e) => resolve(e.data))
@@ -289,28 +304,31 @@ export class AudioRecorderWeb
       this.durationLimitMillis = null;
       this.currentTime = 0;
       this.mediaRecorderIsRecording = false;
-      this.stream = null;
-
-      if (this.analyserSource) {
-        this.analyserSource.disconnect();
-        this.analyserSource = null;
-      }
-      if (this.analyser) {
-        this.analyser.disconnect();
-        this.analyser = null;
-        this.analyserBuffer = null;
-      }
-
-      if (this.handleDeviceChange) {
-        navigator.mediaDevices?.removeEventListener('devicechange', this.handleDeviceChange);
-        this.handleDeviceChange = null;
-      }
-
-      // Clears recording icon in Chrome tab
-      stream.getTracks().forEach((track) => track.stop());
+      this.releaseStream();
     });
 
     return mediaRecorder;
+  }
+
+  private releaseStream() {
+    if (this.analyserSource) {
+      this.analyserSource.disconnect();
+      this.analyserSource = null;
+    }
+    if (this.analyser) {
+      this.analyser.disconnect();
+      this.analyser = null;
+      this.analyserBuffer = null;
+    }
+
+    if (this.handleDeviceChange) {
+      navigator.mediaDevices?.removeEventListener('devicechange', this.handleDeviceChange);
+      this.handleDeviceChange = null;
+    }
+
+    // Clears recording icon in Chrome tab
+    this.stream?.getTracks().forEach((track) => track.stop());
+    this.stream = null;
   }
 
   private async updateCachedInputs() {
