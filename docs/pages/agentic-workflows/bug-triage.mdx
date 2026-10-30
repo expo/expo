@@ -16,7 +16,7 @@ import { BugTriageDiagram } from '~/scenes/eas/agentic-workflows/AgenticWorkflow
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-Bug triage is an automated workflow in which a coding agent tries to reproduce a bug report on a remote Android Emulator or iOS Simulator. The report comes from a GitHub issue or from TestFlight feedback. When the agent sees the bug and a person reads the report, [Issue to PR](/agentic-workflows/issue-to-pr/) opens a pull request (PR) with a fix, and [Agentic CI](/agentic-workflows/agentic-ci/) tests the fix.
+Bug triage is an automated workflow in which a coding agent tries to reproduce a bug report on a remote Android Emulator or iOS Simulator. The report comes from a GitHub issue or from TestFlight feedback. When the agent sees the bug, a person reads the report and adds the `agent` label. Then [Issue to PR](/agentic-workflows/issue-to-pr/) opens a pull request (PR) with a fix, and [Agentic CI](/agentic-workflows/agentic-ci/) tests the fix.
 
 ## How Bug triage works
 
@@ -231,7 +231,7 @@ The job script adds the issue, its comments, and **agent-output/device.md** to t
 You try to reproduce a bug report in this project on a remote Android Emulator or iOS Simulator. The app is installed and open on the device. The bug report and the details of the device are at the end of this prompt.
 
 1. Read the report. Find the steps, the expected result, and the actual result. You can also read the source code of the project with your file tools.
-2. Follow the steps as a user does. Run only the shell command in the Device section. The job denies each other shell command. If a command is denied, continue with the command of the Device section.
+2. Follow the steps as a user does. Run only the shell command in the Device section. If a command is denied, continue with the command of the Device section.
 3. Save a screenshot after each step.
 4. Write the file agent-output/evidence/verdict.md. Line 1 is "REPLICATED: <one sentence>" or "NOT-REPLICATED: <one sentence>". Then list each step that you did and what you saw.
 
@@ -484,6 +484,8 @@ The jobs do these tasks:
     '$ git push',
   ]}
 />
+
+For Android only, leave out **.eas/agents/feedback-issue.mjs**.
 
 </Step>
 
