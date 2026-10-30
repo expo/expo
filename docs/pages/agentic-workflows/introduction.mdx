@@ -23,11 +23,11 @@ This section has four guides. Each guide adds one agentic workflow to your proje
 
 Each agentic workflow has three parts:
 
-- **A workflow** starts the work. In these guides, [EAS Workflows](/eas/workflows/introduction/) runs the jobs in the cloud. A PR, TestFlight feedback, a GitHub Action, or a manual run starts a workflow.
+- **A workflow** starts the work. In these guides, [Expo Workflows](/eas/workflows/introduction/) runs the jobs in the cloud. A PR, TestFlight feedback, a GitHub Action, or a manual run starts a workflow.
 - **A coding agent** does the task, such as a test of a change, a new feature, or a bug fix. In a workflow, the agent runs from the command line, without a person.
 - **An Expo Simulators session** gives the agent a running app on a cloud Android Emulator or iOS Simulator. The agent uses the app as a person does and saves evidence.
 
-The following diagram shows one run of an agentic workflow. The highlighted steps run on EAS Workflows and Expo Simulators:
+The following diagram shows one run of an agentic workflow. The highlighted steps run on Expo Workflows and Expo Simulators:
 
 <AgenticWorkflowDiagram />
 
@@ -35,7 +35,7 @@ The following diagram shows one run of an agentic workflow. The highlighted step
 
 A coding agent can read and change code, but it cannot see if the app functions as expected. To see the app, the agent needs a device that runs it.
 
-With [Expo Simulators](/preview/simulators/introduction/), your workflows can use Android Emulators and iOS Simulators on EAS cloud infrastructure. A job in the workflow starts a session. Then the agent uses a controller, [agent-device](/agents/agent-device/) or [Argent](/agents/argent/), to tap, type, and scroll in the app.
+With [Expo Simulators](/preview/simulators/introduction/), your workflows can use Android Emulators and iOS Simulators on Expo cloud infrastructure. A job in the workflow starts a session. Then the agent uses a controller, [agent-device](/agents/agent-device/) or [Argent](/agents/argent/), to tap, type, and scroll in the app.
 
 ## What the agent returns
 
@@ -43,7 +43,7 @@ The agent does not merge or ship a change. It returns evidence for a person to r
 
 - A verdict, such as `PASS` or `FAIL`, with a report of each check.
 - The screenshots that the agent saved.
-- The screen recording of the session, on the session page on the EAS dashboard.
+- The screen recording of the session, on the session page on the Expo dashboard.
 - A link that opens the build in a browser preview.
 
 For example, Agentic CI posts this evidence in a comment on the PR:
@@ -61,7 +61,7 @@ For example, Agentic CI posts this evidence in a comment on the PR:
 Agentic workflows build on other Expo tools. If you are new to them, set them up in this order:
 
 1. [Create a project](/get-started/create-a-project/) and push it to a GitHub repository.
-2. [Get started with EAS Workflows](/eas/workflows/get-started/) and run your first workflow.
+2. [Get started with Expo Workflows](/eas/workflows/get-started/) and run your first workflow.
 3. [Set up a coding agent](/agents/) on your computer and try it on your project.
 4. Check that your Expo account has [Expo Simulators](/preview/simulators/introduction/) access.
 
