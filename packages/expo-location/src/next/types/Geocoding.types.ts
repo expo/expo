@@ -46,25 +46,25 @@ export type Address = {
 };
 
 /**
- * Options for [`geocode`](#geocodeaddressoptions).
+ * Options for [`geocode`](#geocodeaddress-options).
  * @platform ios
  */
 export type GeocodeOptions = {
   /**
-   * The language of the text fields in the result, as a BCP 47 tag such as `en-US`.
-   * @default The device language.
+   * The language of the text fields in the result, as a BCP 47 tag such as `en-US`. Defaults to
+   * the device language.
    */
   locale?: string;
 };
 
 /**
- * Options for [`reverseGeocode`](#reversegeocodecoordinatesoptions).
+ * Options for [`reverseGeocode`](#reversegeocodecoordinates-options).
  * @platform ios
  */
 export type ReverseGeocodeOptions = {
   /**
-   * The language of the text fields in the result, as a BCP 47 tag such as `en-US`.
-   * @default The device language.
+   * The language of the text fields in the result, as a BCP 47 tag such as `en-US`. Defaults to
+   * the device language.
    */
   locale?: string;
 };

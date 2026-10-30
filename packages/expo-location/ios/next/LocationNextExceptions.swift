@@ -118,12 +118,12 @@ final class InvalidCoordinatesException: Exception, @unchecked Sendable {
 
 final class GeocodingUnavailableException: Exception, @unchecked Sendable {
   override var reason: String {
-    "Geocoding is unavailable. See the underlying error for details."
+    "Geocoding is unavailable."
   }
 }
 
 final class GeocodingFailedException: Exception, @unchecked Sendable {
   override var reason: String {
-    "Geocoding failed. See the underlying error for details."
+    "Geocoding failed."
   }
 }
