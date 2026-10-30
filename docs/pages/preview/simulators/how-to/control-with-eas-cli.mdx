@@ -216,7 +216,11 @@ Use `media.add` to upload a photo or video from your computer into the simulator
 
 <Terminal cmd={['$ eas simulator:control media.add ./fixture.png --id <session-id>']} />
 
-`media.add` and `app.install` read the file from your computer. If the file does not exist, the command fails before it sends the action. To use a file that is already on the simulator host, prefix its absolute path with `host:`. The simulator host accepts only paths in the folders that it uses for simulators, uploads, and screenshots. `app.file.upload` accepts only a file from your computer.
+`media.add` and `app.install` read the file from your computer. If the file does not exist, the command fails before it sends the action. To use a file that is already on the simulator host, prefix its absolute path with `host:`:
+
+<Terminal cmd={['$ eas simulator:control media.add host:<absolute-path> --id <session-id>']} />
+
+The simulator host accepts only paths in the folders that it uses for simulators, uploads, and screenshots. `app.file.upload` accepts only a file from your computer.
 
 Use app data transfers to seed test fixtures or inspect files your app saves. The app must understand the file's path and format.
 
