@@ -33,6 +33,10 @@ import expo.modules.ui.graphics.ImageLoader
 import expo.modules.ui.icon.IconView
 import expo.modules.ui.image.ImageView
 import expo.modules.ui.menu.DropdownMenuContent
+import expo.modules.ui.menu.DropdownMenuGroupContent
+import expo.modules.ui.menu.DropdownMenuGroupProps
+import expo.modules.ui.menu.DropdownMenuPopupContent
+import expo.modules.ui.menu.DropdownMenuPopupProps
 import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
@@ -53,6 +57,8 @@ import expo.modules.ui.menu.ExposedDropdownMenuBoxContent
 import expo.modules.ui.menu.ExposedDropdownMenuBoxProps
 import expo.modules.ui.menu.ExposedDropdownMenuContent
 import expo.modules.ui.menu.ExposedDropdownMenuProps
+import expo.modules.ui.menu.SelectableDropdownMenuItemContent
+import expo.modules.ui.menu.SelectableDropdownMenuItemProps
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 
@@ -445,11 +451,33 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<DropdownMenuPopupProps>("DropdownMenuPopupView") {
+      val onDismissRequest by Event<Unit>()
+
+      Content { props ->
+        DropdownMenuPopupContent(props) { onDismissRequest(Unit) }
+      }
+    }
+
+    ExpoUIView<DropdownMenuGroupProps>("DropdownMenuGroupView") {
+      Content { props ->
+        DropdownMenuGroupContent(props)
+      }
+    }
+
     ExpoUIView<DropdownMenuItemProps>("DropdownMenuItemView") {
       val onItemPressed by Event<Unit>()
 
       Content { props ->
         DropdownMenuItemContent(props) { onItemPressed(Unit) }
+      }
+    }
+
+    ExpoUIView<SelectableDropdownMenuItemProps>("SelectableDropdownMenuItemView") {
+      val onItemPressed by Event<Unit>()
+
+      Content { props ->
+        SelectableDropdownMenuItemContent(props) { onItemPressed(Unit) }
       }
     }
 
