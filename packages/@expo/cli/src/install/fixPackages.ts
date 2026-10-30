@@ -1,3 +1,4 @@
+import { getPackageJson } from '@expo/config';
 import type * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
@@ -7,6 +8,7 @@ import type { getVersionedDependenciesAsync } from '../start/doctor/dependencies
 import { groupBy } from '../utils/array';
 import { applyPluginsAsync } from './applyPlugins';
 import { installExpoPackageAsync } from './installExpoPackage';
+import { updatePnpmCatalogAsync } from './updatePnpmCatalog';
 
 /**
  * Given a list of incompatible packages, installs the correct versions of the packages with the package manager used for the project.
@@ -38,6 +40,24 @@ export async function fixPackagesAsync(
     return;
   }
 
+  const pkg = getPackageJson(projectRoot);
+  const catalogPackages =
+    packageManager.name === 'pnpm' && !packageManagerArguments.includes('--no-save')
+      ? packages.flatMap((dep) => {
+          const spec = pkg[dep.packageType]?.[dep.packageName];
+          return spec?.startsWith('catalog:')
+            ? [
+                {
+                  name: dep.packageName,
+                  catalog: spec.slice('catalog:'.length),
+                  version: dep.expectedVersionOrRange,
+                },
+              ]
+            : [];
+        })
+      : [];
+  const catalogNames = new Set(catalogPackages.map((dep) => dep.name));
+
   const { dependencies = [], devDependencies = [] } = groupBy(packages, (dep) => dep.packageType);
   const versioningMessages = getOperationLog({
     othersCount: 0, // All fixable packages are versioned
@@ -55,33 +75,50 @@ export async function fixPackagesAsync(
   // if updating expo package, install this first, then run expo install --fix again under new version
   const expoDep = dependencies.find((dep) => dep.packageName === 'expo');
   if (expoDep) {
+    if (catalogNames.has('expo')) {
+      await updatePnpmCatalogAsync(
+        projectRoot,
+        catalogPackages.filter((dep) => dep.name === 'expo')
+      );
+    }
     await installExpoPackageAsync(projectRoot, {
       packageManager,
       packageManagerArguments,
       expoPackageToInstall: `expo@${expoDep.expectedVersionOrRange}`,
       followUpCommandArgs: ['--fix'],
+      installFromCatalog: catalogNames.has('expo'),
     });
     // follow-up commands will be spawned in a detached process, so return immediately
     return;
   }
 
+  if (catalogPackages.length) {
+    await updatePnpmCatalogAsync(projectRoot, catalogPackages);
+    await packageManager.installAsync(packageManagerArguments);
+  }
+
+  const regularDependencies = dependencies.filter((dep) => !catalogNames.has(dep.packageName));
+  if (regularDependencies.length) {
+    await packageManager.addAsync([
+      ...packageManagerArguments,
+      ...regularDependencies.map((dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`),
+    ]);
+  }
+
   if (dependencies.length) {
-    const versionedPackages = dependencies.map(
-      (dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`
-    );
-
-    await packageManager.addAsync([...packageManagerArguments, ...versionedPackages]);
-
     await applyPluginsAsync(
       projectRoot,
       dependencies.map((dep) => dep.packageName)
     );
   }
 
-  if (devDependencies.length) {
+  const regularDevDependencies = devDependencies.filter(
+    (dep) => !catalogNames.has(dep.packageName)
+  );
+  if (regularDevDependencies.length) {
     await packageManager.addDevAsync([
       ...packageManagerArguments,
-      ...devDependencies.map((dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`),
+      ...regularDevDependencies.map((dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`),
     ]);
   }
 }
