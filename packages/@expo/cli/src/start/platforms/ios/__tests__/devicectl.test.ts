@@ -1,7 +1,17 @@
-import { xcrunAsync } from '../../../../start/platforms/ios/xcrun';
-import { launchAppWithDeviceCtl } from '../devicectl';
+import { spawn } from 'child_process';
+import { EventEmitter } from 'events';
 
+import { xcrunAsync } from '../../../../start/platforms/ios/xcrun';
+import { ora } from '../../../../utils/ora';
+import { installAndLaunchAppAsync, launchAppWithDeviceCtl } from '../devicectl';
+
+jest.mock('child_process', () => ({
+  ...jest.requireActual('child_process'),
+  spawn: jest.fn(),
+}));
 jest.mock('../../../../start/platforms/ios/xcrun');
+jest.mock('../../../../utils/exit');
+jest.mock('../../../../utils/ora');
 
 describe(launchAppWithDeviceCtl, () => {
   it('throws generic error when `xcrun` fails without error logs', async () => {
@@ -26,6 +36,39 @@ describe(launchAppWithDeviceCtl, () => {
     await expect(() =>
       launchAppWithDeviceCtl('fake-device-id', 'com.exponent.Test')
     ).rejects.toThrow('Device is locked, unlock and try again.');
+  });
+});
+
+describe(installAndLaunchAppAsync, () => {
+  it('stops the spinner when devicectl exits without printing progress', async () => {
+    const spinner = {
+      isSpinning: true,
+      succeed: jest.fn(() => {
+        spinner.isSpinning = false;
+      }),
+      fail: jest.fn(),
+    };
+    jest.mocked(ora).mockReturnValue({ start: () => spinner } as any);
+
+    jest.mocked(spawn).mockImplementationOnce(() => {
+      const childProcess = Object.assign(new EventEmitter(), {
+        stdout: new EventEmitter(),
+        stderr: new EventEmitter(),
+      });
+      process.nextTick(() => childProcess.emit('close', 0));
+      return childProcess as any;
+    });
+    jest.mocked(xcrunAsync).mockResolvedValueOnce({ stdout: '' } as any);
+
+    await installAndLaunchAppAsync({
+      bundle: '/path/to/Test.app',
+      bundleIdentifier: 'com.exponent.Test',
+      udid: 'fake-device-id',
+      deviceName: 'Fake iPhone',
+    });
+
+    expect(spinner.succeed).toHaveBeenCalledWith('Installed on Fake iPhone');
+    expect(spinner.isSpinning).toBe(false);
   });
 });
 
