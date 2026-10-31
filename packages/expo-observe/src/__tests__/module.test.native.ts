@@ -63,6 +63,11 @@ jest.mock('../integrations/react-native-reanimated/init', () => ({
   disableReanimatedIntegration: jest.fn(),
 }));
 
+jest.mock('../integrations/expo-updates/init', () => ({
+  initExpoUpdatesIntegration: jest.fn(() => Promise.resolve()),
+  disableExpoUpdatesIntegration: jest.fn(),
+}));
+
 let warnSpy: jest.SpyInstance;
 
 beforeEach(() => {
@@ -98,6 +103,10 @@ beforeEach(() => {
     initReanimatedIntegration: jest.fn(),
     disableReanimatedIntegration: jest.fn(),
   }));
+  jest.doMock('../integrations/expo-updates/init', () => ({
+    initExpoUpdatesIntegration: jest.fn(() => Promise.resolve()),
+    disableExpoUpdatesIntegration: jest.fn(),
+  }));
 });
 
 function loadModule() {
@@ -110,6 +119,10 @@ function loadInit() {
 
 function loadReactNavigationInit() {
   return require('../integrations/react-navigation/init') as typeof import('../integrations/react-navigation/init');
+}
+
+function loadExpoUpdatesInit() {
+  return require('../integrations/expo-updates/init') as typeof import('../integrations/expo-updates/init');
 }
 
 function loadReanimatedInit() {
@@ -209,6 +222,43 @@ describe('module Proxy', () => {
       expect(disableReanimatedIntegration).toHaveBeenCalledTimes(1);
     }
   );
+
+  it('initializes the expo-updates integration with its config and the native cursor store', () => {
+    const Observe = loadModule();
+    const { initExpoUpdatesIntegration } = loadExpoUpdatesInit();
+    const updatesConfig = { reportWarnings: true, ignoredCodes: ['Unknown' as const] };
+    Observe.configure({ environment: 'test', integrations: { 'expo-updates': updatesConfig } });
+    expect(initExpoUpdatesIntegration).toHaveBeenCalledWith(updatesConfig, mockNative);
+  });
+
+  it.each([false, undefined])(
+    "disables the expo-updates integration when integrations['expo-updates'] is %s",
+    (value) => {
+      const Observe = loadModule();
+      const { initExpoUpdatesIntegration, disableExpoUpdatesIntegration } = loadExpoUpdatesInit();
+      Observe.configure({ environment: 'test', integrations: { 'expo-updates': value } });
+      expect(initExpoUpdatesIntegration).not.toHaveBeenCalled();
+      expect(disableExpoUpdatesIntegration).toHaveBeenCalledTimes(1);
+    }
+  );
+
+  it('gives shouldReport to the expo-updates integration but not to the native module', () => {
+    const Observe = loadModule();
+    const { initExpoUpdatesIntegration } = loadExpoUpdatesInit();
+    const shouldReport = () => true;
+    Observe.configure({
+      environment: 'test',
+      integrations: { 'expo-updates': { reportWarnings: true, shouldReport } },
+    });
+    expect(initExpoUpdatesIntegration).toHaveBeenCalledWith(
+      { reportWarnings: true, shouldReport },
+      mockNative
+    );
+    expect(mockNative.configure).toHaveBeenCalledWith({
+      environment: 'test',
+      integrations: { 'expo-updates': { reportWarnings: true } },
+    });
+  });
 
   it('disables the Reanimated integration when configure has no integrations', () => {
     const Observe = loadModule();
