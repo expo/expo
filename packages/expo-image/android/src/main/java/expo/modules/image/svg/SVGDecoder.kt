@@ -22,8 +22,7 @@ import java.nio.charset.CodingErrorAction
  * and rewritten to Kotlin.
  */
 class SVGDecoder : ResourceDecoder<InputStream, SVG> {
-  // TODO: Can we tell?
-  override fun handles(source: InputStream, options: Options) = true
+  override fun handles(source: InputStream, options: Options) = SVGHeader.looksLikeSvg(source)
 
   @Throws(IOException::class)
   override fun decode(source: InputStream, width: Int, height: Int, options: Options): Resource<SVG>? {
