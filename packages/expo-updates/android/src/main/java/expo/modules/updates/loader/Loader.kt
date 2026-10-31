@@ -52,6 +52,8 @@ abstract class Loader protected constructor(
   private var finishedAssetList: MutableList<AssetEntity> = Collections.synchronizedList(mutableListOf())
   private val _progressFlow = MutableSharedFlow<AssetLoadProgress>()
   private var assetProgressMap: MutableMap<AssetEntity, Double> = ConcurrentHashMap()
+  private val progressLock = Any()
+  private var lastNotifiedProgress = -1.0
 
   internal var assetLoadProgressBlock: ((Double) -> Unit)? = null
 
@@ -74,8 +76,19 @@ abstract class Loader protected constructor(
   }
 
   private fun notifyAssetLoadProgress() {
-    if (assetTotal > 0) {
+    if (assetTotal <= 0) {
+      return
+    }
+    // Called for every asset, including ones that already exist, and for every read of a
+    // download; each call sends the whole state machine context to JS. Only report steps of at
+    // least MIN_PROGRESS_STEP, and the end. One lock keeps the reported values in order.
+    synchronized(progressLock) {
       val progress = assetProgressMap.values.sum() / assetTotal.toDouble()
+      val reachedEnd = progress >= 1.0 && lastNotifiedProgress < 1.0
+      if (!reachedEnd && progress - lastNotifiedProgress < MIN_PROGRESS_STEP) {
+        return
+      }
+      lastNotifiedProgress = progress
       assetLoadProgressBlock?.invoke(progress)
     }
   }
@@ -123,6 +136,9 @@ abstract class Loader protected constructor(
     finishedAssetList = Collections.synchronizedList(mutableListOf())
     assetProgressMap = ConcurrentHashMap()
     assetLoadProgressBlock = null
+    synchronized(progressLock) {
+      lastNotifiedProgress = -1.0
+    }
   }
 
   private fun finish(): LoaderResult {
@@ -204,6 +220,9 @@ abstract class Loader protected constructor(
   private suspend fun downloadAllAssets(update: Update, insertUpdateEntityOnFinish: Boolean): LoaderResult {
     val assetList = update.assetEntityList.distinctBy { it.key }
     assetTotal = assetList.size
+    synchronized(progressLock) {
+      lastNotifiedProgress = -1.0
+    }
 
     val embeddedUpdate = loaderFiles.readEmbeddedUpdate(context, configuration)
     val assetDownloadJobs = mutableListOf<Deferred<AssetLoadResult>>()
@@ -315,5 +334,8 @@ abstract class Loader protected constructor(
 
   companion object {
     private val TAG = Loader::class.java.simpleName
+
+    /** The smallest change in download progress worth reporting to JS. */
+    internal const val MIN_PROGRESS_STEP = 0.01
   }
 }
