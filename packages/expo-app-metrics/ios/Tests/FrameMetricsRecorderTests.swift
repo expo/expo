@@ -15,6 +15,17 @@ struct FrameMetricsRecorderTests {
   }
 
   @Test
+  func `discards invalid target durations and recovers on the next frame`() {
+    let recorder = FrameMetricsRecorder()
+    recorder.processFrame(frame(at: 1.0))
+    recorder.processFrame(Frame(timestamp: 1.1, targetTimestamp: 1.1, duration: target))
+    #expect(recorder.metrics == .zero)
+    recorder.processFrame(frame(at: 1.2))
+    #expect(recorder.metrics.renderedFrames == 1)
+    #expect(recorder.metrics.expectedFrames == 6)
+  }
+
+  @Test
   func `starts with zero metrics`() {
     let recorder = FrameMetricsRecorder()
     #expect(recorder.metrics == .zero)
