@@ -457,14 +457,16 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   /// Starts observing the surface presenter of the host, so the views created while the host is mounting
   /// get this app context.
+  @MainActor
   private func observeMounting(with hostWrapper: ExpoHostWrapper) {
     guard let surfacePresenter = hostWrapper.surfacePresenter() else {
       log.warn("The host has no surface presenter, so its views are created for the app context that registered views last")
       return
     }
     let observer = SurfacePresenterObserver(appContext: self)
-    observer.observe(surfacePresenter)
-    surfacePresenterObserver = observer
+    if observer.observe(surfacePresenter) {
+      surfacePresenterObserver = observer
+    }
   }
 
   // MARK: - Runtime
@@ -782,7 +784,16 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   @objc
   public func setHostWrapper(_ wrapper: ExpoHostWrapper) {
     self.hostWrapper = wrapper
-    observeMounting(with: wrapper)
+
+    // This is called on the JS thread, possibly before `RCTHost` stores the instance that owns this runtime,
+    // so its surface presenter can't be read yet. The host stores the instance on the main thread
+    // in the same call that starts the runtime, so the presenter is available on the next main queue turn.
+    DispatchQueue.main.async { [weak self] in
+      guard let self, let hostWrapper = self.hostWrapper else {
+        return
+      }
+      self.observeMounting(with: hostWrapper)
+    }
   }
 
   // MARK: - Statics
