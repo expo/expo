@@ -180,7 +180,7 @@ export function parseEnvFiles(
       debug(`Loaded environment variables from: ${envFile}`);
 
       for (const key of Object.keys(envFileParsed)) {
-        if (key === 'BABEL_ENV') {
+        if (key.toUpperCase() === 'BABEL_ENV') {
           debug(`"${key}" is ignored in dotenv files, skipping in: ${envFile}`);
           continue;
         }
