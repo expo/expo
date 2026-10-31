@@ -27,7 +27,8 @@ export function AgentSkillSection(props: AgentSkillSectionProps) {
       </P>
       <Terminal cmd={getInstallCmd(packageName)} />
       <P>
-        For skills that cover Expo and EAS in general, see <A href="/skills/">Expo Skills</A>.
+        For skills that cover Expo and Expo Services in general, see{' '}
+        <A href="/skills/">Expo Skills</A>.
       </P>
     </>
   );
