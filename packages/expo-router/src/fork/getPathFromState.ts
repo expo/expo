@@ -96,6 +96,7 @@ export function getPathDataFromState<ParamList extends object>(
   const configs: Record<string, ConfigItem> = cachedNormalizedConfigs[1];
 
   let path = '/';
+  let query = '';
   let current: State | undefined = state;
 
   const allParams: Record<string, any> = {};
@@ -201,10 +202,7 @@ export function getPathDataFromState<ParamList extends object>(
       delete focusedParams['#'];
       focusedParams = removeInternalExpoRouterParams(focusedParams);
 
-      const query = stringifySearchParams(focusedParams);
-      if (query) {
-        path += `?${query}`;
-      }
+      query = stringifySearchParams(focusedParams);
     }
 
     current = route.state;
@@ -213,6 +211,9 @@ export function getPathDataFromState<ParamList extends object>(
   // Remove multiple as well as trailing slashes
   path = path.replace(/\/+/g, '/');
   path = path.length > 1 ? path.replace(/\/$/, '') : path;
+  if (query) {
+    path += `?${query}`;
+  }
 
   // Include the root path if specified
   if (options?.path) {
