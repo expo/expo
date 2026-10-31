@@ -1,6 +1,7 @@
+import parsePng from 'parse-png';
 import * as path from 'path';
 
-import { getPngInfo, getMimeType } from '../Image';
+import { generateImageAsync, getPngInfo, getMimeType } from '../Image';
 
 describe(getMimeType, () => {
   (
@@ -11,6 +12,7 @@ describe(getMimeType, () => {
       ['icon.PNG', 'image/png'],
       ['splash.JPG', 'image/jpeg'],
       ['https://example.com/Icon.Webp?query=1', 'image/webp'],
+      ['favicon.svg', 'image/svg+xml'],
       // Invalid
       ['more.ios.jpeg?foo', null],
       // Unsupported
@@ -66,5 +68,37 @@ describe('Image #getPngInfo', () => {
 
   it('returns true if the file is a png', async () => {
     expect(await getPngInfo(path.join(__dirname, '/assets/icon.png'))).toHaveProperty('width', 100);
+  });
+});
+
+describe(generateImageAsync, () => {
+  it('rasterizes an SVG source into a PNG named with a .png extension', async () => {
+    const { name, source } = await generateImageAsync(
+      { projectRoot: __dirname },
+      { src: path.join(__dirname, 'assets/icon.svg'), resizeMode: 'contain', width: 48, height: 48 }
+    );
+
+    expect(name).toBe('icon_48.png');
+    const info = await parsePng(source);
+    expect(info).toMatchObject({ width: 48, height: 48 });
+  });
+
+  it('explains that SVG sources require sharp-cli when sharp is unavailable', async () => {
+    process.env.EXPO_IMAGE_UTILS_NO_SHARP = '1';
+    try {
+      await expect(
+        generateImageAsync(
+          { projectRoot: __dirname },
+          {
+            src: path.join(__dirname, 'assets/icon.svg'),
+            resizeMode: 'contain',
+            width: 48,
+            height: 48,
+          }
+        )
+      ).rejects.toThrow(/SVG.*sharp-cli/);
+    } finally {
+      delete process.env.EXPO_IMAGE_UTILS_NO_SHARP;
+    }
   });
 });
