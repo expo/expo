@@ -63,11 +63,7 @@ class ScreenOrientationViewController: UIViewController {
     if let vc = vcWithRNScreenOrientation() {
       // react-native-screens has per-screen orientation set. Defer to that VC's
       // supportedInterfaceOrientations so RNScreens' swizzled implementation can
-      // resolve the active screen's orientation mask. When the matching VC is
-      // self, call super to avoid recursing into this override.
-      if vc === self {
-        return super.supportedInterfaceOrientations
-      }
+      // resolve the active screen's orientation mask.
       return vc.supportedInterfaceOrientations
     }
 
@@ -100,20 +96,76 @@ class ScreenOrientationViewController: UIViewController {
   }
 
   /// Finds the VC whose subtree has a react-native-screens screen with orientation set.
-  /// Checks self first (the common case), then each child VC. The child-level search handles
-  /// cases where an intermediate VC (e.g. DevLauncherViewController from expo-dev-client)
-  /// sits between this root VC and the RNSNavigationController, blocking the single-level
-  /// traversal that RNScreens' shouldAskScreensForScreenOrientation performs.
+  /// Checks self first (the common case), then walks the containment hierarchy. This handles
+  /// wrappers such as DevLauncherViewController without depending on their exact nesting depth.
   private func vcWithRNScreenOrientation() -> UIViewController? {
     guard let screenWindowTraitsClass = NSClassFromString("RNSScreenWindowTraits") else {
       return nil
     }
-    if screenWindowTraitsClass.shouldAskScreensForScreenOrientation?(in: self) ?? false {
-      return self
+
+    func shouldAskScreensForOrientation(in viewController: UIViewController) -> Bool {
+      return screenWindowTraitsClass
+        .shouldAskScreensForScreenOrientation?(in: viewController) ?? false
     }
-    for child in children {
-      if screenWindowTraitsClass.shouldAskScreensForScreenOrientation?(in: child) ?? false {
-        return child
+
+    func activeChildren(of viewController: UIViewController) -> [UIViewController] {
+      if let navigationController = viewController as? UINavigationController {
+        return navigationController.topViewController.map { [$0] } ?? []
+      }
+      if let tabBarController = viewController as? UITabBarController {
+        return tabBarController.selectedViewController.map { [$0] } ?? []
+      }
+      if let pageViewController = viewController as? UIPageViewController {
+        return pageViewController.viewControllers ?? []
+      }
+      if let splitViewController = viewController as? UISplitViewController {
+        let splitChildren = splitViewController.viewControllers
+        if splitViewController.viewIfLoaded?.window == nil, splitChildren.count == 1 {
+          return splitChildren
+        }
+        return splitChildren.filter { $0.viewIfLoaded?.window != nil }
+      }
+      if let onlyChild = viewController.children.first, viewController.children.count == 1 {
+        // Before attachment, a single-child wrapper has no ambiguous branch to choose. Once the
+        // wrapper is on-screen, require its child to be attached so a retained stale child cannot
+        // supply the orientation during replacement or teardown.
+        if viewController.viewIfLoaded?.window == nil || onlyChild.viewIfLoaded?.window != nil {
+          return [onlyChild]
+        }
+        return []
+      }
+      // Unknown wrappers do not expose an active-child API. Only follow children whose views
+      // are currently attached, so retained off-screen controllers cannot supply the mask.
+      return viewController.children.filter { $0.viewIfLoaded?.window != nil }
+    }
+
+    func findOrientationOwner(in viewController: UIViewController) -> UIViewController? {
+      let children = activeChildren(of: viewController)
+      // Only trust the predicate when the last child that RNScreens inspects is active.
+      // Return that RNS container directly: generic parents do not necessarily forward
+      // supportedInterfaceOrientations to every RNS container type.
+      if let inspectedChild = viewController.children.last,
+         children.contains(where: { $0 === inspectedChild }),
+         shouldAskScreensForOrientation(in: viewController) {
+        return inspectedChild
+      }
+      for child in children.reversed() {
+        if let owner = findOrientationOwner(in: child) {
+          return owner
+        }
+      }
+      return nil
+    }
+
+    let rootChildren = activeChildren(of: self)
+    if let inspectedChild = self.children.last,
+       rootChildren.contains(where: { $0 === inspectedChild }),
+       shouldAskScreensForOrientation(in: self) {
+      return inspectedChild
+    }
+    for child in rootChildren.reversed() {
+      if let owner = findOrientationOwner(in: child) {
+        return owner
       }
     }
     return nil
