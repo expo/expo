@@ -216,6 +216,25 @@ class UpdatesDatabaseTest {
     Assert.assertEquals(2, assetDao.loadAllAssets().size)
   }
 
+  @Test
+  fun testInsertAssets_KeyConflict_StoresNewRelativePath() {
+    // the row points to an embedded resource of a previous binary
+    val update1 = insertedUpdate(Date(1000))
+    assetDao.insertAssets(
+      listOf(asset("font").apply { relativePath = "file:///android_res/raw/previous_binary_font" }),
+      update1
+    )
+    updateDao.markUpdateFinished(update1)
+
+    // the current binary doesn't embed it under that name, so a new update downloads the file
+    val update2 = insertedUpdate(Date(2000))
+    assetDao.insertAssets(listOf(asset("font").apply { relativePath = "font.ttf" }), update2)
+
+    Assert.assertEquals(1, assetDao.loadAllAssets().size)
+    Assert.assertEquals("font.ttf", assetDao.loadAssetsForUpdate(update2.id).single().relativePath)
+    Assert.assertEquals("font.ttf", assetDao.loadAssetsForUpdate(update1.id).single().relativePath)
+  }
+
   private fun insertedUpdate(commitTime: Date) = UpdateEntity(
     UUID.randomUUID(),
     commitTime,
