@@ -25,6 +25,7 @@ export * from './SegmentedButton';
 export * from './Progress';
 export * from './Slider';
 export * from './Spacer';
+export * from './SplitButtonLayout';
 export * from './Switch';
 export * from './SyncSwitch';
 export {

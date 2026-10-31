@@ -18,9 +18,11 @@ The **session type** sets which controller EAS starts next to the remote device.
 | `agent-device`     | [agent-device](/agents/agent-device/) daemon | Agent-driven control, app installation, screenshots, and recordings. |
 | `argent`           | [Argent](/agents/argent/) tool server        | Argent tools and its Model Context Protocol (MCP) server.            |
 | `appium`           | Appium server                                | Existing Appium clients and test suites.                             |
-| `web-preview-only` | None                                         | A person who uses the browser preview without programmatic control.  |
+| `web-preview-only` | None                                         | Browser preview, with direct EAS CLI controls available on iOS.      |
 
 Each session type includes a browser preview. Each session type also provisions only its own controller. For example, agent-device commands do not work in an `argent` session.
+
+On iOS, [`eas simulator:control`](/preview/simulators/how-to/control-with-eas-cli/) sends direct actions through the preview server. It works independently of the selected controller, including in a `web-preview-only` session.
 
 ## Connection details
 

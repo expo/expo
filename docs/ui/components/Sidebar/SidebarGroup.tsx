@@ -236,6 +236,8 @@ function getIconElement(iconName?: string) {
       return DataIcon;
     case 'Expo Workflows':
       return Dataflow03Icon;
+    case 'Agentic workflows':
+      return Star06Icon;
     case 'Expo Hosting':
       return Cloud01Icon;
     case 'Expo Observe':

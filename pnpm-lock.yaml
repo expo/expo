@@ -2146,6 +2146,9 @@ importers:
       expo:
         specifier: '*'
         version: link:../../expo
+      expo-mcp:
+        specifier: '*'
+        version: 0.2.4
       expo-server:
         specifier: workspace:^
         version: link:../../expo-server
@@ -2221,9 +2224,6 @@ importers:
       ws:
         specifier: ^8.12.1
         version: 8.19.0
-      zod:
-        specifier: ^3.25.76
-        version: 3.25.76
     devDependencies:
       '@babel/core':
         specifier: ^7.20.0
@@ -2366,6 +2366,9 @@ importers:
       tree-kill:
         specifier: ^1.2.2
         version: 1.2.2
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
 
   packages/@expo/config:
     dependencies:
@@ -2384,9 +2387,6 @@ importers:
       '@expo/require-utils':
         specifier: workspace:^
         version: link:../require-utils
-      deepmerge:
-        specifier: ^4.3.1
-        version: 4.3.1
       getenv:
         specifier: ^2.0.0
         version: 2.0.0
@@ -5467,8 +5467,8 @@ importers:
         specifier: workspace:~
         version: link:../expo-modules-jsi
       expo-modules-macros:
-        specifier: 0.27.1
-        version: 0.27.1
+        specifier: 0.29.0
+        version: 0.29.0
       invariant:
         specifier: ^2.2.4
         version: 2.2.4
@@ -8436,25 +8436,25 @@ packages:
   '@expo/metro@58.0.0':
     resolution: {integrity: sha512-PMD640ihB0C3Oqm0AnDVJ/8qF2cKbRUEqGuSOr4tM/OTb9ktxsQqsiSSSeaOEgdCZBq20AxRS0d6WHNhhH2P+g==}
 
-  '@expo/modules-macros-linux-arm64@0.27.1':
-    resolution: {integrity: sha512-8bwGkFZ5FaLzSXe37t8ksw4GJ7flvRhBSmmFfkZlETjm8nAPrU5D+VF8YkSmRUoQ5DA3PWLLwnYK+WhvzJ0+fA==}
+  '@expo/modules-macros-linux-arm64@0.29.0':
+    resolution: {integrity: sha512-wWT0DO/S7UluMJDPi+sPSKX516N//waiKg+qh2To1MYpDEAC6bm7tU6nzWskcXOAe8XYC5Dm/crVY5i8/2k/5A==}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@expo/modules-macros-linux-x64@0.27.1':
-    resolution: {integrity: sha512-63BZcm/aWPNe4VC9jBxKOME7abiM6rCdn6NiZTTmlEMWmBaoRWJEKj16tT/Gjkf25y9+dMwadQ9B+LNMbh5nPA==}
+  '@expo/modules-macros-linux-x64@0.29.0':
+    resolution: {integrity: sha512-ESYAz3/NZVdEiNyt1pRQ63Px05bZcgn5xHinX90kYTbuRXFxBXYIrjLH27wl8DfasYHP7hnbwUMLo3YLBe/2ag==}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@expo/modules-macros-win32-arm64@0.27.1':
-    resolution: {integrity: sha512-BcIJibqB7YxuUTf7R7gk2gbPYr6ngM0t+hTeoAhpsgS5xUlYU/TVjgrYpYOFTyYfWwgnDUv75WrJxbvVolK5xQ==}
+  '@expo/modules-macros-win32-arm64@0.29.0':
+    resolution: {integrity: sha512-IUZ8s2xg0iz7feY3apUyh6oX8CyPzCuZT3vvGXRfhziTyTDuwoWZx6G2bf9etbJkTQm/rUvX4h9rgtfk+TDptQ==}
     cpu: [arm64]
     os: [win32]
 
-  '@expo/modules-macros-win32-x64@0.27.1':
-    resolution: {integrity: sha512-jguCWgOW2dcLY7VaReBCxU48FBX1g4DhzETm/DpD+WwxZOweiBRSwk7zaOTiTG2rifBYu4y9VYHxHrONHfOLBw==}
+  '@expo/modules-macros-win32-x64@0.29.0':
+    resolution: {integrity: sha512-qdJzIIB0oitXD3tErciv5zTxk4zkCNHuG5nnubJ3pFa9Y3VPd2/70lFwWmAjMWZUGwvBiePZhNVAuehdHaOcyQ==}
     cpu: [x64]
     os: [win32]
 
@@ -12259,8 +12259,12 @@ packages:
     peerDependencies:
       expo: '*'
 
-  expo-modules-macros@0.27.1:
-    resolution: {integrity: sha512-xWNI+LpK4Pdmj52ygNYlxefZDhw4mpe6s5yVCLXpqtOyU3PPrFGJJJnDyBpOsOv+mXiYLeaszEEJEpDKBObZ7A==}
+  expo-mcp@0.2.4:
+    resolution: {integrity: sha512-rBomlm+085wNa+UF9YC3bXGZR6LlYPfOlUXwKBB5R7+dnASk0VjWFETuxyApdtXw9OItmOsAXolUxrAlEYfqSA==}
+    hasBin: true
+
+  expo-modules-macros@0.29.0:
+    resolution: {integrity: sha512-kpkJHrFnHMXfUfvFkDuKRXXqi+CUIIhJ6G8v/4rC09VjmXcdQ30imoY1oNDVEho6tPbJFV0Ux21sZ9wK0XYajQ==}
 
   expo-server@57.0.3:
     resolution: {integrity: sha512-aK+LdKzauHSGmsOStZtyxdzv0zWssCkxTw3m4QuOhfDSJsZaMRTd9O41d8ixU/QfELTbaJ0oRNcF7JFV/7O9YQ==}
@@ -16158,6 +16162,10 @@ packages:
     resolution: {integrity: sha512-eLTh0kA8uHceqesPqSE+VvO1CDDJWMwlQfB6LuN6T8w6MaDJ8Txm8P7s5cHD0miF0V+GGTZrDQfxPZQVsur33w==}
     engines: {node: '>=4.0.0'}
 
+  xml2js@0.6.2:
+    resolution: {integrity: sha512-T4rieHaC1EXcES0Kxxj4JWgaUQHDk+qwHcYOCFHfiwKz7tOVPLq7Hjq9dM1WCMhylqMEfP7hMcOIChvotiZegA==}
+    engines: {node: '>=4.0.0'}
+
   xmlbuilder@11.0.1:
     resolution: {integrity: sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA==}
     engines: {node: '>=4.0'}
@@ -17482,16 +17490,16 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  '@expo/modules-macros-linux-arm64@0.27.1':
+  '@expo/modules-macros-linux-arm64@0.29.0':
     optional: true
 
-  '@expo/modules-macros-linux-x64@0.27.1':
+  '@expo/modules-macros-linux-x64@0.29.0':
     optional: true
 
-  '@expo/modules-macros-win32-arm64@0.27.1':
+  '@expo/modules-macros-win32-arm64@0.29.0':
     optional: true
 
-  '@expo/modules-macros-win32-x64@0.27.1':
+  '@expo/modules-macros-win32-x64@0.29.0':
     optional: true
 
   '@expo/multipart-body-parser@1.1.0':
@@ -21515,12 +21523,29 @@ snapshots:
       serve-static: 2.2.1
       stream-json: 1.9.1
 
-  expo-modules-macros@0.27.1:
+  expo-mcp@0.2.4:
+    dependencies:
+      '@expo/mcp-tunnel': 0.2.4(@modelcontextprotocol/sdk@1.27.1(zod@3.25.76))
+      '@modelcontextprotocol/sdk': 1.27.1(zod@3.25.76)
+      debug: 4.4.3
+      glob: 11.0.3
+      jimp-compact: 0.16.1
+      resolve-from: 5.0.0
+      ws: 8.19.0
+      xml2js: 0.6.2
+      zod: 3.25.76
+      zx: 8.8.5
+    transitivePeerDependencies:
+      - '@cfworker/json-schema'
+      - bufferutil
+      - utf-8-validate
+
+  expo-modules-macros@0.29.0:
     optionalDependencies:
-      '@expo/modules-macros-linux-arm64': 0.27.1
-      '@expo/modules-macros-linux-x64': 0.27.1
-      '@expo/modules-macros-win32-arm64': 0.27.1
-      '@expo/modules-macros-win32-x64': 0.27.1
+      '@expo/modules-macros-linux-arm64': 0.29.0
+      '@expo/modules-macros-linux-x64': 0.29.0
+      '@expo/modules-macros-win32-arm64': 0.29.0
+      '@expo/modules-macros-win32-x64': 0.29.0
 
   expo-server@57.0.3: {}
 
@@ -26098,6 +26123,11 @@ snapshots:
   xml-name-validator@5.0.0: {}
 
   xml2js@0.6.0:
+    dependencies:
+      sax: 1.6.0
+      xmlbuilder: 11.0.1
+
+  xml2js@0.6.2:
     dependencies:
       sax: 1.6.0
       xmlbuilder: 11.0.1

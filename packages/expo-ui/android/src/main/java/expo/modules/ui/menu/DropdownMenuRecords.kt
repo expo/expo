@@ -32,3 +32,16 @@ data class DropdownMenuProps(
   val shadowElevation: Float? = null,
   val properties: ExpoPopupProperties = ExpoPopupProperties()
 ) : ComposeProps
+
+@OptimizedRecord
+data class MenuShapePosition(
+  @Field val index: Int = 0,
+  @Field val count: Int = 1
+) : Record
+
+@OptimizedComposeProps
+data class DropdownMenuPopupProps(
+  val expanded: Boolean = false,
+  val modifiers: ModifierList = emptyList(),
+  val properties: ExpoPopupProperties = ExpoPopupProperties()
+) : ComposeProps

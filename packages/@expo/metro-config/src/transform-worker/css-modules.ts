@@ -1,4 +1,4 @@
-import codeFrame from '@babel/code-frame';
+import { codeFrameColumns } from '@babel/code-frame';
 import type { TransformResult, Warning } from 'lightningcss';
 
 import type { CSSMetadata } from '../serializer/jsOutput';
@@ -123,7 +123,7 @@ export function printCssWarnings(filename: string, code: string, warnings?: Warn
   if (warnings) {
     for (const warning of warnings) {
       console.warn(
-        `Warning: ${warning.message} (${filename}:${warning.loc.line}:${warning.loc.column}):\n${codeFrame(code, warning.loc.line, warning.loc.column)}`
+        `Warning: ${warning.message} (${filename}:${warning.loc.line}:${warning.loc.column}):\n${codeFrameColumns(code, { start: { line: warning.loc.line, column: warning.loc.column } })}`
       );
     }
   }
@@ -197,7 +197,7 @@ export function collectCssImports(
         if (!isSupported) {
           // Assert that syntax like `background: url('./img.png');` is not supported yet.
           console.warn(
-            `Importing local resources in CSS is not supported yet. (${filename}:${dep.loc.start.line}:${dep.loc.start.column}):\n${codeFrame(originalCode, dep.loc.start.line, dep.loc.start.column)}`
+            `Importing local resources in CSS is not supported yet. (${filename}:${dep.loc.start.line}:${dep.loc.start.column}):\n${codeFrameColumns(originalCode, { start: { line: dep.loc.start.line, column: dep.loc.start.column } })}`
           );
         }
       }

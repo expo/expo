@@ -208,7 +208,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
         switch consume result {
         case .success(let value):
           promise.resolve(value)
-        case .failure(let error as any Error):
+        case .failure(let error):
           promise.reject(error)
         }
       }
