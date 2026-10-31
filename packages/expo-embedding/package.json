@@ -2,7 +2,7 @@
   "name": "expo-embedding",
   "version": "0.0.0-dev",
   "private": true,
-  "description": "Expo embedding prototype for existing SwiftUI apps",
+  "description": "Expo embedding prototype for existing SwiftUI and Android Compose apps",
   "license": "MIT",
   "repository": {
     "type": "git",
