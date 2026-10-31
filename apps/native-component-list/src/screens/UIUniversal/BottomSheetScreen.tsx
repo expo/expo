@@ -1,10 +1,12 @@
-import { BottomSheet, Button, Column, Host, ScrollView, Text } from '@expo/ui';
+import { BottomSheet, Button, Column, Host, ScrollView, Text, type SnapPoint } from '@expo/ui';
 import { useState } from 'react';
 
 export default function BottomSheetScreen() {
   const [basicOpen, setBasicOpen] = useState(false);
   const [noDragOpen, setNoDragOpen] = useState(false);
   const [detentsOpen, setDetentsOpen] = useState(false);
+  const [lastSnapPoint, setLastSnapPoint] = useState<SnapPoint | null>(null);
+  const [snapChangeCount, setSnapChangeCount] = useState(0);
 
   return (
     <Host style={{ flex: 1 }}>
@@ -50,11 +52,18 @@ export default function BottomSheetScreen() {
       <BottomSheet
         isPresented={detentsOpen}
         onDismiss={() => setDetentsOpen(false)}
-        snapPoints={['half', 'full']}>
+        snapPoints={['half', 'full']}
+        onSnapPointChange={(snapPoint) => {
+          setLastSnapPoint(snapPoint);
+          setSnapChangeCount((count) => count + 1);
+        }}>
         {/* Wrap tall content in a ScrollView — see `SnapPoint` docs. */}
         <ScrollView>
           <Column spacing={12}>
             <Text textStyle={{ fontSize: 20, fontWeight: 'bold' }}>Snap points: half / full</Text>
+            <Text>
+              Snap changes: {snapChangeCount}. Last: {JSON.stringify(lastSnapPoint)}
+            </Text>
             <Button label="Close" variant="filled" onPress={() => setDetentsOpen(false)} />
             <Text>
               Drag the sheet between half and full screen height. On iOS this maps to SwiftUI&apos;s
