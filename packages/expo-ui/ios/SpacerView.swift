@@ -7,7 +7,7 @@ public final class SpacerViewProps: UIBaseViewProps {
   @Field var minLength: Double?
 }
 
-public struct SpacerView: ExpoSwiftUI.View {
+public struct SpacerView: ExpoSwiftUI.View, UniversalLayoutSpacer {
   @ObservedObject public var props: SpacerViewProps
 
   public init(props: SpacerViewProps) {
