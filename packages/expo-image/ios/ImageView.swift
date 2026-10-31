@@ -132,8 +132,14 @@ public final class ImageView: ExpoView {
   public override var bounds: CGRect {
     didSet {
       // Reload the image when the bounds size has changed and is not empty,
-      // unless the rendered image still fits the new size.
-      if oldValue.size != bounds.size && bounds.size != .zero && !fitRenderedImage() {
+      // unless the view can keep the rendered image.
+      guard oldValue.size != bounds.size && bounds.size != .zero else {
+        return
+      }
+      if isRenderedImageReusable() {
+        imageLayoutSize = renderedImageLayoutSize()
+        applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
+      } else {
         reload()
       }
     }
@@ -593,8 +599,9 @@ public final class ImageView: ExpoView {
     setImage(placeholder, contentFit: placeholderContentFit, isPlaceholder: true)
   }
 
-  /// Returns whether the previously rendered image is either larger than the image view's new size or if no higher resolution image exists. Returns `false` when the image needs to be loaded again.
-  private func fitRenderedImage() -> Bool {
+  /// Returns whether the rendered image is at least as large as the view's new size, or is already at the full size of
+  /// its source. Returns `false` when the image needs to be loaded again.
+  private func isRenderedImageReusable() -> Bool {
     guard
       let image = sourceImage,
       let source = renderedSource,
@@ -609,24 +616,22 @@ public final class ImageView: ExpoView {
       return false
     }
     let scale = window?.screen.scale ?? UIScreen.main.scale
-    let layoutSize = idealSize(
+    let neededPixelSize = renderedImageLayoutSize().rounded(.up) * scale
+    let renderedPixelSize = image.size * image.scale
+    // Downscaling never gives more pixels than the source has. Half a pixel absorbs rounding.
+    return renderedPixelSize.width + 0.5 >= min(neededPixelSize.width, renderedSourcePixelSize.width)
+      && renderedPixelSize.height + 0.5 >= min(neededPixelSize.height, renderedSourcePixelSize.height)
+  }
+
+  /// Returns the layout size of the rendered image in the view's current frame.
+  private func renderedImageLayoutSize() -> CGSize {
+    let scale = window?.screen.scale ?? UIScreen.main.scale
+    return idealSize(
       contentPixelSize: renderedSourcePixelSize,
       containerSize: frame.size,
       scale: scale,
       contentFit: contentFit
     )
-    let neededPixelSize = layoutSize.rounded(.up) * scale
-    let renderedPixelSize = image.size * image.scale
-    // Downscaling never gives more pixels than the source has. Half a pixel absorbs rounding.
-    let hasNeededPixels =
-      renderedPixelSize.width + 0.5 >= min(neededPixelSize.width, renderedSourcePixelSize.width)
-      && renderedPixelSize.height + 0.5 >= min(neededPixelSize.height, renderedSourcePixelSize.height)
-    guard hasNeededPixels else {
-      return false
-    }
-    imageLayoutSize = layoutSize
-    applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
-    return true
   }
 
   // MARK: - Processing
