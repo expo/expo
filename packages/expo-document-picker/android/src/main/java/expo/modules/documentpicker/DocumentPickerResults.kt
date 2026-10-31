@@ -1,33 +1,18 @@
 package expo.modules.documentpicker
 
-import android.net.Uri
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Record
 
-@OptimizedRecord
+@Record
 data class DocumentPickerResult(
-  @Field
   val canceled: Boolean = false,
-
-  @Field
   val assets: List<DocumentInfo>? = null
-) : Record
+)
 
-@OptimizedRecord
+@Record
 data class DocumentInfo(
-  @Field
-  val uri: Uri,
-
-  @Field
+  val uri: String,
   val name: String,
-
-  @Field
   val mimeType: String?,
-
-  @Field
   val size: Long?,
-
-  @Field
   val lastModified: Long
-) : Record
+)

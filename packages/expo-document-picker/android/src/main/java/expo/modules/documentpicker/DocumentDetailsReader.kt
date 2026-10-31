@@ -47,7 +47,7 @@ class DocumentDetailsReader(private val context: Context) {
           System.currentTimeMillis()
         }
 
-        return DocumentInfo(uri, name, mimeType, size, lastModified)
+        return DocumentInfo(uri.toString(), name, mimeType, size, lastModified)
       } ?: throw IOException("Failed to read document details for URI: $uri")
   }
 }

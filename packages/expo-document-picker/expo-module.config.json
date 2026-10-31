@@ -4,7 +4,6 @@
     "modules": ["DocumentPickerModule"]
   },
   "android": {
-    "modules": ["expo.modules.documentpicker.DocumentPickerModule"],
     "publication": {
       "groupId": "host.exp.exponent",
       "artifactId": "expo.modules.documentpicker",
