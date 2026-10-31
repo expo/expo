@@ -1,171 +1,382 @@
----
-title: EAS Build
-sidebar_title: Introduction
-description: EAS Build is a hosted service for building app binaries for your Expo and React Native projects.
----
 
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  Image,
+} from 'react-native';
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
-import { FAQ } from '~/ui/components/FAQ';
-import { RelatedSkills } from '~/ui/components/RelatedSkills';
-import { SimulatorsLaunchCallout } from '~/ui/components/SimulatorsLaunchCallout';
-import { Terminal } from '~/ui/components/Snippet';
+const produits = [
+  {
+    id: '1',
+    nom: 'PS5 Pro',
+    description: 'Neuve, carton, manette et accessoires complets',
+    prix: '12 700 000 GNF',
+    categorie: 'PlayStation',
+    statut: 'Neuve',
+  },
+  {
+    id: '2',
+    nom: 'PS5 Slim',
+    description: 'Neuve, carton, manette et accessoires complets',
+    prix: '8 500 000 GNF',
+    categorie: 'PlayStation',
+    statut: 'Neuve',
+  },
+  {
+    id: '3',
+    nom: 'PS5 Standard',
+    description: 'Neuve, carton, manette et accessoires complets',
+    prix: '7 700 000 GNF',
+    categorie: 'PlayStation',
+    statut: 'Neuve',
+  },
+  {
+    id: '4',
+    nom: 'Nintendo Switch OLED',
+    description: 'Console disponible chez GAME PLUS+',
+    prix: '3 700 000 GNF',
+    categorie: 'Nintendo',
+    statut: 'Disponible',
+  },
+  {
+    id: '5',
+    nom: 'Xbox Series X',
+    description: 'Console disponible sur commande',
+    prix: 'Disponible',
+    categorie: 'Xbox',
+    statut: 'Disponible',
+  },
+  {
+    id: '6',
+    nom: 'Téléphones iPhone et Samsung',
+    description: 'Plusieurs modèles disponibles',
+    prix: 'Disponible',
+    categorie: 'Téléphones',
+    statut: 'Disponible',
+  },
+];
 
-**EAS Build** is a hosted Expo Application Services (EAS) service that builds app binaries (also called [standalone apps](/more/glossary-of-terms/#standalone-app)) for your Expo and React Native projects.
+const categories = [
+  'Tous',
+  'PlayStation',
+  'Xbox',
+  'Nintendo',
+  'Manettes',
+  'Télévisions',
+  'Téléphones',
+  'Accessoires',
+  'Jeux vidéo',
+  'Réalité virtuelle',
+  'Ordinateurs',
+];
 
-EAS Build makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using [ad hoc](/build/internal-distribution/) and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+export default function App() {
+  const [recherche, setRecherche] = useState('');
+  const [categorie, setCategorie] = useState('Tous');
+  const [onglet, setOnglet] = useState('Accueil');
+  const [favoris, setFavoris] = useState([]);
+  const [panier, setPanier] = useState([]);
+  const [modeSombre, setModeSombre] = useState(false);
 
-EAS Build is also designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
+  const fond = modeSombre ? '#101522' : '#F4F7FC';
+  const texte = modeSombre ? '#FFFFFF' : '#172033';
+  const carte = modeSombre ? '#202A3B' : '#FFFFFF';
 
-<SimulatorsLaunchCallout />
+  const resultat = produits.filter((p) =>
+    (categorie === 'Tous' || p.categorie === categorie) &&
+    p.nom.toLowerCase().includes(recherche.toLowerCase())
+  );
 
-## Quick start
+  const ajouterFavori = (id) => {
+    setFavoris((anciens) =>
+      anciens.includes(id)
+        ? anciens.filter((x) => x !== id)
+        : [...anciens, id]
+    );
+  };
 
-> **info** The `eas` commands below require EAS CLI. See [How to install EAS CLI](/eas/cli/#installation) for more information.
+  const ajouterPanier = (id) => {
+    setPanier((anciens) => [...anciens, id]);
+  };
 
-To build your app, run the following command:
+  return (
+    <SafeAreaView style={[styles.container, { backgroundColor: fond }]}>
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.logo}>
+            GAME <Text style={{ color: '#E91E83' }}>PLUS+</Text>
+          </Text>
+          <Text style={[styles.slogan, { color: texte }]}>
+            La confiance, notre plus grand jeu !
+          </Text>
+        </View>
+        <Text style={styles.headerIcon}>🛒 {panier.length}</Text>
+      </View>
 
-<Terminal cmd={['$ eas build --platform all']} />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {onglet === 'Accueil' && (
+          <>
+            <TextInput
+              style={styles.search}
+              placeholder="Rechercher un produit..."
+              placeholderTextColor="#888"
+              value={recherche}
+              onChangeText={setRecherche}
+            />
 
-This command sends your project to EAS Build and produces installable binaries for Android and iOS. You can also build for one platform at a time by passing in `--platform android` or `--platform ios` as desired. For complete setup instructions, see [Create your first build](/build/setup/).
+            <View style={styles.banner}>
+              <Text style={styles.bannerTitle}>GAME PLUS+</Text>
+              <Text style={styles.bannerText}>
+                Consoles • Jeux • Accessoires
+              </Text>
+              <Text style={styles.bannerText}>
+                Jouez sans limites !
+              </Text>
+            </View>
 
-### Expo Skills for AI agents
+            <Text style={[styles.sectionTitle, { color: texte }]}>
+              Nos catégories
+            </Text>
 
-If you use an AI agent, install [Expo Skills](/skills/) to teach it how to create production builds and ship them to the app stores:
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {categories.map((cat) => (
+                <TouchableOpacity
+                  key={cat}
+                  style={[
+                    styles.category,
+                    categorie === cat && styles.categoryActive,
+                  ]}
+                  onPress={() => setCategorie(cat)}
+                >
+                  <Text style={categorie === cat ? styles.white : styles.blue}>
+                    {cat}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
 
-<RelatedSkills names={['eas-app-stores']} />
+            <Text style={[styles.sectionTitle, { color: texte }]}>
+              Nos produits
+            </Text>
 
-## Key features
+            {resultat.map((p) => (
+              <View key={p.id} style={[styles.product, { backgroundColor: carte }]}>
+                <View style={styles.productImage}>
+                  <Text style={{ fontSize: 42 }}>🎮</Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={[styles.productName, { color: texte }]}>
+                    {p.nom}
+                  </Text>
+                  <Text style={styles.description}>{p.description}</Text>
+                  <Text style={styles.price}>{p.prix}</Text>
+                  <Text style={styles.status}>{p.statut}</Text>
+                  <View style={styles.actions}>
+                    <TouchableOpacity
+                      style={styles.orderButton}
+                      onPress={() => ajouterPanier(p.id)}
+                    >
+                      <Text style={styles.white}>Ajouter au panier</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => ajouterFavori(p.id)}>
+                      <Text style={{ fontSize: 23 }}>
+                        {favoris.includes(p.id) ? '❤️' : '♡'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            ))}
+          </>
+        )}
 
-- Cloud builds for Android and iOS with consistent environments
-- Automatically provision and manage app signing credentials or use your own
-- Share [internal distribution](/build/internal-distribution/) builds with a URL
-- Automate builds with [build profiles](/build/eas-json/#build-profiles) in **eas.json** (named sets of build settings) and integrations with [EAS Workflows](/eas/workflows/get-started/) or [CI pipelines](/build/building-on-ci/)
-- Auto-submit successful builds to app stores via [`--auto-submit`](/build/automate-submissions/) and EAS Submit
-- First-class [`expo-updates` integration](/build/updates/) with per-profile channels and [runtime version](/eas-update/runtime-versions/) guidance
-- Reuse [development builds](/develop/development-builds/introduction/) across your team. When two team members run `eas build:dev` and the project fingerprint matches, the existing build is downloaded from EAS instead of creating a new one
-- Faster builds via [dependency caching and custom cache paths](/build-reference/caching/)
-- Install builds and updates on devices with [Expo Orbit](https://expo.dev/orbit)
+        {onglet === 'Catégories' && (
+          <>
+            <Text style={[styles.sectionTitle, { color: texte }]}>
+              Toutes nos catégories
+            </Text>
+            {categories.slice(1).map((cat) => (
+              <TouchableOpacity
+                key={cat}
+                style={[styles.categoryRow, { backgroundColor: carte }]}
+                onPress={() => {
+                  setCategorie(cat);
+                  setOnglet('Accueil');
+                }}
+              >
+                <Text style={{ color: texte, fontWeight: 'bold' }}>{cat}</Text>
+                <Text style={styles.blue}>Voir →</Text>
+              </TouchableOpacity>
+            ))}
+          </>
+        )}
 
-## When to use EAS Build
+        {onglet === 'Favoris' && (
+          <>
+            <Text style={[styles.sectionTitle, { color: texte }]}>Mes favoris</Text>
+            {produits.filter(p => favoris.includes(p.id)).map(p => (
+              <Text key={p.id} style={[styles.categoryRow, { color: texte }]}>
+                {p.nom} — {p.prix}
+              </Text>
+            ))}
+            {favoris.length === 0 && (
+              <Text style={{ color: texte }}>Aucun favori pour le moment.</Text>
+            )}
+          </>
+        )}
 
-| Scenario                                                                             | Recommendation |
-| ------------------------------------------------------------------------------------ | -------------- |
-| Build production-ready binaries for app stores                                       | <YesIcon />    |
-| Share builds with testers via [internal distribution](/build/internal-distribution/) | <YesIcon />    |
-| Consistent builds across team members without local environment setup                | <YesIcon />    |
-| Automate builds from CI or [EAS Workflows](/eas/workflows/get-started/)              | <YesIcon />    |
-| Managed app signing credentials                                                      | <YesIcon />    |
-| Debugging native code locally                                                        | <NoIcon />     |
+        {onglet === 'Messagerie' && (
+          <View style={[styles.product, { backgroundColor: carte }]}>
+            <Text style={[styles.productName, { color: texte }]}>
+              Messagerie GAME PLUS+
+            </Text>
+            <Text style={styles.description}>
+              Bonjour et bienvenue chez GAME PLUS+ !
+              Laissez-nous votre demande. Notre équipe vous répondra.
+            </Text>
+            <Text style={styles.blue}>WhatsApp : +224 626 00 46 90</Text>
+            <Text style={styles.blue}>Téléphone : +224 669 54 88 95</Text>
+          </View>
+        )}
 
-## Frequently asked questions
+        {onglet === 'Profil' && (
+          <View style={[styles.product, { backgroundColor: carte }]}>
+            <Text style={[styles.productName, { color: texte }]}>
+              GAME PLUS+
+            </Text>
+            <Text style={styles.description}>
+              Madina, Centre Commercial Diané, Conakry, Guinée.
+            </Text>
+            <Text style={styles.description}>
+              Livraison disponible en Afrique et en Europe.
+            </Text>
+            <TouchableOpacity
+              style={styles.orderButton}
+              onPress={() => setModeSombre(!modeSombre)}
+            >
+              <Text style={styles.white}>
+                {modeSombre ? 'Activer le mode clair' : 'Activer le mode sombre'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </ScrollView>
 
-<FAQ>
+      <View style={styles.navigation}>
+        {['Accueil', 'Catégories', 'Favoris', 'Messagerie', 'Profil'].map((item, i) => (
+          <TouchableOpacity
+            key={item}
+            style={styles.navItem}
+            onPress={() => setOnglet(item)}
+          >
+            <Text style={{ fontSize: 20 }}>
+              {['⌂', '▦', '♡', '✉', '♙'][i]}
+            </Text>
+            <Text style={{
+              fontSize: 10,
+              color: onglet === item ? '#1769E8' : '#777',
+              fontWeight: 'bold',
+            }}>
+              {item}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </SafeAreaView>
+  );
+}
 
-<Collapsible summary="How do I share builds with my team before submitting to app stores?">
-
-Use [internal distribution](/build/internal-distribution/) to share builds with a URL. Set `"distribution": "internal"` in your [build profile](/build/eas-json/#build-profiles) in **eas.json** to generate installable Android Package (APK) files for Android or [ad hoc builds](/build/internal-distribution/) for iOS.
-
-</Collapsible>
-
-<Collapsible summary="Can I use EAS Build with existing React Native projects?">
-
-Yes. EAS Build works with existing React Native projects created with `npx react-native init` or similar tools. See [Overview of using Expo with existing React Native apps](/bare/overview/) for more information.
-
-</Collapsible>
-
-<Collapsible summary="Does EAS Build handle app signing credentials?">
-
-Yes. EAS Build can generate and manage Android [keystores](/app-signing/app-credentials/#android), iOS [provisioning profiles](/app-signing/app-credentials/#ios) and [distribution certificates](/app-signing/app-credentials/#ios), or use credentials you provide. See [App signing credentials](/app-signing/app-credentials/) for more information.
-
-</Collapsible>
-
-<Collapsible summary="Can I run builds locally instead of in the cloud?">
-
-Yes. Use [local builds](/build-reference/local-builds/) with `eas build --local` to run builds on your machine. This is useful for debugging or for security policies that require local builds.
-
-</Collapsible>
-
-<Collapsible summary="Can I use EAS Build with EAS Workflows or CI pipelines?">
-
-Yes. EAS Build integrates with [EAS Workflows](/eas/workflows/get-started/) using the `build` job type. Add a build job to your workflow configuration, for example:
-
-```yaml
-jobs:
-  build_ios:
-    type: build
-    params:
-      platform: ios
-```
-
-The build job supports builds for both platforms or conditional builds based on the branch:
-
-```yaml
-jobs:
-  build:
-    type: build
-    params:
-      platform: all
-      profile: ${{ github.ref_name == 'main' && 'production' || 'preview' }}
-```
-
-For more information and other usage examples, see the [EAS Workflows build job](/eas/workflows/pre-packaged-jobs#build).
-
-EAS Build supports [builds from GitHub](/build/building-from-github/) and [building on CI](/build/building-on-ci/) with any provider.
-
-</Collapsible>
-
-<Collapsible summary="What build server infrastructure does EAS Build use?">
-
-Android builds run on Linux runners hosted in Google Cloud Platform, and iOS builds run on macOS runners hosted in Expo's macOS cloud. See [Build server infrastructure](/build-reference/infrastructure/).
-
-</Collapsible>
-
-</FAQ>
-
-## Get started
-
-<BoxLink
-  title="Create your first build"
-  description="It should only take a few minutes in total to get up and running for iOS and/or Android."
-  href="/build/setup"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Share your apps with internal testers"
-  description="EAS Build can help share preview builds of your app with a single URL."
-  href="/build/internal-distribution"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Automate submissions"
-  description="Learn how EAS Build can take your successful builds and handle uploading them to app stores automatically."
-  href="/build/automate-submissions"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="App version management"
-  description="Automate version bumps so you never have to think about them again."
-  href="/build-reference/app-versions"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Run builds locally or on your own infrastructure"
-  description="EAS Build is a hosted service, and it can also run on your own machine, for example, to debug or to comply with company security policies."
-  href="/build-reference/local-builds"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Limitations"
-  description="EAS Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
-  href="/build-reference/limitations"
-  Icon={Cube01Icon}
-/>
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  header: {
+    padding: 18,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  logo: { fontSize: 25, fontWeight: '900', color: '#14264A' },
+  slogan: { fontSize: 10, marginTop: 3 },
+  headerIcon: { fontSize: 20, color: '#1769E8' },
+  search: {
+    backgroundColor: '#FFFFFF',
+    margin: 15,
+    padding: 14,
+    borderRadius: 14,
+    fontSize: 15,
+  },
+  banner: {
+    marginHorizontal: 15,
+    padding: 25,
+    borderRadius: 18,
+    backgroundColor: '#103B9B',
+  },
+  bannerTitle: { color: '#FFFFFF', fontSize: 28, fontWeight: '900' },
+  bannerText: { color: '#FFFFFF', marginTop: 8, fontSize: 15 },
+  sectionTitle: {
+    fontSize: 19,
+    fontWeight: 'bold',
+    margin: 16,
+  },
+  category: {
+    backgroundColor: '#FFFFFF',
+    padding: 12,
+    borderRadius: 12,
+    marginLeft: 10,
+  },
+  categoryActive: { backgroundColor: '#1769E8' },
+  blue: { color: '#1769E8', fontWeight: 'bold' },
+  white: { color: '#FFFFFF', fontWeight: 'bold' },
+  product: {
+    marginHorizontal: 15,
+    marginBottom: 13,
+    padding: 14,
+    borderRadius: 16,
+    flexDirection: 'row',
+    gap: 12,
+  },
+  productImage: {
+    width: 85,
+    height: 100,
+    backgroundColor: '#E5EEFF',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  productName: { fontSize: 16, fontWeight: 'bold' },
+  description: { color: '#888', fontSize: 12, marginTop: 5 },
+  price: { color: '#1769E8', fontWeight: '900', marginTop: 8 },
+  status: { color: '#15965B', fontSize: 11, marginTop: 4 },
+  actions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginTop: 9,
+  },
+  orderButton: {
+    backgroundColor: '#1769E8',
+    padding: 9,
+    borderRadius: 9,
+  },
+  categoryRow: {
+    padding: 17,
+    marginHorizontal: 15,
+    marginBottom: 10,
+    borderRadius: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  navigation: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 10,
+  },
+  navItem: { alignItems: 'center', gap: 3 },
+});
