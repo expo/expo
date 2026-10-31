@@ -914,6 +914,11 @@ Create a Vercel configuration file (**vercel.json**) at the root of your project
 
 ```json vercel.json
 {
+  "build": {
+    "env": {
+      "VERCEL_CLI_VERSION": "vercel@65.9.0"
+    }
+  },
   "buildCommand": "expo export -p web",
   "outputDirectory": "dist/client",
   "functions": {
