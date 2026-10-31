@@ -183,12 +183,12 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
     }
   }
 
-  private fun maybeStartForegroundService() {
+  private fun maybeStartForegroundService(isForegrounded: Boolean = AppForegroundedSingleton.isForegrounded) {
     // Foreground service is available as of Android Oreo.
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
       return
     }
-    if (!AppForegroundedSingleton.isForegrounded) {
+    if (!isForegrounded) {
       Log.w(TAG, "Foreground location task cannot be started while the app is in the background!")
       return
     }
@@ -391,7 +391,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
   override fun onHostResume() {
     mIsHostPaused = false
     if (mTask != null && mService?.isPromoted != true) {
-      maybeStartForegroundService()
+      maybeStartForegroundService(isForegrounded = true)
     }
     maybeReportDeferredLocations()
   }
