@@ -4,7 +4,6 @@
     "modules": ["IntegrityModule"]
   },
   "android": {
-    "modules": ["expo.modules.integrity.IntegrityModule"],
     "publication": {
       "groupId": "expo.modules.integrity",
       "artifactId": "expo.modules.integrity",

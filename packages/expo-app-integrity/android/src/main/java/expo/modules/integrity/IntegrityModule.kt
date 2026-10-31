@@ -11,14 +11,21 @@ import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.StandardIntegrityManager
 import com.google.android.play.core.integrity.model.StandardIntegrityErrorCode
 import com.google.android.play.core.integrity.StandardIntegrityException
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.Promise
 import com.google.android.play.core.integrity.StandardIntegrityManager.PrepareIntegrityTokenRequest
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.security.KeyPairGenerator
 import java.security.KeyStore
 import java.security.cert.X509Certificate
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
+@ExpoModule("ExpoAppIntegrity")
 class IntegrityModule : Module() {
   private var integrityTokenProvider: StandardIntegrityManager.StandardIntegrityTokenProvider? =
     null
@@ -30,19 +37,14 @@ class IntegrityModule : Module() {
     private const val ANDROID_KEYSTORE = "AndroidKeyStore"
   }
 
-  override fun definition() = ModuleDefinition {
-    Name("ExpoAppIntegrity")
+  @JS
+  suspend fun prepareIntegrityTokenProviderAsync(cloudProjectNumber: String) {
+    val cloudProjectNumberLong = cloudProjectNumber.toLongOrNull()
+      ?: throw IntegrityException(IntegrityErrorCodes.INVALID_PROJECT_NUMBER, "Invalid cloud project number: '$cloudProjectNumber'. It must be a valid number.")
 
-    AsyncFunction(PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME) { cloudProjectNumber: String, promise: Promise ->
-      val cloudProjectNumberLong = cloudProjectNumber.toLongOrNull()
-
-      if (cloudProjectNumberLong == null) {
-        promise.reject(IntegrityException(IntegrityErrorCodes.INVALID_PROJECT_NUMBER, "Invalid cloud project number: '$cloudProjectNumber'. It must be a valid number."))
-        return@AsyncFunction
-      }
-
-      val integrityManager =
-        IntegrityManagerFactory.createStandard(appContext.reactContext?.applicationContext)
+    val integrityManager =
+      IntegrityManagerFactory.createStandard(androidContext.applicationContext)
+    suspendCancellableCoroutine { continuation ->
       integrityManager.prepareIntegrityToken(
         PrepareIntegrityTokenRequest.builder()
           .setCloudProjectNumber(cloudProjectNumberLong)
@@ -50,73 +52,77 @@ class IntegrityModule : Module() {
       ).addOnSuccessListener {
         integrityTokenProvider = it
         integrityTokenException = null
-        promise.resolve()
+        continuation.resume(Unit)
       }.addOnFailureListener {
         integrityTokenException = it
-        promise.reject(handleIntegrityError(it))
+        continuation.resumeWithException(handleIntegrityError(it))
       }.addOnCanceledListener {
-        promise.reject(
+        continuation.resumeWithException(
           IntegrityException(IntegrityErrorCodes.CANCELLED, "Request cancelled")
         )
       }
     }
+  }
 
-    AsyncFunction(REQUEST_INTEGRITY_CHECK_METHOD_NAME) { requestHash: String, promise: Promise ->
-      integrityTokenProvider?.let {
-        val integrityTokenResponse: Task<StandardIntegrityToken> =
-          it.request(
-            StandardIntegrityTokenRequest.builder()
-              .setRequestHash(requestHash)
-              .build()
-          )
-        integrityTokenResponse
-          .addOnSuccessListener { response: StandardIntegrityToken ->
-            promise.resolve(
-              response.token()
-            )
-          }
-          .addOnFailureListener { exception: Exception? ->
-            promise.reject(handleIntegrityError(exception))
-          }
-          .addOnCanceledListener {
-            promise.reject(
-              IntegrityException(IntegrityErrorCodes.CANCELLED, "Request cancelled")
-            )
-          }
-      } ?: promise.reject(
-        if (integrityTokenException != null) {
-          handleIntegrityError(integrityTokenException)
-        } else {
-          IntegrityException(
-            IntegrityErrorCodes.NOT_PREPARED,
-            "Make sure $PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME is called before $REQUEST_INTEGRITY_CHECK_METHOD_NAME"
+  @JS
+  suspend fun requestIntegrityCheckAsync(requestHash: String): String {
+    val provider = integrityTokenProvider
+      ?: throw if (integrityTokenException != null) {
+        handleIntegrityError(integrityTokenException)
+      } else {
+        IntegrityException(
+          IntegrityErrorCodes.NOT_PREPARED,
+          "Make sure $PREPARE_INTEGRITY_TOKEN_PROVIDER_METHOD_NAME is called before $REQUEST_INTEGRITY_CHECK_METHOD_NAME"
+        )
+      }
+    return suspendCancellableCoroutine { continuation ->
+      val integrityTokenResponse: Task<StandardIntegrityToken> =
+        provider.request(
+          StandardIntegrityTokenRequest.builder()
+            .setRequestHash(requestHash)
+            .build()
+        )
+      integrityTokenResponse
+        .addOnSuccessListener { response: StandardIntegrityToken ->
+          continuation.resume(
+            response.token()
           )
         }
-      )
+        .addOnFailureListener { exception: Exception? ->
+          continuation.resumeWithException(handleIntegrityError(exception))
+        }
+        .addOnCanceledListener {
+          continuation.resumeWithException(
+            IntegrityException(IntegrityErrorCodes.CANCELLED, "Request cancelled")
+          )
+        }
     }
+  }
 
-    AsyncFunction("isHardwareAttestationSupportedAsync") {
-      try {
-        isHardwareAttestationSupported()
-      } catch (e: Exception) {
-        throw IntegrityException(IntegrityErrorCodes.HARDWARE_ATTESTATION_NOT_SUPPORTED, e.message ?: "Failed to check hardware attestation support", e)
-      }
+  @JS
+  suspend fun isHardwareAttestationSupportedAsync(): Boolean = withContext(Dispatchers.IO) {
+    try {
+      isHardwareAttestationSupported()
+    } catch (e: Exception) {
+      throw IntegrityException(IntegrityErrorCodes.HARDWARE_ATTESTATION_NOT_SUPPORTED, e.message ?: "Failed to check hardware attestation support", e)
     }
+  }
 
-    AsyncFunction("generateHardwareAttestedKeyAsync") { keyAlias: String, challenge: String ->
-      try {
-        generateHardwareAttestedKey(keyAlias, challenge)
-      } catch (e: Exception) {
-        throw handleHardwareAttestationError(e)
-      }
+  @JS
+  suspend fun generateHardwareAttestedKeyAsync(keyAlias: String, challenge: String): Unit = withContext(Dispatchers.IO) {
+    try {
+      generateHardwareAttestedKey(keyAlias, challenge)
+    } catch (e: Exception) {
+      throw handleHardwareAttestationError(e)
     }
+  }
 
-    AsyncFunction("getAttestationCertificateChainAsync") { keyAlias: String ->
-      try {
-        getAttestationCertificateChain(keyAlias)
-      } catch (e: Exception) {
-        throw handleHardwareAttestationError(e)
-      }
+  @JS
+  suspend fun getAttestationCertificateChainAsync(keyAlias: String): List<String> = withContext(Dispatchers.IO) {
+    try {
+      getAttestationCertificateChain(keyAlias)
+    } catch (e: Exception) {
+      throw handleHardwareAttestationError(e)
     }
   }
 
