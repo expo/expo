@@ -19,14 +19,28 @@ export function addPbxGroup(
 
   // Add generated files
   targetFiles.push(`${targetName}.entitlements`);
-  targetFiles.push(`Info.plist`);
 
   const sharedFiles = Object.values(shareExtensionFiles.sharedFiles ?? [])
     .flat()
     .map((file) => path.join(sharedFilesPath, file))
     .map((file) => path.relative(path.join(platformProjectRoot, targetName, 'shared'), file));
 
-  const { uuid: mainGroupUuid } = xcodeProject.addPbxGroup(targetFiles, targetName, targetName);
+  const { uuid: mainGroupUuid, pbxGroup: mainGroup } = xcodeProject.addPbxGroup(
+    targetFiles,
+    targetName,
+    targetName
+  );
+  // addPbxGroup reuses an existing file reference with the same path, such as another
+  // extension's Info.plist. Xcode 27.2 rejects a file reference shared between groups.
+  const infoPlistReference = xcodeProject.generateUuid();
+  xcodeProject.addToPbxFileReferenceSection({
+    fileRef: infoPlistReference,
+    basename: 'Info.plist',
+    path: 'Info.plist',
+    lastKnownFileType: 'text.plist.xml',
+    sourceTree: '"<group>"',
+  });
+  mainGroup.children.push({ value: infoPlistReference, comment: 'Info.plist' });
   const { uuid: sharedGroupUuid } = xcodeProject.addPbxGroup(sharedFiles, 'shared', 'shared');
 
   if (mainGroupUuid && sharedGroupUuid) {
