@@ -177,20 +177,24 @@ export function transformNativeBundleForMd5Filename({
     const assetEntity = files.get(artifact.filename);
     assert(assetEntity);
     if (Buffer.isBuffer(assetEntity.contents)) {
-      const searchBuffer = Buffer.from(`${hash}.html`, 'utf8');
-      const replaceBuffer = Buffer.from(`${htmlMd5}.html`, 'utf8');
-      assert(searchBuffer.length === replaceBuffer.length);
-      let index = assetEntity.contents.indexOf(searchBuffer, 0);
-      while (index !== -1) {
-        replaceBuffer.copy(assetEntity.contents, index);
-        index = assetEntity.contents.indexOf(searchBuffer, index + searchBuffer.length);
+      // Already compiled Hermes bytecode. Sibling chunks without DOM component
+      // references (e.g. workers) never contain the html placeholder, so leave
+      // them untouched: rewriting bytecode in place is unsound because hermesc
+      // overlap-packs strings sharing suffix/prefix bytes, so a same-length
+      // replacement can clobber a neighbouring string.
+      if (artifact.metadata.expoDomComponentReferences?.length) {
+        throw new Error(
+          `Cannot rename DOM component asset "${htmlOutputName}" inside the compiled Hermes bytecode of "${artifact.filename}": the chunk was compiled before the rename. ` +
+            'This usually means the project resolves a different @expo/metro-config version than @expo/cli (for example, @expo/metro-config installed directly); run `npx expo-doctor` to find the mismatch. ' +
+            'Otherwise, it is a bug in Expo CLI: chunks that reference DOM components must be compiled after the rename (see `compileDeferredHermesArtifactsAsync`).'
+        );
       }
-    } else {
-      const search = `${hash}.html`;
-      const replace = `${htmlMd5}.html`;
-      assert(search.length === replace.length);
-      assetEntity.contents = assetEntity.contents.toString().replaceAll(search, replace);
+      continue;
     }
+    const search = `${hash}.html`;
+    const replace = `${htmlMd5}.html`;
+    assert(search.length === replace.length);
+    assetEntity.contents = assetEntity.contents.toString().replaceAll(search, replace);
   }
 }
 

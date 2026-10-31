@@ -17,7 +17,7 @@ import { createLegacyChunkingStrategy } from './chunking/createLegacyChunkingStr
 import { getCssSerialAssets } from './getCssDeps';
 import type { SerialAsset } from './serializerAssets';
 
-export { Chunk, getSortedModules } from './chunking/Chunk';
+export { Chunk, getSortedModules, transformJsAssetToHermesBytecodeAsync } from './chunking/Chunk';
 export type { SerializeChunkOptions } from './chunking/chunkingStrategy';
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
