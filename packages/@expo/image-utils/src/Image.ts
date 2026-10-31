@@ -27,7 +27,7 @@ async function resizeAsync(imageOptions: ImageOptions): Promise<Buffer> {
   if (!sharp) {
     if (getMimeType(imageOptions.src) === 'image/svg+xml') {
       throw new Error(
-        `Could not generate an image from the SVG file '${imageOptions.src}'. The image is processed with Jimp because sharp-cli is not available, and Jimp cannot read SVG. Install sharp-cli globally (\`npm install -g sharp-cli@^5.2.0\`), or use a PNG image.`
+        `Could not generate an image from the SVG file '${imageOptions.src}'. Jimp processes the image because sharp-cli is not available, and Jimp cannot read SVG. Install sharp-cli globally (\`npm install -g sharp-cli@^5.2.0\`), or use a PNG image.`
       );
     }
     const inputOptions: any = { input: imageOptions.src, quality: 100 };
