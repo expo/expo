@@ -14,6 +14,7 @@ import { joinWithCommasAnd } from '../utils/strings';
 import { debugEvent } from './events';
 import { fixPackagesAsync } from './fixPackages';
 import type { Options } from './resolveOptions';
+import { isExpoManagedDependencyAsync } from './utils/isExpoManagedDependency';
 
 /**
  * Handles `expo install --fix|check'.
@@ -26,7 +27,7 @@ export async function checkPackagesAsync(
   {
     packages,
     packageManager,
-    options: { fix, json },
+    options: { fix, json, expoOnly },
     packageManagerArguments,
   }: {
     /**
@@ -38,7 +39,7 @@ export async function checkPackagesAsync(
     packageManager: PackageManager.NodePackageManager;
 
     /** How the check should resolve */
-    options: Pick<Options, 'fix' | 'json'>;
+    options: Pick<Options, 'fix' | 'json' | 'expoOnly'>;
     /**
      * Extra parameters to pass to the `packageManager` when installing versioned packages.
      * @example ['--no-save']
@@ -63,7 +64,10 @@ export async function checkPackagesAsync(
     );
   }
 
-  const dependencies = await getVersionedDependenciesAsync(projectRoot, exp, pkg, packages);
+  const incorrectDependencies = await getVersionedDependenciesAsync(projectRoot, exp, pkg, packages);
+  const dependencies = expoOnly
+    ? await filterExpoManagedDependenciesAsync(projectRoot, incorrectDependencies)
+    : incorrectDependencies;
 
   if (!dependencies.length) {
     if (json) {
@@ -96,9 +100,33 @@ export async function checkPackagesAsync(
       packages: dependencies,
       packageManagerArguments,
       sdkVersion: exp.sdkVersion!,
+      expoOnly: !!expoOnly,
     });
   }
 
   // Exit with non-zero exit code if any of the dependencies are out of date.
   Log.exit(chalk.red('Found outdated dependencies'), 1);
+}
+
+/**
+ * Keep only dependencies maintained by Expo for `--expo-only` checks/fixes.
+ */
+async function filterExpoManagedDependenciesAsync(
+  projectRoot: string,
+  dependencies: Awaited<ReturnType<typeof getVersionedDependenciesAsync>>
+) {
+  const expoManagedCache = new Map<string, Promise<boolean>>();
+  const expoManaged = await Promise.all(
+    dependencies.map(async (dependency) => {
+      let cached = expoManagedCache.get(dependency.packageName);
+      if (!cached) {
+        cached = isExpoManagedDependencyAsync(projectRoot, dependency.packageName);
+        expoManagedCache.set(dependency.packageName, cached);
+      }
+      const isExpoManaged = await cached;
+      return isExpoManaged ? dependency : null;
+    })
+  );
+
+  return expoManaged.filter(Boolean) as typeof dependencies;
 }
