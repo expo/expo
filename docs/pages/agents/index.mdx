@@ -50,8 +50,8 @@ Cursor and other agents do not have an official Expo plugin. To configure them, 
 
 Three pieces work together to give an AI agent consistent, Expo-specific context:
 
-- **Expo Skills:** The `expo` plugin adds Expo-specific instructions and slash commands to the agent. The agent applies known-good Expo patterns (SDK upgrades, EAS Workflows, native UI with Jetpack Compose and SwiftUI, API routes) instead of guessing from training data. Skills install once per machine.
-- **Expo MCP Server:** A remote Model Context Protocol (MCP) server that gives the agent live access to the latest Expo documentation, EAS Build history, EAS Update channels, and TestFlight metadata. The agent can install SDK-matching packages, read build logs, and take simulator screenshots through it. For Claude Code and Codex, the `expo` plugin registers this server, so you do not add it separately.
+- **Expo Skills:** The `expo` plugin adds Expo-specific instructions and slash commands to the agent. The agent applies known-good Expo patterns (SDK upgrades, Expo Workflows, native UI with Jetpack Compose and SwiftUI, API routes) instead of guessing from training data. Skills install once per machine.
+- **Expo MCP Server:** A remote Model Context Protocol (MCP) server that gives the agent live access to the latest Expo documentation, Expo Build history, Expo Update channels, and TestFlight metadata. The agent can install SDK-matching packages, read build logs, and take simulator screenshots through it. For Claude Code and Codex, the `expo` plugin registers this server, so you do not add it separately.
 - **Project context files:** `create-expo-app` writes **AGENTS.md** at the project root to point agents to the documentation for the Expo SDK version your project targets. When Claude Code is installed, it also writes **.claude/settings.json** to enable the Expo plugin.
 
 ## Set up Expo Skills and Expo MCP Server
@@ -67,7 +67,7 @@ Expo Skills and the Expo MCP Server work with every supported agent. If you inst
 
 <BoxLink
   title="Expo MCP Server"
-  description="Connect the remote Expo MCP Server to give agents live access to Expo documentation and EAS."
+  description="Connect the remote Expo MCP Server to give agents live access to Expo documentation and Expo Services."
   href="/mcp/"
   Icon={Star06Icon}
 />

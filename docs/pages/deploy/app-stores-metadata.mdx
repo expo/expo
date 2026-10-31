@@ -1,6 +1,6 @@
 ---
 title: App stores metadata
-description: A brief overview of how to use EAS Metadata to automate and maintain your app store presence.
+description: A brief overview of how to use Expo Metadata to automate and maintain your app store presence.
 ---
 
 import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
@@ -8,17 +8,17 @@ import { EasMetadataIcon } from '@expo/styleguide-icons/custom/EasMetadataIcon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 
-> **important** **EAS Metadata** is in [beta](/more/release-statuses/#beta) and subject to breaking changes. The service currently **only supports the Apple App Store**.
+> **important** **Expo Metadata** is in [beta](/more/release-statuses/#beta) and subject to breaking changes. The service currently **only supports the Apple App Store**.
 
 When submitting your app to app stores, you need to provide metadata. This process is lengthy and is often about complex topics that don't apply to your app. After the information you provide gets reviewed and if there is any issue with it, you need to restart this process.
 
-[**EAS Metadata**](/eas/metadata/) enables you to automate and maintain this information from the command line instead of going through multiple forms in the app store dashboards. It can also instantly identify well-known app store restrictions that could trigger a rejection after a lengthy review queue. This guide shows how to use EAS Metadata to automate and maintain your app store presence.
+[**Expo Metadata**](/eas/metadata/) enables you to automate and maintain this information from the command line instead of going through multiple forms in the app store dashboards. It can also instantly identify well-known app store restrictions that could trigger a rejection after a lengthy review queue. This guide shows how to use Expo Metadata to automate and maintain your app store presence.
 
 > **info** **Tip:** Using VS Code? Install the [Expo Tools extension](https://github.com/expo/vscode-expo#readme) for auto-complete, suggestions, and warnings in your **store.config.json** files.
 
 ## Create a store config
 
-EAS Metadata uses [store.config.json](/eas/metadata/config/) file to hold all the information you want to upload to the app stores. This file is located at the root of your Expo project.
+Expo Metadata uses [store.config.json](/eas/metadata/config/) file to hold all the information you want to upload to the app stores. This file is located at the root of your Expo project.
 
 Create a new **store.config.json** file at the root of your project directory as shown in the example below:
 
@@ -45,7 +45,7 @@ The above example file contains JSON schema. Replace the example values with you
 
 **An important thing to remember from the above example is the `configVersion` property.** It helps with versioning changes that are not backward compatible.
 
-> For more information on properties that can be defined in **store.config.json**, see [Schema for EAS Metadata](/eas/metadata/schema/#config-schema).
+> For more information on properties that can be defined in **store.config.json**, see [Schema for Expo Metadata](/eas/metadata/schema/#config-schema).
 
 ## Upload the store config
 
@@ -55,22 +55,22 @@ After you have created the **store.config.json** file and added the necessary in
 
 <Terminal cmd={['$ eas metadata:push']} />
 
-If EAS Metadata runs into any issues with your store config, it will warn you when running this command. When there are no errors, or you confirm to push it with possible issues, it will try to upload as much as possible.
+If Expo Metadata runs into any issues with your store config, it will warn you when running this command. When there are no errors, or you confirm to push it with possible issues, it will try to upload as much as possible.
 
 You can also re-use this command when you modify the **store.config.json** file and want to push the latest changes to the app stores.
 
 ## Next steps
 
 <BoxLink
-  title="EAS Metadata schema"
-  description="A reference of store config in EAS Metadata."
+  title="Expo Metadata schema"
+  description="A reference of store config in Expo Metadata."
   Icon={EasMetadataIcon}
   href="/eas/metadata/schema/"
 />
 
 <BoxLink
-  title="Static and dynamic configurations with EAS Metadata"
-  description="Learn about different ways to configure EAS Metadata."
+  title="Static and dynamic configurations with Expo Metadata"
+  description="Learn about different ways to configure Expo Metadata."
   Icon={EasMetadataIcon}
   href="/eas/metadata/config/"
 />

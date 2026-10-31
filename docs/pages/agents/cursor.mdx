@@ -10,7 +10,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
-Cursor is an AI-first code editor built on VS Code. It can edit across multiple files, run terminal commands, and work autonomously with its agent. Expo projects created with `create-expo-app` are scaffolded with an **AGENTS.md** file that Cursor reads directly. It can also check EAS and Expo CLI logs, fetch documentation from the Expo Model Context Protocol (MCP) Server, use Expo Skills for best practices, manage your EAS deployment workflow, and more.
+Cursor is an AI-first code editor built on VS Code. It can edit across multiple files, run terminal commands, and work autonomously with its agent. Expo projects created with `create-expo-app` are scaffolded with an **AGENTS.md** file that Cursor reads directly. It can also check Expo Services and Expo CLI logs, fetch documentation from the Expo Model Context Protocol (MCP) Server, use Expo Skills for best practices, manage your Expo Services deployment workflow, and more.
 
 ## Quick start
 
@@ -43,7 +43,7 @@ Create a project with the following command or ensure your existing project has 
 
 ### Set up Expo Skills and the Expo MCP Server
 
-Install Expo Skills and connect the Expo MCP Server so Cursor knows Expo conventions and can work with your EAS projects.
+Install Expo Skills and connect the Expo MCP Server so Cursor knows Expo conventions and can work with your Expo Services projects.
 
 <BoxLink
   title="Expo Skills"
@@ -54,7 +54,7 @@ Install Expo Skills and connect the Expo MCP Server so Cursor knows Expo convent
 
 <BoxLink
   title="Expo MCP Server"
-  description="Connect the remote Expo MCP Server to give agents live access to Expo documentation and EAS."
+  description="Connect the remote Expo MCP Server to give agents live access to Expo documentation and Expo Services."
   href="/mcp/#installation-and-setup"
   Icon={Star06Icon}
 />
@@ -97,8 +97,8 @@ After setup, describe Expo tasks in plain language. For example:
 | ----------------- | --------------------------------------------------------------------------------- |
 | Upgrade the SDK   | Upgrade this project to the latest Expo SDK and fix any breaking changes.         |
 | Add navigation    | Add a tab navigator with Expo Router and a new settings screen.                   |
-| Automate builds   | Create an EAS Workflow that builds the app on every pull request.                 |
-| Debug a build     | My latest iOS build failed. Read the EAS Build logs and tell me what went wrong.  |
+| Automate builds   | Create a workflow with Expo Workflows that builds the app on every pull request.  |
+| Debug a build     | My latest iOS build failed. Read the Expo Build logs and tell me what went wrong. |
 | Add notifications | Configure expo-notifications and show a local notification when the app launches. |
 | Set up CI/CD      | Create a CI/CD workflow that builds on every PR.                                  |
 | Add native UI     | Add a SwiftUI picker component to my Expo app.                                    |

@@ -18,7 +18,7 @@
       "description": "Search the official Expo documentation and return page URLs ranked by relevance for a user query. Use read_documentation to fetch the full content of specific pages, starting from the top.",
       "examplePrompt": "search documentation for CNG",
       "availability": "Server",
-      "requirements": "requires an EAS paid plan"
+      "requirements": "requires an Expo Services paid plan"
     },
     {
       "name": "usage_budget_get",
