@@ -213,6 +213,18 @@ export class LiveActivityFactory<T extends object = object> {
       .getInstances()
       .map((instance) => new LiveActivity<T>(instance));
   }
+
+  /**
+   * Returns the instances of this Live Activity type that have ended but are still on the Lock Screen,
+   * because their dismissal policy has not removed them yet. Call `end('immediate')` on an instance to
+   * remove it.
+   * @platform ios
+   */
+  getEndedInstances() {
+    return this.nativeLiveActivityFactory
+      .getEndedInstances()
+      .map((instance) => new LiveActivity<T>(instance));
+  }
 }
 
 /**
