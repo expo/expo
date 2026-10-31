@@ -31,12 +31,19 @@ export class ClientManager {
 
   static async create(udid?: string) {
     const usbmuxClient = new UsbmuxdClient(UsbmuxdClient.connectUsbmuxdSocket());
-    const device = await usbmuxClient.getDevice(udid);
-    const pairRecord = await usbmuxClient.readPairRecord(device.Properties.SerialNumber);
-    const lockdownSocket = await usbmuxClient.connect(device, 62078);
-    const lockdownClient = new LockdowndClient(lockdownSocket);
-    await lockdownClient.doHandshake(pairRecord);
-    return new ClientManager(pairRecord, device, lockdownClient);
+    // A device reached over the network isn't found here and the caller falls back to devicectl;
+    // the socket left open would keep the process alive after the app launches.
+    try {
+      const device = await usbmuxClient.getDevice(udid);
+      const pairRecord = await usbmuxClient.readPairRecord(device.Properties.SerialNumber);
+      const lockdownSocket = await usbmuxClient.connect(device, 62078);
+      const lockdownClient = new LockdowndClient(lockdownSocket);
+      await lockdownClient.doHandshake(pairRecord);
+      return new ClientManager(pairRecord, device, lockdownClient);
+    } catch (error) {
+      usbmuxClient.socket.destroy();
+      throw error;
+    }
   }
 
   async getUsbmuxdClient() {
