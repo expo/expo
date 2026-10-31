@@ -12,6 +12,7 @@ import expo.modules.core.interfaces.services.UIManager;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,12 +22,17 @@ import expo.modules.interfaces.taskManager.TaskManagerInterface;
 import expo.modules.interfaces.taskManager.TaskServiceInterface;
 
 public class TaskManagerInternalModule implements InternalModule, TaskManagerInterface, LifecycleEventListener {
+  private static final String NOT_DELIVERED_REASON = "did not run, because the React instance was destroyed before its event reached JavaScript.";
+  private static final String INTERRUPTED_REASON = "did not report a result, because the React instance was destroyed while the task ran.";
+
   private UIManager mUIManager;
   private ConstantsInterface mConstants;
   private TaskServiceInterface mTaskService;
   private WeakReference<Context> mContextRef;
   private List<Bundle> mEventsQueue = new ArrayList<>();
   private EmitEventWrapper mEmitEventWrapper;
+  private boolean mObserved = false;
+  private boolean mDestroyed = false;
 
   public TaskManagerInternalModule(Context context) {
     mContextRef = new WeakReference<>(context);
@@ -62,6 +68,7 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
   public void onDestroy() {
     mUIManager.unregisterLifecycleEventListener(this);
     mTaskService.setTaskManager(null, getAppScopeKey(), getAppUrl());
+    releaseEvents();
   }
 
   //endregion
@@ -81,9 +88,23 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
 
   @Override
   public synchronized void executeTaskWithBody(Bundle body) {
+    TaskService taskService = getTaskService();
+    if (mDestroyed) {
+      if (taskService != null) {
+        taskService.failEvent(TaskService.getEventId(body), this, TaskService.ERR_TASK_NOT_DELIVERED, NOT_DELIVERED_REASON);
+      }
+      return;
+    }
+    if (mObserved && taskService != null && !taskService.claimEvent(TaskService.getEventId(body), this)) {
+      // The event already finished.
+      return;
+    }
     if (mEventsQueue != null) {
       // `startObserving` on TaskManagerModule wasn't called yet - add event body to the queue.
       mEventsQueue.add(body);
+      if (!mObserved && taskService != null) {
+        taskService.startDeliveryTimeout(TaskService.getEventId(body));
+      }
     } else {
       // Manager is already being observed by JS app, so we can execute the event immediately.
       emitEvent(body);
@@ -157,6 +178,42 @@ public class TaskManagerInternalModule implements InternalModule, TaskManagerInt
 
   //endregion
   //region helpers
+
+  /**
+   * Called when JS subscribes to task events, before the queued events are flushed.
+   */
+  synchronized void markObserved() {
+    mObserved = true;
+    TaskService taskService = getTaskService();
+    if (mEventsQueue == null || taskService == null) {
+      return;
+    }
+    Iterator<Bundle> iterator = mEventsQueue.iterator();
+    while (iterator.hasNext()) {
+      if (!taskService.claimEvent(TaskService.getEventId(iterator.next()), this)) {
+        iterator.remove();
+      }
+    }
+  }
+
+  synchronized void releaseEvents() {
+    mDestroyed = true;
+    TaskService taskService = getTaskService();
+    if (taskService == null) {
+      return;
+    }
+    if (mEventsQueue != null) {
+      for (Bundle body : mEventsQueue) {
+        taskService.failEvent(TaskService.getEventId(body), this, TaskService.ERR_TASK_NOT_DELIVERED, NOT_DELIVERED_REASON);
+      }
+      mEventsQueue.clear();
+    }
+    taskService.failEventsClaimedBy(this, TaskService.ERR_TASK_INTERRUPTED, INTERRUPTED_REASON);
+  }
+
+  private TaskService getTaskService() {
+    return mTaskService instanceof TaskService ? (TaskService) mTaskService : null;
+  }
 
   private boolean isRunningInHeadlessMode() {
     return mTaskService.isStartedByHeadlessLoader(getAppScopeKey());
