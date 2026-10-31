@@ -107,4 +107,17 @@ struct JavaScriptSymbolTests {
     let toString = try runtime.eval("(function () { return Object.prototype.toString.call(this) })").asFunction()
     #expect(try toString.call(this: object).asString() == "[object Tagged]")
   }
+
+  @Test
+  func `symbols with the same description are different property keys`() throws {
+    let object = runtime.createObject()
+    let first = JavaScriptPropNameID(runtime, symbol: try JavaScriptSymbol(runtime, description: "key"))
+    let second = JavaScriptPropNameID(runtime, symbol: try JavaScriptSymbol(runtime, description: "key"))
+    object.setProperty(first, value: JavaScriptValue(runtime, "first"))
+    object.setProperty(second, value: JavaScriptValue(runtime, "second"))
+
+    #expect(object.getProperty(first).getString() == "first")
+    #expect(object.getProperty(second).getString() == "second")
+    #expect(object.getProperty("key").isUndefined() == true)
+  }
 }

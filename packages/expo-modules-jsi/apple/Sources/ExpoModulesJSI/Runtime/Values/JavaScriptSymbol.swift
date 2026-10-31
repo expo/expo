@@ -115,8 +115,8 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
 
   // MARK: - Well-known symbols
 
-  /// The well-known symbols, which are properties of the global `Symbol` function. Hermes doesn't define
-  /// `asyncDispose`, `dispose`, `species` and `unscopables`, so ``wellKnown(_:_:)`` throws for them on Hermes.
+  /// The well-known symbols, which are properties of the global `Symbol` function. An engine may not define
+  /// all of them, and ``wellKnown(_:_:)`` throws for a symbol that the engine doesn't define.
   public enum WellKnown: Int, CaseIterable, Sendable {
     case asyncDispose
     case asyncIterator
@@ -236,7 +236,8 @@ extension JavaScriptSymbol {
     let name: String
 
     public var description: String {
-      return "The JavaScript engine doesn't define 'Symbol.\(name)'. Check that the engine supports it."
+      return
+        "The JavaScript engine doesn't define 'Symbol.\(name)'. Use an engine version that supports it, or a polyfill that defines it."
     }
   }
 }
