@@ -159,7 +159,7 @@ class StartupProcedure(
             logger.error(
               "Failed to load remote update: ${exception.localizedMessageWithCauseLocalizedMessage()}",
               exception,
-              UpdatesErrorCode.UpdateFailedToLoad
+              UpdatesErrorCode.forLoadFailure(exception, otherwise = UpdatesErrorCode.UpdateFailedToLoad)
             )
             remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
 
@@ -283,7 +283,7 @@ class StartupProcedure(
             logger.error(
               "Failed to load remote update for error recovery: ${e.localizedMessageWithCauseLocalizedMessage()}",
               e,
-              UpdatesErrorCode.UpdateFailedToLoad,
+              UpdatesErrorCode.forLoadFailure(e, otherwise = UpdatesErrorCode.UpdateFailedToLoad),
               launchedUpdate?.loggingId,
               null
             )
