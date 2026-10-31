@@ -478,6 +478,14 @@ export type NotificationContent = {
   categoryIdentifier: string | null;
   // @docsMissing
   sound: 'default' | 'defaultCritical' | 'custom' | 'defaultRingtone' | null;
+  /**
+   * The image the notification was scheduled with, if it had one (see `image` in [`NotificationContentInput`](#notificationcontentinput)).
+   *
+   * On Android: the URI that was passed in.
+   *
+   * On iOS: the file URL of the system's copy of the image. It's not repeated in `attachments`.
+   */
+  image?: string;
 } & (NotificationContentIos | NotificationContentAndroid);
 
 /**
@@ -677,6 +685,17 @@ export type NotificationContentInput = {
    * @platform ios
    */
   attachments?: NotificationContentAttachmentIos[];
+  /**
+   * A local image file (a `file://` URI) to show with the notification.
+   *
+   * On Android: the large icon, downsampled to its size. It replaces the `largeIcon` from the config plugin.
+   * The file is read when the notification is presented, so it must still exist then.
+   *
+   * On iOS: an attachment, shown as a thumbnail and in full when the notification is expanded.
+   * The file is copied, so you can delete it once the notification is scheduled. It must be a JPEG, PNG or GIF
+   * with a matching file extension, of at most 10 MB.
+   */
+  image?: string;
   /*
    * The notification’s importance and required delivery timing.
    * Possible values:

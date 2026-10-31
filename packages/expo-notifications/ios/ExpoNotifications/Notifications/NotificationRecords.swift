@@ -299,6 +299,11 @@ public struct NotificationContentRecord: Record {
   var targetContentIdentifier: String?
   @Field
   var interruptionLevel: InterruptionLevelEnum?
+  @Field
+  var image: String?
+
+  /// Identifies the attachment made from `image`, so it's reported as `image` rather than in `attachments`.
+  private static let imageAttachmentIdentifier = "expo.notifications.image"
 
   public init() {}
 
@@ -317,7 +322,10 @@ public struct NotificationContentRecord: Record {
 
     self.launchImageName = content.launchImageName.isEmpty ? nil : content.launchImageName
     self.data = serializedNotificationData(from: request) as? [String: Any]
-    self.attachments = content.attachments.map { NotificationAttachmentRecord(from: $0) }
+    self.attachments = content.attachments
+      .filter { $0.identifier != Self.imageAttachmentIdentifier }
+      .map { NotificationAttachmentRecord(from: $0) }
+    self.image = content.attachments.first { $0.identifier == Self.imageAttachmentIdentifier }?.url.absoluteString
     self.categoryIdentifier = content.categoryIdentifier.isEmpty ? nil : content.categoryIdentifier
     self.threadIdentifier = content.threadIdentifier.isEmpty ? nil : content.threadIdentifier
     self.targetContentIdentifier = content.targetContentIdentifier?.isEmpty == false ? content.targetContentIdentifier : nil
@@ -385,11 +393,36 @@ public struct NotificationContentRecord: Record {
       content.attachments = attachments.compactMap { $0.toUNNotificationAttachment() }
     }
 
+    if let image = image, let attachment = imageAttachment(from: image) {
+      // The first attachment is the one shown as the thumbnail.
+      content.attachments.insert(attachment, at: 0)
+    }
+
     if let interruptionLevel = interruptionLevel {
       content.interruptionLevel = interruptionLevel.toUNNotificationInterruptionLevel()
     }
 
     return content
+  }
+
+  /// Attaches a copy of the image file, because the system moves an attachment's file into its own store.
+  private func imageAttachment(from uri: String) -> UNNotificationAttachment? {
+    guard let url = URL(string: uri), url.isFileURL else {
+      NSLog("[expo-notifications] The notification image must be a file URI: \(uri)")
+      return nil
+    }
+    let fileManager = FileManager.default
+    let directory = fileManager.temporaryDirectory.appendingPathComponent("expo-notifications", isDirectory: true)
+    let copy = directory.appendingPathComponent(UUID().uuidString).appendingPathExtension(url.pathExtension)
+    do {
+      try fileManager.createDirectory(at: directory, withIntermediateDirectories: true)
+      try fileManager.copyItem(at: url, to: copy)
+      return try UNNotificationAttachment(identifier: Self.imageAttachmentIdentifier, url: copy)
+    } catch {
+      try? fileManager.removeItem(at: copy)
+      NSLog("[expo-notifications] Could not attach the notification image at \(uri): \(error.localizedDescription)")
+      return nil
+    }
   }
 
   func customSoundExists() -> Bool {
