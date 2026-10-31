@@ -1,11 +1,41 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+import React
 import Testing
 import UIKit
 
 @testable import ExpoModulesCore
 
 private final class TestFabricView: ExpoView {}
+
+/// Stands in for `RCTSurfacePresenter`, which calls its observers around each mount transaction.
+private final class TestSurfacePresenter: NSObject, RCTSurfacePresenterStub {
+  private var observers = [RCTSurfacePresenterObserver]()
+
+  func mount(_ createViews: () -> Void) {
+    observers.forEach { $0.willMountComponents?(withRootTag: 1) }
+    createViews()
+    observers.forEach { $0.didMountComponents?(withRootTag: 1) }
+  }
+
+  func add(_ observer: RCTSurfacePresenterObserver) {
+    observers.append(observer)
+  }
+
+  func remove(_ observer: RCTSurfacePresenterObserver) {
+    observers.removeAll { $0 === observer }
+  }
+
+  func createFabricSurface(forModuleName moduleName: String, initialProperties: [AnyHashable: Any]) -> RCTSurfaceProtocol {
+    fatalError("Not used in tests")
+  }
+
+  func findComponentView(withTag_DO_NOT_USE_DEPRECATED tag: Int) -> UIView? {
+    return nil
+  }
+
+  func synchronouslyUpdateView(onUIThread reactTag: NSNumber, props: [AnyHashable: Any]) {}
+}
 
 // View classes and the mounting app context are main-thread state.
 @Suite("ExpoFabricView")
@@ -114,6 +144,85 @@ struct ExpoFabricViewTests {
     AppContext.viewsRegisteringAppContext = appContext
     let view = viewClass.createComponentView() as? TestFabricView
 
+    #expect(view?.appContext === appContext)
+  }
+
+  @Test
+  func `creates views for the app context that observes the mounting surface presenter`() throws {
+    let moduleName = uniqueModuleName()
+    let appContext = makeAppContext(moduleName: moduleName)
+    let observer = SurfacePresenterObserver(appContext: appContext)
+    let surfacePresenter = TestSurfacePresenter()
+    let viewClass = try #require(ExpoFabricView.viewClass(moduleName: moduleName, viewName: DEFAULT_MODULE_VIEW) as? ExpoFabricView.Type)
+
+    #expect(observer.observe(surfacePresenter))
+
+    var view: TestFabricView?
+    surfacePresenter.mount {
+      view = viewClass.createComponentView() as? TestFabricView
+    }
+
+    #expect(view?.appContext === appContext)
+    #expect(AppContext.mountingAppContext == nil)
+  }
+
+  @Test
+  func `creates views for the newest app context that observes the surface presenter`() throws {
+    let moduleName = uniqueModuleName()
+    let older = makeAppContext(moduleName: moduleName)
+    let newer = makeAppContext(moduleName: moduleName)
+    let olderObserver = SurfacePresenterObserver(appContext: older)
+    let newerObserver = SurfacePresenterObserver(appContext: newer)
+    let surfacePresenter = TestSurfacePresenter()
+    let viewClass = try #require(ExpoFabricView.viewClass(moduleName: moduleName, viewName: DEFAULT_MODULE_VIEW) as? ExpoFabricView.Type)
+
+    #expect(olderObserver.observe(surfacePresenter))
+    #expect(newerObserver.observe(surfacePresenter))
+
+    var view: TestFabricView?
+    surfacePresenter.mount {
+      view = viewClass.createComponentView() as? TestFabricView
+    }
+
+    #expect(view?.appContext === newer)
+    #expect(AppContext.mountingAppContext == nil)
+  }
+
+  @Test
+  func `doesn't observe the surface presenter that a newer app context observes`() throws {
+    let moduleName = uniqueModuleName()
+    let older = makeAppContext(moduleName: moduleName)
+    let newer = makeAppContext(moduleName: moduleName)
+    let olderObserver = SurfacePresenterObserver(appContext: older)
+    let newerObserver = SurfacePresenterObserver(appContext: newer)
+    let surfacePresenter = TestSurfacePresenter()
+    let viewClass = try #require(ExpoFabricView.viewClass(moduleName: moduleName, viewName: DEFAULT_MODULE_VIEW) as? ExpoFabricView.Type)
+
+    // After quick consecutive reloads, the older app context can observe the newer runtime's presenter last.
+    #expect(newerObserver.observe(surfacePresenter))
+    #expect(!olderObserver.observe(surfacePresenter))
+
+    var view: TestFabricView?
+    surfacePresenter.mount {
+      view = viewClass.createComponentView() as? TestFabricView
+    }
+
+    #expect(view?.appContext === newer)
+  }
+
+  @Test
+  func `creates an empty view when the mounting app context doesn't have the module`() throws {
+    let moduleName = uniqueModuleName()
+    let appContext = AppContext()
+    let observer = SurfacePresenterObserver(appContext: appContext)
+    let viewClass = try #require(ExpoFabricView.viewClass(moduleName: moduleName, viewName: DEFAULT_MODULE_VIEW) as? ExpoFabricView.Type)
+
+    observer.willMountComponents(withRootTag: 1)
+    let view = viewClass.createComponentView() as? ExpoFabricView
+    observer.didMountComponents(withRootTag: 1)
+
+    #expect(view != nil)
+    #expect(view is TestFabricView == false)
     #expect(view?.appContext === appContext)
   }
 }
