@@ -19,6 +19,13 @@ final class LiveActivityFactory: SharedObject {
       throw LiveActivitiesNotSupportedException()
     }
 
+    // iOS can keep an ended activity on the Lock Screen for up to 4 hours. getInstances() does not
+    // return it, so a new activity would show next to it.
+    for activity in Activity<LiveActivityAttributes>.activities
+    where activity.content.state.name == name && activity.activityState == .ended {
+      Task { await activity.end(nil, dismissalPolicy: .immediate) }
+    }
+
     do {
       let initialState = LiveActivityAttributes.ContentState(name: name, props: props)
       let activity = try Activity.request(
