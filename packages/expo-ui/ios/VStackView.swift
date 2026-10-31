@@ -26,6 +26,9 @@ public final class VStackViewProps: UIBaseViewProps {
   // Universal `Column` sets this so a child percentage is a fraction of this stack.
   // A SwiftUI `VStack` leaves it off and keeps the platform layout.
   @Field var resolvesChildPercentages: Bool = false
+  // Universal `Column` sets this only when it or a child has a percentage size.
+  // Otherwise it keeps the platform layout.
+  @Field var usesPercentageLayout: Bool = false
 }
 
 public struct VStackView: ExpoSwiftUI.View {
@@ -39,18 +42,29 @@ public struct VStackView: ExpoSwiftUI.View {
 
   public var body: some View {
     if props.resolvesChildPercentages {
-      ParentAwareVStackLayout(
+      universalStack
+    } else {
+      platformStack
+    }
+  }
+
+  private var universalStack: some View {
+    // `AnyLayout` keeps the children when a percentage is added or removed.
+    let layout = props.usesPercentageLayout
+      ? AnyLayout(ParentAwareVStackLayout(
         alignment: props.alignment ?? .center,
         spacing: props.spacing.map { CGFloat($0) },
         ownDimensions: universalLayoutDimensions(from: props.modifiers),
         resolvesOwnPercentage: resolvesOwnPercentage
-      ) {
-        Children()
-      }
-      .environment(\.universalPercentageParent, true)
-    } else {
-      platformStack
+      ))
+      : AnyLayout(VStackLayout(
+        alignment: props.alignment?.toHorizontalAlignment() ?? .center,
+        spacing: props.spacing.map { CGFloat($0) }
+      ))
+    return layout {
+      Children()
     }
+    .environment(\.universalPercentageParent, true)
   }
 
   private var platformStack: some View {

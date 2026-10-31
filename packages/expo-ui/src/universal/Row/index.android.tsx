@@ -1,6 +1,7 @@
 import { Row as ComposeRow } from '@expo/ui/jetpack-compose';
 
 import { useUniversalLifecycle } from '../hooks';
+import { hasPercentageSize } from '../modifierUtils';
 import { transformToModifiers } from '../transformStyle';
 import type { UniversalAlignment } from '../types';
 import type { RowProps } from './types';
@@ -40,6 +41,7 @@ export function Row({
       verticalAlignment={alignmentMap[alignment]}
       horizontalArrangement={spacing != null ? { spacedBy: spacing } : undefined}
       resolvesChildPercentages
+      usesPercentageLayout={hasPercentageSize(style, children)}
       modifiers={modifiers}>
       {children}
     </ComposeRow>

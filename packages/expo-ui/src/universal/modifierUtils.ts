@@ -1,3 +1,5 @@
+import { Children, Fragment, isValidElement, type ReactNode } from 'react';
+
 import type { ModifierConfig } from '../types';
 
 /**
@@ -86,6 +88,37 @@ function serializeDimension(
 
   warnInvalidDimension(componentName, axis, value);
   return {};
+}
+
+function isPercentage(value: unknown): boolean {
+  return typeof value === 'string' && PERCENTAGE_PATTERN.test(value);
+}
+
+function styleHasPercentage(style: UniversalDimensionStyle | undefined): boolean {
+  return isPercentage(style?.width) || isPercentage(style?.height);
+}
+
+function childrenHavePercentage(children: ReactNode): boolean {
+  return Children.toArray(children).some((child) => {
+    if (!isValidElement<{ style?: UniversalDimensionStyle; children?: ReactNode }>(child)) {
+      return false;
+    }
+    if (child.type === Fragment) {
+      return childrenHavePercentage(child.props.children);
+    }
+    return styleHasPercentage(child.props.style);
+  });
+}
+
+/**
+ * Whether a universal stack or one of its direct children sets a percentage `width` or `height`.
+ * The stack uses its percentage layout only then. Otherwise it keeps the platform stack.
+ */
+export function hasPercentageSize(
+  style: UniversalDimensionStyle | undefined,
+  children: ReactNode
+): boolean {
+  return styleHasPercentage(style) || childrenHavePercentage(children);
 }
 
 export function serializeUniversalDimensions(

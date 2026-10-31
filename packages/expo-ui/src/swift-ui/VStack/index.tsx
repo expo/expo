@@ -19,6 +19,12 @@ export interface VStackProps extends CommonViewModifierProps {
    * @hidden
    */
   resolvesChildPercentages?: boolean;
+  /**
+   * When `true` with `resolvesChildPercentages`, this stack uses the percentage layout.
+   * Universal `Column` sets this only when it or a child has a percentage size.
+   * @hidden
+   */
+  usesPercentageLayout?: boolean;
 }
 
 const VStackNativeView: React.ComponentType<VStackProps> = requireNativeView(
