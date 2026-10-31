@@ -5,7 +5,6 @@
     "appDelegateSubscribers": ["SplashScreenAppDelegateSubscriber"]
   },
   "android": {
-    "modules": ["expo.modules.splashscreen.SplashScreenModule"],
     "publication": {
       "groupId": "host.exp.exponent",
       "artifactId": "expo.modules.splashscreen",

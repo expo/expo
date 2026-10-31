@@ -1,0 +1,5 @@
+---
+'expo-splash-screen': patch
+---
+
+[Android] Migrate to the Expo Modules API 2.0.

@@ -1,64 +1,68 @@
 package expo.modules.splashscreen
 
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import kotlinx.coroutines.launch
-import expo.modules.kotlin.types.OptimizedRecord
+import android.os.Handler
+import android.os.Looper
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.Record
+import io.github.expo.modules.v2.async.Promise
 
-@OptimizedRecord
-class SplashScreenOptions : Record {
-  @Field
-  val duration: Long = 400L
+@Record
+data class SplashScreenOptions(
+  val duration: Long = 400L,
+  val fade: Boolean = true
+)
 
-  @Field
-  var fade: Boolean = true
-}
-
+@ExpoModule("ExpoSplashScreen")
 class SplashScreenModule : Module() {
   private var userControlledAutoHideEnabled: Boolean = false
 
-  override fun definition() = ModuleDefinition {
-    Name("ExpoSplashScreen")
+  override fun onDestroy() {
+    SplashScreenManager.unregisterContentAppearedListener()
+  }
 
-    AsyncFunction<Boolean>("preventAutoHideAsync") {
-      // The user has manually invoked prevent autohide, this is used to allow libraries
-      // such as expo-router to know whether it's safe to hide or if they should wait for
-      // the user to do it.
-      userControlledAutoHideEnabled = true
-      SplashScreenManager.preventAutoHideCalled = true
-      return@AsyncFunction true
+  @JS
+  fun preventAutoHideAsync(): Promise<Boolean> {
+    // The user has manually invoked prevent autohide, this is used to allow libraries
+    // such as expo-router to know whether it's safe to hide or if they should wait for
+    // the user to do it.
+    userControlledAutoHideEnabled = true
+    SplashScreenManager.preventAutoHideCalled = true
+    return Promise.resolve(true)
+  }
+
+  @JS
+  fun internalPreventAutoHideAsync(): Promise<Unit> {
+    SplashScreenManager.preventAutoHideCalled = true
+    return Promise.resolve()
+  }
+
+  @JS
+  fun setOptions(options: SplashScreenOptions) {
+    // Needs to run on the main thread on apis below 33
+    Handler(Looper.getMainLooper()).post {
+      SplashScreenManager.setSplashScreenOptions(options)
     }
+  }
 
-    AsyncFunction<Unit>("internalPreventAutoHideAsync") {
-      SplashScreenManager.preventAutoHideCalled = true
-    }
+  @JS
+  fun hide() {
+    SplashScreenManager.hide()
+  }
 
-    Function("setOptions") { options: SplashScreenOptions ->
-      // Needs to run on the main thread on apis below 33
-      appContext.mainQueue.launch {
-        SplashScreenManager.setSplashScreenOptions(options)
-      }
-    }
+  // For backwards compatibility
+  @JS
+  fun hideAsync(): Promise<Unit> {
+    SplashScreenManager.hide()
+    return Promise.resolve()
+  }
 
-    Function("hide") {
+  @JS
+  fun internalMaybeHideAsync(): Promise<Unit> {
+    if (!userControlledAutoHideEnabled) {
       SplashScreenManager.hide()
     }
-
-    // For backwards compatibility
-    AsyncFunction("hideAsync") {
-      SplashScreenManager.hide()
-    }
-
-    AsyncFunction("internalMaybeHideAsync") {
-      if (!userControlledAutoHideEnabled) {
-        SplashScreenManager.hide()
-      }
-    }
-
-    OnDestroy {
-      SplashScreenManager.unregisterContentAppearedListener()
-    }
+    return Promise.resolve()
   }
 }
