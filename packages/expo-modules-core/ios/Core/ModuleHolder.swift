@@ -8,6 +8,12 @@ public final class ModuleHolder {
   private(set) var _name: String?
 
   /**
+   Name of the package that the module is exported in: the name of the npm package that provides it, or `$local` for local and inline modules.
+   It is `nil` for modules that were not registered from a modules provider.
+   */
+  let packageName: String?
+
+  /**
    Instance of the module.
    */
   private(set) var module: AnyModule
@@ -48,9 +54,10 @@ public final class ModuleHolder {
    */
   var listenersCount: Int = 0
 
-  init(appContext: AppContext, module: AnyModule, name: String?) {
+  init(appContext: AppContext, module: AnyModule, name: String?, packageName: String? = nil) {
     self.appContext = appContext
     self._name = name
+    self.packageName = packageName
     self.module = module
     self.definition = ModuleHolder.buildDefinition(for: module)
     (module as? BaseModule)?.holder = self

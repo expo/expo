@@ -41,6 +41,155 @@ struct ModuleRegistryTests {
   }
 
   @Test
+  func `registers modules from provider packages with their package names`() {
+    class TestProvider: ModulesProvider {
+      override var packages: [String: ExpoPackage] {
+        return [
+          "expo-test": ExpoPackage(modules: [UnnamedModule.self]),
+          "expo-named": ExpoPackage(modules: [NamedModule.self]),
+        ]
+      }
+    }
+
+    let moduleRegistry = appContext.moduleRegistry
+    moduleRegistry.register(fromProvider: TestProvider())
+
+    let unnamedHolder = moduleRegistry.get(moduleHolderForName: String(describing: UnnamedModule.self))
+    let namedHolder = moduleRegistry.get(moduleHolderForName: NamedModule.namedModuleName)
+    #expect(unnamedHolder?.packageName == "expo-test")
+    #expect(namedHolder?.packageName == "expo-named")
+    #expect(Set(moduleRegistry.packageNames) == ["expo-test", "expo-named"])
+  }
+
+  @Test
+  func `lists the local package first and the other packages sorted`() {
+    class LocalModule: Module {
+      func definition() -> ModuleDefinition {
+        Name("LocalModule")
+      }
+    }
+    class TestProvider: ModulesProvider {
+      override var packages: [String: ExpoPackage] {
+        return [
+          "expo-test": ExpoPackage(modules: [UnnamedModule.self]),
+          ExpoPackage.localPackageName: ExpoPackage(modules: [LocalModule.self]),
+          "@expo/named": ExpoPackage(modules: [NamedModule.self]),
+        ]
+      }
+    }
+
+    let moduleRegistry = appContext.moduleRegistry
+    moduleRegistry.register(fromProvider: TestProvider())
+
+    #expect(moduleRegistry.packageNames == ["$local", "@expo/named", "expo-test"])
+  }
+
+  @Test
+  func `registers modules from getModuleClasses without a package`() {
+    class TestProvider: ModulesProvider {
+      override func getModuleClasses() -> [ExpoModuleTupleType] {
+        return [(module: UnnamedModule.self, name: nil)]
+      }
+
+      override var packages: [String: ExpoPackage] {
+        return ["expo-named": ExpoPackage(modules: [NamedModule.self])]
+      }
+    }
+
+    let moduleRegistry = appContext.moduleRegistry
+    moduleRegistry.register(fromProvider: TestProvider())
+
+    let holder = moduleRegistry.get(moduleHolderForName: String(describing: UnnamedModule.self))
+    #expect(holder != nil)
+    #expect(holder?.packageName == nil)
+    #expect(moduleRegistry.get(moduleHolderForName: NamedModule.namedModuleName)?.packageName == "expo-named")
+    #expect(moduleRegistry.packageNames == ["expo-named"])
+  }
+
+  @Test
+  func `registers packages after the modules from getModuleClasses, so their modules win`() {
+    class ClassicModule: Module {
+      func definition() -> ModuleDefinition {
+        Name("SameName")
+      }
+    }
+    class PackageModule: Module {
+      func definition() -> ModuleDefinition {
+        Name("SameName")
+      }
+    }
+    class TestProvider: ModulesProvider {
+      override func getModuleClasses() -> [ExpoModuleTupleType] {
+        return [(module: ClassicModule.self, name: nil)]
+      }
+
+      override var packages: [String: ExpoPackage] {
+        return ["expo-test": ExpoPackage(modules: [PackageModule.self])]
+      }
+    }
+
+    let moduleRegistry = appContext.moduleRegistry
+    moduleRegistry.register(fromProvider: TestProvider())
+
+    #expect(moduleRegistry.get(moduleWithName: "SameName") is PackageModule)
+  }
+
+  @Test
+  func `registers packages in the order of their names`() {
+    class FirstModule: Module {
+      func definition() -> ModuleDefinition {
+        Name("SameName")
+      }
+    }
+    class SecondModule: Module {
+      func definition() -> ModuleDefinition {
+        Name("SameName")
+      }
+    }
+    class TestProvider: ModulesProvider {
+      override var packages: [String: ExpoPackage] {
+        return [
+          "b-package": ExpoPackage(modules: [SecondModule.self]),
+          "a-package": ExpoPackage(modules: [FirstModule.self]),
+        ]
+      }
+    }
+
+    let moduleRegistry = appContext.moduleRegistry
+    moduleRegistry.register(fromProvider: TestProvider())
+
+    // The package registered last wins, and that is always the one with the greater name.
+    #expect(moduleRegistry.get(moduleWithName: "SameName") is SecondModule)
+  }
+
+  @Test
+  func `registers the local package last, so its modules win`() {
+    class PackageModule: Module {
+      func definition() -> ModuleDefinition {
+        Name("SameName")
+      }
+    }
+    class LocalModule: Module {
+      func definition() -> ModuleDefinition {
+        Name("SameName")
+      }
+    }
+    class TestProvider: ModulesProvider {
+      override var packages: [String: ExpoPackage] {
+        return [
+          ExpoPackage.localPackageName: ExpoPackage(modules: [LocalModule.self]),
+          "z-package": ExpoPackage(modules: [PackageModule.self]),
+        ]
+      }
+    }
+
+    let moduleRegistry = appContext.moduleRegistry
+    moduleRegistry.register(fromProvider: TestProvider())
+
+    #expect(moduleRegistry.get(moduleWithName: "SameName") is LocalModule)
+  }
+
+  @Test
   func `concurrent registrations are thread safe`() async {
     let iterations = 1000
     let initialModulesCount = appContext.moduleRegistry.getModuleNames().count

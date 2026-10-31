@@ -13,6 +13,10 @@ internal import ExpoModulesCore
 
 @objc(file)
 internal class file: ModulesProvider {
+  public override var packages: [String: ExpoPackage] {
+    return [:]
+  }
+
   public override func getModuleClasses() -> [ExpoModuleTupleType] {
     return [
     ]
@@ -48,6 +52,10 @@ internal import ExpoModulesCore
 
 @objc(file)
 internal class file: ModulesProvider {
+  public override var packages: [String: ExpoPackage] {
+    return [:]
+  }
+
   public override func getModuleClasses() -> [ExpoModuleTupleType] {
     return [
     ]
@@ -83,6 +91,10 @@ internal import ExpoModulesCore
 
 @objc(file)
 internal class file: ModulesProvider {
+  public override var packages: [String: ExpoPackage] {
+    return [:]
+  }
+
   public override func getModuleClasses() -> [ExpoModuleTupleType] {
     return [
     ]

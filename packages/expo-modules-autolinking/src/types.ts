@@ -15,7 +15,12 @@ export type PackageRevision = {
   version: string;
   config?: ExpoModuleConfig;
   duplicates?: PackageRevision[];
+  /** Whether the package was found in the app's `nativeModulesDir` (local modules). */
+  isLocal?: boolean;
 };
+
+/** Name of the package that local modules and inline modules are exported in. It can't be the name of an npm package. */
+export const LOCAL_PACKAGE_NAME = '$local';
 
 export type SearchResults = {
   [moduleName: string]: PackageRevision;
@@ -68,7 +73,18 @@ export interface ModuleIosConfig {
   class: string;
 }
 export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
+  /**
+   * Name of the package that the modules declared with the `@ExpoModule` macro are exported in, when it differs
+   * from `packageName`. Local modules use `LOCAL_PACKAGE_NAME`.
+   */
+  exportedPackageName?: string;
   modules: ModuleIosConfig[];
+  /**
+   * Whether `modules` were found by `scan-modules`, so they're declared with the `@ExpoModule` macro
+   * (Expo Modules API 2.0). The generated modules provider groups these modules by package in `packages`,
+   * and lists the modules that a package declares in its config in `getModuleClasses()`.
+   */
+  modulesFromScan?: boolean;
   pods: ModuleIosPodspecInfo[];
   flags: Record<string, any> | undefined;
   swiftModuleNames: string[];
