@@ -4,7 +4,6 @@
     "modules": ["ExpoSMSModule"]
   },
   "android": {
-    "modules": ["expo.modules.sms.SMSModule"],
     "publication": {
       "groupId": "host.exp.exponent",
       "artifactId": "expo.modules.sms",

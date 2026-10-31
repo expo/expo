@@ -71,7 +71,6 @@ import expo.modules.sensors.modules.MagnetometerModule
 import expo.modules.sensors.modules.MagnetometerUncalibratedModule
 import expo.modules.sensors.modules.PedometerModule
 import expo.modules.sharing.SharingModule
-import expo.modules.sms.SMSModule
 import expo.modules.speech.SpeechModule
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIModule
@@ -182,7 +181,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ScreenOrientationModule::class.java to null,
     // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,
     // because it needs access to scopedContext for Expo Go support
-    SMSModule::class.java to null,
     SharingModule::class.java to null,
     SpeechModule::class.java to null,
     SplashScreenModule::class.java to null,

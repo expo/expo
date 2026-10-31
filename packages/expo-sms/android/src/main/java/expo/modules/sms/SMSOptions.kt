@@ -1,17 +1,20 @@
 package expo.modules.sms
 
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Record
 
-@OptimizedRecord
+@Record
 data class SMSOptions(
-  @Field val attachments: List<SMSAttachment> = emptyList()
-) : Record
+  val attachments: List<SMSAttachment> = emptyList()
+)
 
-@OptimizedRecord
+@Record
 data class SMSAttachment(
-  @Field val uri: String,
-  @Field val mimeType: String,
-  @Field val filename: String
-) : Record
+  val uri: String,
+  val mimeType: String,
+  val filename: String
+)
+
+@Record
+data class SMSResult(
+  val result: String
+)

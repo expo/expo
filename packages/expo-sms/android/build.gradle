@@ -6,6 +6,10 @@ plugins {
 group = 'host.exp.exponent'
 version = '58.0.2'
 
+expoModule {
+  v2 true
+}
+
 android {
   namespace "expo.modules.sms"
   defaultConfig {
@@ -15,6 +19,7 @@ android {
 }
 
 dependencies {
+  implementation 'com.facebook.react:react-android'
   if (project.findProject(':expo-modules-test-core')) {
     testImplementation project(':expo-modules-test-core')
   }
