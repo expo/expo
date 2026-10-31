@@ -16,6 +16,8 @@ import {
   EdgeCornerStyle,
 } from '@expo/ui/swift-ui';
 import {
+  background,
+  clipShape,
   frame,
   shadow,
   foregroundStyle,
@@ -53,6 +55,35 @@ export default function ShapesScreen() {
                 shadow({ color: '#000000', radius: 5, x: 0, y: 2 }),
               ]}
             />
+            <HStack spacing={16}>
+              <VStack spacing={8}>
+                <Text>Continuous</Text>
+                <RoundedRectangle
+                  cornerRadius={40}
+                  cornerStyle="continuous"
+                  modifiers={[frame({ width: 120, height: 120 }), foregroundStyle('#34C759')]}
+                />
+              </VStack>
+              <VStack spacing={8}>
+                <Text>Circular</Text>
+                <RoundedRectangle
+                  cornerRadius={40}
+                  cornerStyle="circular"
+                  modifiers={[frame({ width: 120, height: 120 }), foregroundStyle('#AF52DE')]}
+                />
+              </VStack>
+            </HStack>
+            <Text>clipShape with a circular corner style</Text>
+            <Text
+              modifiers={[
+                padding({ all: 24 }),
+                background('#FF9500'),
+                clipShape(
+                  shapes.roundedRectangle({ cornerRadius: 24, roundedCornerStyle: 'circular' })
+                ),
+              ]}>
+              Clipped text
+            </Text>
           </VStack>
         </Section>
 
