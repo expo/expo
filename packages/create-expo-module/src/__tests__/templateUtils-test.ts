@@ -1,4 +1,5 @@
 import ejs from 'ejs';
+import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -6,6 +7,7 @@ import path from 'node:path';
 import {
   buildAugmentedData,
   copyPnpmWorkspaceFiles,
+  copyTemplateFiles,
   getGeneratedWebStubSentinel,
   getTemplateDistTag,
   getTemplateVersion,
@@ -149,6 +151,54 @@ describe('updateWebStub', () => {
 });
 
 const SNIPPETS_DIR = path.resolve(__dirname, '../../../expo-module-template/snippets');
+
+describe(copyTemplateFiles, () => {
+  let projectDir: string;
+
+  beforeEach(() => {
+    projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'local-module-ignore-'));
+  });
+
+  afterEach(() => {
+    fs.rmSync(projectDir, { recursive: true, force: true });
+  });
+
+  it('ignores local module build output without ignoring native source files', async () => {
+    execFileSync('git', ['init', '--quiet'], { cwd: projectDir });
+    fs.writeFileSync(path.join(projectDir, '.gitignore'), '/android\n/ios\n');
+    const templateDir = path.join(projectDir, 'template');
+    fs.mkdirSync(templateDir);
+    fs.copyFileSync(
+      path.join(SNIPPETS_DIR, '..', '$.gitignore'),
+      path.join(templateDir, '$.gitignore')
+    );
+    const data = await buildAugmentedData(SNIPPETS_DIR, {
+      project: { ...mockData.project, platforms: ['android'] },
+      type: 'local',
+    });
+    await copyTemplateFiles(templateDir, path.join(projectDir, 'modules/my-module'), data, {
+      platforms: ['android'],
+      moduleType: 'local',
+    });
+
+    const ignoredFiles = [
+      'modules/my-module/android/build/generated/Example.class',
+      'modules/my-module/android/.gradle/buildOutputCleanup/cache.properties',
+    ];
+    const sourceFile = 'modules/my-module/android/src/main/java/Example.kt';
+    for (const file of [...ignoredFiles, sourceFile]) {
+      const filePath = path.join(projectDir, file);
+      fs.mkdirSync(path.dirname(filePath), { recursive: true });
+      fs.writeFileSync(filePath, '');
+    }
+    const ignored = execFileSync('git', ['-c', 'core.excludesFile=', 'check-ignore', '--stdin'], {
+      cwd: projectDir,
+      input: [...ignoredFiles, sourceFile].join('\n') + '\n',
+      encoding: 'utf8',
+    });
+    expect(ignored.trim().split('\n')).toEqual(ignoredFiles);
+  });
+});
 
 async function renderTemplateFile(relativePath: string, data: object): Promise<string> {
   const template = await fs.promises.readFile(path.join(SNIPPETS_DIR, '..', relativePath), 'utf8');
