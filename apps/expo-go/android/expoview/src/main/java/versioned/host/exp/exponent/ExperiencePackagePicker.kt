@@ -23,8 +23,6 @@ import expo.modules.easclient.EASClientModule
 import expo.modules.fetch.ExpoFetchModule
 import expo.modules.filesystem.FileSystemModule
 import expo.modules.filesystem.legacy.FileSystemLegacyModule
-import expo.modules.font.FontLoaderModule
-import expo.modules.font.FontUtilsModule
 import expo.modules.gl.GLModule
 import expo.modules.image.ExpoImageModule
 import expo.modules.imageloader.ImageLoaderService
@@ -152,13 +150,11 @@ object ExperiencePackagePicker : ModulesProvider {
     DomWebViewModule::class.java to null,
     EASClientModule::class.java to null,
     ExpoFetchModule::class.java to null,
-    FontUtilsModule::class.java to null,
     ExpoLinkingModule::class.java to null,
     ExpoRouterModule::class.java to null,
     ExpoUIModule::class.java to null,
     FileSystemModule::class.java to null,
     FileSystemLegacyModule::class.java to null,
-    FontLoaderModule::class.java to null,
     PrintModule::class.java to null,
     GLModule::class.java to null,
     ImagePickerModule::class.java to null,

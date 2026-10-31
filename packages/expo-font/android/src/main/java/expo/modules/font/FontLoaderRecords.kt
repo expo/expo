@@ -1,17 +1,10 @@
 package expo.modules.font
 
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Record
 
-@OptimizedRecord
+@Record
 data class FontFaceRecord(
-  @Field
   val localUri: String = "",
-
-  @Field
   val weight: Int? = null,
-
-  @Field
   val style: String? = null
-) : Record
+)
