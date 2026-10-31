@@ -44,8 +44,8 @@ Pod::Spec.new do |s|
     :name => 'Prepare ExpoWidgets Resources',
     :script => %Q{
       echo "Preparing ExpoWidgets.bundle..."
-      source="#{__dir__}/../bundle/build/ExpoWidgets.bundle"
-      registry_source="#{__dir__}/../bundle/build/ExpoWidgetsLayoutRegistry.json"
+      source="${PODS_TARGET_SRCROOT}/../bundle/build/ExpoWidgets.bundle"
+      registry_source="${PODS_TARGET_SRCROOT}/../bundle/build/ExpoWidgetsLayoutRegistry.json"
       dest="${BUILT_PRODUCTS_DIR}/ExpoWidgets.bundle"
       mkdir -p "${dest}"
       echo "Copying ${source} to ${dest}"
@@ -55,8 +55,8 @@ Pod::Spec.new do |s|
     },
     :execution_position => :before_compile,
     :input_files  => [
-      "#{__dir__}/../bundle/build/ExpoWidgets.bundle",
-      "#{__dir__}/../bundle/build/ExpoWidgetsLayoutRegistry.json",
+      "${PODS_TARGET_SRCROOT}/../bundle/build/ExpoWidgets.bundle",
+      "${PODS_TARGET_SRCROOT}/../bundle/build/ExpoWidgetsLayoutRegistry.json",
     ]
   }
   # :always_out_of_date is only available in CocoaPods 1.13.0 and later
