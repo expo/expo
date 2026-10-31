@@ -169,6 +169,8 @@ on:
 
 Runs your workflow when you create or update a pull request that targets one of the matching branches.
 
+The run uses the workflow files and the code from the head commit of the pull request branch, not from the base branch. So a pull request can change the workflow that its own run uses.
+
 > **info** Pull requests opened from a fork of the connected repository do not trigger `pull_request` workflow runs.
 
 With the `branches` list, you can trigger the workflow only when those specified branches are the target of the pull request. For example, if you use `branches: ['main']`, only pull requests to merge into the main branch trigger the workflow. Supports globs. Defaults to `['*']` when not provided, which means the workflow triggers on pull request events to all branches. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it).
@@ -856,6 +858,29 @@ jobs:
 You can customize the behavior of a workflow — commands to execute, control flow, environment variables, build profile, app version, and more — based on the workflow run's context.
 
 Use the `${{ expression }}` syntax to access context properties and functions. For example: `${{ github.ref_name }}` or `${{ needs.build_ios.outputs.build_id }}`.
+
+### Operators
+
+An expression can use these operators:
+
+- Compare two values: `==`, `!=`, `===`, `!==`, `<`, `>`, `<=`, and `>=`.
+- Combine conditions: `&&`, `||`, and `!`.
+- Choose a value: `condition ? value_if_true : value_if_false`.
+
+```yaml
+jobs:
+  deploy:
+    # @info #
+    if: ${{ github.event_name == 'push' && !startsWith(github.ref_name, 'wip/') }}
+    # @end #
+    steps:
+      - run: |
+          echo "Deploy to ${{ github.ref_name == 'main' ? 'production' : 'preview' }}"
+```
+
+The colon (`:`) in a ternary is also YAML syntax. Put a value that has a ternary in quotes. A `run` script can also use a `|` block, as in the example above. Do not put an `if:` condition in a `|` block, because the block adds a newline that breaks the condition.
+
+EAS evaluates every part of an expression. `&&` and `||` do not skip the right side. `? :` evaluates both values. If one part fails, the expression fails. For example, `${{ inputs.data && fromJSON(inputs.data) }}` fails when `inputs.data` is empty, because `fromJSON('')` fails. Give `fromJSON()` a fallback instead: `${{ fromJSON(inputs.data || '{}') }}`.
 
 ### Context availability
 
