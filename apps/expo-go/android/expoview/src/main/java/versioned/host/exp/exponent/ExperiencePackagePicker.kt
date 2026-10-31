@@ -78,7 +78,6 @@ import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
 import expo.modules.taskmanager.TaskManagerModule
 import expo.modules.taskmanager.TaskManagerPackage
-import expo.modules.trackingtransparency.TrackingTransparencyModule
 import expo.modules.ui.ExpoUIModule
 import expo.modules.updates.UpdatesPackage
 import expo.modules.video.VideoModule
@@ -189,7 +188,6 @@ object ExperiencePackagePicker : ModulesProvider {
     StoreReviewModule::class.java to null,
     SystemUIModule::class.java to null,
     TaskManagerModule::class.java to null,
-    TrackingTransparencyModule::class.java to null,
     VideoThumbnailsModule::class.java to null,
     VideoModule::class.java to null,
     WebBrowserModule::class.java to null,
