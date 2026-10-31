@@ -20,11 +20,11 @@ Issue to PR is an automated workflow in which a coding agent changes your code f
 
 ## How Issue to PR works
 
-When a person adds the `agent` label to an issue, these steps run. The highlighted steps run on EAS Workflows and Expo Simulators:
+When a person adds the `agent` label to an issue, these steps run. The highlighted steps run on Expo Workflows and Expo Simulators:
 
 <IssueToPrDiagram />
 
-1. A GitHub Action starts the Issue to PR workflow on EAS.
+1. A GitHub Action starts the Issue to PR workflow on Expo Workflows.
 2. A coding agent reads the issue and its comments, and changes the code.
 3. The workflow pushes the change to the branch `agent/issue-<number>`, and opens a PR that closes the issue.
 4. Agentic CI tests the PR on an Expo Simulators session, and posts the verdict on the PR.
@@ -49,7 +49,7 @@ Add the Issue to PR workflow to my Expo project. Use https://docs.expo.dev/agent
 
 ## Set up your project
 
-Follow [Set up a project for agentic workflows](/agentic-workflows/setup/) one time for your project, including [Add a GitHub token to EAS](/agentic-workflows/setup/#add-a-github-token-to-eas). See [What the agent can do](/agentic-workflows/setup/#what-the-agent-can-do) to learn which limits apply to the agent.
+Follow [Set up a project for agentic workflows](/agentic-workflows/setup/) one time for your project, including [Add a GitHub token to Expo Services](/agentic-workflows/setup/#add-a-github-token-to-expo-services). See [What the agent can do](/agentic-workflows/setup/#what-the-agent-can-do) to learn which limits apply to the agent.
 
 Issue to PR needs [Agentic CI](/agentic-workflows/agentic-ci/), because Agentic CI tests each PR that the agent opens. Add Agentic CI first.
 
@@ -69,7 +69,7 @@ const token = process.env.GITHUB_TOKEN;
 
 if (!repository || !token) {
   console.error(
-    'GITHUB_REPOSITORY or GITHUB_TOKEN is not set. Add both to the preview environment of the EAS project.'
+    'GITHUB_REPOSITORY or GITHUB_TOKEN is not set. Add both to the preview environment of the Expo Services project.'
   );
   process.exit(1);
 }
@@ -217,7 +217,7 @@ TITLE=${TITLE:-"Change for issue #$ISSUE_NUMBER"}
 AUTHOR_EMAIL=$(node "$GITHUB_HELPER" author-email)
 git checkout -b "$BRANCH"
 git add -A
-git -c user.name="EAS agent" -c user.email="$AUTHOR_EMAIL" commit -m "$TITLE"
+git -c user.name="Expo agent" -c user.email="$AUTHOR_EMAIL" commit -m "$TITLE"
 git push --force "$PUSH_URL" "HEAD:refs/heads/$BRANCH"
 PR_URL=$(node "$GITHUB_HELPER" open-pull-request "$BRANCH" "$TITLE" /tmp/pull-request.md)
 
@@ -260,7 +260,7 @@ The PR description comes from the summary of the agent. Agentic CI tests what th
 
 <Step label="4">
 
-### Add the EAS workflow
+### Add the workflow
 
 ```yaml .eas/workflows/issue-to-pr.yml
 name: Issue to PR
@@ -297,7 +297,7 @@ jobs:
 
 ### Add the GitHub Action
 
-EAS Workflows does not start on issue events. This GitHub Action starts the EAS workflow when a person adds the `agent` label to an issue:
+Expo Workflows does not start on issue events. This GitHub Action starts the Issue to PR workflow when a person adds the `agent` label to an issue:
 
 ```yaml .github/workflows/agent-label.yml
 name: Start the agent
@@ -328,7 +328,7 @@ The Action installs the dependencies with `npm ci`, because EAS CLI reads the ap
 - run: bun install --frozen-lockfile
 ```
 
-With `--ref`, EAS runs the workflow from the last commit of your default branch on GitHub. EAS CLI does not upload the project.
+With `--ref`, Expo Workflows runs the workflow from the last commit of your default branch on GitHub. EAS CLI does not upload the project.
 
 </Step>
 
@@ -374,7 +374,7 @@ The command prints the address of the issue. The address ends with the issue num
 
 <Terminal cmd={['$ gh issue edit <number> --add-label agent']} />
 
-The GitHub Action starts the Issue to PR workflow on EAS.
+The GitHub Action starts the Issue to PR workflow on Expo Workflows.
 
 ## Read the result
 
@@ -414,7 +414,7 @@ To ask for another version, change the text of the issue. Then remove the label 
 
 <BoxLink
   title="Run Expo Simulators sessions in CI"
-  description="Start, use, and always stop sessions from GitHub Actions, EAS Workflows, or another CI system."
+  description="Start, use, and always stop sessions from GitHub Actions, Expo Workflows, or another CI system."
   href="/preview/simulators/how-to/run-in-ci/"
   Icon={Cloud01Icon}
 />
