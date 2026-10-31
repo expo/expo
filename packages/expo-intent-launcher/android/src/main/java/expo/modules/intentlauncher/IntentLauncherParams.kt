@@ -1,29 +1,14 @@
 package expo.modules.intentlauncher
 
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Record
 
-@OptimizedRecord
+@Record
 data class IntentLauncherParams(
-  @Field
-  val type: String?,
-
-  @Field
-  val category: String?,
-
-  @Field
-  val extra: Map<String, Any>?,
-
-  @Field
-  val data: String?,
-
-  @Field
-  val flags: Int?,
-
-  @Field
-  val packageName: String?,
-
-  @Field
-  val className: String?
-) : Record
+  val type: String? = null,
+  val category: String? = null,
+  val extra: Map<String, Any>? = null,
+  val data: String? = null,
+  val flags: Int? = null,
+  val packageName: String? = null,
+  val className: String? = null
+)
