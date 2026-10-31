@@ -77,7 +77,7 @@ export const Search = ({ mainSection }: SearchProps) => {
             }}
             customSections={[
               {
-                heading: 'EAS dashboard',
+                heading: 'Expo dashboard',
                 items: expoDashboardItems,
                 getItemsAsync: getExpoItemsAsync,
                 sectionIndex: Number.MAX_SAFE_INTEGER,
