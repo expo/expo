@@ -21,7 +21,7 @@ export function GET(request: Request) {
 }
 ```
 
-Server features require a custom server, which can be deployed to EAS or most [other hosting providers](#deployment).
+Server features require a custom server, which can be deployed to Expo Hosting or most [other hosting providers](#deployment).
 
 <VideoBoxLink
   videoId="2_UzR1wdimI"
@@ -140,7 +140,7 @@ Relative fetch requests automatically fetch relative to the dev server origin in
 }
 ```
 
-This URL can be automatically configured during EAS Builds by setting the `EXPO_UNSTABLE_DEPLOY_SERVER=1` environment variable. This will trigger a versioned server deployment which sets the origin to a preview deploy URL automatically.
+This URL can be automatically configured during builds on Expo Build by setting the `EXPO_UNSTABLE_DEPLOY_SERVER=1` environment variable. This will trigger a versioned server deployment which sets the origin to a preview deploy URL automatically.
 
 </Step>
 
@@ -417,7 +417,7 @@ When you're ready to deploy to production, run the following command to create t
 />
 
 This server can be tested locally with `npx expo serve`, visit the URL in a web browser or create a native build with the `origin` set to the local server URL.
-You can deploy the server for production using [EAS Hosting](/eas/hosting/get-started) or another third-party service.
+You can deploy the server for production using [Expo Hosting](/eas/hosting/get-started) or another third-party service.
 
 If you want to export API routes and skip generating a website version of your app, you can use the following command, which will generate a **dist** directory containing only the server code of your project.
 
@@ -431,8 +431,8 @@ If you want to export API routes and skip generating a website version of your a
 />
 
 <BoxLink
-  title="Deploy instantly with EAS"
-  description="EAS Hosting is the best way to deploy your Expo API routes and servers."
+  title="Deploy instantly with Expo Hosting"
+  description="Expo Hosting is the best way to deploy your Expo API routes and servers."
   href="/eas/hosting/get-started"
   Icon={Cloud01Icon}
 />
@@ -457,7 +457,7 @@ Ensure the `origin` field is **NOT** set in the **app.json** or in the `expo.ext
 
 <Step label="2">
 
-Setup [EAS Hosting](/eas/hosting/get-started) for the project by deploying once locally first.
+Setup [Expo Hosting](/eas/hosting/get-started) for the project by deploying once locally first.
 
 <Terminal
   cmd={{
@@ -472,7 +472,7 @@ Setup [EAS Hosting](/eas/hosting/get-started) for the project by deploying once 
 
 <Step label="3">
 
-Set the `EXPO_UNSTABLE_DEPLOY_SERVER` environment variable in your `.env` file. This will be used to enable the experimental server deployment functionality during EAS Build.
+Set the `EXPO_UNSTABLE_DEPLOY_SERVER` environment variable in your `.env` file. This will be used to enable the experimental server deployment functionality during Expo Build.
 
 ```sh .env
 EXPO_UNSTABLE_DEPLOY_SERVER=1
@@ -525,7 +525,7 @@ You can also run this locally with:
 
 Notes about automatic server deployment for native apps:
 
-- Server failures may occur during the `Bundle JavaScript` phase of EAS Build if something was not setup correctly.
+- Server failures may occur during the `Bundle JavaScript` phase of Expo Build if something was not setup correctly.
 - You can manually deploy the server and set the `origin` URL before building the app if you'd like.
 - Automatic deployment can be force skipped with the environment variable `EXPO_NO_DEPLOY=1`.
 - Automatic deployment does not support [dynamic app config](/workflow/configuration/#dynamic-configuration) (**app.config.js** and **app.config.ts**) files yet.

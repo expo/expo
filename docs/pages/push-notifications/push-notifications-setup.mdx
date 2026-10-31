@@ -18,8 +18,8 @@ Complete the steps outlined in this guide or follow the more detailed video belo
 
 <VideoBoxLink
   videoId="BCCjGtKtBjE"
-  title="Expo Notifications with EAS | Complete Guide"
-  description="Learn how to set up push notifications in an Expo project. This video covers configuring Firebase for FCM v1 on Android, setting up Android and iOS credentials on EAS, building with EAS Build, and testing with Expo Notifications tool."
+  title="Expo Notifications with Expo Services | Complete Guide"
+  description="Learn how to set up push notifications in an Expo project. This video covers configuring Firebase for FCM v1 on Android, setting up Android and iOS credentials in Expo Services, building with Expo Build, and testing with Expo Notifications tool."
 />
 <br />
 
@@ -31,7 +31,7 @@ To get the client-side ready for push notifications, the following things are re
 <br />
 <Collapsible summary="Do you want to use FCM / APNs directly, instead of the Expo push notification service?">
 
-If you need finer-grained control over your notifications, communicating directly with FCM and APNs may be necessary. Expo does not lock you into using Expo Application Services, and the `expo-notifications` API is push-service agnostic. Learn how to ["Send notifications with FCM and APNs"](/push-notifications/sending-notifications-custom/).
+If you need finer-grained control over your notifications, communicating directly with FCM and APNs may be necessary. Expo does not lock you into using Expo Services, and the `expo-notifications` API is push-service agnostic. Learn how to ["Send notifications with FCM and APNs"](/push-notifications/sending-notifications-custom/).
 
 </Collapsible>
 
@@ -42,7 +42,7 @@ If you need finer-grained control over your notifications, communicating directl
   </Requirement>
 </Prerequisites>
 
-The following steps in this guide use [EAS Build](/build/introduction/). This is the easiest way to set up notifications since your EAS project will also contain the [notification credentials](#get-credentials-for-development-builds). However, you can use the `expo-notifications` library without EAS Build by building [your project locally](/guides/local-app-development/).
+The following steps in this guide use [Expo Build](/build/introduction/). This is the easiest way to set up notifications since your Expo Services project will also contain the [notification credentials](#get-credentials-for-development-builds). However, you can use the `expo-notifications` library without Expo Build by building [your project locally](/guides/local-app-development/).
 
 <Step label="1">
 
@@ -222,7 +222,7 @@ export default function App() {
 
 ### Configure `projectId`
 
-Using the previous example, when you are registering for push notifications, you need to use [`projectId`](/versions/latest/sdk/constants/#easconfig). This property is used to attribute Expo push token to the specific project. For projects using EAS, the `projectId` property represents the Universally Unique Identifier (UUID) of that project.
+Using the previous example, when you are registering for push notifications, you need to use [`projectId`](/versions/latest/sdk/constants/#easconfig). This property is used to attribute Expo push token to the specific project. For projects using Expo Services, the `projectId` property represents the Universally Unique Identifier (UUID) of that project.
 
 `projectId` is set automatically when you create a development build. However, **we recommend setting it manually in your project's code**. To do so, you can use [`expo-constants`](/versions/latest/sdk/constants/) to get the `projectId` value from the app config.
 
@@ -263,7 +263,7 @@ For Android and iOS, there are different requirements to set up your credentials
 
 <br />
 
-> If you are not using EAS Build, run `eas credentials` manually.
+> If you are not using Expo Build, run `eas credentials` manually.
 
 </Step>
 

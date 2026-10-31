@@ -10,7 +10,7 @@ import { Step } from '~/ui/components/Step';
 
 > **info** We recommend upgrading SDK versions incrementally, one at a time. Doing so will help you pinpoint breakages and issues that arise during the upgrade process.
 
-With a new SDK release, the latest version enters the current release status. This applies to Expo Go as it only supports the latest SDK version and previous versions are no longer supported. We recommend using [development builds](/develop/development-builds/introduction/) for production apps as the backwards compatibility for older SDK versions on EAS services tends to be much longer, but not forever.
+With a new SDK release, the latest version enters the current release status. This applies to Expo Go as it only supports the latest SDK version and previous versions are no longer supported. We recommend using [development builds](/develop/development-builds/introduction/) for production apps as the backwards compatibility for older SDK versions on Expo Services tends to be much longer, but not forever.
 
 If you are looking to install a specific version of Expo Go on an Android device, Android Emulator, or iOS Simulator, visit [expo.dev/go](https://expo.dev/go) or use the [`expo-go` CLI](/develop/tools/#expo-go-cli). See [Troubleshoot an Expo Go version mismatch](/troubleshooting/expo-go-version-mismatch/) for more information.
 
@@ -60,7 +60,7 @@ Upgrade all dependencies to match the installed SDK version. Then run [`expo-doc
 
 #### Update native projects
 
-- **If you use [Continuous Native Generation](/workflow/continuous-native-generation/)**: Delete the **android** and **ios** directories if you generated them for a previous SDK version in your local project directory. They'll be re-generated next time you run a build, either with `npx expo run:ios`, `npx expo prebuild`, or with EAS Build.
+- **If you use [Continuous Native Generation](/workflow/continuous-native-generation/)**: Delete the **android** and **ios** directories if you generated them for a previous SDK version in your local project directory. They'll be re-generated next time you run a build, either with `npx expo run:ios`, `npx expo prebuild`, or with Expo Build.
 - **If you don't use [Continuous Native Generation](/workflow/continuous-native-generation/)**: Run `npx pod-install` if you have an **ios** directory. Apply any relevant changes from the [Native project upgrade helper](/bare/upgrade/). Alternatively, you could consider [adopting prebuild](/guides/adopting-prebuild/) for easier upgrades in the future.
 
 </Step>
