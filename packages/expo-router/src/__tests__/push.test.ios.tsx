@@ -80,7 +80,7 @@ it('stacks should always push a new route', async () => {
               },
               path: undefined,
               state: {
-                index: 3,
+                index: 4,
                 key: expect.any(String),
                 routeNames: ['user/[id]', 'post/[id]'],
                 routes: [
@@ -166,7 +166,7 @@ it('stacks should always push a new route', async () => {
                     },
                     path: undefined,
                     state: {
-                      index: 1,
+                      index: 0,
                       key: expect.any(String),
                       routeNames: ['index'],
                       routes: [
@@ -178,18 +178,34 @@ it('stacks should always push a new route', async () => {
                           },
                           path: '/user/1',
                         },
+                      ],
+                      stale: false,
+                      routeKeySeq: expect.any(Number),
+                    },
+                  },
+                  {
+                    key: expect.any(String),
+                    name: 'user/[id]',
+                    params: {
+                      id: '2',
+                    },
+                    path: undefined,
+                    state: {
+                      index: 0,
+                      key: expect.any(String),
+                      routeNames: ['index'],
+                      routes: [
                         {
                           key: expect.any(String),
                           name: 'index',
                           params: {
                             id: '2',
                           },
-                          path: undefined,
+                          path: '/user/2',
                         },
                       ],
                       stale: false,
                       routeKeySeq: expect.any(Number),
-                      type: 'stack',
                     },
                   },
                 ],
