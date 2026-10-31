@@ -42,7 +42,7 @@ describe(readResourcesXMLAsync, () => {
 
     // And parsed in unescaped form
     expect(stringsJSON.resources.string!.filter((e) => e.$.name === 'app_name')[0]!._).toBe(
-      `\\'E&x<p>o\\"\\@\\n`
+      `'E&x<p>o"@\n`
     );
   });
 });
@@ -69,6 +69,34 @@ describe('read and write', () => {
     const stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
     await writeXMLAsync({ path: stringsPath, xml: stringsJSON });
     expect(await fs.promises.readFile(stringsPath, 'utf-8')).toBe(example);
+  });
+
+  it('writes the same resource object twice without adding extra escapes', async () => {
+    const stringsPath = '/app/android/app/src/main/res/values/strings.xml';
+    const stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
+    await writeXMLAsync({ path: stringsPath, xml: stringsJSON });
+    const firstWrite = await fs.promises.readFile(stringsPath, 'utf-8');
+
+    await writeXMLAsync({ path: stringsPath, xml: stringsJSON });
+    expect(await fs.promises.readFile(stringsPath, 'utf-8')).toBe(firstWrite);
+  });
+});
+
+describe(format, () => {
+  it('leaves the resource object unchanged when escaping strings', () => {
+    const xml = {
+      resources: {
+        string: [
+          buildResourceItem({ name: 'app_name', value: `Expo's "test" C:\\Temp\n` }),
+          buildResourceItem({ name: 'reference', value: '@string/app_name', translatable: false }),
+        ],
+      },
+    };
+    const original = structuredClone(xml);
+
+    format(xml);
+
+    expect(xml).toEqual(original);
   });
 });
 
