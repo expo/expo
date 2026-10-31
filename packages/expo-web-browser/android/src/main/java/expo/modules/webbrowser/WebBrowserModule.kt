@@ -89,6 +89,12 @@ class WebBrowserModule : Module() {
         throw NoMatchingActivityException()
       }
 
+      if (options.browserPackage.isNullOrEmpty() && tabsIntent.intent.`package` == null) {
+        customTabsResolver.getPreferredCustomTabsResolvingActivity(null)?.let {
+          tabsIntent.intent.setPackage(it)
+        }
+      }
+
       customTabsResolver.startCustomTabs(tabsIntent, options)
 
       return@AsyncFunction bundleOf(
