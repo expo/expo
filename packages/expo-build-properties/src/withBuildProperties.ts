@@ -10,6 +10,7 @@ import {
   withAndroidQueries,
   withAndroidSettingsGradle,
 } from './android';
+import { withAndroidPurgeHermesV1, withIosPurgeHermesV1 } from './hermesV1';
 import { withIosBuildProperties, withIosDeploymentTarget, withIosInfoPlist } from './ios';
 import { withIosSceneSupport } from './iosSceneSupport';
 import type { PluginConfigType } from './pluginConfig';
@@ -25,6 +26,8 @@ export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, prop
   const pluginConfig = validateConfig(props || {}, projectRoot);
 
   config = withAndroidBuildProperties(config, pluginConfig);
+  // Mods execute in reverse order, so register each purge after its contributor.
+  config = withAndroidPurgeHermesV1(config);
 
   config = withAndroidProguardRules(config, pluginConfig);
   config = withAndroidCleartextTraffic(config, pluginConfig);
@@ -41,6 +44,7 @@ export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, prop
   config = withAndroidPrecompiledHeaders(config, pluginConfig);
 
   config = withIosBuildProperties(config, pluginConfig);
+  config = withIosPurgeHermesV1(config);
   config = withIosDeploymentTarget(config, pluginConfig);
   config = withIosInfoPlist(config, pluginConfig);
   config = withIosSceneSupport(config, pluginConfig);

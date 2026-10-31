@@ -1,6 +1,7 @@
 import type { ConfigPlugin, XcodeProject } from 'expo/config-plugins';
 import { IOSConfig, withInfoPlist, withXcodeProject } from 'expo/config-plugins';
 
+import { IOS_HERMES_V1_PROPERTY } from './hermesV1';
 import type { PluginConfigType } from './pluginConfig';
 import { resolveConfigValue } from './pluginConfig';
 
@@ -42,7 +43,7 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
         resolveConfigValue(config, 'ios', 'buildReactNativeFromSource')?.toString(),
     },
     {
-      propName: 'expo.useHermesV1',
+      propName: IOS_HERMES_V1_PROPERTY,
       propValueGetter: (config) => resolveConfigValue(config, 'ios', 'useHermesV1')?.toString(),
     },
     {
