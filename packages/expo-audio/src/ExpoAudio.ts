@@ -469,6 +469,21 @@ export async function setIsAudioActiveAsync(active: boolean): Promise<void> {
 }
 
 /**
+ * Tells `expo-audio` whether another module, such as `expo-video`, is using the shared audio
+ * session. While `owned` is `true`, pausing or finishing an audio player doesn't deactivate the
+ * session, so it can't interrupt the other module's playback. Pass `false` when the other module is
+ * done, and `expo-audio` deactivates the session again if none of its players or recorders use it.
+ *
+ * Android and web have no shared session to protect, so this does nothing there.
+ *
+ * @param owned Whether another module is using the audio session.
+ * @platform ios
+ */
+export function setAudioSessionOwner(owned: boolean): void {
+  AudioModule.setAudioSessionOwner?.(owned);
+}
+
+/**
  * Configures the global audio behavior and session settings.
  *
  * This function allows you to control how your app's audio interacts with other apps,
