@@ -16,6 +16,17 @@ describe('asyncRequireModule', () => {
   let mockRequire: any;
   let asyncRequire: any;
   const originalExpoOs = process.env.EXPO_OS;
+  const hasDocument = typeof document !== 'undefined';
+
+  // Makes `document.querySelectorAll('script')` return scripts with the given `src` values
+  function mockScriptsOnPage(srcs: string[]) {
+    const scripts = srcs.map((src) => ({ src }));
+    if (hasDocument) {
+      jest.spyOn(document, 'querySelectorAll').mockReturnValue(scripts as any);
+    } else {
+      (globalThis as any).document = { querySelectorAll: () => scripts };
+    }
+  }
 
   beforeEach(() => {
     mockImportAll = jest.fn((id: number, _moduleName?: string) => ({
@@ -62,6 +73,13 @@ describe('asyncRequireModule', () => {
         return undefined;
       }
 
+      function isScriptOnPage(bundlePath) {
+        if (typeof document === 'undefined') return true;
+        return Array.from(document.querySelectorAll('script')).some(function(script) {
+          return script.src.includes(bundlePath);
+        });
+      }
+
       function asyncRequireImpl(moduleID, paths, moduleName) {
         var importAll = function() { return require.importAll(moduleID, moduleName); };
 
@@ -77,6 +95,12 @@ describe('asyncRequireModule', () => {
               'Cannot import module ' + (moduleName == null ? moduleID : moduleName) + ': the async bundle loader is unavailable. ' +
               'Load the initial Expo bundle before importing these chunks: ' + bundlePath.join(', ')
             );
+          }
+          // Requiring an unregistered module reports a fatal error via ErrorUtils before the
+          // catch below sees it, so load first unless the script is already on the page
+          if (typeof bundlePath === 'string' && !isScriptOnPage(bundlePath)) {
+            var maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
+            if (maybeLoadBundlePromise != null) return maybeLoadBundlePromise.then(importAll);
           }
           try {
             return importAll();
@@ -124,6 +148,8 @@ describe('asyncRequireModule', () => {
   afterEach(() => {
     delete (globalThis as any).__loadBundleAsync;
     delete (globalThis as any).__METRO_GLOBAL_PREFIX__;
+    if (!hasDocument) delete (globalThis as any).document;
+    jest.restoreAllMocks();
     process.env.EXPO_OS = originalExpoOs;
   });
 
@@ -186,6 +212,7 @@ describe('asyncRequireModule', () => {
 
   it('falls back to bundle load on web when importAll throws, then retries with moduleName', async () => {
     process.env.EXPO_OS = 'web';
+    mockScriptsOnPage(['http://localhost/bundles/my-module.bundle']);
     mockImportAll
       .mockImplementationOnce(() => {
         throw new Error('Module not loaded');
@@ -216,6 +243,7 @@ describe('asyncRequireModule', () => {
 
   it('does not load the bundle on web when importAll succeeds (preloaded bundle case)', async () => {
     process.env.EXPO_OS = 'web';
+    mockScriptsOnPage(['http://localhost/bundles/my-module.bundle']);
     (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.resolve());
 
     const paths = { '42': '/bundles/my-module.bundle' };
@@ -224,6 +252,29 @@ describe('asyncRequireModule', () => {
     expect(mockImportAll).toHaveBeenCalledWith(42, 'my-module');
     expect((globalThis as any).__loadBundleAsync).not.toHaveBeenCalled();
     expect(result).toEqual({ default: 'module-42' });
+  });
+
+  it('loads the bundle on web before importing when its script is not on the page', async () => {
+    process.env.EXPO_OS = 'web';
+    mockScriptsOnPage(['http://localhost/index.bundle']);
+    let finish!: () => void;
+    (globalThis as any).__loadBundleAsync = jest.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          finish = resolve;
+        })
+    );
+
+    const paths = { '42': '/bundles/my-module.bundle' };
+    const result = asyncRequire(42, paths, 'my-module');
+
+    // Importing before the bundle loads would report a fatal error via `ErrorUtils`
+    expect((globalThis as any).__loadBundleAsync).toHaveBeenCalledWith('/bundles/my-module.bundle');
+    expect(mockImportAll).not.toHaveBeenCalled();
+    finish();
+    await expect(result).resolves.toEqual({ default: 'module-42' });
+    expect(mockImportAll).toHaveBeenCalledTimes(1);
+    expect(mockImportAll).toHaveBeenCalledWith(42, 'my-module');
   });
 
   it('re-throws the import error on web when no bundle path is configured', () => {
@@ -300,11 +351,7 @@ describe('asyncRequireModule', () => {
 
     it('returns a Promise with a Promise _result when a bundle load was needed', async () => {
       process.env.EXPO_OS = 'web';
-      mockImportAll
-        .mockImplementationOnce(() => {
-          throw new Error('Module not loaded');
-        })
-        .mockImplementationOnce(() => ({ default: 'module-42' }));
+      mockScriptsOnPage([]);
 
       (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.resolve());
 
