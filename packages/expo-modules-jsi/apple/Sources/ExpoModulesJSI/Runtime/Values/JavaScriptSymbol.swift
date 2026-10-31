@@ -115,9 +115,10 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
 
   // MARK: - Well-known symbols
 
-  /// The well-known symbols, which are properties of the global `Symbol` function. An engine may not define
-  /// all of them, and ``wellKnown(_:_:)`` throws for a symbol that the engine doesn't define.
-  public enum WellKnown: Int, CaseIterable, Sendable {
+  /// The well-known symbols, which are properties of the global `Symbol` function. The raw value is the name
+  /// of the property. An engine may not define all of them, and ``wellKnown(_:_:)`` throws for a symbol that
+  /// the engine doesn't define.
+  public enum WellKnown: String, CaseIterable, Sendable {
     case asyncDispose
     case asyncIterator
     case dispose
@@ -133,27 +134,6 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
     case toPrimitive
     case toStringTag
     case unscopables
-
-    /// The name of the property of the global `Symbol` function that holds the symbol.
-    internal var propertyName: String {
-      switch self {
-      case .asyncDispose: return "asyncDispose"
-      case .asyncIterator: return "asyncIterator"
-      case .dispose: return "dispose"
-      case .hasInstance: return "hasInstance"
-      case .isConcatSpreadable: return "isConcatSpreadable"
-      case .iterator: return "iterator"
-      case .match: return "match"
-      case .matchAll: return "matchAll"
-      case .replace: return "replace"
-      case .search: return "search"
-      case .species: return "species"
-      case .split: return "split"
-      case .toPrimitive: return "toPrimitive"
-      case .toStringTag: return "toStringTag"
-      case .unscopables: return "unscopables"
-      }
-    }
   }
 }
 
@@ -187,12 +167,9 @@ extension JavaScriptSymbol {
     let constructor: JavaScriptFunction
     let registryFor: JavaScriptFunction
 
-    /// The well-known symbols read so far, indexed by the raw value of `JavaScriptSymbol.WellKnown`.
+    /// The well-known symbols read so far.
     @JavaScriptActor
-    private var wellKnownSymbols = ContiguousArray<JavaScriptValue.Ref?>(
-      repeating: nil,
-      count: WellKnown.allCases.count
-    )
+    private var wellKnownSymbols: [WellKnown: JavaScriptValue.Ref] = [:]
 
     @JavaScriptActor
     init(in runtime: borrowing JavaScriptRuntime) throws {
@@ -204,15 +181,15 @@ extension JavaScriptSymbol {
     @JavaScriptActor
     func wellKnown(_ symbol: WellKnown) throws -> JavaScriptSymbol {
       let ref: JavaScriptValue.Ref
-      if let cached = wellKnownSymbols[symbol.rawValue] {
+      if let cached = wellKnownSymbols[symbol] {
         ref = cached
       } else {
-        let value = constructor.asObject().getProperty(symbol.propertyName)
+        let value = constructor.asObject().getProperty(symbol.rawValue)
         guard value.isSymbol() else {
-          throw WellKnownUnavailableError(name: symbol.propertyName)
+          throw WellKnownUnavailableError(name: symbol.rawValue)
         }
         ref = value.ref()
-        wellKnownSymbols[symbol.rawValue] = ref
+        wellKnownSymbols[symbol] = ref
       }
       // The ref is created holding a value and nothing takes it out, so the unwrap can't fail.
       return ref.withUnwrappedValue { value in value.getSymbol() }!
