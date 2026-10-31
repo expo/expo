@@ -108,7 +108,13 @@ const styles = StyleSheet.create({
 <Step label="4">
 #### Add the API key to your project
 
-Since you are using Google as the map provider, you need to add the API key to the `react-native-maps` [config plugin](/config-plugins/introduction/). Copy your **API Key** into your project to either a **.env** file or copy it directly and then add it to your app config under the `plugins.react-native-maps.androidGoogleMapsApiKey` field like:
+Since you are using Google as the map provider, add the API key to the `react-native-maps` [config plugin](/config-plugins/introduction/) under `plugins.react-native-maps.androidGoogleMapsApiKey`.
+
+Paste the key into **app.json**, or store it in a **.env** file and read it from **app.config.js**. **app.json** does not evaluate JavaScript. A value such as `"process.env.YOUR_GOOGLE_MAPS_API_KEY"` is copied into native files as that literal string.
+
+<Tabs>
+
+<Tab label="app.json">
 
 ```json app.json
 {
@@ -117,13 +123,38 @@ Since you are using Google as the map provider, you need to add the API key to t
       [
         "react-native-maps",
         {
-          "androidGoogleMapsApiKey": "process.env.YOUR_GOOGLE_MAPS_API_KEY"
+          "androidGoogleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
         }
       ]
     ]
   }
 }
 ```
+
+</Tab>
+
+<Tab label="app.config.js">
+
+```js app.config.js
+export default {
+  expo: {
+    plugins: [
+      [
+        'react-native-maps',
+        {
+          androidGoogleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+        },
+      ],
+    ],
+  },
+};
+```
+
+</Tab>
+
+</Tabs>
+
+> **info** If EAS Build does not pick up the API key, make sure your project contains a [.easignore](/build-reference/easignore/) file. This file should mirror your **.gitignore** but must not exclude **.env**, so that EAS Build can access your environment variables.
 
 - In your code, import `{ PROVIDER_GOOGLE }` from `react-native-maps` and add the property `provider={PROVIDER_GOOGLE}` to your `<MapView>`. This property works on both Android and iOS.
 - Rebuild the app binary (or re-submit to the Google Play Store in case your app is already uploaded). An easy way to test if the configuration was successful is to do an [emulator build](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build).
@@ -157,7 +188,13 @@ Since you are using Google as the map provider, you need to add the API key to t
 <Step label="3">
 #### Add the API key to your project
 
-Since you are using Google as the map provider, you need to add the API key to the `react-native-maps` [config plugin](/config-plugins/introduction/). Copy your **API Key** into your project to either a **.env** file or copy it directly and then add it to your app config under the `plugins.react-native-maps.iosGoogleMapsApiKey` field like:
+Since you are using Google as the map provider, add the API key to the `react-native-maps` [config plugin](/config-plugins/introduction/) under `plugins.react-native-maps.iosGoogleMapsApiKey`.
+
+Paste the key into **app.json**, or store it in a **.env** file and read it from **app.config.js**. **app.json** does not evaluate JavaScript. A value such as `"process.env.YOUR_GOOGLE_MAPS_API_KEY"` is copied into native files as that literal string.
+
+<Tabs>
+
+<Tab label="app.json">
 
 ```json app.json
 {
@@ -166,13 +203,36 @@ Since you are using Google as the map provider, you need to add the API key to t
       [
         "react-native-maps",
         {
-          "iosGoogleMapsApiKey": "process.env.YOUR_GOOGLE_MAPS_API_KEY"
+          "iosGoogleMapsApiKey": "YOUR_GOOGLE_MAPS_API_KEY"
         }
       ]
     ]
   }
 }
 ```
+
+</Tab>
+
+<Tab label="app.config.js">
+
+```js app.config.js
+export default {
+  expo: {
+    plugins: [
+      [
+        'react-native-maps',
+        {
+          iosGoogleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+        },
+      ],
+    ],
+  },
+};
+```
+
+</Tab>
+
+</Tabs>
 
 - In your code, import `{ PROVIDER_GOOGLE }` from `react-native-maps` and add the property `provider={PROVIDER_GOOGLE}` to your `<MapView>`. This property works on both Android and iOS.
 - Rebuild the app binary. An easy way to test if the configuration was successful is to do a [simulator build](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build).
