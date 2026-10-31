@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.18
+
+### Patch Changes
+
+- [Android] Fix a crash on launch on Android 7 caused by `java.time.Duration`. ([#52494](https://github.com/expo/expo/pull/52494) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated dependencies. ([#52599](https://github.com/expo/expo/pull/52599))
+  - @expo/schema-utils@58.0.3
+
 ## 58.0.17
 
 ### Patch Changes

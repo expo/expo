@@ -14,7 +14,7 @@ def reactNativeArchitectures() {
 def expoModulesCoreProject = rootProject.findProject(":expo-modules-core")
 
 group = 'host.exp.exponent'
-version = '58.0.3'
+version = '58.0.4'
 
 android {
   if (rootProject.hasProperty("ndkPath")) {
@@ -27,7 +27,7 @@ android {
   namespace "expo.modules.gl"
   defaultConfig {
     versionCode 31
-    versionName "58.0.3"
+    versionName "58.0.4"
 
     externalNativeBuild {
       cmake {

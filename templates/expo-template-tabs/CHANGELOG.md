@@ -1,5 +1,14 @@
 # expo-template-tabs
 
+## 58.0.31
+
+### Patch Changes
+
+- Upgrade `react-native-screens` to 4.30.1. ([#52447](https://github.com/expo/expo/pull/52447) by [@Ubax](https://github.com/Ubax))
+- Updated dependencies. ([#52447](https://github.com/expo/expo/pull/52447), [#52195](https://github.com/expo/expo/pull/52195), [#51893](https://github.com/expo/expo/pull/51893), [#51983](https://github.com/expo/expo/pull/51983), [#51857](https://github.com/expo/expo/pull/51857))
+  - expo@58.0.22
+  - expo-router@58.0.29
+
 ## 58.0.30
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.18
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo-build-properties@58.0.12
+
 ## 58.0.17
 
 ### Patch Changes

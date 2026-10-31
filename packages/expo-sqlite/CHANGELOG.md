@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- Reduce the size of the native library on Android. ([#52401](https://github.com/expo/expo/pull/52401) by [@lukmccall](https://github.com/lukmccall))
+
 ## 58.0.14
 
 ### Patch Changes

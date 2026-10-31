@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.26
+
+### Patch Changes
+
+- [Android] Add `DropdownMenuPopup`, `DropdownMenuGroup`, and `SelectableDropdownMenuItem` for Material 3 Expressive menus. Add a `shape` prop and a `SupportingText` slot to `DropdownMenuItem`. ([#52598](https://github.com/expo/expo/pull/52598) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Add the Jetpack Compose `SplitButtonLayout` component with `SplitButtonLayout.LeadingButton` and `SplitButtonLayout.TrailingButton` slots, and the `SplitButtonLeadingButton` and `SplitButtonTrailingButton` components. ([#52464](https://github.com/expo/expo/pull/52464) by [@juliusmarminge](https://github.com/juliusmarminge))
+- Preserve null selections in the Jetpack Compose `DateTimePicker` instead of reporting January 1, 1970. The `onDateSelected` callback now accepts `Date | null`. Handle `null` before using `Date` methods when date input is incomplete or invalid. ([#52609](https://github.com/expo/expo/pull/52609) by [@sync](https://github.com/sync))
+- Support accessibilityLabel on universal TextInput fields. ([#52606](https://github.com/expo/expo/pull/52606) by [@sync](https://github.com/sync))
+
 ## 58.0.25
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # expo-app
 
+## 1.0.16
+
+### Patch Changes
+
+- Updated dependencies. ([#52447](https://github.com/expo/expo/pull/52447), [#52195](https://github.com/expo/expo/pull/52195), [#51893](https://github.com/expo/expo/pull/51893), [#51983](https://github.com/expo/expo/pull/51983), [#51857](https://github.com/expo/expo/pull/51857))
+  - expo@58.0.22
+  - expo-router@58.0.29
+  - expo-brownfield@58.0.18
+  - expo-constants@58.0.14
+  - expo-image@58.0.18
+  - expo-dev-menu@58.0.12
+
 ## 1.0.15
 
 ### Patch Changes

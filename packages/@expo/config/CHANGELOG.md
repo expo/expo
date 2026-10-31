@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- Prevent prototype pollution for config modifications. ([#52602](https://github.com/expo/expo/pull/52602) by [@kitten](https://github.com/kitten))
+- [Internal] Drop and replace `deepmerge` dependency. ([#52602](https://github.com/expo/expo/pull/52602) by [@kitten](https://github.com/kitten))
+
 ## 58.0.9
 
 ### Patch Changes

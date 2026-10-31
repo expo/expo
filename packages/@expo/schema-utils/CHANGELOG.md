@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.3
+
+### Patch Changes
+
+- [Internal] Add a custom `url` format for WHATWG URL validation in Expo CLI. ([#52599](https://github.com/expo/expo/pull/52599) by [@kitten](https://github.com/kitten))
+
 ## 58.0.2
 
 ### Patch Changes
