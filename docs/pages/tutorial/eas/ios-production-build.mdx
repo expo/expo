@@ -17,7 +17,7 @@ In this chapter, we'll create our example app's production version and submit it
 <VideoBoxLink
   videoId="VZL_e0cEwo8"
   title="Watch: Creating and releasing a production build for iOS"
-  description="Create a production build for iOS with EAS, test it using TestFlight, and submit it to the App Store."
+  description="Create a production build for iOS with Expo Build, test it using TestFlight, and submit it to the App Store."
 />
 
 ---
@@ -56,13 +56,13 @@ Run the `eas credentials` command in the terminal and then answer the following 
 
 ## Create a production build
 
-To create an iOS production build using the default `production` profile, open your terminal and execute the following command. Since `production` is set as the default profile in the EAS configuration, there is no need to specify it explicitly with the `--profile` flag.
+To create an iOS production build using the default `production` profile, open your terminal and execute the following command. Since `production` is set as the default profile in **eas.json**, there is no need to specify it explicitly with the `--profile` flag.
 
 <Terminal cmd={['$ eas build --platform ios']} />
 
 > **info** **Only if this is your first iOS build for this project:** EAS CLI asks **iOS app only uses standard/exempt encryption?** Press <kbd>Y</kbd> to select the default value provided for this prompt. Since our app doesn't use non-exempt encryption, EAS CLI adds `ios.infoPlist.ITSAppUsesNonExemptEncryption: false` to the [app config](/workflow/configuration/). This value manages the compliance check when you release your app to TestFlight or the App Store. If your own app uses non-exempt encryption, press <kbd>N</kbd> and confirm the follow-up prompt. EAS CLI then leaves the app config unchanged. You set the encryption status in App Store Connect.
 
-The command queues the build. Notice on the EAS dashboard that the **Version** column shows the auto-incremented build number in parentheses, for example, `1.0.0 (2)`.
+The command queues the build. Notice on the Expo dashboard that the **Version** column shows the auto-incremented build number in parentheses, for example, `1.0.0 (2)`.
 
 </Step>
 
@@ -70,7 +70,7 @@ The command queues the build. Notice on the EAS dashboard that the **Version** c
 
 ## Submit the app binary to the App Store
 
-To submit the app binary created from our latest EAS Build, run the [`eas submit`](/submit/ios/) command:
+To submit the app binary created from our latest Expo Build, run the [`eas submit`](/submit/ios/) command:
 
 <Terminal cmd={['$ eas submit --platform ios']} />
 
