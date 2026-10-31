@@ -459,6 +459,44 @@ describe('watchConfig', () => {
   });
 });
 
+describe('setupLoaderGraphListener', () => {
+  afterEach(() => {
+    delete (globalThis as any).__c;
+  });
+
+  it('does not clear server modules when a file outside the loader graph changes', async () => {
+    const devServer = new MetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+    let onChange: (event: { changeId: string }) => Promise<void> = async () => {};
+    const revision = { graphId: 'loader-graph' };
+    devServer['metro'] = {
+      getBundler: () => ({
+        getDeltaBundler: () => ({
+          listen: jest.fn((_graph, callback) => {
+            onChange = callback;
+            return jest.fn();
+          }),
+        }),
+        getRevisionByGraphId: jest.fn(async () => revision),
+        updateGraph: jest.fn(async () => ({
+          revision,
+          delta: { added: new Map(), modified: new Map(), deleted: new Set() },
+        })),
+      }),
+    } as any;
+    devServer['broadcastMessage'] = jest.fn();
+    (globalThis as any).__c = jest.fn();
+
+    devServer['setupLoaderGraphListener']('loader-graph', '/app/index.tsx', {} as any);
+    await onChange({ changeId: 'unrelated-file-change' });
+
+    expect((globalThis as any).__c).not.toHaveBeenCalled();
+    expect(devServer['broadcastMessage']).not.toHaveBeenCalled();
+  });
+});
+
 describe('API Route output warning', () => {
   beforeEach(() => {
     vol.reset();
