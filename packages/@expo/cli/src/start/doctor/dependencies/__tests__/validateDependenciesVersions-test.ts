@@ -13,6 +13,13 @@ import {
 } from '../validateDependenciesVersions';
 
 jest.mock(`../../../../log`);
+jest.mock('../../../../utils/fetch', () => ({
+  fetch: jest.fn(async () => ({
+    ok: true,
+    status: 200,
+    text: async () => JSON.stringify({ '0.85-stable': '0.85.3-0' }),
+  })),
+}));
 jest.mock('../bundledNativeModules', () => ({
   getVersionedNativeModulesAsync: () => ({
     'expo-splash-screen': '~1.2.3',
