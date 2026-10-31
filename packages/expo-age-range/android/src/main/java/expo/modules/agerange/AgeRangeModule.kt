@@ -1,25 +1,28 @@
 package expo.modules.agerange
 
 import android.app.Activity
-import android.content.Context
 import android.content.pm.ApplicationInfo
 import com.google.android.play.agesignals.AgeSignalsAccessRequest
 import com.google.android.play.agesignals.AgeSignalsException
 import com.google.android.play.agesignals.AgeSignalsManager
 import com.google.android.play.agesignals.AgeSignalsManagerFactory
 import com.google.android.play.agesignals.AgeSignalsRequest
-import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.toCodedException
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.exception.CodedException
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.async.Promise
+import io.github.expo.modules.v2.react.androidContext
+import io.github.expo.modules.v2.react.currentActivity
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
+@ExpoModule("ExpoAgeRange")
 class AgeRangeModule : Module() {
-  private val context: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-
-  private val ageSignalsManager by lazy { AgeSignalsManagerFactory.create(context.applicationContext) }
+  private val ageSignalsManager by lazy { AgeSignalsManagerFactory.create(androidContext.applicationContext) }
 
   private var fakeAgeSignals: FakeAgeSignals? = null
 
@@ -27,7 +30,7 @@ class AgeRangeModule : Module() {
    * Whether the app is debuggable, which its `android:debuggable` manifest flag decides.
    */
   private val isDebuggable: Boolean
-    get() = context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
+    get() = androidContext.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE != 0
 
   /**
    * A [FakeAgeSignalsManager][com.google.android.play.agesignals.testing.FakeAgeSignalsManager] once
@@ -36,40 +39,41 @@ class AgeRangeModule : Module() {
   private val currentAgeSignalsManager: AgeSignalsManager
     get() = fakeAgeSignals?.manager ?: ageSignalsManager
 
-  override fun definition() = ModuleDefinition {
-    Name("ExpoAgeRange")
+  @JS
+  suspend fun requestAgeRangeAsync(options: Map<String, Any?>): AgeRangeResult = suspendCancellableCoroutine { continuation ->
+    requestAgeRange(
+      ageSignalsManager = currentAgeSignalsManager,
+      onSuccess = { result -> continuation.resume(result) },
+      onError = { exception -> continuation.resumeWithException(exception) },
+      onCancelled = { continuation.resumeWithException(AgeRangeTaskCancelledException()) }
+    )
+  }
 
-    AsyncFunction("requestAgeRangeAsync") { _: Any, promise: Promise ->
-      requestAgeRange(
-        ageSignalsManager = currentAgeSignalsManager,
-        onSuccess = { result -> promise.resolve(result) },
-        onError = { exception -> promise.reject(exception) },
-        onCancelled = { promise.reject(AgeRangeTaskCancelledException()) }
-      )
-    }
+  @JS
+  fun isEligibleForAgeFeaturesAsync(): Promise<Boolean?> = Promise.resolve(null)
 
-    AsyncFunction("isEligibleForAgeFeaturesAsync") {
-      null as Boolean?
-    }
-
-    AsyncFunction("requestAgeSignalsAccessAsync") { promise: Promise ->
+  @JS
+  suspend fun requestAgeSignalsAccessAsync(): String? {
+    val activity = currentActivity ?: throw Exceptions.MissingActivity()
+    return suspendCancellableCoroutine { continuation ->
       requestAgeSignalsAccess(
         ageSignalsManager = currentAgeSignalsManager,
-        activity = appContext.throwingActivity,
-        onSuccess = { status -> promise.resolve(status) },
-        onError = { exception -> promise.reject(exception) },
-        onCancelled = { promise.reject(AgeRangeTaskCancelledException()) }
+        activity = activity,
+        onSuccess = { status -> continuation.resume(status) },
+        onError = { exception -> continuation.resumeWithException(exception) },
+        onCancelled = { continuation.resumeWithException(AgeRangeTaskCancelledException()) }
       )
     }
+  }
 
-    Function("setFakeAgeSignals") { options: FakeAgeSignalsOptions? ->
-      // Going back to the real signals stays allowed everywhere, so cleanup code can call this
-      // without checking the build first.
-      if (options != null && !isDebuggable) {
-        throw FakeAgeSignalsNotDebuggableException()
-      }
-      fakeAgeSignals = options?.let(::FakeAgeSignals)
+  @JS
+  private fun setFakeAgeSignals(options: FakeAgeSignalsOptions?) {
+    // Going back to the real signals stays allowed everywhere, so cleanup code can call this
+    // without checking the build first.
+    if (options != null && !isDebuggable) {
+      throw FakeAgeSignalsNotDebuggableException()
     }
+    fakeAgeSignals = options?.let(::FakeAgeSignals)
   }
 }
 
