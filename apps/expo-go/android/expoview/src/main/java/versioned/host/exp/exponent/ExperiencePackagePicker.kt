@@ -60,7 +60,6 @@ import expo.modules.notifications.permissions.NotificationPermissionsModule
 import expo.modules.notifications.tokens.PushTokenModule
 import expo.modules.print.PrintModule
 import expo.modules.router.ExpoRouterModule
-import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
 import expo.modules.sensors.modules.AccelerometerModule
 import expo.modules.sensors.modules.BarometerModule
@@ -178,7 +177,6 @@ object ExperiencePackagePicker : ModulesProvider {
     MediaLibraryNextModule::class.java to null,
     NavigationBarModule::class.java to null,
     NetworkModule::class.java to null,
-    ScreenCaptureModule::class.java to null,
     ScreenOrientationModule::class.java to null,
     // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,
     // because it needs access to scopedContext for Expo Go support
