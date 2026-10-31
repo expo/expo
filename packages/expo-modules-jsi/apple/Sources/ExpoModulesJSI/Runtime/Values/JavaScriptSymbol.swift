@@ -52,12 +52,12 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
   ///     an undefined description.
   @JavaScriptActor
   public init(_ runtime: borrowing JavaScriptRuntime, description: String? = nil) throws {
-    let functions = try symbolFunctions(in: runtime)
+    let cache = try Self.cache(in: runtime)
     let symbol: JavaScriptValue
     if let description {
-      symbol = try functions.constructor.call(argument: JavaScriptValue(runtime, description))
+      symbol = try cache.constructor.call(argument: JavaScriptValue(runtime, description))
     } else {
-      symbol = try functions.constructor.call()
+      symbol = try cache.constructor.call()
     }
     self = try symbol.asSymbol()
   }
@@ -66,15 +66,15 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
   /// JavaScript. The registry creates the symbol on the first call with a key.
   @JavaScriptActor
   public static func `for`(_ runtime: borrowing JavaScriptRuntime, _ key: String) throws -> JavaScriptSymbol {
-    let functions = try symbolFunctions(in: runtime)
-    return try functions.registryFor.call(argument: JavaScriptValue(runtime, key)).asSymbol()
+    let cache = try Self.cache(in: runtime)
+    return try cache.registryFor.call(argument: JavaScriptValue(runtime, key)).asSymbol()
   }
 
   /// Returns the given well-known symbol, such as `Symbol.iterator`. Each well-known symbol is read from
   /// the global `Symbol` function on first use and then cached in the runtime.
   @JavaScriptActor
   public static func wellKnown(_ runtime: borrowing JavaScriptRuntime, _ symbol: WellKnown) throws -> JavaScriptSymbol {
-    return try symbolFunctions(in: runtime).wellKnown(symbol)
+    return try cache(in: runtime).wellKnown(symbol)
   }
 
   /// Converts the symbol to a string, like `toString()` in JavaScript. The result has the form
@@ -116,9 +116,11 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
   // MARK: - Well-known symbols
 
   /// The well-known symbols, which are properties of the global `Symbol` function. Hermes doesn't define
-  /// `species` and `unscopables`, so ``wellKnown(_:_:)`` throws for them on Hermes.
+  /// `asyncDispose`, `dispose`, `species` and `unscopables`, so ``wellKnown(_:_:)`` throws for them on Hermes.
   public enum WellKnown: Int, CaseIterable, Sendable {
+    case asyncDispose
     case asyncIterator
+    case dispose
     case hasInstance
     case isConcatSpreadable
     case iterator
@@ -135,7 +137,9 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
     /// The name of the property of the global `Symbol` function that holds the symbol.
     internal var propertyName: String {
       switch self {
+      case .asyncDispose: return "asyncDispose"
       case .asyncIterator: return "asyncIterator"
+      case .dispose: return "dispose"
       case .hasInstance: return "hasInstance"
       case .isConcatSpreadable: return "isConcatSpreadable"
       case .iterator: return "iterator"
@@ -176,59 +180,63 @@ extension JavaScriptSymbol: JSIRepresentable {
 
 // MARK: - Cache
 
-/// The global `Symbol` function, `Symbol.for`, and the well-known symbols, cached together in one slot of
-/// the runtime cache. Each well-known symbol is read on its first use only.
-internal final class SymbolFunctions {
-  let constructor: JavaScriptFunction
-  let registryFor: JavaScriptFunction
+extension JavaScriptSymbol {
+  /// The global `Symbol` function, `Symbol.for`, and the well-known symbols, cached together in one slot of
+  /// the runtime cache. Each well-known symbol is read on its first use only.
+  internal final class Cache {
+    let constructor: JavaScriptFunction
+    let registryFor: JavaScriptFunction
 
-  /// The well-known symbols read so far, indexed by the raw value of `JavaScriptSymbol.WellKnown`.
-  @JavaScriptActor
-  private var wellKnownSymbols = ContiguousArray<JavaScriptValue.Ref?>(
-    repeating: nil,
-    count: JavaScriptSymbol.WellKnown.allCases.count
-  )
+    /// The well-known symbols read so far, indexed by the raw value of `JavaScriptSymbol.WellKnown`.
+    @JavaScriptActor
+    private var wellKnownSymbols = ContiguousArray<JavaScriptValue.Ref?>(
+      repeating: nil,
+      count: WellKnown.allCases.count
+    )
 
-  @JavaScriptActor
-  init(in runtime: borrowing JavaScriptRuntime) throws {
-    let constructor = try runtime.global().getPropertyAsFunction("Symbol")
-    self.registryFor = try constructor.asObject().getPropertyAsFunction("for")
-    self.constructor = constructor
-  }
-
-  @JavaScriptActor
-  func wellKnown(_ symbol: JavaScriptSymbol.WellKnown) throws -> JavaScriptSymbol {
-    let ref: JavaScriptValue.Ref
-    if let cached = wellKnownSymbols[symbol.rawValue] {
-      ref = cached
-    } else {
-      let value = constructor.asObject().getProperty(symbol.propertyName)
-      guard value.isSymbol() else {
-        throw WellKnownSymbolUnavailableError(name: symbol.propertyName)
-      }
-      ref = value.ref()
-      wellKnownSymbols[symbol.rawValue] = ref
+    @JavaScriptActor
+    init(in runtime: borrowing JavaScriptRuntime) throws {
+      let constructor = try runtime.global().getPropertyAsFunction("Symbol")
+      self.registryFor = try constructor.asObject().getPropertyAsFunction("for")
+      self.constructor = constructor
     }
-    // The ref is created holding a value and nothing takes it out, so the unwrap can't fail.
-    return ref.withUnwrappedValue { value in value.getSymbol() }!
-  }
-}
 
-@JavaScriptActor
-private func symbolFunctions(in runtime: borrowing JavaScriptRuntime) throws -> SymbolFunctions {
-  return try runtime.cached(JavaScriptRuntime.CacheKeys.symbol) {
-    return try SymbolFunctions(in: runtime)
+    @JavaScriptActor
+    func wellKnown(_ symbol: WellKnown) throws -> JavaScriptSymbol {
+      let ref: JavaScriptValue.Ref
+      if let cached = wellKnownSymbols[symbol.rawValue] {
+        ref = cached
+      } else {
+        let value = constructor.asObject().getProperty(symbol.propertyName)
+        guard value.isSymbol() else {
+          throw WellKnownUnavailableError(name: symbol.propertyName)
+        }
+        ref = value.ref()
+        wellKnownSymbols[symbol.rawValue] = ref
+      }
+      // The ref is created holding a value and nothing takes it out, so the unwrap can't fail.
+      return ref.withUnwrappedValue { value in value.getSymbol() }!
+    }
+  }
+
+  @JavaScriptActor
+  private static func cache(in runtime: borrowing JavaScriptRuntime) throws -> Cache {
+    return try runtime.cached(JavaScriptRuntime.CacheKeys.symbol) {
+      return try Cache(in: runtime)
+    }
   }
 }
 
 // MARK: - Errors
 
-/// Thrown when the JavaScript engine doesn't define a well-known symbol, for example an older engine
-/// without `Symbol.matchAll`.
-public struct WellKnownSymbolUnavailableError: Error, CustomStringConvertible {
-  let name: String
+extension JavaScriptSymbol {
+  /// Thrown when the JavaScript engine doesn't define a well-known symbol, for example an engine without
+  /// `Symbol.dispose`.
+  public struct WellKnownUnavailableError: Error, CustomStringConvertible {
+    let name: String
 
-  public var description: String {
-    return "The JavaScript engine doesn't define 'Symbol.\(name)'. Check that the engine supports it."
+    public var description: String {
+      return "The JavaScript engine doesn't define 'Symbol.\(name)'. Check that the engine supports it."
+    }
   }
 }
