@@ -49,7 +49,7 @@ export function appendScheme(scheme: string | null, infoPlist: InfoPlist): InfoP
   }
 
   const existingSchemes = infoPlist.CFBundleURLTypes ?? [];
-  if (existingSchemes?.some(({ CFBundleURLSchemes }) => CFBundleURLSchemes.includes(scheme))) {
+  if (existingSchemes?.some(({ CFBundleURLSchemes }) => CFBundleURLSchemes?.includes(scheme))) {
     return infoPlist;
   }
 
@@ -75,7 +75,7 @@ export function removeScheme(scheme: string | null, infoPlist: InfoPlist): InfoP
   }
 
   infoPlist.CFBundleURLTypes = infoPlist.CFBundleURLTypes.map((bundleUrlType) => {
-    const index = bundleUrlType.CFBundleURLSchemes.indexOf(scheme);
+    const index = bundleUrlType.CFBundleURLSchemes?.indexOf(scheme) ?? -1;
     if (index > -1) {
       bundleUrlType.CFBundleURLSchemes.splice(index, 1);
       if (bundleUrlType.CFBundleURLSchemes.length === 0) {
