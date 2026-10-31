@@ -311,9 +311,11 @@ jobs:
           retention-days: 30
 
   playwright-windows:
+    # TEMP(diagnostic): also run on pull_request to capture the anchor reload failure.
     if: >-
       (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'schedule' && github.repository == 'expo/expo')
+      (github.event_name == 'schedule' && github.repository == 'expo/expo') ||
+      github.event_name == 'pull_request'
     # GitHub-hosted: on Blacksmith's Windows 2025 runners the CLI e2e setup fails with
     # `ENOENT: no such file or directory, mkdir '\\?'`.
     runs-on: windows-2022
@@ -397,4 +399,13 @@ jobs:
         with:
           name: playwright-report-windows-${{ matrix.shard }}
           path: packages/@expo/cli/playwright-report/
+          retention-days: 30
+
+      # TEMP(diagnostic): upload traces and error-context.md of failed tests.
+      - name: 🗄️ Upload playwright test results
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        if: always()
+        with:
+          name: playwright-test-results-windows-${{ matrix.shard }}
+          path: packages/@expo/cli/test-results/
           retention-days: 30
