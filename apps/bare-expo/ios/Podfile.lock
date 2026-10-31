@@ -684,6 +684,29 @@ PODS:
     - Yoga
   - ExpoSecureStore (58.0.2):
     - ExpoModulesCore
+  - ExpoSelectableText (58.0.0):
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-cxxstableapi
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - ExpoSensors (58.0.4):
     - ExpoModulesCore
   - ExpoSensors/Tests (58.0.4):
@@ -3459,6 +3482,7 @@ DEPENDENCIES:
   - ExpoScreenCapture/Tests (from `../../../packages/expo-screen-capture/ios`)
   - ExpoScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
+  - ExpoSelectableText (from `../../../packages/expo-selectable-text`)
   - ExpoSensors (from `../../../packages/expo-sensors/ios`)
   - ExpoSensors/Tests (from `../../../packages/expo-sensors/ios`)
   - ExpoSharing (from `../../../packages/expo-sharing/ios`)
@@ -3825,6 +3849,8 @@ EXTERNAL SOURCES:
   ExpoSecureStore:
     inhibit_warnings: false
     :path: "../../../packages/expo-secure-store/ios"
+  ExpoSelectableText:
+    :path: "../../../packages/expo-selectable-text"
   ExpoSensors:
     inhibit_warnings: false
     :path: "../../../packages/expo-sensors/ios"
@@ -4179,6 +4205,7 @@ SPEC CHECKSUMS:
   ExpoScreenCapture: 9d9d0f0ea42a137396791b9a91d5c5ff3bb3b7eb
   ExpoScreenOrientation: 6d18aac397d3adcf8397cf10742d435b163ae03f
   ExpoSecureStore: 64e1fe78b5b0a1edb61beff044bb2cad03084f9c
+  ExpoSelectableText: 9b6059c64a3c467115805d8aba1faccd061fa7e8
   ExpoSensors: c126f95565e222791ba5e9ce8535e4e2ecfad1c3
   ExpoSharing: 3287d1b7e0382c59f346df0c0b80da9acb899cb1
   ExpoSMS: c8b282d16f6ed0846beeec28f59bdf9218199d91
