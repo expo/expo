@@ -28,6 +28,7 @@ android {
   defaultConfig {
     versionCode 31
     versionName "58.0.3"
+    consumerProguardFiles("proguard-rules.pro")
 
     externalNativeBuild {
       cmake {

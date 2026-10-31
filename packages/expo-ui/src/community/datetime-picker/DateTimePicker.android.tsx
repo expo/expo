@@ -79,7 +79,8 @@ export function DateTimePicker(props: DateTimePickerProps) {
     }
   };
 
-  const onDateSelected = (date: Date) => {
+  const onDateSelected = (date: Date | null) => {
+    if (date === null) return;
     const selected = usesDateComponents ? utcDayToLocalDate(date, value) : date;
     if (onValueChange) {
       onValueChange(buildChangeEvent(selected), selected);

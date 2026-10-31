@@ -2,6 +2,7 @@ package expo.modules.kotlin.views
 
 import android.content.Context
 import android.graphics.Canvas
+import android.view.ViewTreeObserver
 import android.widget.LinearLayout
 import androidx.annotation.UiThread
 import com.facebook.react.uimanager.BackgroundStyleApplicator
@@ -47,12 +48,77 @@ abstract class ExpoView(
     layout(left, top, right, bottom)
   }
 
+  // Set from requestLayout(), which a subclass may call off the main thread.
+  @Volatile
+  private var isLayoutScheduled = false
+
+  private var isMeasureForced = false
+
+  private val scheduledLayoutRunnable = Runnable { runScheduledLayout() }
+
+  private val preDrawListener = ViewTreeObserver.OnPreDrawListener {
+    runScheduledLayout()
+    true
+  }
+
   override fun requestLayout() {
     super.requestLayout()
     if (shouldUseAndroidLayout) {
       // We need to force measure and layout, because React Native doesn't do it for us.
-      post { measureAndLayout() }
+      scheduleLayout()
     }
+  }
+
+  /**
+   * Lays the view out before the next frame draws, so children changed during a mount don't show
+   * unlaid-out for one frame. The post covers a request that no frame follows.
+   * Set [forceMeasure] when the measure cache must be skipped, because React Native's `layout()`
+   * may have cleared the forced-layout flag before the scheduled layout runs.
+   */
+  internal fun scheduleLayout(forceMeasure: Boolean = false) {
+    if (forceMeasure) {
+      isMeasureForced = true
+    }
+    if (isLayoutScheduled) {
+      return
+    }
+    isLayoutScheduled = true
+    // A detached view posts from onAttachedToWindow. This also skips a request from the LinearLayout
+    // constructor, which runs before scheduledLayoutRunnable is initialized.
+    if (isAttachedToWindow) {
+      post(scheduledLayoutRunnable)
+    }
+  }
+
+  @UiThread
+  private fun runScheduledLayout() {
+    if (!isLayoutScheduled || !isAttachedToWindow) {
+      return
+    }
+    isLayoutScheduled = false
+    removeCallbacks(scheduledLayoutRunnable)
+    if (isMeasureForced) {
+      isMeasureForced = false
+      super.forceLayout()
+    }
+    if (isLayoutRequested) {
+      measureAndLayout()
+    }
+  }
+
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    if (shouldUseAndroidLayout) {
+      viewTreeObserver.addOnPreDrawListener(preDrawListener)
+      if (isLayoutScheduled) {
+        post(scheduledLayoutRunnable)
+      }
+    }
+  }
+
+  override fun onDetachedFromWindow() {
+    viewTreeObserver.removeOnPreDrawListener(preDrawListener)
+    super.onDetachedFromWindow()
   }
 
   override fun forceLayout() {
@@ -60,11 +126,7 @@ abstract class ExpoView(
     if (shouldUseAndroidLayout && isAttachedToWindow && isLaidOut) {
       // ViewRootImpl can force-layout the hierarchy without React Native laying out its
       // managed children. Preserve the Android-layout contract at that boundary.
-      post {
-        if (isAttachedToWindow && isLayoutRequested) {
-          measureAndLayout()
-        }
-      }
+      scheduleLayout()
     }
   }
 

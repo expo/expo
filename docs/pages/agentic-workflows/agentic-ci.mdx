@@ -1,0 +1,394 @@
+---
+title: Test pull requests with an AI agent
+sidebar_title: Agentic CI
+description: Add an agentic workflow in which a coding agent tests each pull request on an Expo Simulators session and posts a verdict with evidence.
+---
+
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
+
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+Agentic CI is an automated workflow in which a coding agent tests a pull request (PR) on a remote Android Emulator or iOS Simulator. The agent tests the change that the PR describes. Then it reports back on the PR with a verdict and evidence.
+
+## How Agentic CI works
+
+When a person opens a PR to `main`, the Agentic CI workflow does these steps:
+
+1. It finds a build of the app with the same native code, or it creates one. Then it adds the JavaScript of the PR to the build.
+2. It starts an Expo Simulators session with the build.
+3. A coding agent reads the PR, tests the change in the app, and writes a verdict.
+4. The workflow posts the verdict on the PR. The comment links to the session recording, the screenshots, and a browser preview of the build.
+
+Agentic CI does not replace your scripted tests. It tests the behavior that a PR describes, even when no script covers it. To learn how the parts work together, see [Introduction to agentic workflows](/agentic-workflows/introduction/).
+
+The following screenshot shows an Agentic CI comment with a `PASS` verdict:
+
+<ContentSpotlight
+  alt="Agentic CI comment on a GitHub pull request with a PASS verdict and links to the session recording, the agent report, and a browser preview"
+  src="/static/images/eas-workflows/agentic-ci-comment.webp"
+  darkSrc="/static/images/eas-workflows/agentic-ci-comment-dark.webp"
+/>
+
+<AgentPrompt
+  title="Add Agentic CI with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Add the Agentic CI workflow to my Expo project. Use https://docs.expo.dev/agentic-workflows/agentic-ci.md as the source for each step and each file.
+
+1. Check each step on https://docs.expo.dev/agentic-workflows/setup.md, except the GitHub token step. Do each step that is not done. Use the version of .eas/agents/run-agent.sh for the agent that I name, and the version of .eas/agents/start-session.sh for the controller that I name: agent-device or Argent.
+2. Create each file that the page shows, at the same path and with the same content.
+3. When a step needs a token, an account, or a choice, stop and ask me. Do not print or save a token.
+4. Run `eas workflow:validate` on each workflow file that you added.
+5. Commit the files, but do not push them. Tell me which files you added.
+```
+
+</AgentPrompt>
+
+## Set up your project
+
+Follow [Set up a project for agentic workflows](/agentic-workflows/setup/) one time for your project. Agentic CI does not need the GitHub token step. See [What the agent can do](/agentic-workflows/setup/#what-the-agent-can-do) to learn which limits apply to the agent.
+
+## Add the Agentic CI workflow
+
+<Step label="1">
+
+### Add the workflow
+
+Use the file for the platform that you test.
+
+<Tabs>
+
+<Tab label="Android">
+
+```yaml .eas/workflows/agentic-ci.yml
+name: Agentic CI (Android)
+
+on:
+  pull_request:
+    branches: ['main']
+    types: ['opened', 'reopened', 'synchronize', 'ready_for_review']
+    if: ${{ !github.event.pull_request.draft }}
+
+jobs:
+  fingerprint:
+    type: fingerprint
+    environment: preview
+
+  get_build:
+    type: get-build
+    needs: [fingerprint]
+    params:
+      platform: android
+      profile: preview
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      wait_for_in_progress: true
+
+  build:
+    type: build
+    needs: [get_build]
+    if: ${{ !needs.get_build.outputs.build_id }}
+    params:
+      platform: android
+      profile: preview
+
+  repack:
+    type: repack
+    needs: [get_build]
+    if: ${{ needs.get_build.outputs.build_id }}
+    params:
+      build_id: ${{ needs.get_build.outputs.build_id }}
+      profile: preview
+
+  check:
+    needs: [get_build]
+    after: [build, repack]
+    environment: preview
+    env:
+      BUILD_ID: ${{ after.build.outputs.build_id || after.repack.outputs.build_id }}
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      PR_BODY: ${{ github.event.pull_request.body || 'The pull request has no description.' }}
+    outputs:
+      verdict: ${{ steps.check.outputs.verdict }}
+      session_url: ${{ steps.check.outputs.session_url }}
+      build_id: ${{ steps.check.outputs.build_id }}
+      commit: ${{ steps.check.outputs.commit }}
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - id: check
+        name: Test the pull request on a remote Android Emulator
+        run: |
+          set -euo pipefail
+          source .eas/agents/start-session.sh android "$BUILD_ID" "PR check" agentic-ci
+          {
+            cat .eas/agents/check-pr.md
+            printf '\n## Pull request\n\n%s\n\n%s\n\n' "$PR_TITLE" "$PR_BODY"
+            cat agent-output/device.md
+          } > agent-output/prompt.md
+
+          env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
+            timeout 20m bash .eas/agents/run-agent.sh agent-output/prompt.md device || true
+
+          set-output verdict "$(head -n 1 agent-output/evidence/verdict.md 2> /dev/null || echo 'FAIL: The agent did not write a verdict.')"
+          set-output session_url "$(node -p 'require("/tmp/session.json").deviceRunSessionUrl')"
+          set-output build_id "$BUILD_ID"
+          set-output commit "$(git rev-parse --short HEAD)"
+      - uses: eas/upload_artifact
+        if: ${{ always() }}
+        with:
+          type: other
+          name: agentic-ci-evidence
+          path: agent-output/evidence/**/*
+
+  comment:
+    type: github-comment
+    after: [check]
+    params:
+      payload: |
+        ## Agentic CI (Android)
+
+        **Verdict:** ${{ after.check.outputs.verdict || 'FAIL: The check job did not finish. See the workflow run.' }}
+
+        **Commit:** ${{ after.check.outputs.commit || 'unknown' }}
+
+        - [Session recording](${{ after.check.outputs.session_url }})
+        - [Agent report and screenshots](${{ workflow.url }})
+        - [Try this build in your browser](https://expo.dev/accounts/${{ account.name }}/projects/${{ app.slug }}/simulator-sessions/create?buildId=${{ after.check.outputs.build_id }})
+
+  result:
+    after: [check]
+    if: ${{ !startsWith(after.check.outputs.verdict, 'PASS') }}
+    steps:
+      - run: |
+          echo "The verdict of the agent is not PASS. See the comment on the pull request."
+          exit 1
+```
+
+Android support in Expo Simulators is still in development. Some features that work on iOS may not work on Android yet. See [Limitations](/preview/simulators/limitations/).
+
+</Tab>
+
+<Tab label="iOS">
+
+```yaml .eas/workflows/agentic-ci.yml
+name: Agentic CI (iOS)
+
+on:
+  pull_request:
+    branches: ['main']
+    types: ['opened', 'reopened', 'synchronize', 'ready_for_review']
+    if: ${{ !github.event.pull_request.draft }}
+
+jobs:
+  fingerprint:
+    type: fingerprint
+    environment: preview
+
+  get_build:
+    type: get-build
+    needs: [fingerprint]
+    params:
+      platform: ios
+      profile: preview
+      simulator: true
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      wait_for_in_progress: true
+
+  build:
+    type: build
+    needs: [get_build]
+    if: ${{ !needs.get_build.outputs.build_id }}
+    params:
+      platform: ios
+      profile: preview
+
+  repack:
+    type: repack
+    needs: [get_build]
+    if: ${{ needs.get_build.outputs.build_id }}
+    params:
+      build_id: ${{ needs.get_build.outputs.build_id }}
+      profile: preview
+
+  check:
+    needs: [get_build]
+    after: [build, repack]
+    environment: preview
+    env:
+      BUILD_ID: ${{ after.build.outputs.build_id || after.repack.outputs.build_id }}
+      PR_TITLE: ${{ github.event.pull_request.title }}
+      PR_BODY: ${{ github.event.pull_request.body || 'The pull request has no description.' }}
+    outputs:
+      verdict: ${{ steps.check.outputs.verdict }}
+      session_url: ${{ steps.check.outputs.session_url }}
+      build_id: ${{ steps.check.outputs.build_id }}
+      commit: ${{ steps.check.outputs.commit }}
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - id: check
+        name: Test the pull request on a remote iOS Simulator
+        run: |
+          set -euo pipefail
+          source .eas/agents/start-session.sh ios "$BUILD_ID" "PR check" agentic-ci
+          {
+            cat .eas/agents/check-pr.md
+            printf '\n## Pull request\n\n%s\n\n%s\n\n' "$PR_TITLE" "$PR_BODY"
+            cat agent-output/device.md
+          } > agent-output/prompt.md
+
+          env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
+            timeout 20m bash .eas/agents/run-agent.sh agent-output/prompt.md device || true
+
+          set-output verdict "$(head -n 1 agent-output/evidence/verdict.md 2> /dev/null || echo 'FAIL: The agent did not write a verdict.')"
+          set-output session_url "$(node -p 'require("/tmp/session.json").deviceRunSessionUrl')"
+          set-output build_id "$BUILD_ID"
+          set-output commit "$(git rev-parse --short HEAD)"
+      - uses: eas/upload_artifact
+        if: ${{ always() }}
+        with:
+          type: other
+          name: agentic-ci-evidence
+          path: agent-output/evidence/**/*
+
+  comment:
+    type: github-comment
+    after: [check]
+    params:
+      payload: |
+        ## Agentic CI (iOS)
+
+        **Verdict:** ${{ after.check.outputs.verdict || 'FAIL: The check job did not finish. See the workflow run.' }}
+
+        **Commit:** ${{ after.check.outputs.commit || 'unknown' }}
+
+        - [Session recording](${{ after.check.outputs.session_url }})
+        - [Agent report and screenshots](${{ workflow.url }})
+        - [Try this build in your browser](https://expo.dev/accounts/${{ account.name }}/projects/${{ app.slug }}/simulator-sessions/create?buildId=${{ after.check.outputs.build_id }})
+
+  result:
+    after: [check]
+    if: ${{ !startsWith(after.check.outputs.verdict, 'PASS') }}
+    steps:
+      - run: |
+          echo "The verdict of the agent is not PASS. See the comment on the pull request."
+          exit 1
+```
+
+</Tab>
+
+</Tabs>
+
+To test both platforms, add both files with different names, such as **agentic-ci-android.yml** and **agentic-ci-ios.yml**. Each workflow posts its own comment.
+
+The workflow runs on PRs to `main`. If your base branch has a different name, change `branches`. The workflow does not run on draft PRs. It runs when a draft PR is ready for review.
+
+The jobs do these tasks:
+
+- `fingerprint`, `get_build`, `build`, and `repack` find or create the build for the remote device. `repack` adds the JavaScript of the PR to a build that already exists.
+- `check` starts a session with the build and runs the agent. Then it stops the session and uploads the report and the screenshots of the agent.
+- `comment` posts the verdict on the PR with the [`github-comment`](/eas/workflows/pre-packaged-jobs/#github-comment) job.
+- `result` fails the run when the verdict is not `PASS`.
+
+</Step>
+
+<Step label="2">
+
+### Add the prompt
+
+The `check` job adds the title and the description of the PR, and **agent-output/device.md**, to the end of this prompt:
+
+```md .eas/agents/check-pr.md|wrap
+You check a pull request in this project on a remote Android Emulator or iOS Simulator. The app of the pull request is installed and open on the device. The title and the description of the pull request, and the details of the device, are at the end of this prompt.
+
+1. Read the title and the description. Find two to four behaviors that the pull request changes. You can also read the source code of the project with your file tools.
+2. Test each behavior as a user does. Run only the shell command in the Device section. If a command is denied, continue with the command of the Device section.
+3. Save a screenshot before and after each important action.
+4. Write the file agent-output/evidence/verdict.md. Line 1 is "PASS: <one sentence>" or "FAIL: <one sentence>". Then write one section for each behavior. Tell what you did, what you saw, and the names of the screenshots.
+
+If the element list and a screenshot do not agree, report both. Then look closer at the element that the pull request describes.
+
+Write FAIL when you are not sure. Do not change the files of the project.
+```
+
+To give the agent facts about your app, such as how to pass the onboarding screens, add them to **.eas/agents/app-facts.md**. See [Add the device controller](/agentic-workflows/setup/#add-the-device-controller).
+
+</Step>
+
+<Step label="3">
+
+### Push the workflow
+
+<Terminal
+  cmd={[
+    '$ git add .eas/workflows/agentic-ci.yml .eas/agents/check-pr.md',
+    '$ git commit -m "Add Agentic CI"',
+    '$ git push',
+  ]}
+/>
+
+</Step>
+
+## Open a pull request
+
+Open a PR to `main` with a change that a user can see in the app. Describe the change in the title and the description, because the agent tests what they say. EAS starts the workflow.
+
+The first run takes longer, because the workflow creates a build. Later runs use this build again when the native code does not change.
+
+Each run uses a build or a repack, an Expo Simulators session of up to 30 minutes, and model tokens of your agent. To use less, open a draft PR first, and mark it ready for review when you want a check.
+
+## Read the result
+
+When the run finishes, the PR gets an **Agentic CI** comment:
+
+<ContentSpotlight
+  alt="Agentic CI comment on a GitHub pull request with a PASS verdict and links to the session recording, the agent report, and a browser preview"
+  src="/static/images/eas-workflows/agentic-ci-comment.webp"
+  darkSrc="/static/images/eas-workflows/agentic-ci-comment-dark.webp"
+/>
+
+The comment has these parts:
+
+- **Verdict:** `PASS` or `FAIL`, with one sentence from the agent.
+- **Commit:** the short hash of the commit that the agent tested.
+- **Session recording:** the session page on expo.dev, with the screen recording of the session.
+- **Agent report and screenshots:** the workflow run on expo.dev. The report and the screenshots are in its artifacts.
+- **Try this build in your browser:** a link that starts a new session with the build and opens its browser preview. Each click starts a new session.
+
+To open these links, sign in to an Expo account that can view the project.
+
+When the verdict is not `PASS`, the `result` job fails, and the workflow run shows the failure. To test the PR again, push a new commit to its branch. Each run updates the same comment, so the comment shows only the result of the last run.
+
+> **warning** The verdict of the agent can be wrong. A `FAIL` can come from what the prompt tells the agent, or does not tell it, and not from the app. A false `FAIL` also fails the PR check. Before you make this check required, read the evidence of some runs. A person must read the evidence and decide, as with any other report. To fix a false `FAIL`, add facts about your app to **.eas/agents/app-facts.md**. See [Add the device controller](/agentic-workflows/setup/#add-the-device-controller).
+
+## Next steps
+
+<BoxLink
+  title="Build a feature from an issue with an AI agent"
+  description="Issue to PR: a coding agent writes the change for a GitHub issue and opens a pull request, and Agentic CI tests it."
+  href="/agentic-workflows/issue-to-pr/"
+  Icon={Star06Icon}
+/>
+
+<BoxLink
+  title="Run Expo Simulators sessions in CI"
+  description="Start, use, and always stop sessions from GitHub Actions, EAS Workflows, or another CI system."
+  href="/preview/simulators/how-to/run-in-ci/"
+  Icon={Cloud01Icon}
+/>
+
+<BoxLink
+  title="Capture screenshots, recordings, and logs"
+  description="Collect evidence from a remote device and download the session artifacts."
+  href="/preview/simulators/how-to/capture-evidence/"
+  Icon={Cloud01Icon}
+/>

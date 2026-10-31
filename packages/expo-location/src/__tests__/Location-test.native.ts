@@ -79,6 +79,32 @@ if (Platform.OS === 'android') {
   });
 }
 
+describe('watchHeadingAsync', () => {
+  it(`passes heading options to the native module`, async () => {
+    const watchDeviceHeading = jest.fn(async () => {});
+    mockProperty(ExpoLocation, 'watchDeviceHeading', watchDeviceHeading);
+
+    const subscription = await Location.watchHeadingAsync(jest.fn(), undefined, {
+      headingFilter: 0.5,
+    });
+
+    expect(watchDeviceHeading).toHaveBeenCalledWith(Location._getCurrentWatchId(), {
+      headingFilter: 0.5,
+    });
+    subscription.remove();
+  });
+
+  it(`passes empty options when none are given`, async () => {
+    const watchDeviceHeading = jest.fn(async () => {});
+    mockProperty(ExpoLocation, 'watchDeviceHeading', watchDeviceHeading);
+
+    const subscription = await Location.watchHeadingAsync(jest.fn());
+
+    expect(watchDeviceHeading).toHaveBeenCalledWith(Location._getCurrentWatchId(), {});
+    subscription.remove();
+  });
+});
+
 describe('reverseGeocodeAsync', () => {
   it(`rejects non-numeric latitude/longitude`, () => {
     // We need to cast these latitude/longitude strings to any type, so TypeScript diagnostics will pass here.

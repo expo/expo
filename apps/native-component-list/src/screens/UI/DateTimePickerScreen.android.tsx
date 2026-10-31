@@ -17,9 +17,11 @@ import { Page, Section } from '../../components/Page';
 const today = new Date();
 const fiveDaysAgo = new Date(today.getTime() - 5 * 24 * 60 * 60 * 1000);
 const thirtyDaysFromNow = new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000);
+const initialInputDate = today.toISOString();
 
 export default function DatePickerScreen() {
   const [selectedDate, setSelectedDate] = React.useState(new Date());
+  const [inputDate, setInputDate] = React.useState<Date | null>(today);
 
   const displayOptions = ['picker', 'input'];
   const [selectedIndex, setSelectedIndex] = React.useState(0);
@@ -48,6 +50,16 @@ export default function DatePickerScreen() {
   return (
     <ScrollView>
       <Page>
+        <Section title="Date input selection">
+          <Text>{inputDate?.toISOString() ?? 'No date selected'}</Text>
+          <Host matchContents={{ vertical: true }}>
+            <DateTimePicker
+              variant="input"
+              initialDate={initialInputDate}
+              onDateSelected={setInputDate}
+            />
+          </Host>
+        </Section>
         <Section title="24-mode">
           <Switch value={is24Hour} onValueChange={setIs24Hour} />
         </Section>
@@ -95,7 +107,7 @@ export default function DatePickerScreen() {
 
               <DateTimePicker
                 onDateSelected={(date) => {
-                  setSelectedDate(date);
+                  if (date) setSelectedDate(date);
                 }}
                 displayedComponents={
                   typeOptions[typeIndex] as DateTimePickerProps['displayedComponents']
@@ -112,7 +124,9 @@ export default function DatePickerScreen() {
         <Section title="With selectableDates (-5d … +30d)">
           <Host matchContents={{ vertical: true }}>
             <DateTimePicker
-              onDateSelected={(date) => setSelectedDate(date)}
+              onDateSelected={(date) => {
+                if (date) setSelectedDate(date);
+              }}
               displayedComponents="date"
               initialDate={selectedDate.toISOString()}
               selectableDates={{ start: fiveDaysAgo, end: thirtyDaysFromNow }}
@@ -123,7 +137,9 @@ export default function DatePickerScreen() {
         <Section title="Without title and headline">
           <Host matchContents={{ vertical: true }}>
             <DateTimePicker
-              onDateSelected={(date) => setSelectedDate(date)}
+              onDateSelected={(date) => {
+                if (date) setSelectedDate(date);
+              }}
               displayedComponents="date"
               initialDate={selectedDate.toISOString()}
               showVariantToggle={false}
@@ -184,7 +200,9 @@ export default function DatePickerScreen() {
         <Section title="Colored date picker">
           <Host matchContents={{ vertical: true }}>
             <DateTimePicker
-              onDateSelected={(date) => setSelectedDate(date)}
+              onDateSelected={(date) => {
+                if (date) setSelectedDate(date);
+              }}
               displayedComponents="date"
               initialDate={selectedDate.toISOString()}
               color="#E040FB"

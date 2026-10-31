@@ -17,7 +17,7 @@ jest.mock('../metro/MetroBundlerDevServer', () => ({ MetroBundlerDevServer: jest
 jest.mock('../webpack/WebpackBundlerDevServer', () => ({ WebpackBundlerDevServer: jest.fn() }));
 jest.mock('@expo/config');
 jest.mock('../platformBundlers');
-jest.mock('../DevToolsPluginManager');
+jest.mock('../devtools/DevToolsPluginManager');
 
 const asMock = <T extends (...args: any[]) => any>(fn: T) => fn as jest.MockedFunction<T>;
 

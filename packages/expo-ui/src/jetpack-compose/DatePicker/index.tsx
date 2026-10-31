@@ -138,9 +138,9 @@ export interface DateTimePickerProps {
    */
   initialDate?: string | null;
   /**
-   * Callback function that is called when a date is selected.
+   * Called when the selection changes. The date is `null` when date input is incomplete or invalid.
    */
-  onDateSelected?: (date: Date) => void;
+  onDateSelected?: (date: Date | null) => void;
   /**
    * The variant of the picker, which determines its appearance and behavior.
    * @default 'picker'
@@ -212,7 +212,7 @@ type NativeDatePickerProps = Omit<
   initialDate?: number | null;
   selectableDates?: { start?: number | null; end?: number | null } | null;
   elementColors?: DatePickerElementColors & TimePickerElementColors;
-} & ViewEvent<'onDateSelected', { date: Date }>;
+} & ViewEvent<'onDateSelected', { date: number | null }>;
 
 function convertSelectableDates(selectableDates?: {
   start?: Date;
@@ -243,7 +243,7 @@ function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePic
     initialDate: initialDateTimestamp,
     selectableDates: convertSelectableDates(selectableDates),
     onDateSelected: ({ nativeEvent: { date } }) => {
-      props.onDateSelected?.(new Date(date));
+      props.onDateSelected?.(convertTimestampToDate(date));
     },
     variant,
     ...(elementColors != null ? { elementColors } : undefined),
