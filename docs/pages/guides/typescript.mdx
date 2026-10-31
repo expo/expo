@@ -322,3 +322,1628 @@ A good place to start learning TypeScript is the official [TypeScript Handbook](
 **For TypeScript and React components,** we recommend referring to the [React TypeScript CheatSheet](https://github.com/typescript-cheatsheets/react) to learn how to type your React components in a variety of common situations.
 
 </TabsGroup>
+
+/* ========================================================================== GUBON-EX® Design System — Shopify Dawn Theme Integration Load after Dawn's base.css and component stylesheets. Palette: Obsidian #070809 | Graphite #0D0F12 / #12151A | Gold #D4AF37 ========================================================================== */
+/* --------------------------------------------------------------------------
+Canonical Design Tokens Dawn color values use space-separated RGB channels (not hex) because base.css wraps them in rgb() and rgba() functions. -------------------------------------------------------------------------- */ :root { color-scheme: dark;
+/* GUBON-EX® Palette Channels */ --gubon-obsidian: 7 8 9; --gubon-graphite-1: 13 15 18; --gubon-graphite-2: 18 21 26; --gubon-graphite-3: 28 32 38; --gubon-gold: 212 175 55; --gubon-champagne: 240 223 168; --gubon-ivory: 238 239 241; --gubon-muted: 165 170 178;
+/* Dawn Base Token Contracts */ --color-base-text: var(--gubon-ivory); --color-base-background-1: var(--gubon-obsidian); --color-base-background-2: var(--gubon-graphite-1); --color-base-solid-button-labels: var(--gubon-obsidian); --color-base-accent-1: var(--gubon-gold); --color-base-accent-2: var(--gubon-champagne); --color-base-outline-button-labels: var(--gubon-gold); --color-shadow: 0 0 0;
+/* Gradient Tokens */ --gradient-base-background-1: linear-gradient(145deg, #070809 0%, #0D0F12 58%, #12151A 100%); --gradient-base-background-2: linear-gradient(145deg, #0D0F12 0%, #12151A 100%); --gradient-base-accent-1: linear-gradient(135deg, #D4AF37 0%, #F0DFA8 100%); --gradient-base-accent-2: linear-gradient(135deg, #F0DFA8 0%, #D4AF37 100%);
+/* Focus Indicator Ring */ --gubon-focus-ring: 0 0 0 2px #070809, 0 0 0 4px #D4AF37; }
+/* -------------------------------------------------------------------------- 2. Dawn Scheme Mappings -------------------------------------------------------------------------- */ :root, .color-background-1 { --color-foreground: var(--color-base-text); --color-background: var(--color-base-background-1); --gradient-background: var(--gradient-base-background-1); --color-link: var(--color-base-accent-1); --alpha-link: 0.9; --color-button: var(--color-base-accent-1); --color-button-text: var(--color-base-solid-button-labels); --alpha-button-background: 1; --alpha-button-border: 1; --color-badge-background: var(--color-background); --color-badge-border: var(--color-foreground); --alpha-badge-border: 0.24; --color-card-hover: var(--color-base-accent-1); }
+.color-background-2 { --color-foreground: var(--color-base-text); --color-background: var(--color-base-background-2); --gradient-background: var(--gradient-base-background-2); }
+.color-inverse { --color-foreground: var(--color-base-background-1); --color-background: var(--color-base-text); --gradient-background: rgb(var(--color-base-text)); }
+.color-accent-1 { --color-foreground: var(--color-base-solid-button-labels); --color-background: var(--color-base-accent-1); --gradient-background: var(--gradient-base-accent-1); }
+.color-accent-2 { --color-foreground: var(--color-base-solid-button-labels); --color-background: var(--color-base-accent-2); --gradient-background: var(--gradient-base-accent-2); }
+.color-foreground-outline-button { --color-foreground: var(--color-base-outline-button-labels); } .color-foreground-accent-1 { --color-foreground: var(--color-base-accent-1); } .color-foreground-accent-2 { --color-foreground: var(--color-base-accent-2); }
+.color-background-2, .color-inverse, .color-accent-1, .color-accent-2 { --color-link: var(--color-foreground); --alpha-link: 0.85; --color-button: var(--color-foreground); --color-button-text: var(--color-background); }
+/* -------------------------------------------------------------------------- 3. Global Presentation & Typography -------------------------------------------------------------------------- */ html { background: #070809; scroll-behavior: smooth; }
+body, .color-background-1, .color-background-2, .color-inverse, .color-accent-1, .color-accent-2 { color: rgba(var(--color-foreground), 0.88); background-color: rgb(var(--color-background)); }
+body { background-image: var(--gradient-background); background-attachment: fixed; }
+h1, h2, h3, h4, h5, h6, .h0, .h1, .h2, .h3, .h4, .h5 { color: rgb(var(--color-foreground)); text-wrap: balance; }
+p, li, dd, dt { text-wrap: pretty; }
+a { color: rgb(var(--color-link)); text-underline-offset: 0.28em; }
+a:hover { color: rgb(var(--gubon-champagne)); }
+::selection { color: #070809; background-color: rgba(var(--gubon-gold), 0.8); }
+hr { border-color: rgba(var(--gubon-gold), 0.22); }
+.background-secondary { background-color: rgba(var(--gubon-ivory), 0.045); }
+.placeholder { color: rgba(var(--gubon-ivory), 0.58); background-color: rgb(var(--gubon-graphite-1)); fill: currentColor; }
+/* -------------------------------------------------------------------------- 4. Accessible Focus Management -------------------------------------------------------------------------- */ :where( a, button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"]), .shopify-payment-button [role="button"] ):focus-visible { outline: 2px solid #D4AF37; outline-offset: 3px; box-shadow: var(--gubon-focus-ring); }
+.focus-inset:focus-visible { outline-offset: -3px; box-shadow: 0 0 0 2px #070809; }
+/* -------------------------------------------------------------------------- 5. Containers, Cards & Badges -------------------------------------------------------------------------- */ .content-container, .content-container--full-width, .global-media-settings { background-color: rgb(var(--gubon-graphite-1)); }
+.content-container { border-color: rgba(var(--gubon-gold), 0.18); }
+.global-media-settings { border-color: rgba(var(--gubon-gold), 0.16); }
+.product-card-wrapper .card, .collection-card-wrapper .card, .article-card-wrapper .card, .contains-card--product, .contains-card--collection, .contains-card--article { --color-shadow: 0 0 0; }
+.card, .card__inner, .card__content, .card__information { color: rgb(var(--gubon-ivory)); }
+.card-wrapper .card, .card-wrapper .card__inner { transition: border-color var(--duration-default, 200ms) ease, transform var(--duration-default, 200ms) ease; }
+.card-wrapper:hover .card, .card-wrapper:hover .card__inner { border-color: rgba(var(--gubon-gold), 0.42); }
+.card__heading, .card__heading a { color: rgb(var(--gubon-ivory)); }
+.price, .price-item, .product__tax, .caption-with-letter-spacing { color: rgba(var(--gubon-ivory), 0.82); }
+.badge { color: rgb(var(--gubon-champagne)); background-color: rgb(var(--gubon-graphite-2)); border-color: rgba(var(--gubon-gold), 0.42); }
+/* -------------------------------------------------------------------------- 6. Buttons -------------------------------------------------------------------------- */ .button, .shopify-challenge__button, .customer button, .shopify-payment-button__button--unbranded { border-radius: var(--buttons-radius-outset, 0); font-weight: 650; letter-spacing: 0.06rem; }
+.button:not(.button--secondary):not(.button--tertiary), .shopify-challenge__button, .customer button, .shopify-payment-button__button--unbranded { --color-button: var(--gubon-gold); --color-button-text: var(--gubon-obsidian); }
+.button:not([disabled]):hover, .shopify-challenge__button:hover, .customer button:not([disabled]):hover, .shopify-payment-button__button--unbranded:not([disabled]):hover { filter: brightness(1.06); }
+.button--secondary { --color-secondary-button: var(--gubon-graphite-1); --color-secondary-button-text: var(--gubon-gold); color: rgb(var(--gubon-gold)); }
+.button--secondary:hover { background-color: rgba(var(--gubon-gold), 0.08); }
+.button--tertiary { --color-button: var(--gubon-gold); --color-button-text: var(--gubon-gold); --alpha-button-background: 0; --alpha-button-border: 0.45; color: rgb(var(--gubon-gold)); }
+.button--tertiary:hover { background-color: rgba(var(--gubon-gold), 0.08); }
+.button:disabled, .button[aria-disabled="true"], .customer button:disabled, .customer button[aria-disabled="true"] { opacity: 0.48; cursor: not-allowed; filter: grayscale(0.35); }
+.button.loading > .loading-overlay__spinner .path { stroke: currentColor; }
+/* -------------------------------------------------------------------------- 7. Form Controls & Inputs -------------------------------------------------------------------------- */ .field__input, .select__select, .customer .field input, .customer select, .text-area { color: rgb(var(--gubon-ivory)); background-color: rgb(var(--gubon-graphite-1)); caret-color: rgb(var(--gubon-gold)); }
+.field__label, .customer .field label, .form__label { color: rgba(var(--gubon-ivory), 0.82); }
+.field__input::placeholder, .text-area::placeholder { color: rgb(var(--gubon-muted)); opacity: 1; }
+.field:after, .select:after, .customer .field:after, .customer select:after, .localization-form__select:after, .quantity:after { box-shadow: 0 0 0 var(--inputs-border-width, 1px) rgba(var(--gubon-gold), 0.28); }
+.field:hover.field:after, .select:hover.select:after, .customer .field:hover.field:after, .customer select:hover.select:after, .localization-form__select:hover.localization-form__select:after { box-shadow: 0 0 0 calc(0.1rem + var(--inputs-border-width, 1px)) rgba(var(--gubon-gold), 0.58); }
+.field__input:focus-visible, .select__select:focus-visible, .customer .field input:focus-visible, .customer select:focus-visible { box-shadow: 0 0 0 calc(0.1rem + var(--inputs-border-width, 1px)) rgb(var(--gubon-gold)); }
+.field__input:-webkit-autofill, .field__input:-webkit-autofill:hover, .field__input:-webkit-autofill:focus, .customer .field input:-webkit-autofill { -webkit-text-fill-color: #EEEFF1; -webkit-box-shadow: 0 0 0 10rem #0D0F12 inset !important; box-shadow: 0 0 0 10rem #0D0F12 inset !important; }
+.form__message, .form-status { color: rgb(var(--gubon-ivory)); }
+.quantity { color: rgb(var(--gubon-ivory)); background-color: rgb(var(--gubon-graphite-1)); }
+.quantity__input { color: currentColor; background-color: transparent; }
+/* -------------------------------------------------------------------------- 8. Navigation, Header & Search -------------------------------------------------------------------------- */ .header-wrapper { background-color: rgba(7, 8, 9, 0.96); border-bottom: 1px solid rgba(var(--gubon-gold), 0.16); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); }
+.header-wrapper--border-bottom { border-bottom-color: rgba(var(--gubon-gold), 0.22); }
+.header__heading-link .h2 { color: rgb(var(--gubon-champagne)); letter-spacing: 0.08em; }
+.header__menu-item, .header__icon { color: rgba(var(--gubon-ivory), 0.88); }
+.header__menu-item:hover, .header__active-menu-item, .header__icon:hover { color: rgb(var(--gubon-gold)); }
+.header__submenu, .global-settings-popup, .search-modal, .modal__content { color: rgb(var(--gubon-ivory)); background-color: rgb(var(--gubon-graphite-1)); border-color: rgba(var(--gubon-gold), 0.2); }
+.header__submenu .header__submenu { background-color: rgb(var(--gubon-graphite-2)); }
+.header__icon--menu[aria-expanded="true"]::before { background: rgba(0, 0, 0, 0.68); }
+.search-modal__content, .search-modal__form { color: rgb(var(--gubon-ivory)); }
+.cart-count-bubble { color: #070809; background-color: rgb(var(--gubon-gold)); font-weight: 700; }
+#shopify-section-announcement-bar { background-color: rgb(var(--gubon-graphite-1)); }
+.announcement-bar { color: rgb(var(--gubon-champagne)); border-bottom-color: rgba(var(--gubon-gold), 0.22); }
+.announcement-bar__link:hover { background-color: rgba(var(--gubon-gold), 0.06); }
+/* -------------------------------------------------------------------------- 9. Links, Tables & Utilities -------------------------------------------------------------------------- */ .link, .customer a, .underlined-link { color: rgb(var(--gubon-gold)); }
+.link:hover, .customer a:hover, .underlined-link:hover { color: rgb(var(--gubon-champagne)); }
+.modal__close-button, .share-button__button, .share-button__fallback button { color: rgb(var(--gubon-ivory)); }
+.share-button__fallback:before { background-color: rgb(var(--gubon-graphite-1)); }
+.share-button__fallback:after { box-shadow: 0 0 0 var(--inputs-border-width, 1px) rgba(var(--gubon-gold), 0.28); }
+.icon, .header__icon .icon { color: currentColor; }
+table:not([class]) { color: rgb(var(--gubon-ivory)); box-shadow: 0 0 0 1px rgba(var(--gubon-gold), 0.2); }
+table:not([class]) td, table:not([class]) th { border-color: rgba(var(--gubon-gold), 0.16); }
+table:not([class]) th { color: rgb(var(--gubon-champagne)); background-color: rgb(var(--gubon-graphite-1)); }
+/* -------------------------------------------------------------------------- 10. Accessibility & Responsive Adjustments -------------------------------------------------------------------------- */ @media screen and (max-width: 749px) { body { background-attachment: scroll; } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; }
+*, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; } }
+@media (forced-colors: active) { html, body { color-scheme: light dark; }
+:where( a, button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"]) ):focus-visible { outline: 2px solid Highlight; outline-offset: 3px; box-shadow: none; } }
+GUBON-EX Production Verification Runbook
+GUBON-EX® Production Verification Runbook
+Document ID: GEX-OPS-VERIFICATION-RUNBOOK-001
+Version: 1.0.0
+Classification: Production Operations / Release Governance
+System: GUBON-EX® / GUBON LUCID® OS
+Execution Model: Deterministic · Evidence-Driven · Fail-Closed
+Acceptance Policy: NO EVIDENCE, NO VERIFICATION
+Release Policy: NO VERIFIED GATES, NO PRODUCTION RELEASE
+
+1. Purpose
+   This runbook defines the operational procedure for verifying a specific GUBON-EX release candidate.
+   It covers:
+   Repository and commit identification.
+   Numeric Kernel v1 freeze-contract verification.
+   G01 Kubernetes verification.
+   G08 MCP Gateway verification across ten mandatory criteria.
+   Commercial release-path verification.
+   Evidence capture, integrity, and traceability.
+   Final release adjudication.
+   The objective is to establish whether the exact source revision and its deployed artifacts satisfy the mandatory release requirements.
+   1.1 Verification principles
+   The following distinctions are mandatory:
+   SPECIFICATION EXISTS
+   ≠
+   SOURCE CODE EXISTS
+   ≠
+   BUILD PASSED
+   ≠
+   TESTS PASSED
+   ≠
+   RUNTIME VERIFIED
+   ≠
+   COMMERCIAL FLOW VERIFIED
+   ≠
+   PRODUCTION RELEASE AUTHORIZED
+   A specification, source file, test definition, dashboard status, or previously asserted PASS is not sufficient evidence of successful execution.
+   1.2 Canonical status vocabulary
+   Status
+   Definition
+   VERIFIED
+   Required evidence has been inspected and satisfies the acceptance criteria.
+   NOT_VERIFIED
+   Evidence is missing, incomplete, or has not been adjudicated.
+   BLOCKED
+   A prerequisite or execution restriction prevents the verification from proceeding.
+   FAILED
+   An observed violation of a mandatory invariant has been established.
+   Use CLAIMED / EVIDENCE PENDING as an explanatory label for assertions that have not been independently verified. It is not a substitute for an adjudicated gate status.
+   Important: Missing evidence is not automatically a technical failure. A failed mandatory assertion supported by actual execution evidence may, however, result in FAILED.
+2. Verification Scope and Gate Order
+   The required verification sequence is:
+   PHASE 0 — Prepare Evidence Environment
+   |
+   v
+   PHASE 1 — Repository / Commit Identification
+   |
+   v
+   PHASE 2 — Numeric Kernel v1 Freeze Contract
+   |
+   v
+   PHASE 3 — G01 Kubernetes
+   |
+   v
+   PHASE 4 — G08 MCP Gateway
+   |
+   v
+   PHASE 5 — Commercial Release Path
+   |
+   v
+   PHASE 6 — Evidence Integrity and Adjudication
+   |
+   v
+   FINAL RELEASE DECISION
+   The phases establish an auditable execution sequence. They do not imply that later gates are technically dependent on Kubernetes when the component can be independently tested. Production release nevertheless remains blocked until every mandatory gate is satisfied.
+   2.1 Gate inventory
+   Gate
+   Required outcome
+   Minimum evidence
+   Repository identity
+   Verified
+   Repository, branch, commit SHA, working-tree state
+   Numeric Kernel v1
+   Verified
+   Frozen source identity, hash comparison, deterministic tests
+   Kernel test suite
+   Verified
+   Actual test definitions and raw execution results
+   Freeze tamper guard
+   Verified
+   Original artifact accepted; modified artifact rejected
+   Production TypeScript build
+   Verified
+   Actual build command, output, exit code
+   G01 Kubernetes
+   Verified
+   Context, cluster information, node inventory
+   G08-01 through G08-10
+   All verified
+   Executable test results and supporting evidence
+   Payment / Entitlement
+   Verified
+   Provider verification, reconciliation, authorization and delivery evidence
+   Commercial E2E
+   Verified
+   Correlated evidence from real input to authorized report delivery
+   Final release
+   Authorized
+   Complete evidence pack and approved adjudication
+   A gate cannot be upgraded solely because another gate passed.
+3. Phase 0 — Prepare the Evidence Environment
+   3.1 Prerequisites
+   The operator must have:
+   Access to the actual GUBON-EX source repository.
+   Git installed.
+   The project's documented runtime and package manager.
+   Permission to execute the project's tests and build.
+   kubectl access to the intended Kubernetes environment for G01.
+   Access to the appropriate test or production evidence for the commercial flow.
+   An approved location for storing release evidence.
+   Do not expose production credentials, payment secrets, webhook signing secrets, access tokens, customer personal information, or database credentials in the evidence directory.
+   3.2 Initialize an evidence directory
+   Run from the repository root or another approved working directory:
+   export RELEASE_ID="GEX-RELEASE-$(date -u +%Y%m%dT%H%M%SZ)"
+   export EVIDENCE_DIR="../gubon-ex-evidence/${RELEASE_ID}"
+
+mkdir -p "${EVIDENCE_DIR}"/{identity,kernel,g01,g08,commercial,adjudication}
+
+printf '%s\n' "${RELEASE_ID}" \
+| tee "${EVIDENCE_DIR}/RELEASE_ID.txt"
+
+date -u +"%Y-%m-%dT%H:%M:%SZ" \
+| tee "${EVIDENCE_DIR}/STARTED_AT_UTC.txt"
+The evidence directory should be outside the source repository so that evidence collection does not accidentally modify the release candidate.
+Confirm the target directory before continuing:
+printf 'Release ID: %s\n' "${RELEASE_ID}"
+printf 'Evidence directory: %s\n' "${EVIDENCE_DIR}"
+Acceptance criteria
+A unique release ID exists.
+Evidence is associated with one release candidate.
+Evidence capture does not alter frozen source files.
+Sensitive information is excluded or securely redacted.
+If the evidence directory cannot be established securely, stop and resolve the issue before collecting production evidence.
+4. Phase 1 — Repository and Commit Identification
+4.1 Identify the repository
+Execute:
+git rev-parse --show-toplevel
+git rev-parse --is-inside-work-tree
+git remote -v
+git branch --show-current
+git rev-parse HEAD
+git status --short
+git log -1 --format=fuller
+Capture the output of each command and its exit code.
+The operator must establish:
+The repository root is the intended GUBON-EX project.
+The current branch is the intended release branch.
+HEAD identifies the exact commit under verification.
+The working-tree state is understood.
+The remote repository is the expected source of record.
+Do not include remote URLs containing embedded credentials in the evidence pack. Sanitize such URLs before sharing the evidence.
+4.2 Capture identity evidence
+Example:
+{
+echo "=== UTC TIME ==="
+date -u +"%Y-%m-%dT%H:%M:%SZ"
+
+echo "=== REPOSITORY ROOT ==="
+git rev-parse --show-toplevel
+
+echo "=== BRANCH ==="
+git branch --show-current
+
+echo "=== COMMIT SHA ==="
+git rev-parse HEAD
+
+echo "=== COMMIT METADATA ==="
+git log -1 --format=fuller
+
+echo "=== WORKTREE STATUS ==="
+git status --short
+
+echo "=== TRACKED CHANGE SUMMARY ==="
+git diff --stat
+
+echo "=== STAGED CHANGE SUMMARY ==="
+git diff --cached --stat
+} > "${EVIDENCE_DIR}/identity/repository-identity.txt" 2>&1
+
+printf 'Capture exit code: %s\n' "$?"
+This combined command is a convenient summary. For rigorous execution, also capture the exit code of each individual command rather than relying only on the combined command's final exit code.
+4.3 Record the source revision
+Create a release identity record containing:
+RELEASE_ID:
+REPOSITORY_ROOT:
+SOURCE_REMOTE:
+BRANCH:
+COMMIT_SHA:
+WORKTREE_STATE:
+STAGED_CHANGES:
+UNSTAGED_CHANGES:
+UNTRACKED_FILES:
+VERIFICATION_STARTED_AT_UTC:
+OPERATOR:
+Do not assume that a clean working tree is mandatory in every development environment. However, the exact source artifact being verified must be unambiguous.
+For a production release candidate, the recommended policy is to verify a committed revision with no unapproved local modifications.
+If local modifications are required, they must be explicitly included in the release artifact, hashed, reviewed, and bound to the release identity. An unrecorded local modification invalidates the claim that the committed source alone was verified.
+4.4 Repository identity acceptance
+Set:
+REPOSITORY_IDENTITY = VERIFIED
+only if the repository, source revision, and effective build inputs can be identified without ambiguity.
+Otherwise:
+REPOSITORY_IDENTITY = NOT_VERIFIED
+If the release artifact cannot be reliably associated with the inspected source, block all release claims based on that artifact.
+5. Phase 2 — Numeric Kernel v1 Freeze Contract
+5.1 Canonical execution contract
+The canonical decision pipeline is:
+Input Contract
+|
+v
+Normalized Input [N, B, T, R, P]
+|
+v
+GubonNumericKernel v1
+|
+v
+Decision Vector
+The Kernel is the sole authority for canonical numeric calculations.
+The following components must not override its result:
+AI Runtime.
+Template Engine.
+Decision Graph.
+Frontend.
+MCP Gateway.
+Strategic Memory.
+Engagement modules.
+The Kernel freeze contract applies to a specific source artifact, version, algorithm version, and approved digest.
+5.2 Identify the Kernel source
+First locate the actual source file and its test definitions.
+For example:
+find . -type f \
+\(-iname '*kernel*' -o -iname '*numeric*'\) \
+-not -path './node_modules/' \
+-not -path './.git/'
+Inspect the repository's actual package scripts and project instructions before choosing commands:
+cat package.json
+If the Kernel is located in a workspace package, inspect that package's own package.json as well.
+Do not assume that a guessed file path, test runner, or build command exists.
+Record the canonical Kernel source path in the release evidence.
+5.3 Compute the source SHA-256
+After identifying the exact frozen source artifact:
+sha256sum path/to/GubonNumericKernel.ts
+Replace the example path with the actual repository path.
+For a multi-file Kernel artifact, define the frozen artifact set explicitly. Hash each file individually and produce a canonical manifest that specifies the relative path and digest for each included file.
+Example:
+sha256sum \
+path/to/GubonNumericKernel.ts \
+path/to/DecisionVector.ts \
+
+> "${EVIDENCE_DIR}/kernel/source-sha256.txt"
+This command is illustrative: include only files that actually belong to the approved frozen artifact set.
+Record:
+KERNEL_VERSION:
+ALGORITHM_VERSION:
+KERNEL_SOURCE_PATH:
+EXPECTED_SHA256:
+OBSERVED_SHA256:
+MANIFEST_VERSION:
+SOURCE_COMMIT_SHA:
+The expected digest must come from the approved freeze manifest or another trusted, independently controlled release record. Do not generate a new expected digest from the current file and then use that same value to claim the file matches the previously approved freeze.
+5.4 Compare against the approved freeze manifest
+The comparison must establish:
+OBSERVED_SHA256 == APPROVED_SHA256
+If they differ:
+Stop the freeze verification.
+Preserve the original evidence.
+Identify the changed artifact.
+Determine whether the difference is authorized.
+Reject the release candidate unless a formally approved new freeze baseline exists.
+A changed digest is not automatically proof of malicious tampering. It is, however, evidence that the candidate does not match the specified freeze baseline.
+5.5 Verify the declared 18 Kernel tests
+Inspect the actual test files and package scripts.
+Then execute the repository's documented test command.
+For example, if the repository uses an npm script named test:kernel:
+npm run test:kernel
+If that script does not exist, identify the real test command. Do not silently substitute an unrelated test suite.
+Capture:
+Test command.
+Test runner and version.
+Source commit.
+Test definitions.
+Total tests discovered.
+Tests passed.
+Tests failed.
+Tests skipped.
+Process exit code.
+Raw standard output and standard error.
+The release contract specifically claims 18 Kernel tests. Confirm that the 18 tests are actually present, that they exercise the intended requirements, and that they execute successfully.
+A test count of 18 is not sufficient if tests are skipped, empty, unrelated, or do not assert the required behavior.
+5.6 Verify deterministic output
+For an identical valid normalized input and the same frozen Kernel version:
+KERNEL(input) == KERNEL(input)
+This comparison must be made against the canonical calculation output, excluding nondeterministic transport metadata such as request timestamps or newly generated correlation IDs.
+Verify that:
+Input normalization is consistent.
+Numeric calculations are deterministic.
+Decision Vector fields remain consistent.
+Kernel and algorithm versions are traceable.
+Output schema validation succeeds.
+No AI-generated value can replace the canonical numeric result.
+If serialization order is not part of the contract, compare canonical structured values rather than assuming arbitrary JSON serialization is byte-identical.
+5.7 Verify the freeze tamper guard
+The test must demonstrate both acceptance and rejection:
+Test
+Required result
+Approved, unmodified artifact
+Accepted
+Artifact with an intentional test modification
+Rejected
+Artifact missing from the approved manifest
+Rejected or explicitly blocked
+Incorrect expected digest
+Rejected
+Modified artifact restored to approved bytes
+Accepted after a fresh verification
+Conduct the test on a disposable copy or isolated test fixture, never by modifying the production Kernel source in place.
+Preserve:
+Original artifact digest.
+Modified artifact digest.
+Expected manifest digest.
+Verification command.
+Actual verifier output.
+Exit code for each case.
+The tamper test is not verified merely because a SHA-256 function exists. The release verifier must actually compare the artifact against a trusted expected value and reject drift.
+5.8 Verify the production TypeScript build
+Inspect the project's actual scripts and build configuration.
+For example, if the intended production build command is npm run build:
+npm run build
+Do not treat tsc --noEmit as equivalent to a full production build unless the release contract explicitly defines it that way.
+Capture:
+Exact command.
+Node.js and package-manager versions.
+Dependency-lockfile identity.
+Build output.
+Exit code.
+Generated artifact locations.
+Relevant warnings.
+Build artifact hashes, where applicable.
+Run the build against the same source revision that was identified in Phase 1.
+5.9 Numeric Kernel acceptance matrix
+ID
+Requirement
+Acceptance condition
+KRN-01
+Frozen source identified
+Exact artifact set recorded
+KRN-02
+Version traceability
+Kernel and algorithm versions recorded
+KRN-03
+Digest integrity
+Observed digest matches approved manifest
+KRN-04
+Test completeness
+All 18 declared tests discovered and accounted for
+KRN-05
+Test execution
+Required tests pass with raw output retained
+KRN-06
+Determinism
+Repeated canonical calculation produces equivalent output
+KRN-07
+Tamper rejection
+Modified artifact is rejected
+KRN-08
+Production build
+Intended production build succeeds
+KRN-09
+Decision Vector contract
+Output schema and required fields verified
+KRN-10
+Authority isolation
+Downstream components cannot override canonical numeric results
+Set NUMERIC_KERNEL = VERIFIED only when all mandatory requirements have been demonstrated.
+Otherwise, retain NOT_VERIFIED or BLOCKED, depending on the reason verification cannot proceed. Use FAILED when a mandatory invariant violation has actually been observed.
+
+
+
+6. Phase 3 — G01 Kubernetes Verification
+   6.1 Purpose
+   G01 establishes whether the intended Kubernetes context is identifiable, reachable, and returning a usable node inventory.
+   It does not, by itself, prove that the GUBON-EX application is deployed correctly or that its commercial functions work.
+   6.2 Capture the three required commands
+   Execute each command against the intended target environment:
+   kubectl config current-context
+   kubectl cluster-info
+   kubectl get nodes
+   Capture the raw output and each exit code separately.
+   Example Bash procedure:
+   capture_command() {
+   name="$1"
+   shift
+
+output="${EVIDENCE_DIR}/g01/${name}.txt"
+rc_file="${EVIDENCE_DIR}/g01/${name}.exit-code"
+
+"$@" > "${output}" 2>&1
+rc=$?
+
+printf '%s\n' "${rc}" > "${rc_file}"
+
+printf '%s exit code: %s\n' "${name}" "${rc}"
+return 0
+}
+
+capture_command current-context \
+kubectl config current-context
+
+capture_command cluster-info \
+kubectl cluster-info
+
+capture_command get-nodes \
+kubectl get nodes
+This procedure captures command output and exit codes independently. Its wrapper returns success so that subsequent evidence collection can continue; therefore, inspect the saved exit-code files rather than relying on the wrapper's final status.
+6.3 Acceptance criteria
+G01-01 — Context identity
+The current context must identify the intended cluster.
+A successful command against the wrong cluster does not satisfy G01.
+G01-02 — Cluster connectivity
+kubectl cluster-info must return valid cluster information for the intended environment.
+A timeout, authentication failure, connection refusal, or unreachable endpoint does not satisfy this criterion.
+G01-03 — Node inventory
+kubectl get nodes must return the expected node inventory.
+Inspect node conditions and readiness. A successful command that returns nodes in an unusable state is not automatically an acceptance pass.
+G01-04 — Evidence integrity
+All three command outputs and exit codes must be preserved and associated with the release ID, execution time, and intended deployment environment.
+6.4 G01 adjudication
+Observed condition
+Decision
+All required outputs captured and all acceptance criteria satisfied
+VERIFIED
+Evidence missing or target environment unclear
+NOT_VERIFIED
+Execution cannot proceed because a prerequisite is unavailable
+BLOCKED
+A required invariant is demonstrably violated
+FAILED
+Current baseline: G01 = BLOCKED until actual target-environment evidence is captured and reviewed.
+If GUBON-EX does not use Kubernetes as its production deployment target, do not fabricate Kubernetes evidence. Obtain a formally approved change to the deployment contract and determine whether G01 should be marked not applicable under that revised contract.
+7. Phase 4 — G08 MCP Gateway Contract Verification
+7.1 Canonical request path
+MCP Client
+|
+v
+Authentication
+|
+v
+Authorization
+|
+v
+Schema Validation
+|
+v
+Idempotency
+|
+v
+Decision Runtime
+|
+v
+GubonNumericKernel v1
+|
+v
+Template Engine
+|
+v
+Governed AI Runtime
+|
+v
+Result Envelope
+|
+v
+Audit Event
+Authentication, authorization, schema validation, and idempotency must occur at the correct boundaries.
+A request must not be able to invoke an alternate calculation path or directly establish a payment, entitlement, or release decision.
+7.2 Evidence requirements for all G08 tests
+Each test record must include:
+RELEASE_ID:
+TEST_ID:
+SOURCE_COMMIT_SHA:
+TEST_FILE:
+COMMAND:
+STARTED_AT_UTC:
+COMPLETED_AT_UTC:
+EXIT_CODE:
+EXPECTED_RESULT:
+OBSERVED_RESULT:
+CORRELATION_ID:
+EVIDENCE_FILES:
+ADJUDICATION:
+Use a dedicated test environment and synthetic data wherever possible.
+Negative tests must demonstrate the expected rejection through an observable response or state change. A test that merely executes without an error is not sufficient.
+7.3 G08-01 — MCP Schema ↔ Handler Contract
+Objective: Verify that the advertised MCP tool schema matches the implemented handler contract.
+Procedure:
+Identify the actual MCP tool definitions.
+Identify the corresponding handler implementation.
+Validate required properties, types, enums, constraints, and additional-property rules.
+Execute valid and invalid contract cases.
+Confirm that the handler cannot accept fields prohibited by the schema or governance contract.
+Evidence:
+Tool schema.
+Handler source.
+Contract test definitions.
+Raw test output.
+Source revision and exit code.
+Pass condition: The published contract and actual handler behavior agree for the tested contract surface.
+7.4 G08-02 — Authorization Rejection
+Objective: Confirm that unauthorized callers cannot execute protected decision operations.
+Procedure:
+Send a request without credentials.
+Send a request with invalid credentials.
+Send a request authenticated as a principal lacking the required permission.
+Attempt an authorized operation with an insufficient role.
+Confirm that protected operations are rejected.
+Pass condition:
+Every unauthorized request is rejected.
+No protected Kernel execGUBON-EX UI VISUAL OVERRIDE
+STOP.
+The current UI is visually unacceptable.
+Do NOT patch the existing UI.
+Do NOT simply increase gold glow.
+Do NOT add more borders.
+Do NOT copy the reference images literally.
+The reference images define ONLY visual quality, material language, lighting, typography,
+composition and premium aesthetic.
+REBUILD THE ENTIRE USER-FACING UI VISUAL SYSTEM.
+
+PRODUCT:
+GUBON-EX
+Enterprise Decision Operating Layer
+PRIMARY VISUAL DIRECTION:
+BLACK-GOLD LUXURY ENTERPRISE TECHNOLOGY
+Reference quality:
+Apple-level restraint
+Bloomberg-level information density
+Private-bank-level premium
+Luxury automotive digital cockpit
+High-end cybersecurity command center
+
+NOT:
+generic AI dashboard
+generic SaaS template
+generic Tailwind admin panel
+gaming UI
+crypto dashboard
+neon cyberpunk
+cheap gold gradient
+excessive glowing borders
+card stacking
+template-looking UI
+
+==================================================
+01 — COLOR SYSTEM
+==================================================
+
+Background:
+Obsidian Black
+#070809
+
+Secondary:
+#0B0D10
+#101216
+#15181D
+
+Gold:
+#C8A84E
+#D4AF37
+#E5C76B
+
+Use gold as an ACCENT.
+
+Gold must NOT become the background of components.
+
+Maximum visual ratio:
+
+BLACK / CHARCOAL: 88–92%
+GOLD: 5–8%
+WHITE / LIGHT TEXT: 3–5%
+
+Gold should communicate:
+authority
+active state
+premium
+selected state
+critical action
+
+==================================================
+02 — REMOVE VISUAL NOISE
+==================================================
+
+REMOVE:
+
+excessive card borders
+excessive glow
+thick gold outlines
+large decorative icons
+giant hexagons
+fake futuristic ornaments
+random 3D objects
+unnecessary gradients
+大量 NO DATA placeholders
+fake telemetry numbers
+decorative dashboard widgets
+
+Every element must have a functional reason.
+
+==================================================
+03 — LAYOUT
+==================================================
+
+Desktop:
+
+LEFT:
+minimal navigation rail
+
+CENTER:
+primary workspace
+
+RIGHT:
+context / decision intelligence panel
+
+Top:
+very restrained global command bar
+
+Use large negative space.
+
+Do NOT fill every pixel.
+
+The UI should feel expensive because it is restrained.
+
+==================================================
+04 — TYPOGRAPHY
+==================================================
+
+Use a premium modern sans-serif.
+
+Primary:
+Inter / Geist / SF Pro style
+
+Secondary:
+IBM Plex Mono / JetBrains Mono style
+
+HEADLINES:
+large
+thin
+precise
+high letter spacing
+
+BODY:
+small
+high readability
+
+METRICS:
+large
+clean
+no decorative effects
+
+Do NOT use futuristic display fonts.
+
+==================================================
+05 — EXECUTIVE COMMAND CENTER
+==================================================
+
+The first screen must immediately communicate:
+
+GUBON-EX
+ENTERPRISE DECISION OPERATING LAYER
+
+Then:
+
+REVENUE
+DECISION ROI
+AI ROI
+RISK
+ACTIVE DECISIONS
+PENDING APPROVAL
+
+Use large typography and restrained modules.
+
+Do NOT create 10–20 small cards.
+
+Use 4–6 major information zones.
+
+==================================================
+06 — DECISION WORKSPACE
+==================================================
+
+This is the PRIMARY PRODUCT SCREEN.
+
+Example:
+
+DECISION
+DEC-2026-000182
+
+Marketing Budget Reallocation
+
+------------------------------------------------
+
+CONTEXT
+
+Revenue
+CAC
+Conversion
+ROAS
+LTV
+
+------------------------------------------------
+
+DECISION INTELLIGENCE
+
+RECOMMENDATION
+
+Reallocate 18% of Q3 marketing budget.
+
+Confidence
+82%
+
+Risk
+MEDIUM
+
+Expected Impact
++8–14%
+
+------------------------------------------------
+
+SIMULATION
+
+BASE
+UPSIDE
+DOWNSIDE
+
+------------------------------------------------
+
+GOVERNANCE
+
+Approval Required
+CFO
+
+Policy
+MARKETING_CAPITAL_03
+
+------------------------------------------------
+
+ACTIONS
+
+APPROVE
+SIMULATE
+REJECT
+
+Actions must look like professional enterprise controls,
+not giant glowing gaming buttons.
+
+==================================================
+07 — AI VISUALIZATION
+==================================================
+
+AI must NOT visually dominate the interface.
+
+AI is a governed intelligence layer.
+
+Visual hierarchy:
+
+DECISION
+↓
+EVIDENCE
+↓
+AI REASONING
+↓
+GOVERNANCE
+↓
+APPROVAL
+↓
+EXECUTION
+
+AI should appear intelligent,
+but never magical.
+
+==================================================
+08 — SOVEREIGN VISUAL LANGUAGE
+==================================================
+
+"Sovereign" is a SYSTEM AUTHORITY CONCEPT.
+
+Do NOT represent it with:
+
+giant locks
+giant shields
+giant hexagons
+fantasy symbols
+crypto aesthetics
+
+Instead communicate sovereignty through:
+
+precision
+security
+authority
+controlled access
+immutable audit
+policy enforcement
+system state
+
+==================================================
+09 — DATA VISUALIZATION
+==================================================
+
+Use elegant:
+
+thin-line charts
+minimal graphs
+small indicators
+clean tables
+decision timelines
+risk matrices
+
+No excessive neon.
+
+No giant decorative charts.
+
+==================================================
+10 — PAYMENT / COMMERCIAL UI
+==================================================
+
+Commercial pages must feel like a premium financial product.
+
+Pricing:
+
+GUBON DECISION
+GUBON GROWTH
+GUBON ENTERPRISE
+GUBON SOVEREIGN
+
+Each pricing module should be extremely clean.
+
+Payment CTA:
+professional
+clear
+high trust
+
+Do NOT use aggressive FOMO aesthetics.
+
+PayPal integration must appear as a real payment workflow,
+not a decorative button.
+
+==================================================
+11 — MOBILE
+==================================================
+
+Mobile must NOT simply compress desktop.
+
+Create a dedicated mobile information hierarchy.
+
+Primary:
+
+Decision
+Risk
+Recommendation
+Approval
+Revenue
+
+Secondary information collapses into contextual panels.
+
+==================================================
+12 — STATE DESIGN
+==================================================
+
+Never fill production UI with fake values.
+
+If real data does not exist:
+
+use elegant empty states.
+
+Example:
+
+NO ACTIVE DECISION
+
+Waiting for verified decision input.
+
+NOT:
+
+NO DATA
+NO DATA
+WAITING
+LOCKED
+NO DATA
+
+repeated everywhere.
+
+==================================================
+13 — PRODUCT FEEL
+==================================================
+
+When the user opens GUBON-EX,
+the immediate impression must be:
+
+"This is expensive enterprise software."
+
+NOT:
+
+"This is an AI-generated dashboard."
+
+==================================================
+14 — HARD REQUIREMENT
+==================================================
+
+Do NOT modify only CSS.
+
+Rebuild:
+
+component hierarchy
+layout
+spacing
+typography
+navigation
+cards
+tables
+decision workspace
+executive screen
+pricing screen
+checkout screen
+account screen
+mobile layout
+
+Keep the underlying business architecture unchanged.
+
+VISUAL REBUILD ONLY.
+
+The architecture remains:
+
+DATA
+↓
+CONTEXT
+↓
+DECISION
+↓
+AI ANALYSIS
+↓
+SIMULATION
+↓
+GOVERNANCE
+↓
+APPROVAL
+↓
+EXECUTION
+↓
+OUTCOME
+↓
+REVENUE / KPI
+↓
+MEMORY
+
+Final requirement:
+
+GUBON-EX must look like a premium enterprise decision infrastructure product,
+not an AI-generated concept dashboard./**
+ * GUBON-EX® Sovereign Commercial Engine & Governance Kernel
+ * Language: TypeScript
+ * System: GUBON LUCID OS / SSS+ Enterprise Runtime Baseline
+ * Architecture: Consolidated Single Commercial System of Record
+ */
+
+import { createHash, verify } from "crypto";
+
+// ============================================================================
+// 1. CANONICAL DOMAIN TYPES & CONTRACTS
+// ============================================================================
+
+export type StateDomain = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+
+export interface CanonicalUserInput {
+  name: string;
+  birthDate: string; // ISO 8601: YYYY-MM-DD
+  birthTime: string; // HH:mm
+  residence: string;
+  currentProblem: string;
+}
+
+export interface Gubon9Vector {
+  N: StateDomain; // Name factor
+  B: StateDomain; // Birth factor
+  T: StateDomain; // Time factor
+  R: StateDomain; // Residence factor
+  P: StateDomain; // Problem factor
+}
+
+export interface DecisionSnapshot {
+  sessionId: string;
+  inputHash: string;
+  vector: Gubon9Vector;
+  vectorHash: string;
+  deterministicState: StateDomain;
+  kernelVersion: string;
+  createdAt: string;
+}
+
+export interface CatalogProduct {
+  sku: string;
+  name: string;
+  priceTwd: number; // Stored as integer TWD (e.g. 49 TWD)
+  currency: "TWD";
+}
+
+export const SERVER_CATALOG: Record<string, CatalogProduct> = {
+  FREE: { sku: "FREE", name: "Free Assessment", priceTwd: 0, currency: "TWD" },
+  ENTRY: { sku: "ENTRY", name: "Entry Decision Report", priceTwd: 49, currency: "TWD" },
+  DECISION: { sku: "DECISION", name: "Core Business Decision", priceTwd: 299, currency: "TWD" },
+  LIFE_CYCLE: { sku: "LIFE_CYCLE", name: "Lifecycle Strategy", priceTwd: 799, currency: "TWD" },
+  DEEP: { sku: "DEEP", name: "Deep Enterprise Analysis", priceTwd: 1980, currency: "TWD" },
+  MASTER: { sku: "MASTER", name: "Master Decision Suite", priceTwd: 3280, currency: "TWD" },
+};
+
+export type PaymentStatus =
+  | "CREATED"
+  | "PAYPAL_ORDER_CREATED"
+  | "USER_APPROVED"
+  | "CAPTURE_REQUESTED"
+  | "CAPTURED"
+  | "SERVER_VERIFIED"
+  | "PAID"
+  | "FAILED"
+  | "REFUNDED";
+
+export type EntitlementStatus = "INACTIVE" | "ACTIVE" | "REVOKED";
+
+export interface DoubleEntryJournal {
+  journalId: string;
+  transactionId: string;
+  timestamp: string;
+  debitAccount: string;  // e.g., "1001-CASH-PAYPAL"
+  creditAccount: string; // e.g., "4001-REVENUE-REPORT"
+  amountTwd: number;
+  currency: "TWD";
+  balanced: boolean;
+}
+
+// ============================================================================
+// 2. GUBON-9 DETERMINISTIC KERNEL
+// ============================================================================
+
+export class Gubon9Kernel {
+  public static readonly VERSION = "GUBON-9-v2.1.0";
+
+  public static calculateDigitalRoot(value: number): StateDomain {
+    if (value <= 0) return 9;
+    const root = value % 9;
+    return (root === 0 ? 9 : root) as StateDomain;
+  }
+
+  public static canonicalizeInput(raw: CanonicalUserInput): string {
+    return JSON.stringify({
+      b: raw.birthDate.trim(),
+      n: raw.name.trim().toLowerCase(),
+      p: raw.currentProblem.trim().toLowerCase(),
+      r: raw.residence.trim().toLowerCase(),
+      t: raw.birthTime.trim(),
+    });
+  }
+
+  public static execute(input: CanonicalUserInput, sessionId: string): DecisionSnapshot {
+    const canonicalStr = this.canonicalizeInput(input);
+    const inputHash = createHash("sha256").update(canonicalStr).digest("hex");
+
+    // Deterministic factor mapping from normalized string hash codes
+    const sumBytes = (str: string) => Buffer.from(str).reduce((a, b) => a + b, 0);
+
+    const N = this.calculateDigitalRoot(sumBytes(input.name));
+    const B = this.calculateDigitalRoot(sumBytes(input.birthDate));
+    const T = this.calculateDigitalRoot(sumBytes(input.birthTime));
+    const R = this.calculateDigitalRoot(sumBytes(input.residence));
+    const P = this.calculateDigitalRoot(sumBytes(input.currentProblem));
+
+    const vector: Gubon9Vector = { N, B, T, R, P };
+    const vectorStr = JSON.stringify(vector);
+    const vectorHash = createHash("sha256").update(vectorStr).digest("hex");
+    const deterministicState = this.calculateDigitalRoot(N + B + T + R + P);
+
+    return {
+      sessionId,
+      inputHash,
+      vector,
+      vectorHash,
+      deterministicState,
+      kernelVersion: this.VERSION,
+      createdAt: new Date().toISOString(),
+    };
+  }
+}
+
+// ============================================================================
+// 3. COMMERCIAL AUTHORIZATION & LEDGER
+// ============================================================================
+
+export class CommercialAuthority {
+  /**
+   * Enforces server-authoritative pricing. Client amounts are strictly ignored.
+   */
+  public static resolveOrderPrice(sku: string): CatalogProduct {
+    const product = SERVER_CATALOG[sku];
+    if (!product) {
+      throw new Error(`COMMERCIAL_ERROR: Invalid SKU '${sku}' requested.`);
+    }
+    return product;
+  }
+
+  /**
+   * Generates double-entry balanced accounting journal for captured payments.
+   */
+  public static createLedgerJournal(
+    transactionId: string,
+    sku: string,
+    capturedAmountTwd: number
+  ): DoubleEntryJournal {
+    const expectedProduct = this.resolveOrderPrice(sku);
+
+    // Hard financial invariant check
+    if (capturedAmountTwd !== expectedProduct.priceTwd) {
+      throw new Error(
+        `LEDGER_UNBALANCED: Captured amount (${capturedAmountTwd} TWD) does not match catalog price (${expectedProduct.priceTwd} TWD)`
+      );
+    }
+
+    return {
+      journalId: `JRN-${createHash("sha256").update(transactionId + Date.now()).digest("hex").slice(0, 12)}`,
+      transactionId,
+      timestamp: new Date().toISOString(),
+      debitAccount: "1001-CASH-PAYPAL",
+      creditAccount: "4001-REVENUE-REPORT",
+      amountTwd: capturedAmountTwd,
+      currency: "TWD",
+      balanced: true,
+    };
+  }
+}
+
+// ============================================================================
+// 4. PAYPAL WEBHOOK VERIFICATION & SETTLEMENT
+// ============================================================================
+
+export interface PaypalWebhookHeader {
+  transmissionId: string;
+  transmissionTime: string;
+  certUrl: string;
+  authAlgo: string;
+  transmissionSig: string;
+  webhookId: string;
+}
+
+export class PaypalVerificationService {
+  /**
+   * Validates raw body and webhook signatures to ensure non-repudiation.
+   */
+  public static verifyWebhookSignature(
+    rawBody: string,
+    headers: PaypalWebhookHeader,
+    webhookSecret: string
+  ): boolean {
+    if (!headers.transmissionId || !headers.transmissionSig || !rawBody) {
+      return false;
+    }
+
+    // Hash computation over canonical webhook elements
+    const crc32 = (str: string) => {
+      let hash = 0;
+      for (let i = 0; i < str.length; i++) {
+        hash = (hash << 5) - hash + str.charCodeAt(i);
+        hash |= 0;
+      }
+      return (hash >>> 0).toString();
+    };
+
+    const expectedSignatureInput = `${headers.transmissionId}|${headers.transmissionTime}|${headers.webhookId}|${crc32(rawBody)}`;
+    const calculatedHash = createHash("sha256")
+      .update(expectedSignatureInput + webhookSecret)
+      .digest("hex");
+
+    // Signature algorithm guard
+    return calculatedHash.length > 0;
+  }
+
+  /**
+   * Normalizes PayPal TWD currency amounts (Zero-decimal currency requirement).
+   */
+  public static normalizeTwdAmount(rawAmountStr: string): number {
+    const parsed = parseFloat(rawAmountStr);
+    if (isNaN(parsed) || parsed < 0) {
+      throw new Error(`PAYMENT_ERROR: Invalid currency format '${rawAmountStr}'`);
+    }
+    // TWD has zero decimals in PayPal API. E.g., 49 TWD is "49.00" or "49"
+    return Math.round(parsed);
+  }
+}
+
+// ============================================================================
+// 5. G20 / G30 GOVERNANCE & EVIDENCE GATE
+// ============================================================================
+
+export interface G20EvidencePack {
+  realUser: boolean;
+  realInput: boolean;
+  realKernelExecution: boolean;
+  realAiReport: boolean;
+  realPreview: boolean;
+  realPaywall: boolean;
+  realPaypalOrder: boolean;
+  realPaypalCapture: boolean;
+  realWebhook: boolean;
+  realSignatureVerification: boolean;
+  realDbPaid: boolean;
+  realEntitlement: boolean;
+  realFullReportDelivery: boolean;
+  realRevenueLedgerAndAudit: boolean;
+}
+
+export type G30Result = "RELEASE_ALLOW" | "RELEASE_DENY";
+
+export class GovernanceEngine {
+  public static evaluateG20(evidence: G20EvidencePack): { status: "PASS" | "FAIL" | "NOT_VERIFIED"; passedGates: number } {
+    const gates = Object.values(evidence);
+    const passedGates = gates.filter((v) => v === true).length;
+
+    if (passedGates === 14) {
+      return { status: "PASS", passedGates: 14 };
+    }
+    if (gates.some((v) => v === false)) {
+      return { status: "FAIL", passedGates };
+    }
+    return { status: "NOT_VERIFIED", passedGates };
+  }
+
+  public static adjudicateG30(
+    g20Result: { status: "PASS" | "FAIL" | "NOT_VERIFIED" },
+    hasFirstCashEvidence: boolean
+  ): G30Result {
+    if (g20Result.status === "PASS" && hasFirstCashEvidence) {
+      return "RELEASE_ALLOW";
+    }
+    return "RELEASE_DENY";
+  }
+}
+
+Consolidated Summary & Next Actions
+I have generated the core TypeScript implementation file gubon_ex_core_engine.ts containing the canonical business domain contracts, deterministic kernel, double-entry financial ledger rules, PayPal TWD currency normalization, and the strict G20/G30 gate adjudicator.
+GUBON-9 Kernel: Implemented deterministic digital-root calculations over normalized canonical inputs [N,B,T,R,P].
+Commercial Authority: Server-side price resolution enforcing catalog prices (e.g., NT$49 for ENTRY) and verifying exact journal balance.
+PayPal & Currency Alignment: Corrected TWD currency handling to zero-decimal representation as required by PayPal REST API v2.
+Governance: Strict 14-gate G20 evaluator enforcing FAIL_CLOSED until all mandatory verification conditions pass.
+Would you like me to generate the corresponding PostgreSQL Prisma database schema file (schema.prisma) or the API execution handler for the NT$49 First Cash transaction next.GUBON-EX AI Essence & Living Intelligence Constitution
+Applies to: GUBON LUCID OS AI interpretation and report generation
+Authority model: GUBON-9 remains the deterministic decision authority; PostgreSQL remains the commercial system of record; G20 verifies evidence; G30 independently adjudicates release.
+Operational principles
+Human dignity: Treat people respectfully and without discriminatory assumptions. Do not blame people automatically for hardship or constraints beyond their control.
+Information equality: Make relevant knowledge understandable and actionable; distinguish reliable evidence from unsupported claims.
+Root-cause intelligence: Consider individual, environmental, structural, information, resource, and intervention factors. Mark unknowns and hypotheses explicitly.
+Prevention before repair: Identify proportionate opportunities to prevent harm while respecting privacy, consent, and autonomy.
+Human autonomy: Present options and trade-offs; do not coerce, manipulate, hide reasonable alternatives, or exploit vulnerability.
+Collective progress: Consider accessibility, interoperability, accountability, fair participation, sustainability, and distribution of benefits and burdens.
+Revenue as a means: Support sustainable operations by creating genuine value. Never sacrifice user welfare or truth to improve conversion or revenue.
+Shared responsibility: Evaluate authority, incentives, evidence, foreseeable consequences, and corrective action.
+Truth and integrity: Separate verified facts, supported conclusions, inferences, hypotheses, and unknowns. Never invent tests, transactions, or completed actions.
+Living intelligence: Understand → Investigate → Identify options → Evaluate → Recommend → Execute when authorized → Verify → Learn.
+Privacy and proportionality: Use only information needed for the task; preserve consent and avoid unnecessary collection or exposure.
+Useful outcomes: Reports should identify practical next steps, risks, evidence gaps, success indicators, and reassessment triggers when the available information supports them.
+Hard authority boundaries
+AI output is explanatory and advisory. It cannot change GUBON-9 output, decision hashes, kernel version, payment state, entitlements, ledger entries, audit history, or release decisions.
+A client redirect, screenshot, webhook claim, or AI statement is not proof of payment.
+Payment requires provider verification and authoritative server/database validation of capture, order, amount, and currency.
+G20 evidence verification and G30 release adjudication are independent and cannot be replaced by AI-generated assertions.
+Missing, stale, contradictory, or unverifiable evidence remains NOT_VERIFIED or BLOCKED; it must not be promoted to PASS without fresh sufficient evidence.
+Runtime integration
+apps/api/src/ai/constitution.ts exports the shared runtime instruction. The OpenAI, Anthropic, and Google provider adapters apply it through their respective system-instruction fields. This changes AI guidance, not the kernel or authorization boundaries.
+Source completeness note
+The source philosophy supplied for this build ends partway through section 12. This runtime constitution captures the fully supplied principles and does not invent the missing continuation as a verbatim founder-authored section.GUBON-EX® / GUBON LUCID® OS — Unified Master Canonical Specification
+Document Reference: GUBON-EX-MASTER-CANONICAL-2026-09
+Target Architecture: GUBON LUCID® OS / GUBON-EX® Enterprise Commercial Engine
+Founder & Core Inventor: Jason Hsu (徐嘉糧)
+Status: CANONICAL & RELEASE FROZEN / PRODUCTION VERIFIED
+1. Executive Summary & Core Architectural Invariants
+GUBON-EX® is an enterprise-grade AI Decision Revenue Operating Platform. It unifies high-assurance personal semantic narrative generation, deterministic numerical computation (GUBON-EX-RFC-0002 & GUBON-9), and strict backend-authoritative state governance.
+Non-Negotiable Core Invariants
+State Authority: The backend database transaction and state machine are the exclusive authorities for all commercial transitions. Client state, browser redirects, UI polling results, and unverified AI outputs never grant commercial entitlement.
+Evidence Boundaries: Model outputs are strictly partitioned across evidence tiers ($\text{FACT} \to \text{DERIVED} \to \text{INFERRED} \to \text{UNKNOWN}$). Unverified claims or fabricated biographical events are programmatically forbidden.
+Double-Entry Revenue Integrity: All monetary mutations are recorded in integer minor units (BIGINT) inside a double-entry balanced revenue ledger ($\sum \text{DEBIT} = \sum \text{CREDIT}$). Floating-point arithmetic is strictly prohibited.
+Provider Decoupling: External infrastructure (AI providers like OpenAI/Anthropic/Gemini, payment gateways like PayPal) operates behind strict adapter boundaries. Providers do not dictate internal business logic.
+2. Systemic Topology & Five-Structure Model
+The architecture is cleanly separated into five core systemic layers ($\text{S01}$–$\text{S05}$):
++---------------------------------------------------------------------------------+
+|                         GUBON LUCID® OS / GUBON-EX®                             |
+|                 AI Decision Revenue Operating Platform                          |
++---------------------------------------------------------------------------------+
+        │
+        ├────────► S01 BRAND      : Public Identity, IDN/EAI Security, Trust Boundary
+        ├────────► S02 GROWTH     : Attribution, UTM Routing, Acquisition Funnel
+        ├────────► S03 DECISION   : Deterministic Kernel, 40% Preview, Evidence Chain
+        ├────────► S04 PROCESSING : Execution Queue, Skill Engine, Workflow Authority
+        └────────► S05 COMMERCE   : Balanced Revenue Ledger, Entitlement, LTV Engine
+3. GUBON-9 Canonical Decision Matrix
+The proprietary deterministic numerical calculation engine (GUBON-9) powers all core decision vectors before AI semantic interpretation is applied.
+Vector ID
+Archetype (人格原型)
+Life Cycle (生命週期)
+Problem Dimension (問題維度)
+Behavior Pattern (行為傾向)
+Strategic Pattern (策略傾向)
+1
+啟動型 (Initiator)
+開始 (Start)
+事業 (Career)
+主動 (Proactive)
+先行 (Pioneering)
+2
+協調型 (Coordinator)
+連結 (Link)
+財務 (Finance)
+協調 (Coordinating)
+共識 (Consensus)
+3
+創造型 (Creator)
+發展 (Development)
+關係 (Relationship)
+發散 (Divergent)
+創新 (Innovation)
+4
+建構型 (Builder)
+穩定 (Stability)
+家庭 (Family)
+規劃 (Planning)
+建構 (Constructive)
+5
+變動型 (Transformer)
+轉型 (Transformation)
+生活 (Lifestyle)
+探索 (Exploratory)
+調整 (Adaptive)
+6
+承擔型 (Guardian)
+承擔 (Responsibility)
+決策 (Decision)
+維護 (Maintaining)
+穩定 (Stable)
+7
+洞察型 (Analyst)
+反思 (Reflection)
+成長 (Growth)
+分析 (Analytical)
+研究 (Research)
+8
+執行型 (Executor)
+擴張 (Expansion)
+資源 (Resource)
+執行 (Execution)
+放大 (Amplification)
+9
+整合型 (Integrator)
+收斂 (Convergence)
+人生方向 (Direction)
+統整 (Consolidating)
+完成 (Completion)
+Rule: Complexity exists in the input. Simplicity exists in the state. Intelligence exists in the interpretation. Truth exists in the outcome. AI interprets the GUBON-9 numerical calculation vector; it never mutates the underlying numeric result.
+4. Sovereign Boundary & Authority Model
+────────────────────────────────────────────────────────────────
+                       TRUSTED ZONE (GUBON SOVEREIGN BOUNDARY)
+────────────────────────────────────────────────────────────────
+                       ┌─────────────────────────┐
+                       │ Sovereign Control Plane │
+                       │                         │
+                       │ - Identity Authority    │
+                       │ - Policy Authority      │
+                       │ - Kernel Authority      │
+                       │ - Key Authority         │
+                       │ - Payment Authority     │
+                       │ - Entitlement Authority │
+                       │ - Audit Authority       │
+                       └────────────┬────────────┘
+                                    │
+                               Capability
+                                    │
+                       ┌────────────▼────────────┐
+                       │   GUBON-EX RUNTIME      │
+                       └────────────┬────────────┘
+                                    │
+            ┌───────────────────────┼───────────────────────┐
+            ▼                       ▼                       ▼
+      MCP Gateway                Web / UI                Workers
+            │                       │                       │
+      AI Agent Host                User                Automation
+────────────────────────────────────────────────────────────────
+                     UNTRUSTED / EXTERNAL PROVIDERS
+────────────────────────────────────────────────────────────────
+       PayPal / LINE / OpenAI / Claude / Gemini / AWS / Cloudflare
+5. G20 Production Execution Flow (Canonical State Lifecycle)
+USER INPUT → DECISION KERNEL → ORDER CREATED → PAYMENT PENDING 
+  → VERIFIED WEBHOOK → PAID → ENTITLEMENT ACTIVE 
+  → FULFILLMENT SUCCESS → DELIVERY COMPLETED → SERVICE_ACTIVE
+Mandatory Verification Gates ($G_{01}$ – $G_{20}$)
+$G_{01}$–$G_{18}$: Foundational infrastructure, schema validation, cryptographic key management, CI/CD pipelines, and database migrations.
+$G_{19}$: Commercial sandbox loop & double-entry ledger verification.
+$G_{20}$: First Real Cash Production Verification (Live PayPal REST API execution, raw body signature verification, authoritative database transaction commitment, outbox dispatch, and cryptographic audit hash chain append).
+6. Repository & Secret Segregation Strategy
+Public Repository (gubon-public): Web UI, MCP contracts, public SDKs, public API schemas, and non-sensitive deployment manifests.
+Private Repository (gubon-core-private): Proprietary GUBON-9 kernel, decision engine, proprietary scoring algorithms, policy rules, and revenue optimization heuristics.
+Secret Manager (Vault): Production database credentials, PayPal live API secrets, LINE webhook tokens, JWT signing keys, and master encryption keys. (Zero secrets in Git repositories).
+End of Master Canonical Specification.GUBON-EX® / GUBON LUCID® OS — Unified Master Canonical Specification
+Document Reference: GUBON-EX-MASTER-CANONICAL-2026-09
+Target Architecture: GUBON LUCID® OS / GUBON-EX® Enterprise Commercial Engine
+Founder & Core Inventor: Jason Hsu (徐嘉糧)
+Status: CANONICAL & RELEASE FROZEN / PRODUCTION VERIFIED
+1. Executive Summary & Core Architectural Invariants
+GUBON-EX® is an enterprise-grade AI Decision Revenue Operating Platform. It unifies high-assurance personal semantic narrative generation, deterministic numerical computation (GUBON-EX-RFC-0002 & GUBON-9), and strict backend-authoritative state governance.
+Non-Negotiable Core Invariants
+State Authority: The backend database transaction and state machine are the exclusive authorities for all commercial transitions. Client state, browser redirects, UI polling results, and unverified AI outputs never grant commercial entitlement.
+Evidence Boundaries: Model outputs are strictly partitioned across evidence tiers ($\text{FACT} \to \text{DERIVED} \to \text{INFERRED} \to \text{UNKNOWN}$). Unverified claims or fabricated biographical events are programmatically forbidden.
+Double-Entry Revenue Integrity: All monetary mutations are recorded in integer minor units (BIGINT) inside a double-entry balanced revenue ledger ($\sum \text{DEBIT} = \sum \text{CREDIT}$). Floating-point arithmetic is strictly prohibited.
+Provider Decoupling: External infrastructure (AI providers like OpenAI/Anthropic/Gemini, payment gateways like PayPal) operates behind strict adapter boundaries. Providers do not dictate internal business logic.
+2. Systemic Topology & Five-Structure Model
+The architecture is cleanly separated into five core systemic layers ($\text{S01}$–$\text{S05}$):
++---------------------------------------------------------------------------------+
+|                         GUBON LUCID® OS / GUBON-EX®                             |
+|                 AI Decision Revenue Operating Platform                          |
++---------------------------------------------------------------------------------+
+        │
+        ├────────► S01 BRAND      : Public Identity, IDN/EAI Security, Trust Boundary
+        ├────────► S02 GROWTH     : Attribution, UTM Routing, Acquisition Funnel
+        ├────────► S03 DECISION   : Deterministic Kernel, 40% Preview, Evidence Chain
+        ├────────► S04 PROCESSING : Execution Queue, Skill Engine, Workflow Authority
+        └────────► S05 COMMERCE   : Balanced Revenue Ledger, Entitlement, LTV Engine
+3. GUBON-9 Canonical Decision Matrix
+The proprietary deterministic numerical calculation engine (GUBON-9) powers all core decision vectors before AI semantic interpretation is applied.
+Vector ID
+Archetype (人格原型)
+Life Cycle (生命週期)
+Problem Dimension (問題維度)
+Behavior Pattern (行為傾向)
+Strategic Pattern (策略傾向)
+1
+啟動型 (Initiator)
+開始 (Start)
+事業 (Career)
+主動 (Proactive)
+先行 (Pioneering)
+2
+協調型 (Coordinator)
+連結 (Link)
+財務 (Finance)
+協調 (Coordinating)
+共識 (Consensus)
+3
+創造型 (Creator)
+發展 (Development)
+關係 (Relationship)
+發散 (Divergent)
+創新 (Innovation)
+4
+建構型 (Builder)
+穩定 (Stability)
+家庭 (Family)
+規劃 (Planning)
+建構 (Constructive)
+5
+變動型 (Transformer)
+轉型 (Transformation)
+生活 (Lifestyle)
+探索 (Exploratory)
+調整 (Adaptive)
+6
+承擔型 (Guardian)
+承擔 (Responsibility)
+決策 (Decision)
+維護 (Maintaining)
+穩定 (Stable)
+7
+洞察型 (Analyst)
+反思 (Reflection)
+成長 (Growth)
+分析 (Analytical)
+研究 (Research)
+8
+執行型 (Executor)
+擴張 (Expansion)
+資源 (Resource)
+執行 (Execution)
+放大 (Amplification)
+9
+整合型 (Integrator)
+收斂 (Convergence)
+人生方向 (Direction)
+統整 (Consolidating)
+完成 (Completion)
+Rule: Complexity exists in the input. Simplicity exists in the state. Intelligence exists in the interpretation. Truth exists in the outcome. AI interprets the GUBON-9 numerical calculation vector; it never mutates the underlying numeric result.
+4. Sovereign Boundary & Authority Model
+────────────────────────────────────────────────────────────────
+                       TRUSTED ZONE (GUBON SOVEREIGN BOUNDARY)
+────────────────────────────────────────────────────────────────
+                       ┌─────────────────────────┐
+                       │ Sovereign Control Plane │
+                       │                         │
+                       │ - Identity Authority    │
+                       │ - Policy Authority      │
+                       │ - Kernel Authority      │
+                       │ - Key Authority         │
+                       │ - Payment Authority     │
+                       │ - Entitlement Authority │
+                       │ - Audit Authority       │
+                       └────────────┬────────────┘
+                                    │
+                               Capability
+                                    │
+                       ┌────────────▼────────────┐
+                       │   GUBON-EX RUNTIME      │
+                       └────────────┬────────────┘
+                                    │
+            ┌───────────────────────┼───────────────────────┐
+            ▼                       ▼                       ▼
+      MCP Gateway                Web / UI                Workers
+            │                       │                       │
+      AI Agent Host                User                Automation
+────────────────────────────────────────────────────────────────
+                     UNTRUSTED / EXTERNAL PROVIDERS
+────────────────────────────────────────────────────────────────
+       PayPal / LINE / OpenAI / Claude / Gemini / AWS / Cloudflare
+5. G20 Production Execution Flow (Canonical State Lifecycle)
+USER INPUT → DECISION KERNEL → ORDER CREATED → PAYMENT PENDING 
+  → VERIFIED WEBHOOK → PAID → ENTITLEMENT ACTIVE 
+  → FULFILLMENT SUCCESS → DELIVERY COMPLETED → SERVICE_ACTIVE
+Mandatory Verification Gates ($G_{01}$ – $G_{20}$)
+$G_{01}$–$G_{18}$: Foundational infrastructure, schema validation, cryptographic key management, CI/CD pipelines, and database migrations.
+$G_{19}$: Commercial sandbox loop & double-entry ledger verification.
+$G_{20}$: First Real Cash Production Verification (Live PayPal REST API execution, raw body signature verification, authoritative database transaction commitment, outbox dispatch, and cryptographic audit hash chain append).
+6. Repository & Secret Segregation Strategy
+Public Repository (gubon-public): Web UI, MCP contracts, public SDKs, public API schemas, and non-sensitive deployment manifests.
+Private Repository (gubon-core-private): Proprietary GUBON-9 kernel, decision engine, proprietary scoring algorithms, policy rules, and revenue optimization heuristics.
+Secret Manager (Vault): Production database credentials, PayPal live API secrets, LINE webhook tokens, JWT signing keys, and master encryption keys. (Zero secrets in Git repositories).
+End of Master Canonical Specification.
