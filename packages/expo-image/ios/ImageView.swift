@@ -47,7 +47,14 @@ public final class ImageView: ExpoView {
   /**
    An image that has been loaded from one of the `sources` or set by the shared ref to an image.
    */
-  var sourceImage: UIImage?
+  var sourceImage: UIImage? {
+    didSet {
+      // The record describes only the image that the view shows. This also releases a replaced image.
+      if sourceImage !== renderedImage?.image {
+        renderedImage = nil
+      }
+    }
+  }
 
   var pendingOperation: SDWebImageCombinedOperation?
 
@@ -61,7 +68,7 @@ public final class ImageView: ExpoView {
 
   /// The image that the latest load of `sources` rendered, and what a size change needs to keep it.
   private struct RenderedImage {
-    /// The image that the load set as `sourceImage`. The record is stale when `sourceImage` is another image.
+    /// The image in `sourceImage`. Setting `sourceImage` to another image clears the record.
     let image: UIImage
     let sourceIndex: Int
     /// The pixel size of the loaded image, before `processImage` downscaled it.
@@ -233,6 +240,8 @@ public final class ImageView: ExpoView {
       context[.imageThumbnailPixelSize] = thumbnailPixelSize
     }
 
+    // Until the new load renders, the image that the view shows can be for other props or another source.
+    renderedImage = nil
     latestLoadID += 1
     let load = SourceLoad(id: latestLoadID, sourceIndex: sourceIndex, isSizeDependent: thumbnailPixelSize != nil)
 
@@ -634,7 +643,6 @@ public final class ImageView: ExpoView {
   private func reusableRenderedImage() -> RenderedImage? {
     guard
       let renderedImage,
-      renderedImage.image === sourceImage,
       renderedImage.sourceIndex == bestSourceIndex,
       // `.center`, which `none` and `scale-down` use, shows the image at its own size and does not scale it.
       [.scaleAspectFit, .scaleAspectFill, .scaleToFill].contains(contentFit.toContentMode())

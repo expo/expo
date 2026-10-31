@@ -116,4 +116,28 @@ struct ImageViewResizeTests {
 
     #expect(!loaded.keptImage)
   }
+
+  @Test
+  func `reloads while a newer load is pending`() async throws {
+    let loaded = try await LoadedView(imagePoints: 200, viewPoints: 100)
+    defer { loaded.removeFile() }
+
+    // The newer load, for example for new props, has not rendered yet.
+    loaded.view.reload()
+    let operation = loaded.view.pendingOperation
+    loaded.view.bounds = square(80)
+
+    #expect(loaded.view.pendingOperation !== operation)
+  }
+
+  @Test
+  func `reloads when the view shows another image`() async throws {
+    let loaded = try await LoadedView(imagePoints: 200, viewPoints: 100)
+    defer { loaded.removeFile() }
+
+    loaded.view.sourceImage = UIImage()
+    loaded.view.bounds = square(80)
+
+    #expect(loaded.view.pendingOperation !== loaded.operation)
+  }
 }
