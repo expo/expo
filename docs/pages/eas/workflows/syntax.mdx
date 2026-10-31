@@ -398,7 +398,7 @@ on:
   observe:
     new_error:
       environments: [production]
-      platforms: [ios, android]
+      platforms: [android, ios]
       if: ${{ observe.event.severity == 'fatal' }}
 
 jobs:
