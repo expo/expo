@@ -41,7 +41,6 @@ import expo.modules.linking.ExpoLinkingPackage
 import expo.modules.localauthentication.LocalAuthenticationModule
 import expo.modules.localization.LocalizationModule
 import expo.modules.location.LocationModule
-import expo.modules.mailcomposer.MailComposerModule
 import expo.modules.manifests.core.Manifest
 import expo.modules.maps.GoogleMapsModule
 import expo.modules.maps.MapsModule
@@ -170,7 +169,6 @@ object ExperiencePackagePicker : ModulesProvider {
     LocalAuthenticationModule::class.java to null,
     LocalizationModule::class.java to null,
     LocationModule::class.java to null,
-    MailComposerModule::class.java to null,
     MapsModule::class.java to null,
     GoogleMapsModule::class.java to null,
     StreetViewModule::class.java to null,

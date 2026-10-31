@@ -1,34 +1,28 @@
 package expo.modules.mailcomposer
 
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Record
 
 /**
  * Represents a mail client with a label and package name.
  */
-@OptimizedRecord
+@Record
 data class MailClient(
-  @Field
   val label: String,
-  @Field
   val packageName: String
-) : Record
+)
 
-@OptimizedRecord
+@Record
 data class MailComposerOptions(
-  @Field
-  val recipients: List<String>?,
-  @Field
-  val ccRecipients: List<String>?,
-  @Field
-  val bccRecipients: List<String>?,
-  @Field
-  val subject: String?,
-  @Field
-  val body: String?,
-  @Field
-  val isHtml: Boolean?,
-  @Field
-  val attachments: List<String>?
-) : Record
+  val recipients: List<String>? = null,
+  val ccRecipients: List<String>? = null,
+  val bccRecipients: List<String>? = null,
+  val subject: String? = null,
+  val body: String? = null,
+  val isHtml: Boolean? = null,
+  val attachments: List<String>? = null
+)
+
+@Record
+data class MailComposerResult(
+  val status: String
+)

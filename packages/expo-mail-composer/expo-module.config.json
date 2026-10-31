@@ -4,7 +4,6 @@
     "modules": ["MailComposerModule"]
   },
   "android": {
-    "modules": ["expo.modules.mailcomposer.MailComposerModule"],
     "publication": {
       "groupId": "host.exp.exponent",
       "artifactId": "expo.modules.mailcomposer",

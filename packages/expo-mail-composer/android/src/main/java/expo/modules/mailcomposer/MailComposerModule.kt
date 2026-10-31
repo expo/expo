@@ -1,74 +1,96 @@
 package expo.modules.mailcomposer
 
+import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
-import expo.modules.kotlin.Promise
+import com.facebook.react.bridge.ActivityEventListener
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
+import io.github.expo.modules.v2.react.currentActivity
+import io.github.expo.modules.v2.react.reactContext
+import io.github.expo.modules.v2.react.reactContextOrNull
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import java.util.concurrent.atomic.AtomicReference
+import kotlin.coroutines.resume
 
+// TODO: Rename the package to 'ExpoMail'
+@ExpoModule("ExpoMailComposer")
 class MailComposerModule : Module() {
-  private val context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-  private var composerOpened = false
-  private var pendingPromise: Promise? = null
+  private val pendingResult = AtomicReference<CancellableContinuation<MailComposerResult>?>(null)
 
-  override fun definition() = ModuleDefinition {
-    // TODO: Rename the package to 'ExpoMail'
-    Name("ExpoMailComposer")
-
-    AsyncFunction<Boolean>("isAvailableAsync") {
-      try {
-        val intent = Intent(Intent.ACTION_SENDTO).apply { data = Uri.parse(MAILTO_URI) }
-        val packageManager = context.packageManager
-        val canOpen = packageManager != null && intent.resolveActivity(packageManager) != null
-
-        return@AsyncFunction canOpen
-      } catch (e: Exception) {
-        throw ResolveActivityException(e)
+  private val activityEventListener = object : ActivityEventListener {
+    override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+      if (requestCode != REQUEST_CODE) {
+        return
       }
+      pendingResult.getAndSet(null)?.resume(MailComposerResult(status = "sent"))
     }
 
-    Function("getClients") {
-      return@Function getAvailableMailClients()
-    }
+    override fun onNewIntent(intent: Intent) = Unit
+  }
 
-    AsyncFunction("composeAsync") { options: MailComposerOptions, promise: Promise ->
+  override fun onDestroy() {
+    reactContextOrNull?.removeActivityEventListener(activityEventListener)
+  }
+
+  @JS
+  suspend fun isAvailableAsync(): Boolean = withContext(Dispatchers.IO) {
+    try {
       val intent = Intent(Intent.ACTION_SENDTO).apply { data = Uri.parse(MAILTO_URI) }
-      val application = appContext.throwingActivity.application
-      val resolveInfo = context.packageManager.queryIntentActivities(intent, 0)
+      val packageManager = androidContext.packageManager
+      packageManager != null && intent.resolveActivity(packageManager) != null
+    } catch (e: Exception) {
+      throw ResolveActivityException(e)
+    }
+  }
 
-      val mailIntents = resolveInfo.map { info ->
-        val mailIntentBuilder = MailIntentBuilder(options)
-          .setComponentName(info.activityInfo.packageName, info.activityInfo.name)
-          .putRecipients(Intent.EXTRA_EMAIL)
-          .putCcRecipients(Intent.EXTRA_CC)
-          .putBccRecipients(Intent.EXTRA_BCC)
-          .putSubject(Intent.EXTRA_SUBJECT)
-          .putBody(Intent.EXTRA_TEXT, options.isHtml == true)
-          .putAttachments(Intent.EXTRA_STREAM, application)
-        mailIntentBuilder.build()
-      }.toMutableList()
+  @JS
+  fun getClients(): List<MailClient> {
+    return getAvailableMailClients()
+  }
 
-      val primaryIntent = mailIntents.removeAt(mailIntents.size - 1)
-      val chooser = Intent.createChooser(primaryIntent, null).apply {
-        putExtra(Intent.EXTRA_INITIAL_INTENTS, mailIntents.toTypedArray())
-        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-      }
+  @JS
+  suspend fun composeAsync(options: MailComposerOptions): MailComposerResult {
+    val activity = currentActivity ?: throw Exceptions.MissingActivity()
+    val intent = Intent(Intent.ACTION_SENDTO).apply { data = Uri.parse(MAILTO_URI) }
+    val application = activity.application
+    val resolveInfo = androidContext.packageManager.queryIntentActivities(intent, 0)
 
-      pendingPromise = promise
-      appContext.throwingActivity.startActivityForResult(chooser, REQUEST_CODE)
-      composerOpened = true
+    val mailIntents = resolveInfo.map { info ->
+      val mailIntentBuilder = MailIntentBuilder(options)
+        .setComponentName(info.activityInfo.packageName, info.activityInfo.name)
+        .putRecipients(Intent.EXTRA_EMAIL)
+        .putCcRecipients(Intent.EXTRA_CC)
+        .putBccRecipients(Intent.EXTRA_BCC)
+        .putSubject(Intent.EXTRA_SUBJECT)
+        .putBody(Intent.EXTRA_TEXT, options.isHtml == true)
+        .putAttachments(Intent.EXTRA_STREAM, application)
+      mailIntentBuilder.build()
+    }.toMutableList()
+
+    val primaryIntent = mailIntents.removeAt(mailIntents.size - 1)
+    val chooser = Intent.createChooser(primaryIntent, null).apply {
+      putExtra(Intent.EXTRA_INITIAL_INTENTS, mailIntents.toTypedArray())
+      addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
 
-    OnActivityResult { _, payload ->
-      if (payload.requestCode == REQUEST_CODE && pendingPromise != null) {
-        val promise = pendingPromise ?: return@OnActivityResult
-        if (composerOpened) {
-          composerOpened = false
-          promise.resolve(Bundle().apply { putString("status", "sent") })
-        }
+    reactContext.addActivityEventListener(activityEventListener)
+
+    return suspendCancellableCoroutine { continuation ->
+      pendingResult.set(continuation)
+      continuation.invokeOnCancellation { pendingResult.compareAndSet(continuation, null) }
+
+      try {
+        activity.startActivityForResult(chooser, REQUEST_CODE)
+      } catch (e: Throwable) {
+        pendingResult.compareAndSet(continuation, null)
+        throw e
       }
     }
   }
@@ -78,7 +100,7 @@ class MailComposerModule : Module() {
     val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
       data = Uri.parse(MAILTO_URI)
     }
-    val pm = context.packageManager
+    val pm = androidContext.packageManager
     val resolveInfoList = pm.queryIntentActivities(emailIntent, 0)
 
     return resolveInfoList.map { resolveInfo ->
