@@ -16,6 +16,7 @@ import { useRouterConfig } from './global-state/useStore';
 import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { Screen } from './primitives';
+import { useClientLayoutEffect } from './react-navigation/core/useClientLayoutEffect';
 import type { LinkingOptions } from './react-navigation/native';
 import { StackRouter, useNavigationBuilder } from './react-navigation/native';
 import { initScreensFeatureFlags } from './screensFeatureFlags';
@@ -150,10 +151,17 @@ function Content({ rootComponent }: { rootComponent: ComponentType<any> }) {
   if (shouldAppendSitemap()) {
     children.push(<Screen key="SITEMAP" name={SITEMAP_ROUTE_NAME} component={Sitemap} />);
   }
-  const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
+  const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
     children,
     id: INTERNAL_SLOT_NAME,
   });
+
+  const delegatesBack = state.index === 0 && state.routes[0]?.name === INTERNAL_SLOT_NAME;
+  useClientLayoutEffect(() => {
+    if (!delegatesBack) return;
+    const subscription = navigation.registerNativeBackNavigation();
+    return () => subscription.remove();
+  }, [navigation, state.key, delegatesBack]);
 
   useEffect(() => {
     maybeHideSplashScreen();

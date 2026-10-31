@@ -7,6 +7,7 @@ import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutE
 import type { NavigationAction } from '../react-navigation/routers';
 import type { BrowserHistoryAdapter } from './browserHistory.types';
 import { internalNavigationEvents } from './internalNavigationEvents';
+import type { NavigationActionResult } from './navigationActionResult';
 import { GlobalRemovalEventEmitterRegistryContext } from './removalPrevention';
 import type { NavigationTreeReport } from './useNavigationTreeReducer';
 
@@ -55,7 +56,8 @@ function warnUnhandledAction(action: NavigationAction) {
 export function useNavigationTreeReportEvents(
   report: NavigationTreeReport | undefined,
   consumeReportEvents: (eventIds: readonly number[]) => void,
-  browserHistory: BrowserHistoryAdapter
+  browserHistory: BrowserHistoryAdapter,
+  settleActionResult?: (id: number, result: NavigationActionResult) => void
 ) {
   const emitterRegistry = React.use(GlobalRemovalEventEmitterRegistryContext)!;
   const consumedIds = React.useRef(new Set<number>());
@@ -81,6 +83,9 @@ export function useNavigationTreeReportEvents(
       // A listener that throws must not stop the remaining events from being delivered.
       try {
         switch (event.type) {
+          case 'action-result':
+            settleActionResult?.(event.transactionId, event.result);
+            break;
           case 'unhandled-action':
             warnUnhandledAction(event.action);
             break;
@@ -127,5 +132,5 @@ export function useNavigationTreeReportEvents(
     if (ids.length > 0) {
       consumeReportEvents(ids);
     }
-  }, [browserHistory, consumeReportEvents, emitterRegistry, report]);
+  }, [browserHistory, consumeReportEvents, emitterRegistry, report, settleActionResult]);
 }
