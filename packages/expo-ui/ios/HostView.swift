@@ -272,9 +272,9 @@ private struct FillAlignmentModifier: ViewModifier {
       // controller centers the overflow instead of keeping it at `alignment`. The proposal is
       // smaller on every frame where the hosting view still has the previous content size.
       content.frame(
-        minWidth: pinHorizontal ? 0 : nil,
+        minWidth: fillHorizontal || pinHorizontal ? 0 : nil,
         maxWidth: fillHorizontal || pinHorizontal ? .infinity : nil,
-        minHeight: pinVertical ? 0 : nil,
+        minHeight: fillVertical || pinVertical ? 0 : nil,
         maxHeight: fillVertical || pinVertical ? .infinity : nil,
         alignment: alignment
       )
