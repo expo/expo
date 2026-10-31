@@ -82,6 +82,15 @@ struct AesCryptoModuleTests {
           }
         );
       }
+      // Returns the code of the error that the callback throws, or 'returned'.
+      function thrownCode(callback) {
+        try {
+          callback();
+          return 'returned';
+        } catch (error) {
+          return String(error.code);
+        }
+      }
       """
     )
   }
@@ -261,6 +270,12 @@ struct AesCryptoModuleTests {
     #expect(try result.asString() == "ERR_INVALID_BASE64")
   }
 
+  @Test
+  func `encryptAsync rejects an empty nonce`() async throws {
+    let result = try await runtime.evalAsync("rejectionCode(encrypt(plaintext, { nonce: new Uint8Array(0) }))")
+    #expect(try result.asString() == "ERR_ENCRYPTION_FAILED")
+  }
+
   // MARK: - decryptAsync
 
   @Test
@@ -286,13 +301,13 @@ struct AesCryptoModuleTests {
       encrypt(plaintext, { additionalData: additionalData }).then(function (sealedData) {
         return Promise.all([
           decrypt(sealedData, { additionalData: '\(Reference.additionalDataBase64)' }).then(hex),
-          rejects(decrypt(sealedData, { additionalData: new Uint8Array([1]) })),
-          rejects(decrypt(sealedData)),
+          rejectionCode(decrypt(sealedData, { additionalData: new Uint8Array([1]) })),
+          rejectionCode(decrypt(sealedData)),
         ]);
       }).then(join)
       """
     )
-    #expect(try result.asString() == "\(Reference.plaintextHex) true true")
+    #expect(try result.asString() == "\(Reference.plaintextHex) ERR_DECRYPTION_FAILED ERR_DECRYPTION_FAILED")
   }
 
   @Test
@@ -300,11 +315,11 @@ struct AesCryptoModuleTests {
     let result = try await runtime.evalAsync(
       """
       Promise.all([encrypt(plaintext), AES.EncryptionKey.generate()]).then(function (values) {
-        return rejects(AES.decryptAsync(values[0], values[1]));
+        return rejectionCode(AES.decryptAsync(values[0], values[1]));
       })
       """
     )
-    #expect(try result.asBool() == true)
+    #expect(try result.asString() == "ERR_DECRYPTION_FAILED")
   }
 
   // MARK: - SealedData
@@ -409,6 +424,23 @@ struct AesCryptoModuleTests {
     )
     let parts = "\(Reference.nonceHex) \(Reference.ciphertextHex) \(Reference.tagHex)"
     #expect(try result.asString() == "\(parts) \(parts) \(parts)")
+  }
+
+  @Test
+  func `fromCombined and fromParts reject parts of an invalid length`() throws {
+    let result = try runtime.eval(
+      """
+      join([
+        thrownCode(function () {
+          return AES.SealedData.fromCombined(new Uint8Array(5));
+        }),
+        thrownCode(function () {
+          return AES.SealedData.fromParts(new Uint8Array(0), plaintext, 16);
+        }),
+      ])
+      """
+    )
+    #expect(try result.asString() == "ERR_INVALID_SEALED_DATA_CONFIG ERR_INVALID_SEALED_DATA_CONFIG")
   }
 }
 
