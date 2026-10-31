@@ -124,7 +124,7 @@ func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double = 
 /**
  Returns a bool whether the image should be downscaled to the given size.
  */
-func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool {
+func shouldDownscale(pixelSize imageSize: CGSize, toSize size: CGSize, scale: Double) -> Bool {
   if size.width <= 0 || size.height <= 0 {
     // View is invisible, so no reason to keep the image in memory.
     // This already ensures that we won't be diving by zero in ratio calculations.
@@ -134,7 +134,6 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
     // Keep the image unscaled for infinite sizes.
     return false
   }
-  let imageSize = image.size * image.scale
   return imageSize.width > (size.width * scale) && imageSize.height > (size.height * scale)
 }
 
@@ -155,6 +154,13 @@ func resize(image: UIImage, toSize size: CGSize, scale: Double) -> UIImage {
  May be `nil` if there are no sources available or the size is zero.
  */
 func getBestSource(from sources: [ImageSource]?, forSize size: CGSize, scale: Double = 1.0) -> ImageSource? {
+  return getBestSourceIndex(from: sources, forSize: size, scale: scale).flatMap { sources?[$0] }
+}
+
+/**
+ The index of the source that `getBestSource` returns.
+ */
+func getBestSourceIndex(from sources: [ImageSource]?, forSize size: CGSize, scale: Double = 1.0) -> Int? {
   guard let sources = sources, !sources.isEmpty else {
     return nil
   }
@@ -162,21 +168,21 @@ func getBestSource(from sources: [ImageSource]?, forSize size: CGSize, scale: Do
     return nil
   }
   if sources.count == 1 {
-    return sources.first
+    return 0
   }
-  var bestSource: ImageSource?
+  var bestIndex: Int?
   var bestFit = Double.infinity
   let targetPixelCount = size.width * size.height * scale * scale
 
-  for source in sources {
+  for (index, source) in sources.enumerated() {
     let fit = abs(1 - (source.pixelCount / targetPixelCount))
 
     if fit < bestFit {
-      bestSource = source
+      bestIndex = index
       bestFit = fit
     }
   }
-  return bestSource
+  return bestIndex
 }
 
 /**
