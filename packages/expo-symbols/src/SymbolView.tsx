@@ -51,6 +51,9 @@ export function SymbolView({
     <View collapsable={false} {...viewProps} style={style}>
       <Text
         aria-hidden
+        // The glyph is drawn with a font, so by default it follows the system font size, but the
+        // view around it is a fixed `size`. Keep the glyph at `size`, like the iOS image.
+        allowFontScaling={false}
         style={{
           fontFamily: font.name,
           color: tintColor ?? DEFAULT_SYMBOL_COLOR,
