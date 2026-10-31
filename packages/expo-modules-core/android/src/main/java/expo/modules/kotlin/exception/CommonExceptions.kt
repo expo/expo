@@ -67,13 +67,9 @@ class Exceptions {
   class UnsupportedHostActivity(
     activity: Activity,
     requiredClass: Class<out Activity>,
-    requester: String = "Expo Modules Core"
-  ) : CodedException(
-    message = "$requester needs a host Activity that extends ${requiredClass.name}. " +
-      "The current Activity ${activity.javaClass.name} does not extend it. " +
-      "Change the superclass of ${activity.javaClass.simpleName} to ${requiredClass.simpleName} " +
-      "or to one of its subclasses, such as AppCompatActivity."
-  )
+    requester: String = "Expo Modules Core",
+    feature: String? = null
+  ) : CodedException(message = unsupportedHostActivityMessage(activity, requiredClass, requester, feature))
 
   /**
    * An exception to throw when function was called on the incorrect thread.
@@ -105,4 +101,27 @@ class Exceptions {
     message: String,
     cause: Throwable? = null
   ) : CodedException(message, cause)
+}
+
+/**
+ * Builds the message of [Exceptions.UnsupportedHostActivity].
+ * [feature] names the part of the requester that needs the Activity class, when the rest works on any host.
+ */
+private fun unsupportedHostActivityMessage(
+  activity: Activity,
+  requiredClass: Class<out Activity>,
+  requester: String,
+  feature: String?
+): String {
+  val fix = "change the superclass of ${activity.javaClass.simpleName} to ${requiredClass.simpleName} " +
+    "or to one of its subclasses, such as AppCompatActivity."
+  return if (feature == null) {
+    "$requester needs a host Activity that extends ${requiredClass.name}. " +
+      "The current Activity ${activity.javaClass.name} does not extend it. " +
+      fix.replaceFirstChar { it.uppercase() }
+  } else {
+    "$requester needs a host Activity that extends ${requiredClass.name} for $feature. " +
+      "The current Activity ${activity.javaClass.name} does not extend it. Its other functions work. " +
+      "To use $feature, $fix"
+  }
 }
