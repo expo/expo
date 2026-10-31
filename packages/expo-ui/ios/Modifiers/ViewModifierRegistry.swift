@@ -1676,6 +1676,9 @@ public class ViewModifierRegistry {
       guard let modifier = try? ResizableModifier(from: params, appContext: appContext)
       else { return image.resizable() }
       return image.resizable(capInsets: EdgeInsets(top: modifier.top, leading: modifier.leading, bottom: modifier.bottom, trailing: modifier.trailing), resizingMode: modifier.resizingMode.toResizingMode)
+    case "renderingMode":
+      let modifier = try? RenderingModeModifier(from: params, appContext: appContext)
+      return image.renderingMode(modifier?.mode?.toTemplateRenderingMode)
     default:
       #if DEBUG
       return image

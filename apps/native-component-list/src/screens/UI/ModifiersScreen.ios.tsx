@@ -81,6 +81,7 @@ import {
   lineLimit,
   contentShape,
   shapes,
+  renderingMode,
   resizable,
   tint,
   redacted,
@@ -939,6 +940,38 @@ export default function ModifiersScreen() {
                       frame({ width: 140, height: 90 }),
                       background('#E8F8F5'),
                       border({ content: '#16A085', width: 1 }),
+                    ]}
+                  />
+                </VStack>
+              </HStack>
+            )}
+
+            {wordmarkUri && (
+              <HStack spacing={16}>
+                <VStack alignment="center" spacing={8}>
+                  <Text modifiers={[font({ size: 12 })]}>renderingMode original</Text>
+                  <Image
+                    uiImage={wordmarkUri}
+                    modifiers={[
+                      renderingMode('original'),
+                      resizable(),
+                      aspectRatio({ contentMode: 'fit' }),
+                      frame({ width: 140, height: 90 }),
+                      foregroundStyle({ type: 'color', color: '#E74C3C' }),
+                    ]}
+                  />
+                </VStack>
+
+                <VStack alignment="center" spacing={8}>
+                  <Text modifiers={[font({ size: 12 })]}>renderingMode template</Text>
+                  <Image
+                    uiImage={wordmarkUri}
+                    modifiers={[
+                      renderingMode('template'),
+                      resizable(),
+                      aspectRatio({ contentMode: 'fit' }),
+                      frame({ width: 140, height: 90 }),
+                      foregroundStyle({ type: 'color', color: '#E74C3C' }),
                     ]}
                   />
                 </VStack>
