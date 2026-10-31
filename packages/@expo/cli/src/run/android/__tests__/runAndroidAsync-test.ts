@@ -42,6 +42,7 @@ jest.mock('../../startBundler', () => ({
     startAsync: jest.fn(),
     getDefaultDevServer: jest.fn(() => ({
       openCustomRuntimeAsync: jest.fn(),
+      getDevServerUrl: jest.fn(() => null),
     })),
   })),
 }));
