@@ -1,6 +1,6 @@
 package expo.modules.cellular
 
-import expo.modules.kotlin.types.Enumerable
+import io.github.expo.modules.v2.Enumerable
 
 enum class CellularGeneration(val value: Int) : Enumerable {
   UNKNOWN(0),

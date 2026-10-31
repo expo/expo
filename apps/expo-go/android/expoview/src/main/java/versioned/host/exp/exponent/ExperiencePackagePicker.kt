@@ -10,7 +10,6 @@ import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
 import expo.modules.calendar.CalendarModule
 import expo.modules.camera.CameraViewModule
-import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsModule
 import expo.modules.constants.ConstantsService
@@ -143,7 +142,6 @@ object ExperiencePackagePicker : ModulesProvider {
     BlurModule::class.java to null,
     CalendarModule::class.java to null,
     CameraViewModule::class.java to null,
-    CellularModule::class.java to null,
     ClipboardModule::class.java to null,
     ConstantsModule::class.java to null,
     ContactsModule::class.java to null,
