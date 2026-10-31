@@ -6,6 +6,8 @@
 
 - Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
 
+- [iOS] Add missing Apple authorization error codes. ([#50572](https://github.com/expo/expo/pull/50572) by [@fobos531](https://github.com/fobos531))
+
 ## 58.0.1 — 2026-09-21
 
 _This version does not introduce any user-facing changes._
