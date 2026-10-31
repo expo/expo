@@ -79,7 +79,7 @@ If the rendered text is longer than 255 characters, EAS truncates it to 254 char
 
 ## `on`
 
-The `on` key defines which GitHub events trigger the workflow. Any workflow can be triggered with the `eas workflow:run` command, regardless of the `on` key.
+The `on` key defines events that trigger the workflow. Any workflow can also be triggered with the `eas workflow:run` command, regardless of the `on` key.
 
 ```yaml
 on:
@@ -381,6 +381,31 @@ on:
     build_upload: {}
 ```
 
+### `on.observe.new_error`
+
+> **info** This trigger is under review and is not available in production yet. This section should be published after the Observe workflow trigger is released.
+
+Runs a workflow when EAS Observe detects an error group for the first time in an environment. Repeated occurrences of the same error group do not start new runs. Add the workflow file to the default branch of a repository linked to your project.
+
+Use `environments` to select environment names and `platforms` to select `ios` or `android`. Both filters are optional. An `if` condition can inspect the detected error through `observe.event`, including `severity` (`fatal` or `error`) and `exception.message`. See [trigger conditions](#ontriggerif).
+
+This example pauses for human review when a new fatal error is detected in production:
+
+```yaml
+name: Review new fatal errors
+
+on:
+  observe:
+    new_error:
+      environments: [production]
+      platforms: [ios, android]
+      if: ${{ observe.event.severity == 'fatal' }}
+
+jobs:
+  review_error:
+    type: require-approval
+```
+
 ### `on.schedule.cron`
 
 > **info** Scheduled workflows are available on paid plans. Learn more at [EAS pricing](https://expo.dev/pricing).
@@ -483,7 +508,7 @@ jobs:
 
 The `if` condition on a trigger decides whether a workflow run starts.
 
-You can add `if:` under `push`, `ref_delete`, `pull_request`, `pull_request_labeled`, `pull_request_comment`, and each `app_store_connect` event domain (`app_version`, `build_upload`, `external_beta`, or `beta_feedback`).
+You can add `if:` under `push`, `ref_delete`, `pull_request`, `pull_request_labeled`, `pull_request_comment`, `observe.new_error`, and each `app_store_connect` event domain (`app_version`, `build_upload`, `external_beta`, or `beta_feedback`).
 
 The value is a boolean or an expression string. You can write it with or without the `${{ }}` wrapper.
 
@@ -499,7 +524,7 @@ The expression must fit in one `${{ }}` block and can be at most 250 characters.
 
 When the condition evaluates to false, no workflow run starts for that trigger event. A retry of an existing run skips this check. It only applies when a new run is created.
 
-The expression can use the [`github`](#github), [`app_store_connect`](#app_store_connect), [`inputs`](#inputs), [`workflow`](#workflow), [`app`](#app), and [`account`](#account) contexts. It supports all [context functions](#context-functions) except `success()`, `failure()`, and `hashFiles()`. Those functions need a job or step that has already run, but a trigger's `if` condition evaluates before any job starts.
+The expression can use the [`github`](#github), [`app_store_connect`](#app_store_connect), [`inputs`](#inputs), [`workflow`](#workflow), [`app`](#app), and [`account`](#account) contexts. An `observe.new_error` condition can also use `observe.event`. It supports all [context functions](#context-functions) except `success()`, `failure()`, and `hashFiles()`. Those functions need a job or step that has already run, but a trigger's `if` condition evaluates before any job starts.
 
 ```yaml
 on:
