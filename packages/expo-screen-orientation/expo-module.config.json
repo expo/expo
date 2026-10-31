@@ -6,7 +6,6 @@
     "modules": ["ScreenOrientationModule"]
   },
   "android": {
-    "modules": ["expo.modules.screenorientation.ScreenOrientationModule"],
     "publication": {
       "groupId": "host.exp.exponent",
       "artifactId": "expo.modules.screenorientation",

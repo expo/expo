@@ -61,7 +61,6 @@ import expo.modules.notifications.tokens.PushTokenModule
 import expo.modules.print.PrintModule
 import expo.modules.router.ExpoRouterModule
 import expo.modules.screencapture.ScreenCaptureModule
-import expo.modules.screenorientation.ScreenOrientationModule
 import expo.modules.sensors.modules.AccelerometerModule
 import expo.modules.sensors.modules.BarometerModule
 import expo.modules.sensors.modules.DeviceMotionModule
@@ -179,7 +178,6 @@ object ExperiencePackagePicker : ModulesProvider {
     NavigationBarModule::class.java to null,
     NetworkModule::class.java to null,
     ScreenCaptureModule::class.java to null,
-    ScreenOrientationModule::class.java to null,
     // SecureStoreModule is not added here, instead it is added in ExpoModuleRegistryAdapter.kt,
     // because it needs access to scopedContext for Expo Go support
     SMSModule::class.java to null,

@@ -7,87 +7,85 @@ import android.view.Surface
 import android.view.WindowInsets
 
 import expo.modules.core.errors.InvalidArgumentException
-import expo.modules.core.interfaces.LifecycleEventListener
-import expo.modules.core.interfaces.services.UIManager
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.screenorientation.enums.Orientation
 import expo.modules.screenorientation.enums.OrientationAttr
 import expo.modules.screenorientation.enums.OrientationLock
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.currentActivity as reactCurrentActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-class ScreenOrientationModule : Module(), LifecycleEventListener {
-  private val weakCurrentActivity get() = appContext.currentActivity
+@ExpoModule("ExpoScreenOrientation")
+class ScreenOrientationModule : Module() {
+  private val weakCurrentActivity get() = reactCurrentActivity
   private val currentActivity
     get() = weakCurrentActivity ?: throw Exceptions.MissingActivity()
 
-  private val uiManager
-    get() = appContext.legacyModuleRegistry.getModule(UIManager::class.java)
-      ?: throw IllegalStateException("Could not find implementation for UIManager.")
-
+  @Volatile
   private var initialOrientation: Int? = null
 
-  override fun definition() = ModuleDefinition {
-    Name("ExpoScreenOrientation")
+  // This is unused on Android. It is only here to suppress the native event emitter warning
+  @Event(name = "expoDidUpdateDimensions")
+  private val onDidUpdateDimensions = event<Map<String, Any?>>()
 
-    // This is unused on Android. It is only here to suppress the native event emitter warning
-    Events("expoDidUpdateDimensions")
-
-    AsyncFunction("lockAsync") { orientationLock: OrientationLock ->
-      try {
-        currentActivity.requestedOrientation = orientationLock.toPlatformInt()
-      } catch (e: InvalidArgumentException) {
-        throw InvalidOrientationLockException(orientationLock.value, e)
-      }
-    }
-
-    AsyncFunction("lockPlatformAsync") { orientationAttr: OrientationAttr ->
-      currentActivity.requestedOrientation = orientationAttr.value
-    }
-
-    AsyncFunction<Int>("getOrientationAsync") {
-      return@AsyncFunction getScreenOrientation(currentActivity).value
-    }
-
-    AsyncFunction<OrientationLock>("getOrientationLockAsync") {
-      try {
-        return@AsyncFunction OrientationLock.fromPlatformInt(currentActivity.requestedOrientation)
-      } catch (e: Exception) {
-        throw GetOrientationLockException(e)
-      }
-    }
-
-    AsyncFunction<Int>("getPlatformOrientationLockAsync") {
-      try {
-        return@AsyncFunction currentActivity.requestedOrientation
-      } catch (e: Exception) {
-        throw GetPlatformOrientationLockException(e)
-      }
-    }
-
-    AsyncFunction("supportsOrientationLockAsync") { orientationLock: Int ->
-      return@AsyncFunction OrientationLock.supportsOrientationLock(orientationLock)
-    }
-
-    OnCreate {
-      uiManager.registerLifecycleEventListener(this@ScreenOrientationModule)
-    }
-
-    OnDestroy {
-      uiManager.unregisterLifecycleEventListener(this@ScreenOrientationModule)
-      initialOrientation?.let {
-        weakCurrentActivity?.requestedOrientation = it
-      }
+  override fun onDestroy() {
+    initialOrientation?.let {
+      weakCurrentActivity?.requestedOrientation = it
     }
   }
 
-  override fun onHostResume() {
-    initialOrientation = initialOrientation ?: weakCurrentActivity?.requestedOrientation
+  @JS
+  suspend fun lockAsync(orientationLock: OrientationLock): Unit = withContext(Dispatchers.IO) {
+    try {
+      setRequestedOrientation(orientationLock.toPlatformInt())
+    } catch (e: InvalidArgumentException) {
+      throw InvalidOrientationLockException(orientationLock.value, e)
+    }
   }
 
-  override fun onHostPause() = Unit
+  @JS
+  suspend fun lockPlatformAsync(orientationAttr: OrientationAttr): Unit = withContext(Dispatchers.IO) {
+    setRequestedOrientation(orientationAttr.value)
+  }
 
-  override fun onHostDestroy() = Unit
+  @JS
+  suspend fun getOrientationAsync(): Int = withContext(Dispatchers.IO) {
+    getScreenOrientation(currentActivity).value
+  }
+
+  @JS
+  suspend fun getOrientationLockAsync(): OrientationLock = withContext(Dispatchers.IO) {
+    try {
+      OrientationLock.fromPlatformInt(currentActivity.requestedOrientation)
+    } catch (e: Exception) {
+      throw GetOrientationLockException(e)
+    }
+  }
+
+  @JS
+  suspend fun getPlatformOrientationLockAsync(): Int = withContext(Dispatchers.IO) {
+    try {
+      currentActivity.requestedOrientation
+    } catch (e: Exception) {
+      throw GetPlatformOrientationLockException(e)
+    }
+  }
+
+  @JS
+  suspend fun supportsOrientationLockAsync(orientationLock: Int): Boolean = withContext(Dispatchers.IO) {
+    OrientationLock.supportsOrientationLock(orientationLock)
+  }
+
+  // Remembers the orientation from before the first lock, so `onDestroy` can restore it.
+  private fun setRequestedOrientation(orientation: Int) {
+    val activity = currentActivity
+    initialOrientation = initialOrientation ?: activity.requestedOrientation
+    activity.requestedOrientation = orientation
+  }
 
   // https://stackoverflow.com/a/10383164/1123156
   // Will not work in all cases as surface rotation is not standardized across android devices, but this is best effort

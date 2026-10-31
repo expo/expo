@@ -1,7 +1,7 @@
 package expo.modules.screenorientation.enums
 
 import expo.modules.core.errors.InvalidArgumentException
-import expo.modules.kotlin.types.Enumerable
+import io.github.expo.modules.v2.Enumerable
 
 enum class OrientationLock(val value: Int) : Enumerable {
   Unspecified(0),
