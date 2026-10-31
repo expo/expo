@@ -23,6 +23,30 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - ExpoSelectableText (58.0.0):
+    - ExpoModulesCore
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-cxxstableapi
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - boost (1.84.0):
     - ReactNativeDependencies
   - DoubleConversion (1.1.6):
@@ -3353,6 +3377,7 @@ PODS:
 
 DEPENDENCIES:
   - BenchmarkingModule (from `../modules/benchmarking/ios`)
+  - ExpoSelectableText (from `../../../packages/expo-selectable-text/ios`)
   - boost (from `build/rndeps-facades/boost`)
   - DoubleConversion (from `build/rndeps-facades/DoubleConversion`)
   - EASClient (from `../../../packages/expo-eas-client/ios`)
@@ -3615,6 +3640,9 @@ EXTERNAL SOURCES:
   BenchmarkingModule:
     inhibit_warnings: false
     :path: "../modules/benchmarking/ios"
+  ExpoSelectableText:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-selectable-text/ios"
   boost:
     :path: build/rndeps-facades/boost
   DoubleConversion:
@@ -4107,6 +4135,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   BenchmarkingModule: 04b4ea60128885663c09d77c9ce097f56f23710a
+  ExpoSelectableText: ba2c29541554504323f00cc02089889366ec0695
   boost: 8502bfdc46e2804408af2e163049ece181009af4
   DoubleConversion: 501a575c40c0b50c89685762dd3e415e6bb26fb0
   EASClient: 672e41a9aa3481e4f4efbea7fc001573d9a7fa85

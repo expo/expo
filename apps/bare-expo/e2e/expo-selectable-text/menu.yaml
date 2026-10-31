@@ -1,0 +1,19 @@
+appId: dev.expo.Payments
+---
+# Start from a fresh screen, so the status shows no earlier action.
+- openLink: bareexpo://components/selectable-text
+- openLink: bareexpo://components/selectable-text/basics
+- assertVisible: 'Last action: None'
+
+# A custom item reports the selected range.
+- longPressOn:
+    text: 'Long press to select part of this text, then pick a custom action from the menu.'
+    index: 0
+- tapOn: 'Add to chat'
+- assertVisible: 'Last action: add-to-chat: ".+" \[\d+, \d+\)'
+
+# A nested pressable `Text` still presses.
+- tapOn:
+    text: 'pressable link'
+    index: 0
+- assertVisible: 'Link presses: 1'

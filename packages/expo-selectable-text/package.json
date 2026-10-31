@@ -1,0 +1,61 @@
+{
+  "name": "expo-selectable-text",
+  "version": "58.0.0",
+  "description": "Native range selection and custom selection menu items for React Native Text.",
+  "keywords": [
+    "expo",
+    "expo-selectable-text",
+    "react-native",
+    "selection",
+    "text"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-selectable-text",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-selectable-text"
+  },
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
+    "@types/react": "~19.3.0",
+    "expo": "workspace:*",
+    "test-renderer": "^1.3.0"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  },
+  "jest": {
+    "preset": "@expo/internal-scripts"
+  }
+}
