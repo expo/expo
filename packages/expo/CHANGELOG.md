@@ -1,5 +1,11 @@
 # Changelog
 
+## Unpublished
+
+### Bug fixes
+
+- Fix `ViewStyle` and `TextStyle` type checking against React Native 0.88 by removing the web `position` and `cursor` redeclarations. ([#52607](https://github.com/expo/expo/issues/52607) by [@itisrmk](https://github.com/itisrmk))
+
 ## 58.0.19
 
 ### Patch Changes

@@ -41,8 +41,6 @@ declare module 'react-native' {
     /** @platform web */
     clip?: string;
     /** @platform web */
-    cursor?: string;
-    /** @platform web */
     gridAutoColumns?: string;
     /** @platform web */
     gridAutoFlow?: string;
@@ -98,8 +96,6 @@ declare module 'react-native' {
     visibility?: string;
     /** @platform web */
     willChange?: string;
-    /** @platform web */
-    position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
   }
 
   /**
@@ -143,8 +139,6 @@ declare module 'react-native' {
     backgroundOrigin?: 'border-box' | 'content-box' | 'padding-box';
     /** @platform web */
     clip?: string;
-    /** @platform web */
-    cursor?: string;
     /** @platform web */
     gridAutoColumns?: string;
     /** @platform web */
@@ -199,8 +193,6 @@ declare module 'react-native' {
     visibility?: string;
     /** @platform web */
     willChange?: string;
-    /** @platform web */
-    position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
     /** @platform web */
     fontFeatureSettings?: string;
     /** @platform web */
