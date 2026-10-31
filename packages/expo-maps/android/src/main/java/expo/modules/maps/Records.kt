@@ -27,6 +27,12 @@ data class SetCameraPositionConfig(
   val zoom: Float?,
 
   @Field
+  val tilt: Float?,
+
+  @Field
+  val bearing: Float?,
+
+  @Field
   val duration: Int?
 ) : Record
 
@@ -130,7 +136,13 @@ data class CameraPositionRecord(
   val coordinates: Coordinates = Coordinates(),
 
   @Field
-  val zoom: Float = 10f
+  val zoom: Float = 10f,
+
+  @Field
+  val tilt: Float = 0f,
+
+  @Field
+  val bearing: Float = 0f
 ) : Record
 
 @OptimizedRecord
