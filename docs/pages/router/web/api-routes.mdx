@@ -914,11 +914,16 @@ Create a Vercel configuration file (**vercel.json**) at the root of your project
 
 ```json vercel.json
 {
+  "build": {
+    "env": {
+      "VERCEL_CLI_VERSION": "vercel@65.2.0"
+    }
+  },
   "buildCommand": "expo export -p web",
   "outputDirectory": "dist/client",
   "functions": {
     "api/index.ts": {
-      "runtime": "@vercel/node@5.1.8",
+      "runtime": "@vercel/node@27.0.1",
       "includeFiles": "dist/server/**"
     }
   },
@@ -991,7 +996,7 @@ Deploy to Vercel with the [Vercel CLI](https://vercel.com/docs/cli).
   cmd={{
     npm: [
       '# Install the Vercel CLI globally if needed.',
-      '$ npm install --global vercel',
+      '$ npm install --global vercel@65.2.0',
       '# Build the website.',
       '$ vercel build',
       '# Deploy the website.',
@@ -999,7 +1004,7 @@ Deploy to Vercel with the [Vercel CLI](https://vercel.com/docs/cli).
     ],
     yarn: [
       '# Install the Vercel CLI globally if needed.',
-      '$ yarn global add vercel',
+      '$ yarn global add vercel@65.2.0',
       '# Build the website.',
       '$ vercel build',
       '# Deploy the website.',
@@ -1007,7 +1012,7 @@ Deploy to Vercel with the [Vercel CLI](https://vercel.com/docs/cli).
     ],
     pnpm: [
       '# Install the Vercel CLI globally if needed.',
-      '$ pnpm add --global vercel',
+      '$ pnpm add --global vercel@65.2.0',
       '# Build the website.',
       '$ vercel build',
       '# Deploy the website.',
@@ -1015,7 +1020,7 @@ Deploy to Vercel with the [Vercel CLI](https://vercel.com/docs/cli).
     ],
     bun: [
       '# Install the Vercel CLI globally if needed.',
-      '$ bun add --global vercel',
+      '$ bun add --global vercel@65.2.0',
       '# Build the website.',
       '$ vercel build',
       '# Deploy the website.',
