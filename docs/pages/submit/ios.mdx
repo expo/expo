@@ -118,7 +118,7 @@ See [Automate submissions](/build/automate-submissions/) for details.
 
 <Collapsible summary="Prefer to bring your own credentials?">
 
-**App Store Connect API Key:** Create your own [API Key](https://expo.fyi/creating-asc-api-key) and set it with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**.
+**App Store Connect API Key:** Create your own [API Key](https://expo.fyi/creating-asc-api-key) and set it with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**. For an [individual key](#choose-an-api-key-type), set only `ascApiKeyPath` and `ascApiKeyId`.
 
 **App-specific password:** Provide your [app-specific password](https://expo.fyi/apple-app-specific-password) via the `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable and set your Apple ID with the `appleId` field in **eas.json**.
 
@@ -154,6 +154,42 @@ This builds an iOS app on every push to `main` and submits it to TestFlight. The
 <Terminal cmd={['$ eas workflow:run submit-ios.yml']} />
 
 See the [workflow examples guide](/eas/workflows/examples/introduction/) for more patterns.
+
+## Choose an API key type
+
+> **info** Individual keys require EAS CLI 24.13.0 or later.
+
+App Store Connect has two types of API keys: team keys and individual keys. Use a team key when possible. When EAS CLI generates a key for you, it creates a team key.
+
+An individual key belongs to one App Store Connect user and has the access and roles of that user. Use an individual key only when you cannot create a team key. Only an **Account Holder** or **Admin** can create a team key. A user with the **Generate Individual API Keys** permission can create an individual key. See [Creating API keys for App Store Connect API](https://developer.apple.com/documentation/appstoreconnectapi/creating-api-keys-for-app-store-connect-api) in Apple's documentation.
+
+An individual key works only with these services:
+
+- EAS Submit, including the TestFlight setup that `eas submit` runs
+- EAS Metadata
+
+An individual key cannot manage certificates, provisioning profiles, or devices.
+
+When a `submit` or `testflight` job in EAS Workflows does not set [`image`](/eas/workflows/syntax/#jobsjob_idimage), EAS selects the image from the project's SDK version. Images for SDK 55 and earlier have a fastlane version that does not support individual keys. If your project uses SDK 55 or earlier, set `image: sdk-56` or later on the job.
+
+To use an individual key, upload your own **.p8** file. When `eas credentials` asks for the key type, select **Individual key (submissions only)**. In the EAS dashboard, select **Individual key** under **Key type** when you upload the key.
+
+With your own credentials, set `ascApiKeyPath` and `ascApiKeyId` in **eas.json** and omit `ascApiKeyIssuerId`:
+
+```json eas.json
+{
+  "submit": {
+    "production": {
+      "ios": {
+        "ascApiKeyPath": "./AuthKey_ABC123DEFG.p8",
+        "ascApiKeyId": "ABC123DEFG"
+      }
+    }
+  }
+}
+```
+
+Do not set an Issuer ID for an individual key. Also unset `EXPO_ASC_ISSUER_ID`. EAS CLI uses that variable for any key that has no Issuer ID. App Store Connect then rejects the request.
 
 ## Use other CI/CD services
 
