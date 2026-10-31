@@ -35,14 +35,14 @@ class ModuleSendEventTest {
   private val module = interopModuleRegistry.appContext.registry.getModule("EventEmittingModule")!!
 
   @Test
-  fun `sendEvent should drop the event after the app context is destroyed`() {
+  fun `sendEvent should not throw after the app context is destroyed`() {
     interopModuleRegistry.onDestroy()
 
     module.sendEvent("onChange")
   }
 
   @Test
-  fun `sendEvent should drop the event after the app context is released`() {
+  fun `sendEvent should not throw after the app context is released`() {
     module.sendEvent("onChange")
     interopModuleRegistry.onDestroy()
     module._appContextHolder = WeakReference(null)
