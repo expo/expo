@@ -52,6 +52,7 @@ data class GoogleMapsViewProps(
   val userLocation: MutableState<UserLocationRecord> = mutableStateOf(UserLocationRecord()),
   val cameraPosition: MutableState<CameraPositionRecord> = mutableStateOf(CameraPositionRecord()),
   val markers: MutableState<List<MarkerRecord>> = mutableStateOf(listOf()),
+  val animateMarkers: MutableState<Boolean> = mutableStateOf(false),
   val polylines: MutableState<List<PolylineRecord>> = mutableStateOf(listOf()),
   val polygons: MutableState<List<PolygonRecord>> = mutableStateOf(listOf()),
   val circles: MutableState<List<CircleRecord>> = mutableStateOf(listOf()),
@@ -192,35 +193,47 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
         }
       )
 
-      for ((marker, state) in markerState.value) {
-        key(marker.id) {
-          val icon = remember(marker.icon) { getIconDescriptor(marker) }
-
-          Marker(
-            state = state,
-            title = marker.title.takeIf { it.isNotEmpty() },
-            snippet = marker.snippet.takeIf { it.isNotEmpty() },
-            draggable = marker.draggable,
-            anchor = marker.anchor.toOffset(),
-            zIndex = marker.zIndex,
-            icon = icon,
-            onClick = {
-              onMarkerClick(
-                // We can't send icon to js, because it's not serializable
-                // So we need to remove it from the marker record
-                MarkerRecord(
-                  id = marker.id,
-                  title = marker.title,
-                  snippet = marker.snippet,
-                  coordinates = marker.coordinates
-                )
-              )
-              !marker.showCallout
-            }
-          )
+      if (props.animateMarkers.value) {
+        AnimatedMarkers(markerState.value) { marker, state, alpha ->
+          MapMarker(marker, state, alpha)
+        }
+      } else {
+        for ((marker, state) in markerState.value) {
+          key(marker.id) {
+            MapMarker(marker, state, alpha = 1f)
+          }
         }
       }
     }
+  }
+
+  @Composable
+  private fun MapMarker(marker: MarkerRecord, state: MarkerState, alpha: Float) {
+    val icon = remember(marker.icon) { getIconDescriptor(marker) }
+
+    Marker(
+      state = state,
+      alpha = alpha,
+      title = marker.title.takeIf { it.isNotEmpty() },
+      snippet = marker.snippet.takeIf { it.isNotEmpty() },
+      draggable = marker.draggable,
+      anchor = marker.anchor.toOffset(),
+      zIndex = marker.zIndex,
+      icon = icon,
+      onClick = {
+        onMarkerClick(
+          // We can't send icon to js, because it's not serializable
+          // So we need to remove it from the marker record
+          MarkerRecord(
+            id = marker.id,
+            title = marker.title,
+            snippet = marker.snippet,
+            coordinates = marker.coordinates
+          )
+        )
+        !marker.showCallout
+      }
+    )
   }
 
   @Composable
