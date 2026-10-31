@@ -4,7 +4,6 @@
     "modules": ["SpeechModule"]
   },
   "android": {
-    "modules": ["expo.modules.speech.SpeechModule"],
     "publication": {
       "groupId": "host.exp.exponent",
       "artifactId": "expo.modules.speech",

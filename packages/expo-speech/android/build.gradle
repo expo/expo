@@ -6,6 +6,10 @@ plugins {
 group = 'host.exp.exponent'
 version = '58.0.3'
 
+expoModule {
+  v2 true
+}
+
 android {
   namespace "expo.modules.speech"
   defaultConfig {
@@ -15,6 +19,7 @@ android {
 }
 
 dependencies {
+  implementation 'com.facebook.react:react-android'
   testImplementation 'io.mockk:mockk:1.14.9'
   testImplementation 'junit:junit:4.13.2'
 }

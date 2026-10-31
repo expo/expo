@@ -4,13 +4,23 @@ import android.os.Bundle
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.speech.tts.Voice
-import expo.modules.kotlin.Promise
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
+import com.facebook.react.bridge.LifecycleEventListener
+import io.github.expo.modules.v2.Constant
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
+import io.github.expo.modules.v2.react.reactContextOrNull
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.util.ArrayDeque
 import java.util.IllformedLocaleException
 import java.util.Locale
 import java.util.Queue
+import kotlin.coroutines.resume
 
 const val speakingStartedEvent = "Exponent.speakingStarted"
 const val speakingWillSayNextStringEvent = "Exponent.speakingWillSayNextString"
@@ -18,71 +28,88 @@ const val speakingDoneEvent = "Exponent.speakingDone"
 const val speakingStoppedEvent = "Exponent.speakingStopped"
 const val speakingErrorEvent = "Exponent.speakingError"
 
+@ExpoModule("ExpoSpeech")
 class SpeechModule : Module() {
   private val delayedUtterances: Queue<Utterance> = ArrayDeque()
-  private val delayedGetVoices: Queue<Promise> = ArrayDeque()
+  private val delayedGetVoices: Queue<CancellableContinuation<List<VoiceRecord>>> = ArrayDeque()
   private var ttsState = TtsState.PENDING
 
-  override fun definition() = ModuleDefinition {
-    Name("ExpoSpeech")
+  @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+  private val queue = Dispatchers.IO.limitedParallelism(1)
 
-    Events(
-      speakingStartedEvent,
-      speakingWillSayNextStringEvent,
-      speakingDoneEvent,
-      speakingStoppedEvent,
-      speakingErrorEvent
-    )
+  private val lifecycleListener = object : LifecycleEventListener {
+    override fun onHostResume() = Unit
+    override fun onHostPause() = Unit
+    override fun onHostDestroy() = textToSpeech.shutdown()
+  }
 
-    Constant("maxSpeechInputLength") {
-      TextToSpeech.getMaxSpeechInputLength()
-    }
+  @Event(name = speakingStartedEvent)
+  private val onSpeakingStarted = event<SpeechEvent>()
 
-    OnActivityDestroys {
-      textToSpeech.shutdown()
-    }
+  @Event(name = speakingWillSayNextStringEvent)
+  private val onSpeakingWillSayNextString = event<SpeechRangeEvent>()
 
-    AsyncFunction<Boolean>("isSpeaking") {
-      textToSpeech.isSpeaking
-    }
+  @Event(name = speakingDoneEvent)
+  private val onSpeakingDone = event<SpeechEvent>()
 
-    AsyncFunction("getVoices") { promise: Promise ->
-      when (ttsState) {
-        TtsState.READY -> promise.resolve(getVoices())
-        TtsState.FAILED -> promise.resolve(emptyList<VoiceRecord>())
-        TtsState.PENDING -> {
-          delayedGetVoices.add(promise)
+  @Event(name = speakingStoppedEvent)
+  private val onSpeakingStopped = event<SpeechEvent>()
 
-          // Init TTS, the promise will be fulfilled after onInit
-          textToSpeech
-        }
+  @Event(name = speakingErrorEvent)
+  private val onSpeakingError = event<SpeechEvent>()
+
+  @JS
+  @Constant
+  val maxSpeechInputLength: Int
+    get() = TextToSpeech.getMaxSpeechInputLength()
+
+  override fun onDestroy() {
+    reactContextOrNull?.removeLifecycleEventListener(lifecycleListener)
+  }
+
+  @JS
+  suspend fun isSpeaking(): Boolean = withContext(queue) {
+    textToSpeech.isSpeaking
+  }
+
+  @JS
+  suspend fun getVoices(): List<VoiceRecord> = withContext(queue) {
+    when (ttsState) {
+      TtsState.READY -> readVoices()
+      TtsState.FAILED -> emptyList()
+      TtsState.PENDING -> suspendCancellableCoroutine { continuation ->
+        delayedGetVoices.add(continuation)
+
+        // Init TTS, the promise will be fulfilled after onInit
+        textToSpeech
       }
-    }
-
-    AsyncFunction<Unit>("stop") {
-      textToSpeech.stop()
-    }
-
-    AsyncFunction("speak") { id: String, text: String, options: SpeechOptions ->
-      if (text.length > TextToSpeech.getMaxSpeechInputLength()) {
-        throw SpeechInputIsToLongException()
-      }
-
-      when (ttsState) {
-        TtsState.READY -> speakOut(id, text, options)
-        TtsState.FAILED -> sendEvent(speakingErrorEvent, idToMap(id))
-        TtsState.PENDING -> {
-          delayedUtterances.add(Utterance(id, text, options))
-
-          // init TTS, speaking will be available only after onInit
-          textToSpeech
-        }
-      }
-      Unit
     }
   }
 
-  private fun getVoices(): List<VoiceRecord> {
+  @JS
+  suspend fun stop(): Unit = withContext(queue) {
+    textToSpeech.stop()
+  }
+
+  @JS
+  suspend fun speak(id: String, text: String, options: SpeechOptions): Unit = withContext(queue) {
+    if (text.length > TextToSpeech.getMaxSpeechInputLength()) {
+      throw SpeechInputIsToLongException()
+    }
+
+    when (ttsState) {
+      TtsState.READY -> speakOut(id, text, options)
+      TtsState.FAILED -> onSpeakingError(SpeechEvent(id))
+      TtsState.PENDING -> {
+        delayedUtterances.add(Utterance(id, text, options))
+
+        // init TTS, speaking will be available only after onInit
+        textToSpeech
+      }
+    }
+  }
+
+  private fun readVoices(): List<VoiceRecord> {
     val nativeVoices = try {
       textToSpeech.voices.toList()
     } catch (err: Exception) {
@@ -151,7 +178,7 @@ class SpeechModule : Module() {
   // TextToSpeech object related code
 
   private val textToSpeech: TextToSpeech by lazy {
-    val newTtsInstance = TextToSpeech(appContext.reactContext) { status: Int ->
+    val newTtsInstance = TextToSpeech(androidContext) { status: Int ->
       if (status == TextToSpeech.SUCCESS) {
         // synchronize because in some cases this runs on another thread and _textToSpeech is null
         synchronized(this@SpeechModule) {
@@ -159,52 +186,49 @@ class SpeechModule : Module() {
           _textToSpeech!!.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
 
             override fun onStart(utteranceId: String) {
-              sendEvent(speakingStartedEvent, idToMap(utteranceId))
+              onSpeakingStarted(SpeechEvent(utteranceId))
             }
 
             override fun onRangeStart(utteranceId: String, start: Int, end: Int, frame: Int) {
-              val map = Bundle().apply {
-                putString("id", utteranceId)
-                putInt("charIndex", start)
-                putInt("charLength", end - start)
-              }
-              sendEvent(speakingWillSayNextStringEvent, map)
+              onSpeakingWillSayNextString(
+                SpeechRangeEvent(
+                  id = utteranceId,
+                  charIndex = start,
+                  charLength = end - start
+                )
+              )
             }
 
             override fun onDone(utteranceId: String) {
-              sendEvent(speakingDoneEvent, idToMap(utteranceId))
+              onSpeakingDone(SpeechEvent(utteranceId))
             }
 
             override fun onStop(utteranceId: String, interrupted: Boolean) {
-              sendEvent(speakingStoppedEvent, idToMap(utteranceId))
+              onSpeakingStopped(SpeechEvent(utteranceId))
             }
 
             override fun onError(utteranceId: String) {
-              sendEvent(speakingErrorEvent, idToMap(utteranceId))
+              onSpeakingError(SpeechEvent(utteranceId))
             }
           })
           for ((id, text, options) in delayedUtterances) {
             speakOut(id, text, options)
           }
-          for (promise in delayedGetVoices) {
-            promise.resolve(getVoices())
+          for (continuation in delayedGetVoices) {
+            continuation.resumeWith(runCatching { readVoices() })
           }
         }
       } else {
         synchronized(this@SpeechModule) {
           ttsState = TtsState.FAILED
-          delayedGetVoices.forEach { it.resolve(emptyList<VoiceRecord>()) }
-          delayedUtterances.forEach { sendEvent(speakingErrorEvent, idToMap(it.id)) }
+          delayedGetVoices.forEach { it.resume(emptyList()) }
+          delayedUtterances.forEach { onSpeakingError(SpeechEvent(it.id)) }
         }
       }
     }
     _textToSpeech = newTtsInstance
+    reactContextOrNull?.addLifecycleEventListener(lifecycleListener)
     newTtsInstance
-  }
-
-  // Helpers
-  private fun idToMap(id: String) = Bundle().apply {
-    putString("id", id)
   }
 
   private data class Utterance(

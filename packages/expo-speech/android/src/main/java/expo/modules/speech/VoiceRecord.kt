@@ -1,19 +1,29 @@
 package expo.modules.speech
 
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Enumerable
+import io.github.expo.modules.v2.Record
 
 enum class VoiceQuality(val value: String) : Enumerable {
   ENHANCED("Enhanced"),
   DEFAULT("Default")
 }
 
-@OptimizedRecord
+@Record
 data class VoiceRecord(
-  @Field val identifier: String,
-  @Field val name: String,
-  @Field val quality: VoiceQuality,
-  @Field val language: String
-) : Record
+  val identifier: String,
+  val name: String,
+  val quality: VoiceQuality,
+  val language: String
+)
+
+@Record
+data class SpeechEvent(
+  val id: String
+)
+
+@Record
+data class SpeechRangeEvent(
+  val id: String,
+  val charIndex: Int,
+  val charLength: Int
+)
