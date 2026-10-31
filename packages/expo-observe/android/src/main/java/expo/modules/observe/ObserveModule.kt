@@ -37,11 +37,15 @@ class ObserveModule : Module() {
 
   private var lastIntegrations: Map<String, Any?> = emptyMap()
 
+  private val updatesLogForwarder = ExpoUpdatesLogForwarder { entry ->
+    sendEvent(EXPO_UPDATES_LOG_ENTRY_EVENT, entry)
+  }
+
   override fun definition() =
     ModuleDefinition {
       Name("ExpoObserve")
 
-      Events("configure")
+      Events("configure", EXPO_UPDATES_LOG_ENTRY_EVENT)
 
       OnCreate {
         appMetricsModule = checkNotNull(appContext.registry.getModule<AppMetricsModule>()) {
@@ -93,6 +97,18 @@ class ObserveModule : Module() {
         lastIntegrations
       }
 
+      OnStartObserving(EXPO_UPDATES_LOG_ENTRY_EVENT) {
+        updatesLogForwarder.setEnabled(true)
+      }
+
+      OnStopObserving(EXPO_UPDATES_LOG_ENTRY_EVENT) {
+        updatesLogForwarder.setEnabled(false)
+      }
+
+      OnDestroy {
+        updatesLogForwarder.setEnabled(false)
+      }
+
       AsyncFunction("getExpoUpdatesLogCursor") {
         ObservePreferences.getExpoUpdatesLogCursor(context)
       }
@@ -121,3 +137,5 @@ class ObserveModule : Module() {
       }
     }
 }
+
+private const val EXPO_UPDATES_LOG_ENTRY_EVENT = "expoUpdatesLogEntry"
