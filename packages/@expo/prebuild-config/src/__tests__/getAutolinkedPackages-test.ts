@@ -80,6 +80,32 @@ describe(shouldSkipAutoPlugin, () => {
     ).toBe(false);
   });
 
+  it(`skips expo-dev-client when it is not autolinked`, () => {
+    expect(
+      shouldSkipAutoPlugin(
+        {
+          _internal: {
+            autolinkedModules: ['expo-camera'],
+          },
+        },
+        'expo-dev-client'
+      )
+    ).toBe(true);
+  });
+
+  it(`allows expo-dev-client when it is autolinked`, () => {
+    expect(
+      shouldSkipAutoPlugin(
+        {
+          _internal: {
+            autolinkedModules: ['expo-camera', 'expo-dev-client'],
+          },
+        },
+        'expo-dev-client'
+      )
+    ).toBe(false);
+  });
+
   it(`cannot validate functions`, () => {
     expect(
       shouldSkipAutoPlugin(
