@@ -2,8 +2,11 @@ package expo.modules.agerange
 
 import android.app.Activity
 import android.os.Looper
+import com.google.android.play.agesignals.AgeSignalsAccessRequest
+import com.google.android.play.agesignals.AgeSignalsAccessRequest.builder
 import com.google.android.play.agesignals.AgeSignalsAccessResult
 import com.google.android.play.agesignals.AgeSignalsException
+import com.google.android.play.agesignals.AgeSignalsRequest.builder
 import com.google.android.play.agesignals.AgeSignalsResult
 import com.google.android.play.agesignals.model.AgeRangeSource
 import com.google.android.play.agesignals.model.AgeSignalsErrorCode
@@ -60,12 +63,17 @@ class AgeSignalsManagerTest {
     var ageRangeResult: AgeRangeResult? = null
     var errorResult: CodedException? = null
 
-    requestAgeRange(
-      ageSignalsManager = fakeManager,
-      onSuccess = { result -> ageRangeResult = result },
-      onError = { error -> errorResult = error },
-      onCancelled = { }
-    )
+    fakeManager
+      .checkAgeSignals(builder().build())
+      .addOnCanceledListener {
+      }
+      .addOnFailureListener { exception ->
+        val codedException = processAgeSignalsError(exception)
+        errorResult = codedException
+      }
+      .addOnSuccessListener { ageSignalsResult ->
+        ageRangeResult = AgeRangeResult(ageSignalsResult)
+      }
 
     shadowOf(Looper.getMainLooper()).idle()
 
@@ -109,13 +117,19 @@ class AgeSignalsManagerTest {
     }
 
     var errorResult: CodedException? = null
-    requestAgeSignalsAccess(
-      ageSignalsManager = fakeManager,
-      activity = Robolectric.buildActivity(Activity::class.java).setup().get(),
-      onSuccess = { throw AssertionError("Unexpected success: $it") },
-      onError = { errorResult = it },
-      onCancelled = { throw AssertionError("Unexpected cancellation") }
-    )
+    fakeManager
+      .requestAgeSignalsAccess(
+        AgeSignalsAccessRequest.builder().setActivity(Robolectric.buildActivity(Activity::class.java).setup().get()).build()
+      )
+      .addOnCanceledListener {
+        throw AssertionError("Unexpected cancellation")
+      }
+      .addOnFailureListener { exception ->
+        errorResult = processAgeSignalsError(exception)
+      }
+      .addOnSuccessListener { accessResult ->
+        throw AssertionError("Unexpected success: ${AgeSignalsStatusValue.fromPlayValue(accessResult.ageSignalsStatus())?.value}")
+      }
     shadowOf(Looper.getMainLooper()).idle()
 
     assertNotNull("Expected error callback to be called", errorResult)
@@ -132,16 +146,20 @@ class AgeSignalsManagerTest {
 
     var called = false
     var accessStatus: String? = null
-    requestAgeSignalsAccess(
-      ageSignalsManager = fakeManager,
-      activity = Robolectric.buildActivity(Activity::class.java).setup().get(),
-      onSuccess = {
+    fakeManager
+      .requestAgeSignalsAccess(
+        AgeSignalsAccessRequest.builder().setActivity(Robolectric.buildActivity(Activity::class.java).setup().get()).build()
+      )
+      .addOnCanceledListener {
+        throw AssertionError("Unexpected cancellation")
+      }
+      .addOnFailureListener { exception ->
+        throw AssertionError("Unexpected error: ${processAgeSignalsError(exception)}")
+      }
+      .addOnSuccessListener { accessResult ->
         called = true
-        accessStatus = it
-      },
-      onError = { throw AssertionError("Unexpected error: $it") },
-      onCancelled = { throw AssertionError("Unexpected cancellation") }
-    )
+        accessStatus = AgeSignalsStatusValue.fromPlayValue(accessResult.ageSignalsStatus())?.value
+      }
     shadowOf(Looper.getMainLooper()).idle()
 
     assertEquals("Expected success callback for status $status", true, called)
@@ -152,12 +170,18 @@ class AgeSignalsManagerTest {
     val fakeManager = FakeAgeSignalsManager().apply { setNextAgeSignalsResult(result) }
 
     var ageRangeResult: AgeRangeResult? = null
-    requestAgeRange(
-      ageSignalsManager = fakeManager,
-      onSuccess = { ageRangeResult = it },
-      onError = { throw AssertionError("Unexpected error: $it") },
-      onCancelled = { throw AssertionError("Unexpected cancellation") }
-    )
+    fakeManager
+      .checkAgeSignals(builder().build())
+      .addOnCanceledListener {
+        throw AssertionError("Unexpected cancellation")
+      }
+      .addOnFailureListener { exception ->
+        val codedException = processAgeSignalsError(exception)
+        throw AssertionError("Unexpected error: $codedException")
+      }
+      .addOnSuccessListener { ageSignalsResult ->
+        ageRangeResult = AgeRangeResult(ageSignalsResult)
+      }
     shadowOf(Looper.getMainLooper()).idle()
 
     assertNotNull("Expected success callback to be called", ageRangeResult)

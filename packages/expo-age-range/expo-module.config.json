@@ -4,7 +4,6 @@
     "modules": ["AgeRangeModule"]
   },
   "android": {
-    "modules": ["expo.modules.agerange.AgeRangeModule"],
     "publication": {
       "groupId": "expo.modules.agerange",
       "artifactId": "expo.modules.agerange",
