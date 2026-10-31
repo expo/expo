@@ -53,9 +53,11 @@
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
+    "@types/react-dom": "^19.1.7",
     "expo": "workspace:*",
     "expo-app-metrics": "workspace:*",
-    "expo-observe": "workspace:*"
+    "expo-observe": "workspace:*",
+    "react-dom": "19.3.0"
   },
   "peerDependencies": {
     "expo": "*",
