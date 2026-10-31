@@ -51,33 +51,31 @@ internal class PrintPDFRenderTask(private val context: Context, private val opti
   private val printAttributes: PrintAttributes
     get() {
       val builder = PrintAttributes.Builder()
-      if (options.html != null) {
-        var width = DEFAULT_MEDIA_WIDTH
-        var height = DEFAULT_MEDIA_HEIGHT
-        options.width?.let {
-          width = it
-        }
-
-        options.height?.let {
-          height = it
-        }
-
-        var mediaSize = PrintAttributes.MediaSize(
-          "id",
-          "label",
-          (width / PIXELS_PER_MIL).roundToInt(),
-          (height / PIXELS_PER_MIL).roundToInt()
-        )
-        options.orientation?.let {
-          if (it === "landscape") {
-            mediaSize = mediaSize.asLandscape()
-          }
-        }
-        builder
-          .setMediaSize(mediaSize)
-          .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
-          .setResolution(PrintAttributes.Resolution("id", "label", PIXELS_PER_INCH, PIXELS_PER_INCH))
+      var width = DEFAULT_MEDIA_WIDTH
+      var height = DEFAULT_MEDIA_HEIGHT
+      options.width?.let {
+        width = it
       }
+
+      options.height?.let {
+        height = it
+      }
+
+      var mediaSize = PrintAttributes.MediaSize(
+        "id",
+        "label",
+        (width / PIXELS_PER_MIL).roundToInt(),
+        (height / PIXELS_PER_MIL).roundToInt()
+      )
+      options.orientation?.let {
+        if (it === "landscape") {
+          mediaSize = mediaSize.asLandscape()
+        }
+      }
+      builder
+        .setMediaSize(mediaSize)
+        .setMinMargins(PrintAttributes.Margins.NO_MARGINS)
+        .setResolution(PrintAttributes.Resolution("id", "label", PIXELS_PER_INCH, PIXELS_PER_INCH))
       return builder.build()
     }
 
