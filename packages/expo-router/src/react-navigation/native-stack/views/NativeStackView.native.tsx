@@ -11,6 +11,7 @@ import {
 } from 'react-native-screens';
 
 import { useRouteNode } from '../../../Route';
+import { ZoomTransitionTarget } from '../../../link/zoom/ZoomTransitionTarget';
 import { useWarnOnce } from '../../../useDeprecated';
 import {
   getDefaultHeaderHeight,
@@ -452,7 +453,7 @@ const SceneView = ({
               ) : null}
               <HeaderShownContext.Provider value={isParentHeaderShown || headerShown !== false}>
                 <HeaderBackContext.Provider value={headerBack}>
-                  {render()}
+                  <ZoomTransitionTarget route={route}>{render()}</ZoomTransitionTarget>
                 </HeaderBackContext.Provider>
               </HeaderShownContext.Provider>
             </HeaderHeightContext.Provider>

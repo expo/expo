@@ -15,8 +15,6 @@ import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
 import { isRouteGuarded, useGuardRedirect, type GuardedRedirects } from './layouts/GuardContext';
 import { Redirect } from './link/Redirect';
-import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
-import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
 import { LoaderRouteLifecycle } from './loaders/LoaderRouteLifecycle';
 import { resolveLoaderPath } from './loaders/resolveLoaderPath';
 import { getContextKey } from './matchers';
@@ -391,28 +389,25 @@ export function getQualifiedRouteComponent(value: RouteNode) {
           {isPerformanceEnabled() && isRouteType && hasRouteKey && (
             <AnalyticsListeners navigation={navigation} screenId={route.key} />
           )}
-          <ZoomTransitionTargetContextProvider route={route}>
-            <ZoomTransitionEnabler route={route} />
-            <React.Suspense
-              name={route ? `Route(${route.name})` : undefined}
-              fallback={
-                // `ResolvedSuspenseFallback` only selects between statically defined
-                // components; nothing is created during render.
-                // oxlint-disable-next-line react/static-components
-                <ResolvedSuspenseFallback
-                  route={value.contextKey}
-                  params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
-                />
-              }>
-              {isRouteType && typeof activityThreshold === 'number' ? (
-                <NavigationAwareActivity hideWhenNestedAtLevel={activityThreshold}>
-                  {screenContent}
-                </NavigationAwareActivity>
-              ) : (
-                screenContent
-              )}
-            </React.Suspense>
-          </ZoomTransitionTargetContextProvider>
+          <React.Suspense
+            name={route ? `Route(${route.name})` : undefined}
+            fallback={
+              // `ResolvedSuspenseFallback` only selects between statically defined
+              // components; nothing is created during render.
+              // oxlint-disable-next-line react/static-components
+              <ResolvedSuspenseFallback
+                route={value.contextKey}
+                params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
+              />
+            }>
+            {isRouteType && typeof activityThreshold === 'number' ? (
+              <NavigationAwareActivity hideWhenNestedAtLevel={activityThreshold}>
+                {screenContent}
+              </NavigationAwareActivity>
+            ) : (
+              screenContent
+            )}
+          </React.Suspense>
         </SuspenseFallbackContext>
       </Route>
     );
