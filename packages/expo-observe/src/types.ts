@@ -120,7 +120,7 @@ export type ObserveNavigationIntegrationConfig = {
    * Route or query parameter keys to remove from exported navigation metric
    * `routeParams`. When any configured parameter is removed from a metric,
    * the exported resolved URL/path is replaced with `urlHidden: true`.
-   * Does not affect `routeName`.
+   * Include `'*'` to remove every parameter. Does not affect `routeName`.
    */
   filteredParams?: string[];
 };

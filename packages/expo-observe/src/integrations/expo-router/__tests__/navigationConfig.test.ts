@@ -65,6 +65,23 @@ describe('expo-router navigation config', () => {
     ).toEqual({ routeParams: { tab: 'posts' }, urlHidden: true });
   });
 
+  it('filters every param and hides the URL when filteredParams contains "*"', () => {
+    expect(
+      getNavigationMetricParams(
+        { filteredParams: ['*'] },
+        { id: '779', tab: 'timeline' },
+        '/incidents/779?tab=timeline'
+      )
+    ).toEqual({ routeParams: {}, urlHidden: true });
+  });
+
+  it('keeps the URL visible when filteredParams contains "*" and the route has no params', () => {
+    expect(getNavigationMetricParams({ filteredParams: ['*'] }, {}, '/incidents')).toEqual({
+      routeParams: {},
+      url: '/incidents',
+    });
+  });
+
   it('keeps the URL visible when a route param cannot be serialized', () => {
     const circular: Record<string, unknown> = {};
     circular.self = circular;
