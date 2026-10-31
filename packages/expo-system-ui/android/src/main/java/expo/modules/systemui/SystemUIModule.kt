@@ -1,5 +1,6 @@
 package expo.modules.systemui
 
+import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
@@ -7,17 +8,22 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatDelegate
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.functions.Queues
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
+import io.github.expo.modules.v2.react.currentActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 const val PREFERENCE_KEY = "expoRootBackgroundColor"
 
+@ExpoModule("ExpoSystemUI")
 class SystemUIModule : Module() {
-  private val context: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+  private val activity: Activity
+    get() = currentActivity ?: throw Exceptions.MissingActivity()
   private val prefs: SharedPreferences
-    get() = context.getSharedPreferences("expo_ui_preferences", Context.MODE_PRIVATE)
+    get() = androidContext.getSharedPreferences("expo_ui_preferences", Context.MODE_PRIVATE)
       ?: throw Exceptions.ReactContextLost()
 
   private val systemBackgroundColor
@@ -25,7 +31,7 @@ class SystemUIModule : Module() {
       AppCompatDelegate.MODE_NIGHT_YES -> Color.BLACK
       AppCompatDelegate.MODE_NIGHT_NO -> Color.WHITE
       AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM -> {
-        when (context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
+        when (androidContext.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) {
           Configuration.UI_MODE_NIGHT_YES -> Color.BLACK
           Configuration.UI_MODE_NIGHT_NO -> Color.WHITE
           else -> Color.WHITE
@@ -34,32 +40,30 @@ class SystemUIModule : Module() {
       else -> Color.WHITE
     }
 
-  override fun definition() = ModuleDefinition {
-    Name("ExpoSystemUI")
-
-    AsyncFunction("setBackgroundColorAsync") { color: Int? ->
-      color?.let {
-        prefs.edit()
-          .putInt(PREFERENCE_KEY, it)
-          .apply()
-      } ?: prefs.edit()
-        .remove(PREFERENCE_KEY)
+  @JS
+  suspend fun setBackgroundColorAsync(color: Int?): Unit = withContext(Dispatchers.Main) {
+    color?.let {
+      prefs.edit()
+        .putInt(PREFERENCE_KEY, it)
         .apply()
-      setBackgroundColor(color ?: systemBackgroundColor)
-    }.runOnQueue(Queues.MAIN)
+    } ?: prefs.edit()
+      .remove(PREFERENCE_KEY)
+      .apply()
+    setBackgroundColor(color ?: systemBackgroundColor)
+  }
 
-    AsyncFunction<String?>("getBackgroundColorAsync") {
-      val background = appContext.throwingActivity.window.decorView.background
-      return@AsyncFunction if (background is ColorDrawable) {
-        colorToHex((background.mutate() as ColorDrawable).color)
-      } else {
-        null
-      }
+  @JS
+  suspend fun getBackgroundColorAsync(): String? = withContext(Dispatchers.IO) {
+    val background = activity.window.decorView.background
+    if (background is ColorDrawable) {
+      colorToHex((background.mutate() as ColorDrawable).color)
+    } else {
+      null
     }
   }
 
   private fun setBackgroundColor(color: Int) {
-    val rootView = appContext.throwingActivity.window?.decorView
+    val rootView = activity.window?.decorView
     val colorInt = Color.parseColor(colorToHex(color))
     rootView?.setBackgroundColor(colorInt)
   }
