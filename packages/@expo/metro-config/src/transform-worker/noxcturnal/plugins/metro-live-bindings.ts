@@ -61,6 +61,7 @@ export function createMetroLiveBindingsPlugin(
     },
     createState: () => ({
       sawEsm: false,
+      hasUseStrict: false,
       modules: new Map(),
       moduleOrder: [],
       importedBindings: new Map(),
@@ -69,7 +70,15 @@ export function createMetroLiveBindingsPlugin(
     }),
     post(context, state) {
       const { collectOnly } = metroPluginData(context);
-      if (collectOnly || !state.sawEsm) return;
+      if (!state.sawEsm) return;
+      // An ES module is strict code. Match the Babel worker (`applyUseStrictDirective`), which
+      // adds the directive to every file that parsed as a module and does not have it yet.
+      // `prependToProgram` inserts after the directive prologue, so it stays a directive.
+      const useStrict = state.hasUseStrict ? [] : [`"use strict";`];
+      if (collectOnly) {
+        if (useStrict.length > 0) context.prependToProgram(useStrict.join('\n'));
+        return;
+      }
       const target = exportsName(context);
       const trailingExports: string[] = [];
 
@@ -109,7 +118,7 @@ export function createMetroLiveBindingsPlugin(
         if (liveBindings) state.exportStatements.push(statement);
         else trailingExports.push(statement);
       }
-      const preamble: string[] = [];
+      const preamble: string[] = [...useStrict];
       if (
         state.exportStatements.length > 0 ||
         trailingExports.length > 0 ||
@@ -164,6 +173,19 @@ export function createMetroLiveBindingsPlugin(
       }
     },
     visitors: [
+      nox.defineVisitor(
+        'Program',
+        {
+          children: {
+            directives: { route: 'Directive', fields: ['value'] },
+          },
+        },
+        (program, state) => {
+          state.hasUseStrict = program
+            .getChildList('directives')
+            .some((directive) => directive.node.value === 'use strict');
+        }
+      ),
       nox.defineVisitor(
         'ImportDeclaration',
         {

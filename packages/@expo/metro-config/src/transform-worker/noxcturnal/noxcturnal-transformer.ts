@@ -204,6 +204,8 @@ export interface MetroLiveModule {
 
 export interface MetroLiveBindingsState {
   sawEsm: boolean;
+  /** Whether the program's directive prologue already has `"use strict"`. */
+  hasUseStrict: boolean;
   modules: Map<string, MetroLiveModule>;
   moduleOrder: MetroLiveModule[];
   importedBindings: Map<string, string>;
@@ -1146,7 +1148,13 @@ export function transformAssetWithNoxcturnalSync(
     functionMap: false,
     pluginData: createMetroTransformPluginData(input),
   };
-  const result = nox.transform(input.source, input.filename, pipeline, transformOptions);
+  // The Babel worker parses the generated asset module as an ES module and adds "use strict"
+  // (`applyUseStrictDirective`). The generated source is CommonJS, so the live-bindings plugin
+  // does not add it here.
+  const source = /^\s*(['"])use strict\1/.test(input.source)
+    ? input.source
+    : `"use strict";\n${input.source}`;
+  const result = nox.transform(source, input.filename, pipeline, transformOptions);
   if (result.status !== 'complete') {
     throw new Error(
       `Noxcturnal could not transform asset ${input.filename} because its generated module is unsupported (${result.reason}). Disable unstable_noxcturnalTransformWorker and report this error to Expo.`
