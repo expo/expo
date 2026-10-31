@@ -23,3 +23,8 @@ export function getRootComponent() {
 
   return exp.default;
 }
+
+/** The `+html` module key, or the name of the default document, for messages. */
+export function getRootComponentSource(): string {
+  return rootContext.keys()[0] ?? 'expo-router/html (default)';
+}
