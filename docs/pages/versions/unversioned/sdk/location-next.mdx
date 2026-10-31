@@ -128,6 +128,31 @@ async function getFreshPosition() {
 
 </Collapsible>
 
+<Collapsible summary="Find the address of the current location">
+
+On iOS, use `reverseGeocode` to turn the device's coordinates into an address. Set `locale` to request the address in a specific language.
+
+```tsx
+import { Location } from 'expo-location/next';
+
+async function getCurrentAddress() {
+  const { granted } = await Location.requestForegroundPermissions();
+  if (!granted) {
+    return null;
+  }
+  const position = await Location.getPosition();
+  if (!position) {
+    return null;
+  }
+  const [address] = await Location.reverseGeocode(position.coordinates, {
+    locale: 'en-US',
+  });
+  return address?.formattedAddress ?? null;
+}
+```
+
+</Collapsible>
+
 <Collapsible summary="Handle a denied permission">
 
 When the user denies the permission, `canAskAgain` tells whether the system shows the dialog again. When it is `false`, the only way to grant the permission is the system settings, so send the user there.
