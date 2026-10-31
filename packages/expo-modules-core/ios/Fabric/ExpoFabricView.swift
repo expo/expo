@@ -171,7 +171,10 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   /// and the app context of each view is resolved when React Native creates it (see `createComponentView`).
   @MainActor
   internal static func registerComponent(moduleName: String, viewName: String) {
-    if viewClasses[componentName(moduleName: moduleName, viewName: viewName)] != nil {
+    if let viewClass = viewClasses[componentName(moduleName: moduleName, viewName: viewName)] {
+      if let component = componentsByViewClass[ObjectIdentifier(viewClass)], component != (moduleName, viewName) {
+        log.error("The view '\(viewName)' from module '\(moduleName)' has the same component name as the view '\(component.viewName)' from module '\(component.moduleName)', so it's created by the module that registered it first")
+      }
       return
     }
     ExpoFabricViewObjC.registerComponentViewClass(viewClass(moduleName: moduleName, viewName: viewName))
@@ -209,7 +212,9 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
         fatalError(Exceptions.AppContextLost().reason)
       }
       guard let view = appContext.moduleRegistry.get(moduleHolderForName: moduleName)?.definition.views[viewName]?.createView(appContext: appContext) else {
-        fatalError("Cannot create a view '\(viewName)' from module '\(moduleName)' because the module or its view isn't registered in the app context")
+        // Component classes are shared by all app contexts, so another app context might have registered this one.
+        log.error("Cannot create a view '\(viewName)' from module '\(moduleName)' because the module or its view isn't registered in the app context, so an empty view is created instead")
+        return .uikit(self.init(appContext: appContext))
       }
       return view
     }
