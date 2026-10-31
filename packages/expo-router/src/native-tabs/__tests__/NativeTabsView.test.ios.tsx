@@ -490,3 +490,57 @@ describe('selectedIcon fallback', () => {
     });
   });
 });
+
+describe('role stability', () => {
+  it('keeps the role passed to Tabs.Screen stable when role changes after mount', async () => {
+    function Layout() {
+      const [onDetail, setOnDetail] = React.useState(false);
+      return (
+        <>
+          <Button testID="toggle" title="Toggle" onPress={() => setOnDetail(true)} />
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+            <NativeTabs.Trigger name="cart" role={onDetail ? 'search' : undefined} />
+            <NativeTabs.Trigger name="lookup" role={onDetail ? undefined : 'search'} />
+          </NativeTabs>
+        </>
+      );
+    }
+
+    function screenCalls(name: string) {
+      return TabsScreen.mock.calls.filter((call) => call[0].screenKey === name);
+    }
+
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      await renderRouter({
+        _layout: Layout,
+        index: () => <View testID="index" />,
+        cart: () => <View testID="cart" />,
+        lookup: () => <View testID="lookup" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(screenCalls('cart').length).toBeGreaterThan(0);
+      expect(screenCalls('cart').every((call) => call[0].ios?.role === undefined)).toBe(true);
+      expect(screenCalls('lookup').every((call) => call[0].ios?.role === 'search')).toBe(true);
+      expect(screenCalls('cart').at(-1)![0].ios?.systemItem).toBeUndefined();
+      expect(screenCalls('lookup').at(-1)![0].ios?.systemItem).toBe('search');
+
+      await act(async () => {
+        await fireEvent.press(screen.getByTestId('toggle'));
+      });
+
+      expect(screenCalls('cart').every((call) => call[0].ios?.role === undefined)).toBe(true);
+      expect(screenCalls('lookup').every((call) => call[0].ios?.role === 'search')).toBe(true);
+      expect(screenCalls('cart').at(-1)![0].ios?.systemItem).toBe('search');
+      expect(screenCalls('cart').at(-1)![0].ios?.automaticallyActivatesSearch).toBeUndefined();
+      expect(screenCalls('lookup').at(-1)![0].ios?.systemItem).toBeUndefined();
+      expect(screenCalls('lookup').at(-1)![0].ios?.automaticallyActivatesSearch).toBe(true);
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('"cart"'));
+      expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('"lookup"'));
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+});
