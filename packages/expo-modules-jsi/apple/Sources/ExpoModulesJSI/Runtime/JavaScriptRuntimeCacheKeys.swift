@@ -22,6 +22,9 @@ extension JavaScriptRuntime {
     /// The global `Set` constructor.
     static let setConstructor = Cache.Key<JavaScriptFunction.Ref>()
 
+    /// The global `Symbol` function, `Symbol.for`, and the well-known symbols read so far.
+    static let symbol = Cache.Key<SymbolFunctions>()
+
     /// The global `Uint8Array` constructor.
     static let uint8ArrayConstructor = Cache.Key<JavaScriptFunction.Ref>()
 

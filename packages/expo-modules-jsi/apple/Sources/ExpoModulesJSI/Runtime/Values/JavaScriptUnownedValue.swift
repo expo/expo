@@ -217,6 +217,14 @@ public struct JavaScriptUnownedValue: ~Copyable {
     return JavaScriptBigInt(runtime, pointer.pointee.getBigInt(self.runtime))
   }
 
+  /// Returns the value as a ``JavaScriptSymbol``, or asserts if it is not a symbol. The zero-copy
+  /// counterpart of ``JavaScriptValue/getSymbol()``, with the same runtime contract as ``getObject(in:)``.
+  public func getSymbol(in runtime: JavaScriptRuntime) -> JavaScriptSymbol {
+    assert(isSymbol(), "Value is not a symbol")
+    assert(isOwned(by: runtime), "`getSymbol(in:)` must be passed the runtime that owns the borrowed value")
+    return JavaScriptSymbol(runtime, pointer.pointee.getSymbol(self.runtime))
+  }
+
   /// The kind of the value. The zero-copy counterpart of ``JavaScriptValue/kind``.
   public var kind: JavaScriptValue.Kind {
     switch true {
