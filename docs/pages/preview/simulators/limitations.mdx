@@ -28,12 +28,12 @@ Expo Simulators is an experimental preview. Its commands, flags, and behavior ca
 
 ## Session lifetime
 
-| Limit                                                                                 | Alternative                                                                                   |
-| ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
-| A session runs for at most 40 minutes on the Free plan and 115 minutes on paid plans. | Start a new session when the old one stops.                                                   |
-| A session started with `--non-interactive` does not stop when the command returns.    | Run `eas simulator:stop`, and set `--max-duration-minutes`.                                   |
-| Browser preview activity does not reset the idle timer.                               | Use `--max-duration-minutes` to limit sessions that a person controls in the browser preview. |
-| `web-preview-only` sessions do not support an idle timeout.                           | Use `--max-duration-minutes`.                                                                 |
+| Limit                                                                                 | Alternative                                                                                                               |
+| ------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| A session runs for at most 40 minutes on the Free plan and 115 minutes on paid plans. | Start a new session when the old one stops.                                                                               |
+| A session started with `--non-interactive` does not stop when the command returns.    | Run `eas simulator:stop`, and set `--max-duration-minutes`.                                                               |
+| Watching the preview, or browser input on Android, does not reset the idle timer.     | Use `--max-duration-minutes` to limit a session that a person only watches, or an Android session that a person controls. |
+| Android `web-preview-only` sessions do not support an idle timeout.                   | Use `--max-duration-minutes`.                                                                                             |
 
 See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
 
