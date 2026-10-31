@@ -326,11 +326,19 @@ public struct NotificationContentRecord: Record {
   }
 
   func serializedNotificationData(from request: UNNotificationRequest) -> [AnyHashable: Any]? {
-    let isRemote = request.trigger is UNPushNotificationTrigger
-    if isRemote {
-      return request.content.userInfo["body"] as? [String: Any]
+    let userInfo = request.content.userInfo
+    guard request.trigger is UNPushNotificationTrigger else {
+      return userInfo
     }
-    return request.content.userInfo
+    if let body = userInfo["body"] as? [String: Any] {
+      return body
+    }
+    if let bodyString = userInfo["body"] as? String,
+      let bodyData = bodyString.data(using: .utf8),
+      let body = try? JSONSerialization.jsonObject(with: bodyData) as? [String: Any] {
+      return body
+    }
+    return userInfo.filter { $0.key as? String != "aps" }
   }
 
   func toUNMutableNotificationContent() -> UNMutableNotificationContent {
