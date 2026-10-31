@@ -271,7 +271,13 @@ class AppContext(
     registry.getModule<JSLoggerModule>()?.logger
   }
 
+  @Volatile
+  internal var isDestroyed = false
+    private set
+
   internal fun onDestroy() = trace("AppContext.onDestroy") {
+    isDestroyed = true
+
     runtime.reactContext?.run {
       removeLifecycleEventListener(reactLifecycleDelegate)
       removeActivityEventListener(reactLifecycleDelegate)
