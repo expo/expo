@@ -71,8 +71,7 @@ public class ViewDefinition<ViewType>: ObjectDefinition, AnyViewDefinition, @unc
 
   public func createView(appContext: AppContext) -> AppleView? {
     // It's assumed that this function is called only from the main thread.
-    // In the ideal scenario it would be marked as `@MainActor`, but then `ViewModuleWrapper`
-    // would be incompatible with `RCTViewManager` as it doesn't specify the actor.
+    // In the ideal scenario it would be marked as `@MainActor`.
     return MainActor.assumeIsolated {
       if let expoViewType = ViewType.self as? AnyExpoView.Type {
         if let fabricViewType = ViewType.self as? ExpoFabricView.Type {

@@ -2,6 +2,8 @@
 
 #import <ExpoModulesCore/Platform.h>
 
+@protocol RCTSurfacePresenterStub;
+
 #ifdef __cplusplus
 #import <ReactCommon/RCTHost.h>
 #endif
@@ -21,6 +23,10 @@ NS_SWIFT_NAME(ExpoHostWrapper)
 - (nullable id)findModuleWithName:(nonnull NSString *)name lazilyLoadIfNecessary:(BOOL)lazilyLoadIfNecessary;
 
 - (nullable NSURL *)bundleURL;
+
+/// The surface presenter of the host. It's typed with the protocol, because `RCTSurfacePresenter` declares
+/// its conformance only in a category interface, so a runtime cast to the protocol fails in Swift.
+- (nullable id<RCTSurfacePresenterStub>)surfacePresenter;
 
 @end
 
