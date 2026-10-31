@@ -21,9 +21,14 @@ const initialState: NavigationState = {
 };
 const browserHistory = { apply() {}, listen: () => () => {} };
 
-test.each([false, true])(
-  'guarded navigation waits for older suspended navigation (cleanup=%s)',
-  async (cleanup) => {
+test.each([
+  [false, false, false],
+  [true, false, false],
+  [false, true, false],
+  [false, true, true],
+])(
+  'guarded navigation waits for older suspended navigation (cleanup=%s, browser=%s, guarded=%s)',
+  async (cleanup, browserInterrupt, guardedInitial) => {
     const results = createNavigationActionResultRegistry();
     const callback = jest.fn();
     let blocked = true;
@@ -33,6 +38,7 @@ test.each([false, true])(
     });
     let processIntent!: ReturnType<typeof useNavigationTreeReducer>['processIntent'];
     let committed = initialState;
+    let pending = false;
     const registry = new Map([
       [
         'root',
@@ -58,7 +64,8 @@ test.each([false, true])(
       );
       React.useLayoutEffect(() => {
         committed = reducer.state;
-      }, [reducer.state]);
+        pending = reducer.hasPendingNavigation;
+      }, [reducer.state, reducer.hasPendingNavigation]);
       if ('lowPriority' in reducer.state && blocked) throw suspended;
       return null;
     }
@@ -69,12 +76,60 @@ test.each([false, true])(
         </React.Suspense>
       </RemovalPreventionProvider>
     );
+    const initialCallback = jest.fn();
+    const initialTransaction = guardedInitial ? results.register(initialCallback) : undefined;
     await act(() =>
       React.startTransition(() =>
-        processIntent({ type: 'ACTION', actionId: 1, payload: { action: { type: 'LOW' } } })
+        processIntent({
+          type: 'ACTION',
+          actionId: 1,
+          payload: {
+            action: { type: 'LOW' },
+            transaction: initialTransaction
+              ? {
+                  id: initialTransaction.id,
+                  token: initialTransaction.token,
+                  expectedState: committed,
+                }
+              : undefined,
+          },
+        })
       )
     );
     expect(committed.index).toBe(0);
+    if (browserInterrupt) {
+      await act(() =>
+        processIntent({
+          type: 'BROWSER_HISTORY_CHANGED',
+          actionId: 10,
+          payload: { id: null, path: '/home' },
+        })
+      );
+      expect(committed).toBe(initialState);
+      expect(pending).toBe(false);
+      if (guardedInitial)
+        expect(initialCallback).toHaveBeenCalledWith(
+          expect.objectContaining({ status: 'cancelled' })
+        );
+      const afterBrowser = results.register(callback);
+      await act(() =>
+        processIntent({
+          type: 'ACTION',
+          actionId: 11,
+          payload: {
+            action: { type: 'NEXT' },
+            transaction: {
+              id: afterBrowser.id,
+              token: afterBrowser.token,
+              expectedState: committed,
+            },
+          },
+        })
+      );
+      expect(callback).toHaveBeenCalledWith(expect.objectContaining({ status: 'handled' }));
+      expect(committed.index).toBe(1);
+      return;
+    }
     const subscription = results.register(callback);
     await act(() =>
       processIntent({

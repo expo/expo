@@ -191,12 +191,17 @@ function navigationTreeReducer(
   if (operation.type === 'BROWSER_HISTORY_CHANGED') {
     const { commitedTreeResult, ...change } = operation;
     const discardedOperations = result.deferred?.operations ?? [];
-    const cancelledTransactions =
-      result.deferred?.operations.flatMap((pending) =>
+    const discardedSettlements = result.settledOperations ?? [];
+    const cancelledTransactionIds = new Set([
+      ...discardedOperations.flatMap((pending) =>
         pending.type === 'ACTION' && pending.payload.transaction
-          ? [pending.payload.transaction]
+          ? [pending.payload.transaction.id]
           : []
-      ) ?? [];
+      ),
+      ...(result.report?.events.flatMap((event) =>
+        event.type === 'action-result' ? [event.transactionId] : []
+      ) ?? []),
+    ]);
     // Waiting operations never reached the screen or the browser, so the browser change drops them.
     result = commitedTreeResult
       ? // Discard the interrupted transition while keeping event IDs monotonic.
@@ -208,14 +213,15 @@ function navigationTreeReducer(
         ...restored,
         settledOperations: [
           ...(restored.settledOperations ?? []),
+          ...discardedSettlements,
           operation.actionId,
           ...discardedOperations.map((pending) => pending.actionId),
         ],
       },
-      cancelledTransactions.map(
-        (transaction): NavigationTreeReportEventData => ({
+      [...cancelledTransactionIds].map(
+        (transactionId): NavigationTreeReportEventData => ({
           type: 'action-result',
-          transactionId: transaction.id,
+          transactionId,
           result: { status: 'cancelled', state: restored.state },
         })
       )
