@@ -76,7 +76,7 @@ On iOS, a snapshot can take tens of seconds. If an action times out, take a new 
   cmd={['$ eas simulator:exec npx agent-device@latest open "myapp://profile/42" --platform ios']}
 />
 
-The first time a scheme opens, iOS can show an **Open in** dialog. Accept it with `alert accept`. You can also start the session with `--open-url`. EAS then tries to approve the scheme so that the dialog does not appear. `--open-url` requires an application source, such as `--build-id`. See [Install an app on a remote Android Emulator or iOS Simulator](/preview/simulators/how-to/install-your-app/).
+The first time a scheme opens, iOS can show an **Open in** dialog. Accept it with `alert accept`. You can also start the session with `--open-url`. Expo Simulators then tries to approve the scheme so that the dialog does not appear. `--open-url` requires an application source, such as `--build-id`. See [Install an app on a remote Android Emulator or iOS Simulator](/preview/simulators/how-to/install-your-app/).
 
 Do not open the browser preview URL on the device. The preview URL is a browser stream for people, not a deep link.
 

@@ -18,8 +18,8 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
     account before starting a session.
   </Requirement>
   <Requirement title="A linked Expo project">
-    Run these commands from the project directory. If the project does not have an EAS project ID,
-    run `eas init` first.
+    Run these commands from the project directory. If the project does not have an Expo Services
+    project ID, run `eas init` first.
   </Requirement>
   <Requirement title="A recent EAS CLI">
     The `simulator:*` commands are experimental. [Install or update EAS CLI](/eas/cli/) before using
@@ -48,7 +48,7 @@ On an interactive machine, log in and confirm the current user:
 
 In CI or a headless agent environment, provide an [Expo access token](/accounts/programmatic-access/) in `EXPO_TOKEN` instead of starting an interactive login.
 
-If the project is not linked to EAS, initialize it:
+If the project is not linked to Expo Services, initialize it:
 
 <Terminal cmd={['$ eas init']} />
 

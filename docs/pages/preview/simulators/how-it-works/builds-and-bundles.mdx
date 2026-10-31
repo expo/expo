@@ -1,7 +1,7 @@
 ---
 title: Which build to install on Expo Simulators
 sidebar_title: Builds and bundles
-description: Learn how release builds, development builds, and Expo Go load JavaScript on Expo Simulators, which build formats install, and where EAS downloads each build.
+description: Learn how release builds, development builds, and Expo Go load JavaScript on Expo Simulators, which build formats install, and where Expo Simulators downloads each build.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -34,26 +34,26 @@ An iOS archive must be a gzip tarball (**.tar.gz** or **.tgz**). The **.app** di
 
 ## Fingerprints and build freshness
 
-A [fingerprint](/versions/latest/sdk/fingerprint/) is a hash of the native parts of a project. Two builds with the same fingerprint have the same native code. When you pass `--build-fingerprint`, EAS installs the most recent finished build with that fingerprint whose artifact has not expired. On iOS, EAS selects only simulator builds. On Android, EAS selects a build of any distribution type. An **.aab** build fails to install, so use a build profile that creates an **.apk**.
+A [fingerprint](/versions/latest/sdk/fingerprint/) is a hash of the native parts of a project. Two builds with the same fingerprint have the same native code. When you pass `--build-fingerprint`, Expo Simulators installs the most recent finished build with that fingerprint whose artifact has not expired. On iOS, Expo Simulators selects only simulator builds. On Android, Expo Simulators selects a build of any distribution type. An **.aab** build fails to install, so use a build profile that creates an **.apk**.
 
 A matching fingerprint does not mean that the JavaScript matches. A release build with a matching fingerprint can contain an older bundle. To see current JavaScript, use a development build with Metro, or create a new release build.
 
-## Where EAS gets the build
+## Where Expo Simulators gets the build
 
-| Application source                               | Who downloads or uploads the build                            |
-| ------------------------------------------------ | ------------------------------------------------------------- |
-| `--build-id` or `--build-fingerprint`            | The machine on EAS downloads the EAS Build artifact.          |
-| `--application-archive-url`                      | The machine on EAS downloads the file from the URL.           |
-| `--expo-go`                                      | EAS selects the Expo Go release for the SDK version.          |
-| agent-device `install-from-source <url>`         | The machine on EAS downloads the file from the URL.           |
-| agent-device `install` or Argent `reinstall-app` | Your computer uploads the local build through the controller. |
-| **Upload build file** on expo.dev                | Your browser uploads the build. The limit is 1 GB.            |
+| Application source                               | Who downloads or uploads the build                               |
+| ------------------------------------------------ | ---------------------------------------------------------------- |
+| `--build-id` or `--build-fingerprint`            | The remote machine downloads the Expo Build artifact.            |
+| `--application-archive-url`                      | The remote machine downloads the file from the URL.              |
+| `--expo-go`                                      | Expo Simulators selects the Expo Go release for the SDK version. |
+| agent-device `install-from-source <url>`         | The remote machine downloads the file from the URL.              |
+| agent-device `install` or Argent `reinstall-app` | Your computer uploads the local build through the controller.    |
+| **Upload build file** on expo.dev                | Your browser uploads the build. The limit is 1 GB.               |
 
-A large local build takes longer, because your computer uploads it. When the build is at a URL, let the machine on EAS download it.
+A large local build takes longer, because your computer uploads it. When the build is at a URL, let the remote machine download it.
 
 ## Launch arguments and URLs
 
-When you install the app with an application source, EAS can launch it with arguments and then open a URL. EAS accepts up to 100 launch arguments, with a total size of up to 64,000 bytes. In an iOS agent-device or Argent session, EAS tries to approve the custom URL scheme first. Then the system **Open in** dialog does not appear. In other session types, or if the approval fails, the dialog can appear. Accept it in the browser preview or with the controller.
+When you install the app with an application source, Expo Simulators can launch it with arguments and then open a URL. Expo Simulators accepts up to 100 launch arguments, with a total size of up to 64,000 bytes. In an iOS agent-device or Argent session, Expo Simulators tries to approve the custom URL scheme first. Then the system **Open in** dialog does not appear. In other session types, or if the approval fails, the dialog can appear. Accept it in the browser preview or with the controller.
 
 ## Common questions
 
@@ -61,7 +61,7 @@ When you install the app with an application source, EAS can launch it with argu
 
 <Collapsible summary="Do I need to sign an iOS build for Expo Simulators?">
 
-No. iOS Simulator builds are not signed, so EAS Build does not ask for credentials.
+No. iOS Simulator builds are not signed, so Expo Build does not ask for credentials.
 
 </Collapsible>
 

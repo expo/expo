@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-Expo Simulators supports all of its features for Expo and React Native apps. Create a simulator build with EAS Build or on your computer, then install it on a session. A development build connected to Metro also gives you Fast Refresh and the React Native features of agent-device.
+Expo Simulators supports all of its features for Expo and React Native apps. Create a simulator build with Expo Build or on your computer, then install it on a session. A development build connected to Metro also gives you Fast Refresh and the React Native features of agent-device.
 
 ## Choose a build
 
@@ -24,11 +24,11 @@ A release build contains the JavaScript from build time. It does not show later 
 
 ## Expo projects
 
-An Expo project already has what EAS CLI needs. Link it to EAS one time:
+An Expo project already has what EAS CLI needs. Link it to Expo Services one time:
 
 <Terminal cmd={['$ eas init']} />
 
-`eas init` adds the EAS project ID to the app config. Then start a session with an application source:
+`eas init` adds the Expo Services project ID to the app config. Then start a session with an application source:
 
 <Terminal
   cmd={[
@@ -41,7 +41,7 @@ The `remote-device` profile needs an APK build type for Android and `ios.simulat
 
 ## React Native projects without Expo
 
-EAS CLI finds the EAS project from the current directory. It needs **package.json** and an app config that contains the project ID. Add an app config to the repository root if the project does not have one:
+EAS CLI finds the Expo Services project from the current directory. It needs **package.json** and an app config that contains the project ID. Add an app config to the repository root if the project does not have one:
 
 ```json app.json
 {
