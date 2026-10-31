@@ -31,12 +31,25 @@ export class ClientManager {
 
   static async create(udid?: string) {
     const usbmuxClient = new UsbmuxdClient(UsbmuxdClient.connectUsbmuxdSocket());
-    const device = await usbmuxClient.getDevice(udid);
-    const pairRecord = await usbmuxClient.readPairRecord(device.Properties.SerialNumber);
-    const lockdownSocket = await usbmuxClient.connect(device, 62078);
-    const lockdownClient = new LockdowndClient(lockdownSocket);
-    await lockdownClient.doHandshake(pairRecord);
-    return new ClientManager(pairRecord, device, lockdownClient);
+    let lockdownSocket: Socket | undefined;
+    try {
+      const device = await usbmuxClient.getDevice(udid);
+      const pairRecord = await usbmuxClient.readPairRecord(device.Properties.SerialNumber);
+      lockdownSocket = await usbmuxClient.connect(device, 62078);
+      const lockdownClient = new LockdowndClient(lockdownSocket);
+      await lockdownClient.doHandshake(pairRecord);
+      return new ClientManager(pairRecord, device, lockdownClient);
+    } catch (error) {
+      try {
+        usbmuxClient.socket.destroy();
+      } catch {}
+      if (lockdownSocket && lockdownSocket !== usbmuxClient.socket) {
+        try {
+          lockdownSocket.destroy();
+        } catch {}
+      }
+      throw error;
+    }
   }
 
   async getUsbmuxdClient() {
