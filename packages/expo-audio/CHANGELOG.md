@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- Remove the unused `androidx.media3:media3-ui` dependency on Android. ([#52321](https://github.com/expo/expo/pull/52321) by [@lukmccall](https://github.com/lukmccall))
+
 ## 58.0.10
 
 ### Patch Changes

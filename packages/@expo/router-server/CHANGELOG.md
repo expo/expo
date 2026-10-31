@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.20
+
+### Patch Changes
+
+- Ignore file watch events outside the app directory when generating typed routes on Windows. ([#52518](https://github.com/expo/expo/pull/52518) by [@tedy69](https://github.com/tedy69))
+
 ## 58.0.19
 
 No changes in this release.

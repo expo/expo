@@ -1,5 +1,12 @@
 # Changelog
 
+## 5.1.6
+
+### Patch Changes
+
+- Drop prompt to initialize git inside existing git repository. ([#51680](https://github.com/expo/expo/pull/51680) by [@byCedric](https://github.com/byCedric))
+- Drop Expo SDK version prompt when creating new project. ([#51387](https://github.com/expo/expo/pull/51387) by [@byCedric](https://github.com/byCedric))
+
 ## 5.1.5
 
 ### Patch Changes

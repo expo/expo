@@ -1,5 +1,24 @@
 # Changelog
 
+## 58.1.18
+
+### Patch Changes
+
+- Remove the Zod production dependency by using schema-utils for DevTools validation and loading Zod from the optional MCP integration.
+
+  Declare `expo-mcp` as an optional peer dependency.
+
+  ([#52599](https://github.com/expo/expo/pull/52599) by [@kitten](https://github.com/kitten))
+
+- Warn when Worklets Bundle Mode is detected in the Metro configuration. ([#52450](https://github.com/expo/expo/pull/52450) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#52602](https://github.com/expo/expo/pull/52602), [#52523](https://github.com/expo/expo/pull/52523), [#52322](https://github.com/expo/expo/pull/52322), [#52518](https://github.com/expo/expo/pull/52518), [#52599](https://github.com/expo/expo/pull/52599))
+  - @expo/config@58.0.10
+  - @expo/metro-config@58.0.20
+  - @expo/log-box@58.0.14
+  - @expo/router-server@58.0.20
+  - @expo/schema-utils@58.0.3
+  - @expo/prebuild-config@58.0.18
+
 ## 58.1.17
 
 ### Patch Changes

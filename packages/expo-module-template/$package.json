@@ -29,16 +29,16 @@
   "dependencies": {},
   "devDependencies": {
 <% if (usesExpoUI) { -%>
-    "@expo/ui": "~58.0.25",
+    "@expo/ui": "~58.0.26",
 <% } -%>
     "@babel/core": "^7.26.0",
     "@react-native/jest-preset": "0.88.1",
     "@types/jest": "^30.0.0",
     "@types/react": "~19.3.0",
-    "babel-preset-expo": "~58.0.22",
+    "babel-preset-expo": "~58.0.23",
     "eslint": "~9.39.4",
     "eslint-config-universe": "^16.1.2",
-    "expo": "^58.0.21",
+    "expo": "^58.0.22",
     "jest": "^30.0.0",
     "jest-expo": "~58.0.13",
     "prettier": "^3.0.0",

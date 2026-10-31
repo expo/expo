@@ -1,5 +1,20 @@
 # Changelog
 
+## 58.0.22
+
+### Patch Changes
+
+- Upgrade `react-native-screens` to 4.30.1. ([#52447](https://github.com/expo/expo/pull/52447) by [@Ubax](https://github.com/Ubax))
+- Updated dependencies. ([#52602](https://github.com/expo/expo/pull/52602), [#51677](https://github.com/expo/expo/pull/51677), [#52631](https://github.com/expo/expo/pull/52631), [#52153](https://github.com/expo/expo/pull/52153), [#52523](https://github.com/expo/expo/pull/52523), [#52322](https://github.com/expo/expo/pull/52322), [#52599](https://github.com/expo/expo/pull/52599), [#52450](https://github.com/expo/expo/pull/52450))
+  - @expo/config@58.0.10
+  - expo-modules-core@58.0.29
+  - @expo/fingerprint@0.21.8
+  - @expo/metro-config@58.0.20
+  - @expo/log-box@58.0.14
+  - @expo/cli@58.1.18
+  - @expo/local-build-cache-provider@58.0.10
+  - babel-preset-expo@58.0.23
+
 ## 58.0.21
 
 ### Patch Changes

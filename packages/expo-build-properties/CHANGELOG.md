@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#52599](https://github.com/expo/expo/pull/52599))
+  - @expo/schema-utils@58.0.3
+
 ## 58.0.11
 
 ### Patch Changes

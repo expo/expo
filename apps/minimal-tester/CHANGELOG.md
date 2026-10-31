@@ -1,5 +1,17 @@
 # minimal-tester
 
+## 1.0.16
+
+### Patch Changes
+
+- Updated dependencies. ([#52447](https://github.com/expo/expo/pull/52447), [#52379](https://github.com/expo/expo/pull/52379))
+  - expo@58.0.22
+  - expo-updates@58.0.20
+  - expo-brownfield@58.0.18
+  - expo-dev-client@58.0.18
+  - expo-image@58.0.18
+  - expo-build-properties@58.0.12
+
 ## 1.0.15
 
 ### Patch Changes

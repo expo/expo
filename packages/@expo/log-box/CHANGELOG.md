@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- Remove the unused `com.google.android.material:material` dependency on Android. ([#52322](https://github.com/expo/expo/pull/52322) by [@lukmccall](https://github.com/lukmccall))
+
 ## 58.0.13
 
 ### Patch Changes

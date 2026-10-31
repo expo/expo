@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- [Android] Fix an issue where scheduling a job would fail when `RECEIVE_BOOT_COMPLETED` is not in the app manifest, which led to crashes in the background. Add `RECEIVE_BOOT_COMPLETED` permission to the manifest, set job persistence based on whether this permission is in the manifest. ([#51701](https://github.com/expo/expo/pull/51701) by [@HubertBer](https://github.com/HubertBer))
+
 ## 58.0.12
 
 ### Patch Changes

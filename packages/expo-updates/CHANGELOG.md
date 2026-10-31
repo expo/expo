@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.20
+
+### Patch Changes
+
+- Remove the BouncyCastle dependency on Android. ([#52379](https://github.com/expo/expo/pull/52379) by [@lukmccall](https://github.com/lukmccall))
+
 ## 58.0.19
 
 ### Patch Changes

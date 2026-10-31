@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.20
+
+### Patch Changes
+
+- Avoid a deprecation warning when displaying CSS code frames. ([#52523](https://github.com/expo/expo/pull/52523) by [@LuisPeixoto](https://github.com/LuisPeixoto))
+- Updated dependencies. ([#52602](https://github.com/expo/expo/pull/52602))
+  - @expo/config@58.0.10
+
 ## 58.0.19
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # Changelog
 
+## 58.0.29
+
+### Patch Changes
+
+- Upgrade `react-native-screens` to 4.30.1. ([#52447](https://github.com/expo/expo/pull/52447) by [@Ubax](https://github.com/Ubax))
+- [Android] Add the `buttonContainerColor` prop to header `Stack.Toolbar` to draw its buttons and menu buttons on a round container in that color. ([#52195](https://github.com/expo/expo/pull/52195) by [@zholmes1](https://github.com/zholmes1))
+- Restore child query parameters in layout useLocalSearchParams. ([#51893](https://github.com/expo/expo/pull/51893) by [@Ubax](https://github.com/Ubax))
+- Fix `router.canDismiss()` returning `false` in an anchored stack opened from a deep link. ([#51983](https://github.com/expo/expo/pull/51983) by [@Ubax](https://github.com/Ubax))
+- Warn in development when a native stack route above a modal has no `presentation` or, on iOS, uses `presentation: 'card'`. ([#51857](https://github.com/expo/expo/pull/51857) by [@Ubax](https://github.com/Ubax))
+- Updated dependencies. ([#52322](https://github.com/expo/expo/pull/52322), [#52599](https://github.com/expo/expo/pull/52599))
+  - @expo/log-box@58.0.14
+  - @expo/schema-utils@58.0.3
+  - @expo/metro-runtime@58.0.16
+
 ## 58.0.28
 
 ### Patch Changes
