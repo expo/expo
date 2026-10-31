@@ -283,7 +283,17 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
   }
 
   private fun stopForegroundService() {
-    mService?.stop()
+    val service = mService
+    if (service != null) {
+      service.stop()
+      return
+    }
+    // A bind from this process is in flight. onServiceConnected stops the service
+    // after onStartCommand calls startForeground. stopService before that can crash the app.
+    if (mServiceConnection != null) {
+      return
+    }
+    context.stopService(Intent(context, LocationTaskService::class.java))
   }
 
   /**
