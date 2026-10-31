@@ -7,7 +7,7 @@ import type { AndroidManifest } from './android/Manifest';
 import type * as AndroidPaths from './android/Paths';
 import type { ResourceXML } from './android/Resources';
 import type { InfoPlist } from './ios/IosConfig.types';
-import type { AppDelegateProjectFile } from './ios/Paths';
+import type { AppDelegateProjectFile, PodfileProjectFile } from './ios/Paths';
 
 export { XcodeProject } from 'xcode';
 export type { ExpoPlist, InfoPlist } from './ios/IosConfig.types';
@@ -197,6 +197,10 @@ export interface ModConfig {
      * Modify the `ios/<name>/AppDelegate.m` as a string (dangerous)
      */
     appDelegate?: Mod<AppDelegateProjectFile>;
+    /**
+     * Modify the `ios/Podfile` as a string (dangerous)
+     */
+    podfile?: Mod<PodfileProjectFile>;
     /**
      * Modify the `ios/Podfile.properties.json` as key-value pairs
      */
