@@ -534,6 +534,41 @@ async function resolveSPMDependenciesAndPatch(packageDir: string): Promise<void>
 }
 
 /**
+ * The libavif-Xcode SPM manifest builds only the libaom codec. Source builds use the
+ * `libavif/libdav1d` CocoaPods subspec, so the prebuilt libavif must decode with dav1d too.
+ */
+export function patchLibavifToDecodeWithDav1d(content: string): string {
+  const libaomPackage =
+    /\.package\(url:\s*"https:\/\/github\.com\/SDWebImage\/libaom-Xcode\.git"[^)]*\)/;
+  if (!libaomPackage.test(content)) {
+    return content;
+  }
+  logger.verbose('🩹 Patched libavif to decode with libdav1d instead of libaom');
+  return content
+    .replace(
+      libaomPackage,
+      '.package(url: "https://github.com/SDWebImage/libdav1d-Xcode.git", from: "1.2.0")'
+    )
+    .replace('dependencies: ["libaom"]', 'dependencies: ["libdav1d"]')
+    .replace('"src/codec_dav1d.c"', '"src/codec_aom.c"')
+    .replace(
+      /cSettings:\s*\[[^\]]*AVIF_CODEC_AOM[^\]]*\]/,
+      'cSettings: [.define("AVIF_CODEC_DAV1D", to: "1")]'
+    );
+}
+
+/**
+ * The libdav1d-Xcode SPM manifest excludes all of `dav1d/src/arm`, but its `config.h` enables
+ * the arm assembly, which calls `dav1d_get_cpu_flags_arm` from `dav1d/src/arm/cpu.c`.
+ */
+export function patchLibdav1dToCompileArmCpu(content: string): string {
+  return content.replace(
+    '"dav1d/src/arm", ',
+    '"dav1d/src/arm/32", "dav1d/src/arm/64", "dav1d/src/arm/asm.S", '
+  );
+}
+
+/**
  * Maps a ProductPlatform to an array of BuildPlatforms
  */
 export const getBuildPlatformsFromProductPlatform = (
@@ -1071,6 +1106,8 @@ export async function buildSharedSPMDependencyAsync(
     /\.library\(\s*name:\s*"([^"]+)",\s*targets:/g,
     '.library(name: "$1", type: .dynamic, targets:'
   );
+  pkgSwiftContent = patchLibavifToDecodeWithDav1d(pkgSwiftContent);
+  pkgSwiftContent = patchLibdav1dToCompileArmCpu(pkgSwiftContent);
   await fs.writeFile(pkgSwift, pkgSwiftContent, 'utf-8');
 
   // Detect inter-dependencies with other shared SPM deps.
