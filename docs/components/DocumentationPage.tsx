@@ -14,7 +14,7 @@ import {
 } from '~/common/routes';
 import { versionToText, throttle } from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
-import DocumentationHead from '~/components/DocumentationHead';
+import DocumentationHead, { getOGImageURL } from '~/components/DocumentationHead';
 import DocumentationNestedScrollLayout, {
   DocumentationNestedScrollLayoutHandles,
 } from '~/components/DocumentationNestedScrollLayout';
@@ -89,7 +89,13 @@ export default function DocumentationPage({
       : undefined;
   const techArticleSchema =
     title && canonicalUrl
-      ? buildTechArticleSchema({ title, description, modificationDate, url: canonicalUrl })
+      ? buildTechArticleSchema({
+          title,
+          description,
+          modificationDate,
+          image: getOGImageURL({ title, description, locale }),
+          url: canonicalUrl,
+        })
       : null;
   const sidebarScrollPosition = process?.browser ? window.__sidebarScroll : 0;
   const currentPath = router?.asPath ?? '';

@@ -26,6 +26,7 @@ type TechArticleInput = {
   title: string;
   description?: string;
   modificationDate?: string;
+  image?: string;
   url: string;
 };
 
@@ -45,6 +46,7 @@ export function buildTechArticleSchema({
   title,
   description,
   modificationDate,
+  image,
   url,
 }: TechArticleInput) {
   const dateModified = modificationDate ? toISODateTime(modificationDate) : undefined;
@@ -55,6 +57,8 @@ export function buildTechArticleSchema({
     headline: title,
     ...(description ? { description } : {}),
     ...(dateModified ? { dateModified } : {}),
+    ...(image ? { image } : {}),
+    author: websiteSchema.publisher,
     publisher: websiteSchema.publisher,
     url,
   };
