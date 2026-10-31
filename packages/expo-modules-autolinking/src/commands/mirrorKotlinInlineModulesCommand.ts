@@ -13,7 +13,7 @@ import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './
 interface MirrorKotlinInlineModulesCommandArguments extends AutolinkingCommonArguments {
   kotlinFilesMirrorDirectory: string;
   inlineModulesListDirectory: string;
-  watchedDirectoriesSerialized: string;
+  watchedDirectory: string[];
 }
 
 /**
@@ -32,21 +32,22 @@ export function mirrorKotlinInlineModulesCommand(cli: commander.CommanderStatic)
       '--inline-modules-list-directory <path>',
       'Path to the directory in which to generate the inlineModulesList file.'
     )
-    .requiredOption(
-      '--watched-directories-serialized <watchedDirectories>',
-      'JSON serialized watched directories array'
+    .option<string[]>(
+      '--watched-directory <path>',
+      'Directory watched for inline modules. Repeat the option for each directory.',
+      (value, previous) => previous.concat(value),
+      []
     )
     .action(async (commandArguments: MirrorKotlinInlineModulesCommandArguments) => {
       const {
         kotlinFilesMirrorDirectory,
         inlineModulesListDirectory,
-        watchedDirectoriesSerialized,
+        watchedDirectory: watchedDirectories,
       } = commandArguments;
       const autolinkingOptionsLoader = createAutolinkingOptionsLoader({
         ...commandArguments,
       });
       const appRoot = await autolinkingOptionsLoader.getAppRoot();
-      const watchedDirectories = JSON.parse(watchedDirectoriesSerialized);
 
       if (
         !/.android./.test(kotlinFilesMirrorDirectory) ||
