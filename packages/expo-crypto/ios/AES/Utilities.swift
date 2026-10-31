@@ -38,6 +38,9 @@ extension Data {
 
 extension AES.GCM.Nonce {
   init(ofSize size: Int) throws {
+    guard size >= 0 else {
+      throw NonceGenerationFailedException(size)
+    }
     var data = Data(count: size)
     let status = try data.withUnsafeMutableBytes { (ptr: UnsafeMutableRawBufferPointer) in
       guard let baseAddress = ptr.baseAddress else {
