@@ -1,6 +1,8 @@
 /* eslint-env browser */
 import { Platform } from 'expo';
 
+import { CameraTypeLabels } from './WebConstants';
+
 async function sourceSelectedAsync(
   isMuted: boolean,
   audioConstraints?: MediaTrackConstraints | boolean,
@@ -52,13 +54,13 @@ export function canGetUserMedia(): boolean {
 export async function isFrontCameraAvailableAsync(
   devices?: MediaDeviceInfo[]
 ): Promise<null | string> {
-  return await supportsCameraType(['front', 'user', 'facetime'], 'user', devices);
+  return await supportsCameraType(CameraTypeLabels.front, 'user', devices);
 }
 
 export async function isBackCameraAvailableAsync(
   devices?: MediaDeviceInfo[]
 ): Promise<null | string> {
-  return await supportsCameraType(['back', 'rear'], 'environment', devices);
+  return await supportsCameraType(CameraTypeLabels.back, 'environment', devices);
 }
 
 async function supportsCameraType(
