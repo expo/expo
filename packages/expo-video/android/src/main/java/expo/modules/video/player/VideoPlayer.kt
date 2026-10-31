@@ -117,7 +117,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
         startPlaybackService()
       }
     }
-  var preservesPitch = false
+  var preservesPitch = true
     set(preservesPitch) {
       field = preservesPitch
       appContext?.mainQueue?.launch {
