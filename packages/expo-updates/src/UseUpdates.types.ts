@@ -14,7 +14,7 @@ export type CurrentlyRunningInfo = {
    */
   updateId?: string;
   /**
-   * The channel name of the current build, if configured for use with EAS Update, `undefined` otherwise.
+   * The channel name of the current build, if configured for use with Expo Update, `undefined` otherwise.
    */
   channel?: string;
   /**
@@ -92,7 +92,7 @@ export type UpdateInfoNew = {
   /**
    * For updates of type `UpdateInfoType.NEW`, this is
    * a string that uniquely identifies the update. For the manifests used in the current Expo Updates protocol (including
-   * EAS Update), this represents the update's UUID in its canonical string form and will always use lowercase letters.
+   * Expo Update), this represents the update's UUID in its canonical string form and will always use lowercase letters.
    * @example
    * `"xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"`
    */

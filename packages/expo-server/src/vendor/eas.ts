@@ -14,7 +14,7 @@ export interface RequestHandler<Env = unknown> {
 const STORE = new AsyncLocalStorage();
 
 /**
- * Returns a request handler for EAS Hosting deployments.
+ * Returns a request handler for Expo Hosting deployments.
  */
 export function createRequestHandler<Env = unknown>(
   params: { build?: string },
