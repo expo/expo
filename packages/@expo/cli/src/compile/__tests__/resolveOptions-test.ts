@@ -1,4 +1,8 @@
+import { vol } from 'memfs';
+
 import { resolveOptions } from '../resolveOptions';
+
+afterEach(() => vol.reset());
 
 describe(resolveOptions, () => {
   it.each([
@@ -18,5 +22,14 @@ describe(resolveOptions, () => {
     expect(() =>
       resolveOptions('/app', { platform: 'ios', mode: 'development', outputType: 'exe' })
     ).toThrow('Invalid option: --output-type exe. Valid options are: app, ipa');
+  });
+
+  it(`resolves a symlinked --output-dir to its real path`, () => {
+    vol.fromJSON({ '/app/android/app/build/outputs/apk/debug/app-debug.apk': '' });
+    vol.symlinkSync('/app/android/app/build/outputs/apk/debug', '/app/build');
+
+    expect(
+      resolveOptions('/app', { platform: 'android', mode: 'development', outputDir: 'build' })
+    ).toMatchObject({ outputDir: '/app/android/app/build/outputs/apk/debug' });
   });
 });
