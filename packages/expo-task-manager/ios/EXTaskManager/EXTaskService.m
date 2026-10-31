@@ -631,18 +631,23 @@
     request = nil;
   }];
 
+  // A task can finish on another thread while this method is still running (for example a
+  // background task whose JavaScript completes on the JS thread). Its callback then clears
+  // `request`, which releases the request. Keep it alive until this method returns.
+  EXTaskExecutionRequest *strongRequest = request;
+
   @synchronized (_lockTarget) {
-    [_requests addObject:request];
+    [_requests addObject:strongRequest];
   }
 
   [self _iterateTasksUsingBlock:^(id<EXTaskInterface> task) {
     if ([task.consumer.class respondsToSelector:@selector(supportsLaunchReason:)] && [task.consumer.class supportsLaunchReason:launchReason]) {
-      [self _addTask:task toRequest:request withInfo:userInfo];
+      [self _addTask:task toRequest:strongRequest withInfo:userInfo];
     }
   }];
-  
+
   // Evaluate request immediately if no tasks were added.
-  [request maybeEvaluate];
+  [strongRequest maybeEvaluate];
 }
 
 - (void)_loadAppWithId:(nonnull NSString *)appId
