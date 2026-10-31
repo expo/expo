@@ -463,7 +463,7 @@ const RENAMED_PAGES: Record<string, string> = {
   // After new environment variables guide
   '/build-reference/variables/': '/eas/environment-variables/',
   '/eas-update/environment-variables/':
-    '/eas/environment-variables/usage/#using-environment-variables-with-eas-update',
+    '/eas/environment-variables/usage/#using-environment-variables-with-expo-update',
 
   // After moving common questions from Expo Router FAQ to Introduction
   '/router/reference/faq/': '/router/introduction/',
@@ -576,7 +576,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After creating EAS environment variables section
   '/eas/hosting/environment-variables/':
-    '/eas/environment-variables/usage/#using-environment-variables-with-eas-hosting',
+    '/eas/environment-variables/usage/#using-environment-variables-with-expo-hosting',
 
   // After separating expo-router reference into multiple subsections
   '/versions/unversioned/sdk/router-ui/': '/versions/unversioned/sdk/router/ui/',

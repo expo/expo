@@ -1,7 +1,7 @@
 ---
-title: Get started with EAS Workflows
+title: Get started with Expo Workflows
 sidebar_title: Get started
-description: Learn how to use EAS Workflows to automate your React Native CI/CD development and release processes.
+description: Learn how to use Expo Workflows to automate your React Native CI/CD development and release processes.
 searchRank: 10
 ---
 
@@ -9,7 +9,7 @@ import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-This page walks you through creating your first EAS Workflow: development builds of your app for Android emulators, iOS simulators, physical devices, and production builds for the app stores.
+This page walks you through creating your first workflow with Expo Workflows: development builds of your app for Android emulators, iOS simulators, physical devices, and production builds for the app stores.
 
 ## Get started
 
@@ -44,7 +44,7 @@ Run the following command to create a workflow that creates development builds f
 
 <Terminal cmd={['$ eas workflow:create --template build']} />
 
-Then follow the prompts and the `[Action requested]` steps when they appear. The command generates a workflow file at **.eas/workflows/build.yml** and sets up your project for building on EAS.
+Then follow the prompts and the `[Action requested]` steps when they appear. The command generates a workflow file at **.eas/workflows/build.yml** and sets up your project for building with Expo Build.
 
 </Step>
 
@@ -80,7 +80,7 @@ When you're ready to build for the app stores, generate a release workflow with 
 
 <Terminal cmd={['$ eas workflow:create --template deploy']} />
 
-This sets up your project for automated deployment: it configures EAS Build and EAS Update and sets your app identifiers, then writes a complete release workflow to **.eas/workflows/deploy.yml**.
+This sets up your project for automated deployment: it configures Expo Build and Expo Update and sets your app identifiers, then writes a complete release workflow to **.eas/workflows/deploy.yml**.
 
 When you run it, the workflow fingerprints your project, then builds and submits a new production build when there are native changes so they're ready for submission, or publishes an over-the-air update when a matching build already exists, which will be sent to your users immediately.
 
@@ -118,7 +118,7 @@ Then, run the workflow:
 
 ### Automate workflows with GitHub events
 
-You can trigger a workflow by pushing a commit to your GitHub repository. You can link a GitHub repo to your EAS project with the following steps:
+You can trigger a workflow by pushing a commit to your GitHub repository. You can link a GitHub repo to your Expo Services project with the following steps:
 
 - Navigate to your project's [GitHub settings](https://expo.dev/accounts/%5Baccount%5D/projects/%5BprojectName%5D/github).
 - Follow the UI to install the GitHub app.
@@ -152,9 +152,9 @@ jobs:
 
 You can also trigger workflows from App Store Connect events using [`on.app_store_connect`](/eas/workflows/syntax/#onapp_store_connect).
 
-Before using App Store Connect triggers, configure your App Store Connect connection in EAS dashboard:
+Before using App Store Connect triggers, configure your App Store Connect connection in Expo dashboard:
 
-- Open EAS dashboard and select your project.
+- Open Expo dashboard and select your project.
 - Navigate to **[Project settings > General > Connections](https://expo.dev/accounts/[account]/projects/[project]/settings)**.
 - Connect your App Store Connect app.
 

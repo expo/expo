@@ -1,13 +1,13 @@
 ---
-title: Troubleshoot EAS Workflows
+title: Troubleshoot Expo Workflows
 sidebar_title: Troubleshooting
-description: Learn how to diagnose and fix common issues when running EAS Workflows.
+description: Learn how to diagnose and fix common issues when running Expo Workflows.
 ---
 
 import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 
-This page lists common EAS Workflows failure modes and how to fix them. If a workflow doesn't start or a job fails, start with the workflow run's detail page on your project's [workflows page](https://expo.dev/accounts/[account]/projects/[projectName]/workflows). It shows each job's status, logs, and errors.
+This page lists common Expo Workflows failure modes and how to fix them. If a workflow doesn't start or a job fails, start with the workflow run's detail page on your project's [workflows page](https://expo.dev/accounts/[account]/projects/[projectName]/workflows). It shows each job's status, logs, and errors.
 
 If a temporary error causes a job to fail, you can [re-run the workflow from its failed jobs](/eas/workflows/manage-workflow-runs/#re-run-from-failed-jobs) and reuse successful jobs and their outputs.
 
@@ -27,8 +27,8 @@ The [Expo Tools VS Code extension](https://marketplace.visualstudio.com/items?it
 
 If a workflow with an [`on` trigger](/eas/workflows/syntax/#on) never starts, check the following:
 
-- **GitHub connection**: triggers such as `push`, `pull_request`, and `ref_delete` require your EAS project to be [linked to a GitHub repository](/eas/workflows/get-started/#automate-workflows-with-github-events).
-- **Workflow file location and ref**: the file must be inside the **.eas/workflows** directory. For `push` and `pull_request` events, EAS reads the workflow file from the triggering commit, so the file must exist on that branch. For `schedule` and `ref_delete` events, EAS reads the workflow file from the default branch.
+- **GitHub connection**: triggers such as `push`, `pull_request`, and `ref_delete` require your Expo Services project to be [linked to a GitHub repository](/eas/workflows/get-started/#automate-workflows-with-github-events).
+- **Workflow file location and ref**: the file must be inside the **.eas/workflows** directory. For `push` and `pull_request` events, Expo Workflows reads the workflow file from the triggering commit, so the file must exist on that branch. For `schedule` and `ref_delete` events, Expo Workflows reads the workflow file from the default branch.
 - **Trigger filters**: `branches`, `tags`, `paths`, `types`, and `labels` filters must match the event. For example, `on.push.branches: ['main']` ignores pushes to every other branch.
 - **Commit message skip markers**: runs triggered by `push` and `pull_request` events are skipped when the commit message contains `[eas skip]`, `[skip eas]`, or `[no eas]`.
 - **Scheduled workflows**: `on.schedule` workflows only run from the repository's default branch, run in the GMT time zone, and may be delayed during periods of high load.
@@ -41,7 +41,7 @@ Add the profile to **eas.json**, or run `eas build:configure` to generate the fi
 
 ## Environment variable is empty or missing
 
-[EAS environment variables](/eas/environment-variables/) are scoped to an environment: `production`, `preview`, or `development`. A job only sees variables from the environment set by its [`environment` key](/eas/workflows/syntax/#jobsjob_idenvironment), which defaults to `production`. If a variable is empty in a job, confirm the variable exists in the environment the job uses, or set the job's `environment` to match where the variable is defined.
+[Expo Services environment variables](/eas/environment-variables/) are scoped to an environment: `production`, `preview`, or `development`. A job only sees variables from the environment set by its [`environment` key](/eas/workflows/syntax/#jobsjob_idenvironment), which defaults to `production`. If a variable is empty in a job, confirm the variable exists in the environment the job uses, or set the job's `environment` to match where the variable is defined.
 
 Also note that the [`env` key](/eas/workflows/syntax/#jobsjob_idenv) is not available on the `apple-device-registration-request`, `branch-delete`, `doc`, `get-build`, `github-comment`, `require-approval`, and `slack` jobs.
 

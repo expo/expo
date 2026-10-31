@@ -1,18 +1,18 @@
 ---
 title: Error reporting
 sidebar_title: Errors
-description: Record JavaScript errors and native crashes from your app and investigate stack traces in the EAS Observe dashboard.
+description: Record JavaScript errors and native crashes from your app and investigate stack traces in the Expo Observe dashboard.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
-> **important** Error reporting in EAS Observe is in [preview](/more/release-statuses/#preview) and requires SDK 57 or later. Native crashes additionally require `expo-observe` 57.0.21 or later. See [Still to come](#still-to-come) for more features.
+> **important** Error reporting in Expo Observe is in [preview](/more/release-statuses/#preview) and requires SDK 57 or later. Native crashes additionally require `expo-observe` 57.0.21 or later. See [Still to come](#still-to-come) for more features.
 
-The `expo-observe` library records JavaScript errors and native crashes from your app alongside its performance metrics. Errors are persisted on-device, batched, and dispatched on the next flush. They appear in the **Errors** page of the EAS Observe dashboard.
+The `expo-observe` library records JavaScript errors and native crashes from your app alongside its performance metrics. Errors are persisted on-device, batched, and dispatched on the next flush. They appear in the **Errors** page of the Expo Observe dashboard.
 
 <ContentSpotlight
-  alt="The Errors page of the EAS Observe dashboard, showing the crash-free sessions chart and the list of distinct errors."
+  alt="The Errors page of the Expo Observe dashboard, showing the crash-free sessions chart and the list of distinct errors."
   src="/static/images/expo-observe/observe-errors-light.webp"
   darkSrc="/static/images/expo-observe/observe-errors-dark.webp"
 />
@@ -96,9 +96,9 @@ Avoid Personally Identifiable Information (PII) in error messages. Everything yo
 
 A native crash terminates the app before your JavaScript can react to it, so the report is written on the device and dispatched the next time the app launches. Native crashes are recorded automatically on Android and iOS with `expo-observe` 57.0.21 or later, and no setup is required. They appear with the **Native** source in the dashboard.
 
-On Android, EAS Observe records uncaught Java and Kotlin exceptions, including the `Caused by` chain. On Android 11 and later, it also reads the crash records the operating system keeps for your app, which covers crashes in native code such as `SIGSEGV` and `SIGABRT`.
+On Android, Expo Observe records uncaught Java and Kotlin exceptions, including the `Caused by` chain. On Android 11 and later, it also reads the crash records the operating system keeps for your app, which covers crashes in native code such as `SIGSEGV` and `SIGABRT`.
 
-On iOS, EAS Observe uses MetricKit to collect the crash reports the system produces for your app. These cover Mach exceptions such as `EXC_BAD_ACCESS` and `EXC_BREAKPOINT`, and Unix signals such as `SIGSEGV`, `SIGBUS`, and `SIGTRAP`. On iOS 17 and later, they also cover uncaught Objective-C and Swift exceptions.
+On iOS, Expo Observe uses MetricKit to collect the crash reports the system produces for your app. These cover Mach exceptions such as `EXC_BAD_ACCESS` and `EXC_BREAKPOINT`, and Unix signals such as `SIGSEGV`, `SIGBUS`, and `SIGTRAP`. On iOS 17 and later, they also cover uncaught Objective-C and Swift exceptions.
 
 > **Note:** Native crashes are not recorded on tvOS or on the iOS Simulator. Application Not Responding (ANR) events and out-of-memory terminations are not recorded on either platform.
 
@@ -107,7 +107,7 @@ On iOS, EAS Observe uses MetricKit to collect the crash reports the system produ
 Click an error in the list to open its details. The page shows how often the error occurs, how many users it affects, when it was first and last seen, and how it splits across platforms.
 
 <ContentSpotlight
-  alt="The error details page of the EAS Observe dashboard, showing the stack trace of a native crash and the session records that preceded it."
+  alt="The error details page of the Expo Observe dashboard, showing the stack trace of a native crash and the session records that preceded it."
   src="/static/images/expo-observe/observe-error-details-light.webp"
   darkSrc="/static/images/expo-observe/observe-error-details-dark.webp"
 />
@@ -128,7 +128,7 @@ In a production app, your JavaScript is bundled and minified. Stack traces point
 
 If no source map is stored for the build or the update, the dashboard shows the reported stack trace as-is. Frames then reference positions in the minified bundle, such as `index.android.bundle:1:481231`, and are difficult to map back to your code.
 
-### Upload source maps with EAS Build
+### Upload source maps with Expo Build
 
 To store a source map for each build, set `uploadSourceMaps` to `true` in the build profile in **eas.json**:
 
@@ -142,13 +142,13 @@ To store a source map for each build, set `uploadSourceMaps` to `true` in the bu
 }
 ```
 
-With this setting, EAS Build uploads the source map produced when your app's JavaScript is bundled. Symbolication then works for every error reported from that build. No changes to your app code are required.
+With this setting, Expo Build uploads the source map produced when your app's JavaScript is bundled. Symbolication then works for every error reported from that build. No changes to your app code are required.
 
-> **info** Source map upload requires EAS CLI version 22.0.0 or later and only works for builds that run on EAS Build servers. Local builds created with `eas build --local` do not upload source maps.
+> **info** Source map upload requires EAS CLI version 22.0.0 or later and only works for builds that run on Expo Build servers. Local builds created with `eas build --local` do not upload source maps.
 
 The source code embedded in the source map (`sourcesContent`) is removed before upload. Only file names and position mappings are stored. If the upload fails, the build still completes and shows a warning in the build logs.
 
-### Upload source maps with EAS Update
+### Upload source maps with Expo Update
 
 > **info** Source map upload for updates requires EAS CLI version 24.9.0 or later.
 

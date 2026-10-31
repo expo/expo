@@ -1,6 +1,6 @@
 ---
 title: Internal distribution
-description: Learn how EAS Build provides shareable URLs for your builds with your team for internal distribution.
+description: Learn how Expo Build provides shareable URLs for your builds with your team for internal distribution.
 ---
 
 import { GraduationHat02DuotoneIcon } from '@expo/styleguide-icons/duotone/GraduationHat02DuotoneIcon';
@@ -9,21 +9,21 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-Setting up an internal distribution build only takes a few minutes with EAS Build and provides a streamlined way to share your app with your team and other testers for feedback. It does this by providing a URL that allows them to install the app directly to their device. If you are not sure yet if you want to use this approach and want to learn about all of the options available for distributing your app internally, refer to the [overview of distribution apps for review](/review/overview/) guide.
+Setting up an internal distribution build only takes a few minutes with Expo Build and provides a streamlined way to share your app with your team and other testers for feedback. It does this by providing a URL that allows them to install the app directly to their device. If you are not sure yet if you want to use this approach and want to learn about all of the options available for distributing your app internally, refer to the [overview of distribution apps for review](/review/overview/) guide.
 
 ## Using internal distribution
 
 To configure a build profile for internal distribution, set `"distribution": "internal"` on it. When you set this configuration, it has the following effects on the build profile:
 
-- **Android**: The default behavior for the `gradleCommand` will change to generate an APK instead of an AAB. If you have specified a custom `gradleCommand`, then make sure that it [produces an APK](/build-reference/apk/#configuring-a-profile-to-build-apks), or it won't be directly installable on an Android device. Additionally, EAS Build will generate a new Android keystore for signing the APK, or it will use an existing one if the package name is the same as your [development build](/develop/development-builds/introduction/).
-- **iOS**: Builds using this profile will use either [ad hoc or enterprise provisioning](#overview-of-distribution-mechanisms). When using ad hoc provisioning, EAS Build will generate a provisioning profile containing an allow-list of device UDIDs, and only those devices in the list at build time will be able to install it. You can add a device by running `eas device:create` and creating a new build.
+- **Android**: The default behavior for the `gradleCommand` will change to generate an APK instead of an AAB. If you have specified a custom `gradleCommand`, then make sure that it [produces an APK](/build-reference/apk/#configuring-a-profile-to-build-apks), or it won't be directly installable on an Android device. Additionally, Expo Build will generate a new Android keystore for signing the APK, or it will use an existing one if the package name is the same as your [development build](/develop/development-builds/introduction/).
+- **iOS**: Builds using this profile will use either [ad hoc or enterprise provisioning](#overview-of-distribution-mechanisms). When using ad hoc provisioning, Expo Build will generate a provisioning profile containing an allow-list of device UDIDs, and only those devices in the list at build time will be able to install it. You can add a device by running `eas device:create` and creating a new build.
 - By default, internal distribution build URLs are available to anybody with the URL, and each is identified by a 32 character UUID. If you would like to require sign-in to an authorized Expo account to access these builds, you can disable the **Unauthenticated access to internal builds** option in your [project settings](https://expo.dev/accounts/[account]/projects/[project]/settings).
 
-See the tutorial on Internal distribution with EAS Build below for more information on how to configure, create, and install a build:
+See the tutorial on Internal distribution with Expo Build below for more information on how to configure, create, and install a build:
 
 <BoxLink
   title="Create and share internal distribution build"
-  description="Complete step-by-step guide to setting up and sharing internal distribution builds with EAS Build."
+  description="Complete step-by-step guide to setting up and sharing internal distribution builds with Expo Build."
   href="/tutorial/eas/internal-distribution-builds/"
   Icon={GraduationHat02DuotoneIcon}
 />
@@ -38,9 +38,9 @@ Pass `--refresh-ad-hoc-provisioning-profile` with `--non-interactive` to update 
 
 > **info** `--refresh-ad-hoc-provisioning-profile` requires EAS CLI 19.1.0 or later.
 
-EAS authenticates with an App Store Connect API key. It reads devices registered on EAS for your Apple team. It registers any missing UDIDs on the portal. Then it refreshes the profile device list.
+Expo Build authenticates with an App Store Connect API key. It reads devices registered on Expo servers for your Apple team. It registers any missing UDIDs on the portal. Then it refreshes the profile device list.
 
-When you use this flag, EAS selects all matching devices for the build target's Apple platform: iPhone and iPad for iOS, Mac for macOS.
+When you use this flag, Expo Build selects all matching devices for the build target's Apple platform: iPhone and iPad for iOS, Mac for macOS.
 
 <Terminal
   cmd={[
@@ -48,15 +48,15 @@ When you use this flag, EAS selects all matching devices for the build target's 
   ]}
 />
 
-For [EAS Workflows](/eas/workflows/get-started), set `refresh_ad_hoc_provisioning_profile: true` in the build job's `params` with the same profile requirements. See the [build job parameters](/eas/workflows/pre-packaged-jobs#build).
+For [Expo Workflows](/eas/workflows/get-started), set `refresh_ad_hoc_provisioning_profile: true` in the build job's `params` with the same profile requirements. See the [build job parameters](/eas/workflows/pre-packaged-jobs#build).
 
-The profile must set [`"distribution": "internal"`](/eas/json/#distribution) and use [credentials managed by EAS](/app-signing/app-credentials/). You need at least one device from [`eas device:create`](/eas/cli/#eas-device-create) and an App Store Connect API key in CI through [environment variables](/build/building-on-ci/#optional-provide-an-asc-api-token-for-your-apple-team) (`EXPO_ASC_API_KEY_PATH`, `EXPO_ASC_KEY_ID`, and `EXPO_ASC_ISSUER_ID`) or a key stored in EAS for submissions on the project.
+The profile must set [`"distribution": "internal"`](/eas/json/#distribution) and use [credentials managed by Expo Services](/app-signing/app-credentials/). You need at least one device from [`eas device:create`](/eas/cli/#eas-device-create) and an App Store Connect API key in CI through [environment variables](/build/building-on-ci/#optional-provide-an-asc-api-token-for-your-apple-team) (`EXPO_ASC_API_KEY_PATH`, `EXPO_ASC_KEY_ID`, and `EXPO_ASC_ISSUER_ID`) or a key stored in Expo Services for submissions on the project.
 
-Otherwise, after registering a device with [`eas device:create`](/eas/cli/#eas-device-create), run [`eas build`](/eas/cli/#eas-build) interactively and sign in with your Apple account so EAS can update the ad hoc provisioning profile.
+Otherwise, after registering a device with [`eas device:create`](/eas/cli/#eas-device-create), run [`eas build`](/eas/cli/#eas-build) interactively and sign in with your Apple account so Expo Build can update the ad hoc provisioning profile.
 
 ### Managing devices
 
-With [EAS Workflows](/eas/workflows/get-started), you can pause a workflow until a tester enrolls an iOS device and a team member approves it using the [`apple-device-registration-request`](/eas/workflows/pre-packaged-jobs#apple-device-registration-request) job. Pair it with a `build` job that sets `refresh_ad_hoc_provisioning_profile: true` to include the new device in an internal distribution build.
+With [Expo Workflows](/eas/workflows/get-started), you can pause a workflow until a tester enrolls an iOS device and a team member approves it using the [`apple-device-registration-request`](/eas/workflows/pre-packaged-jobs#apple-device-registration-request) job. Pair it with a `build` job that sets `refresh_ad_hoc_provisioning_profile: true` to include the new device in an internal distribution build.
 
 You can see any devices registered via `eas device:create` by running:
 
@@ -65,7 +65,7 @@ You can see any devices registered via `eas device:create` by running:
   cmdCopy="eas device:list"
 />
 
-Devices registered with Expo for ad hoc provisioning will appear on your Apple Developer Portal after they are used to generate a provisioning profile for a new internal build with EAS Build or to [re-sign an existing build](/app-signing/app-credentials/#re-signing-new-credentials) with `eas build:resign`.
+Devices registered with Expo for ad hoc provisioning will appear on your Apple Developer Portal after they are used to generate a provisioning profile for a new internal build with Expo Build or to [re-sign an existing build](/app-signing/app-credentials/#re-signing-new-credentials) with `eas build:resign`.
 
 > **warning** **On new or recently renewed Apple Developer Program memberships, a newly registered device may not be immediately installable.** Registering a device with Expo does not register it with Apple. The device is added to your Apple Developer Portal only when it's first included in a provisioning profile, which happens when you create a new internal build or re-sign an existing one. For these memberships, Apple can take [up to 24–72 hours](https://developer.apple.com/help/account/reference/device-registration-updates/) to finish processing a newly registered device, and during that time the device can't be added to provisioning profiles. As a result, the first build or re-sign that includes a new device may fail. Wait for Apple to finish processing, then create a new build or re-sign again to produce an installable build that includes the device.
 
@@ -87,7 +87,7 @@ for ad hoc distribution per app.
 
 #### Rename devices
 
-Devices added via the website URL/QR code will default to displaying their UDID when selecting them for an EAS Build. You can assign friendly names to your devices with the following command:
+Devices added via the website URL/QR code will default to displaying their UDID when selecting them for an Expo Build. You can assign friendly names to your devices with the following command:
 
 <Terminal
   cmd={['# Rename devices on Expo and the Apple Developer Portal', '$ eas device:rename']}
@@ -111,7 +111,7 @@ to your Apple Developer account. This method requires a paid Apple Developer acc
 
 You will need to know the UDID (Unique Device Identifier) of each device that will install your app, which may be challenging if you try to share with someone who is not a developer. Adding a new device will require a rebuild of your app or [re-signing the build with new credentials](/app-signing/app-credentials/#re-signing-new-credentials).
 
-Setting up Ad Hoc certificates correctly can be intimidating if you haven't done it before and tedious even if you have. If you're using [EAS Build](#using-internal-distribution), which is optimized for Expo and React Native projects, we'll handle the time-consuming parts of setting up Ad Hoc credentials for you.
+Setting up Ad Hoc certificates correctly can be intimidating if you haven't done it before and tedious even if you have. If you're using [Expo Build](#using-internal-distribution), which is optimized for Expo and React Native projects, we'll handle the time-consuming parts of setting up Ad Hoc credentials for you.
 
 </Collapsible>
 

@@ -1,6 +1,6 @@
 ---
 title: Troubleshoot build errors and crashes
-description: A reference for troubleshooting build errors and crashes when using EAS Build.
+description: A reference for troubleshooting build errors and crashes when using Expo Build.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -60,7 +60,7 @@ A good path forward is to **determine if the build failed due to a native or Jav
   ]}
 />
 
-This particular error means that the app is importing **./src/Routes** and it is not found. The cause could be that the filename case is different in Git than the developer's filesystem (for example, **routes.js** in Git instead of **Routes.js**), or maybe the project has a build step and it wasn't set up to run on EAS Build. In this case, it turns out that in this case **./src/Routes** was intended to import **./src/Routes/index.js**, but that path was accidentally excluded in the developer's **.gitignore**.
+This particular error means that the app is importing **./src/Routes** and it is not found. The cause could be that the filename case is different in Git than the developer's filesystem (for example, **routes.js** in Git instead of **Routes.js**), or maybe the project has a build step and it wasn't set up to run on Expo Build. In this case, it turns out that in this case **./src/Routes** was intended to import **./src/Routes/index.js**, but that path was accidentally excluded in the developer's **.gitignore**.
 
 It's important to note that with iOS builds the build details page only displays an abridged version of the logs because the full output from `xcodebuild` can be in the order of 10MB. Sometimes it's necessary to open the full Xcode logs to find the information that you need; for example, if the JavaScript build failed but you don't see any useful information on the build details page. To open the full Xcode logs, scroll to the bottom of the build details page when the build has been completed and either click to view or download them.
 
@@ -72,9 +72,9 @@ Armed with your error logs, you can often start to fix your build or search the 
 
 <Collapsible summary="Are you using a monorepo?">
 
-Monorepos are incredibly useful but they do introduce their own set of problems. It's necessary to upload the entire monorepo to the EAS Build builders, set it up, and run the build.
+Monorepos are incredibly useful but they do introduce their own set of problems. It's necessary to upload the entire monorepo to the Expo Build builders, set it up, and run the build.
 
-EAS Build is more like a typical CI service in that we need the source code, rather than a compiled JavaScript bundle and manifest. EAS Build has first-class support for Yarn workspaces, and [your success may vary when using other monorepo tools](/build-reference/limitations).
+Expo Build is more like a typical CI service in that we need the source code, rather than a compiled JavaScript bundle and manifest. Expo Build has first-class support for Yarn workspaces, and [your success may vary when using other monorepo tools](/build-reference/limitations).
 
 For more information, see [Working with monorepos](/guides/monorepos).
 
@@ -88,7 +88,7 @@ This can often be a sign that your app bundle is extremely large, which will mak
 
 To determine how large your bundle is and to see a breakdown of where the size comes from, use [Expo Atlas](/guides/analyzing-bundles/).
 
-To increase memory limits on your EAS Build builders, use [`large` resource class](/eas/json/#resourceclass) in your **eas.json**. See [Android-specific resource class](/build-reference/infrastructure/#android-build-server-configurations) and [iOS-specific resource class](/build-reference/infrastructure/#ios-build-server-configurations) for more information.
+To increase memory limits on your Expo Build builders, use [`large` resource class](/eas/json/#resourceclass) in your **eas.json**. See [Android-specific resource class](/build-reference/infrastructure/#android-build-server-configurations) and [iOS-specific resource class](/build-reference/infrastructure/#ios-build-server-configurations) for more information.
 
 </Collapsible>
 
@@ -102,7 +102,7 @@ If your project imports a file listed in **.gitignore**, the build will fail wit
 
 - Remove any files or directories Metro was unable to resolve from your **.gitignore**. However, this poses a security risk since any sensitive information included in these files will now be available in your project's source code and Git commit history.
 
-- Store the file as a [file environment variable](/eas/environment-variables/faq/#can-i-use-file-environment-variables-in-my-eas-project). If the file does not contain secrets, you can include it in the project archive with [.easignore](/build-reference/easignore/#adding-files-to-your-project-upload-with-easignore).
+- Store the file as a [file environment variable](/eas/environment-variables/faq/#can-i-use-file-environment-variables-in-my-expo-services-project). If the file does not contain secrets, you can include it in the project archive with [.easignore](/build-reference/easignore/#adding-files-to-your-project-upload-with-easignore).
 
 - Refactor your source code to avoid importing sensitive files on the client side. If a file is an auto-generated code from a third-party provider and that provider has automatically listed files in your **.gitignore**, then that file probably contains sensitive information. You should not include it on the client side. During app development, ensure you follow secure practices, such as using environment variables or serving them through your backend. See [Using secrets in environment variables](/eas/environment-variables/#visibility-settings-for-environment-variables) for more information.
 
@@ -110,11 +110,11 @@ If your project imports a file listed in **.gitignore**, the build will fail wit
 
 ## Compare build logs
 
-When an EAS Build that previously succeeded starts failing, identifying what changed between the two builds can help pinpoint the root cause. The **Compare** button on the EAS Build details page helps you compare two builds side-by-side, showing differences in their build logs and configuration.
+When an Expo Build that previously succeeded starts failing, identifying what changed between the two builds can help pinpoint the root cause. The **Compare** button on the Expo Build details page helps you compare two builds side-by-side, showing differences in their build logs and configuration.
 
 To compare two builds:
 
-- Open your build details page on the [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds) of your failed build
+- Open your build details page on the [Expo dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds) of your failed build
 - Click the **Compare** button to open the compare modal
 - Enter the build ID or the complete build URL of the build you want to compare against. This will be the build that previously succeeded.
 - Click **Compare**.
@@ -145,17 +145,17 @@ In the above example, comparing a failed build on the right side against a succe
 
 When a build fails with `Task :app:bundleReleaseJsAndAssets FAILED` (Android) or `Metro encountered an error` (iOS), it means Metro bundler was unable to bundle the app's JavaScript code while trying to embed it in your app's binary. This error message is usually followed by a syntax error or other details about why bundling failed. Unfortunately, a standard React Native project is configured to perform this step late in the Gradle/Xcode build step, meaning it can take a while to see this error.
 
-You can build the production bundle locally by running `npx expo export` to bypass all of the other build steps so you can see this error much more quickly. Run this command repeatedly, resolving any syntax errors or other issues uncovered until the bundle builds successfully. Then try your EAS Build again.
+You can build the production bundle locally by running `npx expo export` to bypass all of the other build steps so you can see this error much more quickly. Run this command repeatedly, resolving any syntax errors or other issues uncovered until the bundle builds successfully. Then try your Expo Build again.
 
 ## Verify that your project builds and runs locally
 
-If the logs weren't enough to immediately help you understand and fix the root cause, it's time to try to reproduce the issue locally. If your project builds and runs locally in release mode then it will also build on EAS Build, provided that the following are all true:
+If the logs weren't enough to immediately help you understand and fix the root cause, it's time to try to reproduce the issue locally. If your project builds and runs locally in release mode then it will also build on Expo Build, provided that the following are all true:
 
 - Relevant [Build tool versions](/build/eas-json#configuring-build-tools) (for example, Xcode, Node.js, npm, Yarn) are the same in both environments.
 - Relevant [environment variables](/eas/environment-variables) are the same in both environments.
-- The [project archive](/build-reference/project-upload/#what-the-project-archive-includes) that EAS CLI uploads to EAS Build includes the same relevant source files.
+- The [project archive](/build-reference/project-upload/#what-the-project-archive-includes) that EAS CLI uploads to Expo Build includes the same relevant source files.
 
-You can verify that your project builds on your local machine with the `npx expo run:android` and `npx expo run:ios` commands, with variant/configuration flags set to release to most faithfully reproduce what executes on EAS Build. For more information, see [Android build process](/build-reference/android-builds) and [iOS build process](/build-reference/ios-builds).
+You can verify that your project builds on your local machine with the `npx expo run:android` and `npx expo run:ios` commands, with variant/configuration flags set to release to most faithfully reproduce what executes on Expo Build. For more information, see [Android build process](/build-reference/android-builds) and [iOS build process](/build-reference/ios-builds).
 
 <Terminal
   cmd={{
@@ -194,29 +194,29 @@ You can verify that your project builds on your local machine with the `npx expo
 >
 > <br />
 > You can alternatively run a local build with `eas build --local` — this command will run a series
-> of steps that is as close as it can be to what runs remotely on the hosted EAS Build service. It
+> of steps that is as close as it can be to what runs remotely on the hosted Expo Build service. It
 > will copy your project to a temporary directory and make any necessary changes there. [Learn how
 > to set this up and use it for
 > debugging](/build-reference/local-builds/#use-local-builds-for-debugging).
 
-If your native toolchains are installed correctly and you are unable to build and run your project in release mode on your local machine, it will not build on EAS Build. Fix the issues locally, then try again on EAS Build. The other advice in this doc may be useful to help you resolve the issue locally, but often this requires some knowledge of native tooling or judicious application of Google, Stack Overflow, and GitHub Issues.
+If your native toolchains are installed correctly and you are unable to build and run your project in release mode on your local machine, it will not build on Expo Build. Fix the issues locally, then try again on Expo Build. The other advice in this doc may be useful to help you resolve the issue locally, but often this requires some knowledge of native tooling or judicious application of Google, Stack Overflow, and GitHub Issues.
 
 <Collapsible summary="Don't have Xcode and Android Studio set up on your machine?">
 
-**If you do not have native toolchains installed locally**, for example, because you do not have an Apple computer and therefore cannot build an iOS app on your machine, it can be trickier to get to the bottom of build errors. The feedback loop of making small changes locally and then seeing the result on EAS Build is slower than doing the same steps locally because the EAS Build builder must set up its environment, download your project, and install dependencies before starting the build.
+**If you do not have native toolchains installed locally**, for example, because you do not have an Apple computer and therefore cannot build an iOS app on your machine, it can be trickier to get to the bottom of build errors. The feedback loop of making small changes locally and then seeing the result on Expo Build is slower than doing the same steps locally because the Expo Build builder must set up its environment, download your project, and install dependencies before starting the build.
 
 If you are willing and able to set up the appropriate native tools, then refer to the [React Native environment setup guide](https://reactnative.dev/docs/environment-setup).
 
 </Collapsible>
 
-<Collapsible summary="My app builds locally, but not on EAS Build">
+<Collapsible summary="My app builds locally, but not on Expo Build">
 
-By default, EAS Build follows a relatively straightforward process for building your app for ([Android](/build-reference/android-builds) or [iOS](/build-reference/ios-builds)). If `npx expo run:android --variant release` and `npx expo run:ios --configuration Release` work locally, but your builds fail, then it's time to narrow down what configuration exists on your machine that hasn't been set up for your project on EAS Build yet.
+By default, Expo Build follows a relatively straightforward process for building your app for ([Android](/build-reference/android-builds) or [iOS](/build-reference/ios-builds)). If `npx expo run:android --variant release` and `npx expo run:ios --configuration Release` work locally, but your builds fail, then it's time to narrow down what configuration exists on your machine that hasn't been set up for your project on Expo Build yet.
 
-- Do a fresh `git clone` of your project to a new directory and get it running, ideally on a different machine. Pay attention to each of the steps that are needed and verify that they are also configured for EAS Build.
+- Do a fresh `git clone` of your project to a new directory and get it running, ideally on a different machine. Pay attention to each of the steps that are needed and verify that they are also configured for Expo Build.
 - Check that your [environment variables](/guides/environment-variables) are properly configured.
 - Verify that versions of Node.js, npm, Yarn, Xcode, Java, and other tools are the same in both environments.
-- Ensure that the [project archive you are uploading to EAS Build](/build-reference/project-upload/#what-the-project-archive-includes) includes the same relevant source files.
+- Ensure that the [project archive you are uploading to Expo Build](/build-reference/project-upload/#what-the-project-archive-includes) includes the same relevant source files.
 
 </Collapsible>
 
