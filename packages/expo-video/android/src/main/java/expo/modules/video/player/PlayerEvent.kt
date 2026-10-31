@@ -15,6 +15,7 @@ import expo.modules.video.records.IsPlayingEventPayload
 import expo.modules.video.records.MutedChangedEventPayload
 import expo.modules.video.records.PlaybackError
 import expo.modules.video.records.PlaybackRateChangedEventPayload
+import expo.modules.video.records.PlaybackRequestedChangedEventPayload
 import expo.modules.video.records.SourceChangedEventPayload
 import expo.modules.video.records.StatusChangedEventPayload
 import expo.modules.video.records.SubtitleTrack
@@ -42,6 +43,11 @@ sealed class PlayerEvent {
   data class IsPlayingChanged(val isPlaying: Boolean, val oldIsPlaying: Boolean?) : PlayerEvent() {
     override val name = "playingChange"
     override val jsEventPayload = IsPlayingEventPayload(isPlaying, oldIsPlaying)
+  }
+
+  data class PlaybackRequestedChanged(val isPlaybackRequested: Boolean) : PlayerEvent() {
+    override val name = "playbackRequestedChange"
+    override val jsEventPayload = PlaybackRequestedChangedEventPayload(isPlaybackRequested)
   }
 
   data class VolumeChanged(val volume: Float, val oldVolume: Float?) : PlayerEvent() {

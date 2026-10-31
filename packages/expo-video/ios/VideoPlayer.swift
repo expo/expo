@@ -398,6 +398,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     VideoManager.shared.setAppropriateAudioSessionOrWarn()
   }
 
+  func onPlaybackRequestedChanged(player: AVPlayer, isPlaybackRequested: Bool) {
+    safeEmit(event: "playbackRequestedChange", payload: PlaybackRequestedChangedEventPayload(isPlaybackRequested: isPlaybackRequested))
+  }
+
   func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float) {
     if #available(iOS 16.0, tvOS 16.0, *) {
       if player.defaultRate != playbackRate {

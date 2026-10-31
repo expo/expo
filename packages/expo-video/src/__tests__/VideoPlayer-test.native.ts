@@ -95,20 +95,25 @@ describe('expo-video under the jest-expo preset', () => {
     await expect(clearVideoCacheAsync()).resolves.toBeUndefined();
   });
 
-  it('emits `playingChange` from `play` and `pause`, only on actual changes', () => {
+  it('emits `playingChange` and `playbackRequestedChange` from `play` and `pause`, only on actual changes', () => {
     const player = createVideoPlayer(SOURCE);
     const listener = jest.fn();
+    const requestedListener = jest.fn();
     player.addListener('playingChange', listener);
+    player.addListener('playbackRequestedChange', requestedListener);
 
     player.play();
     expect(listener).toHaveBeenLastCalledWith({ isPlaying: true, oldIsPlaying: false });
+    expect(requestedListener).toHaveBeenLastCalledWith({ isPlaybackRequested: true });
 
     // Calling `play` while already playing must not emit, matching the native player.
     player.play();
     expect(listener).toHaveBeenCalledTimes(1);
+    expect(requestedListener).toHaveBeenCalledTimes(1);
 
     player.pause();
     expect(listener).toHaveBeenLastCalledWith({ isPlaying: false, oldIsPlaying: true });
+    expect(requestedListener).toHaveBeenLastCalledWith({ isPlaybackRequested: false });
   });
 
   it('emits `sourceChange` when the source is replaced', () => {
