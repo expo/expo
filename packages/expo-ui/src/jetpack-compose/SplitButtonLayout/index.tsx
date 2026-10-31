@@ -9,7 +9,7 @@ export type { ButtonColors };
 export interface SplitButtonLayoutProps {
   /**
    * The space between the leading and trailing buttons, in dp.
-   * Defaults to `SplitButtonDefaults.Spacing`.
+   * @default SplitButtonDefaults.Spacing
    */
   spacing?: number;
   /**
@@ -52,7 +52,7 @@ export interface SplitButtonLeadingButtonProps {
 
 export interface SplitButtonTrailingButtonProps {
   /**
-   * Whether the trailing button is checked. Set it while the menu it opens is expanded.
+   * Whether the trailing button is checked. This usually matches the menu's `expanded` state.
    */
   checked: boolean;
   /**
@@ -110,7 +110,7 @@ const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeVi
 
 /**
  * The leading button of a split button, which runs the primary action.
- * Put it in the `SplitButtonLayout.LeadingButton` slot.
+ * Goes in the `SplitButtonLayout.LeadingButton` slot.
  * Wraps `SplitButtonDefaults.LeadingButton`.
  */
 function SplitButtonLeadingButton(props: SplitButtonLeadingButtonProps) {
@@ -128,7 +128,7 @@ function SplitButtonLeadingButton(props: SplitButtonLeadingButtonProps) {
 
 /**
  * The trailing button of a split button, which usually opens a `DropdownMenu` of related actions.
- * Put it in the `SplitButtonLayout.TrailingButton` slot.
+ * Goes in the `SplitButtonLayout.TrailingButton` slot.
  * Wraps `SplitButtonDefaults.TrailingButton`.
  */
 function SplitButtonTrailingButton(props: SplitButtonTrailingButtonProps) {

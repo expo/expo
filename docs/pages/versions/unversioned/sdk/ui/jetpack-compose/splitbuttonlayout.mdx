@@ -19,7 +19,7 @@ Expo UI SplitButtonLayout matches the official Jetpack Compose [`SplitButtonLayo
 
 ### Split button with a menu
 
-`SplitButtonLayout` has two slots: `SplitButtonLayout.LeadingButton` and `SplitButtonLayout.TrailingButton`. Put a `SplitButtonLeadingButton` in the leading slot. To open a menu from the trailing button, put a [`DropdownMenu`](./dropdownmenu) in the trailing slot and use a `SplitButtonTrailingButton` as its trigger, so the menu opens below the button. Set `checked` on the trailing button while the menu is expanded: Material 3 then changes its shape to show that the menu is open.
+`SplitButtonLayout` has two slots: `SplitButtonLayout.LeadingButton` and `SplitButtonLayout.TrailingButton`. Put a `SplitButtonLeadingButton` in the leading slot. To open a menu from the trailing button, put a [`DropdownMenu`](./dropdownmenu) in the trailing slot with a `SplitButtonTrailingButton` as the menu's trigger. The menu then opens below the button. Set `checked` on the trailing button while the menu is expanded. Material 3 changes the shape of a checked button to show that the menu is open.
 
 ```tsx SplitButtonWithMenu.tsx
 import {
