@@ -37,7 +37,12 @@ public final class ImageView: ExpoView {
   /**
    An array of sources from which the view will asynchronously load one of them that fits best into the view bounds.
    */
-  var sources: [ImageSource]?
+  var sources: [ImageSource]? {
+    didSet {
+      // The index in `renderedImage` refers to the old array.
+      renderedImage = nil
+    }
+  }
 
   /**
    An image that has been loaded from one of the `sources` or set by the shared ref to an image.
@@ -46,9 +51,25 @@ public final class ImageView: ExpoView {
 
   var pendingOperation: SDWebImageCombinedOperation?
 
-  private var loadingSource: ImageSource?
-  private var renderedSource: ImageSource?
-  private var renderedSourcePixelSize: CGSize = .zero
+  /// A load of one of `sources`. Its completion records the rendered image only when it is still the latest load.
+  private struct SourceLoad {
+    let id: Int
+    let sourceIndex: Int
+    /// A thumbnail is decoded for the view's size at the time of the load, so a size change cannot keep it.
+    let isSizeDependent: Bool
+  }
+
+  /// The image that the latest load of `sources` rendered, and what a size change needs to keep it.
+  private struct RenderedImage {
+    /// The image that the load set as `sourceImage`. The record is stale when `sourceImage` is another image.
+    let image: UIImage
+    let sourceIndex: Int
+    /// The pixel size of the loaded image, before `processImage` downscaled it.
+    let sourcePixelSize: CGSize
+  }
+
+  private var latestLoadID = 0
+  private var renderedImage: RenderedImage?
 
   /// Rebuilds the image from a substituted SVG document after the manager delivered the original.
   var pendingSVGVariablesTask: Task<Void, Never>?
@@ -136,9 +157,8 @@ public final class ImageView: ExpoView {
       guard oldValue.size != bounds.size && bounds.size != .zero else {
         return
       }
-      if isRenderedImageReusable() {
-        imageLayoutSize = renderedImageLayoutSize()
-        applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
+      if let renderedImage = reusableRenderedImage() {
+        layOutImage(sourcePixelSize: renderedImage.sourcePixelSize)
       } else {
         reload()
       }
@@ -187,7 +207,7 @@ public final class ImageView: ExpoView {
         loadPlaceholderIfNecessary()
       }
     }
-    guard let source = bestSource else {
+    guard let sourceIndex = bestSourceIndex, let source = sources?[sourceIndex] else {
       displayPlaceholderIfNecessary()
       return
     }
@@ -202,17 +222,19 @@ public final class ImageView: ExpoView {
 
     // Cancel currently running load requests.
     cancelPendingOperation()
-    renderedSource = nil
-    loadingSource = source
 
     if blurRadius > 0 {
       context[.imageTransformer] = createTransformPipeline()
     }
 
-    if let thumbnailPixelSize = thumbnailPixelSize(for: source) {
+    let thumbnailPixelSize = thumbnailPixelSize(for: source)
+    if let thumbnailPixelSize {
       context[.imagePreserveAspectRatio] = true
       context[.imageThumbnailPixelSize] = thumbnailPixelSize
     }
+
+    latestLoadID += 1
+    let load = SourceLoad(id: latestLoadID, sourceIndex: sourceIndex, isSizeDependent: thumbnailPixelSize != nil)
 
     // Some loaders (e.g. PhotoLibraryAssetLoader) may need to know the screen scale.
     context[ImageView.screenScaleKey] = screenScale
@@ -220,7 +242,7 @@ public final class ImageView: ExpoView {
     context[ImageView.contentFitKey] = contentFit
 
     // Do it here so we don't waste resources trying to fetch from a remote URL
-    if maybeRenderLocalAsset(from: source) {
+    if maybeRenderLocalAsset(from: source, load: load) {
       return
     }
 
@@ -237,7 +259,9 @@ public final class ImageView: ExpoView {
       options: loadingOptions,
       context: context,
       progress: imageLoadProgress(_:_:_:),
-      completed: imageLoadCompleted(_:_:_:_:_:_:)
+      completed: { [weak self] image, data, error, cacheType, finished, imageUrl in
+        self?.imageLoadCompleted(image, data, error, cacheType, finished, imageUrl, load: load)
+      }
     )
   }
 
@@ -279,7 +303,8 @@ public final class ImageView: ExpoView {
     _ error: Error?,
     _ cacheType: SDImageCacheType,
     _ finished: Bool,
-    _ imageUrl: URL?
+    _ imageUrl: URL?,
+    load: SourceLoad
   ) {
     if let error = error {
       let code = (error as NSError).code
@@ -305,10 +330,17 @@ public final class ImageView: ExpoView {
     // or a transformed image comes without data, but `SVGCoder` left the document on the image.
     let document = data ?? (image.sd_extendedObject as? Data)
     if let variables = svgVariables, let document, SDImageSVGCoder.shared.canDecode(from: document) {
-      substituteSVGVariables(variables, in: document, replacing: image, cacheType: cacheType, imageUrl: imageUrl)
+      substituteSVGVariables(
+        variables,
+        in: document,
+        replacing: image,
+        cacheType: cacheType,
+        imageUrl: imageUrl,
+        load: load
+      )
       return
     }
-    didLoad(image, cacheType: cacheType, imageUrl: imageUrl)
+    didLoad(image, cacheType: cacheType, imageUrl: imageUrl, load: load)
   }
 
   /// Rebuilds the image from the original SVG document with the variables substituted, then displays
@@ -320,7 +352,8 @@ public final class ImageView: ExpoView {
     in data: Data,
     replacing original: UIImage,
     cacheType: SDImageCacheType,
-    imageUrl: URL?
+    imageUrl: URL?,
+    load: SourceLoad
   ) {
     let scale = original.scale
     let thumbnailPixelSize = thumbnailPixelSize(for: bestSource)
@@ -342,7 +375,7 @@ public final class ImageView: ExpoView {
         ])
         return
       }
-      self.didLoad(image, cacheType: cacheType, imageUrl: imageUrl)
+      self.didLoad(image, cacheType: cacheType, imageUrl: imageUrl, load: load)
     }
   }
 
@@ -365,7 +398,7 @@ public final class ImageView: ExpoView {
   }
 
   /// Reports a finished load and displays the image.
-  private func didLoad(_ image: UIImage, cacheType: SDImageCacheType, imageUrl: URL?) {
+  private func didLoad(_ image: UIImage, cacheType: SDImageCacheType, imageUrl: URL?, load: SourceLoad) {
     onLoad([
       "cacheType": cacheTypeToString(cacheType),
       "source": [
@@ -383,20 +416,16 @@ public final class ImageView: ExpoView {
       height: image.size.height * image.scale
     )
 
-    let scale = window?.screen.scale ?? UIScreen.main.scale
-    let pixelSize = image.size * image.scale
-    imageLayoutSize = idealSize(
-      contentPixelSize: pixelSize,
-      containerSize: frame.size,
-      scale: scale,
-      contentFit: contentFit
-    )
-    let imageIdealSize = imageLayoutSize.rounded(.up)
-    let image = processImage(image, idealSize: imageIdealSize, scale: scale)
-    applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
+    let sourcePixelSize = image.size * image.scale
+    layOutImage(sourcePixelSize: sourcePixelSize)
+    let image = processImage(image, sourcePixelSize: sourcePixelSize)
     renderSourceImage(image, cacheType: ImageCacheType.fromSdCacheType(cacheType))
-    renderedSource = loadingSource
-    renderedSourcePixelSize = pixelSize
+
+    // A load that `reload()` superseded may still complete. Its image is not from the best source.
+    // The animation transformer of an animated image has the old size.
+    if let image, load.id == latestLoadID, !load.isSizeDependent, !image.sd_isAnimated {
+      renderedImage = RenderedImage(image: image, sourceIndex: load.sourceIndex, sourcePixelSize: sourcePixelSize)
+    }
   }
 
   private func renderSFSymbol(from source: ImageSource) {
@@ -464,13 +493,13 @@ public final class ImageView: ExpoView {
     onDisplay()
   }
 
-  private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
+  private func maybeRenderLocalAsset(from source: ImageSource, load: SourceLoad) -> Bool {
     if let image = assetCatalogImage(for: source.uri) {
       onLoadStart([:])
       if blurRadius > 0 {
-        blurAssetCatalogImage(image, imageUrl: source.uri)
+        blurAssetCatalogImage(image, imageUrl: source.uri, load: load)
       } else {
-        didLoad(image, cacheType: .memory, imageUrl: source.uri)
+        didLoad(image, cacheType: .memory, imageUrl: source.uri, load: load)
       }
       return true
     }
@@ -495,7 +524,7 @@ public final class ImageView: ExpoView {
    Applies `blurRadius` to an asset catalog image. These skip SDWebImage, which would otherwise run
    the blur transformer on a background queue, so the blur runs off the main actor here.
    */
-  private func blurAssetCatalogImage(_ image: UIImage, imageUrl: URL?) {
+  private func blurAssetCatalogImage(_ image: UIImage, imageUrl: URL?, load: SourceLoad) {
     let radius = blurRadius
 
     pendingAssetCatalogBlurTask = Task { [weak self] in
@@ -509,7 +538,7 @@ public final class ImageView: ExpoView {
         return
       }
       self.pendingAssetCatalogBlurTask = nil
-      self.didLoad(result.image ?? image, cacheType: .memory, imageUrl: imageUrl)
+      self.didLoad(result.image ?? image, cacheType: .memory, imageUrl: imageUrl, load: load)
     }
   }
 
@@ -599,39 +628,37 @@ public final class ImageView: ExpoView {
     setImage(placeholder, contentFit: placeholderContentFit, isPlaceholder: true)
   }
 
-  /// Returns whether the rendered image is at least as large as the view's new size, or is already at the full size of
-  /// its source. Returns `false` when the image needs to be loaded again.
-  private func isRenderedImageReusable() -> Bool {
+  /// Returns the rendered image when the view can keep it at its new size, or `nil` when the image needs to be loaded
+  /// again. The view keeps the image when a load of the best source rendered it, the content mode scales it to the
+  /// view, and it has at least the pixels that `processImage` would give for the new size.
+  private func reusableRenderedImage() -> RenderedImage? {
     guard
-      let image = sourceImage,
-      let source = renderedSource,
-      let bestSource,
-      bestSource.uri == source.uri,
-      bestSource.cacheKey == source.cacheKey,
-      // The animation transformer of an animated image has the old size.
-      !image.sd_isAnimated,
-      // A thumbnail is decoded at the old size.
-      thumbnailPixelSize(for: source) == nil
+      let renderedImage,
+      renderedImage.image === sourceImage,
+      renderedImage.sourceIndex == bestSourceIndex,
+      // `.center`, which `none` and `scale-down` use, shows the image at its own size and does not scale it.
+      [.scaleAspectFit, .scaleAspectFill, .scaleToFill].contains(contentFit.toContentMode())
     else {
-      return false
+      return nil
     }
-    let scale = window?.screen.scale ?? UIScreen.main.scale
-    let neededPixelSize = renderedImageLayoutSize().rounded(.up) * scale
-    let renderedPixelSize = image.size * image.scale
-    // Downscaling never gives more pixels than the source has. Half a pixel absorbs rounding.
-    return renderedPixelSize.width + 0.5 >= min(neededPixelSize.width, renderedSourcePixelSize.width)
-      && renderedPixelSize.height + 0.5 >= min(neededPixelSize.height, renderedSourcePixelSize.height)
+    let sourcePixelSize = renderedImage.sourcePixelSize
+    let neededPixelSize = downscaledSize(sourcePixelSize: sourcePixelSize).map { $0 * screenScale } ?? sourcePixelSize
+    let renderedPixelSize = renderedImage.image.size * renderedImage.image.scale
+    guard renderedPixelSize.width >= neededPixelSize.width && renderedPixelSize.height >= neededPixelSize.height else {
+      return nil
+    }
+    return renderedImage
   }
 
-  /// Returns the layout size of the rendered image in the view's current frame.
-  private func renderedImageLayoutSize() -> CGSize {
-    let scale = window?.screen.scale ?? UIScreen.main.scale
-    return idealSize(
-      contentPixelSize: renderedSourcePixelSize,
+  /// Sets `imageLayoutSize` for an image of `sourcePixelSize` in the view's frame and applies `contentPosition`.
+  private func layOutImage(sourcePixelSize: CGSize) {
+    imageLayoutSize = idealSize(
+      contentPixelSize: sourcePixelSize,
       containerSize: frame.size,
-      scale: scale,
+      scale: screenScale,
       contentFit: contentFit
     )
+    applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
   }
 
   // MARK: - Processing
@@ -643,19 +670,33 @@ public final class ImageView: ExpoView {
     return SDImagePipelineTransformer(transformers: transformers)
   }
 
-  private func processImage(_ image: UIImage?, idealSize: CGSize, scale: Double) -> UIImage? {
-    guard let image = image, !bounds.isEmpty else {
+  /// The size in points that `processImage` downscales an image of `sourcePixelSize` to for the view's current frame,
+  /// or `nil` when it keeps the image at its full size.
+  private func downscaledSize(sourcePixelSize: CGSize) -> CGSize? {
+    let size = idealSize(
+      contentPixelSize: sourcePixelSize,
+      containerSize: frame.size,
+      scale: screenScale,
+      contentFit: contentFit
+    ).rounded(.up)
+    guard allowDownscaling && shouldDownscale(pixelSize: sourcePixelSize, toSize: size, scale: screenScale) else {
+      return nil
+    }
+    return size
+  }
+
+  private func processImage(_ image: UIImage, sourcePixelSize: CGSize) -> UIImage? {
+    guard !bounds.isEmpty else {
       return nil
     }
     sdImageView.animationTransformer = nil
     // Downscale the image only when necessary
-    if allowDownscaling && shouldDownscale(image: image, toSize: idealSize, scale: scale) {
+    if let size = downscaledSize(sourcePixelSize: sourcePixelSize) {
       if image.sd_isAnimated {
-        let size = idealSize * scale
-        sdImageView.animationTransformer = SDImageResizingTransformer(size: size, scaleMode: .fill)
+        sdImageView.animationTransformer = SDImageResizingTransformer(size: size * screenScale, scaleMode: .fill)
         return image
       }
-      return resize(image: image, toSize: idealSize, scale: scale)
+      return resize(image: image, toSize: size, scale: screenScale)
     }
     return image
   }
@@ -688,7 +729,6 @@ public final class ImageView: ExpoView {
 
     // Update the source image before it gets rendered or transitioned to.
     sourceImage = image
-    renderedSource = nil
 
     // For SF Symbol replace effect, skip the UIView transition and let the native symbol animation handle it
     let isSFReplaceEffect = transition?.effect.isSFReplaceEffect == true && isSFSymbolSource
@@ -949,7 +989,14 @@ public final class ImageView: ExpoView {
    The image source that fits best into the view bounds.
    */
   var bestSource: ImageSource? {
-    return getBestSource(from: sources, forSize: bounds.size, scale: screenScale)
+    return bestSourceIndex.flatMap { sources?[$0] }
+  }
+
+  /**
+   The index in `sources` of `bestSource`.
+   */
+  var bestSourceIndex: Int? {
+    return getBestSourceIndex(from: sources, forSize: bounds.size, scale: screenScale)
   }
 
   /**
