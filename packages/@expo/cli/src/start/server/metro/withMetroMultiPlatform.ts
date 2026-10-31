@@ -32,6 +32,7 @@ import {
   createAutolinkingModuleResolver,
 } from './createExpoAutolinkingResolver';
 import { createFallbackModuleResolver } from './createExpoFallbackResolver';
+import { createImplicitAssetResolver } from './createImplicitAssetResolver';
 import { createTypescriptResolver } from './createTypescriptResolver';
 import { FailedToResolveNativeOnlyModuleError } from './errors/FailedToResolveNativeOnlyModuleError';
 import { isNodeExternal, shouldCreateVirtualShim } from './externals';
@@ -792,6 +793,15 @@ export function withExtendedResolver(
       originModuleNames: ['expo', 'expo-router'],
       getStrictResolver,
     }),
+
+    // If a file still couldn't be resolved, resolve it as an asset if it exists and isn't a source file.
+    // This removes the need to list every asset type in `resolver.assetExts`
+    createImplicitAssetResolver({
+      config,
+      roots: [config.projectRoot, ...(config.watchFolders ?? [])],
+      getStrictResolver,
+      getFileSystem: () => (getMetroBundler()._depGraph as any)._fileSystem,
+    }),
   ]);
 
   // Ensure we mutate the resolution context to include the custom resolver options for server and web.
@@ -861,7 +871,14 @@ export function withExtendedResolver(
   );
 
   return withMetroErrorReportingResolver(
-    withMetroSupervisingTransformWorker(metroConfigWithCustomContext)
+    withMetroSupervisingTransformWorker({
+      ...metroConfigWithCustomContext,
+      transformer: {
+        ...metroConfigWithCustomContext.transformer,
+        // Lets the transform worker transform files from `createImplicitAssetResolver` as assets
+        expo_sourceExts: config.resolver?.sourceExts,
+      },
+    })
   );
 }
 

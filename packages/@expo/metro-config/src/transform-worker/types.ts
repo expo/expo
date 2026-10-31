@@ -59,6 +59,11 @@ export type ExpoJsTransformerConfigExtensions = {
    * a project's Metro config to opt out of the supervising transformer when debugging.
    */
   expo_customTransformerPath?: string | false;
+  /**
+   * The resolver's `sourceExts`, set by `@expo/cli`. Modules with any other extension are
+   * transformed as assets, since Expo CLI resolves them as assets when they aren't in `assetExts`.
+   */
+  readonly expo_sourceExts?: readonly string[];
 };
 
 /** Metro transformer configuration plus fields owned and consumed by Expo. */
