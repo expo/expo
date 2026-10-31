@@ -772,7 +772,7 @@ class FileDownloader(
     }
     val path = File(destinationDirectory, filename)
 
-    if (path.exists()) {
+    if (path.exists() && existingAssetFileMatchesExpectedHash(path, asset, requestedUpdate?.id?.toString())) {
       asset.relativePath = filename
       return AssetDownloadResult(asset, false)
     } else {
@@ -812,6 +812,36 @@ class FileDownloader(
         throw IOException(message, e)
       }
     }
+  }
+
+  // a file left at this path by an interrupted write may be truncated, so it is only reused when
+  // it matches the expected hash; otherwise the download below replaces it.
+  private fun existingAssetFileMatchesExpectedHash(path: File, asset: AssetEntity, requestedUpdateId: String?): Boolean {
+    val expectedHash = asset.expectedHash ?: return true
+
+    val actualHash = try {
+      UpdatesUtils.toBase64Url(UpdatesUtils.sha256(path))
+    } catch (e: Exception) {
+      logger.warn(
+        "Could not read existing asset file ${path.absolutePath}; downloading it again: ${e.localizedMessage}",
+        UpdatesErrorCode.AssetsFailedToLoad,
+        requestedUpdateId,
+        asset.key
+      )
+      return false
+    }
+
+    if (actualHash != expectedHash) {
+      logger.warn(
+        "Existing asset file ${path.absolutePath} does not match the expected hash; downloading it again; expected: $expectedHash; actual: $actualHash",
+        UpdatesErrorCode.AssetsFailedToLoad,
+        requestedUpdateId,
+        asset.key
+      )
+      return false
+    }
+
+    return true
   }
 
   private suspend fun downloadData(request: Request, progressListener: FileDownloadProgressListener? = null): Response =
