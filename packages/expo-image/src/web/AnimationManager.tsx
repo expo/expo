@@ -1,9 +1,15 @@
 import React from 'react';
 
-import type { ImageTransition } from '../Image.types';
+import type { ImageLoadEventData, ImageTransition } from '../Image.types';
 
 type Callbacks = {
-  onReady?: (() => void) | null;
+  onReady?:
+    | ((
+        event?: React.SyntheticEvent<HTMLImageElement> & {
+          cacheType?: ImageLoadEventData['cacheType'];
+        }
+      ) => void)
+    | null;
   onAnimationFinished?: (() => void) | null;
   onMount?: (() => void) | null;
   onError?: (() => void) | null;
@@ -165,8 +171,15 @@ export default function AnimationManager({
   function wrapNodeWithCallbacks(node: MountedAnimationNode) {
     if (renderFunction[0] === node.animationKey) {
       return renderFunction[1]({
-        onReady: () => {
-          if (animation) {
+        onReady: (event) => {
+          // An image the browser already had in memory shows at once, as on Android and iOS.
+          if (
+            animation &&
+            event?.cacheType === 'memory' &&
+            (transition?.skipOnCacheHit === 'memory' || transition?.skipOnCacheHit === 'all')
+          ) {
+            setNodes([{ ...node, status: 'active' }]);
+          } else if (animation) {
             setNodes((nodes) =>
               nodes.map((n) => (n === newNode ? { ...n, status: 'in' } : { ...n, status: 'out' }))
             );
@@ -222,7 +235,12 @@ export default function AnimationManager({
           const className = classes[status]!;
           return (
             <div className={animation?.containerClass} key={n.animationKey}>
-              {wrapNodeWithCallbacks(n)(className, styles)}
+              {wrapNodeWithCallbacks(n)(
+                className,
+                // The inline duration applies to every property (`transition-property: all`): an image
+                // shown at once would fade in from its starting class's opacity.
+                n.status === 'active' ? { ...styles, transitionDuration: '0ms' } : styles
+              )}
             </div>
           );
         })}
