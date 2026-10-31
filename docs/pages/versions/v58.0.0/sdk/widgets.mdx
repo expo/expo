@@ -347,6 +347,8 @@ MyWidget.updateSnapshot({ count: 5 });
 
 Use the `updateTimeline` method to schedule widget updates at a specific time. The system automatically updates the widget based on the timeline.
 
+> **info** On Android, `updateTimeline` has no effect. To change the widget content from your app, call `updateSnapshot`.
+
 The example below continues from [Creating a widget](#prerequisite-creating-a-widget).
 
 ```tsx
