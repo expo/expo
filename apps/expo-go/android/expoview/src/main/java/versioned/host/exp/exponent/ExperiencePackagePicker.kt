@@ -7,7 +7,6 @@ import expo.modules.backgroundtask.BackgroundTaskModule
 import expo.modules.battery.BatteryModule
 import expo.modules.blob.BlobModule
 import expo.modules.blur.BlurModule
-import expo.modules.brightness.BrightnessModule
 import expo.modules.calendar.CalendarModule
 import expo.modules.camera.CameraViewModule
 import expo.modules.cellular.CellularModule
@@ -192,8 +191,7 @@ object ExperiencePackagePicker : ModulesProvider {
     TrackingTransparencyModule::class.java to null,
     VideoThumbnailsModule::class.java to null,
     VideoModule::class.java to null,
-    WebBrowserModule::class.java to null,
-    BrightnessModule::class.java to null
+    WebBrowserModule::class.java to null
   )
 
   override fun getServices(): List<Class<out Service>> {

@@ -4,7 +4,6 @@
     "modules": ["BrightnessModule"]
   },
   "android": {
-    "modules": ["expo.modules.brightness.BrightnessModule"],
     "publication": {
       "groupId": "host.exp.exponent",
       "artifactId": "expo.modules.brightness",
