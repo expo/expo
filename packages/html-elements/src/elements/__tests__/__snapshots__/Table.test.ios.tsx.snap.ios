@@ -4,7 +4,7 @@ exports[`renders Caption 1`] = `
 <Text
   style={
     {
-      "fontSize": 32,
+      "fontSize": 16,
       "textAlign": "center",
     }
   }
@@ -20,7 +20,7 @@ exports[`renders TD 1`] = `
   style={
     {
       "flex": 1,
-      "fontSize": 32,
+      "fontSize": 16,
     }
   }
 >
@@ -35,7 +35,7 @@ exports[`renders TH 1`] = `
   style={
     {
       "flex": 1,
-      "fontSize": 32,
+      "fontSize": 16,
       "fontWeight": "bold",
       "textAlign": "center",
     }

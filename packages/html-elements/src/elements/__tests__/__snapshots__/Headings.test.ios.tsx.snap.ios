@@ -5,9 +5,9 @@ exports[`renders H1 1`] = `
   accessibilityRole="header"
   style={
     {
-      "fontSize": 64,
+      "fontSize": 32,
       "fontWeight": "bold",
-      "marginVertical": 21.44,
+      "marginVertical": 10.72,
     }
   }
 />
@@ -18,9 +18,9 @@ exports[`renders H2 1`] = `
   accessibilityRole="header"
   style={
     {
-      "fontSize": 48,
+      "fontSize": 24,
       "fontWeight": "bold",
-      "marginVertical": 26.56,
+      "marginVertical": 13.28,
     }
   }
 />
@@ -31,9 +31,9 @@ exports[`renders H3 1`] = `
   accessibilityRole="header"
   style={
     {
-      "fontSize": 37.44,
+      "fontSize": 18.72,
       "fontWeight": "bold",
-      "marginVertical": 32,
+      "marginVertical": 16,
     }
   }
 />
@@ -44,9 +44,9 @@ exports[`renders H4 1`] = `
   accessibilityRole="header"
   style={
     {
-      "fontSize": 32,
+      "fontSize": 16,
       "fontWeight": "bold",
-      "marginVertical": 42.56,
+      "marginVertical": 21.28,
     }
   }
 />
@@ -57,9 +57,9 @@ exports[`renders H5 1`] = `
   accessibilityRole="header"
   style={
     {
-      "fontSize": 26.56,
+      "fontSize": 13.28,
       "fontWeight": "bold",
-      "marginVertical": 53.44,
+      "marginVertical": 26.72,
     }
   }
 />
@@ -70,9 +70,9 @@ exports[`renders H6 1`] = `
   accessibilityRole="header"
   style={
     {
-      "fontSize": 21.44,
+      "fontSize": 10.72,
       "fontWeight": "bold",
-      "marginVertical": 74.56,
+      "marginVertical": 37.28,
     }
   }
 />
