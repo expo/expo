@@ -1,12 +1,10 @@
 package expo.modules.localauthentication
 
 import androidx.biometric.BiometricManager
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Enumerable
+import io.github.expo.modules.v2.Record
 
-internal enum class BiometricsSecurityLevel(val value: String) : Enumerable {
+enum class BiometricsSecurityLevel(val value: String) : Enumerable {
   WEAK("weak"),
   STRONG("strong");
 
@@ -18,26 +16,13 @@ internal enum class BiometricsSecurityLevel(val value: String) : Enumerable {
   }
 }
 
-@OptimizedRecord
-internal class AuthOptions : Record {
-  @Field
-  val promptMessage: String = ""
-
-  @Field
-  val promptSubtitle: String? = null
-
-  @Field
-  val promptDescription: String? = null
-
-  @Field
-  val cancelLabel: String? = null
-
-  @Field
-  val disableDeviceFallback: Boolean = false
-
-  @Field
-  val requireConfirmation: Boolean = true
-
-  @Field
+@Record
+data class AuthOptions(
+  val promptMessage: String = "",
+  val promptSubtitle: String? = null,
+  val promptDescription: String? = null,
+  val cancelLabel: String? = null,
+  val disableDeviceFallback: Boolean = false,
+  val requireConfirmation: Boolean = true,
   val biometricsSecurityLevel: BiometricsSecurityLevel = BiometricsSecurityLevel.WEAK
-}
+)

@@ -4,22 +4,34 @@ package expo.modules.localauthentication
 import android.app.Activity
 import android.app.KeyguardManager
 import android.content.Context
+import android.content.Intent
 import android.os.Build
-import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import androidx.annotation.UiThread
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.fragment.app.FragmentActivity
-import expo.modules.kotlin.Promise
+import com.facebook.react.bridge.ActivityEventListener
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.UnexpectedException
-import expo.modules.kotlin.functions.Queues
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
-import kotlinx.coroutines.launch
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
+import io.github.expo.modules.v2.react.currentActivity
+import io.github.expo.modules.v2.react.reactContext
+import io.github.expo.modules.v2.react.reactContextOrNull
+import kotlinx.coroutines.CancellableContinuation
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
 private const val AUTHENTICATION_TYPE_FINGERPRINT = 1
 private const val AUTHENTICATION_TYPE_FACIAL_RECOGNITION = 2
@@ -30,85 +42,29 @@ private const val SECURITY_LEVEL_BIOMETRIC_WEAK = 2
 private const val SECURITY_LEVEL_BIOMETRIC_STRONG = 3
 private const val DEVICE_CREDENTIAL_FALLBACK_CODE = 6
 
+/**
+ * The pending result of one `authenticateAsync` call. Only the first `resolve` or `reject` settles it.
+ */
+private class AuthPromise(private val continuation: CancellableContinuation<Map<String, Any>>) {
+  private val isSettled = AtomicBoolean(false)
+
+  fun resolve(value: Map<String, Any>) {
+    if (isSettled.compareAndSet(false, true)) {
+      continuation.resume(value)
+    }
+  }
+
+  fun reject(exception: Throwable) {
+    if (isSettled.compareAndSet(false, true)) {
+      continuation.resumeWithException(exception)
+    }
+  }
+}
+
+@ExpoModule("ExpoLocalAuthentication")
 class LocalAuthenticationModule : Module() {
-  override fun definition() = ModuleDefinition {
-    Name("ExpoLocalAuthentication")
-
-    AsyncFunction<Set<Int>>("supportedAuthenticationTypesAsync") {
-      val results = mutableSetOf<Int>()
-      if (canAuthenticateUsingWeakBiometrics() == BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE) {
-        return@AsyncFunction results
-      }
-
-      // note(cedric): replace hardcoded system feature strings with constants from
-      // PackageManager when dropping support for Android SDK 28
-      results.apply {
-        addIf(hasSystemFeature("android.hardware.fingerprint"), AUTHENTICATION_TYPE_FINGERPRINT)
-        addIf(hasSystemFeature("android.hardware.biometrics.face"), AUTHENTICATION_TYPE_FACIAL_RECOGNITION)
-        addIf(hasSystemFeature("android.hardware.biometrics.iris"), AUTHENTICATION_TYPE_IRIS)
-        addIf(hasSystemFeature("com.samsung.android.bio.face"), AUTHENTICATION_TYPE_FACIAL_RECOGNITION)
-      }
-
-      return@AsyncFunction results
-    }
-
-    AsyncFunction<Boolean>("hasHardwareAsync") {
-      canAuthenticateUsingWeakBiometrics() != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
-    }
-
-    AsyncFunction<Boolean>("isEnrolledAsync") {
-      canAuthenticateUsingWeakBiometrics() == BiometricManager.BIOMETRIC_SUCCESS
-    }
-
-    AsyncFunction<Int>("getEnrolledLevelAsync") {
-      var level = SECURITY_LEVEL_NONE
-      if (isDeviceSecure) {
-        level = SECURITY_LEVEL_SECRET
-      }
-      if (canAuthenticateUsingWeakBiometrics() == BiometricManager.BIOMETRIC_SUCCESS) {
-        level = SECURITY_LEVEL_BIOMETRIC_WEAK
-      }
-      if (canAuthenticateUsingStrongBiometrics() == BiometricManager.BIOMETRIC_SUCCESS) {
-        level = SECURITY_LEVEL_BIOMETRIC_STRONG
-      }
-      return@AsyncFunction level
-    }
-
-    AsyncFunction("authenticateAsync") { options: AuthOptions, promise: Promise ->
-      val fragmentActivity = appContext.throwingActivity as? FragmentActivity
-      if (fragmentActivity == null) {
-        promise.reject(Exceptions.MissingActivity())
-        return@AsyncFunction
-      }
-      if (!keyguardManager.isDeviceSecure) {
-        promise.resolve(
-          createResponse(
-            error = "not_enrolled",
-            warning = "KeyguardManager#isDeviceSecure() returned false"
-          )
-        )
-        return@AsyncFunction
-      }
-
-      // BiometricPrompt callbacks are invoked on the main thread so also run this there to avoid
-      // having to do locking.
-      appContext.mainQueue.launch {
-        authenticate(fragmentActivity, options, promise)
-      }
-    }
-
-    AsyncFunction<Unit>("cancelAuthenticate") {
-      val current = activePromise
-      val currentPrompt = biometricPrompt
-      activePromise = null
-      biometricPrompt = null
-      isAuthenticating = false
-      isRetryingWithDeviceCredentials = false
-      currentPrompt?.cancelAuthentication()
-      current?.resolve(createResponse(error = "user_cancel"))
-    }.runOnQueue(Queues.MAIN)
-
-    OnActivityResult { activity, (requestCode, resultCode, data) ->
+  private val activityEventListener = object : ActivityEventListener {
+    override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
       if (requestCode == DEVICE_CREDENTIAL_FALLBACK_CODE) {
         if (resultCode == Activity.RESULT_OK) {
           activePromise?.resolve(createResponse())
@@ -133,31 +89,109 @@ class LocalAuthenticationModule : Module() {
         fragment?.onActivityResult(requestCode and 0xffff, resultCode, data)
       }
     }
+
+    override fun onNewIntent(intent: Intent) = Unit
   }
 
-  private val context: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+  override fun onDestroy() {
+    reactContextOrNull?.removeActivityEventListener(activityEventListener)
+  }
+
+  @JS
+  suspend fun supportedAuthenticationTypesAsync(): List<Int> = withContext(Dispatchers.IO) {
+    val results = mutableSetOf<Int>()
+    if (canAuthenticateUsingWeakBiometrics() == BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE) {
+      return@withContext results.toList()
+    }
+
+    // note(cedric): replace hardcoded system feature strings with constants from
+    // PackageManager when dropping support for Android SDK 28
+    results.apply {
+      addIf(hasSystemFeature("android.hardware.fingerprint"), AUTHENTICATION_TYPE_FINGERPRINT)
+      addIf(hasSystemFeature("android.hardware.biometrics.face"), AUTHENTICATION_TYPE_FACIAL_RECOGNITION)
+      addIf(hasSystemFeature("android.hardware.biometrics.iris"), AUTHENTICATION_TYPE_IRIS)
+      addIf(hasSystemFeature("com.samsung.android.bio.face"), AUTHENTICATION_TYPE_FACIAL_RECOGNITION)
+    }
+
+    results.toList()
+  }
+
+  @JS
+  suspend fun hasHardwareAsync(): Boolean = withContext(Dispatchers.IO) {
+    canAuthenticateUsingWeakBiometrics() != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE
+  }
+
+  @JS
+  suspend fun isEnrolledAsync(): Boolean = withContext(Dispatchers.IO) {
+    canAuthenticateUsingWeakBiometrics() == BiometricManager.BIOMETRIC_SUCCESS
+  }
+
+  @JS
+  suspend fun getEnrolledLevelAsync(): Int = withContext(Dispatchers.IO) {
+    var level = SECURITY_LEVEL_NONE
+    if (isDeviceSecure) {
+      level = SECURITY_LEVEL_SECRET
+    }
+    if (canAuthenticateUsingWeakBiometrics() == BiometricManager.BIOMETRIC_SUCCESS) {
+      level = SECURITY_LEVEL_BIOMETRIC_WEAK
+    }
+    if (canAuthenticateUsingStrongBiometrics() == BiometricManager.BIOMETRIC_SUCCESS) {
+      level = SECURITY_LEVEL_BIOMETRIC_STRONG
+    }
+    level
+  }
+
+  @JS
+  suspend fun authenticateAsync(options: AuthOptions): Map<String, Any> {
+    val fragmentActivity = currentActivity as? FragmentActivity ?: throw Exceptions.MissingActivity()
+    if (!keyguardManager.isDeviceSecure) {
+      return createResponse(
+        error = "not_enrolled",
+        warning = "KeyguardManager#isDeviceSecure() returned false"
+      )
+    }
+
+    reactContext.addActivityEventListener(activityEventListener)
+
+    // BiometricPrompt callbacks are invoked on the main thread so also run this there to avoid
+    // having to do locking.
+    return withContext(Dispatchers.Main) {
+      suspendCancellableCoroutine { continuation ->
+        authenticate(fragmentActivity, options, AuthPromise(continuation))
+      }
+    }
+  }
+
+  @JS
+  suspend fun cancelAuthenticate(): Unit = withContext(Dispatchers.Main) {
+    val current = activePromise
+    val currentPrompt = biometricPrompt
+    activePromise = null
+    biometricPrompt = null
+    isAuthenticating = false
+    isRetryingWithDeviceCredentials = false
+    currentPrompt?.cancelAuthentication()
+    current?.resolve(createResponse(error = "user_cancel"))
+  }
 
   private val keyguardManager: KeyguardManager
-    get() = context.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
+    get() = androidContext.getSystemService(Context.KEYGUARD_SERVICE) as KeyguardManager
 
-  private val biometricManager by lazy { BiometricManager.from(context) }
-  private val packageManager by lazy { context.packageManager }
+  private val biometricManager by lazy { BiometricManager.from(androidContext) }
+  private val packageManager by lazy { androidContext.packageManager }
   private var biometricPrompt: BiometricPrompt? = null
-  private var activePromise: Promise? = null
+  private var activePromise: AuthPromise? = null
   private var isRetryingWithDeviceCredentials = false
   private var isAuthenticating = false
 
   private fun buildAuthenticationCallback(
-    callPromise: Promise,
+    callPromise: AuthPromise,
     callOptions: AuthOptions
   ): BiometricPrompt.AuthenticationCallback = object : BiometricPrompt.AuthenticationCallback() {
     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
       finishCall(callPromise) {
         callPromise.resolve(
-          Bundle().apply {
-            putBoolean("success", true)
-          }
+          mapOf("success" to true)
         )
       }
     }
@@ -186,7 +220,7 @@ class LocalAuthenticationModule : Module() {
   }
 
   // Drop late callbacks for a call whose promise was already settled by another path (e.g. cancelAuthenticate).
-  private inline fun finishCall(callPromise: Promise, resolve: () -> Unit) {
+  private inline fun finishCall(callPromise: AuthPromise, resolve: () -> Unit) {
     if (activePromise !== callPromise) {
       return
     }
@@ -198,7 +232,7 @@ class LocalAuthenticationModule : Module() {
   }
 
   @UiThread
-  private fun authenticate(fragmentActivity: FragmentActivity, options: AuthOptions, promise: Promise) {
+  private fun authenticate(fragmentActivity: FragmentActivity, options: AuthOptions, promise: AuthPromise) {
     if (isAuthenticating) {
       // Reject the new call rather than supersede. AndroidX `BiometricPrompt` won't show a
       // replacement prompt while the previous fragment is still detaching
@@ -238,8 +272,8 @@ class LocalAuthenticationModule : Module() {
     }
   }
 
-  private fun promptDeviceCredentialsFallback(options: AuthOptions, promise: Promise) {
-    val fragmentActivity = appContext.throwingActivity as FragmentActivity?
+  private fun promptDeviceCredentialsFallback(options: AuthOptions, promise: AuthPromise) {
+    val fragmentActivity = currentActivity as? FragmentActivity
     if (fragmentActivity == null) {
       finishCall(promise) {
         promise.resolve(
@@ -257,12 +291,12 @@ class LocalAuthenticationModule : Module() {
 
     // BiometricPrompt callbacks are invoked on the main thread so also run this there to avoid
     // having to do locking.
-    appContext.mainQueue.launch {
+    Handler(Looper.getMainLooper()).post {
       // On Android devices older than 11, we need to use Keyguard to unlock by Device Credentials.
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
         val credentialConfirmationIntent = keyguardManager.createConfirmDeviceCredentialIntent(promptMessage, promptDescription)
         fragmentActivity.startActivityForResult(credentialConfirmationIntent, DEVICE_CREDENTIAL_FALLBACK_CODE)
-        return@launch
+        return@post
       }
 
       val executor: Executor = Executors.newSingleThreadExecutor()
@@ -335,13 +369,13 @@ class LocalAuthenticationModule : Module() {
   private fun createResponse(
     error: String? = null,
     warning: String? = null
-  ) = Bundle().apply {
-    putBoolean("success", error == null)
+  ): Map<String, Any> = buildMap {
+    put("success", error == null)
     error?.let {
-      putString("error", it)
+      put("error", it)
     }
     warning?.let {
-      putString("warning", it)
+      put("warning", it)
     }
   }
 }

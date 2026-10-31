@@ -38,7 +38,6 @@ import expo.modules.kotlin.services.Service
 import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.linking.ExpoLinkingModule
 import expo.modules.linking.ExpoLinkingPackage
-import expo.modules.localauthentication.LocalAuthenticationModule
 import expo.modules.localization.LocalizationModule
 import expo.modules.location.LocationModule
 import expo.modules.mailcomposer.MailComposerModule
@@ -167,7 +166,6 @@ object ExperiencePackagePicker : ModulesProvider {
     IntentLauncherModule::class.java to null,
     KeepAwakeModule::class.java to null,
     LinearGradientModule::class.java to null,
-    LocalAuthenticationModule::class.java to null,
     LocalizationModule::class.java to null,
     LocationModule::class.java to null,
     MailComposerModule::class.java to null,
