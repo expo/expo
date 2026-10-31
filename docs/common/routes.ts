@@ -160,28 +160,27 @@ export const isRouteActive = (
 
 const DOCS_ROOT = 'https://docs.expo.dev';
 
-function getAncestorUrl(node: NavigationRoute): string {
-  if (!node.children) {
-    return DOCS_ROOT;
-  }
+function getPageUrl(href: string) {
+  return `${DOCS_ROOT}${href}/`;
+}
 
-  for (const child of node.children as NavigationRoute[]) {
-    if (!child || child.hidden) {
+function collectVisiblePages(nodes: NavigationRoute[] = [], pages: NavigationRoute[] = []) {
+  for (const node of nodes) {
+    if (!node || node.hidden) {
       continue;
     }
-    if (child.type === 'page' && child.href) {
-      if (child.isIndex) {
-        return `${DOCS_ROOT}${child.href}`;
-      }
+    if (node.type === 'page' && node.href) {
+      pages.push(node);
     }
-    if (child.children) {
-      const url = getAncestorUrl(child);
-      if (url !== DOCS_ROOT) {
-        return url;
-      }
-    }
+    collectVisiblePages(node.children as NavigationRoute[], pages);
   }
-  return DOCS_ROOT;
+  return pages;
+}
+
+function getAncestorUrl(node: NavigationRoute): string {
+  const pages = collectVisiblePages(node.children as NavigationRoute[]);
+  const page = pages.find(child => child.isIndex) ?? pages[0];
+  return page ? getPageUrl(page.href) : DOCS_ROOT;
 }
 
 export function getBreadcrumbTrail(
@@ -223,7 +222,7 @@ export function getBreadcrumbTrail(
       }
 
       const url =
-        item.node.type === 'page' ? `${DOCS_ROOT}${item.node.href}` : getAncestorUrl(item.node);
+        item.node.type === 'page' ? getPageUrl(item.node.href) : getAncestorUrl(item.node);
 
       return { name: item.name, url };
     });
