@@ -1,18 +1,29 @@
 package expo.modules.ai
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.media.ExifInterface
+import android.net.Uri
 import com.google.mlkit.genai.common.DownloadStatus
 import com.google.mlkit.genai.common.FeatureStatus
+import com.google.mlkit.genai.common.GenAiException
+import com.google.mlkit.genai.prompt.Content
 import com.google.mlkit.genai.prompt.GenerateContentRequest
 import com.google.mlkit.genai.prompt.Generation
 import com.google.mlkit.genai.prompt.GenerativeModel
+import com.google.mlkit.genai.prompt.ImagePart
 import com.google.mlkit.genai.prompt.SystemInstruction
 import com.google.mlkit.genai.prompt.TextPart
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.withContext
 
 internal class MlKitLanguageModelBackend(
-  private val model: GenerativeModel = Generation.getClient()
+  private val model: GenerativeModel = Generation.getClient(),
+  private val decodeImage: (uri: String) -> Bitmap? = ::decodeImageFile
 ) : LanguageModelBackend {
   override suspend fun status() = when (model.checkStatus()) {
     FeatureStatus.AVAILABLE -> ModelStatus.AVAILABLE
@@ -73,18 +84,37 @@ internal class MlKitLanguageModelBackend(
     } else {
       prompt
     }
-    val request = GenerateContentRequest.Builder(TextPart(input)).apply {
+    val bitmaps = withContext(Dispatchers.IO) { options.images.map(::decode) }
+    val content = Content.Builder().addPart(TextPart(input)).apply {
+      bitmaps.forEach { addPart(ImagePart(it)) }
+    }.build()
+    val request = GenerateContentRequest.Builder(content).apply {
       if (nativeInstructions) {
         systemInstruction = SystemInstruction(requireNotNull(instructions))
       }
       options.maximumOutputTokens?.let { maxOutputTokens = it }
       candidateCount = 1
     }.build()
-    if (!options.stream) {
-      val result = model.generateContent(request)
-      return result.candidates.firstOrNull()?.text
-        ?: throw LanguageModelException("ERR_RESPONSE_INVALID", "The model returned no text candidate.")
+    return try {
+      if (options.stream) {
+        streamText(request, onText)
+      } else {
+        model.generateContent(request).candidates.firstOrNull()?.text
+          ?: throw LanguageModelException("ERR_RESPONSE_INVALID", "The model returned no text candidate.")
+      }
+    } catch (error: GenAiException) {
+      if (options.images.isNotEmpty() && error.errorCode in imageRejectionCodes) {
+        throw LanguageModelException(
+          "ERR_UNSUPPORTED_FEATURE",
+          "The on-device model could not use the images. The model on this device may accept text only. Retry the request without images.",
+          error
+        )
+      }
+      throw error
     }
+  }
+
+  private suspend fun streamText(request: GenerateContentRequest, onText: (String) -> Unit): String {
     val text = StringBuilder()
     var hasCandidate = false
     model.generateContentStream(request).collect { chunk ->
@@ -101,6 +131,11 @@ internal class MlKitLanguageModelBackend(
     return text.toString()
   }
 
+  private fun decode(image: LanguageModelImage): Bitmap =
+    decodeImage(image.uri) ?: throw LanguageModelException.invalid(
+      "The image \"${image.label}\" could not be decoded. The file may be missing, unreadable by the app, or in an image format Android cannot decode. Pass a file:// URL to a readable PNG, JPEG, or WebP file."
+    )
+
   override fun close() = model.close()
 
   private suspend fun <T> optionalMetadata(body: suspend () -> T?): T? = try {
@@ -110,4 +145,54 @@ internal class MlKitLanguageModelBackend(
   } catch (_: Exception) {
     null
   }
+}
+
+private val imageRejectionCodes = setOf(GenAiException.ErrorCode.INVALID_INPUT_IMAGE, GenAiException.ErrorCode.NOT_SUPPORTED)
+
+private const val MAX_IMAGE_EDGE = 2048
+
+private fun decodeImageFile(uri: String): Bitmap? {
+  val path = Uri.parse(uri).path ?: return null
+  val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+  BitmapFactory.decodeFile(path, bounds)
+  if (bounds.outWidth <= 0 || bounds.outHeight <= 0) {
+    return null
+  }
+  var sampleSize = 1
+  while ((maxOf(bounds.outWidth, bounds.outHeight) + sampleSize - 1) / sampleSize > MAX_IMAGE_EDGE) {
+    sampleSize *= 2
+  }
+  val bitmap = BitmapFactory.decodeFile(path, BitmapFactory.Options().apply { inSampleSize = sampleSize }) ?: return null
+  return bitmap.withExifOrientation(path)
+}
+
+/** Applies the EXIF orientation, because BitmapFactory ignores it and camera photos often rely on it. */
+private fun Bitmap.withExifOrientation(path: String): Bitmap {
+  val orientation = try {
+    ExifInterface(path).getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+  } catch (_: Exception) {
+    return this
+  }
+  val matrix = Matrix()
+  when (orientation) {
+    ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.setScale(-1f, 1f)
+    ExifInterface.ORIENTATION_ROTATE_180 -> matrix.setRotate(180f)
+    ExifInterface.ORIENTATION_FLIP_VERTICAL -> matrix.setScale(1f, -1f)
+    ExifInterface.ORIENTATION_TRANSPOSE -> {
+      matrix.setRotate(90f)
+      matrix.postScale(-1f, 1f)
+    }
+    ExifInterface.ORIENTATION_ROTATE_90 -> matrix.setRotate(90f)
+    ExifInterface.ORIENTATION_TRANSVERSE -> {
+      matrix.setRotate(-90f)
+      matrix.postScale(-1f, 1f)
+    }
+    ExifInterface.ORIENTATION_ROTATE_270 -> matrix.setRotate(-90f)
+    else -> return this
+  }
+  val oriented = Bitmap.createBitmap(this, 0, 0, width, height, matrix, true)
+  if (oriented !== this) {
+    recycle()
+  }
+  return oriented
 }

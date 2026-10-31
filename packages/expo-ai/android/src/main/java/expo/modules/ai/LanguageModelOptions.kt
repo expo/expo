@@ -23,10 +23,16 @@ internal data class LanguageModelSessionOptions(val instructions: String?) {
   }
 }
 
-internal data class LanguageModelRequestOptions(val stream: Boolean, val maximumOutputTokens: Int?) {
+internal data class LanguageModelImage(val uri: String, val label: String)
+
+internal data class LanguageModelRequestOptions(
+  val stream: Boolean,
+  val maximumOutputTokens: Int?,
+  val images: List<LanguageModelImage> = emptyList()
+) {
   companion object {
     fun parse(json: String): LanguageModelRequestOptions {
-      val value = parseObject(json, setOf("schema", "stream", "maximumOutputTokens", "maximumToolCalls"))
+      val value = parseObject(json, setOf("schema", "stream", "maximumOutputTokens", "maximumToolCalls", "images"))
       if (value.has("schema")) {
         throw LanguageModelException("ERR_SCHEMA_UNSUPPORTED", "ML Kit does not support native runtime output schemas. Structured output is handled by the shared library.")
       }
@@ -39,7 +45,32 @@ internal data class LanguageModelRequestOptions(val stream: Boolean, val maximum
       if (maximumToolCalls > 16) {
         throw LanguageModelException.invalid("maximumToolCalls must not exceed 16.")
       }
-      return LanguageModelRequestOptions(stream, value.optionalInteger("maximumOutputTokens", 1))
+      return LanguageModelRequestOptions(stream, value.optionalInteger("maximumOutputTokens", 1), parseImages(value))
+    }
+
+    private fun parseImages(options: JSONObject): List<LanguageModelImage> {
+      if (!options.has("images")) {
+        return emptyList()
+      }
+      val values = options.get("images") as? JSONArray
+      if (values == null || values.length() > 8) {
+        throw LanguageModelException.invalid("images must be an array containing at most eight images.")
+      }
+      val labels = mutableSetOf<String>()
+      return (0 until values.length()).map { index ->
+        val image = values.get(index) as? JSONObject ?: throw LanguageModelException.invalid("Each image must be an object.")
+        val uri = image.opt("uri") as? String
+        val label = image.opt("label") as? String
+        if (
+          image.keys().asSequence().any { it != "uri" && it != "label" } ||
+          uri == null || !uri.startsWith("file://") ||
+          label == null || label.isEmpty() || label.length > 128 || label.any(Char::isISOControl) ||
+          !labels.add(label)
+        ) {
+          throw LanguageModelException.invalid("Images need local file URLs and unique labels of 1–128 characters without control characters.")
+        }
+        LanguageModelImage(uri, label)
+      }
     }
   }
 }
