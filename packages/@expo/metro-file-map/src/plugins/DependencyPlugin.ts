@@ -9,12 +9,12 @@ import type { Path } from '../types';
 import excludedExtensions from '../workerExclusionList';
 import FileDataPlugin from './FileDataPlugin';
 
-export interface DependencyPluginOptions {
+export type DependencyPluginOptions = Readonly<{
   /** Path to custom dependency extractor module */
-  readonly dependencyExtractor: string | null;
+  dependencyExtractor: string | undefined | null;
   /** Whether to compute dependencies (performance optimization) */
-  readonly computeDependencies: boolean;
-}
+  computeDependencies: boolean;
+}>;
 
 export default class DependencyPlugin extends FileDataPlugin<readonly string[] | null> {
   constructor(options: DependencyPluginOptions) {
@@ -23,9 +23,11 @@ export default class DependencyPlugin extends FileDataPlugin<readonly string[] |
     let cacheKey: string;
     if (dependencyExtractor != null) {
       const mod = require(dependencyExtractor);
-      const getCacheKey =
-        mod?.getCacheKey ??
-        (mod.__esModule === true && 'default' in mod ? mod.default : mod).getCacheKey;
+      let getCacheKey = mod?.getCacheKey; // CJS export or ESM named export
+      // Allow for getCacheKey as a prop of an ESM default export
+      if (getCacheKey == null && mod?.__esModule === true) {
+        getCacheKey = mod.default?.getCacheKey;
+      }
       cacheKey = getCacheKey?.() ?? dependencyExtractor;
     } else {
       cacheKey = 'default-dependency-extractor';
@@ -53,15 +55,10 @@ export default class DependencyPlugin extends FileDataPlugin<readonly string[] |
     });
   }
 
-  /**
-   * Get the list of dependencies for a given file.
-   * @param mixedPath Absolute or project-relative path to the file
-   * @returns Array of dependency module names, or null if the file doesn't exist
-   */
-  getDependencies(mixedPath: Path): readonly string[] | null | undefined {
-    const result = this.getFileSystem().lookup(mixedPath);
+  getDependencies(mixedPath: Path): readonly string[] | undefined | null {
+    const result = this.getOrComputeFileData(mixedPath);
     if (result.exists && result.type === 'f') {
-      return result.pluginData ?? [];
+      return result.data ?? [];
     }
     return null;
   }

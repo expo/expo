@@ -9,7 +9,7 @@
 export default function getPlatformExtension(
   file: string,
   platforms: ReadonlySet<string>
-): string | null {
+): string | undefined | null {
   const last = file.lastIndexOf('.');
   const secondToLast = file.lastIndexOf('.', last - 1);
   if (secondToLast === -1) {

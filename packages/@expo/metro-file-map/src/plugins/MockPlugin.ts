@@ -5,13 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import path from 'path';
+import path from 'node:path';
 
 import { RootPathUtils } from '../lib/RootPathUtils';
 import normalizePathSeparatorsToPosix from '../lib/normalizePathSeparatorsToPosix';
 import normalizePathSeparatorsToSystem from '../lib/normalizePathSeparatorsToSystem';
 import type {
-  Console,
   FileMapPlugin,
   FileMapPluginInitOptions,
   FileMapPluginWorker,
@@ -24,15 +23,15 @@ import getMockName from './mocks/getMockName';
 
 export const CACHE_VERSION = 2;
 
-export interface MockMapOptions {
-  readonly console: Console;
-  readonly mocksPattern: RegExp;
-  readonly rawMockMap?: RawMockMap;
-  readonly rootDir: Path;
-  readonly throwOnModuleCollision: boolean;
-}
+export type MockMapOptions = Readonly<{
+  console: typeof console;
+  mocksPattern: RegExp;
+  rawMockMap?: RawMockMap;
+  rootDir: Path;
+  throwOnModuleCollision: boolean;
+}>;
 
-export default class MockPlugin implements FileMapPlugin<RawMockMap, undefined>, IMockMap {
+export default class MockPlugin implements FileMapPlugin<RawMockMap, void>, IMockMap {
   readonly name = 'mocks' as const;
 
   readonly #mocksPattern: RegExp;
@@ -63,9 +62,9 @@ export default class MockPlugin implements FileMapPlugin<RawMockMap, undefined>,
   }
 
   async initialize({ files, pluginState }: FileMapPluginInitOptions<RawMockMap>): Promise<void> {
-    if (pluginState != null && (pluginState as RawMockMap).version === this.#raw.version) {
+    if (pluginState != null && pluginState.version === this.#raw.version) {
       // Use cached state directly if available
-      this.#raw = pluginState as RawMockMap;
+      this.#raw = pluginState;
     } else {
       // Otherwise, traverse all files to rebuild
       for (const { canonicalPath } of files.fileIterator({
@@ -85,7 +84,7 @@ export default class MockPlugin implements FileMapPlugin<RawMockMap, undefined>,
     return this.#pathUtils.normalToAbsolute(normalizePathSeparatorsToSystem(mockPosixRelativePath));
   }
 
-  onChanged(delta: ReadonlyFileSystemChanges<undefined | null>): void {
+  onChanged(delta: ReadonlyFileSystemChanges<void | null>): void {
     // Process removals first so that moves aren't treated as duplicates.
     for (const [canonicalPath] of delta.removedFiles) {
       this.#onFileRemoved(canonicalPath);
@@ -133,15 +132,18 @@ export default class MockPlugin implements FileMapPlugin<RawMockMap, undefined>,
     const duplicates = this.#raw.duplicates.get(mockName);
     if (duplicates != null) {
       const posixRelativePath = normalizePathSeparatorsToPosix(canonicalPath);
+      const wasActiveMock = this.#raw.mocks.get(mockName) === posixRelativePath;
       duplicates.delete(posixRelativePath);
       if (duplicates.size === 1) {
         this.#raw.duplicates.delete(mockName);
       }
-      // Set the mock to a remaining duplicate. Should never be empty.
-      // Size was checked as 1 above, so this is always defined
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const remaining = duplicates.values().next().value!;
-      this.#raw.mocks.set(mockName, remaining);
+      // Only reassign the active mock if the file we removed *was* the active
+      // one; otherwise a non-active duplicate's removal would clobber it.
+      if (wasActiveMock) {
+        // Set the mock to a remaining duplicate. Should never be empty.
+        const remaining = nullthrows(duplicates.values().next().value);
+        this.#raw.mocks.set(mockName, remaining);
+      }
     } else {
       this.#raw.mocks.delete(mockName);
     }
@@ -195,4 +197,13 @@ export default class MockPlugin implements FileMapPlugin<RawMockMap, undefined>,
   getWorker(): FileMapPluginWorker | undefined | null {
     return null;
   }
+}
+
+// Equivalent of the `nullthrows` package, which upstream imports here but this
+// package does not depend on.
+function nullthrows<T>(x: T | null | undefined): T {
+  if (x != null) {
+    return x;
+  }
+  throw new Error('Got unexpected ' + x);
 }
