@@ -6,6 +6,10 @@ plugins {
 group = 'host.exp.exponent'
 version = '58.0.2'
 
+expoModule {
+  v2 true
+}
+
 android {
   namespace "expo.modules.storereview"
   defaultConfig {
@@ -15,6 +19,7 @@ android {
 }
 
 dependencies {
+  implementation 'com.facebook.react:react-android'
   implementation "com.google.android.play:review:2.0.1"
   implementation "com.google.android.play:review-ktx:2.0.0"
   api "com.google.android.gms:play-services-base:17.3.0"

@@ -73,7 +73,6 @@ import expo.modules.sensors.modules.PedometerModule
 import expo.modules.sharing.SharingModule
 import expo.modules.sms.SMSModule
 import expo.modules.speech.SpeechModule
-import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
 import expo.modules.taskmanager.TaskManagerModule
@@ -186,7 +185,6 @@ object ExperiencePackagePicker : ModulesProvider {
     SharingModule::class.java to null,
     SpeechModule::class.java to null,
     SplashScreenModule::class.java to null,
-    StoreReviewModule::class.java to null,
     SystemUIModule::class.java to null,
     TaskManagerModule::class.java to null,
     TrackingTransparencyModule::class.java to null,

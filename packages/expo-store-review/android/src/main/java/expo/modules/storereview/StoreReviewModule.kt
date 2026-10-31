@@ -1,56 +1,49 @@
 package expo.modules.storereview
 
-import android.content.Context
 import android.content.pm.PackageManager
 import com.google.android.gms.common.GooglePlayServicesUtil
+import com.google.android.gms.tasks.Task
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
-import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
+import io.github.expo.modules.v2.react.currentActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.resume
 
+@ExpoModule("ExpoStoreReview")
 class StoreReviewModule : Module() {
-  private val context: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+  @JS
+  suspend fun isAvailableAsync(): Boolean = withContext(Dispatchers.IO) {
+    isPlayStoreInstalled()
+  }
 
-  override fun definition() = ModuleDefinition {
-    Name("ExpoStoreReview")
-
-    AsyncFunction<Boolean>("isAvailableAsync") {
-      return@AsyncFunction isPlayStoreInstalled()
+  @JS
+  suspend fun requestReview(): Unit = withContext(Dispatchers.Main) {
+    val manager: ReviewManager = ReviewManagerFactory.create(androidContext)
+    val request = manager.requestReviewFlow().awaitCompletion()
+    if (!request.isSuccessful) {
+      throw RMUnsuccessfulTaskException()
     }
-
-    AsyncFunction("requestReview") { promise: Promise ->
-      requestReview(promise)
+    val reviewInfo = request.result ?: throw RMTaskException()
+    val activity = currentActivity ?: throw Exceptions.MissingActivity()
+    val flow = manager.launchReviewFlow(activity, reviewInfo).awaitCompletion()
+    if (!flow.isSuccessful) {
+      throw RMTaskException()
     }
   }
 
-  private fun requestReview(promise: Promise) {
-    val manager: ReviewManager = ReviewManagerFactory.create(context)
-    val request = manager.requestReviewFlow()
-
-    request.addOnCompleteListener { task ->
-      if (task.isSuccessful) {
-        val reviewInfo = task.result
-        reviewInfo?.let {
-          val flow = manager.launchReviewFlow(appContext.throwingActivity, it)
-          flow.addOnCompleteListener { result ->
-            if (result.isSuccessful) {
-              promise.resolve(null)
-            } else {
-              promise.reject(RMTaskException())
-            }
-          }
-        } ?: promise.reject(RMTaskException())
-      } else {
-        promise.reject(RMUnsuccessfulTaskException())
-      }
-    }
+  private suspend fun <T> Task<T>.awaitCompletion(): Task<T> = suspendCancellableCoroutine { continuation ->
+    addOnCompleteListener { task -> continuation.resume(task) }
   }
 
   private fun isPlayStoreInstalled(): Boolean = try {
-    context.packageManager
+    androidContext.packageManager
       .getPackageInfo(GooglePlayServicesUtil.GOOGLE_PLAY_STORE_PACKAGE, 0)
     true
   } catch (e: PackageManager.NameNotFoundException) {
