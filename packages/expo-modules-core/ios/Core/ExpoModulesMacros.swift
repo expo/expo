@@ -87,6 +87,16 @@ public macro JS(_ jsName: String? = nil, _ options: JSOptions...) =
 public macro JS(_ options: JSOptions...) =
   #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
 
+/// Options passed to `@Event` after the optional JS name, e.g. `@Event(.sync)` or
+/// `@Event("tick", .sync)`. The macro reads them from the source, so spell them as `.option`
+/// literals rather than constants.
+public enum EventOptions {
+  /// Emits the event synchronously: the payload is converted and the JS listeners run before the
+  /// call returns. `@ExpoModule` and `@SharedObject` isolate the property to `@JavaScriptActor`, so
+  /// it can only be called on the JavaScript thread.
+  case sync
+}
+
 /// Turns a function-typed `var` on a module or shared object into a typed JavaScript event.
 /// Calling the property emits the event to JavaScript, with the closure's parameter as the payload.
 ///
@@ -101,9 +111,17 @@ public macro JS(_ options: JSOptions...) =
 ///
 ///     // Emit it from anywhere:
 ///     onProgress(ProgressEvent(percent: 50))
+///
+/// Trailing `EventOptions` tune the event. The options-only overload exists because `.sync` can't
+/// fill the unlabeled `name` slot.
 @attached(accessor)
 @attached(peer, names: arbitrary)
-public macro Event(_ name: String? = nil, sync: Bool = false) =
+public macro Event(_ name: String? = nil, _ options: EventOptions...) =
+  #externalMacro(module: "ExpoModulesMacros", type: "EventMacro")
+
+@attached(accessor)
+@attached(peer, names: arbitrary)
+public macro Event(_ options: EventOptions...) =
   #externalMacro(module: "ExpoModulesMacros", type: "EventMacro")
 
 /// Member macro applied to a `Module` subclass. Scans the class body for declarations

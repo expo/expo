@@ -172,6 +172,88 @@ public extension EventEmitter {
   }
 }
 
+public extension EventEmitter {
+  /// Emits an event with the given name to the associated JavaScript object synchronously, on the JS
+  /// thread. Listeners run before this function returns. The `@Event(.sync)` macro calls it.
+  @JavaScriptActor
+  @inlinable
+  func emitSync(event: String) {
+    emitSync(event: event, payload: JavaScriptUndefined())
+  }
+
+  /// Emits an event with the given name and a pre-converted JavaScript payload to the associated
+  /// JavaScript object synchronously, on the JS thread.
+  @JavaScriptActor
+  func emitSync(event: String, payload: consuming JavaScriptValue) {
+    guard let runtime = eventRuntime(forEvent: event) else {
+      return
+    }
+    dispatchEvent(event: event, payload: payload, from: self, in: runtime)
+  }
+
+  /// Emits an event with the given name and payload to the associated JavaScript object synchronously,
+  /// on the JS thread.
+  @JavaScriptActor
+  @inlinable
+  func emitSync<P: JavaScriptEncodable>(event: String, payload: P) {
+    guard let runtime = eventRuntime(forEvent: event) else {
+      return
+    }
+    let jsPayload: JavaScriptValue
+    do {
+      jsPayload = try P.encode(payload, in: runtime)
+    } catch {
+      warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
+      return
+    }
+    dispatchEvent(event: event, payload: jsPayload, from: self, in: runtime)
+  }
+
+  /// Emits an event with the given name and payload to the associated JavaScript object synchronously,
+  /// on the JS thread, converting the payload with `encode`. The `@Event(.sync)` macro uses it for
+  /// payload types that can't conform to `JavaScriptEncodable`, such as tuples.
+  @JavaScriptActor
+  @inlinable
+  func emitSync<P>(
+    event: String,
+    payload: P,
+    encode: (P, borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime) throws -> Void
+  ) {
+    guard let runtime = eventRuntime(forEvent: event) else {
+      return
+    }
+    let jsPayload: JavaScriptValue
+    do {
+      jsPayload = try JavaScriptValue.encoding(in: runtime) { slot in
+        try encode(payload, slot, runtime)
+      }
+    } catch {
+      warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
+      return
+    }
+    dispatchEvent(event: event, payload: jsPayload, from: self, in: runtime)
+  }
+
+  /// Emits an event with the given name and payload to the associated JavaScript object synchronously,
+  /// on the JS thread. Payloads that are `JavaScriptEncodable` use the `emitSync(event:payload:)`
+  /// overload for them, which converts them statically.
+  @JavaScriptActor
+  @_disfavoredOverload
+  func emitSync<P: AnyArgument>(event: String, payload: P) {
+    guard let appContext, let runtime = eventRuntime(forEvent: event) else {
+      return
+    }
+    let jsPayload: JavaScriptValue
+    do {
+      jsPayload = try (~P.self).castToJS(payload, appContext: appContext, in: runtime)
+    } catch {
+      warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
+      return
+    }
+    dispatchEvent(event: event, payload: jsPayload, from: self, in: runtime)
+  }
+}
+
 /// A weak reference to an event emitter that the scheduled `emit` closures capture by value, so it is stored
 /// in the closure context without an allocation of its own. Frozen, because with library evolution the
 /// inlinable initializer can't assign the stored property of a struct whose layout isn't fixed.

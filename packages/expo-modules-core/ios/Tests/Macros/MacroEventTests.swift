@@ -16,6 +16,9 @@ private struct ProgressEvent {
 private final class MacroEmittingObject: SharedObject {
   @Event
   var onTicked: (ProgressEvent) -> Void
+
+  @Event(.sync)
+  var onTickedSync: (ProgressEvent) -> Void
 }
 
 @ExpoModule(classes: [MacroEmittingObject.self])
@@ -31,6 +34,15 @@ private final class MacroEmitter: Module {
 
   @Event
   var onTimestamp: (Date) -> Void
+
+  @Event(.sync)
+  var onProgressSync: (ProgressEvent) -> Void
+
+  @Event(.sync)
+  var onDoneSync: () -> Void
+
+  @Event("moveSync", .sync)
+  var onMovedSync: ((x: Int, y: Int)) -> Void
 }
 
 @Suite("Macro event")
@@ -124,6 +136,49 @@ private struct MacroEventTests {
     object.onTicked(ProgressEvent(percent: 30))
 
     try await expectResult(equals: 30)
+  }
+
+  @Test
+  func `emits a sync event with a payload before returning`() throws {
+    try runtime.eval("""
+      globalThis.result = null
+      expo.modules.MacroEmitter.addListener('progressSync', payload => { globalThis.result = payload.percent })
+      """)
+    module.onProgressSync(ProgressEvent(percent: 40))
+    #expect(try runtime.eval("globalThis.result").asInt() == 40)
+  }
+
+  @Test
+  func `emits a no-payload sync event before returning`() throws {
+    try runtime.eval("""
+      globalThis.result = null
+      expo.modules.MacroEmitter.addListener('doneSync', (...args) => { globalThis.result = args.length + ':' + typeof args[0] })
+      """)
+    module.onDoneSync()
+    #expect(try runtime.eval("globalThis.result").asString() == "1:undefined")
+  }
+
+  @Test
+  func `emits a sync event with a tuple payload before returning`() throws {
+    try runtime.eval("""
+      globalThis.result = null
+      expo.modules.MacroEmitter.addListener('moveSync', payload => { globalThis.result = JSON.stringify(payload) })
+      """)
+    module.onMovedSync((x: 3, y: 4))
+    #expect(try runtime.eval("globalThis.result").asString() == #"{"x":3,"y":4}"#)
+  }
+
+  @Test
+  func `emits a sync event from a shared object before returning`() throws {
+    let object = MacroEmittingObject()
+    let encoded = try MacroEmittingObject.encode(object, in: runtime)
+    try runtime.global().setProperty("emittingObject", value: encoded)
+    try runtime.eval("""
+      globalThis.result = null
+      emittingObject.addListener('tickedSync', payload => { globalThis.result = payload.percent })
+      """)
+    object.onTickedSync(ProgressEvent(percent: 60))
+    #expect(try runtime.eval("globalThis.result").asInt() == 60)
   }
 
   nonisolated private func expectResult(equals expected: Int) async throws {
