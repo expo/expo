@@ -46,9 +46,6 @@ public final class ImageView: ExpoView {
 
   var pendingOperation: SDWebImageCombinedOperation?
 
-  /// `loadingSource` is the source of the latest load. `renderedSource` and `renderedSourcePixelSize` are the source
-  /// and the pixel size, before downscaling, of the image that a load rendered. `renderedSource` is `nil` when the
-  /// rendered image did not come from a load of `sources`.
   private var loadingSource: ImageSource?
   private var renderedSource: ImageSource?
   private var renderedSourcePixelSize: CGSize = .zero
@@ -596,9 +593,7 @@ public final class ImageView: ExpoView {
     setImage(placeholder, contentFit: placeholderContentFit, isPlaceholder: true)
   }
 
-  /// Lays the rendered image out for the view's new size and returns `true` when the image can stay: it came from
-  /// the source that is still the best one, nothing about it depends on the old size, and it has the pixels that
-  /// downscaling for the new size would give. Returns `false` when the image must be loaded again.
+  /// Returns whether the previously rendered image is either larger than the image view's new size or if no higher resolution image exists. Returns `false` when the image needs to be loaded again.
   private func fitRenderedImage() -> Bool {
     guard
       let image = sourceImage,
