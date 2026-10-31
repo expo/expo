@@ -9,6 +9,8 @@ import UIKit.UIGestureRecognizerSubclass
   We create a custom gesture recognizer to stop React Root listening to touches when user taps background while Menu is opened.
   Menu when opened attaches a container view `_UIContextMenuContainerView` to the window.
   On tapping it, React Root's `RCTSurfaceTouchHandler` also listens to the touch and causes Pressables to fire onPress.
+
+  It does the same for a touch on a SwiftUI control, so a `Pressable` around the host doesn't fire with the control.
  */
 internal final class SystemMenuTouchGate: UIGestureRecognizer, UIGestureRecognizerDelegate {
   init() {
@@ -106,19 +108,61 @@ internal final class SystemMenuTouchGate: UIGestureRecognizer, UIGestureRecogniz
   }
 
   /**
-   Tells React Native's handlers to skip these touches while a menu is open. UIKit then delivers
-   neither `touchesBegan` nor `touchesEnded` for them, so JS sees no `touchStart`, no press and no
-   `touchEnd`. A handler that already registered a touch cancels it from `reset` at sequence end.
+   Tells React Native's handlers to skip these touches while a menu is open, or when a SwiftUI
+   control takes them. UIKit then delivers neither `touchesBegan` nor `touchesEnded` for them, so JS
+   sees no `touchStart`, no press and no `touchEnd`. A handler that already registered a touch
+   cancels it from `reset` at sequence end.
    */
   private func detachSurfaceTouchHandlers(from touches: Set<UITouch>, for event: UIEvent) {
-    guard let window = view as? UIWindow, Self.isShowingContextMenu(in: window) else {
+    guard let window = view as? UIWindow else {
       return
     }
-    for touch in touches {
+    let isShowingContextMenu = Self.isShowingContextMenu(in: window)
+    for touch in touches where isShowingContextMenu || Self.isClaimedBySwiftUIControl(touch) {
       for handler in Self.surfaceTouchHandlers(above: touch.view) {
         handler.ignore(touch, for: event)
       }
     }
+  }
+
+  // MARK: - Detecting a SwiftUI control
+
+  /**
+   Whether the touch landed on SwiftUI content that handles touches, such as a button, toggle or
+   text field. UIKit routes the touch to the recognizers of that content, while plain content like
+   `Text` gets none. React Native's handler ignores recognizers inside its own views, so without this
+   a `Pressable` around the `Host` also fires on the same tap.
+   */
+  static func isClaimedBySwiftUIControl(_ touch: UITouch) -> Bool {
+    guard let host = swiftUIHost(containing: touch.view) else {
+      return false
+    }
+    return touch.gestureRecognizers?.contains { recognizer in
+      guard let recognizerView = recognizer.view, recognizerView.isDescendant(of: host) else {
+        return false
+      }
+      // A scroll view's pan doesn't claim a tap.
+      return !(recognizer is UIPanGestureRecognizer) && !isSurfaceTouchHandler(recognizer)
+    } ?? false
+  }
+
+  /**
+   The Expo SwiftUI host the touched view belongs to. A React Native view hosted inside it
+   (`RNHostView`) is reached first, and its touches stay with React Native.
+   */
+  static func swiftUIHost(containing view: UIView?) -> UIView? {
+    let reactViewClass: AnyClass? = NSClassFromString("RCTViewComponentView")
+    var current = view
+    while let view = current {
+      if view is AnyExpoSwiftUIHostingView {
+        return view
+      }
+      if let reactViewClass, view.isKind(of: reactViewClass) {
+        return nil
+      }
+      current = view.superview
+    }
+    return nil
   }
 
   // MARK: - UIGestureRecognizerDelegate
