@@ -701,6 +701,51 @@ describe(resolveReactNativeModule, () => {
   );
 
   itWithMemoize(
+    'should list an Expo module with codegenConfig on iOS without iOS platform data',
+    async () => {
+      vol.fromJSON({
+        '/app/node_modules/expo-media-library/package.json': JSON.stringify({
+          name: 'expo-media-library',
+          codegenConfig: {
+            name: 'expo-media-library',
+            type: 'modules',
+            jsSrcsDir: './src',
+            ios: {
+              modulesConformingToProtocol: { RCTImageURLLoader: 'MediaLibraryImageLoader' },
+            },
+          },
+        }),
+        '/app/node_modules/expo-media-library/expo-module.config.json': JSON.stringify({
+          platforms: ['apple', 'android'],
+        }),
+      });
+      mockPlatformResolverIos.mockResolvedValueOnce(null);
+
+      const result = await resolveReactNativeModule(
+        {
+          name: 'expo-media-library',
+          version: '1.0.0',
+          path: '/app/node_modules/expo-media-library',
+          originPath: '/app/node_modules/expo-media-library',
+          source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
+          duplicates: null,
+          depth: 0,
+        },
+        null,
+        'ios',
+        new Set()
+      );
+
+      expect(result).toEqual({
+        root: '/app/node_modules/expo-media-library',
+        name: 'expo-media-library',
+        platforms: {},
+      });
+      vol.reset();
+    }
+  );
+
+  itWithMemoize(
     `should return null for the react-native because it's a platform package`,
     async () => {
       const result = await resolveReactNativeModule(
