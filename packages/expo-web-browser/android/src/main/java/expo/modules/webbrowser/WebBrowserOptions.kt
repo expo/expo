@@ -1,18 +1,29 @@
 package expo.modules.webbrowser
 
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Record
 
-@OptimizedRecord
-internal data class OpenBrowserOptions(
-  @Field val toolbarColor: Int? = null,
-  @Field val secondaryToolbarColor: Int? = null,
-  @Field val browserPackage: String? = null,
-  @Field val showTitle: Boolean = false,
-  @Field val enableDefaultShareMenuItem: Boolean = false,
-  @Field val enableBarCollapsing: Boolean = false,
-  @Field val showInRecents: Boolean = false,
-  @Field(key = "createTask") val shouldCreateTask: Boolean = true,
-  @Field val useProxyActivity: Boolean = true
-) : Record
+@Record
+data class OpenBrowserOptions(
+  val toolbarColor: Int? = null,
+  val secondaryToolbarColor: Int? = null,
+  val browserPackage: String? = null,
+  val showTitle: Boolean = false,
+  val enableDefaultShareMenuItem: Boolean = false,
+  val enableBarCollapsing: Boolean = false,
+  val showInRecents: Boolean = false,
+  val createTask: Boolean = true,
+  val useProxyActivity: Boolean = true
+)
+
+@Record
+data class OpenBrowserResult(
+  val type: String
+)
+
+@Record
+data class CustomTabsBrowsersResult(
+  val browserPackages: List<String>,
+  val servicePackages: List<String>,
+  val preferredBrowserPackage: String?,
+  val defaultBrowserPackage: String?
+)

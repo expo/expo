@@ -6,6 +6,10 @@ plugins {
 group = 'host.exp.exponent'
 version = '58.0.6'
 
+expoModule {
+  v2 true
+}
+
 android {
   namespace "expo.modules.webbrowser"
   defaultConfig {
@@ -15,6 +19,7 @@ android {
 }
 
 dependencies {
+  implementation 'com.facebook.react:react-android'
   implementation "androidx.browser:browser:1.6.0"
 
   implementation "androidx.core:core-ktx:1.17.0"

@@ -1,105 +1,111 @@
 package expo.modules.webbrowser
 
-import android.os.Bundle
 import android.text.TextUtils
 import androidx.browser.customtabs.CustomTabColorSchemeParams
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.core.os.bundleOf
+import com.facebook.react.bridge.LifecycleEventListener
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
 import androidx.core.net.toUri
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
+import io.github.expo.modules.v2.react.currentActivity
+import io.github.expo.modules.v2.react.reactContext
+import io.github.expo.modules.v2.react.reactContextOrNull
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 private const val SERVICE_PACKAGE_KEY = "servicePackage"
-private const val BROWSER_PACKAGES_KEY = "browserPackages"
-private const val SERVICE_PACKAGES_KEY = "servicePackages"
-private const val PREFERRED_BROWSER_PACKAGE = "preferredBrowserPackage"
-private const val DEFAULT_BROWSER_PACKAGE = "defaultBrowserPackage"
 
-private const val MODULE_NAME = "ExpoWebBrowser"
-
+@ExpoModule("ExpoWebBrowser")
 class WebBrowserModule : Module() {
-  private val context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+  // The connection helper is not thread-safe, so every function runs on one background thread.
+  @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+  private val queue = Dispatchers.IO.limitedParallelism(1)
 
-  override fun definition() = ModuleDefinition {
-    Name(MODULE_NAME)
+  private val lifecycleListener = object : LifecycleEventListener {
+    override fun onHostResume() = Unit
+    override fun onHostPause() = Unit
+    override fun onHostDestroy() = connectionHelper.destroy()
+  }
 
-    OnCreate {
-      customTabsResolver = CustomTabsActivitiesHelper(appContext)
-      connectionHelper = CustomTabsConnectionHelper(context)
-    }
+  override fun onDestroy() {
+    reactContextOrNull?.removeLifecycleEventListener(lifecycleListener)
+  }
 
-    OnActivityDestroys {
-      connectionHelper.destroy()
-    }
+  @JS
+  suspend fun warmUpAsync(packageName: String?): Map<String, String> = withContext(queue) {
+    val resolvedPackageName = givenOrPreferredPackageName(packageName)
+    connectionHelper.warmUp(resolvedPackageName)
+    mapOf(
+      SERVICE_PACKAGE_KEY to resolvedPackageName
+    )
+  }
 
-    AsyncFunction("warmUpAsync") { packageName: String? ->
-      val resolvedPackageName = givenOrPreferredPackageName(packageName)
-      connectionHelper.warmUp(resolvedPackageName)
-      return@AsyncFunction bundleOf(
+  @JS
+  suspend fun coolDownAsync(packageName: String?): Map<String, String> = withContext(queue) {
+    val resolvedPackageName = givenOrPreferredPackageName(packageName)
+    if (connectionHelper.coolDown(resolvedPackageName)) {
+      mapOf(
         SERVICE_PACKAGE_KEY to resolvedPackageName
       )
-    }
-
-    AsyncFunction("coolDownAsync") { packageName: String? ->
-      val resolvedPackageName = givenOrPreferredPackageName(packageName)
-      val result = if (connectionHelper.coolDown(resolvedPackageName)) {
-        bundleOf(
-          SERVICE_PACKAGE_KEY to resolvedPackageName
-        )
-      } else {
-        Bundle()
-      }
-      return@AsyncFunction result
-    }
-
-    AsyncFunction("mayInitWithUrlAsync") { url: String, packageName: String? ->
-      val resolvedPackageName = givenOrPreferredPackageName(packageName)
-      connectionHelper.mayInitWithUrl(resolvedPackageName, url.toUri())
-      return@AsyncFunction bundleOf(
-        SERVICE_PACKAGE_KEY to resolvedPackageName
-      )
-    }
-
-    AsyncFunction<Bundle>("getCustomTabsSupportingBrowsersAsync") {
-      val activities = customTabsResolver.customTabsResolvingActivities
-      val services = customTabsResolver.customTabsResolvingServices
-      val preferredPackage = customTabsResolver.getPreferredCustomTabsResolvingActivity(activities)
-      val defaultPackage = customTabsResolver.defaultCustomTabsResolvingActivity
-
-      // It might happen, that default activity does not support Chrome Tabs. Then it will be ResolvingActivity and we don't want to return it as a result.
-      val defaultCustomTabsPackage: String? = defaultPackage.takeIf { activities.contains(it) }
-
-      return@AsyncFunction Bundle().apply {
-        putStringArrayList(BROWSER_PACKAGES_KEY, activities)
-        putStringArrayList(SERVICE_PACKAGES_KEY, services)
-        putString(PREFERRED_BROWSER_PACKAGE, preferredPackage)
-        putString(DEFAULT_BROWSER_PACKAGE, defaultCustomTabsPackage)
-      }
-    }
-
-    AsyncFunction("openBrowserAsync") { url: String, options: OpenBrowserOptions ->
-      val tabsIntent = createCustomTabsIntent(options).apply {
-        intent.data = url.toUri()
-      }
-
-      if (!customTabsResolver.canResolveIntent(tabsIntent)) {
-        throw NoMatchingActivityException()
-      }
-
-      customTabsResolver.startCustomTabs(tabsIntent, options)
-
-      return@AsyncFunction bundleOf(
-        "type" to "opened"
-      )
+    } else {
+      emptyMap()
     }
   }
 
+  @JS
+  suspend fun mayInitWithUrlAsync(url: String, packageName: String?): Map<String, String> = withContext(queue) {
+    val resolvedPackageName = givenOrPreferredPackageName(packageName)
+    connectionHelper.mayInitWithUrl(resolvedPackageName, url.toUri())
+    mapOf(
+      SERVICE_PACKAGE_KEY to resolvedPackageName
+    )
+  }
+
+  @JS
+  suspend fun getCustomTabsSupportingBrowsersAsync(): CustomTabsBrowsersResult = withContext(queue) {
+    val activities = customTabsResolver.customTabsResolvingActivities
+    val services = customTabsResolver.customTabsResolvingServices
+    val preferredPackage = customTabsResolver.getPreferredCustomTabsResolvingActivity(activities)
+    val defaultPackage = customTabsResolver.defaultCustomTabsResolvingActivity
+
+    // It might happen, that default activity does not support Chrome Tabs. Then it will be ResolvingActivity and we don't want to return it as a result.
+    val defaultCustomTabsPackage: String? = defaultPackage.takeIf { activities.contains(it) }
+
+    CustomTabsBrowsersResult(
+      browserPackages = activities,
+      servicePackages = services,
+      preferredBrowserPackage = preferredPackage,
+      defaultBrowserPackage = defaultCustomTabsPackage
+    )
+  }
+
+  @JS
+  suspend fun openBrowserAsync(url: String, options: OpenBrowserOptions): OpenBrowserResult = withContext(queue) {
+    val tabsIntent = createCustomTabsIntent(options).apply {
+      intent.data = url.toUri()
+    }
+
+    if (!customTabsResolver.canResolveIntent(tabsIntent)) {
+      throw NoMatchingActivityException()
+    }
+
+    customTabsResolver.startCustomTabs(tabsIntent, options)
+
+    OpenBrowserResult(type = "opened")
+  }
+
   // these must be `internal` to be able to be injected in tests
-  internal lateinit var customTabsResolver: CustomTabsActivitiesHelper
-  internal lateinit var connectionHelper: CustomTabsConnectionHelper
+  internal val customTabsResolver: CustomTabsActivitiesHelper by lazy {
+    CustomTabsActivitiesHelper { currentActivity ?: throw Exceptions.MissingActivity() }
+  }
+  internal val connectionHelper: CustomTabsConnectionHelper by lazy {
+    reactContext.addLifecycleEventListener(lifecycleListener)
+    CustomTabsConnectionHelper(androidContext)
+  }
 
   private fun createCustomTabsIntent(options: OpenBrowserOptions): CustomTabsIntent {
     val builder = CustomTabsIntent.Builder()

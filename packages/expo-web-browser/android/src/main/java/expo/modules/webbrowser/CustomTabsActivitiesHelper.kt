@@ -8,12 +8,11 @@ import androidx.browser.customtabs.CustomTabsClient
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService
 import androidx.core.net.toUri
-import expo.modules.kotlin.AppContext
 
 private const val DUMMY_URL = "https://expo.dev"
 
 internal class CustomTabsActivitiesHelper(
-  private val appContext: AppContext
+  private val activityProvider: () -> Activity
 ) {
 
   // region Actual custom tabs activities helper methods
@@ -62,7 +61,7 @@ internal class CustomTabsActivitiesHelper(
   fun startCustomTabs(tabsIntent: CustomTabsIntent, options: OpenBrowserOptions) {
     val url = tabsIntent.intent.data ?: throw NoUrlProvidedException()
 
-    if (!options.shouldCreateTask) {
+    if (!options.createTask) {
       tabsIntent.launchUrl(currentActivity, url)
       return
     }
@@ -111,7 +110,7 @@ internal class CustomTabsActivitiesHelper(
     get() = currentActivity.packageManager ?: throw PackageManagerNotFoundException()
 
   private val currentActivity: Activity
-    get() = appContext.throwingActivity
+    get() = activityProvider()
 
 // endregion
 }

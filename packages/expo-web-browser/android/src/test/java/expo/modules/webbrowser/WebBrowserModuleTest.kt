@@ -1,33 +1,20 @@
 package expo.modules.webbrowser
 
-import android.os.Bundle
 import androidx.browser.customtabs.CustomTabsIntent
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.errorCodeOf
-import expo.modules.test.core.legacy.ModuleMock
-import expo.modules.test.core.legacy.ModuleMockHolder
 import expo.modules.test.core.legacy.assertCodedException
 import io.mockk.every
 import io.mockk.slot
+import io.mockk.spyk
 import io.mockk.verify
 import junit.framework.ComparisonFailure
+import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.robolectric.RobolectricTestRunner
-
-private fun assertSetsEqual(first: Set<*>, second: Set<*>, message: String = "") {
-  if (!first.all { second.contains(it) }) {
-    throw ComparisonFailure(message, first.toString(), second.toString())
-  }
-}
-
-private fun assertStringValueNull(bundle: Bundle, key: String) {
-  assertTrue(bundle.containsKey(key))
-  assertEquals(null, bundle.getString(key))
-}
 
 private fun assertListsEqual(first: List<*>?, second: List<*>?, message: String = "") {
   if (first == second) {
@@ -43,25 +30,28 @@ private fun assertListsEqual(first: List<*>?, second: List<*>?, message: String 
   }
 }
 
-private interface WebBrowserModuleTestInterface {
+/** Calls the module's suspend exports the way JavaScript would. */
+private class WebBrowserModuleTestWrapper(private val module: WebBrowserModule) {
   @Throws(CodedException::class)
-  fun openBrowserAsync(url: String, options: OpenBrowserOptions): Bundle
+  fun openBrowserAsync(url: String, options: OpenBrowserOptions): OpenBrowserResult =
+    runBlocking { module.openBrowserAsync(url, options) }
 
-  fun getCustomTabsSupportingBrowsersAsync(): Bundle
+  fun getCustomTabsSupportingBrowsersAsync(): CustomTabsBrowsersResult =
+    runBlocking { module.getCustomTabsSupportingBrowsersAsync() }
 
-  fun warmUpAsync(browserPackage: String?): Bundle
+  fun warmUpAsync(browserPackage: String?): Map<String, String> =
+    runBlocking { module.warmUpAsync(browserPackage) }
 
-  fun coolDownAsync(browserPackage: String?): Bundle
+  fun coolDownAsync(browserPackage: String?): Map<String, String> =
+    runBlocking { module.coolDownAsync(browserPackage) }
 }
 
-private inline fun withWebBrowserMock(
-  block: ModuleMockHolder<WebBrowserModuleTestInterface, WebBrowserModule>.() -> Unit
-) = ModuleMock.createMock(
-  WebBrowserModuleTestInterface::class,
-  WebBrowserModule(),
-  block = block,
-  autoOnCreate = false
-)
+private class WebBrowserModuleMock(val moduleSpy: WebBrowserModule) {
+  val module = WebBrowserModuleTestWrapper(moduleSpy)
+}
+
+private inline fun withWebBrowserMock(block: WebBrowserModuleMock.() -> Unit) =
+  WebBrowserModuleMock(spyk(WebBrowserModule())).block()
 
 @RunWith(RobolectricTestRunner::class)
 internal class WebBrowserModuleTest {
@@ -77,10 +67,7 @@ internal class WebBrowserModuleTest {
     val result = module.openBrowserAsync("http://expo.dev", OpenBrowserOptions())
 
     // then
-    result.let {
-      assertSetsEqual(setOf("type"), it.keySet())
-      assertEquals("opened", it.getString("type"))
-    }
+    assertEquals("opened", result.type)
   }
 
   @Test
@@ -181,11 +168,10 @@ internal class WebBrowserModuleTest {
 
     // then
     result.let {
-      assertSetsEqual(setOf("browserPackages", "servicePackages", "preferredBrowserPackage", "defaultBrowserPackage"), it.keySet())
-      assertListsEqual(activities, it.getStringArrayList("browserPackages"))
-      assertListsEqual(services, it.getStringArrayList("servicePackages"))
-      assertStringValueNull(it, "preferredBrowserPackage")
-      assertStringValueNull(it, "defaultBrowserPackage")
+      assertListsEqual(activities, it.browserPackages)
+      assertListsEqual(services, it.servicePackages)
+      assertEquals(null, it.preferredBrowserPackage)
+      assertEquals(null, it.defaultBrowserPackage)
     }
   }
 
@@ -199,11 +185,10 @@ internal class WebBrowserModuleTest {
 
     // then
     result.let {
-      assertSetsEqual(setOf("browserPackages", "servicePackages", "preferredBrowserPackage", "defaultBrowserPackage"), it.keySet())
-      assertListsEqual(emptyList<String>(), it.getStringArrayList("browserPackages"))
-      assertListsEqual(emptyList<String>(), it.getStringArrayList("servicePackages"))
-      assertStringValueNull(it, "preferredBrowserPackage")
-      assertStringValueNull(it, "defaultBrowserPackage")
+      assertListsEqual(emptyList<String>(), it.browserPackages)
+      assertListsEqual(emptyList<String>(), it.servicePackages)
+      assertEquals(null, it.preferredBrowserPackage)
+      assertEquals(null, it.defaultBrowserPackage)
     }
   }
 
