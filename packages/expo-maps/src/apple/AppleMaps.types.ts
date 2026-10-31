@@ -514,6 +514,16 @@ export type AppleMapsViewProps = {
   annotations?: AppleMapsAnnotation[];
 
   /**
+   * Whether an annotation's content fades and scales in when the annotation first appears on the
+   * map, instead of appearing instantly. An annotation animates once per `id`: not again when its
+   * content changes, and only after it has been removed from `annotations` and added back. Useful
+   * when the set of annotations changes often, for example when annotations are clustered by zoom
+   * level. Removed annotations disappear instantly.
+   * @default false
+   */
+  animateAnnotations?: boolean;
+
+  /**
    * The `MapUiSettings` to be used for UI-specific settings on the map.
    */
   uiSettings?: AppleMapsUISettings;

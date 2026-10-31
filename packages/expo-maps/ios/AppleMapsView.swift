@@ -7,6 +7,7 @@ import SwiftUI
 class AppleMapsViewProps: ExpoSwiftUI.ViewProps {
   @Field var markers: [MapMarker] = []
   @Field var annotations: [MapAnnotation] = []
+  @Field var animateAnnotations: Bool = false
   @Field var polylines: [ExpoAppleMapPolyline] = []
   @Field var polygons: [Polygon] = []
   @Field var circles: [Circle] = []
