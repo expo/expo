@@ -1,11 +1,17 @@
 package expo.modules.linking
 
 import android.net.Uri
-import androidx.core.os.bundleOf
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.Record
 import java.lang.ref.WeakReference
 
+@Record
+internal data class URLReceivedEvent(val url: String?)
+
+@ExpoModule("ExpoLinking")
 class ExpoLinkingModule : Module() {
   companion object {
     var initialURL: Uri? = null
@@ -14,30 +20,32 @@ class ExpoLinkingModule : Module() {
 
   private var onURLReceivedObserver: ((Uri?) -> Unit)? = null
 
-  override fun definition() = ModuleDefinition {
-    Name("ExpoLinking")
+  @Event(name = "onURLReceived")
+  private val onURLReceived = event<URLReceivedEvent>(
+    onStartObserving = ::startObservingURLs,
+    onStopObserving = ::stopObservingURLs
+  )
 
-    Events("onURLReceived")
+  @JS
+  fun getLinkingURL(): String? {
+    return initialURL?.toString()
+  }
 
-    Function("getLinkingURL") {
-      initialURL?.toString()
+  @JS
+  fun clearInitialURL() {
+    initialURL = null
+  }
+
+  private fun startObservingURLs() {
+    val weakModule = WeakReference(this@ExpoLinkingModule)
+    val observer: (Uri?) -> Unit = { uri: Uri? ->
+      weakModule.get()?.onURLReceived?.invoke(URLReceivedEvent(uri?.toString()))
     }
+    onURLReceivedObservers.add(observer)
+    onURLReceivedObserver = observer
+  }
 
-    Function("clearInitialURL") {
-      initialURL = null
-    }
-
-    OnStartObserving("onURLReceived") {
-      val weakModule = WeakReference(this@ExpoLinkingModule)
-      val observer: (Uri?) -> Unit = { uri: Uri? ->
-        weakModule.get()?.sendEvent("onURLReceived", bundleOf("url" to uri?.toString()))
-      }
-      onURLReceivedObservers.add(observer)
-      onURLReceivedObserver = observer
-    }
-
-    OnStopObserving("onURLReceived") {
-      onURLReceivedObservers.remove(onURLReceivedObserver)
-    }
+  private fun stopObservingURLs() {
+    onURLReceivedObservers.remove(onURLReceivedObserver)
   }
 }

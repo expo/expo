@@ -36,7 +36,6 @@ import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.services.Service
 import expo.modules.lineargradient.LinearGradientModule
-import expo.modules.linking.ExpoLinkingModule
 import expo.modules.linking.ExpoLinkingPackage
 import expo.modules.localauthentication.LocalAuthenticationModule
 import expo.modules.localization.LocalizationModule
@@ -153,7 +152,6 @@ object ExperiencePackagePicker : ModulesProvider {
     EASClientModule::class.java to null,
     ExpoFetchModule::class.java to null,
     FontUtilsModule::class.java to null,
-    ExpoLinkingModule::class.java to null,
     ExpoRouterModule::class.java to null,
     ExpoUIModule::class.java to null,
     FileSystemModule::class.java to null,
