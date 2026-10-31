@@ -149,12 +149,12 @@ class EmbeddedLoaderTest {
   fun testEmbeddedLoaderWithCopyAssets_FailureToCopyAssets() = runTest {
     every { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) } throws IOException("mock failed to copy asset")
 
-    val error = assertFailsWith<IOException> {
+    val error = assertFailsWith<AssetsFailedToLoadException> {
       loaderWithCopyAssets.load { _ ->
         Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
       }
     }
-    Assert.assertEquals("mock failed to copy asset", error.message)
+    Assert.assertEquals("mock failed to copy asset", error.cause?.message)
 
     verify(atLeast = 1) { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) }
 

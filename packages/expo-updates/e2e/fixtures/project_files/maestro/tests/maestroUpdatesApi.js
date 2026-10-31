@@ -70,6 +70,12 @@ function logEntries() {
   return JSON.parse(response.body);
 }
 
+function logEntriesWithLevelAndCode(level, code) {
+  return logEntries().filter(function (entry) {
+    return entry.level === level && entry.code === code;
+  });
+}
+
 output.api = {
   delay: delay,
   installClient: installClient,
@@ -77,6 +83,7 @@ output.api = {
   lastRequestHeaders: lastRequestHeaders,
   lastAssetRequestHeaders: lastAssetRequestHeaders,
   logEntries: logEntries,
+  logEntriesWithLevelAndCode: logEntriesWithLevelAndCode,
   restartUpdatesServer: restartUpdatesServer,
   serveManifest: serveManifest,
   staticFileCount: staticFileCount,

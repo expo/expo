@@ -29,7 +29,7 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
   case remoteAppLoaderUnsafeAssetFilename(filename: String)
   case remoteAppLoaderHeaderDataError(cause: Error)
   case remoteAppLoaderUnknownError(cause: Error)
-  case appLoaderFailedToLoadAllAssets
+  case appLoaderFailedToLoadAllAssets(failures: [AssetLoadFailure])
   case appLoaderFinishedWithoutManifest
   case appLoaderUnknownError(cause: Error)
   case appLoaderTaskFailedToLaunch(cause: Error?)
@@ -100,8 +100,13 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
       return "Failed to download asset: filename \"\(filename)\" would resolve outside the updates directory"
     case let .remoteAppLoaderHeaderDataError(cause):
       return "Error persisting header data to disk: \(cause.localizedDescription)"
-    case .appLoaderFailedToLoadAllAssets:
-      return "Failed to load all assets"
+    case let .appLoaderFailedToLoadAllAssets(failures):
+      let maxListedAssetKeys = 5
+      let listedKeys = failures.prefix(maxListedAssetKeys).map { $0.assetKey }.joined(separator: ", ")
+      let moreKeys = failures.count > maxListedAssetKeys ? ", and \(failures.count - maxListedAssetKeys) more" : ""
+      let firstError = failures.first.map { ": \($0.error.localizedDescription)" } ?? ""
+      let assets = failures.count == 1 ? "asset" : "assets"
+      return "Failed to load \(failures.count) \(assets) (\(listedKeys)\(moreKeys))\(firstError)"
     case .appLoaderFinishedWithoutManifest:
       return "AppLoader finished without a processed update manifest. This is an internal error."
     case let .remoteAppLoaderUnknownError(cause):
@@ -174,6 +179,8 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
       return cause
     case let .fileDownloaderCodeSigningError(cause):
       return cause
+    case let .appLoaderFailedToLoadAllAssets(failures):
+      return failures.first?.error
     case .fileDownloaderAssetDownloadEmptyResponse,
       .fileDownloaderAssetMismatchedHash,
       .fileDownloaderResponseNotHTTPURLResponse,
@@ -188,7 +195,6 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
       .fileDownloaderHTTPResponseError,
       .remoteAppLoaderAssetMissingUrl,
       .remoteAppLoaderUnsafeAssetFilename,
-      .appLoaderFailedToLoadAllAssets,
       .appLoaderFinishedWithoutManifest,
       .appLoaderTaskUnexpectedErrorDuringLaunch,
       .errorRecoveryCrashing,
@@ -201,6 +207,14 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
       return nil
     }
   }
+}
+
+/**
+ An asset that failed to load, and the error it failed with.
+ */
+public struct AssetLoadFailure: Sendable {
+  public let assetKey: String
+  public let error: UpdatesError
 }
 
 // swiftlint:enable identifier_name

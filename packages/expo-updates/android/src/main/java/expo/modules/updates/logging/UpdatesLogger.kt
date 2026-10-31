@@ -4,6 +4,8 @@ import expo.modules.core.logging.LogHandlers
 import expo.modules.core.logging.LogType
 import expo.modules.core.logging.Logger
 import expo.modules.core.logging.LoggerTimer
+import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
+import expo.modules.updates.loader.AssetsFailedToLoadException
 import java.io.File
 import java.util.Date
 
@@ -96,6 +98,42 @@ class UpdatesLogger(filesDirectory: File) : IUpdatesLogger {
     assetId: String?
   ) {
     logger.error(logEntryWithCauseExceptionString(message, cause, code, LogType.Error, null, updateId, assetId))
+  }
+
+  /**
+   * Logs a failed update load as an error that starts with [context]. When assets of the update
+   * failed to load, logs one error for each group of asset failures with the same code and HTTP
+   * status, so that one kind of failure does not hide another.
+   */
+  fun errorForLoadFailure(
+    context: String,
+    cause: Exception,
+    otherwise: UpdatesErrorCode,
+    updateId: String? = null
+  ) {
+    val assetsFailure = generateSequence<Throwable>(cause) { it.cause }
+      .filterIsInstance<AssetsFailedToLoadException>()
+      .firstOrNull()
+    if (assetsFailure == null) {
+      error(
+        "$context: ${cause.localizedMessageWithCauseLocalizedMessage()}",
+        cause,
+        UpdatesErrorCode.forLoadFailure(cause, otherwise),
+        updateId,
+        null
+      )
+      return
+    }
+    for ((code, failures) in UpdatesErrorCode.groups(assetsFailure.failures)) {
+      val groupError = AssetsFailedToLoadException(failures)
+      error(
+        "$context: ${groupError.localizedMessageWithCauseLocalizedMessage()}",
+        groupError,
+        code,
+        updateId,
+        null
+      )
+    }
   }
 
   fun fatal(
