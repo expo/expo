@@ -233,25 +233,6 @@ public extension EventEmitter {
     }
     dispatchEvent(event: event, payload: jsPayload, from: self, in: runtime)
   }
-
-  /// Emits an event with the given name and payload to the associated JavaScript object synchronously,
-  /// on the JS thread. Payloads that are `JavaScriptEncodable` use the `emitSync(event:payload:)`
-  /// overload for them, which converts them statically.
-  @JavaScriptActor
-  @_disfavoredOverload
-  func emitSync<P: AnyArgument>(event: String, payload: P) {
-    guard let appContext, let runtime = eventRuntime(forEvent: event) else {
-      return
-    }
-    let jsPayload: JavaScriptValue
-    do {
-      jsPayload = try (~P.self).castToJS(payload, appContext: appContext, in: runtime)
-    } catch {
-      warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
-      return
-    }
-    dispatchEvent(event: event, payload: jsPayload, from: self, in: runtime)
-  }
 }
 
 /// A weak reference to an event emitter that the scheduled `emit` closures capture by value, so it is stored
