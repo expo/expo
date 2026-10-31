@@ -1,5 +1,5 @@
 ---
-'expo-app-integrity': patch
+'@expo/app-integrity': patch
 ---
 
 [Android] Migrate to the Expo Modules API 2.0.
