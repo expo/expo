@@ -21,5 +21,9 @@ class KeepAwakeModule : Module() {
     AsyncFunction<Boolean>("isActivated") {
       keepAwakeManager.isActivated
     }
+
+    OnActivityEntersForeground {
+      keepAwakeManager.syncKeepScreenOnFlag()
+    }
   }
 }
