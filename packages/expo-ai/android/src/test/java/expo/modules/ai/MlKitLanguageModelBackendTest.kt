@@ -71,7 +71,7 @@ class MlKitLanguageModelBackendTest {
   }
 
   @Test
-  fun `images follow the prompt text as image parts in order on both generation paths`() = runTest {
+  fun `each image follows the prompt as a label then an image part on both generation paths`() = runTest {
     val model = mockk<GenerativeModel>()
     coEvery { model.checkStatus() } returns FeatureStatus.AVAILABLE
     val first = mockk<Bitmap>(relaxed = true)
@@ -87,8 +87,9 @@ class MlKitLanguageModelBackendTest {
     assertEquals(2, requests.size)
     requests.forEach { request ->
       val parts = request.contents.single().parts
-      assertEquals("Describe", (parts[0] as TextPart).textString)
-      assertEquals(listOf(first, second), parts.drop(1).map { (it as ImagePart).bitmap })
+      assertEquals(5, parts.size)
+      assertEquals(listOf("Describe", "Image \"first\":", "Image \"second\":"), listOf(parts[0], parts[1], parts[3]).map { (it as TextPart).textString })
+      assertEquals(listOf(first, second), listOf(parts[2], parts[4]).map { (it as ImagePart).bitmap })
     }
   }
 
@@ -107,24 +108,35 @@ class MlKitLanguageModelBackendTest {
   }
 
   @Test
-  fun `image rejections from the model tell the app to retry without images`() = runTest {
-    for (sdkCode in listOf(GenAiException.ErrorCode.INVALID_INPUT_IMAGE, GenAiException.ErrorCode.NOT_SUPPORTED)) {
-      for (stream in listOf(false, true)) {
-        val model = mockk<GenerativeModel>()
-        coEvery { model.checkStatus() } returns FeatureStatus.AVAILABLE
-        val failure = GenAiException("rejected", null, sdkCode)
-        coEvery { model.generateContent(any<GenerateContentRequest>()) } throws failure
-        every { model.generateContentStream(any<GenerateContentRequest>()) } returns flow { throw failure }
-        val backend = MlKitLanguageModelBackend(model) { mockk(relaxed = true) }
-        try {
-          backend.generate("Describe", null, LanguageModelRequestOptions(stream, null, images)) {}
-          fail("An image rejection must fail")
-        } catch (error: LanguageModelException) {
-          assertEquals("ERR_UNSUPPORTED_FEATURE", error.code)
-          assertTrue(error.message!!.contains("without images"))
-        }
-      }
+  fun `an image the model cannot read fails as invalid input naming every label`() = runTest {
+    for (stream in listOf(false, true)) {
+      val error = generateWithSdkFailure(GenAiException.ErrorCode.INVALID_INPUT_IMAGE, stream)
+      assertEquals("ERR_INVALID_ARGUMENT", error.code)
+      assertTrue(error.message!!.contains("\"first\"") && error.message!!.contains("\"second\""))
     }
+  }
+
+  @Test
+  fun `an unsupported request with images keeps the generic SDK mapping`() = runTest {
+    for (stream in listOf(false, true)) {
+      val error = generateWithSdkFailure(GenAiException.ErrorCode.NOT_SUPPORTED, stream)
+      assertEquals("ERR_UNSUPPORTED_FEATURE", error.code)
+      assertEquals("rejected", error.message)
+    }
+  }
+
+  private suspend fun generateWithSdkFailure(sdkCode: Int, stream: Boolean): LanguageModelException {
+    val model = mockk<GenerativeModel>()
+    coEvery { model.checkStatus() } returns FeatureStatus.AVAILABLE
+    val failure = GenAiException("rejected", null, sdkCode)
+    coEvery { model.generateContent(any<GenerateContentRequest>()) } throws failure
+    every { model.generateContentStream(any<GenerateContentRequest>()) } returns flow { throw failure }
+    try {
+      MlKitLanguageModelBackend(model) { mockk(relaxed = true) }.generate("Describe", null, LanguageModelRequestOptions(stream, null, images)) {}
+    } catch (error: Exception) {
+      return LanguageModelException.from(error)
+    }
+    throw AssertionError("The SDK failure must propagate")
   }
 
   @Test

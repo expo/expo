@@ -134,7 +134,7 @@ export type ToolDefinitions<Schemas extends readonly ObjectSchema[]> = {
 
 /** Controls one generation and all model/tool work it initiates. */
 export type RequestOptions = {
-  /** Local image files. Up to 8; labels default to image-1, image-2, and so on. Apple image tools support iOS 26; Apple model vision requires iOS 27 and model support. Android sends images to the device model, which rejects them with `ERR_UNSUPPORTED_FEATURE` if it accepts text only. */
+  /** Local image files. Up to 8; labels default to image-1, image-2, and so on. Apple image tools support iOS 26; Apple model vision requires iOS 27 and model support. Android sends images to the device model. A device model that does not accept images can reject the request, for example with `ERR_UNSUPPORTED_FEATURE`, or can ignore the images. */
   images?: readonly ImageInput[];
   signal?: AbortSignal;
   /** Optional overall deadline in milliseconds, including tool handlers and approval. No library deadline applies when omitted. */

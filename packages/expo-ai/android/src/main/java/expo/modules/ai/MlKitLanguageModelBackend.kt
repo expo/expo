@@ -20,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
+import org.json.JSONObject
 
 internal class MlKitLanguageModelBackend(
   private val model: GenerativeModel = Generation.getClient(),
@@ -84,9 +85,17 @@ internal class MlKitLanguageModelBackend(
     } else {
       prompt
     }
-    val bitmaps = withContext(Dispatchers.IO) { options.images.map(::decode) }
+    val bitmaps = withContext(Dispatchers.IO) {
+      options.images.map {
+        ensureActive()
+        decode(it)
+      }
+    }
     val content = Content.Builder().addPart(TextPart(input)).apply {
-      bitmaps.forEach { addPart(ImagePart(it)) }
+      options.images.zip(bitmaps).forEach { (image, bitmap) ->
+        addPart(TextPart("Image ${JSONObject.quote(image.label)}:"))
+        addPart(ImagePart(bitmap))
+      }
     }.build()
     val request = GenerateContentRequest.Builder(content).apply {
       if (nativeInstructions) {
@@ -103,10 +112,11 @@ internal class MlKitLanguageModelBackend(
           ?: throw LanguageModelException("ERR_RESPONSE_INVALID", "The model returned no text candidate.")
       }
     } catch (error: GenAiException) {
-      if (options.images.isNotEmpty() && error.errorCode in imageRejectionCodes) {
+      if (options.images.isNotEmpty() && error.errorCode == GenAiException.ErrorCode.INVALID_INPUT_IMAGE) {
+        val labels = options.images.joinToString { JSONObject.quote(it.label) }
         throw LanguageModelException(
-          "ERR_UNSUPPORTED_FEATURE",
-          "The on-device model could not use the images. The model on this device may accept text only. Retry the request without images.",
+          "ERR_INVALID_ARGUMENT",
+          "The on-device model rejected the images $labels. Try a smaller or different image, or retry without images.",
           error
         )
       }
@@ -133,7 +143,7 @@ internal class MlKitLanguageModelBackend(
 
   private fun decode(image: LanguageModelImage): Bitmap =
     decodeImage(image.uri) ?: throw LanguageModelException.invalid(
-      "The image \"${image.label}\" could not be decoded. The file may be missing, unreadable by the app, or in an image format Android cannot decode. Pass a file:// URL to a readable PNG, JPEG, or WebP file."
+      "The image \"${image.label}\" could not be decoded. The file may be missing, unreadable by the app, or in an image format Android cannot decode. Pass a file:// URL to a readable image file in a format Android can decode (for example JPEG, PNG or WebP)."
     )
 
   override fun close() = model.close()
@@ -146,8 +156,6 @@ internal class MlKitLanguageModelBackend(
     null
   }
 }
-
-private val imageRejectionCodes = setOf(GenAiException.ErrorCode.INVALID_INPUT_IMAGE, GenAiException.ErrorCode.NOT_SUPPORTED)
 
 private const val MAX_IMAGE_EDGE = 2048
 

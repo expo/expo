@@ -128,6 +128,14 @@ class LanguageModelBackendTest {
   }
 
   @Test
+  fun `request options reject image URLs that are not local files`() {
+    for (uri in listOf("file://otherhost/x.png", "file:///x.png?size=2", "file:///x.png#top", "file:///x%00.png", "file:///x\\u0001.png", "file:", "content://media/x")) {
+      assertCode("ERR_INVALID_ARGUMENT") { LanguageModelRequestOptions.parse("""{"images":[{"uri":"$uri","label":"a"}]}""") }
+    }
+    assertEquals("file://localhost/x.png", LanguageModelRequestOptions.parse("""{"images":[{"uri":"file://localhost/x.png","label":"a"}]}""").images.single().uri)
+  }
+
+  @Test
   fun `SDK failures keep actionable public error codes`() {
     val cases = mapOf(
       GenAiException.ErrorCode.CANCELLED to "ERR_REQUEST_CANCELLED",

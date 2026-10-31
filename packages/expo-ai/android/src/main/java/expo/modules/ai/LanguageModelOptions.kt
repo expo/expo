@@ -2,6 +2,7 @@ package expo.modules.ai
 
 import org.json.JSONArray
 import org.json.JSONObject
+import java.net.URLDecoder
 
 internal data class LanguageModelSessionOptions(val instructions: String?) {
   companion object {
@@ -63,7 +64,7 @@ internal data class LanguageModelRequestOptions(
         val label = image.opt("label") as? String
         if (
           image.keys().asSequence().any { it != "uri" && it != "label" } ||
-          uri == null || !uri.startsWith("file://") ||
+          uri == null || !isLocalFileUrl(uri) ||
           label == null || label.isEmpty() || label.length > 128 || label.any(Char::isISOControl) ||
           !labels.add(label)
         ) {
@@ -86,6 +87,23 @@ private fun parseObject(json: String, allowed: Set<String>): JSONObject {
     throw LanguageModelException.invalid("Unsupported options: ${unknown.joinToString()}.")
   }
   return value
+}
+
+private fun isLocalFileUrl(uri: String): Boolean {
+  if (!uri.startsWith("file://") || uri.any { it == '?' || it == '#' || it.isISOControl() }) {
+    return false
+  }
+  val hostAndPath = uri.removePrefix("file://")
+  val pathStart = hostAndPath.indexOf('/')
+  if (pathStart < 0 || hostAndPath.substring(0, pathStart) !in setOf("", "localhost")) {
+    return false
+  }
+  val path = try {
+    URLDecoder.decode(hostAndPath.substring(pathStart), "UTF-8")
+  } catch (_: IllegalArgumentException) {
+    return false
+  }
+  return path.none(Char::isISOControl)
 }
 
 private fun JSONObject.optionalInteger(key: String, minimum: Int): Int? {
