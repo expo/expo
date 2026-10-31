@@ -31,6 +31,7 @@ class ExpoModulesPackage : ReactPackage {
     }
   }
 
+  @Deprecated("Migrate to [BaseReactPackage] and implement [getModule] instead.")
   override fun createNativeModules(reactContext: ReactApplicationContext): List<NativeModule> {
     return moduleRegistryAdapter.createNativeModules(reactContext)
   }

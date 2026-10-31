@@ -267,7 +267,6 @@ internal class MockActivity : ReactActivity() {
   override fun createReactActivityDelegate(): ReactActivityDelegate = spyk(
     ReactActivityDelegateWrapper(
       this,
-      BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
       spyk(
         object : DefaultReactActivityDelegate(
           this,
