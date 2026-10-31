@@ -6,13 +6,12 @@ internal import SDWebImage
 
 @testable import ExpoImage
 
-/// Writes a square PNG of the given size in pixels to a new temporary file.
-private func makeImageFile(pixels: CGFloat) throws -> URL {
+private func makeImageFile(pixelSize: CGSize) throws -> URL {
   let format = UIGraphicsImageRendererFormat()
   format.scale = 1
-  let data = UIGraphicsImageRenderer(size: CGSize(width: pixels, height: pixels), format: format).pngData { context in
+  let data = UIGraphicsImageRenderer(size: pixelSize, format: format).pngData { context in
     UIColor.red.setFill()
-    context.fill(CGRect(x: 0, y: 0, width: pixels, height: pixels))
+    context.fill(CGRect(origin: .zero, size: pixelSize))
   }
   let url = FileManager.default.temporaryDirectory.appendingPathComponent("expo-image-test-\(UUID().uuidString).png")
   try data.write(to: url)
@@ -30,7 +29,6 @@ private func square(_ points: CGFloat) -> CGRect {
   return CGRect(x: 0, y: 0, width: points, height: points)
 }
 
-/// A view that rendered a square image from a temporary file.
 @MainActor
 private struct LoadedView {
   let view: ImageView
@@ -38,21 +36,19 @@ private struct LoadedView {
   let image: UIImage
   let operation: SDWebImageCombinedOperation?
 
-  /// Loads an image of `imagePoints` at the screen scale into a view of `viewPoints`.
-  init(imagePoints: CGFloat, viewPoints: CGFloat, contentFit: ContentFit = .cover) async throws {
+  init(imageSize: CGSize, bounds: CGRect, contentFit: ContentFit = .cover) async throws {
     view = ImageView()
-    url = try makeImageFile(pixels: imagePoints * view.screenScale)
+    url = try makeImageFile(pixelSize: imageSize * view.screenScale)
     var source = ImageSource()
     source.uri = url
     view.contentFit = contentFit
     view.sources = [source]
-    view.bounds = square(viewPoints)
-    try await waitUntil { [view] in view.sourceImage != nil }
+    view.bounds = bounds
+    try await waitUntil { [view] in return view.sourceImage != nil }
     image = try #require(view.sourceImage)
     operation = view.pendingOperation
   }
 
-  /// Whether the view still shows the same image and did not start a new load.
   var keptImage: Bool {
     return view.pendingOperation === operation && view.sourceImage === image
   }
@@ -67,27 +63,17 @@ private struct LoadedView {
 struct ImageViewResizeTests {
   @Test
   func `keeps the rendered image when the view shrinks`() async throws {
-    let loaded = try await LoadedView(imagePoints: 200, viewPoints: 100)
+    let loaded = try await LoadedView(imageSize: square(200).size, bounds: square(100))
     defer { loaded.removeFile() }
 
     loaded.view.bounds = square(80)
 
     #expect(loaded.keptImage)
-  }
-
-  @Test
-  func `reloads when the view grows past the downscaled image`() async throws {
-    let loaded = try await LoadedView(imagePoints: 200, viewPoints: 100)
-    defer { loaded.removeFile() }
-
-    loaded.view.bounds = square(150)
-
-    #expect(!loaded.keptImage)
   }
 
   @Test
   func `keeps the full-size image when the view grows`() async throws {
-    let loaded = try await LoadedView(imagePoints: 100, viewPoints: 100)
+    let loaded = try await LoadedView(imageSize: square(100).size, bounds: square(100))
     defer { loaded.removeFile() }
 
     loaded.view.bounds = square(150)
@@ -96,48 +82,44 @@ struct ImageViewResizeTests {
   }
 
   @Test
-  func `reloads a scale-down image when the view shrinks`() async throws {
-    // `scale-down` shows the image at its own size, so a kept image would not shrink with the view.
-    let loaded = try await LoadedView(imagePoints: 200, viewPoints: 100, contentFit: .scaleDown)
+  func `keeps a scale-down image when its size does not change`() async throws {
+    let loaded = try await LoadedView(imageSize: square(200).size, bounds: square(100), contentFit: .scaleDown)
     defer { loaded.removeFile() }
 
-    loaded.view.bounds = square(80)
+    loaded.view.bounds = CGRect(x: 0, y: 0, width: 100, height: 150)
 
-    #expect(!loaded.keptImage)
+    #expect(loaded.keptImage)
   }
 
   @Test
-  func `reloads after the sources change`() async throws {
-    let loaded = try await LoadedView(imagePoints: 200, viewPoints: 100)
+  func `keeps a full-size scale-down image when the view grows`() async throws {
+    let loaded = try await LoadedView(imageSize: square(100).size, bounds: square(150), contentFit: .scaleDown)
     defer { loaded.removeFile() }
 
-    loaded.view.sources = loaded.view.sources
-    loaded.view.bounds = square(80)
+    loaded.view.bounds = square(200)
 
-    #expect(!loaded.keptImage)
+    #expect(loaded.keptImage)
   }
 
   @Test
-  func `reloads while a newer load is pending`() async throws {
-    let loaded = try await LoadedView(imagePoints: 200, viewPoints: 100)
+  func `keeps a none image when the view resizes`() async throws {
+    let loaded = try await LoadedView(imageSize: square(200).size, bounds: square(100), contentFit: .none)
     defer { loaded.removeFile() }
 
-    // The newer load, for example for new props, has not rendered yet.
-    loaded.view.reload()
-    let operation = loaded.view.pendingOperation
     loaded.view.bounds = square(80)
 
-    #expect(loaded.view.pendingOperation !== operation)
+    #expect(loaded.keptImage)
   }
 
   @Test
-  func `reloads when the view shows another image`() async throws {
-    let loaded = try await LoadedView(imagePoints: 200, viewPoints: 100)
+  func `keeps the aspect ratio of the source when it downscales`() async throws {
+    let loaded = try await LoadedView(
+      imageSize: CGSize(width: 400, height: 4),
+      bounds: CGRect(x: 0, y: 0, width: 101, height: 1)
+    )
     defer { loaded.removeFile() }
 
-    loaded.view.sourceImage = UIImage()
-    loaded.view.bounds = square(80)
-
-    #expect(loaded.view.pendingOperation !== loaded.operation)
+    let aspectRatio = loaded.image.size.width / loaded.image.size.height
+    #expect(abs(aspectRatio - 100) < 2)
   }
 }

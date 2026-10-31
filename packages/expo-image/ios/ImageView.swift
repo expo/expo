@@ -39,7 +39,6 @@ public final class ImageView: ExpoView {
    */
   var sources: [ImageSource]? {
     didSet {
-      // The index in `renderedImage` refers to the old array.
       renderedImage = nil
     }
   }
@@ -49,7 +48,6 @@ public final class ImageView: ExpoView {
    */
   var sourceImage: UIImage? {
     didSet {
-      // The record describes only the image that the view shows. This also releases a replaced image.
       if sourceImage !== renderedImage?.image {
         renderedImage = nil
       }
@@ -58,20 +56,15 @@ public final class ImageView: ExpoView {
 
   var pendingOperation: SDWebImageCombinedOperation?
 
-  /// A load of one of `sources`. Its completion records the rendered image only when it is still the latest load.
   private struct SourceLoad {
     let id: Int
     let sourceIndex: Int
-    /// A thumbnail is decoded for the view's size at the time of the load, so a size change cannot keep it.
-    let isSizeDependent: Bool
+    let isThumbnail: Bool
   }
 
-  /// The image that the latest load of `sources` rendered, and what a size change needs to keep it.
   private struct RenderedImage {
-    /// The image in `sourceImage`. Setting `sourceImage` to another image clears the record.
     let image: UIImage
     let sourceIndex: Int
-    /// The pixel size of the loaded image, before `processImage` downscaled it.
     let sourcePixelSize: CGSize
   }
 
@@ -159,8 +152,7 @@ public final class ImageView: ExpoView {
 
   public override var bounds: CGRect {
     didSet {
-      // Reload the image when the bounds size has changed and is not empty,
-      // unless the view can keep the rendered image.
+      // Reload the image when the bounds size has changed and is not empty.
       guard oldValue.size != bounds.size && bounds.size != .zero else {
         return
       }
@@ -240,10 +232,9 @@ public final class ImageView: ExpoView {
       context[.imageThumbnailPixelSize] = thumbnailPixelSize
     }
 
-    // Until the new load renders, the image that the view shows can be for other props or another source.
     renderedImage = nil
     latestLoadID += 1
-    let load = SourceLoad(id: latestLoadID, sourceIndex: sourceIndex, isSizeDependent: thumbnailPixelSize != nil)
+    let load = SourceLoad(id: latestLoadID, sourceIndex: sourceIndex, isThumbnail: thumbnailPixelSize != nil)
 
     // Some loaders (e.g. PhotoLibraryAssetLoader) may need to know the screen scale.
     context[ImageView.screenScaleKey] = screenScale
@@ -427,12 +418,11 @@ public final class ImageView: ExpoView {
 
     let sourcePixelSize = image.size * image.scale
     layOutImage(sourcePixelSize: sourcePixelSize)
-    let image = processImage(image, sourcePixelSize: sourcePixelSize)
+    let image = processImage(image)
     renderSourceImage(image, cacheType: ImageCacheType.fromSdCacheType(cacheType))
-
-    // A load that `reload()` superseded may still complete. Its image is not from the best source.
-    // The animation transformer of an animated image has the old size.
-    if let image, load.id == latestLoadID, !load.isSizeDependent, !image.sd_isAnimated {
+    // SDWebImage can complete a cancelled load after `reload()` starts the next one.
+    // A thumbnail and an animated image depend on the view's size at load time.
+    if let image, load.id == latestLoadID, !load.isThumbnail, !image.sd_isAnimated {
       renderedImage = RenderedImage(image: image, sourceIndex: load.sourceIndex, sourcePixelSize: sourcePixelSize)
     }
   }
@@ -637,36 +627,36 @@ public final class ImageView: ExpoView {
     setImage(placeholder, contentFit: placeholderContentFit, isPlaceholder: true)
   }
 
-  /// Returns the rendered image when the view can keep it at its new size, or `nil` when the image needs to be loaded
-  /// again. The view keeps the image when a load of the best source rendered it, the content mode scales it to the
-  /// view, and it has at least the pixels that `processImage` would give for the new size.
   private func reusableRenderedImage() -> RenderedImage? {
-    guard
-      let renderedImage,
-      renderedImage.sourceIndex == bestSourceIndex,
-      // `.center`, which `none` and `scale-down` use, shows the image at its own size and does not scale it.
-      [.scaleAspectFit, .scaleAspectFill, .scaleToFill].contains(contentFit.toContentMode())
-    else {
+    guard let renderedImage, renderedImage.sourceIndex == bestSourceIndex else {
       return nil
     }
-    let sourcePixelSize = renderedImage.sourcePixelSize
-    let neededPixelSize = downscaledSize(sourcePixelSize: sourcePixelSize).map { $0 * screenScale } ?? sourcePixelSize
-    let renderedPixelSize = renderedImage.image.size * renderedImage.image.scale
-    guard renderedPixelSize.width >= neededPixelSize.width && renderedPixelSize.height >= neededPixelSize.height else {
+    let image = renderedImage.image
+    let downscaledSize = downscaledSize(sourcePixelSize: renderedImage.sourcePixelSize)
+    let neededPixelSize = downscaledSize.map { return $0 * screenScale } ?? renderedImage.sourcePixelSize
+    let pixelSize = image.size * image.scale
+    guard pixelSize.width >= neededPixelSize.width && pixelSize.height >= neededPixelSize.height else {
+      return nil
+    }
+    // `.center` draws the image at its size in points and does not scale it to the view.
+    if sdImageView.contentMode == .center, let downscaledSize, image.size != downscaledSize {
       return nil
     }
     return renderedImage
   }
 
-  /// Sets `imageLayoutSize` for an image of `sourcePixelSize` in the view's frame and applies `contentPosition`.
   private func layOutImage(sourcePixelSize: CGSize) {
-    imageLayoutSize = idealSize(
+    imageLayoutSize = layoutSize(sourcePixelSize: sourcePixelSize)
+    applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
+  }
+
+  private func layoutSize(sourcePixelSize: CGSize) -> CGSize {
+    return idealSize(
       contentPixelSize: sourcePixelSize,
       containerSize: frame.size,
       scale: screenScale,
       contentFit: contentFit
     )
-    applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
   }
 
   // MARK: - Processing
@@ -678,28 +668,23 @@ public final class ImageView: ExpoView {
     return SDImagePipelineTransformer(transformers: transformers)
   }
 
-  /// The size in points that `processImage` downscales an image of `sourcePixelSize` to for the view's current frame,
-  /// or `nil` when it keeps the image at its full size.
   private func downscaledSize(sourcePixelSize: CGSize) -> CGSize? {
-    let size = idealSize(
-      contentPixelSize: sourcePixelSize,
-      containerSize: frame.size,
-      scale: screenScale,
-      contentFit: contentFit
-    ).rounded(.up)
+    // Rounding to the nearest pixel, not up to a whole point, keeps the aspect ratio of the source within half a pixel.
+    let pixelSize = (layoutSize(sourcePixelSize: sourcePixelSize) * screenScale).rounded(.toNearestOrAwayFromZero)
+    let size = CGSize(width: max(pixelSize.width, 1), height: max(pixelSize.height, 1)) / screenScale
     guard allowDownscaling && shouldDownscale(pixelSize: sourcePixelSize, toSize: size, scale: screenScale) else {
       return nil
     }
     return size
   }
 
-  private func processImage(_ image: UIImage, sourcePixelSize: CGSize) -> UIImage? {
+  private func processImage(_ image: UIImage) -> UIImage? {
     guard !bounds.isEmpty else {
       return nil
     }
     sdImageView.animationTransformer = nil
     // Downscale the image only when necessary
-    if let size = downscaledSize(sourcePixelSize: sourcePixelSize) {
+    if let size = downscaledSize(sourcePixelSize: image.size * image.scale) {
       if image.sd_isAnimated {
         sdImageView.animationTransformer = SDImageResizingTransformer(size: size * screenScale, scaleMode: .fill)
         return image
@@ -997,12 +982,9 @@ public final class ImageView: ExpoView {
    The image source that fits best into the view bounds.
    */
   var bestSource: ImageSource? {
-    return bestSourceIndex.flatMap { sources?[$0] }
+    return bestSourceIndex.flatMap { return sources?[$0] }
   }
 
-  /**
-   The index in `sources` of `bestSource`.
-   */
   var bestSourceIndex: Int? {
     return getBestSourceIndex(from: sources, forSize: bounds.size, scale: screenScale)
   }
