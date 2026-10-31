@@ -161,6 +161,8 @@ In SDK 58, `expo-router/testing-library` requires `@testing-library/react-native
 
 Replace imports and calls to `renderRouterAsync` with `renderRouter`, keeping `await`. Replace the removed `RenderRouterAsyncOptions` type with `RenderRouterOptions`. The `testRouter.canGoBack()` method remains synchronous.
 
+`expo-router/testing-library` no longer mocks `react-native-reanimated`. If your tests relied on this mock, follow [Reanimated's Jest setup](https://docs.swmansion.com/react-native-reanimated/docs/guides/testing/), including `setUpTests()` and the resolver required by your Reanimated version. This allows animated style assertions to use Reanimated's test implementation.
+
 See [Testing with Expo Router](/router/reference/testing/) for test helpers and [Unit testing with Jest](/develop/unit-testing/) for setup instructions.
 
 ### Prefer `useRouter` in components
