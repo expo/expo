@@ -334,6 +334,7 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
             // Flag first — the stream is already `closed` when this callback
             // runs, so the guard must not go stale if cancelStreaming throws.
             this.bodyStreamClosed = true;
+            body.consumed = true;
             this.cancelStreaming(String(reason));
           },
         },
