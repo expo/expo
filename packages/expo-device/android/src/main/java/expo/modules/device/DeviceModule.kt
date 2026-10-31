@@ -114,6 +114,11 @@ class DeviceModule : Module() {
   val deviceName: String?
     get() = if (Build.VERSION.SDK_INT <= 31) {
       Settings.Secure.getString(androidContext.contentResolver, "bluetooth_name")
+        ?: if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+          Settings.Global.getString(androidContext.contentResolver, Settings.Global.DEVICE_NAME)
+        } else {
+          null
+        }
     } else {
       Settings.Global.getString(androidContext.contentResolver, Settings.Global.DEVICE_NAME)
     }
