@@ -167,10 +167,37 @@ struct OpenTelemetryTests {
       droppedAttributesCount: 0,
       sessionId: testSessionId
     )
-    let otLog = log.toOTLogRecord()
+    let otLog = log.toOTLogRecord(inSampleRate: true)
 
     #expect(otLog.timeUnixNano == 1_767_960_489_123_000_000)
     #expect(otLog.observedTimeUnixNano == 1_767_960_489_123_000_000)
+  }
+
+  @Test(arguments: [true, false])
+  func `toOTLogRecord marks all logs with whether the installation is in the sampleRate sample`(
+    inSampleRate: Bool
+  ) {
+    for name in ["auth.login_failed", "js.exception", "native.exception"] {
+      let otLog = makeLog(name: name).toOTLogRecord(inSampleRate: inSampleRate)
+      let attribute = otLog.attributes.first { $0.key == "expo.in_sample_rate" }
+      guard case .bool(let value) = attribute?.value else {
+        Issue.record("Expected a bool `expo.in_sample_rate` attribute on \(name)")
+        continue
+      }
+      #expect(value == inSampleRate)
+    }
+  }
+
+  private func makeLog(name: String) -> Event.Log {
+    Event.Log(
+      name: name,
+      body: nil,
+      timestamp: "2026-01-09T12:08:09.123Z",
+      severity: .error,
+      attributes: nil,
+      droppedAttributesCount: 0,
+      sessionId: testSessionId
+    )
   }
 
   // MARK: - Event metadata

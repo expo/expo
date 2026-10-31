@@ -249,7 +249,7 @@ class BaseObservabilityManager(
           Event(
             metadata = Metadata.fromSessionMetadata(session),
             metrics = emptyList(),
-            logs = sessionLogs.map(LogEvent::fromLogRecord)
+            logs = sessionLogs.map { LogEvent.fromLogRecord(it, inSampleRate = dispatchLogsAndErrors) }
           )
         }
       }
