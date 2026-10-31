@@ -14,8 +14,13 @@ internal class WidgetsHermesRuntime : Closeable {
     nativeEvaluateBundle(script, "ExpoWidgets.bundle")
   }
 
-  fun render(layout: String, props: ReadableNativeMap?, environment: ReadableNativeMap): ReadableNativeMap {
-    return nativeRender(layout, props, environment)
+  fun render(
+    layout: String,
+    props: ReadableNativeMap?,
+    environment: ReadableNativeMap,
+    locale: String
+  ): ReadableNativeMap {
+    return nativeRender(layout, props, environment, locale)
   }
 
   fun handlePress(layout: String, props: ReadableNativeMap?, environment: ReadableNativeMap): ReadableNativeMap? {
@@ -27,7 +32,12 @@ internal class WidgetsHermesRuntime : Closeable {
   }
 
   private external fun nativeEvaluateBundle(script: String, sourceUrl: String)
-  private external fun nativeRender(layout: String, props: ReadableNativeMap?, environment: ReadableNativeMap): ReadableNativeMap
+  private external fun nativeRender(
+    layout: String,
+    props: ReadableNativeMap?,
+    environment: ReadableNativeMap,
+    locale: String
+  ): ReadableNativeMap
   private external fun nativeHandlePress(layout: String, props: ReadableNativeMap?, environment: ReadableNativeMap): ReadableNativeMap?
 
   companion object {

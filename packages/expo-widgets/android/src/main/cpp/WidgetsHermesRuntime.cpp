@@ -75,7 +75,8 @@ namespace expo::widgets {
     jni::local_ref<react::ReadableNativeMap::jhybridobject> nativeRender(
       const jni::alias_ref<jstring> &layout,
       const jni::alias_ref<react::ReadableNativeMap::javaobject> &props,
-      const jni::alias_ref<react::ReadableNativeMap::javaobject> &environment
+      const jni::alias_ref<react::ReadableNativeMap::javaobject> &environment,
+      const jni::alias_ref<jstring> &locale
     ) {
       try {
         std::scoped_lock lock(mutex);
@@ -83,7 +84,8 @@ namespace expo::widgets {
           "__expoWidgetRender",
           layout->toStdString(),
           props,
-          environment
+          environment,
+          locale->toStdString()
         );
       } catch (const jsi::JSError &error) {
         throwRuntimeException(error.getMessage());
@@ -136,12 +138,16 @@ namespace expo::widgets {
       const char *functionName,
       const std::string &layout,
       const jni::alias_ref<react::ReadableNativeMap::javaobject> &propsMap,
-      const jni::alias_ref<react::ReadableNativeMap::javaobject> &environmentMap
+      const jni::alias_ref<react::ReadableNativeMap::javaobject> &environmentMap,
+      const std::string &locale = ""
     ) {
       auto &rt = *runtime;
       ensureLayoutFunction(layout);
 
       rt.global().setProperty(rt, "__expoWidgetLayout", jsi::Value(rt, *layoutCache.at(layout)));
+      if (!locale.empty()) {
+        rt.global().setProperty(rt, "__expoWidgetDeviceLocale", jsi::String::createFromUtf8(rt, locale));
+      }
 
       auto props = readableMapToValue(rt, propsMap);
       auto environment = readableMapToValue(rt, environmentMap);
