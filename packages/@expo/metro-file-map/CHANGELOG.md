@@ -1,5 +1,11 @@
 # Changelog
 
+## Unpublished
+
+### 🐛 Bug fixes
+
+- Watch Windows projects with one native recursive watcher, so Metro does not open one watch handle per folder ([#52326](https://github.com/expo/expo/issues/52326)).
+
 ## 58.0.5
 
 ### Patch Changes

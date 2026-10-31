@@ -23,7 +23,7 @@ const RECRAWL_EVENT = 'recrawl';
 /**
  * NativeWatcher uses Node's native fs.watch API with recursive: true.
  *
- * Supported on macOS (and potentially Windows), because both natively have a
+ * Supported on macOS and Windows, because both natively have a
  * concept of recursive watching, via FSEvents and ReadDirectoryChangesW
  * respectively. Notably Linux lacks this capability at the OS level.
  *
@@ -35,16 +35,13 @@ const RECRAWL_EVENT = 'recrawl';
  *
  * Therefore, we retain a fallback to our own application-level recursive
  * FallbackWatcher for Linux, which has async `startWatching`.
- *
- * On Windows, this watcher could be used in principle, but needs work around
- * some Windows-specific edge cases handled in FallbackWatcher, like
- * deduping file change events, ignoring directory changes, and handling EPERM.
  */
 export default class NativeWatcher extends AbstractWatcher {
   #fsWatcher: FSWatcher | undefined | null;
 
   static isSupported(): boolean {
-    return platform() === 'darwin';
+    const hostPlatform = platform();
+    return hostPlatform === 'darwin' || hostPlatform === 'win32';
   }
 
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
