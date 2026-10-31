@@ -2,7 +2,13 @@
 // Fork of @react-navigation/native Link.tsx with `href` and `replace` support added and
 // `to` / `action` support removed.
 import { useMemo, type Ref, type MouseEvent } from 'react';
-import { type TextProps, type GestureResponderEvent, Platform, type Text } from 'react-native';
+import {
+  type TextProps,
+  type TextStyle,
+  type GestureResponderEvent,
+  Platform,
+  type Text,
+} from 'react-native';
 
 import type { Href } from '../types';
 import type { SingularOptions } from '../useScreens';
@@ -229,8 +235,32 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
   ref?: Ref<Text>;
 }
 
+// Stand-ins for `Falsy` and `RecursiveArray`, which React Native 0.88 no longer exports.
+// Naming them from `react-native` in this signature publishes those missing names.
+type ReactNativeFalsy = undefined | null | false | '' | 0;
+type ReactNativeRecursiveArray<T> = readonly (T | readonly T[] | ReactNativeRecursiveArray<T>)[];
+type RouterLinkClassNameStyle = {
+  $$css: boolean;
+  __routerLinkClassName: string;
+};
+type UseInteropClassNameStyle =
+  | ReactNativeFalsy
+  | TextStyle
+  | ReactNativeRecursiveArray<ReactNativeFalsy | TextStyle>
+  | (
+      | ReactNativeFalsy
+      | TextStyle
+      | ReactNativeRecursiveArray<ReactNativeFalsy | TextStyle>
+      | readonly (ReactNativeFalsy | TextStyle)[]
+      | RouterLinkClassNameStyle
+    )[]
+  | null;
+
 // Mutate the style prop to add the className on web.
-export function useInteropClassName(props: { style?: TextProps['style']; className?: string }) {
+export function useInteropClassName(props: {
+  style?: TextProps['style'];
+  className?: string;
+}): UseInteropClassNameStyle {
   if (Platform.OS !== 'web') {
     return props.style;
   }

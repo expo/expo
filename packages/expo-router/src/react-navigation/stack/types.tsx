@@ -439,14 +439,24 @@ export type StackNavigationConfig = {
   detachInactiveScreens?: boolean;
 };
 
+// Keys of the base config React Native 0.88 no longer exports as `Animated.AnimationConfig`.
+type BaseAnimationConfigKey =
+  | 'debugID'
+  | 'isInteraction'
+  | 'isLooping'
+  | 'iterations'
+  | 'onComplete'
+  | 'platformConfig'
+  | 'useNativeDriver';
+
 export type TransitionSpec =
   | {
       animation: 'spring';
-      config: Omit<Animated.SpringAnimationConfig, 'toValue' | keyof Animated.AnimationConfig>;
+      config: Omit<Animated.SpringAnimationConfig, 'toValue' | BaseAnimationConfigKey>;
     }
   | {
       animation: 'timing';
-      config: Omit<Animated.TimingAnimationConfig, 'toValue' | keyof Animated.AnimationConfig>;
+      config: Omit<Animated.TimingAnimationConfig, 'toValue' | BaseAnimationConfigKey>;
     };
 
 export type StackCardInterpolationProps = {

@@ -14,7 +14,7 @@ import {
   type NativeStackNavigationOptions,
 } from '../../react-navigation/native-stack';
 import type { NativeStackNavigationConfig } from '../../react-navigation/native-stack/types';
-import type { NavigatorContentProps } from '../../standard-navigation';
+import type { NavigatorContentProps, StandardNavigator } from '../../standard-navigation/types';
 import { CompositionContext, mergeOptions, useCompositionRegistry } from './composition-options';
 import { DescriptorsContext } from './descriptors-context';
 import { usePreviewTransition } from './usePreviewTransition';
@@ -142,7 +142,13 @@ function NativeStackNavigatorContent({
   );
 }
 
-export const createStandardNativeStackNavigator = createStandardNavigator<
+// An explicit `StandardNavigator` annotation keeps its type parameters in scope in the published
+// declarations. The inferred return type prints `NavigatorOptions` and `NavigatorEventMap` unbound.
+export const createStandardNativeStackNavigator: StandardNavigator<
+  NativeStackNavigationOptions,
+  StandardNativeStackEventMap,
+  NativeStackNavigatorCreateProps
+> = createStandardNavigator<
   NativeStackNavigationOptions,
   StandardNativeStackEventMap,
   NativeStackNavigatorCreateProps

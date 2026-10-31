@@ -1,8 +1,9 @@
-import type { AndroidSymbol } from 'expo-symbols';
-
 import { requireExpoSymbols } from '../../optional-libraries/expo-symbols';
 import { NativeTabsTriggerPromiseIcon } from '../common/elements';
 import { convertComponentSrcToImageSource } from './icon';
+
+// Material glyph names. `string` keeps the optional `expo-symbols` peer out of published types.
+type AndroidSymbol = string;
 
 export function convertMaterialIconNameToImageSource(
   name: AndroidSymbol
@@ -12,7 +13,15 @@ export function convertMaterialIconNameToImageSource(
   );
   return convertComponentSrcToImageSource(
     <NativeTabsTriggerPromiseIcon
-      loader={() => unstable_getMaterialSymbolSourceAsync(name, 24, 'white')}
+      loader={() =>
+        unstable_getMaterialSymbolSourceAsync(
+          // The peer's parameter is its icon-name union. This file stays on `string` so the
+          // published declarations do not import that optional peer.
+          name as Parameters<typeof unstable_getMaterialSymbolSourceAsync>[0],
+          24,
+          'white'
+        )
+      }
     />
   );
 }
