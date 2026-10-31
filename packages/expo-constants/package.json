@@ -60,12 +60,12 @@
   },
   "dependencies": {
     "@expo/env": "workspace:~",
-    "@expo/require-utils": "workspace:^"
+    "@expo/require-utils": "workspace:^",
+    "expo-manifests": "workspace:~"
   },
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
     "@types/node": "^22.14.0",
-    "expo-manifests": "workspace:*",
     "expo-updates": "workspace:*"
   },
   "peerDependencies": {

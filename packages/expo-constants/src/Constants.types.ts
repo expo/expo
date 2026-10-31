@@ -7,7 +7,6 @@ import type {
   ManifestExtra as ManifestExtraForReExport,
   ClientScopingConfig as ClientScopingConfigForReExport,
   ExpoGoPackagerOpts as ExpoGoPackagerOptsForReExport,
-  // @ts-ignore -- optional interface, will gracefully degrade to `any` not installed
 } from 'expo-manifests';
 import type { ExpoConfig } from 'expo/config';
 

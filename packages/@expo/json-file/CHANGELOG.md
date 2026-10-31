@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### 🐛 Bug fixes
+
+- Type the `mode` option as `number | string` so the published declarations do not import `node:fs` or require `@types/node`. ([#52666](https://github.com/expo/expo/issues/52666) by [@itisrmk](https://github.com/itisrmk))
+
 ## 11.2.1
 
 ### Patch Changes

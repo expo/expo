@@ -4562,6 +4562,9 @@ importers:
       expo:
         specifier: '*'
         version: link:../expo
+      expo-manifests:
+        specifier: workspace:~
+        version: link:../expo-manifests
       react-native:
         specifier: 0.88.1
         version: 0.88.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
@@ -4572,9 +4575,6 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.20.1
-      expo-manifests:
-        specifier: workspace:*
-        version: link:../expo-manifests
       expo-updates:
         specifier: workspace:*
         version: link:../expo-updates
