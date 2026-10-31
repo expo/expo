@@ -94,11 +94,11 @@ function prepareRenderContext(location: URL, options: GetStreamingContentOptions
   const search = searchParams.toString();
   const loaderKey = options.loader ? options.loader.key + (search ? `?${search}` : '') : null;
 
-  const loadedData = loaderKey
+  const loadedData: Record<string, unknown> = loaderKey
     ? {
         [loaderKey]: options.loader?.data ?? null,
       }
-    : null;
+    : {};
 
   return { headContext, element, getStyleElement, loadedData };
 }
