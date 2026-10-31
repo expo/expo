@@ -84,12 +84,12 @@ describe('resolveOpenInfo — tunnel', () => {
     getAppId: noAppId,
   };
 
-  it('routes expo go URLs through the tunnel host', async () => {
+  it('routes expo go URLs through the HTTPS tunnel host with the exps scheme', async () => {
     const info = (await resolveOpenInfo(
       { platform: 'ios', runtime: 'expo' },
       baseDeps
     )) as OpenSinglePlatformResult;
-    expect(info.url).toBe('exp://abc.ngrok-free.app');
+    expect(info.url).toBe('exps://abc.ngrok-free.app');
   });
 
   it('routes dev client URLs through the tunnel host (with https inner URL)', async () => {

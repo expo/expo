@@ -64,6 +64,26 @@ describe('constructExpoGoUrl', () => {
   it(`uses the exps scheme`, () => {
     expect(createDefaultCreator().constructExpoGoUrl({}, 'exps')).toBe('exps://100.100.1.100:8081');
   });
+  it(`uses the exps scheme for an HTTPS tunnel`, () => {
+    const creator = new UrlCreator(
+      { hostType: 'tunnel' },
+      { getPort: () => 8081, getTunnelUrl: () => 'https://project.on.expo.app/' }
+    );
+    expect(creator.constructExpoGoUrl()).toBe('exps://project.on.expo.app');
+    expect(creator.constructExpoGoUrl({ hostType: 'lan' })).toBe('exp://100.100.1.100:8081');
+  });
+  it(`uses the exps scheme for an HTTPS tunnel selected in the options`, () => {
+    const creator = new UrlCreator(
+      {},
+      { getPort: () => 8081, getTunnelUrl: () => 'https://project.on.expo.app:4443/' }
+    );
+    expect(creator.constructExpoGoUrl({ hostType: 'tunnel' })).toBe(
+      'exps://project.on.expo.app:4443'
+    );
+    expect(createDefaultCreator().constructExpoGoUrl({ hostType: 'tunnel' })).toBe(
+      'exp://tunnel.dev'
+    );
+  });
   it(`ignores a custom scheme option`, () => {
     expect(createDefaultCreator().constructExpoGoUrl({ scheme: 'foobar' })).toBe(
       'exp://100.100.1.100:8081'
