@@ -15,13 +15,14 @@ internal struct ImageResizeTransformer: ImageTransformer {
 
     var targetSize = CGSize.zero
 
+    // UIGraphicsImageRenderer rounds a fractional size up and leaves the added row or column partly transparent.
     if let width = options.width {
       targetSize.width = width
-      targetSize.height = width / imageRatio
+      targetSize.height = max(1, (width / imageRatio).rounded())
     }
     if let height = options.height {
       targetSize.height = height
-      targetSize.width = targetSize.width == 0 ? imageRatio * targetSize.height : targetSize.width
+      targetSize.width = targetSize.width == 0 ? max(1, (imageRatio * targetSize.height).rounded()) : targetSize.width
     }
 
     let format = UIGraphicsImageRendererFormat()
