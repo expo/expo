@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import AppMetrics from 'expo-app-metrics';
 
+import { createNavigationBlockingTime } from '../blockingTime';
 import { initListeners, initRouterIntegration } from '../init';
 import type { RouterPerformanceMark, RouterPerformanceObserver } from '../router';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
@@ -22,9 +23,21 @@ jest.mock('expo-app-metrics', () => {
 });
 
 jest.mock('../router', () => ({ optionalRouter: undefined, isRouterInstalled: false }));
+jest.mock('../blockingTime', () => ({
+  createNavigationBlockingTime: jest.fn(() => ({
+    start: jest.fn(),
+    setMetric: jest.fn(),
+    dispose: jest.fn(),
+  })),
+}));
 
 const mockGetMainSession = AppMetrics.getMainSession as jest.Mock;
 const mockAddMetric = AppMetrics.getMainSession().addMetric as jest.Mock;
+const mockCreateNavigationBlockingTime = createNavigationBlockingTime as jest.Mock;
+
+function lastBlockingTime() {
+  return mockCreateNavigationBlockingTime.mock.results.at(-1)!.value;
+}
 
 type ObserverCallback = ConstructorParameters<RouterPerformanceObserver>[0];
 
@@ -528,6 +541,105 @@ describe('initListeners', () => {
     expect(mockAddMetric).toHaveBeenCalledWith(
       expect.objectContaining({ name: 'cold_ttr', routeName: '/a' })
     );
+  });
+});
+
+describe('navigation total blocking time', () => {
+  beforeEach(async () => {
+    focus(events, 'a');
+    await flushAsync();
+  });
+
+  it('sets the tbt metric for the destination route', async () => {
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b', { pathname: '/b?q=1', params: { q: '1' } });
+    await flushAsync();
+
+    expect(lastBlockingTime().start).toHaveBeenCalledTimes(1);
+    expect(lastBlockingTime().setMetric).toHaveBeenCalledWith(
+      {
+        timestamp: expect.any(String),
+        category: 'navigation',
+        name: 'tbt',
+        routeName: '/b',
+        params: { routeParams: { q: '1' }, url: '/b?q=1' },
+      },
+      expect.any(Number)
+    );
+  });
+
+  it('starts the tbt window at the navigation time', () => {
+    enqueue(events, 1, 1000);
+    dispatch(events, 'NAVIGATE', 1200, 1);
+    dispatch(events, 'NAVIGATE', 1300);
+
+    expect(lastBlockingTime().start.mock.calls).toEqual([[1000], [1300]]);
+  });
+
+  it('links the tbt metric at the focus mark time', async () => {
+    dispatch(events, 'NAVIGATE', 1000);
+    focus(events, 'b', undefined, 1250);
+    await flushAsync();
+
+    expect(lastBlockingTime().setMetric).toHaveBeenCalledWith(expect.anything(), 1250);
+  });
+
+  it('records the measured tbt in the main session', () => {
+    const metric = { category: 'navigation', name: 'tbt', routeName: '/b', value: 0.12 };
+    mockCreateNavigationBlockingTime.mock.lastCall![0](metric);
+    expect(mockAddMetric).toHaveBeenLastCalledWith(metric);
+  });
+
+  it('filters route params from tbt', async () => {
+    setRouterConfig({ filteredParams: ['token'] });
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b', { pathname: '/b?token=secret', params: { token: 'secret' } });
+    await flushAsync();
+
+    expect(lastBlockingTime().setMetric.mock.lastCall[0].params).toEqual({
+      routeParams: {},
+      urlHidden: true,
+    });
+  });
+
+  it('sets the tbt metric only on the first focus of a screen', async () => {
+    preload(events, 'b');
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+    dispatch(events, 'GO_BACK');
+    focus(events, 'a');
+    await flushAsync();
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+
+    expect(lastBlockingTime().setMetric).toHaveBeenCalledTimes(1);
+    expect(lastBlockingTime().setMetric).toHaveBeenCalledWith(
+      expect.objectContaining({ routeName: '/b' }),
+      expect.any(Number)
+    );
+  });
+
+  it('does not measure the initial app launch', () => {
+    expect(lastBlockingTime().start).not.toHaveBeenCalled();
+    expect(lastBlockingTime().setMetric).not.toHaveBeenCalled();
+  });
+
+  it('does not measure PRELOAD actions', () => {
+    dispatch(events, 'PRELOAD');
+    expect(lastBlockingTime().start).not.toHaveBeenCalled();
+  });
+
+  it('starts a measurement for every navigation action', () => {
+    dispatch(events, 'NAVIGATE');
+    dispatch(events, 'SET_PARAMS');
+    expect(lastBlockingTime().start).toHaveBeenCalledTimes(2);
+  });
+
+  it('disposes the measurement on cleanup', () => {
+    cleanup();
+    expect(lastBlockingTime().dispose).toHaveBeenCalledTimes(1);
   });
 });
 
