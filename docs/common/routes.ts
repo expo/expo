@@ -202,7 +202,7 @@ export function getBreadcrumbTrail(
           return true;
         }
       } else if (node.children) {
-        trail.push({ name: node.name, node });
+        trail.push({ name: node.sidebarTitle ?? node.name, node });
         if (search(node.children)) {
           return true;
         }

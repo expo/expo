@@ -1,4 +1,4 @@
-import { BASE_DESCRIPTIONS } from '../common/i18n';
+import { BASE_DESCRIPTIONS, SITE_NAMES, type SupportedLocale } from '../common/i18n';
 
 type BreadcrumbItem = {
   name: string;
@@ -121,3 +121,7 @@ export const websiteSchema = {
     ],
   },
 };
+
+export function buildWebsiteSchema(locale: SupportedLocale) {
+  return { ...websiteSchema, name: SITE_NAMES[locale], description: BASE_DESCRIPTIONS[locale] };
+}
