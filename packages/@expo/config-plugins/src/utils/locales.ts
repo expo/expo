@@ -43,9 +43,9 @@ export async function getResolvedLocalesAsync(
         if (localizableStringsEntry) {
           localizableStringsIOS[lang] = localizableStringsEntry;
         }
-        locales[lang] = { ...rest, ...otherEntries };
+        locales[lang] = filterStringValues({ ...rest, ...otherEntries }, lang, forPlatform);
       } else {
-        locales[lang] = { ...rest, ...android };
+        locales[lang] = filterStringValues({ ...rest, ...android }, lang, forPlatform);
       }
     }
   }
@@ -105,6 +105,32 @@ function extractIosLocalizableStrings({ ios, lang }: { ios: StringsMap; lang: st
   }
 
   return { localizableStringsEntry, otherEntries };
+}
+
+/** Drop object values, which the `.strings`/`strings.xml` writers would render as `[object Object]`. */
+function filterStringValues(
+  values: Record<string, unknown>,
+  lang: string,
+  forPlatform: 'ios' | 'android'
+): LocaleJson {
+  const strings: LocaleJson = {};
+  const skipped: string[] = [];
+  for (const [key, value] of Object.entries(values)) {
+    if (typeof value === 'object') {
+      skipped.push(key);
+    } else {
+      strings[key] = value as string;
+    }
+  }
+  if (skipped.length) {
+    addWarningForPlatform(
+      forPlatform,
+      `locales.${lang}`,
+      `Skipped locale keys with invalid values: ${skipped.join(', ')}. Values must be strings.`,
+      'https://docs.expo.dev/guides/localization/#translating-app-metadata'
+    );
+  }
+  return strings;
 }
 
 function isStringsMap(value: unknown): value is StringsMap {
