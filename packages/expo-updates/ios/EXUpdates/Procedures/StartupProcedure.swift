@@ -186,7 +186,6 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
   }
 
   func appLoaderTask(_: AppLoaderTask, didFinishWithError error: Error) {
-    logger.error(cause: UpdatesError.startupProcedureDidFinishWithError(cause: error), code: .updateFailedToLoad)
     self.procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
     emergencyLaunch(fatalError: error)
   }

@@ -119,10 +119,7 @@ class FileDownloader(
       val response = downloadData(request, progressListener)
       val hash = response.use { resp ->
         if (!resp.isSuccessful) {
-          val message = "Asset download request not successful"
-          val cause = IOException(resp.body?.string() ?: "Unknown error")
-          logger.error(message, cause, UpdatesErrorCode.AssetsFailedToLoad)
-          throw IOException(message, cause)
+          throw IOException("Asset download request not successful", IOException(resp.body?.string() ?: "Unknown error"))
         }
 
         val responseBody = resp.body
@@ -185,9 +182,9 @@ class FileDownloader(
                 expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash,
                 embeddedAssetExtractor = embeddedAssetExtractor
               )
-            }.getOrElse {
+            }.getOrElse { e ->
               logger.warn(
-                "Patch application failed for asset ${asset.key}; retrying with full asset download",
+                "Patch application failed for asset ${asset.key}; retrying with full asset download: ${e.localizedMessageWithCauseLocalizedMessage()}",
                 UpdatesErrorCode.AssetsFailedToLoad,
                 requestedUpdateId,
                 asset.key
@@ -205,9 +202,7 @@ class FileDownloader(
       }
       return FileDownloadResult(destination, hash)
     } catch (e: IOException) {
-      val message = "Failed to download asset from URL ${request.url}"
-      logger.error(message, e, UpdatesErrorCode.AssetsFailedToLoad)
-      throw IOException(message, e)
+      throw IOException("Failed to download asset from URL ${request.url}", e)
     }
   }
 
@@ -477,13 +472,7 @@ class FileDownloader(
         return result
       }
     } catch (e: Exception) {
-      val ioException = e as? IOException ?: IOException("Failed to apply patch", e)
-      logger.error(
-        "Failed to apply patch for asset ${asset.key}",
-        ioException,
-        UpdatesErrorCode.AssetsFailedToLoad
-      )
-      throw ioException
+      throw e as? IOException ?: IOException("Failed to apply patch", e)
     } finally {
       if (patchFile.exists()) {
         patchFile.delete()
@@ -514,10 +503,7 @@ class FileDownloader(
         )
       }
 
-      val message = "Invalid update response"
-      val cause = IOException("Empty body")
-      logger.error(message, cause, UpdatesErrorCode.UpdateFailedToLoad)
-      throw IOException(message, cause)
+      throw IOException("Invalid update response", IOException("Empty body"))
     }
 
     val isMultipart = responseBody.contentType()?.type == "multipart"
@@ -579,26 +565,20 @@ class FileDownloader(
         }
       } catch (e: Exception) {
         // okhttp multipart reader doesn't support empty multipart bodies, but our spec does
-        val message = "Error while reading multipart remote update response"
-        logger.error(message, e, UpdatesErrorCode.UpdateFailedToLoad)
-        throw IOException(message, e)
+        throw IOException("Error while reading multipart remote update response", e)
       }
     }
 
     val extensions = try {
       extensionsBody?.let { JSONObject(it) }
     } catch (e: Exception) {
-      val message = "Failed to parse multipart remote update extensions part"
-      logger.error(message, e, UpdatesErrorCode.UpdateFailedToLoad)
-      throw IOException(message, e)
+      throw IOException("Failed to parse multipart remote update extensions part", e)
     }
 
     // in v0 compatibility mode require a manifest
     if (configuration.enableExpoUpdatesProtocolV0CompatibilityMode && manifestPartBodyAndHeaders == null) {
-      val message = "Invalid update response"
       val cause = IOException("Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the response being for a different protocol version.")
-      logger.error(message, cause, UpdatesErrorCode.UpdateFailedToLoad)
-      throw IOException(message, cause)
+      throw IOException("Invalid update response", cause)
     }
 
     val manifestResponseInfo = manifestPartBodyAndHeaders?.let {
@@ -733,17 +713,12 @@ class FileDownloader(
       )
 
       if (!response.isSuccessful) {
-        val message = "Remote update request not successful"
-        val underlyingError = IOException(describeUnsuccessfulResponse(response))
-        logger.error(message, underlyingError, UpdatesErrorCode.UpdateFailedToLoad)
-        throw IOException(message, underlyingError)
+        throw IOException("Remote update request not successful", IOException(describeUnsuccessfulResponse(response)))
       }
 
       return parseRemoteUpdateResponse(response)
     } catch (e: Exception) {
-      val message = "Failed to download remote update"
-      logger.error(message, e, UpdatesErrorCode.UpdateFailedToLoad)
-      throw IOException(message, e)
+      throw IOException("Failed to download remote update", e)
     }
   }
 
@@ -757,18 +732,16 @@ class FileDownloader(
     embeddedAssetExtractor: EmbeddedAssetExtractor? = null
   ): AssetDownloadResult {
     if (asset.url == null) {
-      val message = "Failed to download asset ${asset.key}"
-      val error = Exception("Asset missing URL")
-      logger.error(message, error, UpdatesErrorCode.AssetsFailedToLoad)
-      throw IOException(message, error)
+      throw logAssetDownloadFailure(asset, requestedUpdate, Exception("Asset missing URL"))
     }
 
     val filename = UpdatesUtils.createFilenameForAsset(asset)
     if (!UpdatesUtils.isSafeFilename(filename)) {
-      val message = "Failed to download asset ${asset.key}"
-      val error = IOException("Asset filename \"$filename\" would resolve outside the updates directory")
-      logger.error(message, error, UpdatesErrorCode.AssetsFailedToLoad)
-      throw IOException(message, error)
+      throw logAssetDownloadFailure(
+        asset,
+        requestedUpdate,
+        IOException("Asset filename \"$filename\" would resolve outside the updates directory")
+      )
     }
     val path = File(destinationDirectory, filename)
 
@@ -807,11 +780,20 @@ class FileDownloader(
         asset.hash = downloadResult.hash
         return AssetDownloadResult(asset, true)
       } catch (e: Exception) {
-        val message = "Failed to download asset ${asset.key}"
-        logger.error(message, e, UpdatesErrorCode.AssetsFailedToLoad)
-        throw IOException(message, e)
+        throw logAssetDownloadFailure(asset, requestedUpdate, e)
       }
     }
+  }
+
+  private fun logAssetDownloadFailure(asset: AssetEntity, requestedUpdate: UpdateEntity?, cause: Exception): IOException {
+    val error = IOException("Failed to download asset ${asset.key}", cause)
+    logger.warn(
+      error.localizedMessageWithCauseLocalizedMessage(),
+      UpdatesErrorCode.AssetsFailedToLoad,
+      requestedUpdate?.loggingId,
+      asset.key
+    )
+    return error
   }
 
   private suspend fun downloadData(request: Request, progressListener: FileDownloadProgressListener? = null): Response =
