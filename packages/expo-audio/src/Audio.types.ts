@@ -647,6 +647,24 @@ export type AudioMode = {
    */
   shouldRouteThroughEarpiece: boolean;
   /**
+   * iOS `AVAudioSession` mode.
+   *
+   * `spokenAudio` keeps recording on and plays speech louder on the loudspeaker.
+   * Omit this to keep the current mode.
+   *
+   * @platform ios
+   */
+  iosMode?:
+    | 'default'
+    | 'spokenAudio'
+    | 'measurement'
+    | 'voiceChat'
+    | 'videoChat'
+    | 'videoRecording'
+    | 'gameChat'
+    | 'moviePlayback'
+    | 'voicePrompt';
+  /**
    * Whether audio recording should continue when the app moves to the background.
    *
    * @default false
