@@ -29,8 +29,24 @@ public class SplitViewModule: Module {
 }
 
 struct SplitViewToolbarItemRecord: Record {
+  @Field var id: String = ""
   @Field var title: String = ""
   @Field var icon: String?
+  @Field var menu: SplitViewMenuRecord?
+}
+
+struct SplitViewMenuRecord: Record {
+  @Field var title: String?
+  @Field var items: [SplitViewMenuActionRecord] = []
+}
+
+struct SplitViewMenuActionRecord: Record {
+  @Field var id: String = ""
+  @Field var title: String = ""
+  @Field var icon: String?
+  @Field var destructive: Bool = false
+  @Field var disabled: Bool = false
+  @Field var isOn: Bool = false
 }
 
 struct SplitViewSearchBarRecord: Record {

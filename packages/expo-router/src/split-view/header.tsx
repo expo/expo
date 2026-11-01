@@ -1,4 +1,4 @@
-import type { SplitViewHeader } from './elements';
+import type { SplitViewHeader, SplitViewToolbarItem } from './elements';
 import { SplitViewNativeHeader } from './native';
 
 export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
@@ -7,15 +7,40 @@ export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
     <SplitViewNativeHeader
       title={title}
       largeTitle={largeTitle}
-      leftToolbarItems={leftToolbar?.map(({ title, icon }) => ({ title, icon }))}
-      rightToolbarItems={rightToolbar?.map(({ title, icon }) => ({ title, icon }))}
-      onToolbarItemPress={({ nativeEvent: { side, index } }) => {
-        const items = side === 'left' ? leftToolbar : rightToolbar;
-        items?.[index]?.onPress();
+      leftToolbarItems={toNativeToolbarItems('left', leftToolbar)}
+      rightToolbarItems={toNativeToolbarItems('right', rightToolbar)}
+      onToolbarItemPress={({ nativeEvent: { id } }) => {
+        // `id` is `<side>.<itemIndex>` or `<side>.<itemIndex>.<actionIndex>`.
+        const [side, itemIndex, actionIndex] = id.split('.');
+        const item = (side === 'left' ? leftToolbar : rightToolbar)?.[Number(itemIndex)];
+        if (actionIndex === undefined) {
+          item?.onPress?.();
+        } else {
+          item?.menu?.items[Number(actionIndex)]?.onPress?.();
+        }
       }}
       searchBar={searchBar && { placeholder: searchBar.placeholder }}
       onSearchBarChangeText={searchBar?.onChangeText}
       onSearchBarSearchButtonPress={searchBar?.onSearchButtonPress}
     />
   );
+}
+
+function toNativeToolbarItems(side: 'left' | 'right', items: SplitViewToolbarItem[] | undefined) {
+  return items?.map(({ title, icon, menu }, index) => ({
+    id: `${side}.${index}`,
+    title,
+    icon,
+    menu: menu && {
+      title: menu.title,
+      items: menu.items.map(({ title, icon, destructive, disabled, isOn }, actionIndex) => ({
+        id: `${side}.${index}.${actionIndex}`,
+        title,
+        icon,
+        destructive,
+        disabled,
+        isOn,
+      })),
+    },
+  }));
 }
