@@ -17,11 +17,11 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
-`expo-updates` is a library that enables your app to manage remote updates to your application code. It communicates with the configured remote update service to get information about available updates.
+`expo-updates` is a library that enables your app to manage remote updates to your application code. It communicates with the configured remote update service to get information about available updates. [Expo Update](/eas-update/introduction/) is the hosted update service from Expo, and `expo-updates` is the library that your app uses to get updates from it or from another update service.
 
 ## Installation
 
-The `expo-updates` library can be automatically configured using [EAS Update](/eas-update/introduction/), which is a hosted service that manages and serves updates to your app. To get started with EAS Update, follow the instructions in the [Get started](/eas-update/getting-started/) guide.
+The `expo-updates` library can be automatically configured using [Expo Update](/eas-update/introduction/), which is a hosted service that manages and serves updates to your app. To get started with Expo Update, follow the instructions in the [Get started](/eas-update/getting-started/) guide.
 
 Alternatively, it is also possible to configure the `expo-updates` library manually in cases where a different remote update service is required or configuration is only specified in native files.
 
@@ -36,7 +36,7 @@ If using [app config](/workflow/configuration/) for configuration, this library 
 - [`updates.url`](../config/app/#updates): a URL of a remote service implementing the [Expo Updates protocol](/technical-specs/expo-updates-1/)
 - [`runtimeVersion`](../config/app/#runtimeversion): a [runtime version](#runtime-version)
 
-The remote service must implement the [Expo Updates protocol](/technical-specs/expo-updates-1/). [EAS Update](/eas-update/introduction) is one such service, but it is also possible to use this library with a custom server.
+The remote service must implement the [Expo Updates protocol](/technical-specs/expo-updates-1/). [Expo Update](/eas-update/introduction) is one such service, but it is also possible to use this library with a custom server.
 
 <BoxLink
   title="Custom Expo Updates Server"
@@ -71,7 +71,7 @@ The two core required configuration options are:
 - [`updates.url`](../config/app/#updates): the URL at which the library fetches remote updates
 - [`runtimeVersion`](../config/app/#runtimeversion): a [runtime version](#runtime-version)
 
-These are configured automatically when following the EAS Update [Get started](/eas-update/getting-started/) guide.
+These are configured automatically when following the Expo Update [Get started](/eas-update/getting-started/) guide.
 
 ### Runtime version
 
