@@ -11,6 +11,7 @@ import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import androidx.media3.exoplayer.source.MediaSource
+import androidx.media3.extractor.DefaultExtractorsFactory
 import expo.modules.video.cache.CachePolicy
 import expo.modules.video.cache.CacheVariantIndex
 import expo.modules.video.cache.ExpoVideoCacheKeyFactory
@@ -177,9 +178,12 @@ private fun evictCacheEntry(url: String, storageKey: String) {
 fun buildMediaSourceFactory(
   context: Context,
   dataSourceFactory: DataSource.Factory,
-  fallbackOnTransportError: Boolean = false
+  fallbackOnTransportError: Boolean = false,
+  tsExtractorFlags: Int = 0
 ): MediaSource.Factory {
-  val factory = DefaultMediaSourceFactory(context).setDataSourceFactory(dataSourceFactory)
+  val extractorsFactory = DefaultExtractorsFactory()
+    .setTsExtractorFlags(tsExtractorFlags)
+  val factory = DefaultMediaSourceFactory(context, extractorsFactory).setDataSourceFactory(dataSourceFactory)
   if (fallbackOnTransportError) {
     factory.setLoadErrorHandlingPolicy(TransportFallbackLoadErrorHandlingPolicy())
   }
@@ -201,7 +205,8 @@ fun buildExpoVideoMediaSource(
   val mediaSourceFactory = buildMediaSourceFactory(
     context,
     dataSourceFactory,
-    fallbackOnTransportError = videoSource.useCaching
+    fallbackOnTransportError = videoSource.useCaching,
+    tsExtractorFlags = videoSource.tsExtractorFlags
   )
   val mediaItem = videoSource.toMediaItem(context)
   return mediaSourceFactory.createMediaSource(mediaItem)
