@@ -1,12 +1,10 @@
 // TODO(@kitten): Add missing optional peers
 
-// @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 import type {
   EmbeddedManifest,
   EASConfig,
   ExpoGoConfig,
   ExpoUpdatesManifest,
-  // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 } from 'expo-manifests';
 import { CodedError, requireOptionalNativeModule } from 'expo-modules-core';
 // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed

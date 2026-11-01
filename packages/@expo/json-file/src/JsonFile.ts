@@ -18,7 +18,8 @@ type Options<TJSONObject extends JSONObject> = {
   jsonParseErrorDefault?: TJSONObject;
   cantReadFileDefault?: TJSONObject;
   ensureDir?: boolean;
-  mode?: fs.Mode;
+  // `number | string` is `fs.Mode`. Referencing `fs` here would import `node:fs` into the published declarations.
+  mode?: number | string;
   default?: TJSONObject;
   json5?: boolean;
   space?: number;

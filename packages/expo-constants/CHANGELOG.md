@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### 🐛 Bug fixes
+
+- Add `expo-manifests` as a dependency so the published declarations resolve when an app type-checks with `skipLibCheck` turned off. ([#52666](https://github.com/expo/expo/issues/52666) by [@itisrmk](https://github.com/itisrmk))
+
 ## 58.0.13
 
 ### Patch Changes
