@@ -1,3 +1,4 @@
+import { installRejectionTracker } from './installRejectionTracker';
 import Observe from './module';
 
 /**
@@ -27,6 +28,7 @@ Observe.setBundleDefaults({
   environment: process.env.NODE_ENV ?? 'production',
   isJsDev: !!__DEV__,
 });
+installRejectionTracker();
 
 export { Observe };
 
