@@ -25,7 +25,7 @@ class AudioPlaylist(
   updateInterval: Double,
   dataSourceFactory: DataSource.Factory
 ) : BaseAudioPlayer(
-  player = ExoPlayer.Builder(context)
+  player = ExoPlayer.Builder(context, AudioRenderersFactory(context))
     .setLooper(context.mainLooper)
     .setAudioAttributes(AudioAttributes.DEFAULT, false)
     .setHandleAudioBecomingNoisy(true)
