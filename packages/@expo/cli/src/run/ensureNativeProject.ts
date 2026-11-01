@@ -8,7 +8,11 @@ import { profile } from '../utils/profile';
 
 export async function ensureNativeProjectAsync(
   projectRoot: string,
-  { platform, install }: { platform: ModPlatform; install?: boolean }
+  {
+    platform,
+    install,
+    skipPodInstall,
+  }: { platform: ModPlatform; install?: boolean; skipPodInstall?: boolean }
 ) {
   // If the user has an empty android folder then the project won't build, this can happen when they delete the prebuild files in git.
   // Check to ensure most of the core files are in place, and prompt to remove the folder if they aren't.
@@ -18,6 +22,7 @@ export async function ensureNativeProjectAsync(
   if (!fs.existsSync(path.join(projectRoot, platform))) {
     await prebuildAsync(projectRoot, {
       install: !!install,
+      skipPodInstall,
       platforms: [platform],
     });
   } else {

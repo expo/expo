@@ -21,7 +21,7 @@ import { startBundlerAsync } from '../startBundler';
 import * as XcodeBuild from './XcodeBuild';
 import type { Options } from './XcodeBuild.types';
 import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
-import { resolveOptionsAsync } from './options/resolveOptions';
+import { resolveDeviceOptionsAsync, resolveOptionsAsync } from './options/resolveOptions';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
 
 export async function runIosAsync(projectRoot: string, options: Options) {
@@ -32,22 +32,32 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   const install = !!options.install;
 
-  if ((await ensureNativeProjectAsync(projectRoot, { platform: 'ios', install })) && install) {
-    await maybePromptToSyncPodsAsync(projectRoot);
-  }
+  const hasNativeProject = await ensureNativeProjectAsync(projectRoot, {
+    platform: 'ios',
+    install,
+    skipPodInstall: true,
+  });
 
-  // Resolve the CLI arguments into useable options.
-  const props = await profile(resolveOptionsAsync)(projectRoot, options);
+  const selection = await profile(resolveDeviceOptionsAsync)(projectRoot, options);
 
-  if (props.device) {
+  if (selection.device) {
     event('device:selected', {
       platform: 'ios',
-      name: props.device.name,
-      id: props.device.udid,
-      os: props.device.osType ?? null,
-      type: props.isSimulator ? 'simulator' : 'device',
+      name: selection.device.name,
+      id: selection.device.udid,
+      os: selection.device.osType ?? null,
+      type: selection.isSimulator ? 'simulator' : 'device',
     });
   }
+
+  if (install) {
+    debugEvent('ios:pods_sync', { status: 'started' });
+    await maybePromptToSyncPodsAsync(projectRoot, { force: !hasNativeProject });
+    debugEvent('ios:pods_sync', { status: 'finished' });
+  }
+
+  // Resolve build options from the prepared native project without prompting again.
+  const props = await profile(resolveOptionsAsync)(projectRoot, options, selection);
 
   // We only support build cache for simulator builds for now.
   if (!options.binary && props.buildCacheProvider && props.isSimulator) {

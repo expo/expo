@@ -51,6 +51,8 @@ export async function prebuildAsync(
   options: {
     /** Should install node modules and cocoapods. */
     install?: boolean;
+    /** Defer CocoaPods installation to the caller while still installing JavaScript dependencies. */
+    skipPodInstall?: boolean;
     /** List of platforms to prebuild. */
     platforms: ModPlatform[];
     /** Should delete the native folders before attempting to prebuild. */
@@ -194,7 +196,12 @@ export async function prebuildAsync(
   if (useSwiftPM) {
     event('pods:installed', { ms: 0, skipped: true });
     await setupSwiftPMAsync(projectRoot, { install: !!options.install });
-  } else if (options.platforms.includes('ios') && options.install && needsPodInstall) {
+  } else if (
+    options.platforms.includes('ios') &&
+    options.install &&
+    !options.skipPodInstall &&
+    needsPodInstall
+  ) {
     const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
 
     const startedAt = Date.now();
