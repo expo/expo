@@ -57,6 +57,7 @@ import {
   foregroundStyle,
   fixedSize,
   disabled,
+  allowsHitTesting,
   scrollContentBackground,
   listRowBackground,
   allowsTightening,
@@ -150,6 +151,8 @@ export default function ModifiersScreen() {
 
   const [containerRelativeFrameCount, setContainerRelativeFrameCount] = useState(1);
   const [contentShapeButtonCounter, setcontentShapeButtonCounter] = useState(0);
+  const [captionAllowsHitTesting, setCaptionAllowsHitTesting] = useState(false);
+  const [hitTestingTapCount, setHitTestingTapCount] = useState(0);
   const [assets] = useAssets([require('../../../assets/images/logo-wordmark.png')]);
   const wordmarkUri = assets?.[0]?.localUri;
 
@@ -1161,6 +1164,34 @@ export default function ModifiersScreen() {
               <Text>Right label</Text>
             </HStack>
             <Text>Taps: {contentShapeButtonCounter}</Text>
+          </Section>
+
+          <Section title="Allows Hit Testing Modifier">
+            <Toggle
+              isOn={captionAllowsHitTesting}
+              onIsOnChange={setCaptionAllowsHitTesting}
+              label="Caption allows hit testing"
+            />
+            <Text>Tap the caption on the card:</Text>
+            <ZStack alignment="bottom">
+              <Rectangle
+                modifiers={[
+                  frame({ height: 120 }),
+                  foregroundStyle('#3498DB'),
+                  onTapGesture(() => setHitTestingTapCount((count) => count + 1)),
+                ]}
+              />
+              <Text
+                modifiers={[
+                  frame({ maxWidth: Infinity }),
+                  padding({ all: 12 }),
+                  background({ type: 'material', material: 'thin' }),
+                  allowsHitTesting(captionAllowsHitTesting),
+                ]}>
+                Decorative caption
+              </Text>
+            </ZStack>
+            <Text>Card taps: {hitTestingTapCount}</Text>
           </Section>
 
           <Section title="Misc">
