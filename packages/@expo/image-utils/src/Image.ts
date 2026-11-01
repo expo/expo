@@ -25,6 +25,11 @@ async function resizeAsync(imageOptions: ImageOptions): Promise<Buffer> {
   const sharp = await getSharpAsync();
   const { width, height, backgroundColor, resizeMode } = imageOptions;
   if (!sharp) {
+    if (getMimeType(imageOptions.src) === 'image/svg+xml') {
+      throw new Error(
+        `Could not generate an image from the SVG file '${imageOptions.src}'. Jimp processes the image because sharp-cli is not available, and Jimp cannot read SVG. Install sharp-cli globally (\`npm install -g sharp-cli@^5.2.0\`), or use a PNG image.`
+      );
+    }
     const inputOptions: any = { input: imageOptions.src, quality: 100 };
     const jimp = await Jimp.resize(inputOptions, {
       width,
@@ -129,6 +134,7 @@ const types: Record<string, string> = {
   jpe: 'image/jpeg',
   webp: 'image/webp',
   gif: 'image/gif',
+  svg: 'image/svg+xml',
 };
 
 const inverseMimeTypes: Record<string, string> = {
@@ -136,6 +142,8 @@ const inverseMimeTypes: Record<string, string> = {
   'image/jpeg': 'jpg',
   'image/webp': 'webp',
   'image/gif': 'gif',
+  // SVG sources are rasterized, so the generated image is always a PNG.
+  'image/svg+xml': 'png',
 };
 
 export function getMimeType(srcPath: string): string | null {
