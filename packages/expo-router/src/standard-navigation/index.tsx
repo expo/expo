@@ -1,5 +1,4 @@
 'use client';
-
 import { type ComponentType, useMemo } from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 import type { NavigatorArgs } from 'standard-navigation';
@@ -7,6 +6,7 @@ import type { NavigatorArgs } from 'standard-navigation';
 import { ScreenErrorBoundaryContext, useRouteNode } from '../Route';
 import { useRoutesWithRemovalPrevented } from '../global-state/removalPrevention';
 import { withLayoutContext } from '../layouts/withLayoutContext';
+import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import {
   useNavigationBuilder,
   type DefaultRouterOptions,
@@ -194,6 +194,15 @@ export function integrateWithRouter<
       activityDefaultThreshold: options?.activityDefaultThreshold,
     });
 
+    const nativeBackNavigation =
+      typeof options?.nativeBackNavigation === 'function'
+        ? options.nativeBackNavigation(state)
+        : options?.nativeBackNavigation === true;
+    useClientLayoutEffect(() => {
+      if (!nativeBackNavigation) return;
+      const subscription = navigation.registerNativeBackNavigation();
+      return () => subscription.remove();
+    }, [navigation, state.key, nativeBackNavigation]);
     const { dispatch, dispatchSync } = navigation;
     const routesWithRemovalPrevented = useRoutesWithRemovalPrevented();
 

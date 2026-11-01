@@ -2,12 +2,14 @@
 
 import { nanoid } from 'nanoid/non-secure';
 import * as React from 'react';
+import isEqual from 'react-fast-compare';
 
 import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { collectMissingLayouts, loadLayouts } from '../layoutAnchor';
 import { warnIfScreenParam } from '../navigationParams';
 import { deepFreeze } from '../react-navigation/core/deepFreeze';
+import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import type {
   InitialState,
   NavigationAction,
@@ -28,6 +30,11 @@ import {
   createSeededNavigationState,
 } from './createSeededNavigationState';
 import { getNavigateAction } from './getNavigationAction';
+import type {
+  NavigationActionResult,
+  NavigationTransactionCancellations,
+} from './navigationActionResult';
+import { createPendingNavigationOperations } from './pendingNavigationOperations';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
 import { markActionEnqueuedAndReturnId, type QueuedRoutingIntent } from './routingQueue';
@@ -44,6 +51,8 @@ type ReducerConfig = {
   linking?: ExpoLinkingOptions;
   redirects?: StoreRedirects[];
   browserHistoryIdPrefix: string;
+  cancelledTransactions?: NavigationTransactionCancellations;
+  transactionScope?: object;
 };
 
 type QueuedOperation = (
@@ -61,6 +70,7 @@ type QueuedOperation = (
 };
 
 type TreeOperation =
+  | { type: 'OPERATIONS_CONSUMED'; actionIds: readonly number[] }
   | QueuedOperation
   // `failed` layouts could not load, so the replay skips their anchors.
   | { type: 'RESUME'; failed: RouteNode[] }
@@ -80,6 +90,9 @@ type TreeOperation =
     };
 
 type Options = {
+  pendingOperations?: ReturnType<typeof createPendingNavigationOperations>;
+  cancelledTransactions?: NavigationTransactionCancellations;
+  transactionScope?: object;
   initialState: InitialState | undefined;
   routeNode?: RouteNode;
   registry: RouterRegistry;
@@ -93,6 +106,7 @@ export type NavigationTreeReport = {
 };
 
 type NavigationTreeReportEventData =
+  | { type: 'action-result'; transactionId: number; result: NavigationActionResult }
   | {
       type: 'unhandled-action';
       action: NavigationAction;
@@ -125,6 +139,7 @@ export type NavigationTreeReportEvent = NavigationTreeReportEventData & {
 };
 
 type NavigationTreeResult = {
+  settledOperations?: readonly number[];
   state: NavigationState;
   report: NavigationTreeReport | undefined;
   eventSeq: number;
@@ -175,12 +190,42 @@ function navigationTreeReducer(
   }
   if (operation.type === 'BROWSER_HISTORY_CHANGED') {
     const { commitedTreeResult, ...change } = operation;
+    const discardedOperations = result.deferred?.operations ?? [];
+    const discardedSettlements = result.settledOperations ?? [];
+    const cancelledTransactionIds = new Set([
+      ...discardedOperations.flatMap((pending) =>
+        pending.type === 'ACTION' && pending.payload.transaction
+          ? [pending.payload.transaction.id]
+          : []
+      ),
+      ...(result.report?.events.flatMap((event) =>
+        event.type === 'action-result' ? [event.transactionId] : []
+      ) ?? []),
+    ]);
     // Waiting operations never reached the screen or the browser, so the browser change drops them.
     result = commitedTreeResult
       ? // Discard the interrupted transition while keeping event IDs monotonic.
         { ...commitedTreeResult, eventSeq: result.eventSeq, deferred: undefined }
       : { ...result, deferred: undefined };
-    return reduceQueuedOperation(result, change, config);
+    const restored = reduceQueuedOperation(result, change, config);
+    return appendReportEvents(
+      {
+        ...restored,
+        settledOperations: [
+          ...(restored.settledOperations ?? []),
+          ...discardedSettlements,
+          operation.actionId,
+          ...discardedOperations.map((pending) => pending.actionId),
+        ],
+      },
+      [...cancelledTransactionIds].map(
+        (transactionId): NavigationTreeReportEventData => ({
+          type: 'action-result',
+          transactionId,
+          result: { status: 'cancelled', state: restored.state },
+        })
+      )
+    );
   }
   if ('deferrable' in operation && operation.deferrable) {
     return reduceQueuedOperation(result, operation, config);
@@ -247,7 +292,9 @@ function reduceOperation(
     return appendReportEvents({ ...restored.result, history: restored.history }, restored.events);
   }
 
-  const next = reduceTree({ ...result, browserHistoryAction: undefined }, operation, config);
+  let next = reduceTree({ ...result, browserHistoryAction: undefined }, operation, config);
+  if ('actionId' in operation)
+    next = { ...next, settledOperations: [...(next.settledOperations ?? []), operation.actionId] };
   if (next.state === result.state || !next.history) {
     return next;
   }
@@ -337,6 +384,30 @@ function reduceTree(
       );
     }
     case 'ACTION': {
+      const transaction = operation.payload.transaction;
+      const settle = (next: NavigationTreeResult, status: NavigationActionResult['status']) =>
+        transaction
+          ? appendReportEvents(next, [
+              {
+                type: 'action-result',
+                transactionId: transaction.id,
+                result: { status, state: next.state },
+              },
+            ])
+          : next;
+      if (transaction) {
+        if (
+          transaction.blockedAtEnqueue ||
+          config.cancelledTransactions?.has(transaction.token) ||
+          (config.transactionScope && transaction.scope !== config.transactionScope)
+        )
+          return settle(result, 'cancelled');
+        const current = findStateByKey(state, transaction.expectedState.key);
+        // Navigation helpers may derive an equivalent declared-routes state. Compare
+        // structure, not object identity, at reduction time after earlier queued actions.
+        if (!current || !isEqual(current, transaction.expectedState))
+          return settle(result, 'stale');
+      }
       const tree = indexNavigationTree(state);
       const origin = resolveOrigin(
         tree.rootNode,
@@ -345,7 +416,7 @@ function reduceTree(
         operation.payload.originKey
       );
       if (!origin) {
-        return reportUnhandledAction(result, operation.payload.action);
+        return settle(reportUnhandledAction(result, operation.payload.action), 'unhandled');
       }
 
       const reduction = reduceNavigationTree(operation.payload.action, config.registry, {
@@ -353,13 +424,13 @@ function reduceTree(
         tree,
       });
       if (!reduction.handled) {
-        return reportUnhandledAction(result, operation.payload.action);
+        return settle(reportUnhandledAction(result, operation.payload.action), 'unhandled');
       }
       const nextState = config.routeNode
         ? completeNavigationState(reduction.nextState, config.routeNode)
         : reduction.nextState;
       if (nextState === state) {
-        return result;
+        return settle(result, 'noop');
       }
 
       const removedRoutes = getRemovedRouteKeys(state, nextState);
@@ -404,9 +475,12 @@ function reduceTree(
                 actionId: operation.actionId,
               },
             ];
-      return appendReportEvents(
-        { ...result, state: committedState, browserHistoryAction: reduction.browserHistory },
-        eventsWithoutIds
+      return settle(
+        appendReportEvents(
+          { ...result, state: committedState, browserHistoryAction: reduction.browserHistory },
+          eventsWithoutIds
+        ),
+        preventedRoutes.length > 0 ? 'prevented' : 'handled'
       );
     }
     case 'NAVIGATOR_UNMOUNTED': {
@@ -436,6 +510,11 @@ function reduceTree(
         ? completeNavigationState(nextState, config.routeNode)
         : nextState;
       return { ...result, state: deepFreeze(completeState) };
+    }
+    case 'OPERATIONS_CONSUMED': {
+      const consumed = new Set(operation.actionIds);
+      const remaining = result.settledOperations?.filter((id) => !consumed.has(id));
+      return { ...result, settledOperations: remaining?.length ? remaining : undefined };
     }
     case 'REPORT_CONSUMED': {
       if (!result.report) {
@@ -481,6 +560,9 @@ function appendReportEvents(
 }
 
 export function useNavigationTreeReducer({
+  pendingOperations: providedPendingOperations,
+  cancelledTransactions,
+  transactionScope,
   initialState,
   routeNode,
   registry,
@@ -488,8 +570,17 @@ export function useNavigationTreeReducer({
   linking,
   redirects,
 }: Options) {
+  const [localPendingOperations] = React.useState(createPendingNavigationOperations);
+  const pendingOperations = providedPendingOperations ?? localPendingOperations;
+  const pendingSnapshot = React.useSyncExternalStore(
+    pendingOperations.subscribe,
+    pendingOperations.getSnapshot,
+    pendingOperations.getSnapshot
+  );
   const browserHistoryIdPrefix = `${browserHistorySessionId}:${React.useId()}`;
   const config: ReducerConfig = {
+    cancelledTransactions,
+    transactionScope,
     registry,
     routesWithRemovalPrevented,
     routeNode,
@@ -542,11 +633,13 @@ export function useNavigationTreeReducer({
         ? payload.params
         : undefined;
     warnIfScreenParam(params);
+    const actionId = markActionEnqueuedAndReturnId();
+    pendingOperations.enqueue(actionId, false);
     reactDispatch({
       type: 'ACTION',
       payload: { action, originKey },
       // Sync dispatches skip the routing queue, so mark the enqueue here.
-      actionId: markActionEnqueuedAndReturnId(),
+      actionId,
     });
   });
   const resetNavigator = useLatestCallback((stateKey: string, routerType: string | undefined) => {
@@ -557,6 +650,20 @@ export function useNavigationTreeReducer({
   });
 
   const processIntent = useLatestCallback((intent: QueuedRoutingIntent, inTransition = false) => {
+    const transaction = intent.type === 'ACTION' ? intent.payload.transaction : undefined;
+    if (intent.type === 'ACTION' && transaction)
+      intent = {
+        ...intent,
+        payload: {
+          ...intent.payload,
+          transaction: {
+            ...transaction,
+            blockedAtEnqueue:
+              transaction.blockedAtEnqueue || pendingOperations.hasOtherThan(intent.actionId),
+          },
+        },
+      };
+    pendingOperations.enqueue(intent.actionId, transaction !== undefined);
     const deferrable = { inTransition };
     if (intent.type === 'BROWSER_HISTORY_CHANGED') {
       // Example: A is visible while a push to B is suspended. Browser Back starts from A,
@@ -592,12 +699,19 @@ export function useNavigationTreeReducer({
     };
   }, [missingLayouts]);
 
+  useClientLayoutEffect(() => {
+    if (!result.settledOperations?.length) return;
+    pendingOperations.settle(result.settledOperations);
+    reactDispatch({ type: 'OPERATIONS_CONSUMED', actionIds: result.settledOperations });
+  }, [pendingOperations, result.settledOperations]);
+
   React.useInsertionEffect(() => {
     warnIfStaleState(result.state);
   }, [result.state]);
 
   return {
     state: result.state,
+    hasPendingNavigation: pendingSnapshot.normalPending,
     isWaitingForLayouts: result.deferred !== undefined,
     report: result.report,
     consumeReportEvents,

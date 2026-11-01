@@ -1,5 +1,6 @@
 import type * as React from 'react';
 
+import type { NavigationActionResult } from '../../global-state/navigationActionResult';
 import type {
   DefaultRouterOptions,
   InitialState,
@@ -247,6 +248,20 @@ type NavigationHelpersCommon<
    * @param action Action object to dispatch.
    */
   dispatch(action: NavigationAction): void;
+
+  /** Queues a guarded action and reports its post-commit outcome, including rejection/no-op.
+   * Requires stable navigation: older queued, suspended or layout-loading navigation yields `cancelled`.
+   * The action is urgent and does not interrupt older navigation.
+   * Removing the subscription cancels observation and any action not yet committed; after settlement it is a no-op.
+   */
+  dispatchWithResult(
+    action: NavigationAction,
+    options: { expectedState: NavigationState },
+    callback: (result: NavigationActionResult) => void
+  ): { remove(): void };
+
+  /** Declares that this navigator delegates Back to a native dispatcher. Re-register after a state-key reset. */
+  registerNativeBackNavigation(): { remove(): void };
 
   /**
    * Dispatches an action synchronously.
@@ -731,6 +746,7 @@ export type RouteGroupConfig<
 };
 
 export type NavigationContainerEventMap = {
+  nativeBackOwnershipChange: { data: undefined };
   /**
    * Event that fires when the navigation state changes.
    */
@@ -760,6 +776,8 @@ export type NavigationContainerRef<ParamList extends {}> = NavigationHelpers<Par
      * Get the current state of the navigation tree.
      */
     getRootState(): NavigationState;
+    /** Whether every focused navigator explicitly owns native Back, with no removal guard. */
+    isNativeBackNavigationOwned(): boolean;
     /**
      * Get the currently focused navigation route.
      */
