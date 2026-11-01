@@ -9,6 +9,17 @@ internal enum LanguageModelSchema {
     return try GenerationSchema(root: compiler.visit(schema, depth: 0), dependencies: [])
   }
 
+  /// Built-in image tools take one of the current request's image labels. Constraining the
+  /// argument to those labels keeps the model from generating a label that does not exist.
+  static func imageTool(labels: [String], name: String) throws -> GenerationSchema {
+    let image = DynamicGenerationSchema(name: "\(name)_image", anyOf: labels)
+    let root = DynamicGenerationSchema(name: name, description: nil, properties: [
+      DynamicGenerationSchema.Property(
+        name: "image", description: "The label of an image attached to the current request.", schema: image)
+    ])
+    return try GenerationSchema(root: root, dependencies: [])
+  }
+
   private struct Compiler {
     let prefix: String
     var nextType = 0
