@@ -1,4 +1,4 @@
-import { loadAsync, type FontSource } from 'expo-font';
+import { isLoaded, loadAsync, type FontSource } from 'expo-font';
 import { useState, useEffect, useMemo, type JSX } from 'react';
 import { Platform, PlatformColor, Text, View } from 'react-native';
 
@@ -35,9 +35,9 @@ export function SymbolView({
       } as FontSource,
     })
       .then(() => setLoaded(true))
-      .catch(() => {
-        /* noop */
-      });
+      // On web, `loadAsync` rejects when the font file takes longer than its timeout to arrive. The
+      // `@font-face` rule is registered by then and the glyph paints once the file loads, so draw it.
+      .catch(() => setLoaded(isLoaded(font.name)));
   }, []);
   if (!name) {
     return <>{fallback}</>;
