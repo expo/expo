@@ -350,6 +350,29 @@ describe.each([['win32'], ['posix']] as const)('RootPathUtils on %s', (platform)
       );
 
       test.each([
+        ['C:\\project\\root', 'D:\\store\\package\\link', '..\\target.js'],
+        ['D:\\project\\root', 'C:\\store\\package\\link', '..\\target.js'],
+        ['C:\\', 'D:\\store\\package\\link', '..\\target.js'],
+        ['D:\\', 'C:\\store\\package\\link', '..\\target.js'],
+        ['C:\\project\\root', 'D:\\store\\package\\link', '.\\target.js'],
+        ['C:\\project\\root', 'D:\\store\\package\\link', 'child\\..\\target.js'],
+      ])(
+        'resolves a relative target on another drive (rootDir=%s, %s -> %s)',
+        (rootDir, absoluteSymlinkPath, readlinkResult) => {
+          pathUtils = new RootPathUtils(rootDir);
+          const symlinkNormalPath = pathUtils.absoluteToNormal(absoluteSymlinkPath);
+          const expectedAbsolute = mockPathModule.resolve(
+            mockPathModule.dirname(absoluteSymlinkPath),
+            readlinkResult
+          );
+
+          const normal = pathUtils.resolveSymlinkToNormal(symlinkNormalPath, readlinkResult);
+          expect(pathUtils.normalToAbsolute(normal)).toEqual(expectedAbsolute);
+          expect(normal).toEqual(pathUtils.absoluteToNormal(expectedAbsolute));
+        }
+      );
+
+      test.each([
         ['C:\\project\\root', 'link', 'D:\\target.js'],
         ['C:\\project\\root', 'a\\b\\link', 'D:\\sub\\target.js'],
         // 'D:\\' hits a distinct path: the leading trailing-separator strip

@@ -190,6 +190,12 @@ export class RootPathUtils {
     if (path.isAbsolute(target)) {
       return this.absoluteToNormal(target);
     }
+    // Cross-drive normal paths escape past the project drive before the target drive.
+    if (IS_WIN32 && symlinkNormalPath.startsWith(UP_FRAGMENT_SEP.repeat(this.#rootParts.length))) {
+      return this.absoluteToNormal(
+        path.resolve(path.dirname(this.normalToAbsolute(symlinkNormalPath)), target)
+      );
+    }
     // Resolve relative to the symlink's containing directory, expressed as
     // a root-relative (possibly non-normal) path, then normalize
     const sepIdx = symlinkNormalPath.lastIndexOf(path.sep);
