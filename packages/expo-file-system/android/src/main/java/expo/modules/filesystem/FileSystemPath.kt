@@ -9,6 +9,7 @@ import expo.modules.filesystem.unifiedfile.AssetFile
 import expo.modules.filesystem.unifiedfile.ContentProviderFile
 import expo.modules.filesystem.fsops.DestinationSpec
 import expo.modules.filesystem.unifiedfile.JavaFile
+import expo.modules.filesystem.unifiedfile.ResourceFile
 import expo.modules.filesystem.unifiedfile.SAFDocumentFile
 import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.kotlin.exception.Exceptions
@@ -42,6 +43,11 @@ val Uri.isAssetUri
     return scheme == "asset"
   }
 
+val Uri.isResourceUri
+  get(): Boolean {
+    return scheme == null
+  }
+
 fun Uri.isSAFUri(context: Context): Boolean =
   isContentUri && (
     DocumentsContract.isDocumentUri(context, this) || DocumentsContract.isTreeUri(this)
@@ -72,6 +78,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
         uri.isSAFUri(context) -> SAFDocumentFile(context, uri)
         uri.isContentUri -> ContentProviderFile(context, uri)
         uri.isAssetUri -> AssetFile(context, uri)
+        uri.isResourceUri -> ResourceFile(context, uri)
         else -> JavaFile(uri)
       }
       return newAdapter.also { fileAdapter = it }
@@ -79,10 +86,10 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
 
   val javaFile: File
     get() =
-      if (uri.isContentUri) {
-        throw Exception("This method cannot be used with content URIs: $uri")
+      if (file is File) {
+        file as File
       } else {
-        (file as File)
+        throw Exception("This method cannot be used with URI: $uri")
       }
 
   fun delete() {
@@ -156,6 +163,9 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     if (uri.isAssetUri) {
       // TODO: Consider adding a check for asset URIs – this returns asset files of Expo Go (such as root-cert), but these are already freely available on apk mirrors etc.
       return true
+    }
+    if (uri.isResourceUri) {
+      return permission == FilePermissionService.Permission.READ
     }
     return checkPermissionForPath(javaFile.path, permission)
   }
