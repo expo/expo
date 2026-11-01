@@ -789,7 +789,7 @@ class FileDownloader(
     val error = IOException("Failed to download asset ${asset.key}", cause)
     logger.warn(
       error.localizedMessageWithCauseLocalizedMessage(),
-      UpdatesErrorCode.AssetsFailedToLoad,
+      UpdatesErrorCode.forLoadFailure(cause, otherwise = UpdatesErrorCode.AssetsFailedToLoad),
       requestedUpdate?.loggingId,
       asset.key
     )

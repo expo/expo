@@ -144,6 +144,63 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
       return "Failed to relaunch: \(cause.localizedDescription)"
     }
   }
+
+  /**
+   The error that this error wraps, if it wraps one.
+   */
+  var cause: Error? {
+    switch self {
+    case let .fileDownloaderAssetFileWriteFailed(cause, _),
+      let .fileDownloaderDirectiveParseFailed(cause),
+      let .fileDownloaderCodeSigningUnknownError(cause),
+      let .fileDownloaderServerDefinedHeaderFailure(cause),
+      let .fileDownloaderExtraParamFailure(cause),
+      let .fileDownloaderFailedUpdateIDsFailure(cause),
+      let .fileDownloaderUnknownError(cause),
+      let .remoteAppLoaderHeaderDataError(cause),
+      let .remoteAppLoaderUnknownError(cause),
+      let .appLoaderUnknownError(cause),
+      let .appControllerInitializationError(cause),
+      let .errorRecoveryCouldNotWriteToLog(cause),
+      let .appLauncherWithDatabaseUnknownError(cause),
+      let .startupProcedureDidFinishBackgroundUpdateWithStatusWithError(cause),
+      let .checkForUpdateProcedureFailed(cause),
+      let .fetchUpdateProcedureFailed(cause),
+      let .relaunchProcedureFailedToRelaunch(cause):
+      return cause
+    case let .fileDownloaderManifestParseFailed(cause),
+      let .appLoaderTaskFailedToLaunch(cause),
+      let .appLauncherNoLaunchableUpdates(cause):
+      return cause
+    case let .fileDownloaderCodeSigningError(cause):
+      return cause
+    case .fileDownloaderAssetDownloadEmptyResponse,
+      .fileDownloaderAssetMismatchedHash,
+      .fileDownloaderResponseNotHTTPURLResponse,
+      .fileDownloaderRemoteUpdateMissingBody,
+      .fileDownloaderMissingMultipartBoundary,
+      .fileDownloaderErrorReadingMultipartResponse,
+      .fileDownloaderMultipartExtensionsPartParseFailed,
+      .fileDownloaderMultipartMissingManifestVersion0,
+      .fileDownloaderCodeSigningIncorrectSignature,
+      .fileDownloaderCodeSigningCertificateScopeKeyOrProjectIdMismatch,
+      .fileDownloaderManifestFilterManifestMismatch,
+      .fileDownloaderHTTPResponseError,
+      .remoteAppLoaderAssetMissingUrl,
+      .remoteAppLoaderUnsafeAssetFilename,
+      .appLoaderFailedToLoadAllAssets,
+      .appLoaderFinishedWithoutManifest,
+      .appLoaderTaskUnexpectedErrorDuringLaunch,
+      .errorRecoveryCrashing,
+      .errorRecoveryFatalException,
+      .appLauncherWithDatabaseAssetMissingUrl,
+      .appLauncherWithDatabaseAssetBundlePathNil,
+      .appLauncherWithDatabaseAssetCopyFailed,
+      .appLauncherLaunchAssetNotFound,
+      .embeddedAppLoaderEmbeddedManifestLoadFailed:
+      return nil
+    }
+  }
 }
 
 // swiftlint:enable identifier_name

@@ -50,7 +50,7 @@ class CheckForUpdateProcedure(
       updatesLogger.error(
         "Failed to check for update: ${e.localizedMessageWithCauseLocalizedMessage()}",
         e,
-        UpdatesErrorCode.UpdateFailedToLoad
+        UpdatesErrorCode.forLoadFailure(e, otherwise = UpdatesErrorCode.UpdateFailedToLoad)
       )
       procedureContext.processStateEvent(UpdatesStateEvent.CheckError(e.localizedMessageWithCauseLocalizedMessage()))
       callback(IUpdatesController.CheckForUpdateResult.ErrorResult(e))
