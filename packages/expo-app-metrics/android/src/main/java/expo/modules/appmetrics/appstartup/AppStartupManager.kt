@@ -7,13 +7,17 @@ import android.os.Build
 import android.util.Log
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
+import expo.modules.appmetrics.AppMetricsPreferences
 import expo.modules.appmetrics.AppStartupMetric
 import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.frames.FrameMetricsRecord
 import expo.modules.appmetrics.frames.FrameMetricsRecorder
+import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.networkrequests.NetworkRequestMonitor
+import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.utils.DeviceConditions
+import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.appmetrics.utils.MetricParamsBuilder
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimeInMillis
 import expo.modules.appmetrics.utils.TimeUtils.getCurrentTimestampInISOFormat
@@ -39,12 +43,27 @@ data class EASObserveAppStartupInfo(
 object AppStartupManager {
   private const val BACKGROUND_THRESHOLD_MS = 60_000L
 
+  // Matches the max startup duration on iOS.
+  private const val MAX_STARTUP_DURATION_MS = 3 * 60 * 1000L
+
   // CopyOnWriteArrayList: writes (addMetric) happen on the React/JS/main threads;
   // reads happen on appContext.modulesQueue. Snapshot iteration on the read side
   // means we never CME under concurrent add().
   private val _metrics: MutableList<Metric> = CopyOnWriteArrayList()
   internal val metrics: List<Metric>
     get() = _metrics
+
+  // Log events not yet handed out for saving. Guarded by `this`.
+  private val unsavedLogs = mutableListOf<LogRecord>()
+
+  private data class PausedStartup(val durationInMs: Long, val hasRendered: Boolean)
+
+  // Set when the startup was paused, until the app enters the background or resumes. Guarded by `this`.
+  private var pausedStartup: PausedStartup? = null
+
+  // Called after a log event is recorded outside of the module's own saves, so the module can save it.
+  @Volatile
+  internal var onLogRecorded: (() -> Unit)? = null
 
   // How many of `_metrics` were already handed out for saving. Guarded by `this`.
   private var savedCount = 0
@@ -125,6 +144,13 @@ object AppStartupManager {
     val unsaved = snapshot.drop(savedCount)
     savedCount = snapshot.size
     return unsaved
+  }
+
+  @Synchronized
+  internal fun takeUnsavedLogs(): List<LogRecord> {
+    val logs = unsavedLogs.toList()
+    unsavedLogs.clear()
+    return logs
   }
 
   @Synchronized
@@ -267,7 +293,53 @@ object AppStartupManager {
         merged
       }
     )
+    if (launchTimeInMillis != null) {
+      AppMetricsPreferences.setHasMarkedInteractive(context)
+    }
     startupState = StartupState.LAUNCHED
+  }
+
+  /**
+   * Interrupts the startup if it is still in progress when the activity pauses. The pause doesn't mean
+   * that the user left the app (a permission dialog pauses it too), so the duration is kept until
+   * the app enters the background or the activity resumes.
+   */
+  @Synchronized
+  fun markPaused() {
+    if (startupState != StartupState.LAUNCHING) {
+      return
+    }
+    startupState = StartupState.INTERRUPTED
+
+    val launch = launchTimeInMillis ?: return
+    val durationInMs = getCurrentTimeInMillis() - launch
+    if (durationInMs <= MAX_STARTUP_DURATION_MS) {
+      pausedStartup = PausedStartup(durationInMs, hasRendered = hasRecordedFirstRender)
+    }
+  }
+
+  @Synchronized
+  fun markResumed() {
+    pausedStartup = null
+  }
+
+  /**
+   * Records the `expo.app_startup.backgrounded` event when the app enters the background
+   * after the startup was paused, for example when the user left the app stuck on the splash screen.
+   */
+  fun markEnteredBackground(context: Context) {
+    synchronized(this) {
+      val paused = pausedStartup ?: return
+      pausedStartup = null
+      unsavedLogs.add(
+        makeStartupBackgroundedLogRecord(
+          durationInMs = paused.durationInMs,
+          hasRendered = paused.hasRendered,
+          hasMarkedInteractive = AppMetricsPreferences.getHasMarkedInteractive(context)
+        )
+      )
+    }
+    onLogRecorded?.invoke()
   }
 
   private fun buildInteractiveParams(
@@ -298,3 +370,29 @@ object AppStartupManager {
     addMetricSinceLaunch(AppStartupMetric.TimeToFirstRender)
   }
 }
+
+/**
+ * Builds the internal `expo.app_startup.backgrounded` log event recorded when the user leaves the app before TTI.
+ * - `expo.app_startup.duration`: seconds from the end of the native launch until the app entered the background.
+ * - `expo.app_startup.hasRendered`: whether the first render happened. When `false`, the user probably saw only the splash screen.
+ * - `expo.app_startup.hasMarkedInteractive`: whether the app reached TTI in an earlier launch. When `false`, the app
+ *   probably doesn't call `markInteractive`, so the event doesn't tell that the startup didn't finish.
+ */
+internal fun makeStartupBackgroundedLogRecord(
+  durationInMs: Long,
+  hasRendered: Boolean,
+  hasMarkedInteractive: Boolean
+): LogRecord =
+  LogRecord(
+    sessionId = "",
+    timestamp = getCurrentTimestampInISOFormat(),
+    name = "expo.app_startup.backgrounded",
+    severity = Severity.INFO.rawValue,
+    attributes = JsonAny.encodeMapToJsonString(
+      mapOf(
+        "expo.app_startup.duration" to durationInMs.toDouble() / 1000.0,
+        "expo.app_startup.hasRendered" to hasRendered,
+        "expo.app_startup.hasMarkedInteractive" to hasMarkedInteractive
+      )
+    )
+  )

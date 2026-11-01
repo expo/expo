@@ -8,6 +8,7 @@ private const val PREFS_NAME = "dev.expo.app-metrics"
 private const val KEY_ENVIRONMENT = "environment"
 private const val KEY_LAST_PROCESSED_EXIT_MILLIS = "lastProcessedExitMillis"
 private const val KEY_NETWORK_TRACES_CONFIGURATION = "networkTracesConfiguration"
+private const val KEY_HAS_MARKED_INTERACTIVE = "hasMarkedInteractive"
 
 object AppMetricsPreferences {
   /**
@@ -68,5 +69,19 @@ object AppMetricsPreferences {
     // `apply()` rather than `commit()`: this runs inline on the JS thread, and iOS persists
     // through `UserDefaults` without a synchronous flush either.
     prefs.edit { putString(KEY_NETWORK_TRACES_CONFIGURATION, configuration.toJson()) }
+  }
+
+  /**
+   * Whether the app reached TTI in this or an earlier launch. TTI is not marked automatically,
+   * so this tells whether the app calls `markInteractive` at all.
+   */
+  fun getHasMarkedInteractive(context: Context): Boolean {
+    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    return prefs.getBoolean(KEY_HAS_MARKED_INTERACTIVE, false)
+  }
+
+  fun setHasMarkedInteractive(context: Context) {
+    val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    prefs.edit { putBoolean(KEY_HAS_MARKED_INTERACTIVE, true) }
   }
 }
