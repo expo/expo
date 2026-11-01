@@ -14,6 +14,12 @@ android {
     versionName '0.1.2'
     consumerProguardFiles 'consumer-rules.pro'
   }
+  testOptions {
+    unitTests.all {
+      // ML Kit's ImagePart bytecode passes ART verification but fails the JVM verifier.
+      jvmArgs '-XX:+UnlockDiagnosticVMOptions', '-XX:-BytecodeVerificationRemote'
+    }
+  }
 }
 
 dependencies {
