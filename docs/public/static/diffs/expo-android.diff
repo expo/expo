@@ -13,7 +13,7 @@ index 1789e54..b6ac31d 100644
     */
    override fun createReactActivityDelegate(): ReactActivityDelegate =
 -      DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
-+      ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled))
++      ReactActivityDelegateWrapper(this, DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled))
  }
 diff --git a/android/app/src/main/java/com/myapp/MainApplication.kt b/android/app/src/main/java/com/myapp/MainApplication.kt
 index 9cb435b..bd46af6 100644
