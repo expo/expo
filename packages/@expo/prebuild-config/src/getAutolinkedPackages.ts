@@ -37,11 +37,6 @@ export function shouldSkipAutoPlugin(
   config: Pick<ExpoConfig, '_internal'>,
   plugin: StaticPlugin | string
 ) {
-  // Hack workaround because expo-dev-client doesn't use expo modules.
-  if (plugin === 'expo-dev-client') {
-    return false;
-  }
-
   // Only perform the check if `autolinkedModules` is defined, otherwise we assume
   // this is a legacy runner which doesn't support autolinking.
   if (Array.isArray(config._internal?.autolinkedModules)) {
