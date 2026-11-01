@@ -1,5 +1,6 @@
 package expo.modules.kotlin.modules
 
+import androidx.fragment.app.FragmentActivity
 import com.google.common.truth.Truth
 import expo.modules.core.Promise
 import expo.modules.kotlin.events.EventName
@@ -120,5 +121,36 @@ class ModuleDefinitionBuilderTest {
     val moduleDefinition = TestModuleWithName().definition()
 
     Truth.assertThat(moduleDefinition.name).isEqualTo("OverriddenName")
+  }
+
+  @Test
+  fun `builder should record the required host activity class`() {
+    val moduleDefinition = unboundModuleDefinition {
+      Name("Module")
+      RequiresHostActivity<FragmentActivity>()
+    }
+
+    Truth.assertThat(moduleDefinition.hostActivityRequirement?.activityClass).isEqualTo(FragmentActivity::class.java)
+    Truth.assertThat(moduleDefinition.hostActivityRequirement?.feature).isNull()
+  }
+
+  @Test
+  fun `builder should record the feature that needs the host activity class`() {
+    val moduleDefinition = unboundModuleDefinition {
+      Name("Module")
+      RequiresHostActivity<FragmentActivity>(feature = "authentication prompts")
+    }
+
+    Truth.assertThat(moduleDefinition.hostActivityRequirement?.activityClass).isEqualTo(FragmentActivity::class.java)
+    Truth.assertThat(moduleDefinition.hostActivityRequirement?.feature).isEqualTo("authentication prompts")
+  }
+
+  @Test
+  fun `builder should not require a host activity class by default`() {
+    val moduleDefinition = unboundModuleDefinition {
+      Name("Module")
+    }
+
+    Truth.assertThat(moduleDefinition.hostActivityRequirement).isNull()
   }
 }
