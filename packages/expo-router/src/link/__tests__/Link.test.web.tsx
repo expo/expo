@@ -1,6 +1,6 @@
 /** @jest-environment jsdom */
 import { fireEvent, render } from '@testing-library/react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { Link } from '../Link';
 
@@ -61,6 +61,47 @@ it('renders a Link with a slot', () => {
       </a>
     </DocumentFragment>
   `);
+});
+
+it('does not pass onPress to a DOM element child of a slot', () => {
+  const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  const { getByTestId } = render(
+    <Link asChild href="/foo">
+      <a data-testid="link">Foo</a>
+    </Link>
+  );
+
+  fireEvent.click(getByTestId('link'), { button: 0 });
+
+  expect(errorSpy).not.toHaveBeenCalled();
+  expect(mockLinkTo).toHaveBeenCalledWith('/foo', {
+    dangerouslySingular: undefined,
+    event: undefined,
+    relativeToDirectory: undefined,
+    withAnchor: undefined,
+  });
+  errorSpy.mockRestore();
+});
+
+it('navigates when a Link with onPress has a Pressable child of a slot', () => {
+  const onPress = jest.fn();
+  const { getByTestId } = render(
+    <Link asChild href="/foo" onPress={onPress}>
+      <Pressable testID="pressable">
+        <Text>Foo</Text>
+      </Pressable>
+    </Link>
+  );
+
+  fireEvent.click(getByTestId('pressable'), { button: 0 });
+
+  expect(onPress).toHaveBeenCalledTimes(1);
+  expect(mockLinkTo).toHaveBeenCalledWith('/foo', {
+    dangerouslySingular: undefined,
+    event: undefined,
+    relativeToDirectory: undefined,
+    withAnchor: undefined,
+  });
 });
 
 it('renders a Link with a slot and array style', () => {
