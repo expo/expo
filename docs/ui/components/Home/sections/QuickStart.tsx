@@ -12,10 +12,11 @@ export function QuickStart() {
   return (
     <>
       <H1 className="mt-1 border-0 pb-0 font-extrabold!">
-        Create amazing apps that run everywhere
+        AI writes your app. Expo makes it happen.
       </H1>
       <P className="mb-2 text-secondary">
-        Build one JavaScript/TypeScript project that runs natively on all your users' devices.
+        Agentic mobile infrastructure that builds your app, validates every change, ships it, and
+        monitors it in production.
       </P>
       <GridContainer>
         <GridCell
@@ -57,7 +58,7 @@ export function QuickStart() {
           />
           <DevicesImage />
           <h2 className="relative z-10 max-w-[24ch] heading-xl font-bold text-palette-blue12">
-            Create a universal Android, iOS, and web app
+            Create your first app
           </h2>
           <HomeButton
             className="border-palette-blue11 bg-palette-blue11 text-palette-white dark:text-palette-blue2 hocus:bg-palette-blue10"
