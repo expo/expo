@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Tabs, type TabsHostProps, type TabsScreenAppearanceIOS } from 'react-native-screens';
 
@@ -18,7 +18,11 @@ import {
   createStandardAppearanceFromOptions,
 } from './appearance';
 import { NativeTabsBottomAccessory } from './common/elements';
-import { SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS, type NativeTabsViewProps } from './types';
+import {
+  SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS,
+  type NativeTabOptions,
+  type NativeTabsViewProps,
+} from './types';
 import { useBottomAccessoryFunctionFromBottomAccessories } from './utils/bottomAccessory';
 import {
   convertOptionsIconToScreensPropsIcon,
@@ -144,6 +148,7 @@ interface InternalTabScreenProps extends SharedInternalTabScreenProps {
 
 function Screen(props: InternalTabScreenProps) {
   const { options, standardAppearance, scrollEdgeAppearance, contentRenderer } = props;
+  const initialRole = useMountedTabRole(props.name, options.role);
 
   const shared = useSharedScreenProps(props);
 
@@ -197,7 +202,7 @@ function Screen(props: InternalTabScreenProps) {
         scrollEdgeAppearance,
         systemItem: options.role,
         // On by default: on iOS 27, UIKit detaches the search tab only while activation is on.
-        ...(options.role === 'search'
+        ...(initialRole === 'search'
           ? {
               role: 'search',
               automaticallyActivatesSearch: !options.disableAutomaticSearchActivation,
@@ -214,6 +219,23 @@ function Screen(props: InternalTabScreenProps) {
       {wrappedContent}
     </TabsScreen>
   );
+}
+
+// react-native-screens builds a UISearchTab from `role` once and throws if that prop
+// changes on a mounted screen (iOS 26.1+). `systemItem` can still change.
+function useMountedTabRole(tabName: string, role: NativeTabOptions['role']) {
+  const initialRoleRef = useRef(role);
+  const initialRole = initialRoleRef.current;
+
+  useWarnOnce(
+    `NativeTabs could not change the "${tabName}" tab's role after it mounted. ` +
+      'react-native-screens rejects a new role on iOS 26.1 and later. ' +
+      `The tab keeps the role from its first render (${initialRole ?? 'none'}). ` +
+      'The system item still follows the latest role. Set `role` before the tab first renders.',
+    role !== initialRole
+  );
+
+  return initialRole;
 }
 
 const supportedTabBarMinimizeBehaviorsSet = new Set<string>(SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS);
