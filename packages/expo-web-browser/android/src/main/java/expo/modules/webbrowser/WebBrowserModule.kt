@@ -89,7 +89,11 @@ class WebBrowserModule : Module() {
         throw NoMatchingActivityException()
       }
 
-      customTabsResolver.startCustomTabs(tabsIntent, options)
+      try {
+        customTabsResolver.startCustomTabs(tabsIntent, options)
+      } catch (e: SecurityException) {
+        throw BrowserActivityNotAllowedException(e)
+      }
 
       return@AsyncFunction bundleOf(
         "type" to "opened"

@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
 import java.lang.ref.WeakReference
@@ -15,6 +16,7 @@ class BrowserProxyActivity : Activity() {
   companion object {
     const val EXTRA_URL = "expo.modules.webbrowser.EXTRA_URL"
     const val EXTRA_CUSTOM_TABS_INTENT_DATA = "expo.modules.webbrowser.EXTRA_CUSTOM_TABS_INTENT_DATA"
+    private const val TAG = "BrowserProxyActivity"
 
     var instance: WeakReference<BrowserProxyActivity> = WeakReference(null)
   }
@@ -47,7 +49,15 @@ class BrowserProxyActivity : Activity() {
     customTabsIntentData.extras?.let { customTabsIntent.intent.putExtras(it) }
     customTabsIntentData.`package`?.let { customTabsIntent.intent.`package` = it }
 
-    customTabsIntent.launchUrl(this, url.toUri())
+    try {
+      customTabsIntent.launchUrl(this, url.toUri())
+    } catch (e: SecurityException) {
+      // The URL resolved to an activity this app isn't allowed to start (for example, an app that
+      // registered a browser activity without exporting it). Don't crash the app over it.
+      Log.e(TAG, "Couldn't open the URL in a browser, because the system rejected the activity it resolved to", e)
+      finish()
+      return
+    }
 
     instance = WeakReference(this)
     hasLaunchedCustomTab = true
