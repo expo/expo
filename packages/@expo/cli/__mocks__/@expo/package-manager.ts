@@ -5,3 +5,4 @@ export const createForProject = jest.fn(() => ({
 export const NpmPackageManager = jest.fn(() => ({
   addGlobalAsync: jest.fn(),
 }));
+export const resolvePackageManager = jest.fn(() => null);
