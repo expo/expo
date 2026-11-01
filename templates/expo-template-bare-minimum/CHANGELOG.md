@@ -1,5 +1,13 @@
 # expo-template-bare-minimum
 
+## 58.0.32
+
+### Patch Changes
+
+- [iOS] Set `UIViewControllerBasedStatusBarAppearance` to `true` so `StatusBar` works in apps built with the iOS 27 SDK. ([#52730](https://github.com/expo/expo/pull/52730) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated dependencies. ([#52728](https://github.com/expo/expo/pull/52728))
+  - expo@58.0.23
+
 ## 58.0.31
 
 ### Patch Changes

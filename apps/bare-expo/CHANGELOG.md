@@ -1,5 +1,43 @@
 # bare-expo
 
+## 0.0.18
+
+### Patch Changes
+
+- Updated dependencies. ([#52581](https://github.com/expo/expo/pull/52581), [#52736](https://github.com/expo/expo/pull/52736), [#52728](https://github.com/expo/expo/pull/52728), [#52477](https://github.com/expo/expo/pull/52477), [#50849](https://github.com/expo/expo/pull/50849))
+  - expo-app-intents@0.5.16
+  - expo-ai@0.2.0
+  - expo@58.0.23
+  - expo-brownfield@58.0.19
+  - expo-app-metrics@58.0.15
+  - native-component-list@0.0.17
+  - test-suite@1.0.17
+  - expo-video@58.0.13
+  - expo-image@58.0.18
+  - expo-observe@58.0.18
+  - @expo/dom-webview@58.0.2
+  - expo-audio@58.0.11
+  - expo-background-fetch@58.0.12
+  - expo-build-properties@58.0.12
+  - expo-camera@58.0.14
+  - expo-dev-client@58.0.18
+  - expo-dev-menu@58.0.12
+  - expo-font@58.0.11
+  - expo-insights@58.0.11
+  - expo-linking@58.0.15
+  - expo-location@58.0.20
+  - expo-media-library@58.0.13
+  - expo-navigation-bar@58.0.4
+  - expo-network-addons@58.0.2
+  - expo-notifications@58.1.7
+  - expo-secure-store@58.0.2
+  - expo-splash-screen@58.0.12
+  - expo-status-bar@58.0.4
+  - expo-tracking-transparency@58.0.2
+  - @expo/ui@58.0.26
+  - expo-updates@58.0.20
+  - expo-web-browser@58.0.7
+
 ## 0.0.17
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0
+
+### Minor Changes
+
+- Add image input on Android. The package sends local images to Gemini Nano after the prompt text, each with its label. ML Kit does not report whether the device model accepts images, so Android reports the `images` capability as `unknown`. A device model that does not accept images can reject the request, for example with `ERR_UNSUPPORTED_FEATURE`, or can ignore the images. ([#52736](https://github.com/expo/expo/pull/52736) by [@chrfalch](https://github.com/chrfalch))
+
 ## 0.1.2
 
 ### Patch Changes

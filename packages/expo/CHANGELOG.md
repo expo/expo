@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- [iOS] Fix `StatusBar` hidden and style changes having no effect in apps built with the iOS 27 SDK. ([#52728](https://github.com/expo/expo/pull/52728) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated dependencies. ([#48461](https://github.com/expo/expo/pull/48461), [#52727](https://github.com/expo/expo/pull/52727), [#52443](https://github.com/expo/expo/pull/52443), [#52238](https://github.com/expo/expo/pull/52238), [#52463](https://github.com/expo/expo/pull/52463))
+  - expo-modules-autolinking@58.0.17
+  - expo-modules-core@58.0.30
+  - @expo/cli@58.1.19
+
 ## 58.0.22
 
 ### Patch Changes
