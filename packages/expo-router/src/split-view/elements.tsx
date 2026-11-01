@@ -4,6 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { SafeAreaView, Split } from '../optional-libraries/react-native-screens';
+import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import { SplitViewColumnHeader } from './header';
 
 export interface SplitViewToolbarItem {
@@ -162,6 +163,22 @@ export interface SplitViewHeader {
    * Search bar shown in the navigation bar.
    */
   searchBar?: SplitViewSearchBar;
+  /**
+   * How the back button shows its icon and title. Same values as `headerBackButtonDisplayMode` of Stack.
+   * The back button shows when the split view is collapsed.
+   *
+   * @default 'default'
+   */
+  backButtonDisplayMode?: NativeStackNavigationOptions['headerBackButtonDisplayMode'];
+  /**
+   * Title of the back button. Defaults to the title of the previous column.
+   */
+  backTitle?: string;
+  /**
+   * Whether the back button is visible.
+   * @default true
+   */
+  backVisible?: boolean;
 }
 
 export interface SplitViewColumnProps {
