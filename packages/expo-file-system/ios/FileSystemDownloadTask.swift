@@ -379,8 +379,8 @@ private final class DownloadTaskDelegate: NSObject, NetworkTaskDelegate {
     if shouldEmit {
       lastProgressTime = currentTime
       sharedObject?.emit(event: "progress", payload: [
-        "bytesWritten": totalBytesWritten,
-        "totalBytes": totalBytesExpectedToWrite,
+        "bytesWritten": Double(totalBytesWritten),
+        "totalBytes": Double(totalBytesExpectedToWrite),
       ])
     }
   }
