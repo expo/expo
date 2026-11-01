@@ -1,5 +1,6 @@
 import { HStack } from '@expo/ui/swift-ui';
 
+import { hasPercentageSize } from '../modifierUtils';
 import { transformToModifiers } from '../transformStyle';
 import type { UniversalAlignment } from '../types';
 import type { RowProps } from './types';
@@ -42,6 +43,7 @@ export function Row({
       spacing={spacing}
       modifiers={modifiers}
       resolvesChildPercentages
+      usesPercentageLayout={hasPercentageSize(style, children)}
       testID={testID}>
       {children}
     </HStack>

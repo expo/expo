@@ -32,6 +32,12 @@ export interface RowProps extends PrimitiveBaseProps {
    * Universal `Row` sets this. Leave it unset to keep the Compose `Row`.
    */
   resolvesChildPercentages?: boolean;
+  /**
+   * When `true` with `resolvesChildPercentages`, this row uses the percentage layout.
+   * Universal `Row` sets this only when it or a child has a percentage size.
+   * @hidden
+   */
+  usesPercentageLayout?: boolean;
 }
 
 const RowNativeView: React.ComponentType<RowProps> = requireNativeView('ExpoUI', 'RowView');

@@ -32,6 +32,12 @@ export interface ColumnProps extends PrimitiveBaseProps {
    * Universal `Column` sets this. Leave it unset to keep the Compose `Column`.
    */
   resolvesChildPercentages?: boolean;
+  /**
+   * When `true` with `resolvesChildPercentages`, this column uses the percentage layout.
+   * Universal `Column` sets this only when it or a child has a percentage size.
+   * @hidden
+   */
+  usesPercentageLayout?: boolean;
 }
 
 const ColumnNativeView: React.ComponentType<ColumnProps> = requireNativeView(
