@@ -14,6 +14,7 @@ function withDefaults({ watchPlugins, ...config }) {
     ...config,
     roots: ['src'],
     clearMocks: true,
+    resolver: 'react-native-reanimated/jest/resolver',
     setupFilesAfterEnv: ['./build/testing-library/mocks.js'],
     // Map CSS modules to a proxy object so Jest doesn't attempt to parse them.
     moduleNameMapper: {
