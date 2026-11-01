@@ -9,6 +9,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.fragment.app.FragmentActivity
 import expo.modules.core.ModuleRegistry
 import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.kotlin.exception.Exceptions
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.crypto.Cipher
@@ -42,8 +43,16 @@ class AuthenticationHelper(
 
     try {
       assertBiometricsSupport()
-      val fragmentActivity = getCurrentActivity() as? FragmentActivity
+      val currentActivity = getCurrentActivity()
         ?: throw AuthenticationException("Cannot display biometric prompt when the app is not in the foreground")
+      val fragmentActivity = currentActivity as? FragmentActivity
+        ?: throw AuthenticationException(
+          Exceptions.UnsupportedHostActivity(
+            currentActivity,
+            FragmentActivity::class.java,
+            "The ExpoSecureStore module with requireAuthentication"
+          ).message
+        )
 
       val authenticationPrompt = AuthenticationPrompt(
         fragmentActivity,
