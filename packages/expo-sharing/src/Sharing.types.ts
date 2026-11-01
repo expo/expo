@@ -114,6 +114,7 @@ export type BaseResolvedSharePayload = SharePayload & {
   /**
    * URI which can be used to access the shared content. When resolving contents of a URL with redirects, contains the redirect target URI.
    * Null when resolving a [`SharePayload`](#sharepayload) with a `text` [`ShareType`](#sharetype).
+   * On Android, also null for a URL caption shared alongside a file, because caption URLs are not fetched.
    */
   contentUri: string | null;
 
