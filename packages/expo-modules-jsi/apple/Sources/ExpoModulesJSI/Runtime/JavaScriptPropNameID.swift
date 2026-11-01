@@ -24,6 +24,16 @@ public final class JavaScriptPropNameID: JavaScriptType {
     self.pointee = string.toJSIPropNameID(in: runtime.pointee)
   }
 
+  /// Creates a PropNameID from the symbol, for a property with a symbol key.
+  public init(_ runtime: borrowing JavaScriptRuntime, symbol: borrowing JavaScriptSymbol) {
+    assert(
+      symbol.runtimeHandle === runtime.handle,
+      "JavaScriptSymbol belongs to a different runtime than the PropNameID being created"
+    )
+    self.runtimeHandle = runtime.handle
+    self.pointee = facebook.jsi.PropNameID.forSymbol(runtime.pointee, symbol.pointee)
+  }
+
   /// Copies the contents of the PropNameID into a string.
   public func utf8() -> String {
     guard let jsiRuntime else {
