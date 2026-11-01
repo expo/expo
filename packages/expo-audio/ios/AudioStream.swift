@@ -284,9 +284,8 @@ class AudioStream: SharedObject {
   }
 
   private func timestampSinceStart(_ when: AVAudioTime) -> Double {
-    guard let startTimestamp else { return 0 }
-    let hostTimeDiff = when.hostTime - startTimestamp.hostTime
-    return Double(hostTimeDiff) / Double(NSEC_PER_SEC)
+    guard let startTimestamp, when.isHostTimeValid, startTimestamp.isHostTimeValid else { return 0 }
+    return AVAudioTime.seconds(forHostTime: when.hostTime) - AVAudioTime.seconds(forHostTime: startTimestamp.hostTime)
   }
 
   deinit {
