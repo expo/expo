@@ -62,10 +62,14 @@ public class BackgroundTaskScheduler {
     private var scheduler: BackgroundTaskScheduling = SystemBackgroundTaskScheduler()
     private var numberOfRegisteredTasksOfThisType: Int = 0
     private var intervalSeconds: TimeInterval = 12 * 60 * 60
+    private var requiresNetworkConnectivity: Bool = false
 
-    func didRegisterTask(minutes: Int?) -> Bool {
+    func didRegisterTask(minutes: Int?, requiresNetwork: Bool?) -> Bool {
       if let minutes = minutes {
         intervalSeconds = Double(minutes) * 60
+      }
+      if let requiresNetwork = requiresNetwork {
+        requiresNetworkConnectivity = requiresNetwork
       }
       numberOfRegisteredTasksOfThisType += 1
 
@@ -90,7 +94,7 @@ public class BackgroundTaskScheduler {
       stopWorkerOnce()
 
       let request = BGProcessingTaskRequest(identifier: BackgroundTaskConstants.BackgroundWorkerIdentifier)
-      request.requiresNetworkConnectivity = true
+      request.requiresNetworkConnectivity = requiresNetworkConnectivity
       request.requiresExternalPower = false
       request.earliestBeginDate = Date().addingTimeInterval(intervalSeconds)
 
@@ -152,9 +156,9 @@ public class BackgroundTaskScheduler {
   /**
    * Call when a task is registered to keep track of how many background task consumers we have
    */
-  public static func didRegisterTask(minutes: Int?) {
+  public static func didRegisterTask(minutes: Int?, requiresNetwork: Bool? = nil) {
     Task {
-      if await schedulerState.didRegisterTask(minutes: minutes) {
+      if await schedulerState.didRegisterTask(minutes: minutes, requiresNetwork: requiresNetwork) {
         try await tryScheduleWorker()
       }
     }
