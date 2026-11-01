@@ -6,7 +6,10 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.notifications.NotificationWasAlreadyHandledException
+import expo.modules.notifications.notifications.DataOnlyPresentationSetting
 import expo.modules.notifications.notifications.NotificationManager
+import expo.modules.notifications.notifications.PendingDataOnlyPresentationWarning
+import expo.modules.notifications.notifications.hasTitleOrText
 import expo.modules.notifications.notifications.interfaces.NotificationListener
 import expo.modules.notifications.notifications.model.Notification
 import expo.modules.notifications.notifications.model.NotificationBehaviorRecord
@@ -49,6 +52,13 @@ open class NotificationsHandler : Module(), NotificationListener {
     // foreground.
     OnStartObserving("onHandleNotification") {
       NotificationManager.addListener(this@NotificationsHandler)
+      appContext.reactContext?.let { context ->
+        if (PendingDataOnlyPresentationWarning(context).consume()) {
+          DataOnlyPresentationSetting.read(context).deprecationWarning(presented = true)?.let {
+            appContext.jsLogger?.warn(it)
+          }
+        }
+      }
     }
 
     OnStopObserving("onHandleNotification") {
@@ -109,6 +119,11 @@ open class NotificationsHandler : Module(), NotificationListener {
       // We do not notify JS about data-only notifications, for consistency with iOS.
       // onDidReceiveNotification is triggered
       // and JS task will run if set up
+      if (content.hasTitleOrText()) {
+        DataOnlyPresentationSetting.read(context).deprecationWarning(presented = false)?.let {
+          appContext.jsLogger?.warn(it)
+        }
+      }
       return
     }
     val task = SingleNotificationHandlerTask(
