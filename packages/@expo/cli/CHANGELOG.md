@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.1.19
+
+### Patch Changes
+
+- Updated dependencies.
+  - @expo/prebuild-config@58.0.19
+  - @expo/metro-config@58.0.20
+
 ## 58.1.18
 
 ### Patch Changes

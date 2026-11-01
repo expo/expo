@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.30
+
+### Patch Changes
+
+- [iOS] Add `ExpoRootViewController`, which applies the status bar style and visibility set from JavaScript, and use it as the default root view controller. ([#52727](https://github.com/expo/expo/pull/52727) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Update `expo-modules-macros` to 0.29.0. The code that `@Record` and `@Union` generate is `nonisolated`, so it also compiles with `-default-isolation MainActor`, a `@Union` can be a `@Record` property, and a `@SharedObject` subclass binds the `@JS` members it inherits. A `@Record` type can no longer be created from a native dictionary: its `from(dictionary:appContext:)` throws `RecordDictionaryConversionException`. ([#52443](https://github.com/expo/expo/pull/52443) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make `Logger.minLevel` public, so apps can keep less severe logs of the shared `log` instance, such as module registration in release builds, out of the device log. ([#52238](https://github.com/expo/expo/pull/52238) by [@tmak](https://github.com/tmak))
+- [iOS] `@ExpoModule` and `@SharedObject` add an `@unchecked Sendable` conformance to their class, so `@JS(.withAsync)` functions compile without declaring it by hand. ([#52443](https://github.com/expo/expo/pull/52443) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add `RecordDictionaryConversionException`, which `@Record` types throw when they're created from a native dictionary. ([#52463](https://github.com/expo/expo/pull/52463) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#52476](https://github.com/expo/expo/pull/52476), [#52477](https://github.com/expo/expo/pull/52477), [#52570](https://github.com/expo/expo/pull/52570), [#52648](https://github.com/expo/expo/pull/52648))
+  - expo-modules-jsi@58.0.22
+
 ## 58.0.29
 
 ### Patch Changes

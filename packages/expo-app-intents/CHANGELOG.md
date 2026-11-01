@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.16
+
+### Patch Changes
+
+- [iOS] Decode donation params on the JavaScript thread through `decode(_:in:)` instead of `from(dictionary:)`, so a `@Record` type works as `DonationParams`. ([#52581](https://github.com/expo/expo/pull/52581) by [@tsapeta](https://github.com/tsapeta))
+
 ## 0.5.15
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- [iOS] Fix a crash when a frame duration is zero, negative, infinite or NaN. ([#50849](https://github.com/expo/expo/pull/50849) by [@JoaoPauloCMarra](https://github.com/JoaoPauloCMarra))
+
 ## 58.0.14
 
 ### Patch Changes

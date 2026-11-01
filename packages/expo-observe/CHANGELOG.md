@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.18
+
+### Patch Changes
+
+- Updated dependencies. ([#50849](https://github.com/expo/expo/pull/50849))
+  - expo-app-metrics@58.0.15
+
 ## 58.0.17
 
 ### Patch Changes

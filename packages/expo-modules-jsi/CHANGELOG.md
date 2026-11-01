@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.22
+
+### Patch Changes
+
+- [iOS] Reduce the overhead of converting JavaScript arrays to Swift arrays, such as the array arguments of `@JS` functions. ([#52476](https://github.com/expo/expo/pull/52476) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Reduce the overhead of calling the throwing `as…()` conversions of `JavaScriptValue` and `JavaScriptUnownedValue` from another module. `JavaScriptValue.TypeError` is now `@frozen`. ([#52477](https://github.com/expo/expo/pull/52477) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix a crash on iOS 17 and older ("freed pointer was not the last allocation") when an async native function awaits `JavaScriptRuntime.execute` on the JavaScript thread. ([#52570](https://github.com/expo/expo/pull/52570) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] `Optional` conforms to `JavaScriptDecodable` also when its wrapped type is non-copyable, so an optional `JavaScriptObject` or `JavaScriptValue` decodes like any other optional, for example as an optional argument of a `@JS` function. ([#52648](https://github.com/expo/expo/pull/52648) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.21
 
 ### Patch Changes
