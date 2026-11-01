@@ -46,6 +46,16 @@ export interface SegmentedControlProps {
    */
   tintColor?: string;
   /**
+   * Text color of the selected segment.
+   * @platform android, web
+   */
+  activeTextColor?: string;
+  /**
+   * Text color of the unselected segments.
+   * @platform android, web
+   */
+  inactiveTextColor?: string;
+  /**
    * Overrides the control's appearance irrespective of the system theme.
    */
   appearance?: 'dark' | 'light';
