@@ -4,12 +4,11 @@ import android.content.Context
 import android.view.View
 import android.view.View.MeasureSpec
 import android.view.ViewGroup
-import eightbitlab.com.blurview.BlurTarget
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
 
 class ExpoBlurTargetView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
-  internal val blurTargetView: BlurTarget = UIManagerCompatibleBlurTarget(appContext, context)
+  internal val blurTargetView = UIManagerCompatibleBlurTarget(appContext, context)
 
   init {
     super.addView(
