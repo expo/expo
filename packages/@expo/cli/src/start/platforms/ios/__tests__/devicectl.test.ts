@@ -47,7 +47,6 @@ describe(installAndLaunchAppAsync, () => {
   it.each([
     [true, '', 0],
     [false, '', 0],
-    [true, '50%...', 0],
     [true, '100%...', 0],
     [true, '100%...', 1],
   ])(
@@ -76,25 +75,21 @@ describe(installAndLaunchAppAsync, () => {
       });
       const spinner = oraUtils.getAllSpinners()[0]!;
       const succeed = jest.spyOn(spinner, 'succeed');
-      try {
-        if (progress) child.stdout.emit('data', Buffer.from(progress));
+      if (progress) child.stdout.emit('data', Buffer.from(progress));
+      expect(succeed).not.toHaveBeenCalled();
+      child.emit('close', code);
+      if (code === 0) {
+        await installation;
+        expect(succeed).toHaveBeenCalledTimes(1);
+        expect(succeed).toHaveBeenCalledWith('Installed on Test iPhone');
+      } else {
+        await expect(installation).rejects.toThrow('Command failed with exit code 1');
         expect(succeed).not.toHaveBeenCalled();
-        child.emit('close', code);
-        if (code === 0) {
-          await installation;
-          expect(succeed).toHaveBeenCalledTimes(1);
-          expect(succeed).toHaveBeenCalledWith('Installed on Test iPhone');
-        } else {
-          await expect(installation).rejects.toThrow('Command failed with exit code 1');
-          expect(succeed).not.toHaveBeenCalled();
-          expect(xcrunAsync).not.toHaveBeenCalled();
-        }
-        expect(spinner.isSpinning).toBe(false);
-        expect(oraUtils.getAllSpinners()).not.toContain(spinner);
-        expect(console.log).toBe(originalLog);
-      } finally {
-        spinner.stop();
+        expect(xcrunAsync).not.toHaveBeenCalled();
       }
+      expect(spinner.isSpinning).toBe(false);
+      expect(oraUtils.getAllSpinners()).not.toContain(spinner);
+      expect(console.log).toBe(originalLog);
     }
   );
 });

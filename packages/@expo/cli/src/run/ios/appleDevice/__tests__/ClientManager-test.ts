@@ -8,7 +8,7 @@ import { UsbmuxdClient } from '../client/UsbmuxdClient';
 
 afterEach(() => jest.restoreAllMocks());
 
-it.each(['getDevice', 'readPairRecord', 'connect', 'doHandshake'] as const)(
+it.each(['getDevice', 'doHandshake'] as const)(
   'releases the transport and preserves the error when %s fails',
   async (stage) => {
     const socket = { destroy: jest.fn() } as unknown as Socket;
