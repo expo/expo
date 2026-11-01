@@ -87,14 +87,22 @@ public macro JS(_ jsName: String? = nil, _ options: JSOptions...) =
 public macro JS(_ options: JSOptions...) =
   #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
 
-/// Options passed to `@Event` after the optional JS name, e.g. `@Event(.sync)` or
-/// `@Event("tick", .sync)`. The macro reads them from the source, so spell them as `.option`
-/// literals rather than constants.
+/// Options passed to `@Event` after the optional JS name, e.g. `@Event(.inline)` or
+/// `@Event("tick", .blocking)`. The macro reads them from the source, so spell them as `.option`
+/// literals rather than constants. Without an option, the event is scheduled on the JavaScript thread
+/// and the listeners run later. An event property is callable from any thread with each option.
 public enum EventOptions {
-  /// Emits the event synchronously: the payload is converted and the JS listeners run before the
-  /// call returns. `@ExpoModule` and `@SharedObject` isolate the property to `@JavaScriptActor`, so
-  /// it can only be called on the JavaScript thread.
-  case sync
+  /// Runs the listeners before the call returns when it is made on the JavaScript thread, for example
+  /// from a synchronous function. On any other thread, the event is scheduled, the same as without an
+  /// option. It never blocks. The listeners can call back into the module or shared object before the
+  /// call returns, so emit after its state is up to date.
+  case inline
+
+  /// Runs the listeners before the call returns, on any thread. A call from another thread blocks until
+  /// the JavaScript thread runs them, so it deadlocks when the JavaScript thread is waiting for the
+  /// calling thread, for example in `DispatchQueue.main.sync` while the main thread emits. Prefer
+  /// `.inline` unless the caller must wait for the listeners.
+  case blocking
 }
 
 /// Turns a function-typed `var` on a module or shared object into a typed JavaScript event.
@@ -112,7 +120,7 @@ public enum EventOptions {
 ///     // Emit it from anywhere:
 ///     onProgress(ProgressEvent(percent: 50))
 ///
-/// Trailing `EventOptions` tune the event. The options-only overload exists because `.sync` can't
+/// Trailing `EventOptions` tune the event. The options-only overload exists because an option can't
 /// fill the unlabeled `name` slot.
 @attached(accessor)
 @attached(peer, names: arbitrary)
