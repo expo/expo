@@ -56,6 +56,29 @@ export async function requestAsync<T>(requestUrl: string, fetchRequest: FetchReq
 
   const response = await fetch(correctedUrl, request);
 
+  // Check for HTTP errors before attempting to parse the body.
+  // Without this, a non-2xx response with an empty or non-JSON body would throw
+  // an opaque SyntaxError from JSON.parse, hiding the actual HTTP error.
+  // See: https://github.com/expo/expo/issues/45384
+  if (!response.ok) {
+    const bodyText = await response.text().catch(() => '');
+    const contentType = response.headers.get('content-type');
+    // If the error response is JSON, try to parse it and return it so callers
+    // (like TokenRequest.performAsync) can inspect the `error` field.
+    if (contentType?.includes('application/json') && bodyText) {
+      try {
+        return JSON.parse(bodyText);
+      } catch {
+        // Fall through to throw a descriptive error
+      }
+    }
+    // For non-JSON error responses or empty bodies, throw a clear error
+    const statusText = response.statusText || 'Unknown';
+    throw new Error(
+      `Request to ${correctedUrl} failed with status ${response.status} (${statusText})${bodyText ? `: ${bodyText}` : ''}`
+    );
+  }
+
   const contentType = response.headers.get('content-type');
   if (isJsonDataType || contentType?.includes('application/json')) {
     return response.json();
