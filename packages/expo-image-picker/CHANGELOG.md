@@ -119,6 +119,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - [iOS] Allow `launchCameraAsync` to be invoked on the simulator. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
+- [iOS] Add an event that notifies when the user has finished selecting media and the selector sheet closes. ([#46708](https://github.com/expo/expo/pull/46837) by [@AbeUribe831](https://github.com/AbeUribe831))
 
 ### 💡 Others
 
