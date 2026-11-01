@@ -914,11 +914,16 @@ Create a Vercel configuration file (**vercel.json**) at the root of your project
 
 ```json vercel.json
 {
+  "build": {
+    "env": {
+      "VERCEL_CLI_VERSION": "vercel@65.9.0"
+    }
+  },
   "buildCommand": "expo export -p web",
   "outputDirectory": "dist/client",
   "functions": {
     "api/index.ts": {
-      "runtime": "@vercel/node@5.1.8",
+      "runtime": "@vercel/node@29.0.1",
       "includeFiles": "dist/server/**"
     }
   },
