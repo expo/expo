@@ -1,5 +1,11 @@
 # Changelog
 
+## Unpublished
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `printToFileAsync` and HTML `print` never settling or rejecting when a garbage collection runs during PDF rendering.
+
 ## 58.0.7
 
 ### Patch Changes
