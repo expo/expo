@@ -1,0 +1,15 @@
+appId: dev.expo.Payments
+---
+# Start from a fresh screen, so the status shows no earlier action.
+- openLink: bareexpo://components/selectable-text
+- openLink: bareexpo://components/selectable-text/chat
+- assertVisible: 'expo \| None'
+
+# Recycled rows report the range of their own text.
+- scrollUntilVisible:
+    element: 'Message 40: .*'
+    direction: DOWN
+    timeout: 60000
+- longPressOn: 'Message 40: .*'
+- tapOn: 'Add to chat'
+- assertVisible: 'expo \| row 40: .* slice-match=YES'
