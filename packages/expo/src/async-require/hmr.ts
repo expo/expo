@@ -21,6 +21,7 @@ import {
   resetErrorOverlay,
   showLoading,
 } from './hmrUtils';
+import { registerBundleWithReactNativeHMR } from './registerBundleWithReactNativeHMR';
 
 declare global {
   interface Window {
@@ -100,6 +101,10 @@ const HMRClient = {
   },
 
   registerBundle(requestUrl: string) {
+    if (!hmrClient && registerBundleWithReactNativeHMR(requestUrl)) {
+      return;
+    }
+
     assert(hmrClient, 'Expected HMRClient.setup() call at startup.');
     pendingEntryPoints.push(requestUrl);
     registerBundleEntryPoints(hmrClient);
