@@ -1,7 +1,7 @@
 ---
 title: Share previews with your team
 sidebar_title: Share previews
-description: Learn how to use EAS Update to send OTA updates and share previews with a team.
+description: Learn how to use Expo Update to send OTA updates and share previews with a team.
 hasVideoLink: true
 ---
 
@@ -14,12 +14,12 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Updates generally fix small bugs and push small changes in between app store releases. They allow updating the non-native parts of our example app, such as JavaScript code, styling, and images.
 
-In this chapter, we'll use [EAS Update](/eas-update/introduction/) to share changes with our team. This will help [us and our team quickly share previews](/review/overview/) of the change.
+In this chapter, we'll use [Expo Update](/eas-update/introduction/) to share changes with our team. This will help [us and our team quickly share previews](/review/overview/) of the change.
 
 <VideoBoxLink
   videoId="vPKh-tNm-yI"
   title="Watch: How to share previews with your team"
-  description="Set up EAS Update to share preview versions of your app with your team between app store releases."
+  description="Set up Expo Update to share preview versions of your app with your team between app store releases."
 />
 
 ---
@@ -43,9 +43,9 @@ To initialize our project and send an update, we need to use the [`expo-updates`
 
 <Step label="2">
 
-## Configure EAS Update
+## Configure Expo Update
 
-To initialize our project with EAS Update, run the following command:
+To initialize our project with Expo Update, run the following command:
 
 <Terminal cmd={['$ eas update:configure']} />
 
@@ -91,7 +91,7 @@ If your **app.config.js** doesn't use the `config` values from **app.json**, EAS
 
 <Collapsible summary="What is a channel?">
 
-[Channels](/eas-update/how-it-works/#conceptual-overview) are used to group builds together. If we have an Android and iOS build, both on the app store, we can give them both a channel of production. Later, we can tell EAS Update to target the production channel, so our update will affect all builds with a production channel.
+[Channels](/eas-update/how-it-works/#conceptual-overview) are used to group builds together. If we have an Android and iOS build, both on the app store, we can give them both a channel of production. Later, we can tell Expo Update to target the production channel, so our update will affect all builds with a production channel.
 
 </Collapsible>
 
@@ -135,19 +135,19 @@ Instead of creating a new build to share this change with our team for testing, 
 
 In the command above, we used the `development` channel. Every update is associated with a [channel name](/eas-update/how-it-works/#publishing-an-update). It is similar to every commit that we make with git, which is associated with a git branch.
 
-So, we use the `development` channel in our build profile and publish an update to it. This tells EAS to deliver the update to builds with the `development` channel. When we make an EAS Update channel, EAS automatically maps it to a branch with the same name.
+So, we use the `development` channel in our build profile and publish an update to it. This tells Expo Update to deliver the update to builds with the `development` channel. When we make an Expo Update channel, Expo Update automatically maps it to a branch with the same name.
 
 After publishing the update, the CLI prints information about it.
 
 <ContentSpotlight
-  alt="EAS Update published successfully with CLI output"
+  alt="Expo Update published successfully with CLI output"
   src="/static/images/tutorial/eas/team-development-update-cli.webp"
 />
 
-Click the **EAS Dashboard** link to see the update under **Over-the-air updates** > **Update groups**:
+Click the **Expo dashboard** link to see the update under **Over-the-air updates** > **Update groups**:
 
 <ContentSpotlight
-  alt="EAS dashboard shows the latest published update for the development build"
+  alt="Expo dashboard shows the latest published update for the development build"
   src="/static/images/tutorial/eas/team-development-update-group.webp"
   className="max-w-[800px]"
 />

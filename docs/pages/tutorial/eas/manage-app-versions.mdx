@@ -1,7 +1,7 @@
 ---
 title: Manage different app versions
 sidebar_title: Manage app versions
-description: Learn about developer-facing and user-facing app versions and how EAS Build automatically manages developer-facing versions.
+description: Learn about developer-facing and user-facing app versions and how Expo Build automatically manages developer-facing versions.
 hasVideoLink: true
 ---
 
@@ -10,12 +10,12 @@ import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-In this chapter, we'll learn how EAS Build automatically manages the developer-facing app version for Android and iOS. Learning about it will be useful before we dive into production build in the next two chapters.
+In this chapter, we'll learn how Expo Build automatically manages the developer-facing app version for Android and iOS. Learning about it will be useful before we dive into production build in the next two chapters.
 
 <VideoBoxLink
   videoId="C8x4N9UmzS8"
   title="Watch: Automating app version code"
-  description="Understand developer-facing and user-facing app versions and how EAS Build automates version management for you."
+  description="Understand developer-facing and user-facing app versions and how Expo Build automates version management for you."
 />
 
 ---
@@ -29,7 +29,7 @@ An app version is composed of two values:
 
 Both Google Play Store and Apple App Store rely on developer-facing values to identify each unique build. For example, if we upload an app with the app version `1.0.0 (1)` (which is a combination of user-facing and developer-facing values), we cannot submit another build to the app stores with the same app version. Submitting builds with duplicate app version numbers results in a failed submission.
 
-An example demonstration of manually managing developer-facing values is shown below by `android.versionCode` and `ios.buildNumber` in **app.config.js**. **We don't have to add or manage these values manually since EAS Build automates this for us**.
+An example demonstration of manually managing developer-facing values is shown below by `android.versionCode` and `ios.buildNumber` in **app.config.js**. **We don't have to add or manage these values manually since Expo Build automates this for us**.
 
 ```js app.config.js
 {
@@ -44,11 +44,11 @@ An example demonstration of manually managing developer-facing values is shown b
 }
 ```
 
-> **info** EAS does not handle the [user-facing version number](/build-reference/app-versions/#user-facing-version). Instead, we update the `version` property in app config before we create a production build.
+> **info** Expo Build does not handle the [user-facing version number](/build-reference/app-versions/#user-facing-version). Instead, we update the `version` property in app config before we create a production build.
 
-## Automatic app version management with EAS Build
+## Automatic app version management with Expo Build
 
-By default, EAS Build assists in automating developer-facing values. It utilizes the [remote version source](/build-reference/app-versions/#remote-version-source) to automatically increment developer-facing values whenever a new production release is made.
+By default, Expo Build assists in automating developer-facing values. It utilizes the [remote version source](/build-reference/app-versions/#remote-version-source) to automatically increment developer-facing values whenever a new production release is made.
 
 When we configured the project with the `eas build:configure` command, the EAS CLI automatically added the following properties in **eas.json**:
 
@@ -79,9 +79,9 @@ You can view them in your project's **eas.json**:
 
 When we create a new production build in the next two chapters, the `versionCode` for Android and `buildNumber` for iOS will increment automatically.
 
-<Collapsible summary="Syncing developer-facing app versions for already published apps to EAS">
+<Collapsible summary="Syncing developer-facing app versions for already published apps to Expo Services">
 
-If your app is already published in the app stores, the developer-facing app versions are already set. When migrating this app to use EAS Build, follow the steps below to sync those app versions:
+If your app is already published in the app stores, the developer-facing app versions are already set. When migrating this app to use Expo Build, follow the steps below to sync those app versions:
 
 - In the terminal window, run the `eas build:version:set` command:
 
@@ -91,7 +91,7 @@ If your app is already published in the app stores, the developer-facing app ver
 - When prompted **Do you want to set app version source to remote now?**, select **yes**. This will set the `cli.appVersionSource` to `remote` in **eas.json**.
 - When prompted **What version would you like to initialize it with?**, enter the last version number that you have set in the app stores.
 
-After these steps, the app versions will be synced to EAS Build remotely. You can set `build.production.autoIncrement` to `true` in **eas.json**. When you create a new production build, the `versionCode` and `buildNumber` will be automatically incremented from now on.
+After these steps, the app versions will be synced to Expo Build remotely. You can set `build.production.autoIncrement` to `true` in **eas.json**. When you create a new production build, the `versionCode` and `buildNumber` will be automatically incremented from now on.
 
 </Collapsible>
 

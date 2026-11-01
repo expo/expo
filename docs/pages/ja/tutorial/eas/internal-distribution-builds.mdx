@@ -19,7 +19,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 <VideoBoxLink
   videoId="1fQuGLHxWks"
   title="視聴：内部配布ビルドを作成して共有する方法"
-  description="EAS で内部配布ビルドを作成し、テストのためにチームへ直接共有します。"
+  description="Expo Build で内部配布ビルドを作成し、テストのためにチームへ直接共有します。"
 />
 
 ---
@@ -37,13 +37,13 @@ Google と Apple はどちらも、アプリを内部で共有する仕組みを
 
 ただし、これらの従来の方法にはそれぞれ制約があります。たとえば TestFlight では、一度にアクティブにできるビルドは 1 つだけです。
 
-### より速く配布するための EAS Build
+### より速く配布するための Expo Build
 
-EAS Build はこのプロセスを高速化します。ビルドの共有リンクを作成し、その使い方も案内してくれます。内部配布をしやすくするデフォルト設定を備えており、従来の方法よりも効率的な選択肢になります。
+Expo Build はこのプロセスを高速化します。ビルドの共有リンクを作成し、その使い方も案内してくれます。内部配布をしやすくするデフォルト設定を備えており、従来の方法よりも効率的な選択肢になります。
 
 ## 内部配布ビルドを作成する
 
-EAS Build でビルドを作成して配布するには、次の手順に従います。
+Expo Build でビルドを作成して配布するには、次の手順に従います。
 
 <Step label="1">
 
@@ -88,10 +88,10 @@ Android のアプリ署名は制約がゆるく、互換性のある **.apk** �
 <Terminal cmd={['$ eas build --platform android --profile preview']} />
 
 - preview ビルドは前の章で設定した独自の Android Application ID を使うため、EAS CLI から **Generate a new Android Keystore**（新しい Android Keystore を生成しますか？）と尋ねられます。<kbd>Y</kbd> を押します。
-- このコマンドが EAS Build を起動し、EAS ダッシュボードでビルドの進捗を確認できます。
+- このコマンドが Expo Build を起動し、Expo ダッシュボードでビルドの進捗を確認できます。
 
 <ContentSpotlight
-  alt="Android preview build details and progress in EAS dashboard"
+  alt="Android preview build details and progress in Expo dashboard"
   src="/static/images/tutorial/eas/internal-distribution-builds-android-preview-build.webp"
   className="max-w-[800px]"
 />
@@ -116,10 +116,10 @@ ad hoc プロビジョニングプロファイルで署名されたアプリは�
 
 <Terminal cmd={['$ eas build --platform ios --profile preview']} />
 
-- このコマンドが EAS Build を起動し、EAS ダッシュボードでビルドの進捗を確認できます。
+- このコマンドが Expo Build を起動し、Expo ダッシュボードでビルドの進捗を確認できます。
 
 <ContentSpotlight
-  alt="iOS preview build details and progress in EAS dashboard"
+  alt="iOS preview build details and progress in Expo dashboard"
   src="/static/images/tutorial/eas/internal-distribution-builds-ios-preview-build.webp"
   className="max-w-[800px]"
 />
@@ -174,7 +174,7 @@ Apple Enterprise Program のメンバーシップは年間 299 米ドルで、[�
 - **Send a link to a device** セクションからリンクをコピーし、テスト用デバイスに送ります。
 
 <ContentSpotlight
-  alt="Install on a test device popup with a QR code and an install link in EAS dashboard"
+  alt="Install on a test device popup with a QR code and an install link in Expo dashboard"
   src="/static/images/tutorial/eas/android-development-build-qr-code.webp"
   className="max-w-[450px]"
 />
