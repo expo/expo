@@ -6,6 +6,7 @@ import android.view.KeyEvent
 import android.view.ViewGroup
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
+import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
 import com.facebook.react.devsupport.interfaces.DevSupportManager
 import expo.modules.core.interfaces.Package
@@ -49,7 +50,7 @@ class DevMenuPackage : Package {
 
         override fun onDidCreateReactActivityDelegateNotification(activity: ReactActivity?, delegate: ReactActivityDelegate?) {
           currentActivityHolder = activity.weak()
-          reactHostHolder = delegate?.reactHost.weak()
+          reactHostHolder = (delegate?.reactHost ?: (activity?.application as? ReactApplication)?.reactHost).weak()
         }
 
         override fun createReactRootViewContainer(activity: Activity): ViewGroup {
