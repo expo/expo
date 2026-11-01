@@ -1,5 +1,6 @@
 import path from 'path';
 
+import { maybeRealpathSync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import type { EnvironmentMode } from '../utils/nodeEnv';
 
@@ -31,9 +32,14 @@ export function resolveOptions(projectRoot: string, options: Options): ResolvedO
   return {
     mode: options.mode,
     device: options.device,
-    outputDir: options.outputDir ? path.resolve(projectRoot, options.outputDir) : undefined,
+    outputDir: options.outputDir ? resolveOutputDir(projectRoot, options.outputDir) : undefined,
     outputType: resolveOutputType(options),
   };
+}
+
+function resolveOutputDir(projectRoot: string, outputDir: string): string {
+  const resolvedOutputDir = path.resolve(projectRoot, outputDir);
+  return maybeRealpathSync(resolvedOutputDir) ?? resolvedOutputDir;
 }
 
 function resolveOutputType({ platform, mode, device, outputType }: Options): OutputType {
