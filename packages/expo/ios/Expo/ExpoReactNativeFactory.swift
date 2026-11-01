@@ -13,7 +13,7 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
   @MainActor
   private lazy var reactDelegate: ExpoReactDelegate = {
     ExpoReactDelegate(
-      handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers,
+      handlers: ExpoAppDelegateSubscriberRepository.reactDelegateHandlers + [ExpoRootViewControllerReactDelegateHandler()],
       reactNativeFactory: self
     )
   }()

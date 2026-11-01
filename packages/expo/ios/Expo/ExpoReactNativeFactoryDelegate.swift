@@ -13,6 +13,25 @@ open class ExpoReactNativeFactoryDelegate: RCTDefaultReactNativeFactoryDelegate 
   open override func createRootViewController() -> UIViewController {
     return ExpoAppDelegateSubscriberRepository.reactDelegateHandlers.lazy
       .compactMap { $0.createRootViewController() }
-      .first(where: { _ in true }) ?? UIViewController()
+      .first(where: { _ in true }) ?? ExpoRootViewController()
+  }
+}
+
+/**
+ Returns the status bar values that JavaScript sets, like React Native's default root view controller.
+ The `UIApplication` status bar setters do nothing in apps built with the iOS 27 SDK.
+ */
+final class ExpoRootViewController: UIViewController {
+  override var preferredStatusBarStyle: UIStatusBarStyle { RCTStatusBarAppearance.style }
+  override var prefersStatusBarHidden: Bool { RCTStatusBarAppearance.hidden }
+  override var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { RCTStatusBarAppearance.updateAnimation }
+}
+
+/**
+ Makes `ExpoReactDelegate.createRootViewController()` return `ExpoRootViewController` when no other handler provides a view controller.
+ */
+final class ExpoRootViewControllerReactDelegateHandler: ExpoReactDelegateHandler {
+  override func createRootViewController() -> UIViewController? {
+    return ExpoRootViewController()
   }
 }
