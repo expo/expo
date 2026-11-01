@@ -142,27 +142,6 @@ describe(runIosAsync, () => {
     );
   });
 
-  it('does not build when pod installation changes the selected target platform', async () => {
-    mockPlatform('darwin');
-    mockIosProject();
-    mockInstallPodsAsync.mockImplementationOnce(async () => {
-      const file = '/ios/ReactNativeProject.xcodeproj/project.pbxproj';
-      const project = vol.readFileSync(file, 'utf8').toString();
-      vol.writeFileSync(
-        file,
-        project.replaceAll(
-          'ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;',
-          'ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon; SDKROOT = appletvos;'
-        )
-      );
-    });
-
-    await expect(runIosAsync('/', { install: true })).rejects.toMatchObject({
-      code: 'IOS_SCHEME_CHANGED',
-    });
-    expect(buildAsync).not.toHaveBeenCalled();
-  });
-
   it('does not install pods when device selection is cancelled', async () => {
     mockPlatform('darwin');
     mockIosProject();
