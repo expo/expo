@@ -1,0 +1,146 @@
+---
+title: Reusable workflows in EAS Workflows
+sidebar_title: Reusable workflows
+description: Learn how to call a workflow from another workflow to reuse its jobs.
+---
+
+import { FileTree } from '~/ui/components/FileTree';
+
+A reusable workflow is a workflow file that other workflows can call. Use it to share whole jobs between workflow files. To share a sequence of steps inside a job, use [custom functions](/eas/workflows/custom-functions/).
+
+For the YAML syntax of the reusable workflow and the calling job, see [`on.workflow_call`](/eas/workflows/syntax/#onworkflow_call) and [Call another workflow](/eas/workflows/syntax/#call-another-workflow) in the syntax reference.
+
+## How it works
+
+A workflow can call another workflow only if that workflow declares [`on.workflow_call`](/eas/workflows/syntax/#onworkflow_call).
+
+A calling job sets [`uses`](/eas/workflows/syntax/#jobsjob_iduses) to the path of the reusable workflow, and [`with`](/eas/workflows/syntax/#jobsjob_idwith) to its input values. Both workflow files must be in the **.eas/workflows** directory of the same project:
+
+<FileTree
+  files={[
+    'my-app/.eas/workflows/build.yml',
+    'my-app/.eas/workflows/release.yml',
+    'my-app/eas.json',
+  ]}
+/>
+
+When the calling job runs, it starts the called run and waits for its result. For the path format and the other keys that a calling job accepts, see [`jobs.<job_id>.uses`](/eas/workflows/syntax/#jobsjob_iduses).
+
+## Inputs and outputs
+
+The reusable workflow declares its inputs in [`on.workflow_call.inputs`](/eas/workflows/syntax/#onworkflow_callinputs) and reads them as `${{ inputs.<input_name> }}`. The calling job sets their values in `with`. For the expressions and value types that `with` accepts, see [`jobs.<job_id>.with`](/eas/workflows/syntax/#jobsjob_idwith).
+
+The reusable workflow declares its outputs in [`on.workflow_call.outputs`](/eas/workflows/syntax/#onworkflow_calloutputs). EAS evaluates them after the called run succeeds. The calling run reads them through the `needs` context of the calling job.
+
+## Context of a called run
+
+The called run uses the same commit, Git ref, and `github` context as the calling run, so `github.event_name` stays the same. For the one exception in `github.event.inputs`, see the [`github`](/eas/workflows/syntax/#github) context in the syntax reference. The called run has its own [`inputs`](/eas/workflows/syntax/#inputs), from `with` and the input defaults, and its own [`workflow`](/eas/workflows/syntax/#workflow) context.
+
+Each job in the reusable workflow gets [`env`](/eas/workflows/syntax/#env) from its own [`environment`](/eas/workflows/syntax/#jobsjob_idenvironment). The calling job passes only its `with` values to the called run. It does not pass its environment variables.
+
+The [`run_name`](/eas/workflows/syntax/#run_name) and [`concurrency`](/eas/workflows/syntax/#concurrency) settings of the reusable workflow apply to the called run. EAS evaluates the [`concurrency.group`](/eas/workflows/syntax/#concurrencygroup) of the called run. If the result matches the group of a run that called it, EAS does not start the called run. This includes a run that called it through other workflows. The calling job then fails. These runs have the same `github` context, so a group that uses only `github` values is the same in all of them.
+
+## Status and cancellation
+
+The calling job ends with the same status as the called run: success, failure, or canceled. When the called run fails, the calling job shows its errors.
+
+When you cancel the calling run, EAS also cancels the called run.
+
+You cannot [re-run](/eas/workflows/manage-workflow-runs/#re-run-a-workflow) a called run alone. Re-run the calling run instead.
+
+## Nesting and limits
+
+A reusable workflow can call other reusable workflows. The following limits apply:
+
+- A chain can have at most 4 levels of called runs below the first run.
+- A workflow cannot call itself, directly or through other workflows.
+- A run started with `eas workflow:run` can upload at most 100 workflow files.
+
+## Example
+
+**.eas/workflows/build.yml** is a reusable workflow that builds the app for one environment. It fingerprints the project and looks for an existing build with the same fingerprint for each platform. If a platform has no matching build, the workflow creates a new build. The workflow returns the IDs of new builds as outputs. This example assumes that **eas.json** has build profiles named `preview` and `production`, with the same names as the EAS environments.
+
+```yaml .eas/workflows/build.yml
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        type: environment
+        required: true
+    outputs:
+      android_build_id:
+        value: ${{ jobs.build_android.outputs.build_id }}
+      ios_build_id:
+        value: ${{ jobs.build_ios.outputs.build_id }}
+
+jobs:
+  fingerprint:
+    type: fingerprint
+    environment: ${{ inputs.environment }}
+  get_android_build:
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      platform: android
+      profile: ${{ inputs.environment }}
+  get_ios_build:
+    needs: [fingerprint]
+    type: get-build
+    params:
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      platform: ios
+      profile: ${{ inputs.environment }}
+  build_android:
+    needs: [get_android_build]
+    if: ${{ !needs.get_android_build.outputs.build_id }}
+    type: build
+    params:
+      platform: android
+      profile: ${{ inputs.environment }}
+  build_ios:
+    needs: [get_ios_build]
+    if: ${{ !needs.get_ios_build.outputs.build_id }}
+    type: build
+    params:
+      platform: ios
+      profile: ${{ inputs.environment }}
+```
+
+**.eas/workflows/release.yml** calls the reusable workflow twice on each push to `main`. The first call builds for `preview`. After an approval, the second call builds for `production`, and the workflow submits each new production build to the app stores. If a production build with the same fingerprint already exists, the workflow skips both the build and the submission for that platform:
+
+```yaml .eas/workflows/release.yml
+name: Release
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_preview:
+    uses: ./.eas/workflows/build.yml
+    with:
+      environment: preview
+  approve_production:
+    needs: [build_preview]
+    type: require-approval
+  build_production:
+    needs: [approve_production]
+    uses: ./.eas/workflows/build.yml
+    with:
+      environment: production
+  submit_android:
+    needs: [build_production]
+    if: ${{ needs.build_production.outputs.android_build_id }}
+    type: submit
+    params:
+      build_id: ${{ needs.build_production.outputs.android_build_id }}
+  submit_ios:
+    needs: [build_production]
+    if: ${{ needs.build_production.outputs.ios_build_id }}
+    type: submit
+    params:
+      build_id: ${{ needs.build_production.outputs.ios_build_id }}
+```

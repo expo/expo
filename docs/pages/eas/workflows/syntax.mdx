@@ -79,7 +79,7 @@ If the rendered text is longer than 255 characters, EAS truncates it to 254 char
 
 ## `on`
 
-The `on` key defines what starts a workflow run. A run can start from GitHub events, a schedule, App Store Connect events, or a manual run with [`workflow_dispatch`](#onworkflow_dispatchinputs) inputs. Any workflow can be triggered with the `eas workflow:run` command, regardless of the `on` key.
+The `on` key defines what starts a workflow run. A run can start from GitHub events, a schedule, App Store Connect events, or a manual run with [`workflow_dispatch`](#onworkflow_dispatchinputs) inputs. A run can also start when another workflow calls this workflow with [`workflow_call`](#onworkflow_call). Any workflow can be triggered with the `eas workflow:run` command, regardless of the `on` key.
 
 ```yaml
 on:
@@ -478,6 +478,49 @@ jobs:
           #       for non-eas-workflow:run-run workflows.
           echo "Hello, ${{ inputs.name || 'World' }}!"
 ```
+
+### `on.workflow_call`
+
+Allows other workflows in the same project to call this workflow. To call it, set [`uses`](#jobsjob_iduses) on a job to the path of this workflow file. For how called runs work, see [Reusable workflows](/eas/workflows/reusable-workflows/).
+
+`on.workflow_call` does not accept `if`. The calling job controls when the called run starts with its own [`if`](#jobsjob_idif).
+
+```yaml .eas/workflows/build-android.yml
+on:
+  # @info #
+  workflow_call:
+    inputs:
+      profile:
+        type: string
+        required: true
+    outputs:
+      build_id:
+        description: 'ID of the Android build'
+        value: ${{ jobs.build_android.outputs.build_id }}
+  # @end #
+
+jobs:
+  build_android:
+    type: build
+    params:
+      platform: android
+      profile: ${{ inputs.profile }}
+```
+
+#### `on.workflow_call.inputs`
+
+Defines the inputs of this workflow. The calling job sets their values in [`with`](#jobsjob_idwith). Inputs use the same properties as [`on.workflow_dispatch.inputs`](#onworkflow_dispatchinputs). The reusable workflow reads them as `${{ inputs.<input_name> }}`.
+
+#### `on.workflow_call.outputs`
+
+Defines the values that the called run returns to the calling job. The calling run reads each output as `${{ needs.<job_id>.outputs.<output_name> }}`, where `<job_id>` is the ID of the calling job.
+
+| Property      | Type     | Required    | Description                              |
+| ------------- | -------- | ----------- | ---------------------------------------- |
+| `value`       | `string` | <YesIcon /> | An expression of at most 250 characters. |
+| `description` | `string` | <NoIcon />  | Description for the output.              |
+
+A `value` can use `${{ }}` expressions that reference the contexts of the called run and the `jobs` context. The `jobs` context contains every job of the called run. Read a job output as `${{ jobs.<job_id>.outputs.<output_name> }}`. The `jobs` context is available only in `on.workflow_call.outputs`. A `value` cannot use [`env`](#env). Each `value` must evaluate to a string, a number, a boolean, or null. EAS converts a string, a number, or a boolean to a string. A `null` value or a missing property, such as an output of a skipped job, becomes `null`. If a value is a list or an object, the called run stays successful, and the calling job fails. To pass one, wrap it in `toJSON()`.
 
 ### `on.<trigger>.if`
 
@@ -884,11 +927,12 @@ EAS evaluates every part of an expression. `&&` and `||` do not skip the right s
 
 ### Context availability
 
-EAS evaluates `${{ }}` expressions at three points. Each point has its own set of contexts and functions.
+EAS evaluates `${{ }}` expressions at four points. Each point has its own set of contexts and functions.
 
 - **Run creation**: [`run_name`](#run_name), [`on.<trigger>.if`](#ontriggerif), [`concurrency.group`](#concurrencygroup), and [`concurrency.cancel_in_progress`](#concurrencycancel_in_progress). EAS evaluates them when it creates the run, before any job exists.
 - **Job**: every field of a job except `steps`, `hooks`, and `outputs`, for example [`jobs.<job_id>.if`](#jobsjob_idif), `env`, and `params`. EAS evaluates them when the job is ready to start.
 - **Steps**: [`jobs.<job_id>.steps`](#jobsjob_idsteps), [`jobs.<job_id>.hooks`](#jobsjob_idhooks), and [`jobs.<job_id>.outputs`](#jobsjob_idoutputs). EAS evaluates them on the worker while the job runs.
+- **Called run outputs**: [`on.workflow_call.outputs`](#onworkflow_calloutputs). EAS evaluates them after the called run succeeds. They can use the contexts of the called run and its `jobs` context.
 
 | Context or function                                                                                     | Run creation | Job         | Steps                           |
 | ------------------------------------------------------------------------------------------------------- | ------------ | ----------- | ------------------------------- |
@@ -1016,7 +1060,7 @@ jobs:
 
 #### `inputs`
 
-A record of inputs provided when manually triggering a workflow with [`workflow_dispatch`](#onworkflow_dispatchinputs). Available when the workflow is triggered via `eas workflow:run` command with input parameters.
+A record of inputs provided when manually triggering a workflow with [`workflow_dispatch`](#onworkflow_dispatchinputs). Available when the workflow is triggered via `eas workflow:run` command with input parameters. In a [called run](/eas/workflows/reusable-workflows/#context-of-a-called-run), `inputs` contains the values from [`with`](#jobsjob_idwith) of the calling job. An input that `with` does not set gets its `default` from [`on.workflow_call.inputs`](#onworkflow_callinputs).
 
 Example:
 
@@ -1090,6 +1134,8 @@ type GitHubContext = {
 > **info** The `event` object contains the full [GitHub webhook payload](https://docs.github.com/en/webhooks/webhook-events-and-payloads). For `pull_request` events, `event.pull_request` includes fields from GitHub's Pull Request webhook payload, such as `github.event.pull_request.title` and `github.event.pull_request.body`. For edited pull request events, `github.event.changes` contains the fields that changed, such as `github.event.changes.base.ref.from` when the base branch changed. For `pull_request_comment` events, `event.comment.body` contains the comment text, and `event.pull_request.number` and `event.number` contain the pull request number. The type above lists a few useful fields, but additional fields such as `user`, `labels`, `milestone`, and others are also available.
 
 If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
+
+A [called run](/eas/workflows/reusable-workflows/#context-of-a-called-run) gets the `github` context of the run that called it. The exception is `github.event.inputs`, which contains the inputs of the called run.
 
 Example:
 
@@ -2579,6 +2625,39 @@ jobs:
 ##### Properties
 
 <EASFunctionDescription name="posthog_upload_sourcemaps" />
+
+## Call another workflow
+
+A job with `uses` runs another workflow file of the same project as a separate workflow run. The [reusable workflow](/eas/workflows/reusable-workflows/) must declare [`on.workflow_call`](#onworkflow_call).
+
+### `jobs.<job_id>.uses`
+
+The path of the workflow file to call. The value must be a literal path in the format `./.eas/workflows/<name>.yml` or `./.eas/workflows/<name>.yaml`. You cannot use a subdirectory or a `${{ }}` expression in the path.
+
+A job with `uses` accepts only [`name`](#jobsjob_idname), [`needs`](#jobsjob_idneeds), [`after`](#jobsjob_idafter), [`if`](#jobsjob_idif), `uses`, and [`with`](#jobsjob_idwith). The reusable workflow defines its own jobs and their settings.
+
+### `jobs.<job_id>.with`
+
+The input values for the reusable workflow. Use the input names declared in [`on.workflow_call.inputs`](#onworkflow_callinputs) of the reusable workflow. Each value must be a string, a number, or a boolean. If a required input has no value, or a value does not match the input type, the calling job fails.
+
+A value can use `${{ }}` expressions that reference the [contexts available to a job](#context-availability) in the calling run, for example `needs` and `inputs`. A value cannot use [`env`](#env), because a job with `uses` cannot set [`environment`](#jobsjob_idenvironment). If an expression evaluates to `null`, EAS treats the input as not set. The called run then uses the default value of that input.
+
+```yaml
+jobs:
+  setup:
+    outputs:
+      profile: ${{ steps.pick.outputs.profile }}
+    steps:
+      - id: pick
+        run: set-output profile "preview"
+  build:
+    needs: [setup]
+    uses: ./.eas/workflows/build-android.yml
+    # @info #
+    with:
+      profile: ${{ needs.setup.outputs.profile }}
+    # @end #
+```
 
 ## Custom functions
 
