@@ -188,25 +188,9 @@ public extension EventEmitter {
   /// Listeners that run inline can call back into the emitter before this function returns, so emit
   /// after the emitter's state is up to date.
   @inlinable
-  func emitInline<P: JavaScriptEncodable>(event: String, payload: sending P) {
-    guard let runtime = eventRuntime(forEvent: event) else {
-      return
-    }
-    // See the note in `emit(event:payload:)` above.
-    let emitter = WeakEventEmitterReference(value: self)
-
-    runtime.runOrSchedule {
-      guard let emitter = emitter.value else {
-        return
-      }
-      let jsPayload: JavaScriptValue
-      do {
-        jsPayload = try P.encode(payload, in: runtime)
-      } catch {
-        warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
-        return
-      }
-      dispatchEventOrRetry(event: event, payload: jsPayload, from: emitter, in: runtime)
+  func emitInline<P: JavaScriptEncodable & ~Copyable>(event: String, payload: consuming sending P) {
+    emitInline(event: event, payload: payload) { payload, slot, runtime in
+      try P.encode(payload, into: slot, in: runtime)
     }
   }
 
@@ -214,32 +198,36 @@ public extension EventEmitter {
   /// `@Event(.inline)` macro uses it for payload types that can't conform to `JavaScriptEncodable`, such
   /// as tuples.
   @inlinable
-  func emitInline<P>(
+  func emitInline<P: ~Copyable>(
     event: String,
-    payload: sending P,
-    encode: @escaping @JavaScriptActor @Sendable (P, borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime) throws
-      -> Void
+    payload: consuming sending P,
+    encode: @escaping @JavaScriptActor @Sendable (consuming P, borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime)
+      throws -> Void
   ) {
     guard let runtime = eventRuntime(forEvent: event) else {
       return
     }
     // See the note in `emit(event:payload:)` above.
     let emitter = WeakEventEmitterReference(value: self)
+    var payload: P? = payload
+    if runtime.isOnJavaScriptThread() {
+      // Emits right away, without the closure and the box that scheduling needs.
+      JavaScriptActor.assumeIsolated {
+        guard let emitter = emitter.value else {
+          return
+        }
+        emitEventNow(event: event, payload: &payload, encode: encode, from: emitter, in: runtime)
+      }
+      return
+    }
+    // An escaping closure can't consume a captured non-copyable value, so the payload moves into a box.
+    let box = EventPayloadBox(payload)
 
-    runtime.runOrSchedule {
+    runtime.schedule {
       guard let emitter = emitter.value else {
         return
       }
-      let jsPayload: JavaScriptValue
-      do {
-        jsPayload = try JavaScriptValue.encoding(in: runtime) { slot in
-          try encode(payload, slot, runtime)
-        }
-      } catch {
-        warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
-        return
-      }
-      dispatchEventOrRetry(event: event, payload: jsPayload, from: emitter, in: runtime)
+      emitEventNow(event: event, payload: &box.value, encode: encode, from: emitter, in: runtime)
     }
   }
 
@@ -261,29 +249,9 @@ public extension EventEmitter {
   /// while the main thread emits. Use `emitInline(event:payload:)` when the caller doesn't need to wait.
   @available(*, noasync)
   @inlinable
-  func emitBlocking<P: JavaScriptEncodable>(event: String, payload: sending P) {
-    guard let runtime = eventRuntime(forEvent: event) else {
-      return
-    }
-    // See the note in `emit(event:payload:)` above.
-    let emitter = WeakEventEmitterReference(value: self)
-
-    do {
-      try runtime.execute {
-        guard let emitter = emitter.value else {
-          return
-        }
-        let jsPayload: JavaScriptValue
-        do {
-          jsPayload = try P.encode(payload, in: runtime)
-        } catch {
-          warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
-          return
-        }
-        dispatchEventOrRetry(event: event, payload: jsPayload, from: emitter, in: runtime)
-      }
-    } catch {
-      warnRuntimeLost(event: event, emitterType: type(of: self))
+  func emitBlocking<P: JavaScriptEncodable & ~Copyable>(event: String, payload: consuming sending P) {
+    emitBlocking(event: event, payload: payload) { payload, slot, runtime in
+      try P.encode(payload, into: slot, in: runtime)
     }
   }
 
@@ -292,38 +260,82 @@ public extension EventEmitter {
   /// such as tuples.
   @available(*, noasync)
   @inlinable
-  func emitBlocking<P>(
+  func emitBlocking<P: ~Copyable>(
     event: String,
-    payload: sending P,
-    encode: @escaping @JavaScriptActor @Sendable (P, borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime) throws
-      -> Void
+    payload: consuming sending P,
+    encode: @escaping @JavaScriptActor @Sendable (consuming P, borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime)
+      throws -> Void
   ) {
     guard let runtime = eventRuntime(forEvent: event) else {
       return
     }
     // See the note in `emit(event:payload:)` above.
     let emitter = WeakEventEmitterReference(value: self)
+    var payload: P? = payload
+    if runtime.isOnJavaScriptThread() {
+      // See the note in `emitInline(event:payload:encode:)` above.
+      JavaScriptActor.assumeIsolated {
+        guard let emitter = emitter.value else {
+          return
+        }
+        emitEventNow(event: event, payload: &payload, encode: encode, from: emitter, in: runtime)
+      }
+      return
+    }
+    // See the note in `emitInline(event:payload:encode:)` above.
+    let box = EventPayloadBox(payload)
 
     do {
       try runtime.execute {
         guard let emitter = emitter.value else {
           return
         }
-        let jsPayload: JavaScriptValue
-        do {
-          jsPayload = try JavaScriptValue.encoding(in: runtime) { slot in
-            try encode(payload, slot, runtime)
-          }
-        } catch {
-          warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
-          return
-        }
-        dispatchEventOrRetry(event: event, payload: jsPayload, from: emitter, in: runtime)
+        emitEventNow(event: event, payload: &box.value, encode: encode, from: emitter, in: runtime)
       }
     } catch {
       warnRuntimeLost(event: event, emitterType: type(of: self))
     }
   }
+}
+
+/// Holds an event payload until the JavaScript thread takes it, so a closure that escapes can carry a
+/// non-copyable payload. The payload is taken once, on the JavaScript thread.
+@usableFromInline
+internal final class EventPayloadBox<P: ~Copyable>: @unchecked Sendable {
+  @usableFromInline
+  var value: P?
+
+  @inlinable
+  init(_ value: consuming P?) {
+    self.value = consume value
+  }
+}
+
+/// Takes the payload out of `payload`, converts it with `encode` and sends it to the JavaScript object of
+/// the emitter. Logs a warning when the conversion fails.
+@JavaScriptActor
+@inlinable
+internal func emitEventNow<P: ~Copyable>(
+  event: String,
+  payload: inout P?,
+  encode: (consuming P, borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime) throws -> Void,
+  from emitter: any EventEmitter,
+  in runtime: JavaScriptRuntime
+) {
+  guard payload != nil else {
+    return
+  }
+  let jsPayload: JavaScriptValue
+  do {
+    // A closure can't consume a captured non-copyable value, but it can take it out of an optional.
+    jsPayload = try JavaScriptValue.encoding(in: runtime) { slot in
+      try encode(payload.take()!, slot, runtime)
+    }
+  } catch {
+    warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
+    return
+  }
+  dispatchEventOrRetry(event: event, payload: jsPayload, from: emitter, in: runtime)
 }
 
 /// A weak reference to an event emitter that the scheduled `emit` closures capture by value, so it is stored
@@ -361,7 +373,7 @@ internal func warnRuntimeLost(event: String, emitterType: Any.Type) {
 
 /// Logs that the payload of an event couldn't be converted, so the event is not emitted.
 @usableFromInline
-internal func warnPayloadNotEncoded(event: String, payloadType: Any.Type, error: any Error) {
+internal func warnPayloadNotEncoded(event: String, payloadType: any (~Copyable).Type, error: any Error) {
   log.warn(
     "Failed to convert payload for event '\(event)' on \(payloadType); the event will not be emitted: \(error)"
   )
