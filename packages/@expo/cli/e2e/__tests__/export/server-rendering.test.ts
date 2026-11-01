@@ -254,7 +254,9 @@ describe('exports server', () => {
       // Inline scripts execute while parsing, before the deferred hydration bundles.
       expect(hydrationScript).not.toBeNull();
       expect(hydrationScript!.hasAttribute('src')).toBe(false);
-      expect(hydrationScript!.textContent).toBe('globalThis.__EXPO_ROUTER_HYDRATE__=true;');
+      expect(hydrationScript!.textContent).toBe(
+        'globalThis.__EXPO_ROUTER_HYDRATE__=true;\nglobalThis.__EXPO_ROUTER_HYDRATE_DOCUMENT__=true;'
+      );
     });
 
     it('SSR styles are injected', async () => {
