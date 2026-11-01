@@ -60,6 +60,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    */
   private var hostWrapper: ExpoHostWrapper?
 
+  /// Observes the surface presenter of the host to know when the views of this app context are created.
+  private var surfacePresenterObserver: SurfacePresenterObserver?
+
   /**
    Underlying JSI runtime of the running app.
    */
@@ -134,7 +137,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   /// The application identifier that distinguishes app contexts that are alive at the same time,
   /// for example during a reload or when more than one `RCTHost` is running. It's `nil` for the first
-  /// app context, so its view names have no suffix.
+  /// app context.
   @objc
   public var appIdentifier: String? {
     return AppContext.appIdentifier(forIndex: appIndex)
@@ -427,10 +430,42 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   @MainActor
   private func registerNativeViews() {
     for holder in moduleRegistry {
-      for (key, viewDefinition) in holder.definition.views {
-        let viewModule = ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
-        ExpoFabricView.registerComponent(viewModule, appContext: self)
+      for viewName in holder.definition.views.keys {
+        ExpoFabricView.registerComponent(moduleName: holder.name, viewName: viewName)
       }
+    }
+    AppContext.viewsRegisteringAppContext = self
+  }
+
+  // MARK: - Mounting views
+
+  /// The app context whose host is mounting views right now. It's set by `SurfacePresenterObserver`.
+  @MainActor
+  internal static weak var mountingAppContext: AppContext?
+
+  /// The app context that registered native views most recently. Views are created for this context
+  /// when no host is mounting, for example when the host isn't wrapped by `ExpoHostWrapper`.
+  @MainActor
+  internal static weak var viewsRegisteringAppContext: AppContext?
+
+  /// The app context that the views being created belong to. Component view classes are shared by all app contexts,
+  /// so this is how the views get their app context.
+  @MainActor
+  internal static var appContextForNewViews: AppContext? {
+    return mountingAppContext ?? viewsRegisteringAppContext
+  }
+
+  /// Starts observing the surface presenter of the host, so the views created while the host is mounting
+  /// get this app context.
+  @MainActor
+  private func observeMounting(with hostWrapper: ExpoHostWrapper) {
+    guard let surfacePresenter = hostWrapper.surfacePresenter() else {
+      log.warn("The host has no surface presenter, so its views are created for the app context that registered views last")
+      return
+    }
+    let observer = SurfacePresenterObserver(appContext: self)
+    if observer.observe(surfacePresenter) {
+      surfacePresenterObserver = observer
     }
   }
 
@@ -482,10 +517,6 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     // it be recovered from the runtime via `AppContext.from(runtime:)`. This is the main
     // runtime, so its teardown owns the app context's `destroy()`.
     installer.installAppContextNativeState(on: coreObject, ownsLifecycle: true)
-
-    if let appIdentifier {
-      coreObject.defineProperty("__expo_app_identifier__", value: appIdentifier)
-    }
 
     try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
 
@@ -753,6 +784,16 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   @objc
   public func setHostWrapper(_ wrapper: ExpoHostWrapper) {
     self.hostWrapper = wrapper
+
+    // This is called on the JS thread, possibly before `RCTHost` stores the instance that owns this runtime,
+    // so its surface presenter can't be read yet. The host stores the instance on the main thread
+    // in the same call that starts the runtime, so the presenter is available on the next main queue turn.
+    DispatchQueue.main.async { [weak self] in
+      guard let self, let hostWrapper = self.hostWrapper else {
+        return
+      }
+      self.observeMounting(with: hostWrapper)
+    }
   }
 
   // MARK: - Statics
