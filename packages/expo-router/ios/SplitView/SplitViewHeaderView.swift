@@ -106,8 +106,8 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
 
   private func barButtonItems(_ items: [SplitViewToolbarItemRecord]) -> [UIBarButtonItem] {
     return items.map { item in
-      // With an image, the button shows only the image and uses the title as its accessibility label.
-      let image = item.icon.flatMap { UIImage(systemName: $0) }
+      // With an image, the button shows only the image and uses the title as its default accessibility label.
+      let image = toolbarItemImage(item)
       let barButtonItem: UIBarButtonItem
       if let menu = item.menu {
         barButtonItem = UIBarButtonItem(title: item.title, image: image, primaryAction: nil, menu: makeMenu(menu))
@@ -116,8 +116,25 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
       }
       barButtonItem.isEnabled = !item.disabled
       barButtonItem.isSelected = item.selected
+      barButtonItem.tintColor = item.tintColor
+      barButtonItem.style = item.barButtonItemStyle?.toUIBarButtonItemStyle() ?? .plain
+      barButtonItem.accessibilityLabel = item.accessibilityLabel
+      barButtonItem.accessibilityHint = item.accessibilityHint
+      if #available(iOS 26.0, *) {
+        barButtonItem.sharesBackground = item.sharesBackground
+        barButtonItem.hidesSharedBackground = item.hidesSharedBackground
+        barButtonItem.badge = item.badgeConfiguration?.toBadgeConfiguration().toBarButtonItemBadge()
+      }
       return barButtonItem
     }
+  }
+
+  private func toolbarItemImage(_ item: SplitViewToolbarItemRecord) -> UIImage? {
+    if let xcassetName = item.xcassetName {
+      let renderingMode: UIImage.RenderingMode = item.imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
+      return UIImage(named: xcassetName)?.withRenderingMode(renderingMode)
+    }
+    return item.icon.flatMap { UIImage(systemName: $0) }
   }
 
   private func makeMenu(_ menu: SplitViewMenuRecord) -> UIMenu {
