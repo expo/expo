@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcel
@@ -407,5 +408,32 @@ open class ExpoNotificationBuilder(
       }
       return null
     }
+
+    /**
+     * Decodes the image at [uri] (`file://` or `content://`) for use as the large icon.
+     * Large icons show at 64dp, so the image is downsampled by the largest power of two
+     * that keeps its shorter side at least 256px (64dp at xxxhdpi), which keeps big photos
+     * from using a lot of memory.
+     */
+    @JvmStatic
+    fun largeIconFromUri(context: Context, uri: Uri): Bitmap? {
+      return try {
+        val resolver = context.contentResolver
+        val bounds = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+        resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, bounds) }
+        if (bounds.outWidth <= 0 || bounds.outHeight <= 0) {
+          Log.e("expo-notifications", "Could not decode the notification image at $uri.")
+          return null
+        }
+        val scale = min(bounds.outWidth, bounds.outHeight) / LARGE_ICON_MIN_SIZE
+        val options = BitmapFactory.Options().apply { inSampleSize = Integer.highestOneBit(max(scale, 1)) }
+        resolver.openInputStream(uri)?.use { BitmapFactory.decodeStream(it, null, options) }
+      } catch (e: Exception) {
+        Log.e("expo-notifications", "Could not read the notification image at $uri.", e)
+        null
+      }
+    }
+
+    private const val LARGE_ICON_MIN_SIZE = 256
   }
 }
