@@ -337,18 +337,24 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
         : InheritedSuspenseFallback;
 
+    // When navigating to a screen, remove the no animation param to re-enable animations
+    // Otherwise the navigation back would also have no animation
+    // An effect event, so the listener reads the params the screen has when its transition ends,
+    // not the ones it had when it subscribed: a later navigation to this screen changes them.
+    const removeNoAnimationParam = React.useEffectEvent(() => {
+      if (hasParam(route?.params, INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
+        navigation.dispatchSync(
+          CommonActions.replaceParams(
+            removeParams(route?.params, [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME])!
+          )
+        );
+      }
+    });
+
     useEffect(() => {
       return navigation.addListener('transitionEnd', (e) => {
         if (!e?.data?.closing) {
-          // When navigating to a screen, remove the no animation param to re-enable animations
-          // Otherwise the navigation back would also have no animation
-          if (hasParam(route?.params, INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME)) {
-            navigation.dispatchSync(
-              CommonActions.replaceParams(
-                removeParams(route?.params, [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME])!
-              )
-            );
-          }
+          removeNoAnimationParam();
         }
       });
     }, [navigation]);
