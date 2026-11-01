@@ -206,15 +206,15 @@ export type ObserveModuleEvents = {
 
 export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
   /**
-   * The EAS client id: a random, pseudonymous identifier for this app installation, shared by all
-   * EAS client libraries. Observe records it on every metric and log event as the
+   * The Expo Services client id: a random, pseudonymous identifier for this app installation, shared by all
+   * Expo Services client libraries. Observe records it on every metric and log event as the
    * `expo.eas_client.id` attribute, so use it to correlate Observe data with another service.
    *
    * The id is stored in native preferences and is stable across app launches and app updates. It
    * changes when the app's data is cleared or the app is reinstalled, although a backup restore
    * can carry the previous id over. It identifies an installation, not a user or a device.
    *
-   * `null` on web, where there is no EAS client id.
+   * `null` on web, where there is no Expo Services client id.
    *
    * @example
    * ```ts
