@@ -347,6 +347,20 @@ ${parameter.values
 const widgetSwift = (widget: WidgetConfig): string => {
   const configuration = widget.ios?.configuration ?? widget.configuration;
   const supportedFamilies = widget.ios?.supportedFamilies ?? widget.supportedFamilies ?? [];
+  const hasExtraLargePortrait = supportedFamilies.includes(WidgetFamily.systemExtraLargePortrait);
+  const otherFamilies = supportedFamilies.filter(
+    (family) => family !== WidgetFamily.systemExtraLargePortrait
+  );
+  const familiesDeclaration = hasExtraLargePortrait
+    ? `    var supportedFamilies: [WidgetFamily] = [${otherFamilies.map((family) => `.${family}`).join(', ')}]
+    if #available(iOS 27.0, *) {
+      supportedFamilies.append(.systemExtraLargePortrait)
+    }
+`
+    : '';
+  const familiesArgument = hasExtraLargePortrait
+    ? 'supportedFamilies'
+    : `[.${supportedFamilies.join(', .')}]`;
   const contentMarginsDisabled =
     widget.ios?.contentMarginsDisabled ?? widget.contentMarginsDisabled;
   if (!configuration)
@@ -358,12 +372,12 @@ struct ${widget.name}: Widget {
   let name: String = "${widget.name}"
 
   var body: some WidgetConfiguration {
-    StaticConfiguration(kind: name, provider: WidgetsTimelineProvider(name: name)) { entry in
+${familiesDeclaration}    ${hasExtraLargePortrait ? 'return ' : ''}StaticConfiguration(kind: name, provider: WidgetsTimelineProvider(name: name)) { entry in
       WidgetsEntryView(entry: entry)
     }
     .configurationDisplayName(${JSON.stringify(widget.displayName)})
     .description(${JSON.stringify(widget.description)})
-    .supportedFamilies([.${supportedFamilies.join(', .')}])${contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
+    .supportedFamilies(${familiesArgument})${contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
   }
 }`;
   return `import WidgetKit
@@ -484,12 +498,12 @@ struct ${widget.name}: Widget {
   let name: String = "${widget.name}"
 
   var body: some WidgetConfiguration {
-    return AppIntentConfiguration(kind: name, intent: ${widget.name}ConfigurationAppIntent.self, provider: ${widget.name}TimelineProvider()) { entry in
+${familiesDeclaration}    return AppIntentConfiguration(kind: name, intent: ${widget.name}ConfigurationAppIntent.self, provider: ${widget.name}TimelineProvider()) { entry in
       ${widget.name}EntryView(entry: entry)
     }
     .configurationDisplayName(${JSON.stringify(widget.displayName)})
     .description(${JSON.stringify(widget.description)})
-    .supportedFamilies([.${supportedFamilies.join(', .')}])${contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
+    .supportedFamilies(${familiesArgument})${contentMarginsDisabled ? '\n    .contentMarginsDisabled()' : ''}
   }
 }`;
 };

@@ -34,6 +34,7 @@ export type ActivityFamily = 'small' | 'medium';
  * - `systemMedium` - Medium widget (4x2 grid).
  * - `systemLarge` - Large widget (4x4 grid).
  * - `systemExtraLarge` - Extra large widget (iPad only, 6x4 grid).
+ * - `systemExtraLargePortrait` - Extra large portrait widget (iOS 27+).
  * - `accessoryCircular` - Circular accessory widget for the Lock Screen.
  * - `accessoryRectangular` - Rectangular accessory widget for the Lock Screen.
  * - `accessoryInline` - Inline accessory widget for the Lock Screen.
@@ -44,6 +45,7 @@ export type WidgetFamily =
   | 'systemMedium'
   | 'systemLarge'
   | 'systemExtraLarge'
+  | 'systemExtraLargePortrait'
   | 'accessoryCircular'
   | 'accessoryRectangular'
   | 'accessoryInline';
