@@ -371,6 +371,32 @@ export type AppleMapsAnnotation = {
    * @default { x: 0.5, y: 0.5 }
    */
   anchor?: AppleMapsAnchor;
+
+  /**
+   * The color of a ripple drawn natively beneath the annotation, similar to the user location pulse.
+   * The ripple is centered on the annotation's content and does not change its size or anchor.
+   * The ripple is drawn only when both `pulseColor` and `pulseRadius` are set. Requires iOS 18 or later.
+   */
+  pulseColor?: string;
+
+  /**
+   * The radius the ripple expands to, in points.
+   * @default 0
+   */
+  pulseRadius?: number;
+
+  /**
+   * The duration of one ripple, in seconds.
+   * @default 2.4
+   */
+  pulseDuration?: number;
+
+  /**
+   * The duration, in seconds, over which a change of `coordinates` is animated. When `0`, the annotation jumps to its new position.
+   * Requires iOS 18 or later.
+   * @default 0
+   */
+  moveDuration?: number;
 } & AppleMapsMarker;
 
 /**
