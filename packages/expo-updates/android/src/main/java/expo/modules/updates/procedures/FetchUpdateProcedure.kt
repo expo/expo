@@ -10,6 +10,7 @@ import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
+import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
@@ -40,10 +41,9 @@ class FetchUpdateProcedure(
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
-      logger.error("Failed to download new update", e)
-      procedureContext.processStateEvent(
-        UpdatesStateEvent.DownloadError("Failed to download new update: ${e.localizedMessageWithCauseLocalizedMessage()}")
-      )
+      val message = "Failed to download new update: ${e.localizedMessageWithCauseLocalizedMessage()}"
+      logger.error(message, e, UpdatesErrorCode.UpdateFailedToLoad)
+      procedureContext.processStateEvent(UpdatesStateEvent.DownloadError(message))
       callback(IUpdatesController.FetchUpdateResult.ErrorResult(e))
     } finally {
       procedureContext.onComplete()

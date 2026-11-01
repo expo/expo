@@ -6,6 +6,8 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.logging.UpdatesLogEntry
+import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
 import io.mockk.every
@@ -32,20 +34,24 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.File
 import java.util.Date
 import java.util.UUID
 
 @RunWith(RobolectricTestRunner::class)
 class FileDownloaderTest {
   private lateinit var logger: UpdatesLogger
+  private lateinit var logsDirectory: File
   private lateinit var database: UpdatesDatabase
+  private val startTime = Date()
 
   @get:Rule
   val temporaryFolder = TemporaryFolder()
 
   @Before
   fun setup() {
-    logger = UpdatesLogger(temporaryFolder.newFolder())
+    logsDirectory = temporaryFolder.newFolder()
+    logger = UpdatesLogger(logsDirectory)
     database = mockk(relaxed = true)
   }
 
@@ -581,6 +587,61 @@ class FileDownloaderTest {
         message.length < 1000
       )
     }
+  }
+
+  @Test
+  fun test_downloadRemoteUpdate_failureIsLeftToTheCallerToLog() = runTest {
+    val fileDownloader = createFileDownloader(
+      createRemoteUpdateConfiguration(),
+      createClientReturningManifestResponse(code = 500, body = "server exploded")
+    )
+
+    try {
+      fileDownloader.downloadRemoteUpdate(null)
+      Assert.fail("Expected exception to be thrown")
+    } catch (_: Exception) {
+    }
+
+    val errors = readErrorLogEntries()
+    Assert.assertTrue("Expected no error entries, got: $errors", errors.isEmpty())
+  }
+
+  @Test
+  fun test_downloadAsset_failureLogsOneWarningAndNoErrorWithTheAssetKey() = runTest {
+    val assetEntity = AssetEntity("asset-key", "jpg").apply {
+      url = Uri.parse("https://example.com/asset.jpg")
+    }
+    val fileDownloader = createFileDownloader(
+      createRemoteUpdateConfiguration(),
+      createClientReturningManifestResponse(code = 500, body = "server exploded")
+    )
+
+    try {
+      fileDownloader.downloadAsset(assetEntity, temporaryFolder.newFolder(), JSONObject("{}"), null, null)
+      Assert.fail("Expected exception to be thrown")
+    } catch (_: Exception) {
+    }
+
+    val entries = readLogEntries()
+    val errors = entries.filter { it.level == "error" }
+    val warnings = entries.filter { it.level == "warn" }
+    Assert.assertTrue("Expected no error entries, got: $errors", errors.isEmpty())
+    Assert.assertEquals("Expected one warning entry, got: $warnings", 1, warnings.size)
+    val warning = warnings.single()
+    Assert.assertEquals("AssetsFailedToLoad", warning.code)
+    Assert.assertEquals("asset-key", warning.assetId)
+    Assert.assertTrue("Expected the response body in: ${warning.message}", warning.message.contains("server exploded"))
+  }
+
+  private fun readErrorLogEntries(): List<UpdatesLogEntry> =
+    readLogEntries().filter { it.level == "error" }
+
+  private fun readLogEntries(): List<UpdatesLogEntry> {
+    // The persistent file log handler writes asynchronously.
+    Thread.sleep(500)
+    return UpdatesLogReader(logsDirectory)
+      .getLogEntries(Date(startTime.time - 5000))
+      .mapNotNull { UpdatesLogEntry.create(it) }
   }
 
   private fun createRemoteUpdateConfiguration(): UpdatesConfiguration {
