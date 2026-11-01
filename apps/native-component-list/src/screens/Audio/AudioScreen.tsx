@@ -1,4 +1,5 @@
 import { preload } from 'expo-audio';
+import { Platform } from 'react-native';
 
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
@@ -8,6 +9,18 @@ preload(sfx1);
 preload(sfx2);
 
 export const AudioScreens = [
+  ...(Platform.OS === 'android'
+    ? [
+        {
+          name: 'Expo Audio Recording Notifications',
+          route: 'audio/expo-audio-recording-notifications',
+          options: {},
+          getComponent() {
+            return optionalRequire(() => require('./RecordingNotificationsScreen'));
+          },
+        },
+      ]
+    : []),
   {
     name: 'Expo Audio Player',
     route: 'audio/expo-audio',
