@@ -151,10 +151,7 @@ function isPodFolderCreated(projectRoot: string): boolean {
 
 // TODO: Same process but with app.config changes + default plugins.
 // This will ensure the user is prompted for extra setup.
-export async function maybePromptToSyncPodsAsync(
-  projectRoot: string,
-  { force = false }: { force?: boolean } = {}
-) {
+export async function maybePromptToSyncPodsAsync(projectRoot: string) {
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   if (isSwiftPMEnabled(exp)) {
     const skipping = chalk`Skipping CocoaPods because {bold experiments.swiftPackageManager} is enabled in the app config.`;
@@ -170,7 +167,7 @@ export async function maybePromptToSyncPodsAsync(
     // Project does not use CocoaPods
     return;
   }
-  if (force || !isLockfileCreated(projectRoot) || !isPodFolderCreated(projectRoot)) {
+  if (!isLockfileCreated(projectRoot) || !isPodFolderCreated(projectRoot)) {
     if (!(await installCocoaPodsAsync(projectRoot))) {
       throw new AbortCommandError();
     }

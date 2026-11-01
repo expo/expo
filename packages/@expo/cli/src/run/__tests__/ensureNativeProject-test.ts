@@ -19,6 +19,10 @@ describe(ensureNativeProjectAsync, () => {
     vol.fromJSON({}, '/');
     await ensureNativeProjectAsync('/', { platform: 'android', install: true });
     expect(promptToClearMalformedNativeProjectsAsync).toHaveBeenCalledWith('/', ['android']);
-    expect(prebuildAsync).toHaveBeenCalledWith('/', { install: true, platforms: ['android'] });
+    expect(prebuildAsync).toHaveBeenCalledWith(
+      '/',
+      { install: true, platforms: ['android'] },
+      undefined
+    );
   });
 });
