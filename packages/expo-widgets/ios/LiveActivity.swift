@@ -12,13 +12,13 @@ final class LiveActivity: SharedObject {
     super.init()
   }
 
-  func update(props: String?, staleDate: Date?) async throws {
+  func update(props: String?, staleDate: Date?, relevanceScore: Double?) async throws {
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
       throw LiveActivityNotFoundException(id)
     }
 
     let newState = LiveActivityAttributes.ContentState(name: name, props: props)
-    await activity.update(ActivityContent(state: newState, staleDate: staleDate))
+    await activity.update(ActivityContent(state: newState, staleDate: staleDate, relevanceScore: relevanceScore ?? 0))
   }
 
   func end(dismissalPolicy: LiveActivityDismissalPolicy?, afterDate: Date?, props: String?, contentDate: Date?) async throws {

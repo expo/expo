@@ -736,6 +736,21 @@ function updateDelivery(instance: LiveActivity<DeliveryActivityProps>) {
 }
 ```
 
+#### Ranking Live Activities
+
+When your app has more than one Live Activity, pass a `relevanceScore` to `start` or `update`. The system shows the activity with the highest score in the Dynamic Island and puts it first on the Lock Screen. Activities without a score have a score of `0`.
+
+```tsx
+const urgent = DeliveryActivity.start(
+  { etaMinutes: 2, status: 'Arriving now' },
+  undefined,
+  undefined,
+  100
+);
+
+await urgent.update({ etaMinutes: 1, status: 'At your door' }, undefined, 100);
+```
+
 #### Recovering active Live Activities
 
 A Live Activity can outlive the app process that started it. Use `getInstances` on the factory to retrieve the activities of that type that are currently active, for example to update or end them after your app relaunches.
