@@ -10,11 +10,13 @@ export * from './Widgets';
 export type {
   ExpoWidgetsEvents,
   LevelOfDetail,
+  LiveActivityAlertConfiguration,
   LiveActivityComponent,
   LiveActivityDismissalPolicy,
   LiveActivityEnvironment,
   LiveActivityEvents,
   LiveActivityLayout,
+  LiveActivityScheduleOptions,
   PushTokenEvent,
   PushToStartTokenEvent,
   UserInteractionEvent,
