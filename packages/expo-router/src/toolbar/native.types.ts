@@ -2,6 +2,7 @@ import { SharedRef } from 'expo';
 import type { ColorValue, ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import type { NativeStackHeaderItemButton } from '../react-navigation/native-stack';
 import type { BasicTextStyle } from '../utils/font';
 
 export interface RouterToolbarHostProps {
@@ -27,11 +28,9 @@ export interface RouterToolbarItemProps {
   hidden?: boolean;
   selected?: boolean;
   possibleTitles?: string[];
-  // Right now this does not seem to work
-  badgeConfiguration?: {
-    value?: string;
-    backgroundColor?: ColorValue;
-  } & BasicTextStyle;
+  badgeConfiguration?: { value?: string } & NonNullable<
+    NativeStackHeaderItemButton['badge']
+  >['style'];
   titleStyle?: BasicTextStyle;
   accessibilityLabel?: string;
   accessibilityHint?: string;
