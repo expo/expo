@@ -1,7 +1,16 @@
+import { spawn } from 'child_process';
+import { EventEmitter } from 'events';
+import { PassThrough } from 'stream';
+
 import { xcrunAsync } from '../../../../start/platforms/ios/xcrun';
-import { launchAppWithDeviceCtl } from '../devicectl';
+import { isInteractive } from '../../../../utils/interactive';
+import * as oraUtils from '../../../../utils/ora';
+import { installAndLaunchAppAsync, launchAppWithDeviceCtl } from '../devicectl';
 
 jest.mock('../../../../start/platforms/ios/xcrun');
+jest.mock('../../../../utils/interactive');
+jest.mock('../../../../utils/exit');
+jest.unmock('ora');
 
 describe(launchAppWithDeviceCtl, () => {
   it('throws generic error when `xcrun` fails without error logs', async () => {
@@ -27,6 +36,67 @@ describe(launchAppWithDeviceCtl, () => {
       launchAppWithDeviceCtl('fake-device-id', 'com.exponent.Test')
     ).rejects.toThrow('Device is locked, unlock and try again.');
   });
+});
+
+describe(installAndLaunchAppAsync, () => {
+  afterEach(() => {
+    for (const spinner of [...oraUtils.getAllSpinners()]) spinner.stop();
+    jest.restoreAllMocks();
+  });
+
+  it.each([
+    [true, '', 0],
+    [false, '', 0],
+    [true, '50%...', 0],
+    [true, '100%...', 0],
+    [true, '100%...', 1],
+  ])(
+    'finishes the indicator after exit (interactive: %s, progress: %s, code: %s)',
+    async (interactive, progress, code) => {
+      jest.mocked(isInteractive).mockReturnValue(interactive);
+      const realOra = oraUtils.ora;
+      const output = new PassThrough();
+      jest
+        .spyOn(oraUtils, 'ora')
+        .mockImplementation((text) => realOra({ text: text as string, stream: output }));
+      const child = Object.assign(new EventEmitter(), {
+        stdout: new EventEmitter(),
+        stderr: new EventEmitter(),
+        kill: jest.fn(),
+      });
+      jest.mocked(spawn).mockReturnValueOnce(child as any);
+      jest.mocked(xcrunAsync).mockResolvedValueOnce({ stdout: '' } as any);
+
+      const originalLog = console.log;
+      const installation = installAndLaunchAppAsync({
+        bundle: '/Test.app',
+        bundleIdentifier: 'dev.expo.Test',
+        udid: 'test-udid',
+        deviceName: 'Test iPhone',
+      });
+      const spinner = oraUtils.getAllSpinners()[0]!;
+      const succeed = jest.spyOn(spinner, 'succeed');
+      try {
+        if (progress) child.stdout.emit('data', Buffer.from(progress));
+        expect(succeed).not.toHaveBeenCalled();
+        child.emit('close', code);
+        if (code === 0) {
+          await installation;
+          expect(succeed).toHaveBeenCalledTimes(1);
+          expect(succeed).toHaveBeenCalledWith('Installed on Test iPhone');
+        } else {
+          await expect(installation).rejects.toThrow('Command failed with exit code 1');
+          expect(succeed).not.toHaveBeenCalled();
+          expect(xcrunAsync).not.toHaveBeenCalled();
+        }
+        expect(spinner.isSpinning).toBe(false);
+        expect(oraUtils.getAllSpinners()).not.toContain(spinner);
+        expect(console.log).toBe(originalLog);
+      } finally {
+        spinner.stop();
+      }
+    }
+  );
 });
 
 // const INSTALL_FIXTURE = [

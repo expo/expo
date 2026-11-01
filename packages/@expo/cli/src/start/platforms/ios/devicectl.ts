@@ -397,24 +397,14 @@ export async function installAndLaunchAppAsync(props: {
     await installAppWithDeviceCtlAsync(
       udid,
       bundle,
-      ({
-        status,
-        isComplete,
-        progress,
-      }: {
-        status: string;
-        isComplete: boolean;
-        progress: number;
-      }) => {
+      ({ status, progress }: { status: string; isComplete: boolean; progress: number }) => {
         if (!indicator) {
           indicator = ora(status).start();
         }
         indicator.text = `${chalk.bold(status)} ${progress}%`;
-        if (isComplete) {
-          indicator.succeed();
-        }
       }
     );
+    indicator.succeed(`Installed on ${deviceName}`);
   } catch (error: any) {
     if (indicator) {
       indicator.fail();
