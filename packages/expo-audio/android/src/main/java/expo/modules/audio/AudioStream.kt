@@ -52,8 +52,13 @@ class AudioStream(
     private set
   var channels: Int = 0
     private set
+  @Volatile
   var isStreaming: Boolean = false
     private set
+
+  // Incremented by each start(). A queued buffer event compares it to drop audio from a stopped session.
+  @Volatile
+  private var session: Int = 0
 
   private var startTimeNanos: Long = 0
 
@@ -82,6 +87,7 @@ class AudioStream(
     channels = config.channelCount
     audioRecord = recorder
     startTimeNanos = System.nanoTime()
+    session += 1
     isStreaming = true
     emitStatus()
 
@@ -237,11 +243,12 @@ class AudioStream(
   }
 
   private fun startCaptureLoop(recorder: AudioRecord, config: ResolvedAudioConfig) {
+    val captureSession = session
     captureJob = coroutineScope.launch {
       val readSizeBytes = config.readSize
 
       while (isActive && isStreaming) {
-        readAndEmit(recorder, readSizeBytes, config.channelCount, config.sampleRate)
+        readAndEmit(recorder, readSizeBytes, config.channelCount, config.sampleRate, captureSession)
       }
     }
   }
@@ -250,7 +257,8 @@ class AudioStream(
     recorder: AudioRecord,
     readSizeBytes: Int,
     channels: Int,
-    sampleRate: Int
+    sampleRate: Int,
+    captureSession: Int
   ) {
     val byteBuffer = ByteBuffer.allocateDirect(readSizeBytes).order(ByteOrder.nativeOrder())
     val bytesRead = recorder.read(byteBuffer, readSizeBytes, AudioRecord.READ_BLOCKING)
@@ -267,23 +275,27 @@ class AudioStream(
       synchronized(fileWriterLock) {
         fileWriter?.append(pcmBytes)
       }
-      emitBufferEvent(NativeArrayBuffer(recorded), channels, sampleRate)
+      emitBufferEvent(NativeArrayBuffer(recorded), channels, sampleRate, captureSession)
     }
   }
 
   private fun emitStatus() {
+    val streaming = isStreaming
     appContext?.mainQueue?.launch {
       emit(
         AUDIO_STREAM_STATUS,
-        mapOf("isStreaming" to isStreaming)
+        mapOf("isStreaming" to streaming)
       )
     }
   }
 
-  private fun emitBufferEvent(data: NativeArrayBuffer, channels: Int, sampleRate: Int) {
+  private fun emitBufferEvent(data: NativeArrayBuffer, channels: Int, sampleRate: Int, bufferSession: Int) {
     val timestamp = (System.nanoTime() - startTimeNanos) / 1_000_000_000.0
 
     appContext?.mainQueue?.launch {
+      if (!isStreaming || bufferSession != session) {
+        return@launch
+      }
       emit(
         AUDIO_STREAM_BUFFER,
         mapOf(
