@@ -312,7 +312,8 @@ class ExpoImageModule : Module() {
         "onProgress",
         "onError",
         "onLoad",
-        "onDisplay"
+        "onDisplay",
+        "onPlaceholderDisplay"
       )
 
       Prop("source") { view: ExpoImageViewWrapper, sources: EitherOfThree<List<SourceMap>, SharedRef<Drawable>, SharedRef<Bitmap>>? ->
