@@ -17,8 +17,8 @@ private final class MacroEmittingObject: SharedObject {
   @Event
   var onTicked: (ProgressEvent) -> Void
 
-  @Event(.sync)
-  var onTickedSync: (ProgressEvent) -> Void
+  @Event(.inline)
+  var onTickedInline: (ProgressEvent) -> Void
 }
 
 @ExpoModule(classes: [MacroEmittingObject.self])
@@ -35,14 +35,17 @@ private final class MacroEmitter: Module {
   @Event
   var onTimestamp: (Date) -> Void
 
-  @Event(.sync)
-  var onProgressSync: (ProgressEvent) -> Void
+  @Event(.inline)
+  var onProgressInline: (ProgressEvent) -> Void
 
-  @Event(.sync)
-  var onDoneSync: () -> Void
+  @Event(.blocking)
+  var onDoneBlocking: () -> Void
 
-  @Event("moveSync", .sync)
-  var onMovedSync: ((x: Int, y: Int)) -> Void
+  @Event("moveInline", .inline)
+  var onMovedInline: ((x: Int, y: Int)) -> Void
+
+  @Event(.blocking)
+  var onMovedBlocking: ((x: Int, y: Int)) -> Void
 }
 
 @Suite("Macro event")
@@ -139,45 +142,55 @@ private struct MacroEventTests {
   }
 
   @Test
-  func `emits a sync event with a payload before returning`() throws {
+  func `emits an inline event with a payload before returning`() throws {
     try runtime.eval("""
       globalThis.result = null
-      expo.modules.MacroEmitter.addListener('progressSync', payload => { globalThis.result = payload.percent })
+      expo.modules.MacroEmitter.addListener('progressInline', payload => { globalThis.result = payload.percent })
       """)
-    module.onProgressSync(ProgressEvent(percent: 40))
+    module.onProgressInline(ProgressEvent(percent: 40))
     #expect(try runtime.eval("globalThis.result").asInt() == 40)
   }
 
   @Test
-  func `emits a no-payload sync event before returning`() throws {
+  func `emits a no-payload blocking event before returning`() throws {
     try runtime.eval("""
       globalThis.result = null
-      expo.modules.MacroEmitter.addListener('doneSync', (...args) => { globalThis.result = args.length + ':' + typeof args[0] })
+      expo.modules.MacroEmitter.addListener('doneBlocking', (...args) => { globalThis.result = args.length + ':' + typeof args[0] })
       """)
-    module.onDoneSync()
+    module.onDoneBlocking()
     #expect(try runtime.eval("globalThis.result").asString() == "1:undefined")
   }
 
   @Test
-  func `emits a sync event with a tuple payload before returning`() throws {
+  func `emits an inline event with a tuple payload before returning`() throws {
     try runtime.eval("""
       globalThis.result = null
-      expo.modules.MacroEmitter.addListener('moveSync', payload => { globalThis.result = JSON.stringify(payload) })
+      expo.modules.MacroEmitter.addListener('moveInline', payload => { globalThis.result = JSON.stringify(payload) })
       """)
-    module.onMovedSync((x: 3, y: 4))
+    module.onMovedInline((x: 3, y: 4))
     #expect(try runtime.eval("globalThis.result").asString() == #"{"x":3,"y":4}"#)
   }
 
   @Test
-  func `emits a sync event from a shared object before returning`() throws {
+  func `emits a blocking event with a tuple payload before returning`() throws {
+    try runtime.eval("""
+      globalThis.result = null
+      expo.modules.MacroEmitter.addListener('movedBlocking', payload => { globalThis.result = JSON.stringify(payload) })
+      """)
+    module.onMovedBlocking((x: 5, y: 6))
+    #expect(try runtime.eval("globalThis.result").asString() == #"{"x":5,"y":6}"#)
+  }
+
+  @Test
+  func `emits an inline event from a shared object before returning`() throws {
     let object = MacroEmittingObject()
     let encoded = try MacroEmittingObject.encode(object, in: runtime)
     try runtime.global().setProperty("emittingObject", value: encoded)
     try runtime.eval("""
       globalThis.result = null
-      emittingObject.addListener('tickedSync', payload => { globalThis.result = payload.percent })
+      emittingObject.addListener('tickedInline', payload => { globalThis.result = payload.percent })
       """)
-    object.onTickedSync(ProgressEvent(percent: 60))
+    object.onTickedInline(ProgressEvent(percent: 60))
     #expect(try runtime.eval("globalThis.result").asInt() == 60)
   }
 

@@ -173,65 +173,156 @@ public extension EventEmitter {
 }
 
 public extension EventEmitter {
-  /// Emits an event with the given name to the associated JavaScript object synchronously, on the JS
-  /// thread. Listeners run before this function returns. The `@Event(.sync)` macro calls it.
-  @JavaScriptActor
+  /// Emits an event with the given name to the associated JavaScript object. On the JavaScript thread,
+  /// the listeners run before this function returns; on any other thread, the event is scheduled, the
+  /// same as with `emit`. It never blocks. The `@Event(.inline)` macro calls it.
   @inlinable
-  func emitSync(event: String) {
-    emitSync(event: event, payload: JavaScriptUndefined())
+  func emitInline(event: String) {
+    emitInline(event: event, payload: JavaScriptUndefined())
   }
 
-  /// Emits an event with the given name and a pre-converted JavaScript payload to the associated
-  /// JavaScript object synchronously, on the JS thread.
-  @JavaScriptActor
-  func emitSync(event: String, payload: consuming JavaScriptValue) {
+  /// Emits an event with the given name and payload to the associated JavaScript object. On the
+  /// JavaScript thread, the payload is converted and the listeners run before this function returns; on
+  /// any other thread, the event is scheduled, the same as with `emit`. It never blocks.
+  ///
+  /// Listeners that run inline can call back into the emitter before this function returns, so emit
+  /// after the emitter's state is up to date.
+  @inlinable
+  func emitInline<P: JavaScriptEncodable>(event: String, payload: sending P) {
     guard let runtime = eventRuntime(forEvent: event) else {
       return
     }
-    dispatchEvent(event: event, payload: payload, from: self, in: runtime)
+    // See the note in `emit(event:payload:)` above.
+    let emitter = WeakEventEmitterReference(value: self)
+
+    runtime.runOrSchedule {
+      guard let emitter = emitter.value else {
+        return
+      }
+      let jsPayload: JavaScriptValue
+      do {
+        jsPayload = try P.encode(payload, in: runtime)
+      } catch {
+        warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
+        return
+      }
+      dispatchEventOrRetry(event: event, payload: jsPayload, from: emitter, in: runtime)
+    }
   }
 
-  /// Emits an event with the given name and payload to the associated JavaScript object synchronously,
-  /// on the JS thread.
-  @JavaScriptActor
+  /// Emits an event like `emitInline(event:payload:)`, converting the payload with `encode`. The
+  /// `@Event(.inline)` macro uses it for payload types that can't conform to `JavaScriptEncodable`, such
+  /// as tuples.
   @inlinable
-  func emitSync<P: JavaScriptEncodable>(event: String, payload: P) {
-    guard let runtime = eventRuntime(forEvent: event) else {
-      return
-    }
-    let jsPayload: JavaScriptValue
-    do {
-      jsPayload = try P.encode(payload, in: runtime)
-    } catch {
-      warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
-      return
-    }
-    dispatchEvent(event: event, payload: jsPayload, from: self, in: runtime)
-  }
-
-  /// Emits an event with the given name and payload to the associated JavaScript object synchronously,
-  /// on the JS thread, converting the payload with `encode`. The `@Event(.sync)` macro uses it for
-  /// payload types that can't conform to `JavaScriptEncodable`, such as tuples.
-  @JavaScriptActor
-  @inlinable
-  func emitSync<P>(
+  func emitInline<P>(
     event: String,
-    payload: P,
-    encode: (P, borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime) throws -> Void
+    payload: sending P,
+    encode: @escaping @JavaScriptActor @Sendable (P, borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime) throws
+      -> Void
   ) {
     guard let runtime = eventRuntime(forEvent: event) else {
       return
     }
-    let jsPayload: JavaScriptValue
-    do {
-      jsPayload = try JavaScriptValue.encoding(in: runtime) { slot in
-        try encode(payload, slot, runtime)
+    // See the note in `emit(event:payload:)` above.
+    let emitter = WeakEventEmitterReference(value: self)
+
+    runtime.runOrSchedule {
+      guard let emitter = emitter.value else {
+        return
       }
-    } catch {
-      warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
+      let jsPayload: JavaScriptValue
+      do {
+        jsPayload = try JavaScriptValue.encoding(in: runtime) { slot in
+          try encode(payload, slot, runtime)
+        }
+      } catch {
+        warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
+        return
+      }
+      dispatchEventOrRetry(event: event, payload: jsPayload, from: emitter, in: runtime)
+    }
+  }
+
+  /// Emits an event with the given name to the associated JavaScript object. The listeners run before
+  /// this function returns, on any thread: a call from another thread blocks until the JavaScript thread
+  /// runs them. The `@Event(.blocking)` macro calls it.
+  @available(*, noasync)
+  @inlinable
+  func emitBlocking(event: String) {
+    emitBlocking(event: event, payload: JavaScriptUndefined())
+  }
+
+  /// Emits an event with the given name and payload to the associated JavaScript object. The payload is
+  /// converted and the listeners run before this function returns, on any thread: on the JavaScript
+  /// thread they run inline, and a call from another thread blocks until the JavaScript thread runs them.
+  ///
+  /// A call from another thread deadlocks when the JavaScript thread is waiting for the calling thread,
+  /// for example when a synchronous function waits for the main thread with `DispatchQueue.main.sync`
+  /// while the main thread emits. Use `emitInline(event:payload:)` when the caller doesn't need to wait.
+  @available(*, noasync)
+  @inlinable
+  func emitBlocking<P: JavaScriptEncodable>(event: String, payload: sending P) {
+    guard let runtime = eventRuntime(forEvent: event) else {
       return
     }
-    dispatchEvent(event: event, payload: jsPayload, from: self, in: runtime)
+    // See the note in `emit(event:payload:)` above.
+    let emitter = WeakEventEmitterReference(value: self)
+
+    do {
+      try runtime.execute {
+        guard let emitter = emitter.value else {
+          return
+        }
+        let jsPayload: JavaScriptValue
+        do {
+          jsPayload = try P.encode(payload, in: runtime)
+        } catch {
+          warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
+          return
+        }
+        dispatchEventOrRetry(event: event, payload: jsPayload, from: emitter, in: runtime)
+      }
+    } catch {
+      warnRuntimeLost(event: event, emitterType: type(of: self))
+    }
+  }
+
+  /// Emits an event like `emitBlocking(event:payload:)`, converting the payload with `encode`. The
+  /// `@Event(.blocking)` macro uses it for payload types that can't conform to `JavaScriptEncodable`,
+  /// such as tuples.
+  @available(*, noasync)
+  @inlinable
+  func emitBlocking<P>(
+    event: String,
+    payload: sending P,
+    encode: @escaping @JavaScriptActor @Sendable (P, borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime) throws
+      -> Void
+  ) {
+    guard let runtime = eventRuntime(forEvent: event) else {
+      return
+    }
+    // See the note in `emit(event:payload:)` above.
+    let emitter = WeakEventEmitterReference(value: self)
+
+    do {
+      try runtime.execute {
+        guard let emitter = emitter.value else {
+          return
+        }
+        let jsPayload: JavaScriptValue
+        do {
+          jsPayload = try JavaScriptValue.encoding(in: runtime) { slot in
+            try encode(payload, slot, runtime)
+          }
+        } catch {
+          warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
+          return
+        }
+        dispatchEventOrRetry(event: event, payload: jsPayload, from: emitter, in: runtime)
+      }
+    } catch {
+      warnRuntimeLost(event: event, emitterType: type(of: self))
+    }
   }
 }
 
@@ -262,6 +353,12 @@ extension EventEmitter {
   }
 }
 
+/// Logs that the runtime was lost before an event could be emitted.
+@usableFromInline
+internal func warnRuntimeLost(event: String, emitterType: Any.Type) {
+  log.warn("Trying to send event '\(event)' to \(emitterType), but the JS runtime has been lost")
+}
+
 /// Logs that the payload of an event couldn't be converted, so the event is not emitted.
 @usableFromInline
 internal func warnPayloadNotEncoded(event: String, payloadType: Any.Type, error: any Error) {
@@ -286,6 +383,35 @@ internal func dispatchEvent(
   }
   if dispatched == nil {
     log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
+  }
+}
+
+/// Sends a pre-converted event payload to the JavaScript object of the given emitter, like
+/// `dispatchEvent(event:payload:from:in:)`. When the emitter isn't associated with a JavaScript object
+/// yet, it schedules one more try instead of dropping the event: an event that a shared object emits
+/// inline from its constructor runs before the object is paired with its JavaScript object.
+@JavaScriptActor
+@usableFromInline
+internal func dispatchEventOrRetry(
+  event: String,
+  payload: consuming JavaScriptValue,
+  from emitter: any EventEmitter,
+  in runtime: JavaScriptRuntime
+) {
+  let dispatched = emitter.withEventTarget { target in
+    dispatchEvent(event: event, payload: payload, to: target, in: runtime)
+    return true
+  }
+  if dispatched != nil {
+    return
+  }
+  let payload = payload.ref()
+  let weakEmitter = WeakEventEmitterReference(value: emitter)
+  runtime.schedule {
+    guard let emitter = weakEmitter.value, let payload = payload.take() else {
+      return
+    }
+    dispatchEvent(event: event, payload: payload, from: emitter, in: runtime)
   }
 }
 
