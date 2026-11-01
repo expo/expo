@@ -1,7 +1,7 @@
-import { AppRegistry, DeviceEventEmitter } from 'react-native';
+import { AppRegistry, DeviceEventEmitter, Platform } from 'react-native';
 
 import ExpoDevMenu from './ExpoDevMenu';
-import type { ExpoDevMenuItem } from './ExpoDevMenu.types';
+import type { ExpoDevMenuCallback, ExpoDevMenuItem } from './ExpoDevMenu.types';
 
 /**
  * A method that opens development client menu when called.
@@ -56,14 +56,19 @@ let handlers = new Map<string, () => void>();
  */
 export async function registerDevMenuItems(items: ExpoDevMenuItem[]): Promise<void> {
   handlers = new Map();
-  const callbackNames: { name: string; shouldCollapse?: boolean }[] = [];
+  const callbacks: ExpoDevMenuCallback[] = [];
 
   items.forEach((item) => {
     handlers.set(item.name, item.callback);
-    callbackNames.push({ name: item.name, shouldCollapse: item.shouldCollapse });
+    callbacks.push({
+      name: item.name,
+      shouldCollapse: item.shouldCollapse,
+      icon: item.icon ? Platform.select(item.icon)?.trim() || undefined : undefined,
+      group: item.group?.trim() || undefined,
+    });
   });
 
-  return await ExpoDevMenu.addDevMenuCallbacks(callbackNames);
+  return await ExpoDevMenu.addDevMenuCallbacks(callbacks);
 }
 
 function syncAvailableAppKeys() {
