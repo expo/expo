@@ -221,8 +221,34 @@ struct ExpoFabricViewTests {
     let view = viewClass.createComponentView() as? ExpoFabricView
     observer.didMountComponents(withRootTag: 1)
 
-    #expect(view != nil)
-    #expect(view is TestFabricView == false)
-    #expect(view?.appContext === appContext)
+    let emptyView = try #require(view)
+    // `type(of:)` reports the Swift superclass for classes created at runtime, so compare the Objective-C class.
+    #expect(object_getClass(emptyView) === viewClass)
+    #expect(emptyView.appContext === appContext)
+  }
+
+  @Test
+  func `keeps the mounting app context when an older app context's observer is notified`() throws {
+    let moduleName = uniqueModuleName()
+    let outer = makeAppContext(moduleName: moduleName)
+    let older = makeAppContext(moduleName: moduleName)
+    let newer = makeAppContext(moduleName: moduleName)
+    let outerObserver = SurfacePresenterObserver(appContext: outer)
+    let olderObserver = SurfacePresenterObserver(appContext: older)
+    let newerObserver = SurfacePresenterObserver(appContext: newer)
+    let surfacePresenter = TestSurfacePresenter()
+
+    #expect(olderObserver.observe(surfacePresenter))
+    #expect(newerObserver.observe(surfacePresenter))
+
+    // The observer of the older app context ignores the mount, so its `didMount` must not restore anything.
+    outerObserver.willMountComponents(withRootTag: 1)
+    olderObserver.willMountComponents(withRootTag: 2)
+    olderObserver.didMountComponents(withRootTag: 2)
+
+    #expect(AppContext.mountingAppContext === outer)
+
+    outerObserver.didMountComponents(withRootTag: 1)
+    #expect(AppContext.mountingAppContext == nil)
   }
 }
