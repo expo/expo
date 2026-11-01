@@ -22,6 +22,9 @@ const ImageScreens: ScreenConfig[] = optionalScreens(
 const SVGScreens: ScreenConfig[] = optionalScreens(
   () => require('../screens/SVG/SVGScreen').SVGScreens
 );
+const SelectableTextScreens: ScreenConfig[] = optionalScreens(
+  () => require('../screens/SelectableText/SelectableTextScreen').SelectableTextScreens
+);
 const UIScreens: ScreenConfig[] = optionalScreens(
   () => require('../screens/UI/UIScreen').UIScreens
 );
@@ -70,6 +73,12 @@ export const ScreensList: ScreenConfig[] = [
       return optionalRequire(() => require('../screens/GlassView/GlassViewScreen'));
     },
     name: 'GlassView',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/SelectableText/SelectableTextScreen'));
+    },
+    name: 'SelectableText',
   },
   {
     getComponent() {
@@ -308,6 +317,7 @@ export const Screens: ScreenConfig[] = [
   ...CameraScreens,
   ...ImageScreens,
   ...VideoScreens,
+  ...SelectableTextScreens,
   ...UIScreens,
   ...UIUniversalScreens,
   ...SVGScreens,
