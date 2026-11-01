@@ -88,6 +88,14 @@ export function removeFileSystemDots(filePath: string): string {
 }
 
 export function stripGroupSegmentsFromPath(path: string): string {
+  // Only the pathname can contain groups. The search and hash may contain parentheses, e.g. `?a=(a)`
+  const suffixIndex = path.search(/[?#]/);
+  if (suffixIndex !== -1) {
+    const pathname = stripGroupSegmentsFromPath(path.slice(0, suffixIndex));
+    const root = path.startsWith('/') ? '/' : '';
+    return (pathname || root) + path.slice(suffixIndex);
+  }
+
   return path
     .split('/')
     .reduce((acc, v) => {
