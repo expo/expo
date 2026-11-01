@@ -17,7 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -38,8 +40,10 @@ import expo.modules.devlauncher.compose.primitives.CircularProgressBar
 import expo.modules.devlauncher.compose.ui.ActionButton
 import expo.modules.devlauncher.compose.ui.AppHeader
 import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
+import expo.modules.devlauncher.compose.ui.SearchInput
 import expo.modules.devlauncher.compose.ui.LauncherIcons
 import expo.modules.devlauncher.compose.utils.DateFormat
+import expo.modules.devlauncher.compose.utils.fuzzyMatch
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
 import expo.modules.devmenu.compose.primitives.RoundedSurface
@@ -143,6 +147,7 @@ fun BranchesScreen(
   branches: List<Branch> = emptyList(),
   needToSignIn: Boolean = false,
   isLoading: Boolean = false,
+  hasMore: Boolean = true,
   onProfileClick: () -> Unit = {},
   onAction: (BranchesAction) -> Unit = { _ -> }
 ) {
@@ -161,6 +166,28 @@ fun BranchesScreen(
     Spacer(NewAppTheme.spacing.`4`)
 
     Column {
+      var searchQuery by remember { mutableStateOf("") }
+
+      val filteredBranches = remember(branches, searchQuery) {
+        val query = searchQuery.trim()
+        if (query.isEmpty()) {
+          branches
+        } else {
+          branches.filter { branch ->
+            fuzzyMatch(query, branch.name) ||
+              (branch.compatibleUpdate?.name?.let { fuzzyMatch(query, it) } == true)
+          }
+        }
+      }
+
+      SearchInput(
+        value = searchQuery,
+        onValueChange = { searchQuery = it },
+        placeholder = "Search branches and updates"
+      )
+
+      Spacer(NewAppTheme.spacing.`4`)
+
       val lazyListState = rememberLazyListState()
 
       val reachedBottom: Boolean by remember {
@@ -171,8 +198,10 @@ fun BranchesScreen(
         }
       }
 
-      LaunchedEffect(reachedBottom) {
-        if (reachedBottom && !isLoading) {
+      LaunchedEffect(reachedBottom, branches.size, searchQuery) {
+        // While searching, a short filtered list always "reaches bottom", which would burst-load every page
+        // which is why searching pages is driven by the explicit button below instead.
+        if (reachedBottom && !isLoading && searchQuery.isBlank()) {
           onAction(BranchesAction.LoadMoreBranches)
         }
       }
@@ -181,7 +210,7 @@ fun BranchesScreen(
         state = lazyListState,
         verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
       ) {
-        items(items = branches) { branch ->
+        items(items = filteredBranches, key = { it.name }) { branch ->
           RoundedSurface(
             color = NewAppTheme.colors.background.subtle,
             borderRadius = NewAppTheme.borderRadius.xl
@@ -283,7 +312,7 @@ fun BranchesScreen(
               )
             }
           }
-        } else if (branches.isEmpty()) {
+        } else if (filteredBranches.isEmpty()) {
           item {
             Row(
               modifier = Modifier
@@ -293,7 +322,11 @@ fun BranchesScreen(
               verticalAlignment = Alignment.CenterVertically
             ) {
               NewText(
-                "No branches available.",
+                if (searchQuery.isBlank()) {
+                  "No branches available."
+                } else {
+                  "No branches or updates match \"$searchQuery\"."
+                },
                 style = NewAppTheme.font.lg.merge(
                   textAlign = TextAlign.Center,
                   fontWeight = FontWeight.Medium
@@ -301,6 +334,18 @@ fun BranchesScreen(
                 color = NewAppTheme.colors.text.secondary
               )
             }
+          }
+        }
+
+        if (searchQuery.isNotBlank() && hasMore && !isLoading) {
+          item {
+            ActionButton(
+              "Load more to keep searching",
+              foreground = NewAppTheme.colors.text.default,
+              background = NewAppTheme.colors.background.element,
+              modifier = Modifier.padding(vertical = NewAppTheme.spacing.`2`),
+              onClick = { onAction(BranchesAction.LoadMoreBranches) }
+            )
           }
         }
       }
