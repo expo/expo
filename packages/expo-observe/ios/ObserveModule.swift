@@ -11,6 +11,7 @@ internal struct Config: Record {
   @Field var dispatchingEnabled: Bool?
   @Field var dispatchInDebug: Bool?
   @Field var sampleRate: Double?
+  @Field var errorSampleRate: Double?
   @Field var integrations: [String: Any]?
 }
 
@@ -51,7 +52,8 @@ public final class ObserveModule: Module {
           PersistedConfig(
             dispatchingEnabled: config.dispatchingEnabled,
             dispatchInDebug: config.dispatchInDebug,
-            sampleRate: config.sampleRate
+            sampleRate: config.sampleRate,
+            errorSampleRate: config.errorSampleRate
           )
         )
         let resolvedEnvironment = config.environment ?? ObserveUserDefaults.bundleDefaults?.environment

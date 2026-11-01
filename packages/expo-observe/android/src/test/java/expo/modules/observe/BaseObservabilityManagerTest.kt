@@ -279,6 +279,121 @@ class BaseObservabilityManagerTest {
 
   // endregion
 
+  // region Error sample rate tests
+
+  @Test
+  fun `when only errors are in-sample, only exception logs are dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    stubLogDispatch(logs = listOf(log(1, "info"), log(2, "js.exception"), log(3, "native.exception")))
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(3, logCursor)
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(
+        match { events -> events.single().logs.map { it.name } == listOf("js.exception", "native.exception") }
+      )
+    }
+  }
+
+  @Test
+  fun `when in-sample for sampleRate, all logs are dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 1.0, errorSampleRate = 0.0)
+    stubLogDispatch(logs = listOf(log(1, "info"), log(2, "js.exception"), log(3, "native.exception")))
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(3, logCursor)
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(
+        match { events -> events.single().logs.map { it.name } == listOf("info", "js.exception", "native.exception") }
+      )
+    }
+  }
+
+  @Test
+  fun `when errorSampleRate is null, exception logs follow sampleRate`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.5, errorSampleRate = null)
+    stubLogDispatch(logs = listOf(log(1, "js.exception")))
+
+    createManager(deterministicUniformValue = 0.8).dispatchUnsentLogs()
+
+    assertEquals(1, logCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatchLogs(any()) }
+  }
+
+  @Test
+  fun `when dispatchingEnabled is false, errorSampleRate has no effect`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns
+      PersistedConfig(dispatchingEnabled = false, errorSampleRate = 1.0)
+    stubLogDispatch(logs = listOf(log(1, "js.exception")))
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(1, logCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatchLogs(any()) }
+  }
+
+  @Test
+  fun `on a debug build without dispatchInDebug, errorSampleRate has no effect`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(errorSampleRate = 1.0)
+    stubLogDispatch(logs = listOf(log(1, "js.exception")))
+
+    createManager(isDebugBuild = true).dispatchUnsentLogs()
+
+    assertEquals(1, logCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatchLogs(any()) }
+  }
+
+  @Test
+  fun `a chunk with only out-of-sample logs is skipped and the next chunk is dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    coEvery { sessionManager.getMaxLogId() } returns 4
+    coEvery { sessionManager.getLogs(-1, 2) } returns listOf(log(1, "one"), log(2, "two"))
+    coEvery { sessionManager.getLogs(2, 2) } returns listOf(log(3, "js.exception"), log(4, "four"))
+    coEvery { sessionManager.getLogs(4, 2) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
+
+    createManager(chunkSize = 2).dispatchUnsentLogs()
+
+    assertEquals(4, logCursor)
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(match { events -> events.single().logs.map { it.name } == listOf("js.exception") })
+    }
+  }
+
+  @Test
+  fun `a retryable failure keeps the cursor before in-sample exception logs`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    stubLogDispatch(
+      logs = listOf(log(1, "info"), log(2, "js.exception")),
+      result = DispatchResult.RetryableFailure(60_000)
+    )
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(-1, logCursor)
+  }
+
+  @Test
+  fun `when only errors are in-sample, metrics and spans are not dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    coEvery { sessionManager.getMaxMetricId() } returns 10
+    coEvery { sessionManager.getMaxSpanId() } returns 42
+    val manager = createManager()
+
+    manager.dispatchUnsentMetrics()
+    manager.dispatchUnsentSpans()
+
+    assertEquals(10, metricCursor)
+    coVerify(exactly = 1) { sessionManager.deleteSpansUpTo(42) }
+    coVerify(exactly = 0) { eventDispatcher.dispatch(any()) }
+    coVerify(exactly = 0) { eventDispatcher.dispatchSpans(any()) }
+  }
+
+  // endregion
+
   // region Fetching and dispatch tests
 
   @Test
