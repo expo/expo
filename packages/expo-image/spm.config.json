@@ -47,6 +47,13 @@
           "version": {
             "exact": "1.0.0"
           }
+        },
+        {
+          "url": "https://github.com/SDWebImage/libdav1d-Xcode.git",
+          "productName": "libdav1d",
+          "version": {
+            "exact": "1.2.0"
+          }
         }
       ],
       "targets": [
@@ -64,7 +71,8 @@
             "SDWebImageAVIFCoder",
             "SDWebImageSVGCoder",
             "SDWebImageWebPCoder",
-            "libavif"
+            "libavif",
+            "libdav1d"
           ],
           "linkedFrameworks": ["Foundation", "UIKit"],
           "exclude": ["Tests/**"]
