@@ -15,6 +15,10 @@ export function serializeMetadataToReact(metadata: Metadata): ReactNode[] {
       return <title key="metadata-title">{tag.content}</title>;
     }
 
-    return <tag.tagName key={`metadata-${tag.tagName}-${index}`} {...tag.attributes} />;
+    // React names the HTML `hreflang` attribute `hrefLang`.
+    const { hreflang, ...attributes } = tag.attributes;
+    return (
+      <tag.tagName key={`metadata-${tag.tagName}-${index}`} {...attributes} hrefLang={hreflang} />
+    );
   });
 }
