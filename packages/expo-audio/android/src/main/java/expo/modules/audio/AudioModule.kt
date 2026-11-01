@@ -454,12 +454,13 @@ class AudioModule : Module() {
     }
 
     AsyncFunction("preload") Coroutine { source: AudioSource, _: Double ->
-      val uri = source.uri ?: return@Coroutine
-      val factory = when (uri.toUri().scheme) {
+      val uriString = source.uri ?: return@Coroutine
+      val uri = resolveSourceUri(uriString)
+      val factory = when (uri.scheme) {
         "http", "https" -> httpDataSourceFactory(source.headers)
         else -> DefaultDataSource.Factory(context)
       }
-      AudioPreloadManager.preload(uri, factory)
+      AudioPreloadManager.preload(uriString, uri, factory)
     }
 
     AsyncFunction("clearPreloadedSource") Coroutine { source: AudioSource ->
@@ -909,14 +910,7 @@ class AudioModule : Module() {
           playlist.loopMode = loop
           playlist.setMediaItemCreator { source ->
             source.uri?.let { uriString ->
-              val uri = uriString.toUri()
-              when {
-                isRawResource(uri) -> {
-                  val file = getResourceName(uri, uriString)
-                  MediaItem.fromUri(getRawResourceURI(file))
-                }
-                else -> MediaItem.fromUri(uri)
-              }
+              MediaItem.fromUri(resolveSourceUri(uriString))
             }
           }
           playlist.loadInitialPlaylist()
@@ -1123,13 +1117,7 @@ class AudioModule : Module() {
 
   private fun createMediaItem(source: AudioSource?): MediaSource? = source?.uri?.let { uriString ->
     val uri = uriString.toUri()
-    val mediaItem = when {
-      isRawResource(uri) -> {
-        val file = getResourceName(uri, uriString)
-        MediaItem.fromUri(getRawResourceURI(file))
-      }
-      else -> MediaItem.fromUri(uri)
-    }
+    val mediaItem = MediaItem.fromUri(resolveSourceUri(uriString))
 
     val preloadedBytes = AudioPreloadManager.get(uriString)
     val factory: DataSource.Factory = if (preloadedBytes != null) {
@@ -1148,6 +1136,17 @@ class AudioModule : Module() {
       headers?.let { headers ->
         setDefaultRequestProperties(headers)
       }
+    }
+  }
+
+  // Bundled assets arrive as a bare resource name (embedded bundle) or as
+  // `file:///android_res/raw/...` (expo-updates). Neither can be opened as a file.
+  private fun resolveSourceUri(uriString: String): Uri {
+    val uri = uriString.toUri()
+    return if (isRawResource(uri)) {
+      getRawResourceURI(getResourceName(uri, uriString))
+    } else {
+      uri
     }
   }
 
