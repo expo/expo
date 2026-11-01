@@ -356,7 +356,7 @@ export enum OuterNamespace {}
   "moduleInterfaces": [
     {
       "indexFile": {
-        "content": "export type * from './TestModule.types';
+        "content": "export * from './TestModule.types';
 
 export { default as TestModule } from './TestModuleModule';
 

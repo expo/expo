@@ -265,15 +265,15 @@ export type FileTypeInformationSerialized = {
  */
 export type FileTypeInformation = {
   /**
-   * @field Set of all type identifiers declared and used in the file.
+   * Set of all type identifiers declared and used in the file.
    */
   usedTypeIdentifiers: Set<string>;
   /**
-   * @field Set of all type identifiers declared in the file.
+   * Set of all type identifiers declared in the file.
    */
   declaredTypeIdentifiers: Set<string>;
   /**
-   * @field For parametrized types it is the maximum number of parameters this type is used with.
+   * For parametrized types it is the maximum number of parameters this type is used with.
    * This map is useful if we want to infer how many parameters a type declared in other file has.
    *
    * For example if `Set<string>` exists in a file then inferredTypeParametersCount['Set'] == 1.
@@ -282,19 +282,19 @@ export type FileTypeInformation = {
    */
   inferredTypeParametersCount: Map<string, number>;
   /**
-   * @field Maps string identifier to the appropriate declaration object. For now only enum and records identifiers are mapped.
+   * Maps string identifier to the appropriate declaration object. For now only enum and records identifiers are mapped.
    */
   typeIdentifierDefinitionMap: TypeIdentifierDefinitionMap;
   /**
-   * @field Array of all module classes declared in the given file.
+   * Array of all module classes declared in the given file.
    */
   moduleClasses: ModuleClassDeclaration[];
   /**
-   * @field Array of all record classes declared in the given file.
+   * Array of all record classes declared in the given file.
    */
   records: RecordType[];
   /**
-   * @field Array of all enums declared in the given file.
+   * Array of all enums declared in the given file.
    */
   enums: EnumType[];
 };
