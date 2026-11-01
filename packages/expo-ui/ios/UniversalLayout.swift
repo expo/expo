@@ -20,6 +20,13 @@ internal struct UniversalLayoutDimensionsKey: LayoutValueKey {
   static let defaultValue = UniversalLayoutDimensions()
 }
 
+/// A `Spacer` fills any proposal, so a universal stack measures its cross size with none.
+internal protocol UniversalLayoutSpacer {}
+
+internal struct UniversalLayoutSpacerKey: LayoutValueKey {
+  static let defaultValue = false
+}
+
 internal func universalLayoutDimensions(from modifiers: ModifierArray?) -> UniversalLayoutDimensions {
   guard let values = modifiers?.last(where: { $0["$type"] as? String == "universalLayout" }) else {
     return UniversalLayoutDimensions()
@@ -407,11 +414,17 @@ private struct StackConfiguration {
   private func measure(proposal: ProposedViewSize, subviews: LayoutSubviews) -> StackMeasurement {
     let spacings = stackSpacings(subviews: subviews, explicit: spacing)
     let measured = measureChildren(subviews: subviews, proposal: proposal, spacings: spacings)
-    // A flexible child reports its cross size for its final main size and no cross proposal.
-    // So a `Spacer` does not stretch the stack, and wrapped text counts its lines.
+    // A flexible child reports its cross size for its final main size, so wrapped text counts its lines.
+    // A `Spacer` gets no cross proposal, as in a platform stack, so it does not stretch the stack.
+    // Any other flexible child keeps the offered cross size: a `List` reports 0 for its ideal width,
+    // which left an unsized stack 0 wide (expo/expo#52410).
     let dimensions = zip(subviews, measured.children).map { subview, child in
       let dimensionProposal = child.flexible
-        ? proposedSize(main: mainLength(child.size, axis: axis), cross: nil, axis: axis)
+        ? proposedSize(
+          main: mainLength(child.size, axis: axis),
+          cross: subview[UniversalLayoutSpacerKey.self] ? nil : child.crossProposal,
+          axis: axis
+        )
         : child.proposal
       return subview.dimensions(in: dimensionProposal)
     }

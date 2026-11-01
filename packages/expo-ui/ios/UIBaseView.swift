@@ -22,6 +22,7 @@ public struct UIBaseView<Props: UIBaseViewProps, Content: ExpoSwiftUI.View<Props
       // A user modifier such as `onGeometryChange` hides the layout value a universal stack reads.
       // Set it again outside every modifier.
       .layoutValue(key: UniversalLayoutDimensionsKey.self, value: universalLayoutDimensions(from: props.modifiers))
+      .layoutValue(key: UniversalLayoutSpacerKey.self, value: innerView is UniversalLayoutSpacer)
       .publishZeroContentOrigin(props.shadowNodeProxy)
   }
 }
