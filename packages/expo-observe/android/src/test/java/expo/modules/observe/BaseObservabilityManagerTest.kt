@@ -25,6 +25,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -307,6 +308,40 @@ class BaseObservabilityManagerTest {
     coVerify(exactly = 1) {
       eventDispatcher.dispatchLogs(
         match { events -> events.single().logs.map { it.name } == listOf("info", "js.exception", "native.exception") }
+      )
+    }
+  }
+
+  @Test
+  fun `when only errors are in-sample, logs are marked as not in the sampleRate sample`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    stubLogDispatch(logs = listOf(log(1, "js.exception"), log(2, "native.exception")))
+
+    createManager().dispatchUnsentLogs()
+
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(
+        match { events ->
+          events.single().logs.map { it.attributes?.get("expo.in_sample_rate") } ==
+            listOf(JsonPrimitive(false), JsonPrimitive(false))
+        }
+      )
+    }
+  }
+
+  @Test
+  fun `when in-sample for sampleRate, all logs are marked as in the sampleRate sample`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 1.0, errorSampleRate = 0.0)
+    stubLogDispatch(logs = listOf(log(1, "info"), log(2, "js.exception"), log(3, "native.exception")))
+
+    createManager().dispatchUnsentLogs()
+
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(
+        match { events ->
+          events.single().logs.map { it.attributes?.get("expo.in_sample_rate") } ==
+            listOf(JsonPrimitive(true), JsonPrimitive(true), JsonPrimitive(true))
+        }
       )
     }
   }

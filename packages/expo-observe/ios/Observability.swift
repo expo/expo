@@ -199,7 +199,7 @@ internal struct ObservabilityManager {
           guard !event.logs.isEmpty else {
             return nil
           }
-          return event.toOTResourceLogs(easClientId)
+          return event.toOTResourceLogs(easClientId, inSampleRate: shouldDispatch)
         }
         guard !resourceLogs.isEmpty else {
           return nil
