@@ -52,6 +52,8 @@ class AudioStream(
     private set
   var channels: Int = 0
     private set
+
+  @Volatile
   var isStreaming: Boolean = false
     private set
 
@@ -60,8 +62,13 @@ class AudioStream(
   private var fileWriter: AudioStreamFileWriter? = null
   private val fileWriterLock = Any()
 
+  // Guards `isStreaming`, `audioRecord` and `captureJob`. JS calls `stop()` on the JS thread,
+  // `start()` runs on a coroutine and the capture loop calls `stop()` from Dispatchers.IO.
+  // Taken before `fileWriterLock`, never after it.
+  private val stateLock = Any()
+
   @RequiresPermission(Manifest.permission.RECORD_AUDIO)
-  fun start() {
+  fun start() = synchronized(stateLock) {
     if (isStreaming) {
       return
     }
@@ -89,23 +96,25 @@ class AudioStream(
   }
 
   fun stop() {
-    if (!isStreaming) {
-      return
+    synchronized(stateLock) {
+      if (!isStreaming) {
+        return
+      }
+      isStreaming = false
+      captureJob?.cancel()
+      captureJob = null
+      val recorder = audioRecord
+      audioRecord = null
+      try {
+        recorder?.stop()
+      } catch (e: IllegalStateException) {
+        // The recorder is not initialized, so there is nothing to stop. It still has to be released.
+        appContext?.jsLogger?.warn("AudioStream: failed to stop the AudioRecord", e)
+      } finally {
+        recorder?.release()
+      }
+      emitStatus()
     }
-    isStreaming = false
-    captureJob?.cancel()
-    captureJob = null
-    val recorder = audioRecord
-    audioRecord = null
-    try {
-      recorder?.stop()
-    } catch (e: IllegalStateException) {
-      // The recorder is not initialized, so there is nothing to stop. It still has to be released.
-      appContext?.jsLogger?.warn("AudioStream: failed to stop the AudioRecord", e)
-    } finally {
-      recorder?.release()
-    }
-    emitStatus()
 
     // Auto-finalize any in-progress file recording.
     // isStreaming = false causes the capture loop to exit; the lock guarantees any
@@ -241,7 +250,24 @@ class AudioStream(
       val readSizeBytes = config.readSize
 
       while (isActive && isStreaming) {
-        readAndEmit(recorder, readSizeBytes, config.channelCount, config.sampleRate)
+        val bytesRead = readAndEmit(recorder, readSizeBytes, config.channelCount, config.sampleRate)
+        if (bytesRead < 0) {
+          synchronized(stateLock) {
+            // A loop whose recorder was already replaced or released by `stop()` just leaves.
+            if (!isActive || audioRecord !== recorder) {
+              return@launch
+            }
+            appContext?.jsLogger?.warn(
+              "AudioStream: AudioRecord.read() failed with error code: ${describeReadError(bytesRead)}, stopping the stream"
+            )
+            try {
+              stop()
+            } catch (e: Exception) {
+              appContext?.jsLogger?.warn("AudioStream: failed to stop after a read error", e)
+            }
+          }
+          return@launch
+        }
       }
     }
   }
@@ -251,7 +277,7 @@ class AudioStream(
     readSizeBytes: Int,
     channels: Int,
     sampleRate: Int
-  ) {
+  ): Int {
     val byteBuffer = ByteBuffer.allocateDirect(readSizeBytes).order(ByteOrder.nativeOrder())
     val bytesRead = recorder.read(byteBuffer, readSizeBytes, AudioRecord.READ_BLOCKING)
     if (bytesRead > 0) {
@@ -269,6 +295,17 @@ class AudioStream(
       }
       emitBufferEvent(NativeArrayBuffer(recorded), channels, sampleRate)
     }
+    return bytesRead
+  }
+
+  private fun describeReadError(code: Int): String {
+    val name = when (code) {
+      AudioRecord.ERROR_BAD_VALUE -> "ERROR_BAD_VALUE"
+      AudioRecord.ERROR_INVALID_OPERATION -> "ERROR_INVALID_OPERATION"
+      AudioRecord.ERROR_DEAD_OBJECT -> "ERROR_DEAD_OBJECT"
+      else -> return code.toString()
+    }
+    return "$code ($name)"
   }
 
   private fun emitStatus() {
