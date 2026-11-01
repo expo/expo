@@ -113,39 +113,61 @@ object UpdatesUtils {
   @Throws(NoSuchAlgorithmException::class, IOException::class)
   fun verifySHA256AndWriteToFile(inputStream: InputStream, destination: File, expectedBase64URLEncodedHash: String?): ByteArray {
     DigestInputStream(inputStream, MessageDigest.getInstance("SHA-256")).use { digestInputStream ->
-      // write file atomically by writing it to a temporary path and then renaming
-      // this protects us against partially written files if the process is interrupted
+      // Write to a temporary path first and only move the file into place after the hash is
+      // verified. The move is a rename on the same filesystem, so the destination is either absent
+      // or complete; it can never be observed partially written. A streamed copy into the
+      // destination (the previous implementation) left a truncated file behind when the process
+      // was killed mid-copy, and that file was later trusted because it existed.
       val tmpFile = File(destination.absolutePath + ".tmp")
       tmpFile.parentFile?.mkdirs()
-      digestInputStream.use { input ->
-        tmpFile.outputStream().use { output ->
-          input.copyTo(output)
-        }
-      }
-
-      // this message digest must be read after the input stream has been consumed in order to get the hash correctly
-      val md = digestInputStream.messageDigest
-      val hash = md.digest()
-      val hashBase64String = toBase64Url(hash)
-      if (expectedBase64URLEncodedHash != null && expectedBase64URLEncodedHash != hashBase64String) {
-        throw IOException("File download was successful but base64url-encoded SHA-256 did not match expected; expected: $expectedBase64URLEncodedHash; actual: $hashBase64String")
-      }
-      // only rename after the hash has been verified
-      // Since renameTo() does not expose detailed errors, and can fail if source and destination
-      // are not on the same mount point, we do a copyTo followed by delete
-      // if there are two assets with identical content, they will be written to the same file path,
-      // so we allow overwrites
       try {
-        tmpFile.copyTo(destination, true)
-      } catch (e: NoSuchFileException) {
-        throw IOException("File download was successful, but temp file ${tmpFile.absolutePath} does not exist")
-      } catch (e: Exception) {
-        throw IOException("File download was successful, but an exception occurred: $e")
+        digestInputStream.use { input ->
+          FileOutputStream(tmpFile).use { output ->
+            input.copyTo(output)
+            // flush to disk before the file becomes visible at the final path, so a reboot or
+            // power loss right after the move cannot leave a truncated file behind
+            output.fd.sync()
+          }
+        }
+
+        // this message digest must be read after the input stream has been consumed in order to get the hash correctly
+        val md = digestInputStream.messageDigest
+        val hash = md.digest()
+        val hashBase64String = toBase64Url(hash)
+        if (expectedBase64URLEncodedHash != null && expectedBase64URLEncodedHash != hashBase64String) {
+          throw IOException("File download was successful but base64url-encoded SHA-256 did not match expected; expected: $expectedBase64URLEncodedHash; actual: $hashBase64String")
+        }
+
+        // if there are two assets with identical content, they will be written to the same file path,
+        // so we allow overwrites
+        moveFileAtomically(tmpFile, destination)
+
+        return hash
       } finally {
         tmpFile.delete()
       }
+    }
+  }
 
-      return hash
+  /**
+   * Moves [source] to [destination], replacing any existing file. The temp file and the destination
+   * live in the same directory, so `rename(2)` applies and the move is atomic. If the rename is
+   * rejected anyway (for example, the two paths end up on different mount points), fall back to a
+   * copy so the download still succeeds.
+   */
+  @Throws(IOException::class)
+  internal fun moveFileAtomically(source: File, destination: File) {
+    if (!source.exists()) {
+      throw IOException("File download was successful, but temp file ${source.absolutePath} does not exist")
+    }
+    if (source.renameTo(destination)) {
+      return
+    }
+    Log.w(TAG, "Atomic rename of ${source.absolutePath} to ${destination.absolutePath} failed; falling back to copy")
+    try {
+      source.copyTo(destination, true)
+    } catch (e: Exception) {
+      throw IOException("File download was successful, but an exception occurred: $e")
     }
   }
 

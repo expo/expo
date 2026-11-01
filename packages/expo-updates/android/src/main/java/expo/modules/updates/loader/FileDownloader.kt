@@ -773,45 +773,83 @@ class FileDownloader(
     val path = File(destinationDirectory, filename)
 
     if (path.exists()) {
-      asset.relativePath = filename
-      return AssetDownloadResult(asset, false)
-    } else {
-      val canApplyPatch =
-        asset.isLaunchAsset &&
-          launchedUpdate != null &&
-          requestedUpdate != null &&
-          launchedUpdate.id != requestedUpdate.id
+      if (isExistingAssetFileValid(path, asset, requestedUpdate)) {
+        asset.relativePath = filename
+        return AssetDownloadResult(asset, false)
+      }
+      // the file on disk is not the asset we expect (for example, it was truncated when a previous
+      // process was killed); throw it away and download again
+      path.delete()
+    }
 
-      try {
-        val downloadResult = downloadAssetAndVerifyHashAndWriteToPath(
+    val canApplyPatch =
+      asset.isLaunchAsset &&
+        launchedUpdate != null &&
+        requestedUpdate != null &&
+        launchedUpdate.id != requestedUpdate.id
+
+    try {
+      val downloadResult = downloadAssetAndVerifyHashAndWriteToPath(
+        asset,
+        extraHeaders,
+        createRequestForAsset(
           asset,
           extraHeaders,
-          createRequestForAsset(
-            asset,
-            extraHeaders,
-            configuration,
-            allowPatch = canApplyPatch
-          ),
-          asset.expectedHash,
-          path,
-          destinationDirectory,
-          assetLoadProgressListener?.let { listener -> { listener.invoke(it) } },
-          allowPatch = canApplyPatch,
-          launchedUpdate = launchedUpdate,
-          requestedUpdate = requestedUpdate,
-          embeddedAssetExtractor = embeddedAssetExtractor
-        )
+          configuration,
+          allowPatch = canApplyPatch
+        ),
+        asset.expectedHash,
+        path,
+        destinationDirectory,
+        assetLoadProgressListener?.let { listener -> { listener.invoke(it) } },
+        allowPatch = canApplyPatch,
+        launchedUpdate = launchedUpdate,
+        requestedUpdate = requestedUpdate,
+        embeddedAssetExtractor = embeddedAssetExtractor
+      )
 
-        asset.downloadTime = Date()
-        asset.relativePath = filename
-        asset.hash = downloadResult.hash
-        return AssetDownloadResult(asset, true)
-      } catch (e: Exception) {
-        val message = "Failed to download asset ${asset.key}"
-        logger.error(message, e, UpdatesErrorCode.AssetsFailedToLoad)
-        throw IOException(message, e)
-      }
+      asset.downloadTime = Date()
+      asset.relativePath = filename
+      asset.hash = downloadResult.hash
+      return AssetDownloadResult(asset, true)
+    } catch (e: Exception) {
+      val message = "Failed to download asset ${asset.key}"
+      logger.error(message, e, UpdatesErrorCode.AssetsFailedToLoad)
+      throw IOException(message, e)
     }
+  }
+
+  /**
+   * An asset file that already exists on disk is only reused when its contents match the hash the
+   * manifest declares for the asset. Trusting the file because it exists is unsafe: a process
+   * killed while the file was being written leaves a truncated file behind, and the launch asset
+   * then fails to load with a Hermes `Buffer is smaller than the size stated in the file header`
+   * error. When the manifest has no hash for the asset there is nothing to verify against, so the
+   * file is reused as before.
+   */
+  private fun isExistingAssetFileValid(path: File, asset: AssetEntity, requestedUpdate: UpdateEntity?): Boolean {
+    val expectedHash = asset.expectedHash ?: return true
+    val actualHash = try {
+      UpdatesUtils.toBase64Url(UpdatesUtils.sha256(path))
+    } catch (e: Exception) {
+      logger.warn(
+        "Failed to hash existing file for asset ${asset.key}; re-downloading: ${e.message}",
+        UpdatesErrorCode.AssetsFailedToLoad,
+        requestedUpdate?.id?.toString(),
+        asset.key
+      )
+      return false
+    }
+    if (actualHash == expectedHash) {
+      return true
+    }
+    logger.warn(
+      "Existing file for asset ${asset.key} did not match expected hash (size ${path.length()} bytes); re-downloading",
+      UpdatesErrorCode.AssetsFailedToLoad,
+      requestedUpdate?.id?.toString(),
+      asset.key
+    )
+    return false
   }
 
   private suspend fun downloadData(request: Request, progressListener: FileDownloadProgressListener? = null): Response =
