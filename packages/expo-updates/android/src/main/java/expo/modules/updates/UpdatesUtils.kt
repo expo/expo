@@ -120,6 +120,7 @@ object UpdatesUtils {
       digestInputStream.use { input ->
         tmpFile.outputStream().use { output ->
           input.copyTo(output)
+          output.fd.sync()
         }
       }
 
@@ -130,13 +131,16 @@ object UpdatesUtils {
       if (expectedBase64URLEncodedHash != null && expectedBase64URLEncodedHash != hashBase64String) {
         throw IOException("File download was successful but base64url-encoded SHA-256 did not match expected; expected: $expectedBase64URLEncodedHash; actual: $hashBase64String")
       }
-      // only rename after the hash has been verified
-      // Since renameTo() does not expose detailed errors, and can fail if source and destination
-      // are not on the same mount point, we do a copyTo followed by delete
+      // only rename after the hash has been verified.
+      // the temp file was synced above, and renameTo replaces the destination atomically, so the
+      // destination never holds a partial file. java.nio.file.Files.move requires API 26.
       // if there are two assets with identical content, they will be written to the same file path,
-      // so we allow overwrites
+      // so we allow overwrites.
       try {
-        tmpFile.copyTo(destination, true)
+        if (!tmpFile.renameTo(destination)) {
+          Log.w(TAG, "Could not rename ${tmpFile.absolutePath} to ${destination.absolutePath}; falling back to copy")
+          tmpFile.copyTo(destination, true)
+        }
       } catch (e: NoSuchFileException) {
         throw IOException("File download was successful, but temp file ${tmpFile.absolutePath} does not exist")
       } catch (e: Exception) {

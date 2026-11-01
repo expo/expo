@@ -3,6 +3,7 @@ package expo.modules.updates.loader
 import android.net.Uri
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
@@ -26,12 +27,18 @@ import okio.BufferedSource
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert
+import org.junit.Assume
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.File
+import java.io.FilterInputStream
+import java.nio.file.Files
+import java.nio.file.attribute.BasicFileAttributes
+import java.security.MessageDigest
 import java.util.Date
 import java.util.UUID
 
@@ -581,6 +588,87 @@ class FileDownloaderTest {
         message.length < 1000
       )
     }
+  }
+
+  @Test
+  fun test_downloadAsset_truncatedExistingFileIsDownloadedAgain() = runTest {
+    val content = "the full, correct bundle contents"
+    val assetEntity = AssetEntity("truncated-asset", "hbc").apply {
+      url = Uri.parse("https://example.com")
+      expectedHash = base64UrlSha256(content.toByteArray())
+    }
+    val destinationDirectory = temporaryFolder.newFolder()
+    val existingFile = File(destinationDirectory, UpdatesUtils.createFilenameForAsset(assetEntity))
+    existingFile.writeText("the full, corr")
+
+    val result = createFileDownloader(createRemoteUpdateConfiguration(), createClientReturningAsset(content))
+      .downloadAsset(assetEntity, destinationDirectory, JSONObject("{}"), null, null)
+
+    Assert.assertTrue(result.isNew)
+    Assert.assertEquals(content, existingFile.readText())
+  }
+
+  @Test
+  fun test_downloadAsset_unreadableExistingPathIsReplaced() = runTest {
+    val content = "the full, correct bundle contents"
+    val assetEntity = AssetEntity("unreadable-asset", "hbc").apply {
+      url = Uri.parse("https://example.com")
+      expectedHash = base64UrlSha256(content.toByteArray())
+    }
+    val destinationDirectory = temporaryFolder.newFolder()
+    val existingPath = File(destinationDirectory, UpdatesUtils.createFilenameForAsset(assetEntity))
+    existingPath.mkdir()
+
+    val result = createFileDownloader(createRemoteUpdateConfiguration(), createClientReturningAsset(content))
+      .downloadAsset(assetEntity, destinationDirectory, JSONObject("{}"), null, null)
+
+    Assert.assertTrue(result.isNew)
+    Assert.assertTrue(existingPath.isFile)
+    Assert.assertEquals(content, existingPath.readText())
+  }
+
+  @Test
+  fun test_verifySHA256AndWriteToFile_movesTempFileIntoPlace() {
+    val content = "the full, correct bundle contents"
+    val destination = File(temporaryFolder.newFolder(), "asset.hbc")
+    val tempFile = File(destination.absolutePath + ".tmp")
+    var tempFileKey: Any? = null
+    val input = object : FilterInputStream(content.byteInputStream()) {
+      override fun read(b: ByteArray, off: Int, len: Int): Int {
+        val count = super.read(b, off, len)
+        if (count == -1 && tempFileKey == null) {
+          tempFileKey = fileKeyOf(tempFile)
+        }
+        return count
+      }
+    }
+
+    UpdatesUtils.verifySHA256AndWriteToFile(input, destination, base64UrlSha256(content.toByteArray()))
+
+    Assume.assumeNotNull(tempFileKey)
+    Assert.assertEquals(tempFileKey, fileKeyOf(destination))
+    Assert.assertEquals(content, destination.readText())
+    Assert.assertFalse(tempFile.exists())
+  }
+
+  private fun fileKeyOf(file: File): Any? {
+    return Files.readAttributes(file.toPath(), BasicFileAttributes::class.java).fileKey()
+  }
+
+  private fun createClientReturningAsset(content: String) = mockk<OkHttpClient> {
+    every { newCall(any()) } returns mockk {
+      every { execute() } returns Response.Builder()
+        .request(Request.Builder().url("https://example.com").build())
+        .protocol(Protocol.HTTP_2)
+        .code(200)
+        .message("OK")
+        .body(content.toResponseBody("application/octet-stream".toMediaTypeOrNull()))
+        .build()
+    }
+  }
+
+  private fun base64UrlSha256(bytes: ByteArray): String {
+    return UpdatesUtils.toBase64Url(MessageDigest.getInstance("SHA-256").digest(bytes))
   }
 
   private fun createRemoteUpdateConfiguration(): UpdatesConfiguration {
