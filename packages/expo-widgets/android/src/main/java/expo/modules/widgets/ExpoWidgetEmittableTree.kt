@@ -295,8 +295,8 @@ private fun ImageContentScale.toGlanceContentScale(): ContentScale {
 private fun ReadableMap.toPeekButton(converterContext: WidgetConverterContext, source: InteractionSource): Emittable {
   val props = props<WidgetButtonProps>(converterContext)
   val children = children()
-  val action =
-    props.target?.let { target -> WidgetInteraction(source, target).toGlanceAction(converterContext.applicationContext) }
+  val action = props.url?.let { url -> openUrlAction(converterContext.applicationContext, url) }
+    ?: props.target?.let { target -> WidgetInteraction(source, target).toGlanceAction(converterContext.applicationContext) }
   val modifier = props.buttonModifier(converterContext)
   val contentColor = props.contentColorProvider()
   val textContent = children.textContent(converterContext) ?: props.label
@@ -680,7 +680,8 @@ internal data class WidgetButtonProps(
   val enabled: Boolean = true,
   val label: String? = null,
   val modifiers: ModifierList = emptyList(),
-  val target: String? = null
+  val target: String? = null,
+  val url: String? = null
 ) : ComposeProps
 
 @OptimizedComposeProps
