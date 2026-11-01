@@ -24,6 +24,26 @@ Most providers use the [OAuth 2](https://oauth.net/2/) standard for secure authe
 
 Since [your client application code is not a secure place to store secrets](https://reactnative.dev/docs/security#storing-sensitive-info), it is necessary to exchange the authorization code in a server such as with [API routes](/router/web/api-routes) or [React Server Components](/guides/server-components). This will allow you to securely store and use a client secret to access the provider's token endpoint.
 
+Use [`AuthSession.exchangeCodeAsync()`](/versions/latest/sdk/auth-session/#exchangecodeasync) to swap that `code` for an access token. If the provider requires a client secret, call `exchangeCodeAsync` on your server. If the provider supports Proof Key for Code Exchange (PKCE), you can exchange the code in the app without a client secret. Pass `request.codeVerifier` in `extraParams.code_verifier`. The GitHub and Okta examples below use PKCE.
+
+```tsx
+import { exchangeCodeAsync } from 'expo-auth-session';
+
+const tokenResponse = await exchangeCodeAsync(
+  {
+    clientId: 'CLIENT_ID',
+    code,
+    redirectUri,
+    extraParams: {
+      code_verifier: request.codeVerifier,
+    },
+  },
+  discovery
+);
+
+const accessToken = tokenResponse.accessToken;
+```
+
 ## Examples
 
 The following examples show how to use the `AuthSession` API to authenticate with a few popular providers.
@@ -48,7 +68,7 @@ The following examples show how to use the `AuthSession` API to authenticate wit
 ```tsx GitHub Auth Example
 import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { exchangeCodeAsync, makeRedirectUri, useAuthRequest } from 'expo-auth-session';
 import { Button } from 'react-native';
 
 /* @info **Web only:** This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
@@ -77,12 +97,28 @@ export default function App() {
   );
 
   useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. */
-      const { code } = response.params;
-      /* @end */
+    async function getAccessToken() {
+      if (response?.type === 'success' && request?.codeVerifier) {
+        const { code } = response.params;
+        /* @info Exchange the authorization code for an access token. Providers that require a client secret must do this on a server. */
+        const tokenResponse = await exchangeCodeAsync(
+          {
+            clientId: 'CLIENT_ID',
+            code,
+            redirectUri: request.redirectUri,
+            extraParams: {
+              code_verifier: request.codeVerifier,
+            },
+          },
+          discovery
+        );
+        const accessToken = tokenResponse.accessToken;
+        /* @end */
+      }
     }
-  }, [response]);
+
+    getAccessToken();
+  }, [response, request]);
 
   return (
     <Button
@@ -118,7 +154,7 @@ export default function App() {
 ```tsx Okta Auth Example
 import { useEffect } from 'react';
 import * as WebBrowser from 'expo-web-browser';
-import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
+import { exchangeCodeAsync, makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
 import { Button, Platform } from 'react-native';
 
 /* @info **Web only:** This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
@@ -141,12 +177,28 @@ export default function App() {
   );
 
   useEffect(() => {
-    if (response?.type === 'success') {
-      /* @info Exchange the code for an access token in a server. */
-      const { code } = response.params;
-      /* @end */
+    async function getAccessToken() {
+      if (response?.type === 'success' && request?.codeVerifier && discovery) {
+        const { code } = response.params;
+        /* @info Exchange the authorization code for an access token. Providers that require a client secret must do this on a server. */
+        const tokenResponse = await exchangeCodeAsync(
+          {
+            clientId: 'CLIENT_ID',
+            code,
+            redirectUri: request.redirectUri,
+            extraParams: {
+              code_verifier: request.codeVerifier,
+            },
+          },
+          discovery
+        );
+        const accessToken = tokenResponse.accessToken;
+        /* @end */
+      }
     }
-  }, [response]);
+
+    getAccessToken();
+  }, [response, request, discovery]);
 
   return (
     <Button
