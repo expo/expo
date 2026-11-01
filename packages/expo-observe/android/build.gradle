@@ -27,6 +27,7 @@ android {
     versionName packageJson.version
 
     buildConfigField "String", "EXPO_OBSERVE_VERSION", "\"${packageJson.version}\""
+    consumerProguardFiles("proguard-rules.pro")
   }
 
   buildFeatures {
