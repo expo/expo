@@ -147,7 +147,7 @@ TV also works with [React Navigation](https://reactnavigation.org/), [React Nati
 
 - The [Expo DevClient](/versions/latest/sdk/dev-client/) library is only supported in SDK 54 and later:
   - **Android TV**: All operations are supported, similar to an Android phone.
-  - **Apple TV**: Basic operations with a local or tunneled packager are supported. Authentication to EAS and listing of EAS builds and updates is not yet supported.
+  - **Apple TV**: Basic operations with a local or tunneled packager are supported. Authentication to Expo Services and listing of builds and updates is not yet supported.
 
 </Collapsible>
 
@@ -309,9 +309,9 @@ You can revert the changes for TV and go back to phone development by unsetting 
 
 <Step label="7">
 
-### Create EAS Build profiles for both TV and phone
+### Create Expo Build profiles for both TV and phone
 
-Since the TV build can be driven by the value of an environment variable, it is easy to set up EAS Build profiles that build from the same source but target TV instead of phone.
+Since the TV build can be driven by the value of an environment variable, it is easy to set up Expo Build profiles that build from the same source but target TV instead of phone.
 
 The following example **eas.json** shows how to extend existing profiles (`development` and `preview`) to create TV profiles (`development_tv` and `preview_tv`).
 
@@ -373,11 +373,11 @@ The following example **eas.json** shows how to extend existing profiles (`devel
 
 tvOS uses the same bundle IDs and distribution certificates as iOS and other Apple platforms. However, tvOS does not use the same provisioning profiles as iOS.
 
-Since the EAS tooling on the web and in EAS CLI only creates iOS provisioning profiles, some extra steps are required for tvOS projects. There are two ways for you to proceed:
+Since the Expo dashboard and EAS CLI only create iOS provisioning profiles, some extra steps are required for tvOS projects. There are two ways for you to proceed:
 
-1. If a project is targeting only tvOS, you can have your credentials stored in EAS. Create the bundle ID, and upload the distribution certificate on the project's website, as you would for an iOS project. Then, you should go to Apple's developer web site and create a tvOS provisioning profile there, using the bundle ID that EAS created. Then download that profile to your computer, and upload it to the project at [your EAS project website](https://expo.dev/accounts/[account]/projects/[project]/credentials/). See the [app credentials guide](/app-signing/app-credentials/).
+1. If a project is targeting only tvOS, you can have your credentials stored in Expo Services. Create the bundle ID, and upload the distribution certificate on the project's website, as you would for an iOS project. Then, you should go to Apple's developer web site and create a tvOS provisioning profile there, using the bundle ID that Expo Services created. Then download that profile to your computer, and upload it to the project at [your Expo Services project website](https://expo.dev/accounts/[account]/projects/[project]/credentials/). See the [app credentials guide](/app-signing/app-credentials/).
 
-2. If a project is targeting both tvOS and iOS, you should use [local credentials](/app-signing/local-credentials/) for tvOS, as the EAS-stored credentials will be needed by your iOS builds.
+2. If a project is targeting both tvOS and iOS, you should use [local credentials](/app-signing/local-credentials/) for tvOS, as the credentials stored in Expo Services will be needed by your iOS builds.
 
 </Step>
 

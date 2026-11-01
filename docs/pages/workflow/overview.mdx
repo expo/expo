@@ -31,33 +31,33 @@ Expo provides a variety of tools and services that can be adopted independently,
 
 </Collapsible>
 
-<Collapsible summary={`What is the difference between "Expo" and "Expo Application Services (EAS)"?`}>
+<Collapsible summary={`What is the difference between "Expo" and "Expo Services"?`}>
 
 Expo is an open-source project that gives developers powerful tools to assist in building and maintaining React Native apps at any scale. For example, Expo CLI, Expo Router, and Expo SDK packages. All Expo open-source tools are entirely free to use and carry the MIT license.
 
-Expo Application Services (EAS) is a suite of hosted services that you can use with Expo and React Native projects to:
+Expo Services is a suite of hosted services that you can use with Expo and React Native projects to:
 
 - Build, submit, and update your app
 - Set up automation around all of these processes
 - Collaborate with your team
 
-EAS solves a set of problems that require physical resources, such as application servers and CDNs for serving over-the-air updates and physical servers for running builds. EAS has a generous [free plan](https://expo.dev/pricing#get-started) that will work for many student and hobby projects.
+Expo Services solves a set of problems that require physical resources, such as application servers and CDNs for serving over-the-air updates and physical servers for running builds. Expo Services has a generous [free plan](https://expo.dev/pricing#get-started) that will work for many student and hobby projects.
 
-You don't have to use GitHub to use git, but it certainly helps for many cases. The same goes for EAS and Expo.
+You don't have to use GitHub to use git, but it certainly helps for many cases. The same goes for Expo Services and Expo.
 
-<Collapsible summary="Do I have to use EAS if I use Expo open source tools?">
+<Collapsible summary="Do I have to use Expo Services if I use Expo open source tools?">
 
 Nope! Your Expo project is just a React Native app, which is just a native app. You can use Fastlane or any native build, update, and more, tools you like.
 
-Most EAS services also allow you to run them on your own infrastructure, and we provide instructions for how you can accomplish this. For example, [self-hosting updates](/versions/latest/sdk/updates/) (rather than using EAS Update), or [running builds locally](/guides/local-app-development/) or on [your own CI](/build/building-on-ci/) (rather than using our EAS Build worker fleet).
+Most Expo Services also allow you to run them on your own infrastructure, and we provide instructions for how you can accomplish this. For example, [self-hosting updates](/versions/latest/sdk/updates/) (rather than using Expo Update), or [running builds locally](/guides/local-app-development/) or on [your own CI](/build/building-on-ci/) (rather than using our Expo Build worker fleet).
 
-For most teams, it makes sense to use EAS rather than spending the engineering time and resources on acquiring, setting up, and maintaining the services on other infrastructure. Additionally, EAS provides deep integration between services, such as the deployments page for monitoring app version adoption, assigning updates to specific builds, and rolling those updates out incrementally — which ties back into monitoring with [EAS Insights](/eas-insights/introduction/).
+For most teams, it makes sense to use Expo Services rather than spending the engineering time and resources on acquiring, setting up, and maintaining the services on other infrastructure. Additionally, Expo Services provides deep integration between services, such as the deployments page for monitoring app version adoption, assigning updates to specific builds, and rolling those updates out incrementally — which ties back into monitoring with [Expo Insights](/eas-insights/introduction/).
 
 </Collapsible>
 
-<Collapsible summary="Can I use EAS if I'm not using any Expo open source tools?">
+<Collapsible summary="Can I use Expo Services if I'm not using any Expo open source tools?">
 
-Yes! We think EAS is a great fit for any React Native project.
+Yes! We think Expo Services is a great fit for any React Native project.
 
 </Collapsible>
 
@@ -173,11 +173,11 @@ See [Determining third-party library compatibility](/workflow/using-libraries/#d
 
 Whether you choose cloud-based or local doesn't significantly alter your development loop. It's about how you produce and distribute your app binaries that your JavaScript code runs against. Choosing a cloud-based or local development is a choice you can make each time you run a new native build.
 
-Compiling your app in the cloud with EAS Build is as easy as running a single command, no need to install Android Studio or Xcode. Cloud builds make it easier to share your app with other teammates or stakeholders, [among other benefits](/build/introduction/).
+Compiling your app in the cloud with Expo Build is as easy as running a single command, no need to install Android Studio or Xcode. Cloud builds make it easier to share your app with other teammates or stakeholders, [among other benefits](/build/introduction/).
 
 To compile your app locally, you will need to install Android Studio and Xcode on your machine, and then you can either run the build from those tools or use `npx expo run:[android|ios]`. This is most useful when you want to debug your app on a physical device or emulator/simulator using the native debugging tools.
 
-Learn more about [cloud-based workflows with EAS Build](/build/introduction/) and [local development](/guides/local-app-development/).
+Learn more about [cloud-based workflows with Expo Build](/build/introduction/) and [local development](/guides/local-app-development/).
 
 </Collapsible>
 
@@ -185,7 +185,7 @@ Learn more about [cloud-based workflows with EAS Build](/build/introduction/) an
 
 The easiest way to [create a new project is with `create-expo-app`](/get-started/create-a-project/). After creating your project, you can immediately launch it directly in Expo Go on your physical device or in an emulator/simulator if you want to experiment or build a quick prototype.
 
-In most cases, you will create and use a development build of your project. You will install the [`expo-dev-client`](/develop/development-builds/introduction/) library. Development builds can be created with EAS Build or locally on your machine:
+In most cases, you will create and use a development build of your project. You will install the [`expo-dev-client`](/develop/development-builds/introduction/) library. Development builds can be created with Expo Build or locally on your machine:
 
 <BoxLink
   title="Create a development build using EAS"
@@ -241,7 +241,7 @@ The core development loop described in the diagram above is a cycle of four main
   the library provides a config plugin or steps to take to update the app config. Like the previous
   activity, this also requires you to create a development build.
 
-When creating a [development build](#development-builds), you have two options. You can create a cloud-based build using [EAS Build](/build/setup/) or do it locally. If you choose to do it locally, you can use [CNG](#continuous-native-generation-cng) and then [`npx expo prebuild --clean`](#how-do-i-know-when-i-need), or you can create a development build using [`npx expo run android|ios` or Android Studio and Xcode](/guides/local-app-development/#local-app-compilation).
+When creating a [development build](#development-builds), you have two options. You can create a cloud-based build using [Expo Build](/build/setup/) or do it locally. If you choose to do it locally, you can use [CNG](#continuous-native-generation-cng) and then [`npx expo prebuild --clean`](#how-do-i-know-when-i-need), or you can create a development build using [`npx expo run android|ios` or Android Studio and Xcode](/guides/local-app-development/#local-app-compilation).
 
 > **Note**: When creating a development build locally, the `npx expo run` commands will generate native directories before building your app. If you modify your project's configuration or native code after the first build, you will have to rebuild your project. Running `npx expo prebuild` again layers the changes on the top of existing files. It may also produce different results after the build. To avoid this, add native directories to the project's **.gitignore** and use `npx expo prebuild --clean` command.
 
@@ -253,13 +253,13 @@ Another key part of the development loop is debugging. See [Debugging runtime is
 
 The next step to developing an app is to share your app with your team, with beta testers, or run it on multiple test devices. A traditional approach is to upload your app's binary to the Google Play Beta (Android) or TestFlight (iOS). This can be a time-consuming effort and is limited to only one active build at a time (for example, in the case of TestFlight).
 
-If you are using EAS Build, we recommend going through [Internal distribution](/build/internal-distribution/) to learn more about sharing your app for testing.
+If you are using Expo Build, we recommend going through [Internal distribution](/build/internal-distribution/) to learn more about sharing your app for testing.
 
 If you compile your app locally, you can create [production builds locally](/guides/local-app-production/).
 
 ## Release app to stores
 
-To release your app on the app stores, you can use [EAS Submit](/deploy/submit-to-app-stores/). For more information on using EAS Submit, see [Submit to Google Play Store](/submit/android/) and [Submit to Apple App Store](/submit/ios/).
+To release your app on the app stores, you can use [Expo Submit](/deploy/submit-to-app-stores/). For more information on using Expo Submit, see [Submit to Google Play Store](/submit/android/) and [Submit to Apple App Store](/submit/ios/).
 
 To create a production build locally, see the [guide](/guides/local-app-production/) on the same and then go through the app stores guide to submit your app.
 
@@ -273,4 +273,4 @@ Analytics allows you to track how users interact with your app. See [analytics o
 
 The `expo-updates` library allows you to programmatically make instant updates to your app's JavaScript available to your production app.
 
-You can use [EAS Update](/eas-update/introduction/) which provides first-class support for instant updates in a React Native app. It serves updates from the edge of a global CDN and uses modern networking protocols such as HTTP/3 for clients that support them. It is also [tailored for developers](/eas-update/preview/) who use EAS Build. You can also use it for builds you have created [locally](/eas-update/standalone-service/).
+You can use [Expo Update](/eas-update/introduction/) which provides first-class support for instant updates in a React Native app. It serves updates from the edge of a global CDN and uses modern networking protocols such as HTTP/3 for clients that support them. It is also [tailored for developers](/eas-update/preview/) who use Expo Build. You can also use it for builds you have created [locally](/eas-update/standalone-service/).
