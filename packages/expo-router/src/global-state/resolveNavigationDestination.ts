@@ -182,6 +182,7 @@ function createResolvedAction({
     withAnchor,
     internalParams,
     parentChain,
+    anchorParams: targetRoute.params,
     previewKey: action.payload.__internal__PreviewKey,
     // Navigators below the `POP_TO` target get `NAVIGATE`, which pushes unless `pop` is set.
     pop: pop === true || action.type === 'POP_TO',
@@ -205,6 +206,7 @@ function resolveState({
   withAnchor,
   internalParams,
   parentChain,
+  anchorParams,
   previewKey,
   pop,
 }: {
@@ -216,12 +218,20 @@ function resolveState({
   withAnchor: boolean;
   internalParams: InternalExpoRouterParams;
   parentChain: string;
+  anchorParams: object | undefined;
   previewKey?: string;
   /** Requested for every level; createResolvedAction decides per level (see shouldPopTo). */
   pop?: boolean;
 }): NavigationState {
   if (navigationState?.stale !== false || !registry.has(navigationState.key)) {
-    return createDestinationState(targetState, routeNode, withAnchor, internalParams, parentChain);
+    return createDestinationState(
+      targetState,
+      routeNode,
+      withAnchor,
+      internalParams,
+      parentChain,
+      anchorParams
+    );
   }
 
   const targetRoute = getFocusedRoute(targetState);
@@ -245,7 +255,14 @@ function resolveState({
   const result = registry.get(navigationState.key)?.reduce(navigationState, action);
   const selection = getSelection(result);
   if (!selection) {
-    return createDestinationState(targetState, routeNode, withAnchor, internalParams, parentChain);
+    return createDestinationState(
+      targetState,
+      routeNode,
+      withAnchor,
+      internalParams,
+      parentChain,
+      anchorParams
+    );
   }
 
   return isEqual(selection.state, navigationState) ? navigationState : selection.state;
@@ -256,7 +273,8 @@ function createDestinationState(
   routeNode: RouteNode,
   withAnchor: boolean,
   internalParams: InternalExpoRouterParams,
-  parentChain: string
+  parentChain: string,
+  anchorParams: object | undefined
 ): NavigationState {
   const targetRoute = getFocusedRoute(targetState);
   const initialRouteName = getValidInitialRouteName(routeNode);
@@ -305,7 +323,8 @@ function createDestinationState(
           childNode,
           withAnchor,
           internalParams,
-          getChainFromRouteKey(destinationRouteKey)
+          getChainFromRouteKey(destinationRouteKey),
+          targetRoute.params
         )
       : undefined;
   const destinationRoute = {
@@ -321,7 +340,13 @@ function createDestinationState(
       ...destination,
       routeKeySeq: minter.routeKeySeq,
       index: 1,
-      routes: [destination.routes[0]!, destinationRoute],
+      routes: [
+        {
+          ...destination.routes[0]!,
+          ...(anchorParams !== undefined ? { params: anchorParams } : undefined),
+        },
+        destinationRoute,
+      ],
     });
   }
 
