@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import debugModule from 'debug';
 import EventEmitter from 'events';
 import { promises as fsPromises } from 'fs';
 import invariant from 'invariant';
@@ -15,7 +16,7 @@ import { Watcher } from './Watcher';
 import { DiskCacheManager } from './cache/DiskCacheManager';
 import H from './constants';
 import createFallbackFilesystem from './crawlers/node/fallback';
-import { event, debugEvent } from './events';
+import { debugEvent, event } from './events';
 import { FileProcessor } from './lib/FileProcessor';
 import { FileSystemChangeAggregator } from './lib/FileSystemChangeAggregator';
 import { RootPathUtils } from './lib/RootPathUtils';
@@ -37,11 +38,14 @@ import type {
   ChangeEventClock,
   ChangeEventMetadata,
   Console,
+  Crawler,
+  CrawlerFactory,
   CrawlerOptions,
   CrawlResult,
   FileData,
   FileMapPlugin,
   FileMapPluginWorker,
+  FileMapRoot,
   FileMetadata,
   FileSystem,
   HasteMapData,
@@ -57,7 +61,7 @@ import type {
   WatchmanClocks,
 } from './types';
 
-const debug = require('debug')('Metro:FileMap');
+const debug = debugModule('Metro:FileMap');
 
 export type {
   BuildParameters,
@@ -72,69 +76,91 @@ export type {
   InputFileMapPlugin,
 };
 
-export interface InputOptions {
-  readonly computeSha1?: boolean | undefined | null;
-  readonly enableFallback?: boolean | undefined | null;
-  readonly enableSymlinks?: boolean | undefined | null;
-  readonly extensions: readonly string[];
-  readonly ignorePattern?: RegExp | undefined | null;
-  readonly plugins?: readonly InputFileMapPlugin[] | undefined;
-  readonly retainAllFiles: boolean;
-  readonly rootDir: string;
-  readonly roots: readonly string[];
-  readonly scopeFallback?: boolean | undefined | null;
-  readonly serverRoot?: string | undefined | null;
-  readonly cacheManagerFactory?: CacheManagerFactory | undefined | null;
-  readonly console?: Console;
-  readonly healthCheck: HealthCheckOptions;
-  readonly maxFilesPerWorker?: number | undefined | null;
-  readonly maxWorkers: number;
-  readonly perfLoggerFactory?: PerfLoggerFactory | undefined | null;
-  readonly resetCache?: boolean | undefined | null;
-  readonly useWatchman?: boolean | undefined | null;
-  readonly watch?: boolean | undefined | null;
-  readonly watchmanDeferStates?: readonly string[];
-}
+export type InputOptions = Readonly<{
+  computeSha1?: boolean | null | undefined;
+  /**
+   * Populate paths outside `roots` from the filesystem when they are first
+   * looked up (the on-demand filesystem). Default: true.
+   */
+  enableFallback?: boolean | null | undefined;
+  enableSymlinks?: boolean | null | undefined;
+  extensions: readonly string[];
+  ignorePattern?: RegExp | null | undefined;
+  plugins?: readonly InputFileMapPlugin[];
+  retainAllFiles: boolean;
+  rootDir: string;
+  roots: readonly string[];
+  /**
+   * Limit the on-demand filesystem to `serverRoot` and below, except through a
+   * symlink. Default: true.
+   */
+  scopeFallback?: boolean | null | undefined;
+  /** The directory `scopeFallback` limits the on-demand filesystem to. */
+  serverRoot?: string | null | undefined;
 
-interface HealthCheckOptions {
-  readonly enabled: boolean;
-  readonly interval: number;
-  readonly timeout: number;
-  readonly filePrefix: string;
-}
+  cacheManagerFactory?: CacheManagerFactory | null | undefined;
+  console?: Console;
+  /**
+   * Replaces the built-in Watchman/node crawlers. Watch mode, if enabled, still
+   * uses the built-in watcher backends.
+   */
+  crawlerFactory?: CrawlerFactory | null | undefined;
+  healthCheck: HealthCheckOptions;
+  maxFilesPerWorker?: number | null | undefined;
+  maxWorkers: number;
+  perfLoggerFactory?: PerfLoggerFactory | null | undefined;
+  resetCache?: boolean | null | undefined;
+  useWatchman?: boolean | null | undefined;
+  watch?: boolean | null | undefined;
+  watchmanDeferStates?: readonly string[];
+}>;
 
-interface InternalOptions extends BuildParameters {
-  readonly enableFallback: boolean;
-  readonly scopeFallback: boolean;
-  readonly serverRoot: string | undefined | null;
-  readonly healthCheck: HealthCheckOptions;
-  readonly perfLoggerFactory: PerfLoggerFactory | undefined | null;
-  readonly resetCache: boolean | undefined | null;
-  readonly useWatchman: boolean;
-  readonly watch: boolean;
-  readonly watchmanDeferStates: readonly string[];
-}
+type HealthCheckOptions = Readonly<{
+  enabled: boolean;
+  interval: number;
+  timeout: number;
+  filePrefix: string;
+}>;
 
-interface IndexedPlugin {
-  readonly plugin: FileMapPlugin<any, any>;
-  readonly dataIdx: number | undefined | null;
-}
+type InternalOptions = Readonly<
+  BuildParameters & {
+    enableFallback: boolean;
+    scopeFallback: boolean;
+    serverRoot: string | null | undefined;
+    healthCheck: HealthCheckOptions;
+    perfLoggerFactory: PerfLoggerFactory | null | undefined;
+    resetCache: boolean | null | undefined;
+    useWatchman: boolean;
+    watch: boolean;
+    watchmanDeferStates: readonly string[];
+  }
+>;
 
-type InternalEnqueuedEvent =
+type IndexedPlugin = Readonly<{
+  // Plugin types cannot be known statically
+  plugin: FileMapPlugin<any, any>;
+  dataIdx: number | null | undefined;
+}>;
+type InternalEnqueuedEvent = Readonly<
   | {
-      readonly clock: ChangeEventClock | undefined | null;
-      readonly relativeFilePath: string;
-      readonly metadata: FileMetadata;
-      readonly type: 'touch';
+      clock: ChangeEventClock | null | undefined;
+      relativeFilePath: string;
+      metadata: FileMetadata;
+      type: 'touch';
     }
   | {
-      readonly clock: ChangeEventClock | undefined | null;
-      readonly relativeFilePath: string;
-      readonly type: 'delete';
-    };
+      clock: ChangeEventClock | null | undefined;
+      relativeFilePath: string;
+      metadata?: undefined;
+      type: 'delete';
+    }
+>;
 
 export { DiskCacheManager } from './cache/DiskCacheManager';
+export { NoopCacheManager } from './cache/NoopCacheManager';
 export { default as DependencyPlugin } from './plugins/DependencyPlugin';
+export { default as FileDataPlugin } from './plugins/FileDataPlugin';
+export type { FileDataPluginOptions } from './plugins/FileDataPlugin';
 export type { DependencyPluginOptions } from './plugins/DependencyPlugin';
 export { DuplicateHasteCandidatesError } from './plugins/haste/DuplicateHasteCandidatesError';
 export { HasteConflictsError } from './plugins/haste/HasteConflictsError';
@@ -148,14 +174,21 @@ export type {
   CacheManagerFactoryOptions,
   CacheManagerWriteOptions,
   ChangeEvent,
+  Crawler,
+  CrawlerFactory,
+  CrawlerFactoryOptions,
+  CrawlerOptions,
+  CrawlResult,
   DependencyExtractor,
+  FileDataResult,
+  FileMapRoot,
   WatcherStatus,
 } from './types';
 
 // This should be bumped whenever a code change to `metro-file-map` itself
 // would cause a change to the cache data structure and/or content (for a given
 // filesystem state and build parameters).
-const CACHE_BREAKER = '12';
+const CACHE_BREAKER = '13';
 
 const CHANGE_INTERVAL = 30;
 
@@ -204,7 +237,8 @@ const WATCHMAN_REQUIRED_CAPABILITIES = [
  *   visited: boolean, // whether the file has been parsed or not.
  *   dependencies: Array<string>, // all relative dependencies of this file.
  *   sha1: ?string, // SHA-1 of the file, if requested via options.
- *   symlink: ?(1 | 0 | string), // Truthy if symlink, string is target
+ *   symlink: ?(1 | 0 | string), // Truthy if symlink, string is the target,
+ *                               // lexically resolved to a normal POSIX path
  * };
  *
  * // Modules can be targeted to a specific platform based on the file name.
@@ -250,20 +284,31 @@ export default class FileMap extends EventEmitter {
   // NOTE(@kitten): Expo brand to recognize patched `metro-file-map -> @expo/metro-file-map`
   readonly __expo = true;
 
-  #buildPromise: Promise<BuildResult> | undefined | null;
+  #buildPromise: Promise<BuildResult> | null | undefined;
   readonly #cacheManager: CacheManager;
   #canUseWatchmanPromise: Promise<boolean> | undefined;
   #changeID: number;
-  #changeInterval: ReturnType<typeof setInterval> | undefined | null;
+  // Serializes changes to the built file system: watcher events and roots
+  // added by `addRoot`.
+  #changeQueue: Promise<null | void> = Promise.resolve();
+  #changeInterval: ReturnType<typeof setInterval> | null | undefined;
   readonly #console: Console;
   readonly #crawlerAbortController: AbortController;
   readonly #fileProcessor: FileProcessor;
-  #healthCheckInterval: ReturnType<typeof setInterval> | undefined | null;
+  #healthCheckInterval: ReturnType<typeof setInterval> | null | undefined;
   readonly #options: InternalOptions;
+  #roots: readonly FileMapRoot[];
   readonly #pathUtils: RootPathUtils;
+  readonly #crawler: Crawler | null | undefined;
+  // Roots added by `addRoot`, mapped to the completion of each addition.
+  readonly #dynamicRoots: Map<string, Promise<void>> = new Map();
+  #fileSystem: TreeFS | null | undefined;
+  // Applies and emits watcher events waiting on the change interval. Set in
+  // watch mode.
+  #flushPendingChanges: (() => void) | null | undefined;
   readonly #plugins: readonly IndexedPlugin[];
-  readonly #startupPerfLogger: PerfLogger | undefined | null;
-  #watcher: Watcher | undefined | null;
+  readonly #startupPerfLogger: PerfLogger | null | undefined;
+  #watcher: Watcher | null | undefined;
   #usedWatchman: boolean = false;
 
   static create(options: InputOptions): FileMap {
@@ -278,8 +323,10 @@ export default class FileMap extends EventEmitter {
       this.#startupPerfLogger?.point('constructor_start');
     }
 
+    // NOTE(@robhogan): VCS directories are excluded by the crawlers and watchers directly (see
+    // `isWatcherExcluded`), rather than by appending them to `ignorePattern`
     const ignorePattern: RegExp | null = options.ignorePattern ?? null;
-    if (ignorePattern && !(ignorePattern instanceof RegExp)) {
+    if (ignorePattern != null && !(ignorePattern instanceof RegExp)) {
       throw new Error('metro-file-map: the `ignorePattern` option must be a RegExp');
     }
 
@@ -289,19 +336,31 @@ export default class FileMap extends EventEmitter {
 
     const indexedPlugins: IndexedPlugin[] = [];
     const pluginWorkers: FileMapPluginWorker[] = [];
+    const pluginDataIndices = new Map<string, number>();
     const plugins = options.plugins ?? [];
     for (const plugin of plugins) {
       const maybeWorker = plugin.getWorker();
-      indexedPlugins.push({
-        plugin,
-        dataIdx: maybeWorker != null ? dataSlot++ : null,
-      });
+      const dataIdx = maybeWorker != null ? dataSlot++ : null;
+      indexedPlugins.push({ plugin, dataIdx });
+      if (dataIdx != null) {
+        // Crawlers address plugin data by name, so names must be unique among
+        // plugins holding a slot - otherwise a crawler would silently write to
+        // the shadowed plugin's slot.
+        invariant(
+          !pluginDataIndices.has(plugin.name),
+          'metro-file-map: Duplicate plugin name: %s',
+          plugin.name
+        );
+        pluginDataIndices.set(plugin.name, dataIdx);
+      }
       if (maybeWorker != null) {
         pluginWorkers.push(maybeWorker);
       }
     }
     this.#plugins = indexedPlugins;
 
+    // NOTE(@robhogan): The on-demand filesystem is on by default. Neither option is a build
+    // parameter, since neither changes what is crawled
     const enableFallback = options.enableFallback ?? true;
     const scopeFallback = options.scopeFallback ?? true;
 
@@ -314,6 +373,8 @@ export default class FileMap extends EventEmitter {
       plugins,
       retainAllFiles: options.retainAllFiles,
       rootDir: options.rootDir,
+      // NOTE(@robhogan): Roots are resolved and deduplicated, and roots nested inside another
+      // root are dropped, so overlapping watch folders aren't crawled and watched twice
       roots: removeOverlappingRoots(options.roots),
     };
 
@@ -322,6 +383,7 @@ export default class FileMap extends EventEmitter {
       healthCheck: options.healthCheck,
       perfLoggerFactory: options.perfLoggerFactory,
       resetCache: options.resetCache,
+      // NOTE(@robhogan): Watchman is opt-in, where upstream defaults `useWatchman` to `true`
       useWatchman: options.useWatchman ?? false,
       watch: !!options.watch,
       watchmanDeferStates: options.watchmanDeferStates ?? [],
@@ -329,6 +391,10 @@ export default class FileMap extends EventEmitter {
       scopeFallback: enableFallback && scopeFallback,
       serverRoot: options.serverRoot,
     };
+
+    this.#crawler = options.crawlerFactory
+      ? options.crawlerFactory.call(null, { buildParameters, pluginDataIndices })
+      : null;
 
     const cacheFactoryOptions: CacheManagerFactoryOptions = {
       buildParameters,
@@ -347,6 +413,11 @@ export default class FileMap extends EventEmitter {
 
     this.#buildPromise = null;
     this.#pathUtils = new RootPathUtils(options.rootDir);
+    this.#roots = this.#options.roots.map((absolutePath) => ({
+      absolutePath,
+      rootRelativePath: this.#pathUtils.absoluteToNormal(absolutePath),
+      dynamic: false,
+    }));
     this.#startupPerfLogger?.point('constructor_end');
     this.#crawlerAbortController = new AbortController();
     this.#changeID = 0;
@@ -358,7 +429,7 @@ export default class FileMap extends EventEmitter {
       const doneBuild = event.span();
       this.#buildPromise = (async () => {
         const doneHydrate = debugEvent.span();
-        let initialData: CacheData | undefined | null;
+        let initialData: CacheData | null | undefined;
         if (this.#options.resetCache !== true) {
           initialData = await this.read();
         }
@@ -369,10 +440,9 @@ export default class FileMap extends EventEmitter {
         }
 
         const rootDir = this.#options.rootDir;
-        const ignorePattern = this.#options.ignorePattern;
         this.#startupPerfLogger?.point('constructFileSystem_start');
-        const processFile: ProcessFileFunction = async (normalPath, metadata, opts) => {
-          const result = await this.#fileProcessor.processRegularFile(normalPath, metadata, {
+        const processFile: ProcessFileFunction = (normalPath, metadata, opts) => {
+          const result = this.#fileProcessor.processRegularFile(normalPath, metadata, {
             computeSha1: opts.computeSha1,
             maybeReturnContent: true,
           });
@@ -381,6 +451,7 @@ export default class FileMap extends EventEmitter {
           this.emit('metadata');
           return result?.content;
         };
+        const ignorePattern = this.#options.ignorePattern;
         const fallbackFilesystem = this.#options.enableFallback
           ? createFallbackFilesystem({
               rootPathUtils: this.#pathUtils,
@@ -389,28 +460,34 @@ export default class FileMap extends EventEmitter {
               includeSymlinks: this.#options.enableSymlinks,
             })
           : null;
-        const { roots } = this.#options;
+        // Watchman lists a symlinked root's files under its real path. A custom
+        // crawler's files may not be on disk.
+        const realRoots =
+          this.#crawler == null
+            ? await Promise.all(
+                this.#options.roots.map((root) => fsPromises.realpath(root).catch(() => root))
+              )
+            : [];
+        // NOTE(@robhogan): The file system's snapshot holds only what is under these roots, so
+        // they include the real paths of symlinked roots
+        const roots = removeOverlappingRoots([...this.#options.roots, ...realRoots]);
         const serverRoot = this.#options.scopeFallback ? this.#options.serverRoot : null;
         const fileSystem =
           initialData != null
             ? TreeFS.fromDeserializedSnapshot({
-                // Typed `mixed` because we've read this from an external
+                // Typed `unknown` because we've read this from an external
                 // source. It'd be too expensive to validate at runtime, so
                 // trust our cache manager that this is correct.
-                fileSystemData: initialData.fileSystemData as any,
+                fileSystemData: initialData.fileSystemData as Parameters<
+                  typeof TreeFS.fromDeserializedSnapshot
+                >[0]['fileSystemData'],
                 processFile,
                 rootDir,
                 fallbackFilesystem,
                 roots,
                 serverRoot,
               })
-            : new TreeFS({
-                processFile,
-                rootDir,
-                fallbackFilesystem,
-                roots,
-                serverRoot,
-              });
+            : new TreeFS({ processFile, rootDir, fallbackFilesystem, roots, serverRoot });
         this.#startupPerfLogger?.point('constructFileSystem_end');
         doneHydrate('hydrate', { fromCache: initialData != null });
 
@@ -425,22 +502,13 @@ export default class FileMap extends EventEmitter {
             fileSystem,
           }),
           Promise.all(
-            plugins.map(({ plugin, dataIdx }) =>
-              plugin.initialize({
+            plugins.map(({ plugin, dataIdx }) => {
+              const isLazy = plugin.getWorker()?.lazy === true;
+              return plugin.initialize({
                 files: {
                   lookup: (mixedPath) => {
                     const result = fileSystem.lookup(mixedPath);
-                    if (!result.exists) {
-                      return { exists: false };
-                    }
-                    if (result.type === 'd') {
-                      return { exists: true, type: 'd' };
-                    }
-                    return {
-                      exists: true,
-                      type: 'f',
-                      pluginData: dataIdx != null ? result.metadata[dataIdx] : null,
-                    };
+                    return result.exists ? { exists: true, type: result.type } : { exists: false };
                   },
                   fileIterator: (opts) =>
                     mapIterable(
@@ -453,10 +521,61 @@ export default class FileMap extends EventEmitter {
                     ),
                 },
                 pluginState: initialData?.plugins.get(plugin.name),
-              })
-            )
+                getOrComputeFileData: (mixedPath, observations) => {
+                  invariant(
+                    dataIdx != null,
+                    'metro-file-map: Plugin "%s" has no worker to process files with',
+                    plugin.name
+                  );
+                  const result = fileSystem.lookup(mixedPath, observations);
+                  if (!result.exists) {
+                    return { exists: false };
+                  }
+                  if (result.type === 'd') {
+                    return { exists: true, type: 'd' };
+                  }
+                  // Plugin data is derived from what the file holds, so it
+                  // changes when the file is modified.
+                  observations?.content.add(result.canonicalPath);
+                  let data = result.metadata[dataIdx];
+                  // `undefined` means no worker has run on this file.
+                  if (data === undefined) {
+                    if (isLazy) {
+                      data = this.#fileProcessor.processFileForPlugin(
+                        result.realPath,
+                        result.metadata,
+                        dataIdx - H.PLUGINDATA
+                      );
+                      debug('Lazily processed file for %s: %s', plugin.name, mixedPath);
+                      // Inform caches that there is new data to save.
+                      this.emit('metadata');
+                    } else {
+                      data = null;
+                    }
+                  }
+                  return {
+                    exists: true,
+                    type: 'f',
+                    realPath: result.realPath,
+                    data,
+                  };
+                },
+              });
+            })
           ),
         ]);
+
+        // The cache key does not include roots added by `addRoot`, so the
+        // cache may hold files from an earlier instance's added roots. Drop
+        // them, including from plugins.
+        if (initialData != null) {
+          for (const canonicalPath of fileSystem.pathsOutsideRoots([
+            ...this.#options.roots,
+            ...realRoots,
+          ])) {
+            fileDelta.removedFiles.add(canonicalPath);
+          }
+        }
 
         // Update `fileSystem` and plugins based on the file delta.
         const actualChanges = await this.#applyFileDelta(fileSystem, plugins, fileDelta);
@@ -466,11 +585,12 @@ export default class FileMap extends EventEmitter {
         // Validate plugins before persisting them.
         plugins.forEach(({ plugin }) => plugin.assertValid());
 
-        const watchmanClocks = new Map('clocks' in fileDelta ? fileDelta.clocks : []);
+        const watchmanClocks = new Map(fileDelta.clocks ?? []);
         await this.#takeSnapshotAndPersist(fileSystem, watchmanClocks, plugins, changeSize > 0);
         debug('Finished mapping files (%d changes).', changeSize);
 
         await this.#watch(fileSystem, watchmanClocks, plugins);
+        this.#fileSystem = fileSystem;
         doneBuild('build', {
           crawler: this.#usedWatchman ? 'watchman' : 'node',
           fromCache: initialData != null,
@@ -485,17 +605,130 @@ export default class FileMap extends EventEmitter {
   }
 
   /**
+   * The directories whose files this file map holds: the `roots` it was
+   * constructed with, followed by any added with `addRoot`, in the order they
+   * were added. The same array is returned until the roots change.
+   */
+  getRoots(): readonly FileMapRoot[] {
+    return this.#roots;
+  }
+
+  #updateRoots(): void {
+    this.#roots = [
+      ...this.#roots.filter((root) => !root.dynamic),
+      ...Array.from(this.#dynamicRoots.keys(), (absolutePath) => ({
+        absolutePath,
+        rootRelativePath: this.#pathUtils.absoluteToNormal(absolutePath),
+        dynamic: true,
+      })),
+    ];
+  }
+
+  /**
+   * Add a directory to the file map after `build()`, crawling it and (in
+   * watch mode) watching it for the lifetime of this instance. Resolves once
+   * its files are available, after a 'change' event for any that are new.
+   *
+   * A root reached through a symlink in the file map is added at the
+   * symlink's target. A path through any other symlink should be given as its
+   * real path.
+   *
+   * Added roots are not persisted: a later instance reading this one's cache
+   * starts with only its own `roots`.
+   */
+  addRoot(root: string): Promise<void> {
+    const buildPromise = this.#buildPromise;
+    invariant(buildPromise != null, 'metro-file-map: addRoot() must be called after build()');
+    const fileSystem = this.#fileSystem;
+    if (fileSystem == null) {
+      // Symlinks are resolved against the built file system.
+      return buildPromise.then(() => this.addRoot(root));
+    }
+    // The file system holds only real paths. Crawling a root through a
+    // symlink would replace that symlink with a copy of its target.
+    const absoluteRoot = fileSystem.resolveSymlinks(path.resolve(root));
+    const existing = this.#dynamicRoots.get(absoluteRoot);
+    if (existing != null) {
+      return existing;
+    }
+    if (this.#roots.some((r) => path.resolve(r.absolutePath) === absoluteRoot)) {
+      return Promise.resolve();
+    }
+    // A root within an existing one has nothing of its own to crawl or watch,
+    // and is ready when that root is.
+    const parent = this.#roots.find((r) =>
+      absoluteRoot.startsWith(path.resolve(r.absolutePath) + path.sep)
+    );
+    const ready: Promise<unknown> =
+      parent != null
+        ? (this.#dynamicRoots.get(parent.absolutePath) ?? Promise.resolve())
+        : this.#crawlAndWatchRoot(absoluteRoot);
+    const added = ready.then(
+      () => {},
+      (error) => {
+        this.#dynamicRoots.delete(absoluteRoot);
+        this.#updateRoots();
+        throw error;
+      }
+    );
+    this.#dynamicRoots.set(absoluteRoot, added);
+    this.#updateRoots();
+    return added;
+  }
+
+  async #crawlAndWatchRoot(absoluteRoot: string): Promise<void> {
+    const watcher = this.#watcher;
+    const fileSystem = this.#fileSystem;
+    invariant(
+      watcher != null && fileSystem != null,
+      'Expected build() to have set #watcher and #fileSystem'
+    );
+    // Watch before crawling, so that a change made during the crawl is still
+    // reported.
+    await watcher.watchRoot(absoluteRoot);
+
+    const crawled = this.#changeQueue.then(async () => {
+      // Apply pending watcher events first, so that the crawl is compared with
+      // the current file system.
+      this.#flushPendingChanges?.();
+      const crawlResult = await watcher.recrawl(
+        this.#pathUtils.absoluteToNormal(absoluteRoot),
+        fileSystem
+      );
+      // end() may have been called during the crawl or while applying it.
+      const abortSignal = this.#crawlerAbortController.signal;
+      abortSignal.throwIfAborted();
+      const changeAggregator = await this.#applyFileDelta(fileSystem, this.#plugins, crawlResult);
+      abortSignal.throwIfAborted();
+      // NOTE(@robhogan): The root is now crawled and watched, so the on-demand filesystem no
+      // longer needs to look for paths within it
+      fileSystem.excludeFromFallback(absoluteRoot);
+      if (changeAggregator.getSize() === 0) {
+        return;
+      }
+      const changeEvent: ChangeEvent = {
+        changes: changeAggregator.getMappedView(toPublicMetadata),
+        logger: null,
+        rootDir: this.#options.rootDir,
+      };
+      this.emit('change', changeEvent);
+    });
+    this.#changeQueue = crawled.catch(() => {});
+    await crawled;
+  }
+
+  /**
    * 1. read data from the cache or create an empty structure.
    */
-  async read(): Promise<CacheData | undefined | null> {
-    let data: CacheData | undefined | null;
+  async read(): Promise<CacheData | null | undefined> {
+    let data: CacheData | null | undefined;
     this.#startupPerfLogger?.point('read_start');
     try {
       data = await this.#cacheManager.read();
-    } catch (e: any) {
+    } catch (e) {
       this.#console.warn('Error while reading cache, falling back to a full crawl:\n', e);
       this.#startupPerfLogger?.annotate({
-        string: { cacheReadError: e.toString() },
+        string: { cacheReadError: (e as Error).toString() },
       });
       event('cache:read_error', { error: event.error(e as Error) });
     }
@@ -521,20 +754,9 @@ export default class FileMap extends EventEmitter {
       watchmanDeferStates,
     } = this.#options;
 
-    const ignoreForCrawl = (() => {
-      if (ignorePattern && !retainAllFiles) {
-        return (filePath: string) =>
-          ignorePattern.test(filePath) || filePath.includes(NODE_MODULES);
-      } else if (ignorePattern) {
-        return (filePath: string) => ignorePattern.test(filePath);
-      } else if (!retainAllFiles) {
-        return (filePath: string) => filePath.includes(NODE_MODULES);
-      } else {
-        return () => false;
-      }
-    })();
-
-    this.#usedWatchman = await this.#shouldUseWatchman();
+    // A supplied crawler makes the Watchman capability probe - which spawns
+    // watchman - pointless.
+    this.#usedWatchman = this.#crawler == null && (await this.#shouldUseWatchman());
     const crawler = this.#usedWatchman ? 'watchman' : 'node';
     const full = !previousState.clocks || previousState.clocks.size === 0;
     const doneCrawl = debugEvent.span();
@@ -543,12 +765,15 @@ export default class FileMap extends EventEmitter {
       abortSignal: this.#crawlerAbortController.signal,
       computeSha1,
       console: this.#console,
+      crawl: this.#crawler,
       enableSymlinks,
       extensions,
-      healthCheckFilePrefix: this.#options.healthCheck.enabled
-        ? this.#options.healthCheck.filePrefix
-        : null,
-      ignoreForCrawl,
+      healthCheckFilePrefix: this.#options.healthCheck.filePrefix,
+      // TODO: Refactor out the two different ignore strategies here.
+      ignoreForCrawl: (filePath) => {
+        const ignoreMatched = ignorePattern?.test(filePath) === true;
+        return ignoreMatched || (!retainAllFiles && filePath.includes(NODE_MODULES));
+      },
       ignorePatternForWatch: ignorePattern,
       perfLogger: this.#startupPerfLogger,
       previousState,
@@ -573,7 +798,7 @@ export default class FileMap extends EventEmitter {
     return result;
   }
 
-  #maybeReadLink(normalPath: Path, fileMetadata: FileMetadata): Promise<void> | undefined | null {
+  #maybeReadLink(normalPath: Path, fileMetadata: FileMetadata): Promise<void> | null | undefined {
     // If we only need to read a link, it's more efficient to do it in-band
     // (with async file IO) than to have the overhead of worker IO.
     if (fileMetadata[H.SYMLINK] === 1) {
@@ -628,10 +853,8 @@ export default class FileMap extends EventEmitter {
       if (fileData[H.SYMLINK] === 0) {
         filesToProcess.push([normalFilePath, fileData]);
       } else if (fileData[H.MTIME] != null && fileData[H.MTIME] !== 0) {
-        // Symlink was previously resolved and its mtime changed — resolve
-        // eagerly to update the cached target. Symlinks with null mtime
-        // (cold start or never accessed) are deferred to lazy resolution
-        // in TreeFS.#resolveSymlinkTargetToNormalPath.
+        // The symlink will only be updated, if it's been accessed before
+        // If this is a newly crawled entry, it's skipped
         const maybeReadLink = this.#maybeReadLink(normalFilePath, fileData);
         if (maybeReadLink) {
           readLinkPromises.push(
@@ -671,7 +894,7 @@ export default class FileMap extends EventEmitter {
     // startup, so there's nothing more to do.
     this.#startupPerfLogger?.point('applyFileDelta_missing_start');
     for (const { normalFilePath, error } of batchResult.errors.concat(readLinkErrors)) {
-      if (['ENOENT', 'EACCESS'].includes(error.code ?? '')) {
+      if (['ENOENT', 'EACCESS'].includes(error.code as string)) {
         delta.changedFiles.delete(normalFilePath);
         fileSystem.remove(normalFilePath, changeAggregator);
       } else {
@@ -761,14 +984,11 @@ export default class FileMap extends EventEmitter {
     const hasWatchedExtension = (filePath: string) =>
       this.#options.extensions.some((ext) => filePath.endsWith(ext));
 
-    let nextEmit:
-      | {
-          events: InternalEnqueuedEvent[];
-          firstEventTimestamp: number;
-          firstEnqueuedTimestamp: number;
-        }
-      | undefined
-      | null = null;
+    let nextEmit: {
+      events: InternalEnqueuedEvent[];
+      firstEventTimestamp: number;
+      firstEnqueuedTimestamp: number;
+    } | null = null;
 
     const emitChange = () => {
       if (nextEmit == null) {
@@ -811,11 +1031,6 @@ export default class FileMap extends EventEmitter {
         );
       });
 
-      const toPublicMetadata = (metadata: Readonly<FileMetadata>): ChangedFileMetadata => ({
-        isSymlink: metadata[H.SYMLINK] !== 0,
-        modifiedTime: metadata[H.MTIME] ?? null,
-      });
-
       const changesWithMetadata = changeAggregator.getMappedView(toPublicMetadata);
 
       const hmrPerfLogger = this.#options.perfLoggerFactory?.('HMR', {
@@ -839,8 +1054,6 @@ export default class FileMap extends EventEmitter {
       nextEmit = null;
     };
 
-    let changeQueue: Promise<null | void> = Promise.resolve();
-
     const onChange = (change: WatcherBackendChangeEvent) => {
       // Recrawl events bypass normal filtering - they trigger a full subdirectory scan
       if (
@@ -863,7 +1076,6 @@ export default class FileMap extends EventEmitter {
 
       // Ignore files (including symlinks) whose path matches ignorePattern
       // (we don't ignore node_modules in watch mode)
-      // TODO(@kitten): Can be dropped, assuming that regexes aren't violating constraints
       if (this.#options.ignorePattern?.test(absoluteFilePath) === true) {
         return;
       }
@@ -881,7 +1093,10 @@ export default class FileMap extends EventEmitter {
         nextEmit.events.push(event);
       };
 
-      changeQueue = changeQueue
+      // `recrawl` events carry no metadata.
+      const changeMetadata = change.event === 'recrawl' ? undefined : change.metadata;
+
+      this.#changeQueue = this.#changeQueue
         .then(async () => {
           // If we get duplicate events for the same file, ignore them.
           if (
@@ -890,12 +1105,12 @@ export default class FileMap extends EventEmitter {
               (event) =>
                 event.type === change.event &&
                 event.relativeFilePath === relativeFilePath &&
-                ((!('metadata' in event) && !change.metadata) ||
-                  ('metadata' in event &&
-                    change.metadata &&
+                ((!event.metadata && !changeMetadata) ||
+                  (event.metadata &&
+                    changeMetadata &&
                     event.metadata[H.MTIME] != null &&
-                    change.metadata.modifiedTime != null &&
-                    event.metadata[H.MTIME] === change.metadata.modifiedTime))
+                    changeMetadata.modifiedTime != null &&
+                    event.metadata[H.MTIME] === changeMetadata.modifiedTime))
             )
           ) {
             return null;
@@ -909,12 +1124,11 @@ export default class FileMap extends EventEmitter {
               'since the file exists or changed, it should have known size'
             );
             const fileMetadata: FileMetadata = [
-              change.metadata.modifiedTime ?? null,
+              change.metadata.modifiedTime,
               change.metadata.size,
               0,
               null,
               change.metadata.type === 'l' ? 1 : 0,
-              null,
             ];
 
             try {
@@ -932,8 +1146,8 @@ export default class FileMap extends EventEmitter {
                 metadata: fileMetadata,
                 type: change.event,
               });
-            } catch (e: any) {
-              if (!['ENOENT', 'EACCESS'].includes(e.code)) {
+            } catch (e) {
+              if (!['ENOENT', 'EACCESS'].includes((e as NodeJS.ErrnoException).code as string)) {
                 throw e;
               }
               // Swallow ENOENT/ACCESS errors silently. Safe because either:
@@ -987,11 +1201,6 @@ export default class FileMap extends EventEmitter {
             }
 
             // Emit changes directly
-            const toPublicMetadata = (metadata: Readonly<FileMetadata>): ChangedFileMetadata => ({
-              isSymlink: metadata[H.SYMLINK] !== 0,
-              modifiedTime: metadata[H.MTIME] ?? null,
-            });
-
             const changesWithMetadata = recrawlChangeAggregator.getMappedView(toPublicMetadata);
 
             const changeEvent: ChangeEvent = {
@@ -1002,7 +1211,7 @@ export default class FileMap extends EventEmitter {
             this.emit('change', changeEvent);
           } else {
             throw new Error(
-              `metro-file-map: Unrecognized event type from watcher: ${(change as any).event}`
+              `metro-file-map: Unrecognized event type from watcher: ${(change as { event: string }).event}`
             );
           }
           return null;
@@ -1012,10 +1221,11 @@ export default class FileMap extends EventEmitter {
         });
     };
 
+    this.#flushPendingChanges = emitChange;
     this.#changeInterval = setInterval(emitChange, CHANGE_INTERVAL);
 
     invariant(this.#watcher != null, 'Expected #watcher to have been initialised by build()');
-    await this.#watcher.watch(onChange);
+    await this.#watcher.watch(onChange, clocks);
 
     if (this.#options.healthCheck.enabled) {
       const performHealthCheck = () => {
@@ -1067,15 +1277,15 @@ export default class FileMap extends EventEmitter {
           });
           return true;
         })
-        .catch((e: any) => {
+        .catch((e) => {
           // TODO: Advise people to either install Watchman or set
           // `useWatchman: false` here?
           this.#startupPerfLogger?.annotate({
             string: {
-              watchmanFailedCapabilityCheck: e?.message ?? '[missing]',
+              watchmanFailedCapabilityCheck: (e as Error | null)?.message ?? '[missing]',
             },
           });
-          event('watchman:unavailable', { reason: e?.message ?? '[missing]' });
+          event('watchman:unavailable', { reason: (e as Error | null)?.message ?? '[missing]' });
           return false;
         });
     }
@@ -1089,7 +1299,7 @@ export default class FileMap extends EventEmitter {
     return ++this.#changeID;
   }
 
-  #updateClock(clocks: WatchmanClocks, newClock: ChangeEventClock | undefined | null): void {
+  #updateClock(clocks: WatchmanClocks, newClock?: ChangeEventClock | null): void {
     if (newClock == null) {
       return;
     }
@@ -1101,11 +1311,15 @@ export default class FileMap extends EventEmitter {
   static H: HType = H;
 }
 
+const toPublicMetadata = (metadata: Readonly<FileMetadata>): ChangedFileMetadata => ({
+  isSymlink: metadata[H.SYMLINK] !== 0,
+  modifiedTime: metadata[H.MTIME] ?? null,
+});
+
 // TODO: Replace with it.map() from Node 22+
-function mapIterable<T, S>(it: Iterable<T>, fn: (item: T) => S): Iterable<S> {
-  return (function* mapped() {
+const mapIterable = <T, S>(it: Iterable<T>, fn: (item: T) => S): IteratorObject<S> =>
+  (function* mapped() {
     for (const item of it) {
       yield fn(item);
     }
   })();
-}

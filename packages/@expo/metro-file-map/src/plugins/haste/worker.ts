@@ -5,39 +5,39 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import path from 'path';
+import path from 'node:path';
 
 import type { MetadataWorker, V8Serializable, WorkerMessage } from '../../types';
 import excludedExtensions from '../../workerExclusionList';
 
-const PACKAGE_JSON: string = path.sep + 'package.json';
+const PACKAGE_JSON = path.sep + 'package.json';
 
 export default class Worker implements MetadataWorker {
-  #hasteImpl: { readonly getHasteName: (filePath: string) => string | null | undefined } | null =
-    null;
+  readonly #hasteImpl: Readonly<{
+    getHasteName: (filePath: string) => string | undefined | null;
+  }> | null = null;
 
-  constructor({ hasteImplModulePath }: Readonly<{ hasteImplModulePath: string | null }>) {
+  constructor({
+    hasteImplModulePath,
+  }: Readonly<{ hasteImplModulePath: string | undefined | null }>) {
     if (hasteImplModulePath != null) {
       const mod = require(hasteImplModulePath);
       this.#hasteImpl = mod.__esModule === true && 'default' in mod ? mod.default : mod;
     }
   }
 
-  async processFile(
-    data: WorkerMessage,
-    utils: { readonly getContent: () => Promise<Buffer> }
-  ): Promise<V8Serializable> {
+  processFile(data: WorkerMessage, utils: Readonly<{ getContent: () => Buffer }>): V8Serializable {
     let hasteName: string | null = null;
     const { filePath } = data;
     if (filePath.endsWith(PACKAGE_JSON)) {
       // Process a package.json that is returned as a PACKAGE type with its name.
       try {
-        const fileData = JSON.parse((await utils.getContent()).toString());
+        const fileData = JSON.parse(utils.getContent().toString());
         if (fileData.name) {
           hasteName = fileData.name;
         }
-      } catch (err: any) {
-        throw new Error(`Cannot parse ${filePath} as JSON: ${err.message}`);
+      } catch (err) {
+        throw new Error(`Cannot parse ${filePath} as JSON: ${(err as Error).message}`);
       }
     } else if (!excludedExtensions.has(filePath.substr(filePath.lastIndexOf('.')))) {
       if (!this.#hasteImpl) {

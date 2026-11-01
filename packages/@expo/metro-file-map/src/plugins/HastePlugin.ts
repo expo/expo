@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import path from 'path';
+import path from 'node:path';
 
 import H from '../constants';
 import { RootPathUtils } from '../lib/RootPathUtils';
@@ -38,15 +38,15 @@ const PACKAGE_JSON = /(?:[/\\]|^)package\.json$/;
 // Based on 200k files taking up to 800ms => max 40ms between yields.
 const YIELD_EVERY_NUM_HASTE_FILES = 10000;
 
-export interface HasteMapOptions {
-  readonly console?: Console | null;
-  readonly enableHastePackages: boolean;
-  readonly hasteImplModulePath: string | null;
-  readonly perfLogger?: PerfLogger | null;
-  readonly platforms: ReadonlySet<string>;
-  readonly rootDir: Path;
-  readonly failValidationOnConflicts: boolean;
-}
+export type HasteMapOptions = Readonly<{
+  console?: Console | null;
+  enableHastePackages: boolean;
+  hasteImplModulePath: string | undefined | null;
+  perfLogger?: PerfLogger | null;
+  platforms: ReadonlySet<string>;
+  rootDir: Path;
+  failValidationOnConflicts: boolean;
+}>;
 
 export default class HastePlugin implements HasteMap, FileMapPlugin<null, string | null> {
   readonly name = 'haste' as const;
@@ -72,8 +72,9 @@ export default class HastePlugin implements HasteMap, FileMapPlugin<null, string
     this.#failValidationOnConflicts = options.failValidationOnConflicts;
   }
 
-  async initialize({ files }: FileMapPluginInitOptions<null, string | null>): Promise<void> {
+  async initialize(opts: FileMapPluginInitOptions<null, string | null>): Promise<void> {
     this.#perfLogger?.point('constructHasteMap_start');
+    const files = opts.files;
     let hasteFiles = 0;
     for (const { baseName, canonicalPath, pluginData: hasteId } of files.fileIterator({
       // Symlinks and node_modules are never Haste modules or packages.
@@ -92,9 +93,9 @@ export default class HastePlugin implements HasteMap, FileMapPlugin<null, string
       }
     }
     this.#getModuleNameByPath = (mixedPath) => {
-      const result = files.lookup(mixedPath);
-      return result.exists && result.type === 'f' && typeof result.pluginData === 'string'
-        ? result.pluginData
+      const result = opts.getOrComputeFileData(mixedPath);
+      return result.exists && result.type === 'f' && typeof result.data === 'string'
+        ? result.data
         : null;
     };
     this.#perfLogger?.point('constructHasteMap_end');
@@ -445,7 +446,7 @@ export default class HastePlugin implements HasteMap, FileMapPlugin<null, string
   getWorker(): FileMapPluginWorker {
     return {
       worker: {
-        modulePath: require.resolve('./haste/worker.js'),
+        modulePath: require.resolve('./haste/worker'),
         setupArgs: {
           hasteImplModulePath: this.#hasteImplModulePath ?? null,
         },

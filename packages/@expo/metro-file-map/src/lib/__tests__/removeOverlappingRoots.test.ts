@@ -3,16 +3,12 @@
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
- *
- * @format
- * @flow strict
- * @oncall react_native
  */
 
-let mockPathModule: typeof import('path').posix;
+let mockPathModule: typeof import('path');
 jest.mock('path', () => mockPathModule);
 
-describe.each([['win32'], ['posix']])('removeOverlappingRoots on %s', (platform) => {
+describe.each([['win32'], ['posix']] as const)('removeOverlappingRoots on %s', (platform) => {
   // Convenience function to write paths with posix separators but convert them
   // to system separators
   const p = (filePath: string): string =>
@@ -22,8 +18,7 @@ describe.each([['win32'], ['posix']])('removeOverlappingRoots on %s', (platform)
 
   beforeEach(() => {
     jest.resetModules();
-    mockPathModule =
-      jest.requireActual<typeof import('path')>('path')[platform as 'win32' | 'posix'];
+    mockPathModule = jest.requireActual<typeof import('path')>('path')[platform];
     removeOverlappingRoots = require('../removeOverlappingRoots').default;
   });
 
@@ -49,6 +44,10 @@ describe.each([['win32'], ['posix']])('removeOverlappingRoots on %s', (platform)
 
   test('removes deeply nested subdirectories', () => {
     expect(removeOverlappingRoots([p('/a'), p('/a/b'), p('/a/b/c')])).toEqual([p('/a')]);
+  });
+
+  test('removes roots nested under a filesystem root', () => {
+    expect(removeOverlappingRoots([p('/a/b'), p('/')])).toEqual([p('/')]);
   });
 
   test('keeps sibling directories', () => {

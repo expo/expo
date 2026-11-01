@@ -11,17 +11,16 @@
  * Originally vendored from https://github.com/amasad/sane/blob/64ff3a870c42e84f744086884bf55a4f9c22d376/src/node_watcher.js
  */
 
-import type { FSWatcher, Stats } from 'fs';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
+import type { FSWatcher, Stats } from 'node:fs';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 
+import { isWatcherExcludedDirName } from '../lib/isWatcherExcluded';
 import type { ChangeEventMetadata } from '../types';
-import { AbstractWatcher, type WatcherBackendChangeEventWithoutRoot } from './AbstractWatcher';
+import { AbstractWatcher } from './AbstractWatcher';
+import type { WatcherBackendChangeEventWithoutRoot } from './AbstractWatcher';
 import * as common from './common';
-
-// NOTE(@kitten): No typings
-const walker = require('walker');
 
 const platform = os.platform();
 
@@ -29,6 +28,7 @@ const fsPromises = fs.promises;
 
 const TOUCH_EVENT = common.TOUCH_EVENT;
 const DELETE_EVENT = common.DELETE_EVENT;
+const RECRAWL_EVENT = common.RECRAWL_EVENT;
 
 /**
  * This setting delays all events. It suppresses 'change' events that
@@ -37,6 +37,13 @@ const DELETE_EVENT = common.DELETE_EVENT;
  */
 const DEBOUNCE_MS = 100;
 
+/**
+ * The number of entries `recReaddir` visits at a time. Enough to keep the libuv
+ * thread pool saturated, few enough that a large tree does not queue up an
+ * unbounded number of fs requests.
+ */
+const CRAWL_CONCURRENCY = 32;
+
 export default class FallbackWatcher extends AbstractWatcher {
   readonly #changeTimers: Map<string, ReturnType<typeof setTimeout>> = new Map();
   readonly #dirRegistry: {
@@ -44,28 +51,34 @@ export default class FallbackWatcher extends AbstractWatcher {
   } = Object.create(null);
   readonly #watched: { [key: string]: FSWatcher } = Object.create(null);
 
+  // Not live on darwin, though FallbackWatcher isn't currently used there.
+  static isLiveOnStart(): boolean {
+    return platform !== 'darwin';
+  }
+
   async startWatching(): Promise<void> {
     this.#watchdir(this.root);
 
-    await new Promise<void>((resolve) => {
-      recReaddir(
-        this.root,
-        (dir) => {
-          this.#watchdir(dir);
-        },
-        (filename) => {
-          this.#register(filename, 'f');
-        },
-        (symlink) => {
-          this.#register(symlink, 'l');
-        },
-        () => {
-          resolve();
-        },
-        this.#checkedEmitError,
-        this.ignored
-      );
-    });
+    await recReaddir(
+      this.root,
+      (dir) => {
+        this.#watchdir(dir);
+      },
+      (filename) => {
+        this.#register(filename, 'f');
+      },
+      (symlink) => {
+        this.#register(symlink, 'l');
+      },
+      this.#checkedEmitError,
+      this.ignored
+    );
+
+    if (platform === 'win32') {
+      // Inherited from sane: win32 needs a settling period after the watches
+      // are registered before events can be relied on.
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
   }
 
   /**
@@ -167,22 +180,36 @@ export default class FallbackWatcher extends AbstractWatcher {
     }
     let watcher: FSWatcher;
     try {
-      watcher = fs.watch(dir, { persistent: true }, (event, filename) =>
-        this.#normalizeChange(dir, event, filename as string)
-      );
-    } catch (error: any) {
-      // Directory can vanish before watch; filterDir must not throw.
-      this.#checkedEmitError(error);
+      watcher = fs.watch(dir, { persistent: true }, (event, filename) => {
+        // libuv on Windows reports a deleted watched directory to its own
+        // handle as a rename naming the directory's absolute path, and before
+        // libuv 1.53 repeats that report until the handle is closed. If the
+        // directory is recreated first, the open handle also stops it from
+        // being watched again. Linux and macOS name the directory by its
+        // basename instead, so this branch is Windows-only.
+        if (filename != null && path.isAbsolute(filename)) {
+          this.#reconcileWatchedDirectory(dir, watcher).catch((error) => this.emitError(error));
+          return;
+        }
+        // `filename` is typed nullable, and is handled as such in
+        // `#normalizeChange`.
+        this.#normalizeChange(dir, event, filename as string);
+      });
+    } catch (error) {
+      // A directory we cannot watch is still worth crawling, so report the
+      // error and carry on rather than losing the subtree under it.
+      this.#checkedEmitError(error as Error);
       return false;
     }
     this.#watched[dir] = watcher;
 
     watcher.on('error', (error) => {
-      // Node emits no `close` after `error`.
+      // Node has already closed the watcher, and will not emit 'close'. Forget
+      // it, so that stopping doesn't wait on it and the path can be watched
+      // again.
       if (this.#watched[dir] === watcher) {
         delete this.#watched[dir];
       }
-      watcher.close();
       this.#checkedEmitError(error);
     });
 
@@ -196,16 +223,38 @@ export default class FallbackWatcher extends AbstractWatcher {
    * Stop watching a directory.
    */
   async #stopWatching(dir: string): Promise<void> {
-    const watcher = this.#watched[dir];
-    if (!watcher) {
+    if (this.#watched[dir]) {
+      await new Promise((resolve) => {
+        this.#watched[dir]!.once('close', () => process.nextTick(resolve));
+        this.#watched[dir]!.close();
+        delete this.#watched[dir];
+      });
+    }
+  }
+
+  /**
+   * Stop watching a directory and every directory beneath it.
+   */
+  async #stopWatchingTree(dirpath: string): Promise<void> {
+    const prefix = dirpath + path.sep;
+    const nested = Object.keys(this.#watched).filter((watchedDir) => watchedDir.startsWith(prefix));
+    await Promise.all([dirpath, ...nested].map((watchedDir) => this.#stopWatching(watchedDir)));
+  }
+
+  /**
+   * A watched directory reported its own path, so it was deleted or replaced:
+   * close its handles and process it as its parent's rename event would.
+   */
+  async #reconcileWatchedDirectory(dir: string, watcher: FSWatcher): Promise<void> {
+    if (this.#watched[dir] !== watcher) {
       return;
     }
-    delete this.#watched[dir];
-    await new Promise<void>((resolve) => {
-      watcher.once('close', () => process.nextTick(resolve));
-      watcher.once('error', () => process.nextTick(resolve));
-      watcher.close();
-    });
+    if (dir === this.root) {
+      await this.#stopWatching(dir);
+      return;
+    }
+    await this.#stopWatchingTree(dir);
+    await this.#processChange(path.dirname(dir), 'rename', path.basename(dir));
   }
 
   /**
@@ -218,67 +267,43 @@ export default class FallbackWatcher extends AbstractWatcher {
   }
 
   /**
-   * On some platforms, as pointed out on the fs docs (most likely just win32)
-   * the file argument might be missing from the fs event. Try to detect what
-   * change by detecting if something was deleted or the most recent file change.
-   */
-  #detectChangedFile(dir: string, event: string, callback: (file: string) => void) {
-    if (!this.#dirRegistry[dir]) {
-      return;
-    }
-
-    let found = false;
-    let closest: Readonly<{ file: string; mtime: Stats['mtime'] }> | null = null;
-    let c = 0;
-    Object.keys(this.#dirRegistry[dir]).forEach((file, i, arr) => {
-      fs.lstat(path.join(dir, file), (error, stat) => {
-        if (found) {
-          return;
-        }
-
-        if (error) {
-          if (isIgnorableFileError(error)) {
-            found = true;
-            callback(file);
-          } else {
-            this.emitError(error);
-          }
-        } else {
-          if (closest == null || stat.mtime > closest.mtime) {
-            closest = { file, mtime: stat.mtime };
-          }
-          if (arr.length === ++c) {
-            callback(closest.file);
-          }
-        }
-      });
-    });
-  }
-
-  /**
    * Normalize fs events and pass it on to be processed.
    */
   #normalizeChange(dir: string, event: string, file: string) {
     if (!file) {
-      if (!this.#dirRegistry[dir]) {
-        // Windows may omit filename; list the new directory.
-        this.#processChange(dir, event === 'change' ? 'rename' : event, '').catch((error) => {
-          this.emitError(error);
-        });
-        return;
-      }
-      this.#detectChangedFile(dir, event, (actualFile) => {
-        if (actualFile) {
-          this.#processChange(dir, event, actualFile).catch((error) => {
-            this.emitError(error);
-          });
-        }
-      });
+      this.#processUnnamedChange(dir).catch((error) => this.emitError(error));
     } else {
-      this.#processChange(dir, event, path.normalize(file)).catch((error) => {
-        this.emitError(error);
-      });
+      this.#processChange(dir, event, path.normalize(file)).catch((error) => this.emitError(error));
     }
+  }
+
+  /**
+   * Process an event that doesn't name the changed entry. Windows sends these
+   * when changes to a directory overflow the buffer they're reported through,
+   * so any number of entries under `dir` may have been added, changed or
+   * removed.
+   */
+  async #processUnnamedChange(dir: string) {
+    // Watch and register anything new, so that later changes are reported.
+    await recReaddir(
+      dir,
+      (subdir) => {
+        this.#watchdir(subdir);
+      },
+      (filename) => {
+        this.#register(filename, 'f');
+      },
+      (symlink) => {
+        this.#register(symlink, 'l');
+      },
+      this.#checkedEmitError,
+      this.ignored
+    );
+    // Then have the file map reconcile everything under `dir`.
+    this.#emitEvent({
+      event: RECRAWL_EVENT,
+      relativePath: path.relative(this.root, dir),
+    });
   }
 
   /**
@@ -298,10 +323,14 @@ export default class FallbackWatcher extends AbstractWatcher {
           return;
         }
 
-        if (this.doIgnore(relativePath) || !common.isIncluded('d', this.included, relativePath)) {
+        if (
+          isWatcherExcludedDirName(path.basename(fullPath)) ||
+          this.doIgnore(relativePath) ||
+          !common.isIncluded('d', this.included, relativePath)
+        ) {
           return;
         }
-        recReaddir(
+        await recReaddir(
           path.resolve(this.root, relativePath),
           (dir, stats) => {
             if (this.#watchdir(dir)) {
@@ -342,10 +371,15 @@ export default class FallbackWatcher extends AbstractWatcher {
               });
             }
           },
-          function endCallback() {},
           this.#checkedEmitError,
           this.ignored
         );
+        // A directory we already knew about has been replaced, so entries we
+        // registered under it may since have changed or been removed. Have the
+        // file map reconcile it.
+        if (registered) {
+          this.#emitEvent({ event: RECRAWL_EVENT, relativePath });
+        }
       } else {
         const type = common.typeFromStat(stat);
         if (type == null) {
@@ -364,9 +398,9 @@ export default class FallbackWatcher extends AbstractWatcher {
           }
         }
       }
-    } catch (error: any) {
-      if (!isIgnorableFileError(error)) {
-        this.emitError(error);
+    } catch (error) {
+      if (!isIgnorableFileError(error as Error)) {
+        this.emitError(error as Error);
         return;
       }
       this.#unregister(fullPath);
@@ -382,7 +416,14 @@ export default class FallbackWatcher extends AbstractWatcher {
       if (registered) {
         this.#emitEvent({ event: DELETE_EVENT, relativePath });
       }
-      await this.#stopWatching(fullPath);
+      // Close every handle under a deleted directory. Left open, a handle stops
+      // its path from being watched again once it is recreated. On Linux it
+      // also follows the directory if it was moved (as npm moves a package
+      // aside to update it), so it goes on watching the old copy. macOS
+      // watches by path, so there an open handle is merely redundant.
+      if (removedFiles.length > 0 || this.#watched[fullPath]) {
+        await this.#stopWatchingTree(fullPath);
+      }
     }
   }
 
@@ -409,7 +450,7 @@ export default class FallbackWatcher extends AbstractWatcher {
     );
   }
 
-  getPauseReason(): string | undefined | null {
+  getPauseReason(): string | null | undefined {
     return null;
   }
 }
@@ -417,59 +458,90 @@ export default class FallbackWatcher extends AbstractWatcher {
 /**
  * Determine if a given FS error can be ignored
  */
-function isIgnorableFileError(error: Error & { code?: string }) {
+function isIgnorableFileError(error: Error | { code: string }) {
+  const { code } = error as { code?: string };
   return (
-    error.code === 'ENOENT' ||
+    code === 'ENOENT' ||
     // Workaround Windows EPERM on watched folder deletion, and when
     // reading locked files (pending further writes or pending deletion).
     // In such cases, we'll receive a subsequent event when the file is
     // deleted or ready to read.
-    // https://github.com/facebook/metro/issues/1001
+    // https://github.com/react/metro/issues/1001
     // https://github.com/nodejs/node-v0.x-archive/issues/4337
-    (error.code === 'EPERM' && platform === 'win32')
+    (code === 'EPERM' && platform === 'win32')
   );
 }
 
 /**
- * Traverse a directory recursively calling `callback` on every directory.
+ * Traverse a directory recursively, reporting every entry with its stats.
+ *
+ * Entries are visited depth-first by a bounded pool, so neither the queue of
+ * pending entries nor the number of in-flight fs requests grows with the size
+ * of the tree.
  */
-function recReaddir(
-  dir: string,
+async function recReaddir(
+  root: string,
   dirCallback: (dir: string, stats: Stats) => void,
   fileCallback: (file: string, stats: Stats) => void,
   symlinkCallback: (symlink: string, stats: Stats) => void,
-  endCallback: () => void,
   errorCallback: (error: Error) => void,
-  ignored: RegExp | undefined | null
-) {
-  const walk = walker(dir);
-  // Watch before readdir so a file written in between is not missed.
-  walk.filterDir((currentDir: string, stats: Stats) => {
-    if (ignored && common.posixPathMatchesPattern(ignored, currentDir)) {
-      return false;
-    }
-    normalizeProxy(dirCallback)(currentDir, stats);
-    return true;
-  });
-  walk
-    .on('file', normalizeProxy(fileCallback))
-    .on('symlink', normalizeProxy(symlinkCallback))
-    .on('error', errorCallback)
-    .on('end', () => {
-      if (platform === 'win32') {
-        setTimeout(endCallback, 1000);
-      } else {
-        endCallback();
-      }
-    });
-}
+  ignored: RegExp | null | undefined
+): Promise<void> {
+  const pending = [root];
 
-/**
- * Returns a callback that when called will normalize a path and call the
- * original callback
- */
-function normalizeProxy<T>(
-  callback: (filepath: string, stats: Stats) => T
-): (filepath: string, stats: Stats) => T {
-  return (filepath: string, stats: Stats) => callback(path.normalize(filepath), stats);
+  const visit = async (entry: string) => {
+    let stats;
+    let names;
+    try {
+      stats = await fsPromises.lstat(entry);
+      if (!stats.isDirectory()) {
+        if (stats.isSymbolicLink()) {
+          symlinkCallback(entry, stats);
+        } else if (stats.isFile()) {
+          fileCallback(entry, stats);
+        }
+        return;
+      }
+      if (ignored != null && common.posixPathMatchesPattern(ignored, entry)) {
+        return;
+      }
+      // NOTE(@robhogan): Excluded directories (`.git`, `.hg`, `.cxx`) are neither watched nor
+      // listed. `doIgnore` drops events for their contents, but watching them at all costs a
+      // handle per directory, and `.cxx` churn can error the watcher
+      if (entry !== root && isWatcherExcludedDirName(path.basename(entry))) {
+        return;
+      }
+      // Report the directory before listing it. A consumer that starts watching
+      // here would otherwise miss anything written between the two.
+      dirCallback(entry, stats);
+      names = await fsPromises.readdir(entry);
+    } catch (error) {
+      errorCallback(error as Error);
+      return;
+    }
+    for (const name of names) {
+      pending.push(path.join(entry, name));
+    }
+  };
+
+  await new Promise<void>((resolve, reject) => {
+    let active = 0;
+    const pump = () => {
+      while (active < CRAWL_CONCURRENCY) {
+        const entry = pending.pop();
+        if (entry == null) {
+          break;
+        }
+        active++;
+        visit(entry).then(() => {
+          active--;
+          pump();
+        }, reject);
+      }
+      if (active === 0) {
+        resolve();
+      }
+    };
+    pump();
+  });
 }
