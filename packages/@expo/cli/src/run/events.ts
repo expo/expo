@@ -37,6 +37,7 @@ declare module '2g' {
     'run:android:apk_search': { directory: string };
     'run:android:apk_check': { path: string };
     'run:android:package_name': { name: string };
+    'run:ios:pods_sync': { status: 'started' | 'finished' };
     'run:ios:binary_path': { path: string };
     'run:ios:terminate_failed': { error: SerializedError };
     'run:ios:binary_copy': { path: string };

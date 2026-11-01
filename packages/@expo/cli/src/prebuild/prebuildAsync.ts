@@ -66,7 +66,9 @@ export async function prebuildAsync(
     };
     /** List of node modules to skip updating. */
     skipDependencyUpdate?: string[];
-  }
+  },
+  /** Runs after native configuration, before native dependency installation. */
+  onProjectReady?: () => Promise<void>
 ): Promise<PrebuildResults | null> {
   const initialExp = getConfig(projectRoot).exp;
   const { platforms } = initialExp;
@@ -188,6 +190,8 @@ export async function prebuildAsync(
     configSyncingStep.fail('Prebuild failed');
     throw error;
   }
+
+  await onProjectReady?.();
 
   let podsInstalled: boolean = false;
   // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.

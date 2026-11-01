@@ -9,7 +9,7 @@ import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver
 import { getContainerPathAsync, simctlAsync } from '../../start/platforms/ios/simctl';
 import { resolveBuildCache, uploadBuildCache } from '../../utils/build-cache-providers';
 import { maybePromptToSyncPodsAsync } from '../../utils/cocoapods';
-import { CommandError } from '../../utils/errors';
+import { AbortCommandError, CommandError } from '../../utils/errors';
 import { loadEnvFiles } from '../../utils/nodeEnv';
 import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { profile } from '../../utils/profile';
@@ -19,9 +19,10 @@ import { event, debugEvent } from '../events';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
 import * as XcodeBuild from './XcodeBuild';
-import type { Options } from './XcodeBuild.types';
+import type { BuildProps, Options } from './XcodeBuild.types';
 import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
+import { resolveXcodeProject } from './options/resolveXcodeProject';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
 
 export async function runIosAsync(projectRoot: string, options: Options) {
@@ -32,22 +33,39 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   const install = !!options.install;
 
-  if ((await ensureNativeProjectAsync(projectRoot, { platform: 'ios', install })) && install) {
+  let props: BuildProps | undefined;
+  const hasNativeProject = await ensureNativeProjectAsync(
+    projectRoot,
+    { platform: 'ios', install },
+    async () => {
+      props = await profile(resolveOptionsAsync)(projectRoot, options);
+      if (props.device) {
+        event('device:selected', {
+          platform: 'ios',
+          name: props.device.name,
+          id: props.device.udid,
+          os: props.device.osType ?? null,
+          type: props.isSimulator ? 'simulator' : 'device',
+        });
+      }
+      if (install) {
+        debugEvent('ios:pods_sync', { status: 'started' });
+      }
+    }
+  );
+
+  if (!props) {
+    throw new AbortCommandError();
+  }
+  if (hasNativeProject && install) {
     await maybePromptToSyncPodsAsync(projectRoot);
   }
-
-  // Resolve the CLI arguments into useable options.
-  const props = await profile(resolveOptionsAsync)(projectRoot, options);
-
-  if (props.device) {
-    event('device:selected', {
-      platform: 'ios',
-      name: props.device.name,
-      id: props.device.udid,
-      os: props.device.osType ?? null,
-      type: props.isSimulator ? 'simulator' : 'device',
-    });
+  if (install) {
+    debugEvent('ios:pods_sync', { status: 'finished' });
   }
+
+  // NOTE(@kitten): Pod installation may have created a workspace after options were resolved.
+  props.xcodeProject = resolveXcodeProject(projectRoot);
 
   // We only support build cache for simulator builds for now.
   if (!options.binary && props.buildCacheProvider && props.isSimulator) {
