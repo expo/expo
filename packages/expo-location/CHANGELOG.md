@@ -1,5 +1,11 @@
 # Changelog
 
+## Unpublished
+
+### Bug fixes
+
+- [Android] Stop the location foreground service and its notification when `stopLocationUpdatesAsync` runs after the OS restarts the app. ([#52230](https://github.com/expo/expo/issues/52230))
+
 ## 58.0.19
 
 ### Patch Changes
