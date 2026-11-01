@@ -1,5 +1,6 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Foundation
 import Testing
 
@@ -204,5 +205,104 @@ private struct MacroEventTests {
       }
       return try await resultValue.asInt() == expected
     }
+  }
+}
+
+/// Emits through `TestAppContext`, whose runtime has its own JavaScript thread, so an event that
+/// runs inline can be told from a scheduled one. The test itself runs on another thread.
+@Suite("Macro event dispatch")
+@JavaScriptActor
+private struct MacroEventDispatchTests {
+  let appContext: AppContext
+  let module: MacroEmitter
+  var runtime: ExpoRuntime {
+    get throws {
+      try appContext.runtime
+    }
+  }
+
+  init() throws {
+    appContext = TestAppContext()
+    module = MacroEmitter(appContext: appContext)
+    appContext.moduleRegistry.register(module: module, name: nil)
+    let runtime = try appContext.runtime
+    try runtime.execute {
+      try runtime.eval("""
+        globalThis.result = null
+        expo.modules.MacroEmitter.addListener('progress', payload => { globalThis.result = payload.percent })
+        expo.modules.MacroEmitter.addListener('progressInline', payload => { globalThis.result = payload.percent })
+        expo.modules.MacroEmitter.addListener('doneBlocking', () => { globalThis.result = 1 })
+        """)
+    }
+  }
+
+  /// Reads `globalThis.result` on the JavaScript thread.
+  private func result() throws -> Int? {
+    let runtime = try runtime
+    return try runtime.execute {
+      let value = try runtime.eval("globalThis.result")
+      return value.isNumber() ? try value.asInt() : nil
+    }
+  }
+
+  @Test
+  func `schedules an event without an option, also on the JavaScript thread`() async throws {
+    let runtime = try runtime
+    let module = module
+    let resultInTask = try await runtime.execute {
+      module.onProgress(ProgressEvent(percent: 10))
+      let value = try runtime.eval("globalThis.result")
+      return value.isNumber() ? try value.asInt() : nil
+    }
+    #expect(resultInTask == nil)
+    try await expectEventually { try await self.result() == 10 }
+  }
+
+  @Test
+  func `runs the listeners of an inline event before returning on the JavaScript thread`() throws {
+    let runtime = try runtime
+    let module = module
+    let resultInTask = try runtime.execute {
+      module.onProgressInline(ProgressEvent(percent: 20))
+      let value = try runtime.eval("globalThis.result")
+      return value.isNumber() ? try value.asInt() : nil
+    }
+    #expect(resultInTask == 20)
+  }
+
+  @Test
+  func `schedules an inline event emitted from another thread without waiting`() async throws {
+    let runtime = try runtime
+    let jsThreadReleased = DispatchSemaphore(value: 0)
+    // Keeps the JavaScript thread busy, so an emit that waits for it would not return.
+    runtime.schedule {
+      jsThreadReleased.wait()
+    }
+
+    module.onProgressInline(ProgressEvent(percent: 30))
+
+    jsThreadReleased.signal()
+    try await expectEventually { try await self.result() == 30 }
+  }
+
+  @Test
+  func `blocks a blocking event emitted from another thread until the listeners ran`() throws {
+    let runtime = try runtime
+    let module = module
+    let jsThreadReleased = DispatchSemaphore(value: 0)
+    let emitted = DispatchSemaphore(value: 0)
+    runtime.schedule {
+      jsThreadReleased.wait()
+    }
+    DispatchQueue.global().async {
+      module.onDoneBlocking()
+      emitted.signal()
+    }
+
+    // The JavaScript thread is busy, so the emit can't return yet.
+    #expect(emitted.wait(timeout: .now() + 0.1) == .timedOut)
+    jsThreadReleased.signal()
+    #expect(emitted.wait(timeout: .now() + 5) == .success)
+    #expect(try result() == 1)
   }
 }
