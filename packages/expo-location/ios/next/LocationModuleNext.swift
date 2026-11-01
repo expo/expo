@@ -5,6 +5,13 @@ public final class LocationModuleNext: Module {
   private lazy var permissions = LocationPermissionsDelegate(appContext: appContext)
   private lazy var accessGuard = LocationAccessGuard(appContext: appContext)
 
+  private lazy var geocoder: any GeocoderNext = {
+    if #available(iOS 26.0, *) {
+      return MapKitGeocoder()
+    }
+    return CompatibilityGeocoder()
+  }()
+
   public func definition() -> ModuleDefinition {
     Name("LocationModuleNext")
 
@@ -40,6 +47,14 @@ public final class LocationModuleNext: Module {
 
       let location = try await PositionRequester().get(options: options ?? GetPositionOptions())
       return location?.toPosition()
+    }
+
+    AsyncFunction("geocode") { (address: String, options: GeocodeOptions?) -> [Address] in
+      try await geocoder.geocode(address, options: options ?? GeocodeOptions())
+    }
+
+    AsyncFunction("reverseGeocode") { (coordinates: Coordinates, options: ReverseGeocodeOptions?) -> [Address] in
+      try await geocoder.reverseGeocode(coordinates, options: options ?? ReverseGeocodeOptions())
     }
 
     Function("watchPosition") { (profile: Profile?) -> PositionWatcher in
