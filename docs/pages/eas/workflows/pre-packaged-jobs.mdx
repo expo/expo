@@ -1712,6 +1712,120 @@ jobs:
 
 </Collapsible>
 
+## Email
+
+Send a plain-text email to members of the account that owns the project.
+
+The job skips recipients who are not account members or have no verified email address. If the job skips a recipient, the job fails and lists the skipped recipients. The other recipients still receive the email.
+
+The job is subject to hourly rate limits. Each account can send up to 100 emails, and each member can receive up to 10 emails. On the Production and Enterprise plans, these limits are 1,000 and 60 respectively.
+
+### Syntax
+
+```yaml
+jobs:
+  send_email:
+    type: email
+    params:
+      usernames: string[] # required if emails is not provided
+      emails: string[] # required if usernames is not provided
+      subject: string # required
+      body: string # required
+```
+
+#### Parameters
+
+You can pass the following parameters into the `params` list:
+
+| Parameter | Type     | Description                                                                                                                       |
+| --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| usernames | string[] | Required if emails is not provided. The usernames of the account members to send the email to. Up to 50 usernames.                |
+| emails    | string[] | Required if usernames is not provided. The email addresses of the account members to send the email to. Up to 50 email addresses. |
+| subject   | string   | Required. The subject of the email. Up to 255 characters.                                                                         |
+| body      | string   | Required. The plain-text body of the email. Up to 20,000 characters.                                                              |
+
+### Examples
+
+Here are some practical examples of using the Email job:
+
+<Collapsible summary="Email on Maestro test failure">
+
+This workflow runs Maestro tests on an iOS Simulator build and emails two account members only when the tests fail.
+
+```yaml .eas/workflows/email-maestro-failure.yml
+name: Maestro Tests with Alert
+
+jobs:
+  build_ios_simulator:
+    name: Build iOS Simulator
+    type: build
+    params:
+      platform: ios
+      profile: preview-simulator
+
+  maestro_test:
+    name: Run Maestro Tests
+    needs: [build_ios_simulator]
+    type: maestro
+    environment: preview
+    params:
+      build_id: ${{ needs.build_ios_simulator.outputs.build_id }}
+      flow_path: ./maestro/flows
+
+  notify_failure:
+    name: Email Test Failure
+    needs: [build_ios_simulator]
+    after: [maestro_test]
+    if: ${{ after.maestro_test.status == 'failure' }}
+    type: email
+    params:
+      usernames: [alice, bob]
+      subject: 'Maestro tests failed'
+      body: |
+        Maestro tests failed for build ${{ needs.build_ios_simulator.outputs.build_id }}.
+```
+
+</Collapsible>
+
+<Collapsible summary="Ask for approval by email">
+
+This workflow deploys a web preview, emails a reviewer, and waits for approval before it deploys to production.
+
+```yaml .eas/workflows/email-approval.yml
+name: Deploy Web with Approval
+
+jobs:
+  web_preview:
+    name: Deploy Web Preview
+    type: deploy
+
+  request_approval:
+    name: Email Reviewer
+    needs: [web_preview]
+    type: email
+    params:
+      emails: [release-manager@example.com]
+      subject: 'Approve the production web deploy'
+      body: |
+        A new web preview is ready: ${{ needs.web_preview.outputs.deploy_url }}
+
+        Approve or reject the production deploy.
+
+  require_approval:
+    name: Deploy Web to Production?
+    needs: [web_preview]
+    type: require-approval
+
+  web_production:
+    name: Deploy Web Production
+    needs: [require_approval]
+    type: deploy
+    params:
+      prod: true
+```
+
+</Collapsible>
+
 ## GitHub Comment
 
 Automatically post reports of your workflow's completed builds, updates, and deployments to GitHub pull requests. It's particularly useful for providing instant feedback on PR builds, sharing test builds with QR codes for easy device testing, displaying EAS Hosting deployment previews, and automating deployment notifications. You can also override the comment contents by providing the `payload` parameter.
