@@ -50,7 +50,8 @@ it.each(['module', 'asset', 'source'] as const)(
           : transformNodeModuleWithNoxcturnalSync;
     expect(() => run(input)).toThrow(stop);
     expect(noxcturnal.transform).toHaveBeenLastCalledWith(
-      input.source,
+      // The asset path adds the "use strict" directive that the Babel worker adds.
+      kind === 'asset' ? `"use strict";\n${input.source}` : input.source,
       input.filename,
       expect.anything(),
       expect.objectContaining({
