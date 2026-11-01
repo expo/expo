@@ -357,6 +357,15 @@ With server rendering, loaders execute on every request. This means:
 - The `request` parameter contains an immutable version of the incoming HTTP request
 - Requires [`expo-server`](/versions/latest/sdk/server/) for production deployment
 
+## Native apps
+
+On native, a loader still runs on the server. The app fetches its data from that server, like an [API route](/router/web/api-routes/) request.
+
+- **Development**: The app fetches loader data from the development server that `npx expo start` runs.
+- **Production**: Deploy your server. See [Native deployment](/router/web/api-routes/#native-deployment) for more details.
+
+A native app does not receive an initial HTML response with loader data embedded in it. The first time a route renders, [`useLoaderData`](/versions/latest/sdk/router/#useloaderdata) fetches its data and suspends. Add a [`<Suspense>`](#using-suspense) boundary, or a layout [`SuspenseFallback`](/router/error-handling/#loading-states-with-suspense-fallback) to show a loading state while the data loads.
+
 ## Typed loader functions
 
 `expo-server` provides two helper functions that create loaders with improved type safety. They narrow the callback signature so you only receive the parameters relevant to your rendering mode.
@@ -461,6 +470,7 @@ export default function Post() {
 
 - Loaders **must** return JSON-serializable data or a `Response` with a JSON body. Streaming loader data is not supported.
 - There is no public API to invalidate loader data for a route that remains mounted. Use `Cache-Control` to control HTTP caching when the route fetches again.
+- A `loader` export in a native-only route file, such as **index.ios.tsx**, does not run. Put the `loader` in **index.web.tsx** if that file exists, or in **index.tsx** if it does not.
 
 ## Common questions
 
@@ -469,6 +479,12 @@ export default function Post() {
 <Collapsible summary="Can I use data loaders without server rendering?">
 
 Yes. Data loaders work with both static rendering (`web.output: 'static'`) and server rendering (`web.output: 'server'`).
+
+</Collapsible>
+
+<Collapsible summary="Can I use data loaders in native apps?">
+
+Yes. The loader runs on the server, and the app fetches the data from that server. A production build needs a deployed server. See [Native apps](#native-apps).
 
 </Collapsible>
 
