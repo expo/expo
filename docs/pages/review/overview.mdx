@@ -1,7 +1,7 @@
 ---
 title: Overview of distributing apps for review
 sidebar_title: Distributing apps for review
-description: Learn about how to distribute your app for review using app stores, internal distribution, and EAS Update.
+description: Learn about how to distribute your app for review using app stores, internal distribution, and Expo Update.
 ---
 
 import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
@@ -14,7 +14,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { CODE } from '~/ui/components/Text';
 
-This page outlines three approaches to sharing a preview version of your app with your team for QA and review: app store testing tracks, internal distribution, and development builds with EAS Update.
+This page outlines three approaches to sharing a preview version of your app with your team for QA and review: app store testing tracks, internal distribution, and development builds with Expo Update.
 
 <Collapsible summary="Can I use Expo Go for reviewing releases?">
 
@@ -24,7 +24,7 @@ Expo Go is a playground for students and learners, not for building production-g
 
 ## App store testing tracks
 
-When distributing apps through app store testing tracks, you can only use release builds. You cannot use this method to distribute development builds. An alternative approach is to use ["Internal distribution"](#internal-distribution-with-eas-build), which works with both release and development builds.
+When distributing apps through app store testing tracks, you can only use release builds. You cannot use this method to distribute development builds. An alternative approach is to use ["Internal distribution"](#internal-distribution-with-expo-build), which works with both release and development builds.
 
 <Collapsible summary="Android: Google Play Beta">
 
@@ -49,30 +49,30 @@ For step-by-step instructions on setting up both options, see [Distribute an iOS
 </Collapsible>
 
 <BoxLink
-  title="EAS Submit"
+  title="Expo Submit"
   description="Learn how to upload your app to app store testing and release tracks."
   href="/deploy/submit-to-app-stores/"
   Icon={EasSubmitIcon}
 />
 
-## Internal distribution with EAS Build
+## Internal distribution with Expo Build
 
-[Internal distribution](/build/internal-distribution/) is a feature provided by EAS that allows developers to create builds and easily share them with a URL. The URL can be opened on a device to install the app. The app is provided as an installable APK for Android or an ad hoc provisioned app for iOS.
+[Internal distribution](/build/internal-distribution/) is a feature provided by Expo Build that allows developers to create builds and easily share them with a URL. The URL can be opened on a device to install the app. The app is provided as an installable APK for Android or an ad hoc provisioned app for iOS.
 
 As soon as an internal distribution build is created, it is available for download and installation — no need to fill out any forms or wait for approval/processing. You can use internal distribution to share both release and development builds.
 
 <BoxLink
   title="How to set up an internal distribution build"
-  description="Learn how EAS Build provides shareable URLs for your builds with your team for internal distribution."
+  description="Learn how Expo Build provides shareable URLs for your builds with your team for internal distribution."
   href="/build/internal-distribution/"
   Icon={BuildIcon}
 />
 
-## Development builds and EAS Update
+## Development builds and Expo Update
 
-You can use [development builds](/develop/development-builds/introduction/) to load previews of your app during the review stage by publishing an update with [EAS Update](/eas-update/introduction/). After sharing a development build through internal distribution and installing it, you can launch any update that you published with EAS Update, as long as it is compatible with the installed build. Learn more about [Runtime versions and updates](/eas-update/runtime-versions/).
+You can use [development builds](/develop/development-builds/introduction/) to load previews of your app during the review stage by publishing an update with [Expo Update](/eas-update/introduction/). After sharing a development build through internal distribution and installing it, you can launch any update that you published with Expo Update, as long as it is compatible with the installed build. Learn more about [Runtime versions and updates](/eas-update/runtime-versions/).
 
-<Collapsible summary="You can use the EAS dashboard to launch updates and share a link to a specific update.">
+<Collapsible summary="You can use the Expo dashboard to launch updates and share a link to a specific update.">
 
 <ContentSpotlight controls file="review/eas-update-01.mp4" />
 
@@ -93,10 +93,10 @@ You can use [development builds](/develop/development-builds/introduction/) to l
 This approach is uniquely powerful because it allows you to respond to feedback as quickly as you can run `eas update`. It can take seconds to share a new version of your app with your team, and you can do so without needing to rebuild the app or upload it to a store test track.
 
 <BoxLink
-  title="Get started with EAS Update"
+  title="Get started with Expo Update"
   description={
     <>
-      Learn how to get started using <CODE>expo-updates</CODE> library and use EAS Update in your
+      Learn how to get started using <CODE>expo-updates</CODE> library and use Expo Update in your
       project.
     </>
   }
@@ -106,7 +106,7 @@ This approach is uniquely powerful because it allows you to respond to feedback 
 
 <BoxLink
   title="Use GitHub Actions"
-  description="Learn how to use GitHub Actions to automate the process of publishing updates with EAS Update. It also makes deploying updates consistent and fast, leaving you more time to develop your app."
+  description="Learn how to use GitHub Actions to automate the process of publishing updates with Expo Update. It also makes deploying updates consistent and fast, leaving you more time to develop your app."
   href="/eas-update/github-actions/"
   Icon={GithubIcon}
 />
@@ -114,7 +114,7 @@ This approach is uniquely powerful because it allows you to respond to feedback 
 <BoxLink
   title={
     <>
-      Use <CODE>expo-dev-client</CODE> with EAS Update
+      Use <CODE>expo-dev-client</CODE> with Expo Update
     </>
   }
   description={
