@@ -4,6 +4,11 @@ import AppMetrics, { setErrorHandlerEnabled } from 'expo-app-metrics';
 import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
 import {
+  disableExpoUpdatesIntegration,
+  initExpoUpdatesIntegration,
+  type ExpoUpdatesLogCursorStore,
+} from './integrations/expo-updates/init';
+import {
   disableReanimatedIntegration,
   initReanimatedIntegration,
 } from './integrations/react-native-reanimated/init';
@@ -37,6 +42,23 @@ function networkTracesConfigFromOption(networkTraces: ObserveConfig['networkTrac
   // only has to be spelled out to turn recording off while keeping the filter configured.
   const enabled = option.enabled ?? true;
   return option.filter != null ? { enabled, filter: option.filter } : { enabled };
+}
+
+/**
+ * Removes the `expo-updates` integration's `shouldReport` function from the config before it goes
+ * to the native module, which stores the integrations config and sends it back in `configure`
+ * events. The function only runs in JS.
+ */
+function configForNative(config: ObserveConfig): ObserveConfig {
+  const updatesConfig = config.integrations?.['expo-updates'];
+  if (typeof updatesConfig !== 'object' || !('shouldReport' in updatesConfig)) {
+    return config;
+  }
+  const { shouldReport: _shouldReport, ...nativeUpdatesConfig } = updatesConfig;
+  return {
+    ...config,
+    integrations: { ...config.integrations, 'expo-updates': nativeUpdatesConfig },
+  };
 }
 
 const native = requireNativeModule<ObserveModule>('ExpoObserve');
@@ -90,7 +112,14 @@ const Observe: ObserveModule = new Proxy(native, {
         } else {
           disableReanimatedIntegration();
         }
-        return target.configure(config);
+        const updatesConfig = config.integrations?.['expo-updates'];
+        if (updatesConfig) {
+          // The native module implements the cursor store functions, which are not public API.
+          initExpoUpdatesIntegration(updatesConfig, target as unknown as ExpoUpdatesLogCursorStore);
+        } else {
+          disableExpoUpdatesIntegration();
+        }
+        return target.configure(configForNative(config));
       };
     }
 

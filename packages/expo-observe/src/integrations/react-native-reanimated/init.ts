@@ -2,6 +2,7 @@ import AppMetrics from 'expo-app-metrics';
 
 import { reportCaughtError } from '../../reportCaughtError';
 import type { ObserveIntegrationsConfig } from '../../types';
+import { createReportLimiter } from '../reportLimiter';
 import { loadReanimated, type ReanimatedLogData } from './reanimated';
 import { removeFirstFrame } from './stack';
 
@@ -15,22 +16,8 @@ const MIN_MINOR = 7;
 const REANIMATED_ERROR_NAME = 'reanimated.error';
 const REANIMATED_WARNING_EVENT = 'reanimated.warning';
 
-// A UI-runtime log can repeat every frame, so each distinct message is reported at most once per
-// window. The cap bounds the reports in a window when messages embed varying values, and the
-// window lets new messages be reported again after a surge. Errors and warnings have separate
-// windows, so a screen with many distinct warnings cannot stop errors from being reported.
-const REPORT_WINDOW_MS = 15 * 60_000;
-const MAX_DISTINCT_MESSAGES_PER_WINDOW = 20;
-// Attribute values are sent on every dispatch, and strict-mode messages append a docs
-// reference, so the copied message is capped. Messages are also deduplicated by this capped
-// text, so two messages that differ only after the cap do not send the same attribute twice.
-const MAX_MESSAGE_LENGTH = 500;
-
-// Maps the capped text of each message reported in the current window to the time it was
-// reported. A `Map` keeps insertion order, so the oldest report is always first. The time comes
-// from the monotonic `performance.now()`, so a change to the device clock cannot stop expiry.
-const reportedErrors = new Map<string, number>();
-const reportedWarnings = new Map<string, number>();
+const errorLimiter = createReportLimiter();
+const warningLimiter = createReportLimiter();
 
 // The callback stays registered in Reanimated after the integration is turned off, because
 // configuring the logger again would reset the app's `level` and `strict`. It checks this flag.
@@ -61,25 +48,6 @@ function supportsOnLog(version: string): boolean {
   return major > MIN_MAJOR || (major === MIN_MAJOR && minor >= MIN_MINOR);
 }
 
-function removeExpiredReports(reported: Map<string, number>, now: number): void {
-  for (const [message, reportedAt] of reported) {
-    if (now - reportedAt < REPORT_WINDOW_MS) {
-      return;
-    }
-    reported.delete(message);
-  }
-}
-
-function shouldReport(reported: Map<string, number>, cappedMessage: string): boolean {
-  const now = performance.now();
-  removeExpiredReports(reported, now);
-  if (reported.has(cappedMessage) || reported.size >= MAX_DISTINCT_MESSAGES_PER_WINDOW) {
-    return false;
-  }
-  reported.set(cappedMessage, now);
-  return true;
-}
-
 // Reanimated already prints every log to the console, so this only reports to Observe. The name
 // is specific to Observe, so `removeFirstFrame` cannot remove a frame of an app function.
 function __expo_observe_reportReanimatedLog({ level, message }: ReanimatedLogData): void {
@@ -90,8 +58,8 @@ function __expo_observe_reportReanimatedLog({ level, message }: ReanimatedLogDat
   if (!isError && !shouldReportWarnings) {
     return;
   }
-  const cappedMessage = message.slice(0, MAX_MESSAGE_LENGTH);
-  if (!shouldReport(isError ? reportedErrors : reportedWarnings, cappedMessage)) {
+  const cappedMessage = (isError ? errorLimiter : warningLimiter).allow(message);
+  if (cappedMessage === null) {
     return;
   }
   if (isError) {

@@ -26,6 +26,13 @@ class ObservePreferencesTest {
   }
 
   @Test
+  fun `expoUpdatesLogCursor is null by default and keeps the stored value`() {
+    assertNull(ObservePreferences.getExpoUpdatesLogCursor(context))
+    ObservePreferences.setExpoUpdatesLogCursor(context, "{\"timestamp\":1,\"keys\":[]}")
+    assertEquals("{\"timestamp\":1,\"keys\":[]}", ObservePreferences.getExpoUpdatesLogCursor(context))
+  }
+
+  @Test
   fun `getConfig returns null by default`() {
     assertNull(ObservePreferences.getConfig(context))
   }

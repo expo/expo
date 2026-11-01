@@ -30,6 +30,7 @@ internal final class ObserveUserDefaults: UserDefaults {
     case lastDispatchDate
     case config
     case bundleDefaults
+    case expoUpdatesLogCursor
   }
 
   private init() {
@@ -94,6 +95,16 @@ internal final class ObserveUserDefaults: UserDefaults {
   static func setBundleDefaults(_ newValue: PersistedBundleDefaults) {
     guard let data = try? JSONEncoder().encode(newValue) else { return }
     defaults.set(data, forKey: Keys.bundleDefaults.rawValue)
+  }
+
+  /// The expo-updates integration's log cursor, as a JSON string that only the JS integration reads.
+  static var expoUpdatesLogCursor: String? {
+    get {
+      return defaults.string(forKey: Keys.expoUpdatesLogCursor.rawValue)
+    }
+    set {
+      defaults.set(newValue, forKey: Keys.expoUpdatesLogCursor.rawValue)
+    }
   }
 
   // MARK: - Legacy keys
