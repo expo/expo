@@ -1,12 +1,9 @@
 // swift-tools-version: 6.2
 import PackageDescription
 
-// The platforms below exist so this manifest is still valid on its own.
-//
-// `dependencies` is empty at both levels on purpose. ExpoModulesCore, React and Hermes
-// resolve to app- or build-local paths that a checked-in manifest cannot name, so Expo's
-// SwiftPM autolinking plugin and the prebuild pipeline inject them at generation time. A
-// manifest that declares them for itself is rejected rather than merged.
+// Expo's SwiftPM plugin builds this manifest through a symlink to this directory at
+// `<app>/ios/build/generated/autolinking/expo/direct/expo-haptics`. Relative package paths
+// such as `../ExpoModulesCoreHeaders` resolve against that symlink, not against this directory.
 let package = Package(
   name: "expo-haptics",
   platforms: [
@@ -15,13 +12,26 @@ let package = Package(
   products: [
     .library(name: "ExpoHaptics", targets: ["ExpoHaptics"])
   ],
-  dependencies: [],
+  dependencies: [
+    .package(path: "../ExpoModulesCoreHeaders")
+  ],
   targets: [
     .target(
       name: "ExpoHaptics",
-      dependencies: [],
+      dependencies: [
+        .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders")
+      ],
       path: "ios",
-      exclude: ["ExpoHaptics.podspec"]
+      exclude: ["ExpoHaptics.podspec"],
+      swiftSettings: [
+        // SwiftPM rejects `$(BUILD_DIR)` in unsafeFlags; Xcode still expands `${BUILD_DIR}`.
+        // Autolinking symlinks the macro plugin there before each build.
+        .unsafeFlags([
+          "-Xfrontend", "-load-plugin-executable",
+          "-Xfrontend", "${BUILD_DIR}/ExpoModulesMacros#ExpoModulesMacros",
+        ])
+      ]
     )
-  ]
+  ],
+  swiftLanguageModes: [.v5]
 )

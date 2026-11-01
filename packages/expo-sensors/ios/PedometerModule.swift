@@ -18,11 +18,10 @@ public final class PedometerModule: Module {
     Events(EVENT_PEDOMETER_UPDATE)
 
     AsyncFunction("isAvailableAsync") {
-      #if EXPO_DISABLE_MOTION_PERMISSION
-      return false
-      #else
+      if MotionPermissionRequester.isMotionPermissionDisabled() {
+        return false
+      }
       return CMPedometer.isStepCountingAvailable()
-      #endif
     }
 
     AsyncFunction("getStepCountAsync") { (startTime: Double, endTime: Double, promise: Promise) in
