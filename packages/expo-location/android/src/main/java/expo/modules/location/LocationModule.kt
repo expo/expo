@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import java.util.concurrent.ConcurrentHashMap
 import android.content.pm.PackageManager
 import android.hardware.GeomagneticField
 import android.hardware.Sensor
@@ -77,8 +78,8 @@ import kotlin.math.abs
 
 class LocationModule : Module(), SensorEventListener, ActivityEventListener {
   private var mGeofield: GeomagneticField? = null
-  private val mLocationCallbacks = HashMap<Int, LocationCallback>()
-  private val mLocationRequests = HashMap<Int, LocationRequest>()
+  private val mLocationCallbacks = ConcurrentHashMap<Int, LocationCallback>()
+  private val mLocationRequests = ConcurrentHashMap<Int, LocationRequest>()
   private var mPendingLocationRequests = ArrayList<LocationActivityResultListener>()
   private lateinit var mContext: Context
   private lateinit var mSensorManager: SensorManager
