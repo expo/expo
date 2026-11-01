@@ -14,11 +14,11 @@ import { Terminal } from '~/ui/components/Snippet';
 <Prerequisites>
   <Requirement title="Expo SDK 58 or later">
     The integration is available in `expo-observe` version 58.0.17 and later. Use `expo-updates`
-    version 58.0.19 or later on Android and iOS. With an earlier version on Android, the integration
-    reports a JS error that error recovery handled as `updates.error` with the `Unknown` code, not
-    as `updates.error_recovery`. With an earlier version on iOS, the integration reports emergency
-    launch and initialization errors as `updates.error_recovery`, and `ignoredCodes` and
-    `shouldReport` cannot skip them.
+    version 58.0.19 or later on Android and iOS. With an earlier version, the integration reports
+    new log entries only on the next launch. On Android, it also reports a JS error that error
+    recovery handled as `updates.error` with the `Unknown` code, not as `updates.error_recovery`. On
+    iOS, it reports emergency launch and initialization errors as `updates.error_recovery`, and
+    `ignoredCodes` and `shouldReport` cannot skip them.
   </Requirement>
   <Requirement title="An app already using EAS Observe">
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
@@ -44,7 +44,7 @@ Observe.configure({
 
 ## How it works
 
-When `Observe.configure()` runs, the integration reads the `expo-updates` log entries written since its last report. `expo-updates` keeps log entries for one day, so on the first run, the integration reads up to one day back. Because the integration reads the log at the next launch, it also reports errors from an earlier launch. For example, it reports a crash that error recovery handled before the app could start again.
+When `Observe.configure()` runs, the integration reads the `expo-updates` log entries written since its last report. `expo-updates` keeps log entries for one day, so on the first run, the integration reads up to one day back. Because the integration reads the log at the next launch, it also reports errors from an earlier launch. For example, it reports a crash that error recovery handled before the app could start again. After that, the integration reports each new entry when `expo-updates` logs it.
 
 The integration reports the entries as follows:
 
