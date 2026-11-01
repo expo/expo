@@ -91,9 +91,9 @@ Yes, a session can wait for available concurrency before it starts. EAS CLI show
 
 <Collapsible summary="Can I run sessions in parallel?">
 
-Yes. Start each session with its own name and tags. `simulator:exec` passes your shell environment to the command. When the **.env.eas-simulator** file in the project directory contains `EAS_SIMULATOR_SESSION_ID`, its values replace the exported connection variables. The file holds one session, so use a separate copy of the project directory for each parallel session. `simulator:get`, `simulator:stop`, and `simulator:events` also accept `--id <session-id>`.
+Yes. Start each session with its own name and tags. `simulator:exec` passes your shell environment to the command. When the **.env.eas-simulator** file in the project directory contains `EAS_SIMULATOR_SESSION_ID`, its values replace the exported connection variables. The file holds one session, so use a separate copy of the project directory for each parallel session. `simulator:get`, `simulator:stop`, `simulator:events`, `simulator:logs`, and `simulator:control` also accept `--id <session-id>`.
 
-With `--out-config-type env`, the start command prints shell exports instead of writing **.env.eas-simulator**. Run the printed `export` lines in the shell of the job before you run controller commands. The exports do not include the session ID, so pass `--id` to `get`, `stop`, and `events`. A leftover **.env.eas-simulator** file in the project directory replaces these exports. Delete the file, or run the job in a separate directory. See [Run parallel sessions](/preview/simulators/how-it-works/agent-targeting/#run-parallel-sessions).
+With `--out-config-type env`, the start command prints shell exports instead of writing **.env.eas-simulator**. Run the printed `export` lines in the shell of the job before you run controller commands. The exports do not include the session ID, so pass `--id` to `get`, `stop`, `events`, `logs`, and `control`. A leftover **.env.eas-simulator** file in the project directory replaces these exports. Delete the file, or run the job in a separate directory. See [Run parallel sessions](/preview/simulators/how-it-works/agent-targeting/#run-parallel-sessions).
 
 </Collapsible>
 

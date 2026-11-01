@@ -29,6 +29,7 @@ To manage sessions without EAS CLI, use the [Expo Simulators REST API](/preview/
 | [`simulator:control`](#simulatorcontrol)           | Run a supported device action on a running iOS session                   |
 | [`simulator:exec`](#simulatorexec)                 | Run another command with **.env.eas-simulator** loaded                   |
 | [`simulator:events`](#simulatorevents)             | Show recorded activity or follow activity from a running session         |
+| [`simulator:logs`](#simulatorlogs)                 | Show app logs from an iOS session, or download them after it stops       |
 | [`simulator:egress`](#simulatoregress)             | Run the local egress client for a session started with `--egress local`  |
 | [`simulator:get`](#simulatorget)                   | Get status, connection details, dashboard URL, timestamps, and artifacts |
 | [`simulator:list`](#simulatorlist)                 | List and filter sessions for the current project                         |
@@ -128,7 +129,7 @@ Important flags:
 
 `--build-id`, `--build-fingerprint`, `--application-archive-url`, and `--expo-go` are mutually exclusive application sources. `--launch-arg` and `--open-url` require one of those sources because the start command needs an installed application to launch.
 
-The default `dotenv` output writes configuration even when you pass `--json`. Use `--out-config-type env` when you explicitly do not want the file. The `env` output does not export `EAS_SIMULATOR_SESSION_ID`, so pass `--id <session-id>` to `simulator:get`, `simulator:stop`, and `simulator:events`.
+The default `dotenv` output writes configuration even when you pass `--json`. Use `--out-config-type env` when you explicitly do not want the file. The `env` output does not export `EAS_SIMULATOR_SESSION_ID`, so pass `--id <session-id>` to `simulator:get`, `simulator:stop`, `simulator:events`, `simulator:logs`, and `simulator:control`.
 
 Common JSON output fields have this shape. The fields inside `remoteConfig` depend on the selected controller:
 
@@ -227,7 +228,7 @@ Pass a session ID to inspect another session:
 
 <Terminal cmd={['$ eas simulator:events --id <session-id>']} />
 
-The default text output condenses related operations into a readable timeline. It includes the timestamp, controller, summary, and duration when available. This command shows session and controller activity from agent-device, Argent, or Appium, not application runtime logs.
+The default text output condenses related operations into a readable timeline. It includes the timestamp, controller, summary, and duration when available. This command shows session and controller activity from agent-device, Argent, or Appium, not application runtime logs. For app logs, use [`simulator:logs`](#simulatorlogs).
 
 Follow new activity while a session is running:
 
@@ -240,6 +241,32 @@ For agents and automation, request the raw event records as JSON:
 <Terminal cmd={['$ eas simulator:events --json']} />
 
 The JSON object contains `deviceRunSessionId` and an `events` array. Common event fields include `eventId`, `ts`, `producer`, `type`, and `summary`, with operation ID, outcome, duration, and controller-specific data when available. `--json` cannot be combined with `--follow`.
+
+## `simulator:logs`
+
+Show the latest app logs from the running iOS session referenced by **.env.eas-simulator**:
+
+<Terminal cmd={['$ eas simulator:logs']} />
+
+The command prints the latest buffered lines, 100 by default. Use `--limit` to change the number. By default, it shows only logs from installed apps. To include system logs, use `--scope all` with `--follow`. Add `--timestamp` to show the time of each line. After the first 30 minutes of the session, new lines appear only while you follow the logs with `--follow`.
+
+To collect the logs of an action, start following before you run the action:
+
+<Terminal cmd={['$ eas simulator:logs --follow']} />
+
+The `-f` short flag is equivalent to `--follow`. To save the logs, redirect the output to a file:
+
+<Terminal cmd={['$ eas simulator:logs --follow > logs.txt']} />
+
+Press <kbd>Ctrl</kbd> + <kbd>C</kbd> to stop following.
+
+Use `--json` to get the buffered lines as JSON. The `lines` array contains each line's sequence number in `seq`, its time in `at`, and the log record in `raw`. You cannot use `--json` together with `--follow`.
+
+After the session stops, download its saved app logs:
+
+<Terminal cmd={['$ eas simulator:logs --id <session-id> --output ./app-logs.ndjson']} />
+
+For each iOS device that writes app logs, EAS saves them as an **app-logs.ndjson** artifact. Each artifact holds only the app logs from the first 30 minutes of the session, up to 20 MiB. When a session has more than one device, the command asks you to select a file. In non-interactive mode, it stops with an error that lists the files. Pass `--artifact <index>` with a number from that list, starting at 1. Android sessions do not provide logs through this command.
 
 ## `simulator:egress`
 
@@ -321,7 +348,7 @@ Controller connection variables depend on the selected type:
 
 A session started with `--egress local` also adds `EAS_SIMULATOR_EGRESS_URL`, `EAS_SIMULATOR_EGRESS_TOKEN`, `EAS_SIMULATOR_EGRESS_FINGERPRINT`, `EAS_SIMULATOR_EGRESS_PORT`, `EAS_SIMULATOR_EGRESS_PLATFORM`, and `EAS_SIMULATOR_EGRESS_ALLOW`.
 
-When the file contains a session ID, its values replace the same variables in your shell environment for `simulator:start`, `simulator:exec`, `simulator:get`, `simulator:stop`, `simulator:events`, and `simulator:egress`. The only exception is `simulator:egress --config-type env`, which does not read the file. When the file has no session ID and you do not pass `--id`, `simulator:get`, `simulator:stop`, and `simulator:events` use `EAS_SIMULATOR_SESSION_ID` from your shell environment.
+When the file contains a session ID, its values replace the same variables in your shell environment for `simulator:start`, `simulator:exec`, `simulator:get`, `simulator:stop`, `simulator:events`, `simulator:logs`, `simulator:control`, and `simulator:egress`. The only exception is `simulator:egress --config-type env`, which does not read the file. Some commands also read `EAS_SIMULATOR_SESSION_ID` from your shell environment: `simulator:get`, `simulator:stop`, `simulator:events`, `simulator:logs`, and `simulator:control`. They use it when the file has no session ID and you do not pass `--id`.
 
 Add the file to **.gitignore**:
 
