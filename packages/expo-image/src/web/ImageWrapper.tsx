@@ -1,5 +1,5 @@
 import type { Ref } from 'react';
-import React, { useEffect, useId } from 'react';
+import React, { useCallback, useEffect, useId, useLayoutEffect, useRef } from 'react';
 
 import type { ImageNativeProps, ImageSource } from '../Image.types';
 import ColorTintFilter, { getTintColorStyle } from './ColorTintFilter';
@@ -47,6 +47,19 @@ const ImageWrapper = React.forwardRef(
       events?.onMount?.forEach((e) => e?.());
     }, []);
 
+    const imgRef = useRef<HTMLImageElement | null>(null);
+    const setRef = useCallback(
+      (img: HTMLImageElement | null) => {
+        imgRef.current = img;
+        if (typeof ref === 'function') {
+          ref(img);
+        } else if (ref) {
+          (ref as React.RefObject<HTMLImageElement | null>).current = img;
+        }
+      },
+      [ref]
+    );
+
     // Use a unique ID for the SVG filter so that multiple <Image> can be used
     // on the same page with different tint colors without conflicts.
     const tintId = useId()
@@ -63,6 +76,29 @@ const ImageWrapper = React.forwardRef(
     );
 
     const sourceWithHeaders = useHeaders(resolvedSource, cachePolicy, events?.onError);
+    const handlers = sourceWithHeaders && getImageWrapperEventHandler(events, sourceWithHeaders);
+    const loaded = useRef(false);
+    const onLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
+      if (!loaded.current) {
+        loaded.current = true;
+        handlers?.onLoad(event);
+      }
+    };
+
+    // An image the browser already has in memory is complete once mounted: its load is a memory
+    // cache hit, reported before the image is painted (`skipOnCacheHit`). Its `load` event that
+    // follows is then ignored.
+    useLayoutEffect(() => {
+      const img = imgRef.current;
+      if (img?.complete && img.naturalWidth > 0 && img.getAttribute('src')) {
+        onLoad({
+          target: img,
+          currentTarget: img,
+          cacheType: 'memory',
+        } as unknown as React.SyntheticEvent<HTMLImageElement>);
+      }
+    }, []);
+
     if (!sourceWithHeaders) {
       return null;
     }
@@ -70,7 +106,7 @@ const ImageWrapper = React.forwardRef(
       <>
         <ColorTintFilter id={tintId} tintColor={tintColor} />
         <img
-          ref={ref}
+          ref={setRef}
           alt={accessibilityLabel}
           className={className}
           src={sourceWithHeaders?.uri || undefined}
@@ -87,7 +123,8 @@ const ImageWrapper = React.forwardRef(
           fetchPriority={getFetchPriorityFromImagePriority(priority || 'normal')}
           loading={loading || undefined}
           draggable={draggable}
-          {...getImageWrapperEventHandler(events, sourceWithHeaders)}
+          {...handlers}
+          onLoad={onLoad}
           {...getImgPropsFromSource(source)}
           {...props}
         />
