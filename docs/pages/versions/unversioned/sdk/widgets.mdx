@@ -687,7 +687,7 @@ The layout object supports these regions:
 - `compactLeading`, `compactTrailing`, `minimal`: The compact and minimal Dynamic Island states.
 - `expandedLeading`, `expandedTrailing`, `expandedCenter`, `expandedBottom`: The regions of the expanded Dynamic Island.
 
-The `environment` object also exposes `isLuminanceReduced`, `isActivityFullscreen`, `isActivityUpdateReduced`, and `activityFamily` so you can adapt the layout to the current presentation.
+The `environment` object also exposes `isLuminanceReduced`, `isActivityFullscreen`, `isActivityUpdateReduced`, and `activityFamily` so you can adapt the layout to the current presentation. Its `activityId` is the identifier of the Live Activity being drawn, the same value that `LiveActivity.getId()` returns.
 
 #### Starting a Live Activity
 
