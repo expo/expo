@@ -1,7 +1,7 @@
-import { Log } from '../../../log';
+import { Log } from '../../../../log';
 import DevToolsPluginManager from '../DevToolsPluginManager';
 
-jest.mock('../../../log');
+jest.mock('../../../../log');
 
 // Mock the autolinking module
 jest.mock('expo/internal/unstable-autolinking-exports', () => ({

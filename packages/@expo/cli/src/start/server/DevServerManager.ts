@@ -4,7 +4,7 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import type { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
-import DevToolsPluginManager from './DevToolsPluginManager';
+import DevToolsPluginManager from './devtools/DevToolsPluginManager';
 import { getPlatformBundlers } from './platformBundlers';
 import { Log } from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';

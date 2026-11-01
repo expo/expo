@@ -3,8 +3,8 @@ import send from 'send';
 
 import { ExpoMiddleware } from './ExpoMiddleware';
 import type { ServerRequest, ServerResponse } from './server.types';
-import type DevToolsPluginManager from '../DevToolsPluginManager';
-import { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
+import type DevToolsPluginManager from '../devtools/DevToolsPluginManager';
+import { DevToolsPluginEndpoint } from '../devtools/DevToolsPluginManager';
 
 export { DevToolsPluginEndpoint };
 

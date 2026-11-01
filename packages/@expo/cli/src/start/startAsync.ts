@@ -17,14 +17,13 @@ import * as Log from '../log';
 import type { BundlerStartOptions } from './server/BundlerDevServer';
 import type { MultiBundlerStartOptions } from './server/DevServerManager';
 import { DevServerManager } from './server/DevServerManager';
-import { maybeCreateMCPServerAsync } from './server/MCP';
+import { maybeCreateMCPServerAsync } from './server/mcp/MCP';
 import { openPlatformsAsync } from './server/openPlatforms';
 import type { PlatformBundlers } from './server/platformBundlers';
 import { getPlatformBundlers } from './server/platformBundlers';
 import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
-import { addMcpCapabilities } from './server/MCPDevToolsPluginCLIExtensions';
 
 async function getMultiBundlerStartOptions(
   projectRoot: string,
@@ -134,7 +133,7 @@ export async function startAsync(
   const defaultServerUrl = devServerManager.getDefaultDevServer()?.getDevServerUrl() ?? '';
   const mcpServer =
     (await profile(maybeCreateMCPServerAsync)({
-      projectRoot,
+      devServerManager,
       devServerUrl: defaultServerUrl,
     })) ?? undefined;
 
@@ -161,7 +160,6 @@ export async function startAsync(
   }
 
   if (mcpServer) {
-    addMcpCapabilities(mcpServer, devServerManager);
     mcpServer.start();
   }
 

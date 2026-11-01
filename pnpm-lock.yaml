@@ -1920,6 +1920,9 @@ importers:
       dnssd-advertise:
         specifier: ^1.1.6
         version: 1.1.6
+      expo-mcp:
+        specifier: '*'
+        version: 0.2.4
       expo-server:
         specifier: workspace:^56.0.6
         version: link:../../expo-server
@@ -1995,9 +1998,6 @@ importers:
       ws:
         specifier: ^8.12.1
         version: 8.19.0
-      zod:
-        specifier: ^3.25.76
-        version: 3.25.76
     devDependencies:
       '@expo/fingerprint':
         specifier: workspace:*
@@ -2137,6 +2137,9 @@ importers:
       tree-kill:
         specifier: ^1.2.2
         version: 1.2.2
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
 
   packages/@expo/config:
     dependencies:
@@ -11429,6 +11432,10 @@ packages:
     peerDependencies:
       expo: '*'
 
+  expo-mcp@0.2.4:
+    resolution: {integrity: sha512-rBomlm+085wNa+UF9YC3bXGZR6LlYPfOlUXwKBB5R7+dnASk0VjWFETuxyApdtXw9OItmOsAXolUxrAlEYfqSA==}
+    hasBin: true
+
   expo-three@7.0.1:
     resolution: {integrity: sha512-B8OyGwjQZ+NbGBMT3zqe2ngV7mI147yJL8eR56y9SQLrsEkv8+DiMpm3f88r7/LJoFXKGg8mmMrK09hMvRqGHg==}
     peerDependencies:
@@ -16072,6 +16079,10 @@ packages:
 
   xml2js@0.6.0:
     resolution: {integrity: sha512-eLTh0kA8uHceqesPqSE+VvO1CDDJWMwlQfB6LuN6T8w6MaDJ8Txm8P7s5cHD0miF0V+GGTZrDQfxPZQVsur33w==}
+    engines: {node: '>=4.0.0'}
+
+  xml2js@0.6.2:
+    resolution: {integrity: sha512-T4rieHaC1EXcES0Kxxj4JWgaUQHDk+qwHcYOCFHfiwKz7tOVPLq7Hjq9dM1WCMhylqMEfP7hMcOIChvotiZegA==}
     engines: {node: '>=4.0.0'}
 
   xmlbuilder@10.1.1:
@@ -21934,6 +21945,24 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  expo-mcp@0.2.4:
+    dependencies:
+      '@expo/mcp-tunnel': 0.2.4(@modelcontextprotocol/sdk@1.27.1(zod@3.25.76))
+      '@modelcontextprotocol/sdk': 1.27.1(zod@3.25.76)
+      debug: 4.4.3
+      glob: 11.0.3
+      jimp-compact: 0.16.1
+      resolve-from: 5.0.0
+      ws: 8.19.0
+      xml2js: 0.6.2
+      zod: 3.25.76
+      zx: 8.8.5
+    transitivePeerDependencies:
+      - '@cfworker/json-schema'
+      - bufferutil
+      - supports-color
+      - utf-8-validate
+
   expo-three@7.0.1(expo-asset@packages+expo-asset)(expo-file-system@packages+expo-file-system)(expo-font@packages+expo-font)(expo-modules-core@packages+expo-modules-core)(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)(three@0.137.5):
     dependencies:
       '@expo/browser-polyfill': 1.0.1(expo-asset@packages+expo-asset)(expo-file-system@packages+expo-file-system)(react-native@0.85.3(@babel/core@7.29.0)(@react-native/jest-preset@0.85.3(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.85.3(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
@@ -27380,6 +27409,11 @@ snapshots:
   xml-name-validator@4.0.0: {}
 
   xml2js@0.6.0:
+    dependencies:
+      sax: 1.6.0
+      xmlbuilder: 11.0.1
+
+  xml2js@0.6.2:
     dependencies:
       sax: 1.6.0
       xmlbuilder: 11.0.1
