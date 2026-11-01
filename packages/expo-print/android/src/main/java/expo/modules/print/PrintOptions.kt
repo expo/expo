@@ -13,5 +13,6 @@ internal class PrintOptions(
   @Field var height: Int? = null,
   @Field var orientation: String? = null,
   @Field var textZoom: Int? = null,
-  @Field var base64: Boolean = false
+  @Field var base64: Boolean = false,
+  @Field var fileName: String? = null
 ) : Record, Serializable
