@@ -29,6 +29,7 @@ private const val SECURITY_LEVEL_SECRET = 1
 private const val SECURITY_LEVEL_BIOMETRIC_WEAK = 2
 private const val SECURITY_LEVEL_BIOMETRIC_STRONG = 3
 private const val DEVICE_CREDENTIAL_FALLBACK_CODE = 6
+private const val DEFAULT_FALLBACK_LABEL = "Use screen lock"
 
 class LocalAuthenticationModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -150,7 +151,8 @@ class LocalAuthenticationModule : Module() {
 
   private fun buildAuthenticationCallback(
     callPromise: Promise,
-    callOptions: AuthOptions
+    callOptions: AuthOptions,
+    usesDeviceCredentialButton: Boolean = false
   ): BiometricPrompt.AuthenticationCallback = object : BiometricPrompt.AuthenticationCallback() {
     override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
       finishCall(callPromise) {
@@ -164,10 +166,9 @@ class LocalAuthenticationModule : Module() {
 
     override fun onAuthenticationError(errMsgId: Int, errString: CharSequence) {
       if (
-        isBiometricUnavailable(errMsgId) &&
+        shouldFallBackToDeviceCredential(errMsgId, callOptions.disableDeviceFallback, usesDeviceCredentialButton) &&
         isDeviceSecure &&
         !isRetryingWithDeviceCredentials &&
-        !callOptions.disableDeviceFallback &&
         activePromise === callPromise
       ) {
         isRetryingWithDeviceCredentials = true
@@ -206,25 +207,24 @@ class LocalAuthenticationModule : Module() {
       return
     }
 
-    val allowedAuthenticators = if (options.disableDeviceFallback) {
-      options.biometricsSecurityLevel.toNativeBiometricSecurityLevel()
-    } else {
-      options.biometricsSecurityLevel.toNativeBiometricSecurityLevel() or BiometricManager.Authenticators.DEVICE_CREDENTIAL
-    }
+    val selection = selectAuthenticators(
+      securityLevel = options.biometricsSecurityLevel,
+      disableDeviceFallback = options.disableDeviceFallback,
+      apiLevel = Build.VERSION.SDK_INT
+    )
 
     isAuthenticating = true
     activePromise = promise
     val executor: Executor = Executors.newSingleThreadExecutor()
-    val localBiometricPrompt = BiometricPrompt(fragmentActivity, executor, buildAuthenticationCallback(promise, options))
+    val localBiometricPrompt = BiometricPrompt(fragmentActivity, executor, buildAuthenticationCallback(promise, options, selection.usesDeviceCredentialButton))
     biometricPrompt = localBiometricPrompt
     val promptInfoBuilder = PromptInfo.Builder().apply {
       setTitle(options.promptMessage)
       setSubtitle(options.promptSubtitle)
       setDescription(options.promptDescription)
-      setAllowedAuthenticators(allowedAuthenticators)
-      if (options.disableDeviceFallback && options.cancelLabel != null) {
-        setNegativeButtonText(options.cancelLabel)
-      }
+      setAllowedAuthenticators(selection.allowedAuthenticators)
+      negativeButtonText(selection, options.disableDeviceFallback, options.cancelLabel, options.fallbackLabel, ::defaultFallbackLabel)
+        ?.let { setNegativeButtonText(it) }
       setConfirmationRequired(options.requireConfirmation)
     }
 
@@ -314,17 +314,9 @@ class LocalAuthenticationModule : Module() {
     }
   }
 
-  private fun isBiometricUnavailable(code: Int): Boolean {
-    return when (code) {
-      BiometricPrompt.ERROR_HW_NOT_PRESENT,
-      BiometricPrompt.ERROR_HW_UNAVAILABLE,
-      BiometricPrompt.ERROR_NO_BIOMETRICS,
-      BiometricPrompt.ERROR_UNABLE_TO_PROCESS,
-      BiometricPrompt.ERROR_NO_SPACE -> true
-
-      else -> false
-    }
-  }
+  // AndroidX's localized label for a button that opens the device credential.
+  private fun defaultFallbackLabel(): CharSequence =
+    biometricManager.getStrings(BiometricManager.Authenticators.DEVICE_CREDENTIAL)?.buttonLabel ?: DEFAULT_FALLBACK_LABEL
 
   private fun canAuthenticateUsingWeakBiometrics(): Int =
     biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
