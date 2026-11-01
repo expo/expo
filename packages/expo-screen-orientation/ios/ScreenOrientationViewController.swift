@@ -77,6 +77,11 @@ class ScreenOrientationViewController: UIViewController {
     return !mask.isEmpty ? mask : defaultOrientationMask
   }
 
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    screenOrientationRegistry.updateCurrentScreenOrientationIfUnknown()
+  }
+
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
     super.traitCollectionDidChange(previousTraitCollection)
     screenOrientationRegistry.traitCollectionDidChange(to: traitCollection)
