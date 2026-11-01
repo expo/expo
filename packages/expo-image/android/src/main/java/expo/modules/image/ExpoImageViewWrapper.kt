@@ -469,8 +469,23 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     rerenderIfNeeded(
       shouldRerenderBecauseOfResize = allowDownscaling &&
         contentFit != ContentFit.Fill &&
-        contentFit != ContentFit.None
+        contentFit != ContentFit.None &&
+        !canReuseImage()
     )
+  }
+
+  // A new decode can't be sharper than an image that already covers the view.
+  private fun canReuseImage(): Boolean {
+    // Both views hold an image during a transition, so it's unclear which one stays.
+    if (firstView.drawable != null && secondView.drawable != null) {
+      return false
+    }
+    val view = activeView
+    val drawable = view.drawable ?: return false
+    if (view.isPlaceholder || drawable is Animatable || blurRadius != null) {
+      return false
+    }
+    return drawable.intrinsicWidth >= width && drawable.intrinsicHeight >= height
   }
 
   private fun createPropOptions(): RequestOptions {
