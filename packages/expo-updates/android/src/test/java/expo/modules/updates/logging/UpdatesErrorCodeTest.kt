@@ -1,5 +1,7 @@
 package expo.modules.updates.logging
 
+import expo.modules.updates.loader.AssetLoadFailure
+import expo.modules.updates.loader.FileDownloader
 import org.junit.Assert
 import org.junit.Test
 import java.io.EOFException
@@ -49,5 +51,24 @@ class UpdatesErrorCodeTest {
         UpdatesErrorCode.forLoadFailure(error, otherwise = UpdatesErrorCode.AssetsFailedToLoad)
       )
     }
+  }
+
+  @Test
+  fun `asset failures group by code and HTTP status`() {
+    val failures = listOf(
+      AssetLoadFailure("a", IOException("Failed to download asset", FileDownloader.AssetHttpResponseException(404, "not found"))),
+      AssetLoadFailure("b", IOException("Failed to download asset", SocketTimeoutException("timeout"))),
+      AssetLoadFailure("c", IOException("Failed to download asset", FileDownloader.AssetHttpResponseException(404, "not found"))),
+      AssetLoadFailure("d", IOException("Failed to download asset", FileDownloader.AssetHttpResponseException(500, "server exploded"))),
+      AssetLoadFailure("e", IOException("Failed to download asset", UnknownHostException("Unable to resolve host")))
+    )
+
+    val groups = UpdatesErrorCode.groups(failures)
+
+    Assert.assertEquals(
+      listOf(UpdatesErrorCode.AssetsFailedToLoad, UpdatesErrorCode.UpdateServerUnreachable, UpdatesErrorCode.AssetsFailedToLoad),
+      groups.map { it.first }
+    )
+    Assert.assertEquals(listOf(listOf("a", "c"), listOf("b", "e"), listOf("d")), groups.map { group -> group.second.map { it.assetKey } })
   }
 }

@@ -108,11 +108,13 @@ class RemoteLoaderTest {
       loader.load { _ ->
         Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
       }
-    } catch (e: IOException) {
-      Assert.assertEquals("mock failed to download asset", e.message)
+      Assert.fail("Expected an AssetsFailedToLoadException")
+    } catch (e: AssetsFailedToLoadException) {
+      Assert.assertEquals(2, e.failures.size)
+      Assert.assertEquals("mock failed to download asset", e.cause?.message)
     }
 
-    coVerify(atLeast = 1) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), any()) }
+    coVerify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
