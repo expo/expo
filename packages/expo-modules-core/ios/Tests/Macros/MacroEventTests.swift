@@ -208,6 +208,15 @@ private struct MacroEventTests {
   }
 }
 
+/// A non-copyable payload, which `emitInline` and `emitBlocking` accept.
+private struct UniqueTicket: ~Copyable, JavaScriptEncodable {
+  let number: Int
+
+  static func encode(_ value: consuming UniqueTicket, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    return try Int.encode(value.number, in: runtime)
+  }
+}
+
 /// Emits through `TestAppContext`, whose runtime has its own JavaScript thread, so an event that
 /// runs inline can be told from a scheduled one. The test itself runs on another thread.
 @Suite("Macro event dispatch")
@@ -294,15 +303,42 @@ private struct MacroEventDispatchTests {
     runtime.schedule {
       jsThreadReleased.wait()
     }
-    DispatchQueue.global().async {
+    // A thread of its own, so the emit starts at once even when the dispatch workers are busy.
+    let started = DispatchSemaphore(value: 0)
+    Thread {
+      started.signal()
       module.onDoneBlocking()
       emitted.signal()
-    }
+    }.start()
+    started.wait()
 
     // The JavaScript thread is busy, so the emit can't return yet.
     #expect(emitted.wait(timeout: .now() + 0.1) == .timedOut)
     jsThreadReleased.signal()
     #expect(emitted.wait(timeout: .now() + 5) == .success)
     #expect(try result() == 1)
+  }
+
+  @Test
+  func `emits a non-copyable payload inline on the JavaScript thread`() throws {
+    let runtime = try runtime
+    let module = module
+    let resultInTask = try runtime.execute {
+      try runtime.eval("expo.modules.MacroEmitter.addListener('ticket', number => { globalThis.result = number })")
+      module.emitInline(event: "ticket", payload: UniqueTicket(number: 50))
+      let value = try runtime.eval("globalThis.result")
+      return value.isNumber() ? try value.asInt() : nil
+    }
+    #expect(resultInTask == 50)
+  }
+
+  @Test
+  func `emits a non-copyable payload blocking from another thread`() throws {
+    let runtime = try runtime
+    try runtime.execute {
+      try runtime.eval("expo.modules.MacroEmitter.addListener('ticket', number => { globalThis.result = number })")
+    }
+    module.emitBlocking(event: "ticket", payload: UniqueTicket(number: 60))
+    #expect(try result() == 60)
   }
 }
