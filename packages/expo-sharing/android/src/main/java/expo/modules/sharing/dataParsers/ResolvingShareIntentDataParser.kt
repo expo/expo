@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
-import java.io.File
 import java.io.FileOutputStream
 import java.net.HttpURLConnection
 import java.net.URL
@@ -16,6 +15,7 @@ class ResolvingShareIntentDataParser {
   companion object {
     fun parse(context: Context, intent: Intent): List<ResolvedSharePayload> {
       val type = intent.type ?: return emptyList()
+      ShareIntoFileStore(context.cacheDir).removeStaleFiles()
 
       return when (intent.action) {
         Intent.ACTION_SEND -> handleSendAction(context, intent, type)
@@ -56,13 +56,13 @@ class ResolvingShareIntentDataParser {
 
     private fun resolveUri(context: Context, uri: Uri, mimeType: String): ResolvedSharePayload {
       val contentResolver = context.contentResolver
-      val fileName = getFileName(contentResolver, uri) ?: "unknown"
+      val fileName = safeShareFileName(getFileName(contentResolver, uri), "unknown")
       val fileSize = getFileSize(contentResolver, uri)
       val specificMimeType = contentResolver.getType(uri) ?: mimeType
       val type = ShareType.fromMimeType(specificMimeType)
 
       // Copy to cache dir to ensure access
-      val file = File(context.cacheDir, fileName)
+      val file = ShareIntoFileStore(context.cacheDir).newDestination(fileName)
       try {
         contentResolver.openInputStream(uri)?.use { input ->
           FileOutputStream(file).use { output ->
@@ -71,6 +71,7 @@ class ResolvingShareIntentDataParser {
         }
       } catch (e: Exception) {
         e.printStackTrace()
+        file.parentFile?.deleteRecursively()
       }
 
       return ResolvedSharePayload().apply {
