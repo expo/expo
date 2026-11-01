@@ -22,14 +22,6 @@ import type {
 
 const debug = require('debug')('Metro:FileMapCache');
 
-declare global {
-  namespace NodeJS {
-    export interface Process {
-      isBun?: boolean;
-    }
-  }
-}
-
 interface AutoSaveOptions {
   readonly debounceMs: number;
 }
@@ -41,7 +33,7 @@ interface DiskCacheConfig {
 }
 
 let DEFAULT_PREFIX = 'metro-file-map';
-if (process.isBun) {
+if (process.versions.bun) {
   // NOTE(@kitten): The v8 serialize/deserialize format isn't 100% compatible between
   // Node and Bun and therefore we should fork the cache file
   DEFAULT_PREFIX += '-bun';
