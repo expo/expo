@@ -5,8 +5,7 @@ import UIKit
 class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
   // Cached reference to the view controller to avoid responder chain traversal
   private weak var cachedController: RNSScreen?
-  // The navigation controller whose toolbar this host fills. A popped screen
-  // no longer has a navigationController when its view leaves the window.
+  // A popped screen has no navigationController by the time it leaves the window
   private weak var cachedNavigationController: UINavigationController?
 
   // Mutable map of toolbar items
@@ -188,9 +187,7 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
     }
   }
 
-  // All screens of a stack share the navigation controller's toolbar, and a
-  // screen without Stack.Toolbar has no host to hide it. So the host that
-  // leaves hides it, unless the screen now on top has items of its own.
+  // The toolbar is shared by the stack, so the leaving host hides it for the next screen
   private func hideToolbarIfTopScreenHasNoItems() {
     guard let navigationController = cachedNavigationController,
       navigationController.topViewController?.toolbarItems?.isEmpty ?? true
