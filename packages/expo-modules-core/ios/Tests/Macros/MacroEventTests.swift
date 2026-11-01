@@ -143,7 +143,7 @@ private struct MacroEventTests {
   }
 
   @Test
-  func `emits an inline event with a payload before returning`() throws {
+  func `emits an inline event with a payload`() throws {
     try runtime.eval("""
       globalThis.result = null
       expo.modules.MacroEmitter.addListener('progressInline', payload => { globalThis.result = payload.percent })
@@ -153,7 +153,7 @@ private struct MacroEventTests {
   }
 
   @Test
-  func `emits a no-payload blocking event before returning`() throws {
+  func `emits a no-payload blocking event`() throws {
     try runtime.eval("""
       globalThis.result = null
       expo.modules.MacroEmitter.addListener('doneBlocking', (...args) => { globalThis.result = args.length + ':' + typeof args[0] })
@@ -163,7 +163,7 @@ private struct MacroEventTests {
   }
 
   @Test
-  func `emits an inline event with a tuple payload before returning`() throws {
+  func `emits an inline event with a tuple payload`() throws {
     try runtime.eval("""
       globalThis.result = null
       expo.modules.MacroEmitter.addListener('moveInline', payload => { globalThis.result = JSON.stringify(payload) })
@@ -173,7 +173,7 @@ private struct MacroEventTests {
   }
 
   @Test
-  func `emits a blocking event with a tuple payload before returning`() throws {
+  func `emits a blocking event with a tuple payload`() throws {
     try runtime.eval("""
       globalThis.result = null
       expo.modules.MacroEmitter.addListener('movedBlocking', payload => { globalThis.result = JSON.stringify(payload) })
@@ -183,7 +183,7 @@ private struct MacroEventTests {
   }
 
   @Test
-  func `emits an inline event from a shared object before returning`() throws {
+  func `emits an inline event from a shared object`() throws {
     let object = MacroEmittingObject()
     let encoded = try MacroEmittingObject.encode(object, in: runtime)
     try runtime.global().setProperty("emittingObject", value: encoded)
