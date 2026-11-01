@@ -39,7 +39,8 @@
         "expo-brownfield",
         {
           "ios": {
-            "buildReactNativeFromSource": false
+            "buildReactNativeFromSource": false,
+            "embeddedBundle": true
           },
           "android": {
             "publishing": [

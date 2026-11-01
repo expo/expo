@@ -33,6 +33,8 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
     mkdir(groupPath);
 
     const templateFiles = [
+      'ExpoHost.swift',
+      'ExpoScene.swift',
       // React Native host manager
       'ReactNativeHostManager.swift',
       // Messaging proxy
@@ -81,15 +83,15 @@ const withXcodeProjectPlugin: ConfigPlugin<PluginConfig> = (config, pluginConfig
     );
 
     // Configure build phases:
-    // - Reference Expo app target's RN bundle script
-    // - Add custom script for patching ExpoModulesProvider
+    // - Bundle JavaScript and assets for the framework
     // - Add template files to the compile sources phase
     configureBuildPhases(
       xcodeProject,
       target,
       pluginConfig.targetName,
       projectName,
-      templateFiles.map((file) => `${pluginConfig.targetName}/${file}`)
+      templateFiles.map((file) => `${pluginConfig.targetName}/${file}`),
+      pluginConfig.embeddedBundle
     );
     // Add the required build settings
     configureBuildSettings(
