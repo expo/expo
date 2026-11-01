@@ -1,6 +1,7 @@
 package expo.modules.widgets
 
 import android.content.Context
+import android.os.LocaleList
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.widgets.jni.WidgetsHermesRuntime
@@ -18,7 +19,8 @@ internal object WidgetsJSRuntime {
     return getRuntime(context).render(
       layout,
       Arguments.makeNativeMap(props),
-      Arguments.makeNativeMap(environment)
+      Arguments.makeNativeMap(environment),
+      LocaleList.getDefault().get(0).language
     )
   }
 
