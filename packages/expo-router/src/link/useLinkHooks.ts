@@ -4,6 +4,7 @@
 import { useMemo, type Ref, type MouseEvent } from 'react';
 import { type TextProps, type GestureResponderEvent, Platform, type Text } from 'react-native';
 
+import type { SplitViewColumnName } from '../global-state/types';
 import type { Href } from '../types';
 import type { SingularOptions } from '../useScreens';
 
@@ -220,6 +221,14 @@ export interface LinkProps extends Omit<TextProps, 'href'>, WebAnchorProps {
    * If used with `push`, the history will be filtered even if no navigation occurs.
    */
   dangerouslySingular?: SingularOptions;
+
+  /**
+   * The `SplitView` column to show after the navigation. A compact `SplitView` shows the column at once. An expanded
+   * one shows it after the next collapse.
+   *
+   * @platform ios
+   */
+  splitViewColumnName?: SplitViewColumnName;
 
   /**
    * Prefetches the route when the component is rendered on a focused screen.
