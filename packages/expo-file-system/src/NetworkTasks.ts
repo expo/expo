@@ -6,6 +6,7 @@ import ExpoFileSystem from './ExpoFileSystem';
 import { File } from './File';
 import type {
   DownloadProgress,
+  DownloadResponse,
   DownloadPauseState,
   DownloadTaskOptions,
   DownloadTaskState,
@@ -245,6 +246,19 @@ export class DownloadTask {
     this._url = url;
     this._destination = destination;
     this._options = options;
+  }
+
+  /**
+   * Returns the latest HTTP response status and headers, including for HTTP failures.
+   * Before a response arrives, returns `{ status: null, headers: {} }`.
+   * Metadata remains available after completion, failure, pause, or cancellation, until `release()`.
+   * Resuming clears the previous response; the next response may have a different status (such as 206).
+   * This does not wait for response headers or for the download to finish.
+   * @platform android
+   * @platform ios
+   */
+  async getResponseAsync(): Promise<DownloadResponse> {
+    return this._nativeTask.getResponseAsync();
   }
 
   /**
