@@ -12,6 +12,7 @@ import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -19,6 +20,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.graphics.Color as ComposeColor
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.takeOrElse
@@ -31,6 +34,7 @@ import expo.modules.kotlin.views.AsyncFunctionHandle
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.views.OptimizedComposeProps
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -100,10 +104,26 @@ fun FunctionalComposableScope.ModalBottomSheetContent(
   hide: AsyncFunctionHandle<Unit>,
   expand: AsyncFunctionHandle<Unit>,
   partialExpand: AsyncFunctionHandle<Unit>,
-  onDismissRequest: () -> Unit
+  onDismissRequest: () -> Unit,
+  onCurrentValueChange: (String) -> Unit
 ) {
   val sheetState = rememberModalBottomSheetState(props.skipPartiallyExpanded)
   val scope = rememberCoroutineScope()
+  val currentOnCurrentValueChange = rememberUpdatedState(onCurrentValueChange)
+
+  LaunchedEffect(sheetState) {
+    snapshotFlow { sheetState.currentValue }
+      .drop(1)
+      .collect { value ->
+        currentOnCurrentValueChange.value(
+          when (value) {
+            SheetValue.Hidden -> "hidden"
+            SheetValue.PartiallyExpanded -> "partiallyExpanded"
+            SheetValue.Expanded -> "expanded"
+          }
+        )
+      }
+  }
 
   hide.handle {
     try {

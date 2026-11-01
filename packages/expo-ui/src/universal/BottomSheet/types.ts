@@ -66,6 +66,15 @@ export interface BottomSheetProps {
   snapPoints?: SnapPoint[];
 
   /**
+   * Called when the active snap point changes while the sheet is presented.
+   * Requires `snapPoints`. Opening and dismissal are not snap point changes.
+   * This is not a continuous drag or animation-completion callback; timing follows
+   * the platform's selection change (on web, the snap target chosen on release).
+   * Android reports only `'half'` or `'full'`, including for custom snap points.
+   */
+  onSnapPointChange?: (snapPoint: SnapPoint) => void;
+
+  /**
    * Padding between the sheet and [`children`](#children), in dp on Android, points on iOS, and
    * CSS pixels on web. Pass `0` for content that reaches the sheet's edges.
    *

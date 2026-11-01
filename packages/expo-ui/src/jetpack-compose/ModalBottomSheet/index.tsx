@@ -3,7 +3,7 @@ import type { Ref, ReactNode, ComponentType } from 'react';
 import type { ColorValue } from 'react-native';
 
 import { PresentedContent } from '../../PresentedContentContext';
-import { type ModifierConfig } from '../../types';
+import { type ModifierConfig, type ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
 type SlotNativeViewProps = {
@@ -12,6 +12,11 @@ type SlotNativeViewProps = {
 };
 
 const SlotNativeView: ComponentType<SlotNativeViewProps> = requireNativeView('ExpoUI', 'SlotView');
+
+/**
+ * The current value of Compose's `SheetState`.
+ */
+export type SheetValue = 'hidden' | 'partiallyExpanded' | 'expanded';
 
 export type ModalBottomSheetRef = {
   /**
@@ -59,6 +64,11 @@ export interface ModalBottomSheetProps {
    */
   onDismissRequest: () => void;
   /**
+   * Called when Compose's `SheetState.currentValue` changes, including opening and hiding.
+   * The initial value is not reported. This does not report continuous drag progress.
+   */
+  onCurrentValueChange?: (value: SheetValue) => void;
+  /**
    * Immediately opens the bottom sheet in full screen.
    * @default false
    */
@@ -102,9 +112,8 @@ export interface ModalBottomSheetProps {
   modifiers?: ModifierConfig[];
 }
 
-type NativeModalBottomSheetProps = Omit<ModalBottomSheetProps, 'onDismissRequest'> & {
-  onDismissRequest: () => void;
-};
+type NativeModalBottomSheetProps = Omit<ModalBottomSheetProps, 'onCurrentValueChange'> &
+  ViewEvent<'onCurrentValueChange', { value: SheetValue }>;
 
 const ModalBottomSheetNativeView: ComponentType<NativeModalBottomSheetProps> = requireNativeView(
   'ExpoUI',
@@ -112,13 +121,16 @@ const ModalBottomSheetNativeView: ComponentType<NativeModalBottomSheetProps> = r
 );
 
 function transformProps(props: ModalBottomSheetProps): NativeModalBottomSheetProps {
-  const { modifiers, onDismissRequest, ...restProps } = props;
+  const { modifiers, onDismissRequest, onCurrentValueChange, ...restProps } = props;
   return {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
     skipPartiallyExpanded: props.skipPartiallyExpanded ?? false,
     initialFullyExpanded: props.initialFullyExpanded ?? false,
+    onCurrentValueChange: onCurrentValueChange
+      ? ({ nativeEvent: { value } }) => onCurrentValueChange(value)
+      : undefined,
     onDismissRequest: () => {
       onDismissRequest?.();
     },
