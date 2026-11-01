@@ -337,6 +337,7 @@ export declare class NativeLiveActivityFactory extends SharedObject {
   constructor(name: string, layout: string);
   start(props?: string, url?: string, staleDate?: number): NativeLiveActivity;
   getInstances(): NativeLiveActivity[];
+  getEndedInstances(): NativeLiveActivity[];
 }
 
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {

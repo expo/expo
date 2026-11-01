@@ -750,6 +750,14 @@ for (const instance of activeInstances) {
 }
 ```
 
+An ended Live Activity stays on the Lock Screen until its dismissal policy removes it, and `getInstances` does not return it. Use `getEndedInstances` to find those activities, for example to remove them right away.
+
+```tsx
+for (const instance of DeliveryActivity.getEndedInstances()) {
+  await instance.end('immediate');
+}
+```
+
 #### Ending a Live Activity
 
 Use `end` to finish a Live Activity. You can choose the dismissal policy, optionally provide a final content state, and pass a `contentDate` so the system can ignore stale updates.

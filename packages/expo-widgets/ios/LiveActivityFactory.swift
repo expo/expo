@@ -59,6 +59,12 @@ final class LiveActivityFactory: SharedObject {
     }
   }
 
+  func getEndedInstances() -> [LiveActivity] {
+    return Activity<LiveActivityAttributes>.activities
+      .filter { $0.content.state.name == name && $0.activityState == .ended }
+      .map { LiveActivity(id: $0.id, name: name) }
+  }
+
   override func sharedObjectWillRelease() {
     instances.removeAll()
   }
