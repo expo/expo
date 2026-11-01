@@ -1,4 +1,4 @@
-import { useConsentManager } from '@expo/styleguide-cookie-consent';
+import { useConsent } from '@expo/styleguide-cookie-consent';
 import { useEffect } from 'react';
 
 import { cometlyPixelHost, cometlyPixelScriptUrl } from './cometly-constants';
@@ -27,9 +27,8 @@ export function injectCometlyPixel(doc: Document = document) {
 }
 
 export function CometlyPixel() {
-  const { has, hasConsented } = useConsentManager();
-  const hasMarketing = has('marketing');
-  const userConsented = hasConsented();
+  const { marketing, hasConsented: userConsented } = useConsent();
+  const hasMarketing = marketing === 'granted';
 
   useEffect(() => {
     if (
