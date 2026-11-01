@@ -1,14 +1,17 @@
-import type { DevServerManager } from './DevServerManager';
-import type { DevToolsPluginInfo } from './DevToolsPlugin.schema';
-import { DevToolsPluginOutputSchema } from './DevToolsPlugin.schema';
-import { DevToolsPluginCliExtensionExecutor } from './DevToolsPluginCliExtensionExecutor';
-import { McpServer } from './MCP';
+import { Log } from '../../../log';
+import type { DevServerManager } from '../DevServerManager';
+import type { McpServer } from './MCP';
 import { createMCPDevToolsExtensionSchema } from './createMCPDevToolsExtensionSchema';
-import { Log } from '../../log';
+import type { DevToolsPluginInfo } from '../devtools/DevToolsPlugin.schema';
+import { DevToolsPluginCliExtensionExecutor } from '../devtools/DevToolsPluginCliExtensionExecutor';
 
 const debug = require('debug')('expo:start:server:devtools:mcp');
 
-export async function addMcpCapabilities(mcpServer: McpServer, devServerManager: DevServerManager) {
+export async function addMcpCapabilities(
+  mcpServer: Pick<McpServer, 'registerTool'>,
+  devServerManager: DevServerManager,
+  z: typeof import('zod').z
+) {
   const plugins = await devServerManager.devtoolsPluginManager.queryPluginsAsync();
 
   for (const plugin of plugins) {
@@ -31,7 +34,7 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
         },
       };
 
-      const schema = createMCPDevToolsExtensionSchema(mcpPlugin);
+      const schema = createMCPDevToolsExtensionSchema(mcpPlugin, z);
 
       debug(
         `Installing MCP CLI extension for plugin: ${plugin.packageName} - found ${mcpCommands.length} commands`
@@ -57,31 +60,18 @@ export async function addMcpCapabilities(mcpServer: McpServer, devServerManager:
               devServerManager.projectRoot
             ).execute({ command, args, metroServerOrigin });
 
-            const parsedResults = DevToolsPluginOutputSchema.safeParse(results);
-            if (parsedResults.success === false) {
-              throw new Error(
-                `Invalid output from CLI command: ${parsedResults.error.issues
-                  .map((issue) => issue.message)
-                  .join(', ')}`
-              );
-            }
             return {
-              content: parsedResults.data
-                .map((line) => {
-                  const { type } = line;
-                  if (type === 'text') {
-                    return { type, text: line.text, level: line.level, url: line.url };
-                  } else if (line.type === 'image' || line.type === 'audio') {
-                    // We could present this as a resource_link, but it seems not to be well supported in MCP clients,
-                    // so we'll return a text with the link instead.
-                    return {
-                      type: 'text',
-                      text: `${type} resource: ${line.url}${line.text ? ' (' + line.text + ')' : ''}`,
-                    } as const;
-                  }
-                  return null;
-                })
-                .filter((line): line is Exclude<typeof line, null> => line !== null),
+              content: results.map((line) => {
+                if (line.type === 'text') {
+                  return line;
+                }
+                // We could present this as a resource_link, but it seems not to be well supported in MCP clients,
+                // so we'll return a text with the link instead.
+                return {
+                  type: 'text',
+                  text: `${line.type} resource: ${line.url}${line.text ? ' (' + line.text + ')' : ''}`,
+                } as const;
+              }),
             };
           } catch (e: any) {
             Log.error('Error executing MCP CLI command:', e);

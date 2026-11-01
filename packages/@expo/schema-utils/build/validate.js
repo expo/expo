@@ -2,6 +2,13 @@
 
 exports.__esModule = true;
 exports.validateSchema = void 0;
+function _nodeUrl() {
+  const data = require("node:url");
+  _nodeUrl = function () {
+    return data;
+  };
+  return data;
+}
 const getValueType = value => {
   const typeOf = typeof value;
   switch (typeOf) {
@@ -84,6 +91,8 @@ const validateFormat = (format, value) => {
       return hostnameRe.test(value);
     case 'uri':
       return uriRe.test(value);
+    case 'url':
+      return _nodeUrl().URL.canParse(value);
     default:
       throw new TypeError(`Unsupported format "${format}"`);
   }

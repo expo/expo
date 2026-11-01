@@ -4,6 +4,7 @@
   "exclude": ["**/__mocks__/*", "**/__tests__/*"],
   "compilerOptions": {
     "outDir": "./build",
-    "typeRoots": ["../cli/ts-declarations"]
+    "types": ["node"],
+    "typeRoots": ["../../../node_modules/@types"]
   }
 }

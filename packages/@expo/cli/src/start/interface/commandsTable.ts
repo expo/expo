@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
 
 import * as Log from '../../log';
-import type { McpServer } from '../server/MCP';
+import type { McpServer } from '../server/mcp/MCP';
 
 // Approximately how many rows apart from the commands table (usage guide on `expo start`)
 // will be printed after the QR code? The `rows` input doesn't account for all of them,

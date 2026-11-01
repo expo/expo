@@ -7,7 +7,7 @@ import {
   DevToolsPluginOutput,
 } from './DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionResults } from './DevToolsPluginCliExtensionResults';
-import { isPathInside } from '../../utils/dir';
+import { isPathInside } from '../../../utils/dir';
 
 const DEFAULT_TIMEOUT_MS = 10_000; // 10 seconds
 

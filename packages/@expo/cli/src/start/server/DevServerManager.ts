@@ -2,8 +2,8 @@ import { ExpoConfig, getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 
-import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
-import DevToolsPluginManager from './DevToolsPluginManager';
+import type { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
+import DevToolsPluginManager from './devtools/DevToolsPluginManager';
 import { getPlatformBundlers } from './platformBundlers';
 import { Log } from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';

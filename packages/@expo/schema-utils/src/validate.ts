@@ -1,3 +1,5 @@
+import { URL } from 'node:url';
+
 import { JSONSchema } from './JSONSchema';
 
 export interface BaseValidationError {
@@ -113,6 +115,8 @@ const validateFormat = (format: string, value: string): boolean => {
       return hostnameRe.test(value);
     case 'uri':
       return uriRe.test(value);
+    case 'url':
+      return URL.canParse(value);
     default:
       throw new TypeError(`Unsupported format "${format}"`);
   }

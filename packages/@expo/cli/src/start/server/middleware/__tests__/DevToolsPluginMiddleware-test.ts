@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import DevToolsPluginManager from '../../DevToolsPluginManager';
+import DevToolsPluginManager from '../../devtools/DevToolsPluginManager';
 import { DevToolsPluginMiddleware } from '../DevToolsPluginMiddleware';
 import { ServerRequest, ServerResponse } from '../server.types';
 
