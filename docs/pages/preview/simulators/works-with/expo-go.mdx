@@ -11,7 +11,7 @@ import { Step } from '~/ui/components/Step';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-Expo Go on Expo Simulators lets you test your project without a build. Pass `--expo-go` to `eas simulator:start`. EAS CLI selects the Expo Go version that matches the Expo SDK of your project, and EAS installs it. Then Expo Go opens your project from Metro through a tunnel.
+Expo Go on Expo Simulators lets you test your project without a build. Pass `--expo-go` to `eas simulator:start`. EAS CLI selects the Expo Go version that matches the Expo SDK of your project, and Expo Simulators installs it. Then Expo Go opens your project from Metro through a tunnel.
 
 Expo Go works only for projects that have no custom native code. For other projects, use a [development build](/develop/development-builds/introduction/). See [Use Fast Refresh with Metro on a remote simulator](/preview/simulators/how-to/iterate-on-your-code/).
 
@@ -21,7 +21,7 @@ Expo Go works only for projects that have no custom native code. For other proje
 
 ### Start Metro with a tunnel
 
-The remote device must reach Metro over the internet. Start Metro first, because EAS opens the Metro URL while the session starts:
+The remote device must reach Metro over the internet. Start Metro first, because Expo Simulators opens the Metro URL while the session starts:
 
 <Terminal cmd={['$ EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel']} />
 
@@ -44,7 +44,7 @@ The remote device must reach Metro over the internet. Start Metro first, because
 
 Replace `<metro-host>` with the host of the tunnel URL, without a port. Use an `exp://` URL.
 
-On iOS, EAS starts Expo Go with launch arguments that skip the developer menu onboarding screen and hide the floating developer menu button. You do not need to pass them.
+On iOS, Expo Simulators starts Expo Go with launch arguments that skip the developer menu onboarding screen and hide the floating developer menu button. You do not need to pass them.
 
 </Step>
 
