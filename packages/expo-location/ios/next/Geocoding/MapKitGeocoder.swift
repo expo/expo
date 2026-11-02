@@ -21,7 +21,7 @@ final class MapKitGeocoder: GeocoderNext {
 
   func geocode(_ address: String, options: GeocodeOptions) async throws -> [Address] {
     do {
-      return try await forwardMapItems(address, options.locale.map(Locale.init(identifier:))).map { $0.toAddress() }
+      return try await forwardMapItems(address, options.locale?.toLocale()).map { $0.toAddress() }
     } catch {
       return try handleGeocodingError(error)
     }
@@ -35,7 +35,7 @@ final class MapKitGeocoder: GeocoderNext {
     }
     let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
     do {
-      return try await reverseMapItems(location, options.locale.map(Locale.init(identifier:))).map { $0.toAddress() }
+      return try await reverseMapItems(location, options.locale?.toLocale()).map { $0.toAddress() }
     } catch {
       return try handleGeocodingError(error)
     }

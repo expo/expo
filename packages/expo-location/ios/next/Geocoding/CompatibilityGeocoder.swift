@@ -13,7 +13,7 @@ final class CompatibilityGeocoder: GeocoderNext {
 
   func geocode(_ address: String, options: GeocodeOptions) async throws -> [Address] {
     do {
-      let placemarks = try await forwardPlacemarks(address, options.locale.map(Locale.init(identifier:)))
+      let placemarks = try await forwardPlacemarks(address, options.locale?.toLocale())
       return placemarks.compactMap { $0.toAddress() }
     } catch {
       return try handleGeocodingError(error)
@@ -28,7 +28,7 @@ final class CompatibilityGeocoder: GeocoderNext {
     }
     let location = CLLocation(latitude: coordinates.latitude, longitude: coordinates.longitude)
     do {
-      let placemarks = try await reversePlacemarks(location, options.locale.map(Locale.init(identifier:)))
+      let placemarks = try await reversePlacemarks(location, options.locale?.toLocale())
       return placemarks.compactMap { $0.toAddress() }
     } catch {
       return try handleGeocodingError(error)
