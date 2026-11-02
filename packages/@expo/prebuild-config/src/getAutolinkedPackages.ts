@@ -1,9 +1,6 @@
 import type { ModPlatform, StaticPlugin } from '@expo/config-plugins';
 import type { ExpoConfig } from '@expo/config-types';
 import { resolveFrom } from '@expo/require-utils';
-import Debug from 'debug';
-
-const debug = Debug('expo:prebuild-config');
 
 /**
  * Returns a list of packages that are autolinked to a project.
@@ -18,9 +15,6 @@ export async function getAutolinkedPackagesAsync(
 ) {
   const autolinking = importAutolinkingExportsFromProject(projectRoot);
   if (!autolinking) {
-    debug(
-      `Cannot resolve "expo/internal/unstable-autolinking-exports" from "${projectRoot}", assuming no packages are autolinked`
-    );
     return [];
   }
   const { makeCachedDependenciesLinker, scanExpoModuleResolutionsForPlatform } = autolinking;
@@ -44,7 +38,19 @@ function importAutolinkingExportsFromProject(
     projectRoot,
     'expo/internal/unstable-autolinking-exports'
   );
-  return autolinkingExportsPath ? require(autolinkingExportsPath) : null;
+  if (autolinkingExportsPath) {
+    return require(autolinkingExportsPath);
+  }
+  let fallbackPath: string;
+  try {
+    fallbackPath = require.resolve('expo/internal/unstable-autolinking-exports');
+  } catch (error: any) {
+    if ((error as NodeJS.ErrnoException).code !== 'MODULE_NOT_FOUND') {
+      throw error;
+    }
+    return null;
+  }
+  return require(fallbackPath);
 }
 
 export function resolvePackagesList(platformPaths: Record<string, any>[]) {

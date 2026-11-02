@@ -15,7 +15,7 @@ const withDefaultLocationPermissions: ConfigPlugin = (config) => {
   // Only add location permissions if react-native-maps is installed.
   if (
     config._internal?.projectRoot &&
-    resolveFrom(config._internal.projectRoot, 'react-native-maps') &&
+    resolveFrom(config._internal.projectRoot, 'react-native-maps/package.json') &&
     isLinked
   ) {
     config = withInfoPlist(config, (config) => {
