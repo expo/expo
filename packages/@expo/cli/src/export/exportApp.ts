@@ -7,6 +7,7 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
+import { compileHermesArtifactsAsync } from './compileHermesArtifacts';
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
 import { exportAssetsAsync } from './exportAssets';
 import {
@@ -209,12 +210,6 @@ export async function exportAppAsync(
 
           bundles[platform] = bundle;
 
-          getFilesFromSerialAssets(bundle.artifacts, {
-            includeSourceMaps: sourceMaps,
-            files,
-            isServerHosted: devServer.isReactServerComponentsEnabled || hostedNative,
-          });
-
           const expoDomComponentReferences = [
             ...new Set(
               bundle.artifacts
@@ -264,6 +259,16 @@ export async function exportAppAsync(
               ];
             })
           );
+
+          if (bytecode && isHermes && !dev) {
+            await compileHermesArtifactsAsync(projectRoot, bundle.artifacts);
+          }
+
+          getFilesFromSerialAssets(bundle.artifacts, {
+            includeSourceMaps: sourceMaps,
+            files,
+            isServerHosted: devServer.isReactServerComponentsEnabled || hostedNative,
+          });
 
           if (platform === 'web') {
             // TODO: Unify with exportStaticAsync

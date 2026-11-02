@@ -13,16 +13,9 @@ const path_1 = __importDefault(require("path"));
 const debugId_1 = require("./debugId");
 const exportPath_1 = require("./exportPath");
 const getCssDeps_1 = require("./getCssDeps");
+const hermesArtifacts_1 = require("./hermesArtifacts");
 const getAssets_1 = __importDefault(require("../transform-worker/getAssets"));
 const filePath_1 = require("../utils/filePath");
-// Lazy-loaded to avoid pulling in metro-source-map at startup
-let _buildHermesBundleAsync;
-function getBuildHermesBundleAsync() {
-    if (!_buildHermesBundleAsync) {
-        _buildHermesBundleAsync = require('./exportHermes').buildHermesBundleAsync;
-    }
-    return _buildHermesBundleAsync;
-}
 // Lazy-loaded to avoid pulling in metro's getAppendScripts -> sourceMapString -> @babel/traverse at startup
 let _sourceMapString;
 function getSourceMapString() {
@@ -344,44 +337,10 @@ class Chunk {
                 source: sourceMap,
             });
         }
-        if (this.boolishTransformOption('bytecode') && this.isHermesEnabled()) {
-            const adjustedSource = jsAsset.source.replace(/^\/\/# (sourceMappingURL)=(.*)$/gm, (...props) => {
-                if (props[1] === 'sourceMappingURL') {
-                    const mapName = props[2].replace(/\.js\.map$/, '.hbc.map');
-                    return `//# ${props[1]}=` + mapName;
-                }
-                return '';
-            });
-            // TODO: Generate hbc for each chunk
-            const hermesBundleOutput = await getBuildHermesBundleAsync()({
-                projectRoot: this.options.projectRoot,
-                filename: this.name,
-                code: adjustedSource,
-                map: assets[1] ? assets[1].source : null,
-                // TODO: Maybe allow prod + no minify.
-                minify: true, //!this.options.dev,
-            });
-            if (hermesBundleOutput.hbc) {
-                // TODO: Unclear if we should add multiple assets, link the assets, or mutate the first asset.
-                // jsAsset.metadata.hbc = hermesBundleOutput.hbc;
-                // @ts-expect-error: TODO
-                jsAsset.source = hermesBundleOutput.hbc;
-                jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
-                // Replace mappings with hbc
-                if (jsAsset.metadata.paths) {
-                    jsAsset.metadata.paths = Object.fromEntries(Object.entries(jsAsset.metadata.paths).map(([key, value]) => [
-                        key,
-                        Object.fromEntries(Object.entries(value).map(([key, value]) => [
-                            key,
-                            value ? value.replace(/\.js$/, '.hbc') : value,
-                        ])),
-                    ]));
-                }
-            }
-            if (assets[1] && hermesBundleOutput.sourcemap) {
-                assets[1].source = mutateSourceMapWithDebugId(hermesBundleOutput.sourcemap);
-                assets[1].filename = assets[1].filename.replace(/\.js\.map$/, '.hbc.map');
-            }
+        if (this.boolishTransformOption('bytecode') &&
+            this.isHermesEnabled() &&
+            !jsAsset.metadata.expoDomComponentReferences?.length) {
+            await (0, hermesArtifacts_1.transformJsAssetToHermesBytecodeAsync)(this.options.projectRoot, jsAsset, assets[1]);
         }
         return assets;
     }

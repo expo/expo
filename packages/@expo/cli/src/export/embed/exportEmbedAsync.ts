@@ -28,6 +28,7 @@ import { stripAnsi } from '../../utils/ansi';
 import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
+import { compileHermesArtifactsAsync } from '../compileHermesArtifacts';
 import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
@@ -279,6 +280,10 @@ export async function exportEmbedBundleAndAssetsAsync(
           }
         })
       );
+    }
+
+    if (options.bytecode && isHermes && !options.dev) {
+      await compileHermesArtifactsAsync(projectRoot, bundles.artifacts);
     }
 
     return {

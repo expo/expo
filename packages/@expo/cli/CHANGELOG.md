@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix `npx expo start --localhost` refusing connections on `127.0.0.1`. ([#52324](https://github.com/expo/expo/pull/52324) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Fix corruption of unrelated string literals in native exports containing DOM components by resolving HTML filenames before Hermes compilation. Defer Hermes compilation only for chunks that reference DOM components. ([#52752](https://github.com/expo/expo/pull/52752) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
