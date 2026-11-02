@@ -1,7 +1,7 @@
 ---
 title: iOS 実機向けのクラウドビルドを作成して実行する
 sidebar_title: iOS 実機向け開発ビルド
-description: EAS Build を使って iOS の実機向けに開発ビルドを設定する方法を学びます。
+description: Expo Build を使って iOS の実機向けに開発ビルドを設定する方法を学びます。
 hasVideoLink: true
 ---
 
@@ -13,14 +13,14 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-この章では、EAS Build を使って iOS の実機で動作する開発ビルドを作成します。
+この章では、Expo Build を使って iOS の実機で動作する開発ビルドを作成します。
 
 iOS 実機向けの開発ビルドは、iOS アプリのインストールで標準的な **.ipa** 形式で生成されます。
 
 <VideoBoxLink
   videoId="HbfWU7_o4cU"
   title="視聴：iOS 実機向けの開発ビルドを作成する"
-  description="コード署名の設定を含め、EAS Build を使って iOS 実機で開発ビルドをビルド・実行する方法を学びます。"
+  description="コード署名の設定を含め、Expo Build を使って iOS 実機で開発ビルドをビルド・実行する方法を学びます。"
 />
 
 ---
@@ -28,7 +28,7 @@ iOS 実機向けの開発ビルドは、iOS アプリのインストールで標
 <Prerequisites>
   <Requirement title="Apple Developer アカウント">
     アプリの署名に必要な [認証情報](/app-signing/app-credentials/#ios)
-    にアクセスするために必要です。アプリが信頼できる提供元から来たことを検証するため、各ビルドには署名が必要です。EAS
+    にアクセスするために必要です。アプリが信頼できる提供元から来たことを検証するため、各ビルドには署名が必要です。Expo
     Build はこれらの認証情報の管理を助けてくれます。
   </Requirement>
   <Requirement title="iOS 16 以降ではデベロッパモードを有効化">
@@ -119,10 +119,10 @@ iOS 実機向けの開発ビルドを作成するには、`build.development` �
 
 > **info** **[iOS Simulator の章](/ja/tutorial/eas/ios-development-build-for-simulators/) を飛ばした場合のみ:** **iOS app only uses standard/exempt encryption?**（この iOS アプリは標準的な、または適用除外の暗号化のみを使いますか？）と EAS CLI が尋ねます。<kbd>Y</kbd> を押してデフォルト値を選びます。このアプリは適用除外ではない暗号化を使っていないため、EAS CLI が [アプリ設定](/workflow/configuration/) に `ios.infoPlist.ITSAppUsesNonExemptEncryption: false` を追加します。この値によって、TestFlight や App Store にアプリをリリースする際のコンプライアンスチェックが処理されます。自分のアプリが適用除外ではない暗号化を使っている場合は、<kbd>N</kbd> を押し、続く質問で確認します。その場合、EAS CLI はアプリ設定を変更しません。暗号化のステータスは App Store Connect で設定します。
 
-回答するとビルドがキューに入り、EAS CLI が表示するリンクから EAS ダッシュボードで進捗を確認できます。
+回答するとビルドがキューに入り、EAS CLI が表示するリンクから Expo ダッシュボードで進捗を確認できます。
 
 <ContentSpotlight
-  alt="iOS development build details and progress in EAS dashboard"
+  alt="iOS development build details and progress in Expo dashboard"
   src="/static/images/tutorial/eas/ios-development-build-for-devices-details.webp"
   className="max-w-[800px]"
 />
@@ -131,7 +131,7 @@ iOS 実機向けの開発ビルドを作成するには、`build.development` �
 
 ビルド詳細ページには、ビルドの種類、プロファイル、環境、Expo SDK バージョン、アプリバージョン、ビルド番号が表示されます。また、フィンガープリント、最後のコミットハッシュ、そしてビルドを開始した開発者またはアカウント所有者も表示されます。
 
-上の画像では、**Build artifact** の現在のステータスがビルド進行中であることを示しています。完了すると、このセクションからビルドをダウンロードできるようになります。**Logs** には、EAS Build 上での iOS ビルドプロセスの各ステップが並びます。ここでは簡潔にするため、各ステップの詳細には触れません。詳しくは [iOS のビルドプロセス](/build-reference/ios-builds/) を参照してください。
+上の画像では、**Build artifact** の現在のステータスがビルド進行中であることを示しています。完了すると、このセクションからビルドをダウンロードできるようになります。**Logs** には、Expo Build 上での iOS ビルドプロセスの各ステップが並びます。ここでは簡潔にするため、各ステップの詳細には触れません。詳しくは [iOS のビルドプロセス](/build-reference/ios-builds/) を参照してください。
 
 </Collapsible>
 
@@ -165,12 +165,12 @@ iOS 実機向けの開発ビルドを作成するには、`build.development` �
 - Orbit アプリで **Device** を選択します。
 
 <ContentSpotlight
-  alt="Open with Orbit button on EAS dashboard in Build artifact"
+  alt="Open with Orbit button on Expo dashboard in Build artifact"
   src="/static/images/tutorial/eas/ios-orbit.png"
   className="max-w-[300px]"
 />
 
-- EAS ダッシュボードの **Build artifact** で **Open with Orbit** をクリックします。
+- Expo ダッシュボードの **Build artifact** で **Open with Orbit** をクリックします。
 
 ビルドがインストールされると、Orbit アプリが実機上で開発ビルドを起動します。
 
@@ -239,7 +239,7 @@ iOS 実機向けの開発ビルドを作成するには、`build.development` �
   name="EAS_TUTORIAL"
   currentChapterSlug="/tutorial/eas/ios-development-build-for-devices"
   chapterTitle="第 4 章：iOS 実機向けのクラウドビルドを作成して実行する"
-  summary="EAS Build を使って iOS の実機で開発ビルドを作成・実行しました。"
+  summary="Expo Build を使って iOS の実機で開発ビルドを作成・実行しました。"
   nextChapterDescription="次の章では、1 台のデバイスに複数のアプリバリアントをインストールできるよう、app config を設定する方法を学びます。"
   nextChapterTitle="複数のアプリバリアントを設定する"
   nextChapterLink="/ja/tutorial/eas/multiple-app-variants/"
