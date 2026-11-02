@@ -8,6 +8,7 @@ import assert from 'node:assert';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { compileHermesArtifactsAsync } from './compileHermesArtifacts';
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
 import { exportAssetsAsync } from './exportAssets';
 import {
@@ -210,12 +211,6 @@ export async function exportAppAsync(
 
           bundles[platform] = bundle;
 
-          getFilesFromSerialAssets(bundle.artifacts, {
-            includeSourceMaps: sourceMaps,
-            files,
-            isServerHosted: devServer.isReactServerComponentsEnabled || hostedNative,
-          });
-
           const expoDomComponentReferences = [
             ...new Set(
               bundle.artifacts
@@ -265,6 +260,16 @@ export async function exportAppAsync(
               ];
             })
           );
+
+          if (bytecode && isHermes && !dev) {
+            await compileHermesArtifactsAsync(projectRoot, bundle.artifacts);
+          }
+
+          getFilesFromSerialAssets(bundle.artifacts, {
+            includeSourceMaps: sourceMaps,
+            files,
+            isServerHosted: devServer.isReactServerComponentsEnabled || hostedNative,
+          });
 
           if (platform === 'web') {
             const faviconAsset = await generateFaviconAssetAsync(projectRoot, {
