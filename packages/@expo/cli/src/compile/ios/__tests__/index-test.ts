@@ -3,11 +3,13 @@ import { vol } from 'memfs';
 
 import { Log } from '../../../log';
 import rnFixture from '../../../prebuild/__tests__/fixtures/react-native-project';
+import { copyAsync, removeAsync } from '../../../utils/dir';
 import { loadEnvFiles } from '../../../utils/nodeEnv.js';
 import { event } from '../../events';
 import { expoCompileIos } from '../index';
 
 jest.mock('../../../log');
+jest.mock('../../../utils/dir');
 jest.mock('../../../utils/nodeEnv.js', () => ({ loadEnvFiles: jest.fn() }), { virtual: true });
 jest.mock('../../events', () => {
   const done = jest.fn();
@@ -21,9 +23,6 @@ jest.mock('../../events', () => {
   };
 });
 jest.mock('../../resolveOptions.js', () => jest.requireActual('../../resolveOptions'), {
-  virtual: true,
-});
-jest.mock('../resolveOptions.js', () => jest.requireActual('../resolveOptions'), {
   virtual: true,
 });
 jest.mock('../compileIosAsync.js', () => jest.requireActual('../compileIosAsync'), {
@@ -117,6 +116,16 @@ it('builds the app for the simulator', async () => {
     outputType: 'app',
     outputPath: appPath,
   });
+});
+
+it('copies the app to the output directory', async () => {
+  await expoCompileIos(['--dev', '--output-dir', 'build']);
+
+  expect(removeAsync).toHaveBeenCalledWith('/app/build/ReactNativeProject.app');
+  expect(copyAsync).toHaveBeenCalledWith(appPath, '/app/build/ReactNativeProject.app');
+  expect(Log.log).toHaveBeenCalledWith(
+    expect.stringContaining('Binary: /app/build/ReactNativeProject.app')
+  );
 });
 
 it('refuses production before loading env files', async () => {

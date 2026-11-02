@@ -25,9 +25,6 @@ jest.mock('../../events', () => {
 jest.mock('../../resolveOptions.js', () => jest.requireActual('../../resolveOptions'), {
   virtual: true,
 });
-jest.mock('../resolveOptions.js', () => jest.requireActual('../resolveOptions'), {
-  virtual: true,
-});
 jest.mock('../compileAndroidAsync.js', () => jest.requireActual('../compileAndroidAsync'), {
   virtual: true,
 });
