@@ -45,8 +45,9 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
   case appLauncherNoLaunchableUpdates(cause: Error?)
   case appLauncherLaunchAssetNotFound(updateId: UUID)
   case embeddedAppLoaderEmbeddedManifestLoadFailed
-  case startupProcedureDidFinishWithError(cause: Error)
   case startupProcedureDidFinishBackgroundUpdateWithStatusWithError(cause: Error)
+  case checkForUpdateProcedureFailed(cause: Error)
+  case fetchUpdateProcedureFailed(cause: Error)
   case relaunchProcedureFailedToRelaunch(cause: Error)
 
   public var errorDescription: String? {
@@ -133,10 +134,12 @@ public enum UpdatesError: Error, Sendable, LocalizedError {
       return "Launch asset not found for update \(updateId). The update cannot launch and will be repaired at the next app launch."
     case .embeddedAppLoaderEmbeddedManifestLoadFailed:
       return "Failed to load embedded manifest. Make sure you have configured expo-updates correctly."
-    case let .startupProcedureDidFinishWithError(cause):
-      return "AppController appLoaderTask didFinishWithError: \(cause.localizedDescription)"
     case let .startupProcedureDidFinishBackgroundUpdateWithStatusWithError(cause):
-      return "AppController appLoaderTask didFinishBackgroundUpdateWithStatus=Error: \(cause.localizedDescription)"
+      return "Failed to load remote update: \(cause.localizedDescription)"
+    case let .checkForUpdateProcedureFailed(cause):
+      return "Failed to check for update: \(cause.localizedDescription)"
+    case let .fetchUpdateProcedureFailed(cause):
+      return "Failed to download new update: \(cause.localizedDescription)"
     case let .relaunchProcedureFailedToRelaunch(cause):
       return "Failed to relaunch: \(cause.localizedDescription)"
     }

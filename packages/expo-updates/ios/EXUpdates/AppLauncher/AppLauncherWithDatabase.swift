@@ -281,7 +281,12 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
               // so we want to propagate this error
               self.launchAssetError = downloadAssetError
             }
-            self.logger.warn(message: "AppLauncherWithDatabase: Failed to load missing asset \(downloadAssetAsset.key ?? ""): \(downloadAssetError.localizedDescription)")
+            self.logger.error(
+              cause: downloadAssetError,
+              code: .assetsFailedToLoad,
+              updateId: self.launchedUpdate?.loggingId(),
+              assetId: downloadAssetAsset.key ?? downloadAssetAsset.filename
+            )
             completion(false)
           } else {
             // attempt to update the database record to match the newly downloaded asset

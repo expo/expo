@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.Deferred
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.Update
@@ -94,23 +93,18 @@ abstract class Loader protected constructor(
   ): FileDownloader.AssetDownloadResult
 
   suspend fun load(updateResponseDecision: (UpdateResponse) -> OnUpdateResponseLoadedResult): LoaderResult {
-    try {
-      val updateResponse = loadRemoteUpdate(database, configuration)
-      this@Loader.updateResponse = updateResponse
-      val update = updateResponse.manifestUpdateResponsePart?.update
-      val onUpdateResponseLoadedResult = updateResponseDecision(updateResponse)
+    val updateResponse = loadRemoteUpdate(database, configuration)
+    this@Loader.updateResponse = updateResponse
+    val update = updateResponse.manifestUpdateResponsePart?.update
+    val onUpdateResponseLoadedResult = updateResponseDecision(updateResponse)
 
-      if (update !== null && onUpdateResponseLoadedResult.shouldDownloadManifestIfPresentInResponse) {
-        // if onUpdateResponseLoaded returns true that is a sign that the delegate wants the update manifest
-        // to be processed/downloaded, and therefore the update needs to exist
-        return processUpdate(update)
-      } else {
-        updateEntity = null
-        return finish()
-      }
-    } catch (e: Exception) {
-      logger.error("Load error", e, UpdatesErrorCode.UpdateFailedToLoad)
-      throw e
+    if (update !== null && onUpdateResponseLoadedResult.shouldDownloadManifestIfPresentInResponse) {
+      // if onUpdateResponseLoaded returns true that is a sign that the delegate wants the update manifest
+      // to be processed/downloaded, and therefore the update needs to exist
+      return processUpdate(update)
+    } else {
+      updateEntity = null
+      return finish()
     }
   }
 
