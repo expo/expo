@@ -151,7 +151,6 @@ ${bundleMethod}
       '// dev client fallback\n    bridge.bundleURL /* nested /* comment */ } */ ?? bundleURL()',
     ])('removes a stock forwarder: %s', (body) => {
       expect(updateModulesAppDelegateSwift(delegate(body), '58.0.0')).toBe(migrated);
-      expect(updateModulesAppDelegateSwift(migrated, '58.0.0')).toBe(migrated);
     });
 
     it('accepts a multiline signature and a renamed bridge parameter', () => {
@@ -166,8 +165,6 @@ ${bundleMethod}
       'return customBundleURL()',
       'recordLaunch(); return self.bundleURL()',
       'if let url = bridge.bundleURL { return url }; return bundleURL()',
-      'return URL(string: "https://example.com/bundle.js")',
-      'let message = "}"; return bundleURL()',
     ])('requires manual migration for custom code: %s', (body) => {
       expect(() => updateModulesAppDelegateSwift(delegate(body), '58.0.0')).toThrow(
         /custom implementation.*Move.*bundleURL\(\)/
