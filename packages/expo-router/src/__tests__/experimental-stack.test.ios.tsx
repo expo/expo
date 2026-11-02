@@ -3,12 +3,19 @@ import { use, useState, type Dispatch, type ReactNode, type SetStateAction } fro
 import { Text, type NativeSyntheticEvent } from 'react-native';
 import type { TabSelectedEvent, TabsHostProps, TabsScreenProps } from 'react-native-screens';
 
+import { navigationRef } from '../global-state/navigationRef';
 import { router } from '../imperative-api';
 import { ExperimentalStack } from '../layouts/experimental-stack';
 import { NativeTabs } from '../native-tabs';
 import { usePreventRemove } from '../react-navigation/native';
-import { IsWithinNativeNavigator } from '../standard-navigation';
+import { TabRouter } from '../react-navigation/routers';
+import {
+  createStandardRouterNavigator,
+  IsWithinNativeNavigator,
+  type NavigatorContentProps,
+} from '../standard-navigation';
 import { renderRouter } from '../testing-library';
+import { Slot } from '../views/Navigator';
 
 jest.mock('react-native-screens', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
@@ -581,4 +588,30 @@ describe('ExperimentalStack — unsupported option warning', () => {
       warnSpy.mockRestore();
     }
   });
+});
+
+const PredictiveTabs = createStandardRouterNavigator(
+  ({ state, descriptors }: NavigatorContentProps<any>) => {
+    const route = state.routes[state.index];
+    return route ? (descriptors[route.key]?.render() ?? null) : null;
+  },
+  TabRouter,
+  { nativeBackNavigation: true }
+);
+
+test('transparent Slot delegates native ownership through ExperimentalStack and explicit custom tabs', async () => {
+  await renderRouter({
+    _layout: () => <Slot />,
+    '(app)/_layout': () => <ExperimentalStack />,
+    '(app)/(tabs)/_layout': () => <PredictiveTabs />,
+    '(app)/(tabs)/index': () => <Text>Home</Text>,
+    '(app)/(tabs)/search': () => <Text>Search</Text>,
+    outside: () => <Text>Outside</Text>,
+  });
+  expect(navigationRef.isNativeBackNavigationOwned()).toBe(true);
+  await act(() => router.push('/outside'));
+  // Slot now owns real history; it must no longer delegate system Back to Android.
+  expect(navigationRef.isNativeBackNavigationOwned()).toBe(false);
+  await act(() => router.back());
+  expect(navigationRef.isNativeBackNavigationOwned()).toBe(true);
 });

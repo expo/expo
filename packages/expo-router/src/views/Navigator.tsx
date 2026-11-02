@@ -141,6 +141,8 @@ function SlotContent({ state, descriptors }: NavigatorContentProps<any>) {
 
 const RouterSlot = createStandardRouterNavigator(SlotContent, StackRouter, {
   activityDefaultThreshold: 1,
+  // A transparent Slot can delegate only while it has no local history to pop.
+  nativeBackNavigation: (state) => state.index === 0,
 });
 
 /**

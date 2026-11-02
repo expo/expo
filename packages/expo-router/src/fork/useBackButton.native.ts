@@ -1,6 +1,3 @@
-/**
- * This file is unchanged, except for removing eslint comments
- */
 import * as React from 'react';
 import { BackHandler } from 'react-native';
 
@@ -26,8 +23,24 @@ export function useBackButton(ref: React.RefObject<NavigationContainerRef<ParamL
       }
 
       return false;
-    });
+    }) as ReturnType<typeof BackHandler.addEventListener> & {
+      setNativeNavigationFallback?: (enabled: boolean) => void;
+    };
+    const updateOwnership = () =>
+      subscription.setNativeNavigationFallback?.(
+        ref.current?.isNativeBackNavigationOwned() === true
+      );
+    updateOwnership();
+    const removeStateListener = ref.current?.addListener('state', updateOwnership);
+    const removeOwnershipListener = ref.current?.addListener(
+      'nativeBackOwnershipChange',
+      updateOwnership
+    );
 
-    return () => subscription.remove();
+    return () => {
+      removeStateListener?.();
+      removeOwnershipListener?.();
+      subscription.remove();
+    };
   }, [ref]);
 }

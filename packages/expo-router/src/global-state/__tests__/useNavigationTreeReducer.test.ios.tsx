@@ -3,6 +3,7 @@ import { useLayoutEffect } from 'react';
 
 import type { NavigationAction, NavigationState } from '../../react-navigation/routers';
 import { getNavigateAction } from '../getNavigationAction';
+import type { NavigationTransactionCancellations } from '../navigationActionResult';
 import type { RouterRegistry } from '../routerRegistry';
 import type { LinkToOptions } from '../types';
 import { useNavigationTreeReducer } from '../useNavigationTreeReducer';
@@ -32,10 +33,14 @@ async function renderReducer({
   state = initialState,
   registry,
   routesWithRemovalPrevented = new Set(),
+  cancelledTransactions,
+  transactionScope,
 }: {
   state?: NavigationState;
   registry: RouterRegistry;
   routesWithRemovalPrevented?: ReadonlySet<string>;
+  cancelledTransactions?: NavigationTransactionCancellations;
+  transactionScope?: object;
 }) {
   const reports: NonNullable<ReturnType<typeof useNavigationTreeReducer>['report']>[] = [];
   const committedStates: NavigationState[] = [];
@@ -44,11 +49,15 @@ async function renderReducer({
     {
       registry: RouterRegistry;
       routesWithRemovalPrevented: ReadonlySet<string>;
+      cancelledTransactions?: NavigationTransactionCancellations;
+      transactionScope?: object;
     }
   >(
-    ({ registry, routesWithRemovalPrevented }) => {
+    ({ registry, routesWithRemovalPrevented, cancelledTransactions, transactionScope }) => {
       const reducer = useNavigationTreeReducer({
         initialState: state,
+        cancelledTransactions,
+        transactionScope,
         registry,
         routesWithRemovalPrevented,
       });
@@ -60,7 +69,14 @@ async function renderReducer({
       });
       return reducer;
     },
-    { initialProps: { registry, routesWithRemovalPrevented } }
+    {
+      initialProps: {
+        registry,
+        routesWithRemovalPrevented,
+        cancelledTransactions,
+        transactionScope,
+      },
+    }
   );
   return { ...result, committedStates, reports };
 }
@@ -755,4 +771,227 @@ it('throws for an incomplete initial state', async () => {
         })
       )
   ).rejects.toThrow('incomplete initial state');
+});
+
+test('guarded actions reject a history change that reduces earlier in the same queued batch', async () => {
+  const reducer = await renderReducer({
+    registry: new Map([
+      [
+        'root',
+        entry((state) => ({
+          state: { ...state, index: state.index + 1 },
+          affectedRouteKey: state.routes[state.index + 1]?.key,
+        })),
+      ],
+    ]),
+  });
+  const expectedState = reducer.result.current.state;
+  await act(() => {
+    reducer.result.current.processIntent({
+      type: 'ACTION',
+      payload: { action: { type: 'NEXT' } },
+      actionId: 1,
+    });
+    reducer.result.current.processIntent({
+      type: 'ACTION',
+      payload: {
+        action: { type: 'NEXT' },
+        originKey: 'root',
+        transaction: { id: 2, token: {}, expectedState },
+      },
+      actionId: 2,
+    });
+  });
+  expect(reducer.result.current.state.index).toBe(1);
+  expect(reducer.result.current.report?.events).toContainEqual(
+    expect.objectContaining({
+      type: 'action-result',
+      transactionId: 2,
+      result: expect.objectContaining({ status: 'cancelled' }),
+    })
+  );
+});
+
+test.each(['handled', 'prevented', 'noop', 'unhandled'] as const)(
+  'guarded actions report %s after reduction, including unchanged state',
+  async (status) => {
+    const reducer = await renderReducer({
+      registry: new Map([
+        [
+          'root',
+          entry((state) =>
+            status === 'unhandled'
+              ? null
+              : {
+                  state:
+                    status === 'noop'
+                      ? state
+                      : { ...state, index: 0, routes: state.routes.slice(0, 1) },
+                  affectedRouteKey: state.routes[0]?.key,
+                }
+          ),
+        ],
+      ]),
+      routesWithRemovalPrevented: status === 'prevented' ? new Set(['third']) : new Set(),
+    });
+    // A helper may return an equivalent declared-routes object rather than the reducer's pointer.
+    const expectedState = {
+      ...reducer.result.current.state,
+      routes: [...reducer.result.current.state.routes],
+    };
+    await act(() =>
+      reducer.result.current.processIntent({
+        type: 'ACTION',
+        payload: {
+          action: { type: 'REMOVE' },
+          originKey: 'root',
+          transaction: { id: 7, token: {}, expectedState },
+        },
+        actionId: 7,
+      })
+    );
+    const results = reducer.result.current.report?.events.filter(
+      (event) => event.type === 'action-result'
+    );
+    expect(results).toEqual([
+      expect.objectContaining({
+        transactionId: 7,
+        result: expect.objectContaining({ status }),
+      }),
+    ]);
+  }
+);
+
+test('a guarded request with a changed origin is stale before invoking any router', async () => {
+  const reduce = jest.fn((state: NavigationState) => ({
+    state,
+    affectedRouteKey: state.routes[0]?.key,
+  }));
+  const reducer = await renderReducer({ registry: new Map([['root', entry(reduce)]]) });
+  await act(() =>
+    reducer.result.current.processIntent({
+      type: 'ACTION',
+      payload: {
+        action: { type: 'GO_BACK' },
+        originKey: 'removed',
+        transaction: { id: 9, token: {}, expectedState: { ...initialState, key: 'removed' } },
+      },
+      actionId: 9,
+    })
+  );
+  expect(reduce).not.toHaveBeenCalled();
+  expect(reducer.result.current.report?.events).toContainEqual(
+    expect.objectContaining({
+      type: 'action-result',
+      transactionId: 9,
+      result: expect.objectContaining({ status: 'stale' }),
+    })
+  );
+});
+
+test('cancellation before reduction rejects an otherwise identical navigation state', async () => {
+  const reduce = jest.fn((state: NavigationState) => ({
+    state: { ...state, index: 1 },
+    affectedRouteKey: state.routes[1]?.key,
+  }));
+  const registry = new Map([['root', entry(reduce)]]);
+  const reducer = await renderReducer({ registry, cancelledTransactions: { has: () => false } });
+  const expectedState = reducer.result.current.state;
+  await act(async () => {
+    // A scope/overlay invalidation does not necessarily change navigation state.
+    await reducer.rerender({
+      registry,
+      routesWithRemovalPrevented: new Set(),
+      cancelledTransactions: { has: () => true },
+    });
+    reducer.result.current.processIntent({
+      type: 'ACTION',
+      payload: {
+        action: { type: 'NEXT' },
+        originKey: 'root',
+        transaction: { id: 12, token: {}, expectedState },
+      },
+      actionId: 12,
+    });
+  });
+  expect(reduce).not.toHaveBeenCalled();
+  expect(reducer.result.current.state).toBe(expectedState);
+  expect(reducer.result.current.report?.events).toContainEqual(
+    expect.objectContaining({
+      type: 'action-result',
+      transactionId: 12,
+      result: expect.objectContaining({ status: 'cancelled' }),
+    })
+  );
+});
+
+test('a committed history change invalidates an older preview snapshot', async () => {
+  const reducer = await renderReducer({
+    registry: new Map([
+      [
+        'root',
+        entry((state) => ({
+          state: { ...state, index: state.index + 1 },
+          affectedRouteKey: state.routes[state.index + 1]?.key,
+        })),
+      ],
+    ]),
+  });
+  const expectedState = reducer.result.current.state;
+  await act(() =>
+    reducer.result.current.processIntent({
+      type: 'ACTION',
+      payload: { action: { type: 'NEXT' } },
+      actionId: 30,
+    })
+  );
+  await act(() =>
+    reducer.result.current.processIntent({
+      type: 'ACTION',
+      payload: {
+        action: { type: 'NEXT' },
+        originKey: 'root',
+        transaction: { id: 31, token: {}, expectedState },
+      },
+      actionId: 31,
+    })
+  );
+  expect(reducer.result.current.state.index).toBe(1);
+  expect(reducer.result.current.report?.events).toContainEqual(
+    expect.objectContaining({
+      type: 'action-result',
+      transactionId: 31,
+      result: expect.objectContaining({ status: 'stale' }),
+    })
+  );
+});
+
+test('a transaction from a removed navigation container cannot mutate its replacement', async () => {
+  const reduce = jest.fn((state: NavigationState) => ({
+    state: { ...state, index: 1 },
+    affectedRouteKey: state.routes[1]?.key,
+  }));
+  const registry = new Map([['root', entry(reduce)]]);
+  const oldScope = {};
+  const reducer = await renderReducer({ registry, transactionScope: {} });
+  const expectedState = reducer.result.current.state;
+  await act(() =>
+    reducer.result.current.processIntent({
+      type: 'ACTION',
+      actionId: 101,
+      payload: {
+        action: { type: 'NEXT' },
+        transaction: { id: 101, token: {}, scope: oldScope, expectedState },
+      },
+    })
+  );
+  expect(reduce).not.toHaveBeenCalled();
+  expect(reducer.result.current.state).toBe(expectedState);
+  expect(reducer.result.current.report?.events).toContainEqual(
+    expect.objectContaining({
+      type: 'action-result',
+      transactionId: 101,
+      result: expect.objectContaining({ status: 'cancelled' }),
+    })
+  );
 });

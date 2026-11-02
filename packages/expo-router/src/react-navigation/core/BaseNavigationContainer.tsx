@@ -11,6 +11,15 @@ import {
   areUrlObjectsEqual,
   getRouteInfoFromState,
 } from '../../global-state/getRouteInfoFromState';
+import {
+  createNavigationActionResultRegistry,
+  type NavigationActionResult,
+} from '../../global-state/navigationActionResult';
+import {
+  createNativeBackRegistry,
+  NativeBackRegistryContext,
+  NavigationActionResultRegistryContext,
+} from '../../global-state/navigationIntegration';
 import { GlobalRoutesWithRemovalPreventedContext } from '../../global-state/removalPrevention';
 import { RouteInfoContext } from '../../global-state/routeInfoContext';
 import { RouterConfigContext } from '../../global-state/routerConfigContext';
@@ -94,12 +103,26 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   }
 
   const emitter = useEventEmitter<NavigationContainerEventMap>();
+  const [actionResults] = React.useState(createNavigationActionResultRegistry);
+  const cancelledTransactions = React.useSyncExternalStore(
+    actionResults.subscribe,
+    actionResults.getSnapshot,
+    actionResults.getSnapshot
+  );
+  const [nativeBackRegistry] = React.useState(createNativeBackRegistry);
+  const nativeBackVersion = React.useSyncExternalStore(
+    nativeBackRegistry.subscribe,
+    nativeBackRegistry.getVersion,
+    nativeBackRegistry.getVersion
+  );
+  React.useEffect(() => () => actionResults.clear(), [actionResults]);
   const [registry, setRegistry] = React.useState<RouterRegistry>(() => new Map());
 
   // TODO(@ubax): consider moving this state to ExpoRoot.
   const {
     state,
     isWaitingForLayouts,
+    hasPendingNavigation,
     report,
     consumeReportEvents,
     resetNavigator,
@@ -107,6 +130,9 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     processIntent,
   } = useNavigationTreeReducer({
     initialState,
+    pendingOperations: routingQueue.pendingOperations,
+    cancelledTransactions,
+    transactionScope: actionResults.scope,
     routeNode: UNSTABLE_routeNode,
     registry,
     routesWithRemovalPrevented,
@@ -114,7 +140,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     redirects: routerConfig?.redirects,
   });
   const [browserHistory] = React.useState(createBrowserHistoryAdapter);
-  useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory);
+  useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory, actionResults.settle);
   const registrySetters = React.useMemo<RouterRegistrySetters>(
     () => ({
       register(stateKey, entry) {
@@ -156,6 +182,38 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     handleAction(action);
   });
 
+  const dispatchWithResult = useLatestCallback(
+    (
+      action: NavigationAction,
+      options: { expectedState: import('../routers').NavigationState },
+      callback: (result: NavigationActionResult) => void
+    ) => {
+      const registration = actionResults.register(callback);
+      routingQueue.enqueue({
+        type: 'ACTION',
+        inTransition: false,
+        payload: {
+          action,
+          transaction: {
+            id: registration.id,
+            token: registration.token,
+            scope: actionResults.scope,
+            expectedState: options.expectedState,
+          },
+        },
+      });
+      return { remove: registration.remove };
+    }
+  );
+  const registerNativeBackNavigation = useLatestCallback(() =>
+    nativeBackRegistry.register(state.key)
+  );
+  const isNativeBackNavigationOwned = useLatestCallback(
+    () =>
+      !hasPendingNavigation &&
+      !isWaitingForLayouts &&
+      nativeBackRegistry.ownsFocusedChain(state, routesWithRemovalPrevented)
+  );
   const canGoBack = useLatestCallback(() => {
     if (listeners.focus[0] == null) {
       return false;
@@ -199,6 +257,9 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
       ...emitter.create('root'),
       dispatch,
       dispatchSync,
+      dispatchWithResult,
+      registerNativeBackNavigation,
+      isNativeBackNavigationOwned,
       isFocused: () => true,
       canGoBack,
       getParent: () => undefined,
@@ -212,7 +273,18 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
         throw new Error('Cannot call setOptions outside a screen');
       },
     }),
-    [canGoBack, dispatch, dispatchSync, emitter, getCurrentOptions, getCurrentRoute, getRootState]
+    [
+      canGoBack,
+      dispatch,
+      dispatchSync,
+      dispatchWithResult,
+      registerNativeBackNavigation,
+      isNativeBackNavigationOwned,
+      emitter,
+      getCurrentOptions,
+      getCurrentRoute,
+      getRootState,
+    ]
   );
 
   React.useImperativeHandle(ref, () => navigation, [navigation]);
@@ -314,31 +386,47 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
     emitter.emit({ type: 'state', data: { state } });
   }, [emitter, state]);
 
+  useClientLayoutEffect(() => {
+    emitter.emit({ type: 'nativeBackOwnershipChange', data: undefined });
+  }, [
+    emitter,
+    nativeBackVersion,
+    routesWithRemovalPrevented,
+    state,
+    hasPendingNavigation,
+    isWaitingForLayouts,
+  ]);
+
   return (
-    <NavigationContainerRefContext.Provider value={navigation}>
-      <NavigationBuilderContext.Provider value={builderContext}>
-        <NavigationStateContext.Provider value={context}>
-          <RouteInfoContext.Provider value={routeInfo}>
-            <RootNavigationStateContext.Provider value={state}>
-              <CanGoBackContext value={focusedCanGoBack}>
-                <RouterRegistrySettersContext.Provider value={registrySetters}>
-                  <EnsureSingleNavigator>
-                    <NavigationPendingContext value={isNavigationPending || isWaitingForLayouts}>
-                      <ThemeProvider value={theme}>{children}</ThemeProvider>
-                    </NavigationPendingContext>
-                  </EnsureSingleNavigator>
-                </RouterRegistrySettersContext.Provider>
-              </CanGoBackContext>
-              <ImperativeRoutingQueueBridge
-                enqueue={routingQueue.enqueue}
-                setTransitionMode={routingQueue.setTransitionMode}
-              />
-              <RoutingQueueDrainer processIntent={processIntent} />
-              <BrowserHistorySync adapter={browserHistory} />
-            </RootNavigationStateContext.Provider>
-          </RouteInfoContext.Provider>
-        </NavigationStateContext.Provider>
-      </NavigationBuilderContext.Provider>
-    </NavigationContainerRefContext.Provider>
+    <NativeBackRegistryContext value={nativeBackRegistry}>
+      <NavigationActionResultRegistryContext value={actionResults}>
+        <NavigationContainerRefContext.Provider value={navigation}>
+          <NavigationBuilderContext.Provider value={builderContext}>
+            <NavigationStateContext.Provider value={context}>
+              <RouteInfoContext.Provider value={routeInfo}>
+                <RootNavigationStateContext.Provider value={state}>
+                  <CanGoBackContext value={focusedCanGoBack}>
+                    <RouterRegistrySettersContext.Provider value={registrySetters}>
+                      <EnsureSingleNavigator>
+                        <NavigationPendingContext
+                          value={isNavigationPending || isWaitingForLayouts}>
+                          <ThemeProvider value={theme}>{children}</ThemeProvider>
+                        </NavigationPendingContext>
+                      </EnsureSingleNavigator>
+                    </RouterRegistrySettersContext.Provider>
+                  </CanGoBackContext>
+                  <ImperativeRoutingQueueBridge
+                    enqueue={routingQueue.enqueue}
+                    setTransitionMode={routingQueue.setTransitionMode}
+                  />
+                  <RoutingQueueDrainer processIntent={processIntent} />
+                  <BrowserHistorySync adapter={browserHistory} />
+                </RootNavigationStateContext.Provider>
+              </RouteInfoContext.Provider>
+            </NavigationStateContext.Provider>
+          </NavigationBuilderContext.Provider>
+        </NavigationContainerRefContext.Provider>
+      </NavigationActionResultRegistryContext>
+    </NativeBackRegistryContext>
   );
 }

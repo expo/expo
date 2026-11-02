@@ -1,5 +1,6 @@
 import { mark } from '../performance';
 import type { NavigationAction, NavigationState } from '../react-navigation/native';
+import type { NavigationActionTransaction } from './navigationActionResult';
 import type { RouterRegistry } from './routerRegistry';
 import type { LinkToOptions } from './types';
 
@@ -27,7 +28,11 @@ export type RoutingIntent = (
     }
   | {
       type: 'ACTION';
-      payload: { action: NavigationAction; originKey?: string };
+      payload: {
+        action: NavigationAction;
+        originKey?: string;
+        transaction?: NavigationActionTransaction;
+      };
     }
   | {
       // The browser moved on its own (back, forward, hash link); `id` is the entry id stored in

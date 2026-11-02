@@ -120,6 +120,8 @@ export type IntegrateWithRouterOptions<
   NavigatorOptions extends object = Record<string, any>,
   EventMap extends EventMapBase = EventMapBase,
 > = CreatePropsOption<State, CreateProps> & {
+  /** Declares an Android native dispatcher owner; unknown navigators retain JavaScript Back. */
+  nativeBackNavigation?: boolean | ((state: State) => boolean);
   /**
    * Number of screens above a route that hides its content when `activityEnabled` is `true`.
    * @default 1

@@ -2,6 +2,11 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import type { NavigationActionResult } from '../../global-state/navigationActionResult';
+import {
+  NavigationActionResultRegistryContext,
+  NativeBackRegistryContext,
+} from '../../global-state/navigationIntegration';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
@@ -40,6 +45,8 @@ export function useNavigationHelpers<
 >({ id: navigatorId, handleAction, state, emitter, router }: Options<State, Action>) {
   const parentNavigationHelpers = use(NavigationContext);
   const enqueue = useEnqueueRoutingIntent();
+  const actionResults = use(NavigationActionResultRegistryContext);
+  const nativeBackRegistry = use(NativeBackRegistryContext);
   // Unlike handler-only Effect Events, the public accessor can be called during render.
   const getState = useLatestCallback(() => state);
 
@@ -53,6 +60,35 @@ export function useNavigationHelpers<
         type: 'ACTION',
         payload: { action, originKey: getState().key },
       });
+    };
+
+    const dispatchWithResult = (
+      action: Action,
+      options: { expectedState: NavigationState },
+      callback: (result: NavigationActionResult) => void
+    ) => {
+      if (!actionResults) throw new Error('Navigation action results require ExpoRoot.');
+      const registration = actionResults.register(callback);
+      enqueue({
+        type: 'ACTION',
+        inTransition: false,
+        payload: {
+          action,
+          originKey: getState().key,
+          transaction: {
+            id: registration.id,
+            token: registration.token,
+            scope: actionResults.scope,
+            expectedState: options.expectedState,
+          },
+        },
+      });
+      return { remove: registration.remove };
+    };
+
+    const registerNativeBackNavigation = () => {
+      if (!nativeBackRegistry) throw new Error('Native Back ownership requires ExpoRoot.');
+      return nativeBackRegistry.register(getState().key);
     };
 
     const actions = {
@@ -71,6 +107,8 @@ export function useNavigationHelpers<
       ...helpers,
       dispatch,
       dispatchSync,
+      dispatchWithResult,
+      registerNativeBackNavigation,
       emit: emitter.emit,
       isFocused: parentNavigationHelpers ? parentNavigationHelpers.isFocused : () => true,
       canGoBack: () => {
@@ -102,5 +140,14 @@ export function useNavigationHelpers<
     } as NavigationHelpers<ParamListBase, EventMap> & ActionHelpers;
 
     return navigationHelpers;
-  }, [enqueue, router, parentNavigationHelpers, emitter.emit, handleAction, navigatorId]);
+  }, [
+    enqueue,
+    router,
+    parentNavigationHelpers,
+    emitter.emit,
+    handleAction,
+    navigatorId,
+    actionResults,
+    nativeBackRegistry,
+  ]);
 }

@@ -11,6 +11,7 @@ import {
 } from 'react';
 
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
+import { createPendingNavigationOperations } from './pendingNavigationOperations';
 import { createImperativeRouter, getDefaultTransitionMode, router, unboundRouter } from './router';
 import {
   markActionEnqueuedAndReturnId,
@@ -28,6 +29,7 @@ const throwMissingRoutingQueue = () => {
 };
 
 export type RoutingQueueApi = {
+  pendingOperations: ReturnType<typeof createPendingNavigationOperations>;
   enqueue: (intent: RoutingIntent) => void;
   dequeue: (processed: QueuedRoutingIntent[]) => void;
   startTransition: TransitionStartFunction;
@@ -40,15 +42,33 @@ export const PendingIntentsContext = createContext<QueuedRoutingIntent[]>(EMPTY)
 export const NavigationPendingContext = createContext(false);
 
 export function RoutingQueueProvider({ children }: PropsWithChildren) {
+  const [pendingOperations] = useState(createPendingNavigationOperations);
   const [queue, setQueue] = useState(EMPTY);
   const [isPending, startTransition] = useTransition();
   const [transitionMode, setTransitionMode] =
     useState<NavigationTransitionMode>(getDefaultTransitionMode);
   const api = useMemo<RoutingQueueApi>(
     () => ({
+      pendingOperations,
       // Each enqueue has its own identity, including repeated uses of the same intent object.
       enqueue: (intent) => {
-        const queued = { ...intent, actionId: markActionEnqueuedAndReturnId() };
+        const actionId = markActionEnqueuedAndReturnId();
+        const transaction = intent.type === 'ACTION' ? intent.payload.transaction : undefined;
+        const guarded =
+          intent.type === 'ACTION' && transaction
+            ? {
+                ...intent,
+                payload: {
+                  ...intent.payload,
+                  transaction: {
+                    ...transaction,
+                    blockedAtEnqueue: pendingOperations.hasOtherThan(actionId),
+                  },
+                },
+              }
+            : intent;
+        const queued = { ...guarded, actionId };
+        pendingOperations.enqueue(actionId, transaction !== undefined);
         setQueue((previous) => [...previous, queued]);
       },
       // Keep intents added between the drained render and this state update.
@@ -62,7 +82,7 @@ export function RoutingQueueProvider({ children }: PropsWithChildren) {
       transitionMode,
       setTransitionMode,
     }),
-    [startTransition, transitionMode]
+    [startTransition, transitionMode, pendingOperations]
   );
 
   return (
