@@ -73,7 +73,7 @@ describe(getAppPathAsync, () => {
     } as any);
 
     await expect(getAppPathAsync(props)).rejects.toThrow(
-      'The "my-app" scheme doesn\'t build a target named "my-app". Targets it builds: other-app.'
+      'The "my-app" scheme doesn\'t build a target named "my-app". Targets it builds: other-app. Edit the scheme in Xcode so it builds the "my-app" target.'
     );
   });
 });
