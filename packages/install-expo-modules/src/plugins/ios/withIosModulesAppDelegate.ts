@@ -10,6 +10,7 @@ import fs from 'fs';
 import { globSync } from 'glob';
 import semver from 'semver';
 
+import { removeLegacySourceUrl } from './removeLegacySourceUrl';
 import {
   getDesignatedSwiftBridgingHeaderFileReference,
   withXCParseXcodeProject,
@@ -171,15 +172,16 @@ export function updateModulesAppDelegateSwift(
     /\bRCTDefaultReactNativeFactoryDelegate\b/,
     'ExpoReactNativeFactoryDelegate'
   );
-  contents = contents.replace(
-    /(\boverride.*\ssourceURL\(.*\{[\s\S]+?)(\s+self\.bundleURL\(\))/m,
-    `$1\
+  if (sdkVersion && semver.gte(sdkVersion, '58.0.0')) {
+    contents = removeLegacySourceUrl(contents);
+    contents = updateModulesAppDelegateSwiftSceneLifecycle(contents);
+  } else {
+    contents = contents.replace(
+      /(\boverride.*\ssourceURL\(.*\{[\s\S]+?)(\s+self\.bundleURL\(\))/m,
+      `$1\
     // needed to return the correct URL for expo-dev-client.
     bridge.bundleURL ?? bundleURL()`
-  );
-
-  if (sdkVersion && semver.gte(sdkVersion, '58.0.0')) {
-    contents = updateModulesAppDelegateSwiftSceneLifecycle(contents);
+    );
   }
 
   return contents;
