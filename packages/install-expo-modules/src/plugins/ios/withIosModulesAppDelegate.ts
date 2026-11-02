@@ -145,7 +145,7 @@ export function updateModulesAppDelegateSwift(
     }
   }
 
-  if (sdkVersion && semver.gte(sdkVersion, '58.0.0')) {
+  if (sdkVersion && semver.gte(sdkVersion, '59.0.0')) {
     assertNoLegacySourceUrl(contents);
   }
 
@@ -176,15 +176,16 @@ export function updateModulesAppDelegateSwift(
     /\bRCTDefaultReactNativeFactoryDelegate\b/,
     'ExpoReactNativeFactoryDelegate'
   );
-  if (sdkVersion && semver.gte(sdkVersion, '58.0.0')) {
-    contents = updateModulesAppDelegateSwiftSceneLifecycle(contents);
-  } else {
+  if (!sdkVersion || semver.lt(sdkVersion, '59.0.0')) {
     contents = contents.replace(
       /(\boverride.*\ssourceURL\(.*\{[\s\S]+?)(\s+self\.bundleURL\(\))/m,
       `$1\
     // needed to return the correct URL for expo-dev-client.
     bridge.bundleURL ?? bundleURL()`
     );
+  }
+  if (sdkVersion && semver.gte(sdkVersion, '58.0.0')) {
+    contents = updateModulesAppDelegateSwiftSceneLifecycle(contents);
   }
 
   return contents;

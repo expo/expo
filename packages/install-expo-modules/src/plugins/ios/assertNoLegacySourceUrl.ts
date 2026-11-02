@@ -6,7 +6,7 @@ export function assertNoLegacySourceUrl(contents: string): void {
 
   const line = contents.slice(0, method.index).split('\n').length;
   throw new Error(
-    `Cannot install Expo modules because AppDelegate.swift contains the legacy sourceURL(for:) method at line ${line}. SDK 58 and later use bundleURL() instead. Remove sourceURL(for:) and its attributes. If it contains custom bundle selection, move that logic to bundleURL() first. Then run install-expo-modules again.`
+    `Cannot install Expo modules because AppDelegate.swift contains the legacy sourceURL(for:) method at line ${line}. SDK 59 and later require bundleURL() instead. Remove sourceURL(for:) and its attributes. If it contains custom bundle selection, move that logic to bundleURL() first. Then run install-expo-modules again.`
   );
 }
 
