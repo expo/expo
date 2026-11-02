@@ -90,7 +90,9 @@ class Ignore {
   constructor(private rootDir: string) {}
 
   public async initIgnoreAsync(): Promise<void> {
-    const ignoreFilePaths = (await findIgnoreFilesAsync(this.rootDir)).sort(
+    const ignoreFilePaths = (await findIgnoreFilesAsync(this.rootDir))
+      // ensure that parent dir is before child directories
+      .sort(
       (a, b) => a.length - b.length && a.localeCompare(b)
     );
 
