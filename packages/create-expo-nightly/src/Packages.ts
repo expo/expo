@@ -9,7 +9,7 @@ const EXCLUDE_PACKAGES = [
   'eslint-config-universe',
   'expo-doctor',
   'expo-env-info',
-  'expo-module-scripts',
+  '@expo/internal-scripts',
   'expo-module-template',
   'expo-test-runner',
   'install-expo-modules',

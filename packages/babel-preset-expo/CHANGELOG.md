@@ -1,5 +1,58 @@
 # Changelog
 
+## 58.0.20
+
+No changes in this release.
+
+## 58.0.19
+
+No changes in this release.
+
+## 58.0.18
+
+### Patch Changes
+
+- Drop Hermes v1 transform workaround plugins. Three transforms existed to work around Hermes v1 issues, which have since been resolved in Hermes 260318099.0.x. ([#51687](https://github.com/expo/expo/pull/51687) by [@kitten](https://github.com/kitten))
+
+## 58.0.17
+
+No changes in this release.
+
+## 58.0.16
+
+No changes in this release.
+
+## 58.0.15
+
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Internal] Drop unused `EXPO_PROJECT_ROOT` and `EXPO_ROUTER_ABS_APP_ROOT` variables and corresponding invalidation. ([#51540](https://github.com/expo/expo/pull/51540) by [@kitten](https://github.com/kitten))
+
+## 58.0.14
+
+### Patch Changes
+
+- Update to `@expo/metro@~58.0.0` (promoted to stable for SDK 58). ([#51549](https://github.com/expo/expo/pull/51549) by [@kitten](https://github.com/kitten))
+
+## 58.0.13
+
+No changes in this release.
+
+## 58.0.12
+
+### Patch Changes
+
+- [Internal] Bump `babel-plugin-react-native-web` to `~0.21.4`. ([#51260](https://github.com/expo/expo/pull/51260) by [@zoontek](https://github.com/zoontek))
+- Remapped `import.meta.url` under Jest to the module's `file://` URL. `jest-expo` now reports `bundler: 'jest'` to Babel. ([#51110](https://github.com/expo/expo/pull/51110) by [@abappi19](https://github.com/abappi19))
+
+## 58.0.11
+
+### Patch Changes
+
+- [Internal] Bootstrap React Native through `react-native/setup-env` instead of `InitializeCore`. ([#50863](https://github.com/expo/expo/pull/50863) by [@huntie](https://github.com/huntie))
+- [Internal] Import React Native internals from `react-native/unstable-internals-do-not-use`. ([#50860](https://github.com/expo/expo/pull/50860) by [@huntie](https://github.com/huntie))
+
 ## 58.0.10
 
 No changes in this release.

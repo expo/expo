@@ -259,14 +259,14 @@ test('preserves the focused occurrence of a duplicate route', () => {
   });
 });
 
-test('resolves an initial route to its directory index route', () => {
+test('inserts a directory anchor as its index route before the target', () => {
   const state = createSeededRootState(
     {
       routes: [
         {
           name: '__root',
           state: {
-            routes: [{ name: 'home' }, { name: 'settings' }],
+            routes: [{ name: 'settings' }],
           },
         },
       ],
@@ -281,15 +281,14 @@ test('resolves an initial route to its directory index route', () => {
   });
 });
 
-test('does not duplicate a directory index route used as the initial route', () => {
+test('does not insert a directory anchor that is the target', () => {
   const state = createSeededRootState(
     {
       routes: [
         {
           name: '__root',
           state: {
-            index: 1,
-            routes: [{ name: 'home' }, { name: 'home/index', path: '/home' }],
+            routes: [{ name: 'home/index', path: '/home' }],
           },
         },
       ],

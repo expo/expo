@@ -89,6 +89,10 @@ export type TimePickerElementColors = {
   /** The color of clock dial numbers when selected or overlapping the selector. */
   clockDialSelectedContentColor?: ColorValue;
   /** The color of clock dial numbers when unselected. */
+  clockDialContentColor?: ColorValue;
+  /**
+   * @deprecated Use `clockDialContentColor` instead.
+   */
   clockDialUnselectedContentColor?: ColorValue;
   /** The color of the clock dial selector (hand). */
   selectorColor?: ColorValue;
@@ -97,18 +101,34 @@ export type TimePickerElementColors = {
   /** The background color of the selected AM/PM period. */
   periodSelectorSelectedContainerColor?: ColorValue;
   /** The background color of the unselected AM/PM period. */
+  periodSelectorContainerColor?: ColorValue;
+  /**
+   * @deprecated Use `periodSelectorContainerColor` instead.
+   */
   periodSelectorUnselectedContainerColor?: ColorValue;
   /** The text color of the selected AM/PM period. */
   periodSelectorSelectedContentColor?: ColorValue;
   /** The text color of the unselected AM/PM period. */
+  periodSelectorContentColor?: ColorValue;
+  /**
+   * @deprecated Use `periodSelectorContentColor` instead.
+   */
   periodSelectorUnselectedContentColor?: ColorValue;
   /** The background color of the selected hour/minute segment. */
   timeSelectorSelectedContainerColor?: ColorValue;
   /** The background color of the unselected hour/minute segment. */
+  timeSelectorContainerColor?: ColorValue;
+  /**
+   * @deprecated Use `timeSelectorContainerColor` instead.
+   */
   timeSelectorUnselectedContainerColor?: ColorValue;
   /** The text color of the selected hour/minute segment. */
   timeSelectorSelectedContentColor?: ColorValue;
   /** The text color of the unselected hour/minute segment. */
+  timeSelectorContentColor?: ColorValue;
+  /**
+   * @deprecated Use `timeSelectorContentColor` instead.
+   */
   timeSelectorUnselectedContentColor?: ColorValue;
 };
 
@@ -118,9 +138,9 @@ export interface DateTimePickerProps {
    */
   initialDate?: string | null;
   /**
-   * Callback function that is called when a date is selected.
+   * Called when the selection changes. The date is `null` when date input is incomplete or invalid.
    */
-  onDateSelected?: (date: Date) => void;
+  onDateSelected?: (date: Date | null) => void;
   /**
    * The variant of the picker, which determines its appearance and behavior.
    * @default 'picker'
@@ -131,6 +151,20 @@ export interface DateTimePickerProps {
    * @default true
    */
   showVariantToggle?: boolean;
+  /**
+   * Whether the picker shows its title, such as "Select date". When `false`, the picker passes
+   * `null` to Material 3's `title` slot. This prop has no effect when `displayedComponents` is
+   * `'hourAndMinute'`.
+   * @default true
+   */
+  showTitle?: boolean;
+  /**
+   * Whether the picker shows its headline, which displays the current selection. When `false`,
+   * the picker passes `null` to Material 3's `headline` slot. This prop has no effect when
+   * `displayedComponents` is `'hourAndMinute'`.
+   * @default true
+   */
+  showHeadline?: boolean;
   /**
    * The components that the picker should display.
    * On Android, you can have a picker that selects just the date or just the time.
@@ -178,7 +212,7 @@ type NativeDatePickerProps = Omit<
   initialDate?: number | null;
   selectableDates?: { start?: number | null; end?: number | null } | null;
   elementColors?: DatePickerElementColors & TimePickerElementColors;
-} & ViewEvent<'onDateSelected', { date: Date }>;
+} & ViewEvent<'onDateSelected', { date: number | null }>;
 
 function convertSelectableDates(selectableDates?: {
   start?: Date;
@@ -209,7 +243,7 @@ function transformDateTimePickerProps(props: DateTimePickerProps): NativeDatePic
     initialDate: initialDateTimestamp,
     selectableDates: convertSelectableDates(selectableDates),
     onDateSelected: ({ nativeEvent: { date } }) => {
-      props.onDateSelected?.(new Date(date));
+      props.onDateSelected?.(convertTimestampToDate(date));
     },
     variant,
     ...(elementColors != null ? { elementColors } : undefined),
@@ -252,6 +286,18 @@ export interface DateRangePickerProps {
    * @default true
    */
   showVariantToggle?: boolean;
+  /**
+   * Whether the picker shows its title, such as "Select date". When `false`, the picker passes
+   * `null` to Material 3's `title` slot.
+   * @default true
+   */
+  showTitle?: boolean;
+  /**
+   * Whether the picker shows its headline, which displays the current selection. When `false`,
+   * the picker passes `null` to Material 3's `headline` slot.
+   * @default true
+   */
+  showHeadline?: boolean;
   /**
    * The tint color to use on the picker elements.
    */
@@ -332,6 +378,18 @@ export interface DatePickerDialogProps {
   initialDate?: string | null;
   variant?: AndroidVariant;
   showVariantToggle?: boolean;
+  /**
+   * Whether the picker shows its title, such as "Select date". When `false`, the picker passes
+   * `null` to Material 3's `title` slot.
+   * @default true
+   */
+  showTitle?: boolean;
+  /**
+   * Whether the picker shows its headline, which displays the current selection. When `false`,
+   * the picker passes `null` to Material 3's `headline` slot.
+   * @default true
+   */
+  showHeadline?: boolean;
   confirmButtonLabel?: string;
   dismissButtonLabel?: string;
   color?: ColorValue;

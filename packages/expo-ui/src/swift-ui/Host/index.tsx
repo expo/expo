@@ -2,10 +2,11 @@ import { requireNativeView } from 'expo';
 import type { Ref } from 'react';
 import { I18nManager, type ColorValue, type StyleProp, type ViewStyle } from 'react-native';
 
+import { NativeTreeContext, useWarnIfNestedHost } from '../../NativeTreeContext';
 import { TextInputHostProvider, useTextInputHostRef } from '../../keyboard';
 import { useMergeRefs } from '../../utils/useMergeRefs';
 import { createViewModifierEventListener } from '../modifiers/utils';
-import { type CommonViewModifierProps } from '../types';
+import { type Alignment, type CommonViewModifierProps } from '../types';
 
 export interface HostProps extends CommonViewModifierProps {
   /**
@@ -14,6 +15,17 @@ export interface HostProps extends CommonViewModifierProps {
    * @default false
    */
   matchContents?: boolean | { vertical?: boolean; horizontal?: boolean };
+
+  /**
+   * The position of the SwiftUI content inside the host when their sizes differ. The sizes differ
+   * when the host is larger than its content, and while the content of a `matchContents` host
+   * animates to a new size. Setting it to the edge that the host is anchored to in its React
+   * Native layout keeps that edge still. For example, a host at the end of a row uses `'trailing'`.
+   * It also aligns the host's children with each other. Leading and trailing follow
+   * `layoutDirection`.
+   * @default 'topLeading'
+   */
+  alignment?: Alignment;
 
   /**
    * When true and no explicit size is provided, the host will use the viewport size as the proposed size for SwiftUI layout.
@@ -81,10 +93,12 @@ export function Host(props: HostProps) {
     layoutDirection,
     seedColor,
     ref,
+    children,
     ...restProps
   } = props;
   const hostRef = useTextInputHostRef();
   const mergedRef = useMergeRefs(ref, hostRef);
+  useWarnIfNestedHost('SwiftUI');
 
   return (
     <TextInputHostProvider hostRef={hostRef}>
@@ -104,8 +118,9 @@ export function Host(props: HostProps) {
         ignoreSafeArea={ignoreSafeArea}
         seedColor={seedColor}
         {...restProps}
-        ref={mergedRef}
-      />
+        ref={mergedRef}>
+        <NativeTreeContext.Provider value>{children}</NativeTreeContext.Provider>
+      </HostNativeView>
     </TextInputHostProvider>
   );
 }

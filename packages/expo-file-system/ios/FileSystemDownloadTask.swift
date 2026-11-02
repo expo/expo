@@ -234,6 +234,7 @@ final class NetworkTaskSessionManager {
 struct DownloadTaskOptions: Record {
   @Field var headers: [String: String]?
   @Field var sessionType: NetworkTaskSessionType = .background
+  @Field var deferBackgroundSessionCompletion: Bool = false
 }
 
 /**
@@ -244,6 +245,20 @@ class FileSystemDownloadTask: SharedObject {
   private var delegateKey: String?
   private var sessionType: NetworkTaskSessionType = .background
   private(set) var isPausing = false
+  private var backgroundSessionHandler: FileSystemBackgroundSessionHandler?
+
+  private func registerBackgroundCompletion(in session: URLSession, options: DownloadTaskOptions?) {
+    guard options?.deferBackgroundSessionCompletion == true,
+      let identifier = session.configuration.identifier else { return }
+    backgroundSessionHandler = ExpoAppDelegateSubscriberRepository.getSubscriberOfType(FileSystemBackgroundSessionHandler.self)
+    backgroundSessionHandler?.registerDownload(self, forSessionIdentifier: identifier)
+  }
+
+  func acknowledgeBackgroundCompletion() throws {
+    guard downloadTask == nil else { throw BackgroundDownloadNotFinishedException() }
+    backgroundSessionHandler?.acknowledgeDownload(self)
+    backgroundSessionHandler = nil
+  }
 
   func start(url: URL, to: FileSystemPath, options: DownloadTaskOptions?, promise: Promise) {
     isPausing = false
@@ -261,6 +276,7 @@ class FileSystemDownloadTask: SharedObject {
 
     let task = session.downloadTask(with: request)
     downloadTask = task
+    registerBackgroundCompletion(in: session, options: options)
     delegateKey = NetworkTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
     task.resume()
   }
@@ -295,6 +311,7 @@ class FileSystemDownloadTask: SharedObject {
     let task = session.downloadTask(withResumeData: data)
 
     downloadTask = task
+    registerBackgroundCompletion(in: session, options: options)
     delegateKey = NetworkTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
     task.resume()
   }
@@ -305,14 +322,20 @@ class FileSystemDownloadTask: SharedObject {
     cleanup(unregisterDelegate: false)
   }
 
-  func finishTask() {
+  func finishTask(succeeded: Bool) {
+    backgroundSessionHandler?.finishDownload(self, succeeded: succeeded)
     // Delegate is unregistered by NetworkTaskSessionDispatcher after didCompleteWithError returns.
     cleanup(unregisterDelegate: false)
   }
 
   override func sharedObjectWillRelease() {
-    downloadTask?.cancel()
-    cleanup(unregisterDelegate: false)
+    // SharedObject release may arrive on the JS thread; subscriber state is main-queue confined.
+    DispatchQueue.main.async {
+      self.backgroundSessionHandler?.discardDownload(self)
+      self.backgroundSessionHandler = nil
+      self.downloadTask?.cancel()
+      self.cleanup(unregisterDelegate: false)
+    }
   }
 
   private func cleanup(unregisterDelegate: Bool) {
@@ -330,6 +353,8 @@ private final class DownloadTaskDelegate: NSObject, NetworkTaskDelegate {
   private weak var sharedObject: FileSystemDownloadTask?
   private let destination: FileSystemPath
   private let promise: Promise
+  private var downloadedFileUri: String?
+  private var saveError: Error?
   private var lastProgressTime: TimeInterval = 0
   private let progressThrottleInterval: TimeInterval = 0.1
 
@@ -368,7 +393,7 @@ private final class DownloadTaskDelegate: NSObject, NetworkTaskDelegate {
     do {
       if let httpResponse = downloadTask.response as? HTTPURLResponse,
          !(200...299).contains(httpResponse.statusCode) {
-        promise.reject(UnableToDownloadException("server returned HTTP \(httpResponse.statusCode)"))
+        saveError = UnableToDownloadException("server returned HTTP \(httpResponse.statusCode)")
         return
       }
 
@@ -395,20 +420,26 @@ private final class DownloadTaskDelegate: NSObject, NetworkTaskDelegate {
         try FileManager.default.moveItem(at: location, to: destinationUrl)
         return destinationUrl.absoluteString
       }
-      promise.resolve(resolvedUrl)
+      downloadedFileUri = resolvedUrl
     } catch {
-      promise.reject(
-        UnableToDownloadException("Failed to move downloaded file: \(error.localizedDescription)")
-      )
+      saveError = UnableToDownloadException("Failed to move downloaded file: \(error.localizedDescription)")
     }
   }
 
   func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-    defer {
-      sharedObject?.finishTask()
+    // JS can acknowledge as soon as the promise settles. Register the outcome first
+    // so that acknowledgment cannot race finishDownload.
+    sharedObject?.finishTask(succeeded: error == nil && downloadedFileUri != nil)
+    if let saveError {
+      promise.reject(saveError)
+      return
     }
-
     guard let error else {
+      if let downloadedFileUri {
+        promise.resolve(downloadedFileUri)
+      } else {
+        promise.reject(UnableToDownloadException("Download completed without a saved file"))
+      }
       return
     }
 

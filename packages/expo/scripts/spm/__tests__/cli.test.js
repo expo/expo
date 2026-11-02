@@ -27,12 +27,13 @@ function valueOf(argv, flag) {
 }
 
 describe('generateModulesProvider', () => {
-  it('always passes the target, app root and platform', () => {
+  it('always passes the target, app root and platforms', () => {
     const argv = argvFor({});
     expect(argv[1]).toBe('generate-modules-provider');
     expect(valueOf(argv, '--target')).toMatch(/ExpoModulesProvider\.swift$/);
     expect(valueOf(argv, '--app-root')).toBe(path.join(os.tmpdir(), 'app'));
     expect(valueOf(argv, '--platform')).toBe('apple');
+    expect(valueOf(argv, '--target-platform')).toBe('ios');
   });
 
   it('passes the app target name, entitlements and Podfile properties when resolved', () => {
@@ -115,22 +116,37 @@ describe('resolveExpoModules', () => {
     expect(resolve({ modules, extraDependencies, coreFeatures: [] })).toEqual({
       modules,
       extraDependencies,
+      buildFromSource: [],
     });
   });
 
   // Every caller reads `extraDependencies.length`, so it is an array in every shape
   // the CLI answers with.
   it('reports no extra pods when the app declares none', () => {
-    expect(resolve({ modules: [] })).toEqual({ modules: [], extraDependencies: [] });
+    expect(resolve({ modules: [] })).toEqual({
+      modules: [],
+      extraDependencies: [],
+      buildFromSource: [],
+    });
     expect(resolve({ modules: [], extraDependencies: null })).toEqual({
       modules: [],
       extraDependencies: [],
+      buildFromSource: [],
     });
+  });
+
+  // The same option CocoaPods reads from this output, in autolinking_manager.rb.
+  it("returns the app's buildFromSource patterns", () => {
+    const configuration = { buildFromSource: ['expo-haptics', 'ExpoCamera.*'] };
+    expect(resolve({ modules: [], configuration }).buildFromSource).toEqual([
+      'expo-haptics',
+      'ExpoCamera.*',
+    ]);
   });
 
   it('reads the legacy top-level array as modules alone', () => {
     const modules = [{ packageName: 'expo-camera', pods: [] }];
 
-    expect(resolve(modules)).toEqual({ modules, extraDependencies: [] });
+    expect(resolve(modules)).toEqual({ modules, extraDependencies: [], buildFromSource: [] });
   });
 });

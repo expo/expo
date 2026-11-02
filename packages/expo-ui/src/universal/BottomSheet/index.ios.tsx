@@ -9,6 +9,7 @@ import {
   type PresentationDetent,
 } from '@expo/ui/swift-ui/modifiers';
 
+import { useIsInsideNativeTree } from '../../NativeTreeContext';
 import type { BottomSheetProps, SnapPoint } from './types';
 import { resolveContentPadding } from './utils';
 
@@ -29,6 +30,7 @@ export function BottomSheet({
   contentPadding,
   containerColor,
 }: BottomSheetProps) {
+  const isInsideHost = useIsInsideNativeTree();
   const { top, bottom, left, right } = resolveContentPadding(contentPadding, {
     top: 16,
     bottom: 0,
@@ -50,17 +52,26 @@ export function BottomSheet({
     presentationModifiers.push(...modifiers);
   }
 
+  const sheet = (
+    <SwiftUIBottomSheet
+      isPresented={isPresented}
+      onIsPresentedChange={(presented) => {
+        if (!presented) onDismiss();
+      }}
+      fitToContents={!snapPoints || snapPoints.length === 0}
+      testID={testID}>
+      <Group modifiers={presentationModifiers}>{children}</Group>
+    </SwiftUIBottomSheet>
+  );
+
+  // Already inside a `Host`, for example nested in another sheet's content: a `Host` of its own
+  // would be a `Host` directly inside SwiftUI.
+  if (isInsideHost) {
+    return sheet;
+  }
   return (
     <Host style={{ position: 'absolute' }} pointerEvents="none">
-      <SwiftUIBottomSheet
-        isPresented={isPresented}
-        onIsPresentedChange={(presented) => {
-          if (!presented) onDismiss();
-        }}
-        fitToContents={!snapPoints || snapPoints.length === 0}
-        testID={testID}>
-        <Group modifiers={presentationModifiers}>{children}</Group>
-      </SwiftUIBottomSheet>
+      {sheet}
     </Host>
   );
 }

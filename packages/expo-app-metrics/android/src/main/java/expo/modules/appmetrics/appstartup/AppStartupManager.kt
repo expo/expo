@@ -40,11 +40,17 @@ object AppStartupManager {
   private const val BACKGROUND_THRESHOLD_MS = 60_000L
 
   // CopyOnWriteArrayList: writes (addMetric) happen on the React/JS/main threads;
-  // reads (saveStartupMetricsIfNotSaved) happen on appContext.modulesQueue. Snapshot
-  // iteration on the read side means we never CME under concurrent add().
+  // reads happen on appContext.modulesQueue. Snapshot iteration on the read side
+  // means we never CME under concurrent add().
   private val _metrics: MutableList<Metric> = CopyOnWriteArrayList()
   internal val metrics: List<Metric>
     get() = _metrics
+
+  // How many of `_metrics` were already handed out for saving. Guarded by `this`.
+  private var savedCount = 0
+
+  // Set once recording is stopped; `addMetric` then drops every metric. Guarded by `this`.
+  private var isRecordingStopped = false
 
   // These fields are read and written across the React marker thread, the main thread,
   // and the JS thread. @Volatile guarantees writes are visible across threads so the
@@ -111,12 +117,31 @@ object AppStartupManager {
     )
   }
 
-  private fun addMetric(
+  // Returns the metrics recorded since the last call, so each one is saved once.
+  // Works on one snapshot so a metric added concurrently is left for the next call.
+  @Synchronized
+  internal fun takeUnsavedMetrics(): List<Metric> {
+    val snapshot = _metrics.toList()
+    val unsaved = snapshot.drop(savedCount)
+    savedCount = snapshot.size
+    return unsaved
+  }
+
+  @Synchronized
+  internal fun stopRecording() {
+    isRecordingStopped = true
+  }
+
+  @Synchronized
+  internal fun addMetric(
     metric: AppStartupMetric,
     valueInMs: Long,
     routeName: String? = null,
     params: Map<String, Any>? = null
   ) {
+    if (isRecordingStopped) {
+      return
+    }
     _metrics.add(
       Metric(
         sessionId = "",

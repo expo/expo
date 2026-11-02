@@ -163,7 +163,7 @@ public struct Conversions {
    */
   static func anyToJavaScriptValue<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
     if ValueType.self is AnyOptional.Type, Optional.isNil(value) {
-      return .null
+      return .null()
     }
     if let value = value as? AnyArgument {
       return try type(of: value).getDynamicType().castToJS(value, appContext: appContext, in: runtime)
@@ -185,15 +185,18 @@ public struct Conversions {
    path so produced dicts/arrays live in the calling runtime, not the main runtime.
    */
   static func unknownToJavaScriptValue(_ value: Any, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
+    if let converted = value as? ConvertedJavaScriptValue {
+      return converted.takeValue()
+    }
     if let value = value as? JavaScriptRepresentable {
       return .representing(value: value, in: runtime)
     }
 
     switch value {
     case is Void:
-      return .undefined
+      return .undefined()
     case is NSNull:
-      return .null
+      return .null()
     case let number as NSNumber:
       if number === kCFBooleanTrue {
         return .true()
@@ -205,7 +208,9 @@ public struct Conversions {
     case let string as NSString:
       return .representing(value: string as String, in: runtime)
     case let data as Data:
-      return try dataToUint8Array(data, runtime: runtime)
+      return try JavaScriptActor.assumeIsolated {
+        return try Data.encode(data, in: runtime)
+      }
     case let array as NSArray:
       let jsArray = runtime.createArray(length: array.count)
       for (index, element) in array.enumerated() {
@@ -221,22 +226,8 @@ public struct Conversions {
       return jsObject.asValue()
     default:
       log.warn("unknownToJavaScriptValue: unsupported native type '\(type(of: value))', returning undefined")
-      return .undefined
+      return .undefined()
     }
-  }
-
-  /**
-   Copies the given `Data` into a new JS `ArrayBuffer` and wraps it in a `Uint8Array`.
-   */
-  private static func dataToUint8Array(_ data: Data, runtime: JavaScriptRuntime) throws -> JavaScriptValue {
-    let arrayBuffer = runtime.createArrayBuffer(size: data.count)
-    data.withUnsafeBytes { rawBuffer in
-      if let baseAddress = rawBuffer.baseAddress, data.count > 0 {
-        memcpy(arrayBuffer.data(), baseAddress, data.count)
-      }
-    }
-    let uint8ArrayCtor = try runtime.global().getPropertyAsFunction("Uint8Array")
-    return try uint8ArrayCtor.callAsConstructor(arrayBuffer.asValue())
   }
 
   // MARK: - Exceptions
@@ -348,4 +339,39 @@ public struct Conversions {
     }
   }
 
+}
+
+/**
+ A JavaScript value carried through `Any` inside the conversion pipeline, between a dynamic type's
+ `convertResult` and its `castToJS` (for example a record field that is already a JS object). It is
+ needed because `JavaScriptValue` is non-copyable and cannot be boxed in `Any` itself. Internal to the
+ pipeline: the module API never hands it to user code.
+ */
+internal final class ConvertedJavaScriptValue: @unchecked Sendable {
+  /**
+   The shared box for `undefined`. It holds no value and `takeValue()` creates a fresh `undefined`
+   each time, so one instance serves every use without an allocation.
+   */
+  static let undefined = ConvertedJavaScriptValue()
+
+  private let ref: JavaScriptValue.Ref?
+
+  init(_ value: consuming JavaScriptValue) {
+    self.ref = value.ref()
+  }
+
+  private init() {
+    self.ref = nil
+  }
+
+  /**
+   Moves the value out of the box, so the pipeline reads it without cloning the engine value. A box is
+   read once, where the converted value becomes a JS value; a later read yields `undefined`.
+   */
+  func takeValue() -> JavaScriptValue {
+    guard let ref else {
+      return .undefined()
+    }
+    return ref.take() ?? .undefined()
+  }
 }

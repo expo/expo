@@ -1,4 +1,4 @@
-import type { MediaType } from './Asset.types';
+import type { MediaSubtype, MediaType } from './Asset.types';
 
 export enum AssetField {
   CREATION_TIME = 'creationTime',
@@ -8,6 +8,10 @@ export enum AssetField {
   HEIGHT = 'height',
   DURATION = 'duration',
   IS_FAVORITE = 'isFavorite',
+  /**
+   * @platform ios
+   */
+  MEDIA_SUBTYPES = 'mediaSubtypes',
 }
 
 export type AssetFieldValueMap = {
@@ -18,9 +22,14 @@ export type AssetFieldValueMap = {
   [AssetField.HEIGHT]: number;
   [AssetField.DURATION]: number;
   [AssetField.IS_FAVORITE]: boolean;
+  [AssetField.MEDIA_SUBTYPES]: MediaSubtype[];
 };
 
+export type CollectionAssetField = AssetField.MEDIA_SUBTYPES;
+
+export type SortableAssetField = Exclude<AssetField, CollectionAssetField>;
+
 export type SortDescriptor = {
-  key: AssetField;
+  key: SortableAssetField;
   ascending?: boolean;
 };

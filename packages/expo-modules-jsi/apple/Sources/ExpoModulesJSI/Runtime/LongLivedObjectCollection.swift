@@ -2,9 +2,10 @@
 /// promise holding its resolve/reject state. Register it with a ``LongLivedObjectCollection``.
 @JavaScriptActor
 public protocol LongLivedObject: AnyObject {
-  /// Called on the JavaScript thread when the runtime tears down while this object is still
-  /// registered, to release any held JSI state. Not called on the normal completion path, where the
-  /// object removes itself after releasing its own state.
+  /// Called when the runtime tears down while this object is still registered, to release any held
+  /// JSI state. Not called on the normal completion path, where the object removes itself after
+  /// releasing its own state. It can run on a thread other than the JavaScript thread while nothing
+  /// else uses the runtime, so it must only release JSI values and must not call into the runtime.
   func allowRelease()
 }
 
@@ -30,7 +31,7 @@ public final class LongLivedObjectCollection {
   }
 
   /// Teardown sweep: calls ``LongLivedObject/allowRelease()`` on every remaining object and empties
-  /// the collection. Must run on the JavaScript thread while the runtime is still valid.
+  /// the collection. Must run while the runtime is still valid and nothing else uses it.
   public func clear() {
     let survivors = registeredObjects.values
     registeredObjects.removeAll()

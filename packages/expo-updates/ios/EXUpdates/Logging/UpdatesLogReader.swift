@@ -91,6 +91,6 @@ public final class UpdatesLogReader {
     // instead
     let earliestDate = Date().addingTimeInterval(-UpdatesLogReader.MAXIMUM_LOOKBACK_INTERVAL)
     let dateToUse = date.timeIntervalSince1970 < earliestDate.timeIntervalSince1970 ? earliestDate : date
-    return UInt(dateToUse.timeIntervalSince1970) * 1000
+    return UInt(dateToUse.timeIntervalSince1970 * 1000)
   }
 }

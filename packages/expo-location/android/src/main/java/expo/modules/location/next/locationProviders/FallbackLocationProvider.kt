@@ -1,6 +1,8 @@
 package expo.modules.location.next.locationProviders
 
 import android.app.Activity
+import expo.modules.interfaces.taskManager.TaskConsumer
+import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.location.next.Position
 
 class FallbackLocationProvider(val locationProviders: List<LocationProvider>) : LocationProvider {
@@ -19,14 +21,21 @@ class FallbackLocationProvider(val locationProviders: List<LocationProvider>) : 
     return firstAvailable { it.watchPosition() }
   }
 
+  override fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> {
+    return firstAvailable { it.getLocationTaskConsumerClass() }
+  }
+
+  override fun getRegisteredTaskConsumerClass(taskManager: TaskManagerInterface, taskName: String): ProviderResult<Class<out TaskConsumer>> {
+    return firstAvailable { it.getRegisteredTaskConsumerClass(taskManager, taskName) }
+  }
+
   private inline fun <T> firstAvailable(providerOperation: (LocationProvider) -> ProviderResult<T>): ProviderResult<T> {
     var outcome: ProviderResult<T> = ProviderResult.Unsupported
     for (locationProvider in locationProviders) {
-      val thisOutcome = providerOperation(locationProvider)
-      when (thisOutcome) {
+      when (val thisOutcome = providerOperation(locationProvider)) {
         is ProviderResult.Available -> return thisOutcome
         ProviderResult.Unavailable -> outcome = ProviderResult.Unavailable
-        // Note that the operation is only unsupported if it is unsupported for all of the providers
+        // Note that the operation is only unsupported if it is unsupported for all the providers
         ProviderResult.Unsupported -> continue
       }
     }

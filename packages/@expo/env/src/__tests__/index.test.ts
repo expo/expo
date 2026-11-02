@@ -48,6 +48,14 @@ describe(setNodeEnv, () => {
     expect(process.env.NODE_ENV).toBe('production');
   });
 
+  it('removes an inherited BABEL_ENV value', () => {
+    process.env.BABEL_ENV = 'development';
+
+    setNodeEnv('production');
+
+    expect(process.env.BABEL_ENV).toBeUndefined();
+  });
+
   it('updates a custom environment without changing process.env', () => {
     process.env.NODE_ENV = 'development';
     const systemEnv = { NODE_ENV: 'test', EXAMPLE: 'value' };
@@ -340,6 +348,12 @@ describe(parseProjectEnv, () => {
     );
 
     expect(parseProjectEnv('/')).toMatchObject({ env: {}, files: ['/.env'] });
+  });
+
+  it('ignores BABEL_ENV in env files', () => {
+    vol.fromJSON({ '.env': ['BABEL_ENV=production', 'FOO=default'].join('\n') }, '/');
+
+    expect(parseProjectEnv('/').env).toEqual({ FOO: 'default' });
   });
 });
 

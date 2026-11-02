@@ -226,7 +226,15 @@ describe('_getManifestResponseAsync', () => {
       id: 'userwat',
       username: 'wat',
       primaryAccount: { id: 'blah-account' },
-      accounts: [],
+      accounts: [
+        {
+          id: 'blah-account',
+          viewerUserPermission2: {
+            permissions: ['OWN', 'ADMIN', 'PUBLISH_PROTECTED', 'PUBLISH', 'RUN', 'VIEW'],
+            effectivePermissions: ['OWN', 'ADMIN', 'PUBLISH_PROTECTED', 'PUBLISH', 'RUN', 'VIEW'],
+          },
+        },
+      ],
     }));
 
     jest.mocked(AppQuery.byIdAsync).mockImplementation(

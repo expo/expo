@@ -18,9 +18,10 @@ describe.each([
     }
   });
 
-  it('keeps the module name mappers from the platform preset', () => {
-    const { moduleNameMapper } = getPreset();
-    expect(moduleNameMapper).toHaveProperty(['^(\\.{1,2}/.*)\\.js$'], '$1');
+  it('does not enable internal workspace source resolution', () => {
+    const { moduleNameMapper, testEnvironmentOptions } = getPreset();
+    expect(moduleNameMapper).not.toHaveProperty(['^(\\.{1,2}/.*)\\.js$']);
+    expect(testEnvironmentOptions.customExportConditions).not.toContain('expo-source');
   });
 
   it('keeps the module name mappers from the tsconfig paths', () => {

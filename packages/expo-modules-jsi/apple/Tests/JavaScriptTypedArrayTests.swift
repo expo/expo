@@ -148,7 +148,8 @@ struct JavaScriptTypedArrayTests {
       bytes[2] = 255
     }
 
-    let result = try runtime.eval("val => [val[0], val[1], val[2]]").getFunction().call(arguments: value).getArray()
+    let result = try runtime.eval("val => [val[0], val[1], val[2]]").getFunction().call(arguments: value.refToValue())
+      .getArray()
     #expect(result[0].getInt() == 42)
     #expect(result[1].getInt() == 99)
     #expect(result[2].getInt() == 255)
@@ -159,7 +160,7 @@ struct JavaScriptTypedArrayTests {
     let value = try runtime.eval("new Uint8Array([0, 0, 0])")
     let typedArray = value.getTypedArray()
 
-    try runtime.eval("val => { val[1] = 77 }").getFunction().call(arguments: value)
+    try runtime.eval("val => { val[1] = 77 }").getFunction().call(arguments: value.refToValue())
 
     typedArray.withUnsafeBytes { bytes in
       #expect(bytes[1] == 77)
@@ -204,7 +205,8 @@ struct JavaScriptTypedArrayTests {
       elements[2] = Int32.max
     }
 
-    let result = try runtime.eval("val => [val[0], val[1], val[2]]").getFunction().call(arguments: value).getArray()
+    let result = try runtime.eval("val => [val[0], val[1], val[2]]").getFunction().call(arguments: value.refToValue())
+      .getArray()
     #expect(result[0].getInt() == -100)
     #expect(result[1].getInt() == 0)
     #expect(Int32(result[2].getInt()) == Int32.max)
@@ -298,7 +300,7 @@ struct JavaScriptTypedArrayTests {
     buffer.data()[1] = 99
 
     // Read back through the TypedArray in JS
-    let updated = try runtime.eval("val => val[1]").getFunction().call(arguments: value)
+    let updated = try runtime.eval("val => val[1]").getFunction().call(arguments: value.refToValue())
     #expect(updated.getInt() == 99)
   }
 }

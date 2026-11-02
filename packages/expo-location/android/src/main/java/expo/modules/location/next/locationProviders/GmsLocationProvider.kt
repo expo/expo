@@ -2,9 +2,11 @@ package expo.modules.location.next.locationProviders
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
 import android.location.Location
 import android.os.Looper
-import android.util.Log
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.CurrentLocationRequest
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -12,10 +14,17 @@ import com.google.android.gms.location.LocationAvailability
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import com.google.android.gms.location.SettingsClient
 import com.google.android.gms.tasks.Task
+import expo.modules.core.logging.Logger
+import expo.modules.interfaces.taskManager.TaskConsumer
+import expo.modules.interfaces.taskManager.TaskManagerInterface
+import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface
+import expo.modules.location.next.BatchedPositions
+import expo.modules.location.next.LocationTaskConsumer
 import expo.modules.location.next.Position
 import expo.modules.location.next.SETTINGS_REQUEST_CODE
 import expo.modules.location.next.toPosition
@@ -34,23 +43,24 @@ fun LocationPriority.toGmsPriority(): Int {
   }
 }
 
-private suspend fun <T> Task<T>.awaitOrNull(): T? {
-  return suspendCancellableCoroutine { continuation ->
-    this.addOnSuccessListener { continuation.resume(it) }
-    this.addOnFailureListener { e ->
-      Log.w("ExpoLocation", "GMS location task failed", e)
-      continuation.resume(null)
-    }
-    this.addOnCanceledListener { continuation.resume(null) }
-  }
-}
-
 class GmsLocationProvider(
   val fusedLocationProvider: FusedLocationProviderClient,
   val settingsClient: SettingsClient,
+  private val jsLogger: Logger?,
   val isServiceAvailable: () -> Boolean
 ) : LocationProvider {
   override val name = "GMS"
+
+  private suspend fun <T> Task<T>.awaitOrNull(): T? {
+    return suspendCancellableCoroutine { continuation ->
+      this.addOnSuccessListener { continuation.resume(it) }
+      this.addOnFailureListener { e ->
+        jsLogger?.warn("[expo-location] GMS location task failed", e)
+        continuation.resume(null)
+      }
+      this.addOnCanceledListener { continuation.resume(null) }
+    }
+  }
 
   @SuppressLint("MissingPermission")
   private suspend fun getCachedOrCurrentLocation(options: GetCurrentPositionOptions): Location? {
@@ -117,9 +127,24 @@ class GmsLocationProvider(
       return ProviderResult.Available(enableServicesResult)
     } catch (e: CancellationException) {
       throw e
-    } catch (_: Throwable) {
+    } catch (e: Throwable) {
+      jsLogger?.warn("[expo-location] Could not check the location settings", e)
       return ProviderResult.Unavailable
     }
+  }
+
+  override fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> {
+    if (!isServiceAvailable()) {
+      return ProviderResult.Unavailable
+    }
+    return ProviderResult.Available(GmsLocationTaskConsumer::class.java)
+  }
+
+  override fun getRegisteredTaskConsumerClass(taskManager: TaskManagerInterface, taskName: String): ProviderResult<Class<out TaskConsumer>> {
+    if (!taskManager.taskHasConsumerOfClass(taskName, GmsLocationTaskConsumer::class.java)) {
+      return ProviderResult.Unavailable
+    }
+    return ProviderResult.Available(GmsLocationTaskConsumer::class.java)
   }
 }
 
@@ -185,4 +210,60 @@ private class GmsPositionUpdatesSession(
   @Volatile
   var available = false
   override fun canDeliverUpdates(): Boolean = available
+}
+
+class GmsLocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsInterface?) : LocationTaskConsumer(
+  context,
+  taskManagerUtils
+) {
+  private val fusedLocationProvider: FusedLocationProviderClient by lazy {
+    LocationServices.getFusedLocationProviderClient(context)
+  }
+
+  @SuppressLint("MissingPermission")
+  override fun requestLocationUpdates(pendingIntent: PendingIntent, options: BackgroundUpdatesParameters, updateExisting: Boolean): Boolean {
+    try {
+      val request = LocationRequest.Builder(
+        options.priority.toGmsPriority(),
+        options.interval.inWholeMilliseconds
+      ).setMaxUpdateDelayMillis(options.maxUpdateDelay.inWholeMilliseconds)
+        .setMinUpdateDistanceMeters(options.minUpdateDistance)
+        .build()
+
+      fusedLocationProvider
+        .requestLocationUpdates(request, pendingIntent)
+        .addOnFailureListener {
+          reportRequestFailed(it)
+        }
+      return true
+    } catch (e: Exception) {
+      reportRequestFailed(e)
+      return false
+    }
+  }
+
+  override fun stopLocationUpdates(pendingIntent: PendingIntent) {
+    runCatching {
+      fusedLocationProvider
+        .removeLocationUpdates(pendingIntent)
+    }
+  }
+
+  override fun decodeBatchedPositions(intent: Intent?): BatchedPositions {
+    if (intent == null) {
+      return BatchedPositions(null, "Received a location broadcast without an intent.")
+    }
+
+    val positions = LocationResult.extractResult(intent)?.locations?.takeIf { it.isNotEmpty() }
+    if (positions != null) {
+      return BatchedPositions(positions.map { it.toPosition() }, null)
+    }
+
+    val availability = LocationAvailability.extractLocationAvailability(intent)
+    if (availability != null && !availability.isLocationAvailable) {
+      return BatchedPositions(null, "Location is currently unavailable.")
+    }
+
+    return BatchedPositions(null, null)
+  }
 }

@@ -40,7 +40,7 @@ You have created a project using Expo tooling, and now you want to create a deve
 }
 ```
 
-If your project has EAS Build configured, the **eas.json** also has a similar configuration as shown below:
+If your project has Expo Build configured, the **eas.json** also has a similar configuration as shown below:
 
 ```json eas.json
 {
@@ -99,7 +99,7 @@ You can customize other aspects of your app on a per-variant basis. You can swap
 **Examples:**
 
 - If you are using a library that requires you to register your application identifier with an external service to use its SDK, such as Google Maps or Firebase Cloud Messaging (FCM), you'll need to have a separate configuration for that API for the `android.package` and `ios.bundleIdentifier`.
-- If you're using [development builds](/develop/development-builds/introduction/), you can configure the `expo-dev-client` plugin to disable the app scheme used by Expo CLI and EAS Update QR codes in non-development builds. This ensures that those URLs will always launch the development build, regardless of your device's defaults:
+- If you're using [development builds](/develop/development-builds/introduction/), you can configure the `expo-dev-client` plugin to disable the app scheme used by Expo CLI and Expo Update QR codes in non-development builds. This ensures that those URLs will always launch the development build, regardless of your device's defaults:
 
 ```js app.config.js
 plugins: [
@@ -114,7 +114,7 @@ plugins: [
 
 </Collapsible>
 
-### Configuration for EAS Build
+### Configuration for Expo Build
 
 In **eas.json**, set the `APP_VARIANT` environment variable to run builds with the **development** profile by using the `env` property:
 
@@ -132,7 +132,7 @@ In **eas.json**, set the `APP_VARIANT` environment variable to run builds with t
 }
 ```
 
-Now, when you run `eas build --profile development`, the environment variable `APP_VARIANT` is set to `development` when evaluating **app.config.js** both locally and on the EAS Build builder.
+Now, when you run `eas build --profile development`, the environment variable `APP_VARIANT` is set to `development` when evaluating **app.config.js** both locally and on the Expo Build builder.
 
 ### Using the development server
 
@@ -152,7 +152,7 @@ A shortcut for this is to add the following script to your **package.json**:
 
 When you run `eas build --profile production` the `APP_VARIANT` variable environment is not set, and the build runs as the production variant.
 
-> **Note**: If you use EAS Update to publish JavaScript updates of your app, you should be cautious to set the correct environment variables for the app variant that you are publishing for when you run the `eas update` command. See the EAS Build [Environment variables and secrets](/build/updates) for more information.
+> **Note**: If you use Expo Update to publish JavaScript updates of your app, you should be cautious to set the correct environment variables for the app variant that you are publishing for when you run the `eas update` command. See the Expo Build [Environment variables and secrets](/build/updates) for more information.
 
 ### Build and run multiple app variants locally
 
@@ -226,7 +226,7 @@ android {
 
 > **Note**: Currently, EAS CLI supports only the `applicationId` field. If you use `applicationIdSuffix` inside `productFlavors` or `buildTypes` sections then this value will not be detected correctly.
 
-Assign Android flavors to EAS Build profiles by specifying a `gradleCommand` in the **eas.json**:
+Assign Android flavors to Expo Build profiles by specifying a `gradleCommand` in the **eas.json**:
 
 ```json eas.json
 {

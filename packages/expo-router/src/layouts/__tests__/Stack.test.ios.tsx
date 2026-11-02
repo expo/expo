@@ -17,10 +17,16 @@ jest.mock('react-native-screens', () => {
   return {
     ...actualScreens,
     ScreenStackItem: jest.fn((props) => <actualScreens.ScreenStackItem {...props} />),
+    ScreenStackHeaderLeftView: jest.fn((props) => (
+      <actualScreens.ScreenStackHeaderLeftView {...props} />
+    )),
+    ScreenStackHeaderRightView: jest.fn((props) => (
+      <actualScreens.ScreenStackHeaderRightView {...props} />
+    )),
   };
 });
 
-const { ScreenStackItem } = jest.requireMock(
+const { ScreenStackItem, ScreenStackHeaderLeftView, ScreenStackHeaderRightView } = jest.requireMock(
   'react-native-screens'
 ) as typeof import('react-native-screens');
 const MockedScreenStackItem = ScreenStackItem as jest.MockedFunction<typeof ScreenStackItem>;
@@ -39,6 +45,36 @@ function latestStackItemProps(routeName: string): StackItemProps | undefined {
 
 beforeEach(() => {
   MockedScreenStackItem.mockClear();
+  jest.mocked(ScreenStackHeaderLeftView).mockClear();
+  jest.mocked(ScreenStackHeaderRightView).mockClear();
+});
+
+describe('native header defaults', () => {
+  it.each(['modal', 'formSheet'] as const)(
+    'gives a %s root the default header without custom header buttons',
+    async (presentation) => {
+      await renderRouter(
+        {
+          _layout: () => (
+            <Stack>
+              <Stack.Screen name="sheet" options={{ presentation }} />
+            </Stack>
+          ),
+          index: () => <View />,
+          sheet: () => <View />,
+        },
+        { initialUrl: '/' }
+      );
+      await act(() => router.push('/sheet'));
+
+      const headerConfig = latestStackItemProps('sheet')?.headerConfig;
+      expect(headerConfig).toMatchObject({ backgroundColor: 'transparent', translucent: true });
+      expect(headerConfig?.headerLeftBarButtonItems).toBeUndefined();
+      expect(headerConfig?.headerRightBarButtonItems).toBeUndefined();
+      expect(ScreenStackHeaderLeftView).not.toHaveBeenCalled();
+      expect(ScreenStackHeaderRightView).not.toHaveBeenCalled();
+    }
+  );
 });
 
 afterEach(() => jest.useRealTimers());

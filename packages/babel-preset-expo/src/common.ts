@@ -5,7 +5,7 @@ import type { ExpoBabelCaller } from '@expo/metro-config/build/babel-transformer
 import path from 'node:path';
 
 /** Determine which bundler is being used. */
-export function getBundler(caller?: any) {
+export function getBundler(caller?: any): 'metro' | 'webpack' | 'jest' | null {
   assertExpoBabelCaller(caller);
   if (!caller) return null;
   if (caller.bundler) return caller.bundler;
@@ -136,10 +136,13 @@ export function getBabelRuntimeVersion(caller?: any) {
   return babelRuntimeVersion ?? '^7.20.0';
 }
 
-export function getExpoRouterAbsoluteAppRoot(caller?: any): string {
+export function getExpoRouterAbsoluteAppRoot(caller?: any): string | null {
   assertExpoBabelCaller(caller);
   const rootModuleId = caller?.routerRoot ?? './app';
   const projectRoot = getPossibleProjectRoot(caller);
+  if (!projectRoot && !caller?.routerRoot) {
+    return null;
+  }
   const resolved = path.isAbsolute(rootModuleId)
     ? rootModuleId
     : path.join(projectRoot || '/', rootModuleId);

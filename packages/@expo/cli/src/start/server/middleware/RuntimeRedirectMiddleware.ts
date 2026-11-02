@@ -1,5 +1,3 @@
-import { parse } from 'url';
-
 import * as Log from '../../../log';
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
 import type { ForwardedRequestInfo } from './resolveForwarded';
@@ -38,8 +36,8 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
   }
 
   async handleRequestAsync(req: ServerRequest, res: ServerResponse): Promise<void> {
-    const { query } = parse(req.url!, true);
-    const isDevClient = query['choice'] === 'expo-dev-client';
+    const query = URL.parse(req.url!, 'file:')?.searchParams;
+    const isDevClient = query?.get('choice') === 'expo-dev-client';
     const platform = parsePlatformHeader(req) ?? resolvePlatformFromUserAgentHeader(req);
     assertMissingRuntimePlatform(platform);
     assertRuntimePlatform(platform);

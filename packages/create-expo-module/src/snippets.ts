@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import type { Feature, SubstitutionData, LocalSubstitutionData } from './types';
+import { writeFileAsync, type WriteFile } from './utils/files';
 
 type AnySubstitutionData = SubstitutionData | LocalSubstitutionData;
 
@@ -265,7 +266,8 @@ async function copySnippetsInternal(
   features: string[],
   data: AnySubstitutionData,
   targetDir: string,
-  filter: (spec: (typeof FILE_SNIPPET_SPECS)[0]) => boolean
+  filter: (spec: (typeof FILE_SNIPPET_SPECS)[0]) => boolean,
+  writeFile: WriteFile
 ): Promise<void> {
   const selectedPlatforms: string[] = data.project.platforms;
 
@@ -280,8 +282,7 @@ async function copySnippetsInternal(
     const rendered = ejs.render(template, data);
     const destPath = path.join(targetDir, spec.dest(data));
 
-    await fs.promises.mkdir(path.dirname(destPath), { recursive: true });
-    await fs.promises.writeFile(destPath, rendered, 'utf8');
+    await writeFile(destPath, rendered);
   }
 }
 
@@ -289,22 +290,38 @@ export const copyFileSnippets = (
   snippetsDir: string,
   features: string[],
   data: AnySubstitutionData,
-  targetDir: string
-) => copySnippetsInternal(snippetsDir, features, data, targetDir, () => true);
+  targetDir: string,
+  writeFile: WriteFile = writeFileAsync
+) => copySnippetsInternal(snippetsDir, features, data, targetDir, () => true, writeFile);
 
 export const copyNativeFileSnippets = (
   snippetsDir: string,
   features: string[],
   data: AnySubstitutionData,
-  targetDir: string
-) => copySnippetsInternal(snippetsDir, features, data, targetDir, (spec) => !!spec.platform);
+  targetDir: string,
+  writeFile: WriteFile = writeFileAsync
+) =>
+  copySnippetsInternal(
+    snippetsDir,
+    features,
+    data,
+    targetDir,
+    (spec) => !!spec.platform,
+    writeFile
+  );
 
 export const copyWebFileSnippets = (
   snippetsDir: string,
   features: string[],
   data: AnySubstitutionData,
-  targetDir: string
+  targetDir: string,
+  writeFile: WriteFile = writeFileAsync
 ) =>
-  copySnippetsInternal(snippetsDir, features, data, targetDir, (spec) =>
-    spec.source.includes('.web.')
+  copySnippetsInternal(
+    snippetsDir,
+    features,
+    data,
+    targetDir,
+    (spec) => spec.source.includes('.web.'),
+    writeFile
   );

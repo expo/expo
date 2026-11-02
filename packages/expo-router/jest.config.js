@@ -1,6 +1,6 @@
 const path = require('node:path');
 
-const createJestPreset = require('expo-module-scripts/createJestPreset');
+const createJestPreset = require('@expo/internal-scripts/createJestPreset');
 const {
   getWebPreset,
   getNodePreset,
@@ -48,7 +48,7 @@ projects.push({ ...pluginProject, rootDir: path.join(__dirname, 'plugin') });
 
 // Run the RSC `__rsc_tests__` as their own per-platform projects (`rsc/<platform>`) so a single
 // `jest` covers them too. These match only `**/__rsc_tests__/**`, separate from the projects above.
-projects.push(...require('jest-expo/rsc/jest-preset').projects);
+projects.push(...require('jest-expo/rsc/jest-preset').projects.map(createJestPreset));
 
 const config = withWatchPlugins({
   ...require('jest-expo/config/maxWorkers'),

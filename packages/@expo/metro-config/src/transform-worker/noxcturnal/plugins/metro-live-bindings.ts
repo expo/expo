@@ -49,6 +49,16 @@ export function createMetroLiveBindingsPlugin(
 
   return nox.defineNativePlugin<MetroLiveBindingsState>({
     name: 'metro-native-import-export-live-bindings',
+    contract: {
+      syntax: {
+        anyOf: [
+          'ImportDeclaration',
+          'ExportNamedDeclaration',
+          'ExportDefaultDeclaration',
+          'ExportAllDeclaration',
+        ],
+      },
+    },
     createState: () => ({
       sawEsm: false,
       modules: new Map(),

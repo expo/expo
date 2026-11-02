@@ -58,15 +58,15 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@testing-library/react-native": "^14.0.1",
-    "@types/react": "~19.3.0",
-    "expo-module-scripts": "workspace:*"
+    "@types/react": "~19.3.0"
   },
   "peerDependencies": {
     "expo": "*",
     "react": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

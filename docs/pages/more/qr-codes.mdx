@@ -6,7 +6,7 @@ description: Reference for the QR code generator at qr.expo.dev.
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
-qr.expo.dev is a cloud function that generates Expo-branded QR codes. This function creates QR codes for [EAS Update](/eas-update/introduction/), which are used to preview updates in [development builds](/develop/development-builds/introduction/) and Expo Go.
+qr.expo.dev is a cloud function that generates Expo-branded QR codes. This function creates QR codes for [Expo Update](/eas-update/introduction/), which are used to preview updates in [development builds](/develop/development-builds/introduction/) and Expo Go.
 
 For example, if you and your team have a development build, and you'd like to load the latest update on a specific build's channel, you could go to the following endpoint to generate a QR code:
 
@@ -49,7 +49,7 @@ The following base query parameters can be included with any request to `/eas-up
 
 ### Update by device traits
 
-Preview and production builds make requests to the EAS Update service with `runtimeVersion` and `channel` properties. You can emulate this behavior with the following query parameters:
+Preview and production builds make requests to the Expo Update service with `runtimeVersion` and `channel` properties. You can emulate this behavior with the following query parameters:
 
 | Param            | Required    | Description                                                       |
 | ---------------- | ----------- | ----------------------------------------------------------------- |

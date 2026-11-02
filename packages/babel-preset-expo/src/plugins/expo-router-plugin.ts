@@ -4,7 +4,7 @@
 import type { ConfigAPI, PluginObj, PluginPass } from '@babel/core';
 import nodePath from 'node:path';
 
-import { getExpoRouterAbsoluteAppRoot, getPossibleProjectRoot, getAsyncRoutes } from '../common';
+import { getExpoRouterAbsoluteAppRoot, getAsyncRoutes } from '../common';
 
 const debug = require('debug')('expo:babel:router');
 
@@ -22,38 +22,22 @@ function getExpoRouterAppRoot(currentFile: string, appFolder: string) {
   return appRoot;
 }
 
-interface ExpoRouterPluginState extends PluginPass {
-  projectRoot?: string;
-  isTestEnv?: boolean;
-}
-
 /**
  * Inlines environment variables to configure the process:
  *
- * EXPO_PROJECT_ROOT
- * EXPO_ROUTER_ABS_APP_ROOT
  * EXPO_ROUTER_APP_ROOT
  * EXPO_ROUTER_IMPORT_MODE
  */
 export function expoRouterBabelPlugin(api: ConfigAPI & typeof import('@babel/core')): PluginObj {
   const { types: t } = api;
-  const possibleProjectRoot = api.caller(getPossibleProjectRoot);
   const asyncRoutes = api.caller(getAsyncRoutes);
   const routerAbsoluteRoot = api.caller(getExpoRouterAbsoluteAppRoot);
   const importMode = asyncRoutes ? 'lazy' : 'sync';
 
   return {
     name: 'expo-router',
-
-    pre() {
-      const state = this as ExpoRouterPluginState;
-      state.projectRoot = possibleProjectRoot || this.file.opts.root || '';
-      // Check test env at transform time, not module load time
-      state.isTestEnv = process.env.NODE_ENV === 'test';
-    },
-
     visitor: {
-      MemberExpression(path, state: ExpoRouterPluginState) {
+      MemberExpression(path, state: PluginPass) {
         // Quick check: skip if not accessing something on an object named 'process'
         const object = path.node.object;
         if (!t.isMemberExpression(object)) return;
@@ -71,29 +55,14 @@ export function expoRouterBabelPlugin(api: ConfigAPI & typeof import('@babel/cor
         const key = path.toComputedKey();
         if (!t.isStringLiteral(key)) return;
 
-        const keyValue = key.value;
-
-        // Check each possible env var
-
-        switch (keyValue) {
-          case 'EXPO_PROJECT_ROOT':
-            path.replaceWith(t.stringLiteral(state.projectRoot!));
-            return;
+        switch (key.value) {
           case 'EXPO_ROUTER_IMPORT_MODE':
             path.replaceWith(t.stringLiteral(importMode));
             return;
-          default:
-            break;
-        }
-
-        // Skip app root transforms in tests (handled by testing-library utils)
-        if (state.isTestEnv) return;
-
-        switch (keyValue) {
-          case 'EXPO_ROUTER_ABS_APP_ROOT':
-            path.replaceWith(t.stringLiteral(routerAbsoluteRoot));
-            return;
           case 'EXPO_ROUTER_APP_ROOT': {
+            if (!routerAbsoluteRoot) {
+              return;
+            }
             // Use the actual file being transformed to compute the relative path.
             // This ensures the path is correct regardless of package hoisting.
             const filename = state.filename || state.file.opts.filename;
@@ -103,7 +72,10 @@ export function expoRouterBabelPlugin(api: ConfigAPI & typeof import('@babel/cor
               );
             }
             path.replaceWith(t.stringLiteral(getExpoRouterAppRoot(filename, routerAbsoluteRoot)));
+            return;
           }
+          default:
+            break;
         }
       },
     },

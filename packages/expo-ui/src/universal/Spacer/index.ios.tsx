@@ -30,7 +30,8 @@ export function Spacer({
   const baseModifiers = transformToModifiers(
     style,
     { onAppear, onDisappear, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'Spacer' }
   );
 
   if (flexible) {

@@ -27,5 +27,5 @@ internal protocol AnyFieldInternal: AnyField {
   func set(_ newValue: Any?, appContext: AppContext) throws
 
   @JavaScriptActor
-  func set(jsValue: JavaScriptValue, appContext: AppContext) throws
+  func set(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws
 }

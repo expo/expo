@@ -144,8 +144,11 @@ final class NativeDatabase: SharedObject, @unchecked Sendable {
       try statement.ensureNotFinalized()
       try ensureOpen()
       let sourceString = source.cString(using: .utf8)
-      if exsqlite3_prepare_v2(pointer, sourceString, -1, &statement.pointer, nil) != SQLITE_OK {
-        throw SQLiteErrorException(lastErrorMessage())
+      let result = sqliteResult(for: pointer) {
+        exsqlite3_prepare_v2(pointer, sourceString, -1, &statement.pointer, nil)
+      }
+      if let message = result.message {
+        throw SQLiteErrorException(message)
       }
       statements.append(statement)
     }
@@ -170,12 +173,6 @@ final class NativeDatabase: SharedObject, @unchecked Sendable {
       throw SQLiteErrorException(errorString)
     }
   }
-}
-
-internal func sqliteErrorMessage(for db: OpaquePointer?) -> String {
-  let code = exsqlite3_errcode(db)
-  let message = String(cString: exsqlite3_errmsg(db), encoding: .utf8) ?? ""
-  return "Error code \(code): \(message)"
 }
 
 // `==` lives in an extension: an operator declared inside a type that carries a member-attribute macro

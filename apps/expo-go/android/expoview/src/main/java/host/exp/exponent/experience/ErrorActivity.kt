@@ -16,8 +16,11 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentPagerAdapter
 import host.exp.exponent.LauncherActivity
 import host.exp.exponent.kernel.ExponentError
+import host.exp.exponent.kernel.ExponentPackageLogger
 import host.exp.exponent.kernel.Kernel
 import host.exp.expoview.databinding.ErrorActivityNewBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.util.*
 
 class ErrorActivity() : FragmentActivity() {
@@ -51,6 +54,23 @@ class ErrorActivity() : FragmentActivity() {
 
     manifestUrl = intent.extras!!.getString(MANIFEST_URL_KEY)
     pager.adapter = ViewPagerAdapter(supportFragmentManager)
+
+    if (savedInstanceState == null) {
+      reportToDevServer()
+    }
+  }
+
+  private fun reportToDevServer() {
+    val manifestUrl = manifestUrl ?: return
+    val extras = intent.extras ?: return
+    val message = ErrorScreenLogMessage.make(
+      header = extras.getString(ERROR_HEADER_KEY),
+      userMessage = extras.getString(USER_ERROR_MESSAGE_KEY),
+      developerMessage = extras.getString(DEVELOPER_ERROR_MESSAGE_KEY)
+    ) ?: return
+    kernel.kernelScope.launch(Dispatchers.IO) {
+      ExponentPackageLogger.send(manifestUrl, message, ExponentPackageLogger.LogLevel.ERROR)
+    }
   }
 
   override fun onResume() {

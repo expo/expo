@@ -6,6 +6,9 @@ on:
     paths: &trigger_paths
       - .github/workflows/create-expo-module.yml
       - packages/create-expo-module/**
+      - packages/expo-module-template/**
+      - packages/expo/bundledNativeModules.json
+      - templates/expo-template-blank-typescript/package.json
       - pnpm-lock.yaml
   pull_request:
     paths: *trigger_paths
@@ -55,6 +58,9 @@ jobs:
           TURBO_TEAM: expo
       - name: 🛠 Build create-expo-module
         run: pnpm run prepublishOnly
+        working-directory: packages/create-expo-module
+      - name: 🧪 Unit Test create-expo-module
+        run: pnpm test
         working-directory: packages/create-expo-module
       - name: 🧪 E2E Test create-expo-module
         run: pnpm test:e2e

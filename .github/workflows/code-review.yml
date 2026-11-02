@@ -18,9 +18,11 @@ jobs:
     # EXPO_BOT_GITHUB_TOKEN under `pull_request`, so the review would fail
     # anyway — skip cleanly instead of leaving a red check. Forks dispatching
     # this workflow manually would also fail for the same reason; gate on
-    # `github.repository` to short-circuit.
+    # `github.repository` to short-circuit. Dependabot PRs get only Dependabot
+    # secrets, not EXPO_BOT_GITHUB_TOKEN, so skip them too.
     if: >-
       github.repository == 'expo/expo' &&
+      github.actor != 'dependabot[bot]' &&
       (github.event_name == 'workflow_dispatch' ||
        github.event.pull_request.head.repo.full_name == github.repository) &&
       (github.event_name != 'pull_request' ||

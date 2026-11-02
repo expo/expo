@@ -49,5 +49,5 @@ public func Class<SharedObjectType: SharedObject>(
   _ sharedObjectType: SharedObjectType.Type,
   @ClassDefinitionBuilder<SharedObjectType> @_implicitSelfCapture _ elements: () -> [AnyClassDefinitionElement]
 ) -> ClassDefinition {
-  return ClassDefinition(name: String(describing: SharedObjectType.self), associatedType: SharedObjectType.self, elements: elements())
+  return ClassDefinition(name: unqualifiedTypeName(SharedObjectType.self), associatedType: SharedObjectType.self, elements: elements())
 }

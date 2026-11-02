@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.4
+
+### Patch Changes
+
+- Fix missing `followSymlinks` case for direct-file Node candidate resolution, which would previously ignore a `followSymlinks: true` option. ([#51535](https://github.com/expo/expo/pull/51535) by [@kitten](https://github.com/kitten))
+
 ## 58.0.3
 
 ### Patch Changes

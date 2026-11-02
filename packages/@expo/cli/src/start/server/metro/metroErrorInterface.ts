@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { events, type SerializedError } from '2g';
 import { getMetroServerRoot } from '@expo/config/paths';
 import { parseWebBuildErrors } from '@expo/log-box-utils';
 import chalk from 'chalk';
@@ -25,6 +26,14 @@ import type { CodeFrame, StackFrame as MetroStackFrame } from './log-box/LogBoxS
 import { getStackFormattedLocation } from './log-box/formatProjectFilePath';
 
 const isDebug = env.EXPO_DEBUG;
+
+declare module '2g' {
+  interface EventRegistry {
+    'metro:server_error': { error: SerializedError; stack: MetroStackFrame[] };
+  }
+}
+
+const event = events('metro');
 
 function fill(width: number): string {
   return Array(width).join(' ');
@@ -48,12 +57,15 @@ export async function logMetroErrorWithStack(
   }: {
     stack: MetroStackFrame[];
     codeFrame?: CodeFrame;
-    error: Error;
+    error: Error & { [HAS_LOGGED_SYMBOL]?: boolean };
   }
 ) {
-  if (error instanceof SilentError) {
+  if (error instanceof SilentError || error[HAS_LOGGED_SYMBOL]) {
     return;
   }
+  error[HAS_LOGGED_SYMBOL] = true;
+
+  event('server_error', { error: event.error(error), stack });
 
   // process.stdout.write('\u001b[0m'); // Reset attributes
   // process.stdout.write('\u001bc'); // Reset the terminal
@@ -209,7 +221,7 @@ export function getStackAsFormattedLog(
 }
 
 export const IS_METRO_BUNDLE_ERROR_SYMBOL = Symbol('_isMetroBundleError');
-const HAS_LOGGED_SYMBOL = Symbol('_hasLoggedInCLI');
+export const HAS_LOGGED_SYMBOL = Symbol('_hasLoggedInCLI');
 
 export async function logMetroError(
   projectRoot: string,
@@ -224,8 +236,6 @@ export async function logMetroError(
   if (error instanceof SilentError || error[HAS_LOGGED_SYMBOL]) {
     return;
   }
-  error[HAS_LOGGED_SYMBOL] = true;
-
   const stack = parseErrorStack(projectRoot, error.stack);
 
   const log = new LogBoxLog({

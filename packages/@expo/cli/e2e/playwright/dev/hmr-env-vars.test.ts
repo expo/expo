@@ -18,7 +18,7 @@ test.afterAll(() => restoreEnv());
 test.describe('router-e2e with spaces', () => {
   if (platform === 'win32') {
     test.skip('skipping on windows', () => {
-      // This test is skipped on Windows due to an issue with expo-module-scripts when cloning a project outside of the repo.
+      // This test is skipped on Windows due to an issue with @expo/internal-scripts when cloning a project outside of the repo.
     });
     return;
   }

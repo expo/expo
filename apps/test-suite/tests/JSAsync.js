@@ -835,6 +835,55 @@ export function test({ describe, it, xit, expect }) {
         expect(await f(1, 2, 3)).toBe(3);
       });
 
+      it('initializes default parameters once before await', async () => {
+        const events = [];
+        const f = async (x = (events.push('default'), 7)) => {
+          events.push(x);
+          await Promise.resolve();
+          return x;
+        };
+        const result = f();
+        expect(events).toEqual(['default', 7]);
+        expect(await result).toBe(7);
+        expect(await f(9)).toBe(9);
+        expect(events).toEqual(['default', 7, 9]);
+      });
+
+      it('keeps mixed non-simple parameters and lexical captures after await', async () => {
+        function make(offset) {
+          return async ({ value } = { value: 2 }, [extra] = [3], ...rest) => {
+            await Promise.resolve();
+            return this.base + arguments[0] + value + extra + rest.length;
+          };
+        }
+        const f = make.call({ base: 10 }, 5);
+        expect(await f()).toBe(20);
+        expect(await f({ value: 4 }, [6], 'a', 'b')).toBe(27);
+      });
+
+      it('rejects parameter initialization errors without entering the body', async () => {
+        let entered = false;
+        const failure = new Error('parameter');
+        const fail = () => {
+          throw failure;
+        };
+        const f = async (value = fail()) => {
+          entered = true;
+          await Promise.resolve();
+          return value;
+        };
+        const result = f();
+        expect(result instanceof Promise).toBe(true);
+        let caught;
+        try {
+          await result;
+        } catch (error) {
+          caught = error;
+        }
+        expect(caught).toBe(failure);
+        expect(entered).toBe(false);
+      });
+
       it('value visible through .then()', async () => {
         const f = async ({ b: _ }) => 42;
         const seen = await new Promise((resolve) => {

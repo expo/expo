@@ -99,7 +99,7 @@ function SitemapItem({ node, level = 0 }: SitemapItemProps) {
     () => node.children.length > 0 || node.contextKey.match(/_layout\.[jt]sx?$/),
     [node]
   );
-  const info = node.isInitial ? 'Initial' : node.isGenerated ? 'Generated' : '';
+  const info = node.isGenerated ? 'Generated' : '';
 
   if (isLayout) {
     return <LayoutSitemapItem node={node} level={level} info={info} />;

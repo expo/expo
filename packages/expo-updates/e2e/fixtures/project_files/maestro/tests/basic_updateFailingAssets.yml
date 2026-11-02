@@ -1,0 +1,49 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+# update whose assets fail in different ways logs one warning for each asset, and one error for each kind of failure
+- evalScript:
+    script: ${output.api.serveManifest('test-update-with-failing-assets', MAESTRO_PLATFORM)}
+    label: Setup updates server to serve an update with two missing assets, one asset that fails with HTTP 500, and one unreachable asset
+    env:
+      MAESTRO_PLATFORM: ${MAESTRO_PLATFORM}
+- launchApp
+- copyTextFrom:
+    label: Copy text from update string
+    id: updateString
+- assertTrue:
+    condition: ${maestro.copiedText == "test"}
+    label: Assert update string is from embedded bundle
+- evalScript:
+    script: ${output.api.delay(3000)}
+    label: Delay for 3 seconds
+- tapOn:
+    label: Tap on read log entries
+    id: readLogEntries
+- evalScript:
+    script: ${output.api.delay(500)}
+    label: Delay for 0.5 seconds
+- evalScript:
+    script: ${output.assetErrors = output.api.logEntriesWithLevelAndCode('error', 'AssetsFailedToLoad')}
+    label: Read AssetsFailedToLoad errors uploaded to server
+- evalScript:
+    script: ${output.unreachableErrors = output.api.logEntriesWithLevelAndCode('error', 'UpdateServerUnreachable')}
+    label: Read UpdateServerUnreachable errors uploaded to server
+- assertTrue:
+    condition: ${output.assetErrors.length == 2}
+    label: Assert one AssetsFailedToLoad error for the HTTP 404 assets and one for the HTTP 500 asset
+- assertTrue:
+    condition: ${output.assetErrors.some(function (e) { return e.message.includes('failing-asset0') && e.message.includes('failing-asset1') && e.message.includes('404'); })}
+    label: Assert that one error names both HTTP 404 assets
+- assertTrue:
+    condition: ${output.assetErrors.some(function (e) { return e.message.includes('(failing-asset2)') && e.message.includes('500'); })}
+    label: Assert that one error names the HTTP 500 asset
+- assertTrue:
+    condition: ${output.unreachableErrors.length == 1 && output.unreachableErrors[0].message.includes('(failing-asset3)')}
+    label: Assert one UpdateServerUnreachable error for the unreachable asset
+- assertTrue:
+    condition: ${output.api.logEntries().filter(function (e) { return e.level == 'warn' && e.assetId && e.assetId.indexOf('failing-asset') == 0; }).length == 4}
+    label: Assert one warning for each failed asset
+- stopApp

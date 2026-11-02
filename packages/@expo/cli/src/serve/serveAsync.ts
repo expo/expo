@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 import connect from 'connect';
 import { createRequestHandler } from 'expo-server/adapter/http';
+import fs from 'node:fs/promises';
 import http from 'node:http';
 import path from 'node:path';
 import send from 'send';
@@ -44,6 +45,12 @@ export async function serveAsync(inputDir: string, options: Options) {
   }
 
   const isStatic = await isStaticExportAsync(serverDist);
+
+  if (!isStatic && (await isDevelopmentExportAsync(serverDist))) {
+    throw new CommandError(
+      'This export was built for development with `expo export --dev`, but `expo serve` only runs production exports. Export your app again without `--dev`.'
+    );
+  }
 
   Log.log(chalk.dim(`Starting ${isStatic ? 'static ' : ''}server in ${serverDist}`));
 
@@ -174,6 +181,13 @@ function canParseURL(url: string): boolean {
   } catch {
     return false;
   }
+}
+
+async function isDevelopmentExportAsync(dist: string): Promise<boolean> {
+  const manifest = JSON.parse(
+    await fs.readFile(path.join(dist, 'server/_expo/routes.json'), 'utf8')
+  );
+  return manifest.mode === 'development';
 }
 
 async function isStaticExportAsync(dist: string): Promise<boolean> {

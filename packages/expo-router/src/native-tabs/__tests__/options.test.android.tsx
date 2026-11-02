@@ -1,6 +1,7 @@
 import { screen } from '@testing-library/react-native';
+import type { ReactNode } from 'react';
 import { View } from 'react-native';
-import { Tabs } from 'react-native-screens';
+import { Tabs, type TabsScreenProps } from 'react-native-screens';
 
 import { renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
@@ -23,7 +24,8 @@ jest.mock('react-native-screens', () => {
   };
 });
 
-const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
+// `Tabs` is mocked by `jest.mock` above; cast to read `.mock` with the props type.
+const TabsScreen = Tabs.Screen as jest.MockedFunction<(props: TabsScreenProps) => ReactNode>;
 
 describe('Icons', () => {
   it('passes iconResourceName when using Icon drawable on Android', async () => {
@@ -40,10 +42,10 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].android?.icon?.type).toBe('drawableResource');
-    if (TabsScreen.mock.calls[0][0].android?.icon?.type !== 'drawableResource')
+    expect(TabsScreen.mock.calls[0]![0].android?.icon?.type).toBe('drawableResource');
+    if (TabsScreen.mock.calls[0]![0].android?.icon?.type !== 'drawableResource')
       throw new Error('Icon type is not drawableResource');
-    expect(TabsScreen.mock.calls[0][0].android.icon.name).toBe('stairs');
+    expect(TabsScreen.mock.calls[0]![0].android.icon.name).toBe('stairs');
   });
 
   it('uses last Icon drawable value when multiple are provided', async () => {
@@ -62,10 +64,10 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].android?.icon?.type).toBe('drawableResource');
-    if (TabsScreen.mock.calls[0][0].android?.icon?.type !== 'drawableResource')
+    expect(TabsScreen.mock.calls[0]![0].android?.icon?.type).toBe('drawableResource');
+    if (TabsScreen.mock.calls[0]![0].android?.icon?.type !== 'drawableResource')
       throw new Error('Icon type is not drawableResource');
-    expect(TabsScreen.mock.calls[0][0].android.icon.name).toBe('last');
+    expect(TabsScreen.mock.calls[0]![0].android.icon.name).toBe('last');
   });
 
   it('does not pass icon when Icon is not used', async () => {
@@ -80,7 +82,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].android?.icon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0]![0].android?.icon).toBeUndefined();
   });
 
   // Currently not needed. Screens does not forbid this, as Icon does not work on Android yet.
@@ -116,11 +118,11 @@ describe('Icons', () => {
     expect(TabsScreen).toHaveBeenCalledTimes(1);
     // selectedIcon mirrors icon — sf-selected does not leak in, and the drawable default
     // is reused (temporary fallback for the react-native-screens upstream bug).
-    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toEqual({
+    expect(TabsScreen.mock.calls[0]![0].android?.selectedIcon).toEqual({
       type: 'drawableResource',
       name: 'stairs',
     });
-    expect(TabsScreen.mock.calls[0][0].android?.icon).toEqual({
+    expect(TabsScreen.mock.calls[0]![0].android?.icon).toEqual({
       type: 'drawableResource',
       name: 'stairs',
     });
@@ -145,11 +147,11 @@ describe('Icons', () => {
     expect(TabsScreen).toHaveBeenCalledTimes(1);
     // sf-selected does not leak into the Android selectedIcon; the drawable default is
     // mirrored instead (temporary fallback for the react-native-screens upstream bug).
-    expect(TabsScreen.mock.calls[0][0].android?.selectedIcon).toEqual({
+    expect(TabsScreen.mock.calls[0]![0].android?.selectedIcon).toEqual({
       type: 'drawableResource',
       name: 'stairs',
     });
-    expect(TabsScreen.mock.calls[0][0].android?.icon).toEqual({
+    expect(TabsScreen.mock.calls[0]![0].android?.icon).toEqual({
       type: 'drawableResource',
       name: 'stairs',
     });

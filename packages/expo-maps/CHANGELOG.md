@@ -1,5 +1,29 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.23. ([#51823](https://github.com/expo/expo/pull/51823) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.9
+
+### Patch Changes
+
+- [Internal] Bump precompiled artifacts due to ABI breakage in expo-modules-jsi, which makes `JavaScriptValue` a non-copyable struct. ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.8
+
+### Patch Changes
+
+- Correct `setCameraPosition` return types to `Promise<void>`. Android reports animation completion and cancellation; iOS resolves after scheduling the camera update. ([#51102](https://github.com/expo/expo/pull/51102) by [@eliotgevers](https://github.com/eliotgevers))
+
+## 58.0.7
+
+### Patch Changes
+
+- Support immediate Android camera updates with duration 0 and reject negative durations. ([#51101](https://github.com/expo/expo/pull/51101) by [@eliotgevers](https://github.com/eliotgevers))
+
 ## 58.0.6
 
 ### Patch Changes

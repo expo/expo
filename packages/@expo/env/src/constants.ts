@@ -96,7 +96,7 @@ export function isIgnoredEnvKey(name: string) {
     case 'PYTHONUSERBASE':
     case 'PYTHONEXECUTABLE':
     case 'PYTHONSAFEPATH':
-    case 'PYTJONNOUSERSITE':
+    case 'PYTHONNOUSERSITE':
       return true;
 
     // Ruby libs

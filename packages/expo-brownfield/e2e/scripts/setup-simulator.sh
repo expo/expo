@@ -25,9 +25,9 @@ function wait_for_simulator_ready() {
 }
 
 function start_simulator() {
-  local DEVICE="iPhone 17 Pro"
+  local DEVICE="iPhone 18 Pro"
   local DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-  local IOS_VERSION="26"
+  local IOS_VERSION="27"
   local RETRIES=3
   local CI=${CI:-true}
 

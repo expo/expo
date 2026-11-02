@@ -62,11 +62,11 @@ struct JavaScriptCodablePrimitivesTests {
   @Test
   func `encodes Int64 and UInt64 as a JS bigint regardless of magnitude`() throws {
     let smallSigned = try Int64.encode(5, in: runtime)
-    #expect(smallSigned.isBigInt())
+    #expect(smallSigned.isBigInt() == true)
     #expect(try smallSigned.asBigInt().asInt64() == 5)
 
     let smallUnsigned = try UInt64.encode(5, in: runtime)
-    #expect(smallUnsigned.isBigInt())
+    #expect(smallUnsigned.isBigInt() == true)
     #expect(try smallUnsigned.asBigInt().asUint64() == 5)
   }
 
@@ -91,11 +91,11 @@ struct JavaScriptCodablePrimitivesTests {
   @Test
   func `Int and UInt encode as a JS number within the safe-integer range`() throws {
     let small = try Int.encode(5, in: runtime)
-    #expect(small.isNumber())
+    #expect(small.isNumber() == true)
     #expect(small.getInt() == 5)
 
     let unsigned = try UInt.encode(UInt(Self.maxSafeInteger), in: runtime)
-    #expect(unsigned.isNumber())
+    #expect(unsigned.isNumber() == true)
     #expect(unsigned.getDouble() == Double(Self.maxSafeInteger))
   }
 
@@ -192,8 +192,8 @@ struct JavaScriptCodablePrimitivesTests {
     // `bigint` branch; this exercises that materialization path for a value beyond the safe-integer range.
     let buffer = JavaScriptValuesBuffer.allocate(
       in: runtime,
-      with: JavaScriptValue(runtime, bigInt: Self.firstUnsafeInteger),
-      JavaScriptValue(runtime, bigInt: UInt64.max)
+      with: JavaScriptValue(runtime, bigInt: Self.firstUnsafeInteger).ref(),
+      JavaScriptValue(runtime, bigInt: UInt64.max).ref()
     )
     #expect(try Int64.decode(buffer.unownedValue(at: 0), in: runtime) == Self.firstUnsafeInteger)
     #expect(try UInt64.decode(buffer.unownedValue(at: 1), in: runtime) == UInt64.max)

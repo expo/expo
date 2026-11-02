@@ -18,6 +18,23 @@ private struct FailingEncodable: JavaScriptEncodable {
   }
 }
 
+/// Records whether `FlaggingEncodable` was encoded. Written on the JavaScript thread and read after the
+/// test drained it.
+private final class EncodeFlag: @unchecked Sendable {
+  var isEncoded = false
+}
+
+/// A `JavaScriptEncodable` that records when it's encoded, which happens only when the work that settles
+/// with it runs.
+private struct FlaggingEncodable: JavaScriptEncodable {
+  let flag: EncodeFlag
+
+  static func encode(_ value: FlaggingEncodable, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    value.flag.isEncoded = true
+    return .undefined()
+  }
+}
+
 @Suite
 @JavaScriptActor
 struct JavaScriptPromiseTests {
@@ -31,14 +48,18 @@ struct JavaScriptPromiseTests {
 
   @Test
   func `deferred promises from separate runtimes settle independently`() async throws {
-    let first = JavaScriptRuntime()
-    let second = JavaScriptRuntime()
-    let firstPromise = try JavaScriptPromise(first)
-    let secondPromise = try JavaScriptPromise(second)
-    firstPromise.resolve(1.0)
-    secondPromise.resolve(2.0)
-    #expect(try await firstPromise.await().getDouble() == 1.0)
-    #expect(try await secondPromise.await().getDouble() == 2.0)
+    let first = await TestRuntimeScheduler().makeRuntime()
+    let second = await TestRuntimeScheduler().makeRuntime()
+    let firstPromise = try await first.scheduler.runIsolated {
+      UncheckedSendable(value: try JavaScriptPromise(first.runtime))
+    }
+    let secondPromise = try await second.scheduler.runIsolated {
+      UncheckedSendable(value: try JavaScriptPromise(second.runtime))
+    }
+    firstPromise.value.resolve(1.0)
+    secondPromise.value.resolve(2.0)
+    #expect(try await firstPromise.value.await().getDouble() == 1.0)
+    #expect(try await secondPromise.value.await().getDouble() == 2.0)
   }
 
   @Test
@@ -57,32 +78,36 @@ struct JavaScriptPromiseTests {
 
   @Test
   func `creating and settling a deferred promise installs no then handlers until awaited`() async throws {
-    let runtime = JavaScriptRuntime()
-    try runtime.eval(
-      """
-      globalThis.thenCalls = 0;
-      const originalThen = Promise.prototype.then;
-      Promise.prototype.then = function (...args) {
-        globalThis.thenCalls++;
-        return originalThen.apply(this, args);
-      };
-      """
-    )
-    let promise = try JavaScriptPromise(runtime)
-    promise.resolve(42.0)
-    #expect(try runtime.eval("globalThis.thenCalls").getInt() == 0)
-    #expect(try await promise.await().getInt() == 42)
-    #expect(try runtime.eval("globalThis.thenCalls").getInt() == 1)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      try runtime.eval(
+        """
+        globalThis.thenCalls = 0;
+        const originalThen = Promise.prototype.then;
+        Promise.prototype.then = function (...args) {
+          globalThis.thenCalls++;
+          return originalThen.apply(this, args);
+        };
+        """
+      )
+      let promise = try JavaScriptPromise(runtime)
+      promise.resolve(42.0)
+      #expect(try runtime.eval("globalThis.thenCalls").getInt() == 0)
+      let result = try await promise.await()
+      #expect(result.getInt() == 42)
+      #expect(try await runtime.execute { try runtime.eval("globalThis.thenCalls").getInt() } == 1)
+    }
   }
 
   @Test
   func `awaiting a deferred promise that settled long before delivers the value`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
-    promise.resolve("late")
-    // Let the settle run and the engine drain its reactions before anything is awaited.
-    try runtime.eval("for (let i = 0; i < 10; i++) {}")
-    #expect(try await promise.await().getString() == "late")
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
+      promise.resolve("late")
+      // Let the engine run its reactions before anything is awaited.
+      try runtime.drainMicrotasks()
+      let result = try await promise.await().ref()
+      #expect(try await runtime.execute { try result.take().getString() } == "late")
+    }
   }
 
   @Test
@@ -97,111 +122,147 @@ struct JavaScriptPromiseTests {
 
   @Test
   func `resolve promise with value`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
 
-    promise.resolve(JavaScriptValue(runtime, 42))
+      promise.resolve(JavaScriptValue(runtime, 42))
 
-    let result = try await promise.await()
-    #expect(result.getInt() == 42)
+      let result = try await promise.await()
+      #expect(result.getInt() == 42)
+    }
   }
 
   @Test
   func `resolve with a both-conforming value keeps its representable type`() async throws {
-    // A 64-bit integer conforms to both `JavaScriptRepresentable` and `JavaScriptEncodable`. The
-    // encodable overload is disfavored, so it resolves through the representable path and stays a JS
-    // `number`, rather than encoding to a `bigint` (`Int64.encode`) or rejecting for exceeding the
-    // safe-integer range (`Int.encode`).
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
-    promise.resolve(Int64(42))
-    let result = try await promise.await()
-    #expect(result.isNumber())
-    #expect(result.getInt() == 42)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      // A 64-bit integer conforms to both `JavaScriptRepresentable` and `JavaScriptEncodable`. The
+      // encodable overload is disfavored, so it resolves through the representable path and stays a JS
+      // `number`, rather than encoding to a `bigint` (`Int64.encode`) or rejecting for exceeding the
+      // safe-integer range (`Int.encode`).
+      let promise = try JavaScriptPromise(runtime)
+      promise.resolve(Int64(42))
+      let result = try await promise.await()
+      #expect(result.isNumber() == true)
+      #expect(result.getInt() == 42)
+    }
   }
 
   @Test
   func `resolve promise with an encodable-only value`() async throws {
-    // `Date` is `JavaScriptEncodable` but not `JavaScriptRepresentable`, so it can only settle the
-    // promise through the encodable overload. It encodes to a JS `Date`.
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
-    let date = Date(timeIntervalSince1970: 1000)
-    promise.resolve(date)
-    let result = try await promise.await()
-    let milliseconds = try result.getObject().callFunction("getTime").asDouble()
-    #expect(milliseconds == 1_000_000)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      // `Date` is `JavaScriptEncodable` but not `JavaScriptRepresentable`, so it can only settle the
+      // promise through the encodable overload. It encodes to a JS `Date`.
+      let promise = try JavaScriptPromise(runtime)
+      let date = Date(timeIntervalSince1970: 1000)
+      promise.resolve(date)
+      let result = try await promise.await().ref()
+      let milliseconds = try await runtime.execute {
+        try result.take().getObject().callFunction("getTime").asDouble()
+      }
+      #expect(milliseconds == 1_000_000)
+    }
   }
 
   @Test
   func `resolve rejects the promise when encoding throws`() async throws {
-    // The encodable `resolve` encodes on the JavaScript thread; if that throws, the promise must
-    // reject with the thrown error rather than fulfill.
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
-    promise.resolve(FailingEncodable())
-    await #expect(throws: Error.self) {
-      try await promise.await()
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      // The encodable `resolve` encodes on the JavaScript thread; if that throws, the promise must
+      // reject with the thrown error rather than fulfill.
+      let promise = try JavaScriptPromise(runtime)
+      promise.resolve(FailingEncodable())
+      await #expect(throws: Error.self) {
+        _ = try await promise.await()
+      }
     }
   }
 
   @Test
   func `resolve promise with string`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
 
-    promise.resolve(JavaScriptValue(runtime, "hello"))
+      promise.resolve(JavaScriptValue(runtime, "hello"))
 
-    let result = try await promise.await()
-    #expect(result.getString() == "hello")
+      let result = try await promise.await().ref()
+      #expect(try await runtime.execute { try result.take().getString() } == "hello")
+    }
   }
 
   @Test
   func `resolve promise with object`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
 
-    let obj = runtime.createObject()
-    obj.setProperty("value", value: 42)
-    promise.resolve(obj.asValue())
+      let obj = runtime.createObject()
+      obj.setProperty("value", value: 42)
+      promise.resolve(obj.asValue())
 
-    let result = try await promise.await()
-    #expect(result.isObject())
-    #expect(result.getObject().getProperty("value").getInt() == 42)
+      let result = try await promise.await().ref()
+      let value = try await runtime.execute {
+        try result.take().getObject().getProperty("value").getInt()
+      }
+      #expect(value == 42)
+    }
+  }
+
+  @Test
+  func `awaiting a settled promise again delivers the value again`() async throws {
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
+
+      let obj = runtime.createObject()
+      obj.setProperty("value", value: 42)
+      promise.resolve(obj.asValue())
+
+      let firstRef = try await promise.await().ref()
+      let secondRef = try await promise.await().ref()
+      try await runtime.execute {
+        let first: JavaScriptValue = try firstRef.take()
+        let second: JavaScriptValue = try secondRef.take()
+        #expect(first.getObject().getProperty("value").getInt() == 42)
+        #expect(second.getObject().getProperty("value").getInt() == 42)
+        // Both reads clone the same settled object.
+        let isSameObject = first.isEqual(to: second)
+        #expect(isSameObject)
+      }
+    }
   }
 
   @Test
   func `reject promise with error`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
 
-    struct TestError: Error {
-      var localizedDescription: String { "Test error message" }
-    }
+      struct TestError: Error {
+        var localizedDescription: String { "Test error message" }
+      }
 
-    promise.reject(TestError())
+      promise.reject(TestError())
 
-    await #expect(throws: Error.self) {
-      try await promise.await()
+      await #expect(throws: Error.self) {
+        _ = try await promise.await()
+      }
     }
   }
 
   @Test
   func `wrap existing resolved promise`() async throws {
-    let runtime = JavaScriptRuntime()
-    let resolvedPromise = try runtime.eval("Promise.resolve(42)").getPromise()
-    let result = try await resolvedPromise.await()
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let resolvedPromise = try runtime.eval("Promise.resolve(42)").getPromise()
+      let result = try await resolvedPromise.await()
 
-    #expect(result.getInt() == 42)
+      #expect(result.getInt() == 42)
+    }
   }
 
   @Test
   func `wrap existing rejected promise`() async throws {
-    let runtime = JavaScriptRuntime()
-    let rejectedPromise = try runtime.eval("Promise.reject(new Error('test error'))").getPromise()
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let rejectedPromise = try runtime.eval("Promise.reject(new Error('test error'))").getPromise()
 
-    await #expect(throws: Error.self) {
-      try await rejectedPromise.await()
+      await #expect(throws: Error.self) {
+        _ = try await rejectedPromise.await()
+      }
     }
   }
 
@@ -226,11 +287,15 @@ struct JavaScriptPromiseTests {
 
   @Test
   func `wrap pending promise that resolves later`() async throws {
-    let runtime = JavaScriptRuntime()
-    let pendingPromise = try runtime.eval("new Promise((resolve) => { setImmediate(() => resolve(100)) })").getPromise()
-    let result = try await pendingPromise.await()
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let pendingPromise =
+        try runtime
+        .eval("new Promise((resolve) => { Promise.resolve().then(() => resolve(100)) })")
+        .getPromise()
+      let result = try await pendingPromise.await()
 
-    #expect(result.getInt() == 100)
+      #expect(result.getInt() == 100)
+    }
   }
 
   @Test
@@ -239,178 +304,193 @@ struct JavaScriptPromiseTests {
     let promise = try JavaScriptPromise(runtime)
     let value = promise.asValue()
 
-    #expect(value.isObject())
+    #expect(value.isObject() == true)
   }
 
   @Test
   func `promise can be passed to JavaScript`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
 
-    runtime.global().setProperty("testPromise", value: promise.asValue())
-    promise.resolve(42)
+      runtime.global().setProperty("testPromise", value: promise.asValue())
+      promise.resolve(42)
 
-    let result = try await runtime.eval("globalThis.testPromise").getPromise().await()
+      let result = try await runtime.eval("globalThis.testPromise").getPromise().await()
 
-    #expect(result.getInt() == 42)
+      #expect(result.getInt() == 42)
+    }
   }
 
   @Test
   func `promise can be chained in JavaScript`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
 
-    runtime.global().setProperty("testPromise", value: promise.asValue())
+      runtime.global().setProperty("testPromise", value: promise.asValue())
 
-    // Chain the promise in JavaScript
-    let chainedPromise = try runtime.eval("globalThis.testPromise.then(x => x * 2)").getPromise()
+      // Chain the promise in JavaScript
+      let chainedPromise = try runtime.eval("globalThis.testPromise.then(x => x * 2)").getPromise()
 
-    // Resolve the original promise
-    promise.resolve(21)
+      // Resolve the original promise
+      promise.resolve(21)
 
-    // Verify the chained promise
-    let result = try await chainedPromise.await()
-    #expect(result.getInt() == 42)
+      // Verify the chained promise
+      let result = try await chainedPromise.await()
+      #expect(result.getInt() == 42)
+    }
   }
 
   @Test
   func `resolve with boolean`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
 
-    promise.resolve(JavaScriptValue(runtime, true))
+      promise.resolve(JavaScriptValue(runtime, true))
 
-    let result = try await promise.await()
-    #expect(result.getBool() == true)
+      let result = try await promise.await()
+      #expect(result.getBool() == true)
+    }
   }
 
   @Test
   func `resolve with null`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
 
-    promise.resolve(JavaScriptValue.null)
+      promise.resolve(JavaScriptValue.null())
 
-    let result = try await promise.await()
-    #expect(result.isNull())
+      let result = try await promise.await()
+      #expect(result.isNull() == true)
+    }
   }
 
   @Test
   func `resolve with undefined`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
 
-    promise.resolve(JavaScriptValue.undefined)
+      promise.resolve(JavaScriptValue.undefined())
 
-    let result = try await promise.await()
-    #expect(result.isUndefined())
+      let result = try await promise.await()
+      #expect(result.isUndefined() == true)
+    }
   }
 
   @Test
   func `resolve with array`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
 
-    promise.resolve([1, 2, 3])
+      promise.resolve([1, 2, 3])
 
-    let result = try await promise.await().getArray()
+      let value = try await promise.await().ref()
 
-    #expect(result.length == 3)
-    #expect(result[0].getInt() == 1)
-    #expect(result[1].getInt() == 2)
-    #expect(result[2].getInt() == 3)
+      try await runtime.execute {
+        let result = try value.take().getArray()
+        #expect(result.length == 3)
+        #expect(result[0].getInt() == 1)
+        #expect(result[1].getInt() == 2)
+        #expect(result[2].getInt() == 3)
+      }
+    }
   }
 
   @Test
   func `multiple promises resolve independently`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise1 = try JavaScriptPromise(runtime)
-    let promise2 = try JavaScriptPromise(runtime)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise1 = try JavaScriptPromise(runtime)
+      let promise2 = try JavaScriptPromise(runtime)
 
-    promise1.resolve(10)
-    promise2.resolve(20)
+      promise1.resolve(10)
+      promise2.resolve(20)
 
-    let result1 = try await promise1.await()
-    let result2 = try await promise2.await()
+      let result1 = try await promise1.await()
+      let result2 = try await promise2.await()
 
-    #expect(result1.getInt() == 10)
-    #expect(result2.getInt() == 20)
+      #expect(result1.getInt() == 10)
+      #expect(result2.getInt() == 20)
+    }
   }
 
   @Test
   func `promise from async JavaScript function`() async throws {
-    let runtime = JavaScriptRuntime()
-    let result =
-      try await runtime
-      .eval("(async function() { return 42; })")
-      .getFunction()
-      .call()
-      .getPromise()
-      .await()
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let result =
+        try await runtime
+        .eval("(async function() { return 42; })")
+        .getFunction()
+        .call()
+        .getPromise()
+        .await()
 
-    #expect(result.getInt() == 42)
+      #expect(result.getInt() == 42)
+    }
   }
 
   @Test
   func `promise from async JavaScript function with arguments`() async throws {
-    let runtime = JavaScriptRuntime()
-    let result =
-      try await runtime
-      .eval("(async function(a, b) { return a + b; })")
-      .getFunction()
-      .call(arguments: 15, 27)
-      .getPromise()
-      .await()
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let result =
+        try await runtime
+        .eval("(async function(a, b) { return a + b; })")
+        .getFunction()
+        .call(arguments: 15, 27)
+        .getPromise()
+        .await()
 
-    #expect(result.getInt() == 42)
+      #expect(result.getInt() == 42)
+    }
   }
 
   @Test
   func `promise catches JavaScript errors`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise =
-      try runtime
-      .eval("(async function() { throw new Error('async error'); })")
-      .getFunction()
-      .call()
-      .getPromise()
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise =
+        try runtime
+        .eval("(async function() { throw new Error('async error'); })")
+        .getFunction()
+        .call()
+        .getPromise()
 
-    await #expect(throws: Error.self) {
-      return try await promise.await()
+      await #expect(throws: Error.self) {
+        _ = try await promise.await()
+      }
     }
   }
 
   @Test
   func `resolve promise from a task`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
 
-    // Resolve from a task
-    Task.detached {
-      try await Task.sleep(nanoseconds: 10_000_000) // 10ms
-      promise.resolve(JavaScriptValue(runtime, 99))
+      // Resolve from a task
+      Task.detached {
+        try await Task.sleep(nanoseconds: 10_000_000) // 10ms
+        promise.resolve(99)
+      }
+
+      let result = try await promise.await()
+      #expect(result.getInt() == 99)
     }
-
-    let result = try await promise.await()
-    #expect(result.getInt() == 99)
   }
 
   @Test
   func `reject promise from a task while awaiting`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
 
-    struct TestError: Error {}
+      struct TestError: Error {}
 
-    // Reject after the await has already suspended on the pending promise. This must throw, not
-    // resume the awaiting caller with the rejection value as if it were fulfilled.
-    Task.detached {
-      try await Task.sleep(nanoseconds: 10_000_000) // 10ms
-      promise.reject(TestError())
-    }
+      // Reject after the await has already suspended on the pending promise. This must throw, not
+      // resume the awaiting caller with the rejection value as if it were fulfilled.
+      Task.detached {
+        try await Task.sleep(nanoseconds: 10_000_000) // 10ms
+        promise.reject(TestError())
+      }
 
-    await #expect(throws: Error.self) {
-      try await promise.await()
+      await #expect(throws: Error.self) {
+        _ = try await promise.await()
+      }
     }
   }
 
@@ -445,67 +525,71 @@ struct JavaScriptPromiseTests {
 
   @Test
   func `settling promise more than once is ignored`() async throws {
-    struct TestError: Error, Sendable {}
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      struct TestError: Error, Sendable {}
 
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
+      let promise = try JavaScriptPromise(runtime)
 
-    runtime.global().setProperty("testPromise", value: promise.asValue())
-    promise.resolve(42)
-    promise.reject(TestError())
-    promise.resolve(100)
+      runtime.global().setProperty("testPromise", value: promise.asValue())
+      promise.resolve(42)
+      promise.reject(TestError())
+      promise.resolve(100)
 
-    let result = try await promise.await()
+      let result = try await promise.await()
 
-    #expect(result.getInt() == 42)
+      #expect(result.getInt() == 42)
+    }
   }
 
   @Test
   func `promise all`() async throws {
-    let runtime = JavaScriptRuntime()
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise1 = try JavaScriptPromise(runtime)
+      let promise2 = try JavaScriptPromise(runtime)
+      let promise3 = try JavaScriptPromise(runtime)
 
-    let promise1 = try JavaScriptPromise(runtime)
-    let promise2 = try JavaScriptPromise(runtime)
-    let promise3 = try JavaScriptPromise(runtime)
+      runtime.global().setProperty("p1", value: promise1.asValue())
+      runtime.global().setProperty("p2", value: promise2.asValue())
+      runtime.global().setProperty("p3", value: promise3.asValue())
 
-    runtime.global().setProperty("p1", value: promise1.asValue())
-    runtime.global().setProperty("p2", value: promise2.asValue())
-    runtime.global().setProperty("p3", value: promise3.asValue())
+      let promiseAll =
+        try runtime
+        .eval("Promise.all([globalThis.p1, globalThis.p2, globalThis.p3])")
+        .getPromise()
 
-    let promiseAll =
-      try runtime
-      .eval("Promise.all([globalThis.p1, globalThis.p2, globalThis.p3])")
-      .getPromise()
+      promise1.resolve(JavaScriptValue(runtime, 1))
+      promise2.resolve(JavaScriptValue(runtime, 2))
+      promise3.resolve(JavaScriptValue(runtime, 3))
 
-    promise1.resolve(JavaScriptValue(runtime, 1))
-    promise2.resolve(JavaScriptValue(runtime, 2))
-    promise3.resolve(JavaScriptValue(runtime, 3))
+      let value = try await promiseAll.await().ref()
 
-    let array = try await promiseAll.await().getArray()
-
-    #expect(array.length == 3)
-    #expect(try array.getValue(at: 0).getInt() == 1)
-    #expect(try array.getValue(at: 1).getInt() == 2)
-    #expect(try array.getValue(at: 2).getInt() == 3)
+      try await runtime.execute {
+        let array = try value.take().getArray()
+        #expect(array.length == 3)
+        #expect(try array.getValue(at: 0).getInt() == 1)
+        #expect(try array.getValue(at: 1).getInt() == 2)
+        #expect(try array.getValue(at: 2).getInt() == 3)
+      }
+    }
   }
 
   @Test
   func `promise race`() async throws {
-    let runtime = JavaScriptRuntime()
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise1 = try JavaScriptPromise(runtime)
+      let promise2 = try JavaScriptPromise(runtime)
 
-    let promise1 = try JavaScriptPromise(runtime)
-    let promise2 = try JavaScriptPromise(runtime)
+      runtime.global().setProperty("p1", value: promise1.asValue())
+      runtime.global().setProperty("p2", value: promise2.asValue())
 
-    runtime.global().setProperty("p1", value: promise1.asValue())
-    runtime.global().setProperty("p2", value: promise2.asValue())
+      let promiseRace = try runtime.eval("Promise.race([globalThis.p1, globalThis.p2])").getPromise()
 
-    let promiseRace = try runtime.eval("Promise.race([globalThis.p1, globalThis.p2])").getPromise()
+      // Resolve promise1 first
+      promise1.resolve(JavaScriptValue(runtime, 42))
 
-    // Resolve promise1 first
-    promise1.resolve(JavaScriptValue(runtime, 42))
-
-    let firstResult = try await promiseRace.await()
-    #expect(firstResult.getInt() == 42)
+      let firstResult = try await promiseRace.await()
+      #expect(firstResult.getInt() == 42)
+    }
   }
 
   @Test
@@ -542,35 +626,36 @@ struct JavaScriptPromiseTests {
 
   @Test
   func `settling keeps the promise registered while the wrapper is alive`() async throws {
-    let runtime = JavaScriptRuntime()
-    let promise = try JavaScriptPromise(runtime)
-    #expect(runtime.longLivedObjects.count == 1)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promise = try JavaScriptPromise(runtime)
+      #expect(runtime.longLivedObjects.count == 1)
 
-    promise.resolve(JavaScriptValue(runtime, 42))
-    _ = try await promise.await()
+      promise.resolve(JavaScriptValue(runtime, 42))
+      _ = try await promise.await()
 
-    // Settling releases the resolve/reject functions, but the state stays registered so it continues
-    // to own the promise object for as long as the wrapper is alive (it is only deregistered when the
-    // wrapper is dropped, see the tests below, or by the teardown sweep).
-    #expect(promise.isDeferred == false)
-    #expect(runtime.longLivedObjects.count == 1)
+      // Settling releases the resolve/reject functions, but the state stays registered so it continues
+      // to own the promise object for as long as the wrapper is alive (it is only deregistered when the
+      // wrapper is dropped, see the tests below, or by the teardown sweep).
+      #expect(promise.isDeferred == false)
+      #expect(try await runtime.execute { runtime.longLivedObjects.count } == 1)
+    }
   }
 
   @Test
   func `dropping a settled promise deregisters its state`() async throws {
-    let runtime = JavaScriptRuntime()
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      do {
+        let promise = try JavaScriptPromise(runtime)
+        promise.resolve(JavaScriptValue(runtime, 42))
+        _ = try await promise.await()
+        #expect(try await runtime.execute { runtime.longLivedObjects.count } == 1)
+        // Leaving the scope drops the last owner of the wrapper.
+      }
 
-    do {
-      let promise = try JavaScriptPromise(runtime)
-      promise.resolve(JavaScriptValue(runtime, 42))
-      _ = try await promise.await()
-      #expect(runtime.longLivedObjects.count == 1)
-      // Leaving the scope drops the last owner of the wrapper.
+      // Dropping the wrapper deregisters its state and releases the promise object, so a stream of
+      // short-lived promises doesn't pin their objects (and resolution values) until teardown.
+      #expect(try await runtime.execute { runtime.longLivedObjects.count } == 0)
     }
-
-    // Dropping the wrapper deregisters its state and releases the promise object, so a stream of
-    // short-lived promises doesn't pin their objects (and resolution values) until teardown.
-    #expect(runtime.longLivedObjects.count == 0)
   }
 
   @Test
@@ -636,5 +721,62 @@ struct JavaScriptPromiseTests {
     // Dropping the promise wrapper here must not touch a freed runtime. This is the crash point in
     // #47454; reaching the end of the test without a crash is the assertion.
     promise = nil
+  }
+
+  @Test(.timeLimit(.minutes(1)))
+  func `awaiting a promise whose runtime is gone throws RuntimeLostError`() async throws {
+    var promise: JavaScriptPromise? = nil
+    do {
+      let runtime = JavaScriptRuntime()
+      promise = try JavaScriptPromise(runtime)
+    }
+    await #expect(throws: JavaScriptCallback.RuntimeLostError.self) {
+      _ = try await promise?.await()
+    }
+    promise = nil
+  }
+
+  @Test
+  func `a resolve queued before the runtime goes away is dropped`() async throws {
+    let testRuntime = await ReleasableTestRuntime()
+    let promise = try await testRuntime.scheduler.runIsolated {
+      UncheckedSendable(value: try JavaScriptPromise(testRuntime.runtime!))
+    }
+    let flag = EncodeFlag()
+
+    await testRuntime.releaseRuntime(afterQueueing: {
+      promise.value.resolve(FlaggingEncodable(flag: flag))
+    })
+
+    #expect(flag.isEncoded == false)
+    await testRuntime.tearDown()
+  }
+
+  @Test
+  func `the teardown sweep releases the value of an awaited promise`() async throws {
+    // The receiver keeps the settled value so a later `await()` can read it again. It must not keep
+    // it past the runtime's teardown sweep: a value destroyed after its runtime is a use-after-free.
+    // The runtime work stays on the scheduler's thread, which owns the runtime.
+    let testRuntime = await TestRuntimeScheduler().makeRuntime()
+    let (promise, weakObject) = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      let promise = try JavaScriptPromise(runtime)
+      let object = runtime.createObject()
+      let weakObject = object.createWeak()
+      promise.resolve(object.asValue())
+      return (UncheckedSendable(value: promise), UncheckedSendable(value: weakObject))
+    }
+    // Moved into a ref, so the awaited value is released on the runtime's thread below.
+    let awaited = try await promise.value.await().ref()
+
+    let isCollected = try await testRuntime.scheduler.runIsolated {
+      let runtime = testRuntime.runtime
+      awaited.release()
+      runtime.longLivedObjects.clear()
+      let isCollected = { weakObject.value.lock() == nil }
+      runtime.collectGarbage(until: isCollected)
+      return isCollected()
+    }
+    #expect(isCollected)
   }
 }

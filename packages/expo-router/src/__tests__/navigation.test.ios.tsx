@@ -59,10 +59,11 @@ it('should respect `unstable_settings', async () => {
     );
 
   await render({ initialUrl: '/orange' });
-  expect(screen).toHaveSegments(['(two)', 'orange']);
+  // Both groups match `/orange` equally. Group-specific anchors do not rank the matches.
+  expect(screen).toHaveSegments(['(one)', 'orange']);
 
   expect(screen.getByTestId('orange')).toBeVisible();
-  // Orange is the initial route so you can't go back
+  // Orange is the first tab, so you can't go back
   expect(router.canGoBack()).toBeFalsy();
 
   // Reset the app, but start at /banana
@@ -1945,4 +1946,95 @@ it.each([
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
   expect(router.canGoBack()).toBe(false);
+});
+
+it('pushes a new layout when navigating between multi-segment dynamic layouts', async () => {
+  function ProjectLayout() {
+    const { org, project } = useLocalSearchParams();
+    return (
+      <>
+        <Text testID="layout">{`${org}/${project}`}</Text>
+        <Stack />
+      </>
+    );
+  }
+
+  await renderRouter(
+    {
+      _layout: () => <Stack />,
+      '[org]/[project]/_layout': ProjectLayout,
+      '[org]/[project]/index': () => <Text testID="index" />,
+    },
+    { initialUrl: '/acme/web' }
+  );
+
+  expect(screen.getByTestId('layout')).toHaveTextContent('acme/web');
+
+  await act(() => router.navigate('/acme/api'));
+
+  expect(screen).toHavePathname('/acme/api');
+  expect(screen.getByTestId('layout')).toHaveTextContent('acme/api');
+  expect(router.canGoBack()).toBe(true);
+
+  await act(() => router.back());
+
+  expect(screen).toHavePathname('/acme/web');
+  expect(screen.getByTestId('layout')).toHaveTextContent('acme/web');
+});
+
+describe('multi-segment dynamic layouts', () => {
+  const mounts: string[] = [];
+
+  function ProjectLayout() {
+    const { org, project } = useLocalSearchParams();
+    useEffect(() => {
+      mounts.push(`${org}/${project}`);
+    }, []);
+    return (
+      <>
+        <Text testID="layout">{`${org}/${project}`}</Text>
+        <Stack />
+      </>
+    );
+  }
+
+  const routes = {
+    _layout: () => <Stack />,
+    '[org]/[project]/_layout': ProjectLayout,
+    '[org]/[project]/index': () => <Text testID="index" />,
+    '[org]/[project]/settings': () => <Text testID="settings" />,
+  };
+
+  beforeEach(() => {
+    mounts.length = 0;
+  });
+
+  it('reuses the layout when the dynamic params stay the same', async () => {
+    await renderRouter(routes, { initialUrl: '/acme/web' });
+
+    await act(() => router.navigate('/acme/web/settings'));
+
+    expect(screen).toHavePathname('/acme/web/settings');
+    expect(screen.getByTestId('layout')).toHaveTextContent('acme/web');
+    expect(mounts).toEqual(['acme/web']);
+
+    const layouts = navigationRef.getRootState().routes[0]!.state!.routes;
+    expect(layouts).toHaveLength(1);
+    expect(layouts[0]!.state!.routes.map((route) => route.name)).toEqual(['index', 'settings']);
+  });
+
+  it('pushes a new layout when only the first param changes', async () => {
+    await renderRouter(routes, { initialUrl: '/acme/web' });
+
+    await act(() => router.navigate('/other/web'));
+
+    expect(screen).toHavePathname('/other/web');
+    expect(screen.getByTestId('layout')).toHaveTextContent('other/web');
+    expect(mounts).toEqual(['acme/web', 'other/web']);
+
+    await act(() => router.back());
+
+    expect(screen).toHavePathname('/acme/web');
+    expect(screen.getByTestId('layout')).toHaveTextContent('acme/web');
+  });
 });

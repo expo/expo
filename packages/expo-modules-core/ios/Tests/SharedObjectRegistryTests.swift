@@ -66,8 +66,8 @@ struct SharedObjectRegistryTests {
 
     // Reading the pairing must not consume it: two consecutive lookups for the same runtime should
     // both resolve to the originally paired JS object.
-    #expect(nativeState.javaScriptObject(in: runtime)?.asValue() == jsObject.asValue())
-    #expect(nativeState.javaScriptObject(in: runtime)?.asValue() == jsObject.asValue())
+    #expect(nativeState.javaScriptObject(in: runtime)?.asValue().isEqual(to: jsObject.asValue()) == true)
+    #expect(nativeState.javaScriptObject(in: runtime)?.asValue().isEqual(to: jsObject.asValue()) == true)
   }
 
   @Test
@@ -87,8 +87,8 @@ struct SharedObjectRegistryTests {
 
     // Each runtime resolves to its own JS counterpart. Compare within a runtime only (cross-runtime
     // strict-equality is meaningless).
-    #expect(nativeState.javaScriptObject(in: primaryRuntime)?.asValue() == primaryObject.asValue())
-    #expect(nativeState.javaScriptObject(in: secondaryRuntime)?.asValue() == secondaryObject.asValue())
+    #expect(nativeState.javaScriptObject(in: primaryRuntime)?.asValue().isEqual(to: primaryObject.asValue()) == true)
+    #expect(nativeState.javaScriptObject(in: secondaryRuntime)?.asValue().isEqual(to: secondaryObject.asValue()) == true)
   }
 
   @Test
@@ -205,6 +205,30 @@ struct SharedObjectRegistryTests {
     let isFirstJSObject = encoded.asValue() == firstJSObject.asValue()
     let resolved = try SharedObject.native(from: encoded)
     #expect(isFirstJSObject == false)
+    #expect(resolved === nativeObject)
+  }
+
+  @Test
+  func `encoding a native object whose JS object was collected pairs it again under a new id`() throws {
+    let runtime = try runtime
+    let nativeObject = TestSharedObject()
+    let firstJSObject = runtime.createObject()
+    let firstId = registry.add(native: nativeObject, javaScript: firstJSObject)
+    let firstNativeState = try #require(nativeObject.nativeState)
+    // Keeps the first C++ native state alive after its JS object is collected, like a finalizer that has not run yet.
+    let holder = runtime.createObject()
+    holder.setNativeState(firstNativeState)
+    _ = consume firstJSObject
+    try runtime.collectGarbage { firstNativeState.javaScriptObject(in: runtime) == nil }
+    let secondJSObject = try TestSharedObject.encode(nativeObject, in: runtime).asObject()
+    let secondId = nativeObject.sharedObjectId
+    // Destroying the first C++ native state releases the first id, after the native object was paired again.
+    _ = consume holder
+    try runtime.collectGarbage { registry.get(firstId) == nil }
+    let resolved = try SharedObject.native(from: secondJSObject)
+    #expect(secondId != firstId)
+    #expect(registry.get(firstId) == nil)
+    #expect(nativeObject.sharedObjectId == secondId)
     #expect(resolved === nativeObject)
   }
 
@@ -332,7 +356,7 @@ struct SharedObjectRegistryTests {
       let id = sharedObjectRegistry.add(native: nativeObject, javaScript: jsObject)
       let nativeState = sharedObjectRegistry.get(id)
       #expect(nativeState?.native === nativeObject)
-      #expect(nativeState?.javaScriptObject(in: runtime)?.asValue() == jsObject.asValue())
+      #expect(nativeState?.javaScriptObject(in: runtime)?.asValue().isEqual(to: jsObject.asValue()) == true)
     }
   }
 

@@ -73,8 +73,13 @@ function createCarouselComponent<P extends { modifiers?: ModifierConfig[] }>(
 
 export interface HorizontalCenteredHeroCarouselProps extends CarouselCommonConfig {
   /**
-   * Maximum width of the hero item in dp.
-   * When unspecified, the hero item will be as wide as possible.
+   * The width that the large item aims for in dp. The carousel picks the arrangement whose large
+   * item width is closest to this value, so the final width can differ.
+   * When unspecified, one large item fills the viewport beside two small items.
+   */
+  preferredItemWidth?: number;
+  /**
+   * @deprecated Use `preferredItemWidth` instead. The value is now a preferred width, not a maximum.
    */
   maxItemWidth?: number;
   /**

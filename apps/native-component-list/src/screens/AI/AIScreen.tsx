@@ -27,6 +27,14 @@ export const AIScreens = [
     },
   },
   {
+    name: 'Images',
+    route: 'ai/images',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImagesScreen'));
+    },
+  },
+  {
     name: 'Session',
     route: 'ai/session',
     options: {},
@@ -40,6 +48,14 @@ export const AIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./StreamingScreen'));
+    },
+  },
+  {
+    name: 'Reminders',
+    route: 'ai/reminders',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./Reminders/RemindersScreen'));
     },
   },
 ];

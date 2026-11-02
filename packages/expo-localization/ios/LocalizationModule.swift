@@ -50,15 +50,27 @@ public class LocalizationModule: Module {
   }
 
   func setRTLPreferences() {
-    let supportsRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_supportsRTL") as? Bool ?? true
-    let forcesRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_forcesRTL") as? Bool ?? false
+    let supportsRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_supportsRTL") as? Bool
+    let forcesRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_forcesRTL") as? Bool
 
     // We call these methods before React loads to ensure it gets rendered correctly the first time the app is opened.
     // Uses required reason API based on the following reason: CA92.1
     if let i18nUtil = RCTI18nUtil.sharedInstance() {
-      i18nUtil.allowRTL(supportsRTL)
-      i18nUtil.forceRTL(forcesRTL)
+      if let allowRTL = resolveRTL("ExpoLocalization_supportsRTLSetByConfig", supportsRTL, true) {
+        i18nUtil.allowRTL(allowRTL)
+      }
+      if let forceRTL = resolveRTL("ExpoLocalization_forcesRTLSetByConfig", forcesRTL, false) {
+        i18nUtil.forceRTL(forceRTL)
+      }
     }
+  }
+
+  // The config plugin writes only non-default values. When an option is removed, apply the default once,
+  // then leave the value to the app's own I18nManager calls.
+  private func resolveRTL(_ key: String, _ configValue: Bool?, _ defaultValue: Bool) -> Bool? {
+    let wasSetByConfig = UserDefaults.standard.object(forKey: key) as? Bool ?? true
+    UserDefaults.standard.set(configValue != nil, forKey: key)
+    return configValue ?? (wasSetByConfig ? defaultValue : nil)
   }
 
   // If the application isn't manually localized for the device language then the
@@ -193,11 +205,9 @@ public class LocalizationModule: Module {
     return unitCharacter == "F" ? "fahrenheit" : "celsius"
   }
 
-  // https://stackoverflow.com/a/28183182
-  static func uses24HourClock() -> Bool {
-    let dateFormat = DateFormatter.dateFormat(fromTemplate: "j", options: 0, locale: Locale.current)!
-
-    return dateFormat.firstIndex(of: "a") == nil
+  static func uses24HourClock(locale: Locale = .current) -> Bool {
+    let hourCycle = locale.hourCycle
+    return hourCycle == .zeroToTwentyThree || hourCycle == .oneToTwentyFour
   }
 
   static func getCalendars() -> [[String: Any?]] {

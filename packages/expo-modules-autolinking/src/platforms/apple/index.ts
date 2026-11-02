@@ -3,4 +3,5 @@ export {
   generateModulesProviderAsync,
   resolveModuleAsync,
   resolveExtraBuildDependenciesAsync,
+  scanNativeModulesAsync,
 } from './apple';

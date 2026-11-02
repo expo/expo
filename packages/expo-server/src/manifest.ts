@@ -164,11 +164,23 @@ export interface RoutesManifest<TRegex = RegExp | string> {
    * When present, HTML routes are rendered at runtime instead of being served from pre-rendered files.
    */
   rendering?: RenderingConfiguration;
+  /**
+   * Set to `development` when the server was exported with `expo export --dev`.
+   */
+  mode?: 'development';
 }
 
 export type RawManifest = RoutesManifest<string>;
 export type Manifest = RoutesManifest<RegExp>;
 export type Route = RouteInfo<RegExp>;
+
+/** The route the server matched for a request. */
+export interface MatchedRoute {
+  file: string;
+  page: string;
+  /** True for generated routes, such as the sitemap. */
+  generated?: boolean;
+}
 
 /**
  * @type {import('@expo/router-server/src/static/renderStaticContent').GetStaticContentOptions}
@@ -176,6 +188,10 @@ export type Route = RouteInfo<RegExp>;
 export interface GetStaticContentOptions {
   loader?: { data?: unknown; key: string };
   request?: Request;
+  /** The route the server matched for the location. */
+  route: MatchedRoute;
+  /** The params the server captured for `route`. */
+  params?: Record<string, string | string[]>;
   assets?: AssetInfo;
 }
 
@@ -188,5 +204,11 @@ export interface GetStreamingContentOptions {
     headNodes: ReactNode[];
   } | null;
   request?: Request;
+  /** The route the server matched for the location. */
+  route: MatchedRoute;
+  /** The params the server captured for `route`. */
+  params?: Record<string, string | string[]>;
   assets?: AssetInfo;
+  output?: 'static' | 'server';
+  hydrate?: boolean;
 }

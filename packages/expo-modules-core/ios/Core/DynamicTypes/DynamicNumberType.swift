@@ -13,7 +13,7 @@ internal struct DynamicNumberType<NumberType>: AnyDynamicType {
     return type is Self
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     if jsValue.isNumber() {
       // Fast paths for common types avoid expensive `as? any BinaryFloatingPoint` conformance lookups.
       let double = jsValue.getDouble()

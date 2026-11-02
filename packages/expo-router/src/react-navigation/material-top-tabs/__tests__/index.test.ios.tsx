@@ -245,6 +245,26 @@ test('renders a custom tabBar with standard navigation props', async () => {
   expect(screen).toHavePathname('/second');
 });
 
+test('passes safeAreaInsets overrides to a custom tabBar', async () => {
+  let tabBarProps: MaterialTopTabBarProps | undefined;
+
+  await renderRouter({
+    _layout: () => (
+      <TopTabs
+        safeAreaInsets={{ left: 0, right: 0 }}
+        tabBar={(props: MaterialTopTabBarProps) => {
+          tabBarProps = props;
+          return null;
+        }}>
+        <TopTabs.Screen name="index" />
+      </TopTabs>
+    ),
+    index: () => <View testID="index" />,
+  });
+
+  expect(tabBarProps?.insets).toEqual(expect.objectContaining({ left: 0, right: 0 }));
+});
+
 test('lets a tabPress listener prevent navigation from a custom tabBar', async () => {
   function CustomTabBar({ state, emitter, navigateToTab }: MaterialTopTabBarProps) {
     const route = state.routes[1]!;

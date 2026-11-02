@@ -59,7 +59,7 @@ export type EnvMode = 'development' | 'production';
 
 /**
  * Set `NODE_ENV` for an Expo command or tool.
- * Existing values are replaced.
+ * Existing values are replaced, and `BABEL_ENV` is removed.
  *
  * Pass a custom `systemEnv` to set the value without changing `process.env`.
  */
@@ -68,6 +68,7 @@ export function setNodeEnv(
   { systemEnv = process.env }: { systemEnv?: EnvOutput } = {}
 ) {
   systemEnv.NODE_ENV = mode;
+  delete systemEnv.BABEL_ENV;
   return systemEnv;
 }
 
@@ -179,6 +180,10 @@ export function parseEnvFiles(
       debug(`Loaded environment variables from: ${envFile}`);
 
       for (const key of Object.keys(envFileParsed)) {
+        if (key === 'BABEL_ENV') {
+          debug(`"${key}" is ignored in dotenv files, skipping in: ${envFile}`);
+          continue;
+        }
         if (isIgnoredEnvKey(key)) {
           (blockedByFile[envFile] ||= []).push(key);
           debug(`"${key}" is blocked from dotenv files, skipping in: ${envFile}`);

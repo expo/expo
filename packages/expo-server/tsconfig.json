@@ -1,5 +1,5 @@
 {
-  "extends": "expo-module-scripts/tsconfig.node",
+  "extends": "@expo/internal-scripts/tsconfig.node",
   "include": ["./src"],
   "exclude": ["install.d.ts", "install.js"],
   "compilerOptions": {

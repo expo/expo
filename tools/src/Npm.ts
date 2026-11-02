@@ -119,7 +119,7 @@ export async function packToTarballAsync(packageDir: string): Promise<PackResult
   await spawnAsync('pnpm', ['pack', '--pack-destination', destination], {
     cwd: packageDir,
     stdio: 'ignore',
-    // Prevent expo-module-scripts from auto-adding --watch during lifecycle scripts
+    // Prevent @expo/internal-scripts from auto-adding --watch during lifecycle scripts
     env: { ...process.env, EXPO_NONINTERACTIVE: '1' },
   });
 
@@ -165,7 +165,7 @@ export async function publishPackageAsync(
   args.push(...maybeNpmOtpFlag());
   await spawnAsync('pnpm', args, {
     cwd: packageDir,
-    // Prevent expo-module-scripts from auto-adding --watch during lifecycle scripts
+    // Prevent @expo/internal-scripts from auto-adding --watch during lifecycle scripts
     env: { ...process.env, EXPO_NONINTERACTIVE: '1' },
     ...options.spawnOptions,
   });

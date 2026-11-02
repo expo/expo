@@ -1,5 +1,23 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- [Internal] Add an `integration` error source for errors that an integration reports for a library. ([#51720](https://github.com/expo/expo/pull/51720) by [@douglowder](https://github.com/douglowder))
+
+## 58.0.13
+
+### Patch Changes
+
+- [iOS] Skip startup metrics for launches that start in the background (for example a background fetch or a silent push notification), and drop TTR and TTI longer than 3 minutes. Before, their TTR and TTI included the whole time until the user opened the app. ([#51609](https://github.com/expo/expo/pull/51609) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.12
+
+### Patch Changes
+
+- [Android] Fix startup metrics recorded after the first save (for example TTI after an update download) never being persisted. ([#51538](https://github.com/expo/expo/pull/51538) by [@Ubax](https://github.com/Ubax))
+
 ## 58.0.11
 
 ### Patch Changes

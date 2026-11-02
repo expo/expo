@@ -11,6 +11,10 @@ import { requireNotNull } from '../utils/requireNotNull';
 
 export const name = 'SQLite';
 
+if (process.env.EXPO_OS === 'web') {
+  SQLite.configureWeb({ wasmURL: require('../assets/wa-sqlite-fts.wasm') });
+}
+
 interface UserEntity {
   name: string;
   k: number;
@@ -587,6 +591,50 @@ CREATE TABLE IF NOT EXISTS users (user_id INTEGER PRIMARY KEY NOT NULL, name VAR
       }
     });
 
+    nativeIt('preserves constraint codes and details while other statements run', async () => {
+      const db = await SQLite.openDatabaseAsync(':memory:', {
+        finalizeUnusedStatementsBeforeClosing: false,
+      });
+      try {
+        await db.execAsync(
+          'CREATE TABLE error_test(id INTEGER PRIMARY KEY); INSERT INTO error_test VALUES (1)'
+        );
+        const readers = await Promise.all(
+          Array.from({ length: 16 }, () => db.prepareAsync('SELECT 1 UNION ALL SELECT 2'))
+        );
+        try {
+          for (let attempt = 0; attempt < 200; attempt++) {
+            const statement = await db.prepareAsync('INSERT INTO error_test VALUES (1)');
+            let executionError: unknown;
+            try {
+              await statement.executeAsync();
+            } catch (error) {
+              executionError = error;
+            }
+            expect(String(executionError)).toMatch(
+              /Error code 19: UNIQUE constraint failed: error_test.id/
+            );
+            // These native calls can replace the connection error between finalize() and error reporting.
+            const reading = Promise.all(readers.map((reader) => reader.executeAsync()));
+            let finalizeError: unknown;
+            try {
+              await statement.finalizeAsync();
+            } catch (error) {
+              finalizeError = error;
+            }
+            await reading;
+            expect(String(finalizeError)).toMatch(
+              /Error code 19: UNIQUE constraint failed: error_test.id/
+            );
+          }
+        } finally {
+          for (const reader of readers) await reader.finalizeAsync();
+        }
+      } finally {
+        await db.closeAsync();
+      }
+    });
+
     it('should throw from getFirstAsync()/getAllAsync() if the cursor is not at the beginning', async () => {
       const db = await SQLite.openDatabaseAsync(':memory:');
       await db.execAsync(`
@@ -744,6 +792,15 @@ INSERT INTO users (user_id, name, k, j) VALUES (3, 'Nikhilesh Sigatapu', 7, 42.1
 
     afterEach(async () => {
       await db.closeAsync();
+    });
+
+    it('should report whether a transaction is active', async () => {
+      db = await SQLite.openDatabaseAsync(':memory:');
+      expect(await db.isInTransactionAsync()).toBe(false);
+      await db.withTransactionAsync(async () => {
+        expect(await db.isInTransactionAsync()).toBe(true);
+      });
+      expect(await db.isInTransactionAsync()).toBe(false);
     });
 
     it('should support async transaction', async () => {
@@ -1219,7 +1276,7 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
     });
 
     for (const useNewConnection of [false, true]) {
-      nativeIt(
+      it(
         'can clean up and retry a failed close (useNewConnection=' + useNewConnection + ')',
         async () => {
           const options = {
@@ -1268,7 +1325,7 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       );
     }
 
-    nativeIt('can clean up and retry a failed synchronous close', () => {
+    it('can clean up and retry a failed synchronous close', () => {
       const db = SQLite.openDatabaseSync(':memory:', {
         useNewConnection: true,
         finalizeUnusedStatementsBeforeClosing: false,
@@ -1283,11 +1340,21 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
       }
       expect(() => db.execSync('SELECT 1')).toThrow();
     });
+
+    it('can finalize a statement after closing its handle to a shared connection', async () => {
+      const options = { finalizeUnusedStatementsBeforeClosing: false };
+      const db = await SQLite.openDatabaseAsync(':memory:', options);
+      const sharedDb = await SQLite.openDatabaseAsync(':memory:', options);
+      const statement = await sharedDb.prepareAsync('SELECT 1');
+      await sharedDb.closeAsync();
+      await statement.finalizeAsync();
+      await db.closeAsync();
+    });
   });
 
   describe('Virtual tables', () => {
     for (const moduleName of ['fts5', 'fts4']) {
-      nativeIt(`should close a ${moduleName} database after the query is finalized`, async () => {
+      it(`should close a ${moduleName} database after the query is finalized`, async () => {
         const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
         await db.execAsync(`
           CREATE VIRTUAL TABLE fts_probe USING ${moduleName}(body);
@@ -1299,21 +1366,20 @@ CREATE TABLE foo (a INTEGER PRIMARY KEY NOT NULL, b INTEGER);
         await db.closeAsync();
       });
 
-      nativeIt(
-        `should close a ${moduleName} database while a query statement is still open`,
-        async () => {
-          const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
-          await db.execAsync(`
+      it(`should close a ${moduleName} database while a query statement is still open`, async () => {
+        const db = await SQLite.openDatabaseAsync(':memory:', { useNewConnection: true });
+        await db.execAsync(`
             CREATE VIRTUAL TABLE fts_probe USING ${moduleName}(body);
             INSERT INTO fts_probe(body) VALUES ('hello world');
           `);
-          const statement = await db.prepareAsync(
-            "SELECT rowid FROM fts_probe WHERE fts_probe MATCH 'hello'"
-          );
-          await db.closeAsync();
-          expect(() => statement.getColumnNamesSync()).toThrowError(/Access to closed resource/);
-        }
-      );
+        const statement = await db.prepareAsync(
+          "SELECT rowid FROM fts_probe WHERE fts_probe MATCH 'hello'"
+        );
+        await db.closeAsync();
+        expect(() => statement.getColumnNamesSync()).toThrowError(
+          /Access to closed resource|Statement not found/
+        );
+      });
     }
   });
 

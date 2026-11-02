@@ -2,6 +2,7 @@ import {
   BaseRouter,
   type CommonNavigationAction,
   type DefaultRouterOptions,
+  isActionHandled,
   type NavigationState,
   type Router,
 } from '../../../routers';
@@ -141,9 +142,9 @@ export function MockRouter(options: DefaultRouterOptions) {
 
         default: {
           const result = base.getStateForAction(state, action, config);
-          return result === null
-            ? null
-            : { ...result, state: { ...result.state, type: 'test' } };
+          return isActionHandled(result)
+            ? { ...result, state: { ...result.state, type: 'test' } }
+            : result;
         }
       }
     },

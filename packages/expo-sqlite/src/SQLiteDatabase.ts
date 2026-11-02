@@ -63,8 +63,8 @@ export class SQLiteDatabase {
    *
    * @param databaseName The name of the current attached databases. The default value is `main` which is the default database name.
    */
-  public serializeAsync(databaseName: string = 'main'): Promise<Uint8Array> {
-    return this.nativeDatabase.serializeAsync(databaseName);
+  public async serializeAsync(databaseName: string = 'main'): Promise<Uint8Array> {
+    return toUint8Array(await this.nativeDatabase.serializeAsync(databaseName));
   }
 
   /**
@@ -264,7 +264,7 @@ export class SQLiteDatabase {
    * @param databaseName The name of the current attached databases. The default value is `main` which is the default database name.
    */
   public serializeSync(databaseName: string = 'main'): Uint8Array {
-    return this.nativeDatabase.serializeSync(databaseName);
+    return toUint8Array(this.nativeDatabase.serializeSync(databaseName));
   }
 
   /**
@@ -801,4 +801,12 @@ class Transaction extends SQLiteDatabase {
     await nativeDatabase.initAsync();
     return new Transaction(db.databasePath, options, nativeDatabase);
   }
+}
+
+/**
+ * The native database hands serialized bytes over as a `Uint8Array` on iOS and as an `ArrayBuffer`
+ * on Android.
+ */
+function toUint8Array(data: Uint8Array | ArrayBuffer): Uint8Array {
+  return data instanceof Uint8Array ? data : new Uint8Array(data);
 }

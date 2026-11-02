@@ -428,6 +428,37 @@ describe('_resolveProjectSettingsAsync', () => {
     // Limit this to a single call since it can get expensive.
     expect(getConfig).toHaveBeenCalledTimes(1);
   });
+  it(`returns absolute asset URLs relative to the server root for Webpack dev servers`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      isNativeWebpack: true,
+      constructUrl: jest.fn(() => 'http://fake.mock:8081'),
+      mode: 'development',
+    });
+
+    jest.mocked(resolveManifestAssets).mockClear();
+    middleware._getBundleUrl = jest.fn(
+      () => 'http://fake.mock:8081/node_modules/expo/AppEntry.bundle?platform=ios&dev=true'
+    );
+
+    await middleware._resolveProjectSettingsAsync({
+      hostname: 'localhost',
+      platform: 'ios',
+    } as any);
+
+    const resolver = jest.mocked(resolveManifestAssets).mock.calls?.[0]?.[1].resolver;
+    await expect(resolver?.('assets/icon.png')).resolves.toBe(
+      'http://fake.mock:8081/assets/icon.png'
+    );
+    await expect(resolver?.('./assets/icon.png')).resolves.toBe(
+      'http://fake.mock:8081/assets/icon.png'
+    );
+    await expect(resolver?.('assets\\icon.png')).resolves.toBe(
+      'http://fake.mock:8081/assets/icon.png'
+    );
+    await expect(resolver?.('./nested/../assets/icon.png')).resolves.toBe(
+      'http://fake.mock:8081/assets/icon.png'
+    );
+  });
 });
 
 describe('getHandler', () => {

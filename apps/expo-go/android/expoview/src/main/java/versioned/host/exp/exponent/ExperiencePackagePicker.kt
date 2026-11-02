@@ -4,7 +4,6 @@ import expo.modules.asset.AssetModule
 import expo.modules.audio.AudioModule
 import expo.modules.backgroundfetch.BackgroundFetchModule
 import expo.modules.backgroundtask.BackgroundTaskModule
-import expo.modules.battery.BatteryModule
 import expo.modules.blob.BlobModule
 import expo.modules.blur.BlurModule
 import expo.modules.brightness.BrightnessModule
@@ -18,7 +17,6 @@ import expo.modules.contacts.ContactsModule
 import expo.modules.contacts.next.ContactsNextModule
 import expo.modules.core.interfaces.Package
 import expo.modules.crypto.aes.AesCryptoModule
-import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
 import expo.modules.fetch.ExpoFetchModule
@@ -32,7 +30,6 @@ import expo.modules.imageloader.ImageLoaderService
 import expo.modules.imagemanipulator.ImageManipulatorModule
 import expo.modules.imagepicker.ImagePickerModule
 import expo.modules.intentlauncher.IntentLauncherModule
-import expo.modules.keepawake.KeepAwakeModule
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.services.Service
@@ -44,6 +41,9 @@ import expo.modules.localization.LocalizationModule
 import expo.modules.location.LocationModule
 import expo.modules.mailcomposer.MailComposerModule
 import expo.modules.manifests.core.Manifest
+import expo.modules.maps.GoogleMapsModule
+import expo.modules.maps.MapsModule
+import expo.modules.maps.StreetViewModule
 import expo.modules.medialibrary.MediaLibraryModule
 import expo.modules.medialibrary.next.MediaLibraryNextModule
 import expo.modules.navigationbar.NavigationBarModule
@@ -71,12 +71,11 @@ import expo.modules.sensors.modules.PedometerModule
 import expo.modules.sharing.SharingModule
 import expo.modules.sms.SMSModule
 import expo.modules.speech.SpeechModule
-import expo.modules.sqlite.SQLiteModule
 import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
-import expo.modules.taskManager.TaskManagerModule
-import expo.modules.taskManager.TaskManagerPackage
+import expo.modules.taskmanager.TaskManagerModule
+import expo.modules.taskmanager.TaskManagerPackage
 import expo.modules.trackingtransparency.TrackingTransparencyModule
 import expo.modules.ui.ExpoUIModule
 import expo.modules.updates.UpdatesPackage
@@ -135,7 +134,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ExpoBackgroundNotificationTasksModule::class.java to null,
     // End of Notifications
     AesCryptoModule::class.java to null,
-    BatteryModule::class.java to null,
     BackgroundFetchModule::class.java to null,
     BackgroundTaskModule::class.java to null,
     BlobModule::class.java to null,
@@ -147,7 +145,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ConstantsModule::class.java to null,
     ContactsModule::class.java to null,
     ContactsNextModule::class.java to null,
-    DeviceModule::class.java to null,
     DocumentPickerModule::class.java to null,
     DomWebViewModule::class.java to null,
     EASClientModule::class.java to null,
@@ -165,12 +162,14 @@ object ExperiencePackagePicker : ModulesProvider {
     ImageManipulatorModule::class.java to null,
     ExpoImageModule::class.java to null,
     IntentLauncherModule::class.java to null,
-    KeepAwakeModule::class.java to null,
     LinearGradientModule::class.java to null,
     LocalAuthenticationModule::class.java to null,
     LocalizationModule::class.java to null,
     LocationModule::class.java to null,
     MailComposerModule::class.java to null,
+    MapsModule::class.java to null,
+    GoogleMapsModule::class.java to null,
+    StreetViewModule::class.java to null,
     MediaLibraryModule::class.java to null,
     MediaLibraryNextModule::class.java to null,
     NavigationBarModule::class.java to null,
@@ -184,7 +183,6 @@ object ExperiencePackagePicker : ModulesProvider {
     SpeechModule::class.java to null,
     SplashScreenModule::class.java to null,
     StoreReviewModule::class.java to null,
-    SQLiteModule::class.java to null,
     SystemUIModule::class.java to null,
     TaskManagerModule::class.java to null,
     TrackingTransparencyModule::class.java to null,

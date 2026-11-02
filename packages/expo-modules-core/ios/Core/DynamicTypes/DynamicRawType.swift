@@ -17,7 +17,7 @@ internal struct DynamicRawType<InnerType>: AnyDynamicType {
     return type is Self
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     return try cast(jsValue.getAny(), appContext: appContext)
   }
 
@@ -43,7 +43,7 @@ internal struct DynamicRawType<InnerType>: AnyDynamicType {
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
     if Optional.isNil(value) {
-      return .null
+      return .null()
     }
     // When `InnerType` is `Any` (e.g. `[String: Any]` value slot), the runtime type of the
     // value is more specific than the static type, so we dispatch on it to reach proper
@@ -60,7 +60,7 @@ internal struct DynamicRawType<InnerType>: AnyDynamicType {
     // We use `DynamicRawType` for this only temporarily.
     if let objectBuilder = result as? JavaScriptObjectBuilder {
       return try JavaScriptActor.assumeIsolated {
-        return try objectBuilder.build(appContext: appContext).asValue()
+        return ConvertedJavaScriptValue(try objectBuilder.build(appContext: appContext).asValue())
       }
     }
     return result

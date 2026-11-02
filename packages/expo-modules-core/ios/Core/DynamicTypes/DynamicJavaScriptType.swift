@@ -16,18 +16,24 @@ internal struct DynamicJavaScriptType: AnyDynamicType {
     return type is Self
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
-    return jsValue
+  // `JavaScriptValue` is non-copyable, so it can neither be boxed in `Any` nor appear in a definition
+  // closure's argument tuple or result. The compiler rejects such a definition, so these paths are
+  // unreachable from the DSL; they throw for completeness.
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
+    throw NonCopyableValueException()
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext) throws -> JavaScriptValue {
-    if let value = value as? JavaScriptValue {
-      return value
-    }
-    throw Conversions.ConversionToJSFailedException((kind: .undefined, nativeType: ValueType.self))
+    throw NonCopyableValueException()
   }
 
   var description: String {
     return "JavaScriptValue"
+  }
+}
+
+internal final class NonCopyableValueException: Exception, @unchecked Sendable {
+  override var reason: String {
+    return "JavaScriptValue is non-copyable and cannot be passed through the module definition as a native value"
   }
 }

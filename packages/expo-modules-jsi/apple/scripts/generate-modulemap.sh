@@ -1,6 +1,7 @@
 #!/bin/bash
 #
-# Writes `.generated/module.modulemap` for the `jsi` Clang module.
+# Writes `.generated/module.modulemap` for the `jsi` Clang module, under
+# EXPO_CUSTOM_BUILD_ROOT when set and next to the package otherwise.
 #
 # Headers are referenced by absolute path so the modulemap works regardless of
 # where Pods lives. The `Pods/Headers/Public` path exists in non-frameworks and
@@ -31,7 +32,7 @@ if [[ ! -d "$PODS_ROOT" ]]; then
 fi
 PODS_ROOT="$(cd "$PODS_ROOT" && pwd)"
 
-GENERATED_DIR="${PACKAGE_DIR}/.generated"
+GENERATED_DIR="${EXPO_CUSTOM_BUILD_ROOT:-${PACKAGE_DIR}}/.generated"
 GENERATED_MODULE_MAP="${GENERATED_DIR}/module.modulemap"
 mkdir -p "$GENERATED_DIR"
 

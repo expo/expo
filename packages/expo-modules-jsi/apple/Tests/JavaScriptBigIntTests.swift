@@ -455,7 +455,7 @@ struct JavaScriptBigIntTests {
     let bigInt = JavaScriptBigInt(runtime, fromInt64: 42)
     let result = try runtime.global()
       .getPropertyAsFunction("identity")
-      .call(arguments: bigInt.asValue())
+      .call(arguments: bigInt.asValue().ref())
       .getBigInt()
 
     #expect((result == bigInt) == true)
@@ -468,7 +468,7 @@ struct JavaScriptBigIntTests {
     let bigInt = JavaScriptBigInt(runtime, fromInt64: 21)
     let result = try runtime.global()
       .getPropertyAsFunction("double")
-      .call(arguments: bigInt.asValue())
+      .call(arguments: bigInt.asValue().ref())
       .getBigInt()
 
     #expect(result.getInt64() == 42)

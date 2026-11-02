@@ -67,7 +67,11 @@ extension ExpoSwiftUI {
       self.contentView = ContentView(props: props)
       let rootView = AnyView(contentView)
       self.props = props
+      #if os(iOS) || os(tvOS)
+      let controller: UIHostingController<AnyView> = AppearanceTrackingHostingController(rootView: rootView)
+      #else
       let controller = UIHostingController(rootView: rootView)
+      #endif
 
       if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
         controller.sizingOptions = [.intrinsicContentSize]
@@ -240,6 +244,15 @@ extension ExpoSwiftUI {
         hostingController.removeFromParent()
         return
       }
+      // `reactViewController()` walks the responder chain, which may not match the view hierarchy:
+      // UIKit makes an input accessory view's `nextResponder` the text input that owns it. UIKit throws
+      // when a child controller's view is outside its parent's view, so skip containment in that case.
+      if !(parentController.viewIfLoaded.map(isDescendant(of:)) ?? false) {
+        hostingController.removeFromParent()
+        addSubview(hostingController.view)
+        setupHostingViewConstraints()
+        return
+      }
       if parentController as? UINavigationController == nil && parentController as? UITabBarController == nil {
         // Swift automatically adds the hostingController in the correct place when the parentController
         // is UINavigationController, since its children are supposed to be only screens.
@@ -250,9 +263,26 @@ extension ExpoSwiftUI {
       addSubview(hostingController.view)
       #if os(iOS) || os(tvOS)
       hostingController.didMove(toParent: parentController)
+      forwardAppearanceIfMissed(parentController: parentController)
       #endif
       setupHostingViewConstraints()
     }
+
+    #if os(iOS) || os(tvOS)
+    // A child added during a transition after its parent appeared never appears, so it gets no safe area (#51288).
+    // TODO: Workaround for https://github.com/software-mansion/react-native-screens/pull/4997, remove once it ships.
+    private func forwardAppearanceIfMissed(parentController: UIViewController) {
+      guard
+        parentController.transitionCoordinator != nil,
+        let controller = hostingController as? AppearanceTrackingHostingController,
+        !controller.isAppearing
+      else {
+        return
+      }
+      controller.beginAppearanceTransition(true, animated: false)
+      controller.endAppearanceTransition()
+    }
+    #endif
 
 #if os(macOS)
     public override func reactViewController() -> NSViewController? {
@@ -268,6 +298,23 @@ extension ExpoSwiftUI {
 #endif
   }
 }
+
+#if os(iOS) || os(tvOS)
+// Records whether UIKit forwarded appearance, so `HostingView` can forward it when UIKit misses it.
+private final class AppearanceTrackingHostingController: UIHostingController<AnyView> {
+  private(set) var isAppearing = false
+
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    isAppearing = true
+  }
+
+  override func viewDidDisappear(_ animated: Bool) {
+    super.viewDidDisappear(animated)
+    isAppearing = false
+  }
+}
+#endif
 
 extension UIHostingController {
   /// Applies the `ignoreSafeArea` mode reactively, restoring the default safe area when `nil` so

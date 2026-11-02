@@ -10,13 +10,13 @@ name: AI code review (command)
 #                            half). Any tail belongs to verify (--fix), so
 #                            the router always picks agents here.
 # This never changes configuration. CONTINUOUS review is configured in
-# expo-code-review.yml (the `pull_request` workflow) via the `review.trigger`
-# policy in .expo-code-review/config.jsonc and the `ai-review:skip` label.
+# expo-code-review.yml (the `pull_request_target` workflow) via the `review.trigger`
+# policy in .expo-agents/code-review/config.jsonc and the `ai-review:skip` label.
 #
 # Also dispatchable manually (Actions → this workflow → Run workflow) with a PR
 # number. Dispatch requires write access, so it carries the same maintainers-only
 # gate as the comment path. The `config-from-checkout` input exists for PRs whose
-# base commit predates .expo-code-review/ — `ecr ci` loads configuration from the
+# base commit predates the reviewer config — `ecr ci` loads configuration from the
 # PR's trusted base commit and fails closed when that commit has no config, so
 # such PRs can only be reviewed by trusting this base-ref checkout's config
 # (still never the PR head).
@@ -36,16 +36,15 @@ on:
         required: false
         default: ''
       config-from-checkout:
-        description: Load reviewer config from this checkout instead of the PR's base commit (for PRs whose base predates .expo-code-review/)
+        description: Load reviewer config from this checkout instead of the PR's base commit (for PRs whose base predates the reviewer config)
         type: boolean
         required: false
         default: false
 
-# Comment-only: read the repo, write PR comments (issue comments API).
+# Every write uses an expo-bot token (see GH_TOKEN in the steps), never GITHUB_TOKEN,
+# so GITHUB_TOKEN only needs to read the repository for the checkout.
 permissions:
   contents: read
-  pull-requests: write
-  issues: write
 
 jobs:
   command:
@@ -172,7 +171,7 @@ jobs:
       - name: Reply to a rejected command
         if: always() && github.event_name == 'issue_comment' && steps.cmd.outputs.reject != ''
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           REJECT: ${{ steps.cmd.outputs.reject }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: gh issue comment "${{ github.event.issue.number }}" -R "${{ github.repository }}" --body "⚠️ $REJECT ([run log]($RUN_URL))"
@@ -181,20 +180,20 @@ jobs:
         # Comment path only — a manual dispatch has no comment to react to.
         if: steps.cmd.outputs.run == 'true' && github.event_name == 'issue_comment'
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
         run: gh api -X POST "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes
 
       # SECURITY: `issue_comment` is NOT fork-restricted by GitHub — it always
       # runs in the base-repo context with full secrets and a write-scoped token,
       # regardless of whether the commented-on PR is from a fork. We check out ONLY
-      # the trusted base ref (the default branch) for the `.expo-code-review/`
+      # the trusted base ref (the default branch) for the `.expo-agents/code-review/`
       # config, and never `gh pr checkout` the PR head. The reviewer engine itself
       # is the PUBLISHED @expo/code-review-cli (fetched by npx), not built from any
       # checkout, so attacker-controlled PR code never runs here. The diff + PR
       # metadata come from the API (`gh pr diff`/`gh pr view`); `ecr ci` loads
       # configuration from the PR's immutable base commit and reads source from a
       # head worktree scrubbed of ambient runtime config (opencode.json, plugins,
-      # AGENTS.md, .env, …) — the same trust model as the pull_request workflow.
+      # AGENTS.md, .env, …) — the same trust model as expo-code-review.yml.
       - name: Checkout (base ref only — never the PR head)
         if: steps.cmd.outputs.run == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -220,7 +219,7 @@ jobs:
         if: steps.cmd.outputs.run == 'true'
         run: npm install -g @anthropic-ai/claude-code@2.1.280
 
-      # SECURITY: the base-ref checkout above includes every .expo-code-review/
+      # SECURITY: the base-ref checkout above includes every .expo-agents/code-review/
       # config.jsonc + routing.jsonc, whose auth.tokenEnv names the env var the CLI
       # forwards as the model credential. The canonical guard ships with the CLI:
       # `ecr verify-config` sweeps every config (root + routing + all scopes, referenced
@@ -258,7 +257,7 @@ jobs:
       - name: Explain that the review did not start
         if: always() && steps.cmd.outputs.run == 'true' && steps.model-env.outcome == 'failure'
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           PR: ${{ github.event.issue.number || inputs.pr }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
@@ -279,7 +278,7 @@ jobs:
         if: steps.cmd.outputs.run == 'true'
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
           # Layer-1 auth lock: the CLI refuses to run when the tokenEnv it would honor
           # differs from this. Keep it in sync with the guard's EXPECTED.
           ECR_EXPECTED_TOKEN_ENV: ${{ vars.ECR_EXPECTED_TOKEN_ENV || 'CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN' }}
@@ -324,15 +323,15 @@ jobs:
             ARGS+=(--force)
             if [ "$CONFIG_FROM_CHECKOUT" = "true" ]; then
               # Operator trust decision (absolute path): PRs whose base commit
-              # predates .expo-code-review/ have no trusted-base config to load,
+              # predates the reviewer config have no trusted-base config to load,
               # so trust this base-ref checkout's config — still never the PR head.
-              ARGS+=(--config-dir "$GITHUB_WORKSPACE/.expo-code-review")
+              ARGS+=(--config-dir "$GITHUB_WORKSPACE/.expo-agents/code-review")
             fi
           fi
           ./scripts/expo-code-review ecr ci "${ARGS[@]}"
 
-      # Same ephemeral per-run log as the pull_request workflow — a review command
-      # runs the full `ecr ci`, whose .expo-code-review/.runs/ log is gone when the
+      # Same ephemeral per-run log as expo-code-review.yml — a review command
+      # runs the full `ecr ci`, whose .expo-agents/code-review/.runs/ log is gone when the
       # runner tears down. always() captures it even on error, gated on run=='true'
       # (an unrelated comment writes no log); issue.number IS the PR number here
       # (issue_comment context has no pull_request.number), and inputs.pr covers
@@ -342,6 +341,6 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: review-run-log-pr${{ github.event.issue.number || inputs.pr }}
-          path: .expo-code-review/.runs/reviews.jsonl
+          path: .expo-agents/code-review/.runs/reviews.jsonl
           if-no-files-found: ignore
           retention-days: 14

@@ -1,6 +1,7 @@
 import { expect, test } from '@jest/globals';
 
 import type { ParamListBase, TabNavigationState } from '../../react-navigation/native';
+import { expectHandled } from '../../react-navigation/routers/__tests__/__fixtures__/expectHandled';
 import { ExpoTabRouter } from '../TabRouter';
 
 function buildTabState(
@@ -77,16 +78,18 @@ test('reselecting a tab with matching carried state preserves its history', () =
     1
   );
 
-  const result = router.getStateForAction(
-    state,
-    {
-      type: 'JUMP_TO',
-      payload: {
-        name: 'second',
-        state: { ...childState, __internal__routerActionState: true as const },
+  const result = expectHandled(
+    router.getStateForAction(
+      state,
+      {
+        type: 'JUMP_TO',
+        payload: {
+          name: 'second',
+          state: { ...childState, __internal__routerActionState: true as const },
+        },
       },
-    },
-    options
+      options
+    )
   );
 
   expect(result?.state).toBe(state);
@@ -105,10 +108,12 @@ test('resetOnFocus preserves child state when reselecting the focused tab', () =
     1
   );
 
-  const result = router.getStateForAction(
-    state,
-    { type: 'JUMP_TO', payload: { name: 'second', resetOnFocus: true } },
-    options
+  const result = expectHandled(
+    router.getStateForAction(
+      state,
+      { type: 'JUMP_TO', payload: { name: 'second', resetOnFocus: true } },
+      options
+    )
   );
 
   expect(result?.state.routes[1]?.state).toBe(childState);
@@ -126,10 +131,12 @@ test('resetOnFocus clears child state when switching tabs', () => {
     0
   );
 
-  const result = router.getStateForAction(
-    state,
-    { type: 'JUMP_TO', payload: { name: 'second', resetOnFocus: true } },
-    options
+  const result = expectHandled(
+    router.getStateForAction(
+      state,
+      { type: 'JUMP_TO', payload: { name: 'second', resetOnFocus: true } },
+      options
+    )
   );
 
   expect(result?.state.index).toBe(1);

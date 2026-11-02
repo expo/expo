@@ -1,4 +1,5 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -12,7 +13,7 @@ struct FormatterTests {
     let appContext: AppContext
 
     init() {
-      self.appContext = AppContext.create()
+      self.appContext = TestAppContext()
       self.appContext.moduleRegistry.register(moduleType: FormatterTestModule.self, name: nil)
     }
 
@@ -37,23 +38,8 @@ struct FormatterTests {
 
     @Test
     func `can be used in async functions`() async throws {
-      try appContext.runtime.eval(
-        "expo.modules.FormatterModule.f1Async().then((result) => { globalThis.result = result; })"
-      )
-      try await expectEventually {
-        try await appContext.runtime.eval("!!globalThis.result").asBool() == true
-      }
-      let r1 = try appContext.runtime.eval("globalThis.result").asObject()
-
-      try appContext.runtime.eval("globalThis.result = null")
-
-      try appContext.runtime.eval(
-        "expo.modules.FormatterModule.f2Async().then((result) => { globalThis.result = result; })"
-      )
-      try await expectEventually {
-        try await appContext.runtime.eval("!!globalThis.result").asBool() == true
-      }
-      let r2 = try appContext.runtime.eval("globalThis.result").asObject()
+      let r1 = try await appContext.runtime.evalAsync("expo.modules.FormatterModule.f1Async()").asObject()
+      let r2 = try await appContext.runtime.evalAsync("expo.modules.FormatterModule.f2Async()").asObject()
 
       #expect(r1.getProperty("a").isUndefined() == true)
       #expect(r1.getProperty("b").getString() == "b")

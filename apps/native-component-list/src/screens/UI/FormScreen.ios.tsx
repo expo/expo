@@ -122,6 +122,7 @@ export default function FormScreen() {
             title="Card expired"
             systemImage="creditcard.trianglebadge.exclamationmark"
             description="Please update your payment information to continue using our services."
+            actions={<Button onPress={() => alert('Update payment')} label="Update payment" />}
           />
         </Section>
       </Form>

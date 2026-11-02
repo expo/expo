@@ -14,8 +14,7 @@ platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
 target 'NativeTests' do
   pod 'expo-dev-menu-interface', path: '../../../packages/expo-dev-menu-interface/ios'
 
-  # add this manually, because it has UITests too
-  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
+  pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests']
 
   use_expo_modules_tests!
 

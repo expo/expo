@@ -1,7 +1,7 @@
 {
   "meta": {
     "source": "https://developer.android.com/reference/android/Manifest.permission",
-    "scrapedAt": "2026-09-17T08:14:07.333Z"
+    "scrapedAt": "2026-10-10T08:12:27.799Z"
   },
   "data": {
     "ACCEPT_HANDOVER": {
@@ -3118,7 +3118,7 @@
       "warning": null
     },
     "READ_UPDATE_ENGINE_LOGS": {
-      "apiAdded": 1,
+      "apiAdded": 37.2,
       "apiDeprecated": null,
       "apiReplaced": null,
       "name": "READ_UPDATE_ENGINE_LOGS",

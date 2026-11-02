@@ -4,7 +4,7 @@ import { worklets } from './optionalWorklets';
 import { useWorkletProp } from './useWorkletProp';
 
 /**
- * A worklet function wrapped for native code, returned by [`useWorkletCallback`](#useworkletcallback).
+ * A worklet function wrapped for native code, returned by [`useWorkletCallback`](#useworkletcallbackcallback).
  * Pass it to a modifier or prop that accepts worklet callbacks, which then runs it synchronously on
  * the UI thread.
  */

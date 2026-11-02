@@ -23,11 +23,11 @@ const mockRoute: { key: string; name: string; params: object; isPreloaded?: true
 
 jest.mock('../../../react-navigation/native', () => ({
   useRoute: jest.fn(() => mockRoute),
+  useIsFocused: () => mockIsFocused(),
 }));
 
 jest.mock('../../../useNavigation', () => ({
   useNavigation: jest.fn(() => ({
-    isFocused: mockIsFocused,
     setOptions: mockSetOptions,
   })),
 }));

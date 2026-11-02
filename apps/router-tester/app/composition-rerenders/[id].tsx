@@ -1,6 +1,7 @@
 import { Link, Stack, useLocalSearchParams } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Button, Text, View } from 'react-native';
+import { Button, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const DETAIL_SUITES = ['Default', 'Minimal', 'Custom'] as const;
 
@@ -11,7 +12,8 @@ export default function Detail() {
   renderCount.current += 1;
 
   return (
-    <View
+    <SafeAreaView
+      edges={['left', 'right']}
       style={{
         flex: 1,
         justifyContent: 'center',
@@ -45,6 +47,6 @@ export default function Detail() {
         onPress={() => setConfigSuite((s) => (s + 1) % DETAIL_SUITES.length)}
       />
       <Link href={`/composition-rerenders/${Number(id) + 1}`}>Go to {Number(id) + 1}</Link>
-    </View>
+    </SafeAreaView>
   );
 }

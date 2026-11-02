@@ -5,6 +5,7 @@ import type { DefinedNativePlugin } from 'noxcturnal';
 
 import {
   expoPluginInput,
+  resolveInputFilename,
   isNodeModule,
   type Noxcturnal,
   type NoxcturnalTransformInput,
@@ -23,7 +24,10 @@ export function createExpoDomComponentPlugin(
   return nox.defineNativePlugin<ExpoDomComponentState>({
     name: 'expo-dom-component',
     editEffect: 'bindings',
-    contract: { metadata: { writes: ['expoDomComponentReference'] } },
+    contract: {
+      syntax: { anyOf: ['Directive'] },
+      metadata: { writes: ['expoDomComponentReference'] },
+    },
     createState: (context) => ({
       input: expoPluginInput(context),
       enabled: false,
@@ -90,10 +94,12 @@ export function createExpoDomComponentPlugin(
     post(context, state) {
       if (!state.enabled) return;
       if (!state.hasDefault) context.unsupported('dom-component-missing-default');
-      const basename = path.basename(state.input.filename);
+      const absoluteFilename = resolveInputFilename(state.input);
+      const basename = path.basename(absoluteFilename);
       if (
-        state.input.filename.includes(state.input.projectRoot) &&
-        !isNodeModule(state.input.filename)
+        state.input.projectRoot &&
+        absoluteFilename.includes(state.input.projectRoot) &&
+        !isNodeModule(absoluteFilename)
       ) {
         if (/^_layout\.[jt]sx?$/.test(basename)) {
           context.unsupported('dom-component-layout-route');
@@ -102,7 +108,7 @@ export function createExpoDomComponentPlugin(
           context.unsupported('dom-component-api-route');
         }
       }
-      const outputKey = pathToFileURL(state.input.filename).href;
+      const outputKey = pathToFileURL(absoluteFilename).href;
       const filePath = state.input.options.dev
         ? `${JSON.stringify(`${basename}?file=`)} + ${JSON.stringify(outputKey)}`
         : JSON.stringify(`${createHash('md5').update(outputKey).digest('hex')}.html`);

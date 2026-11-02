@@ -11,6 +11,21 @@ import {
 } from './fakeTextInputState';
 
 jest.mock('../textInputState', () => require('./fakeTextInputState'));
+// The first hosted field reads `TextInput.State`, and loading the real `TextInput`
+// takes long enough on CI to time out whichever test registers a host first.
+// Like React Native's, this `State` holds its own copies of the two entry points.
+jest.mock('react-native/Libraries/Components/TextInput/TextInput', () => {
+  const { TextInputState } = require('./fakeTextInputState');
+  return {
+    __esModule: true,
+    default: {
+      State: {
+        focusTextInput: TextInputState.focusTextInput,
+        blurTextInput: TextInputState.blurTextInput,
+      },
+    },
+  };
+});
 
 /**
  * A hosted field, standing in for a native text-field view. It is both the

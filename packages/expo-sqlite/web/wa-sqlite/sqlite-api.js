@@ -300,7 +300,10 @@ export function Factory(Module) {
     return async function (db) {
       verifyDatabase(db);
       const result = await f(db);
-      databases.delete(db);
+      // expo-sqlite: SQLite keeps the connection open when close fails, so keep it usable for a retry.
+      if (result === SQLite.SQLITE_OK) {
+        databases.delete(db);
+      }
       return check(fname, result, db);
     };
   })();

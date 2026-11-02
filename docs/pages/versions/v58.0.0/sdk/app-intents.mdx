@@ -8,6 +8,7 @@ isAlpha: true
 ---
 
 import APISection from '~/components/plugins/APISection';
+import { AgentSkillSection } from '~/components/plugins/AgentSkillSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import { ConfigPluginExample } from '~/ui/components/ConfigSection';
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -26,6 +27,10 @@ With `expo-app-intents`, you can implement Apple Intelligence features, includin
 ## Installation
 
 <APIInstallSection />
+
+### Agent skill
+
+<AgentSkillSection />
 
 ## Configuration in app config
 
@@ -234,6 +239,10 @@ Keep the App Intents directory at the project root, like the default **app-inten
 Pass `--visual-intelligence` with the mail example to scaffold its Spotlight integration. This adds native code that makes drafts searchable and lets the system transfer and open a draft. It also registers the `mailDraft` entity kind so [`appEntityIdentifier()`](#appintentsappentityidentifierentity-id) can identify the draft represented by a view. The generated code extends the base mail types, so the example works the same way with or without this flag.
 
 <Terminal cmd={['$ npx expo-app-intents init --examples mail --visual-intelligence']} />
+
+Pass `--donations` to scaffold the native code that lets JavaScript [donate](#donate-an-intent) the intents of the selected examples. This adds a `DonatableAppIntent` extension for each example intent and registers the intents in **AppIntentsSetup.swift** under the names they dispatch, such as `orderFood`. The interactive prompt asks about this after you pick the examples. Like `--visual-intelligence`, the generated code extends the base types, so each example works the same way with or without this flag.
+
+<Terminal cmd={['$ npx expo-app-intents init --examples restaurant --donations']} />
 
 Then rebuild the native project:
 

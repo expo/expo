@@ -1,6 +1,7 @@
 import { userEvent } from '@testing-library/react-native';
 import { useEffect, useState } from 'react';
 import {
+  Animated,
   type EmitterSubscription,
   Keyboard,
   type KeyboardEventListener,
@@ -12,11 +13,12 @@ import {
 import { router } from '../../../imperative-api';
 import { Stack } from '../../../layouts/Stack';
 import { Tabs } from '../../../layouts/Tabs';
-import { act, renderRouter, screen } from '../../../testing-library';
+import { act, fireEvent, renderHook, renderRouter, screen } from '../../../testing-library';
 import { useNavigation } from '../../../useNavigation';
 import { Text } from '../../elements';
 import type { ParamListBase } from '../../native';
 import type { BottomTabBarProps, BottomTabNavigationProp } from '../types';
+import { useAnimatedHashMap } from '../utils/useAnimatedHashMap';
 
 let warnSpy: jest.SpyInstance;
 
@@ -649,4 +651,140 @@ test('resets a nested stack when its tab loses focus with popToTopOnBlur', async
   // Without `popToTopOnBlur`, the details screen would still be active.
   expect(screen.getByTestId('one-index')).toBeVisible();
   expect(screen.queryByTestId('one-details')).toBeNull();
+});
+
+// Mirrors the activity states `BottomTabView` hands to `MaybeScreen`.
+const STATE_INACTIVE = 0;
+const STATE_TRANSITIONING_OR_BELOW_TOP = 1;
+const STATE_ON_TOP = 2;
+
+/** Reads the activity state of the screen container wrapping `text`. */
+function getActivityState(text: string) {
+  let node = screen.getByText(text, { includeHiddenElements: true }).parent;
+
+  while (node && node.props.activityState === undefined) {
+    node = node.parent;
+  }
+
+  return node?.props.activityState;
+}
+
+test('keeps the outgoing tab attached until its transition has settled', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Tabs screenOptions={{ animation: 'fade' }}>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="second" />
+      </Tabs>
+    ),
+    index: () => <Text>Screen index</Text>,
+    second: () => <Text>Screen second</Text>,
+  });
+
+  expect(getActivityState('Screen index')).toBe(STATE_ON_TOP);
+
+  await fireEvent.press(screen.getByRole('button', { name: 'second, tab, 2 of 2' }));
+
+  // The outgoing screen has to stay attached for the whole transition, otherwise
+  // it is detached mid-animation and the arriving tab renders blank.
+  expect(getActivityState('Screen index')).toBe(STATE_TRANSITIONING_OR_BELOW_TOP);
+  expect(getActivityState('Screen second')).toBe(STATE_ON_TOP);
+
+  // Once the animation finishes, the delayed clear detaches it.
+  await act(() => {
+    jest.advanceTimersByTime(1000);
+  });
+
+  expect(getActivityState('Screen index')).toBe(STATE_INACTIVE);
+  expect(getActivityState('Screen second')).toBe(STATE_ON_TOP);
+});
+
+test('fades an unvisited lazy tab in on its first visit', async () => {
+  const startingValues: number[] = [];
+  const timing = Animated.timing;
+  jest.spyOn(Animated, 'timing').mockImplementation((value, config) => {
+    if (config.toValue === 0) {
+      // BottomTabView passes scalar values; React Native's types omit this test-only accessor.
+      startingValues.push((value as Animated.Value & { __getValue(): number }).__getValue());
+    }
+    return timing(value, config);
+  });
+
+  await renderRouter({
+    _layout: () => (
+      <Tabs screenOptions={{ animation: 'fade' }}>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="second" />
+      </Tabs>
+    ),
+    index: () => <Text>Screen index</Text>,
+    second: () => <Text>Screen second</Text>,
+  });
+
+  startingValues.length = 0;
+  await fireEvent.press(screen.getByRole('button', { name: 'second, tab, 2 of 2' }));
+
+  expect(startingValues).toEqual([1]);
+});
+
+test('creates an animated value for a tab named constructor', async () => {
+  const { result } = await renderHook(() =>
+    useAnimatedHashMap({
+      index: 0,
+      routes: [{ key: 'constructor-placeholder', name: 'constructor' }],
+    })
+  );
+
+  expect(result.current.constructor).toBeInstanceOf(Animated.Value);
+});
+
+test('shifts an unvisited lazy tab in from the side of the previous tab', async () => {
+  const startingValues: number[] = [];
+  const timing = Animated.timing;
+  jest.spyOn(Animated, 'timing').mockImplementation((value, config) => {
+    if (config.toValue === 0) {
+      // BottomTabView passes scalar values; React Native's types omit this test-only accessor.
+      startingValues.push((value as Animated.Value & { __getValue(): number }).__getValue());
+    }
+    return timing(value, config);
+  });
+
+  await renderRouter(
+    {
+      _layout: () => (
+        <Tabs screenOptions={{ animation: 'shift' }}>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="second" />
+          <Tabs.Screen name="third" />
+        </Tabs>
+      ),
+      index: () => <Text>Screen index</Text>,
+      second: () => <Text>Screen second</Text>,
+      third: () => <Text>Screen third</Text>,
+    },
+    { initialUrl: '/third' }
+  );
+
+  startingValues.length = 0;
+  await fireEvent.press(screen.getByRole('button', { name: 'second, tab, 2 of 3' }));
+
+  expect(startingValues).toEqual([-1]);
+});
+
+test('detaches the outgoing tab immediately when the transition is not animated', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Tabs screenOptions={{ animation: 'none' }}>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="second" />
+      </Tabs>
+    ),
+    index: () => <Text>Screen index</Text>,
+    second: () => <Text>Screen second</Text>,
+  });
+
+  await fireEvent.press(screen.getByRole('button', { name: 'second, tab, 2 of 2' }));
+
+  expect(getActivityState('Screen index')).toBe(STATE_INACTIVE);
+  expect(getActivityState('Screen second')).toBe(STATE_ON_TOP);
 });

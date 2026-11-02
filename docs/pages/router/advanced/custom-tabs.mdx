@@ -148,6 +148,8 @@ An additional `TabTrigger` can be defined outside of a `TabList`, allowing you t
 
 All components are rendered unstyled as a `<View>`, except `TabTrigger` which renders as a `<Pressable>`. This allows you to provide a custom `style` prop to customize their appearance. Styling `TabList` is similar to customizing the tab bar in React Navigation, while styling `TabTrigger` affects the appearance of tab buttons.
 
+`TabList` pads its content by the left and right safe area insets it overlaps, such as the rail on iPhone Duo, and leaves top and bottom insets to you. With `asChild`, your component handles the safe area.
+
 If you need to change the structure of a component, you can override its underlying component by using the `asChild` props. The component then acts as a slot, and will forward its props to its immediate child.
 
 ```tsx Custom TabList

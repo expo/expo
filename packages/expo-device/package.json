@@ -36,14 +36,14 @@
     "ua-parser-js": "^0.7.33"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/ua-parser-js": "^0.7.39",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

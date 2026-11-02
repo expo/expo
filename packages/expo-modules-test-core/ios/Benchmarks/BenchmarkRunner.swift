@@ -24,11 +24,12 @@ public func benchmarkCase(_ body: @escaping @JavaScriptActor () throws -> Void) 
 ///
 /// The iteration count is calibrated so that a single sample takes roughly 50ms, and the
 /// garbage collector runs between samples so collection pauses triggered by garbage from
-/// one sample don't land in the next one's measurement.
+/// one sample don't land in the next one's measurement. Pass `nil` as the runtime when the
+/// body runs no JavaScript.
 @JavaScriptActor
 public func benchmark(
   _ name: String,
-  runtime: JavaScriptRuntime,
+  runtime: JavaScriptRuntime?,
   samples sampleCount: Int = 7,
   _ body: (_ iterations: Int) throws -> Void
 ) rethrows {
@@ -43,7 +44,7 @@ public func benchmark(
   iterations = rescaleIterations(iterations, elapsed: warmupElapsed)
   var nanosecondsPerOperation = [Double]()
   for _ in 0..<sampleCount {
-    runtime.collectGarbage()
+    runtime?.collectGarbage()
     let elapsed = try clock.measure {
       try body(iterations)
     }

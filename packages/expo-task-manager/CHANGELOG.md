@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- [android] Rename the Java package from `expo.modules.taskManager` to `expo.modules.taskmanager` to match the Gradle namespace. This fixes an R8 `BuildConfig` descriptor error on case-insensitive file systems. ([#51570](https://github.com/expo/expo/pull/51570) by [@Kudo](https://github.com/Kudo))
+
 ## 58.0.11
 
 ### Patch Changes

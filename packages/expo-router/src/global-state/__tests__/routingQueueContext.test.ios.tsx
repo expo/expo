@@ -2,7 +2,7 @@ import { act, render, renderHook } from '@testing-library/react-native';
 import { use, type ContextType, type PropsWithChildren } from 'react';
 
 import { router } from '../router';
-import type { RoutingIntent } from '../routingQueue';
+import type { QueuedRoutingIntent, RoutingIntent } from '../routingQueue';
 import {
   ImperativeRoutingQueueBridge,
   NavigationPendingContext,
@@ -15,6 +15,11 @@ import { useRouterActions } from '../useRouterActions';
 
 function actionIntent(type: string): RoutingIntent {
   return { type: 'ACTION', payload: { action: { type } } };
+}
+
+// The queue tags each intent with the id reported by the `expo-router:action-enqueued` mark.
+function queued(intent: RoutingIntent) {
+  return { ...intent, actionId: expect.any(Number) };
 }
 
 afterEach(() => router.setTransitionMode('preload-only'));
@@ -51,10 +56,10 @@ it('installs the module-level router after the bridge commits', async () => {
   await act(() => router.push('/test'));
 
   expect(pending).toEqual([
-    {
+    queued({
       type: 'NAVIGATE_TO_HREF',
       payload: { href: '/test', options: { event: 'PUSH' } },
-    },
+    }),
   ]);
 });
 
@@ -141,13 +146,13 @@ it('preserves enqueue order and drains on the following render', async () => {
     enqueue(actionIntent('SECOND'));
   });
 
-  expect(snapshots).toEqual([[], [actionIntent('FIRST'), actionIntent('SECOND')]]);
+  expect(snapshots).toEqual([[], [queued(actionIntent('FIRST')), queued(actionIntent('SECOND'))]]);
   expect(pendingSnapshots).toEqual([false, true]);
 });
 
 it('keeps intents added while a batch is being dequeued', async () => {
   let api: NonNullable<ContextType<typeof RoutingQueueApiContext>>;
-  let pending: RoutingIntent[] = [];
+  let pending: QueuedRoutingIntent[] = [];
 
   function Consumer() {
     api = use(RoutingQueueApiContext)!;
@@ -168,7 +173,7 @@ it('keeps intents added while a batch is being dequeued', async () => {
     api.dequeue(processed);
   });
 
-  expect(pending).toEqual([actionIntent('SECOND')]);
+  expect(pending).toEqual([queued(actionIntent('SECOND'))]);
 });
 
 it('keeps providers isolated', async () => {
@@ -194,7 +199,7 @@ it('keeps providers isolated', async () => {
   );
   await act(() => enqueues[0]!(actionIntent('FIRST')));
 
-  expect(queues).toEqual([[actionIntent('FIRST')], []]);
+  expect(queues).toEqual([[queued(actionIntent('FIRST'))], []]);
   error.mockRestore();
 });
 

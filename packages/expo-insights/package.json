@@ -36,8 +36,8 @@
     "expo-eas-client": "workspace:~"
   },
   "devDependencies": {
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*",
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"

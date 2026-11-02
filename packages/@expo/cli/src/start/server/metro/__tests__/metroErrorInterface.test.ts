@@ -1,3 +1,9 @@
+import { events } from '2g';
+import resolveFrom from 'resolve-from';
+
+import { Log } from '../../../../log';
+import * as interactive from '../../../../utils/interactive';
+import { MetroTerminalReporter } from '../MetroTerminalReporter';
 import { LogBoxLog } from '../log-box/LogBoxLog';
 import {
   attachImportStackToRootMessage,
@@ -5,9 +11,21 @@ import {
   likelyContainsCodeFrame,
   dropStackIfContainsCodeFrame,
   logMetroError,
+  logMetroErrorAsync,
+  logMetroErrorWithStack,
+  getErrorOverlayHtmlAsync,
+  HAS_LOGGED_SYMBOL,
 } from '../metroErrorInterface';
 
 jest.mock('../../../../log');
+jest.mock('../../getStaticRenderFunctions', () => ({
+  createMetroEndpointAsync: jest.fn().mockResolvedValue('/_expo/error.bundle'),
+}));
+jest.mock('2g', () => {
+  const actual = jest.requireActual('2g');
+  const event = Object.assign(jest.fn(), actual.events('metro'));
+  return { ...actual, events: Object.assign(() => event, actual.events) };
+});
 jest.mock('../log-box/LogBoxLog', () => ({
   LogBoxLog: jest.fn(() => ({
     symbolicate: (_type: string, callback: () => void) => callback(),
@@ -260,6 +278,105 @@ describe('dropStackIfContainsCodeFrame', () => {
 });
 
 describe('logMetroError', () => {
+  it.each([
+    ['bundle', true],
+    ['bundle', false],
+    ['map', true],
+    ['map', false],
+  ] as const)('preserves %s lifecycle events with interactive=%s', (bundleType, isInteractive) => {
+    const event = events('metro');
+    const span = jest.spyOn(event, 'span').mockReturnValue(event);
+    const terminalMode = jest.spyOn(interactive, 'isInteractive').mockReturnValue(isInteractive);
+    const reporter = new MetroTerminalReporter('/app', {
+      log: jest.fn(),
+      status: jest.fn(),
+      persistStatus: jest.fn(),
+    } as any);
+    const error = Object.assign(new Error('bundle failed'), { [HAS_LOGGED_SYMBOL]: true });
+    const start = (buildID: string) =>
+      reporter.update({
+        type: 'bundle_build_started',
+        buildID,
+        bundleDetails: {
+          entryFile: '/app/index.js',
+          platform: 'web',
+          bundleType,
+          dev: true,
+          minify: false,
+          customResolverOptions: {},
+          customTransformOptions: {},
+        },
+        isPrefetch: false,
+      });
+    try {
+      start('first');
+      start('second');
+      reporter.update({
+        type: 'bundle_transform_progressed_throttled',
+        buildID: 'second',
+        transformedFileCount: 2,
+        totalFileCount: 5,
+      });
+      reporter.update({ type: 'bundle_build_failed', buildID: 'first' });
+      reporter.update({ type: 'bundling_error', error });
+      reporter.update({ type: 'bundle_build_done', buildID: 'second' });
+      reporter.update({ type: 'bundle_build_done', buildID: 'second' });
+      start('third');
+      reporter.update({ type: 'bundle_build_failed', buildID: 'third' });
+      reporter.update({ type: 'bundling_error', error });
+      reporter.update({ type: 'bundling_error', error: new Error('HMR failed') });
+
+      expect(
+        jest.mocked(event).mock.calls.map(([name, data]) => [name, 'id' in data && data.id])
+      ).toEqual([
+        ['bundling:start', 'first'],
+        ['bundling:start', 'second'],
+        ['bundling:progress', 'second'],
+        ['bundling:failed', 'first'],
+        ['bundling:done', 'second'],
+        ['bundling:start', 'third'],
+        ['bundling:failed', 'third'],
+        ['bundling:failed', null],
+      ]);
+      expect(event).toHaveBeenCalledWith(
+        'bundling:done',
+        expect.objectContaining({ id: 'second', total: 5 })
+      );
+    } finally {
+      span.mockRestore();
+      terminalMode.mockRestore();
+    }
+  });
+
+  it.each([{}, { targetModuleName: 'fs', originModulePath: '/app/index.js' }])(
+    'does not repeat a reported bundling error: %j',
+    async (details) => {
+      const error = Object.assign(new Error('bundle failed'), details);
+      const terminal = { log: jest.fn() };
+      const reporter = new MetroTerminalReporter('/app', terminal as any);
+      reporter._logBundlingError(error);
+      await logMetroError('/app', { error });
+      await logMetroErrorWithStack('/app', { error, stack: [] });
+      expect(events('metro')).toHaveBeenCalledTimes(1);
+      expect(events('metro')).toHaveBeenCalledWith('bundling:failed', expect.any(Object));
+      expect(terminal.log).toHaveBeenCalledTimes(1);
+      expect(Log.log).not.toHaveBeenCalled();
+      expect(LogBoxLog).not.toHaveBeenCalled();
+    }
+  );
+
+  it('does not repeat a formatted error but still generates its overlay', async () => {
+    jest.mocked(resolveFrom).mockReturnValueOnce('/app/node_modules/expo-router/_error.js');
+    const error = new Error('render failed');
+    await logMetroErrorWithStack('/app', { error, stack: [] });
+    await logMetroErrorAsync({ projectRoot: '/app', error });
+    const html = await getErrorOverlayHtmlAsync({ projectRoot: '/app', routerRoot: 'app', error });
+    expect(events('metro')).toHaveBeenCalledTimes(1);
+    expect(Log.log).toHaveBeenCalledTimes(4);
+    expect(html).toContain('_expo-static-error');
+    expect(html).toContain('/_expo/error.bundle');
+  });
+
   it('symbolicates server bundle frames inside node_modules', async () => {
     const error = new Error('fake-lib: failed during module init');
     error.stack = [

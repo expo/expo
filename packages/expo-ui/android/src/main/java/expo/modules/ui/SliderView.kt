@@ -5,15 +5,15 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.SliderState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.viewevent.getValue
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
@@ -57,22 +57,31 @@ data class SliderValueChangedEvent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FunctionalComposableScope.SliderContent(props: SliderProps) {
-  val onValueChange by remember { this@SliderContent.EventDispatcher<SliderValueChangedEvent>() }
-  val onValueChangeFinished by remember { this@SliderContent.EventDispatcher<Unit>() }
+fun FunctionalComposableScope.SliderContent(
+  props: SliderProps,
+  onValueChange: (SliderValueChangedEvent) -> Unit,
+  onValueChangeFinished: (Unit) -> Unit
+) {
   val interactionSource = remember { MutableInteractionSource() }
 
   val effectiveLower = maxOf(props.min, props.lowerLimit ?: Float.NEGATIVE_INFINITY)
   val effectiveUpper = minOf(props.max, props.upperLimit ?: Float.POSITIVE_INFINITY)
 
   var localValue by remember { mutableFloatStateOf(props.value.coerceIn(effectiveLower, effectiveUpper)) }
-  var isDragging by remember { mutableStateOf(false) }
   val clampedPropsValue = props.value.coerceIn(effectiveLower, effectiveUpper)
   var prevPropsValue by remember { mutableFloatStateOf(clampedPropsValue) }
 
+  val sliderState = remember(props.min, props.max, props.steps) {
+    SliderState(
+      value = localValue.coerceIn(effectiveLower, effectiveUpper),
+      steps = props.steps,
+      trackRange = props.min..props.max
+    )
+  }
+
   if (clampedPropsValue != prevPropsValue) {
     prevPropsValue = clampedPropsValue
-    if (!isDragging) {
+    if (!sliderState.isDragging) {
       localValue = clampedPropsValue
     }
   }
@@ -88,24 +97,28 @@ fun FunctionalComposableScope.SliderContent(props: SliderProps) {
     inactiveTickColor = props.colors.inactiveTickColor.compose
   )
 
+  SideEffect {
+    val target = localValue.coerceIn(effectiveLower, effectiveUpper)
+    if (sliderState.value != target) {
+      sliderState.value = target
+    }
+  }
+
   Slider(
-    value = localValue,
-    valueRange = props.min..props.max,
-    steps = props.steps,
+    state = sliderState,
     enabled = props.enabled,
     interactionSource = interactionSource,
     onValueChange = {
       val clamped = it.coerceIn(effectiveLower, effectiveUpper)
-      isDragging = true
       localValue = clamped
+      sliderState.value = clamped
       onValueChange(SliderValueChangedEvent(clamped))
     },
     onValueChangeFinished = {
-      isDragging = false
       onValueChangeFinished(Unit)
     },
     colors = sliderColors,
-    thumb = { sliderState ->
+    thumb = {
       if (thumbSlotView != null) {
         with(UIComposableScope()) { with(thumbSlotView) { Content() } }
       } else {

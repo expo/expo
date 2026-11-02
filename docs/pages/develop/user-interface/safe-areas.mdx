@@ -148,4 +148,43 @@ By default, React Navigation supports safe areas and uses `react-native-safe-are
 
 ### Usage with web
 
-If you are targeting the web, set up `SafeAreaProvider` as described in the [usage section](#usage). If you are doing server-side rendering (SSR), see the [Web SSR section](https://appandflow.github.io/react-native-safe-area-context/optimizations#web-ssr) in the library's documentation.
+On web, use CSS `env(safe-area-inset-*)` values for safe-area spacing. The browser applies these values across client rendering, server rendering, and static generation. CSS safe-area spacing does not require the `react-native-safe-area-context` library.
+
+With Expo Router, create **src/safe-area.css** and import it in your existing [root layout](/router/basics/navigation-layouts/#root-layout):
+
+```tsx src/app/_layout.tsx
+import '../safe-area.css';
+```
+
+Apply a class to an element in a [web-specific route](/router/advanced/platform-specific-modules/):
+
+```tsx src/app/index.web.tsx
+export default function HomeScreen() {
+  return <main className="safe-area-content">Content is in the safe area.</main>;
+}
+```
+
+In **src/safe-area.css**, define the spacing for the `safe-area-content` class:
+
+```css src/safe-area.css
+.safe-area-content {
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+}
+```
+
+The browser provides the `safe-area-inset-*` environment variables. These values specify the distance from their respective edge of the viewport to the safe area, keeping content clear of notches and rounded corners. The `env()` function is used to read these values. See the [CSS `env()` reference](https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/env) for details.
+
+The browser updates this spacing without a React state update. Keep a corresponding **src/app/index.tsx** route using `react-native-safe-area-context` for Android and iOS.
+
+Static and server exports include the stylesheet in the initial HTML.
+
+In development, [async routes](/router/web/async-routes/) can load layout CSS after streamed content and cause a layout shift. To avoid this development limitation, render the rules in a `<style>` element inside the `<head>` of your [Root HTML component](/router/web/static-rendering/#root-html). Use **src/app/+html.tsx** for this component. CSS imports in **+html.tsx** are not supported.
+
+In SDK 58 and later, Expo Router disables automatic safe-area measurements on web to preserve streamed content during hydration. Do not add another `SafeAreaProvider` to restore these measurements. Its updates can interrupt hydration and discard pending streamed content, even if you provide `initialMetrics`.
+
+See the [safe-area context reference](/versions/latest/sdk/safe-area-context/#context) for the behavior of its hooks and components. CSS values do not change the numbers returned by these hooks.
+
+Without Expo Router, the library's provider still supports web measurements. If you use its components or hooks, configure `SafeAreaProvider` as described in the [usage section](#usage). CSS remains the recommended approach for web spacing.

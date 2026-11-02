@@ -14,7 +14,7 @@ struct JavaScriptCodableUnownedDecodeTests {
   private func unowned<T: JavaScriptDecodable>(_ type: T.Type, from source: String) throws -> T {
     let runtime = try appContext.runtime
     let value = try runtime.eval(source)
-    let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [value])
+    let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [JavaScriptValue.Ref(value)])
     return try T.decode(buffer.unownedValue(at: 0), in: runtime)
   }
 

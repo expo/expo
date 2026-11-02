@@ -33,6 +33,12 @@ class Query: SharedObject {
     return self
   }
 
+  func contains(_ assetField: AssetField, _ value: MediaSubtypeNext) -> Query {
+    let predicate = AssetFieldPredicateBuilder.buildPredicate(assetField: assetField, contains: value)
+    predicates.append(predicate)
+    return self
+  }
+
   func gt(_ assetField: AssetField, _ value: Int) -> Query {
     let predicate = AssetFieldPredicateBuilder.buildPredicate(
       assetField: assetField,

@@ -9,13 +9,17 @@ import expo.modules.kotlin.toBridgePromise
 
 internal const val NativeModulesProxyModuleName = "NativeModulesProxy"
 
+private val legacyConstantKeys = listOf("modulesConstants", "exportedMethods", "viewManagersMetadata")
+
 class NativeModulesProxyModule : Module() {
   override fun definition() = ModuleDefinition {
     Name(NativeModulesProxyModuleName)
 
-    appContext.legacyModulesProxyHolder?.get()?.constants?.forEach {
-      Constant(it.key) {
-        it.value
+    // The legacy proxy isn't attached yet when this definition is built, so read it lazily.
+    // Reading its constants is also what emits `OnCreate` to all modules.
+    legacyConstantKeys.forEach { key ->
+      Constant(key) {
+        appContext.legacyModulesProxyHolder?.get()?.constants?.get(key)
       }
     }
 

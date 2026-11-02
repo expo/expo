@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -18,6 +20,9 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import host.exp.expoview.R
 
@@ -67,6 +72,14 @@ fun EnterUrlRow() {
       OutlinedTextField(
         state = textFieldState,
         placeholder = { Text("exp://") },
+        lineLimits = TextFieldLineLimits.SingleLine,
+        keyboardOptions = KeyboardOptions(
+          capitalization = KeyboardCapitalization.None,
+          autoCorrectEnabled = false,
+          keyboardType = KeyboardType.Uri,
+          imeAction = ImeAction.Go
+        ),
+        onKeyboardAction = { connect() },
         modifier = Modifier.fillMaxWidth()
       )
       Button(

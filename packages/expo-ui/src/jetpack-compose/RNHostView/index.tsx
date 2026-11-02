@@ -2,6 +2,7 @@ import { requireNativeView } from 'expo';
 import type { ReactElement, ComponentType } from 'react';
 import type { LayoutChangeEvent } from 'react-native';
 
+import { NativeTreeContext } from '../../NativeTreeContext';
 import { PresentedContentContext, useIsPresentedInOwnWindow } from '../../PresentedContentContext';
 import type { ModifierConfig } from '../../types';
 import { resolveMatchContents } from '../../utils/matchContents';
@@ -80,7 +81,8 @@ export function RNHostView(props: RNHostProps) {
       key={`${nativeProps.matchContentsHorizontal}-${nativeProps.matchContentsVertical}`}>
       {/* Reset context here so only nearest RNHostView becomes the layout root for its children, and not any other RNHostView above it in the tree. */}
       <PresentedContentContext.Provider value={false}>
-        {props.children}
+        {/* Hosted children are React Native views again, so a `Host` among them is not nested. */}
+        <NativeTreeContext.Provider value={false}>{props.children}</NativeTreeContext.Provider>
       </PresentedContentContext.Provider>
     </NativeRNHostView>
   );

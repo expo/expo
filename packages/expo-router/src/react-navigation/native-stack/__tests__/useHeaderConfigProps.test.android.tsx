@@ -106,6 +106,16 @@ describe('translucent', () => {
     );
     expect(result.current.translucent).toBe(false);
   });
+
+  test('uses the Android value of headerTransparent', async () => {
+    const { result } = await renderHook(() =>
+      useHeaderConfigProps(defaultProps({ headerTransparent: { ios: true, android: false } }))
+    );
+    expect(result.current).toMatchObject({
+      backgroundColor: DEFAULT_COLORS.card,
+      translucent: false,
+    });
+  });
 });
 
 // ─── backButtonDisplayMode ──────────────────────────────────────────────────────

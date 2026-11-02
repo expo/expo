@@ -21,14 +21,16 @@
  * integration falls back to them whenever `.build/` is missing — without any staleness check
  * — a stale one silently links month-old binaries against current source.
  */
+
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
-import { getPackagesDir, getPrecompileDir } from '../Directories';
+import { getExpoRepositoryRootDir, getPackagesDir } from '../Directories';
 import logger from '../Logger';
+import { getMonorepoBuildDir } from './MonorepoLayout';
 import { verifyAllPackagesAsync } from './Utils';
 
 export type PruneOptions = {
@@ -50,7 +52,7 @@ export type PruneResult = {
 
 /** Root of the centralized prebuild cache: `packages/precompile/.build/`. */
 function getBuildCacheRoot(): string {
-  return path.join(getPrecompileDir(), '.build');
+  return getMonorepoBuildDir(getExpoRepositoryRootDir());
 }
 
 /**

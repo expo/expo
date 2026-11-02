@@ -108,27 +108,15 @@ class DevLauncherUncaughtExceptionHandler(
     }
 
     try {
-      val url = getWebSocketUrl()
-      val remoteLogManager = DevLauncherRemoteLogManager(DevLauncherController.instance.httpClient, url)
-        .apply {
-          deferError("Your app just crashed. See the error below.")
-          deferError(exception)
-        }
-      remoteLogManager.sendViaWebSocket()
+      val devSupportManager = requireNotNull(controller.appHost.devSupportManager)
+      DevLauncherRemoteLogManager.reportError(
+        DevLauncherController.instance.httpClient,
+        Uri.parse(devSupportManager.sourceUrl),
+        "Your app just crashed. See the error below.",
+        exception
+      )
     } catch (e: Throwable) {
       Log.e("DevLauncher", "Couldn't send an exception to bundler. $e", e)
     }
-  }
-
-  private fun getWebSocketUrl(): Uri {
-    // URL structure replicates
-    // https://github.com/facebook/react-native/blob/0.69-stable/Libraries/Utilities/HMRClient.js#L164
-    val devSupportManager = requireNotNull(controller.appHost.devSupportManager)
-    return Uri
-      .parse(devSupportManager.sourceUrl)
-      .buildUpon()
-      .path("hot")
-      .clearQuery()
-      .build()
   }
 }

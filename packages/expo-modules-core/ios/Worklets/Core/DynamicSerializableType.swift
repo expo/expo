@@ -17,7 +17,7 @@ internal struct DynamicSerializableType: AnyDynamicType {
     return false
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     let runtime = try appContext.runtime
     let jsSerializable: JavaScriptSerializable? = runtime.withUnsafePointee { runtimePointee in
       return jsValue.withUnsafePointee { valuePointee in

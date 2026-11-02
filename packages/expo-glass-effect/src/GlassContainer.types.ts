@@ -1,4 +1,4 @@
-import type { Ref } from 'react';
+import type { ComponentRef, Ref } from 'react';
 import type { View, ViewProps } from 'react-native';
 
 export type GlassContainerProps = {
@@ -8,5 +8,5 @@ export type GlassContainerProps = {
    * @default undefined
    */
   spacing?: number;
-  ref?: Ref<View>;
+  ref?: Ref<ComponentRef<typeof View>>;
 } & ViewProps;

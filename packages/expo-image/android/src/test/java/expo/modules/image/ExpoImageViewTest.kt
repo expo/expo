@@ -3,9 +3,13 @@ package expo.modules.image
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.graphics.Color
+import android.graphics.Picture
 import android.graphics.drawable.ColorDrawable
 import android.os.Looper
+import android.view.View
+import android.view.ViewConfiguration
 import androidx.core.view.isVisible
+import expo.modules.image.svg.SVGPictureDrawable
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
@@ -16,11 +20,78 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
+import org.robolectric.annotation.Config
 import java.lang.ref.WeakReference
 import java.time.Duration
 
 @RunWith(RobolectricTestRunner::class)
 class ExpoImageViewTest {
+  @Test
+  @Config(sdk = [26, 27])
+  fun svgUsesSoftwareLayerOnAndroidEightAndResetsWhenReused() {
+    val view = ExpoImageView(RuntimeEnvironment.getApplication())
+    val picture = Picture().apply {
+      beginRecording(24, 24).drawColor(Color.RED)
+      endRecording()
+    }
+
+    view.setImageDrawable(SVGPictureDrawable(picture, 24, 24))
+    assertEquals(View.LAYER_TYPE_NONE, view.layerType)
+
+    view.layout(0, 0, 200, 200)
+    assertEquals(View.LAYER_TYPE_SOFTWARE, view.layerType)
+
+    view.setImageDrawable(ColorDrawable(Color.BLUE))
+    assertEquals(View.LAYER_TYPE_NONE, view.layerType)
+
+    view.setImageDrawable(SVGPictureDrawable(picture, 24, 24))
+    view.recycleView()
+    assertEquals(View.LAYER_TYPE_NONE, view.layerType)
+  }
+
+  @Test
+  @Config(sdk = [26, 27])
+  fun svgUsesSoftwareOnlyWhileViewFitsDrawingCache() {
+    val context = RuntimeEnvironment.getApplication()
+    val view = ExpoImageView(context)
+    val picture = Picture().apply {
+      beginRecording(24, 24).drawColor(Color.RED)
+      endRecording()
+    }
+    val maximumDrawingCacheSize = ViewConfiguration.get(context).scaledMaximumDrawingCacheSize
+    val width = 1024
+    val fittingHeight = maximumDrawingCacheSize / (width * 4)
+
+    view.setImageDrawable(SVGPictureDrawable(picture, 24, 24))
+    view.layout(0, 0, width, fittingHeight)
+    assertEquals(View.LAYER_TYPE_SOFTWARE, view.layerType)
+
+    view.layout(0, 0, width, fittingHeight + 1)
+    assertEquals(View.LAYER_TYPE_NONE, view.layerType)
+
+    view.setImageDrawable(SVGPictureDrawable(picture, 24, 24))
+    assertEquals(View.LAYER_TYPE_NONE, view.layerType)
+
+    view.layout(0, 0, width, fittingHeight)
+    assertEquals(View.LAYER_TYPE_SOFTWARE, view.layerType)
+
+    view.setImageDrawable(ColorDrawable(Color.BLUE))
+    assertEquals(View.LAYER_TYPE_NONE, view.layerType)
+  }
+
+  @Test
+  @Config(sdk = [28])
+  fun svgKeepsDefaultLayerOnAndroidNine() {
+    val view = ExpoImageView(RuntimeEnvironment.getApplication())
+    val picture = Picture().apply {
+      beginRecording(24, 24).drawColor(Color.RED)
+      endRecording()
+    }
+
+    view.setImageDrawable(SVGPictureDrawable(picture, 24, 24))
+    assertEquals(View.LAYER_TYPE_NONE, view.layerType)
+  }
+
   @Test
   fun recycledViewDoesNotRunStaleAnimationCleanupAfterBeingRebound() {
     val view = ExpoImageView(RuntimeEnvironment.getApplication())

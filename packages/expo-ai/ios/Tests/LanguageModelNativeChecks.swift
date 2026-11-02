@@ -512,6 +512,14 @@ private final class HermesTestHost: @unchecked Sendable {
       return state.callbacks.removeFirst()
     }) {
       callback.value?()
+      drainMicrotasks()
+    }
+  }
+
+  /// Runs the promise reactions that the last task queued, like React Native does after each task.
+  func drainMicrotasks() {
+    JavaScriptActor.assumeIsolated {
+      try? owner.drainMicrotasks()
     }
   }
 }
@@ -556,6 +564,7 @@ private final class BridgeFixture {
 
   func evaluate(_ script: String) throws {
     try JavaScriptActor.assumeIsolated { _ = try context.runtime.eval(script) }
+    hosts.last?.drainMicrotasks()
   }
 
   func boolean(_ script: String) throws -> Bool {

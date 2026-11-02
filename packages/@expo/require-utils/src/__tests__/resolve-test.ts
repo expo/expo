@@ -212,6 +212,42 @@ describe('followSymlinks option', () => {
     );
   });
 
+  it('returns the symlinked direct match when followSymlinks is false', () => {
+    vol.fromJSON({ '/real/pkg': '' });
+    vol.mkdirSync('/proj/node_modules', { recursive: true });
+    vol.symlinkSync('/real/pkg', '/proj/node_modules/pkg');
+    expect(resolveFrom('/proj', 'pkg', { followSymlinks: false, skipNodePath: true })).toBe(
+      toNativePath('/proj/node_modules/pkg')
+    );
+  });
+
+  it('returns the realpath of a direct match when followSymlinks is true', () => {
+    vol.fromJSON({ '/real/pkg': '' });
+    vol.mkdirSync('/proj/node_modules', { recursive: true });
+    vol.symlinkSync('/real/pkg', '/proj/node_modules/pkg');
+    expect(resolveFrom('/proj', 'pkg', { followSymlinks: true, skipNodePath: true })).toBe(
+      '/real/pkg'
+    );
+  });
+
+  it('returns the realpath of a direct match with an explicit extension', () => {
+    vol.fromJSON({ '/real/pkg.js': '' });
+    vol.mkdirSync('/proj/node_modules', { recursive: true });
+    vol.symlinkSync('/real/pkg.js', '/proj/node_modules/pkg.js');
+    expect(resolveFrom('/proj', 'pkg.js', { followSymlinks: true, skipNodePath: true })).toBe(
+      '/real/pkg.js'
+    );
+  });
+
+  it('returns the realpath of a subpath direct match', () => {
+    vol.fromJSON({ '/real/sub.js': '' });
+    vol.mkdirSync('/proj/node_modules/pkg', { recursive: true });
+    vol.symlinkSync('/real/sub.js', '/proj/node_modules/pkg/sub.js');
+    expect(resolveFrom('/proj', 'pkg/sub.js', { followSymlinks: true, skipNodePath: true })).toBe(
+      '/real/sub.js'
+    );
+  });
+
   it('returns the realpath of an extension match when followSymlinks is true', () => {
     vol.fromJSON({ '/real/pkg.js': '' });
     vol.mkdirSync('/proj/node_modules', { recursive: true });

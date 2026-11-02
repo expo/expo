@@ -2,6 +2,7 @@ package expo.modules.devlauncher.react
 
 import android.content.Context
 import android.util.Log
+import androidx.core.net.toUri
 import com.facebook.react.devsupport.NonFinalBridgelessDevSupportManager
 import com.facebook.react.devsupport.ReactInstanceDevHelper
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
@@ -11,6 +12,7 @@ import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.helpers.injectDevServerHelper
 import expo.modules.devlauncher.launcher.errors.DevLauncherAppError
 import expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity
+import expo.modules.devlauncher.logs.DevLauncherRemoteLogManager
 
 class DevLauncherBridgelessDevSupportManager(
   applicationContext: Context,
@@ -60,6 +62,9 @@ class DevLauncherBridgelessDevSupportManager(
       return
     }
 
+    controller?.let {
+      DevLauncherRemoteLogManager.reportError(it.httpClient, sourceUrl.toUri(), message ?: "Native error", e)
+    }
     controller?.onAppLoadedWithError()
     DevLauncherErrorActivity.showError(activity, DevLauncherAppError(message, e))
   }

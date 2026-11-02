@@ -43,16 +43,16 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/invariant": "^2.2.33",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

@@ -116,7 +116,7 @@ If you are using the [default](/more/create-expo/#--template) template to create
     {
       name: 'pageHeaders',
       description:
-        "An array of header rules that are set on a specific page's response from the server. Each rule is a [`PageHeadersConfig`](#pageheadersconfig) with `source` and `headers`. Rules only apply to page responses, not API routes or data loaders.",
+        "An array of header rules that are set on a specific page's response from the server. Each rule is a [`PageHeadersConfig`](#pageheadersconfig) with `source` and `headers`. Rules match HTML page paths and do not apply to API routes. Later matching rules override earlier rules. See [Server headers](/router/web/server-headers/#path-specific-headers).",
       default: 'undefined',
     },
     {

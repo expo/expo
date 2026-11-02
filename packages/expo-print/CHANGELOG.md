@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.23. ([#51823](https://github.com/expo/expo/pull/51823) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 58.0.6
+
+### Patch Changes
+
+- [Internal] Bump precompiled artifacts due to ABI breakage in expo-modules-jsi, which makes `JavaScriptValue` a non-copyable struct. ([#51368](https://github.com/expo/expo/pull/51368) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.5
 
 ### Patch Changes

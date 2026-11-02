@@ -51,11 +51,11 @@
     "chalk": "^4.1.2"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "@types/ws": "^8.5.4",
-    "expo-module-scripts": "workspace:*",
     "ws": "^8.18.0"
   },
   "peerDependencies": {

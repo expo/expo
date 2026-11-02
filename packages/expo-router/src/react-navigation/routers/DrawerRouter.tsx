@@ -7,9 +7,14 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
-import { extendRouter, type RouterExtensionContext } from './extendRouter';
+import {
+  extendRouter,
+  type RouterExtensionContext,
+  type RouterExtensionMembers,
+} from './extendRouter';
 import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
-import type { CommonNavigationAction, ParamListBase, Router } from './types';
+import { type CommonNavigationAction, type ParamListBase, RouterActionHandling } from './types';
+import { isActionHandled } from './utils';
 export type DrawerStatus = 'open' | 'closed';
 
 export type DrawerActionType =
@@ -76,7 +81,10 @@ function drawerRouterExtension({
   DrawerActionType | CommonNavigationAction,
   DrawerRouterOptions
 >): Partial<
-  Router<DrawerNavigationState<ParamListBase>, DrawerActionType | CommonNavigationAction>
+  RouterExtensionMembers<
+    DrawerNavigationState<ParamListBase>,
+    DrawerActionType | CommonNavigationAction
+  >
 > {
   // `ensureStateHistory` is typed for the tab state. The drawer state differs only by the extra
   // drawer entries in `history`, which reconstruction never produces.
@@ -215,7 +223,7 @@ function drawerRouterExtension({
         case 'NAVIGATE': {
           const actionResult = router.getStateForAction(state, action, options);
 
-          if (actionResult !== null) {
+          if (isActionHandled(actionResult)) {
             const nextState = actionResult.state;
             if (nextState.index === state.index) {
               return actionResult;
@@ -227,7 +235,7 @@ function drawerRouterExtension({
             };
           }
 
-          return null;
+          return RouterActionHandling.Unhandled;
         }
 
         case 'GO_BACK':
