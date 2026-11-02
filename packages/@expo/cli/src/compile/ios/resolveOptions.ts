@@ -32,7 +32,7 @@ export async function resolveOptionsAsync(
   }
 
   const configuration: XcodeConfiguration = options.mode === 'production' ? 'Release' : 'Debug';
-  const xcodeProject = resolveXcodeProject(projectRoot);
+  const xcodeProject = await resolveXcodeProject(projectRoot);
   if (!(await hasRequiredIOSFilesAsync(projectRoot))) {
     throw new CommandError(
       'IOS_MALFORMED',

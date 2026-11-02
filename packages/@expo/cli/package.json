@@ -94,7 +94,6 @@
     "expo-server": "workspace:^",
     "fetch-nodeshim": "^0.4.10",
     "getenv": "^2.0.0",
-    "glob": "^13.0.0",
     "lan-network": "^0.2.1",
     "multitars": "^1.0.2",
     "node-forge": "^1.4.0",
@@ -112,6 +111,7 @@
     "stacktrace-parser": "^0.1.10",
     "structured-headers": "^0.4.1",
     "terminal-link": "^2.1.1",
+    "tinyglobby": "^0.2.15",
     "toqr": "^0.1.1",
     "wrap-ansi": "^7.0.0",
     "ws": "^8.12.1"
