@@ -3,14 +3,12 @@ import chalk from 'chalk';
 import * as Log from '../../log';
 import { copyBinaryToOutputAsync } from '../copyBinaryToOutputAsync';
 import { debugEvent, event } from '../events';
-import type { ResolvedOptions } from '../resolveOptions';
-import { resolveOptionsAsync } from './resolveOptions';
+import type { BuildProps } from './resolveOptions';
 import { buildAsync, getAppPathAsync } from './xcodebuild';
 
-export async function compileIosAsync(projectRoot: string, options: ResolvedOptions) {
+export async function compileIosAsync(projectRoot: string, props: BuildProps) {
   const doneCompile = event.span();
 
-  const props = await resolveOptionsAsync(projectRoot, options);
   debugEvent('ios:build_props', {
     scheme: props.scheme,
     configuration: props.configuration,

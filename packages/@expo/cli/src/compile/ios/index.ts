@@ -18,27 +18,18 @@ export const expoCompileIos: Command = async (argv) => {
 
     assertPlatform();
 
-    const projectRoot = findUpProjectRootOrAssert(process.cwd());
-    const { resolveMode } = await import('../resolveMode.js');
-    const mode = resolveMode({
-      dev: values.dev,
-      prod: values.prod,
-      device: values.device,
-    });
-    const { loadEnvFiles } = await import('../../utils/nodeEnv.js');
-    loadEnvFiles(projectRoot, { mode });
-
     const { resolveOptions } = await import('../resolveOptions.js');
-    const options = resolveOptions(projectRoot, {
-      platform: 'ios',
-      mode,
-      device: values.device,
-      outputDir: values['output-dir'],
-      outputType: values['output-type'],
-    });
+    const options = resolveOptions('ios', values);
+
+    const projectRoot = findUpProjectRootOrAssert(process.cwd());
+    const { loadEnvFiles } = await import('../../utils/nodeEnv.js');
+    loadEnvFiles(projectRoot, { mode: options.mode });
+
+    const { resolveOptionsAsync } = await import('./resolveOptions.js');
+    const props = await resolveOptionsAsync(projectRoot, options);
 
     const { compileIosAsync } = await import('./compileIosAsync.js');
-    await compileIosAsync(projectRoot, options);
+    await compileIosAsync(projectRoot, props);
   } catch (error) {
     return logCmdError(error);
   }
