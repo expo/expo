@@ -30,10 +30,15 @@ class AudioStream: SharedObject {
     super.init()
   }
 
-  func start() throws {
+  func start(deactivateSessionOnFailure: Bool = true) throws {
     guard !isStreaming else { return }
 
     let session = AVAudioSession.sharedInstance()
+    defer {
+      if !isStreaming && deactivateSessionOnFailure {
+        try? session.setActive(false)
+      }
+    }
     try session.setCategory(.record, mode: .measurement)
     try session.setPreferredSampleRate(requestedSampleRate)
     try session.setActive(true)
@@ -174,12 +179,23 @@ class AudioStream: SharedObject {
     }
     guard let converter = AVAudioConverter(from: inputFormat, to: targetFormat) else {
       throw AudioStreamException(
-        "The audio input (\(Int(inputFormat.sampleRate)) Hz, \(inputFormat.channelCount) ch) cannot be converted to the requested format "
-        + "(\(Int(targetFormat.sampleRate)) Hz, \(targetFormat.channelCount) ch). "
-        + "Check that a microphone is connected and that the app has microphone permission, or request a different sample rate or channel count"
+        "The audio input (\(describe(inputFormat))) cannot be converted to the requested format (\(describe(targetFormat))). "
+        + "Check that a microphone is connected, or request a different sample rate or channel count"
       )
     }
     return converter
+  }
+
+  private static func describe(_ format: AVAudioFormat) -> String {
+    let sampleType: String
+    switch format.commonFormat {
+    case .pcmFormatInt16: sampleType = "Int16"
+    case .pcmFormatInt32: sampleType = "Int32"
+    case .pcmFormatFloat32: sampleType = "Float32"
+    case .pcmFormatFloat64: sampleType = "Float64"
+    default: sampleType = "unknown sample type"
+    }
+    return "\(Int(format.sampleRate)) Hz, \(format.channelCount) ch, \(sampleType)"
   }
 
   private func convertAndEmit(
