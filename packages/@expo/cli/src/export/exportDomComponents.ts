@@ -177,10 +177,8 @@ export function transformNativeBundleForMd5Filename({
     if (Buffer.isBuffer(artifact.source)) {
       if (artifact.metadata.expoDomComponentReferences?.length) {
         throw new Error(
-          `Cannot rename DOM assets inside compiled Hermes bytecode (${artifact.filename}). ` +
-            'The project serializer compiled this chunk before its DOM filenames were resolved. ' +
-            'Ensure the project resolves compatible @expo/cli and @expo/metro-config versions and that custom serializers support deferred Hermes compilation. ' +
-            'Run `pnpm dlx expo-doctor` to check package compatibility; if versions are aligned, report this as an Expo CLI bug.'
+          `Cannot rename DOM assets in compiled Hermes bytecode (${artifact.filename}). ` +
+            'Run `npx expo-doctor` to check package compatibility. Custom serializers must defer Hermes compilation until DOM filenames are resolved.'
         );
       }
     } else {

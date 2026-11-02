@@ -1,4 +1,5 @@
 import { buildHermesBundleAsync } from '@expo/metro-config/build/serializer/exportHermes';
+import { transformJsAssetToHermesBytecodeAsync } from '@expo/metro-config/build/serializer/hermesArtifacts';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 
 import { compileHermesArtifactsAsync } from '../compileHermesArtifacts';
@@ -11,7 +12,7 @@ jest.mock('@expo/metro-config/build/serializer/exportHermes', () => ({
   })),
 }));
 
-it('compiles renamed artifacts before creating output entries', async () => {
+it('compiles renamed artifacts once before creating output entries', async () => {
   const asset: SerialAsset = {
     type: 'js',
     filename: 'index.js',
@@ -45,6 +46,7 @@ it('compiles renamed artifacts before creating output entries', async () => {
   const inputMap = map.source;
 
   await compileHermesArtifactsAsync('/app', [asset, map, worker, compiled]);
+  await transformJsAssetToHermesBytecodeAsync('/app', asset, map);
 
   expect(buildHermesBundleAsync).toHaveBeenCalledTimes(2);
   expect(buildHermesBundleAsync).toHaveBeenCalledWith({

@@ -20,6 +20,8 @@ export async function transformJsAssetToHermesBytecodeAsync(
   jsAsset: SerialAsset,
   mapAsset?: SerialAsset
 ): Promise<void> {
+  if (Buffer.isBuffer(jsAsset.source)) return;
+
   const debugId = stringToUUID(path.basename(jsAsset.filename, path.extname(jsAsset.filename)));
   const adjustedSource = jsAsset.source.replace(/^\/\/# (sourceMappingURL)=(.*)$/gm, (...props) => {
     if (props[1] === 'sourceMappingURL') {
@@ -44,22 +46,22 @@ export async function transformJsAssetToHermesBytecodeAsync(
     jsAsset.source = hermesBundleOutput.hbc;
     jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
 
-    // Replace mappings with hbc
     if (jsAsset.metadata.paths) {
-      jsAsset.metadata.paths = Object.fromEntries(
-        Object.entries(jsAsset.metadata.paths).map(([key, value]) => [
-          key,
-          Object.fromEntries(
-            Object.entries(value).map(([key, value]) => {
-              assert(
-                value == null || typeof value === 'string',
-                'Hermes async paths must remain scalar.'
-              );
-              return [key, value ? value.replace(/\.js$/, '.hbc') : value];
-            })
-          ),
-        ])
-      );
+      const rewrittenPaths = { ...jsAsset.metadata.paths };
+      for (const [moduleId, modulePaths] of Object.entries(rewrittenPaths)) {
+        const rewrittenModulePaths = { ...modulePaths };
+        for (const [dependencyId, targetPath] of Object.entries(modulePaths)) {
+          assert(
+            targetPath == null || typeof targetPath === 'string',
+            'Hermes async paths must remain scalar.'
+          );
+          rewrittenModulePaths[dependencyId] = targetPath
+            ? targetPath.replace(/\.js$/, '.hbc')
+            : targetPath;
+        }
+        rewrittenPaths[moduleId] = rewrittenModulePaths;
+      }
+      jsAsset.metadata.paths = rewrittenPaths;
     }
   }
   if (mapAsset && hermesBundleOutput.sourcemap) {
