@@ -21,6 +21,7 @@ const homeDirectories = [
   'review',
   'monitoring',
   'agents',
+  'agentic-workflows',
 ];
 /** Manual list of directories to categorize as "Learn" */
 const learnDirectories = ['tutorial', 'additional-resources'];
@@ -93,6 +94,14 @@ export const home = [
       }
     ),
     makePage('llms.mdx'),
+  ]),
+  makeSection('Agentic workflows', [
+    makePage('agentic-workflows/introduction.mdx'),
+    makePage('agentic-workflows/setup.mdx'),
+    makePage('agentic-workflows/agentic-ci.mdx'),
+    makePage('agentic-workflows/issue-to-pr.mdx'),
+    makePage('agentic-workflows/bug-triage.mdx'),
+    makePage('agentic-workflows/qa-swarm.mdx'),
   ]),
   makeSection('Develop', [
     makePage('develop/tools.mdx'),
@@ -481,6 +490,7 @@ export const eas = [
   makeSection('EAS Workflows', [
     makePage('eas/workflows/introduction.mdx'),
     makePage('eas/workflows/get-started.mdx'),
+    makePage('eas/workflows/manage-workflow-runs.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),
     makePage('eas/workflows/custom-functions.mdx'),
@@ -769,6 +779,7 @@ const preview = [
             makePage('preview/simulators/how-to/start-a-session.mdx'),
             makePage('preview/simulators/how-to/install-your-app.mdx'),
             makePage('preview/simulators/how-to/drive-the-device.mdx'),
+            makePage('preview/simulators/how-to/control-with-eas-cli.mdx'),
             makePage('preview/simulators/how-to/iterate-on-your-code.mdx'),
             makePage('preview/simulators/how-to/capture-evidence.mdx'),
             makePage('preview/simulators/how-to/organize-sessions.mdx'),

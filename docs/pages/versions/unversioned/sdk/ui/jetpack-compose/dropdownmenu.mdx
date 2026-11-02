@@ -307,6 +307,173 @@ export default function ShadowDropdownMenuExample() {
 
 </ComponentExample>
 
+### Grouped menu
+
+Use `DropdownMenuPopup` to show a Material 3 Expressive menu. It matches Compose's `DropdownMenuPopup`, which has no container of its own. The menu anchors to its parent, so put it in a `Box` next to the component that opens it. Put the items in `DropdownMenuGroup` components, with a 2 dp `Spacer` between the groups. The 2 dp height matches `MenuDefaults.GroupSpacing` in Compose.
+
+<ComponentExample
+  title="GroupedDropdownMenuExample.tsx"
+  src="/static/images/expo-ui/examples/dropdownmenu-grouped-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/dropdownmenu-grouped-android-dark.webp"
+  alt="An outlined Show menu button with an open menu below it holding two rounded groups: Edit and Share, then Settings">
+
+```tsx
+import {
+  Host,
+  Box,
+  DropdownMenuPopup,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  OutlinedButton,
+  Spacer,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import { height } from '@expo/ui/jetpack-compose/modifiers';
+import { useState } from 'react';
+
+export default function GroupedDropdownMenuExample() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  return (
+    <Host matchContents>
+      <Box>
+        <OutlinedButton onClick={() => setIsExpanded(true)}>
+          <Text>Show menu</Text>
+        </OutlinedButton>
+        <DropdownMenuPopup
+          expanded={isExpanded}
+          onDismissRequest={() => setIsExpanded(false)}>
+          <DropdownMenuGroup>
+            <DropdownMenuItem onClick={() => setIsExpanded(false)}>
+              <DropdownMenuItem.Text>
+                <Text>Edit</Text>
+              </DropdownMenuItem.Text>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setIsExpanded(false)}>
+              <DropdownMenuItem.Text>
+                <Text>Share</Text>
+              </DropdownMenuItem.Text>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <Spacer modifiers={[height(2)]} />
+          <DropdownMenuGroup>
+            <DropdownMenuItem onClick={() => setIsExpanded(false)}>
+              <DropdownMenuItem.Text>
+                <Text>Settings</Text>
+              </DropdownMenuItem.Text>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuPopup>
+      </Box>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Selectable menu items
+
+Use `SelectableDropdownMenuItem` for a choice of one option, such as a sort order. It matches Compose's `SelectableDropdownMenuItem`. A selected item gets a highlighted container and shows its `SelectedLeadingIcon` in place of its `LeadingIcon`.
+
+<ComponentExample
+  title="SelectableDropdownMenuExample.tsx"
+  src="/static/images/expo-ui/examples/dropdownmenu-selectable-android-light.webp"
+  darkSrc="/static/images/expo-ui/examples/dropdownmenu-selectable-android-dark.webp"
+  alt="A Sort: Newest button with an open menu below it holding Newest, Oldest, and Popular, with Newest highlighted and checked">
+
+```tsx
+import {
+  Host,
+  Box,
+  DropdownMenuPopup,
+  DropdownMenuGroup,
+  SelectableDropdownMenuItem,
+  OutlinedButton,
+  Icon,
+  Text,
+} from '@expo/ui/jetpack-compose';
+import { useState } from 'react';
+
+const checkIcon = require('./assets/check.xml');
+const options = ['Newest', 'Oldest', 'Popular'];
+
+export default function SelectableDropdownMenuExample() {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [sortOrder, setSortOrder] = useState('Newest');
+  return (
+    <Host matchContents>
+      <Box>
+        <OutlinedButton onClick={() => setIsExpanded(true)}>
+          <Text>{`Sort: ${sortOrder}`}</Text>
+        </OutlinedButton>
+        <DropdownMenuPopup
+          expanded={isExpanded}
+          onDismissRequest={() => setIsExpanded(false)}>
+          <DropdownMenuGroup>
+            {options.map(option => (
+              <SelectableDropdownMenuItem
+                key={option}
+                selected={sortOrder === option}
+                onClick={() => {
+                  setSortOrder(option);
+                  setIsExpanded(false);
+                }}>
+                <SelectableDropdownMenuItem.Text>
+                  <Text>{option}</Text>
+                </SelectableDropdownMenuItem.Text>
+                <SelectableDropdownMenuItem.SelectedLeadingIcon>
+                  <Icon source={checkIcon} size={20} />
+                </SelectableDropdownMenuItem.SelectedLeadingIcon>
+              </SelectableDropdownMenuItem>
+            ))}
+          </DropdownMenuGroup>
+        </DropdownMenuPopup>
+      </Box>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Group and item shapes
+
+By default, each `DropdownMenuGroup` and `SelectableDropdownMenuItem` has the shape of a single element. To join them into one stack, set the position of each element as `{ index, count }`:
+
+- `shapes` on `DropdownMenuGroup`: the position of the group in the menu.
+- `shape` on `DropdownMenuItem`, or `shapes` on `SelectableDropdownMenuItem`: the position of the item in its group.
+
+The first element gets rounder top corners, and the last element gets rounder bottom corners. A `DropdownMenuItem` without `shape` is the original Material 3 menu item.
+
+```tsx
+<DropdownMenuPopup
+  expanded={isExpanded}
+  onDismissRequest={() => setIsExpanded(false)}>
+  {/* Group 1 of 2, with 2 items */}
+  <DropdownMenuGroup shapes={{ index: 0, count: 2 }}>
+    <DropdownMenuItem shape={{ index: 0, count: 2 }}>
+      <DropdownMenuItem.Text>
+        <Text>Edit</Text>
+      </DropdownMenuItem.Text>
+    </DropdownMenuItem>
+    <DropdownMenuItem shape={{ index: 1, count: 2 }}>
+      <DropdownMenuItem.Text>
+        <Text>Share</Text>
+      </DropdownMenuItem.Text>
+    </DropdownMenuItem>
+  </DropdownMenuGroup>
+  <Spacer modifiers={[height(2)]} />
+  {/* Group 2 of 2, with 1 item */}
+  <DropdownMenuGroup shapes={{ index: 1, count: 2 }}>
+    <DropdownMenuItem shape={{ index: 0, count: 1 }}>
+      <DropdownMenuItem.Text>
+        <Text>Settings</Text>
+      </DropdownMenuItem.Text>
+    </DropdownMenuItem>
+  </DropdownMenuGroup>
+</DropdownMenuPopup>
+```
+
 ## API
 
 ```tsx

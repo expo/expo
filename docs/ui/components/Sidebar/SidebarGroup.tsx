@@ -236,6 +236,8 @@ function getIconElement(iconName?: string) {
       return DataIcon;
     case 'EAS Workflows':
       return Dataflow03Icon;
+    case 'Agentic workflows':
+      return Star06Icon;
     case 'EAS Hosting':
       return Cloud01Icon;
     case 'EAS Observe':

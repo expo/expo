@@ -435,6 +435,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'SplitButtonLayout component',
+    route: 'ui/split-button-layout',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./SplitButtonLayoutScreen'));
+    },
+  },
+  {
     name: 'Surface component',
     route: 'ui/surface',
     options: {},

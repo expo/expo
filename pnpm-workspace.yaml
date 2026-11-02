@@ -35,7 +35,7 @@ minimumReleaseAgeExclude:
   - '@changesets/apply-release-plan@8.1.1'
   - '@changesets/cli@3.0.3'
   - '@changesets/config@4.0.1'
-  - react-native-screens@4.30.0
+  - react-native-screens@4.30.1
   - 2g
   - expo-atlas@0.5.0
   - react-native-svg@15.16.0

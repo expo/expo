@@ -20,7 +20,7 @@ apple/
 │   │   ├── Extensions/            # Swift extensions (e.g. Task+immediate)
 │   │   ├── Protocols/             # JavaScriptType, JavaScriptRepresentable, etc.
 │   │   ├── Runtime/               # JavaScriptRuntime, JavaScriptActor, JavaScriptRef
-│   │   │   └── Values/            # JS value wrappers (Value, Object, Array, Function, ArrayBuffer, TypedArray, Promise, BigInt, Error, WeakObject)
+│   │   │   └── Values/            # JS value wrappers (Value, Object, Array, Function, ArrayBuffer, TypedArray, Promise, BigInt, Symbol, Error, WeakObject)
 │   │   └── Utilities/             # Error handling, DeferredPromise, helpers
 │   └── ExpoModulesJSI-Cxx/        # C++ utilities bridging Swift ↔ JSI
 │       ├── include/               # In-package C++ headers

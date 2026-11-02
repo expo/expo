@@ -156,7 +156,7 @@ class StartupProcedure(
             if (exception == null) {
               throw AssertionError("Background update with error status must have a nonnull exception object")
             }
-            logger.error("UpdatesController onBackgroundUpdateFinished", exception, UpdatesErrorCode.Unknown)
+            logger.errorForLoadFailure("Failed to load remote update", exception, UpdatesErrorCode.UpdateFailedToLoad)
             remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
 
             // Since errors can happen through a number of paths, we do these checks
@@ -276,7 +276,12 @@ class StartupProcedure(
           } catch (e: CancellationException) {
             throw e
           } catch (e: Exception) {
-            logger.error("UpdatesController loadRemoteUpdate onFailure", e, UpdatesErrorCode.UpdateFailedToLoad, launchedUpdate?.loggingId, null)
+            logger.errorForLoadFailure(
+              "Failed to load remote update for error recovery",
+              e,
+              UpdatesErrorCode.UpdateFailedToLoad,
+              launchedUpdate?.loggingId
+            )
             setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
           }
         }

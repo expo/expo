@@ -23,7 +23,15 @@ Evidence shows what the app did on the remote device. Use a **screenshot** for a
 
 ## Take a screenshot
 
-Open the app first. agent-device needs an open app session before it can take a screenshot:
+For a running iOS session, download a screenshot directly with EAS CLI. This works with every session type that exposes the preview server. You do not need an open controller app session:
+
+<Terminal
+  cmd={['$ eas simulator:control screenshot.capture --output ./home.png --id <session-id>']}
+/>
+
+The output path is on your computer. For more options, see [Save a screenshot on your computer](/preview/simulators/how-to/control-with-eas-cli/#save-a-screenshot-on-your-computer).
+
+For an agent-device screenshot, open the app first. agent-device needs an open app session before it can take a screenshot:
 
 <Terminal
   cmd={[

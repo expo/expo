@@ -41,6 +41,16 @@ Only Release Managers, Admins, and Owners can run these commands. Run either com
 
 If your workflow interacts with a protected channel, remove protection from that channel with `eas channel:unprotect`, or run those commands, such as `eas update`, outside EAS Workflows with an access token for a user or robot with the Release Manager role or higher.
 
+## Protected credentials
+
+When you turn on credentials protection for an account, only Release Managers, Admins, and Owners can view, create, change, or delete [build](/app-signing/app-credentials/), submission, and push credentials stored on EAS. Protection applies to every project in the account. Developers lose access to these credentials.
+
+To turn credentials protection on or off, go to [**Credentials**](https://expo.dev/accounts/[account]/credentials) in your account and use the **Protect credentials** switch. Only Admins and Owners can change this setting.
+
+### EAS Workflows and protected credentials
+
+> **warning** [EAS Workflows](/eas/workflows/introduction/) jobs run with at most Developer-level permissions. When credentials protection is on, builds and submissions that run in workflows or from GitHub can fail when they use credentials stored on EAS.
+
 ## Coming soon
 
 Protection for other resource types is in progress.

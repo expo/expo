@@ -15,136 +15,77 @@ enum DataFormat: String, Enumerable {
   case base64
 }
 
-internal struct CiphertextOptions: Record {
-  @Field
+@Record
+internal struct CiphertextOptions {
   var includeTag: Bool = false
-
-  @Field
   var outputFormat: DataFormat = .bytes
 }
 
-internal struct EncryptOptions: Record {
-  @Field
-  var nonce: EitherOfThree<String, Data, Int>?
-
-  @Field
+@Record
+internal struct EncryptOptions {
+  var nonce: NonceInput?
   var additionalData: BinaryInput?
 }
 
-internal struct DecryptOptions: Record {
-  @Field
+@Record
+internal struct DecryptOptions {
   var output: DataFormat = .bytes
-
-  @Field
   var additionalData: BinaryInput?
 }
 
-typealias BinaryInput = Either<Data, String>
+@Union
+enum BinaryInput {
+  case bytes(Data)
+  case string(String)
 
-extension BinaryInput {
   func intoData() throws -> Data {
-    if let data: Data = self.get() {
+    switch self {
+    case .bytes(let data):
+      return data
+    case .string(let base64String):
+      guard let data = Data(base64Encoded: base64String) else {
+        throw InvalidBase64Exception()
+      }
       return data
     }
-
-    let base64String = try self.as(String.self)
-    guard let data = Data(base64Encoded: base64String) else {
-      throw InvalidBase64Exception()
-    }
-    return data
   }
 }
 
+@Union
+enum NonceInput {
+  case base64(String)
+  case bytes(Data)
+  case length(Int)
+}
+
+@Union
+enum BinaryOutput {
+  case bytes(Data)
+  case base64(String)
+}
+
+@ExpoModule("ExpoCryptoAES", classes: [EncryptionKey.self, SealedData.self])
 public class AesCryptoModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoCryptoAES")
-
-    AsyncFunction("encryptAsync", self.encrypt)
-    AsyncFunction("decryptAsync", self.decrypt)
-
-    Class("EncryptionKey", EncryptionKey.self) {
-      StaticAsyncFunction("generate", self.generateKey)
-      StaticAsyncFunction("import", self.importKey)
-
-      AsyncFunction("bytes") { (key: EncryptionKey) in key.bytes }
-      AsyncFunction("encoded") { (key: EncryptionKey, encoding: DataEncoding) in
-        key.encoded(with: encoding)
-      }
-
-      Property("size") { (key: EncryptionKey) in key.keySize }
-    }
-
-    Class("SealedData", SealedData.self) {
-      StaticFunction("fromCombined") { (combined: BinaryInput, config: SealedDataConfig?) in
-        let config = config ?? SealedDataConfig()
-
-        return try SealedData(
-          ivLength: config.ivLength,
-          tagLength: config.tagLength,
-          content: combined.intoData()
-        )
-      }
-      StaticFunction("fromParts") { (iv: BinaryInput, ciphertext: BinaryInput, tag: Either<Data, Int>?) in
-        if let tagData: Data = tag?.get() {
-          return try SealedData(
-            iv: iv.intoData(),
-            ciphertext: ciphertext.intoData(),
-            tag: tagData
-          )
-        }
-
-        let tagLength: Int = tag?.get() ?? DEFAULT_TAG_LENGTH
-        return try SealedData(
-          iv: iv.intoData(),
-          ciphertextWithTag: ciphertext.intoData(),
-          tagLength: tagLength
-        )
-      }
-
-      Property("combinedSize") { (sealedData: SealedData) in
-        sealedData.combined.count
-      }
-      Property("ivSize") { (sealedData: SealedData) in
-        sealedData.iv.count
-      }
-      Property("tagSize") { (sealedData: SealedData) in
-        sealedData.tag.count
-      }
-
-      AsyncFunction("iv") { (sealedData: SealedData, format: DataFormat?) -> Any in
-        sealedData.iv.formatted(with: format)
-      }
-      AsyncFunction("tag") { (sealedData: SealedData, format: DataFormat?) -> Any in
-        sealedData.tag.formatted(with: format)
-      }
-      AsyncFunction("combined") { (sealedData: SealedData, format: DataFormat?) -> Any in
-        sealedData.combined.formatted(with: format)
-      }
-      AsyncFunction("ciphertext") { (sealedData: SealedData, options: CiphertextOptions?) -> Any in
-        sealedData
-          .ciphertext(withTag: options?.includeTag ?? false)
-          .formatted(with: options?.outputFormat)
-      }
+  @JS(.concurrent)
+  func encryptAsync(
+    plaintext: BinaryInput,
+    key: EncryptionKey,
+    options: EncryptOptions?
+  ) async throws -> SealedData {
+    return try mapCryptoKitError(to: EncryptionFailedException()) {
+      return try encrypt(plaintext: plaintext, key: key, options: options)
     }
   }
 
-  private func generateKey(size: KeySize?) -> EncryptionKey {
-    EncryptionKey(size: size ?? KeySize.aes256)
-  }
-
-  private func importKey(
-    rawKey: Either<Data, String>,
-    encoding: DataEncoding?
-  ) throws -> EncryptionKey {
-    if rawKey.is(Data.self) {
-      return try EncryptionKey(bytes: rawKey.as(Data.self))
+  @JS(.concurrent)
+  func decryptAsync(
+    sealedData: SealedData,
+    key: EncryptionKey,
+    options: DecryptOptions?
+  ) async throws -> BinaryOutput {
+    return try mapCryptoKitError(to: DecryptionFailedException()) {
+      return try decrypt(sealedData: sealedData, key: key, options: options)
     }
-
-    guard let dataEncoding = encoding else {
-      throw MissingEncodingException()
-    }
-    let keyString = try rawKey.as(String.self)
-    return try EncryptionKey(string: keyString, encodedWith: dataEncoding)
   }
 
   private func encrypt(
@@ -153,16 +94,17 @@ public class AesCryptoModule: Module {
     options: EncryptOptions?
   ) throws -> SealedData {
     let iv: AES.GCM.Nonce
-    if let bytes: Data = options?.nonce?.get() {
-      iv = try AES.GCM.Nonce(data: bytes)
-    } else if let base64: String = options?.nonce?.get() {
+    switch options?.nonce {
+    case .base64(let base64):
       guard let bytes = Data(base64Encoded: base64) else {
         throw InvalidBase64Exception()
       }
       iv = try AES.GCM.Nonce(data: bytes)
-    } else if let size: Int = options?.nonce?.get() {
+    case .bytes(let bytes):
+      iv = try AES.GCM.Nonce(data: bytes)
+    case .length(let size):
       iv = try AES.GCM.Nonce(ofSize: size)
-    } else {
+    case nil:
       iv = AES.GCM.Nonce()  // defaults to 12-byte nonce
     }
 
@@ -189,7 +131,7 @@ public class AesCryptoModule: Module {
     sealedData: SealedData,
     key: EncryptionKey,
     options: DecryptOptions?
-  ) throws -> Any {
+  ) throws -> BinaryOutput {
     let plaintext: Data =
       if let aad = options?.additionalData {
         try AES.GCM.open(
@@ -204,9 +146,6 @@ public class AesCryptoModule: Module {
         )
       }
 
-    if options?.output == .base64 {
-      return plaintext.base64EncodedString()
-    }
-    return plaintext
+    return plaintext.formatted(with: options?.output)
   }
 }

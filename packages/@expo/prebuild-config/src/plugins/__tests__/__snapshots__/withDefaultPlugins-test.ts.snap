@@ -176,7 +176,7 @@ exports[`built-in plugins compiles mods 1`] = `
         "UIInterfaceOrientationLandscapeRight",
       ],
       "UIUserInterfaceStyle": "Automatic",
-      "UIViewControllerBasedStatusBarAppearance": false,
+      "UIViewControllerBasedStatusBarAppearance": true,
       "bar": {
         "val": [
           "foo",
@@ -969,7 +969,7 @@ exports[`built-in plugins introspects mods 1`] = `
             "UIInterfaceOrientationLandscapeRight",
           ],
           "UIUserInterfaceStyle": "Automatic",
-          "UIViewControllerBasedStatusBarAppearance": false,
+          "UIViewControllerBasedStatusBarAppearance": true,
           "bar": {
             "val": [
               "foo",
@@ -1158,7 +1158,7 @@ exports[`built-in plugins introspects mods 1`] = `
         "UIInterfaceOrientationLandscapeRight",
       ],
       "UIUserInterfaceStyle": "Automatic",
-      "UIViewControllerBasedStatusBarAppearance": false,
+      "UIViewControllerBasedStatusBarAppearance": true,
       "bar": {
         "val": [
           "foo",

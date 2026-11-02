@@ -15,6 +15,7 @@ private let networkPermissionGrantedKey = "expo.devlauncher.hasGrantedNetworkPer
 private let filterByBundleIdentifierKey = "expo.devlauncher.nsd.filterByBundleIdentifier"
 private let filterByUsernameKey = "expo.devlauncher.nsd.filterByUsername"
 private let filterBySlugKey = "expo.devlauncher.nsd.filterBySlug"
+private let updatesPageSizeKey = "expo.devlauncher.updatesPageSize"
 
 enum LocalNetworkPermissionStatus: Equatable, Sendable {
   case unknown
@@ -26,10 +27,9 @@ enum LocalNetworkPermissionStatus: Equatable, Sendable {
 
 @MainActor
 class DevLauncherViewModel: ObservableObject {
-  /// Safe area inset for when VC hierarchy doesn't propagate it (e.g., SwiftUI/brownfield apps)
-  @Published var topSafeAreaInset: CGFloat = 0
   @Published var recentlyOpenedApps: [RecentlyOpenedApp] = []
   @Published var buildInfo: [AnyHashable: Any] = [:]
+  @Published var appIcon: UIImage?
   @Published var updatesConfig: [AnyHashable: Any] = [:]
   @Published var currentError: EXDevLauncherAppError?
   @Published var showingCrashReport = false
@@ -59,6 +59,11 @@ class DevLauncherViewModel: ObservableObject {
       UserDefaults.standard.set(autoLaunchMostRecent, forKey: "EXDevLauncherTryToLaunchLastBundle")
     }
   }
+  @Published var updatesPageSize = UserDefaults.standard.object(forKey: updatesPageSizeKey) as? Int ?? 10 {
+    didSet {
+      UserDefaults.standard.set(updatesPageSize, forKey: updatesPageSizeKey)
+    }
+  }
   @Published var isAuthenticated = false
   @Published var isAuthenticating = false
   @Published var user: User? {
@@ -67,7 +72,7 @@ class DevLauncherViewModel: ObservableObject {
     }
   }
   @Published var selectedAccountId: String?
-  @Published var isLoadingServer: Bool = false
+  @Published var loadingServerURL: String?
   @Published var isLoadingLocalBundle: Bool = false
   @Published var permissionStatus: LocalNetworkPermissionStatus = .unknown
 
@@ -166,8 +171,14 @@ class DevLauncherViewModel: ObservableObject {
       username: user?.username
     )
 
-    devServers = filtered.sorted(by: <)
-    hiddenDevServerCount = allDevServers.count - filtered.count
+    let sorted = filtered.sorted(by: <)
+    if sorted != devServers {
+      devServers = sorted
+    }
+    let hiddenCount = allDevServers.count - filtered.count
+    if hiddenCount != hiddenDevServerCount {
+      hiddenDevServerCount = hiddenCount
+    }
   }
 
   private func extractPort(from url: String) -> String? {
@@ -182,6 +193,9 @@ class DevLauncherViewModel: ObservableObject {
     let controller = EXDevLauncherController.sharedInstance()
     self.buildInfo = controller.getBuildInfo()
     self.updatesConfig = controller.getUpdatesConfig(nil)
+    if let path = buildInfo["appIcon"] as? String, let url = URL(string: path), url.isFileURL {
+      self.appIcon = UIImage(contentsOfFile: url.path)
+    }
 
     loadRecentlyOpenedApps()
     loadMenuPreferences()
@@ -225,20 +239,20 @@ class DevLauncherViewModel: ObservableObject {
       return
     }
 
-    isLoadingServer = true
+    loadingServerURL = url
 
     EXDevLauncherController.sharedInstance().loadApp(
       bundleUrl,
       onSuccess: { [weak self] in
         DispatchQueue.main.async {
-          self?.isLoadingServer = false
+          self?.loadingServerURL = nil
         }
       },
       onError: { [weak self] error in
         let message = DevLauncherLoadErrorMessage.message(for: error as NSError, url: url)
         EXDevLauncherRemoteLogsManager.reportError(message, toServerAt: bundleUrl)
         DispatchQueue.main.async {
-          self?.isLoadingServer = false
+          self?.loadingServerURL = nil
           self?.showErrorAlert(message)
         }
       })

@@ -1,0 +1,571 @@
+---
+title: Triage a bug report with an AI agent
+sidebar_title: Bug triage
+description: Add an agentic workflow in which a coding agent reproduces a bug from a GitHub issue or TestFlight feedback on a remote Android Emulator or iOS Simulator.
+---
+
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
+
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+import { BugTriageDiagram } from '~/scenes/eas/agentic-workflows/AgenticWorkflowDiagram';
+
+> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+Bug triage is an automated workflow in which a coding agent tries to reproduce a bug report on a remote Android Emulator or iOS Simulator. The report comes from a GitHub issue or from TestFlight feedback. When the agent sees the bug, a person reads the report and adds the `agent` label. Then [Issue to PR](/agentic-workflows/issue-to-pr/) opens a pull request (PR) with a fix, and [Agentic CI](/agentic-workflows/agentic-ci/) tests the fix.
+
+## How Bug triage works
+
+The highlighted steps run on EAS Workflows and Expo Simulators:
+
+<BugTriageDiagram />
+
+1. Each bug report starts as a GitHub issue. For TestFlight feedback, the workflow creates the issue with the comment of the tester, the device, and links to the screenshots.
+2. The workflow starts an Expo Simulators session with a build of the default branch.
+3. A coding agent follows the steps in the report and writes a verdict: `REPLICATED` or `NOT-REPLICATED`.
+4. The workflow posts the verdict on the issue. For a `REPLICATED` bug, a person reads the report and adds the `agent` label, which starts Issue to PR.
+
+The agent tests a build of the default branch, not the build that the tester used.
+
+<AgentPrompt
+  title="Add Bug triage with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Add the Bug triage workflow to my Expo project. Use https://docs.expo.dev/agentic-workflows/bug-triage.md as the source for each step and each file.
+
+1. Check each step on https://docs.expo.dev/agentic-workflows/setup.md. Check that the Agentic CI workflow from https://docs.expo.dev/agentic-workflows/agentic-ci.md and the Issue to PR workflow from https://docs.expo.dev/agentic-workflows/issue-to-pr.md are in the project. Do each step that is not done. Use the version of .eas/agents/run-agent.sh for the agent that I name, and the version of .eas/agents/start-session.sh for the controller that I name: agent-device or Argent.
+2. Create each file that the page shows, at the same path and with the same content.
+3. When a step needs a token, an account, or a choice, stop and ask me. Do not print or save a token.
+4. Run `eas workflow:validate` on each workflow file that you added.
+5. Commit the files, but do not push them. Tell me which files you added and which commands I must run.
+```
+
+</AgentPrompt>
+
+## Set up your project
+
+Follow [Set up a project for agentic workflows](/agentic-workflows/setup/) one time for your project, including [Add a GitHub token to EAS](/agentic-workflows/setup/#add-a-github-token-to-eas). See [What the agent can do](/agentic-workflows/setup/#what-the-agent-can-do) to learn which limits apply to the agent.
+
+Bug triage needs [Agentic CI](/agentic-workflows/agentic-ci/) and [Issue to PR](/agentic-workflows/issue-to-pr/), because they fix a replicated bug and test the fix. Add them first.
+
+## Add the Bug triage workflow
+
+<Step label="1">
+
+### Update the GitHub helper
+
+This version of **.eas/agents/github.mjs** adds the `create-issue` command to the version from Issue to PR. Replace the file:
+
+```js .eas/agents/github.mjs
+import { readFile } from 'node:fs/promises';
+
+const repository = process.env.GITHUB_REPOSITORY;
+const token = process.env.GITHUB_TOKEN;
+
+if (!repository || !token) {
+  console.error(
+    'GITHUB_REPOSITORY or GITHUB_TOKEN is not set. Add both to the preview environment of the EAS project.'
+  );
+  process.exit(1);
+}
+
+async function request(method, path, body) {
+  const response = await fetch(`https://api.github.com${path}`, {
+    method,
+    headers: {
+      accept: 'application/vnd.github+json',
+      authorization: `Bearer ${token}`,
+      'content-type': 'application/json',
+      'x-github-api-version': '2022-11-28',
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!response.ok) {
+    throw new Error(
+      `GitHub returned ${response.status} for ${method} ${path}: ${await response.text()}\nCheck that GITHUB_TOKEN can read and write contents, issues, and pull requests in ${repository}.`
+    );
+  }
+  return response.json();
+}
+
+const repo = `/repos/${repository}`;
+const [command, ...args] = process.argv.slice(2);
+
+switch (command) {
+  case 'issue': {
+    const issue = await request('GET', `${repo}/issues/${args[0]}`);
+    const comments = await request('GET', `${repo}/issues/${args[0]}/comments?per_page=50`);
+    console.log(
+      JSON.stringify(
+        {
+          title: issue.title,
+          body: issue.body,
+          comments: comments
+            .filter(comment =>
+              ['OWNER', 'MEMBER', 'COLLABORATOR'].includes(comment.author_association)
+            )
+            .map(comment => comment.body),
+        },
+        null,
+        2
+      )
+    );
+    break;
+  }
+  case 'comment': {
+    await request('POST', `${repo}/issues/${args[0]}/comments`, {
+      body: await readFile(args[1], 'utf8'),
+    });
+    break;
+  }
+  case 'create-issue': {
+    const [title, bodyFile, ...labels] = args;
+    const issue = await request('POST', `${repo}/issues`, {
+      title,
+      body: await readFile(bodyFile, 'utf8'),
+      labels,
+    });
+    console.log(issue.number);
+    break;
+  }
+  case 'open-pull-request': {
+    const [branch, title, bodyFile] = args;
+    const owner = repository.split('/')[0];
+    const open = await request('GET', `${repo}/pulls?state=open&head=${owner}:${branch}`);
+    if (open.length > 0) {
+      console.log(open[0].html_url);
+      break;
+    }
+    const { default_branch: base } = await request('GET', repo);
+    const pullRequest = await request('POST', `${repo}/pulls`, {
+      head: branch,
+      base,
+      title,
+      body: await readFile(bodyFile, 'utf8'),
+    });
+    console.log(pullRequest.html_url);
+    break;
+  }
+  case 'author-email': {
+    const user = await request('GET', '/user');
+    console.log(`${user.id}+${user.login}@users.noreply.github.com`);
+    break;
+  }
+  default:
+    console.error(
+      `Unknown command "${command}". Use issue, comment, create-issue, open-pull-request, or author-email.`
+    );
+    process.exit(1);
+}
+```
+
+</Step>
+
+<Step label="2">
+
+### Add the job script
+
+```sh .eas/agents/reproduce.sh
+#!/usr/bin/env bash
+set -euo pipefail
+
+: "${BUILD_ID:?No simulator build. Check the build or repack job of this run.}"
+: "${ISSUE_NUMBER:?No issue number. Check the intake job, or pass -F issue_number=<number>.}"
+: "${PLATFORM:?No platform. Set PLATFORM to android or ios in the reproduce job.}"
+
+node .eas/agents/github.mjs issue "$ISSUE_NUMBER" > /tmp/issue.json
+source .eas/agents/start-session.sh "$PLATFORM" "$BUILD_ID" "Issue #$ISSUE_NUMBER triage" bug-triage
+
+{
+  cat .eas/agents/reproduce.md
+  printf '\n## Bug report\n\n'
+  cat /tmp/issue.json
+  printf '\n'
+  cat agent-output/device.md
+} > agent-output/prompt.md
+
+env -u EXPO_TOKEN -u EXPO_TOKEN_SIMULATOR -u GITHUB_TOKEN \
+  timeout 20m bash .eas/agents/run-agent.sh agent-output/prompt.md device || true
+
+VERDICT=$(head -n 1 agent-output/evidence/verdict.md 2> /dev/null || true)
+PLATFORM_NAME=$([ "$PLATFORM" = ios ] && echo iOS || echo Android)
+VERDICT=${VERDICT:-"INCONCLUSIVE: The agent did not write a verdict. See the logs of this run."}
+SESSION_URL=$(node -p 'require("/tmp/session.json").deviceRunSessionUrl')
+
+{
+  printf '## Bug triage (%s)\n\n**Verdict:** %s\n\n' "$PLATFORM_NAME" "$VERDICT"
+  printf -- '- [Session recording](%s)\n' "$SESSION_URL"
+  printf -- '- [Agent report and screenshots](%s)\n\n' "$RUN_URL"
+  printf '<details>\n<summary>Report</summary>\n\n'
+  tail -n +2 agent-output/evidence/verdict.md 2> /dev/null || true
+  printf '\n</details>\n'
+  case "$VERDICT" in
+    REPLICATED:*) printf '\nTo start Issue to PR, read the report, then add the `agent` label.\n' ;;
+  esac
+} > /tmp/comment.md
+node .eas/agents/github.mjs comment "$ISSUE_NUMBER" /tmp/comment.md
+```
+
+The script does these tasks in this order:
+
+1. It reads the issue and the comments from the owners, members, and collaborators of the repository.
+2. It starts a session with the build. Then it writes the prompt for the agent, and runs the agent in the `device` mode.
+3. It posts the verdict and a report on the issue.
+4. For a `REPLICATED` verdict, the comment asks a person to read the report and add the `agent` label.
+5. It stops the session.
+
+</Step>
+
+<Step label="3">
+
+### Add the prompt
+
+The job script adds the issue, its comments, and **agent-output/device.md** to the end of this prompt:
+
+```md .eas/agents/reproduce.md|wrap
+You try to reproduce a bug report in this project on a remote Android Emulator or iOS Simulator. The app is installed and open on the device. The bug report and the details of the device are at the end of this prompt.
+
+1. Read the report. Find the steps, the expected result, and the actual result. You can also read the source code of the project with your file tools.
+2. Follow the steps as a user does. Run only the shell command in the Device section. If a command is denied, continue with the command of the Device section.
+3. Save a screenshot after each step.
+4. Write the file agent-output/evidence/verdict.md. Line 1 is "REPLICATED: <one sentence>" or "NOT-REPLICATED: <one sentence>". Then list each step that you did and what you saw.
+
+Write REPLICATED only when you saw the bug yourself. Do not change the files of the project.
+```
+
+</Step>
+
+<Step label="4">
+
+### Add the TestFlight report formatter
+
+TestFlight is iOS only, so skip this step for Android. For TestFlight feedback, the iOS workflow uses this script to change the feedback into the text of an issue. The issue does not include the name or the email address of the tester.
+
+```js .eas/agents/feedback-issue.mjs
+import { readFile, writeFile } from 'node:fs/promises';
+
+const [feedbackFile, bodyFile] = process.argv.slice(2);
+const result = JSON.parse(await readFile(feedbackFile, 'utf8'));
+const report = result.feedback ?? result.crash ?? result;
+const comment = (report.comment ?? '').trim();
+const screenshots = (report.screenshots ?? []).map(screenshot => screenshot.url).filter(Boolean);
+
+const lines = [
+  '## TestFlight report',
+  '',
+  comment
+    ? comment
+        .split('\n')
+        .map(line => `> ${line}`)
+        .join('\n')
+    : '> The tester did not write a comment.',
+  '',
+  `- Build: ${report.buildVersion ?? 'unknown'}`,
+  `- Device: ${report.deviceModel ?? 'unknown'}, iOS ${report.osVersion ?? 'unknown'}`,
+  ...screenshots.map((url, index) => `- [Screenshot ${index + 1}](${url}). The link expires.`),
+];
+
+if (result.logText) {
+  const codeFence = '`'.repeat(3);
+  lines.push(
+    '',
+    '<details>',
+    '<summary>Crash log</summary>',
+    '',
+    codeFence,
+    result.logText.slice(0, 20000),
+    codeFence,
+    '',
+    '</details>'
+  );
+}
+
+await writeFile(bodyFile, `${lines.join('\n')}\n`);
+
+const title =
+  comment.split('\n')[0] || (result.crash ? 'TestFlight crash report' : 'TestFlight feedback');
+console.log(title.slice(0, 100));
+```
+
+Apple signs the links to the screenshots for a limited time, so the links in the issue expire.
+
+</Step>
+
+<Step label="5">
+
+### Add the EAS workflow
+
+Use the file for the platform that you test. Only the iOS workflow starts on TestFlight feedback.
+
+<Tabs>
+
+<Tab label="Android">
+
+```yaml .eas/workflows/bug-triage.yml
+name: Bug triage (Android)
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: The number of the issue with the bug report
+        type: string
+        required: true
+
+jobs:
+  fingerprint:
+    type: fingerprint
+    environment: preview
+
+  get_build:
+    type: get-build
+    needs: [fingerprint]
+    params:
+      platform: android
+      profile: preview
+      fingerprint_hash: ${{ needs.fingerprint.outputs.android_fingerprint_hash }}
+      wait_for_in_progress: true
+
+  build:
+    type: build
+    needs: [get_build]
+    if: ${{ !needs.get_build.outputs.build_id }}
+    params:
+      platform: android
+      profile: preview
+
+  repack:
+    type: repack
+    needs: [get_build]
+    if: ${{ needs.get_build.outputs.build_id }}
+    params:
+      build_id: ${{ needs.get_build.outputs.build_id }}
+      profile: preview
+
+  reproduce:
+    needs: [get_build]
+    after: [build, repack]
+    environment: preview
+    env:
+      BUILD_ID: ${{ after.build.outputs.build_id || after.repack.outputs.build_id }}
+      ISSUE_NUMBER: ${{ inputs.issue_number }}
+      RUN_URL: ${{ workflow.url }}
+      PLATFORM: android
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - name: Reproduce the bug on a remote Android Emulator
+        run: bash .eas/agents/reproduce.sh
+      - uses: eas/upload_artifact
+        if: ${{ always() }}
+        with:
+          type: other
+          name: bug-triage-evidence
+          path: agent-output/evidence/**/*
+```
+
+</Tab>
+
+<Tab label="iOS">
+
+```yaml .eas/workflows/bug-triage.yml
+name: Bug triage (iOS)
+
+on:
+  app_store_connect:
+    beta_feedback:
+      types: [screenshot, crash]
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: The number of the issue with the bug report
+        type: string
+        required: true
+
+jobs:
+  intake:
+    if: ${{ !inputs.issue_number }}
+    environment: preview
+    env:
+      FEEDBACK_URL: ${{ app_store_connect.beta_feedback.url }}
+    outputs:
+      issue_number: ${{ steps.file.outputs.issue_number }}
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - id: file
+        name: File the TestFlight report as a GitHub issue
+        run: |
+          set -euo pipefail
+          EXPO_TOKEN="$EXPO_TOKEN_SIMULATOR" npx --yes eas-cli@latest testflight:feedback "$FEEDBACK_URL" --json > /tmp/feedback.json
+          node .eas/agents/feedback-issue.mjs /tmp/feedback.json /tmp/issue.md > /tmp/issue-title.txt
+          ISSUE_NUMBER=$(node .eas/agents/github.mjs create-issue "$(cat /tmp/issue-title.txt)" /tmp/issue.md bug testflight)
+          set-output issue_number "$ISSUE_NUMBER"
+
+  fingerprint:
+    type: fingerprint
+    environment: preview
+
+  get_build:
+    type: get-build
+    needs: [fingerprint]
+    params:
+      platform: ios
+      profile: preview
+      simulator: true
+      fingerprint_hash: ${{ needs.fingerprint.outputs.ios_fingerprint_hash }}
+      wait_for_in_progress: true
+
+  build:
+    type: build
+    needs: [get_build]
+    if: ${{ !needs.get_build.outputs.build_id }}
+    params:
+      platform: ios
+      profile: preview
+
+  repack:
+    type: repack
+    needs: [get_build]
+    if: ${{ needs.get_build.outputs.build_id }}
+    params:
+      build_id: ${{ needs.get_build.outputs.build_id }}
+      profile: preview
+
+  reproduce:
+    needs: [get_build]
+    after: [intake, build, repack]
+    environment: preview
+    env:
+      BUILD_ID: ${{ after.build.outputs.build_id || after.repack.outputs.build_id }}
+      ISSUE_NUMBER: ${{ inputs.issue_number || after.intake.outputs.issue_number }}
+      RUN_URL: ${{ workflow.url }}
+      PLATFORM: ios
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - name: Reproduce the bug on a remote iOS Simulator
+        run: bash .eas/agents/reproduce.sh
+      - uses: eas/upload_artifact
+        if: ${{ always() }}
+        with:
+          type: other
+          name: bug-triage-evidence
+          path: agent-output/evidence/**/*
+```
+
+</Tab>
+
+</Tabs>
+
+To test both platforms, add both files with different names, such as **bug-triage-android.yml** and **bug-triage-ios.yml**. Each workflow posts its own comment. Use the same names in the commands on this page.
+
+The jobs do these tasks:
+
+- `intake` runs only in the iOS workflow, for TestFlight feedback. It creates the GitHub issue.
+- `fingerprint`, `get_build`, `build`, and `repack` find or create a build of the default branch for the remote device.
+- `reproduce` runs the job script. It gets the issue number from `-F issue_number` in a manual run, or from the `intake` job.
+
+</Step>
+
+<Step label="6">
+
+### Push the workflow
+
+<Terminal
+  cmd={[
+    '$ git add .eas/agents/github.mjs .eas/agents/reproduce.sh .eas/agents/reproduce.md .eas/agents/feedback-issue.mjs .eas/workflows/bug-triage.yml',
+    '$ git commit -m "Add Bug triage"',
+    '$ git push',
+  ]}
+/>
+
+For Android only, leave out **.eas/agents/feedback-issue.mjs**.
+
+</Step>
+
+## Reproduce a bug from a GitHub issue
+
+Create an issue with the `bug` label. Write the steps, the expected result, and the actual result:
+
+<Terminal
+  cmd={[
+    '$ gh issue create --label bug --title "<what is wrong>" --body "<steps, expected result, and actual result>"',
+  ]}
+/>
+
+The command prints the address of the issue. The address ends with the issue number. Start the workflow on the default branch with the issue number:
+
+<Terminal
+  cmd={['$ eas workflow:run .eas/workflows/bug-triage.yml --ref main -F issue_number=<number>']}
+/>
+
+If your default branch has a different name, change `--ref`.
+
+## Reproduce a bug from TestFlight feedback
+
+This path is iOS only. You need a membership in the Apple Developer Program and an app with a build in TestFlight.
+
+<Step label="1">
+
+Connect your App Store Connect app to the EAS project. See [Trigger workflows from App Store Connect events](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events).
+
+Do this before testers send feedback. Feedback that a tester sent before the connection does not start the workflow.
+
+</Step>
+
+<Step label="2">
+
+Make sure that EAS has an App Store Connect API key for the app. To add one, run `eas credentials --platform ios`. The `eas testflight:feedback` command finds the app with the bundle identifier and the API key of the `production` submit profile.
+
+</Step>
+
+<Step label="3">
+
+Create the `testflight` label:
+
+<Terminal cmd={['$ gh label create testflight']} />
+
+</Step>
+
+<Step label="4">
+
+In the TestFlight app, take a screenshot of the bug, write a comment, and send the feedback.
+
+</Step>
+
+App Store Connect starts the iOS workflow. The `intake` job creates the issue, and then the `reproduce` job runs. Each TestFlight report creates a new issue. The workflow does not look for duplicates.
+
+## Read the result
+
+When the agent finishes, the issue gets a **Bug triage (Android)** or **Bug triage (iOS)** comment:
+
+- **Verdict:** `REPLICATED`, `NOT-REPLICATED`, or `INCONCLUSIVE`, with one sentence from the agent. The verdict is `INCONCLUSIVE` when the agent writes no verdict.
+- **Session recording:** the session page on expo.dev, with the screen recording of the session.
+- **Agent report and screenshots:** the workflow run on expo.dev. The report and the screenshots are in its artifacts. The Claude Code runner also saves its log there, and the other runners print it to the job log.
+- **Report:** in a folded section, each step of the agent and what it saw.
+
+For a `REPLICATED` bug, read the report before you add the `agent` label. The report can come from a tester, and the change agent follows the text of the issue. When you add the label, Issue to PR opens a PR with a fix, and Agentic CI tests it.
+
+For `NOT-REPLICATED`, add the missing steps to the issue. Then run the workflow again.
+
+## Next steps
+
+<BoxLink
+  title="Build a feature from an issue with an AI agent"
+  description="Issue to PR: a coding agent writes the change for a GitHub issue and opens a pull request, and Agentic CI tests it."
+  href="/agentic-workflows/issue-to-pr/"
+  Icon={Star06Icon}
+/>
+
+<BoxLink
+  title="Test pull requests with an AI agent"
+  description="Agentic CI: a coding agent tests each pull request on a remote Android Emulator or iOS Simulator and posts a verdict with evidence."
+  href="/agentic-workflows/agentic-ci/"
+  Icon={Star06Icon}
+/>
