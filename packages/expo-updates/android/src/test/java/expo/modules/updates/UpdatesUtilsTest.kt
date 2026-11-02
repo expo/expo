@@ -6,6 +6,7 @@ import io.mockk.mockk
 import junit.framework.TestCase
 import org.junit.Assert
 import java.io.File
+import java.io.IOException
 
 class UpdatesUtilsTest : TestCase() {
   fun testCreateFilenameForAsset() {
@@ -158,5 +159,49 @@ class UpdatesUtilsTest : TestCase() {
       .toByteArray()
 
     Assert.assertEquals(hashString, UpdatesUtils.bytesToHex(hashBytes))
+  }
+
+  fun testMoveFileAtomically_movesSourceToDestination() {
+    val directory = createTempDirectory()
+    val source = File(directory, "asset.bundle.tmp").apply { writeText("complete") }
+    val destination = File(directory, "asset.bundle")
+
+    UpdatesUtils.moveFileAtomically(source, destination)
+
+    Assert.assertFalse(source.exists())
+    Assert.assertEquals("complete", destination.readText())
+  }
+
+  fun testMoveFileAtomically_replacesExistingDestination() {
+    val directory = createTempDirectory()
+    val source = File(directory, "asset.bundle.tmp").apply { writeText("complete") }
+    val destination = File(directory, "asset.bundle").apply { writeText("truncated") }
+
+    UpdatesUtils.moveFileAtomically(source, destination)
+
+    Assert.assertFalse(source.exists())
+    Assert.assertEquals("complete", destination.readText())
+  }
+
+  fun testMoveFileAtomically_throwsWhenSourceIsMissing() {
+    val directory = createTempDirectory()
+    val source = File(directory, "asset.bundle.tmp")
+    val destination = File(directory, "asset.bundle")
+
+    try {
+      UpdatesUtils.moveFileAtomically(source, destination)
+      Assert.fail("Expected exception to be thrown")
+    } catch (e: IOException) {
+      Assert.assertTrue(e.message!!.contains("does not exist"))
+    }
+    Assert.assertFalse(destination.exists())
+  }
+
+  private fun createTempDirectory(): File {
+    val directory = File.createTempFile("updates-utils-test", "")
+    directory.delete()
+    directory.mkdirs()
+    directory.deleteOnExit()
+    return directory
   }
 }
