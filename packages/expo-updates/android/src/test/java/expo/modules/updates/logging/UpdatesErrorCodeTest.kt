@@ -18,6 +18,7 @@ class UpdatesErrorCodeTest {
       ConnectException("Failed to connect"),
       NoRouteToHostException("No route to host"),
       SocketException("Connection reset"),
+      SocketException("recvfrom failed: ECONNRESET (Connection reset by peer)"),
       SocketTimeoutException("timeout")
     )) {
       Assert.assertEquals(
@@ -42,6 +43,9 @@ class UpdatesErrorCodeTest {
       IOException("HTTP 500: server exploded"),
       IOException("Asset hash mismatch", IllegalStateException("bad hash")),
       EOFException("unexpected end of stream"),
+      SocketException("Socket closed"),
+      SocketException("Socket is closed"),
+      IOException("Canceled", SocketException("Socket closed")),
       Exception("Unexpected error")
     )) {
       Assert.assertEquals(
