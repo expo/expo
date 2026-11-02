@@ -3,13 +3,16 @@ package expo.modules.filesystem
 import android.net.Uri
 import android.os.Build
 import com.facebook.react.bridge.BridgeReactContext
-import com.sun.net.httpserver.HttpServer
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.services.Service
 import kotlinx.coroutines.runBlocking
+import okhttp3.mockwebserver.Dispatcher
+import okhttp3.mockwebserver.MockResponse
+import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.RecordedRequest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Rule
@@ -20,7 +23,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.annotation.Config
 import java.lang.ref.WeakReference
-import java.net.InetSocketAddress
 import java.net.URI
 import java.util.EnumSet
 
@@ -87,7 +89,7 @@ class DownloadResponseTest {
   }
 
   private fun destination() = FileSystemFile(Uri.fromFile(temporaryFolder.newFile())).apply {
-    runtimeContextHolder = WeakReference(appContext.runtime)
+    runtimeContextHolder = WeakReference(this@DownloadResponseTest.appContext.runtime)
   }
 
   private fun headers(task: FileSystemDownloadTask): Map<String, String> {
@@ -96,25 +98,30 @@ class DownloadResponseTest {
   }
 
   private suspend fun withServer(block: suspend (URI) -> Unit) {
-    val server = HttpServer.create(InetSocketAddress("127.0.0.1", 0), 0)
-    server.createContext("/") { exchange ->
-      val status = when (exchange.requestURI.path) {
-        "/failure" -> 429
-        "/partial" -> 206
-        else -> 200
+    val server = MockWebServer()
+    server.dispatcher = object : Dispatcher() {
+      override fun dispatch(request: RecordedRequest): MockResponse {
+        val status = when (request.path) {
+          "/failure" -> 429
+          "/partial" -> 206
+          else -> 200
+        }
+        return MockResponse()
+          .setResponseCode(status)
+          .addHeader("X-Response", "first")
+          .addHeader("X-Response", "second")
+          .addHeader("Retry-After", "60")
+          .setBody(if (status == 206) "def" else "abc")
+          .apply {
+            request.getHeader("Range")?.let { addHeader("X-Range", it) }
+          }
       }
-      exchange.responseHeaders.add("X-Response", "first")
-      exchange.responseHeaders.add("Retry-After", "60")
-      exchange.requestHeaders.getFirst("Range")?.let { exchange.responseHeaders.add("X-Range", it) }
-      val body = (if (status == 206) "def" else "abc").toByteArray()
-      exchange.sendResponseHeaders(status, body.size.toLong())
-      exchange.responseBody.use { it.write(body) }
     }
     server.start()
     try {
-      block(URI("http://127.0.0.1:${server.address.port}/"))
+      block(server.url("/").toUri())
     } finally {
-      server.stop(0)
+      server.shutdown()
     }
   }
 }

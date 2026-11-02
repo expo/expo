@@ -405,7 +405,7 @@ export declare class FileSystemDownloadTask extends SharedObject<DownloadTaskEve
   /**
    * @hidden
    */
-  getResponseAsync(): Promise<DownloadResponse>;
+  readonly response: DownloadResponse;
   /**
    * @hidden
    */

@@ -246,20 +246,30 @@ class FileSystemDownloadTask: SharedObject {
   private var sessionType: NetworkTaskSessionType = .background
   private(set) var isPausing = false
   private var backgroundSessionHandler: FileSystemBackgroundSessionHandler?
-  private var response: HTTPURLResponse?
+  // Delegate callbacks write on main; the synchronous property reads on the JS thread.
+  private let responseLock = NSLock()
+  private var responseMetadata: [String: Any] = ["status": NSNull(), "headers": [String: String]()]
 
   func recordResponse(_ response: URLResponse?) {
-    if let response = response as? HTTPURLResponse {
-      self.response = response
+    guard let response = response as? HTTPURLResponse else {
+      return
     }
+    let snapshot: [String: Any] = ["status": response.statusCode, "headers": response.responseHeaders()]
+    responseLock.lock()
+    defer { responseLock.unlock() }
+    responseMetadata = snapshot
   }
 
   func getResponse() -> [String: Any] {
-    let response = downloadTask?.response as? HTTPURLResponse ?? self.response
-    let headers = response?.allHeaderFields.reduce(into: [String: String]()) { result, entry in
-      result[String(describing: entry.key)] = String(describing: entry.value)
-    } ?? [:]
-    return ["status": response?.statusCode as Any? ?? NSNull(), "headers": headers]
+    responseLock.lock()
+    defer { responseLock.unlock() }
+    return responseMetadata
+  }
+
+  private func clearResponse() {
+    responseLock.lock()
+    defer { responseLock.unlock() }
+    responseMetadata = ["status": NSNull(), "headers": [String: String]()]
   }
 
   private func registerBackgroundCompletion(in session: URLSession, options: DownloadTaskOptions?) {
@@ -277,7 +287,7 @@ class FileSystemDownloadTask: SharedObject {
 
   func start(url: URL, to: FileSystemPath, options: DownloadTaskOptions?, promise: Promise) {
     isPausing = false
-    response = nil
+    clearResponse()
     sessionType = options?.sessionType ?? .background
 
     let session = NetworkTaskSessionManager.shared.session(for: sessionType)
@@ -315,7 +325,7 @@ class FileSystemDownloadTask: SharedObject {
     promise: Promise
   ) {
     isPausing = false
-    response = nil
+    clearResponse()
     sessionType = options?.sessionType ?? sessionType
 
     guard let data = Data(base64Encoded: resumeData) else {
@@ -390,7 +400,6 @@ private final class DownloadTaskDelegate: NSObject, NetworkTaskDelegate {
     totalBytesWritten: Int64,
     totalBytesExpectedToWrite: Int64
   ) {
-    sharedObject?.recordResponse(downloadTask.response)
     let currentTime = Date().timeIntervalSince1970
     let shouldEmit = currentTime - lastProgressTime >= progressThrottleInterval ||
       totalBytesWritten == totalBytesExpectedToWrite
@@ -409,7 +418,6 @@ private final class DownloadTaskDelegate: NSObject, NetworkTaskDelegate {
     downloadTask: URLSessionDownloadTask,
     didFinishDownloadingTo location: URL
   ) {
-    sharedObject?.recordResponse(downloadTask.response)
     do {
       if let httpResponse = downloadTask.response as? HTTPURLResponse,
          !(200...299).contains(httpResponse.statusCode) {

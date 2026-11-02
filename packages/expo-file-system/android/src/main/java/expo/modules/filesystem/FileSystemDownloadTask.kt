@@ -180,7 +180,7 @@ class FileSystemDownloadTask : SharedObject() {
           response.use { resp ->
             responseMetadata = mapOf(
               "status" to resp.code,
-              "headers" to resp.headers.toMultimap().mapValues { it.value.joinToString(", ") }
+              "headers" to resp.headers.toResponseHeaders()
             )
             try {
               processDownloadResponse(resp, destination, isResume, offset, ::safeResume)

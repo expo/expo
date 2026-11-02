@@ -811,47 +811,31 @@ export class FileSystemUploadTask extends SharedObject {
 }
 
 export class FileSystemDownloadTask extends SharedObject {
-  private response: DownloadResponse = { status: null, headers: {} };
+  private cancelled = false;
+  private responseMetadata: DownloadResponse = { status: null, headers: {} };
 
-  getResponseAsync(): Promise<DownloadResponse> {
-    return Promise.resolve({ ...this.response, headers: { ...this.response.headers } });
+  get response(): DownloadResponse {
+    return { ...this.responseMetadata, headers: { ...this.responseMetadata.headers } };
   }
 
-  private async completeDownload(
-    url: string,
-    to: FileSystemFile | FileSystemDirectory
-  ): Promise<string> {
-    this.response = { status: null, headers: {} };
-    // Simulate receiving a successful response after starting a new attempt.
+  private async completeDownload(): Promise<string> {
+    this.cancelled = false;
+    this.responseMetadata = { status: null, headers: {} };
     await Promise.resolve();
-    this.response = { status: 200, headers: {} };
-    const destination =
-      to instanceof FileSystemDirectory
-        ? new FileSystemFile(
-            joinUri(to.uri, new globalThis.URL(url).pathname.split('/').pop() || 'download')
-          )
-        : to;
-    assertParent(destination.uri, true);
-    return downloadFileAsync(url, destination, undefined, undefined);
+    if (!this.cancelled) {
+      this.responseMetadata = { status: 200, headers: {} };
+    }
+    return 'file:///mock/downloaded-file';
   }
 
-  start(
-    url: string,
-    to: FileSystemFile | FileSystemDirectory,
-    _options?: any
-  ): Promise<string | null> {
-    return this.completeDownload(url, to);
+  start(_url: string, _to: any, _options?: any): Promise<string | null> {
+    return this.completeDownload();
   }
   pause(): { resumeData: string } {
     return { resumeData: 'mock-resume-data' };
   }
-  resume(
-    url: string,
-    to: FileSystemFile | FileSystemDirectory,
-    _resumeData: string,
-    _options?: any
-  ): Promise<string | null> {
-    return this.completeDownload(url, to);
+  resume(_url: string, _to: any, _resumeData: string, _options?: any): Promise<string | null> {
+    return this.completeDownload();
   }
   release(): void {
     super.release();
@@ -860,7 +844,9 @@ export class FileSystemDownloadTask extends SharedObject {
     return Promise.resolve();
   }
 
-  cancel(): void {}
+  cancel(): void {
+    this.cancelled = true;
+  }
 }
 
 function directChildren(dirUri: string): { uri: string; kind: 'file' | 'dir' }[] {

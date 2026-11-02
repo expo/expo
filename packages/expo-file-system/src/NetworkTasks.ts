@@ -253,12 +253,13 @@ export class DownloadTask {
    * Before a response arrives, returns `{ status: null, headers: {} }`.
    * Metadata remains available after completion, failure, pause, or cancellation, until `release()`.
    * Resuming clears the previous response; the next response may have a different status (such as 206).
-   * This does not wait for response headers or for the download to finish.
+   * Each read returns a fresh snapshot without waiting for headers or download completion.
+   * Read after `downloadAsync()` or `resumeAsync()` settles to get the final response.
    * @platform android
    * @platform ios
    */
-  async getResponseAsync(): Promise<DownloadResponse> {
-    return this._nativeTask.getResponseAsync();
+  get response(): DownloadResponse {
+    return this._nativeTask.response;
   }
 
   /**

@@ -484,7 +484,7 @@ class FileSystemModule : Module() {
         task.resume(url, to, resumeData, options)
       }
 
-      AsyncFunction("getResponseAsync") { task: FileSystemDownloadTask ->
+      Property("response") { task: FileSystemDownloadTask ->
         task.getResponse()
       }
 

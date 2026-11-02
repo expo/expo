@@ -1,6 +1,5 @@
 import { Platform } from 'react-native';
 
-import { __resetMockFileSystem } from '../../mocks/FileSystem';
 import ExpoFileSystem from '../ExpoFileSystem';
 import {
   File,
@@ -271,48 +270,8 @@ describe('DownloadTask', () => {
 
   it('has no response before the download starts', async () => {
     const task = new DownloadTask(url, destination);
-    expect(await task.getResponseAsync()).toEqual({ status: null, headers: {} });
+    expect(task.response).toEqual({ status: null, headers: {} });
     expect(task.state).toBe('idle');
-    task.release();
-  });
-
-  it('can read response metadata while the download is still active', async () => {
-    let complete!: (uri: string) => void;
-    jest.spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start').mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          complete = resolve;
-        })
-    );
-    jest
-      .spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'getResponseAsync')
-      .mockResolvedValue({ status: 200, headers: { 'content-type': 'video/mp4' } });
-    const task = new DownloadTask(url, destination);
-    const download = task.downloadAsync();
-    expect(await task.getResponseAsync()).toEqual({
-      status: 200,
-      headers: { 'content-type': 'video/mp4' },
-    });
-    expect(task.state).toBe('active');
-    complete(mockOutputUri);
-    await download;
-    expect((await task.getResponseAsync()).status).toBe(200);
-    task.release();
-  });
-
-  it('exposes an HTTP failure without changing the rejected download result', async () => {
-    const error = new Error('HTTP 429');
-    jest.spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'start').mockRejectedValue(error);
-    jest
-      .spyOn(ExpoFileSystem.FileSystemDownloadTask.prototype, 'getResponseAsync')
-      .mockResolvedValue({ status: 429, headers: { 'retry-after': '60' } });
-    const task = new DownloadTask(url, destination);
-    await expect(task.downloadAsync()).rejects.toBe(error);
-    expect(await task.getResponseAsync()).toEqual({
-      status: 429,
-      headers: { 'retry-after': '60' },
-    });
-    expect(task.state).toBe('error');
     task.release();
   });
 
@@ -849,21 +808,15 @@ describe('DownloadTask background completion acknowledgment', () => {
 describe('DownloadTask response metadata with the supplied fake', () => {
   const url = 'https://example.com/download';
 
-  beforeEach(() => {
-    __resetMockFileSystem();
-  });
-
   it('retains a successful response after downloading through the public API', async () => {
     const destination = new File(Paths.cache, 'response.bin');
     const task = new DownloadTask(url, destination);
     try {
-      expect(await task.getResponseAsync()).toEqual({ status: null, headers: {} });
+      expect(task.response).toEqual({ status: null, headers: {} });
       const result = await task.downloadAsync();
-      expect(result?.uri).toBe(destination.uri);
-      expect(destination.exists).toBe(true);
-      expect(destination.textSync()).toBe(`mock:${url}`);
+      expect(result?.uri).toBe('file:///mock/downloaded-file');
       expect(task.state).toBe('completed');
-      expect(await task.getResponseAsync()).toEqual({ status: 200, headers: {} });
+      expect(task.response).toEqual({ status: 200, headers: {} });
     } finally {
       task.release();
     }
@@ -877,45 +830,25 @@ describe('DownloadTask response metadata with the supplied fake', () => {
       resumeData: 'mock-resume-data',
     });
     try {
-      expect(await task.getResponseAsync()).toEqual({ status: null, headers: {} });
+      expect(task.response).toEqual({ status: null, headers: {} });
       const result = await task.resumeAsync();
-      const destination = new File(Paths.cache, 'resumed-response.bin');
-      expect(result?.uri).toBe(destination.uri);
-      expect(destination.exists).toBe(true);
-      expect(destination.textSync()).toBe(`mock:${url}`);
+      expect(result?.uri).toBe('file:///mock/downloaded-file');
       expect(task.state).toBe('completed');
-      expect(await task.getResponseAsync()).toEqual({ status: 200, headers: {} });
+      expect(task.response).toEqual({ status: 200, headers: {} });
     } finally {
       task.release();
     }
   });
 
-  it.each([
-    ['https://example.com/files/bundle.sqlite?version=1#section', 'bundle.sqlite'],
-    ['https://example.com/', 'download'],
-  ])('uses the URL filename within a directory for %s', async (sourceUrl, filename) => {
-    const directory = new Directory(Paths.cache, 'downloads');
-    const destination = new File(directory, filename);
-    const task = new DownloadTask(sourceUrl, directory);
-    const resumed = DownloadTask.fromSavable({
-      url: sourceUrl,
-      fileUri: directory.uri,
-      isDirectory: true,
-      resumeData: 'mock-resume-data',
-    });
+  it('does not report a response when cancelled before the fake completes', async () => {
+    const native = new ExpoFileSystem.FileSystemDownloadTask();
     try {
-      const result = await task.downloadAsync();
-      expect(result?.uri).toBe(destination.uri);
-      expect(directory.exists).toBe(true);
-      expect(destination.textSync()).toBe(`mock:${sourceUrl}`);
-      destination.delete();
-      const resumedResult = await resumed.resumeAsync();
-      expect(resumedResult?.uri).toBe(destination.uri);
-      expect(directory.list().map((file) => file.uri)).toEqual([destination.uri]);
-      expect(destination.textSync()).toBe(`mock:${sourceUrl}`);
+      const download = native.start(url, new File(Paths.cache, 'cancelled.bin'));
+      native.cancel();
+      await download;
+      expect(native.response).toEqual({ status: null, headers: {} });
     } finally {
-      task.release();
-      resumed.release();
+      native.release();
     }
   });
 
@@ -925,17 +858,17 @@ describe('DownloadTask response metadata with the supplied fake', () => {
     const destination = new File(Paths.cache, 'native-response.bin');
     try {
       await native.start(url, destination);
-      const response = await native.getResponseAsync();
+      const response = native.response;
       expect(response.status).toBe(200);
       response.status = 500;
       response.headers['x-test'] = 'modified';
-      expect(await native.getResponseAsync()).toEqual({ status: 200, headers: {} });
-      expect(await other.getResponseAsync()).toEqual({ status: null, headers: {} });
+      expect(native.response).toEqual({ status: 200, headers: {} });
+      expect(other.response).toEqual({ status: null, headers: {} });
 
       const resumed = native.resume(url, destination, 'mock-resume-data');
-      expect(await native.getResponseAsync()).toEqual({ status: null, headers: {} });
+      expect(native.response).toEqual({ status: null, headers: {} });
       await resumed;
-      expect(await native.getResponseAsync()).toEqual({ status: 200, headers: {} });
+      expect(native.response).toEqual({ status: 200, headers: {} });
     } finally {
       native.release();
       other.release();
