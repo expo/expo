@@ -9,6 +9,21 @@ export interface PathMatchObject {
   match: (filePath: string) => boolean;
 }
 
+// NOTE(@kitten): Minimatch only gives parentheses and pipes special meaning inside extglobs.
+function escapeLiteralParentheses(pattern: string, noext = false): string {
+  const literalParentheses: boolean[] = [];
+  return pattern.replace(/\\.|\[(?:\\.|[^\]\\])*\]|([?*+@!])?\(|\)|\|/g, (token, extglob) => {
+    if (token.startsWith('\\') || token.startsWith('[')) return token;
+    if (token === '|') return literalParentheses.at(-1) === false ? token : '\\|';
+    if (token.endsWith('(')) {
+      const literal = noext || (!extglob && literalParentheses.at(-1) !== false);
+      literalParentheses.push(literal);
+      return literal ? `${extglob ?? ''}\\(` : token;
+    }
+    return literalParentheses.pop() === false ? token : '\\)';
+  });
+}
+
 function createPathMatchObject(pattern: string, options: PicomatchOptions): PathMatchObject {
   const comment = pattern.startsWith('#');
   let negate = false;
@@ -18,7 +33,7 @@ function createPathMatchObject(pattern: string, options: PicomatchOptions): Path
   }
   // NOTE(@kitten): Compile regexes so literal brackets cannot bypass glob matching.
   const expression = pattern
-    ? picomatch.makeRe(pattern, {
+    ? picomatch.makeRe(escapeLiteralParentheses(pattern, options.noext), {
         literalBrackets: false,
         posix: true,
         strictSlashes: true,

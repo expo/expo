@@ -47,6 +47,25 @@ describe(isIgnoredPath, () => {
     expect(isIgnoredPath('/dir/app.json', ['/dir/*.json'])).toBe(true);
   });
 
+  it('preserves literal parentheses without changing extglob matching', () => {
+    const cases = [
+      ['app/(auth)/**', 'app/(auth)/index.tsx', true],
+      ['app/(auth)/**', 'app/auth/index.tsx', false],
+      ['app/(auth|tabs)/**', 'app/auth/index.tsx', false],
+      ['app/(auth|tabs)/**', 'app/(auth|tabs)/index.tsx', true],
+      ['app/(group(auth))/**', 'app/(group(auth))/index.tsx', true],
+      ['app/@(auth|tabs)/**', 'app/auth/index.tsx', true],
+      ['app/@(auth|tabs)/**', 'app/(auth)/index.tsx', false],
+      ['app/@(@(auth|tabs)|other)/**', 'app/auth/index.tsx', true],
+      ['app/\\(auth\\)/**', 'app/(auth)/index.tsx', true],
+      ['app/[(]auth[)]/**', 'app/(auth)/index.tsx', true],
+      ['app/{(auth),(tabs)}/**', 'app/(tabs)/index.tsx', true],
+    ] as const;
+    for (const [pattern, file, expected] of cases) {
+      expect(isIgnoredPath(file, [pattern])).toBe(expected);
+    }
+  });
+
   it('should support directory pattern', () => {
     expect(isIgnoredPath('/app/ios/Podfile', ['**/ios/**/*'])).toBe(true);
   });
