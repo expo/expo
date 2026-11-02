@@ -66,7 +66,7 @@ export async function getAppPathAsync(
   if (!match) {
     const targets = settings.map(({ target }: { target: string }) => target).join(', ');
     throw new CommandError(
-      `The "${props.scheme}" scheme doesn't build a target named "${props.scheme}". Targets it builds: ${targets}.`
+      `The "${props.scheme}" scheme doesn't build a target named "${props.scheme}". Targets it builds: ${targets}. Edit the scheme in Xcode so it builds the "${props.scheme}" target.`
     );
   }
   const { buildSettings } = match;
