@@ -9,6 +9,7 @@ public final class AppMetricsUserDefaults: UserDefaults {
     case lastAppLaunchState
     case environment
     case networkTracesConfiguration
+    case hasMarkedInteractive
   }
 
   private init() {
@@ -51,6 +52,17 @@ public final class AppMetricsUserDefaults: UserDefaults {
     }
     set {
       defaults.set(codable: newValue, forKey: Keys.networkTracesConfiguration.rawValue)
+    }
+  }
+
+  /// Whether the app reached TTI in this or an earlier launch. TTI is not marked automatically,
+  /// so this tells whether the app calls `markInteractive` at all.
+  static var hasMarkedInteractive: Bool {
+    get {
+      return defaults.bool(forKey: Keys.hasMarkedInteractive.rawValue)
+    }
+    set {
+      defaults.set(newValue, forKey: Keys.hasMarkedInteractive.rawValue)
     }
   }
 }

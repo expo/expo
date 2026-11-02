@@ -1,6 +1,7 @@
 package expo.modules.appmetrics
 
 import android.app.Application
+import expo.modules.appmetrics.appstartup.AppBackgroundObserver
 import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.crashreporting.CrashFileWriter
 import expo.modules.appmetrics.crashreporting.JvmCrashHandler
@@ -11,6 +12,7 @@ class AppMetricsApplicationLifecycleListeners : ApplicationLifecycleListener {
   override fun onCreate(application: Application) {
     super.onCreate(application)
     AppStartupManager.recordAppCreated(application)
+    application.registerActivityLifecycleCallbacks(AppBackgroundObserver())
     // Crash capture starts at process start, not at module creation: the module
     // system spins up lazily (when JS first touches a module), and a crash
     // during startup would otherwise be missed entirely. The session id is null

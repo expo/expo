@@ -38,10 +38,10 @@ public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   }
 
   public func applicationDidEnterBackground(_ application: UIApplication) {
+    let currentTime = CACurrentMediaTime()
     AppMetricsActor.isolated {
-      let monitor = AppMetrics.mainSession.appStartupMonitor
-      if monitor.startupState == .launching {
-        monitor.startupState = .interrupted
+      if let log = AppMetrics.mainSession.appStartupMonitor.markEnteredBackground(at: currentTime) {
+        AppMetrics.mainSession.receiveLog(log)
       }
     }
     AppMetrics.stopForegroundSession()
