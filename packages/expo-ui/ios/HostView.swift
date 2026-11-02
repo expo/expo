@@ -268,14 +268,14 @@ private struct FillAlignmentModifier: ViewModifier {
 
   func body(content: Content) -> some View {
     if fillHorizontal || fillVertical || pinHorizontal || pinVertical {
-      // A `matchContents` axis needs a `0` minimum as well. Without it the frame keeps the
-      // content's own size whenever that size is larger than the proposal, and the hosting
-      // controller centers the overflow instead of keeping it at `alignment`. The proposal is
-      // smaller on every frame where the hosting view still has the previous content size.
+      // When the content is larger than the proposal (a safe-area inset covers the host, or a
+      // `matchContents` host still has the previous content size), the `0` minimums keep the
+      // frame at the proposed size. Otherwise the frame grows to the content, and the hosting
+      // controller centers it instead of keeping it at `alignment`.
       content.frame(
-        minWidth: pinHorizontal ? 0 : nil,
+        minWidth: fillHorizontal || pinHorizontal ? 0 : nil,
         maxWidth: fillHorizontal || pinHorizontal ? .infinity : nil,
-        minHeight: pinVertical ? 0 : nil,
+        minHeight: fillVertical || pinVertical ? 0 : nil,
         maxHeight: fillVertical || pinVertical ? .infinity : nil,
         alignment: alignment
       )
