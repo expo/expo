@@ -2,6 +2,7 @@ package expo.modules.observe
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import kotlinx.serialization.json.Json
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -88,6 +89,13 @@ class ObservePreferencesTest {
     ObservePreferences.setConfig(context, PersistedConfig())
     assertEquals(emptyList<String>(), ObservePreferences.getConfig(context)?.ignoredMetrics)
     assertEquals(emptyList<String>(), ObservePreferences.getConfig(context)?.ignoredEvents)
+  }
+
+  @Test
+  fun `old persisted JSON decodes with empty ignored lists`() {
+    val config = Json.decodeFromString<PersistedConfig>("""{"dispatchingEnabled":true,"sampleRate":0.5}""")
+    assertEquals(emptyList<String>(), config.ignoredMetrics)
+    assertEquals(emptyList<String>(), config.ignoredEvents)
   }
 
   // region PersistedBundleDefaults

@@ -19,19 +19,24 @@ export type ObserveAttribute = LogAttributeValue;
  */
 export type ObserveAttributes = Record<string, ObserveAttribute>;
 
+// Keep in sync with `metricNameMap` in `ios/OpenTelemetry.swift` and `android/.../OpenTelemetry.kt` (except legacy entries).
+/**
+ * Name of a metric that EAS Observe sends.
+ */
 export type ObserveMetricName =
   | 'expo.app_startup.tti'
   | 'expo.app_startup.ttr'
   | 'expo.app_startup.cold_launch_time'
   | 'expo.app_startup.warm_launch_time'
   | 'expo.app_startup.bundle_load_time'
-  | 'expo.app_startup.load_time'
-  | 'expo.app_startup.launch_time'
   | 'expo.updates.download_time'
   | 'expo.navigation.cold_ttr'
   | 'expo.navigation.warm_ttr'
   | 'expo.navigation.tti';
 
+/**
+ * Name of an event that EAS Observe sends. Custom names passed to `logEvent` are allowed.
+ */
 export type ObserveEventName =
   | 'js.exception'
   | 'native.exception'
@@ -106,18 +111,14 @@ export type ObserveConfig = {
    */
   errorSampleRate?: number;
   /**
-   * Exported metric names to skip when dispatching. Already persisted rows with these names are
-   * consumed without being sent. Each `configure` call replaces the list; omitting it clears it.
-   * Has no effect on web or on spans recorded by `networkTraces`.
+   * Metric names that are not sent. Each `configure` call replaces the list.
    *
    * @default []
    */
   ignoredMetrics?: ObserveMetricName[];
   /**
-   * Persisted event names to skip when dispatching, including custom names passed to `logEvent`.
-   * Already persisted rows with these names are consumed without being sent. The filter runs after
-   * error sampling and applies to errors as well. Each `configure` call replaces the list;
-   * omitting it clears it. Has no effect on web or on spans recorded by `networkTraces`.
+   * Event names that are not sent, including custom names passed to `logEvent`. Each `configure`
+   * call replaces the list.
    *
    * @default []
    */

@@ -210,7 +210,7 @@ struct OTResourceSpans: Codable, Sendable {
 /// — a renamed key would silently mismatch the declared schema otherwise.
 private let semConvSchemaUrl = "https://opentelemetry.io/schemas/1.27.0"
 
-// This must be kept in sync with the INTERNAL_TO_OTEL map in universe
+// Keep in sync with INTERNAL_TO_OTEL in universe and `ObserveMetricName` in `src/types.ts`:
 // https://github.com/expo/universe/blob/main/server/www/src/middleware/easObserveRoutes.ts#L209
 // Keyed by "<category>/<name>" — mirrors the (category, name) pair used by the
 // Android port so the same metric name under a different category never silently

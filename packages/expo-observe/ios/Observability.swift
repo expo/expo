@@ -409,7 +409,7 @@ internal struct ObservabilityManager {
   }
 
   internal nonisolated static func sampledLogs(
-    _ logs: [LogRow], shouldDispatch: Bool, ignoredEvents: Set<String> = []
+    _ logs: [LogRow], shouldDispatch: Bool, ignoredEvents: Set<String>
   ) -> [LogRow] {
     let eligible = shouldDispatch ? logs : logs.filter { errorLogNames.contains($0.name) }
     return eligible.filter { !ignoredEvents.contains($0.name) }

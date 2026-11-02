@@ -957,7 +957,7 @@ class BaseObservabilityManagerTest {
 
   // endregion
 
-  // region Helper methods
+  // region Ignored names tests
 
   @Test
   fun `ignored metrics are consumed across mixed and all ignored chunks`() = runTest {
@@ -1020,6 +1020,10 @@ class BaseObservabilityManagerTest {
     coVerify(exactly = 1) { eventDispatcher.dispatchLogs(any()) }
   }
 
+  // endregion
+
+  // region Helper methods
+
   private fun stubMetricDispatch(
     metrics: List<Metric> = listOf(metric(1, "metric")),
     sessions: List<Session> = listOf(session()),
@@ -1074,9 +1078,6 @@ class BaseObservabilityManagerTest {
 
   @Test
   fun `a successful chunk is deleted up to its highest id`() = runTest {
-    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(
-      ignoredMetrics = listOf("expo.app_startup.tti"), ignoredEvents = listOf("js.exception")
-    )
     stubSpanDispatch(spans = spans(1..3), result = DispatchResult.Success)
 
     createManager().dispatchUnsentSpans()

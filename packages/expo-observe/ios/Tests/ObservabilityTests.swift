@@ -84,13 +84,13 @@ struct ObservabilitySampledLogsTests {
 
   @Test
   func `out-of-sample for sampleRate keeps only exception logs`() {
-    let result = ObservabilityManager.sampledLogs(logs, shouldDispatch: false)
+    let result = ObservabilityManager.sampledLogs(logs, shouldDispatch: false, ignoredEvents: [])
     #expect(result.map(\.name) == ["js.exception", "native.exception"])
   }
 
   @Test
   func `in-sample for sampleRate keeps all logs`() {
-    let result = ObservabilityManager.sampledLogs(logs, shouldDispatch: true)
+    let result = ObservabilityManager.sampledLogs(logs, shouldDispatch: true, ignoredEvents: [])
     #expect(result.map(\.name) == ["info", "js.exception", "native.exception"])
   }
 

@@ -121,13 +121,16 @@ struct DispatchLoopTests {
   @Test
   func `mixed and all ignored metric batches advance past every row`() async {
     let metrics = [
+      // Ignored: `expo.app_startup.tti`.
       MetricRow(
         id: 1, sessionId: "s", timestamp: "t", category: "appStartup",
         name: "timeToInteractive", value: 1
       ),
+      // Sent: `expo.navigation.tti`.
       MetricRow(
         id: 2, sessionId: "s", timestamp: "t", category: "navigation", name: "tti", value: 2
       ),
+      // Ignored. Alone in chunk 2, so that chunk sends nothing.
       MetricRow(
         id: 3, sessionId: "s", timestamp: "t", category: "appStartup",
         name: "timeToInteractive", value: 3
@@ -146,14 +149,14 @@ struct DispatchLoopTests {
           batch, ignoredMetrics: ["expo.app_startup.tti"]
         )
         sent += remaining.map(\.name)
-        return remaining.isEmpty ? nil : .success
+        return remaining.isEmpty ? nil : .success // Same as `dispatchMetrics`: `nil` skips the chunk.
       },
       onResult: { _, _, _ in },
       persistCursor: { cursors.append($0) }
     )
 
     #expect(sent == ["tti"])
-    #expect(cursors == [2, 3])
+    #expect(cursors == [2, 3]) // Chunk 2 has only ignored rows, but the cursor still moves to 3.
   }
 
   @Test

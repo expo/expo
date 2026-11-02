@@ -129,7 +129,7 @@ Observe.configure({
 });
 ```
 
-These lists filter at dispatch time. Matching rows already stored on the device are consumed without being sent. Each `configure()` call replaces both lists; omitting one resets it to empty. The options do nothing on web. Names emitted only on another platform or by a disabled integration have no effect. Network trace spans are unaffected. `ignoredMetrics` accepts only supported exported metric names; `ignoredEvents` also accepts custom event names.
+The lists apply at dispatch time. They do nothing on web and do not affect network traces.
 
 See [Configuration](https://docs.expo.dev/eas/observe/configuration/).
 
