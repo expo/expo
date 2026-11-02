@@ -578,7 +578,10 @@ public class AudioModule: Module {
 
       AsyncFunction("start") { (stream: AudioStream) in
         try checkPermissions()
-        try stream.start()
+        let deactivateSessionOnFailure = sessionQueue.sync {
+          !sessionIsActive && audioSessionActivityKeepers.isEmpty
+        }
+        try stream.start(deactivateSessionOnFailure: deactivateSessionOnFailure)
         self.recordSessionActive(true)
       }
 
