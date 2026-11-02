@@ -90,9 +90,9 @@ To fix this, add `@sentry/cli` to your [trusted dependencies](#trusted-dependenc
 
 ### Expo Build fails with a runtime version mismatch when using patched dependencies
 
-When Bun installs a package that has a patch in [`patchedDependencies`](https://bun.sh/docs/pm/cli/patch), it writes an empty tag file named **.bun-tag-&lt;hash&gt;** in the package directory. The name of the tag file depends on the Bun version. For example, Bun 1.3.14 and Bun 1.4.2 write different names for the same patch.
+When Bun installs a package that has a patch in [`patchedDependencies`](https://bun.sh/docs/pm/cli/patch), it writes an empty tag file named **.bun-tag-&lt;hash&gt;** in the package directory. The name of the tag file depends on the Bun version, so two Bun versions write different names for the same patch.
 
-The [fingerprint](/versions/latest/sdk/fingerprint/) can include the tag file in SDK 57 and earlier, but not with the default `balanced` [preset](/versions/latest/sdk/fingerprint/#fingerprintpreset) in SDK 58 and later. If the fingerprint includes the tag file and Expo Build uses a different Bun version than your machine, the two fingerprints differ. With the `fingerprint` [runtime version policy](/versions/latest/sdk/updates/#automatic-configuration-using-runtime-version-policies), the build then fails in the **Configure expo-updates** build phase with this error:
+The [fingerprint](/versions/latest/sdk/fingerprint/) includes the tag file when the patched package is a native module or config plugin, in SDK 57 and earlier or with the `strict` [preset](/versions/latest/sdk/fingerprint/#fingerprintpreset) in SDK 58 and later. If the fingerprint includes the tag file and Expo Build uses a different Bun version than your machine, the two fingerprints differ. With the `fingerprint` [runtime version policy](/versions/latest/sdk/updates/#automatic-configuration-using-runtime-version-policies), the build then fails in the **Configure expo-updates** build phase with this error:
 
 ```text
 Runtime version calculated on local machine not equal to runtime version calculated during build.
