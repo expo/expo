@@ -109,7 +109,10 @@ final class FetchUpdateProcedure: StateMachineProcedure {
         priorError: nil
       ) { updateToLaunch, error, didRollBackToEmbedded in
         if let error = error {
-          self.logger.error(cause: UpdatesError.fetchUpdateProcedureFailed(cause: error), code: .updateFailedToLoad)
+          self.logger.error(
+            cause: UpdatesError.fetchUpdateProcedureFailed(cause: error),
+            code: UpdatesErrorCode.forLoadFailure(error, otherwise: .updateFailedToLoad)
+          )
           procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
           self.successBlock(FetchUpdateResult.error(error: error))
           procedureContext.onComplete()
@@ -136,7 +139,10 @@ final class FetchUpdateProcedure: StateMachineProcedure {
         return
       }
     } error: { error in
-      self.logger.error(cause: UpdatesError.fetchUpdateProcedureFailed(cause: error), code: .updateFailedToLoad)
+      self.logger.error(
+        cause: UpdatesError.fetchUpdateProcedureFailed(cause: error),
+        code: UpdatesErrorCode.forLoadFailure(error, otherwise: .updateFailedToLoad)
+      )
       procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
       self.successBlock(FetchUpdateResult.error(error: error))
       procedureContext.onComplete()
