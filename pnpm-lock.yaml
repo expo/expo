@@ -2734,9 +2734,6 @@ importers:
       commander:
         specifier: ^12.1.0
         version: 12.1.0
-      glob:
-        specifier: ^13.0.0
-        version: 13.0.6
       jest-expo:
         specifier: workspace:~
         version: link:../../jest-expo
