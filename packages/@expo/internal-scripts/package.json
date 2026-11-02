@@ -69,7 +69,6 @@
     "@testing-library/react-native": "^14.0.1",
     "@types/jest": "^30.0.0",
     "commander": "^12.1.0",
-    "glob": "^13.0.0",
     "jest-expo": "workspace:~",
     "jest-watch-typeahead": "^3.0.1",
     "oxlint-config-universe": "^0.2.0",
