@@ -4382,9 +4382,6 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../expo
-      glob:
-        specifier: ^13.0.6
-        version: 13.0.6
 
   packages/expo-build-properties:
     dependencies:
