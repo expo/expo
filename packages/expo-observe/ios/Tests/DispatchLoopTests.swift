@@ -123,18 +123,31 @@ struct DispatchLoopTests {
     let metrics = [
       // Ignored: `expo.app_startup.tti`.
       MetricRow(
-        id: 1, sessionId: "s", timestamp: "t", category: "appStartup",
-        name: "timeToInteractive", value: 1
+        id: 1,
+        sessionId: "s",
+        timestamp: "t",
+        category: "appStartup",
+        name: "timeToInteractive",
+        value: 1
       ),
       // Sent: `expo.navigation.tti`.
       MetricRow(
-        id: 2, sessionId: "s", timestamp: "t", category: "navigation", name: "tti", value: 2
+        id: 2,
+        sessionId: "s",
+        timestamp: "t",
+        category: "navigation",
+        name: "tti",
+        value: 2
       ),
       // Ignored. Alone in chunk 2, so that chunk sends nothing.
       MetricRow(
-        id: 3, sessionId: "s", timestamp: "t", category: "appStartup",
-        name: "timeToInteractive", value: 3
-      )
+        id: 3,
+        sessionId: "s",
+        timestamp: "t",
+        category: "appStartup",
+        name: "timeToInteractive",
+        value: 3
+      ),
     ]
     var cursors: [Int64] = []
     var sent: [String] = []
@@ -146,7 +159,8 @@ struct DispatchLoopTests {
       rowId: { $0.id },
       send: { batch in
         let remaining = ObservabilityManager.filteredMetrics(
-          batch, ignoredMetrics: ["expo.app_startup.tti"]
+          batch,
+          ignoredMetrics: ["expo.app_startup.tti"]
         )
         sent += remaining.map(\.name)
         return remaining.isEmpty ? nil : .success // Same as `dispatchMetrics`: `nil` skips the chunk.
@@ -173,7 +187,9 @@ struct DispatchLoopTests {
       rowId: { $0.id },
       send: { batch in
         sent = ObservabilityManager.sampledLogs(
-          batch, shouldDispatch: true, ignoredEvents: ["hidden"]
+          batch,
+          shouldDispatch: true,
+          ignoredEvents: ["hidden"]
         ).map(\.name)
         return .retryableFailure(retryAfter: nil)
       },

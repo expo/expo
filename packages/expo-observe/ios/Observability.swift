@@ -50,10 +50,12 @@ internal struct ObservabilityManager {
       )
 
       await dispatchMetrics(
-        shouldDispatch: shouldDispatch, ignoredMetrics: Set(config?.ignoredMetrics ?? [])
+        shouldDispatch: shouldDispatch,
+        ignoredMetrics: Set(config?.ignoredMetrics ?? [])
       )
       await dispatchLogs(
-        shouldDispatch: shouldDispatch, shouldDispatchErrors: shouldDispatchErrors,
+        shouldDispatch: shouldDispatch,
+        shouldDispatchErrors: shouldDispatchErrors,
         ignoredEvents: Set(config?.ignoredEvents ?? [])
       )
       await dispatchTraces(shouldDispatch: shouldDispatch)
@@ -160,7 +162,9 @@ internal struct ObservabilityManager {
   }
 
   private static func dispatchLogs(
-    shouldDispatch: Bool, shouldDispatchErrors: Bool, ignoredEvents: Set<String>
+    shouldDispatch: Bool,
+    shouldDispatchErrors: Bool,
+    ignoredEvents: Set<String>
   ) async {
     guard let endpointUrl = logsEndpointUrl else {
       return
@@ -401,7 +405,8 @@ internal struct ObservabilityManager {
   }
 
   internal nonisolated static func filteredMetrics(
-    _ metrics: [MetricRow], ignoredMetrics: Set<String>
+    _ metrics: [MetricRow],
+    ignoredMetrics: Set<String>
   ) -> [MetricRow] {
     return metrics.filter {
       !ignoredMetrics.contains(exportedMetricName(category: $0.category, name: $0.name))
@@ -409,7 +414,9 @@ internal struct ObservabilityManager {
   }
 
   internal nonisolated static func sampledLogs(
-    _ logs: [LogRow], shouldDispatch: Bool, ignoredEvents: Set<String>
+    _ logs: [LogRow],
+    shouldDispatch: Bool,
+    ignoredEvents: Set<String>
   ) -> [LogRow] {
     let eligible = shouldDispatch ? logs : logs.filter { errorLogNames.contains($0.name) }
     return eligible.filter { !ignoredEvents.contains($0.name) }
