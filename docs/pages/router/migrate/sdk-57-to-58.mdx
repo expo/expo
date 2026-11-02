@@ -488,6 +488,8 @@ Dispatch functions are no longer supported. Read the state first, compute an act
 
 The read and deferred dispatch are not atomic. Use `dispatchSync(action)` deliberately if other navigation work cannot happen between them.
 
+`CommonActions.reset` now requires a complete navigation state. A partial payload, such as `{ index: 0, routes: [...] }`, is no longer completed during render and the reset is silently ignored in production (development builds log a warning). Spread `navigation.getState()` into the payload, as in the diff above, whenever you reset.
+
 ### Replace `navigationKey`
 
 Layout `Screen` and `Group` components no longer accept `navigationKey`. There is no direct replacement. Use route and layout identity, protected routes, or explicit href navigation based on why the key was used.
