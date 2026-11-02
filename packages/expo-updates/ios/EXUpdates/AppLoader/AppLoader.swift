@@ -42,11 +42,16 @@ open class AppLoader: NSObject {
 
   private var assetsToLoad: [UpdateAsset] = []
   private var assetDownloadProgress: [UpdateAsset: Double] = [:]
+  // The last progress reported through assetLoadProgressBlock; guarded by arrayLock
+  private var lastNotifiedProgress: Double = -1
   private var erroredAssets: [UpdateAsset] = []
   private var finishedAssets: [UpdateAsset] = []
   private var existingAssets: [UpdateAsset] = []
 
   private let arrayLock: NSLock = NSLock()
+
+  /// The smallest change in download progress worth reporting to JS.
+  static let minProgressStep: Double = 0.01
   private let completionQueue: DispatchQueue
 
   /// Overridable for testing, where the bundle has no `app.manifest`.
@@ -81,6 +86,7 @@ open class AppLoader: NSObject {
     finishedAssets = []
     existingAssets = []
     assetDownloadProgress = [:]
+    lastNotifiedProgress = -1
     updateResponseContainingManifest = nil
     requestedUpdate = nil
     updateResponseBlock = nil
@@ -374,6 +380,14 @@ open class AppLoader: NSObject {
     let totalAssetsCount = finishedAssets.count + existingAssets.count + erroredAssets.count + assetsToLoad.count
     if totalAssetsCount > 0 {
       let progress = assetDownloadProgress.values.reduce(0, +) / Double(totalAssetsCount)
+      // Called for every asset, including ones that already exist, and for every progress change
+      // of a download; each call sends the whole state machine context to JS. Only report steps
+      // of at least minProgressStep, and the end.
+      let reachedEnd = progress >= 1 && lastNotifiedProgress < 1
+      guard reachedEnd || progress - lastNotifiedProgress >= AppLoader.minProgressStep else {
+        return
+      }
+      lastNotifiedProgress = progress
       if let assetLoadProgressBlock = assetLoadProgressBlock {
         assetLoadProgressBlock(progress)
       }
