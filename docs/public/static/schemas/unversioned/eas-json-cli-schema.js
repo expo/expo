@@ -3,7 +3,7 @@ export default [
     name: 'version',
     type: 'string',
     description: [
-      'A [semver range](https://github.com/npm/node-semver#ranges) of EAS CLI versions that the project supports, such as `>= 16.0.0`. If the installed EAS CLI version is outside this range, EAS CLI stops with an error.',
+      'A [semantic version range](https://github.com/npm/node-semver#ranges) of EAS CLI versions that the project supports, such as `>= 16.0.0`. If the installed EAS CLI version is outside this range, EAS CLI stops with an error.',
     ],
   },
   {
