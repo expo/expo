@@ -116,12 +116,10 @@ class Ignore {
 }
 
 async function findIgnoreFilesAsync(root: string): Promise<string[]> {
-  const matches: string[] = [];
-  for await (const file of fs.glob(`**/${GITIGNORE_FILENAME}`, {
-    cwd: root,
-    exclude: (entry) => path.basename(entry) === 'node_modules',
-  })) {
-    matches.push(file);
-  }
-  return matches;
+  return Array.fromAsync(
+    fs.glob(`**/${GITIGNORE_FILENAME}`, {
+      cwd: root,
+      exclude: (entry) => path.basename(entry) === 'node_modules',
+    })
+  );
 }
