@@ -409,7 +409,9 @@ private struct StackConfiguration {
       subviews: subviews,
       cache: &cache
     )
-    let fill = alignment.offset(container: crossLength(bounds.size, axis: axis), content: measurement.contentCross)
+    let fill = measurement.contentCross.isFinite
+      ? alignment.offset(container: crossLength(bounds.size, axis: axis), content: measurement.contentCross)
+      : 0
     // The origin stays leading.
     // SwiftUI mirrors a custom layout in right-to-left.
     var cursor = axis == .horizontal ? bounds.minX : bounds.minY
@@ -432,11 +434,14 @@ private struct StackConfiguration {
       return subview.dimensions(in: dimensionProposal)
     }
     let guides = dimensions.map(alignment.guide)
-    let reference = guides.max() ?? 0
-    let extents = zip(dimensions, guides).map { dimension, guide in
-      crossLength(CGSize(width: dimension.width, height: dimension.height), axis: axis) - guide
-    }
-    let contentCross = reference + (extents.max() ?? 0)
+    let crossSizes = dimensions.map { crossLength(CGSize(width: $0.width, height: $0.height), axis: axis) }
+    // A child that answers an infinite probe with an infinite size has no finite center or end guide.
+    // The stack then reports that it can grow and skips the guides.
+    let growsAcross = crossSizes.contains { $0.isInfinite }
+    let reference = growsAcross ? 0 : guides.max() ?? 0
+    let contentCross = growsAcross
+      ? CGFloat.infinity
+      : reference + (zip(crossSizes, guides).map { $0 - $1 }.max() ?? 0)
     return StackMeasurement(
       size: stackSize(
         main: measured.definiteMain ?? measured.contentMain,
@@ -446,7 +451,7 @@ private struct StackConfiguration {
       sizes: measured.children.map(\.size),
       proposals: measured.children.map(\.proposal),
       spacings: spacings,
-      crossOffsets: guides.map { reference - $0 },
+      crossOffsets: growsAcross ? guides.map { _ in 0 } : guides.map { reference - $0 },
       contentCross: contentCross
     )
   }
@@ -457,7 +462,8 @@ private struct StackConfiguration {
     spacings: [CGFloat]
   ) -> MeasuredChildren {
     let offeredMain = finite(axis == .horizontal ? proposal.width : proposal.height)
-    let offeredCross = finite(axis == .horizontal ? proposal.height : proposal.width)
+    let proposedCross = axis == .horizontal ? proposal.height : proposal.width
+    let offeredCross = finite(proposedCross)
     let ownMainPoints = axis == .horizontal ? ownDimensions.widthPoints : ownDimensions.heightPoints
     let ownMainFraction = axis == .horizontal ? ownDimensions.widthFraction : ownDimensions.heightFraction
     let ownCrossPoints = axis == .horizontal ? ownDimensions.heightPoints : ownDimensions.widthPoints
@@ -494,8 +500,9 @@ private struct StackConfiguration {
       let mainFraction = axis == .horizontal ? dimensions.widthFraction : dimensions.heightFraction
       let crossFraction = axis == .horizontal ? dimensions.heightFraction : dimensions.widthFraction
       // A fraction uses the size chosen above.
-      // Every other child still gets the offered cross size, so text can wrap.
-      let crossProposal = crossFraction != nil ? definiteCross : offeredCross
+      // Every other child gets the cross proposal unchanged, so text can wrap, and an infinite probe
+      // reaches a child that can grow.
+      let crossProposal = crossFraction != nil ? definiteCross : proposedCross
 
       if mainFraction != nil, let definiteMain {
         let childProposal = proposedSize(main: definiteMain, cross: crossProposal, axis: axis)
