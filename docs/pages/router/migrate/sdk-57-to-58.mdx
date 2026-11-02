@@ -456,6 +456,8 @@ export default function TabLayout() {
 
 On iOS 27, this prop also removes the separate placement of the search tab.
 
+> **warning** If `role` changes to or from `"search"` while the tab is rendered, Expo Router remounts the tab and resets its local state.
+
 ## Advanced migrations
 
 ### Update `navigation.dispatch`
