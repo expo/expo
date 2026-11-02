@@ -13,16 +13,37 @@ export interface PathMatchObject {
 // NOTE(@kitten): Braces are already expanded; parentheses and pipes only have meaning inside extglobs.
 function escapeLiteralGlobCharacters(pattern: string, noext = false): string {
   const literalParentheses: boolean[] = [];
-  return pattern.replace(/\\.|\[(?:\\.|[^\]\\])*\]|([?*+@!])?\(|\)|\||[{}]/g, (token, extglob) => {
-    if (token.startsWith('\\') || token.startsWith('[')) return token;
-    if (token === '{' || token === '}') return `\\${token}`;
-    if (token === '|') return literalParentheses.at(-1) === false ? token : '\\|';
-    if (token.endsWith('(')) {
+  // NOTE(@kitten): Find the boundary once so unmatched brackets cannot cause repeated scans.
+  let lastClosingBracket = -1;
+  for (let index = 0; index < pattern.length; index++) {
+    if (pattern[index] === '\\') {
+      index++;
+    } else if (pattern[index] === ']') {
+      lastClosingBracket = index;
+    }
+  }
+
+  let inBrackets = false;
+  return pattern.replace(/\\.|([?*+@!])?\(|[()[\]{}|]/g, (token, extglob, offset) => {
+    if (token === '[') {
+      inBrackets = offset < lastClosingBracket;
+      return token;
+    } else if (token === ']') {
+      inBrackets = false;
+      return token;
+    } else if (inBrackets || token.startsWith('\\')) {
+      return token;
+    } else if (token === '{' || token === '}') {
+      return `\\${token}`;
+    } else if (token === '|') {
+      return literalParentheses.at(-1) === false ? token : '\\|';
+    } else if (token.endsWith('(')) {
       const literal = noext || (!extglob && literalParentheses.at(-1) !== false);
       literalParentheses.push(literal);
       return literal ? `${extglob ?? ''}\\(` : token;
+    } else {
+      return literalParentheses.pop() === false ? token : '\\)';
     }
-    return literalParentheses.pop() === false ? token : '\\)';
   });
 }
 
