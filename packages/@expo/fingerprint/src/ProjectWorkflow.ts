@@ -159,7 +159,10 @@ class Ignore {
 
   public async initIgnoreAsync(): Promise<void> {
     const ignoreFilePaths = await Array.fromAsync(
-      fs.glob(`**/${GITIGNORE_FILENAME}`, { cwd: this.rootDir })
+      fs.glob(`**/${GITIGNORE_FILENAME}`, {
+        cwd: this.rootDir,
+        exclude: (entry) => path.basename(entry) === 'node_modules',
+      })
     );
     // ensure that parent dir is before child directories
     ignoreFilePaths.sort((a, b) => a.length - b.length && a.localeCompare(b));
