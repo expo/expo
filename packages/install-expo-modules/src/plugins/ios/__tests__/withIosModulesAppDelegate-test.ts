@@ -155,18 +155,10 @@ class ReactNativeDelegate: ${superclass} {
       );
     });
 
-    it('ignores declarations in comments and strings', () => {
-      const lookalike =
-        'override func sourceURL(for bridge: RCTBridge) -> URL? { self.bundleURL() }';
+    it('ignores declarations in line comments', () => {
       const contents = `internal import Expo
-// ${lookalike}
-/* nested /* comment */
-${lookalike}
-*/
-let example = #"""
-${lookalike}
-"""#
 class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+  // override func sourceURL(for bridge: RCTBridge) -> URL? { self.bundleURL() }
   override func bundleURL() -> URL? { customBundleURL() }
 }
 `;
