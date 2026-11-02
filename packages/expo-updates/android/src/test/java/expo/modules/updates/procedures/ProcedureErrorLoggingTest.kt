@@ -224,6 +224,10 @@ class ProcedureErrorLoggingTest {
     Assert.assertTrue(unreachable.message, unreachable.message.contains("Failed to load 1 asset ") && unreachable.message.contains("timeout"))
     val notFound = errors.single { it.code == "AssetsFailedToLoad" }
     Assert.assertTrue(notFound.message, notFound.message.contains("Failed to load 1 asset ") && notFound.message.contains("HTTP response error 404"))
+    for (error in errors) {
+      val firstFrame = error.stacktrace?.firstOrNull().orEmpty()
+      Assert.assertTrue("Expected the failed download's stack trace, got: $firstFrame", firstFrame.contains("ProcedureErrorLoggingTest"))
+    }
   }
 
   private fun assertOneErrorEntry(code: String, text: String) {

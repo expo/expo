@@ -1,9 +1,9 @@
 package expo.modules.updates.logging
 
-import java.net.ConnectException
-import java.net.NoRouteToHostException
 import expo.modules.updates.loader.AssetLoadFailure
 import expo.modules.updates.loader.FileDownloader
+import java.net.ConnectException
+import java.net.NoRouteToHostException
 import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException

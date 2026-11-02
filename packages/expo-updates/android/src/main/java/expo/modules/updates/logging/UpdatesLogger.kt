@@ -126,9 +126,10 @@ class UpdatesLogger(filesDirectory: File) : IUpdatesLogger {
     }
     for ((code, failures) in UpdatesErrorCode.groups(assetsFailure.failures)) {
       val groupError = AssetsFailedToLoadException(failures)
+      // The log entry keeps the stack trace of the first failure, not of the group exception.
       error(
         "$context: ${groupError.localizedMessageWithCauseLocalizedMessage()}",
-        groupError,
+        failures.first().error,
         code,
         updateId,
         null

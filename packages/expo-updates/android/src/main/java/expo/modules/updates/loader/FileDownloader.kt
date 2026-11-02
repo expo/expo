@@ -123,7 +123,7 @@ class FileDownloader(
         if (!resp.isSuccessful) {
           throw IOException(
             "Asset download request not successful",
-            AssetHttpResponseException(resp.code, resp.body?.string() ?: "Unknown error")
+            AssetHttpResponseException(resp.code, truncateForErrorMessage(resp.body?.string() ?: "Unknown error"))
           )
         }
 
@@ -232,7 +232,10 @@ class FileDownloader(
 
       fallbackBody.use { body ->
         if (!fallbackResp.isSuccessful) {
-          throw IOException(body.string())
+          throw IOException(
+            "Fallback asset download request not successful",
+            AssetHttpResponseException(fallbackResp.code, truncateForErrorMessage(body.string()))
+          )
         }
 
         body.byteStream().use { inputStream ->
