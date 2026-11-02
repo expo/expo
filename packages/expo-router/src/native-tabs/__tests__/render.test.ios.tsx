@@ -166,6 +166,55 @@ it('does not remount the focused screen while preloading other tabs after a deep
   expect(unmount).not.toHaveBeenCalled();
 });
 
+it('remounts a tab\'s screen when its role toggles to and from "search"', async () => {
+  const mount = jest.fn();
+  const unmount = jest.fn();
+
+  function Probe() {
+    React.useEffect(() => {
+      mount();
+      return unmount;
+    }, []);
+
+    return <View testID="index" />;
+  }
+
+  function Layout() {
+    const [isSearch, setIsSearch] = React.useState(false);
+    return (
+      <>
+        <Button
+          title="toggle role"
+          testID="toggle-role"
+          onPress={() => setIsSearch((value) => !value)}
+        />
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" role={isSearch ? 'search' : undefined} />
+        </NativeTabs>
+      </>
+    );
+  }
+
+  await renderRouter({
+    _layout: Layout,
+    index: Probe,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(mount).toHaveBeenCalledTimes(1);
+  expect(unmount).not.toHaveBeenCalled();
+
+  await act(() => fireEvent.press(screen.getByTestId('toggle-role')));
+
+  expect(unmount).toHaveBeenCalledTimes(1);
+  expect(mount).toHaveBeenCalledTimes(2);
+
+  await act(() => fireEvent.press(screen.getByTestId('toggle-role')));
+
+  expect(unmount).toHaveBeenCalledTimes(2);
+  expect(mount).toHaveBeenCalledTimes(3);
+});
+
 describe('Tabs visibility', () => {
   it('does not render tab, when not specified', async () => {
     await renderRouter({
