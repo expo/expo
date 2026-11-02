@@ -1,3 +1,4 @@
+import braces from 'braces';
 import fs from 'fs/promises';
 import process from 'node:process';
 import path from 'path';
@@ -9,11 +10,12 @@ export interface PathMatchObject {
   match: (filePath: string) => boolean;
 }
 
-// NOTE(@kitten): Minimatch only gives parentheses and pipes special meaning inside extglobs.
-function escapeLiteralParentheses(pattern: string, noext = false): string {
+// NOTE(@kitten): Braces are already expanded; parentheses and pipes only have meaning inside extglobs.
+function escapeLiteralGlobCharacters(pattern: string, noext = false): string {
   const literalParentheses: boolean[] = [];
-  return pattern.replace(/\\.|\[(?:\\.|[^\]\\])*\]|([?*+@!])?\(|\)|\|/g, (token, extglob) => {
+  return pattern.replace(/\\.|\[(?:\\.|[^\]\\])*\]|([?*+@!])?\(|\)|\||[{}]/g, (token, extglob) => {
     if (token.startsWith('\\') || token.startsWith('[')) return token;
+    if (token === '{' || token === '}') return `\\${token}`;
     if (token === '|') return literalParentheses.at(-1) === false ? token : '\\|';
     if (token.endsWith('(')) {
       const literal = noext || (!extglob && literalParentheses.at(-1) !== false);
@@ -32,15 +34,20 @@ function createPathMatchObject(pattern: string, options: PicomatchOptions): Path
     pattern = pattern.slice(1);
   }
   // NOTE(@kitten): Compile regexes so literal brackets cannot bypass glob matching.
-  const expression = pattern
-    ? picomatch.makeRe(escapeLiteralParentheses(pattern, options.noext), {
-        literalBrackets: false,
-        posix: true,
-        strictSlashes: true,
-        ...options,
-        nonegate: true,
-      })
-    : /^$/;
+  const patterns = options.nobrace
+    ? [pattern]
+    : braces(pattern, { expand: true, keepEscaping: true });
+  const expressions = patterns.map((expandedPattern) =>
+    expandedPattern
+      ? picomatch.makeRe(escapeLiteralGlobCharacters(expandedPattern, options.noext), {
+          literalBrackets: false,
+          posix: true,
+          strictSlashes: true,
+          ...options,
+          nonegate: true,
+        })
+      : /^$/
+  );
   return {
     pattern,
     negate,
@@ -48,7 +55,9 @@ function createPathMatchObject(pattern: string, options: PicomatchOptions): Path
       if (comment) return false;
       if (options.basename) filePath = path.basename(filePath);
       const normalizedPath = pattern.endsWith('/') ? filePath : filePath.replace(/\/$/, '');
-      const matches = expression.test(filePath) || expression.test(normalizedPath);
+      const matches = expressions.some(
+        (expression) => expression.test(filePath) || expression.test(normalizedPath)
+      );
       return negate !== matches;
     },
   };

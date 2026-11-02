@@ -2593,6 +2593,9 @@ importers:
       arg:
         specifier: ^5.0.2
         version: 5.0.2
+      braces:
+        specifier: ^3.0.3
+        version: 3.0.3
       chalk:
         specifier: ^4.1.2
         version: 4.1.2
@@ -2624,6 +2627,9 @@ importers:
       '@expo/require-utils':
         specifier: workspace:~
         version: link:../require-utils
+      '@types/braces':
+        specifier: ^3.0.5
+        version: 3.0.5
       '@types/debug':
         specifier: ^4.1.5
         version: 4.1.12

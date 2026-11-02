@@ -47,7 +47,7 @@ describe(isIgnoredPath, () => {
     expect(isIgnoredPath('/dir/app.json', ['/dir/*.json'])).toBe(true);
   });
 
-  it('preserves literal parentheses without changing extglob matching', () => {
+  it('preserves literal parentheses and brace alternatives without changing extglobs', () => {
     const cases = [
       ['app/(auth)/**', 'app/(auth)/index.tsx', true],
       ['app/(auth)/**', 'app/auth/index.tsx', false],
@@ -60,6 +60,16 @@ describe(isIgnoredPath, () => {
       ['app/\\(auth\\)/**', 'app/(auth)/index.tsx', true],
       ['app/[(]auth[)]/**', 'app/(auth)/index.tsx', true],
       ['app/{(auth),(tabs)}/**', 'app/(tabs)/index.tsx', true],
+      ['app/{,@}(auth)/**', 'app/auth/index.tsx', true],
+      ['app/{,@}(auth)/**', 'app/(auth)/index.tsx', true],
+      ['app/{,@}(auth)/**', 'app/@(auth)/index.tsx', false],
+      ['app/{foo,@}(auth)/**', 'app/auth/index.tsx', true],
+      ['app/{foo,@}(auth)/**', 'app/foo(auth)/index.tsx', true],
+      ['app/{foo,@}(auth)/**', 'app/@(auth)/index.tsx', false],
+      ['app/{foo,{,@}}(auth)/**', 'app/auth/index.tsx', true],
+      ['app/\\{auth,tabs\\}/**', 'app/{auth,tabs}/index.tsx', true],
+      ['app/\\{auth,tabs\\}/**', 'app/auth/index.tsx', false],
+      ['app/\\{1,2\\}/**', 'app/{1,2}/index.tsx', true],
     ] as const;
     for (const [pattern, file, expected] of cases) {
       expect(isIgnoredPath(file, [pattern])).toBe(expected);
