@@ -3594,9 +3594,6 @@ importers:
       getenv:
         specifier: ^2.0.0
         version: 2.0.0
-      glob:
-        specifier: ^13.0.6
-        version: 13.0.6
       memfs:
         specifier: ^3.6.0
         version: 3.6.0
@@ -3621,6 +3618,9 @@ importers:
       slugify:
         specifier: ^1.6.6
         version: 1.6.8
+      tinyglobby:
+        specifier: ^0.2.15
+        version: 0.2.15
       update-check:
         specifier: ^1.5.4
         version: 1.5.4
