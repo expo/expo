@@ -2933,9 +2933,6 @@ importers:
       getenv:
         specifier: ^2.0.0
         version: 2.0.0
-      glob:
-        specifier: ^13.0.0
-        version: 13.0.6
       hermes-parser:
         specifier: ^0.36.0
         version: 0.36.1
@@ -2957,6 +2954,9 @@ importers:
       resolve-from:
         specifier: ^5.0.0
         version: 5.0.0
+      tinyglobby:
+        specifier: ^0.2.15
+        version: 0.2.15
     devDependencies:
       '@babel/plugin-transform-explicit-resource-management':
         specifier: ^7.28.6
