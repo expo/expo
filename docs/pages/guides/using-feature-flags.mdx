@@ -64,3 +64,14 @@ The following libraries support feature flags and work out of the box with Expo 
   href="https://rnfirebase.io/remote-config/usage"
   Icon={BookOpen02Icon}
 />
+
+### Gates
+
+[Gates](https://usegates.app/) is a feature flag service built only for Expo apps. Flags are evaluated on the device from a snapshot saved on the last sync, so reading a flag never makes a network request and keeps working offline. Rules can target the platform, the app version, the `expo-updates` runtime version and user traits, with percentage rollouts that stay stable for a device across sessions. A kill switch turns a flag off across every environment on the next sync. The SDK is JavaScript only and does not require a config plugin or a native rebuild, and the CLI creates the project and installs the SDK with a single command.
+
+<BoxLink
+  title="Gates documentation"
+  description="Learn how to install the Gates SDK and ship your first flag in an Expo project."
+  href="https://usegates.app/docs/"
+  Icon={BookOpen02Icon}
+/>
