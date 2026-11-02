@@ -50,7 +50,7 @@ When you use this flag, EAS selects all matching devices for the build target's 
 
 For [EAS Workflows](/eas/workflows/get-started), set `refresh_ad_hoc_provisioning_profile: true` in the build job's `params` with the same profile requirements. See the [build job parameters](/eas/workflows/pre-packaged-jobs#build).
 
-The profile must set [`"distribution": "internal"`](/eas/json/#distribution) and use [credentials managed by EAS](/app-signing/app-credentials/). You need at least one device from [`eas device:create`](/eas/cli/#eas-device-create) and an App Store Connect API key in CI through [environment variables](/build/building-on-ci/#optional-provide-an-asc-api-token-for-your-apple-team) (`EXPO_ASC_API_KEY_PATH`, `EXPO_ASC_KEY_ID`, and `EXPO_ASC_ISSUER_ID`) or a key stored in EAS for submissions on the project.
+The profile must set [`"distribution": "internal"`](/eas/json/#distribution) and use [credentials managed by EAS](/app-signing/app-credentials/). You need at least one device from [`eas device:create`](/eas/cli/#eas-device-create). You also need a team App Store Connect API key. Provide it in CI through [environment variables](/build/building-on-ci/#optional-provide-an-asc-api-token-for-your-apple-team) (`EXPO_ASC_API_KEY_PATH`, `EXPO_ASC_KEY_ID`, and `EXPO_ASC_ISSUER_ID`). You can also store it in EAS as the submission key for the project. An [individual key](/submit/ios/#choose-an-api-key-type) cannot update provisioning profiles.
 
 Otherwise, after registering a device with [`eas device:create`](/eas/cli/#eas-device-create), run [`eas build`](/eas/cli/#eas-build) interactively and sign in with your Apple account so EAS can update the ad hoc provisioning profile.
 

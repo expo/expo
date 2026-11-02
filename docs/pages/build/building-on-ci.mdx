@@ -86,6 +86,8 @@ See [personal access tokens](/accounts/programmatic-access/#personal-access-toke
 
 In the event your iOS credentials need to be repaired, we will need an ASC API key to authenticate ourselves to Apple in CI. A common case is when your provisioning profile needs to be re-signed.
 
+This ASC API key must be a team key. An [individual key](/submit/ios/#choose-an-api-key-type) cannot manage certificates or provisioning profiles.
+
 You will need to create an [API Key](https://expo.fyi/creating-asc-api-key). Next, you will need to gather information about your [Apple team](https://expo.fyi/apple-team).
 
 Using the information you've gathered, pass it into the build command through environment variables. You will need to pass the following:

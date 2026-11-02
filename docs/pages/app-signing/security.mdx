@@ -118,6 +118,8 @@ None. They are available through the Apple Developer console.
 
 Apple App Store Connect (ASC) API key is one of the authentication methods that can be used to submit an iOS app to Apple's App Store using the EAS Submit service. This key is stored on the Expo servers and encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) when at rest. The key will remain on Expo servers to be re-used for subsequent submissions, and it can be removed at any time by a user with the requisite permissions.
 
+The key can be a team key or an individual key. An individual key has the access and roles of the user who created it. See [Choose an API key type](/submit/ios/#choose-an-api-key-type).
+
 The ASC API key is the default and **recommended** authentication method for submitting your apps to the App Store using EAS Submit.
 
 #### Consequences if compromised
