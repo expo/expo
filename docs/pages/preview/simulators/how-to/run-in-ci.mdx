@@ -1,7 +1,7 @@
 ---
 title: Run Expo Simulators sessions in CI
 sidebar_title: Run in CI
-description: Start, use, and always stop Expo Simulators sessions from GitHub Actions, EAS Workflows, or another CI system with an Expo access token.
+description: Start, use, and always stop Expo Simulators sessions from GitHub Actions, Expo Workflows, or another CI system with an Expo access token.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -48,7 +48,7 @@ Then add a cleanup step that always runs:
 
 <Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop']} />
 
-The start command needs a project directory with an app config that contains the EAS project ID. Check out the repository before you run it.
+The start command needs a project directory with an app config that contains the Expo Services project ID. Check out the repository before you run it.
 
 > **warning** A CI job that ends does not stop the session. If the cleanup step does not run, the session continues until it reaches its maximum duration. Always set `--max-duration-minutes` in CI.
 
@@ -63,11 +63,11 @@ When the CI job does not have Node.js or the project source, use the REST API wi
 
 See [Expo Simulators REST API](/preview/simulators/reference/rest-api/).
 
-## Get a build in EAS Workflows
+## Get a build in Expo Workflows
 
-In [EAS Workflows](/eas/workflows/introduction/), the pre-packaged `get-build` job can find an existing iOS Simulator build that matches a filter, and a `build` job can create one. Pass the build to a later step that starts the session. See [Pre-packaged jobs](/eas/workflows/pre-packaged-jobs/).
+In [Expo Workflows](/eas/workflows/introduction/), the pre-packaged `get-build` job can find an existing iOS Simulator build that matches a filter, and a `build` job can create one. Pass the build to a later step that starts the session. See [Pre-packaged jobs](/eas/workflows/pre-packaged-jobs/).
 
-For an example of agent-driven testing on pull requests, see Callstack's [agent-device EAS Workflows template](https://github.com/callstackincubator/eas-agent-device/blob/main/.eas/workflows/agent-qa-mobile.yml). It runs its own emulator and simulator in EAS Workflows jobs, not Expo Simulators sessions.
+For an example of agent-driven testing on pull requests, see Callstack's [agent-device Expo Workflows template](https://github.com/callstackincubator/eas-agent-device/blob/main/.eas/workflows/agent-qa-mobile.yml). It runs its own emulator and simulator in Expo Workflows jobs, not Expo Simulators sessions.
 
 ## Run end-to-end tests
 

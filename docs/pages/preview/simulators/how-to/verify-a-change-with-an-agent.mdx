@@ -1,7 +1,7 @@
 ---
 title: Let an AI coding agent verify a change on a remote simulator
 sidebar_title: Verify a change with an agent
-description: Give a coding agent such as Claude Code, Codex, or Cursor a real Android Emulator or iOS Simulator on EAS so that it can test its own change and return screenshots or recordings.
+description: Give a coding agent such as Claude Code, Codex, or Cursor a real Android Emulator or iOS Simulator on Expo infrastructure so that it can test its own change and return screenshots or recordings.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -45,7 +45,7 @@ With the skill, the agent follows the same loop each time:
 
 ## Give the agent access
 
-The agent needs an authenticated EAS CLI and a project linked to EAS:
+The agent needs an authenticated EAS CLI and a project linked to Expo Services:
 
 - On your computer, run `eas login`.
 - In a cloud sandbox, CI job, or background agent, set the `EXPO_TOKEN` environment variable to an [Expo access token](/accounts/programmatic-access/). These environments cannot use a browser login.
@@ -95,7 +95,7 @@ Any agent that can run shell commands can use EAS CLI and agent-device. The Expo
 
 <Collapsible summary="Does the agent need a Mac?">
 
-No. The simulator runs on EAS. The agent can create the build with EAS Build. See [Use an iOS Simulator on Linux or Windows](/preview/simulators/how-to/work-without-a-mac/).
+No. The simulator runs on Expo infrastructure. The agent can create the build with Expo Build. See [Use an iOS Simulator on Linux or Windows](/preview/simulators/how-to/work-without-a-mac/).
 
 </Collapsible>
 

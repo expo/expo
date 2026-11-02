@@ -11,7 +11,7 @@ import { Step } from '~/ui/components/Step';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-A reviewer can test a pull request in the browser without a local build. Create a simulator-compatible build for the pull request, then add a **create session link** to the pull request. When the reviewer opens the link, EAS starts a session with the build and shows the browser preview. On iOS, use an iOS Simulator build. On Android, use an APK build.
+A reviewer can test a pull request in the browser without a local build. Create a simulator-compatible build for the pull request, then add a **create session link** to the pull request. When the reviewer opens the link, Expo Simulators starts a session with the build and shows the browser preview. On iOS, use an iOS Simulator build. On Android, use an APK build.
 
 ## Add a review link to a pull request
 
@@ -19,7 +19,7 @@ A reviewer can test a pull request in the browser without a local build. Create 
 
 ### Create a simulator-compatible build for the pull request
 
-For iOS, use a build profile with `ios.simulator: true`. For Android, use a build profile that creates an APK, because an AAB does not install. Create the build in CI or with EAS Workflows:
+For iOS, use a build profile with `ios.simulator: true`. For Android, use a build profile that creates an APK, because an AAB does not install. Create the build in CI or with Expo Workflows:
 
 <Terminal
   cmd={[
@@ -65,7 +65,7 @@ To return to the same session, the reviewer opens it from the project's **Simula
 
 ## Let an agent review the change
 
-An agent can also test the pull request and post evidence. Ask the agent to use the Expo Simulators skill and start a session with the pull request build. Then ask it to run the changed flow and attach screenshots or a recording. See [Let an AI coding agent verify a change on a remote simulator](/preview/simulators/how-to/verify-a-change-with-an-agent/). Callstack's [agent-device EAS Workflows template](https://github.com/callstackincubator/eas-agent-device/blob/main/.eas/workflows/agent-qa-mobile.yml) shows a similar flow in EAS Workflows, with its own emulator and simulator instead of Expo Simulators sessions.
+An agent can also test the pull request and post evidence. Ask the agent to use the Expo Simulators skill and start a session with the pull request build. Then ask it to run the changed flow and attach screenshots or a recording. See [Let an AI coding agent verify a change on a remote simulator](/preview/simulators/how-to/verify-a-change-with-an-agent/). Callstack's [agent-device Expo Workflows template](https://github.com/callstackincubator/eas-agent-device/blob/main/.eas/workflows/agent-qa-mobile.yml) shows a similar flow in Expo Workflows, with its own emulator and simulator instead of Expo Simulators sessions.
 
 ## Common questions
 

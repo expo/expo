@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-Evidence shows what the app did on the remote device. Use a **screenshot** for a still state and a **recording** for motion. Use **session activity** for the list of actions that a person or an agent did. EAS also keeps **session artifacts**, such as recordings and screenshots, that you can download from EAS CLI or from the session page on expo.dev.
+Evidence shows what the app did on the remote device. Use a **screenshot** for a still state and a **recording** for motion. Use **session activity** for the list of actions that a person or an agent did. Expo Simulators also keeps **session artifacts**, such as recordings and screenshots, that you can download from EAS CLI or from the session page on expo.dev.
 
 ## Choose the evidence
 
@@ -63,7 +63,7 @@ Use the full resolution for an image that you compare pixel by pixel with anothe
   ]}
 />
 
-agent-device writes the recording to the path that you pass to `record start`, with a **.gesture-telemetry.json** file next to it. EAS also uploads the recording as a session artifact. If `record stop` times out while the remote device still exports the recording, run `record stop` again. If agent-device reports that it cannot find the recording, add `--platform ios`.
+agent-device writes the recording to the path that you pass to `record start`, with a **.gesture-telemetry.json** file next to it. Expo Simulators also uploads the recording as a session artifact. If `record stop` times out while the remote device still exports the recording, run `record stop` again. If agent-device reports that it cannot find the recording, add `--platform ios`.
 
 Recordings may not capture every frame, so they cannot prove or disprove a short frame drop.
 
@@ -71,7 +71,7 @@ With Argent, use the `screen-recording-start` and `screen-recording-stop` tools.
 
 ### Recover a recording that did not download
 
-If the controller does not download a recording, get it from the session artifacts. EAS uploads the agent-device recording as an artifact, and it can appear while the session is still running. EAS also records the full session screen and uploads that recording as an artifact after the session stops. Get the session with its ID, and find the recording in the `artifacts` array:
+If the controller does not download a recording, get it from the session artifacts. Expo Simulators uploads the agent-device recording as an artifact, and it can appear while the session is still running. Expo Simulators also records the full session screen and uploads that recording as an artifact after the session stops. Get the session with its ID, and find the recording in the `artifacts` array:
 
 <Terminal cmd={['$ eas simulator:get --id <session-id> --json --non-interactive']} />
 
@@ -103,7 +103,7 @@ agent-device has a `logs` command that collects the logs of the app that it open
 
 ## Find artifacts on expo.dev
 
-The session page on expo.dev shows the evidence that EAS stores for the session:
+The session page on expo.dev shows the evidence that Expo Simulators stores for the session:
 
 | Section              | Content                                                                                                                                         |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -114,7 +114,7 @@ The session page on expo.dev shows the evidence that EAS stores for the session:
 
 Android sessions also produce a session screen recording artifact. The session page on expo.dev shows an **Open preview** button that opens the browser preview in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
 
-Job logs on the session page are available for 30 days after the session is created. EAS keeps session artifacts, such as screenshots and recordings, until you delete the session. You can delete a finished session from its expo.dev page with the Developer role or higher. Download the files that you want to keep. See [Expo Simulators security, permissions, and data retention](/preview/simulators/reference/security-and-data/).
+Job logs on the session page are available for 30 days after the session is created. Expo Simulators keeps session artifacts, such as screenshots and recordings, until you delete the session. You can delete a finished session from its expo.dev page with the Developer role or higher. Download the files that you want to keep. See [Expo Simulators security, permissions, and data retention](/preview/simulators/reference/security-and-data/).
 
 ## Common questions
 
