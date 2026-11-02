@@ -243,9 +243,9 @@
     "expo-file-system": "workspace:~",
     "expo-font": "workspace:~",
     "expo-keep-awake": "workspace:~",
-    "expo-modules-autolinking": "workspace:~",
+    "expo-modules-autolinking": "workspace:*",
     "expo-modules-cli": "workspace:~",
-    "expo-modules-core": "workspace:~",
+    "expo-modules-core": "workspace:*",
     "pretty-format": "^29.7.0",
     "react-refresh": "^0.14.2",
     "whatwg-url-minimum": "^0.2.0"

@@ -44,13 +44,13 @@
     "@expo/json-file": "workspace:^",
     "@react-native/normalize-colors": "0.88.1",
     "debug": "^4.3.1",
-    "expo-modules-autolinking": "workspace:~",
     "resolve-from": "^5.0.0",
     "semver": "^7.7.4"
   },
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
     "@expo/plist": "workspace:*",
+    "expo-modules-autolinking": "workspace:*",
     "@types/debug": "^4.1.5",
     "@types/semver": "^7.7.1",
     "memfs": "^3.6.0"

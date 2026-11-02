@@ -1,9 +1,6 @@
 import type { ModPlatform, StaticPlugin } from '@expo/config-plugins';
 import type { ExpoConfig } from '@expo/config-types';
-import {
-  makeCachedDependenciesLinker,
-  scanExpoModuleResolutionsForPlatform,
-} from 'expo-modules-autolinking/exports';
+import resolveFrom from 'resolve-from';
 
 /**
  * Returns a list of packages that are autolinked to a project.
@@ -16,6 +13,8 @@ export async function getAutolinkedPackagesAsync(
   projectRoot: string,
   platforms: ModPlatform[] = ['ios', 'android']
 ) {
+  const { makeCachedDependenciesLinker, scanExpoModuleResolutionsForPlatform } =
+    importAutolinkingExportsFromProject(projectRoot);
   const linker = makeCachedDependenciesLinker({ projectRoot });
   const dependenciesPerPlatform = await Promise.all(
     platforms.map((platform) => {
@@ -23,6 +22,25 @@ export async function getAutolinkedPackagesAsync(
     })
   );
   return resolvePackagesList(dependenciesPerPlatform);
+}
+
+/**
+ * Loads autolinking through the project's `expo` package, so we use the same
+ * `expo-modules-autolinking` version that `expo` pins instead of our own copy.
+ */
+function importAutolinkingExportsFromProject(
+  projectRoot: string
+): typeof import('expo-modules-autolinking/exports') {
+  const autolinkingExportsPath = resolveFrom.silent(
+    projectRoot,
+    'expo/internal/unstable-autolinking-exports'
+  );
+  if (!autolinkingExportsPath) {
+    throw new Error(
+      `Cannot resolve "expo/internal/unstable-autolinking-exports" from "${projectRoot}". Make sure the "expo" package is installed.`
+    );
+  }
+  return require(autolinkingExportsPath);
 }
 
 export function resolvePackagesList(platformPaths: Record<string, any>[]) {
