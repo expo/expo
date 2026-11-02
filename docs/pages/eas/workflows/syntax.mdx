@@ -567,7 +567,7 @@ jobs:
 
 ### `jobs.<job_id>.env`
 
-Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `apple-device-registration-request`, `branch-delete`, `doc`, `get-build`, `github-comment`, `require-approval`, `slack`, and `update-rollout` jobs).
+Sets environment variables for the job. The property is available on all jobs running a VM (all jobs except for the pre-packaged `apple-device-registration-request`, `branch-delete`, `doc`, `email`, `get-build`, `github-comment`, `require-approval`, `slack`, and `update-rollout` jobs).
 
 ```yaml
 jobs:
@@ -1850,6 +1850,23 @@ jobs:
       webhook_url: string # required
       message: string # required if payload is not provided
       payload: object # required if message is not provided
+```
+
+#### `email`
+
+Sends an email to members of the account that owns the project. See [Email job documentation](/eas/workflows/pre-packaged-jobs#email) for detailed information and examples.
+
+```yaml
+jobs:
+  my_job:
+    # @info #
+    type: email
+    # @end #
+    params:
+      usernames: string[] # required if emails is not provided
+      emails: string[] # required if usernames is not provided
+      subject: string # required
+      body: string # required
 ```
 
 #### `github-comment`
