@@ -305,7 +305,7 @@ Start by creating a widget using the `createWidget` function and pass the widget
 
 ```tsx
 import { Text, VStack } from '@expo/ui/swift-ui';
-import { font, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+import { containerBackground, font, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
 import { createWidget, type WidgetEnvironment } from 'expo-widgets';
 
 type MyWidgetProps = {
@@ -315,11 +315,11 @@ type MyWidgetProps = {
 const MyWidget = (props: MyWidgetProps, environment: WidgetEnvironment) => {
   'widget';
   return (
-    <VStack>
+    <VStack modifiers={[containerBackground('#FFFFFF', 'widget')]}>
       <Text modifiers={[font({ weight: 'bold', size: 16 }), foregroundStyle('#000000')]}>
         Count: {props.count}
       </Text>
-      <Text>Family: {environment.widgetFamily}</Text>
+      <Text modifiers={[foregroundStyle('#000000')]}>Family: {environment.widgetFamily}</Text>
     </VStack>
   );
 };
@@ -329,6 +329,8 @@ export default createWidget('MyWidget', MyWidget, { count: 0 });
 
 The widget name (`'MyWidget'`) must match the `name` field in your widget configuration in the [app config](/workflow/configuration/).
 The optional third argument provides the initial props used before the widget timeline is updated.
+
+> **info** On iOS 17 and later, every widget needs the [`containerBackground`](/versions/latest/sdk/ui/swift-ui/modifiers/#containerbackgroundstyle-container) modifier with the `'widget'` placement on its root view. Without it, the widget shows the system message "Please adopt containerBackground API" instead of your layout.
 
 #### Basic widget
 
