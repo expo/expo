@@ -10,7 +10,7 @@ import fs from 'fs';
 import path from 'node:path';
 import semver from 'semver';
 
-import { removeLegacySourceUrl } from './removeLegacySourceUrl';
+import { assertNoLegacySourceUrl } from './assertNoLegacySourceUrl';
 import {
   getDesignatedSwiftBridgingHeaderFileReference,
   withXCParseXcodeProject,
@@ -143,6 +143,10 @@ export function updateModulesAppDelegateSwift(
     }
   }
 
+  if (sdkVersion && semver.gte(sdkVersion, '58.0.0')) {
+    assertNoLegacySourceUrl(contents);
+  }
+
   // Add imports if needed.
   // SDK 55+ uses `internal import` to match ExpoModulesProvider.swift (Swift 6 compatibility).
   const useInternalImport = sdkVersion && semver.gte(sdkVersion, '55.0.0');
@@ -171,7 +175,6 @@ export function updateModulesAppDelegateSwift(
     'ExpoReactNativeFactoryDelegate'
   );
   if (sdkVersion && semver.gte(sdkVersion, '58.0.0')) {
-    contents = removeLegacySourceUrl(contents);
     contents = updateModulesAppDelegateSwiftSceneLifecycle(contents);
   } else {
     contents = contents.replace(

@@ -28,6 +28,8 @@ To install and use Expo modules, the easiest way to get up and running is with t
   hideBareInstructions
 />
 
+For SDK 58 and later, the installer stops if **AppDelegate.swift** still declares `sourceURL(for:)`. Remove the method and its attributes. If it contains custom bundle selection, move that logic to `bundleURL()` first. Then run the installer again.
+
 - <YesIcon small /> **When the command succeeds**, you will be able to add any Expo module in your
   app! Proceed to [Usage](#usage) for more information.
 
