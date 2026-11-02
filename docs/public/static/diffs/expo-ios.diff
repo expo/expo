@@ -72,7 +72,7 @@ index d06a6a8..d8dd308 100644
      delegate.dependencyProvider = RCTAppDependencyProvider()
 
      reactNativeDelegate = delegate
-@@ -29,13 +30,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
+@@ -29,13 +30,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
        launchOptions: launchOptions
      )
 
@@ -83,10 +83,8 @@ index d06a6a8..d8dd308 100644
 
 -class ReactNativeDelegate: RCTDefaultReactNativeFactoryDelegate {
 +class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
-   override func sourceURL(for bridge: RCTBridge) -> URL? {
+-  override func sourceURL(for bridge: RCTBridge) -> URL? {
 -    self.bundleURL()
-+    // needed to return the correct URL for expo-dev-client.
-+    bridge.bundleURL ?? bundleURL()
-   }
-
+-  }
+-
    override func bundleURL() -> URL? {

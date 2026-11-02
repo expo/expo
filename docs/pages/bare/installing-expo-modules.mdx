@@ -52,6 +52,8 @@ Once installation is complete, apply the changes from the following diffs to con
 
 <DiffBlock source="/static/diffs/expo-ios.diff" />
 
+If your React Native factory delegate has custom bundle selection in `sourceURL(for:)`, move that logic to `bundleURL()` before removing `sourceURL(for:)`.
+
 Optionally, you can also add additional delegate methods to your **AppDelegate.swift**. Some libraries may require them, so unless you have a good reason to leave them out, it is recommended to add them. [See delegate methods in AppDelegate.swift](https://github.com/expo/expo/blob/sdk-57/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift#L34-L51).
 
 Save all of your changes and update your iOS Deployment Target in Xcode to <code>iOS 16.4</code>:
