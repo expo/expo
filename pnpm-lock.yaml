@@ -4769,9 +4769,6 @@ importers:
       getenv:
         specifier: ^2.0.0
         version: 2.0.0
-      glob:
-        specifier: ^13.0.6
-        version: 13.0.6
       ignore:
         specifier: ^5.3.2
         version: 5.3.2
