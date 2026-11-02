@@ -54,5 +54,13 @@
     "@types/semver": "^7.7.1",
     "expo-modules-autolinking": "workspace:*",
     "memfs": "^3.6.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
   }
 }
