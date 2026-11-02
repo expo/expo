@@ -10,6 +10,7 @@
 
 - Fix `npx expo start --localhost` refusing connections on `127.0.0.1`. ([#52324](https://github.com/expo/expo/pull/52324) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Fix corruption of unrelated string literals in native exports containing DOM components by resolving HTML filenames before Hermes compilation. Defer Hermes compilation only for chunks that reference DOM components. ([#52752](https://github.com/expo/expo/pull/52752) by [@kitten](https://github.com/kitten))
+- Fix `expo run:ios --device` staying open after installing and launching an app on a network-paired device when the bundler is disabled. ([#52741](https://github.com/expo/expo/pull/52741) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
