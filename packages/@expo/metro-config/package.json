@@ -97,7 +97,8 @@
     "noxcturnal": "^0.1.11",
     "picomatch": "^4.0.4",
     "postcss": "^8.5.23",
-    "resolve-from": "^5.0.0"
+    "resolve-from": "^5.0.0",
+    "tinyglobby": "^0.2.15"
   },
   "devDependencies": {
     "@babel/plugin-transform-explicit-resource-management": "^7.28.6",

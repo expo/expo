@@ -2957,6 +2957,9 @@ importers:
       resolve-from:
         specifier: ^5.0.0
         version: 5.0.0
+      tinyglobby:
+        specifier: ^0.2.15
+        version: 0.2.15
     devDependencies:
       '@babel/plugin-transform-explicit-resource-management':
         specifier: ^7.28.6

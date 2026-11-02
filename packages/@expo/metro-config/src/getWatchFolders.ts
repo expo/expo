@@ -29,8 +29,19 @@ export function globAllPackageJsonPaths(
   linkedPackages: string[]
 ): string[] {
   return linkedPackages
-    .flatMap((pattern) =>
-      fs
+    .flatMap((pattern) => {
+      // NOTE(@kitten): Recursive directory globs also return source files; match manifests directly.
+      if (pattern.includes('**')) {
+        const { globSync }: typeof import('tinyglobby') = require('tinyglobby');
+        return globSync(path.posix.join(pattern, 'package.json'), {
+          cwd: workspaceProjectRoot,
+          absolute: true,
+          expandDirectories: false,
+          caseSensitiveMatch: process.platform !== 'darwin' && process.platform !== 'win32',
+          ignore: ['**/@(Carthage|Pods|node_modules)/**'],
+        });
+      }
+      return fs
         .globSync(pattern, {
           cwd: workspaceProjectRoot,
           exclude: (entry) =>
@@ -38,8 +49,8 @@ export function globAllPackageJsonPaths(
               .split(path.sep)
               .some((part) => ['Carthage', 'Pods', 'node_modules'].includes(part)),
         })
-        .map((directory) => path.resolve(workspaceProjectRoot, directory, 'package.json'))
-    )
+        .map((directory) => path.resolve(workspaceProjectRoot, directory, 'package.json'));
+    })
     .filter(isValidJsonFile);
 }
 
