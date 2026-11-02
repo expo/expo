@@ -1,6 +1,5 @@
 import { getMetroServerRoot, getMetroWorkspaceGlobs } from '@expo/config/paths';
 import fs from 'fs';
-import { globSync } from 'glob';
 import path from 'path';
 
 function readJsonFile(filePath: string) {
@@ -30,19 +29,18 @@ export function globAllPackageJsonPaths(
   linkedPackages: string[]
 ): string[] {
   return linkedPackages
-    .map((glob) => {
-      // Globs should only contain `/` as separator, even on Windows.
-      return globSync(path.posix.join(glob, 'package.json').replace(/\\/g, '/'), {
-        cwd: workspaceProjectRoot,
-        absolute: true,
-        ignore: ['**/@(Carthage|Pods|node_modules)/**'],
-      }).map((pkgPath) => {
-        return isValidJsonFile(pkgPath) ? pkgPath : null;
-      });
-    })
-    .flat()
-    .filter(Boolean)
-    .map((p) => path.join(p as string));
+    .flatMap((pattern) =>
+      fs
+        .globSync(pattern, {
+          cwd: workspaceProjectRoot,
+          exclude: (entry) =>
+            entry
+              .split(path.sep)
+              .some((part) => ['Carthage', 'Pods', 'node_modules'].includes(part)),
+        })
+        .map((directory) => path.resolve(workspaceProjectRoot, directory, 'package.json'))
+    )
+    .filter(isValidJsonFile);
 }
 
 /**
