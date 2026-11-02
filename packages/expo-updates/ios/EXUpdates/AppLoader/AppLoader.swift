@@ -42,7 +42,7 @@ open class AppLoader: NSObject {
 
   private var assetsToLoad: [UpdateAsset] = []
   private var assetDownloadProgress: [UpdateAsset: Double] = [:]
-  private var erroredAssets: [UpdateAsset] = []
+  private var assetLoadFailures: [AssetLoadFailure] = []
   private var finishedAssets: [UpdateAsset] = []
   private var existingAssets: [UpdateAsset] = []
 
@@ -77,7 +77,7 @@ open class AppLoader: NSObject {
 
   public func reset() {
     assetsToLoad = []
-    erroredAssets = []
+    assetLoadFailures = []
     finishedAssets = []
     existingAssets = []
     assetDownloadProgress = [:]
@@ -357,7 +357,7 @@ open class AppLoader: NSObject {
     )
     arrayLock.lock()
     assetsToLoad.remove(asset)
-    erroredAssets.append(asset)
+    assetLoadFailures.append(AssetLoadFailure(assetKey: assetKey, error: error))
     notifyProgress(withAsset: asset)
     if assetsToLoad.isEmpty {
       finish()
@@ -376,7 +376,7 @@ open class AppLoader: NSObject {
    */
   public func notifyAssetLoadProgress(asset: UpdateAsset, progress: Double) {
     assetDownloadProgress[asset] = progress
-    let totalAssetsCount = finishedAssets.count + existingAssets.count + erroredAssets.count + assetsToLoad.count
+    let totalAssetsCount = finishedAssets.count + existingAssets.count + assetLoadFailures.count + assetsToLoad.count
     if totalAssetsCount > 0 {
       let progress = assetDownloadProgress.values.reduce(0, +) / Double(totalAssetsCount)
       if let assetLoadProgressBlock = assetLoadProgressBlock {
@@ -419,8 +419,8 @@ open class AppLoader: NSObject {
       it(
         asset,
         finishedAssets.count + existingAssets.count,
-        erroredAssets.count,
-        finishedAssets.count + existingAssets.count + erroredAssets.count + assetsToLoad.count
+        assetLoadFailures.count,
+        finishedAssets.count + existingAssets.count + assetLoadFailures.count + assetsToLoad.count
       )
     }
   }
@@ -487,7 +487,7 @@ open class AppLoader: NSObject {
           updateManifest,
           newAssets: self.finishedAssets,
           existingAssets: assetsToLink,
-          markFinished: self.erroredAssets.isEmpty
+          markFinished: self.assetLoadFailures.isEmpty
         )
       } catch {
         self.arrayLock.unlock()
@@ -497,8 +497,9 @@ open class AppLoader: NSObject {
 
       var successBlock: AppLoaderSuccessBlock?
       var errorBlock: AppLoaderErrorBlock?
+      let assetLoadFailures = self.assetLoadFailures
 
-      if !self.erroredAssets.isEmpty {
+      if !assetLoadFailures.isEmpty {
         if let selfErrorBlock = self.errorBlock {
           errorBlock = selfErrorBlock
         }
@@ -512,7 +513,7 @@ open class AppLoader: NSObject {
 
       self.completionQueue.async {
         if let errorBlock = errorBlock {
-          errorBlock(UpdatesError.appLoaderFailedToLoadAllAssets)
+          errorBlock(UpdatesError.appLoaderFailedToLoadAllAssets(failures: assetLoadFailures))
         } else if let successBlock = successBlock {
           successBlock(updateResponse)
         }

@@ -1,5 +1,7 @@
 package expo.modules.updates.logging
 
+import expo.modules.updates.loader.AssetLoadFailure
+import expo.modules.updates.loader.FileDownloader
 import java.net.ConnectException
 import java.net.NoRouteToHostException
 import java.net.SocketException
@@ -49,5 +51,20 @@ enum class UpdatesErrorCode(val code: String) {
       return error is SocketException &&
         error.message?.contains("reset", ignoreCase = true) == true
     }
+
+    /**
+     * Groups asset failures by their code and HTTP status, in the order each group first fails.
+     */
+    fun groups(failures: List<AssetLoadFailure>): List<Pair<UpdatesErrorCode, List<AssetLoadFailure>>> {
+      return failures
+        .groupBy { failure -> Pair(forLoadFailure(failure.error, AssetsFailedToLoad), httpStatus(failure.error)) }
+        .map { (key, groupFailures) -> Pair(key.first, groupFailures) }
+    }
+
+    private fun httpStatus(error: Throwable): Int? =
+      generateSequence(error) { it.cause }
+        .filterIsInstance<FileDownloader.AssetHttpResponseException>()
+        .firstOrNull()
+        ?.statusCode
   }
 }

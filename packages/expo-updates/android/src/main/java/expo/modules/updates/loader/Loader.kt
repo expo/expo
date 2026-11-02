@@ -46,7 +46,7 @@ abstract class Loader protected constructor(
   private var updateResponse: UpdateResponse? = null
   private var updateEntity: UpdateEntity? = null
   private var assetTotal = 0
-  private var erroredAssetList: MutableList<AssetEntity> = Collections.synchronizedList(mutableListOf())
+  private var assetLoadFailures: MutableList<AssetLoadFailure> = Collections.synchronizedList(mutableListOf())
   private var existingAssetList: MutableList<AssetEntity> = Collections.synchronizedList(mutableListOf())
   private var finishedAssetList: MutableList<AssetEntity> = Collections.synchronizedList(mutableListOf())
   private val _progressFlow = MutableSharedFlow<AssetLoadProgress>()
@@ -112,7 +112,7 @@ abstract class Loader protected constructor(
     updateResponse = null
     updateEntity = null
     assetTotal = 0
-    erroredAssetList = Collections.synchronizedList(mutableListOf())
+    assetLoadFailures = Collections.synchronizedList(mutableListOf())
     existingAssetList = Collections.synchronizedList(mutableListOf())
     finishedAssetList = Collections.synchronizedList(mutableListOf())
     assetProgressMap = ConcurrentHashMap()
@@ -191,8 +191,7 @@ abstract class Loader protected constructor(
 
   private enum class AssetLoadResult {
     FINISHED,
-    ALREADY_EXISTS,
-    ERRORED
+    ALREADY_EXISTS
   }
 
   private suspend fun downloadAllAssets(update: Update, insertUpdateEntityOnFinish: Boolean): LoaderResult {
@@ -200,7 +199,7 @@ abstract class Loader protected constructor(
     assetTotal = assetList.size
 
     val embeddedUpdate = loaderFiles.readEmbeddedUpdate(context, configuration)
-    val assetDownloadJobs = mutableListOf<Deferred<AssetLoadResult>>()
+    val assetDownloadJobs = mutableListOf<Deferred<Unit>>()
 
     for (assetEntityCur in assetList) {
       var assetEntity = assetEntityCur
@@ -222,13 +221,20 @@ abstract class Loader protected constructor(
       }
 
       val job = scope.async {
-        val result = loadAsset(
-          assetEntity,
-          updatesDirectory,
-          configuration,
-          requestedUpdate = update.updateEntity,
-          embeddedUpdate = embeddedUpdate?.updateEntity
-        )
+        val result = try {
+          loadAsset(
+            assetEntity,
+            updatesDirectory,
+            configuration,
+            requestedUpdate = update.updateEntity,
+            embeddedUpdate = embeddedUpdate?.updateEntity
+          )
+        } catch (e: CancellationException) {
+          throw e
+        } catch (e: Exception) {
+          handleAssetDownloadFailed(assetEntity, e)
+          return@async
+        }
 
         handleAssetDownloadCompleted(
           result.assetEntity,
@@ -242,8 +248,10 @@ abstract class Loader protected constructor(
       assetDownloadJobs.add(job)
     }
 
-    // Wait for all asset downloads to complete - this will throw the first exception that occurs
     assetDownloadJobs.awaitAll()
+    if (assetLoadFailures.isNotEmpty()) {
+      throw AssetsFailedToLoadException(assetLoadFailures.toList())
+    }
 
     try {
       database.withTransaction {
@@ -281,30 +289,31 @@ abstract class Loader protected constructor(
     return finish()
   }
 
-  private suspend fun handleAssetDownloadCompleted(assetEntity: AssetEntity, result: AssetLoadResult): AssetLoadResult {
+  private suspend fun handleAssetDownloadCompleted(assetEntity: AssetEntity, result: AssetLoadResult) {
     when (result) {
       AssetLoadResult.FINISHED -> finishedAssetList.add(assetEntity)
       AssetLoadResult.ALREADY_EXISTS -> existingAssetList.add(assetEntity)
-      AssetLoadResult.ERRORED -> erroredAssetList.add(assetEntity)
     }
+    assetProgressMap[assetEntity] = 1.0
+    notifyAssetLoadProgress()
+    emitAssetLoadProgress(assetEntity)
+  }
 
-    // do not emit progress update for errored assets
-    // let the progress bar stay at whatever the last successful progress was
-    if (result == AssetLoadResult.FINISHED || result == AssetLoadResult.ALREADY_EXISTS) {
-      assetProgressMap[assetEntity] = 1.0
-      notifyAssetLoadProgress()
-    }
+  // Leaves the progress bar at the last successful progress.
+  private suspend fun handleAssetDownloadFailed(assetEntity: AssetEntity, error: Exception) {
+    assetLoadFailures.add(AssetLoadFailure(assetEntity.key, error))
+    emitAssetLoadProgress(assetEntity)
+  }
 
+  private suspend fun emitAssetLoadProgress(assetEntity: AssetEntity) {
     _progressFlow.emit(
       AssetLoadProgress(
         asset = assetEntity,
         successfulAssetCount = finishedAssetList.size + existingAssetList.size,
-        failedAssetCount = erroredAssetList.size,
+        failedAssetCount = assetLoadFailures.size,
         totalAssetCount = assetTotal
       )
     )
-
-    return result
   }
 
   companion object {
