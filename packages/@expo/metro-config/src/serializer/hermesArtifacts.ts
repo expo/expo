@@ -14,7 +14,6 @@ function getBuildHermesBundleAsync() {
   return _buildHermesBundleAsync;
 }
 
-// Compile requested native bytecode after export has resolved DOM filenames.
 export async function transformJsAssetToHermesBytecodeAsync(
   projectRoot: string,
   jsAsset: SerialAsset,
