@@ -9,6 +9,7 @@ import {
 } from '../dependencies';
 import { createMemoizer } from '../memoize';
 import type { PackageRevision, SearchResults, SupportedPlatform } from '../types';
+import { maybeRealpath } from '../utils';
 
 export async function resolveExpoModule(
   resolution: DependencyResolution,
@@ -59,20 +60,43 @@ export async function findModulesAsync({
   const memoizer = createMemoizer();
   const excludeNames = new Set(autolinkingOptions.exclude);
 
-  // custom native modules should be resolved first so that they can override other modules
-  const searchPaths = autolinkingOptions.nativeModulesDir
-    ? [autolinkingOptions.nativeModulesDir, ...autolinkingOptions.searchPaths]
-    : autolinkingOptions.searchPaths;
+  const nativeModulesDir = autolinkingOptions.nativeModulesDir
+    ? await maybeRealpath(autolinkingOptions.nativeModulesDir)
+    : null;
+  // Paths of the local modules: the packages that the `nativeModulesDir` scan finds. When
+  // `nativeModulesDir` is a package itself (create-expo-module's example app sets it to `../`),
+  // that package keeps its own name, so it isn't a local module.
+  const localModulePaths = new Set<string>();
 
-  return memoizer.withMemoizer(async () => {
+  const searchResults = await memoizer.withMemoizer(async () => {
+    // custom native modules should be resolved first so that they can override other modules
+    const nativeModulesResolutions = autolinkingOptions.nativeModulesDir
+      ? await scanDependenciesInSearchPath(autolinkingOptions.nativeModulesDir)
+      : {};
+    for (const resolution of Object.values(nativeModulesResolutions)) {
+      if (resolution && resolution.path !== nativeModulesDir) {
+        localModulePaths.add(resolution.path);
+        localModulePaths.add(resolution.originPath);
+      }
+    }
     return filterMapResolutionResult(
       mergeResolutionResults(
         await Promise.all([
-          ...searchPaths.map((searchPath) => scanDependenciesInSearchPath(searchPath)),
+          nativeModulesResolutions,
+          ...autolinkingOptions.searchPaths.map((searchPath) =>
+            scanDependenciesInSearchPath(searchPath)
+          ),
           scanDependenciesRecursively(appRoot),
         ])
       ),
       (resolution) => resolveExpoModule(resolution, autolinkingOptions.platform, excludeNames)
     );
   });
+
+  for (const revision of Object.values(searchResults)) {
+    if (localModulePaths.has(revision.path)) {
+      revision.isLocal = true;
+    }
+  }
+  return searchResults;
 }
