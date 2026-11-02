@@ -124,7 +124,7 @@ export default [
     name: 'bun',
     type: 'string',
     description: [
-      'Version of Bun used for build. You can also use a specific version. Learn [how to configure the exact version in eas.json](/guides/using-bun/#customize-bun-version-on-eas).',
+      'Version of Bun used for build. You can also use a specific version. Learn [how to configure the exact version in eas.json](/guides/using-bun/#customize-bun-version-on-expo-build).',
     ],
   },
   {
