@@ -244,9 +244,17 @@ public extension EventEmitter {
   /// converted and the listeners run before this function returns, on any thread: on the JavaScript
   /// thread they run inline, and a call from another thread blocks until the JavaScript thread runs them.
   ///
-  /// A call from another thread deadlocks when the JavaScript thread is waiting for the calling thread,
-  /// for example when a synchronous function waits for the main thread with `DispatchQueue.main.sync`
-  /// while the main thread emits. Use `emitInline(event:payload:)` when the caller doesn't need to wait.
+  /// A call from another thread waits for the task that the JavaScript thread is running, so a call from
+  /// the main thread freezes the UI while the JavaScript thread is busy, for example while it loads the
+  /// bundle. It deadlocks when the JavaScript thread is waiting for the calling thread, for example when
+  /// a synchronous function waits for the main thread with `DispatchQueue.main.sync` while the main
+  /// thread emits. The event is scheduled with immediate priority, so it can reach the listeners before
+  /// events that `emit` scheduled earlier. Use `emitInline(event:payload:)` when the caller doesn't need
+  /// to wait.
+  ///
+  /// `noasync` covers direct calls only. An `@Event(.blocking)` property calls this method from the
+  /// closure it returns, so calling the property from an `async` function compiles and blocks a thread
+  /// of the cooperative pool.
   @available(*, noasync)
   @inlinable
   func emitBlocking<P: JavaScriptEncodable & ~Copyable>(event: String, payload: consuming sending P) {
@@ -305,7 +313,9 @@ internal final class EventPayloadBox<P: ~Copyable>: @unchecked Sendable {
   @usableFromInline
   var value: P?
 
-  @inlinable
+  // Not `@inlinable`: with library evolution, an inlinable initializer of a class must delegate to
+  // another initializer.
+  @usableFromInline
   init(_ value: consuming P?) {
     self.value = consume value
   }
@@ -332,7 +342,7 @@ internal func emitEventNow<P: ~Copyable>(
       try encode(payload.take()!, slot, runtime)
     }
   } catch {
-    warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
+    warnNonCopyablePayloadNotEncoded(event: event, payloadType: P.self, error: error)
     return
   }
   dispatchEventOrRetry(event: event, payload: jsPayload, from: emitter, in: runtime)
@@ -373,7 +383,16 @@ internal func warnRuntimeLost(event: String, emitterType: Any.Type) {
 
 /// Logs that the payload of an event couldn't be converted, so the event is not emitted.
 @usableFromInline
-internal func warnPayloadNotEncoded(event: String, payloadType: any (~Copyable).Type, error: any Error) {
+internal func warnPayloadNotEncoded(event: String, payloadType: Any.Type, error: any Error) {
+  log.warn(
+    "Failed to convert payload for event '\(event)' on \(payloadType); the event will not be emitted: \(error)"
+  )
+}
+
+/// Logs that the payload of an event couldn't be converted, like `warnPayloadNotEncoded`, for a payload
+/// type that may be non-copyable: such a metatype doesn't convert to `Any.Type`.
+@usableFromInline
+internal func warnNonCopyablePayloadNotEncoded(event: String, payloadType: any (~Copyable).Type, error: any Error) {
   log.warn(
     "Failed to convert payload for event '\(event)' on \(payloadType); the event will not be emitted: \(error)"
   )

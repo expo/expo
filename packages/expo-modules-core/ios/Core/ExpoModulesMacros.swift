@@ -99,9 +99,12 @@ public enum EventOptions {
   case inline
 
   /// Runs the listeners before the call returns, on any thread. A call from another thread blocks until
-  /// the JavaScript thread runs them, so it deadlocks when the JavaScript thread is waiting for the
-  /// calling thread, for example in `DispatchQueue.main.sync` while the main thread emits. Prefer
-  /// `.inline` unless the caller must wait for the listeners.
+  /// the JavaScript thread runs them: from the main thread it freezes the UI while the JavaScript thread
+  /// is busy, and it deadlocks when the JavaScript thread is waiting for the calling thread, for example
+  /// in `DispatchQueue.main.sync` while the main thread emits. The event can reach the listeners before
+  /// events emitted earlier without an option. Don't call the property from an `async` function: it
+  /// would block a thread of the cooperative pool, and the compiler doesn't report it. Prefer `.inline`
+  /// unless the caller must wait for the listeners.
   case blocking
 }
 

@@ -280,18 +280,25 @@ private struct MacroEventDispatchTests {
   }
 
   @Test
-  func `schedules an inline event emitted from another thread without waiting`() async throws {
+  func `schedules an inline event emitted from another thread without waiting`() throws {
     let runtime = try runtime
     let jsThreadReleased = DispatchSemaphore(value: 0)
+    let module = module
+    let emitted = DispatchSemaphore(value: 0)
     // Keeps the JavaScript thread busy, so an emit that waits for it would not return.
     runtime.schedule {
       jsThreadReleased.wait()
     }
+    Thread {
+      module.onProgressInline(ProgressEvent(percent: 30))
+      emitted.signal()
+    }.start()
 
-    module.onProgressInline(ProgressEvent(percent: 30))
-
+    // A timed wait, so an emit that blocks fails the test instead of hanging it.
+    #expect(emitted.wait(timeout: .now() + 5) == .success)
     jsThreadReleased.signal()
-    try await expectEventually { try await self.result() == 30 }
+    // `result()` runs in a task that the JavaScript thread runs after the event.
+    #expect(try result() == 30)
   }
 
   @Test
@@ -333,12 +340,29 @@ private struct MacroEventDispatchTests {
   }
 
   @Test
-  func `emits a non-copyable payload blocking from another thread`() throws {
+  func `blocks a non-copyable blocking event emitted from another thread until the listeners ran`() throws {
     let runtime = try runtime
+    let module = module
     try runtime.execute {
       try runtime.eval("expo.modules.MacroEmitter.addListener('ticket', number => { globalThis.result = number })")
     }
-    module.emitBlocking(event: "ticket", payload: UniqueTicket(number: 60))
+    let jsThreadReleased = DispatchSemaphore(value: 0)
+    let emitted = DispatchSemaphore(value: 0)
+    runtime.schedule {
+      jsThreadReleased.wait()
+    }
+    let started = DispatchSemaphore(value: 0)
+    Thread {
+      started.signal()
+      module.emitBlocking(event: "ticket", payload: UniqueTicket(number: 60))
+      emitted.signal()
+    }.start()
+    started.wait()
+
+    // The JavaScript thread is busy, so the emit can't return yet.
+    #expect(emitted.wait(timeout: .now() + 0.1) == .timedOut)
+    jsThreadReleased.signal()
+    #expect(emitted.wait(timeout: .now() + 5) == .success)
     #expect(try result() == 60)
   }
 }
