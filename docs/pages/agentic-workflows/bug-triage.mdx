@@ -20,7 +20,7 @@ Bug triage is an automated workflow in which a coding agent tries to reproduce a
 
 ## How Bug triage works
 
-The highlighted steps run on EAS Workflows and Expo Simulators:
+The highlighted steps run on Expo Workflows and Expo Simulators:
 
 <BugTriageDiagram />
 
@@ -49,7 +49,7 @@ Add the Bug triage workflow to my Expo project. Use https://docs.expo.dev/agenti
 
 ## Set up your project
 
-Follow [Set up a project for agentic workflows](/agentic-workflows/setup/) one time for your project, including [Add a GitHub token to EAS](/agentic-workflows/setup/#add-a-github-token-to-eas). See [What the agent can do](/agentic-workflows/setup/#what-the-agent-can-do) to learn which limits apply to the agent.
+Follow [Set up a project for agentic workflows](/agentic-workflows/setup/) one time for your project, including [Add a GitHub token to Expo Services](/agentic-workflows/setup/#add-a-github-token-to-expo-services). See [What the agent can do](/agentic-workflows/setup/#what-the-agent-can-do) to learn which limits apply to the agent.
 
 Bug triage needs [Agentic CI](/agentic-workflows/agentic-ci/) and [Issue to PR](/agentic-workflows/issue-to-pr/), because they fix a replicated bug and test the fix. Add them first.
 
@@ -69,7 +69,7 @@ const token = process.env.GITHUB_TOKEN;
 
 if (!repository || !token) {
   console.error(
-    'GITHUB_REPOSITORY or GITHUB_TOKEN is not set. Add both to the preview environment of the EAS project.'
+    'GITHUB_REPOSITORY or GITHUB_TOKEN is not set. Add both to the preview environment of the Expo Services project.'
   );
   process.exit(1);
 }
@@ -298,7 +298,7 @@ Apple signs the links to the screenshots for a limited time, so the links in the
 
 <Step label="5">
 
-### Add the EAS workflow
+### Add the workflow
 
 Use the file for the platform that you test. Only the iOS workflow starts on TestFlight feedback.
 
@@ -513,7 +513,7 @@ This path is iOS only. You need a membership in the Apple Developer Program and 
 
 <Step label="1">
 
-Connect your App Store Connect app to the EAS project. See [Trigger workflows from App Store Connect events](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events).
+Connect your App Store Connect app to the Expo Services project. See [Trigger workflows from App Store Connect events](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events).
 
 Do this before testers send feedback. Feedback that a tester sent before the connection does not start the workflow.
 
@@ -521,7 +521,7 @@ Do this before testers send feedback. Feedback that a tester sent before the con
 
 <Step label="2">
 
-Make sure that EAS has an App Store Connect API key for the app. To add one, run `eas credentials --platform ios`. The `eas testflight:feedback` command finds the app with the bundle identifier and the API key of the `production` submit profile.
+Make sure that Expo Services has an App Store Connect API key for the app. To add one, run `eas credentials --platform ios`. The `eas testflight:feedback` command finds the app with the bundle identifier and the API key of the `production` submit profile.
 
 </Step>
 
