@@ -578,7 +578,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const $el = $(el);
     const versionRange = $el.attr('data-md-version');
     if (versionRange) {
-      $el.replaceWith(`<p>Recommended version: <code>${escapeHtml(versionRange)}</code></p>`);
+      $el.replaceWith(`<p>Recommended version: ${escapeHtml(versionRange)}</p>`);
     } else {
       $el.remove();
     }

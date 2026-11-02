@@ -1317,7 +1317,7 @@ describe('Package version', () => {
       '<p>Camera API.</p></main>',
     ].join('');
     const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('Recommended version: `~58.0.3`');
+    expect(md).toContain('Recommended version: ~58.0.3');
   });
 });
 
