@@ -16,6 +16,9 @@ Pick the method that matches your tool:
 | Copy Markdown dropdown | Quick prompts with a single page                       | Click **Copy page** > **Copy Markdown** at the top of any documentation page. |
 | Documentation index    | Project rules and coding agents                        | Add the general-purpose index (`/llms.txt`) to your AI tool configuration.    |
 
+
+> **info** If you use [Expo Skills](/skills/) with the **AGENTS.md** file from `create-expo-app`, do not add `/llms.txt` to **AGENTS.md** yourself. That file already tells the agent to fetch the docs for your SDK version and then this index. Add `/llms.txt` only when a tool takes a documentation URL in its own settings.
+
 ## Per-page markdown
 
 Every documentation page has a lightweight markdown version accessible by appending either `/index.md` or `.md` to the page URL. Both URLs serve the same file. For example:
