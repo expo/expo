@@ -71,7 +71,7 @@
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
     "getenv": "^2.0.0",
-    "glob": "^13.0.0",
+    "glob": "^14.0.3",
     "hermes-parser": "^0.36.0",
     "jsc-safe-url": "^0.2.4",
     "lightningcss": "^1.30.1",
