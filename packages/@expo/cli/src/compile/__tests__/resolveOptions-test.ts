@@ -6,22 +6,25 @@ afterEach(() => vol.reset());
 
 describe(resolveOptions, () => {
   it.each([
-    { platform: 'ios', mode: 'development', outputType: 'app' },
-    { platform: 'ios', mode: 'production', outputType: 'ipa' },
-    { platform: 'ios', mode: 'production', device: 'iPhone 18 Pro', outputType: 'app' },
-    { platform: 'android', mode: 'production', outputType: 'aab' },
-    { platform: 'android', mode: 'production', device: 'emulator-5554', outputType: 'apk' },
-  ] as const)(
-    `defaults --output-type to $outputType for $platform in $mode with device $device`,
-    ({ platform, mode, device, outputType }) => {
-      expect(resolveOptions('/app', { platform, mode, device })).toMatchObject({ outputType });
-    }
-  );
+    { platform: 'ios', outputType: 'app' },
+    { platform: 'android', outputType: 'apk' },
+  ] as const)(`defaults --output-type to $outputType for $platform`, ({ platform, outputType }) => {
+    expect(resolveOptions(platform, { dev: true })).toEqual({ mode: 'development', outputType });
+  });
 
   it(`rejects an unknown --output-type`, () => {
-    expect(() =>
-      resolveOptions('/app', { platform: 'ios', mode: 'development', outputType: 'exe' })
-    ).toThrow('Invalid option: --output-type exe. Valid options are: app, ipa');
+    expect(() => resolveOptions('ios', { dev: true, 'output-type': 'exe' })).toThrow(
+      'Invalid option: --output-type exe. Valid options are: app, ipa'
+    );
+  });
+
+  it.each([
+    { platform: 'ios', target: 'the simulator' },
+    { platform: 'android', target: 'all architectures' },
+  ] as const)(`rejects --device for $platform`, ({ platform, target }) => {
+    expect(() => resolveOptions(platform, { device: 'my-device' })).toThrow(
+      `Device builds are not supported yet. Omit --device to build for ${target}.`
+    );
   });
 
   it(`resolves a symlinked --output-dir to its real path`, () => {

@@ -22,10 +22,10 @@ jest.mock('../../events', () => {
     debugEvent: jest.fn(),
   };
 });
-jest.mock('../../resolveMode.js', () => jest.requireActual('../../resolveMode'), {
+jest.mock('../../resolveOptions.js', () => jest.requireActual('../../resolveOptions'), {
   virtual: true,
 });
-jest.mock('../../resolveOptions.js', () => jest.requireActual('../../resolveOptions'), {
+jest.mock('../resolveOptions.js', () => jest.requireActual('../resolveOptions'), {
   virtual: true,
 });
 jest.mock('../compileAndroidAsync.js', () => jest.requireActual('../compileAndroidAsync'), {
@@ -117,6 +117,21 @@ it('refuses production before loading env files', async () => {
   );
   expect(loadEnvFiles).not.toHaveBeenCalled();
   expect(spawnAsync).not.toHaveBeenCalled();
+});
+
+it('refuses unsupported flags before finding the project', async () => {
+  vol.reset();
+
+  await expect(expoCompileAndroid(['--dev', '--output-type', 'aab'])).rejects.toThrow(
+    /EXIT_CALLED/
+  );
+
+  expect(Log.exit).toHaveBeenCalledWith(
+    expect.objectContaining({
+      message: 'Building an aab is not supported yet. Omit --output-type to build an apk.',
+    })
+  );
+  expect(loadEnvFiles).not.toHaveBeenCalled();
 });
 
 it('reports a failed build', async () => {

@@ -20,10 +20,10 @@ jest.mock('../../events', () => {
     debugEvent: Object.assign(jest.fn(), { path: jest.fn((path) => path) }),
   };
 });
-jest.mock('../../resolveMode.js', () => jest.requireActual('../../resolveMode'), {
+jest.mock('../../resolveOptions.js', () => jest.requireActual('../../resolveOptions'), {
   virtual: true,
 });
-jest.mock('../../resolveOptions.js', () => jest.requireActual('../../resolveOptions'), {
+jest.mock('../resolveOptions.js', () => jest.requireActual('../resolveOptions'), {
   virtual: true,
 });
 jest.mock('../compileIosAsync.js', () => jest.requireActual('../compileIosAsync'), {
@@ -129,6 +129,19 @@ it('refuses production before loading env files', async () => {
   );
   expect(loadEnvFiles).not.toHaveBeenCalled();
   expect(spawnAsync).not.toHaveBeenCalled();
+});
+
+it('refuses unsupported flags before finding the project', async () => {
+  vol.reset();
+
+  await expect(expoCompileIos(['--dev', '--output-type', 'ipa'])).rejects.toThrow(/EXIT_CALLED/);
+
+  expect(Log.exit).toHaveBeenCalledWith(
+    expect.objectContaining({
+      message: 'Building an ipa is not supported yet. Omit --output-type to build an app.',
+    })
+  );
+  expect(loadEnvFiles).not.toHaveBeenCalled();
 });
 
 it('only runs on macOS', async () => {
