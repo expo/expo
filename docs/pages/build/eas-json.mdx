@@ -1,7 +1,7 @@
 ---
-title: Configure EAS Build with eas.json
+title: Configure Expo Build with eas.json
 sidebar_title: Configure with eas.json
-description: Learn how a project using EAS services is configured with eas.json.
+description: Learn how a project using Expo Services is configured with eas.json.
 ---
 
 import { BuildIcon } from '@expo/styleguide-icons/custom/BuildIcon';
@@ -10,7 +10,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-**eas.json** is the configuration file for EAS CLI and services. It is generated when the [`eas build:configure` command](/build/setup/#configure-the-project) runs for the first time in your project and is located next to **package.json** at the root of your project. Configuration for EAS Build all belongs under the `build` key.
+**eas.json** is the configuration file for EAS CLI and services. It is generated when the [`eas build:configure` command](/build/setup/#configure-the-project) runs for the first time in your project and is located next to **package.json** at the root of your project. Configuration for Expo Build all belongs under the `build` key.
 
 The default configuration for **eas.json** generated in a new project is shown below:
 
@@ -176,7 +176,7 @@ It's common to share build tool configurations between profiles. Use `extends` f
 
 ### Selecting resource class
 
-A resource class is the virtual machine resources configuration (CPU cores, RAM size) EAS Build provides to your jobs. By default, the resource class is set to `medium`, which is usually sufficient for both small and bigger projects. However, if your project requires a more powerful CPU or bigger memory, or if you want your builds to finish faster, you can switch to `large` workers.
+A resource class is the virtual machine resources configuration (CPU cores, RAM size) Expo Build provides to your jobs. By default, the resource class is set to `medium`, which is usually sufficient for both small and bigger projects. However, if your project requires a more powerful CPU or bigger memory, or if you want your builds to finish faster, you can switch to `large` workers.
 
 For more details on resources provided to each class, see [`android.resourceClass`](/eas/json/#resourceclass-1) and [`ios.resourceClass`](/eas/json/#resourceclass-2) properties. To run your build on a worker of a specific resource class, configure this property in your build profile:
 
@@ -198,13 +198,13 @@ For more details on resources provided to each class, see [`android.resourceClas
 }
 ```
 
-> **Note**: Running jobs on a `large` worker requires a [paid EAS plan](https://expo.dev/accounts/[account]/settings/billing).
+> **Note**: Running jobs on a `large` worker requires a [paid plan](https://expo.dev/accounts/[account]/settings/billing).
 
 ### Selecting a base image
 
 The base image for the build job controls the default versions for a variety of dependencies, such as Node.js, Yarn, and CocoaPods. You can override them using the specific named fields as described in the previous section using `resourceClass`. However, the image includes specific versions of tools that can't be explicitly set any other way, such as the operating system version and Xcode version.
 
-If you are building an app with Expo, EAS Build will pick the appropriate image to use with a reasonable set of dependencies for the SDK version that you are building for. Otherwise, it is recommended to see the list of available images on [Build server infrastructure](/build-reference/infrastructure).
+If you are building an app with Expo, Expo Build will pick the appropriate image to use with a reasonable set of dependencies for the SDK version that you are building for. Otherwise, it is recommended to see the list of available images on [Build server infrastructure](/build-reference/infrastructure).
 
 ### Examples
 
@@ -216,8 +216,8 @@ If you are building an app with Expo, EAS Build will pick the appropriate image 
   "cli": {
     "version": /* @info Required EAS CLI version range. */"SEMVER_RANGE"/* @end */,
     "requireCommit": /* @info If true, ensures that all changes are committed before a build. Defaults to false. */boolean/* @end */,
-    "appVersionSource": /* @info If set to remote, values stored on EAS servers will take precedence over local values. Defaults to local. */string/* @end */,
-    "promptToConfigurePushNotifications": /* @info If set to false, skips Push Notifications credentials setup for EAS Build. Defaults to true. */boolean/* @end */,
+    "appVersionSource": /* @info If set to remote, values stored on Expo servers will take precedence over local values. Defaults to local. */string/* @end */,
+    "promptToConfigurePushNotifications": /* @info If set to false, skips Push Notifications credentials setup for Expo Build. Defaults to true. */boolean/* @end */,
   },
   "build": {
     /* @info Any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_1"/* @end */: {
@@ -357,7 +357,7 @@ If you are building an app with Expo, EAS Build will pick the appropriate image 
 
 ## Environment variables
 
-You can configure environment variables on your build profiles using the `"env"` field. These environment variables will be used to evaluate **app.config.js** locally when you run `eas build`, and they will also be set on the EAS Build builder.
+You can configure environment variables on your build profiles using the `"env"` field. These environment variables will be used to evaluate **app.config.js** locally when you run `eas build`, and they will also be set on the Expo Build builder.
 
 ```json eas.json
 {
@@ -381,13 +381,13 @@ You can configure environment variables on your build profiles using the `"env"`
 }
 ```
 
-The [Environment variables and secrets](/eas/environment-variables) reference explains this topic in greater detail, and the [Use EAS Update](/build/updates) guide provides considerations when using this feature alongside `expo-updates`.
+The [Environment variables and secrets](/eas/environment-variables) reference explains this topic in greater detail, and the [Use Expo Update](/build/updates) guide provides considerations when using this feature alongside `expo-updates`.
 
 ## More
 
 <BoxLink
-  title="EAS Build schema reference"
-  description="See complete reference of available properties for EAS Build."
-  href="/eas/json/#eas-build"
+  title="Expo Build schema reference"
+  description="See complete reference of available properties for Expo Build."
+  href="/eas/json/#expo-build"
   Icon={BuildIcon}
 />

@@ -1,7 +1,7 @@
 ---
 title: GitHub Action for PR previews
 sidebar_title: GitHub PR previews
-description: Learn how to use GitHub Actions to automate publishing updates with EAS Update.
+description: Learn how to use GitHub Actions to automate publishing updates with Expo Update.
 ---
 
 import { Step } from '~/ui/components/Step';
@@ -30,7 +30,7 @@ on: pull_request
 
 jobs:
   update:
-    name: EAS Update
+    name: Expo Update
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -52,7 +52,7 @@ jobs:
           node-version: 24
           cache: yarn
 
-      - name: Setup EAS
+      - name: Setup EAS CLI
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
@@ -92,7 +92,7 @@ If you haven't, you need to give the script above permission to run by providing
 
 </Step>
 
-Your GitHub Action should be set up now. Whenever a developer creates a pull request, this action will build an update and publish it, making it available to all reviewers with builds that have access to the EAS branch.
+Your GitHub Action should be set up now. Whenever a developer creates a pull request, this action will build an update and publish it, making it available to all reviewers with builds that have access to the Expo Update branch.
 
 > Some repositories or organizations might need to explicitly enable GitHub Workflows and allow third-party Actions.
 

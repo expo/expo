@@ -3,7 +3,7 @@ modificationDate: October 8, 2026
 title: Build server infrastructure
 sidebar_title: Server infrastructure
 maxHeadingDepth: 4
-description: Learn about the current build server infrastructure when using EAS.
+description: Learn about the current build server infrastructure when using Expo Build.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -66,7 +66,7 @@ Android builders run on virtual machines in an isolated environment. Every build
 
 ### Gradle JVM args
 
-EAS Build sets the `GRADLE_OPTS` environment variable on the build VM (the worker) before Gradle runs. The values depend on the [resource class](/eas/json/#resourceclass) you select:
+Expo Build sets the `GRADLE_OPTS` environment variable on the build VM (the worker) before Gradle runs. The values depend on the [resource class](/eas/json/#resourceclass) you select:
 
 | Resource class | `-Xmx` (max heap) |
 | -------------- | ----------------- |
@@ -88,7 +88,7 @@ The worker also sets these top-level Gradle properties on `GRADLE_OPTS`:
 
 #### Overriding `GRADLE_OPTS`
 
-You can replace the worker default by setting `GRADLE_OPTS` under a build profile's [`env`](/eas/json/#env) in **eas.json**, in a [workflow file](/eas/workflows/syntax/#jobsjob_idenv), or with [EAS Environment Variables](/eas/environment-variables/). Project environment values take precedence over the worker's default values.
+You can replace the worker default by setting `GRADLE_OPTS` under a build profile's [`env`](/eas/json/#env) in **eas.json**, in a [workflow file](/eas/workflows/syntax/#jobsjob_idenv), or with [Expo Services environment variables](/eas/environment-variables/). Project environment values take precedence over the worker's default values.
 
 ### Android server images
 

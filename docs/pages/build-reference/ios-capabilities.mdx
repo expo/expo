@@ -1,11 +1,11 @@
 ---
 title: iOS capabilities
-description: Learn about built-in iOS capabilities supported in EAS Build and how to enable or disable them.
+description: Learn about built-in iOS capabilities supported in Expo Build and how to enable or disable them.
 ---
 
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
-When you make a change to your iOS entitlements, this change needs to be updated remotely on Apple's servers before making a production build. EAS Build automatically synchronizes capabilities on the Apple Developer Console with your local entitlements configuration when you run `eas build`. Capabilities are web services provided by Apple, think of them like AWS or Firebase services.
+When you make a change to your iOS entitlements, this change needs to be updated remotely on Apple's servers before making a production build. Expo Build automatically synchronizes capabilities on the Apple Developer Console with your local entitlements configuration when you run `eas build`. Capabilities are web services provided by Apple, think of them like AWS or Firebase services.
 
 > This feature can be disabled with `EXPO_NO_CAPABILITY_SYNC=1 eas build`
 
@@ -17,7 +17,7 @@ In an [existing React Native project](/bare/overview/), the entitlements are rea
 
 ## Enabling
 
-If a supported entitlement is present in the entitlements file, then running `eas build` will enable it on Apple Developer Console. If the capability is already enabled, then EAS Build will skip it.
+If a supported entitlement is present in the entitlements file, then running `eas build` will enable it on Apple Developer Console. If the capability is already enabled, then Expo Build will skip it.
 
 ## Disabling
 
@@ -25,7 +25,7 @@ If a capability is enabled for your app remotely, but not present in the native 
 
 ## Supported capabilities
 
-EAS Build will only enable capabilities that it has built-in support for, any unsupported entitlements must be manually enabled via [Apple Developer Console][apple-dev-console].
+Expo Build will only enable capabilities that it has built-in support for, any unsupported entitlements must be manually enabled via [Apple Developer Console][apple-dev-console].
 
 | Support     | Capability                                        | Entitlement string                                                                                               |
 | ----------- | ------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
@@ -110,7 +110,7 @@ Apple's Broadcast option lives inside the Push Notifications capability and has 
 }
 ```
 
-EAS Build sets the Broadcast option only when it enables the Push Notifications capability, so your entitlements also need `aps-environment`. Apple limits [broadcast push notifications](https://developer.apple.com/documentation/usernotifications/setting-up-broadcast-push-notifications) to Live Activities on iOS 18 and later.
+Expo Build sets the Broadcast option only when it enables the Push Notifications capability, so your entitlements also need `aps-environment`. Apple limits [broadcast push notifications](https://developer.apple.com/documentation/usernotifications/setting-up-broadcast-push-notifications) to Live Activities on iOS 18 and later.
 
 If you enable Broadcast only in [Apple Developer Console][apple-dev-console], the next `eas build` resets the Push Notifications capability to its default options and turns Broadcast off. Apple Push Notification service (APNs) then rejects your channel management requests with a `FeatureNotEnabled` error.
 

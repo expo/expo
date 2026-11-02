@@ -1,7 +1,7 @@
 ---
-title: Syntax for EAS Workflows
+title: Syntax for Expo Workflows
 sidebar_title: Syntax
-description: Reference guide for the EAS Workflows configuration file syntax.
+description: Reference guide for the Expo Workflows configuration file syntax.
 maxHeadingDepth: 5
 ---
 
@@ -15,7 +15,7 @@ import { EASFunctionDescription } from '~/ui/components/EASFunctionDescription';
 
 A workflow is a configurable automated process made up of one or more jobs. You must create a YAML file to define your workflow configuration.
 
-To get started with workflows, see [Get Started with EAS Workflows](/eas/workflows/get-started) or see [Examples](/eas/workflows/examples/introduction) for complete workflow configurations.
+To get started with workflows, see [Get Started with Expo Workflows](/eas/workflows/get-started) or see [Examples](/eas/workflows/examples/introduction) for complete workflow configurations.
 
 ## Workflow files
 
@@ -40,7 +40,7 @@ Below is a reference for the syntax of the workflow configuration file.
 
 ## `name`
 
-The human-friendly name of the workflow. This is displayed on the EAS dashboard on the workflows list page and is the title of the workflow's detail page. To set a title for each individual run, use [`run_name`](#run_name).
+The human-friendly name of the workflow. This is displayed on the Expo dashboard on the workflows list page and is the title of the workflow's detail page. To set a title for each individual run, use [`run_name`](#run_name).
 
 ```yaml
 # @info #
@@ -69,13 +69,13 @@ on:
         required: true
 ```
 
-The value is a string. It can include `${{ }}` expressions. EAS renders the template when it creates the run, before any job starts.
+The value is a string. It can include `${{ }}` expressions. Expo Workflows renders the template when it creates the run, before any job starts.
 
 The expression can use the [`github`](#github), [`app_store_connect`](#app_store_connect), [`inputs`](#inputs), [`workflow`](#workflow), [`app`](#app), and [`account`](#account) contexts. It supports all [context functions](#context-functions) except `success()`, `failure()`, and `hashFiles()`. Those functions need a job or step that has already run.
 
-Job-level contexts such as `needs`, `steps`, and `env` are not available. If the template references an unsupported context, the run fails. EAS stores an error and does not store a custom title.
+Job-level contexts such as `needs`, `steps`, and `env` are not available. If the template references an unsupported context, the run fails. Expo Workflows stores an error and does not store a custom title.
 
-If the rendered text is longer than 255 characters, EAS truncates it to 254 characters and appends an ellipsis.
+If the rendered text is longer than 255 characters, Expo Workflows truncates it to 254 characters and appends an ellipsis.
 
 ## `on`
 
@@ -135,7 +135,7 @@ on:
 
 ### `on.ref_delete`
 
-Runs your workflow when a GitHub branch or tag is deleted. Requires a [linked GitHub repository](/eas/workflows/get-started/#automate-workflows-with-github-events) on your EAS project.
+Runs your workflow when a GitHub branch or tag is deleted. Requires a [linked GitHub repository](/eas/workflows/get-started/#automate-workflows-with-github-events) on your Expo Services project.
 
 With the `branches` list, you can trigger the workflow only when those specified branches are deleted. For example, if you use `branches: ['feat/**']`, only deletion of branches matching `feat/**` triggers the workflow. Supports globs. By using the `!` prefix you can specify branches to ignore (you still need to provide at least one branch pattern without it). See [`on.push`](#onpush) for details on glob and negation pattern matching.
 
@@ -147,7 +147,7 @@ With the [`if:`](#ontriggerif) condition, you can decide whether a workflow run 
 
 > **info** Workflow files are read from the default branch HEAD at the time of deletion, not from the deleted ref.
 
-Pair this trigger with the [`branch-delete`](/eas/workflows/pre-packaged-jobs#branch-delete) job to remove EAS Update branches when GitHub branches are deleted. See the [Clean up update branches example](/eas/workflows/examples/branch-cleanup) for a complete workflow.
+Pair this trigger with the [`branch-delete`](/eas/workflows/pre-packaged-jobs#branch-delete) job to remove Expo Update branches when GitHub branches are deleted. See the [Clean up update branches example](/eas/workflows/examples/branch-cleanup) for a complete workflow.
 
 ```yaml
 on:
@@ -279,7 +279,7 @@ on:
 
 Runs your workflow when one of the selected App Store Connect events occurs.
 
-> **info** To use this trigger, configure your App Store Connect connection in the [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/settings). For setup steps, see the [App Store Connect trigger setup](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events) section.
+> **info** To use this trigger, configure your App Store Connect connection in the [Expo dashboard](https://expo.dev/accounts/[account]/projects/[project]/settings). For setup steps, see the [App Store Connect trigger setup](/eas/workflows/get-started/#trigger-workflows-from-app-store-connect-events) section.
 
 When `on.app_store_connect` is present, you must specify at least one event domain (`app_version`, `build_upload`, `external_beta`, or `beta_feedback`). Within a configured event domain, you can specify which states should trigger your workflow.
 
@@ -383,7 +383,7 @@ on:
 
 ### `on.schedule.cron`
 
-> **info** Scheduled workflows are available on paid plans. Learn more at [EAS pricing](https://expo.dev/pricing).
+> **info** Scheduled workflows are available on paid plans. Learn more at [Expo pricing](https://expo.dev/pricing).
 
 Runs your workflow on a schedule using [unix-cron](https://www.ibm.com/docs/en/db2/11.5?topic=task-unix-cron-format) syntax. You can use [crontab guru](https://crontab.guru/) and their [examples](https://crontab.guru/examples.html) to generate cron strings.
 
@@ -549,7 +549,7 @@ jobs:
 
 ### `jobs.<job_id>.environment`
 
-Sets the [EAS environment variable](/eas/environment-variables/) environment for the job. There are three possible values:
+Sets the [Expo Services environment variable](/eas/environment-variables/) environment for the job. There are three possible values:
 
 - `production`
 - `preview`
@@ -720,7 +720,7 @@ With this configuration, a new run cancels the unfinished runs of the same workf
 
 ### `concurrency.group`
 
-A template for the concurrency group key. Write literal text, `${{ }}` expressions, or both. EAS renders the template into the key once, when it creates the run.
+A template for the concurrency group key. Write literal text, `${{ }}` expressions, or both. Expo Workflows renders the template into the key once, when it creates the run.
 
 Each group belongs to one project. Runs of the same project with the same rendered key share one group, even when they come from different workflow files. Different projects never share a group. Each new run applies its own `cancel_in_progress` and `queue` settings to the whole group. For example, a run with `queue: single` replaces every waiting run in the group, even runs that another workflow file queued with `queue: max`. Use the same settings in every workflow file that shares a group.
 
@@ -732,25 +732,25 @@ concurrency:
   # @end #
 ```
 
-The expressions can use the [`github`](#github), [`app_store_connect`](#app_store_connect), [`inputs`](#inputs), [`workflow`](#workflow), [`app`](#app), and [`account`](#account) contexts. They support all [context functions](#context-functions) except `success()`, `failure()`, and `hashFiles()`. Job-level contexts such as `needs`, `after`, `steps`, and `env` are not available. EAS rejects a template that references any other name, such as a job-level context, `success()`, or a misspelled context. It does this when it validates the workflow file, before it creates a run. [`eas workflow:validate`](/eas/workflows/troubleshooting/#validate-the-workflow-file) reports the same errors. See [Context availability](#context-availability).
+The expressions can use the [`github`](#github), [`app_store_connect`](#app_store_connect), [`inputs`](#inputs), [`workflow`](#workflow), [`app`](#app), and [`account`](#account) contexts. They support all [context functions](#context-functions) except `success()`, `failure()`, and `hashFiles()`. Job-level contexts such as `needs`, `after`, `steps`, and `env` are not available. Expo Workflows rejects a template that references any other name, such as a job-level context, `success()`, or a misspelled context. It does this when it validates the workflow file, before it creates a run. [`eas workflow:validate`](/eas/workflows/troubleshooting/#validate-the-workflow-file) reports the same errors. See [Context availability](#context-availability).
 
-When EAS renders the key:
+When Expo Workflows renders the key:
 
 - Each expression must evaluate to a string, a number, or a boolean. Other values, such as objects, fail the run.
 - A missing value renders as an empty string, so every run without that value gets the same key and shares one group. For example, `github.event.pull_request.number` is missing for `push` runs, so `e2e-${{ github.event.pull_request.number }}` puts every push run in the group `e2e-`. Use `||` to provide a fallback: `e2e-${{ github.event.pull_request.number || github.ref }}`.
 - If the rendered key is empty, the run fails. Add literal text such as `ci-` if every expression can be empty for some trigger.
-- The template can be at most 250 characters. EAS rejects a longer template when it validates the workflow file. The rendered key can be at most 2048 bytes. A longer key fails the run.
+- The template can be at most 250 characters. Expo Workflows rejects a longer template when it validates the workflow file. The rendered key can be at most 2048 bytes. A longer key fails the run.
 
-If rendering fails, EAS creates the run, marks it as failed, and shows the error on the run's page. The run does not enter its group.
+If rendering fails, Expo Workflows creates the run, marks it as failed, and shows the error on the run's page. The run does not enter its group.
 
 ### `concurrency.cancel_in_progress`
 
 Whether a new run cancels the runs of its group instead of waiting for them. The value is a boolean or a single `${{ }}` expression. Defaults to `false`.
 
-- `true`, or an expression that evaluates to a truthy value: the new run starts right away. EAS cancels the active run and all waiting runs of its group. The new run does not wait for the canceled runs to stop.
+- `true`, or an expression that evaluates to a truthy value: the new run starts right away. Expo Workflows cancels the active run and all waiting runs of its group. The new run does not wait for the canceled runs to stop.
 - `false`, or an expression that evaluates to a falsy value: the new run waits until the group is free. `false` behaves the same as omitting the property.
 
-For deploys, leave `cancel_in_progress` out. The active deploy always finishes. The newest run waits for it, and EAS replaces the runs in between.
+For deploys, leave `cancel_in_progress` out. The active deploy always finishes. The newest run waits for it, and Expo Workflows replaces the runs in between.
 
 ```yaml
 concurrency:
@@ -767,14 +767,14 @@ concurrency:
   # @end #
 ```
 
-EAS evaluates the expression once, when it creates the run. The expression must be one `${{ }}` block of at most 250 characters. It can use the same contexts and functions as [`concurrency.group`](#concurrencygroup), and EAS validates it the same way when it validates the workflow file. If the expression fails to evaluate, EAS creates the run and marks it as failed. The run does not cancel anything and does not enter its group.
+Expo Workflows evaluates the expression once, when it creates the run. The expression must be one `${{ }}` block of at most 250 characters. It can use the same contexts and functions as [`concurrency.group`](#concurrencygroup), and Expo Workflows validates it the same way when it validates the workflow file. If the expression fails to evaluate, Expo Workflows creates the run and marks it as failed. The run does not cancel anything and does not enter its group.
 
 ### `concurrency.queue`
 
 How many runs can wait for the group. Defaults to `single`.
 
-- `single`: only the newest run waits. When a newer run arrives, it replaces the run that is waiting. EAS cancels the replaced run, which never starts.
-- `max`: up to 100 runs wait. They start one at a time, in the order EAS created them. When 100 runs are already waiting, EAS cancels the new run.
+- `single`: only the newest run waits. When a newer run arrives, it replaces the run that is waiting. Expo Workflows cancels the replaced run, which never starts.
+- `max`: up to 100 runs wait. They start one at a time, in the order Expo Workflows created them. When 100 runs are already waiting, Expo Workflows cancels the new run.
 
 Use `max` when every run must execute, such as database migrations. With a literal key such as `migrate-production`, runs from every branch wait for each other.
 
@@ -786,17 +786,17 @@ concurrency:
   # @end #
 ```
 
-You cannot combine `queue: max` with `cancel_in_progress: true`. EAS rejects the combination when it validates the workflow file. When `cancel_in_progress` is an expression, EAS checks each run when it creates it. If the expression evaluates to a truthy value while `queue` is `max`, EAS marks the new run as failed. The run does not cancel anything and does not enter its group.
+You cannot combine `queue: max` with `cancel_in_progress: true`. Expo Workflows rejects the combination when it validates the workflow file. When `cancel_in_progress` is an expression, Expo Workflows checks each run when it creates it. If the expression evaluates to a truthy value while `queue` is `max`, Expo Workflows marks the new run as failed. The run does not cancel anything and does not enter its group.
 
 ### Waiting and canceled runs
 
-- A run that waits for its group shows as **Queued** in the EAS dashboard, with a link to the run it waits for. `eas workflow:run --wait` prints "Workflow run is queued" with the name of that run. For runs triggered from GitHub, the commit status reads "Workflow run is waiting for another run in its concurrency group."
+- A run that waits for its group shows as **Queued** in the Expo dashboard, with a link to the run it waits for. `eas workflow:run --wait` prints "Workflow run is queued" with the name of that run. For runs triggered from GitHub, the commit status reads "Workflow run is waiting for another run in its concurrency group."
 - A waiting run has no jobs. It does not use build minutes or a concurrency slot on your account until it starts.
 - When the active run finishes, fails, or is canceled, the next waiting run starts. A run that needs a user action, such as an approval in a [`require-approval`](#require-approval) job, holds its group until it succeeds, fails, or is canceled.
-- A waiting run fails instead of starting if it waited more than 30 days. It also fails if its uploaded project sources expired or if the user who started it lost access to the project. EAS then starts the next waiting run.
+- A waiting run fails instead of starting if it waited more than 30 days. It also fails if its uploaded project sources expired or if the user who started it lost access to the project. Expo Workflows then starts the next waiting run.
 - A run that `cancel_in_progress` canceled, whether it was active or waiting, shows as canceled with "Canceled by" and a link to the newer run.
-- A waiting run that a newer run replaced under `queue: single` shows as canceled with "Replaced by" and a link to the newer run. A run that EAS canceled because a `queue: max` group already had 100 waiting runs shows "Queue was full (limit 100)".
-- The GitHub commit status and `eas workflow:run --wait` show these runs as canceled without the reason. Open the run in the EAS dashboard to see it.
+- A waiting run that a newer run replaced under `queue: single` shows as canceled with "Replaced by" and a link to the newer run. A run that Expo Workflows canceled because a `queue: max` group already had 100 waiting runs shows "Queue was full (limit 100)".
+- The GitHub commit status and `eas workflow:run --wait` show these runs as canceled without the reason. Open the run in the Expo dashboard to see it.
 - You can cancel a waiting run the same way as any other run.
 
 ## Control flow
@@ -884,11 +884,11 @@ EAS evaluates every part of an expression. `&&` and `||` do not skip the right s
 
 ### Context availability
 
-EAS evaluates `${{ }}` expressions at three points. Each point has its own set of contexts and functions.
+Expo Workflows evaluates `${{ }}` expressions at three points. Each point has its own set of contexts and functions.
 
-- **Run creation**: [`run_name`](#run_name), [`on.<trigger>.if`](#ontriggerif), [`concurrency.group`](#concurrencygroup), and [`concurrency.cancel_in_progress`](#concurrencycancel_in_progress). EAS evaluates them when it creates the run, before any job exists.
-- **Job**: every field of a job except `steps`, `hooks`, and `outputs`, for example [`jobs.<job_id>.if`](#jobsjob_idif), `env`, and `params`. EAS evaluates them when the job is ready to start.
-- **Steps**: [`jobs.<job_id>.steps`](#jobsjob_idsteps), [`jobs.<job_id>.hooks`](#jobsjob_idhooks), and [`jobs.<job_id>.outputs`](#jobsjob_idoutputs). EAS evaluates them on the worker while the job runs.
+- **Run creation**: [`run_name`](#run_name), [`on.<trigger>.if`](#ontriggerif), [`concurrency.group`](#concurrencygroup), and [`concurrency.cancel_in_progress`](#concurrencycancel_in_progress). Expo Workflows evaluates them when it creates the run, before any job exists.
+- **Job**: every field of a job except `steps`, `hooks`, and `outputs`, for example [`jobs.<job_id>.if`](#jobsjob_idif), `env`, and `params`. Expo Workflows evaluates them when the job is ready to start.
+- **Steps**: [`jobs.<job_id>.steps`](#jobsjob_idsteps), [`jobs.<job_id>.hooks`](#jobsjob_idhooks), and [`jobs.<job_id>.outputs`](#jobsjob_idoutputs). Expo Workflows evaluates them on the worker while the job runs.
 
 | Context or function                                                                                     | Run creation | Job         | Steps                           |
 | ------------------------------------------------------------------------------------------------------- | ------------ | ----------- | ------------------------------- |
@@ -907,17 +907,17 @@ EAS evaluates `${{ }}` expressions at three points. Each point has its own set o
 | `fromJSON()`, `toJSON()`, `contains()`, `startsWith()`, `endsWith()`, `replaceAll()`, and `substring()` | <YesIcon />  | <YesIcon /> | <YesIcon />                     |
 | `hashFiles()`                                                                                           | <NoIcon />   | <NoIcon />  | <YesIcon />                     |
 
-In [`on.<trigger>.if`](#ontriggerif), the `workflow` context has only `name` and `filename`. EAS evaluates the condition before it creates the run, so `workflow.id` and `workflow.url` do not exist yet.
+In [`on.<trigger>.if`](#ontriggerif), the `workflow` context has only `name` and `filename`. Expo Workflows evaluates the condition before it creates the run, so `workflow.id` and `workflow.url` do not exist yet.
 
 `app_store_connect` has values only for runs that an App Store Connect event triggered. In steps, only `build` jobs receive it.
 
-At the job level, `env` becomes available after EAS determines the job's [`environment`](#jobsjob_idenvironment). You cannot use `env` in `jobs.<job_id>.environment` itself.
+At the job level, `env` becomes available after Expo Workflows determines the job's [`environment`](#jobsjob_idenvironment). You cannot use `env` in `jobs.<job_id>.environment` itself.
 
-If a `build`, `repack`, `submit`, or `testflight` job has no explicit `environment`, EAS first evaluates its `params` to determine which environment to use. These parameters cannot use `env`. For example, a `submit` job inherits its source build's environment, but EAS must evaluate `params.build_id` before it can find that build. Set `environment` explicitly on the job to use `env` in its parameters.
+If a `build`, `repack`, `submit`, or `testflight` job has no explicit `environment`, Expo Workflows first evaluates its `params` to determine which environment to use. These parameters cannot use `env`. For example, a `submit` job inherits its source build's environment, but Expo Workflows must evaluate `params.build_id` before it can find that build. Set `environment` explicitly on the job to use `env` in its parameters.
 
-A condition in [`jobs.<job_id>.if`](#jobsjob_idif) that references `env` fails the job if EAS cannot determine the environment, for example because the job's parameters are invalid. Set `environment` explicitly to make `env` available to the condition without relying on those parameters.
+A condition in [`jobs.<job_id>.if`](#jobsjob_idif) that references `env` fails the job if Expo Workflows cannot determine the environment, for example because the job's parameters are invalid. Set `environment` explicitly to make `env` available to the condition without relying on those parameters.
 
-For `on.<trigger>.if` and `concurrency`, EAS rejects a reference to an unavailable context or function when it validates the workflow file. EAS does not check `run_name` at that time. A `run_name` template that references an unavailable context or function fails the run when EAS renders the title.
+For `on.<trigger>.if` and `concurrency`, Expo Workflows rejects a reference to an unavailable context or function when it validates the workflow file. Expo Workflows does not check `run_name` at that time. A `run_name` template that references an unavailable context or function fails the run when Expo Workflows renders the title.
 
 ### Context properties
 
@@ -1036,7 +1036,7 @@ jobs:
 
 #### `github`
 
-To ease the migration from GitHub Actions to EAS Workflows we expose some context fields you may find useful.
+To ease the migration from GitHub Actions to Expo Workflows we expose some context fields you may find useful.
 
 ```ts
 type GitHubContext = {
@@ -1265,7 +1265,7 @@ jobs:
 
 A record of environment variables available in the current job context.
 
-> **Note:** The `env` context is available in jobs and steps, not when EAS creates the run. In job fields, it is available only after EAS resolves the job's environment. See [Context availability](#context-availability).
+> **Note:** The `env` context is available in jobs and steps, not when Expo Workflows creates the run. In job fields, it is available only after Expo Workflows resolves the job's environment. See [Context availability](#context-availability).
 
 Example:
 
@@ -1306,7 +1306,7 @@ jobs:
 
 #### `always()`
 
-Always returns `true`. Use it in a step's `if` to run the step even when an earlier step failed. In a job's `if`, `always()` does not override `needs`: EAS skips the job when a job in its `needs` list did not succeed. Use [`after`](#jobsjob_idafter) instead of `needs` to run a job regardless of another job's result.
+Always returns `true`. Use it in a step's `if` to run the step even when an earlier step failed. In a job's `if`, `always()` does not override `needs`: Expo Workflows skips the job when a job in its `needs` list did not succeed. Use [`after`](#jobsjob_idafter) instead of `needs` to run a job regardless of another job's result.
 
 ```yaml
 jobs:
@@ -1469,7 +1469,7 @@ Learn about the different pre-packaged jobs below.
 
 #### `build`
 
-Creates an Android or iOS build of your project using [EAS Build](/build/introduction/). See [Build job documentation](/eas/workflows/pre-packaged-jobs#build) for detailed information and examples.
+Creates an Android or iOS build of your project using [Expo Build](/build/introduction/). See [Build job documentation](/eas/workflows/pre-packaged-jobs#build) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1509,7 +1509,7 @@ This job outputs the following properties:
 
 #### `deploy`
 
-Deploys your application using [EAS Hosting](/eas/hosting/introduction/). See [Deploy job documentation](/eas/workflows/pre-packaged-jobs#deploy) for detailed information and examples.
+Deploys your application using [Expo Hosting](/eas/hosting/introduction/). See [Deploy job documentation](/eas/workflows/pre-packaged-jobs#deploy) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1566,11 +1566,11 @@ This job outputs the following properties:
 }
 ```
 
-> **Note:** For accurate fingerprint matching, ensure the fingerprint job's `environment` matches your build profile. Consider using [EAS environment variables](/eas/environment-variables/) instead of `env` for better consistency across jobs.
+> **Note:** For accurate fingerprint matching, ensure the fingerprint job's `environment` matches your build profile. Consider using [Expo Services environment variables](/eas/environment-variables/) instead of `env` for better consistency across jobs.
 
 #### `get-build`
 
-Retrieves an existing build from EAS that matches the provided parameters. See [Get Build job documentation](/eas/workflows/pre-packaged-jobs#get-build) for detailed information and examples.
+Retrieves an existing build from Expo Build that matches the provided parameters. See [Get Build job documentation](/eas/workflows/pre-packaged-jobs#get-build) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1616,7 +1616,7 @@ This job outputs the following properties:
 
 #### `submit`
 
-Submits an Android or iOS build to the app store using [EAS Submit](/deploy/submit-to-app-stores/). See [Submit job documentation](/eas/workflows/pre-packaged-jobs#submit) for detailed information and examples.
+Submits an Android or iOS build to the app store using [Expo Submit](/deploy/submit-to-app-stores/). See [Submit job documentation](/eas/workflows/pre-packaged-jobs#submit) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1683,7 +1683,7 @@ This job outputs the following properties, where `asc_build_id` is only set when
 
 #### `update`
 
-Publishes an update using [EAS Update](/eas-update/introduction/). See [Update job documentation](/eas/workflows/pre-packaged-jobs#update) for detailed information and examples.
+Publishes an update using [Expo Update](/eas-update/introduction/). See [Update job documentation](/eas/workflows/pre-packaged-jobs#update) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1718,7 +1718,7 @@ This job outputs the following properties:
 
 #### `update-rollout`
 
-Increases the rollout percentage of an in-progress EAS Update rollout. See [Update rollout job documentation](/eas/workflows/pre-packaged-jobs#update-rollout) for detailed information and examples.
+Increases the rollout percentage of an in-progress Expo Update rollout. See [Update rollout job documentation](/eas/workflows/pre-packaged-jobs#update-rollout) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1743,7 +1743,7 @@ This job outputs the following properties:
 
 #### `branch-delete`
 
-Deletes an EAS Update branch and all of its updates. See [Branch delete job documentation](/eas/workflows/pre-packaged-jobs#branch-delete) for detailed information and examples.
+Deletes an Expo Update branch and all of its updates. See [Branch delete job documentation](/eas/workflows/pre-packaged-jobs#branch-delete) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1951,7 +1951,7 @@ jobs:
 
 ## Custom jobs
 
-Runs custom code and can use built-in EAS functions. Does not require a `type` field.
+Runs custom code and can use built-in `eas/` functions. Does not require a `type` field.
 
 ```yaml
 jobs:
@@ -2127,7 +2127,7 @@ jobs:
 
 ### `jobs.<job_id>.steps.<step>.uses`
 
-EAS provides a set of built-in reusable functions that you can use in workflow steps. The `uses` keyword is used to specify the function to use. All built-in functions start with the `eas/` prefix.
+Expo Workflows provides a set of built-in reusable functions that you can use in workflow steps. The `uses` keyword is used to specify the function to use. All built-in functions start with the `eas/` prefix.
 
 ```yaml
 jobs:
@@ -2142,7 +2142,7 @@ jobs:
       # @end #
 ```
 
-You can define reusable step sequences in your project and call them with a path that starts with `./` or `../`, such as `./.eas/functions/setup`. See the [custom function schema](#custom-functions) and the guide to [using custom functions in EAS Workflows](/eas/workflows/custom-functions/).
+You can define reusable step sequences in your project and call them with a path that starts with `./` or `../`, such as `./.eas/functions/setup`. See the [custom function schema](#custom-functions) and the guide to [using custom functions in Expo Workflows](/eas/workflows/custom-functions/).
 
 Below is a list of built-in functions you can use in your workflow steps.
 
@@ -2408,7 +2408,7 @@ jobs:
 
 #### `eas/download_artifact`
 
-Downloads an artifact from EAS given an artifact's ID or name. Useful for sending artifacts from previous jobs to other services.
+Downloads an artifact from Expo servers given an artifact's ID or name. Useful for sending artifacts from previous jobs to other services.
 
 ```yaml
 jobs:
@@ -2444,7 +2444,7 @@ jobs:
         run: echo ${{ steps.download_artifact.outputs.artifact_path }}
 ```
 
-The following functions connect your workflow to [PostHog](/guides/using-posthog/). Run `eas integrations:posthog:connect` to link a PostHog project and set the environment variables these functions read. `eas/posthog_capture_event` uses your public project API key, while the other functions use a PostHog personal API key with the scopes noted for each one. For setup, see [Using PostHog](/guides/using-posthog/), and for complete workflows, see [PostHog recipes for EAS Workflows](/guides/using-posthog/recipes).
+The following functions connect your workflow to [PostHog](/guides/using-posthog/). Run `eas integrations:posthog:connect` to link a PostHog project and set the environment variables these functions read. `eas/posthog_capture_event` uses your public project API key, while the other functions use a PostHog personal API key with the scopes noted for each one. For setup, see [Using PostHog](/guides/using-posthog/), and for complete workflows, see [PostHog recipes for Expo Workflows](/guides/using-posthog/recipes).
 
 #### `eas/posthog_capture_event`
 
@@ -2582,9 +2582,9 @@ jobs:
 
 ## Custom functions
 
-Define reusable step sequences in your project and call them with a relative path through [`uses`](#jobsjob_idstepsstepuses). The path must be a static, literal string. It cannot contain `${{ }}` interpolation or backslashes. Custom function calls accept the same fields as built-in function calls: `id`, `name`, `with`, `if`, and `env`. Do not set `working_directory` on the call step. Set it on the function's inner steps instead. Store each custom function in a directory that contains a **function.yml** or **function.yaml** file. Steps inside a custom function use the same format as [custom job steps](#jobsjob_idsteps). For details about organizing files, nesting functions, and calling functions from jobs or hooks, see [Custom functions in EAS Workflows](/eas/workflows/custom-functions/).
+Define reusable step sequences in your project and call them with a relative path through [`uses`](#jobsjob_idstepsstepuses). The path must be a static, literal string. It cannot contain `${{ }}` interpolation or backslashes. Custom function calls accept the same fields as built-in function calls: `id`, `name`, `with`, `if`, and `env`. Do not set `working_directory` on the call step. Set it on the function's inner steps instead. Store each custom function in a directory that contains a **function.yml** or **function.yaml** file. Steps inside a custom function use the same format as [custom job steps](#jobsjob_idsteps). For details about organizing files, nesting functions, and calling functions from jobs or hooks, see [Custom functions in Expo Workflows](/eas/workflows/custom-functions/).
 
-Your **function.yml** file supports the following top-level properties: `name`, `description`, `inputs`, `outputs`, and `runs`. EAS Workflows rejects unknown top-level properties.
+Your **function.yml** file supports the following top-level properties: `name`, `description`, `inputs`, `outputs`, and `runs`. Expo Workflows rejects unknown top-level properties.
 
 ### Function `name`
 
@@ -2619,7 +2619,7 @@ The full form is a list of objects with the following properties:
 | ---------------- | --------- | ----------- | ------------------------------------------------------------------------------- |
 | `name`           | `string`  | <YesIcon /> | The input's name. Use it to access the input as `${{ inputs.<name> }}`.         |
 | `type`           | `string`  | <NoIcon />  | The input type: `string`, `boolean`, `number`, or `json`. Defaults to `string`. |
-| `default_value`  | varies    | <NoIcon />  | The value EAS Workflows uses when you do not provide one. Must match `type`.    |
+| `default_value`  | varies    | <NoIcon />  | The value Expo Workflows uses when you do not provide one. Must match `type`.   |
 | `allowed_values` | array     | <NoIcon />  | The values you can pass for this input.                                         |
 | `required`       | `boolean` | <NoIcon />  | Whether you must provide this input. Defaults to `false`.                       |
 
@@ -2652,7 +2652,7 @@ outputs:
     description: The rendered greeting.
 ```
 
-EAS Workflows exposes each output as a string. Read the output as `${{ steps.<call_id>.outputs.<name> }}`. Use the `id` from the call step. The caller cannot reference the function's internal step identifiers.
+Expo Workflows exposes each output as a string. Read the output as `${{ steps.<call_id>.outputs.<name> }}`. Use the `id` from the call step. The caller cannot reference the function's internal step identifiers.
 
 ### Function `runs.steps`
 
@@ -2667,7 +2667,7 @@ runs:
 
 ## Built-in shell functions
 
-EAS Workflows provides the following shell function that you can use in your workflow steps to set variable outputs.
+Expo Workflows provides the following shell function that you can use in your workflow steps to set variable outputs.
 
 ### `set-output`
 

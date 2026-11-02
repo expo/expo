@@ -5,7 +5,7 @@ export default [
     name: 'withoutCredentials',
     type: 'boolean',
     description: [
-      "When set to `true`, EAS CLI won't require you to configure credentials when building the app. This comes in handy when using EAS Build [custom builds](/custom-builds/get-started/). Defaults to `false`.",
+      "When set to `true`, EAS CLI won't require you to configure credentials when building the app. This comes in handy when using Expo Build [custom builds](/custom-builds/get-started/). Defaults to `false`.",
     ],
   },
   {
@@ -31,7 +31,7 @@ export default [
       ' - `"buildNumber"` (or `true`) - bumps the last component of `expo.ios.buildNumber` (for example, `1.2.3.39` to `1.2.3.40`).',
       " - `false` - versions won't be bumped automatically (default)",
       '',
-      'Based on the value of [`cli.appVersionSource` in **eas.json**](/build-reference/app-versions/), the values will be updated locally in your project or on EAS servers.',
+      'Based on the value of [`cli.appVersionSource` in **eas.json**](/build-reference/app-versions/), the values will be updated locally in your project or on Expo servers.',
     ],
   },
   {
@@ -90,7 +90,7 @@ export default [
     name: 'applicationArchivePath',
     type: 'string',
     description: [
-      'Path (or pattern) where EAS Build is going to look for the application archive. EAS Build uses [glob patterns](https://github.com/isaacs/node-glob#glob-primer) for pattern matching. You should modify that path only if you are using a custom **Gymfile**. The default is `ios/build/Build/Products/*-iphonesimulator/*.app` when building for simulator and `ios/build/*.ipa` in other cases.',
+      'Path (or pattern) where Expo Build is going to look for the application archive. Expo Build uses [glob patterns](https://github.com/isaacs/node-glob#glob-primer) for pattern matching. You should modify that path only if you are using a custom **Gymfile**. The default is `ios/build/Build/Products/*-iphonesimulator/*.app` when building for simulator and `ios/build/*.ipa` in other cases.',
     ],
   },
   {

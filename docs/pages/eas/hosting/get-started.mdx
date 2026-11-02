@@ -1,7 +1,7 @@
 ---
-sidebar_title: Get started with EAS Hosting
+sidebar_title: Get started with Expo Hosting
 title: Deploy your first Expo Router and React app
-description: Learn how to deploy your Expo Router and React apps to EAS Hosting.
+description: Learn how to deploy your Expo Router and React apps to Expo Hosting.
 hasVideoLink: true
 searchRank: 9
 ---
@@ -11,23 +11,23 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-EAS Hosting is a react hosting service that allows you to deploy an exported Expo web build to a preview or production URL.
+Expo Hosting is a react hosting service that allows you to deploy an exported Expo web build to a preview or production URL.
 
 This guide will walk you through the process of creating your first web deployment.
 
 <VideoBoxLink
   videoId="NaKsfWciJLo"
   title="Watch: Deploy your Expo Router web project"
-  description="Set up EAS Hosting for your Expo Router web project, create your first deployment, and get a preview URL up and running."
+  description="Set up Expo Hosting for your Expo Router web project, create your first deployment, and get a preview URL up and running."
 />
 
 ---
 
 <Prerequisites>
   <Requirement title="An Expo account">
-    EAS Hosting is available to anyone with an Expo account, regardless of whether you pay for EAS or use the Free plan. You can sign up at [expo.dev/signup](https://expo.dev/signup).
+    Expo Hosting is available to anyone with an Expo account, regardless of whether you pay for Expo Services or use the Free plan. You can sign up at [expo.dev/signup](https://expo.dev/signup).
 
-    Paid subscribers can create more deployments, have more bandwidth, storage, and requests, and may set up a custom domain. Learn more about different plans and benefits at [EAS pricing](https://expo.dev/pricing#host).
+    Paid subscribers can create more deployments, have more bandwidth, storage, and requests, and may set up a custom domain. Learn more about different plans and benefits at [Expo pricing](https://expo.dev/pricing#host).
 
   </Requirement>
   <Requirement title="An Expo Router web project">
@@ -48,7 +48,7 @@ This guide will walk you through the process of creating your first web deployme
 <Step label="1">
 ## Install the latest EAS CLI
 
-EAS CLI is the command-line app you will use to interact with EAS services from your terminal. To install it, run the command:
+EAS CLI is the command-line app you will use to interact with Expo Services from your terminal. To install it, run the command:
 
 <Terminal
   cmd={{
@@ -113,16 +113,16 @@ You need to export your web project into a **dist** directory. To do this, run:
 
 </Step>
 
-Now publish your website to EAS Hosting:
+Now publish your website to Expo Hosting:
 
 <Terminal cmd={['$ eas deploy']} />
 
 The first time you run this command, it will:
 
-1. Prompt you to connect an EAS project if you haven't done so yet
+1. Prompt you to connect an Expo Services project if you haven't done so yet
 2. Ask you to choose a preview subdomain name
 
 > **info** A **preview subdomain name** is a prefix used for the preview URL of your app.
 > For example, if you choose `my-app` as your preview subdomain name, your preview URL would look something like this: `https://my-app--or1170q9ix.expo.app/`, and your production URL would be: `https://my-app.expo.app/`.
 
-Once your deployment is complete, the CLI will output a preview URL for where your deployed app is accessible, as well as a link to the deployment details on the EAS Dashboard.
+Once your deployment is complete, the CLI will output a preview URL for where your deployed app is accessible, as well as a link to the deployment details on the Expo dashboard.

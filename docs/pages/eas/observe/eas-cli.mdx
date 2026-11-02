@@ -1,13 +1,13 @@
 ---
 title: Querying with EAS CLI
 sidebar_title: EAS CLI
-description: Query EAS Observe metrics, events, errors, and sessions from the terminal with the eas observe commands.
+description: Query Expo Observe metrics, events, errors, and sessions from the terminal with the eas observe commands.
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 
-Everything the [EAS Observe dashboard](/eas/observe/dashboard/) shows is also available from the terminal. Use the `eas observe` commands to compare releases, investigate slow sessions, and pipe results into scripts.
+Everything the [Expo Observe dashboard](/eas/observe/dashboard/) shows is also available from the terminal. Use the `eas observe` commands to compare releases, investigate slow sessions, and pipe results into scripts.
 
 The same metrics, events, and sessions are available to AI agents through the [Expo Model Context Protocol (MCP) Server](/eas/observe/ai-agents/#option-1-expo-mcp-server).
 
@@ -17,7 +17,7 @@ The same metrics, events, and sessions are available to AI agents through the [E
   <Requirement title="The EAS CLI">
     Follow the [instructions for installing the CLI](/eas/cli#installation).
   </Requirement>
-  <Requirement title="An app already using EAS Observe">
+  <Requirement title="An app already using Expo Observe">
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
     build.
   </Requirement>
@@ -64,14 +64,14 @@ When no time range is given, commands return the last 60 days.
 
 Startup metrics are collected automatically once the app is instrumented. See the [Metrics reference](/eas/observe/reference/metrics/) for what each one measures.
 
-| Name              | Metric                                               |
-| ----------------- | ---------------------------------------------------- |
-| `tti`             | Time to interactive                                  |
-| `ttr`             | Time to first render                                 |
-| `cold_launch`     | Cold launch time                                     |
-| `warm_launch`     | Warm launch time                                     |
-| `bundle_load`     | Bundle load time                                     |
-| `update_download` | [EAS Update download time](/eas/observe/eas-update/) |
+| Name              | Metric                                                |
+| ----------------- | ----------------------------------------------------- |
+| `tti`             | Time to interactive                                   |
+| `ttr`             | Time to first render                                  |
+| `cold_launch`     | Cold launch time                                      |
+| `warm_launch`     | Warm launch time                                      |
+| `bundle_load`     | Bundle load time                                      |
+| `update_download` | [Expo Update download time](/eas/observe/eas-update/) |
 
 Navigation metrics are per route. They require SDK 56 or later and one of the navigation integrations, either [Expo Router](/eas/observe/integrations/expo-router/) or [React Navigation](/eas/observe/integrations/react-navigation/).
 
@@ -135,7 +135,7 @@ Command flags:
 - `--limit <number>`: samples per page. Defaults to 10, capped at 100.
 - `--after <cursor>`: the `endCursor` from a previous run.
 - `--app-version <version>` and `--build-number <number>`: filter to one release.
-- `--update-id <id>`: filter by EAS Update ID.
+- `--update-id <id>`: filter by Expo Update ID.
 
 When more results are available, the command prints the flag needed to fetch the next page. JSON output adds `sessionId`, `easClientId`, and any custom params attached to the sample.
 
@@ -162,7 +162,7 @@ Command flags:
 - `--stat <name>`: one of `median`, `p90`, or `count`.
 - `--route-name <name>`: filter by route name. Repeat the flag for several routes.
 - `--app-version <version>` and `--build-number <number>`: filter to one release.
-- `--update-id <id>`: filter by EAS Update ID.
+- `--update-id <id>`: filter by Expo Update ID.
 - `--limit <number>`: routes per page. Defaults to 50, capped at 200.
 - `--after <cursor>`: the `endCursor` from a previous run.
 
@@ -216,7 +216,7 @@ Command flags:
 - `--all-events`: list every event instead of the name summary. Cannot be combined with an event name.
 - `--session-id <id>`: filter to one session. For the full timeline, including metrics, use `observe:session`.
 - `--app-version <version>` and `--build-number <number>`: filter to one release.
-- `--update-id <id>`: filter by EAS Update ID.
+- `--update-id <id>`: filter by Expo Update ID.
 - `--limit <number>` and `--after <cursor>`: paginate the results.
 
 Querying a name that has no events prints the available names for the same time range, which makes typos easy to spot.
@@ -240,7 +240,7 @@ Command flags:
 - `--fingerprint <fingerprint>`: show the occurrences of one error, with stack traces. The fingerprint is in the first column of the grouped output.
 - `--severity <level>`: one of `fatal` or `error`. Ignored with `--fingerprint`.
 - `--app-version <version>` and `--build-number <number>`: filter to one release.
-- `--update-id <id>`: filter by EAS Update ID.
+- `--update-id <id>`: filter by Expo Update ID.
 - `--limit <number>`: occurrences per page. Defaults to 10, capped at 100. Requires `--fingerprint`.
 - `--after <cursor>`: the `endCursor` from a previous run. Requires `--fingerprint`.
 
@@ -266,7 +266,7 @@ Lists the app versions in the field with their build numbers, update IDs, and ev
   ]}
 />
 
-The table shows app version, first seen, events, users, builds, and updates. JSON output returns the full hierarchy, with EAS Build and update details nested under each version.
+The table shows app version, first seen, events, users, builds, and updates. JSON output returns the full hierarchy, with Expo Build and update details nested under each version.
 
 ## Common workflows
 

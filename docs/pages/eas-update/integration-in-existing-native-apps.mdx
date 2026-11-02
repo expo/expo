@@ -1,7 +1,7 @@
 ---
-title: Using EAS Update in an existing native app
+title: Using Expo Update in an existing native app
 sidebar_title: Integrate in existing native apps
-description: Learn how to integrate EAS Update into your existing native Android and iOS app to enable over-the-air updates.
+description: Learn how to integrate Expo Update into your existing native Android and iOS app to enable over-the-air updates.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -11,13 +11,13 @@ import { Terminal, DiffBlock } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
 
-> **info** If your project is a **greenfield React Native app** — primarily built with React Native from the start, and the entry point of the app is React Native, then skip this guide and proceed to [Get started with EAS Update](/eas-update/getting-started/).
+> **info** If your project is a **greenfield React Native app** — primarily built with React Native from the start, and the entry point of the app is React Native, then skip this guide and proceed to [Get started with Expo Update](/eas-update/getting-started/).
 
-This guide explains how to integrate EAS Update in an existing native app, sometimes referred to as a brownfield app. It assumes that you are using Expo SDK 52 or later, and React Native 0.76 or later.
+This guide explains how to integrate Expo Update in an existing native app, sometimes referred to as a brownfield app. It assumes that you are using Expo SDK 52 or later, and React Native 0.76 or later.
 
 Instructions are not available for older Expo SDK and React Native versions. Additional hands-on support for integrating with older versions can only be provided for enterprise customers ([contact us](https://expo.dev/contact)).
 
-> **warning** The following instructions may not work for all projects. The specifics of integrating EAS Update into existing projects depend heavily on the specifics of your app, and so you may need to adapt the instructions to your unique setup. If you encounter issues, [create an issue on GitHub](https://github.com/expo/expo/issues) or open a pull request to suggest improvements to this guide.
+> **warning** The following instructions may not work for all projects. The specifics of integrating Expo Update into existing projects depend heavily on the specifics of your app, and so you may need to adapt the instructions to your unique setup. If you encounter issues, [create an issue on GitHub](https://github.com/expo/expo/issues) or open a pull request to suggest improvements to this guide.
 
 <Prerequisites>
   <Requirement title="A brownfield native project with React Native">
@@ -60,9 +60,9 @@ Instructions are not available for older Expo SDK and React Native versions. Add
 
 ## Installation and basic configuration
 
-Follow steps 1, 2, 3, and 4 from the [Get started with EAS Update](/eas-update/getting-started/) guide.
+Follow steps 1, 2, 3, and 4 from the [Get started with Expo Update](/eas-update/getting-started/) guide.
 
-After this is complete, you will have installed and authenticated with `eas-cli`, installed `expo-updates` to your project, initialized an associated EAS project, and added basic configuration to your native projects.
+After this is complete, you will have installed and authenticated with `eas-cli`, installed `expo-updates` to your project, initialized an associated Expo Services project, and added basic configuration to your native projects.
 
 ## Opt out of automatic setup
 
@@ -580,7 +580,7 @@ public class CustomViewController: UIViewController, AppControllerDelegate {
 
 <Collapsible summary="How long will this take to add to my app?">
 
-Assuming you are using the latest version of React Native supported by the Expo SDK, and you are comfortable with the React Native integration in your native projects, then you can likely integrate EAS Update in a similar amount of time as it would take you to integrate with a tool like CodePush or Sentry.
+Assuming you are using the latest version of React Native supported by the Expo SDK, and you are comfortable with the React Native integration in your native projects, then you can likely integrate Expo Update in a similar amount of time as it would take you to integrate with a tool like CodePush or Sentry.
 
 The most important factor is the React Native version that your app uses. If your app uses anything older than the latest supported version by the Expo SDK (as referenced at the top of this guide), then you will want to upgrade to that version first, and the time that will take is heavily dependent on the size and complexity of the app and skill and experience level of the team working on it.
 

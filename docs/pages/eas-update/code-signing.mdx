@@ -1,6 +1,6 @@
 ---
-title: End-to-end code signing with EAS Update
-description: Learn how code signing and key rotation work in EAS Update.
+title: End-to-end code signing with Expo Update
+description: Learn how code signing and key rotation work in Expo Update.
 sidebar_title: Code signing
 ---
 
@@ -8,9 +8,9 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-> **info** EAS Update Code Signing is only available to accounts subscribed to the EAS Production or Enterprise plans. See [EAS pricing plans](https://expo.dev/pricing).
+> **info** Expo Update Code Signing is only available to accounts subscribed to the Production or Enterprise plans. See [Expo pricing plans](https://expo.dev/pricing).
 
-The `expo-updates` library supports end-to-end code signing using [public-key cryptography](https://en.wikipedia.org/wiki/Public-key_cryptography). Code signing allows developers to cryptographically sign their updates with their own keys. The signatures are then verified on the client before the update is applied, which ensures ISPs, CDNs, cloud providers, and even EAS itself cannot tamper with updates run by apps.
+The `expo-updates` library supports end-to-end code signing using [public-key cryptography](https://en.wikipedia.org/wiki/Public-key_cryptography). Code signing allows developers to cryptographically sign their updates with their own keys. The signatures are then verified on the client before the update is applied, which ensures ISPs, CDNs, cloud providers, and even Expo Update itself cannot tamper with updates run by apps.
 
 The following steps will guide you through the process of generating a private key and corresponding certificate, configuring your project to use code signing, and publishing a signed update for your app.
 
@@ -160,7 +160,7 @@ With code signing configured, create a new build with a new runtime version. The
 
 <Terminal cmd={['$ eas update --private-key-path ../keys/private-key.pem']} />
 
-During an EAS Update publish using `eas update`, the EAS CLI automatically detects that code signing is configured for your app. It then verifies the integrity of the update and creates a digital signature using your private key. This process is performed locally so that your private key never leaves your machine. The generated signature is automatically sent to EAS to store alongside the update.
+During an Expo Update publish using `eas update`, the EAS CLI automatically detects that code signing is configured for your app. It then verifies the integrity of the update and creates a digital signature using your private key. This process is performed locally so that your private key never leaves your machine. The generated signature is automatically sent to Expo Update to store alongside the update.
 
 </Step>
 

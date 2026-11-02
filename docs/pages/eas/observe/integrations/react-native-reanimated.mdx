@@ -1,13 +1,13 @@
 ---
 title: Reanimated integration
 sidebar_title: Reanimated
-description: Report Reanimated errors and warnings from your production app by enabling the Reanimated integration for EAS Observe.
+description: Report Reanimated errors and warnings from your production app by enabling the Reanimated integration for Expo Observe.
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 
-[`expo-observe`](/versions/latest/sdk/observe/) ships an opt-in integration for [`react-native-reanimated`](/versions/latest/sdk/reanimated/) that reports Reanimated errors and warnings to EAS Observe. Reanimated prints these messages only to the console, so without the integration you cannot see them for devices in production. The integration reports each Reanimated error as a `reanimated.error` error. It can also log each Reanimated warning as a `reanimated.warning` event.
+[`expo-observe`](/versions/latest/sdk/observe/) ships an opt-in integration for [`react-native-reanimated`](/versions/latest/sdk/reanimated/) that reports Reanimated errors and warnings to Expo Observe. Reanimated prints these messages only to the console, so without the integration you cannot see them for devices in production. The integration reports each Reanimated error as a `reanimated.error` error. It can also log each Reanimated warning as a `reanimated.warning` event.
 
 ## Prerequisites
 
@@ -15,7 +15,7 @@ import { Terminal } from '~/ui/components/Snippet';
   <Requirement title="Expo SDK 58 or later">
     The integration is available in `expo-observe` version 58.0.16 and later.
   </Requirement>
-  <Requirement title="An app already using EAS Observe">
+  <Requirement title="An app already using Expo Observe">
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
     build.
   </Requirement>
@@ -68,7 +68,7 @@ Observe.configure({
 
 - `level`: The minimum log level that Reanimated prints and reports. Use `ReanimatedLogLevel.warn` or `ReanimatedLogLevel.error`. The default is `ReanimatedLogLevel.warn`.
 - `strict`: Whether Reanimated also prints and reports its strict-mode warnings. The default is `true`.
-- `reportWarnings`: Whether the integration also reports Reanimated warnings to EAS Observe as `reanimated.warning` events. The default is `false`. Reanimated prints warnings to the console either way.
+- `reportWarnings`: Whether the integration also reports Reanimated warnings to Expo Observe as `reanimated.warning` events. The default is `false`. Reanimated prints warnings to the console either way.
 
 To turn off reporting, call `Observe.configure()` again without the `react-native-reanimated` integration. Reanimated's logger keeps its `level` and `strict` options.
 

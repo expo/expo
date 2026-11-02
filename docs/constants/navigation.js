@@ -487,7 +487,7 @@ export const eas = [
       expanded: true,
     }
   ),
-  makeSection('EAS Workflows', [
+  makeSection('Expo Workflows', [
     makePage('eas/workflows/introduction.mdx'),
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/manage-workflow-runs.mdx'),
@@ -508,7 +508,7 @@ export const eas = [
       makePage('eas/workflows/examples/e2e-tests.mdx'),
     ]),
   ]),
-  makeSection('EAS Build', [
+  makeSection('Expo Build', [
     makePage('build/introduction.mdx'),
     makePage('build/setup.mdx'),
     makePage('build/eas-json.mdx'),
@@ -570,7 +570,7 @@ export const eas = [
       { expanded: false }
     ),
   ]),
-  makeSection('EAS Submit', [
+  makeSection('Expo Submit', [
     makePage('submit/android.mdx'),
     makePage('submit/ios.mdx'),
     makePage('submit/testflight.mdx'),
@@ -578,7 +578,7 @@ export const eas = [
     makePage('submit/ios-manual.mdx'),
     makePage('submit/eas-json.mdx'),
   ]),
-  makeSection('EAS Hosting', [
+  makeSection('Expo Hosting', [
     makePage('eas/hosting/introduction.mdx'),
     makePage('eas/hosting/get-started.mdx'),
     makePage('eas/hosting/deployments-and-aliases.mdx'),
@@ -591,7 +591,7 @@ export const eas = [
       makePage('eas/hosting/reference/worker-runtime.mdx'),
     ]),
   ]),
-  makeSection('EAS Update', [
+  makeSection('Expo Update', [
     makePage('eas-update/introduction.mdx'),
     makePage('eas-update/getting-started.mdx'),
     makeGroup('Preview', [
@@ -631,7 +631,7 @@ export const eas = [
       makePage('eas-update/integration-in-existing-native-apps.mdx'),
     ]),
   ]),
-  makeSection('EAS Observe', [
+  makeSection('Expo Observe', [
     makePage('eas/observe/introduction.mdx'),
     makePage('eas/observe/get-started.mdx'),
     makePage('eas/observe/dashboard.mdx'),
@@ -654,7 +654,7 @@ export const eas = [
       makePage('eas/observe/reference/troubleshooting.mdx'),
     ]),
   ]),
-  makeSection('EAS Metadata', [
+  makeSection('Expo Metadata', [
     makePage('eas/metadata/index.mdx'),
     makePage('eas/metadata/getting-started.mdx'),
     makeGroup(
@@ -663,7 +663,7 @@ export const eas = [
       { expanded: false }
     ),
   ]),
-  makeSection('EAS Insights', [
+  makeSection('Expo Insights', [
     makePage('eas-insights/introduction.mdx'),
     makePage('eas-insights/app-usage.mdx'),
     makePage('eas-insights/workflows.mdx'),
@@ -677,6 +677,7 @@ export const eas = [
     makePage('distribution/app-size.mdx'),
   ]),
   makeSection('Reference', [
+    makePage('eas-to-expo.mdx'),
     makePage('eas/webhooks.mdx'),
     makePage('eas/protected-resources.mdx'),
     makeSection('Expo accounts', [
