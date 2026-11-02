@@ -4,7 +4,7 @@ let defaultScreenOrientationMaskKey = "EXDefaultScreenOrientationMask"
 let supportedOrientationsKey = "UISupportedInterfaceOrientations"
 let ipadSupportedOrientationsKey = "UISupportedInterfaceOrientations~ipad"
 
-class ScreenOrientationViewController: UIViewController {
+class ScreenOrientationViewController: ExpoRootViewController {
   let screenOrientationRegistry = ScreenOrientationRegistry.shared
   private var defaultOrientationMask: UIInterfaceOrientationMask
   private var previousInterfaceOrientation: UIInterfaceOrientation = .unknown

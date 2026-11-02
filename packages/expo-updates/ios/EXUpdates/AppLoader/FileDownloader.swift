@@ -170,7 +170,6 @@ public final class FileDownloader {
     ) { data, response in
       guard let data else {
         let error = UpdatesError.fileDownloaderAssetDownloadEmptyResponse(url: url)
-        self.logger.error(cause: error, code: UpdatesErrorCode.assetsFailedToLoad)
         errorBlock(error)
         return
       }
@@ -265,9 +264,8 @@ public final class FileDownloader {
           successBlock(patchedData, response, hashBase64String)
           return
         } catch {
-          let updatesError = UpdatesError.fileDownloaderUnknownError(cause: error)
-          self.logger.error(
-            cause: updatesError,
+          self.logger.warn(
+            message: "Patch application failed for asset \(asset.key ?? asset.filename); retrying with full asset download: \(error.localizedDescription)",
             code: UpdatesErrorCode.assetsFailedToLoad,
             updateId: requestedUpdate?.updateId.uuidString,
             assetId: asset.key ?? asset.filename
@@ -297,7 +295,6 @@ public final class FileDownloader {
           expectedBase64URLEncodedSHA256Hash: expectedBase64URLEncodedSHA256Hash,
           actualBase64URLEncodedSHA256Hash: hashBase64String
         )
-        self.logger.error(cause: error, code: UpdatesErrorCode.assetsFailedToLoad)
         errorBlock(error)
         return
       }
@@ -308,12 +305,10 @@ public final class FileDownloader {
         return
       } catch {
         let cause = UpdatesError.fileDownloaderAssetFileWriteFailed(cause: error, destinationPath: destinationPath)
-        self.logger.error(cause: cause, code: UpdatesErrorCode.assetsFailedToLoad)
         errorBlock(cause)
         return
       }
     } errorBlock: { error in
-      self.logger.error(cause: error, code: UpdatesErrorCode.assetsFailedToLoad)
       errorBlock(error)
     }
   }
@@ -343,7 +338,6 @@ public final class FileDownloader {
     ) { data, response in
       guard let response = response as? HTTPURLResponse else {
         let error = UpdatesError.fileDownloaderResponseNotHTTPURLResponse
-        self.logger.error(cause: error, code: UpdatesErrorCode.unknown)
         errorBlock(error)
         return
       }
@@ -762,7 +756,6 @@ public final class FileDownloader {
 
     guard let data = data else {
       let cause = UpdatesError.fileDownloaderRemoteUpdateMissingBody
-      logger.error(cause: cause, code: UpdatesErrorCode.unknown)
       errorBlock(cause)
       return
     }
@@ -777,7 +770,6 @@ public final class FileDownloader {
       guard
         let boundaryParameterValue: String = contentTypeParameters.optionalValue(forKey: "boundary") else {
         let cause = UpdatesError.fileDownloaderMissingMultipartBoundary
-        logger.error(cause: cause, code: UpdatesErrorCode.unknown)
         errorBlock(cause)
         return
       }
@@ -863,7 +855,6 @@ public final class FileDownloader {
 
     if !completed {
       let cause = UpdatesError.fileDownloaderErrorReadingMultipartResponse
-      logger.error(cause: cause, code: .unknown)
       errorBlock(cause)
       return
     }
@@ -880,7 +871,6 @@ public final class FileDownloader {
 
       guard let parsedExtensions = parsedExtensions as? [String: Any] else {
         let cause = UpdatesError.fileDownloaderMultipartExtensionsPartParseFailed
-        logger.error(cause: cause, code: .unknown)
         errorBlock(cause)
         return
       }
@@ -890,7 +880,6 @@ public final class FileDownloader {
 
     if config.enableExpoUpdatesProtocolV0CompatibilityMode && manifestPartHeadersAndData == nil {
       let cause = UpdatesError.fileDownloaderMultipartMissingManifestVersion0
-      logger.error(cause: cause, code: .unknown)
       errorBlock(cause)
       return
     }
@@ -1009,14 +998,12 @@ public final class FileDownloader {
         } else {
           cause = UpdatesError.fileDownloaderCodeSigningUnknownError(cause: error)
         }
-        self.logger.error(cause: cause, code: .unknown)
         errorBlock(cause)
         return
       }
 
       if signatureValidationResult.validationResult == .invalid {
         let cause = UpdatesError.fileDownloaderCodeSigningIncorrectSignature
-        self.logger.error(cause: cause, code: .unknown)
         errorBlock(cause)
         return
       }
@@ -1028,7 +1015,6 @@ public final class FileDownloader {
             directive = try UpdateDirective.fromJSONData(responsePartInfo.body)
           } catch {
             let cause = UpdatesError.fileDownloaderDirectiveParseFailed(cause: error)
-            self.logger.error(cause: cause, code: .unknown)
             errorBlock(cause)
             return
           }
@@ -1036,7 +1022,6 @@ public final class FileDownloader {
           if expoProjectInformation.projectId != directive.signingInfo?.easProjectId ||
             expoProjectInformation.scopeKey != directive.signingInfo?.scopeKey {
             let cause = UpdatesError.fileDownloaderCodeSigningCertificateScopeKeyOrProjectIdMismatch
-            self.logger.error(cause: cause, code: .unknown)
             errorBlock(cause)
             return
           }
@@ -1050,7 +1035,6 @@ public final class FileDownloader {
       directive = try UpdateDirective.fromJSONData(responsePartInfo.body)
     } catch {
       let cause = UpdatesError.fileDownloaderDirectiveParseFailed(cause: error)
-      self.logger.error(cause: cause, code: .unknown)
       errorBlock(cause)
       return
     }
@@ -1071,14 +1055,12 @@ public final class FileDownloader {
       manifest = try JSONSerialization.jsonObject(with: responsePartInfo.body) as? [String: Any]
     } catch {
       let cause = UpdatesError.fileDownloaderManifestParseFailed(cause: error)
-      logger.error(cause: cause, code: .unknown)
       errorBlock(cause)
       return
     }
 
     guard let manifest = manifest else {
       let cause = UpdatesError.fileDownloaderManifestParseFailed(cause: nil)
-      logger.error(cause: cause, code: .unknown)
       errorBlock(cause)
       return
     }
@@ -1134,14 +1116,12 @@ public final class FileDownloader {
         } else {
           cause = UpdatesError.fileDownloaderCodeSigningUnknownError(cause: error)
         }
-        self.logger.error(cause: cause, code: .unknown)
         errorBlock(cause)
         return
       }
 
       if signatureValidationResult.validationResult == .invalid {
         let cause = UpdatesError.fileDownloaderCodeSigningIncorrectSignature
-        self.logger.error(cause: cause, code: .unknown)
         errorBlock(cause)
         return
       }
@@ -1162,7 +1142,6 @@ public final class FileDownloader {
             // this will ensure invalid manifests can be easily debugged.
             // For example, this will catch nullish sdkVersion assertions.
             let cause = UpdatesError.fileDownloaderManifestParseFailed(cause: error)
-            self.logger.error(cause: cause, code: .unknown)
             errorBlock(cause)
             return
           }
@@ -1171,7 +1150,6 @@ public final class FileDownloader {
           if expoProjectInformation.projectId != manifestForProjectInformation.easProjectId() ||
             expoProjectInformation.scopeKey != manifestForProjectInformation.scopeKey() {
             let cause = UpdatesError.fileDownloaderCodeSigningCertificateScopeKeyOrProjectIdMismatch
-            self.logger.error(cause: cause, code: .unknown)
             errorBlock(cause)
             return
           }
@@ -1195,14 +1173,12 @@ public final class FileDownloader {
       // this will ensure invalid manifests can be easily debugged.
       // For example, this will catch nullish sdkVersion assertions.
       let cause = UpdatesError.fileDownloaderManifestParseFailed(cause: error)
-      self.logger.error(cause: cause, code: .unknown)
       errorBlock(cause)
       return
     }
 
     if !SelectionPolicies.doesUpdate(update, matchFilters: responsePartInfo.responseHeaderData.manifestFilters) {
       let cause = UpdatesError.fileDownloaderManifestFilterManifestMismatch
-      self.logger.error(cause: cause, code: .unknown)
       errorBlock(cause)
       return
     }
@@ -1224,7 +1200,6 @@ public final class FileDownloader {
       }
       guard let response = response else {
         let cause = UpdatesError.fileDownloaderUnknownError(cause: error!)
-        self.logger.error(cause: cause, code: .unknown)
         errorBlock(cause)
         return
       }
@@ -1236,7 +1211,6 @@ public final class FileDownloader {
           String(data: it, encoding: encoding)?.truncatedForErrorMessage()
         } ?? "Unknown body response"
         let cause = UpdatesError.fileDownloaderHTTPResponseError(statusCode: httpResponse.statusCode, body: body)
-        self.logger.error(cause: cause, code: .unknown)
         errorBlock(cause)
         return
       }

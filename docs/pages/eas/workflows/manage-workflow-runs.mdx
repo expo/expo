@@ -11,6 +11,7 @@ Each time a workflow is triggered, Expo Workflows creates a workflow run. Use th
 A workflow run has one of the following statuses:
 
 - **New**: Expo Workflows created the run, but it has not started yet.
+- **Queued**: The run is [waiting for another run in its concurrency group](/eas/workflows/syntax/#waiting-and-canceled-runs). A queued run has no jobs until it starts.
 - **In progress**: One or more jobs are running.
 - **Action required**: A job is waiting for a manual action, such as an approval.
 - **Success**: All jobs completed successfully.
