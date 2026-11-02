@@ -1,7 +1,7 @@
 import { Command } from '@expo/commander';
 
-import { prepareAndroidPrecompileToolchainAsync } from '../prebuilds/AndroidToolchain';
 import { prepareAndroidJdkImageAsync } from './PrebuildAndroidPackageForPublish';
+import { prepareAndroidPrecompileToolchainAsync } from '../prebuilds/AndroidToolchain';
 
 export default (program: Command) => {
   program
