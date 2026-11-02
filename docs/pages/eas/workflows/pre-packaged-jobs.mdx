@@ -2202,9 +2202,9 @@ The `preview` profile must set [`distribution: internal`](/eas/json/#distributio
 
 Require approval from a user before continuing with the workflow. A user can approve or reject which translates to success or failure of the job.
 
-> **info** Approve the job within 30 days after EAS creates the workflow run. If the job is approved later, the run fails after the approval with "Failed to process workflow run". To continue, [re-run the workflow from its failed jobs](/eas/workflows/manage-workflow-runs/#re-run-from-failed-jobs). The new run reuses the approval, so you don't need to approve again. If the dashboard doesn't show the re-run options, [start a new run](/eas/workflows/manage-workflow-runs/#re-run-availability).
+> **info** Approve the job within 30 days after EAS creates the workflow run. If the job is approved later, the run can fail after the approval with "Failed to process workflow run". To continue, [re-run the workflow from its failed jobs](/eas/workflows/manage-workflow-runs/#re-run-from-failed-jobs). The new run reuses the approval, so you don't need to approve again. If the dashboard doesn't show the re-run options, [start a new run](/eas/workflows/manage-workflow-runs/#re-run-availability).
 
-After approval, EAS checks the current access of the user or robot that started the run. Later jobs use their access, not the approver's. If they're removed from the account or no longer have a role that can run workflows, the run fails after the approval. It fails before its next job starts, with "Failed to process workflow run". Revoking the access token that started the run doesn't stop jobs from starting within 30 days after EAS creates the run. Access changes don't cancel running jobs. [Cancel the run](/eas/workflows/manage-workflow-runs/#cancel-a-workflow-run) with **Cancel workflow** or `eas workflow:cancel`.
+Revoking the access token that started the run doesn't stop jobs from starting within 30 days after EAS creates the run. Access changes don't cancel running jobs. [Cancel the run](/eas/workflows/manage-workflow-runs/#cancel-a-workflow-run) with **Cancel workflow** or `eas workflow:cancel`.
 
 ### Syntax
 
