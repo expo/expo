@@ -677,7 +677,8 @@ class AudioModule : Module() {
         }
       }
 
-      Function("pause") { player: AudioPlayer ->
+      // `deactivateSession` only applies to the iOS audio session.
+      Function("pause") { player: AudioPlayer, _: Boolean? ->
         runOnMain {
           player.isPaused = false
           player.ref.pause()
