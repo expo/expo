@@ -28,7 +28,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
   const mainSectionMap: Record<string, string> = {
     home: homeLabel,
     general: guidesLabel,
-    eas: 'Expo Application Services',
+    eas: easLabel,
     reference: referenceLabel,
     learn: learnLabel,
   };

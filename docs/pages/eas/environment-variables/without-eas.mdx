@@ -1,24 +1,24 @@
 ---
-title: Using environment variables without EAS
-sidebar_title: Without EAS
-description: Learn about non-EAS ways to manage environment variables in Expo and React Native projects.
+title: Using environment variables without Expo Services
+sidebar_title: Without Expo Services
+description: Learn how to manage environment variables in Expo and React Native projects without Expo Services.
 ---
 
 import { CodeSquare01Icon } from '@expo/styleguide-icons/outline/CodeSquare01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 
-Using [EAS Environment Variables](/eas/environment-variables/) is the recommended way to manage environment variables for cloud builds and updates, but you can still work locally or with other tooling.
+Using [Expo Services environment variables](/eas/environment-variables/) is the recommended way to manage environment variables for cloud builds and updates, but you can still work locally or with other tooling.
 
-## Managing environment variables without EAS
+## Managing environment variables without Expo Services
 
-If you want to manage environment variables without EAS, you can use tools like [`dotenv`](https://www.npmjs.com/package/dotenv) (Node-based loaders) or services such as [Doppler](https://www.doppler.com/) that inject environment variables. These utilities allow you to create a **.env** file in which you can store your environment variables.
+If you want to manage environment variables without Expo Services, you can use tools like [`dotenv`](https://www.npmjs.com/package/dotenv) (Node-based loaders) or services such as [Doppler](https://www.doppler.com/) that inject environment variables. These utilities allow you to create a **.env** file in which you can store your environment variables.
 
-> **Note:** Avoid committing secrets to **.env** files if you are managing your environment variables without EAS.
+> **Note:** Avoid committing secrets to **.env** files if you are managing your environment variables without Expo Services.
 
 ## How environment variables are loaded
 
-After creating the **.env** file, you need to ensure that the file is not listed inside your **.gitignore** or **.easignore** files. Then it can be picked up by EAS commands like `eas build`, `eas update`, and so on.
+After creating the **.env** file, you need to ensure that the file is not listed inside your **.gitignore** or **.easignore** files. Then it can be picked up by EAS CLI commands like `eas build`, `eas update`, and so on.
 
 The **.env** files load according to the [standard **.env** file](/guides/environment-variables/#using-multiple-env-files-to-define-separate-environments) resolution. Expo CLI then replaces all references in your code to `process.env.EXPO_PUBLIC_[VARIABLE_NAME]` with the corresponding value set in the **.env** files. Code inside the **node_modules** directory is not affected for security purposes.
 
@@ -29,8 +29,8 @@ The **.env** files load according to the [standard **.env** file](/guides/enviro
   Icon={CodeSquare01Icon}
 />
 
-## Using .env files with EAS Hosting
+## Using .env files with Expo Hosting
 
-When using **.env** files with EAS Hosting, environment variables prefixed with `EXPO_PUBLIC_` are all available in the client-side code and the server-side code. The variables not prefixed with `EXPO_PUBLIC_` are only available in the server-side code.
+When using **.env** files with Expo Hosting, environment variables prefixed with `EXPO_PUBLIC_` are all available in the client-side code and the server-side code. The variables not prefixed with `EXPO_PUBLIC_` are only available in the server-side code.
 
-The [steps for including client-side and server-side environment variables](/eas/environment-variables/usage/#storing-environment-variables) are the same as when using EAS environment variables. So you need to ensure that your local **.env** files include the correct environment variables before running the `npx expo export` command.
+The [steps for including client-side and server-side environment variables](/eas/environment-variables/usage/#storing-environment-variables) are the same as when using Expo Services environment variables. So you need to ensure that your local **.env** files include the correct environment variables before running the `npx expo export` command.

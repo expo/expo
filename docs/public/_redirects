@@ -495,7 +495,7 @@
 /eas/metadata/faq/ /eas/metadata 301
 
 # After creating EAS environment variables section
-/eas/hosting/environment-variables /eas/environment-variables/usage/#using-environment-variables-with-eas-hosting 301
+/eas/hosting/environment-variables /eas/environment-variables/usage/#using-environment-variables-with-expo-hosting 301
 
 # After separating expo-router reference into multiple subsections
 /versions/unversioned/sdk/router-ui /versions/unversioned/sdk/router/ui 301
@@ -893,7 +893,7 @@
 /get-started/introduction/ /get-started/create-a-project 301
 /eas/workflows/examples/ /eas/workflows/examples/introduction 301
 /eas/using-environment-variables/ /eas/environment-variables 301
-/eas/hosting/environment-variables/ /eas/environment-variables/usage/#using-environment-variables-with-eas-hosting 301
+/eas/hosting/environment-variables/ /eas/environment-variables/usage/#using-environment-variables-with-expo-hosting 301
 /versions/v50.0.0/* /versions/latest/:splat 301
 /versions/v51.0.0/* /versions/latest/:splat 301
 /versions/v52.0.0/* /versions/latest/:splat 301
