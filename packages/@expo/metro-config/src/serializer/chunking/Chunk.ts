@@ -352,7 +352,11 @@ export class Chunk {
       });
     }
 
-    if (this.boolishTransformOption('bytecode') && this.isHermesEnabled()) {
+    if (
+      this.boolishTransformOption('bytecode') &&
+      this.isHermesEnabled() &&
+      !jsAsset.metadata.expoDomComponentReferences?.length
+    ) {
       await transformJsAssetToHermesBytecodeAsync(this.options.projectRoot, jsAsset, assets[1]);
     }
 
@@ -364,9 +368,6 @@ export class Chunk {
   }
 
   isHermesEnabled() {
-    // TODO: Revisit.
-    // TODO: There could be an issue with having the serializer for export:embed output hermes since the native scripts will
-    // also create hermes bytecode. We may need to disable in one of the two places.
     return (
       !this.options.dev &&
       this.supportsBytecode() &&
