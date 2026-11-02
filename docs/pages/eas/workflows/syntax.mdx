@@ -880,7 +880,7 @@ jobs:
 
 The colon (`:`) in a ternary is also YAML syntax. Put a value that has a ternary in quotes. A `run` script can also use a `|` block, as in the example above. Do not put an `if:` condition in a `|` block, because the block adds a newline that breaks the condition.
 
-EAS evaluates every part of an expression. `&&` and `||` do not skip the right side. `? :` evaluates both values. If one part fails, the expression fails. For example, `${{ inputs.data && fromJSON(inputs.data) }}` fails when `inputs.data` is empty, because `fromJSON('')` fails. Give `fromJSON()` a fallback instead: `${{ fromJSON(inputs.data || '{}') }}`.
+Expo Workflows evaluates every part of an expression. `&&` and `||` do not skip the right side. `? :` evaluates both values. If one part fails, the expression fails. For example, `${{ inputs.data && fromJSON(inputs.data) }}` fails when `inputs.data` is empty, because `fromJSON('')` fails. Give `fromJSON()` a fallback instead: `${{ fromJSON(inputs.data || '{}') }}`.
 
 ### Context availability
 
