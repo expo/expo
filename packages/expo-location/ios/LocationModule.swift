@@ -294,6 +294,9 @@ public final class LocationModule: Module {
     // Background motion activity
 
     AsyncFunction("startMotionActivityUpdatesAsync") { (taskName: String, _: [String: Any]) in
+      #if EXPO_LOCATION_DISABLE_MOTION
+      throw Exceptions.MotionActivityDisabled()
+      #else
       guard CMMotionActivityManager.isActivityAvailable() else {
         throw Exceptions.MotionActivityUnavailable()
       }
@@ -303,18 +306,27 @@ public final class LocationModule: Module {
       }
 
       try taskManager.registerTask(withName: taskName, consumer: MotionActivityTaskConsumer.self, options: [:])
+      #endif
     }
 
     AsyncFunction("stopMotionActivityUpdatesAsync") { (taskName: String) in
+      #if EXPO_LOCATION_DISABLE_MOTION
+      throw Exceptions.MotionActivityDisabled()
+      #else
       let taskManager = try taskManager
 
       try EXUtilities.catchException {
         taskManager.unregisterTask(withName: taskName, consumerClass: MotionActivityTaskConsumer.self)
       }
+      #endif
     }
 
     AsyncFunction("hasStartedMotionActivityUpdatesAsync") { (taskName: String) -> Bool in
+      #if EXPO_LOCATION_DISABLE_MOTION
+      throw Exceptions.MotionActivityDisabled()
+      #else
       return try taskManager.task(withName: taskName, hasConsumerOf: MotionActivityTaskConsumer.self)
+      #endif
     }
   }
 }

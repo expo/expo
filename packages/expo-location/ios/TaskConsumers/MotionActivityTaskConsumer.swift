@@ -1,5 +1,6 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+#if !EXPO_LOCATION_DISABLE_MOTION
 import CoreMotion
 import ExpoModulesCore
 
@@ -36,3 +37,4 @@ final class MotionActivityTaskConsumer: NSObject, EXTaskConsumerInterface {
     streamTask?.cancel()
   }
 }
+#endif
