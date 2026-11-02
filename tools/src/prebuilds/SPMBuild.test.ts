@@ -22,8 +22,7 @@ import {
   findFirstExisting,
   findXCFrameworkInDir,
   getBuildPlatformsFromProductPlatform,
-  patchLibavifToDecodeWithDav1d,
-  patchLibdav1dToCompileArmCpu,
+  applyManifestPatches,
 } from './SPMBuild';
 import type { SPMProduct, SPMTarget } from './SPMConfig.types';
 
@@ -37,51 +36,34 @@ describe('getBuildPlatformsFromProductPlatform', () => {
   });
 });
 
-describe('patchLibavifToDecodeWithDav1d', () => {
-  const libavifManifest = `
-    dependencies: [
-        .package(url: "https://github.com/SDWebImage/libaom-Xcode.git", from: "3.0.0")
+describe('applyManifestPatches', () => {
+  const dep = {
+    url: 'https://github.com/SDWebImage/libavif-Xcode.git',
+    productName: 'libavif',
+    version: { exact: '1.0.0' },
+    manifestPatches: [
+      { find: 'dependencies: ["libaom"]', replace: 'dependencies: ["libdav1d"]' },
+      { find: '"src/codec_dav1d.c"', replace: '"src/codec_aom.c"' },
     ],
-    targets: [
-        .target(
-            name: "libavif",
-            dependencies: ["libaom"],
-            path: "avif",
-            exclude: ["src/codec_dav1d.c", "src/codec_rav1e.c", "src/codec_libgav1.c", "src/codec_svt.c", "src/codec_avm.c"],
-            sources: ["src"],
-            publicHeadersPath: "include",
-            cSettings: [.define("AVIF_CODEC_AOM", to: "1"), .define("AVIF_CODEC_AOM_DECODE", to: "1"), .define("AVIF_CODEC_AOM_ENCODE", to: "1")]
-        )
-    ],`;
+  };
 
-  it('replaces libaom with libdav1d in the libavif-Xcode manifest', () => {
-    const patched = patchLibavifToDecodeWithDav1d(libavifManifest);
-    assert.ok(
-      patched.includes(
-        '.package(url: "https://github.com/SDWebImage/libdav1d-Xcode.git", from: "1.2.0")'
-      )
-    );
-    assert.ok(patched.includes('dependencies: ["libdav1d"]'));
-    assert.ok(patched.includes('exclude: ["src/codec_aom.c", "src/codec_rav1e.c"'));
-    assert.ok(patched.includes('cSettings: [.define("AVIF_CODEC_DAV1D", to: "1")]'));
-    assert.ok(!/aom/i.test(patched.replace('codec_aom.c', '')));
-  });
-
-  it('leaves other manifests unchanged', () => {
-    const manifest =
-      '.package(url: "https://github.com/SDWebImage/SDWebImage.git", from: "5.10.0")';
-    assert.equal(patchLibavifToDecodeWithDav1d(manifest), manifest);
-  });
-});
-
-describe('patchLibdav1dToCompileArmCpu', () => {
-  it('compiles dav1d/src/arm/cpu.c and keeps the arm assembly excluded', () => {
-    const manifest =
-      'exclude: ["dav1d/src/arm", "dav1d/src/ppc", "dav1d/src/win32", "dav1d/src/x86", "dav1d/src/ext", "dav1d/include/compat"],';
+  it('applies each patch in order', () => {
     assert.equal(
-      patchLibdav1dToCompileArmCpu(manifest),
-      'exclude: ["dav1d/src/arm/32", "dav1d/src/arm/64", "dav1d/src/arm/asm.S", "dav1d/src/ppc", "dav1d/src/win32", "dav1d/src/x86", "dav1d/src/ext", "dav1d/include/compat"],'
+      applyManifestPatches('dependencies: ["libaom"], exclude: ["src/codec_dav1d.c"]', dep),
+      'dependencies: ["libdav1d"], exclude: ["src/codec_aom.c"]'
     );
+  });
+
+  it('throws when the manifest does not contain a find string', () => {
+    assert.throws(
+      () => applyManifestPatches('dependencies: ["libaom"]', dep),
+      /Update "manifestPatches" for libavif/
+    );
+  });
+
+  it('leaves the manifest unchanged when the package has no patches', () => {
+    const manifest = 'dependencies: ["libaom"]';
+    assert.equal(applyManifestPatches(manifest, { ...dep, manifestPatches: undefined }), manifest);
   });
 });
 
