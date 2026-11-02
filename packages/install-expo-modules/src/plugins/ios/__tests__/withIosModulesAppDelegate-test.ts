@@ -115,6 +115,16 @@ describe(updateModulesAppDelegateObjcImpl, () => {
 
 describe(updateModulesAppDelegateSwift, () => {
   describe('SDK 58 sourceURL migration', () => {
+    let warn: jest.SpyInstance;
+
+    beforeEach(() => {
+      warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      warn.mockRestore();
+    });
+
     const bundleMethod = '  override func bundleURL() -> URL? { customBundleURL() }';
     const delegate = (body: string) => `internal import Expo
 class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
@@ -160,7 +170,7 @@ ${bundleMethod}
       'let message = "}"; return bundleURL()',
     ])('requires manual migration for custom code: %s', (body) => {
       expect(() => updateModulesAppDelegateSwift(delegate(body), '58.0.0')).toThrow(
-        /sourceURL\(for:\).*bundleURL\(\)/
+        /custom implementation.*Move.*bundleURL\(\)/
       );
     });
 
@@ -182,16 +192,72 @@ class OtherDelegate: OtherFactory {
       expect(updateModulesAppDelegateSwift(prefix + delegate('self.bundleURL()'), '58.0.0')).toBe(
         prefix + migrated
       );
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('superclass'));
     });
 
-    it('requires manual migration for an attributed method', () => {
+    it.each(['@objc', '@available(\n    iOS 16.4, *\n  )'])(
+      'gives removal instructions for a stock forwarder with %s',
+      (attribute) => {
+        const contents = delegate('self.bundleURL()').replace(
+          '  override func sourceURL',
+          `  ${attribute}\n  override func sourceURL`
+        );
+        expect(() => updateModulesAppDelegateSwift(contents, '58.0.0')).toThrow(
+          /forwarding method has attributes.*Remove the method together with its attributes/
+        );
+      }
+    );
+
+    it('refuses a declaration whose modifiers would be left behind', () => {
       const contents = delegate('self.bundleURL()').replace(
         '  override func sourceURL',
-        '  @available(\n    iOS 16.4, *\n  )\n  override func sourceURL'
+        '  public\n  override func sourceURL'
       );
       expect(() => updateModulesAppDelegateSwift(contents, '58.0.0')).toThrow(
-        /sourceURL\(for:\).*bundleURL\(\)/
+        /method declaration is not recognized.*Review the declaration/
       );
+    });
+
+    it('reports an unmatched brace as a syntax error', () => {
+      const contents = delegate('self.bundleURL()').replace(/\n}\n$/, '\n');
+      expect(() => updateModulesAppDelegateSwift(contents, '58.0.0')).toThrow(
+        /unmatched opening brace.*line 2.*Check the Swift syntax/
+      );
+    });
+
+    it.each([
+      ['/* unfinished', 'unterminated block comment'],
+      ['"unfinished', 'unterminated string literal'],
+    ])('reports malformed Swift: %s', (body, reason) => {
+      expect(() => updateModulesAppDelegateSwift(delegate(body), '58.0.0')).toThrow(reason);
+    });
+
+    it('warns about an intermediate subclass after removing known forwarders', () => {
+      const base = 'class BaseDelegate: ExpoReactNativeFactoryDelegate {}\n';
+      const indirect = delegate('self.bundleURL()').replace(
+        'ReactNativeDelegate: ExpoReactNativeFactoryDelegate',
+        'IndirectDelegate: BaseDelegate'
+      );
+      const contents = base + indirect + delegate('self.bundleURL()');
+      expect(updateModulesAppDelegateSwift(contents, '58.0.0')).toBe(base + indirect + migrated);
+      expect(warn).toHaveBeenCalledTimes(1);
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(/sourceURL\(for:\).*superclass.*bundleURL\(\)/)
+      );
+    });
+
+    it('removes the separator before a forwarder that is the last member', () => {
+      const contents = `internal import Expo
+class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+${bundleMethod}
+
+  override func sourceURL(for bridge: RCTBridge) -> URL? {
+    self.bundleURL()
+  }
+}
+`;
+      expect(updateModulesAppDelegateSwift(contents, '58.0.0')).toBe(migrated);
     });
 
     it('keeps the old transformation for SDK 57 and an unknown SDK', () => {
