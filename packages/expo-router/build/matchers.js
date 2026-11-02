@@ -87,6 +87,19 @@ function removeFileSystemDots(filePath) {
     return filePath.replace(/^(?:\.\.?\/)+/g, '');
 }
 function stripGroupSegmentsFromPath(path) {
+    // Only the pathname can contain groups. The search and hash may contain parentheses, e.g. `?a=(a)`
+    const suffixIndex = path.search(/[?#]/);
+    if (suffixIndex !== -1) {
+        const pathname = stripGroupSegmentsFromPath(path.slice(0, suffixIndex));
+        const queryAndHash = path.slice(suffixIndex);
+        if (pathname) {
+            return pathname + queryAndHash;
+        }
+        if (path.startsWith('/')) {
+            return '/' + queryAndHash;
+        }
+        return queryAndHash;
+    }
     return path
         .split('/')
         .reduce((acc, v) => {

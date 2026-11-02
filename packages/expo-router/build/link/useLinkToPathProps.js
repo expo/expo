@@ -36,13 +36,11 @@ function useLinkToPathProps({ href, ...options }) {
             (0, routing_1.linkTo)(href, options);
         }
     };
-    let strippedHref = (0, matchers_1.stripGroupSegmentsFromPath)(href) || '/';
-    // Append base url only if needed.
-    if (!(0, url_1.shouldLinkExternally)(strippedHref)) {
-        strippedHref = (0, getPathFromState_forks_1.appendBaseUrl)(strippedHref);
-    }
+    const resolvedHref = (0, url_1.shouldLinkExternally)(href)
+        ? href
+        : (0, getPathFromState_forks_1.appendBaseUrl)((0, matchers_1.stripGroupSegmentsFromPath)(href) || '/');
     return {
-        href: strippedHref,
+        href: resolvedHref,
         role: 'link',
         onPress,
     };

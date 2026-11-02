@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- Prevent `<Link>` from dropping the search params, hash, or part of an external URL from its `href` when they contain parentheses. ([#52587](https://github.com/expo/expo/pull/52587) by [@hassankhan](https://github.com/hassankhan))
 - [web] Fix browser back after `setParams` or `replace` remounting the route tree and losing React state. ([#52127](https://github.com/expo/expo/pull/52127) by [@Ubax](https://github.com/Ubax))
 - Keep the outgoing tab attached until its transition finishes, so the arriving tab no longer renders blank. ([#49778](https://github.com/expo/expo/pull/49778) by [@LizunovSergey](https://github.com/LizunovSergey))
 - Fix Tabs and Drawer routes with `dangerouslySingular` keeping the nested navigator state of the previous ID after navigating to a new ID. ([#51270](https://github.com/expo/expo/pull/51270) by [@gabrieldonadel](https://github.com/gabrieldonadel))
