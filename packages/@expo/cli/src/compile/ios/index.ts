@@ -25,11 +25,8 @@ export const expoCompileIos: Command = async (argv) => {
     const { loadEnvFiles } = await import('../../utils/nodeEnv.js');
     loadEnvFiles(projectRoot, { mode: options.mode });
 
-    const { resolveOptionsAsync } = await import('./resolveOptions.js');
-    const props = await resolveOptionsAsync(projectRoot, options);
-
     const { compileIosAsync } = await import('./compileIosAsync.js');
-    await compileIosAsync(projectRoot, props);
+    await compileIosAsync(projectRoot, options);
   } catch (error) {
     return logCmdError(error);
   }

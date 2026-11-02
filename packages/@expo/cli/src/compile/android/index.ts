@@ -21,11 +21,8 @@ export const expoCompileAndroid: Command = async (argv) => {
     const { loadEnvFiles } = await import('../../utils/nodeEnv.js');
     loadEnvFiles(projectRoot, { mode: options.mode });
 
-    const { resolveOptionsAsync } = await import('./resolveOptions.js');
-    const props = await resolveOptionsAsync(projectRoot, options);
-
     const { compileAndroidAsync } = await import('./compileAndroidAsync.js');
-    await compileAndroidAsync(projectRoot, props);
+    await compileAndroidAsync(projectRoot, options);
   } catch (error) {
     return logCmdError(error);
   }

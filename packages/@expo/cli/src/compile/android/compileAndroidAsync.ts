@@ -3,12 +3,14 @@ import chalk from 'chalk';
 import * as Log from '../../log';
 import { copyBinaryToOutputAsync } from '../copyBinaryToOutputAsync';
 import { debugEvent, event } from '../events';
+import type { ResolvedOptions } from '../resolveOptions';
 import { buildAsync, getApkPath } from './gradle';
-import type { BuildProps } from './resolveOptions';
+import { resolveOptionsAsync } from './resolveOptions';
 
-export async function compileAndroidAsync(projectRoot: string, props: BuildProps) {
+export async function compileAndroidAsync(projectRoot: string, options: ResolvedOptions) {
   const doneCompile = event.span();
 
+  const props = await resolveOptionsAsync(projectRoot, options);
   debugEvent('android:build_props', {
     variant: props.variant,
   });
