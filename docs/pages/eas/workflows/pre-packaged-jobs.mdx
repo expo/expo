@@ -1714,11 +1714,11 @@ jobs:
 
 ## Email
 
-Send a plain-text email to members of the account that owns the project.
+Send a plain-text email to members of the account that owns the project. Each email ends with a footer that links to the workflow run.
 
 The job skips recipients who are not account members or have no verified email address. If the job skips a recipient, the job fails and lists the skipped recipients. The other recipients still receive the email.
 
-The job is subject to hourly rate limits. Each account can send up to 100 emails, and each member can receive up to 10 emails. On the Production and Enterprise plans, these limits are 1,000 and 60 respectively.
+The job is subject to hourly rate limits. Each account can send up to 100 emails, and each member can receive up to 10 emails. On the Production and Enterprise plans, these limits are 1,000 and 60 respectively. If sending to a recipient would exceed a limit, the job skips that recipient.
 
 ### Syntax
 
@@ -1737,12 +1737,12 @@ jobs:
 
 You can pass the following parameters into the `params` list:
 
-| Parameter | Type     | Description                                                                                                                       |
-| --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| usernames | string[] | Required if emails is not provided. The usernames of the account members to send the email to. Up to 50 usernames.                |
-| emails    | string[] | Required if usernames is not provided. The email addresses of the account members to send the email to. Up to 50 email addresses. |
-| subject   | string   | Required. The subject of the email. Up to 255 characters.                                                                         |
-| body      | string   | Required. The plain-text body of the email. Up to 20,000 characters.                                                              |
+| Parameter | Type     | Description                                                                                                                                                    |
+| --------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| usernames | string[] | Required if `emails` is not provided. The usernames of the account members to send the email to. Up to 50 recipients across `usernames` and `emails`.          |
+| emails    | string[] | Required if `usernames` is not provided. The email addresses of the account members to send the email to. Up to 50 recipients across `usernames` and `emails`. |
+| subject   | string   | Required. The subject of the email. Up to 255 characters.                                                                                                      |
+| body      | string   | Required. The plain-text body of the email. Up to 20,000 characters.                                                                                           |
 
 ### Examples
 
