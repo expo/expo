@@ -34,11 +34,18 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "node-forge": "^1.4.0"
+    "@peculiar/asn1-cms": "^2.11.1",
+    "@peculiar/asn1-pfx": "^2.11.1",
+    "@peculiar/asn1-pkcs8": "^2.11.1",
+    "@peculiar/asn1-schema": "^2.11.1",
+    "@peculiar/asn1-x509": "^2.11.1",
+    "asn1js": "^3.1.0"
   },
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
-    "@types/node": "^22.14.0",
-    "@types/node-forge": "^1.0.0"
+    "@types/node": "^22.14.0"
+  },
+  "engines": {
+    "node": "^20.18.3 || >=22.0.0"
   }
 }
