@@ -10,7 +10,6 @@ import fs from 'fs';
 import path from 'node:path';
 import semver from 'semver';
 
-import { assertNoLegacySourceUrl } from './assertNoLegacySourceUrl';
 import {
   getDesignatedSwiftBridgingHeaderFileReference,
   withXCParseXcodeProject,
@@ -144,7 +143,15 @@ export function updateModulesAppDelegateSwift(
   }
 
   if (sdkVersion && semver.gte(sdkVersion, '59.0.0')) {
-    assertNoLegacySourceUrl(contents);
+    const legacySourceUrl = contents.match(
+      /^(?![ \t]*\/\/)[^\n]*\bfunc\s+sourceURL\s*\(\s*for\s+\w+\s*:\s*(?:React\.)?RCTBridge\b/m
+    );
+    if (legacySourceUrl) {
+      const line = contents.slice(0, legacySourceUrl.index).split('\n').length;
+      throw new Error(
+        `Cannot install Expo modules because AppDelegate.swift contains the legacy sourceURL(for:) method at line ${line}. SDK 59 and later require bundleURL() instead. Remove sourceURL(for:) and its attributes. If it contains custom bundle selection, move that logic to bundleURL() first. Then run install-expo-modules again.`
+      );
+    }
   }
 
   // Add imports if needed.
