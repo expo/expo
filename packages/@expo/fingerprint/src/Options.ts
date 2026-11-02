@@ -1,5 +1,4 @@
 import fs from 'fs/promises';
-import type { Minimatch } from 'minimatch';
 import os from 'os';
 import path from 'path';
 
@@ -8,6 +7,7 @@ import { satisfyExpoVersion } from './ExpoResolver';
 import type { Config, NormalizedOptions, Options, Platform } from './Fingerprint.types';
 import { DEFAULT_PRESET, resolvePreset } from './Presets';
 import { resolveProjectWorkflowAsync } from './ProjectWorkflow';
+import type { PathMatchObject } from './utils/Path';
 import { appendIgnorePath, buildDirMatchObjects, buildPathMatchObjects } from './utils/Path';
 
 export const FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
@@ -122,7 +122,7 @@ async function collectIgnorePathsAsync(
   projectRoot: string,
   pathsFromConfig: Config['ignorePaths'],
   options: Options | undefined
-): Promise<Minimatch[]> {
+): Promise<PathMatchObject[]> {
   const ignorePaths = [
     ...DEFAULT_IGNORE_PATHS,
     ...(pathsFromConfig ?? []),
@@ -148,7 +148,7 @@ async function collectIgnorePathsAsync(
 async function resolveUseCNGAsync(
   projectRoot: string,
   options: Options | undefined,
-  ignorePathMatchObjects: Minimatch[]
+  ignorePathMatchObjects: PathMatchObject[]
 ): Promise<Record<Platform, boolean>> {
   const results: Record<Platform, boolean> = {
     android: false,

@@ -1,6 +1,5 @@
-import type { Minimatch } from 'minimatch';
-
 import type { SourceSkips } from './sourcer/SourceSkips';
+import type { PathMatchObject } from './utils/Path';
 
 export type FingerprintSource = HashSource & {
   /**
@@ -133,7 +132,7 @@ export interface Options {
    * Ignore files and directories from hashing. The supported pattern is the same as `glob()`.
    *
    * The pattern matching is slightly different from gitignore. Partial matching is unsupported. For example, `build` does not match `android/build`; instead, use `'**' + '/build'`.
-   * @see [minimatch implementations](https://github.com/isaacs/minimatch#comparisons-to-other-fnmatchglob-implementations) for further reference.
+   * @see [picomatch syntax](https://github.com/micromatch/picomatch#globbing-features) for further reference.
    *
    * Fingerprint comes with implicit default ignorePaths defined in `Options.DEFAULT_IGNORE_PATHS`.
    * If you want to override the default ignorePaths, use `!` prefix in `ignorePaths`.
@@ -405,12 +404,12 @@ export type NormalizedOptions = Omit<Options, 'ignorePaths'> & {
   sourceSkips: NonNullable<Options['sourceSkips']>;
   enableReactImportsPatcher: NonNullable<Options['enableReactImportsPatcher']>;
 
-  ignorePathMatchObjects: Minimatch[];
+  ignorePathMatchObjects: PathMatchObject[];
 
   /**
    * An ignore pattern list specific for dir matching. It is built by `ignorePathMatchObjects` in runtime.
    */
-  ignoreDirMatchObjects: Minimatch[];
+  ignoreDirMatchObjects: PathMatchObject[];
 
   /**
    * Indicate whether the project is using CNG for each platform.

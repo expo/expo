@@ -1,13 +1,12 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
-import { glob } from 'glob';
 import type { Ignore as SingleFileIgnore } from 'ignore';
 import createIgnore from 'ignore';
-import type { Minimatch } from 'minimatch';
 import path from 'path';
 
 import { resolveExpoConfigPluginsPackagePath } from './ExpoResolver';
 import type { Platform, ProjectWorkflow } from './Fingerprint.types';
+import type { PathMatchObject } from './utils/Path';
 import { isIgnoredPathWithMatchObjects, pathExistsAsync, toPosixPath } from './utils/Path';
 
 /**
@@ -19,7 +18,7 @@ import { isIgnoredPathWithMatchObjects, pathExistsAsync, toPosixPath } from './u
 export async function resolveProjectWorkflowAsync(
   projectRoot: string,
   platform: Platform,
-  fingerprintIgnorePaths: Minimatch[]
+  fingerprintIgnorePaths: PathMatchObject[]
 ): Promise<ProjectWorkflow> {
   const configPluginsPackageRoot = resolveExpoConfigPluginsPackagePath(projectRoot);
   if (configPluginsPackageRoot == null) {
@@ -57,7 +56,7 @@ export async function resolveProjectWorkflowAsync(
 
 export async function resolveProjectWorkflowPerPlatformAsync(
   projectRoot: string,
-  fingerprintIgnorePaths: Minimatch[]
+  fingerprintIgnorePaths: PathMatchObject[]
 ): Promise<Record<Platform, ProjectWorkflow>> {
   const [android, ios] = await Promise.all([
     resolveProjectWorkflowAsync(projectRoot, 'android', fingerprintIgnorePaths),
@@ -159,15 +158,11 @@ class Ignore {
   constructor(private rootDir: string) {}
 
   public async initIgnoreAsync(): Promise<void> {
-    const ignoreFilePaths = (
-      await glob(`**/${GITIGNORE_FILENAME}`, {
-        cwd: this.rootDir,
-        ignore: ['node_modules'],
-        follow: false,
-      })
-    )
-      // ensure that parent dir is before child directories
-      .sort((a, b) => a.length - b.length && a.localeCompare(b));
+    const ignoreFilePaths = await Array.fromAsync(
+      fs.glob(`**/${GITIGNORE_FILENAME}`, { cwd: this.rootDir })
+    );
+    // ensure that parent dir is before child directories
+    ignoreFilePaths.sort((a, b) => a.length - b.length && a.localeCompare(b));
 
     const ignoreMapping = await Promise.all(
       ignoreFilePaths.map(async (filePath) => {

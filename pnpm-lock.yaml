@@ -2602,15 +2602,12 @@ importers:
       getenv:
         specifier: ^2.0.0
         version: 2.0.0
-      glob:
-        specifier: ^13.0.0
-        version: 13.0.6
       ignore:
         specifier: ^5.3.1
         version: 5.3.2
-      minimatch:
-        specifier: ^10.2.2
-        version: 10.2.5
+      picomatch:
+        specifier: ^4.0.4
+        version: 4.0.7
       resolve-from:
         specifier: ^5.0.0
         version: 5.0.0
@@ -2636,6 +2633,9 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.20.1
+      '@types/picomatch':
+        specifier: ^4.0.2
+        version: 4.0.2
       '@types/require-from-string':
         specifier: ^1.2.3
         version: 1.2.3
@@ -2654,6 +2654,9 @@ importers:
       temp-dir:
         specifier: ^2.0.0
         version: 2.0.0
+      tinyglobby:
+        specifier: ^0.2.15
+        version: 0.2.15
 
   packages/@expo/image-utils:
     dependencies:
