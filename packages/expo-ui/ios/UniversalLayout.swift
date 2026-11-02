@@ -179,6 +179,13 @@ internal struct ParentAwareHStackLayout: Layout {
     )
   }
 
+  // A `Spacer` reads the orientation and grows only along the stack axis.
+  static var layoutProperties: LayoutProperties {
+    var properties = LayoutProperties()
+    properties.stackOrientation = .horizontal
+    return properties
+  }
+
   func makeCache(subviews: Subviews) -> StackLayoutCache {
     StackLayoutCache()
   }
@@ -215,6 +222,13 @@ internal struct ParentAwareVStackLayout: Layout {
       ownDimensions: ownDimensions,
       resolvesOwnPercentage: resolvesOwnPercentage
     )
+  }
+
+  // A `Spacer` reads the orientation and grows only along the stack axis.
+  static var layoutProperties: LayoutProperties {
+    var properties = LayoutProperties()
+    properties.stackOrientation = .vertical
+    return properties
   }
 
   func makeCache(subviews: Subviews) -> StackLayoutCache {
@@ -407,11 +421,10 @@ private struct StackConfiguration {
   private func measure(proposal: ProposedViewSize, subviews: LayoutSubviews) -> StackMeasurement {
     let spacings = stackSpacings(subviews: subviews, explicit: spacing)
     let measured = measureChildren(subviews: subviews, proposal: proposal, spacings: spacings)
-    // A flexible child reports its cross size for its final main size and no cross proposal.
-    // So a `Spacer` does not stretch the stack, and wrapped text counts its lines.
+    // A flexible child reports its cross size for its final main size, so wrapped text counts its lines.
     let dimensions = zip(subviews, measured.children).map { subview, child in
       let dimensionProposal = child.flexible
-        ? proposedSize(main: mainLength(child.size, axis: axis), cross: nil, axis: axis)
+        ? proposedSize(main: mainLength(child.size, axis: axis), cross: child.crossProposal, axis: axis)
         : child.proposal
       return subview.dimensions(in: dimensionProposal)
     }
