@@ -1307,6 +1307,20 @@ describe('API platform tags', () => {
   });
 });
 
+describe('Package version', () => {
+  it('converts package-version to a recommended version line', () => {
+    const html = [
+      '<main><h1>Camera</h1>',
+      '<div data-md="package-version" data-md-version="~58.0.3">',
+      '<svg/>Recommended version:<div><span>~58.0.3</span></div><button><svg/></button>',
+      '</div>',
+      '<p>Camera API.</p></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('Recommended version: `~58.0.3`');
+  });
+});
+
 describe('API returns section', () => {
   it('converts api-returns to inline returns text', () => {
     const html = [
