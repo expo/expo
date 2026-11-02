@@ -413,6 +413,8 @@ class LoaderTask(
             null
           )
         }
+      } catch (e: CancellationException) {
+        throw e
       } catch (e: Exception) {
         throw IOException("Loaded new update but it failed to launch", e)
       }
