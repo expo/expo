@@ -457,7 +457,8 @@ private struct StackConfiguration {
     spacings: [CGFloat]
   ) -> MeasuredChildren {
     let offeredMain = finite(axis == .horizontal ? proposal.width : proposal.height)
-    let offeredCross = finite(axis == .horizontal ? proposal.height : proposal.width)
+    let proposedCross = axis == .horizontal ? proposal.height : proposal.width
+    let offeredCross = finite(proposedCross)
     let ownMainPoints = axis == .horizontal ? ownDimensions.widthPoints : ownDimensions.heightPoints
     let ownMainFraction = axis == .horizontal ? ownDimensions.widthFraction : ownDimensions.heightFraction
     let ownCrossPoints = axis == .horizontal ? ownDimensions.heightPoints : ownDimensions.widthPoints
@@ -494,8 +495,9 @@ private struct StackConfiguration {
       let mainFraction = axis == .horizontal ? dimensions.widthFraction : dimensions.heightFraction
       let crossFraction = axis == .horizontal ? dimensions.heightFraction : dimensions.widthFraction
       // A fraction uses the size chosen above.
-      // Every other child still gets the offered cross size, so text can wrap.
-      let crossProposal = crossFraction != nil ? definiteCross : offeredCross
+      // Every other child gets the cross proposal unchanged, so text can wrap, and an infinite probe
+      // reaches a child that can grow.
+      let crossProposal = crossFraction != nil ? definiteCross : proposedCross
 
       if mainFraction != nil, let definiteMain {
         let childProposal = proposedSize(main: definiteMain, cross: crossProposal, axis: axis)
