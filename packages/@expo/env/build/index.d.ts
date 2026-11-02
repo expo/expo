@@ -92,7 +92,7 @@ export declare function getOriginalEnv(systemEnv?: EnvOutput): EnvOutput;
 /**
  * Get the pre-load value of a single environment variable as recorded by
  * `@expo/env`. Falls through to the value in `systemEnv` for keys that
- * `@expo/env` never touched. O(1) and allocation-free, intended for read-sites
+ * `@expo/env` never touched. Intended for read-sites
  * that resolve filesystem paths or executables from a single env var.
  *
  * Honors `EXPO_UNSAFE_DOTENV_KEYS`: keys the caller has explicitly opted into

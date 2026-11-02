@@ -16,6 +16,31 @@ const globalStore = globalThis as Record<symbol, EnvBackupStore | undefined>;
 const originalEnvBackup: EnvBackupStore =
   globalStore[ORIGINAL_ENV_BACKUP_KEY] ?? (globalStore[ORIGINAL_ENV_BACKUP_KEY] = new WeakMap());
 
+function normalizeSystemEnvKey(key: string): string {
+  return process.platform === 'win32' ? key.toUpperCase() : key;
+}
+
+function resolveEnvKey(
+  env: EnvOutput | Map<string, string | undefined> | undefined,
+  key: string
+): string {
+  if (process.platform !== 'win32' || !env) return key;
+  const normalized = normalizeSystemEnvKey(key);
+  const keys = env instanceof Map ? env.keys() : Object.keys(env);
+  return [...keys].find((candidate) => normalizeSystemEnvKey(candidate) === normalized) ?? key;
+}
+
+function deleteEnvKey(env: EnvOutput, key: string): void {
+  if (process.platform === 'win32') {
+    const normalized = normalizeSystemEnvKey(key);
+    for (const candidate of Object.keys(env)) {
+      if (normalizeSystemEnvKey(candidate) === normalized) delete env[candidate];
+    }
+  } else {
+    delete env[key];
+  }
+}
+
 function rememberOriginal(systemEnv: EnvOutput, key: string): void {
   if (isUnsafeAllowedEnvKey(key)) return;
   let backup = originalEnvBackup.get(systemEnv);
@@ -23,8 +48,8 @@ function rememberOriginal(systemEnv: EnvOutput, key: string): void {
     backup = new Map();
     originalEnvBackup.set(systemEnv, backup);
   }
-  if (!backup.has(key)) {
-    backup.set(key, systemEnv[key]);
+  if (!backup.has(resolveEnvKey(backup, key))) {
+    backup.set(key, systemEnv[resolveEnvKey(systemEnv, key)]);
   }
 }
 
@@ -301,9 +326,8 @@ export function getOriginalEnv(systemEnv: EnvOutput = process.env): EnvOutput {
   const backup = originalEnvBackup.get(systemEnv);
   if (backup) {
     for (const [key, original] of backup) {
-      if (original === undefined) {
-        delete result[key];
-      } else {
+      deleteEnvKey(result, key);
+      if (original !== undefined) {
         result[key] = original;
       }
     }
@@ -314,7 +338,7 @@ export function getOriginalEnv(systemEnv: EnvOutput = process.env): EnvOutput {
 /**
  * Get the pre-load value of a single environment variable as recorded by
  * `@expo/env`. Falls through to the value in `systemEnv` for keys that
- * `@expo/env` never touched. O(1) and allocation-free, intended for read-sites
+ * `@expo/env` never touched. Intended for read-sites
  * that resolve filesystem paths or executables from a single env var.
  *
  * Honors `EXPO_UNSAFE_DOTENV_KEYS`: keys the caller has explicitly opted into
@@ -328,10 +352,11 @@ export function getOriginalEnvValue(
   systemEnv: EnvOutput = process.env
 ): string | undefined {
   const backup = originalEnvBackup.get(systemEnv);
-  if (backup && backup.has(key)) {
-    return backup.get(key);
+  const backupKey = resolveEnvKey(backup, key);
+  if (backup?.has(backupKey)) {
+    return backup.get(backupKey);
   }
-  return systemEnv[key];
+  return systemEnv[resolveEnvKey(systemEnv, key)];
 }
 
 /** Log the loaded environment info from the loaded results */
