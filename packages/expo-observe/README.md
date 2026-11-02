@@ -125,7 +125,7 @@ Use `ignoredMetrics` to skip exported metric names and `ignoredEvents` to skip e
 ```ts
 Observe.configure({
   ignoredMetrics: ['expo.app_startup.tti'],
-  ignoredEvents: ['js.exception', 'checkout.completed'],
+  ignoredEvents: ['reanimated.warning', 'checkout.completed'],
 });
 ```
 
