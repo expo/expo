@@ -101,10 +101,18 @@ public final class NetworkModule: Module {
     // since we want to wait for the result to be updated once:
     let tempMonitor = NWPathMonitor()
     var tempPath: NWPath?
+    let pathLock = NSLock()
 
     let semaphore = DispatchSemaphore(value: 0)
 
     tempMonitor.pathUpdateHandler = { updatedPath in
+      // Cancellation does not drain queued updates. Keep only the first path,
+      // and lock because the caller reads it on another queue.
+      pathLock.lock()
+      defer { pathLock.unlock() }
+      guard tempPath == nil else {
+        return
+      }
       tempPath = updatedPath
       semaphore.signal() // Notify that we got the path
     }
@@ -122,6 +130,8 @@ public final class NetworkModule: Module {
       return nil
     }
 
+    pathLock.lock()
+    defer { pathLock.unlock() }
     return tempPath
   }
 
