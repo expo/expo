@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import { glob } from 'glob';
+import { glob } from 'node:fs/promises';
 import path from 'path';
 
 import { getExternalPackagesDir, getPrecompileDir } from '../Directories';
@@ -167,9 +167,11 @@ export async function discoverExternalPackagesAsync(): Promise<ExternalPackage[]
   // Pattern matches both regular packages and scoped packages:
   // - react-native-svg/spm.config.json
   // - @shopify/react-native-skia/spm.config.json
-  const configPaths = await glob(`{*,@*/*}/${SPMConfigFileName}`, {
-    cwd: externalDir,
-  });
+  const configPaths = await Array.fromAsync(
+    glob(`{*,@*/*}/${SPMConfigFileName}`, {
+      cwd: externalDir,
+    })
+  );
 
   return configPaths.map((configPath) => {
     // configPath is like "react-native-svg/spm.config.json"

@@ -1,7 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { glob } from 'glob';
+import { globSync } from 'node:fs';
 import path from 'path';
 
 import { getPrecompileDir } from '../Directories';
@@ -235,11 +235,11 @@ export const Frameworks = {
       return nonVersioned;
     }
 
-    const matches = glob.sync(
+    const matches = globSync(
       `output/*/*/*/${buildType.toLowerCase()}/xcframeworks/${productName}.xcframework`,
-      { cwd: buildPath, absolute: true }
-    );
-    return matches[0] ?? null;
+      { cwd: buildPath }
+    ).map((file) => path.resolve(buildPath, file));
+    return matches.sort()[0] ?? null;
   },
 
   /**

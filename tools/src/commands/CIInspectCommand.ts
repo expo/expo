@@ -1,7 +1,7 @@
 import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import { glob } from 'glob';
+import { glob } from 'node:fs/promises';
 import ora from 'ora';
 import path from 'path';
 
@@ -330,7 +330,7 @@ function printAuthStatus(auth: AuthStatus): void {
 
 async function findEASProjectDirs(): Promise<string[]> {
   const pattern = 'apps/*/.eas/workflows';
-  const matches = await glob(pattern, { cwd: EXPO_DIR });
+  const matches = await Array.fromAsync(glob(pattern, { cwd: EXPO_DIR }));
   return matches.map((match) => path.resolve(EXPO_DIR, path.dirname(path.dirname(match))));
 }
 
