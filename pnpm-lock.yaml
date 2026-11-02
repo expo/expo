@@ -2837,9 +2837,6 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.7
         version: 19.2.3(@types/react@19.3.0)
-      glob:
-        specifier: ^13.0.6
-        version: 13.0.6
       npm-run-all2:
         specifier: ^8.0.4
         version: 8.0.4
