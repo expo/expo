@@ -6,10 +6,10 @@
  */
 
 import fs from 'fs-extra';
-import { glob } from 'glob';
 import path from 'path';
 
 import { getExpoRepositoryRootDir } from '../Directories';
+import { glob } from '../Glob';
 import { getPackageByName } from '../Packages';
 import type { DownloadedDependencies } from './Artifacts.types';
 import {

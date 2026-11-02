@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { glob } from 'glob';
 import path from 'path';
 
+import { glob } from '../Glob';
 import logger from '../Logger';
 import type { DownloadedDependencies } from './Artifacts.types';
 import {

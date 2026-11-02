@@ -25,10 +25,10 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { glob } from 'glob';
 import path from 'path';
 
 import { getExpoRepositoryRootDir, getPackagesDir } from '../Directories';
+import { glob } from '../Glob';
 import logger from '../Logger';
 import { getMonorepoBuildDir } from './MonorepoLayout';
 import { verifyAllPackagesAsync } from './Utils';
@@ -89,7 +89,10 @@ export async function findAllDerivedDataDirsAsync(): Promise<string[]> {
   }
 
   // `**` spans the package path (including scopes like `@expo/ui`); `*` is the flavor.
-  const matches = await glob('**/output/*/frameworks', { cwd: buildRoot, absolute: true });
+  const matches = await glob('**/output/*/frameworks', {
+    cwd: buildRoot,
+    absolute: true,
+  });
   return matches.filter(isDerivedDataDir);
 }
 

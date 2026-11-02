@@ -1,8 +1,8 @@
 import fs from 'fs-extra';
-import { glob } from 'glob';
 import os from 'os';
 import path from 'path';
 
+import { glob } from './Glob';
 import { spawnAsync, spawnJSONCommandAsync, SpawnOptions } from './Utils';
 
 export const EXPO_DEVELOPERS_TEAM_NAME = 'expo:developers';

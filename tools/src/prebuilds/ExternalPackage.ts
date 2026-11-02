@@ -1,8 +1,8 @@
 import fs from 'fs-extra';
-import { glob } from 'glob';
 import path from 'path';
 
 import { getExpoRepositoryRootDir, getExternalPackagesDir } from '../Directories';
+import { glob } from '../Glob';
 import { Package } from '../Packages';
 import { getPackageBuildDir } from './MonorepoLayout';
 import { SPMConfig } from './SPMConfig.types';

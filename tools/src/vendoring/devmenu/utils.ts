@@ -1,7 +1,7 @@
-import { glob } from 'glob';
 import path from 'path';
 
 import * as Directories from '../../Directories';
+import { glob } from '../../Glob';
 
 /**
  * @param pathToConvert

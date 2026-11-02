@@ -4,7 +4,6 @@ import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import { randomUUID } from 'crypto';
 import fs, { mkdirp } from 'fs-extra';
-import { glob } from 'glob';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import path from 'path';
@@ -19,6 +18,7 @@ import {
 } from '../Constants';
 import Git from '../Git';
 import { getOrCreateReleaseAsync, uploadReleaseAssetAsync, updateReleaseTitle } from '../GitHub';
+import { globSync } from '../Glob';
 import logger from '../Logger';
 import { androidAppVersionAsync, iosAppVersionAsync } from '../ProjectVersions';
 import { modifySdkVersionsAsync, modifyVersionsAsync } from '../Versions';
@@ -200,14 +200,14 @@ async function iosBuildAndSubmitAsync() {
       { stdio: isDebug ? 'inherit' : 'pipe' }
     );
 
-    const privateKeyMatches = glob.sync('*/certs/distribution/*.p12', {
+    const privateKeyMatches = globSync('*/certs/distribution/*.p12', {
       absolute: true,
       cwd: fastlaneMatchBucketCopyPath,
     });
     assert(privateKeyMatches.length === 1);
     const privateKeyPath = privateKeyMatches[0];
 
-    const certDERMatches = glob.sync('*/certs/distribution/*.cer', {
+    const certDERMatches = globSync('*/certs/distribution/*.cer', {
       absolute: true,
       cwd: fastlaneMatchBucketCopyPath,
     });

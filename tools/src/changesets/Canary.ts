@@ -1,9 +1,9 @@
 import fs from 'fs-extra';
-import { glob } from 'glob';
 import path from 'node:path';
 import semver from 'semver';
 
 import { EXPO_DIR } from '../Constants';
+import { glob } from '../Glob';
 import { runTurboTasksAsync } from '../Turbo';
 import { getReleaseTagAsync, packChangesetsAsync, runChangesetsAsync } from './Changesets';
 import {

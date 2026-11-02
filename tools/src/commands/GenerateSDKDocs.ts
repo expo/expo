@@ -2,10 +2,10 @@ import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { glob } from 'glob';
 import path from 'path';
 
 import * as Directories from '../Directories';
+import { glob } from '../Glob';
 import { transformFileAsync } from '../Transforms';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();

@@ -1,7 +1,6 @@
 import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import { glob } from 'glob';
 import ora from 'ora';
 import path from 'path';
 
@@ -12,6 +11,7 @@ import {
   getJobsForWorkflowRunAsync,
   getWorkflowRunsForRepoAsync,
 } from '../GitHubActions';
+import { glob } from '../Glob';
 import logger from '../Logger';
 import { sanitizeTerminalOutput } from '../Utils';
 

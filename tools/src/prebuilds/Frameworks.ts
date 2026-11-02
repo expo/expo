@@ -9,10 +9,10 @@ import {
   type PrebuiltFlavor,
 } from 'expo-modules-autolinking/internal/prebuiltArtifactPaths';
 import fs from 'fs-extra';
-import { glob } from 'glob';
 import path from 'path';
 
 import { getExpoRepositoryRootDir } from '../Directories';
+import { globSync } from '../Glob';
 import logger from '../Logger';
 import { resolveCheckedInHeaderDirectoriesAsync } from './CheckedInManifest';
 import type { SPMPackageSource } from './ExternalPackage';
@@ -254,7 +254,7 @@ export const Frameworks = {
     // Kept relative to buildPath, which glob takes as its cwd, so a glob metacharacter in the
     // build path cannot widen the match. Glob patterns are POSIX on every platform.
     const anyVersionBase = getArtifactBase('.', buildVersionPrefix('*', '*', '*'));
-    const matches = glob.sync(
+    const matches = globSync(
       path.posix.join(
         ...anyVersionBase.split(path.sep),
         getArtifactSuffixes(productName, PREBUILT_FLAVOR[buildType]).framework
