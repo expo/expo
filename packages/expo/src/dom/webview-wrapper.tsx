@@ -108,9 +108,15 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
   // `injectedJavaScriptObject` changes.
   const initialPropsRef = React.useRef(smartActions);
 
+  // The DOM side starts from `initialProps` and receives the latest props on `DOM_READY`.
+  // Injecting before then can reject on iOS, since the native view may not be registered yet.
+  const isDOMReadyRef = React.useRef(false);
+
   // When the `marshalProps` change, emit them to the webview.
   React.useEffect(() => {
-    emit({ type: '$$props', data: smartActions });
+    if (isDOMReadyRef.current) {
+      emit({ type: '$$props', data: smartActions });
+    }
   }, [emit, smartActions]);
 
   return React.createElement(webView, {
@@ -179,6 +185,7 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
       }
 
       if (type === DOM_READY) {
+        isDOMReadyRef.current = true;
         // Re-send the props the DOM side missed while the WebView was loading.
         emit({ type: '$$props', data: smartActions });
         return;
