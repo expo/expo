@@ -1,15 +1,14 @@
+import fs from 'fs-extra';
 /**
  * SPMPackage - Generates a clean, flat Package.swift from SPM configuration.
  *
  * This module generates Package.swift files without helper classes, producing
  * native SPM declarations that are easier to read and understand.
  */
-
-import fs from 'fs-extra';
+import { glob } from 'node:fs/promises';
 import path from 'path';
 
 import { getExpoRepositoryRootDir } from '../Directories';
-import { glob } from '../Glob';
 import { getPackageByName } from '../Packages';
 import type { DownloadedDependencies } from './Artifacts.types';
 import {
@@ -1008,7 +1007,7 @@ async function resolveSourceTarget(
   if (target.resources && target.resources.length > 0) {
     const resolvedResources: { path: string; rule: 'process' | 'copy' }[] = [];
     for (const r of target.resources) {
-      const matchedFiles = await glob(r.path, { cwd: pkg.path });
+      const matchedFiles = await Array.fromAsync(glob(r.path, { cwd: pkg.path }));
       if (matchedFiles.length === 0) {
         throw new Error(
           `Resource not found: "${r.path}" (resolved from package root: ${pkg.path}). ` +

@@ -1,3 +1,4 @@
+import spawnAsync from '@expo/spawn-async';
 /**
  * Prune intermediate prebuild artifacts.
  *
@@ -21,14 +22,12 @@
  * integration falls back to them whenever `.build/` is missing — without any staleness check
  * — a stale one silently links month-old binaries against current source.
  */
-
-import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import { glob } from 'node:fs/promises';
 import path from 'path';
 
 import { getExpoRepositoryRootDir, getPackagesDir } from '../Directories';
-import { glob } from '../Glob';
 import logger from '../Logger';
 import { getMonorepoBuildDir } from './MonorepoLayout';
 import { verifyAllPackagesAsync } from './Utils';
@@ -74,7 +73,9 @@ export async function findDerivedDataDirsAsync(buildPath: string): Promise<strin
     return [];
   }
 
-  const matches = await glob('*/frameworks', { cwd: outputDir, absolute: true });
+  const matches = (await Array.fromAsync(glob('*/frameworks', { cwd: outputDir }))).map((file) =>
+    path.resolve(outputDir, file)
+  );
   return matches.filter(isDerivedDataDir);
 }
 
@@ -89,10 +90,13 @@ export async function findAllDerivedDataDirsAsync(): Promise<string[]> {
   }
 
   // `**` spans the package path (including scopes like `@expo/ui`); `*` is the flavor.
-  const matches = await glob('**/output/*/frameworks', {
-    cwd: buildRoot,
-    absolute: true,
-  });
+  const matches = (
+    await Array.fromAsync(
+      glob('**/output/*/frameworks', {
+        cwd: buildRoot,
+      })
+    )
+  ).map((file) => path.resolve(buildRoot, file));
   return matches.filter(isDerivedDataDir);
 }
 
@@ -101,10 +105,13 @@ export async function findBundledPrebuildDirsAsync(packagesRoot: string): Promis
     return [];
   }
 
-  const matches = await glob(['*/prebuilds', '@*/*/prebuilds'], {
-    cwd: packagesRoot,
-    absolute: true,
-  });
+  const matches = (
+    await Array.fromAsync(
+      glob(['*/prebuilds', '@*/*/prebuilds'], {
+        cwd: packagesRoot,
+      })
+    )
+  ).map((file) => path.resolve(packagesRoot, file));
   const dirs = await Promise.all(
     matches.map(async (dir) => ((await fs.stat(dir)).isDirectory() ? dir : null))
   );

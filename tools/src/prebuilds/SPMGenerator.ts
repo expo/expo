@@ -1,8 +1,9 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import { glob as nativeGlob } from 'node:fs/promises';
 import path from 'path';
+import { glob } from 'tinyglobby';
 
-import { glob } from '../Glob';
 import logger from '../Logger';
 import type { DownloadedDependencies } from './Artifacts.types';
 import {
@@ -255,6 +256,7 @@ export const SPMGenerator = {
           }
 
           const mappedSourceFiles = await glob(mapping.from, {
+            expandDirectories: false,
             cwd: targetSourcePath,
             ignore: targetExcludes,
           });
@@ -300,7 +302,11 @@ export const SPMGenerator = {
       }
 
       // Use glob to get the source files
-      const files = await glob(pattern, { cwd: targetSourcePath, ignore: targetExcludes });
+      const files = await glob(pattern, {
+        expandDirectories: false,
+        cwd: targetSourcePath,
+        ignore: targetExcludes,
+      });
 
       // Track all valid destination paths to detect stale symlinks later
       const validDestPaths = new Set<string>();
@@ -328,7 +334,9 @@ export const SPMGenerator = {
       // Clean up stale source symlinks from previous runs (e.g., files that were
       // added to the exclude list). Only remove symlinks matching the source pattern
       // that are no longer in the valid set.
-      const allExistingFiles = await glob(pattern, { cwd: targetDestination });
+      const allExistingFiles = await Array.fromAsync(
+        nativeGlob(pattern, { cwd: targetDestination })
+      );
       for (const file of allExistingFiles) {
         const filePath = path.join(targetDestination, file);
         if (!validDestPaths.has(filePath)) {
@@ -344,6 +352,7 @@ export const SPMGenerator = {
       // to avoid accidentally pulling in headers from other targets/products
       if (target.headerPattern) {
         const headerFiles = await glob(target.headerPattern, {
+          expandDirectories: false,
           cwd: targetSourcePath,
           ignore: targetExcludes,
         });
@@ -404,7 +413,7 @@ export const SPMGenerator = {
 
         for (const resource of target.resources) {
           // Glob-expand the resource path against the package root
-          const matchedFiles = await glob(resource.path, { cwd: pkg.path });
+          const matchedFiles = await Array.fromAsync(nativeGlob(resource.path, { cwd: pkg.path }));
 
           if (matchedFiles.length === 0) {
             throw new Error(

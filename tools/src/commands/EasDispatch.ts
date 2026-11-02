@@ -5,6 +5,7 @@ import assert from 'assert';
 import { randomUUID } from 'crypto';
 import fs, { mkdirp } from 'fs-extra';
 import inquirer from 'inquirer';
+import { globSync } from 'node:fs';
 import ora from 'ora';
 import path from 'path';
 import semver from 'semver';
@@ -18,7 +19,6 @@ import {
 } from '../Constants';
 import Git from '../Git';
 import { getOrCreateReleaseAsync, uploadReleaseAssetAsync, updateReleaseTitle } from '../GitHub';
-import { globSync } from '../Glob';
 import logger from '../Logger';
 import { androidAppVersionAsync, iosAppVersionAsync } from '../ProjectVersions';
 import { modifySdkVersionsAsync, modifyVersionsAsync } from '../Versions';
@@ -201,18 +201,16 @@ async function iosBuildAndSubmitAsync() {
     );
 
     const privateKeyMatches = globSync('*/certs/distribution/*.p12', {
-      absolute: true,
       cwd: fastlaneMatchBucketCopyPath,
     });
     assert(privateKeyMatches.length === 1);
-    const privateKeyPath = privateKeyMatches[0];
+    const privateKeyPath = path.resolve(fastlaneMatchBucketCopyPath, privateKeyMatches[0]);
 
     const certDERMatches = globSync('*/certs/distribution/*.cer', {
-      absolute: true,
       cwd: fastlaneMatchBucketCopyPath,
     });
     assert(certDERMatches.length === 1);
-    const certDERPath = certDERMatches[0];
+    const certDERPath = path.resolve(fastlaneMatchBucketCopyPath, certDERMatches[0]);
 
     const certPEMPath = path.join(credentialsDir, 'cert.pem');
     const p12KeystorePath = path.join(credentialsDir, 'dist.p12');

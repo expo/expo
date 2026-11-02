@@ -6,10 +6,10 @@ import fs from 'fs/promises';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import path from 'path';
+import { glob } from 'tinyglobby';
 
 import { EXPO_DIR } from '../Constants';
 import Git from '../Git';
-import { glob } from '../Glob';
 import logger from '../Logger';
 import { spawnErrorOutput } from '../Utils';
 

@@ -2,9 +2,9 @@ import chalk from 'chalk';
 import { pathExists, readJSON, unlink, writeJSON } from 'fs-extra';
 import ora from 'ora';
 import * as path from 'path';
+import { glob } from 'tinyglobby';
 
 import * as Directories from '../Directories';
-import { glob } from '../Glob';
 import logger from '../Logger';
 import { spawnAsync, SpawnResult } from '../Utils';
 import {

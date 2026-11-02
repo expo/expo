@@ -1,8 +1,8 @@
 import { isBuiltin } from 'node:module';
 import path from 'node:path';
+import { glob } from 'tinyglobby';
 import ts from 'typescript';
 
-import { glob } from '../Glob';
 import { DependencyKind, type PackageDependency, type Package } from '../Packages';
 
 type PackageCheckType = 'package' | 'plugin' | 'cli' | 'utils';

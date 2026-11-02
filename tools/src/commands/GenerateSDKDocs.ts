@@ -2,10 +2,10 @@ import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import { glob } from 'node:fs/promises';
 import path from 'path';
 
 import * as Directories from '../Directories';
-import { glob } from '../Glob';
 import { transformFileAsync } from '../Transforms';
 
 const EXPO_DIR = Directories.getExpoRepositoryRootDir();
@@ -75,10 +75,13 @@ async function action(options) {
     await fs.copy(path.join(SDK_DOCS_DIR, 'unversioned'), targetSdkDirectory);
 
     // Version the sourcecode URLs for the API pages
-    const apiFiles = await glob('**/*.mdx', {
-      cwd: path.join(targetSdkDirectory, 'sdk'),
-      absolute: true,
-    });
+    const apiFiles = (
+      await Array.fromAsync(
+        glob('**/*.mdx', {
+          cwd: path.join(targetSdkDirectory, 'sdk'),
+        })
+      )
+    ).map((file) => path.resolve(targetSdkDirectory, 'sdk', file));
     await Promise.all(
       apiFiles.map((apiFilePath) =>
         transformFileAsync(apiFilePath, [

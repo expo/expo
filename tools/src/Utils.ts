@@ -1,10 +1,10 @@
 import basicSpawnAsync, { SpawnResult, SpawnOptions, SpawnPromise } from '@expo/spawn-async';
 import chalk from 'chalk';
 import ora from 'ora';
+import { glob, type GlobOptions } from 'tinyglobby';
 import { stripVTControlCharacters } from 'util';
 
 import { EXPO_DIR } from './Constants';
-import { glob, type GlobOptions } from './Glob';
 
 export { SpawnResult, SpawnOptions };
 
@@ -144,18 +144,9 @@ export function execAll(rgx: RegExp, str: string, index: number = 0): string[] {
 export async function searchFilesAsync(
   rootPath: string,
   patterns: string | string[],
-  options?: GlobOptions
+  options?: Pick<GlobOptions, 'ignore'>
 ): Promise<Set<string>> {
-  const files = await Promise.all(
-    arrayize(patterns).map((pattern) =>
-      glob(pattern, {
-        cwd: rootPath,
-        onlyFiles: true,
-        ...options,
-      })
-    )
-  );
-  return new Set(([] as string[]).concat(...files));
+  return new Set(await glob(patterns, { cwd: rootPath, expandDirectories: false, ...options }));
 }
 
 /**

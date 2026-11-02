@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import { glob } from 'node:fs/promises';
 import path from 'path';
 
 import { Podspec } from '../CocoaPods';
 import { EXPO_GO_IOS_DIR } from '../Constants';
-import { glob } from '../Glob';
 import logger from '../Logger';
 import { Package } from '../Packages';
 import {
@@ -223,7 +223,7 @@ async function findFrameworkForProjectAsync(projectName: string): Promise<string
     const cwd = path.join(PODS_DIR, name);
 
     if (await fs.pathExists(cwd)) {
-      const paths = await glob(`**/*.framework`, { cwd });
+      const paths = await Array.fromAsync(glob(`**/*.framework`, { cwd }));
 
       if (paths.length > 0) {
         return path.join(cwd, paths[0]);

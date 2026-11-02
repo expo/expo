@@ -1,9 +1,10 @@
 import fs from 'fs-extra';
+import { globSync as nativeGlobSync } from 'node:fs';
 import path from 'path';
+import { glob, globSync } from 'tinyglobby';
 
 import { Podspec, readPodspecAsync } from './CocoaPods';
 import * as Directories from './Directories';
-import { glob, globSync } from './Glob';
 import * as Npm from './Npm';
 import { SPMConfig } from './prebuilds/SPMConfig.types';
 
@@ -176,7 +177,9 @@ export class Package {
 
     // Look for podspecs in the package root and both iOS-style subdirectories.
     for (const directory of ['.', this.iosSubdirectory, this.appleSubdirectory]) {
-      const [podspecPath] = globSync(`${directory}/*.podspec`, { cwd: this.path }).sort().reverse();
+      const [podspecPath] = nativeGlobSync(`${directory}/*.podspec`, { cwd: this.path })
+        .sort()
+        .reverse();
       if (podspecPath) return podspecPath;
     }
     return null;

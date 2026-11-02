@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import os from 'node:os';
 import { describe, it } from 'node:test';
 import path from 'path';
+import { glob } from 'tinyglobby';
 
 import { getExpoRepositoryRootDir } from '../Directories';
-import { glob } from '../Glob';
 import type { SPMConfig } from './SPMConfig.types';
 import { getTargetExcludePatterns } from './SPMGenerator';
 
@@ -62,6 +62,7 @@ describe('expo-camera source selection', () => {
     );
 
     const files = await glob(target.pattern ?? '**/*.swift', {
+      expandDirectories: false,
       cwd: path.join(packagePath, target.path),
       ignore: getTargetExcludePatterns(target),
     });
@@ -85,6 +86,7 @@ describe('expo-sqlite source selection', () => {
     assert.ok(target.path, 'expo-sqlite Swift target must declare a path');
 
     const files = await glob(target.pattern ?? '**/*.swift', {
+      expandDirectories: false,
       cwd: path.join(packagePath, target.path),
       ignore: getTargetExcludePatterns(target),
     });

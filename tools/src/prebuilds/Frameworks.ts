@@ -9,10 +9,10 @@ import {
   type PrebuiltFlavor,
 } from 'expo-modules-autolinking/internal/prebuiltArtifactPaths';
 import fs from 'fs-extra';
+import { globSync } from 'node:fs';
 import path from 'path';
 
 import { getExpoRepositoryRootDir } from '../Directories';
-import { globSync } from '../Glob';
 import logger from '../Logger';
 import { resolveCheckedInHeaderDirectoriesAsync } from './CheckedInManifest';
 import type { SPMPackageSource } from './ExternalPackage';
@@ -259,8 +259,8 @@ export const Frameworks = {
         ...anyVersionBase.split(path.sep),
         getArtifactSuffixes(productName, PREBUILT_FLAVOR[buildType]).framework
       ),
-      { cwd: buildPath, absolute: true }
-    );
+      { cwd: buildPath }
+    ).map((file) => path.resolve(buildPath, file));
     return matches.sort()[0] ?? null;
   },
 

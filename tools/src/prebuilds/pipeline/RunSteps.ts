@@ -11,9 +11,9 @@ import chalk from 'chalk';
 import fs from 'fs';
 import fsExtra from 'fs-extra';
 import path from 'path';
+import { globSync } from 'tinyglobby';
 
 import { PACKAGES_DIR } from '../../Constants';
-import { globSync } from '../../Glob';
 import logger from '../../Logger';
 import { getPackageByName } from '../../Packages';
 import { getBundledVersionsAsync } from '../../ProjectVersions';
@@ -335,8 +335,8 @@ function getResourceInputPaths(pkg: SPMPackageSource, product: SPMProduct): stri
     target.type === 'framework'
       ? []
       : (target.resources ?? []).flatMap((resource) =>
-          globSync(resource.path, { cwd: pkg.path, onlyFiles: true }).map((file) =>
-            path.join(pkg.path, file)
+          globSync(resource.path, { expandDirectories: false, cwd: pkg.path, onlyFiles: true }).map(
+            (file) => path.join(pkg.path, file)
           )
         )
   );
