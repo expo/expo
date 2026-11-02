@@ -15,11 +15,13 @@ function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e
 const platform = _nodeOs().default.platform();
 
 // WARN(@kitten): We don't read this dynamically to ignore later modifications to this env var
-const safeKeys = new Set(process.env.EXPO_UNSAFE_DOTENV_KEYS?.split(',').filter(x => !!x));
+const safeKeys = new Set(process.env.EXPO_UNSAFE_DOTENV_KEYS?.split(',').filter(x => !!x).map(name => name.toUpperCase()));
 function isUnsafeAllowedEnvKey(name) {
+  name = name.toUpperCase();
   return name !== '__EXPO_CONFIG_MODE' && safeKeys.has(name);
 }
 function isIgnoredEnvKey(name) {
+  name = name.toUpperCase();
   if (platform === 'darwin' && name.startsWith('DYLD_')) {
     return true;
   } else if (platform === 'linux' && name.startsWith('LD_')) {
@@ -147,7 +149,6 @@ function isIgnoredEnvKey(name) {
 
     // Windows-owned
     case 'SYSTEMROOT':
-    case 'SystemRoot':
       return true;
 
     // User tools
@@ -208,6 +209,7 @@ function isIgnoredEnvKey(name) {
  * Honors `EXPO_UNSAFE_DOTENV_KEYS`: opt-in keys are allowed in any env file.
  */
 function isLocalEnvKey(name) {
+  name = name.toUpperCase();
   if (safeKeys.has(name)) return false;
   switch (name) {
     // Android tooling
@@ -250,15 +252,10 @@ function isLocalEnvKey(name) {
     case 'BROWSER':
     case 'BROWSER_ARGS':
     case 'HTTP_PROXY':
-    case 'http_proxy':
     case 'HTTPS_PROXY':
-    case 'https_proxy':
     case 'ALL_PROXY':
-    case 'all_proxy':
     case 'NO_PROXY':
-    case 'no_proxy':
     case 'FTP_PROXY':
-    case 'ftp_proxy':
     case 'SSL_CRT_FILE':
     case 'SSL_KEY_FILE':
     case 'REACT_NATIVE_PACKAGER_HOSTNAME':

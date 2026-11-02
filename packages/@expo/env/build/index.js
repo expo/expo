@@ -71,6 +71,25 @@ const debug = require('debug')('expo:env');
 const ORIGINAL_ENV_BACKUP_KEY = Symbol.for('@expo/env.originalEnvBackup.v1');
 const globalStore = globalThis;
 const originalEnvBackup = globalStore[ORIGINAL_ENV_BACKUP_KEY] ?? (globalStore[ORIGINAL_ENV_BACKUP_KEY] = new WeakMap());
+function normalizeSystemEnvKey(key) {
+  return process.platform === 'win32' ? key.toUpperCase() : key;
+}
+function resolveEnvKey(env, key) {
+  if (process.platform !== 'win32' || !env) return key;
+  const normalized = normalizeSystemEnvKey(key);
+  const keys = env instanceof Map ? env.keys() : Object.keys(env);
+  return [...keys].find(candidate => normalizeSystemEnvKey(candidate) === normalized) ?? key;
+}
+function deleteEnvKey(env, key) {
+  if (process.platform === 'win32') {
+    const normalized = normalizeSystemEnvKey(key);
+    for (const candidate of Object.keys(env)) {
+      if (normalizeSystemEnvKey(candidate) === normalized) delete env[candidate];
+    }
+  } else {
+    delete env[key];
+  }
+}
 function rememberOriginal(systemEnv, key) {
   if ((0, _constants().isUnsafeAllowedEnvKey)(key)) return;
   let backup = originalEnvBackup.get(systemEnv);
@@ -78,8 +97,8 @@ function rememberOriginal(systemEnv, key) {
     backup = new Map();
     originalEnvBackup.set(systemEnv, backup);
   }
-  if (!backup.has(key)) {
-    backup.set(key, systemEnv[key]);
+  if (!backup.has(resolveEnvKey(backup, key))) {
+    backup.set(key, systemEnv[resolveEnvKey(systemEnv, key)]);
   }
 }
 
@@ -345,22 +364,21 @@ function getOriginalEnv(systemEnv = process.env) {
   const backup = originalEnvBackup.get(systemEnv);
   if (backup) {
     for (const [key, original] of backup) {
-      if (original === undefined) {
-        delete result[key];
-      } else {
+      deleteEnvKey(result, key);
+      if (original !== undefined) {
         result[key] = original;
       }
     }
   }
 
-  // A child process cannot access its parent's in-memory backup, so the inherited marker lists
-  // the dotenv keys to remove.
-  for (const key of getLoadedEnvKeys(result[LOADED_ENV_NAME])) {
+  // A new process cannot access its parent's in-memory backup, so use the inherited marker to
+  // remove the parent's dotenv values.
+  for (const key of getLoadedEnvKeys(result[resolveEnvKey(result, LOADED_ENV_NAME)])) {
     if (!(0, _constants().isUnsafeAllowedEnvKey)(key)) {
-      delete result[key];
+      deleteEnvKey(result, key);
     }
   }
-  delete result[LOADED_ENV_NAME];
+  deleteEnvKey(result, LOADED_ENV_NAME);
   return result;
 }
 
@@ -378,14 +396,17 @@ function getOriginalEnv(systemEnv = process.env) {
  */
 function getOriginalEnvValue(key, systemEnv = process.env) {
   const backup = originalEnvBackup.get(systemEnv);
-  const marker = backup?.has(LOADED_ENV_NAME) ? backup.get(LOADED_ENV_NAME) : systemEnv[LOADED_ENV_NAME];
-  if (key === LOADED_ENV_NAME || !(0, _constants().isUnsafeAllowedEnvKey)(key) && getLoadedEnvKeys(marker).includes(key)) {
+  const markerKey = resolveEnvKey(backup, LOADED_ENV_NAME);
+  const marker = backup?.has(markerKey) ? backup.get(markerKey) : systemEnv[resolveEnvKey(systemEnv, LOADED_ENV_NAME)];
+  const normalized = normalizeSystemEnvKey(key);
+  if (normalized === LOADED_ENV_NAME || !(0, _constants().isUnsafeAllowedEnvKey)(key) && getLoadedEnvKeys(marker).some(loadedKey => normalizeSystemEnvKey(loadedKey) === normalized)) {
     return undefined;
   }
-  if (backup && backup.has(key)) {
-    return backup.get(key);
+  const backupKey = resolveEnvKey(backup, key);
+  if (backup?.has(backupKey)) {
+    return backup.get(backupKey);
   }
-  return systemEnv[key];
+  return systemEnv[resolveEnvKey(systemEnv, key)];
 }
 
 /** Log the loaded environment info from the loaded results */
