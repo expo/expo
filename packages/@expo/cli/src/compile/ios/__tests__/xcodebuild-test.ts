@@ -66,4 +66,14 @@ describe(getAppPathAsync, () => {
       /Could not parse JSON returned from "xcodebuild -showBuildSettings -json"\.\n\nnot json\n\nError: /
     );
   });
+
+  it(`throws when the scheme doesn't build a target with its name`, async () => {
+    jest.mocked(spawnAsync).mockResolvedValueOnce({
+      stdout: JSON.stringify([{ target: 'other-app', buildSettings: {} }]),
+    } as any);
+
+    await expect(getAppPathAsync(props)).rejects.toThrow(
+      'The "my-app" scheme doesn\'t build a target named "my-app". Targets it builds: other-app.'
+    );
+  });
 });
