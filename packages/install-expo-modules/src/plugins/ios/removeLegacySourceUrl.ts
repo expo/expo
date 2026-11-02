@@ -1,7 +1,14 @@
-const migrationError = () =>
+const migrationError = (reason: string, action: string) =>
   new Error(
-    'Cannot migrate sourceURL(for:) in AppDelegate.swift automatically. SDK 58 and later use bundleURL() on the React Native factory delegate. Move custom bundle selection to bundleURL(), remove sourceURL(for:), and run install-expo-modules again.'
+    `Cannot migrate sourceURL(for:) in AppDelegate.swift automatically: ${reason}. ${action} Then run install-expo-modules again.`
   );
+
+function syntaxError(source: string, offset: number, reason: string): Error {
+  const line = source.slice(0, offset).split('\n').length;
+  return new Error(
+    `Cannot parse AppDelegate.swift while migrating sourceURL(for:): ${reason} at line ${line}. Check the Swift syntax, then run install-expo-modules again.`
+  );
+}
 
 export function removeLegacySourceUrl(contents: string): string {
   const code = maskSwiftNonCode(contents);
@@ -26,21 +33,31 @@ export function removeLegacySourceUrl(contents: string): string {
       }
 
       const methodStart = classStart + method.index!;
-      const start = code.lastIndexOf('\n', methodStart) + 1;
+      let start = code.lastIndexOf('\n', methodStart) + 1;
       const bodyStart = methodStart + method[0].length;
       const bodyEnd = findClosingBrace(code, bodyStart);
-      const declaration = code.slice(start, bodyStart);
-      const signature = declaration.match(
-        /^\s*(?:(?:public|internal|open|final)\s+)*override\s+(?:(?:public|internal|open|final)\s+)*func\s+sourceURL\s*\(\s*for\s+(\w+)\s*:\s*RCTBridge\s*\)\s*->\s*URL\?\s*\{$/
+      const signature = method[0].match(
+        /^func\s+sourceURL\s*\(\s*for\s+(\w+)\s*:\s*RCTBridge\s*\)\s*->\s*URL\?\s*\{$/
       );
-      const hasAttribute = /@\w+(?:\([^@{}]*\))?\s*$/.test(code.slice(0, start));
+      const hasAttribute =
+        /@\w+(?:\([^@{}]*\))?\s*$/.test(code.slice(0, start)) ||
+        code.slice(start, methodStart).includes('@');
       const prefix = contents.slice(start, methodStart);
+      const hasLeadingModifier = /\b(?:public|internal|open|final|override)\s*$/.test(
+        code.slice(classStart, start)
+      );
       if (
         !signature ||
-        hasAttribute ||
-        !/^[\t ]*(?:(?:public|internal|open|final|override)\s+)+$/.test(prefix)
+        hasLeadingModifier ||
+        (!hasAttribute &&
+          !/^[\t ]*(?:(?:public|internal|open|final)\s+)*override\s+(?:(?:public|internal|open|final)\s+)*$/.test(
+            prefix
+          ))
       ) {
-        throw migrationError();
+        throw migrationError(
+          'the method declaration is not recognized',
+          'Review the declaration, preserve any custom bundle selection in bundleURL(), and remove sourceURL(for:) manually.'
+        );
       }
 
       const body = code
@@ -51,7 +68,20 @@ export function removeLegacySourceUrl(contents: string): string {
         .replace(/;$/, '');
       const bundleCall = '(?:self\\.)?bundleURL\\(\\)';
       if (!new RegExp(`^(?:${signature[1]}\\.bundleURL\\?\\?)?${bundleCall}$`).test(body)) {
-        throw migrationError();
+        throw migrationError(
+          'the method has a custom implementation',
+          'Move its bundle selection to bundleURL() and remove sourceURL(for:).'
+        );
+      }
+      if (hasAttribute) {
+        throw migrationError(
+          'the forwarding method has attributes',
+          'Remove the method together with its attributes.'
+        );
+      }
+      if (!contents.slice(bodyEnd + 1, classEnd).trim()) {
+        const blankLine = contents.slice(0, start).match(/\r?\n[\t ]*\r?\n$/);
+        if (blankLine) start -= blankLine[0].replace(/^\r?\n/, '').length;
       }
       const trailingNewlines =
         contents.slice(bodyEnd + 1).match(/^[\t ]*\r?\n(?:[\t ]*\r?\n)?/)?.[0].length ?? 0;
@@ -59,8 +89,27 @@ export function removeLegacySourceUrl(contents: string): string {
     }
   }
 
-  for (const { start, end } of removals.sort((a, b) => b.start - a.start)) {
+  const merged: typeof removals = [];
+  for (const removal of removals.sort((a, b) => a.start - b.start)) {
+    const previous = merged.at(-1);
+    if (previous && removal.start <= previous.end) {
+      previous.end = Math.max(previous.end, removal.end);
+    } else {
+      merged.push(removal);
+    }
+  }
+  for (const { start, end } of merged.reverse()) {
     contents = contents.slice(0, start) + contents.slice(end);
+  }
+
+  const remainingCode = maskSwiftNonCode(contents);
+  for (const method of remainingCode.matchAll(/\bfunc\s+sourceURL\s*\(\s*for\b[^{}]*\{/g)) {
+    if (/\bRCTBridge\b/.test(method[0])) {
+      const line = remainingCode.slice(0, method.index).split('\n').length;
+      console.warn(
+        `Unmigrated sourceURL(for:) method in AppDelegate.swift at line ${line}: its superclass could not be verified. If this is a React Native factory delegate, move any custom bundle selection to bundleURL() and remove sourceURL(for:) before building.`
+      );
+    }
   }
   return contents;
 }
@@ -71,7 +120,7 @@ function findClosingBrace(code: string, start: number): number {
     if (code[i] === '{') depth++;
     if (code[i] === '}' && --depth === 0) return i;
   }
-  throw migrationError();
+  throw syntaxError(code, start - 1, 'unmatched opening brace');
 }
 
 /** Preserve offsets and newlines while hiding comments and string contents from matching. */
@@ -104,7 +153,7 @@ function maskSwiftNonCode(source: string): string {
           i++;
         }
       }
-      throw migrationError();
+      throw syntaxError(source, start, 'unterminated block comment');
     }
     if (source[start] !== '"' && source[start] !== '#') return start;
     const literal = source.slice(start).match(/^(#*)("""|")/);
@@ -130,6 +179,6 @@ function maskSwiftNonCode(source: string): string {
         }
       }
     }
-    throw migrationError();
+    throw syntaxError(source, start, 'unterminated string literal');
   }
 }
