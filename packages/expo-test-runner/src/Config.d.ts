@@ -22,10 +22,6 @@ export type Application = {
     mainApplication?: string;
     mainActivity?: string;
   };
-  ios?: {
-    appDelegateHeader?: string;
-    appDelegate?: string;
-  };
   tests: { [key: string]: Test };
 } & DetoxApplication;
 
