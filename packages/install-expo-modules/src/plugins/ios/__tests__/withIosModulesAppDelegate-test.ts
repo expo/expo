@@ -12,14 +12,26 @@ import {
 const fixturesPath = path.resolve(__dirname, 'fixtures');
 
 describe(updateModulesAppDelegateObjcHeader, () => {
-  it('should migrate from react-native@>=0.88.0 AppDelegate.swift to the scene life cycle', async () => {
+  it('migrates RN 0.88 after the user removes sourceURL(for:)', async () => {
     const [rawContents, expectContents] = await Promise.all([
       fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn088.swift'), 'utf8'),
       fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn088-updated.swift'), 'utf8'),
     ]);
 
     const sdkVersion = getSdkVersion('0.88.0');
-    const contents = updateModulesAppDelegateSwift(rawContents, sdkVersion);
+    expect(() => updateModulesAppDelegateSwift(rawContents, sdkVersion)).toThrow(
+      /Remove sourceURL\(for:\).*custom bundle selection.*bundleURL\(\).*run install-expo-modules again/
+    );
+
+    const withoutLegacyMethod = rawContents.replace(
+      `  override func sourceURL(for bridge: RCTBridge) -> URL? {
+    self.bundleURL()
+  }
+
+`,
+      ''
+    );
+    const contents = updateModulesAppDelegateSwift(withoutLegacyMethod, sdkVersion);
     expect(contents).toEqual(expectContents);
 
     const nextContents = updateModulesAppDelegateSwift(contents, sdkVersion);
@@ -115,66 +127,29 @@ describe(updateModulesAppDelegateObjcImpl, () => {
 
 describe(updateModulesAppDelegateSwift, () => {
   describe('SDK 58 sourceURL migration', () => {
-    let warn: jest.SpyInstance;
-
-    beforeEach(() => {
-      warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    });
-
-    afterEach(() => {
-      warn.mockRestore();
-    });
-
-    const bundleMethod = '  override func bundleURL() -> URL? { customBundleURL() }';
-    const delegate = (body: string) => `internal import Expo
-class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
-  override func sourceURL(for bridge: RCTBridge) -> URL? {
+    const delegate = (superclass: string, body: string) => `internal import Expo
+class ReactNativeDelegate: ${superclass} {
+  @objc public override func sourceURL(
+    for sourceBridge: RCTBridge
+  ) -> URL? {
     ${body}
   }
-
-${bundleMethod}
-}
-`;
-    const migrated = `internal import Expo
-class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
-${bundleMethod}
 }
 `;
 
     it.each([
-      'self.bundleURL()',
-      'return self.bundleURL()',
-      'bundleURL()',
-      'return bundleURL();',
-      'bridge.bundleURL ?? bundleURL()',
-      'return bridge.bundleURL ?? self.bundleURL()',
-      '// dev client fallback\n    bridge.bundleURL /* nested /* comment */ } */ ?? bundleURL()',
-    ])('removes a stock forwarder: %s', (body) => {
-      expect(updateModulesAppDelegateSwift(delegate(body), '58.0.0')).toBe(migrated);
-    });
-
-    it('accepts a multiline signature and a renamed bridge parameter', () => {
-      const contents = delegate('return sourceBridge.bundleURL ?? self.bundleURL()').replace(
-        'override func sourceURL(for bridge: RCTBridge) -> URL? {',
-        'public override func sourceURL(\n    for sourceBridge: RCTBridge\n  ) -> URL?\n  {'
-      );
-      expect(updateModulesAppDelegateSwift(contents, '58.0.0')).toBe(migrated);
-    });
-
-    it.each([
-      'return customBundleURL()',
-      'recordLaunch(); return self.bundleURL()',
-      'if let url = bridge.bundleURL { return url }; return bundleURL()',
-    ])('requires manual migration for custom code: %s', (body) => {
-      expect(() => updateModulesAppDelegateSwift(delegate(body), '58.0.0')).toThrow(
-        /custom implementation.*Move.*bundleURL\(\)/
+      ['ExpoReactNativeFactoryDelegate', 'sourceBridge.bundleURL ?? bundleURL()'],
+      ['BaseDelegate', 'recordLaunch(); return customBundleURL()'],
+    ])('requires manual migration for a delegate extending %s', (superclass, body) => {
+      expect(() => updateModulesAppDelegateSwift(delegate(superclass, body), '58.0.0')).toThrow(
+        /sourceURL\(for:\).*line 3.*Remove sourceURL\(for:\) and its attributes.*custom bundle selection.*bundleURL\(\).*run install-expo-modules again/
       );
     });
 
-    it('does not match method declarations in comments, strings, or other classes', () => {
+    it('ignores declarations in comments and strings', () => {
       const lookalike =
         'override func sourceURL(for bridge: RCTBridge) -> URL? { self.bundleURL() }';
-      const prefix = `internal import Expo
+      const contents = `internal import Expo
 // ${lookalike}
 /* nested /* comment */
 ${lookalike}
@@ -182,89 +157,25 @@ ${lookalike}
 let example = #"""
 ${lookalike}
 """#
-class OtherDelegate: OtherFactory {
-  ${lookalike}
-}
-`;
-      expect(updateModulesAppDelegateSwift(prefix + delegate('self.bundleURL()'), '58.0.0')).toBe(
-        prefix + migrated
-      );
-      expect(warn).toHaveBeenCalledTimes(1);
-      expect(warn).toHaveBeenCalledWith(expect.stringContaining('superclass'));
-    });
-
-    it.each(['@objc', '@available(\n    iOS 16.4, *\n  )'])(
-      'gives removal instructions for a stock forwarder with %s',
-      (attribute) => {
-        const contents = delegate('self.bundleURL()').replace(
-          '  override func sourceURL',
-          `  ${attribute}\n  override func sourceURL`
-        );
-        expect(() => updateModulesAppDelegateSwift(contents, '58.0.0')).toThrow(
-          /forwarding method has attributes.*Remove the method together with its attributes/
-        );
-      }
-    );
-
-    it('refuses a declaration whose modifiers would be left behind', () => {
-      const contents = delegate('self.bundleURL()').replace(
-        '  override func sourceURL',
-        '  public\n  override func sourceURL'
-      );
-      expect(() => updateModulesAppDelegateSwift(contents, '58.0.0')).toThrow(
-        /method declaration is not recognized.*Review the declaration/
-      );
-    });
-
-    it('reports an unmatched brace as a syntax error', () => {
-      const contents = delegate('self.bundleURL()').replace(/\n}\n$/, '\n');
-      expect(() => updateModulesAppDelegateSwift(contents, '58.0.0')).toThrow(
-        /unmatched opening brace.*line 2.*Check the Swift syntax/
-      );
-    });
-
-    it.each([
-      ['/* unfinished', 'unterminated block comment'],
-      ['"unfinished', 'unterminated string literal'],
-    ])('reports malformed Swift: %s', (body, reason) => {
-      expect(() => updateModulesAppDelegateSwift(delegate(body), '58.0.0')).toThrow(reason);
-    });
-
-    it('warns about an intermediate subclass after removing known forwarders', () => {
-      const base = 'class BaseDelegate: ExpoReactNativeFactoryDelegate {}\n';
-      const indirect = delegate('self.bundleURL()').replace(
-        'ReactNativeDelegate: ExpoReactNativeFactoryDelegate',
-        'IndirectDelegate: BaseDelegate'
-      );
-      const contents = base + indirect + delegate('self.bundleURL()');
-      expect(updateModulesAppDelegateSwift(contents, '58.0.0')).toBe(base + indirect + migrated);
-      expect(warn).toHaveBeenCalledTimes(1);
-      expect(warn).toHaveBeenCalledWith(
-        expect.stringMatching(/sourceURL\(for:\).*superclass.*bundleURL\(\)/)
-      );
-    });
-
-    it('removes the separator before a forwarder that is the last member', () => {
-      const contents = `internal import Expo
 class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
-${bundleMethod}
-
-  override func sourceURL(for bridge: RCTBridge) -> URL? {
-    self.bundleURL()
-  }
+  override func bundleURL() -> URL? { customBundleURL() }
 }
 `;
-      expect(updateModulesAppDelegateSwift(contents, '58.0.0')).toBe(migrated);
+      expect(updateModulesAppDelegateSwift(contents, '58.0.0')).toBe(contents);
     });
 
     it('keeps the old transformation for SDK 57 and an unknown SDK', () => {
-      const contents = delegate('self.bundleURL()');
-      expect(updateModulesAppDelegateSwift(contents, '58.0.0')).toBe(migrated);
+      const contents = delegate('ExpoReactNativeFactoryDelegate', 'self.bundleURL()').replace(
+        'sourceURL(\n    for sourceBridge: RCTBridge\n  )',
+        'sourceURL(for bridge: RCTBridge)'
+      );
+      expect(() => updateModulesAppDelegateSwift(contents, '58.0.0')).toThrow(
+        /Remove sourceURL\(for:\)/
+      );
       for (const sdkVersion of ['57.0.0', undefined]) {
-        expect(updateModulesAppDelegateSwift(contents, sdkVersion)).toContain(
-          'bridge.bundleURL ?? bundleURL()'
-        );
-        expect(updateModulesAppDelegateSwift(contents, sdkVersion)).toContain('func sourceURL(');
+        const updated = updateModulesAppDelegateSwift(contents, sdkVersion);
+        expect(updated).toContain('bridge.bundleURL ?? bundleURL()');
+        expect(updated).toContain('func sourceURL(');
       }
     });
   });
