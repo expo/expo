@@ -175,12 +175,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/color-schemes/': '/develop/user-interface/color-themes/',
   '/development/introduction/': '/develop/development-builds/introduction/',
   '/develop/development-builds/create-a-build/':
-    '/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build',
+    '/develop/development-builds/introduction/?buildenv=build-with-expo-services#how-would-you-like-to-build-your-development-build',
   '/develop/development-builds/expo-go-to-dev-build/':
     '/develop/development-builds/introduction/#build-locally',
   '/develop/development-builds/next-steps/': '/develop/development-builds/faq/',
   '/development/create-development-builds/':
-    '/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build',
+    '/develop/development-builds/introduction/?buildenv=build-with-expo-services#how-would-you-like-to-build-your-development-build',
   '/development/use-development-builds/': '/develop/development-builds/use-development-builds/',
   '/development/development-workflows/': '/develop/development-builds/development-workflows/',
   '/workflow/expo-cli/': '/more/expo-cli/',
@@ -189,7 +189,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/debugging/runtime-issue/': '/debugging/runtime-issues/',
   '/guides/testing-with-jest/': '/develop/unit-testing/',
   '/develop/development-builds/installation/':
-    '/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build',
+    '/develop/development-builds/introduction/?buildenv=build-with-expo-services#how-would-you-like-to-build-your-development-build',
   '/develop/development-builds/parallel-installation': '/build-reference/variants/',
 
   // MCP server moved out of the EAS section to the top-level /mcp route
@@ -227,9 +227,9 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Development builds redirects
   '/development/build/':
-    '/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build',
+    '/develop/development-builds/introduction/?buildenv=build-with-expo-services#how-would-you-like-to-build-your-development-build',
   '/development/getting-started/':
-    '/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build',
+    '/develop/development-builds/introduction/?buildenv=build-with-expo-services#how-would-you-like-to-build-your-development-build',
   '/development/troubleshooting/': '/develop/development-builds/introduction/',
   '/development/upgrading/': '/develop/development-builds/introduction/',
   '/development/extensions/': '/develop/development-builds/development-workflows/',
@@ -330,7 +330,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup/',
   '/workflow/already-used-react-native/': '/workflow/overview/',
   '/development/installation/':
-    '/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build',
+    '/develop/development-builds/introduction/?buildenv=build-with-expo-services#how-would-you-like-to-build-your-development-build',
   '/guides/routing-and-navigation/': '/routing/introduction/',
   '/build-reference/custom-build-config/': '/custom-builds/get-started/',
   '/eas-update/migrate-codepush-to-eas-update/': '/eas-update/codepush/',

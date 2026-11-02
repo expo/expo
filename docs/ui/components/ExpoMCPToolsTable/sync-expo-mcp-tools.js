@@ -32,7 +32,7 @@ const LOCAL_REQUIREMENTS = {
  * Keyed by tool name.
  */
 const SERVER_REQUIREMENTS = {
-  search_documentation: 'requires an EAS paid plan',
+  search_documentation: 'requires an Expo Services paid plan',
 };
 
 /**
