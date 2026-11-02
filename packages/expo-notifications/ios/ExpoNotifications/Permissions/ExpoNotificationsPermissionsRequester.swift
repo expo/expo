@@ -74,6 +74,9 @@ public class ExpoNotificationsPermissionsRequester: NSObject, EXPermissionsReque
       do {
         _ = try await UNUserNotificationCenter.current().requestAuthorization(options: options)
         resolve(await getPermissionsAsync())
+      } catch let error as UNError where error.code == .notificationsNotAllowed {
+        // An iOS app on a Mac throws this when the user denies; on iOS the same denial returns `false`.
+        resolve(await getPermissionsAsync())
       } catch {
         reject("ERR_PERMISSIONS_REQUEST_NOTIFICATIONS", error.localizedDescription, error)
       }
