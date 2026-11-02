@@ -203,16 +203,18 @@ it('remounts a tab\'s screen when its role toggles to and from "search"', async 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(mount).toHaveBeenCalledTimes(1);
   expect(unmount).not.toHaveBeenCalled();
+  jest.clearAllMocks();
 
   await act(() => fireEvent.press(screen.getByTestId('toggle-role')));
 
   expect(unmount).toHaveBeenCalledTimes(1);
-  expect(mount).toHaveBeenCalledTimes(2);
+  expect(mount).toHaveBeenCalledTimes(1);
+  jest.clearAllMocks();
 
   await act(() => fireEvent.press(screen.getByTestId('toggle-role')));
 
-  expect(unmount).toHaveBeenCalledTimes(2);
-  expect(mount).toHaveBeenCalledTimes(3);
+  expect(unmount).toHaveBeenCalledTimes(1);
+  expect(mount).toHaveBeenCalledTimes(1);
 });
 
 describe('Tabs visibility', () => {
