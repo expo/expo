@@ -2,6 +2,7 @@ import fs from 'fs';
 import module from 'module';
 import os from 'os';
 import path from 'path';
+import picomatch from 'picomatch';
 import requireString from 'require-from-string';
 import { pathToFileURL } from 'url';
 
@@ -17,18 +18,6 @@ const LOAD_CONTEXT: module.LoadHookContext = {
   format: undefined,
   importAttributes: {},
 };
-
-const minimatchConstructorSpy = jest.fn();
-jest.mock('minimatch', () => {
-  const actual = jest.requireActual('minimatch');
-  class SpyMinimatch extends actual.Minimatch {
-    constructor(...args: ConstructorParameters<typeof actual.Minimatch>) {
-      minimatchConstructorSpy(...args);
-      super(...args);
-    }
-  }
-  return { ...actual, Minimatch: SpyMinimatch };
-});
 
 describe('installModuleCaptureHook', () => {
   let tmpDir: string;
@@ -206,6 +195,7 @@ describe('resolveLoadedModuleSourcesAsync', () => {
   });
 
   afterEach(() => {
+    jest.restoreAllMocks();
     fs.rmSync(tmpDir, { recursive: true, force: true });
   });
 
@@ -258,7 +248,7 @@ describe('resolveLoadedModuleSourcesAsync', () => {
     expect(sources).toEqual([{ type: 'file', path: 'plugin.ts' }]);
   });
 
-  it('should build Minimatch objects once per call, not once per module', async () => {
+  it('should build path matchers once per call, not once per module', async () => {
     const ignoredPaths = Array.from({ length: 8 }, (_, i) => `**/ignored-${i}/**/*`);
     const captured: CapturedModule[] = Array.from({ length: 20 }, (_, i) => {
       const filePath = path.join(tmpDir, `plugin-${i}.ts`);
@@ -266,9 +256,9 @@ describe('resolveLoadedModuleSourcesAsync', () => {
       return { id: filePath, filename: filePath, content: 'x' };
     });
 
-    minimatchConstructorSpy.mockClear();
+    const compileSpy = jest.spyOn(picomatch, 'makeRe');
     await resolveLoadedModuleSourcesAsync(captured, tmpDir, ignoredPaths);
 
-    expect(minimatchConstructorSpy).toHaveBeenCalledTimes(ignoredPaths.length);
+    expect(compileSpy).toHaveBeenCalledTimes(ignoredPaths.length);
   });
 });

@@ -4,14 +4,13 @@
  * Usage: npx ts-node scripts/createFixture /path/to/app /path/to/output.json
  */
 import realFS from 'fs';
-import { glob as globAsync } from 'glob';
 import { fs, vol } from 'memfs';
 import path from 'path';
+import picomatch from 'picomatch';
 
 async function createFixtureAsync(targetDir: string, outputFile: string) {
-  const files = await globAsync('**/*', {
-    cwd: targetDir,
-    ignore: [
+  const isIgnored = picomatch(
+    [
       // binary files
       '**/*.{jpg,png,ttf}',
 
@@ -39,12 +38,32 @@ async function createFixtureAsync(targetDir: string, outputFile: string) {
       '**/gradlew.bat',
       '**/gradle/wrapper/**',
     ],
-    nodir: true,
-  });
-  for (const file of files) {
-    const content = realFS.readFileSync(path.join(targetDir, file), 'utf8');
-    fs.mkdirSync(path.join('/', path.dirname(file)), { recursive: true });
-    fs.writeFileSync(path.join('/', file), content);
+    { dot: true }
+  );
+  for await (const entry of realFS.promises.glob('**/*', {
+    cwd: targetDir,
+    withFileTypes: true,
+    exclude: (entry) => {
+      const file = path.join(entry.parentPath, entry.name);
+      return (
+        isIgnored(`${path.relative(targetDir, file)}/`) ||
+        (entry.isSymbolicLink() && !realFS.statSync(file, { throwIfNoEntry: false })?.isFile())
+      );
+    },
+  })) {
+    if (entry.isDirectory()) continue;
+    const file = path.join(entry.parentPath, entry.name);
+    const relative = path.relative(targetDir, file);
+    // NOTE(@kitten): Fixtures capture files, not linked directory trees.
+    if (
+      isIgnored(relative) ||
+      (entry.isSymbolicLink() && !realFS.statSync(file, { throwIfNoEntry: false })?.isFile())
+    ) {
+      continue;
+    }
+    const content = realFS.readFileSync(file, 'utf8');
+    fs.mkdirSync(path.join('/', path.dirname(relative)), { recursive: true });
+    fs.writeFileSync(path.join('/', relative), content);
   }
   const resultJSON: Record<string, string | null> = {};
   for (const [key, value] of Object.entries(vol.toJSON())) {
