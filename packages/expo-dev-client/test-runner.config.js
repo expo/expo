@@ -9,9 +9,6 @@ const baseDevClientE2E = {
     mainActivity: 'e2e/android/MainActivity.java',
     detoxTestFile: 'e2e/android/DetoxTest.java',
   },
-  ios: {
-    appDelegate: 'e2e/ios/AppDelegate.m',
-  },
   dependencies: [
     {
       name: 'expo',
