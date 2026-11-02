@@ -9,7 +9,7 @@ import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
-import { getPrecompileDir } from '../Directories';
+import { getExpoRepositoryRootDir } from '../Directories';
 import { getPackageByName } from '../Packages';
 import type { DownloadedDependencies } from './Artifacts.types';
 import {
@@ -22,6 +22,7 @@ import {
 import type { SPMPackageSource } from './ExternalPackage';
 import { getExternalPackageByProductName } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
+import { getPackageBuildDir } from './MonorepoLayout';
 import { getPackageLocalBuildPath, usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
 import { ObjcTarget, SwiftTarget, CppTarget, SPMProduct } from './SPMConfig.types';
@@ -1626,7 +1627,7 @@ async function buildPackageSwiftContext(
       const depBuildPath =
         usesPackageLocalBuildPath(pkg) && dependencyPackage
           ? getPackageLocalBuildPath(dependencyPackage)
-          : path.join(getPrecompileDir(), '.build', packageName);
+          : getPackageBuildDir(getExpoRepositoryRootDir(), packageName);
       const xcframeworkPath = Frameworks.getFrameworkPath(depBuildPath, productName, buildType);
 
       if (await fs.pathExists(xcframeworkPath)) {

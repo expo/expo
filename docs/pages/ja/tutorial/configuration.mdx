@@ -28,26 +28,24 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 **src/app/\_layout.tsx** で次の手順を行います。
 
 1. `expo-status-bar` から `StatusBar` をインポートします。
-2. `StatusBar` と既存の `Stack` コンポーネントを [React の Fragment コンポーネント](https://react.dev/reference/react/Fragment) でまとめます。
+2. `GestureHandlerRootView` の中で、`Stack` コンポーネントの後に `StatusBar` コンポーネントを追加します。`style` プロパティを `light` に設定して、暗い背景の上でステータスバーのテキストとアイコンが明るい色で表示されるようにします。
 
 {/* prettier-ignore */}
 ```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 /* @tutinfo */
 import { StatusBar } from 'expo-status-bar';
 /* @end */
 
 export default function RootLayout() {
   return (
-    /* @tutinfo `StatusBar` と既存の `Stack` コンポーネントを React の Fragment コンポーネントでまとめます。 */
-    <>
-    /* @end */
+    <GestureHandlerRootView>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
-      /* @tutinfo */<StatusBar style="light" />
-    </>
-    /* @end */
+      /* @tutinfo `light` スタイルの `StatusBar` コンポーネントを追加します。 */<StatusBar style="light" />/* @end */
+    </GestureHandlerRootView>
   );
 }
 ```
@@ -74,17 +72,29 @@ export default function RootLayout() {
   className="max-w-[150px]"
 />
 
-スプラッシュスクリーン画像と同様に、**app.json** ファイルの `"icon"` プロパティでアプリアイコンのパスを設定します。デフォルトでは、新しい Expo プロジェクトには `"./assets/images/icon.png"` という正しいパスが設定されているため、何も変更する必要はありません。
+スプラッシュスクリーン画像と同様に、**app.json** ファイルの `"icon"` プロパティでアプリアイコンのパスを設定します。デフォルトでは、新しい Expo プロジェクトには `"./assets/images/icon.png"` という正しいパスが設定されています。
+
+新しい Expo プロジェクトには、プラットフォーム固有のアイコンプロパティもあり、これらは `"icon"` よりも優先されます。
+
+- Android では、`"android.adaptiveIcon"` プロパティが **assets/images** ディレクトリの **android-icon-foreground.png**、**android-icon-background.png**、**android-icon-monochrome.png** ファイルを使用します。[ダウンロードしたアセット](/ja/tutorial/create-your-first-app/#アセットをダウンロードする) によってこれらのファイルは StickerSmash のアイコンに置き換えられているため、何も変更する必要はありません。
+- iOS では、`"ios.icon"` プロパティが **assets/expo.icon** ファイルのデフォルトの Expo アイコンを使用します。iOS で **icon.png** を使用するには、**app.json** から次の `"ios"` プロパティを削除します。
+
+```json app.json
+{
+  "expo": {
+    "icon": "./assets/images/icon.png",
+    /* @hide ... */ /* @end */
+    "ios": {
+      "icon": "./assets/expo.icon"
+    }
+    /* @hide ... */ /* @end */
+  }
+}
+```
+
+Expo Go にはこのアプリのアイコンは表示されません。アプリをビルドした後に、デバイス上でアイコンを確認できます。詳しくは、[アプリアイコン](/develop/user-interface/splash-screen-and-app-icon/#app-icon) ガイドを参照してください。
 
 > アプリストア向けにアプリをビルドする段階になると、[Expo Application Services (EAS)](/eas/) がこの画像を使って、各デバイスに最適化されたアイコンを生成します。
-
-アプリアイコンは Expo Go のさまざまな場所で確認できます。次は Expo Go の開発者メニューに表示されるアプリアイコンの例です。
-
-<ContentSpotlight
-  alt="Expo Go アプリの開発者メニューに表示されるスプラッシュスクリーン。"
-  src="/static/images/tutorial/app-icon-visible.webp"
-  className="max-w-[240px]"
-/>
 
 </Step>
 
@@ -96,7 +106,7 @@ export default function RootLayout() {
 
 [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) プラグインは、`create-expo-app` で作成したすべてのプロジェクトにあらかじめインストールされています。このライブラリは、スプラッシュスクリーンを設定するためのコンフィグプラグインを提供します。
 
-**app.json** では、アプリアイコン ([ダウンロード可能なアセット](/ja/tutorial/create-your-first-app/#アセットをダウンロードする) に含まれます) をスプラッシュスクリーン画像として使用するように、`expo-splash-screen` プラグインが次のスニペットですでに設定されています。何も変更する必要はありません。
+**app.json** では、アプリアイコン ([ダウンロード可能なアセット](/ja/tutorial/create-your-first-app/#アセットをダウンロードする) に含まれます) をスプラッシュスクリーン画像として使用するように、`expo-splash-screen` プラグインがすでに設定されています。`backgroundColor` はデフォルトの Expo ブルー (`#208AEF`) です。スプラッシュスクリーンがアプリやアイコンと同じ暗い背景になるように、これを `#25292e` に変更します。
 
 ```json app.json
 {
@@ -105,8 +115,9 @@ export default function RootLayout() {
     [
       "expo-splash-screen",
       {
-        "image": "./assets/images/splash-icon.png"
-        /* @hide ... */ /* @end */
+        "backgroundColor": "#25292e",
+        "image": "./assets/images/splash-icon.png",
+        "imageWidth": 76
       }
     ]
   ]

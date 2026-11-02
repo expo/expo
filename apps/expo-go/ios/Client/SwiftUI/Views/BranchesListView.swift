@@ -99,7 +99,7 @@ class BranchesListViewModel: ObservableObject {
 
   func loadMore() async {
     guard !isLoading, hasMore else { return }
-    currentOffset += pageSize
+    currentOffset = branches.count
     await fetchBranches()
   }
 

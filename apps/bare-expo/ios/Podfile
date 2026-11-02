@@ -78,6 +78,18 @@ abstract_target 'BareExpoMain' do
         end
       end
     end
+
+    # Test spec targets inherit `SWIFT_COMPILATION_MODE=wholemodule` from their pods, which
+    # compiles all test files of a pod in one single-threaded frontend job. Batch mode spreads
+    # them across cores instead.
+    if installer.pods_project
+      installer.pods_project.targets.each do |target|
+        next unless target.name.include?('-Unit-')
+        target.build_configurations.each do |config|
+          config.build_settings['SWIFT_COMPILATION_MODE'] = 'singlefile'
+        end
+      end
+    end
   end
 
   target 'BareExpo' do

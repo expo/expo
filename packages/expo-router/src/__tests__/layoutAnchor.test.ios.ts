@@ -2,7 +2,6 @@ import type { RouteNode } from '../Route';
 import {
   collectMissingLayouts,
   getLayoutAnchor,
-  getGroupMatchingRouteName,
   loadLayouts,
   withLoadedLayouts,
 } from '../layoutAnchor';
@@ -97,7 +96,7 @@ describe('getLayoutAnchor', () => {
     expect(getLayoutAnchor(node)).toBe('a');
   });
 
-  it('uses the route named like the group for a skipped layout without loading it', () => {
+  it('returns undefined for a skipped layout without loading it', () => {
     const { node, loadRoute } = layoutNode({
       loadRoute: jest.fn(() => ({ unstable_settings: { anchor: 'a' } })),
       groupName: 'b',
@@ -105,25 +104,21 @@ describe('getLayoutAnchor', () => {
 
     const { value, missing } = collectMissingLayouts(() => getLayoutAnchor(node), new Set([node]));
 
-    expect(value).toBe('b');
+    expect(value).toBeUndefined();
     expect(missing).toEqual([]);
     expect(loadRoute).not.toHaveBeenCalled();
   });
 
-  it('returns undefined without settings or a route named like the group', () => {
+  it('returns undefined without settings', () => {
     expect(anchorOf(undefined)).toBeUndefined();
   });
 
-  it('uses the route named like the group without settings', () => {
-    expect(anchorOf(undefined, 'b')).toBe('b');
+  it('returns undefined without settings when a route is named like the group', () => {
+    expect(anchorOf(undefined, 'b')).toBeUndefined();
   });
 
-  it('uses `anchor` over the route named like the group', () => {
-    expect(anchorOf({ anchor: 'a' }, 'b')).toBe('a');
-  });
-
-  it('uses `initialRouteName` over the route named like the group', () => {
-    expect(anchorOf({ initialRouteName: 'a' }, 'b')).toBe('a');
+  it('uses `initialRouteName`', () => {
+    expect(anchorOf({ initialRouteName: 'a' })).toBe('a');
   });
 
   it('uses `anchor` over `initialRouteName`', () => {
@@ -173,32 +168,6 @@ describe('getLayoutAnchor', () => {
     expect(() => anchorOf({ b: { anchor: 'c' } }, 'b')).toThrow(
       'The initial route name "c" for group "b" was not found'
     );
-  });
-});
-
-describe('getGroupMatchingRouteName', () => {
-  it('returns the route named like the group', () => {
-    const { node } = layoutNode({ routes: ['a', 'b'], groupName: 'b' });
-
-    expect(getGroupMatchingRouteName(node)).toBe('b');
-  });
-
-  it('returns the `index` route of the directory named like the group', () => {
-    const { node } = layoutNode({ routes: ['a', 'b/index'], groupName: 'b' });
-
-    expect(getGroupMatchingRouteName(node)).toBe('b/index');
-  });
-
-  it('returns undefined without a group', () => {
-    const { node } = layoutNode({ routes: ['a', 'b'] });
-
-    expect(getGroupMatchingRouteName(node)).toBeUndefined();
-  });
-
-  it('returns undefined when no route is named like the group', () => {
-    const { node } = layoutNode({ routes: ['a', 'b'], groupName: 'c' });
-
-    expect(getGroupMatchingRouteName(node)).toBeUndefined();
   });
 });
 
@@ -340,14 +309,14 @@ describe('withLoadedLayouts', () => {
     expect(fn).toHaveBeenCalledTimes(3);
   });
 
-  it('uses the route named like the group for a layout that failed to load', async () => {
+  it('returns undefined for a layout that failed to load', async () => {
     const { node } = layoutNode({
       loadRoute: jest.fn(() => Promise.reject(new Error('Network error'))),
       groupName: 'a',
     });
     const fn = jest.fn(() => getLayoutAnchor(node));
 
-    await expect(withLoadedLayouts(fn)).resolves.toBe('a');
+    await expect(withLoadedLayouts(fn)).resolves.toBeUndefined();
     expect(fn).toHaveBeenCalledTimes(2);
   });
 });

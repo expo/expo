@@ -7,7 +7,7 @@
   },
   "build": {
     "base": {
-      "node": "22.17.1",
+      "node": "22.23.4",
       "pnpm": "12.2.1",
       "credentialsSource": "local",
       "android": {

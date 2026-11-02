@@ -92,14 +92,23 @@ public final class SharedObjectRegistry: Sendable {
 
   /**
    Adds a pair of native and JS shared object to the registry. Assigns a new shared object ID to these objects.
+   Pass `inheritsBaseClass: true` when `jsObject` inherits from `expo.SharedObject.prototype`, whose getter
+   already reads the ID from the native state. A plain object gets the ID as its own property instead.
    */
   @discardableResult
-  internal func add(native nativeObject: SharedObject, javaScript jsObject: borrowing JavaScriptObject) -> SharedObjectId {
+  internal func add(
+    native nativeObject: SharedObject,
+    javaScript jsObject: borrowing JavaScriptObject,
+    inheritsBaseClass: Bool = false
+  ) -> SharedObjectId {
     // Reuse the native state, and with it the ID, only while a live JS object in this runtime holds it.
     // That JS object keeps the C++ native state alive until `setNativeState` attaches it to `jsObject`.
     // Otherwise the C++ native state can be in destruction on another thread, and its release must not
     // apply to `jsObject`, so the native object gets a new native state and ID.
-    let pairedObject = pairedObjectHoldingNativeState(of: nativeObject)
+    // Loaded once: each read of the weak reference to the app context costs an atomic operation.
+    let appContext = self.appContext
+    let runtime = try? appContext?.runtime
+    let pairedObject = pairedObjectHoldingNativeState(of: nativeObject, in: runtime)
     let existingNativeState = pairedObject != nil ? nativeObject.nativeState : nil
     let id = existingNativeState != nil ? nativeObject.sharedObjectId : pullNextId()
 
@@ -107,10 +116,12 @@ public final class SharedObjectRegistry: Sendable {
     nativeObject.appContext = appContext
 
     // This property should be deprecated, but it's still used when passing as a view prop.
-    // It's already defined in the JS base SharedObject class prototype,
-    // but with the current implementation it's possible to use a raw object for registration.
+    // The base class prototype defines it as a getter, so only a plain object needs its own property.
+    // Defining it calls `Object.defineProperty` in JS, a large part of the cost of pairing.
     // No option set literals here: they build the set through a generic initializer on every call.
-    jsObject.defineProperty(sharedObjectIdPropertyName, value: id, options: .writable)
+    if !inheritsBaseClass {
+      jsObject.defineProperty(sharedObjectIdPropertyName, value: id, options: .writable)
+    }
 
     if let sharedRefType = nativeObject.sharedRefType {
       jsObject.defineProperty("nativeRefType", value: sharedRefType, options: JavaScriptObject.PropertyOptions())
@@ -158,7 +169,7 @@ public final class SharedObjectRegistry: Sendable {
     // The registry is scoped to its app context, so the JS object being paired here lives in that
     // context's runtime. Record the pairing under that runtime so the native object can recover this
     // JS counterpart via `native.nativeState?.javaScriptObject(in:)`.
-    if let runtime = try? appContext?.runtime {
+    if let runtime {
       nativeState.setJavaScriptObject(jsObject, in: runtime)
     }
 
@@ -237,23 +248,14 @@ public final class SharedObjectRegistry: Sendable {
     guard let runtime = try? appContext?.runtime else {
       return nil
     }
-    return unreleasedNativeState(of: nativeObject)?.javaScriptObject(in: runtime)
-  }
-
-  /// Returns the native object's native state, or `nil` if it was released. A released native state can
-  /// outlive the release on a JS object that couldn't drop it (for example a frozen one).
-  private func unreleasedNativeState(of nativeObject: SharedObject) -> SharedObjectNativeState? {
-    guard let nativeState = nativeObject.nativeState, !nativeState.isReleased else {
-      return nil
-    }
-    return nativeState
+    return nativeObject.object(in: runtime)
   }
 
   /// Returns the JS object paired with the native object in this registry's runtime, if it is alive and
   /// still holds the native object's native state.
-  private func pairedObjectHoldingNativeState(of nativeObject: SharedObject) -> JavaScriptObject? {
-    guard let runtime = try? appContext?.runtime,
-      let nativeState = unreleasedNativeState(of: nativeObject),
+  private func pairedObjectHoldingNativeState(of nativeObject: SharedObject, in runtime: JavaScriptRuntime?) -> JavaScriptObject? {
+    guard let runtime,
+      let nativeState = nativeObject.unreleasedNativeState,
       let pairedObject = nativeState.javaScriptObject(in: runtime),
       pairedObject.getNativeState(as: SharedObjectNativeState.self) === nativeState
     else {

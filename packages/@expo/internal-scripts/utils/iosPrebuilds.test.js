@@ -83,6 +83,16 @@ test('raw validation rejects a missing SPM runtime dependency', () => {
   );
 });
 
+test('staging removes stale prebuilds when the package stops publishing them', () => {
+  const root = fixture();
+  framework(root, 'ExpoOne', 'debug');
+  framework(root, 'ExpoOne', 'release');
+  assert.equal(stageIosPrebuilds(root), true);
+  fs.writeFileSync(path.join(root, 'spm.config.json'), JSON.stringify({ products: [] }));
+  assert.equal(stageIosPrebuilds(root), false);
+  assert.equal(fs.existsSync(path.join(root, 'prebuilds')), false);
+});
+
 test('staging fails when tar cannot be created', () => {
   const root = fixture();
   framework(root, 'ExpoOne', 'debug');

@@ -13,10 +13,10 @@ import type { BaseResolveDeviceProps, PlatformManager } from '../platforms/Platf
 import { AsyncNgrok } from './AsyncNgrok';
 import { AsyncWsTunnel } from './AsyncWsTunnel';
 import { Bonjour } from './Bonjour';
-import DevToolsPluginManager from './DevToolsPluginManager';
 import { DevelopmentSession } from './DevelopmentSession';
 import type { CreateURLOptions } from './UrlCreator';
 import { UrlCreator } from './UrlCreator';
+import DevToolsPluginManager from './devtools/DevToolsPluginManager';
 import { debugEvent } from './events';
 import type { PlatformBundlers } from './platformBundlers';
 

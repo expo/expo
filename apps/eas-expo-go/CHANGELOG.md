@@ -1,5 +1,26 @@
 # eas-expo-go
 
+## 1.0.13
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.19
+
+## 1.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#52073](https://github.com/expo/expo/pull/52073), [#51661](https://github.com/expo/expo/pull/51661))
+  - expo@58.0.18
+
+## 1.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#51751](https://github.com/expo/expo/pull/51751), [#51588](https://github.com/expo/expo/pull/51588))
+  - expo@58.0.17
+
 ## 1.0.10
 
 ### Patch Changes

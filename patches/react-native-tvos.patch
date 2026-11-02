@@ -1,5 +1,5 @@
 diff --git a/React/Base/RCTConstants.m b/React/Base/RCTConstants.m
-index eb90640..fbeb63b 100644
+index 3c2acc5..9e5abe7 100644
 --- a/React/Base/RCTConstants.m
 +++ b/React/Base/RCTConstants.m
 @@ -7,7 +7,7 @@
@@ -12,10 +12,10 @@ index eb90640..fbeb63b 100644
  NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
  NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
 diff --git a/react-native.config.js b/react-native.config.js
-index 6d70ec0..714fea5 100644
+index 7c6e4af..33a19ee 100644
 --- a/react-native.config.js
 +++ b/react-native.config.js
-@@ -120,14 +120,6 @@ const config = {
+@@ -89,14 +89,6 @@ const config = {
      }>} */,
  };
  
@@ -30,7 +30,7 @@ index 6d70ec0..714fea5 100644
  if (android != null) {
    config.commands.push(...android.commands);
    config.platforms.android = {
-@@ -144,6 +136,7 @@ try {
+@@ -113,6 +105,7 @@ try {
    config.platforms.tvos = {
      projectConfig: apple.getProjectConfig({platformName: 'tvos'}),
      dependencyConfig: apple.getDependencyConfig({platformName: 'tvos'}),
@@ -97,7 +97,7 @@ index 3c51ad5..d4d762b 100644
        hermes_enabled: true,
        config_file_dir: '',
 diff --git a/scripts/cocoapods/fabric.rb b/scripts/cocoapods/fabric.rb
-index b6c8264..72fa064 100644
+index ccb1043..9d3dbd1 100644
 --- a/scripts/cocoapods/fabric.rb
 +++ b/scripts/cocoapods/fabric.rb
 @@ -7,7 +7,7 @@
@@ -110,7 +110,7 @@ index b6c8264..72fa064 100644
      pod 'React-FabricComponents', :path => "#{react_native_path}/ReactCommon"
      pod 'React-graphics', :path => "#{react_native_path}/ReactCommon/react/renderer/graphics"
 diff --git a/scripts/cocoapods/jsengine.rb b/scripts/cocoapods/jsengine.rb
-index a15c928..be7909d 100644
+index e1b49ef..0e8f435 100644
 --- a/scripts/cocoapods/jsengine.rb
 +++ b/scripts/cocoapods/jsengine.rb
 @@ -9,7 +9,7 @@ require_relative './utils.rb'
@@ -149,7 +149,7 @@ index c2833d8..9d00361 100644
      pod "React-runtimescheduler", :path => "#{react_native_path}/ReactCommon/react/renderer/runtimescheduler"
      pod 'React-RuntimeCore', :path => "#{react_native_path}/ReactCommon/react/runtime"
 diff --git a/scripts/codegen/generate-artifacts-executor/utils.js b/scripts/codegen/generate-artifacts-executor/utils.js
-index 3ffba68..59ca6c7 100644
+index 07071e7..cc5c609 100644
 --- a/scripts/codegen/generate-artifacts-executor/utils.js
 +++ b/scripts/codegen/generate-artifacts-executor/utils.js
 @@ -479,7 +479,7 @@ function findReactNativeRootPath(projectRoot /* : string */) /* : string */ {
@@ -162,10 +162,10 @@ index 3ffba68..59ca6c7 100644
          paths: [projectRoot],
        },
 diff --git a/scripts/react_native_pods.rb b/scripts/react_native_pods.rb
-index f2525de..a560e41 100644
+index fe20cf3..b2c6270 100644
 --- a/scripts/react_native_pods.rb
 +++ b/scripts/react_native_pods.rb
-@@ -63,7 +63,7 @@ end
+@@ -87,7 +87,7 @@ end
  # - app_path: path to the React Native app. Required by the New Architecture.
  # - config_file_dir: directory of the `package.json` file, required by the New Architecture.
  def use_react_native! (
@@ -174,7 +174,7 @@ index f2525de..a560e41 100644
    fabric_enabled: false,
    new_arch_enabled: NewArchitectureHelper.new_arch_enabled,
    production: false, # deprecated
-@@ -514,7 +514,7 @@ end
+@@ -575,7 +575,7 @@ end
  # - enable_hermes_profiler: whether the hermes profiler should be turned on in Release mode
  def react_native_post_install(
    installer,
@@ -184,10 +184,10 @@ index f2525de..a560e41 100644
    ccache_enabled: ENV['USE_CCACHE'] == '1'
  )
 diff --git a/sdks/hermes-engine/hermes-engine.podspec b/sdks/hermes-engine/hermes-engine.podspec
-index cacef72..e81a035 100644
+index cc1d947..767409a 100644
 --- a/sdks/hermes-engine/hermes-engine.podspec
 +++ b/sdks/hermes-engine/hermes-engine.podspec
-@@ -9,7 +9,7 @@ require_relative "./hermes-utils.rb"
+@@ -10,7 +10,7 @@ require_relative "./hermes-utils.rb"
  begin
    react_native_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
      'require.resolve(
@@ -197,7 +197,7 @@ index cacef72..e81a035 100644
      )', __dir__]).strip
    )
 diff --git a/third-party-podspecs/ReactNativeDependencies.podspec b/third-party-podspecs/ReactNativeDependencies.podspec
-index 0c41590..a158850 100644
+index 832b27f..7fbeb6d 100644
 --- a/third-party-podspecs/ReactNativeDependencies.podspec
 +++ b/third-party-podspecs/ReactNativeDependencies.podspec
 @@ -9,7 +9,7 @@ require_relative "../scripts/cocoapods/utils.rb"

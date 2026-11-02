@@ -51,20 +51,10 @@ public class EXDevLauncherUncaughtExceptionHandler: NSObject {
   }
 
   static func getWebSocketUrl(_ controller: EXDevLauncherController) -> URL? {
-    // URL structure replicates
-    // https://github.com/facebook/react-native/blob/0.69-stable/Libraries/Utilities/HMRClient.js#L164
-    // but URLSessionWebSocketTask will crash if the scheme is not `ws` or `wss`
     guard let appUrl = controller.sourceUrl() else {
       return nil
     }
-    guard let socketUrl = URL.init(string: "hot", relativeTo: appUrl) else {
-      return nil
-    }
-    guard var components = URLComponents(url: socketUrl, resolvingAgainstBaseURL: true) else {
-      return nil
-    }
-    components.scheme = "ws"
-    return components.url
+    return EXDevLauncherRemoteLogsManager.webSocketUrl(forServerUrl: appUrl)
   }
 
   static func tryToSaveException(_ exception: NSException) {

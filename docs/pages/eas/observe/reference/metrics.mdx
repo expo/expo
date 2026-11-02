@@ -328,7 +328,7 @@ Metrics collected while the device is offline are stored on the device. They are
 
 ### Data retention
 
-Metric data is retained for a minimum of 90 days.
+EAS Observe deletes all collected data after 90 days. This includes all metrics, logs, traces and any included metadata. Deletion runs in monthly batches, so a record can remain for up to 120 days. After deletion, Expo keeps only per-app event counts for billing.
 
 ### Sampling
 

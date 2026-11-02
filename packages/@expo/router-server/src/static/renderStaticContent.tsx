@@ -10,11 +10,11 @@ import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
 import {
-  getRouteInfoForLocation,
+  getRouteInfoForMatchedRoute,
   InnerRoot,
   registerStaticRootComponent,
 } from 'expo-router/internal/static';
-import type { AssetInfo } from 'expo-server/private';
+import type { AssetInfo, MatchedRoute } from 'expo-server/private';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 
@@ -45,6 +45,10 @@ export type GetStaticContentOptions = {
     key: string;
   };
   request?: Request;
+  /** The route the server matched for `location`. */
+  route: MatchedRoute;
+  /** The params the server captured for `route`. */
+  params?: Record<string, string | string[]>;
   hydrate?: boolean;
   assets?: AssetInfo;
 };
@@ -53,10 +57,14 @@ export type GetStaticContentOptions = {
  * Shared setup for both `getStaticContent()` and `getStreamingContent()`. Creates the React element
  * tree, resets server contexts, and computes loader data.
  */
-function prepareRenderContext(location: URL, options?: GetStaticContentOptions) {
+function prepareRenderContext(location: URL, options: GetStaticContentOptions) {
   const headContext: { helmet?: any } = {};
   const Root = getRootComponent();
-  const { pathname, params } = getRouteInfoForLocation(ctx, location);
+  const { pathname, params, searchParams } = getRouteInfoForMatchedRoute(
+    options.route,
+    options.params ?? {},
+    location
+  );
 
   const {
     // NOTE: The `element` that's returned adds two extra Views and
@@ -77,11 +85,12 @@ function prepareRenderContext(location: URL, options?: GetStaticContentOptions) 
   // "Warning: Detected multiple renderers concurrently rendering the same context provider. This is currently unsupported."
   resetReactNavigationContexts();
 
-  const loaderKey = options?.loader ? options.loader.key + location.search : null;
+  const search = searchParams.toString();
+  const loaderKey = options.loader ? options.loader.key + (search ? `?${search}` : '') : null;
 
   const loadedData = loaderKey
     ? {
-        [loaderKey]: options?.loader?.data ?? null,
+        [loaderKey]: options.loader?.data ?? null,
       }
     : null;
 
@@ -90,7 +99,7 @@ function prepareRenderContext(location: URL, options?: GetStaticContentOptions) 
 
 export async function getStaticContent(
   location: URL,
-  options?: GetStaticContentOptions
+  options: GetStaticContentOptions
 ): Promise<string> {
   return Font.withServerContext(() => {
     const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
@@ -119,7 +128,7 @@ export async function getStaticContent(
       output = output.replace('</head>', `${createLoaderDataScriptAsString(loadedData)}</head>`);
     }
 
-    output = injectAssetsIntoHtml(output, { assets: options?.assets, hydrate: options?.hydrate });
+    output = injectAssetsIntoHtml(output, { assets: options.assets, hydrate: options.hydrate });
 
     return '<!DOCTYPE html>' + output;
   });

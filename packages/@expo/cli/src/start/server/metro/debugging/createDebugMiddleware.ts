@@ -41,8 +41,9 @@ export function createDebugMiddleware({
     //   },
     // },
     unstable_experiments: {
-      // Enable the Network tab in React Native DevTools
-      enableNetworkInspector: true,
+      // Labels the Network tab "Expo Network" (`unstable_enableNetworkPanel`). Drop it when
+      // using React Native's core Network panel.
+      enableNetworkInspector: !env.EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR,
       // Only enable opening the browser version of React Native DevTools when debugging.
       // This is useful when debugging the React Native DevTools by going to `/open-debugger` in the browser.
       enableOpenDebuggerRedirect: env.EXPO_DEBUG,
@@ -56,7 +57,11 @@ export function createDebugMiddleware({
   const debuggerWebsocketEndpoint = websocketEndpoints['/inspector/debug'] as WebSocketServer;
 
   // NOTE(cedric): add a temporary websocket to handle Network-related CDP events
-  websocketEndpoints['/inspector/network'] = createNetworkWebsocket(debuggerWebsocketEndpoint);
+  // TODO: Remove along with `EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR` once Expo's networking
+  // modules report through React Native's core network reporting
+  if (!env.EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR) {
+    websocketEndpoints['/inspector/network'] = createNetworkWebsocket(debuggerWebsocketEndpoint);
+  }
 
   // Explicitly limit debugger websocket to loopback requests
   debuggerWebsocketEndpoint.on('connection', (socket, request) => {

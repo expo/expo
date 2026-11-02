@@ -30,7 +30,15 @@ export async function autolinkingRunAsync(
 
 // For some reason, it can't be async, cause otherwise we will get `yarn did not print valid JSON:` error
 export function yarnSync(options?: SpawnOptions) {
-  spawnSync('yarn', ['install', '--silent'], options);
+  const result = spawnSync('yarn', ['install', '--silent'], { encoding: 'utf8', ...options });
+  if (result.error) {
+    throw result.error;
+  }
+  if (result.status !== 0) {
+    throw new Error(
+      `yarn install exited with ${result.status ?? result.signal}\n------\nSTDOUT:\n${result.stdout}\n------\nSTDERR:\n${result.stderr}`
+    );
+  }
 }
 
 export function combinations<T, U>(

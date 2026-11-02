@@ -20,7 +20,7 @@
     "build": "expo-build cjs:src=build",
     "clean": "rm -rf build cache",
     "et": "node bin/expotools.js",
-    "lint": "eslint .",
+    "lint": "oxlint --config oxlint.config.mjs .",
     "test": "pnpm build && node --test 'build/**/*.test.js'"
   },
   "dependencies": {
@@ -39,6 +39,7 @@
     "cli-table3": "^0.6.5",
     "cwait": "^1.1.2",
     "diff": "^8.0.3",
+    "expo-modules-autolinking": "workspace:*",
     "folder-hash": "^4.0.4",
     "fs-extra": "^11.2.0",
     "getenv": "^2.0.0",
@@ -73,14 +74,10 @@
     "@types/inquirer": "^8.2.10",
     "@types/node": "^22.14.0",
     "@types/semver": "^7.7.1",
-    "eslint": "^9.39.4",
-    "eslint-config-universe": "workspace:^",
-    "eslint-plugin-lodash": "^7.4.0",
-    "prettier": "^3.8.3",
     "taskr": "1.1.0",
     "typescript": "^6.0.3"
   },
   "volta": {
-    "node": "22.13.1"
+    "node": "22.23.4"
   }
 }

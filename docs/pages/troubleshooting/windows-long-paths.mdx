@@ -1,0 +1,77 @@
+---
+title: '"Filename longer than 260 characters" error on Windows'
+sidebar_title: Long paths on Windows
+description: Learn how to fix the "Filename longer than 260 characters" error when building an Android app on Windows.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+When you build an Android app on Windows, the native (C++) build can fail with an error like this:
+
+```text
+Execution failed for task ':app:buildCMakeDebug[arm64-v8a]'.
+  C++ build system [build] failed while executing:
+  ninja: error: Stat(safeareacontext_autolinked_build/CMakeFiles/react_codegen_safeareacontext.dir/D_/my-project/node_modules/react-native-safe-area-context/common/cpp/react/renderer/components/safeareacontext/RNCSafeAreaViewShadowNode.cpp.o): Filename longer than 260 characters
+```
+
+## Why this happens
+
+The New Architecture compiles C++ code for each native library, and the generated object files are nested deeply under **android/app/.cxx**. With a project in a deep folder, or a package with a long name, their full paths exceed 260 characters, the default path limit on Windows.
+
+The error comes from [Ninja](https://ninja-build.org/), the build tool that CMake uses. Ninja supports longer paths in [version 1.12.0](https://github.com/ninja-build/ninja/releases/tag/v1.12.0) and later. By default, Android builds use the Android SDK's CMake 3.22.1 package, which includes Ninja 1.10.2. Ninja 1.12 also needs long paths to be enabled in Windows.
+
+## Solution
+
+### Enable long paths in Windows
+
+Set the `LongPathsEnabled` registry value. Run the following command in PowerShell as an administrator, then restart your computer:
+
+{/* prettier-ignore */}
+<Terminal
+  cmd={[
+    '$ New-ItemProperty -Path "HKLM:\\SYSTEM\\CurrentControlSet\\Control\\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force',
+  ]}
+/>
+
+For other ways to set it, such as Group Policy, see [Maximum Path Length Limitation](https://learn.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation) in the Windows documentation.
+
+### Use a newer CMake version
+
+Enabling long paths isn't enough on its own, because Ninja 1.10.2 doesn't support them. Install a newer CMake package, which includes a newer Ninja. For example, the Android SDK's CMake 3.31.6 package includes Ninja 1.12.1.
+
+1. In Android Studio, open **Settings** > **Languages & Frameworks** > **Android SDK** > **SDK Tools**, select **Show Package Details**, and install **CMake 3.31.6** under **CMake**.
+2. Set the `android.cmakeVersion` Gradle property in the **gradle.properties** file in your Gradle user home, **%USERPROFILE%\\.gradle\gradle.properties**. Create the file if it doesn't exist:
+
+```properties gradle.properties
+android.cmakeVersion=3.31.6
+```
+
+3. Delete **android/app/.cxx** and **android/app/build** so that CMake regenerates its build files, and then build again.
+
+In SDK 57 and later, Expo reads the `android.cmakeVersion` property, both in projects that use [prebuild](/workflow/continuous-native-generation/) and in projects that include an **android** directory. This file is on your computer and isn't part of your project. Builds on EAS Build and on other computers keep using the default CMake version.
+
+#### Set the CMake version in your project
+
+You can also set the CMake version in your project, with the `android.cmakeVersion` option of [`expo-build-properties`](/versions/latest/sdk/build-properties/) in **app.json**, or with the `android.cmakeVersion` property in **android/gradle.properties**. The setting then applies to every build of the project, including builds on EAS Build. EAS Build runs Android builds on Linux, where the path limit doesn't apply. CMake 3.31.6 isn't installed there, so the build fails with `CMake '3.31.6' was not found in SDK, PATH, or by cmake.dir property`.
+
+If your project uses prebuild, you can set the CMake version only when you build on Windows. Add the `expo-build-properties` entry in **app.config.js** instead of **app.json**:
+
+```js app.config.js
+const isWindows = process.platform === 'win32';
+
+export default ({ config }) => ({
+  ...config,
+  plugins: [
+    ...(config.plugins ?? []),
+    ['expo-build-properties', { android: isWindows ? { cmakeVersion: '3.31.6' } : {} }],
+  ],
+});
+```
+
+EAS Build runs `npx expo prebuild` on its Linux build server, so `cmakeVersion` isn't set there. On your computer, run `npx expo prebuild --clean` after changing the config.
+
+### Move the project to a shorter path
+
+To confirm that the path length is the cause, or as a workaround, move the project to a short folder such as **C:\dev\my-app** and build again.
+
+> **info** The `git config core.longpaths true` setting doesn't affect the Android build. It only matters if Git fails to check out files with long paths.

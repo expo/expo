@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.5.3
+
+### Patch Changes
+
+- Drop an inherited `BABEL_ENV` in `setNodeEnv` and ignore it in **.env** files. ([#51946](https://github.com/expo/expo/pull/51946) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ## 2.5.2
 
 ### Patch Changes

@@ -273,7 +273,7 @@ export async function exportFromServerAsync(
       const normalizedPathname =
         pathname === '' ? '/' : pathname.startsWith('/') ? pathname : `/${pathname}`;
 
-      const renderOpts: GetStaticContentOptions = {};
+      const renderOpts: Omit<GetStaticContentOptions, 'route' | 'params'> = {};
 
       const contextKey = getLoaderRouteContextKey(route);
 

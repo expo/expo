@@ -397,11 +397,11 @@ class AudioModule : Module() {
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
       val previousInterruptionMode = interruptionMode
-      shouldPlayInBackground = mode.shouldPlayInBackground
+      shouldPlayInBackground = mode.shouldPlayInBackground ?: shouldPlayInBackground
       interruptionMode = mode.interruptionMode ?: previousInterruptionMode
-      playsInSilentMode = mode.playsInSilentMode
-      updatePlaySoundThroughEarpiece(mode.shouldRouteThroughEarpiece ?: false)
-      allowsBackgroundRecording = mode.allowsBackgroundRecording
+      playsInSilentMode = mode.playsInSilentMode ?: playsInSilentMode
+      mode.shouldRouteThroughEarpiece?.let { updatePlaySoundThroughEarpiece(it) }
+      allowsBackgroundRecording = mode.allowsBackgroundRecording ?: allowsBackgroundRecording
 
       recorders.values.forEach { recorder ->
         recorder.useForegroundService = allowsBackgroundRecording

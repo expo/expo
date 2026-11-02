@@ -10,7 +10,9 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-EAS CLI manages the session, but it does not press buttons or type text. Device actions come from the **controller** that you selected with `--type` when the session started. Run each controller command through `eas simulator:exec`, which loads the connection details for the active session and then runs the command.
+Use a **controller** for accessibility snapshots and actions that select elements by their labels. The controller comes from the `--type` that you selected when the session started. Run each controller command through `eas simulator:exec`, which loads the connection details for the active session and then runs the command.
+
+For direct iOS actions, use [`eas simulator:control`](/preview/simulators/how-to/control-with-eas-cli/). It also works in an iOS `web-preview-only` session.
 
 ## How `simulator:exec` works
 

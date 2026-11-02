@@ -20,7 +20,7 @@ Coding agents must read [AGENTS.md](./AGENTS.md) before they edit. Pull request 
 
 We recommend that folks interested in contributing to the SDK use the `apps/bare-expo` project in their SDK development workflow instead of Expo Go (in `apps/expo-go`). The Expo Go app is difficult to set up and requires API tokens.
 
-The `bare-expo` project includes most of the Expo SDK. It runs the JavaScript code from `apps/test-suite` and `apps/native-component-list`. That allows you to browse the Expo SDK components and APIs and easily write and run E2E tests for iOS, and Android for any given SDK package. Unit tests can be written within the SDK package itself. When pushed to the remote, CI will run this project with tests for Android/iOS and report the results on your pull request.
+The `bare-expo` project includes most of the Expo SDK. It runs the JavaScript code from `apps/test-suite` and `apps/native-component-list`. That allows you to browse the Expo SDK components and APIs and easily write and run E2E tests for iOS, and Android for any given SDK package. Unit tests can be written within the SDK package itself. When pushed to the remote, CI will run this project with tests for Android/iOS and report the results on your pull request. The iOS jobs and the Android e2e and instrumentation tests run only when the pull request is ready for review, not while it is a draft.
 
 Manual smoke tests are included in `apps/native-component-list`, which is a good fit for demos or tests that require physical interactions. This is particularly useful if you are testing interactions with UI components, or if there is something very difficult to test in an automated way but would be easy to verify through manual interaction.
 
@@ -34,7 +34,7 @@ Manual smoke tests are included in `apps/native-component-list`, which is a good
 
 1. If you are an Expo team member, clone the repository. If you are an external contributor, [fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉). You can use `git clone --depth 1 --single-branch --branch main git@github.com:expo/expo.git`, skipping most of the branches and history to clone it faster.
 2. Install [direnv](https://direnv.net/). On macOS: `brew install direnv`. Don't forget to install the [shell hook](https://direnv.net/docs/hook.html) to your shell profile.
-3. Install Ruby 3.3 or later. On macOS: `brew install ruby@3.3`
+3. Install Ruby 3.4 or later. On macOS: `brew install ruby@3.4`
 4. Install [Node LTS](https://nodejs.org/).
 5. Some of the scripts in this repository require Bun. You won't need it for most tasks, but can install it via [these options](https://bun.com/docs/installation).
 
@@ -85,7 +85,7 @@ The repo's `.envrc` automatically sets `CCACHE_BASEDIR` via direnv, so cache is 
 
 ### Set up iOS
 
-If you will be working with the iOS project, ensure **ruby 3.3** is installed on your machine. macOS comes with ruby 2.6, which is not supported in this repository; if you use Homebrew you can just run `brew install ruby@3.3`. You will also need to have the latest stable version of Xcode installed, along with Xcode command line tools.
+If you will be working with the iOS project, ensure **ruby 3.4** is installed on your machine. macOS comes with ruby 2.6, which is not supported in this repository; if you use Homebrew you can just run `brew install ruby@3.4`. You will also need to have the latest stable version of Xcode installed, along with Xcode command line tools.
 
 ### Verify native installation is successful
 
@@ -223,6 +223,8 @@ Commit messages are most useful when formatted like so: `[platform][api] Title`.
 
 Use [.github/PULL_REQUEST_TEMPLATE](./.github/PULL_REQUEST_TEMPLATE). Keep the headings `Why`, `How`, `Test Plan`, `Screenshots`, and `Checklist`. Delete the HTML comments when you fill them in.
 
+Open the pull request as a draft while you work on it. CI does not run the slow and paid jobs on drafts: the iOS unit tests, the iOS and Android builds and e2e tests, and the Android instrumentation tests. Mark the pull request ready for review when you want them to run.
+
 Keep the pull request small enough to read in one pass. Limit a code change to one published package, plus its changeset. Put a documentation change that can land alone in its own pull request. CI also finishes faster when docs are separate. See [Before Submitting](#-before-submitting).
 
 If the change has more than one reason, split it into a stack:
@@ -270,7 +272,7 @@ Say what you ran, where you ran it, and the result.
 
 - Give the command, or the device or simulator, and the result.
 - If there is no automated test, give the steps a reviewer can repeat.
-- If you did not run a test, say that and open the pull request as a draft.
+- If you did not run a test, say that and open the pull request as a draft. CI runs the iOS and e2e tests after you mark it ready for review.
 
 ### Screenshots
 

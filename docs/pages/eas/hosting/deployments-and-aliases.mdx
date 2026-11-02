@@ -14,6 +14,8 @@ Deployments to EAS Hosting are immutable. Each deployment is accessible via a un
 
 To activate EAS Hosting for a project, you'll need to choose a **preview subdomain name**. You can do this via the **Hosting** section of your project on the [expo.dev](https://expo.dev) website. Alternatively, you'll be prompted to choose a preview subdomain when you create your first deployment using the EAS CLI.
 
+EAS Hosting reserves each preview subdomain name permanently. After you delete a project or change its preview subdomain name, you can't reuse the old name.
+
 ### Preview and production URLs
 
 A **preview subdomain name** is a prefix used for the preview URL of your app. For example, if you choose `my-app` as the preview subdomain name, your preview URL would be: `https://my-app--or1170q9ix.expo.app/`, and your production URL would be: `https://my-app.expo.app/`.

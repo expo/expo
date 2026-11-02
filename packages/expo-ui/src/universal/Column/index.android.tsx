@@ -31,13 +31,15 @@ export function Column({
   const modifiers = transformToModifiers(
     style,
     { onPress: disabled ? undefined : onPress, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'Column' }
   );
 
   return (
     <ComposeColumn
       horizontalAlignment={alignmentMap[alignment]}
       verticalArrangement={spacing != null ? { spacedBy: spacing } : undefined}
+      resolvesChildPercentages
       modifiers={modifiers}>
       {children}
     </ComposeColumn>

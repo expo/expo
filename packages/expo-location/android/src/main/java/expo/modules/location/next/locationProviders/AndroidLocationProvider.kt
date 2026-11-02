@@ -22,6 +22,7 @@ import androidx.core.content.IntentCompat
 import androidx.core.location.LocationListenerCompat
 import androidx.core.location.LocationManagerCompat
 import androidx.core.location.LocationRequestCompat
+import expo.modules.core.logging.Logger
 import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface
@@ -89,7 +90,10 @@ private fun resolveProviderFrom(locationPriority: LocationPriority, validProvide
 fun resolveSystemProviderName(locationPriority: LocationPriority, context: Context, locationManager: LocationManager): String? =
   resolveProviderFrom(locationPriority, getValidSystemProviders(context, locationManager))
 
-class AndroidLocationProvider(private val context: Context) : LocationProvider {
+class AndroidLocationProvider(
+  private val context: Context,
+  private val jsLogger: Logger?
+) : LocationProvider {
   val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
   override val name = "Android"
@@ -134,7 +138,7 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
     if (getValidSystemProviders(context, locationManager).isEmpty()) {
       return ProviderResult.Unavailable
     }
-    return ProviderResult.Available(AndroidPositionUpdatesSession(context, locationManager))
+    return ProviderResult.Available(AndroidPositionUpdatesSession(context, locationManager, jsLogger))
   }
 
   override fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> {
@@ -165,7 +169,8 @@ class AndroidLocationProvider(private val context: Context) : LocationProvider {
 
 private class AndroidPositionUpdatesSession(
   private val context: Context,
-  private val locationManager: LocationManager
+  private val locationManager: LocationManager,
+  private val jsLogger: Logger?
 ) : PositionUpdatesSession, BroadcastReceiver() {
   private class SessionConfig(val parameters: WatchPositionParameters, val onUpdate: (WatchUpdate) -> Unit)
   private class SessionState(val listener: LocationListenerCompat, val provider: String)
@@ -200,6 +205,7 @@ private class AndroidPositionUpdatesSession(
       LocationManagerCompat.requestLocationUpdates(locationManager, provider, request, listener, Looper.getMainLooper())
       listener
     }.onFailure {
+      jsLogger?.warn("[expo-location] Could not request location updates from \"$provider\"", it)
       if (emitError) {
         config.onUpdate(WatchUpdate.Failure(it))
       }

@@ -25,12 +25,13 @@ apple/
 │   └── ExpoModulesJSI-Cxx/        # C++ utilities bridging Swift ↔ JSI
 │       ├── include/               # In-package C++ headers
 │       │   └── Public/            # C++ headers shipped from the xcframework
-│       ├── JSIUtils.cpp
+│       ├── HermesRuntime.cpp      # The standalone Hermes runtime, the only Hermes-specific code
+│       ├── Microtasks.cpp
 │       └── TypedArray.cpp
 ├── Tests/                         # Swift Testing suites, one per type
 ```
 
-In-package C++ headers (consumed by `ExpoModulesJSI`'s own Swift sources) live in `apple/Sources/ExpoModulesJSI-Cxx/include/`: `CppError.h`, `HostFunctionClosure.h`, `HostObject.h`, `HostObjectCallbacks.h`, `JSIUtils.h`, `MemoryBuffer.h`, `RetainedSwiftPointer.h`, `RuntimeScheduler.h`, `TypedArray.h`.
+In-package C++ headers (consumed by `ExpoModulesJSI`'s own Swift sources) live in `apple/Sources/ExpoModulesJSI-Cxx/include/`: `CppError.h`, `HermesRuntime.h`, `HostFunctionClosure.h`, `HostObject.h`, `HostObjectCallbacks.h`, `JSIUtils.h`, `MemoryBuffer.h`, `Microtasks.h`, `RetainedSwiftPointer.h`, `RuntimeScheduler.h`, `TypedArray.h`.
 
 Headers under `include/Public/` (today just `NativeState.h`) are additionally copied into the xcframework's `Headers/` directory by `build-xcframework.sh` and exposed via a `requires cplusplus` modulemap submodule, so non-interop C++ consumers (e.g. `expo-modules-core`) can include them via `<ExpoModulesJSI/NativeState.h>` and use `__has_include` for graceful fallback on non-Apple platforms.
 
@@ -63,6 +64,8 @@ struct JavaScriptRuntimeTests {
 ```
 
 Tests are in `apple/Tests/` and each file covers one type. Some suites use the global actor `@JavaScriptActor` for executor isolation.
+
+A bare `JavaScriptRuntime()` has no event loop, so nothing drains its microtask queue: `JavaScriptPromise.await()` and `evalAsync` never complete on it. A test that awaits a promise runs on a runtime from `TestRuntimeScheduler` instead, whose thread drains the queue after each task like React Native does. `TestRuntime.run { runtime in ... }` starts the test body on that thread. `await()` resumes the body off the thread, so read JavaScript values after it through `runtime.execute`, carrying them across with `.ref()` and `take()`. Tests in other packages use `TestAppContext` from `expo-modules-test-core` for the same reason.
 
 Run them with `pnpm test:integration` from the package root, which calls `apple/scripts/test.sh`. The script needs an installed host app's `Pods` directory (defaults to `$EXPO_ROOT_DIR/apps/bare-expo/ios/Pods`); override with `PODS_ROOT`. It symlinks React / hermesvm / ReactNativeDependencies xcframeworks into `apple/.test-frameworks/` so SPM can resolve them as relative-path binary targets, generates the `jsi` modulemap, and runs `xcodebuild test` against an iOS Simulator (override with `DESTINATION`). Extra args pass through to xcodebuild &mdash; e.g. `pnpm test -only-testing TestName`.
 

@@ -5,9 +5,6 @@ import { describe, it } from 'node:test';
 import path from 'path';
 
 import type { SpmPackagesCheckInput } from '../prebuilds/equivalence/SpmPackagesCheck';
-// oxfmt, the pre-commit formatter, sorts `../` before `./` and runs after `eslint --fix`,
-// so this is the only order that survives both tools.
-// eslint-disable-next-line import/order
 import {
   type ConfigRoots,
   type EquivalenceOptions,

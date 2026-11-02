@@ -52,6 +52,8 @@ maybeRebuildAndRun().catch((error) => {
 });
 
 async function maybeRebuildAndRun() {
+  loadGitHubTokenFromGhCli();
+
   const state = readState();
   const sourceChecksum = await calculateSourceChecksumAsync();
 
@@ -184,6 +186,32 @@ function readState() {
 function saveState(state) {
   fs.mkdirSync(path.dirname(STATE_PATH), { recursive: true });
   fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2));
+}
+
+/**
+ * Falls back to the token stored by `gh auth login` when `GITHUB_TOKEN` is not set.
+ * It must run before any command module loads, because some modules create Octokit at import time.
+ * A rebuild loads all command modules to build the schema.
+ */
+function loadGitHubTokenFromGhCli() {
+  const subCommandName = process.argv[2];
+  if (process.env.GITHUB_TOKEN || !subCommandName || subCommandName.startsWith('-')) {
+    return;
+  }
+  try {
+    const token = require('child_process')
+      .execFileSync('gh', ['auth', 'token'], {
+        encoding: 'utf8',
+        stdio: ['ignore', 'pipe', 'ignore'],
+        timeout: 5000,
+      })
+      .trim();
+    if (token) {
+      process.env.GITHUB_TOKEN = token;
+    }
+  } catch {
+    // `gh` is not installed or not logged in. Commands that need a token report it themselves.
+  }
 }
 
 function canRequire(packageName) {

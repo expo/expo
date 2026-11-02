@@ -31,7 +31,11 @@ export function getWatchHandler(
 
     let shouldRegenerate = false;
     let relativePath = path.relative(process.env.EXPO_ROUTER_APP_ROOT, filePath);
-    const isInsideAppRoot = !relativePath.startsWith('../');
+    const isInsideAppRoot =
+      relativePath &&
+      relativePath !== '..' &&
+      !relativePath.startsWith(`..${path.sep}`) &&
+      !path.isAbsolute(relativePath);
     const basename = path.basename(relativePath);
 
     if (!isInsideAppRoot) return;

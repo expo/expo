@@ -11,16 +11,15 @@ export function createCjsDetectionPlugin(
     createState: () => ({ hasCjsExports: false }),
     visitors: [
       nox.defineVisitor(
-        'StaticMemberExpression',
-        { fields: ['memberPath'], scope: true, ancestry: { mode: 'parent' } },
+        { route: 'AssignmentExpression', children: { left: { route: 'StaticMemberExpression' } } },
+        {
+          scope: true,
+          children: { left: { route: 'StaticMemberExpression', fields: ['memberPath'] } },
+        },
         (path, state: { hasCjsExports: boolean }) => {
-          if (
-            path.parentPath?.node.type !== 'AssignmentExpression' ||
-            path.parentPath.node.start !== path.node.start
-          ) {
-            return;
-          }
-          const pattern = String(path.node.memberPath ?? '');
+          const left = path.getChild('left');
+          if (left == null) return;
+          const pattern = String(left.node.memberPath ?? '');
           const isModuleExports =
             (pattern === 'module.exports' || pattern.startsWith('module.exports.')) &&
             !path.scope.hasBinding('module');
@@ -30,48 +29,51 @@ export function createCjsDetectionPlugin(
         }
       ),
       nox.defineVisitor(
-        'AssignmentExpression',
         {
-          scope: true,
-          children: { left: { route: 'Expression', fields: ['name'] } },
-        },
-        (path, state: { hasCjsExports: boolean }) => {
-          if (state.hasCjsExports) return;
-          const left = path.getChild('left');
-          if (
-            left?.node.type === 'Identifier' &&
-            left.node.name === 'exports' &&
-            !path.scope.hasBinding('exports')
-          ) {
-            state.hasCjsExports = true;
-          }
-        }
-      ),
-      nox.defineVisitor(
-        'CallExpression',
-        {
-          scope: true,
+          route: 'AssignmentExpression',
           children: {
-            callee: { route: 'Expression', fields: ['memberPath'] },
-            arguments: { route: 'Expression', fields: ['name', 'memberPath'] },
+            left: {
+              route: 'Identifier',
+              where: { name: { equals: 'exports' }, global: { equals: true } },
+            },
           },
         },
-        (path, state: { hasCjsExports: boolean }) => {
-          if (state.hasCjsExports) return;
-          const callee = path.getChild('callee');
-          const args = path.getChildList('arguments');
-          if (
-            args.length > 1 &&
-            callee?.matchesPattern('Object.assign') &&
-            !path.scope.hasBinding('Object') &&
-            (args[0]?.matchesPattern('module.exports') ||
-              (args[0]?.node.type === 'Identifier' &&
-                args[0].node.name === 'exports' &&
-                !path.scope.hasBinding('exports')))
-          ) {
-            state.hasCjsExports = true;
-          }
+        {},
+        (_path, state: { hasCjsExports: boolean }) => {
+          state.hasCjsExports = true;
         }
+      ),
+      ...(['identifier', 'member'] as const).map((target) =>
+        nox.defineVisitor(
+          {
+            route: 'CallExpression',
+            where: {
+              calleePath: { equals: 'Object.assign' },
+              calleeGlobal: { equals: true },
+            },
+            children: {
+              callee: {
+                route: 'StaticMemberExpression|ComputedMemberExpression',
+              },
+              arguments:
+                target === 'identifier'
+                  ? {
+                      route: 'Identifier',
+                      index: 0,
+                      where: { name: { equals: 'exports' }, global: { equals: true } },
+                    }
+                  : {
+                      route: 'StaticMemberExpression|ComputedMemberExpression',
+                      index: 0,
+                      where: { memberPath: { equals: 'module.exports' } },
+                    },
+            },
+          },
+          { fields: ['argumentCount'] },
+          (path, state: { hasCjsExports: boolean }) => {
+            if (path.node.argumentCount! > 1) state.hasCjsExports = true;
+          }
+        )
       ),
     ],
     post(context, state) {

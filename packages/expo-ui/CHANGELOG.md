@@ -1,5 +1,39 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- [Android] Fix "Cannot use shared object that was already released" errors when a view with a shared object prop, such as the `@expo/ui` `TextInput`, is remounted right after its first render. ([#51934](https://github.com/expo/expo/pull/51934) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- Universal `Row` and `Column` on Android resolve a child `width` or `height` percentage, such as `'50%'`, against their own size. ([#51118](https://github.com/expo/expo/pull/51118) by [@Kudo](https://github.com/Kudo))
+- Universal `Row` and `Column` on iOS resolve a child `width` or `height` percentage, such as `'50%'`, against their own size. The default `spacing` of a universal `Row` or `Column` on iOS is now `0`, as on Android and web. ([#51119](https://github.com/expo/expo/pull/51119) by [@Kudo](https://github.com/Kudo))
+- Add `List.ForEach` to the universal `List`. It renders rows from `data` and recycles them on Android, iOS, and web. The web `List` now fills its parent, so it scrolls. ([#52047](https://github.com/expo/expo/pull/52047) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Universal `style.width` and `style.height` accept a percentage of the parent, such as `'50%'`. ([#51117](https://github.com/expo/expo/pull/51117) by [@Kudo](https://github.com/Kudo))
+- On web, a universal `Row` or `Column` with a size on its parent's cross axis no longer stretches, so the parent's alignment can place it. ([#51120](https://github.com/expo/expo/pull/51120) by [@Kudo](https://github.com/Kudo))
+- [Android] Fixed `TextInput` with `secureTextEntry` showing the typed password in the keyboard's suggestion strip. A secure field now asks the keyboard for a password layout and turns off autocorrect. ([#52010](https://github.com/expo/expo/pull/52010) by [@enzomanuelmangano](https://github.com/enzomanuelmangano))
+
+## 58.0.22
+
+### Patch Changes
+
+- [Android] Fix screen readers not announcing the label of a labeled universal `Switch` or `Checkbox`. ([#51896](https://github.com/expo/expo/pull/51896) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [Android] Fix touches not reaching the content of `MaskedView`. ([#51988](https://github.com/expo/expo/pull/51988) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [Android] Fix `RNHostView` showing the previous, emptied child after its child is remounted, for example by a `key` change. ([#51914](https://github.com/expo/expo/pull/51914) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [Android] Add `CompositionLocalProvider` with `minimumInteractiveComponentSize`, so Material components can be smaller than the 48dp minimum touch target. ([#51954](https://github.com/expo/expo/pull/51954) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [Android] Add `colorOverrides` to the Jetpack Compose `Host`. It replaces individual Material 3 color roles in the palette from `colorScheme` and `seedColor`. Compose children and `useMaterialColors()` use the result. ([#51650](https://github.com/expo/expo/pull/51650) by [@juliusmarminge](https://github.com/juliusmarminge))
+- [iOS] Fix the graphical `DatePicker` keeping a wrong height when it appears after launch, for example in a sheet. ([#51958](https://github.com/expo/expo/pull/51958) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [iOS] Lay out children of a horizontal universal `ScrollView` in a row. They were stacked vertically. ([#51888](https://github.com/expo/expo/pull/51888) by [@itisrmk](https://github.com/itisrmk))
+- [iOS] Add a `presentationBackground` prop to `BottomSheet` that fills the sheet with a view, so a material stays translucent on iOS 26 and later. ([#51971](https://github.com/expo/expo/pull/51971) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- Update `README.md` with the package overview, entry points, available components and installation instructions. ([#50024](https://github.com/expo/expo/pull/50024) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [iOS] Fix hosted React Native content going blank or keeping a stale size after its child view is remounted, for example by a `key` change in an `RNHostView`. ([#51906](https://github.com/expo/expo/pull/51906) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [iOS] Add `accessibilityLabel` to the community `SegmentedControl`, so screen readers announce a name for the control. ([#51899](https://github.com/expo/expo/pull/51899) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [iOS] Support `tintColor` in the community `SegmentedControl`. ([#51904](https://github.com/expo/expo/pull/51904) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [Android] Add the Jetpack Compose `TopAppBar` component with `TopAppBar.Title`, `TopAppBar.NavigationIcon`, and `TopAppBar.Actions` slots, `colors`, and `windowInsets`. ([#51651](https://github.com/expo/expo/pull/51651) by [@juliusmarminge](https://github.com/juliusmarminge))
+- [web] Fix the universal `Text` ignoring the `colorScheme` of its `Host`. Its default color followed the browser color scheme, so a `Text` in a dark `Host` was black in a light browser. It now uses the `Host` foreground color and keeps the old color when no `Host` is on the page. A light `Host` now also gets the light colors when the browser or an outer `Host` is dark. ([#51698](https://github.com/expo/expo/pull/51698) by [@expo-bot](https://github.com/expo-bot))
+- Fix bottom sheet modals closing on iOS when the snap point count changes. ([#51889](https://github.com/expo/expo/pull/51889) by [@Fizzbow](https://github.com/Fizzbow))
+- [iOS] Stop the community `PagerView` from pressing a `Pressable` on a page when a swipe starts or ends on it, or when a tap stops a moving page. The pager now takes the touch from its pages while it scrolls, like React Native's `ScrollView`. This needs iOS 18 or later. ([#51799](https://github.com/expo/expo/pull/51799) by [@julian-gargicevich](https://github.com/julian-gargicevich))
+- [Web] Put a labeled `Switch` at the trailing edge of its row, as on Android and iOS. ([#51867](https://github.com/expo/expo/pull/51867) by [@miniware9](https://github.com/miniware9))
+
 ## 58.0.21
 
 ### Patch Changes

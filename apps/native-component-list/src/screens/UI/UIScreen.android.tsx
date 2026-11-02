@@ -307,6 +307,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'BottomSheet in a list',
+    route: 'ui/bottom-sheet-in-list',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BottomSheetInListScreen'));
+    },
+  },
+  {
     name: 'BottomSheet component',
     route: 'ui/bottomsheet',
     options: {},
@@ -464,6 +472,22 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ExtendingExpoUIScreen'));
+    },
+  },
+  {
+    name: 'Host in a Pressable',
+    route: 'ui/host-in-pressable',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./HostInPressableScreen'));
+    },
+  },
+  {
+    name: 'RNHostView in a clickable',
+    route: 'ui/rnhostview-in-clickable',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./RNHostViewInClickableScreen'));
     },
   },
   {

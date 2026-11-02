@@ -312,6 +312,16 @@ class Env {
   }
 
   /**
+   * Disable Expo's custom network inspection (the `/inspector/network` relay, response body
+   * storage, and the "Expo Network" DevTools tab), leaving the React Native DevTools Network
+   * panel to React Native's core network reporting. Temporary until the custom network
+   * inspection is removed.
+   */
+  get EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR(): boolean {
+    return boolish('EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR', false);
+  }
+
+  /**
    * Enable Bonjour advertising of the Expo CLI on local networks
    */
   get EXPO_UNSTABLE_BONJOUR(): boolean {

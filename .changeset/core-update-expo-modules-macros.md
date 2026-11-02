@@ -2,4 +2,4 @@
 'expo-modules-core': patch
 ---
 
-[iOS] Update `expo-modules-macros` to 0.22.0. `@Record` types now read and write their JavaScript properties with less overhead. The new `@JS` option `.withAsync("name")` also binds a synchronous function under that name, as a function that returns a promise and runs on the concurrent thread pool. A `@Record` can now be a `final class`, and a class that isn't `final` or has an inheritance clause gets a build error that says how to fix it. A `@JS init` now reports an argument type that can't be converted from JavaScript at the initializer.
+[iOS] Update `expo-modules-macros` to 0.23.1. `@JS` now supports a `lazy var`, which is read-only from JavaScript and stores its value on the JavaScript object at the first read. `@SharedObject` now supports subclasses of `SharedRef<T>`. Macros in a generic type no longer fail to build when a generic parameter of the type has the same name as one in the generated code.

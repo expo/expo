@@ -1,6 +1,6 @@
 ---
 title: Widgets
-description: A library to build iOS home screen widgets and Live Activities using Expo UI components.
+description: A library to build Android and iOS home screen widgets and iOS Live Activities using Expo UI components.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-widgets'
 packageName: 'expo-widgets'
 exampleName: 'with-widgets'
@@ -15,7 +15,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 > **important** This library is not available in the Expo Go app — use [development builds](/develop/development-builds/introduction) to try it out.
 
-`expo-widgets` enables the creation of iOS home screen widgets and Live Activities using Expo UI components, without writing native code. It provides a simple API for creating and updating a widget's timeline, as well as starting and managing Live Activities. You can build the layout using [`expo/ui`](/versions/latest/sdk/ui/swift-ui/) components and modifiers.
+`expo-widgets` enables the creation of Android and iOS home screen widgets and iOS Live Activities using Expo UI components, without writing native code. It provides a simple API for creating and updating a widget's timeline, as well as starting and managing Live Activities (iOS only). You can build the layout using Expo UI components and modifiers: [Jetpack Compose](/versions/latest/sdk/ui/jetpack-compose/) on Android and [SwiftUI](/versions/latest/sdk/ui/swift-ui/) on iOS.
 
 <VideoBoxLink
   videoId="3r_OHePTCcI"
@@ -25,7 +25,8 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 ## Known limitations
 
-- **Widget runtime.** Code inside a `'widget'`-marked component runs in an isolated runtime and can only use `@expo/ui/swift-ui` components, with no React hooks, app state, or asynchronous work. See [The `'widget'` directive](#the-widget-directive).
+- **Widget runtime.** Code inside a `'widget'`-marked component runs in an isolated runtime, with no React hooks, app state, or asynchronous work. It can only use Expo UI components: `@expo/ui/jetpack-compose` on Android and `@expo/ui/swift-ui` on iOS. See [The `'widget'` directive](#the-widget-directive).
+- **Android widgets.** Android widgets are opt-in with the `enableAndroid` config plugin option. They support a subset of Jetpack Compose components and modifiers. Some features are available only on iOS. See [Android widgets](#android-widgets).
 
 ## Installation
 
@@ -80,13 +81,19 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
     {
       name: 'enablePushNotifications',
       description:
-        'Whether to enable custom notifications on Android and push notifications for Live Activities on iOS. On Android, this adds the `POST_NOTIFICATIONS` permission to **AndroidManifest.xml**. On iOS, this adds the `aps-environment` entitlement and sets `ExpoWidgets_EnablePushNotifications` in the **Info.plist**.',
+        'Whether to enable custom notifications on Android and push notifications for Live Activities on iOS. On Android, when `enableAndroid` is `true`, this adds the `POST_NOTIFICATIONS` permission to **AndroidManifest.xml**. On iOS, this adds the `aps-environment` entitlement and sets `ExpoWidgets_EnablePushNotifications` in the **Info.plist**.',
       default: 'false',
     },
     {
       name: 'frequentUpdates',
       description:
         'Whether an app can update its Live Activities frequently. When enabled, your Live Activities can receive frequent updates with remote push notifications. This sets `NSSupportsLiveActivitiesFrequentUpdates` in the **Info.plist**.',
+      default: 'false',
+    },
+    {
+      name: 'enableAndroid',
+      description:
+        'Whether to add an Android home screen widget for each entry in `widgets`. Android widgets also require `android.package` in your [app config](/workflow/configuration/). See [Android widgets](#android-widgets).',
       default: 'false',
     },
     {
@@ -97,7 +104,7 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
     {
       name: 'widgets[].name',
       description:
-        'The internal name (identifier) of the widget. This is used as the Swift struct name and should be a valid Swift identifier (no spaces or special characters). It must match the `name` passed to `createWidget`.',
+        'The internal name (identifier) of the widget. This is used in the Kotlin class name on Android and as the Swift struct name on iOS. It should be a valid Kotlin and Swift identifier (no spaces or special characters). It must match the `name` passed to `createWidget`.',
     },
     {
       name: 'widgets[].displayName',
@@ -142,6 +149,44 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
         '* `parameters` - A map of parameter keys to parameter definitions. Each parameter has a `title`, a `type` (`string`, `number`, `boolean`, or `enum`), and a `default`. An `enum` parameter additionally takes a `values` array of `{ name, value }` options and can set `dynamic: true` to let the app replace those options at runtime.',
       ].join('\n'),
     },
+    {
+      name: 'widgets[].android',
+      description:
+        'Android options for this widget. They apply only when `enableAndroid` is `true`. Set `android` to `null` to skip this widget on Android.',
+    },
+    {
+      name: 'widgets[].android.minWidth',
+      description: 'The default width of the widget in dp on Android 11 and lower.',
+      default: '180',
+    },
+    {
+      name: 'widgets[].android.minHeight',
+      description: 'The default height of the widget in dp on Android 11 and lower.',
+      default: '110',
+    },
+    {
+      name: 'widgets[].android.targetCellWidth',
+      description:
+        'The default width of the widget in home screen grid cells on Android 12 and later.',
+      default: '4',
+    },
+    {
+      name: 'widgets[].android.targetCellHeight',
+      description:
+        'The default height of the widget in home screen grid cells on Android 12 and later.',
+      default: '2',
+    },
+    {
+      name: 'widgets[].android.resizeMode',
+      description:
+        'The directions in which users can resize the widget: `none`, `horizontal`, `vertical`, or `both`.',
+      default: '"both"',
+    },
+    {
+      name: 'widgets[].android.initialLayout',
+      description:
+        'A path to the file that registers this widget with `createWidget`. The path is relative to the project root. Set this so the widget can render its layout before the app is open for the first time.',
+    },
   ]}
 />
 
@@ -159,6 +204,7 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
           "bundleIdentifier": "com.example.myapp.widgets",
           "groupIdentifier": "group.com.example.myapp",
           "enablePushNotifications": true,
+          "enableAndroid": true,
           "widgets": [
             {
               "name": "StatusWidget",
@@ -167,6 +213,10 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
               "ios": {
                 "contentMarginsDisabled": true,
                 "supportedFamilies": ["systemSmall", "systemMedium"]
+              },
+              "android": {
+                "targetCellWidth": 2,
+                "targetCellHeight": 2
               }
             },
             {
@@ -203,7 +253,8 @@ You can configure `expo-widgets` using its built-in [config plugin](/config-plug
                   "accessoryRectangular",
                   "accessoryInline"
                 ]
-              }
+              },
+              "android": null
             }
           ]
         }
@@ -221,7 +272,7 @@ Components passed to `createWidget` and `createLiveActivity` must start with the
 
 Because of this isolation, code inside a `'widget'`-marked component is limited:
 
-- It can only render [`@expo/ui/swift-ui`](/versions/latest/sdk/ui/swift-ui/) components and modifiers. Standard React Native components (such as `View` and `Text` from `react-native`) are not available.
+- It can only render Expo UI components and modifiers: [`@expo/ui/jetpack-compose`](/versions/latest/sdk/ui/jetpack-compose/) on Android and [`@expo/ui/swift-ui`](/versions/latest/sdk/ui/swift-ui/) on iOS. Android widgets support [a subset of components and modifiers](#supported-components-and-modifiers). Standard React Native components (such as `View` and `Text` from `react-native`) are not available.
 - It cannot use React hooks (`useState`, `useEffect`, and others), component state, or context. The function must be pure and return its layout synchronously.
 - It cannot perform asynchronous work, import other modules, or access your app's runtime or in-memory state.
 - It cannot reference anything declared outside the component function, including plain top-level `const`s in the **same file**. The bundler serializes only the function body, so module-scope values are not present at runtime. Declare every constant and helper **inside** the widget function, or pass it in through props.
@@ -281,7 +332,7 @@ The optional third argument provides the initial props used before the widget ti
 
 #### Basic widget
 
-An effective way to update a widget is to use the `updateSnapshot` method. This creates a widget timeline with a single entry that displays immediately.
+An effective way to update a widget is to use the `updateSnapshot` method. It displays the new props immediately. On iOS, it creates a widget timeline with a single entry.
 
 The example below continues from [Creating a widget](#prerequisite-creating-a-widget).
 
@@ -489,6 +540,85 @@ WeatherWidget.setConfigurationParameterEnum('city', [
   { name: 'New York', value: 'nyc' },
 ]);
 ```
+
+### Android widgets
+
+Android home screen widgets use the same `createWidget` API as iOS widgets. Build their layouts with [`@expo/ui/jetpack-compose`](/versions/latest/sdk/ui/jetpack-compose/) components instead of SwiftUI components.
+
+#### Enable Android widgets
+
+Android widgets are opt-in. Set `enableAndroid` to `true` in the config plugin. Also set `android.package` in your app config. The config plugin then adds an Android widget for each entry in `widgets`:
+
+```json app.json
+{
+  "expo": {
+    "android": {
+      "package": "com.example.myapp"
+    },
+    "plugins": [
+      [
+        "expo-widgets",
+        {
+          "enableAndroid": true,
+          "widgets": [
+            {
+              "name": "MyWidget",
+              "displayName": "My Widget",
+              "description": "A sample home screen widget"
+            }
+          ]
+        }
+      ]
+    ]
+  }
+}
+```
+
+After you change these options, run `npx expo prebuild` and rebuild your app. To change the widget size or to skip a widget on Android, use the [`widgets[].android` options](#configuration-in-app-config).
+
+#### Create an Android widget
+
+Build the layout with Jetpack Compose components. The widget name must match the `name` in your app config:
+
+```tsx MyWidget.tsx
+import { Column, Text } from '@expo/ui/jetpack-compose';
+import { createWidget } from 'expo-widgets';
+
+type MyWidgetProps = {
+  count: number;
+};
+
+const MyWidget = (props: MyWidgetProps) => {
+  'widget';
+  return (
+    <Column>
+      <Text>Count: {props.count}</Text>
+    </Column>
+  );
+};
+
+export default createWidget('MyWidget', MyWidget, { count: 0 });
+```
+
+To update the widget from your app, call `updateSnapshot`:
+
+```tsx
+import MyWidget from './MyWidget';
+
+MyWidget.updateSnapshot({ count: 5 });
+```
+
+To test the widget on a device or an emulator, touch and hold the home screen, select **Widgets**, and add the widget for your app.
+
+#### Supported components and modifiers
+
+Android widgets support these components from `@expo/ui/jetpack-compose`: `Box`, `Button`, `Checkbox`, `CircularProgressIndicator`, `Column`, `ElevatedButton`, `FilledTonalButton`, `Image`, `LazyColumn`, `LinearProgressIndicator`, `LoadingIndicator`, `OutlinedButton`, `RadioButton`, `Row`, `Spacer`, `Switch`, `Text`, and `TextButton`. Any other component renders the text "View not found" in the widget.
+
+They support these modifiers from `@expo/ui/jetpack-compose/modifiers`: `background`, `cornerRadius`, `fillMaxHeight`, `fillMaxSize`, `fillMaxWidth`, `height`, `padding`, `paddingAll`, `size`, `width`, `wrapContentHeight`, and `wrapContentWidth`. Other modifiers have no effect.
+
+#### Features available only on iOS
+
+Timelines (`updateTimeline` and `getTimeline`), configurable widgets, and Live Activities are available only on iOS. On Android, use `updateSnapshot` to change what a widget displays. The `environment` argument provides only `colorScheme` on Android.
 
 ### Live Activities
 

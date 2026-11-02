@@ -1,7 +1,6 @@
 ---
 title: Ignore files via .easignore
 description: Learn how to configure EAS to ignore unnecessary files during the build process.
-hideTOC: true
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -11,11 +10,11 @@ A **.easignore** file defines which files [EAS](https://expo.dev/services) shoul
 
 > **info** Ignoring unnecessary files can help reduce your app's archive size and upload time.
 
-By default, the [EAS CLI](/build/setup/#install-the-latest-eas-cli) refers to the [**.gitignore**](https://git-scm.com/docs/gitignore) file (if it exists) to determine which files to ignore. If you create a **.easignore** file, the EAS CLI prioritizes it over the **.gitignore** file. When creating a **.easignore** file, include all files and directories from your **.gitignore** file and add additional files you want to ignore.
+By default, [EAS CLI](/build/setup/#install-the-latest-eas-cli) refers to the [**.gitignore**](https://git-scm.com/docs/gitignore) file (if it exists) to determine which files to ignore. If you create a **.easignore** file, EAS CLI uses it instead of all **.gitignore** files in your repository. When creating a **.easignore** file, include all files and directories from your **.gitignore** file and add additional files you want to ignore.
 
 <Step label="1">
 
-Create a **.easignore** file in the root of your project.
+Create a **.easignore** file in the root of your Git repository.
 
 </Step>
 
@@ -64,3 +63,26 @@ In addition to ignoring additional files beyond what is in your gitignore file, 
 # Include a file not in source control
 !temp_file.json
 ```
+
+If the file contains secrets, use a [file environment variable](/eas/environment-variables/faq/#can-i-use-file-environment-variables-in-my-eas-project) instead of adding it to your project archive.
+
+## Check which files EAS uploads
+
+Run `eas build:inspect` with the `archive` stage to copy the files that EAS CLI uploads into a directory on your computer. The command does not start a build.
+
+<Terminal cmd={['$ eas build:inspect --platform android --stage archive --output ./eas-archive']} />
+
+- Log in to your Expo account with `eas login` before you run this command.
+- The output directory must not exist. To delete an existing output directory first, add `--force`.
+- In the full Git workflow, commit your changes before you run this command. The command does not offer to commit them.
+
+Open the output directory and confirm that it contains the files your build needs and none of the files you want to ignore.
+
+## How EAS CLI applies .easignore
+
+- EAS CLI reads **.easignore** only from the root of your Git repository. In a monorepo, the repository root can be above your project directory.
+- In the [No VCS workflow](/build-reference/project-upload/#no-vcs-workflow), EAS CLI reads **.easignore** from the directory in the `EAS_PROJECT_ROOT` environment variable. If it is not set, EAS CLI reads it from the root of your Git repository, or from the current directory if there is no repository.
+- To exclude the shallow **.git** directory from the project archive, add `.git` to **.easignore**.
+- In the [full Git workflow](/build-reference/project-upload/#full-git-workflow), EAS CLI still applies **.easignore** and deletes the matching files from the clone. The project on EAS Build no longer matches your commit, so EAS CLI shows a warning. To hide the warning, set the `EAS_SUPPRESS_REQUIRE_COMMIT_EASIGNORE_WARNING` environment variable to `1`.
+
+To learn which files EAS CLI uploads in each workflow, see [How EAS CLI uploads your project](/build-reference/project-upload/).

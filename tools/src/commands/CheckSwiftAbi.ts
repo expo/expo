@@ -192,16 +192,19 @@ async function checkModuleAsync(
       skipped: `${module.packageName}@${version} on npm has no ABI file. The first release with \`publishAbiDescriptor\` adds it.`,
     };
   }
-  const findings = parseDigesterReport(await runDigesterAsync(baseline.path, current));
+  const findings = parseDigesterReport(await runDigesterAsync(baseline.path, current)).filter(
+    isBreakingFinding
+  );
   logger.info(
     `${module.productName}: compared with ${module.packageName}@${version}, ${findings.length} finding(s).`
   );
-  return { findings: findings.filter(isBreakingFinding) };
+  return { findings };
 }
 
 async function checkAsync(options: ActionOptions, workDir: string) {
   const findings = new Map<string, DigesterFinding[]>();
   const skipped: string[] = [];
+  const abiFindings: DigesterFinding[] = [];
   for (const module of [CORE_MODULE, JSI_MODULE]) {
     const result = await checkModuleAsync(module, options.baseRef, workDir);
     if (result.skipped) {
@@ -209,13 +212,15 @@ async function checkAsync(options: ActionOptions, workDir: string) {
     }
     if (result.findings.length > 0) {
       findings.set(`${module.productName} ABI changes`, result.findings);
+      abiFindings.push(...result.findings);
     }
   }
-  const abiBreak = findings.size > 0;
   const affected: string[] = [];
+  let symbolsComplete = true;
   for (const result of await checkSymbolsAsync(options.baseRef, workDir)) {
     if (result.skipped) {
       skipped.push(`Symbols were not compared: ${result.skipped}`);
+      symbolsComplete = false;
     }
     for (const finding of result.findings) {
       findings.set(finding.label, finding.findings);
@@ -234,10 +239,20 @@ async function checkAsync(options: ActionOptions, workDir: string) {
     return;
   }
 
-  const missing = await findMissingBumps(
-    path.join(EXPO_DIR, '.changeset'),
-    packagesToBump({ abiBreak, affected, all: await getRequiredPackagesAsync() })
-  );
+  const required = packagesToBump({
+    abiFindings,
+    affected,
+    symbolsComplete,
+    all: await getRequiredPackagesAsync(),
+  });
+  if (required.length === 0) {
+    logger.warn(formatAbiFindings(findings));
+    logger.warn(
+      'These ABI changes only remove symbols that no published precompiled module imports, so no republish is needed.'
+    );
+    return;
+  }
+  const missing = await findMissingBumps(path.join(EXPO_DIR, '.changeset'), required);
   if (missing.length === 0) {
     logger.info(formatAbiFindings(findings));
     logger.success('A changeset republishes every precompiled package, so the check passes.');

@@ -69,7 +69,7 @@ class AudioStream: SharedObject {
         channels = Int(hardwareFormat.channelCount)
         setupTapWithoutConversion(engine: engine, inputNode: inputNode, format: hardwareFormat)
         self.audioEngine = engine
-        try engine.start()
+        try startEngine(engine)
         isStreaming = true
         emitStatus()
         return
@@ -98,9 +98,23 @@ class AudioStream: SharedObject {
     }
 
     self.audioEngine = engine
-    try engine.start()
+    try startEngine(engine)
     isStreaming = true
     emitStatus()
+  }
+
+  // Starting the engine happens after the tap is installed. If it fails, undo the setup here: a later
+  // stop() cannot, because it returns early while isStreaming is still false.
+  private func startEngine(_ engine: AVAudioEngine) throws {
+    do {
+      try engine.start()
+    } catch {
+      engine.inputNode.removeTap(onBus: 0)
+      engine.stop()
+      audioEngine = nil
+      converter = nil
+      throw error
+    }
   }
 
   func stop() {

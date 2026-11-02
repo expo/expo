@@ -61,6 +61,54 @@ struct UpdatesLogReaderTests {
 
   @Test
   @MainActor
+  func `timestamps have millisecond precision`() async throws {
+    let before = UInt(Date().timeIntervalSince1970 * 1000)
+    logger.warn(message: "Precision message", code: .none)
+    try await Task.sleep(for: .seconds(0.1))
+    let after = UInt(Date().timeIntervalSince1970 * 1000)
+
+    let entry = logReader.getLogEntries(newerThan: Date(timeIntervalSinceNow: -60))
+      .compactMap { UpdatesLogEntry.create(from: $0) }
+      .first { $0.message == "Precision message" }
+
+    let timestamp = try #require(entry?.timestamp)
+    #expect(timestamp >= before)
+    #expect(timestamp <= after)
+  }
+
+  @Test
+  @MainActor
+  func `reads entries newer than a subsecond date`() async throws {
+    // A reader that cuts timestamps to whole seconds returns both entries only when the older
+    // entry and the cutoff date fall in the same second, so the test runs inside one second and
+    // tries again when the task is paused across a second boundary.
+    for attempt in 1...5 {
+      try await sleepUntilStartOfNextSecond()
+      let olderMessage = "Older message \(attempt)"
+      let newerMessage = "Newer message \(attempt)"
+      await logWarnAsync(message: olderMessage, code: .none, updateId: nil, assetId: nil)
+      try await Task.sleep(for: .milliseconds(50))
+      let date = Date()
+      await logWarnAsync(message: newerMessage, code: .none, updateId: nil, assetId: nil)
+
+      let entries = logReader.getLogEntries(newerThan: Date(timeIntervalSinceNow: -60))
+        .compactMap { UpdatesLogEntry.create(from: $0) }
+      let olderTimestamp = try #require(entries.first { $0.message == olderMessage }?.timestamp)
+      guard olderTimestamp / 1000 == UInt(date.timeIntervalSince1970) else {
+        continue
+      }
+
+      let messages = logReader.getLogEntries(newerThan: date)
+        .compactMap { UpdatesLogEntry.create(from: $0)?.message }
+        .filter { $0.hasSuffix(" \(attempt)") }
+      #expect(messages == [newerMessage])
+      return
+    }
+    Issue.record("The older entry and the cutoff date never fell in the same second")
+  }
+
+  @Test
+  @MainActor
   func `BasicLoggingWorks`() async throws {
     try await Task.sleep(for: .seconds(1.1))
 
@@ -174,6 +222,12 @@ struct UpdatesLogReaderTests {
   }
 
   // MARK: - Private methods
+
+  func sleepUntilStartOfNextSecond() async throws {
+    let now = Date().timeIntervalSince1970
+    let remaining = now.rounded(.down) + 1 - now
+    try await Task.sleep(for: .seconds(remaining + 0.01))
+  }
 
   func clearLogAsync() async {
     await withCheckedContinuation { continuation in

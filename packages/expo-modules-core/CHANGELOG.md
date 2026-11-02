@@ -1,5 +1,36 @@
 # Changelog
 
+## 58.0.26
+
+### Patch Changes
+
+- [iOS] Reduce the overhead of creating shared objects in JavaScript and of returning them from native functions. ([#52096](https://github.com/expo/expo/pull/52096) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#52095](https://github.com/expo/expo/pull/52095))
+  - expo-modules-jsi@58.0.19
+
+## 58.0.25
+
+### Patch Changes
+
+- [iOS] Support `static` and `class` `@JS` members on `@SharedObject` classes. They are bound onto the JavaScript class itself, for example `Cache.open(name)`. ([#51966](https://github.com/expo/expo/pull/51966) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fix "Cannot use shared object that was already released" errors when a view with a shared object prop, such as the `@expo/ui` `TextInput`, is remounted right after its first render. ([#51934](https://github.com/expo/expo/pull/51934) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [iOS] Fix apps running out of memory when native functions return many new `ArrayBuffer` values to JavaScript, because the garbage collector did not count their memory. ([#52124](https://github.com/expo/expo/pull/52124) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix `ArrayBuffer.wrap(dataWithoutCopy:)` keeping the bytes of released buffers alive until the current autorelease pool drains, which could make apps run out of memory when JavaScript calls a native function in a loop. ([#52123](https://github.com/expo/expo/pull/52123) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#52125](https://github.com/expo/expo/pull/52125), [#52031](https://github.com/expo/expo/pull/52031), [#52133](https://github.com/expo/expo/pull/52133), [#52122](https://github.com/expo/expo/pull/52122), [#52055](https://github.com/expo/expo/pull/52055))
+  - expo-modules-jsi@58.0.18
+
+## 58.0.24
+
+### Patch Changes
+
+- [iOS] Reduce the overhead of creating shared objects in JavaScript and of returning them from native functions. ([#51730](https://github.com/expo/expo/pull/51730) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix shared objects that native code returns to JavaScript again after their earlier JavaScript object was garbage-collected. Their members could throw "Unable to find the native shared object associated with given JavaScript object", or the returned object could belong to another shared object. ([#51854](https://github.com/expo/expo/pull/51854) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Update `expo-modules-macros` to 0.22.0. `@Record` types now read and write their JavaScript properties with less overhead. The new `@JS` option `.withAsync("name")` also binds a synchronous function under that name, as a function that returns a promise and runs on the concurrent thread pool. A `@Record` can now be a `final class`, and a class that isn't `final` or has an inheritance clause gets a build error that says how to fix it. A `@JS init` now reports an argument type that can't be converted from JavaScript at the initializer. ([#51905](https://github.com/expo/expo/pull/51905) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix a SwiftUI `Host` that mounts during a repeated modal presentation having no safe area. ([#51923](https://github.com/expo/expo/pull/51923) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- [iOS] Fix hosted React Native content going blank or keeping a stale size after its child view is remounted, for example by a `key` change in an `RNHostView`. ([#51906](https://github.com/expo/expo/pull/51906) by [@expo-tuft](https://github.com/apps/expo-tuft))
+- Updated dependencies. ([#51588](https://github.com/expo/expo/pull/51588), [#51835](https://github.com/expo/expo/pull/51835), [#51905](https://github.com/expo/expo/pull/51905))
+  - expo-modules-jsi@58.0.17
+
 ## 58.0.23
 
 ### Patch Changes

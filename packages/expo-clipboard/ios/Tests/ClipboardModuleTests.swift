@@ -1,5 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 import UIKit
 import MobileCoreServices
@@ -20,7 +21,7 @@ struct ClipboardModuleTests {
 
   init() throws {
     _ = Self.prepareMocks
-    appContext = AppContext.create()
+    appContext = TestAppContext()
     runtime = try appContext.runtime
     appContext.moduleRegistry.register(
       holder: ModuleHolder(

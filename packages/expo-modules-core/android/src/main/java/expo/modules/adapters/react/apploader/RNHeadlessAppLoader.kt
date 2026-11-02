@@ -74,9 +74,8 @@ class RNHeadlessAppLoader @DoNotStrip constructor() : HeadlessAppLoader {
   }
 
   override fun isRunning(appScopeKey: String?): Boolean {
-    // New architecture - We can return true since the fact that we have a reactContext
-    // means that we've already called start on the reactHost
-    return appRecords[appScopeKey] != null
+    val reactContext = appRecords[appScopeKey] ?: return false
+    return !reactContext.hasCurrentActivity()
   }
   //endregion HeadlessAppLoader
 }

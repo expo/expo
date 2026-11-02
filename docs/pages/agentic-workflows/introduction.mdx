@@ -1,0 +1,100 @@
+---
+title: Introduction to agentic workflows
+sidebar_title: Introduction
+description: Learn how a coding agent can test your app on a cloud simulator and return evidence for you to review.
+---
+
+import { Star06Icon } from '@expo/styleguide-icons/outline/Star06Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+import { AgenticWorkflowDiagram } from '~/scenes/eas/agentic-workflows/AgenticWorkflowDiagram';
+
+> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
+
+You may already use a [coding agent](/agents/), such as Claude Code, Codex, or Cursor, on your computer. You ask the agent to change your code. Then you open the app to check that it functions as expected.
+
+An agentic workflow runs a coding agent for you, in the cloud. The workflow starts when something happens in your project, for example, when a teammate opens a pull request (PR). The agent tests the change in your app on a cloud simulator. Then the workflow posts the result on the PR. A person reads the result and decides what to do next.
+
+This section has four guides. Each guide adds one agentic workflow to your project.
+
+## How an agentic workflow works
+
+Each agentic workflow has three parts:
+
+- **A workflow** starts the work. In these guides, [EAS Workflows](/eas/workflows/introduction/) runs the jobs in the cloud. A PR, TestFlight feedback, a GitHub Action, or a manual run starts a workflow.
+- **A coding agent** does the task, such as a test of a change, a new feature, or a bug fix. In a workflow, the agent runs from the command line, without a person.
+- **An Expo Simulators session** gives the agent a running app on a cloud Android Emulator or iOS Simulator. The agent uses the app as a person does and saves evidence.
+
+The following diagram shows one run of an agentic workflow. The highlighted steps run on EAS Workflows and Expo Simulators:
+
+<AgenticWorkflowDiagram />
+
+## Why the agent needs a simulator
+
+A coding agent can read and change code, but it cannot see if the app functions as expected. To see the app, the agent needs a device that runs it.
+
+With [Expo Simulators](/preview/simulators/introduction/), your workflows can use Android Emulators and iOS Simulators on EAS cloud infrastructure. A job in the workflow starts a session. Then the agent uses a controller, [agent-device](/agents/agent-device/) or [Argent](/agents/argent/), to tap, type, and scroll in the app.
+
+## What the agent returns
+
+The agent does not merge or ship a change. It returns evidence for a person to review:
+
+- A verdict, such as `PASS` or `FAIL`, with a report of each check.
+- The screenshots that the agent saved.
+- The screen recording of the session, on the session page on the EAS dashboard.
+- A link that opens the build in a browser preview.
+
+For example, Agentic CI posts this evidence in a comment on the PR:
+
+<ContentSpotlight
+  alt="Agentic CI comment on a GitHub pull request with a PASS verdict and links to the session recording, the agent report, and a browser preview"
+  src="/static/images/eas-workflows/agentic-ci-comment.webp"
+  darkSrc="/static/images/eas-workflows/agentic-ci-comment-dark.webp"
+/>
+
+[What the agent can do](/agentic-workflows/setup/#what-the-agent-can-do) explains the limits of the agent in these workflows.
+
+## Before you start
+
+Agentic workflows build on other Expo tools. If you are new to them, set them up in this order:
+
+1. [Create a project](/get-started/create-a-project/) and push it to a GitHub repository.
+2. [Get started with EAS Workflows](/eas/workflows/get-started/) and run your first workflow.
+3. [Set up a coding agent](/agents/) on your computer and try it on your project.
+4. Check that your Expo account has [Expo Simulators](/preview/simulators/introduction/) access.
+
+Then follow [Set up a project for agentic workflows](/agentic-workflows/setup/) one time for your project. Each guide uses this setup.
+
+## Agentic workflow guides
+
+See the following guides for use cases of agentic workflows with Expo Simulators. Each guide adds a workflow and the files of its agent:
+
+<BoxLink
+  title="Test pull requests with an AI agent"
+  description="Agentic CI: a coding agent tests each pull request on a remote Android Emulator or iOS Simulator and posts a verdict with evidence."
+  href="/agentic-workflows/agentic-ci/"
+  Icon={Star06Icon}
+/>
+
+<BoxLink
+  title="Build a feature from an issue with an AI agent"
+  description="Issue to PR: a coding agent writes the change for a GitHub issue and opens a pull request, and Agentic CI tests it."
+  href="/agentic-workflows/issue-to-pr/"
+  Icon={Star06Icon}
+/>
+
+<BoxLink
+  title="Triage a bug report with an AI agent"
+  description="Bug triage: a coding agent reproduces a bug from a GitHub issue or TestFlight feedback on a remote Android Emulator or iOS Simulator."
+  href="/agentic-workflows/bug-triage/"
+  Icon={Star06Icon}
+/>
+
+<BoxLink
+  title="Test your app with a swarm of AI agents"
+  description="QA Swarm: several coding agents test your app at the same time, each with one flow on its own cloud simulator."
+  href="/agentic-workflows/qa-swarm/"
+  Icon={Star06Icon}
+/>

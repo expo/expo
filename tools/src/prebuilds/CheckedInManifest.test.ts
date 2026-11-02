@@ -589,6 +589,86 @@ it('product dependency: rejects .product moduleAliases instead of silently dropp
   );
 });
 
+const STAND_IN_PACKAGES =
+  '.package(path: "../direct/ExpoModulesCoreHeaders"), .package(path: "../direct/xcframeworks")';
+const CORE_HEADERS = '.product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders")';
+const REACT_HEADERS = '.product(name: "ReactHeaders", package: "xcframeworks")';
+
+function withStandIns(mainDependencies: string) {
+  const input = fixture(
+    `.target(name: "Main", dependencies: [${mainDependencies}], path: "ios")`,
+    undefined,
+    { dependencies: STAND_IN_PACKAGES }
+  );
+  input.product.externalDependencies = ['expo-modules-core/ExpoModulesCore', 'React'];
+  return input;
+}
+
+it('direct stand-ins: replaces each stand-in product with its spm.config.json dependency', async () => {
+  const input = withStandIns(`${CORE_HEADERS}, ${REACT_HEADERS}`);
+  assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, [
+    'expo-modules-core/ExpoModulesCore',
+    'React',
+  ]);
+});
+
+for (const [dependency, configName, otherConfigName] of [
+  [CORE_HEADERS, 'expo-modules-core/ExpoModulesCore', 'React'],
+  [REACT_HEADERS, 'React', 'expo-modules-core/ExpoModulesCore'],
+] as const) {
+  it(`direct stand-ins: requires externalDependencies to list "${configName}"`, async () => {
+    const input = withStandIns(dependency);
+    input.product.externalDependencies = [otherConfigName];
+    await rejectsManifest(
+      input,
+      new RegExp(`: it names unknown dependency "${configName}", which the generated package`)
+    );
+  });
+}
+
+it('direct stand-ins: drops a stand-in package that no target depends on', async () => {
+  const input = withStandIns('');
+  await assert.doesNotReject(resolve(input.root, input.product));
+});
+
+const REMOTE_XCFRAMEWORKS_URL = 'https://example.com/xcframeworks.git';
+
+for (const productName of ['ReactHeaders', 'ReactNative']) {
+  it(`direct stand-ins: leaves .product "${productName}" of a remote package named like a stand-in`, async () => {
+    const input = withPackages(
+      `.package(url: "${REMOTE_XCFRAMEWORKS_URL}", exact: "1.2.3")`,
+      [remote(undefined, REMOTE_XCFRAMEWORKS_URL, productName)],
+      `.target(name: "Main", dependencies: [.product(name: "${productName}", package: "xcframeworks")], path: "ios")`
+    );
+    assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, [productName]);
+  });
+}
+
+it('direct stand-ins: keeps the platform condition of a stand-in product', async () => {
+  await rejectsManifest(
+    withStandIns(
+      '.product(name: "ReactHeaders", package: "xcframeworks", condition: .when(platforms: [.iOS]))'
+    ),
+    /: dependency "React" has a platform condition, but the generated dependency format cannot preserve it\./
+  );
+});
+
+it('direct stand-ins: rejects stand-in moduleAliases like any other .product moduleAliases', async () => {
+  await rejectsManifest(
+    withStandIns(
+      '.product(name: "ReactHeaders", package: "xcframeworks", moduleAliases: ["ReactHeaders": "ReactAlias"])'
+    ),
+    /: dependency "ReactHeaders" declares moduleAliases, which the generated dependency format cannot preserve\./
+  );
+});
+
+it('direct stand-ins: rejects a product of a stand-in package that has no stand-in', async () => {
+  await rejectsManifest(
+    withStandIns('.product(name: "ReactNative", package: "xcframeworks")'),
+    /: it depends on \.product\(name: "ReactNative", package: "xcframeworks"\), but et prebuild can stand in only for \.product\(name: "ReactHeaders", package: "xcframeworks"\) from that package when it builds a direct manifest, because the local path package does not resolve from the package directory\. Use \.product\(name: "ReactHeaders", package: "xcframeworks"\) instead, or depend on "ReactNative" by name and list it in externalDependencies in spm\.config\.json\.$/
+  );
+});
+
 it('product dependency: rejects a .product naming a product absent from spm.config.json', async () => {
   await rejectsManifest(
     withPackages(

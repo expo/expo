@@ -59,7 +59,7 @@ public struct JavaScriptArrayBuffer: ~Copyable {
       FatalError.runtimeLost()
     }
     let byteCount = size
-    let newBuffer = runtime.createArrayBuffer(size: byteCount)
+    let newBuffer = runtime.createArrayBuffer(size: byteCount, initializeToZero: false)
     memcpy(newBuffer.data(), data(), byteCount)
     return newBuffer
   }

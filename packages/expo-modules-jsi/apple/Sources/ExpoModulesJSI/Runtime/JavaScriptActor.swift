@@ -35,19 +35,18 @@ public actor JavaScriptActor: GlobalActor {
     return runner(operation)
   }
 
-  /// Throwing counterpart to the nonthrowing overload above. The generic error type keeps
-  /// `operation` nonescaping while preserving the exact error it can throw.
+  /// Throwing counterpart to the nonthrowing overload above. It rethrows the error that `operation` throws.
   @_alwaysEmitIntoClient
   @inline(__always)
-  public static func assumeIsolated<T: ~Copyable, E: Error>(
-    _ operation: @JavaScriptActor () throws(E) -> T
-  ) throws(E) -> T {
-    // Casting a `throws(E)` function value requires newer OS runtime support. Wrapping the
-    // operation in the nonthrowing fast path keeps this backdeployable and stack-allocated.
-    let result: Result<T, E> = assumeIsolated {
-      return Result(catching: operation)
-    }
-    return try result.get()
+  public static func assumeIsolated<T: ~Copyable>(_ operation: @JavaScriptActor () throws -> T) throws -> T {
+    typealias IsolatedRunner = @JavaScriptActor (@JavaScriptActor () throws -> T) throws -> T
+    typealias NonisolatedRunner = (@JavaScriptActor () throws -> T) throws -> T
+
+    // Like the nonthrowing overload, `operation` goes straight to the runner, with no closure in
+    // between. Untyped `throws`: casting a `throws(E)` function value requires newer OS runtime
+    // support, and passing a `throws(E)` operation to an untyped runner needs a conversion thunk.
+    let runner = unsafeBitCast(runIsolatedThrowing as IsolatedRunner, to: NonisolatedRunner.self)
+    return try runner(operation)
   }
 
   /// In debug builds, asserts if the actor's executor is not isolating the current context.
@@ -69,6 +68,12 @@ public actor JavaScriptActor: GlobalActor {
   @usableFromInline
   internal static func runIsolated<T: ~Copyable>(_ operation: @JavaScriptActor () -> T) -> T {
     return operation()
+  }
+
+  @JavaScriptActor
+  @usableFromInline
+  internal static func runIsolatedThrowing<T: ~Copyable>(_ operation: @JavaScriptActor () throws -> T) throws -> T {
+    return try operation()
   }
 }
 

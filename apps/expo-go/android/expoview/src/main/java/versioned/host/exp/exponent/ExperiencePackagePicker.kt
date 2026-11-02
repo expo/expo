@@ -18,7 +18,6 @@ import expo.modules.contacts.ContactsModule
 import expo.modules.contacts.next.ContactsNextModule
 import expo.modules.core.interfaces.Package
 import expo.modules.crypto.aes.AesCryptoModule
-import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
 import expo.modules.fetch.ExpoFetchModule
@@ -149,7 +148,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ConstantsModule::class.java to null,
     ContactsModule::class.java to null,
     ContactsNextModule::class.java to null,
-    DeviceModule::class.java to null,
     DocumentPickerModule::class.java to null,
     DomWebViewModule::class.java to null,
     EASClientModule::class.java to null,

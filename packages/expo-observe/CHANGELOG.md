@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.16
+
+### Patch Changes
+
+- Add a `react-native-reanimated` integration that reports Reanimated errors, and optionally warnings, to EAS Observe. ([#50576](https://github.com/expo/expo/pull/50576) by [@douglowder](https://github.com/douglowder))
+- Updated dependencies. ([#51720](https://github.com/expo/expo/pull/51720))
+  - expo-app-metrics@58.0.14
+
 ## 58.0.15
 
 ### Patch Changes

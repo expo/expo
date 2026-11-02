@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Tabs, type TabsHostProps, type TabsScreenAppearanceIOS } from 'react-native-screens';
 
+import { useWarnOnce } from '../useDeprecated';
 import { getFirstChildOfType } from '../utils/children';
 import {
   type InternalTabScreenProps as SharedInternalTabScreenProps,
@@ -25,8 +26,14 @@ import {
 } from './utils/optionsIconConverter';
 
 export function NativeTabsView(props: NativeTabsViewProps) {
-  const { minimizeBehavior, tabs, sidebarAdaptable, nonTriggerChildren, unstable_nativeProps } =
-    props;
+  const {
+    minimizeBehavior,
+    tabs,
+    sidebarAdaptable,
+    preferredPlacement,
+    nonTriggerChildren,
+    unstable_nativeProps,
+  } = props;
   // `ios`/`android` are the only platform-nested keys on `TabsHostProps`. We drop the inactive
   // platform's slice so users writing universal code don't pass Android-only props to the iOS host.
   const {
@@ -38,6 +45,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   const { selectedScreenKey, provenance } = useSelectedScreenKey(props);
   const onTabSelected = useOnTabSelectedHandler(props.onTabChange);
   const onTabSelectionPrevented = useOnTabSelectionPreventedHandler(props.onTabChange);
+  const prominentScreenKey = useProminentScreenKey(tabs);
 
   const iosAppearances = tabs.map((tab) => ({
     standardAppearance: createStandardAppearanceFromOptions(tab.options),
@@ -50,6 +58,13 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   );
 
   const bottomAccessoryFn = useBottomAccessoryFunctionFromBottomAccessories(bottomAccessory);
+
+  useWarnOnce(
+    'NativeTabs ignores `preferredPlacement` because `sidebarAdaptable` is `false`. ' +
+      'The placement has an effect only when the tab bar can turn into a sidebar. ' +
+      'Remove `sidebarAdaptable={false}` to use the placement, or remove `preferredPlacement`.',
+    sidebarAdaptable === false && preferredPlacement !== undefined
+  );
 
   if (
     process.env.NODE_ENV !== 'production' &&
@@ -80,8 +95,13 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     return null;
   }
 
+  // The placement works only in `tabSidebar` mode, so setting it enables that mode.
   const tabBarControllerMode: NonNullable<TabsHostProps['ios']>['tabBarControllerMode'] =
-    sidebarAdaptable ? 'tabSidebar' : sidebarAdaptable === false ? 'tabBar' : 'automatic';
+    sidebarAdaptable === false
+      ? 'tabBar'
+      : sidebarAdaptable || preferredPlacement
+        ? 'tabSidebar'
+        : 'automatic';
 
   return (
     <TabsHostWrapper
@@ -89,7 +109,10 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         tabBarTintColor: props.tintColor,
         tabBarMinimizeBehavior: minimizeBehavior,
         tabBarControllerMode,
+        tabBarSidebarPreferredPlacement: preferredPlacement,
         bottomAccessory: bottomAccessoryFn,
+        tabBarHiddenAnimationEnabled: props.disableHiddenAnimation ? false : undefined,
+        prominentScreenKey,
         ...rawIosProps,
       }}
       tabBarHidden={props.hidden}
@@ -100,6 +123,17 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       {children}
     </TabsHostWrapper>
   );
+}
+
+// `tabs` holds only visible tabs, so a hidden tab can never be prominent.
+function useProminentScreenKey(tabs: NativeTabsViewProps['tabs']): string | undefined {
+  const [prominentTab, ...otherProminentTabs] = tabs.filter((tab) => tab.options.prominent);
+  useWarnOnce(
+    `NativeTabs supports only one prominent tab, so only the "${prominentTab?.name}" tab is prominent. ` +
+      `Remove \`prominent\` from these tabs: ${otherProminentTabs.map((tab) => `"${tab.name}"`).join(', ')}.`,
+    otherProminentTabs.length > 0
+  );
+  return prominentTab?.name;
 }
 
 interface InternalTabScreenProps extends SharedInternalTabScreenProps {
@@ -162,6 +196,13 @@ function Screen(props: InternalTabScreenProps) {
         standardAppearance,
         scrollEdgeAppearance,
         systemItem: options.role,
+        // On by default: on iOS 27, UIKit detaches the search tab only while activation is on.
+        ...(options.role === 'search'
+          ? {
+              role: 'search',
+              automaticallyActivatesSearch: !options.disableAutomaticSearchActivation,
+            }
+          : {}),
         overrideScrollViewContentInsetAdjustmentBehavior: !options.disableAutomaticContentInsets,
         ...shared.nativeIosOverrides,
       }}

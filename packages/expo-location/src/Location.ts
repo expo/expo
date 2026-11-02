@@ -8,6 +8,7 @@ import type {
   LocationGeocodedLocation,
   LocationHeadingCallback,
   LocationHeadingObject,
+  LocationHeadingOptions,
   LocationLastKnownOptions,
   LocationObject,
   LocationOptions,
@@ -162,6 +163,8 @@ export async function getHeadingAsync(): Promise<LocationHeadingObject> {
  * [LocationHeadingObject](#locationheadingobject) as the first argument.
  * @param errorHandler This function is called when an error occurs. It receives a string with the
  * error message as the first argument.
+ * @param options An object of type [LocationHeadingOptions](#locationheadingoptions) to configure
+ * the heading updates.
  * @return A promise which fulfills with a [`LocationSubscription`](#locationsubscription) object.
  *
  * @platform android
@@ -169,12 +172,13 @@ export async function getHeadingAsync(): Promise<LocationHeadingObject> {
  */
 export async function watchHeadingAsync(
   callback: LocationHeadingCallback,
-  errorHandler?: LocationErrorCallback
+  errorHandler?: LocationErrorCallback,
+  options?: LocationHeadingOptions
 ): Promise<LocationSubscription> {
   const watchId = HeadingSubscriber.registerCallback(callback);
   errorHandler && LocationErrorSubscriber.registerCallbackForId(watchId, errorHandler);
 
-  await ExpoLocation.watchDeviceHeading(watchId);
+  await ExpoLocation.watchDeviceHeading(watchId, options ?? {});
 
   return {
     remove() {

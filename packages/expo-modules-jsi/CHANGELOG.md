@@ -1,5 +1,38 @@
 # Changelog
 
+## 58.0.19
+
+### Patch Changes
+
+- [iOS] Add `JavaScriptObject.tryUnsetNativeState()`, which returns `false` when the native state can't be removed, for example from a frozen object. `unsetNativeState()` now ignores that case instead of raising a C++ exception that Swift can't catch. ([#52095](https://github.com/expo/expo/pull/52095) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.18
+
+### Patch Changes
+
+- [iOS] Fix apps running out of memory when native functions return large `Data` values to JavaScript in a loop, because the garbage collector did not count the memory of the new array buffers. Also reduce the overhead of converting `Data` values to JavaScript. ([#52125](https://github.com/expo/expo/pull/52125) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Reduce the overhead of converting Swift arrays to JavaScript arrays. ([#52031](https://github.com/expo/expo/pull/52031) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add an `initializeToZero` option to `JavaScriptRuntime.createArrayBuffer(size:)`. ([#52125](https://github.com/expo/expo/pull/52125) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix a crash in `JavaScriptObject.defineProperty` when the object doesn't accept the property, for example when it's frozen. It now uses `Reflect.defineProperty`, and the object stays unchanged. ([#52133](https://github.com/expo/expo/pull/52133) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix a crash in `JavaScriptObject.setExternalMemoryPressure(_:)` when the runtime rejects the amount, for example an amount above 4 GB. The amount is now ignored. ([#52122](https://github.com/expo/expo/pull/52122) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Make `JavaScriptObject.takeValue()` and `JavaScriptArray.takeValue()` public. They move an object or an array into a `JavaScriptValue` without the copy that `asValue()` makes. ([#52055](https://github.com/expo/expo/pull/52055) by [@tsapeta](https://github.com/tsapeta))
+
+## 58.0.17
+
+### Patch Changes
+
+- [iOS] Write the generated `jsi` module map under `EXPO_CUSTOM_BUILD_ROOT` when it is set, so a custom build writes nothing into the package directory. Without it, the module map stays at `apple/.generated/module.modulemap`. ([#51588](https://github.com/expo/expo/pull/51588) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Publish the `ExpoModulesJSI` ABI descriptor with the package, at `prebuilds/abi/ExpoModulesJSI/arm64-apple-ios-simulator.abi.json`. ([#51835](https://github.com/expo/expo/pull/51835) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Build `ExpoModulesJSI` during the Xcode build of a Swift Package Manager app, against the app's React Native. Expo source packages compile against the `ExpoModulesJSIHeaders` XCFramework that `expo-modules-jsi` ships, and the new "Build ExpoModulesJSI" build phase runs a script in `expo-modules-jsi` that builds, links and embeds the framework.
+
+  The build phase copies the framework's dSYM to the app's dSYM folder, so archives symbolicate `ExpoModulesJSI` crashes.
+
+  Sync fails with an error that names both versions when the `ExpoModulesJSIHeaders` XCFramework comes from another version of `expo-modules-jsi` than the installed sources.
+
+  ([#51588](https://github.com/expo/expo/pull/51588) by [@chrfalch](https://github.com/chrfalch))
+
+- [iOS] Add `JavaScriptObject.setProperty(_:value:)` and `JavaScriptObject.withUnownedProperty(_:_:)` overloads that take a `JavaScriptPropNameID`. `JavaScriptPropNameID.init(_:string:)` now borrows the runtime, so code that only borrows a runtime can create property names without copying it. ([#51905](https://github.com/expo/expo/pull/51905) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.16
 
 ### Patch Changes

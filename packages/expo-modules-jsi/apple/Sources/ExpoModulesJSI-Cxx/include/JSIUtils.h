@@ -4,6 +4,7 @@
 
 #ifdef __cplusplus
 
+#include <cstring>
 #include <new>
 #include <TargetConditionals.h>
 
@@ -64,6 +65,58 @@ inline void setProperty(jsi::IRuntime &runtime, const jsi::Array &array, const j
 
 inline void setValueAtIndex(jsi::IRuntime &runtime, const jsi::Array &array, size_t index, const jsi::Value &value) {
   array.setValueAtIndex(runtime, index, value);
+}
+
+/**
+ Destroys `count` values in place. `jsi::Value::~Value()` is out-of-line in the engine library, so it's
+ called only for a value that holds an engine handle.
+ */
+inline void destroyValues(jsi::Value *_Nonnull values, size_t count) noexcept {
+  for (size_t i = 0; i < count; i++) {
+    jsi::Value &value = values[i];
+    if (!value.isUndefined() && !value.isNull() && !value.isBool() && !value.isNumber()) {
+      value.~Value();
+    }
+  }
+}
+
+/**
+ Creates an array for `pushValues` to fill with `length` values. React Native 0.86 added `IRuntime::push`,
+ so there the array starts empty and grows with each push. On older versions it starts with all `length`
+ slots, which `pushValues` sets by index.
+ */
+inline jsi::Array createArrayForPushing(jsi::IRuntime &runtime, size_t length) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  (void)length;
+  return jsi::Array(runtime, 0);
+#else
+  return jsi::Array(runtime, length);
+#endif
+}
+
+/**
+ Pushes `count` values to the end of an array from `createArrayForPushing` that already holds `index` values,
+ then destroys them, so the memory can take the next values. On React Native 0.86 and later this is one engine
+ call.
+ */
+inline void pushValues(
+  jsi::IRuntime &runtime,
+  const jsi::Array &array,
+  size_t index,
+  jsi::Value *_Nonnull values,
+  size_t count
+) {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+  (void)index;
+  runtime.push(array, values, count);
+#else
+  for (size_t i = 0; i < count; i++) {
+    array.setValueAtIndex(runtime, index + i, values[i]);
+  }
+#endif
+  destroyValues(values, count);
 }
 
 inline void setArrayLength(jsi::IRuntime &runtime, const jsi::Array &array, long length) {
@@ -163,18 +216,6 @@ inline bool isHostObject(jsi::IRuntime &runtime, const jsi::Object &object) {
   return object.isHostObject<jsi::HostObject>(runtime);
 }
 
-jsi::Runtime* createHermesRuntime();
-
-/**
- Destroys a `jsi::Runtime` created by `createHermesRuntime()`. Since the runtime is imported into
- Swift as an immortal reference type (no ARC-managed lifetime), Swift can't `delete` it directly, so
- the standalone `JavaScriptRuntime` calls this from its `deinit` to free the runtime it owns. Must
- not be called on a runtime owned elsewhere (e.g. the React Native-provided one).
- */
-inline void destroyRuntime(jsi::Runtime &runtime) {
-  delete &runtime;
-}
-
 inline jsi::Value evaluateJavaScript(jsi::IRuntime &runtime, const std::shared_ptr<const jsi::Buffer>& buffer, const std::string& sourceURL) {
   return expo::CppError::tryCatch(runtime, [&] {
     return runtime.evaluateJavaScript(buffer, sourceURL);
@@ -215,12 +256,56 @@ inline void emplaceNumber(jsi::Value *_Nonnull slot, double value) noexcept {
 }
 
 /**
+ Creates a string from UTF-8 bytes straight in the slot. Placement new, like the helpers above: the slot must
+ hold a value that owns nothing. The `jsi::String` is moved into the value with the inline constructors, so
+ the only engine call is the one that creates the string.
+ */
+inline void emplaceStringFromUtf8(jsi::Value *_Nonnull slot, jsi::IRuntime &runtime, const uint8_t *_Nonnull utf8, size_t length) {
+  ::new (slot) jsi::Value(jsi::String::createFromUtf8(runtime, utf8, length));
+}
+
+/**
  Moves the value at `source` into the engine's result slot. Placement new, like the `emplace*`
  helpers above: the slot must hold a value that owns nothing. `source` is left holding a null
  pointer, so destroying it afterwards releases nothing.
  */
 inline void emplaceMovedValue(jsi::Value *_Nonnull slot, jsi::Value *_Nonnull source) noexcept {
   ::new (slot) jsi::Value(std::move(*source));
+}
+
+/**
+ Moves the object at `source` into the slot as an object value. Placement new, like the helpers above: the slot
+ must hold a value that owns nothing. `source` is left holding a null pointer, so destroying it afterwards
+ releases nothing.
+ */
+inline void emplaceMovedObject(jsi::Value *_Nonnull slot, jsi::Object *_Nonnull source) noexcept {
+  ::new (slot) jsi::Value(std::move(*source));
+}
+
+/**
+ Same as `emplaceMovedObject`, for an array.
+ */
+inline void emplaceMovedArray(jsi::Value *_Nonnull slot, jsi::Array *_Nonnull source) noexcept {
+  ::new (slot) jsi::Value(std::move(*source));
+}
+
+/**
+ Moves the value at `source` into the slot. Placement new, like the helpers above: the slot must hold a
+ value that owns nothing. A value without an engine handle (undefined, null, a boolean or a number) is
+ copied with the inline constructors, which skips the out-of-line `jsi::Value` move.
+ */
+inline void emplaceValue(jsi::Value *_Nonnull slot, jsi::Value *_Nonnull source) noexcept {
+  if (source->isNumber()) {
+    ::new (slot) jsi::Value(source->getNumber());
+  } else if (source->isBool()) {
+    ::new (slot) jsi::Value(source->getBool());
+  } else if (source->isNull()) {
+    ::new (slot) jsi::Value(nullptr);
+  } else if (source->isUndefined()) {
+    ::new (slot) jsi::Value();
+  } else {
+    ::new (slot) jsi::Value(std::move(*source));
+  }
 }
 
 /**
@@ -232,16 +317,19 @@ inline jsi::Value createStringValueFromUtf8(jsi::IRuntime &runtime, const uint8_
   return jsi::Value(jsi::String::createFromUtf8(runtime, utf8, length));
 }
 
-/**
- Same as `createStringValueFromUtf8`, for bytes the caller knows to be ASCII.
- */
-inline jsi::Value createStringValueFromAscii(jsi::IRuntime &runtime, const char *_Nonnull ascii, size_t length) {
-  return jsi::Value(jsi::String::createFromAscii(runtime, ascii, length));
-}
-
 inline jsi::Value callFunction(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
   return expo::CppError::tryCatch(runtime, [&] {
     return function.call(runtime, args, count);
+  });
+}
+
+/**
+ Calls `function` and moves its result into `result`. Returns `false` when the call throws, so the caller reads
+ the error from `CppError::getCurrent()` only then.
+ */
+inline bool callFunctionInto(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count, jsi::Value *_Nonnull result) {
+  return expo::CppError::tryCatchSucceeded(runtime, [&] {
+    *result = function.call(runtime, args, count);
   });
 }
 
@@ -252,7 +340,7 @@ inline jsi::Value callFunctionWithThis(jsi::IRuntime &runtime, const jsi::Functi
 }
 
 /**
- Calls `defineProperty`, the runtime's `Object.defineProperty`, on `object` with a new descriptor that holds
+ Calls `defineProperty`, the runtime's `Reflect.defineProperty`, on `object` with a new descriptor that holds
  `value` (when `hasValue` is set) and only the attributes that are `true`, like a descriptor built in
  JavaScript. Taking the function and the descriptor keys from the caller lets it create them once per runtime,
  and building the descriptor and the arguments here avoids a round trip through Swift for each of them.
@@ -383,6 +471,20 @@ inline void getStringDataFromValue(
   getStringData(runtime, *string, ctx, callback);
 }
 
+// MARK: - Memory pressure
+
+/**
+ * Sets the external memory pressure of the object. An amount that the runtime rejects is ignored.
+ */
+inline void setExternalMemoryPressure(jsi::IRuntime &runtime, const jsi::Object &object, size_t amount) noexcept {
+  try {
+    object.setExternalMemoryPressure(runtime, amount);
+  } catch (...) {
+    // The pressure is only a hint. Hermes throws for amounts above 32 bits or over its external
+    // memory limit, and a C++ exception that reaches Swift terminates the app.
+  }
+}
+
 // MARK: - ArrayBuffer
 
 /**
@@ -408,12 +510,56 @@ inline uint8_t *arrayBufferData(jsi::IRuntime &runtime, const jsi::ArrayBuffer &
 }
 
 /**
- * Creates a new array buffer of the given size with zero-initialized memory.
+ * Creates a new array buffer of the given size. When `initializeToZero` is false, the memory is left
+ * uninitialized and the caller must write every byte before JavaScript can read the buffer. When
+ * `reportsMemory` is false, the caller must report the memory to the garbage collector itself.
  */
-inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size) {
-  uint8_t *data = new uint8_t[size]();
+inline jsi::ArrayBuffer createArrayBuffer(jsi::IRuntime &runtime, size_t size, bool initializeToZero, bool reportsMemory) {
+  uint8_t *data = initializeToZero ? new uint8_t[size]() : new uint8_t[size];
   auto buffer = std::make_shared<MemoryBuffer>(data, size, [data]() { delete[] data; });
-  return jsi::ArrayBuffer(runtime, std::move(buffer));
+  jsi::ArrayBuffer arrayBuffer(runtime, std::move(buffer));
+  // Hermes does not count the memory of a buffer that it did not allocate, so without this
+  // pressure the garbage collector does not run for these buffers alone. Only this array buffer
+  // owns the memory.
+  if (reportsMemory && size > 0) {
+    setExternalMemoryPressure(runtime, arrayBuffer, size);
+  }
+  return arrayBuffer;
+}
+
+/**
+ * Creates a `Uint8Array` of `size` bytes and sets `data` to its memory, which may be uninitialized: the
+ * caller must write every byte before JavaScript can read the array. `uint8ArrayConstructor` is the
+ * global `Uint8Array` constructor. The garbage collector counts the memory of the new array.
+ */
+inline jsi::Value createUint8Array(
+  jsi::IRuntime &runtime,
+  const jsi::Function &uint8ArrayConstructor,
+  size_t size,
+  uint8_t *_Nullable *_Nonnull data
+) {
+  return expo::CppError::tryCatch(runtime, [&] {
+#if defined(REACT_NATIVE_VERSION_MAJOR) && defined(REACT_NATIVE_VERSION_MINOR) && \
+    (REACT_NATIVE_VERSION_MAJOR > 0 || REACT_NATIVE_VERSION_MINOR >= 86)
+    // Up to 8 KB, an array that the runtime allocates is faster: it needs no native buffer, finalizer or
+    // memory report. The runtime zeroes the memory first, though, and above that size this costs more.
+    if (size <= 8 * 1024) {
+      jsi::Uint8Array array(runtime, size);
+      *data = array.buffer(runtime).data(runtime);
+      return jsi::Value(std::move(array));
+    }
+#endif
+    // The memory is reported only after the `Uint8Array` exists. A report can start a young-generation
+    // collection at the next allocation, and the buffer that this function holds would survive it and
+    // move to the old generation, which a slower collection frees.
+    jsi::ArrayBuffer buffer = createArrayBuffer(runtime, size, false, false);
+    *data = buffer.data(runtime);
+    jsi::Value array = uint8ArrayConstructor.callAsConstructor(runtime, buffer);
+    if (size > 0) {
+      setExternalMemoryPressure(runtime, buffer, size);
+    }
+    return array;
+  });
 }
 
 /**
@@ -490,8 +636,17 @@ inline void setNativeState(jsi::IRuntime &runtime, const jsi::Object &object, co
   object.setNativeState(runtime, nativeState);
 }
 
-inline void unsetNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
-  object.setNativeState(runtime, nullptr);
+/**
+ Removes the native state from the object. Returns `false` when the engine refuses, for example when the
+ object is frozen. A C++ exception can't cross into Swift, so it's caught here.
+ */
+inline bool unsetNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
+  try {
+    object.setNativeState(runtime, nullptr);
+    return true;
+  } catch (const jsi::JSIException &) {
+    return false;
+  }
 }
 
 /**

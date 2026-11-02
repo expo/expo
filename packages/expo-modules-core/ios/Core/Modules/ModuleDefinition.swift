@@ -29,9 +29,8 @@ public final class ModuleDefinition: ObjectDefinition {
 
   let eventObservers: [AnyEventObservingDefinition]
 
-  /// The raw list of definitions used to construct this module. Retained so
-  /// that `ModuleHolder` can merge in the entries synthesized by the
-  /// `@ExpoModule` macro without losing the user-authored ones.
+  /// The raw list of definitions used to construct this module. Retained so that `ModuleHolder` can
+  /// merge in the entries from `_synthesizedDefinition()` without losing the user-authored ones.
   let rawDefinitions: [AnyDefinition]
 
   /**

@@ -1458,6 +1458,16 @@ export const font = (params: {
     | 'footnote'
     | 'caption'
     | 'caption2';
+  /**
+   * Draws both lowercase and uppercase letters as small capitals.
+   * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/font/smallcaps()).
+   */
+  smallCaps?: boolean;
+  /**
+   * The space between lines of text, relative to the font's standard leading.
+   * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/font/leading(_:)).
+   */
+  leading?: 'standard' | 'tight' | 'loose';
 }) => createModifier('font', params);
 /**
  * A standard size for Dynamic Type, from `xSmall` through the five
@@ -1733,6 +1743,15 @@ export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grou
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/liststyle(_:)).
  */
 export const listStyle = (style: ListStyle) => createModifier('listStyle', { style });
+
+/**
+ * Sets the label that a list's section index shows for this `Section`. People tap or drag along
+ * the index to scroll the list to the section. On versions before iOS 26 it does nothing.
+ * @param label - The label for the section, usually a single letter.
+ * @platform ios 26.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/sectionindexlabel(_:)).
+ */
+export const sectionIndexLabel = (label: string) => createModifier('sectionIndexLabel', { label });
 
 /**
  * Adds a luminance to alpha effect to this view.

@@ -93,21 +93,12 @@ extension String: JSIRepresentable {
   }
 
   func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
-    // Hand JSI the Swift string's own UTF-8 storage instead of going through `std::string`: the engine
-    // copies the bytes into its heap right away, so the intermediate `std::string` was one extra
-    // allocation, copy and free per string. `withUTF8` is mutating (it makes a bridged string
-    // contiguous first), hence the local copy; native strings are already contiguous and pay nothing.
-    // The value is moved out through a local because `withUTF8` needs a `Copyable` closure result.
     // The C++ helper moves the engine's `jsi::String` into the value, so this costs one engine handle;
-    // `jsi::Value(runtime, string)` would clone it and then release the original.
-    var string = self
+    // `jsi::Value(runtime, string)` would clone it and then release the original. The value leaves the
+    // closure through a local because the closure result has to be a `Copyable` type.
     var value = facebook.jsi.Value.undefined()
-    string.withUTF8 { utf8 in
-      guard let base = utf8.baseAddress else {
-        value = expo.createStringValueFromAscii(runtime, "", 0)
-        return
-      }
-      value = expo.createStringValueFromUtf8(runtime, base, utf8.count)
+    withJSIUTF8 { utf8, count in
+      value = expo.createStringValueFromUtf8(runtime, utf8, count)
     }
     return value
   }

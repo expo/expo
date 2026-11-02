@@ -8,10 +8,18 @@ const mockRenderContent = jest.fn<ReactNode, []>();
 
 // Metro provides these require.context modules when bundling an app.
 jest.mock('expo-router/_ctx', () => {
+  const { useLoaderData } = require('expo-router');
+
+  function LocaleIndex() {
+    const data = useLoaderData();
+    return data?.message ?? 'MISSING';
+  }
+
   const routes = {
     './index.tsx': { default: () => 'Index route' },
     './post.tsx': { default: () => 'Post route' },
     './suspense.tsx': { default: () => mockRenderContent() },
+    './[locale]/index.tsx': { default: LocaleIndex },
   };
   return {
     ctx: Object.assign((key: keyof typeof routes) => routes[key], {
@@ -32,6 +40,7 @@ it.each(['server', 'static'] as const)(
     const loaderData = { title: 'Post </script>' };
     const location = new URL('http://localhost/post?preview=true');
     const options = {
+      route: { file: './post.tsx', page: '/post' },
       assets: { css: [], js: scripts },
       loader: { key: '/post', data: loaderData },
     };
@@ -62,6 +71,69 @@ it.each(['server', 'static'] as const)(
   }
 );
 
+describe.each(['server', 'static'] as const)('%s output with loader data', (output) => {
+  it.each([
+    ['plain query', '?page=2', '/en/index?page=2'],
+    ['re-encoded comma', '?a=b,c', '/en/index?a=b%2Cc'],
+    ['re-encoded space', '?a=b%20c', '/en/index?a=b+c'],
+    ['re-encoded at sign', '?foo=a@b.example', '/en/index?foo=a%40b.example'],
+    ['re-encoded colon', '?a=x:y', '/en/index?a=x%3Ay'],
+    ['repeated keys', '?a=1&b=2&a=3', '/en/index?a=1&a=3&b=2'],
+    ['integer-like keys', '?2=x&1=y', '/en/index?1=y&2=x'],
+  ])('renders and stores loader data for a %s', async (_name, search, expectedKey) => {
+    const location = new URL(`http://localhost/en${search}`);
+    const loaderData = { message: 'LOADER DATA RENDERED' };
+    const options = {
+      route: { file: './[locale]/index.tsx', page: '/[locale]/index' },
+      params: { locale: 'en' },
+      loader: { key: '/en/index', data: loaderData },
+    };
+    const content =
+      output === 'static'
+        ? await getStreamingContent(location, { ...options, output: 'static' })
+        : await new Response(await getStreamingContent(location, options)).text();
+    const html = parse(content);
+
+    expect(html.querySelector('#root')?.textContent).toContain(loaderData.message);
+    const bootstrap = html.querySelector('script:not([src])');
+    expect(bootstrap).not.toBeNull();
+    const globals: Record<string, unknown> = {};
+    runInNewContext(bootstrap!.textContent, globals);
+    expect(globals.__EXPO_ROUTER_LOADER_DATA__).toEqual({ [expectedKey]: loaderData });
+  });
+
+  it('omits the query separator when only a route parameter is in the query', async () => {
+    const location = new URL('http://localhost/en?locale=fr');
+    const loaderData = { message: 'LOADER DATA RENDERED' };
+    const options = {
+      route: { file: './[locale]/index.tsx', page: '/[locale]/index' },
+      params: { locale: 'en' },
+      loader: { key: '/en/index', data: loaderData },
+    };
+    const consoleWarn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    try {
+      const content =
+        output === 'static'
+          ? await getStreamingContent(location, { ...options, output: 'static' })
+          : await new Response(await getStreamingContent(location, options)).text();
+      const html = parse(content);
+
+      expect(html.querySelector('#root')?.textContent).toContain(loaderData.message);
+      const bootstrap = html.querySelector('script:not([src])');
+      expect(bootstrap).not.toBeNull();
+      const globals: Record<string, unknown> = {};
+      runInNewContext(bootstrap!.textContent, globals);
+      expect(globals.__EXPO_ROUTER_LOADER_DATA__).toEqual({ '/en/index': loaderData });
+      expect(consoleWarn).toHaveBeenCalledWith(
+        "Route '/[locale]/index' with param 'locale' was specified both in the path and as a param, removing from path"
+      );
+    } finally {
+      consoleWarn.mockRestore();
+    }
+  });
+});
+
 function createDeferred<T>() {
   let resolve!: (value: T) => void;
   const promise = new Promise<T>((resolvePromise) => {
@@ -82,8 +154,15 @@ it.each(['server', 'static'] as const)(
     const location = new URL('http://localhost/suspense');
     const content =
       output === 'static'
-        ? await getStreamingContent(location, { output: 'static' })
-        : await new Response(await getStreamingContent(location)).text();
+        ? await getStreamingContent(location, {
+            route: { file: './suspense.tsx', page: '/suspense' },
+            output: 'static',
+          })
+        : await new Response(
+            await getStreamingContent(location, {
+              route: { file: './suspense.tsx', page: '/suspense' },
+            })
+          ).text();
 
     expect(parse(content).querySelector('#root main')?.textContent).toBe(text);
   }
@@ -104,7 +183,10 @@ it('renders large delayed content in its final document position for static outp
       <Content />
     </Suspense>
   );
-  const result = getStreamingContent(new URL('http://localhost/suspense'), { output: 'static' });
+  const result = getStreamingContent(new URL('http://localhost/suspense'), {
+    route: { file: './suspense.tsx', page: '/suspense' },
+    output: 'static',
+  });
   await new Promise<void>((resolve) => setImmediate(resolve));
   deferred.resolve('x'.repeat(30_000));
   const html = parse(await result);
@@ -122,7 +204,9 @@ it('returns the live shell while Suspense is still pending', async () => {
       <Content />
     </Suspense>
   );
-  const stream = await getStreamingContent(new URL('http://localhost/suspense'));
+  const stream = await getStreamingContent(new URL('http://localhost/suspense'), {
+    route: { file: './suspense.tsx', page: '/suspense' },
+  });
   const reader = stream.getReader();
   try {
     const first = await reader.read();
@@ -148,6 +232,7 @@ it('rejects static output when a Suspense boundary fails', async () => {
   try {
     await expect(
       getStreamingContent(new URL('http://localhost/suspense'), {
+        route: { file: './suspense.tsx', page: '/suspense' },
         output: 'static',
       })
     ).rejects.toBe(error);
@@ -159,6 +244,7 @@ it('rejects static output when a Suspense boundary fails', async () => {
 it('respects the hydration option for static output', async () => {
   const html = parse(
     await getStreamingContent(new URL('http://localhost/post'), {
+      route: { file: './post.tsx', page: '/post' },
       output: 'static',
       hydrate: false,
     })
@@ -172,7 +258,9 @@ it('respects the hydration option for static output', async () => {
 });
 
 it('streams the hydration bootstrap when no assets are supplied', async () => {
-  const stream = await getStreamingContent(new URL('http://localhost/'));
+  const stream = await getStreamingContent(new URL('http://localhost/'), {
+    route: { file: './index.tsx', page: '/index' },
+  });
   const html = parse(await new Response(stream).text());
 
   expect(html.querySelector('div#root')?.textContent).toContain('Index route');

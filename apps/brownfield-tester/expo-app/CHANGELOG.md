@@ -1,5 +1,45 @@
 # expo-app
 
+## 1.0.13
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.19
+
+## 1.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#52093](https://github.com/expo/expo/pull/52093), [#50723](https://github.com/expo/expo/pull/50723), [#52045](https://github.com/expo/expo/pull/52045), [#52057](https://github.com/expo/expo/pull/52057), [#52060](https://github.com/expo/expo/pull/52060), [#52059](https://github.com/expo/expo/pull/52059), [#52073](https://github.com/expo/expo/pull/52073), [#51661](https://github.com/expo/expo/pull/51661), [#52000](https://github.com/expo/expo/pull/52000), [#51961](https://github.com/expo/expo/pull/51961), [#51955](https://github.com/expo/expo/pull/51955), [#51897](https://github.com/expo/expo/pull/51897), [#51939](https://github.com/expo/expo/pull/51939), [#51940](https://github.com/expo/expo/pull/51940), [#52005](https://github.com/expo/expo/pull/52005), [#51992](https://github.com/expo/expo/pull/51992), [#52018](https://github.com/expo/expo/pull/52018), [#52049](https://github.com/expo/expo/pull/52049), [#52036](https://github.com/expo/expo/pull/52036))
+  - expo-font@58.0.10
+  - expo-image@58.0.17
+  - expo-router@58.0.26
+  - expo@58.0.18
+  - expo-glass-effect@58.0.5
+  - expo-dev-menu@58.0.11
+
+## 1.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#51751](https://github.com/expo/expo/pull/51751), [#51588](https://github.com/expo/expo/pull/51588), [#51803](https://github.com/expo/expo/pull/51803), [#51813](https://github.com/expo/expo/pull/51813), [#49778](https://github.com/expo/expo/pull/49778), [#51814](https://github.com/expo/expo/pull/51814), [#51996](https://github.com/expo/expo/pull/51996), [#51928](https://github.com/expo/expo/pull/51928), [#51927](https://github.com/expo/expo/pull/51927))
+  - expo@58.0.17
+  - expo-router@58.0.25
+  - expo-status-bar@58.0.4
+  - expo-image@58.0.16
+  - expo-splash-screen@58.0.11
+  - expo-brownfield@58.0.16
+  - expo-constants@58.0.13
+  - expo-dev-menu@58.0.11
+  - expo-device@58.0.5
+  - expo-font@58.0.9
+  - expo-glass-effect@58.0.4
+  - expo-linking@58.0.14
+  - expo-symbols@58.0.4
+  - expo-system-ui@58.0.6
+  - expo-web-browser@58.0.6
+
 ## 1.0.10
 
 ### Patch Changes

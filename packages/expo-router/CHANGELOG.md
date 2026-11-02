@@ -1,5 +1,39 @@
 # Changelog
 
+## 58.0.26
+
+### Patch Changes
+
+- [iOS] Add the `disableHiddenAnimation` prop to `NativeTabs` to hide and show the tab bar without animation. ([#52045](https://github.com/expo/expo/pull/52045) by [@Ubax](https://github.com/Ubax))
+- [iOS] Add the `preferredPlacement` prop to `NativeTabs` to select the sidebar or the tab bar when only one of them can show. ([#52057](https://github.com/expo/expo/pull/52057) by [@Ubax](https://github.com/Ubax))
+- [iOS] Add the `prominent` prop to `NativeTabs.Trigger` to show a tab on its own surface in the tab bar on iOS 27 and later. ([#52060](https://github.com/expo/expo/pull/52060) by [@Ubax](https://github.com/Ubax))
+- [iOS] Make `NativeTabs.Trigger` with `role="search"` a native search tab on iOS 26.1 and later. ([#52059](https://github.com/expo/expo/pull/52059) by [@Ubax](https://github.com/Ubax))
+- [Internal] The renderer no longer rebuilds the route tree to resolve the page's `pathname` and `params`. ([#51961](https://github.com/expo/expo/pull/51961) by [@hassankhan](https://github.com/hassankhan))
+- [Android] Keep native tab content mounted when the tab bar's `hidden` prop changes. ([#51955](https://github.com/expo/expo/pull/51955) by [@qutrek](https://github.com/qutrek))
+- Add `useCanGoBack()` to read back navigation capability during render. ([#51897](https://github.com/expo/expo/pull/51897) by [@Ubax](https://github.com/Ubax))
+- Fix `router.dismissTo` pushing a second screen in a nested stack instead of going back to the screen already in it. ([#51939](https://github.com/expo/expo/pull/51939) by [@erickreutz](https://github.com/erickreutz))
+- Align headers in `expo-router/js-stack` and `expo-router/js-tabs` with native navigation bars on iPhone Duo. Set `headerStatusBarHeight` to override the header's top offset. ([#51940](https://github.com/expo/expo/pull/51940) by [@huntie](https://github.com/huntie))
+- Warn when a tabs, native tabs, drawer, or top tabs layout sets `unstable_settings.anchor` and its `backBehavior` is not `initialRoute`. ([#52005](https://github.com/expo/expo/pull/52005) by [@Ubax](https://github.com/Ubax))
+- This is a breaking change: a layout without `unstable_settings.anchor` no longer uses the route named like its group as the anchor. To keep that back destination, export `unstable_settings = { anchor: '<route>' }` from the layout. ([#51992](https://github.com/expo/expo/pull/51992) by [@Ubax](https://github.com/Ubax))
+- [iOS] Fix a `SplitView` crash with react-native-screens 5 and support `Split.Stack` and `Split.HeaderConfig` in `SplitView.Column`. ([#52018](https://github.com/expo/expo/pull/52018) by [@devin-ai-integration](https://github.com/apps/devin-ai-integration))
+- Tab and drawer `history` now lists the tab that Back goes to after a deep link. Add `unstable_useReconcileTabHistory` for custom tab navigators. ([#52049](https://github.com/expo/expo/pull/52049) by [@Ubax](https://github.com/Ubax))
+- Fix custom matcher types for global and `@jest/globals` when using `expo-router/testing-library`. ([#52036](https://github.com/expo/expo/pull/52036) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#52000](https://github.com/expo/expo/pull/52000), [#51961](https://github.com/expo/expo/pull/51961))
+  - expo-glass-effect@58.0.5
+  - expo-server@58.0.6
+
+## 58.0.25
+
+### Patch Changes
+
+- Warn in development when a modal route is the first screen in a native stack and renders as a card. ([#51803](https://github.com/expo/expo/pull/51803) by [@Ubax](https://github.com/Ubax))
+- Pad `TabList` from `expo-router/ui` by the left and right safe area insets, so tab triggers stay clear of the iPhone Duo rail and landscape cutouts. ([#51813](https://github.com/expo/expo/pull/51813) by [@huntie](https://github.com/huntie))
+- Keep the outgoing tab attached until its transition finishes, so the arriving tab no longer renders blank. ([#49778](https://github.com/expo/expo/pull/49778) by [@LizunovSergey](https://github.com/LizunovSergey))
+- Lay out the JavaScript top tab bar inside the left and right safe area insets, so tabs stay clear of the iPhone Duo rail and landscape cutouts. Override the insets with the `safeAreaInsets` prop on `TopTabs`. ([#51814](https://github.com/expo/expo/pull/51814) by [@huntie](https://github.com/huntie))
+- Updated dependencies. ([#51868](https://github.com/expo/expo/pull/51868), [#51545](https://github.com/expo/expo/pull/51545))
+  - @expo/log-box@58.0.13
+  - @expo/metro-runtime@58.0.15
+
 ## 58.0.24
 
 ### Patch Changes

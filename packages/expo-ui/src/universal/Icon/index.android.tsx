@@ -52,7 +52,8 @@ export function Icon({
   const modifiers = transformToModifiers(
     style,
     { onPress, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'Icon' }
   );
 
   if (onPress) {

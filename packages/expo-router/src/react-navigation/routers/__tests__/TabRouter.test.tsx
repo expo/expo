@@ -624,10 +624,9 @@ test.each<['firstRoute' | 'initialRoute' | 'order', string | undefined, string]>
   expect(result.routes[result.index!]).toEqual({ key: `${name}:0`, name });
 });
 
-test.each<['firstRoute' | 'initialRoute' | 'order', string | undefined, string]>([
+test.each<['firstRoute' | 'initialRoute', string | undefined, string]>([
   ['firstRoute', undefined, 'bar'],
   ['initialRoute', 'baz', 'baz'],
-  ['order', undefined, 'baz'],
 ])('%s PRELOAD inserts the back target into history', (backBehavior, initialRouteName, name) => {
   const router = TabRouter({ backBehavior, initialRouteName });
   const options: RouterConfigOptions = {
@@ -656,6 +655,41 @@ test.each<['firstRoute' | 'initialRoute' | 'order', string | undefined, string]>
 
   expect(result.state.routes[result.state.index!]!.name).toBe(name);
   expect(result.state.history).toEqual([{ type: 'route', key: `${name}:0` }]);
+});
+
+test('order PRELOAD inserts the back target and keeps the unvisited tab in history', () => {
+  const router = TabRouter({ backBehavior: 'order' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeGetIdList: {},
+  };
+  const focusedState: TabNavigationState<ParamListBase> = {
+    stale: false,
+    routeKeySeq: 0,
+    type: 'tab',
+    key: 'navigator:root',
+    index: 0,
+    routeNames: options.routeNames,
+    routes: [{ key: 'qux-key', name: 'qux' }],
+  };
+  const state = expectHandled(
+    router.getStateForAction(focusedState, { type: 'PRELOAD', payload: { name: 'baz' } }, options)
+  ).state as TabNavigationState<ParamListBase>;
+
+  // The unvisited `bar` tab stays in history under its placeholder key.
+  expect(state.history).toEqual([
+    { type: 'route', key: 'bar' },
+    { type: 'route', key: 'baz:0' },
+    { type: 'route', key: 'qux-key' },
+  ]);
+
+  const result = expectHandled(router.getStateForAction(state, CommonActions.goBack(), options));
+
+  expect(result.state.routes[result.state.index!]!.name).toBe('baz');
+  expect(result.state.history).toEqual([
+    { type: 'route', key: 'bar' },
+    { type: 'route', key: 'baz:0' },
+  ]);
 });
 
 test('gets state on route names change', () => {
@@ -876,7 +910,7 @@ test.each<[Parameters<typeof TabRouter>[0]['backBehavior'], string[]]>([
   ['order', ['qux-test', 'baz-test']],
   ['history', ['bar-test', 'baz-test']],
   ['fullHistory', ['bar-test', 'baz-test']],
-  ['none', ['bar-test', 'baz-test']],
+  ['none', ['baz-test']],
 ])(
   'keeps route order and focus on an order-only change with backBehavior: %s',
   (backBehavior, expectedHistory) => {

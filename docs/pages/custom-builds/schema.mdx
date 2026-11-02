@@ -1810,9 +1810,9 @@ build:
           path: ${ eas.env.HOME }/.maestro/tests
 ```
 
-| Input             | Type     | Required   | Description                                                                                                           |
-| ----------------- | -------- | ---------- | --------------------------------------------------------------------------------------------------------------------- |
-| `maestro_version` | `string` | <NoIcon /> | Maestro version to install (for example, 1.35.0). If not provided, `install_maestro` will install the latest version. |
+| Input             | Type     | Required   | Description                                                                                                                                                                                                                |
+| ----------------- | -------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `maestro_version` | `string` | <NoIcon /> | Maestro version to install (for example, 1.35.0). If not provided, `install_maestro` uses a Maestro it finds on the image, or installs the latest version otherwise. Set to `latest` to always install the newest version. |
 
 <BoxLink
   title="eas/install_maestro source code"

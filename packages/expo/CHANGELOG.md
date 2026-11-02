@@ -1,5 +1,57 @@
 # Changelog
 
+## 58.0.19
+
+### Patch Changes
+
+- Updated dependencies. ([#52096](https://github.com/expo/expo/pull/52096))
+  - expo-modules-core@58.0.26
+
+## 58.0.18
+
+### Patch Changes
+
+- [iOS] A `buildFromSource` pattern such as `".*"` no longer fails the SwiftPM sync when it matches a module that Swift Package Manager cannot build from source, `ExpoModulesCore` included: the plugin links that module precompiled and prints one warning naming it. An entry that names such a module exactly still fails the sync. ([#52073](https://github.com/expo/expo/pull/52073) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] The SwiftPM plugin links an Expo module's precompiled XCFramework whenever one exists, unless the app lists the module in its `buildFromSource` autolinking option, which the plugin now honours as CocoaPods does. A module built from source whose checked-in Package.swift depends on the `ExpoModulesCoreHeaders` product is built from that manifest as it stands. ([#51661](https://github.com/expo/expo/pull/51661) by [@chrfalch](https://github.com/chrfalch))
+- Updated dependencies. ([#52017](https://github.com/expo/expo/pull/52017), [#51966](https://github.com/expo/expo/pull/51966), [`4a6ae65`](https://github.com/expo/expo/commit/4a6ae6527e2e46e2b0cbc5af1151a82e30c844d4), [#52093](https://github.com/expo/expo/pull/52093), [#51934](https://github.com/expo/expo/pull/51934), [#51922](https://github.com/expo/expo/pull/51922), [#52124](https://github.com/expo/expo/pull/52124), [#52123](https://github.com/expo/expo/pull/52123), [#51782](https://github.com/expo/expo/pull/51782), [#51961](https://github.com/expo/expo/pull/51961))
+  - expo-modules-autolinking@58.0.15
+  - expo-modules-core@58.0.25
+  - @expo/config@58.0.8
+  - expo-font@58.0.10
+  - expo-file-system@58.0.11
+  - expo-modules-cli@0.3.2
+  - @expo/cli@58.1.15
+  - @expo/local-build-cache-provider@58.0.8
+  - @expo/metro-config@58.0.17
+  - babel-preset-expo@58.0.20
+
+## 58.0.17
+
+### Patch Changes
+
+- Resolve `expo/tsconfig.base` in tools that follow `package.json` `exports`. ([#51751](https://github.com/expo/expo/pull/51751) by [@daemosity](https://github.com/daemosity))
+- [iOS] Build `ExpoModulesJSI` during the Xcode build of a Swift Package Manager app, against the app's React Native. Expo source packages compile against the `ExpoModulesJSIHeaders` XCFramework that `expo-modules-jsi` ships, and the new "Build ExpoModulesJSI" build phase runs a script in `expo-modules-jsi` that builds, links and embeds the framework.
+
+  The build phase copies the framework's dSYM to the app's dSYM folder, so archives symbolicate `ExpoModulesJSI` crashes.
+
+  Sync fails with an error that names both versions when the `ExpoModulesJSIHeaders` XCFramework comes from another version of `expo-modules-jsi` than the installed sources.
+
+  ([#51588](https://github.com/expo/expo/pull/51588) by [@chrfalch](https://github.com/chrfalch))
+
+- Updated dependencies. ([#50388](https://github.com/expo/expo/pull/50388), [#51872](https://github.com/expo/expo/pull/51872), [#51946](https://github.com/expo/expo/pull/51946), [#51986](https://github.com/expo/expo/pull/51986), [#51730](https://github.com/expo/expo/pull/51730), [#51854](https://github.com/expo/expo/pull/51854), [#51905](https://github.com/expo/expo/pull/51905), [#51923](https://github.com/expo/expo/pull/51923), [#51906](https://github.com/expo/expo/pull/51906), [#51504](https://github.com/expo/expo/pull/51504), [#51937](https://github.com/expo/expo/pull/51937), [#52008](https://github.com/expo/expo/pull/52008), [#51868](https://github.com/expo/expo/pull/51868), [#51932](https://github.com/expo/expo/pull/51932), [#51714](https://github.com/expo/expo/pull/51714), [#51913](https://github.com/expo/expo/pull/51913))
+  - expo-modules-autolinking@58.0.14
+  - @expo/cli@58.1.14
+  - @expo/config-plugins@58.0.10
+  - expo-modules-core@58.0.24
+  - @expo/fingerprint@0.21.6
+  - @expo/metro-config@58.0.16
+  - @expo/log-box@58.0.13
+  - @expo/config@58.0.7
+  - expo-constants@58.0.13
+  - babel-preset-expo@58.0.19
+  - @expo/local-build-cache-provider@58.0.7
+  - expo-asset@58.0.18
+
 ## 58.0.16
 
 ### Patch Changes

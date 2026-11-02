@@ -12,7 +12,6 @@ import EXManifests
 final class VersionManager: EXVersionManagerObjC {
   var appContext: AppContext?
   var legacyModuleRegistry: EXModuleRegistry?
-  private var hasRegisteredExpoModules = false
 
   let params: [AnyHashable: Any]
 
@@ -45,10 +44,6 @@ final class VersionManager: EXVersionManagerObjC {
 
   private func getOrCreateAppContext() -> AppContext {
     if let appContext {
-      if !hasRegisteredExpoModules {
-        registerExpoModules(appContext)
-        hasRegisteredExpoModules = true
-      }
       return appContext
     }
 
@@ -67,7 +62,6 @@ final class VersionManager: EXVersionManagerObjC {
     appContext.constants = EXConstantsBinding(params: params)
 
     registerExpoModules(appContext)
-    hasRegisteredExpoModules = true
 
     return appContext
   }
@@ -85,8 +79,7 @@ final class VersionManager: EXVersionManagerObjC {
    */
   @objc
   override func extraModules() -> [Any] {
-    // Ideally if we don't initialize the app context here, but unfortunately there is no better place in bridge lifecycle
-    // that would work well for us (especially properly invalidating existing app context on reload).
+    self.appContext = nil
     let appContext = getOrCreateAppContext()
 
     guard let legacyModuleRegistry else {

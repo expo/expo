@@ -1,14 +1,10 @@
 import type { ScanStats } from 'expo-modules-macros';
 import path from 'path';
 
-import { generateTypes } from '../typegen/generateTypes';
-import type {
-  DeclarationCounts,
-  RenderWarning,
-  RenderedDeclaration,
-} from '../typegen/renderSurface';
+import { generateTypes, type GenerateTypesWarning } from '../typegen/generateTypes';
+import type { DeclarationCounts, RenderedDeclaration } from '../typegen/renderSurface';
 import { parseArgs } from './args';
-import { styleFileName, styleKind, styleTypeName, styleWarningHeading } from './styles';
+import { styleComment, styleFileName, styleKind, styleTypeName, styleWarning } from './styles';
 
 const DEFAULT_OUTPUT_PATH = path.join('src', 'native.types.ts');
 
@@ -17,7 +13,8 @@ const HELP = `Usage: expo-modules generate-types [options] [packageDir]
 Generates TypeScript types for the native API an Expo module exports to
 JavaScript: its @ExpoModule, @SharedObject, @Record, and @Union types and
 Enumerable enums. Scans the package directory (default: the current directory)
-for Swift sources and writes them to a single TypeScript file.
+for Swift sources and writes them to a single TypeScript file. Doc comments
+written in that file stay on the next run.
 
 Options:
   -o, --out <path>  The TypeScript file to write, relative to the package
@@ -101,13 +98,21 @@ export async function generateTypesCommand(argv: string[]) {
   // stays on screen after the summary and the listing.
   const heading = describeWarnings(result.warnings);
   if (heading) {
-    console.warn(`\n${styleWarningHeading(heading, process.stderr)}`);
+    console.warn(`\n${styleWarning(heading, process.stderr)}`);
     for (const warning of result.warnings) {
-      const file = path.relative(packageDir, warning.file);
+      // Doc comment warnings are all about the generated file, which the summary already names.
+      const file =
+        warning.kind === 'dropped' || warning.kind === 'changed'
+          ? ''
+          : `${styleFileName(path.relative(packageDir, warning.file), process.stderr)}: `;
       console.warn(
-        `  ${styleFileName(file, process.stderr)}: ${styleTypeName(warning.location, process.stderr)}: ` +
-          warning.message
+        `${styleWarning('●', process.stderr)} ${file}${styleTypeName(warning.location, process.stderr)}: ` +
+          `${warning.message}.`
       );
+      // A dropped comment is no longer in the file, so its text is printed for adding it back.
+      if ('comment' in warning && warning.comment) {
+        console.warn(styleComment(warning.comment, process.stderr));
+      }
     }
   }
 }
@@ -164,18 +169,21 @@ export function describeEmptyScan(stats: ScanStats, packageDir: string): string 
 }
 
 /**
- * The heading of the warnings block, counting them and how many rendered a type as unknown or
- * skipped a declaration: `3 warnings, 2 rendered as unknown, 1 skipped:`. `null` without warnings.
+ * The heading of the warnings block, counting them and how many rendered a type as unknown,
+ * skipped a declaration, or dropped a doc comment: `3 warnings, 2 rendered as unknown, 1 skipped:`.
+ * `null` without warnings.
  */
-export function describeWarnings(warnings: RenderWarning[]): string | null {
+export function describeWarnings(warnings: GenerateTypesWarning[]): string | null {
   if (warnings.length === 0) {
     return null;
   }
   const unknown = warnings.filter((warning) => warning.kind === 'unknown').length;
   const skipped = warnings.filter((warning) => warning.kind === 'skipped').length;
+  const dropped = warnings.filter((warning) => warning.kind === 'dropped').length;
   const details = [
     unknown > 0 ? `${unknown} rendered as unknown` : null,
     skipped > 0 ? `${skipped} skipped` : null,
+    dropped > 0 ? `${count(dropped, 'doc comment')} dropped` : null,
   ].filter((detail) => detail !== null);
   return `${[count(warnings.length, 'warning'), ...details].join(', ')}:`;
 }

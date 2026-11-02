@@ -86,6 +86,14 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    */
   role?: NativeTabsTabBarItemRole;
   /**
+   * @platform iOS
+   */
+  disableAutomaticSearchActivation?: boolean;
+  /**
+   * @platform iOS
+   */
+  prominent?: boolean;
+  /**
    * @platform android
    * @platform iOS
    */
@@ -405,11 +413,26 @@ export interface NativeTabsProps extends PropsWithChildren {
    */
   disableTransparentOnScrollEdge?: boolean;
   /**
-   * When set to `true`, enables the sidebarAdaptable tab bar style on iPadOS and macOS. This prop has no effect on iPhone.
+   * When set to `true`, the tab bar can turn into a sidebar. The sidebar shows only on iPad, and on iOS 27 and later on larger iPhone models in landscape orientation.
    *
    * @platform iOS 18+
    */
   sidebarAdaptable?: boolean;
+  /**
+   * Selects whether the sidebar or the tab bar shows.
+   * When `sidebarAdaptable` is not set, this prop also enables it.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/sidebar-swift.class/preferredplacement)
+   * @platform iOS 27+
+   */
+  preferredPlacement?: 'automatic' | 'sidebar' | 'tabBar';
+  /**
+   * When set to `true`, the tab bar hides and shows without animation when `hidden` changes.
+   *
+   * @default false
+   * @platform iOS 18+
+   */
+  disableHiddenAnimation?: boolean;
   // #endregion iOS props
   // #region android props
   /**
@@ -691,10 +714,38 @@ export interface NativeTabTriggerProps {
    * properties will override the system icon, but the system-defined title cannot
    * be customized.
    *
+   * The `"search"` role makes this tab the system search tab
+   * ([`UISearchTab`](https://developer.apple.com/documentation/uikit/uisearchtab)) on iOS 26.1 and later.
+   * Do not change `role` after the tab renders.
+   *
    * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem).
    * @platform ios
    */
   role?: NativeTabsTabBarItemRole;
+  /**
+   * When set to `true`, selecting the search tab does not activate its search field.
+   *
+   * By default, selecting a tab with `role="search"` focuses the header search bar
+   * of the stack nested in the tab and opens the keyboard.
+   *
+   * This prop has an effect only when `role` is `"search"`.
+   * On iOS 27, setting this prop to `true` also removes the separate placement of the search tab.
+   * A screen-level trigger applies this prop only after the screen first renders.
+   * To affect the first selection, set it on the layout trigger.
+   *
+   * @default false
+   * @platform ios 26.1+
+   */
+  disableAutomaticSearchActivation?: boolean;
+  /**
+   * Shows the tab on its own surface in the tab bar, which stays visible when the tab bar minimizes.
+   * Only one tab can be prominent. Has effect only on the layout trigger.
+   *
+   * @see The official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbarcontroller/prominenttabidentifier).
+   * @default false
+   * @platform ios 27+
+   */
+  prominent?: boolean;
   /**
    * The default behavior differs between iOS and Android.
    *

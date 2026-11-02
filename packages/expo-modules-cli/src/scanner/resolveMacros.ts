@@ -6,9 +6,10 @@ export type MacrosPackage = typeof Macros;
 
 /**
  * The `scan-exports` schema version this CLI renders. It must match the macros version the CLI is
- * built and tested against (its devDependency); a test keeps the two in sync.
+ * built and tested against (the one `expo-modules-core` in this repository depends on); a test
+ * keeps the two in sync.
  */
-export const SCAN_EXPORTS_SCHEMA_VERSION = 8;
+export const SCAN_EXPORTS_SCHEMA_VERSION = 10;
 
 /**
  * The packages to walk from the scanned package to the macros, each resolved from the one before.
@@ -18,27 +19,42 @@ export const SCAN_EXPORTS_SCHEMA_VERSION = 8;
  */
 const RESOLUTION_CHAIN = ['expo', 'expo-modules-core', 'expo-modules-macros'];
 
+/** The `expo-modules-macros` package that a package compiles with, and where it is installed. */
+export type ResolvedMacros = {
+  macros: MacrosPackage;
+  root: string;
+  version: string;
+};
+
 /**
- * Loads the `expo-modules-macros` package that the `expo-modules-core` of the scanned package
- * depends on, and checks that it reports the schema this CLI renders.
+ * Loads the `expo-modules-macros` package that the `expo-modules-core` of the package at
+ * `packageDir` depends on. `packageDir` can also be any directory inside that package.
  */
-export function resolveMacros(packageDir: string): MacrosPackage {
+export function loadMacros(packageDir: string): ResolvedMacros {
   let root = packageDir;
   for (const name of RESOLUTION_CHAIN) {
     try {
       root = path.dirname(require.resolve(`${name}/package.json`, { paths: [root] }));
     } catch (error) {
       throw new Error(
-        `Could not resolve "${name}" from ${root}. expo-modules-cli scans with the ` +
+        `Could not resolve "${name}" from ${root}. expo-modules-cli uses the ` +
           `expo-modules-macros version that expo-modules-core depends on, and finds it through the ` +
-          `"expo" package of the scanned package, so install "expo" in ${packageDir}.`,
+          `"expo" package of the module, so install "expo" in ${packageDir}.`,
         { cause: error }
       );
     }
   }
-  const macros: MacrosPackage = require(root);
+  const { version } = require(path.join(root, 'package.json'));
+  return { macros: require(root), root, version };
+}
+
+/**
+ * Loads the `expo-modules-macros` package that the `expo-modules-core` of the scanned package
+ * depends on, and checks that it reports the schema this CLI renders.
+ */
+export function resolveMacros(packageDir: string): MacrosPackage {
+  const { macros, root, version } = loadMacros(packageDir);
   if (macros.SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION !== SCAN_EXPORTS_SCHEMA_VERSION) {
-    const { version } = require(path.join(root, 'package.json'));
     throw new Error(
       `expo-modules-macros ${version} at ${root} reports schema version ` +
         `${macros.SUPPORTED_SCAN_EXPORTS_SCHEMA_VERSION}, but this CLI understands version ` +

@@ -1187,6 +1187,18 @@ internal enum TextLinePattern: String, Enumerable {
   case dashDotDot
 }
 
+internal extension TextLinePattern {
+  func toSwiftUI() -> Text.LineStyle.Pattern {
+    switch self {
+    case .solid: return .solid
+    case .dash: return .dash
+    case .dot: return .dot
+    case .dashDot: return .dashDot
+    case .dashDotDot: return .dashDotDot
+    }
+  }
+}
+
 internal struct TextUnderLine: ViewModifier, Record {
   @Field var isActive: Bool = false
   @Field var pattern: TextLinePattern = .solid
@@ -1635,6 +1647,12 @@ public class ViewModifierRegistry {
         return text.foregroundColor(color)
       }
       return text
+    case "underline":
+      guard let modifier = try? TextUnderLine(from: params, appContext: appContext) else { return text }
+      return text.underline(modifier.isActive, pattern: modifier.pattern.toSwiftUI(), color: modifier.color)
+    case "strikethrough":
+      guard let modifier = try? TextStrikeThrough(from: params, appContext: appContext) else { return text }
+      return text.strikethrough(modifier.isActive, pattern: modifier.pattern.toSwiftUI(), color: modifier.color)
     default:
       #if DEBUG
       return Text(" ['\(type)' not supported for nested Text]").foregroundColor(.red)
@@ -1919,6 +1937,10 @@ extension ViewModifierRegistry {
 
     register("frame") { params, appContext, _ in
       return try FrameModifier(from: params, appContext: appContext)
+    }
+
+    register("universalLayout") { params, appContext, _ in
+      return try UniversalLayoutModifier(from: params, appContext: appContext)
     }
 
     register("padding") { params, appContext, _ in
@@ -2498,6 +2520,10 @@ extension ViewModifierRegistry {
 
     register("listStyle") { params, appContext, _ in
       return try ListStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("sectionIndexLabel") { params, appContext, _ in
+      return try SectionIndexLabelModifier(from: params, appContext: appContext)
     }
 
     register("moveDisabled") { params, appContext, _ in

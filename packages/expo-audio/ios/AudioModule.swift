@@ -33,8 +33,8 @@ public class AudioModule: Module {
       setupInterruptionHandling()
     }
 
-    AsyncFunction("setAudioModeAsync") { (mode: AudioMode) in
-      try setAudioMode(mode: mode)
+    AsyncFunction("setAudioModeAsync") { (mode: PartialAudioMode) in
+      try setAudioMode(mode: mode.merged(into: lastConfiguredMode ?? AudioMode()))
     }
 
     AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool) in

@@ -21,6 +21,7 @@ const homeDirectories = [
   'review',
   'monitoring',
   'agents',
+  'agentic-workflows',
 ];
 /** Manual list of directories to categorize as "Learn" */
 const learnDirectories = ['tutorial', 'additional-resources'];
@@ -93,6 +94,14 @@ export const home = [
       }
     ),
     makePage('llms.mdx'),
+  ]),
+  makeSection('Agentic workflows', [
+    makePage('agentic-workflows/introduction.mdx'),
+    makePage('agentic-workflows/setup.mdx'),
+    makePage('agentic-workflows/agentic-ci.mdx'),
+    makePage('agentic-workflows/issue-to-pr.mdx'),
+    makePage('agentic-workflows/bug-triage.mdx'),
+    makePage('agentic-workflows/qa-swarm.mdx'),
   ]),
   makeSection('Develop', [
     makePage('develop/tools.mdx'),
@@ -439,6 +448,7 @@ export const general = [
         makePage('troubleshooting/application-has-not-been-registered.mdx'),
         makePage('troubleshooting/clear-cache-macos-linux.mdx'),
         makePage('troubleshooting/clear-cache-windows.mdx'),
+        makePage('troubleshooting/windows-long-paths.mdx'),
         makePage('troubleshooting/expo-go-version-mismatch.mdx'),
         makePage('troubleshooting/expo-go-sign-in-required.mdx'),
         makePage('troubleshooting/react-native-version-mismatch.mdx'),
@@ -480,6 +490,7 @@ export const eas = [
   makeSection('EAS Workflows', [
     makePage('eas/workflows/introduction.mdx'),
     makePage('eas/workflows/get-started.mdx'),
+    makePage('eas/workflows/manage-workflow-runs.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),
     makePage('eas/workflows/custom-functions.mdx'),
@@ -547,6 +558,7 @@ export const eas = [
         makePage('build-reference/caching.mdx'),
         makePage('build-reference/android-builds.mdx'),
         makePage('build-reference/ios-builds.mdx'),
+        makePage('build-reference/project-upload.mdx'),
         makePage('build-reference/build-configuration.mdx'),
         makePage('build-reference/infrastructure.mdx'),
         makePage('build-reference/app-extensions.mdx'),
@@ -624,6 +636,7 @@ export const eas = [
     makePage('eas/observe/get-started.mdx'),
     makePage('eas/observe/dashboard.mdx'),
     makePage('eas/observe/eas-cli.mdx'),
+    makePage('eas/observe/ai-agents.mdx'),
     makePage('eas/observe/eas-update.mdx'),
     makePage('eas/observe/events.mdx'),
     makePage('eas/observe/errors.mdx'),
@@ -632,6 +645,7 @@ export const eas = [
       makePage('eas/observe/integrations/expo-router.mdx'),
       makePage('eas/observe/integrations/react-navigation.mdx'),
       makePage('eas/observe/integrations/expo-image.mdx'),
+      makePage('eas/observe/integrations/react-native-reanimated.mdx'),
       makePage('eas/observe/integrations/third-party.mdx'),
     ]),
     makeGroup('Reference', [
@@ -696,7 +710,6 @@ export const learn = [
       makePage('tutorial/create-a-modal.mdx'),
       makePage('tutorial/gestures.mdx'),
       makePage('tutorial/screenshot.mdx'),
-      makePage('tutorial/platform-differences.mdx'),
       makePage('tutorial/configuration.mdx'),
       makePage('tutorial/follow-up.mdx'),
     ],
@@ -766,6 +779,7 @@ const preview = [
             makePage('preview/simulators/how-to/start-a-session.mdx'),
             makePage('preview/simulators/how-to/install-your-app.mdx'),
             makePage('preview/simulators/how-to/drive-the-device.mdx'),
+            makePage('preview/simulators/how-to/control-with-eas-cli.mdx'),
             makePage('preview/simulators/how-to/iterate-on-your-code.mdx'),
             makePage('preview/simulators/how-to/capture-evidence.mdx'),
             makePage('preview/simulators/how-to/organize-sessions.mdx'),

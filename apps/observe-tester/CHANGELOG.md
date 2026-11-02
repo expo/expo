@@ -1,5 +1,52 @@
 # observe-tester
 
+## 1.0.13
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.19
+
+## 1.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#52093](https://github.com/expo/expo/pull/52093), [#50723](https://github.com/expo/expo/pull/50723), [#51934](https://github.com/expo/expo/pull/51934), [#52045](https://github.com/expo/expo/pull/52045), [#52057](https://github.com/expo/expo/pull/52057), [#52060](https://github.com/expo/expo/pull/52060), [#52059](https://github.com/expo/expo/pull/52059), [#52073](https://github.com/expo/expo/pull/52073), [#51661](https://github.com/expo/expo/pull/51661), [#51118](https://github.com/expo/expo/pull/51118), [#51119](https://github.com/expo/expo/pull/51119), [#52047](https://github.com/expo/expo/pull/52047), [#51117](https://github.com/expo/expo/pull/51117), [#51120](https://github.com/expo/expo/pull/51120), [#51961](https://github.com/expo/expo/pull/51961), [#51955](https://github.com/expo/expo/pull/51955), [#51897](https://github.com/expo/expo/pull/51897), [#51939](https://github.com/expo/expo/pull/51939), [#51940](https://github.com/expo/expo/pull/51940), [#52005](https://github.com/expo/expo/pull/52005), [#51992](https://github.com/expo/expo/pull/51992), [#52018](https://github.com/expo/expo/pull/52018), [#52049](https://github.com/expo/expo/pull/52049), [#52010](https://github.com/expo/expo/pull/52010), [#52036](https://github.com/expo/expo/pull/52036))
+  - expo-font@58.0.10
+  - expo-image@58.0.17
+  - @expo/ui@58.0.23
+  - expo-router@58.0.26
+  - expo@58.0.18
+  - expo-dev-client@58.0.15
+  - expo-updates@58.0.18
+
+## 1.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#51720](https://github.com/expo/expo/pull/51720), [#50576](https://github.com/expo/expo/pull/50576), [#51911](https://github.com/expo/expo/pull/51911), [#51751](https://github.com/expo/expo/pull/51751), [#51896](https://github.com/expo/expo/pull/51896), [#51988](https://github.com/expo/expo/pull/51988), [#51914](https://github.com/expo/expo/pull/51914), [#51954](https://github.com/expo/expo/pull/51954), [#51650](https://github.com/expo/expo/pull/51650), [#51958](https://github.com/expo/expo/pull/51958), [#51888](https://github.com/expo/expo/pull/51888), [#51971](https://github.com/expo/expo/pull/51971), [#50024](https://github.com/expo/expo/pull/50024), [#51906](https://github.com/expo/expo/pull/51906), [#51899](https://github.com/expo/expo/pull/51899), [#51904](https://github.com/expo/expo/pull/51904), [#51651](https://github.com/expo/expo/pull/51651), [#51698](https://github.com/expo/expo/pull/51698), [#51889](https://github.com/expo/expo/pull/51889), [#51588](https://github.com/expo/expo/pull/51588), [#51803](https://github.com/expo/expo/pull/51803), [#51813](https://github.com/expo/expo/pull/51813), [#49778](https://github.com/expo/expo/pull/49778), [#51814](https://github.com/expo/expo/pull/51814), [#51996](https://github.com/expo/expo/pull/51996), [#51928](https://github.com/expo/expo/pull/51928), [#51927](https://github.com/expo/expo/pull/51927), [#51799](https://github.com/expo/expo/pull/51799), [#51867](https://github.com/expo/expo/pull/51867))
+  - expo-app-metrics@58.0.14
+  - expo-observe@58.0.16
+  - expo-clipboard@58.0.4
+  - expo@58.0.17
+  - @expo/ui@58.0.22
+  - expo-router@58.0.25
+  - expo-status-bar@58.0.4
+  - expo-image@58.0.16
+  - expo-splash-screen@58.0.11
+  - expo-constants@58.0.13
+  - expo-updates@58.0.18
+  - expo-build-properties@58.0.11
+  - expo-dev-client@58.0.14
+  - expo-eas-client@58.0.2
+  - expo-font@58.0.9
+  - expo-haptics@58.0.7
+  - expo-linking@58.0.14
+  - expo-symbols@58.0.4
+  - expo-system-ui@58.0.6
+  - expo-web-browser@58.0.6
+  - @expo/html-elements@58.0.3
+
 ## 1.0.10
 
 ### Patch Changes

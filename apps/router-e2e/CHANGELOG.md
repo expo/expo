@@ -1,5 +1,38 @@
 # @expo/router-e2e
 
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo@58.0.19
+
+## 0.0.12
+
+### Patch Changes
+
+- Updated dependencies. ([#50723](https://github.com/expo/expo/pull/50723), [#52045](https://github.com/expo/expo/pull/52045), [#52057](https://github.com/expo/expo/pull/52057), [#52060](https://github.com/expo/expo/pull/52060), [#52059](https://github.com/expo/expo/pull/52059), [#52073](https://github.com/expo/expo/pull/52073), [#51661](https://github.com/expo/expo/pull/51661), [#51961](https://github.com/expo/expo/pull/51961), [#51955](https://github.com/expo/expo/pull/51955), [#51897](https://github.com/expo/expo/pull/51897), [#51939](https://github.com/expo/expo/pull/51939), [#51940](https://github.com/expo/expo/pull/51940), [#52005](https://github.com/expo/expo/pull/52005), [#51992](https://github.com/expo/expo/pull/51992), [#52018](https://github.com/expo/expo/pull/52018), [#52049](https://github.com/expo/expo/pull/52049), [#52136](https://github.com/expo/expo/pull/52136), [#52036](https://github.com/expo/expo/pull/52036))
+  - expo-image@58.0.17
+  - expo-router@58.0.26
+  - expo@58.0.18
+  - expo-sqlite@58.0.14
+
+## 0.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#51751](https://github.com/expo/expo/pull/51751), [#51588](https://github.com/expo/expo/pull/51588), [#51803](https://github.com/expo/expo/pull/51803), [#51813](https://github.com/expo/expo/pull/51813), [#49778](https://github.com/expo/expo/pull/49778), [#51814](https://github.com/expo/expo/pull/51814))
+  - expo@58.0.17
+  - expo-router@58.0.25
+  - expo-image@58.0.16
+  - expo-splash-screen@58.0.11
+  - @expo/dom-webview@58.0.2
+  - expo-build-properties@58.0.11
+  - expo-haptics@58.0.7
+  - expo-linking@58.0.14
+  - expo-speech@58.0.3
+  - expo-sqlite@58.0.13
+
 ## 0.0.10
 
 ### Patch Changes
