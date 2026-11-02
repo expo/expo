@@ -1,4 +1,14 @@
-import { resolvePackagesList, shouldSkipAutoPlugin } from '../getAutolinkedPackages';
+import {
+  getAutolinkedPackagesAsync,
+  resolvePackagesList,
+  shouldSkipAutoPlugin,
+} from '../getAutolinkedPackages';
+
+describe(getAutolinkedPackagesAsync, () => {
+  it(`returns an empty list when expo can't be resolved from the project`, async () => {
+    await expect(getAutolinkedPackagesAsync('/path/to/project-without-expo')).resolves.toEqual([]);
+  });
+});
 
 describe(resolvePackagesList, () => {
   it(`resolves a list of plugins`, () => {
