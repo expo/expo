@@ -1,10 +1,10 @@
 import fs from 'fs-extra';
-import { glob } from 'glob';
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import path from 'path';
 
 import { getExpoRepositoryRootDir } from '../Directories';
+import { glob } from '../Glob';
 
 describe('SPMGenerator header staging — expo-modules-core', () => {
   it('does not stage @implementation-fragment headers into the public include dir', async () => {

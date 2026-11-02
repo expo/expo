@@ -1,11 +1,11 @@
 import fs from 'fs-extra';
-import { glob } from 'glob';
 import assert from 'node:assert/strict';
 import os from 'node:os';
 import { describe, it } from 'node:test';
 import path from 'path';
 
 import { getExpoRepositoryRootDir } from '../Directories';
+import { glob } from '../Glob';
 import type { SPMConfig } from './SPMConfig.types';
 import { getTargetExcludePatterns } from './SPMGenerator';
 
