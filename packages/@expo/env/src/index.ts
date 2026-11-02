@@ -16,6 +16,31 @@ const globalStore = globalThis as Record<symbol, EnvBackupStore | undefined>;
 const originalEnvBackup: EnvBackupStore =
   globalStore[ORIGINAL_ENV_BACKUP_KEY] ?? (globalStore[ORIGINAL_ENV_BACKUP_KEY] = new WeakMap());
 
+function normalizeSystemEnvKey(key: string): string {
+  return process.platform === 'win32' ? key.toUpperCase() : key;
+}
+
+function resolveEnvKey(
+  env: EnvOutput | Map<string, string | undefined> | undefined,
+  key: string
+): string {
+  if (process.platform !== 'win32' || !env) return key;
+  const normalized = normalizeSystemEnvKey(key);
+  const keys = env instanceof Map ? env.keys() : Object.keys(env);
+  return [...keys].find((candidate) => normalizeSystemEnvKey(candidate) === normalized) ?? key;
+}
+
+function deleteEnvKey(env: EnvOutput, key: string): void {
+  if (process.platform === 'win32') {
+    const normalized = normalizeSystemEnvKey(key);
+    for (const candidate of Object.keys(env)) {
+      if (normalizeSystemEnvKey(candidate) === normalized) delete env[candidate];
+    }
+  } else {
+    delete env[key];
+  }
+}
+
 function rememberOriginal(systemEnv: EnvOutput, key: string): void {
   if (isUnsafeAllowedEnvKey(key)) return;
   let backup = originalEnvBackup.get(systemEnv);
@@ -23,8 +48,8 @@ function rememberOriginal(systemEnv: EnvOutput, key: string): void {
     backup = new Map();
     originalEnvBackup.set(systemEnv, backup);
   }
-  if (!backup.has(key)) {
-    backup.set(key, systemEnv[key]);
+  if (!backup.has(resolveEnvKey(backup, key))) {
+    backup.set(key, systemEnv[resolveEnvKey(systemEnv, key)]);
   }
 }
 
@@ -180,7 +205,7 @@ export function parseEnvFiles(
       debug(`Loaded environment variables from: ${envFile}`);
 
       for (const key of Object.keys(envFileParsed)) {
-        if (key === 'BABEL_ENV') {
+        if (key.toUpperCase() === 'BABEL_ENV') {
           debug(`"${key}" is ignored in dotenv files, skipping in: ${envFile}`);
           continue;
         }
@@ -362,9 +387,8 @@ export function getOriginalEnv(systemEnv: EnvOutput = process.env): EnvOutput {
   const backup = originalEnvBackup.get(systemEnv);
   if (backup) {
     for (const [key, original] of backup) {
-      if (original === undefined) {
-        delete result[key];
-      } else {
+      deleteEnvKey(result, key);
+      if (original !== undefined) {
         result[key] = original;
       }
     }
@@ -372,12 +396,12 @@ export function getOriginalEnv(systemEnv: EnvOutput = process.env): EnvOutput {
 
   // A new process cannot access its parent's in-memory backup, so use the inherited marker to
   // remove the parent's dotenv values.
-  for (const key of getLoadedEnvKeys(result[LOADED_ENV_NAME])) {
+  for (const key of getLoadedEnvKeys(result[resolveEnvKey(result, LOADED_ENV_NAME)])) {
     if (!isUnsafeAllowedEnvKey(key)) {
-      delete result[key];
+      deleteEnvKey(result, key);
     }
   }
-  delete result[LOADED_ENV_NAME];
+  deleteEnvKey(result, LOADED_ENV_NAME);
 
   return result;
 }
@@ -401,20 +425,24 @@ export function getOriginalEnvValue(
   systemEnv: EnvOutput = process.env
 ): string | undefined {
   const backup = originalEnvBackup.get(systemEnv);
-  const marker = backup?.has(LOADED_ENV_NAME)
-    ? backup.get(LOADED_ENV_NAME)
-    : systemEnv[LOADED_ENV_NAME];
+  const markerKey = resolveEnvKey(backup, LOADED_ENV_NAME);
+  const marker = backup?.has(markerKey)
+    ? backup.get(markerKey)
+    : systemEnv[resolveEnvKey(systemEnv, LOADED_ENV_NAME)];
+  const normalized = normalizeSystemEnvKey(key);
 
   if (
-    key === LOADED_ENV_NAME ||
-    (!isUnsafeAllowedEnvKey(key) && getLoadedEnvKeys(marker).includes(key))
+    normalized === LOADED_ENV_NAME ||
+    (!isUnsafeAllowedEnvKey(key) &&
+      getLoadedEnvKeys(marker).some((loadedKey) => normalizeSystemEnvKey(loadedKey) === normalized))
   ) {
     return undefined;
   }
-  if (backup && backup.has(key)) {
-    return backup.get(key);
+  const backupKey = resolveEnvKey(backup, key);
+  if (backup?.has(backupKey)) {
+    return backup.get(backupKey);
   }
-  return systemEnv[key];
+  return systemEnv[resolveEnvKey(systemEnv, key)];
 }
 
 /** Log the loaded environment info from the loaded results */
