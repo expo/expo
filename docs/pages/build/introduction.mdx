@@ -1,171 +1,1057 @@
----
-title: Expo Build
-sidebar_title: Introduction
-description: Expo Build is a hosted service for building app binaries for your Expo and React Native projects.
----
 
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+import React, { useState, useEffect } from "react";
+import {
+  View, Text, TextInput, ScrollView, Image,
+  TouchableOpacity, Alert, StyleSheet, StatusBar,
+  Linking, Modal
+} from "react-native";
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
-import { FAQ } from '~/ui/components/FAQ';
-import { RelatedSkills } from '~/ui/components/RelatedSkills';
-import { SimulatorsLaunchCallout } from '~/ui/components/SimulatorsLaunchCallout';
-import { Terminal } from '~/ui/components/Snippet';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as ImagePicker from "expo-image-picker";
 
-**Expo Build** is a hosted service that builds app binaries (also called [standalone apps](/more/glossary-of-terms/#standalone-app)) for your Expo and React Native projects.
+const BLUE = "#1769C2";
 
-Expo Build makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using [ad hoc](/build/internal-distribution/) and/or enterprise "universal" provisioning), deeply integrates with Expo Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+const CATEGORIES = [
+  "T-shirts", "Pantalons", "Chaussures", "Sacs",
+  "Montres", "Casquettes", "Lunettes", "Ceintures",
+  "Pulls", "Robes", "Ensembles", "Sous-vêtements"
+];
 
-Expo Build is also designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
+const CONTACTS = {
+  whatsapp: "+224 626 00 46 90",
+  phone: "+224 669 54 99 05",
+  address: "Madina, Centre Commercial Diané, Conakry, Guinée"
+};
 
-<SimulatorsLaunchCallout />
+// Identifiants provisoires de démonstration.
+// À remplacer avant une utilisation réelle.
+const ADMIN_PASSWORD = "DJUL2026";
+const ADMIN_PIN = "2240";
 
-## Quick start
+export default function App() {
+  const [tab, setTab] = useState("Accueil");
+  const [dark, setDark] = useState(false);
 
-> **info** The commands for Expo Build start with `eas` and require EAS CLI. See [How to install EAS CLI](/eas/cli/#installation) for more information.
+  const [products, setProducts] = useState([]);
+  const [cart, setCart] = useState([]);
+  const [favorites, setFavorites] = useState([]);
+  const [orders, setOrders] = useState([]);
 
-To build your app, run the following command:
+  const [admin, setAdmin] = useState(false);
+  const [login, setLogin] = useState(false);
+  const [password, setPassword] = useState("");
+  const [pin, setPin] = useState("");
 
-<Terminal cmd={['$ eas build --platform all']} />
+  const [name, setName] = useState("");
+  const [category, setCategory] = useState("T-shirts");
+  const [price, setPrice] = useState("");
+  const [promo, setPromo] = useState("");
+  const [photo, setPhoto] = useState("");
+  const [available, setAvailable] = useState(true);
 
-This command sends your project to Expo Build and produces installable binaries for Android and iOS. You can also build for one platform at a time by passing in `--platform android` or `--platform ios` as desired. For complete setup instructions, see [Create your first build](/build/setup/).
+  const [search, setSearch] = useState("");
+  const [customer, setCustomer] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [payment, setPayment] = useState("Orange Money");
 
-### Expo Skills for AI agents
+  const [trackCode, setTrackCode] = useState("");
+  const [trackPhone, setTrackPhone] = useState("");
 
-If you use an AI agent, install [Expo Skills](/skills/) to teach it how to create production builds and ship them to the app stores:
+  const bg = dark ? "#141820" : "#F3F6FB";
+  const card = dark ? "#252D39" : "#FFFFFF";
+  const color = dark ? "#FFFFFF" : "#172033";
+  const muted = dark ? "#B9C3D0" : "#697586";
 
-<RelatedSkills names={['eas-app-stores']} />
+  useEffect(() => {
+    loadData();
+  }, []);
 
-## Key features
+  useEffect(() => {
+    saveData();
+  }, [products, orders, favorites]);
 
-- Cloud builds for Android and iOS with consistent environments
-- Automatically provision and manage app signing credentials or use your own
-- Share [internal distribution](/build/internal-distribution/) builds with a URL
-- Automate builds with [build profiles](/build/eas-json/#build-profiles) in **eas.json** (named sets of build settings) and integrations with [Expo Workflows](/eas/workflows/get-started/) or [CI pipelines](/build/building-on-ci/)
-- Auto-submit successful builds to app stores via [`--auto-submit`](/build/automate-submissions/) and Expo Submit
-- First-class [`expo-updates` integration](/build/updates/) with per-profile channels and [runtime version](/eas-update/runtime-versions/) guidance
-- Reuse [development builds](/develop/development-builds/introduction/) across your team. When two team members run `eas build:dev` and the project fingerprint matches, the existing build is downloaded from Expo Build instead of creating a new one
-- Faster builds via [dependency caching and custom cache paths](/build-reference/caching/)
-- Install builds and updates on devices with [Expo Orbit](https://expo.dev/orbit)
+  async function loadData() {
+    try {
+      const data = await AsyncStorage.multiGet([
+        "djul_products",
+        "djul_orders",
+        "djul_favorites"
+      ]);
 
-## When to use Expo Build
+      const saved = Object.fromEntries(data);
 
-| Scenario                                                                             | Recommendation |
-| ------------------------------------------------------------------------------------ | -------------- |
-| Build production-ready binaries for app stores                                       | <YesIcon />    |
-| Share builds with testers via [internal distribution](/build/internal-distribution/) | <YesIcon />    |
-| Consistent builds across team members without local environment setup                | <YesIcon />    |
-| Automate builds from CI or [Expo Workflows](/eas/workflows/get-started/)             | <YesIcon />    |
-| Managed app signing credentials                                                      | <YesIcon />    |
-| Debugging native code locally                                                        | <NoIcon />     |
+      if (saved.djul_products)
+        setProducts(JSON.parse(saved.djul_products));
 
-## Frequently asked questions
+      if (saved.djul_orders)
+        setOrders(JSON.parse(saved.djul_orders));
 
-<FAQ>
+      if (saved.djul_favorites)
+        setFavorites(JSON.parse(saved.djul_favorites));
 
-<Collapsible summary="How do I share builds with my team before submitting to app stores?">
+    } catch (e) {
+      console.log("Erreur de chargement", e);
+    }
+  }
 
-Use [internal distribution](/build/internal-distribution/) to share builds with a URL. Set `"distribution": "internal"` in your [build profile](/build/eas-json/#build-profiles) in **eas.json** to generate installable Android Package (APK) files for Android or [ad hoc builds](/build/internal-distribution/) for iOS.
+  async function saveData() {
+    try {
+      await AsyncStorage.multiSet([
+        ["djul_products", JSON.stringify(products)],
+        ["djul_orders", JSON.stringify(orders)],
+        ["djul_favorites", JSON.stringify(favorites)]
+      ]);
+    } catch (e) {
+      console.log("Erreur de sauvegarde", e);
+    }
+  }
 
-</Collapsible>
+  const money = value =>
+    Number(value || 0).toLocaleString("fr-FR") + " GNF";
 
-<Collapsible summary="Can I use Expo Build with existing React Native projects?">
+  const finalPrice = p =>
+    p.promo > 0 && p.promo < p.price ? p.promo : p.price;
 
-Yes. Expo Build works with existing React Native projects created with `npx react-native init` or similar tools. See [Overview of using Expo with existing React Native apps](/bare/overview/) for more information.
+  async function choosePhoto() {
+    const permission =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-</Collapsible>
+    if (!permission.granted) {
+      Alert.alert("Autorisation", "Autorise l'accès à tes photos.");
+      return;
+    }
 
-<Collapsible summary="Does Expo Build handle app signing credentials?">
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      quality: 0.8
+    });
 
-Yes. Expo Build can generate and manage Android [keystores](/app-signing/app-credentials/#android), iOS [provisioning profiles](/app-signing/app-credentials/#ios) and [distribution certificates](/app-signing/app-credentials/#ios), or use credentials you provide. See [App signing credentials](/app-signing/app-credentials/) for more information.
+    if (!result.canceled) {
+      setPhoto(result.assets[0].uri);
+    }
+  }
 
-</Collapsible>
+  function addProduct() {
+    if (!name.trim() || !price || !photo) {
+      Alert.alert(
+        "Informations manquantes",
+        "Ajoute une photo, un nom et un prix."
+      );
+      return;
+    }
 
-<Collapsible summary="Can I run builds locally instead of in the cloud?">
+    if (Number(price) <= 0) {
+      Alert.alert("Prix incorrect", "Entre un prix valide.");
+      return;
+    }
 
-Yes. Use [local builds](/build-reference/local-builds/) with `eas build --local` to run builds on your machine. This is useful for debugging or for security policies that require local builds.
+    const product = {
+      id: Date.now().toString(),
+      name: name.trim(),
+      category,
+      price: Number(price),
+      promo: Number(promo) || 0,
+      photo,
+      available
+    };
 
-</Collapsible>
+    setProducts(old => [product, ...old]);
 
-<Collapsible summary="Can I use Expo Build with Expo Workflows or CI pipelines?">
+    setName("");
+    setPrice("");
+    setPromo("");
+    setPhoto("");
+    setAvailable(true);
 
-Yes. Expo Build integrates with [Expo Workflows](/eas/workflows/get-started/) using the `build` job type. Add a build job to your workflow configuration, for example:
+    Alert.alert("DJUL SHOP", "Produit ajouté avec succès !");
+  }
 
-```yaml
-jobs:
-  build_ios:
-    type: build
-    params:
-      platform: ios
-```
+  function deleteProduct(id) {
+    Alert.alert("Suppression", "Supprimer ce produit ?", [
+      { text: "Annuler" },
+      {
+        text: "Supprimer",
+        onPress: () =>
+          setProducts(old => old.filter(p => p.id !== id))
+      }
+    ]);
+  }
 
-The build job supports builds for both platforms or conditional builds based on the branch:
+  function toggleAvailability(id) {
+    setProducts(old => old.map(p =>
+      p.id === id ? { ...p, available: !p.available } : p
+    ));
+  }
 
-```yaml
-jobs:
-  build:
-    type: build
-    params:
-      platform: all
-      profile: ${{ github.ref_name == 'main' && 'production' || 'preview' }}
-```
+  function addToCart(product) {
+    if (!product.available) {
+      Alert.alert("Indisponible", "Ce produit est épuisé.");
+      return;
+    }
 
-For more information and other usage examples, see the [Expo Workflows build job](/eas/workflows/pre-packaged-jobs#build).
+    setCart(old => [...old, product]);
+    Alert.alert("Panier", "Produit ajouté !");
+  }
 
-Expo Build supports [builds from GitHub](/build/building-from-github/) and [building on CI](/build/building-on-ci/) with any provider.
+  function toggleFavorite(id) {
+    setFavorites(old =>
+      old.includes(id)
+        ? old.filter(x => x !== id)
+        : [...old, id]
+    );
+  }
 
-</Collapsible>
+  function placeOrder() {
+    if (!customer.trim() || !phone.trim() || !address.trim()) {
+      Alert.alert(
+        "Commande",
+        "Remplis ton nom, ton téléphone et ton adresse."
+      );
+      return;
+    }
 
-<Collapsible summary="What build server infrastructure does Expo Build use?">
+    if (!cart.length) {
+      Alert.alert("Panier vide", "Ajoute des produits.");
+      return;
+    }
 
-Android builds run on Linux runners hosted in Google Cloud Platform, and iOS builds run on macOS runners hosted in Expo's macOS cloud. See [Build server infrastructure](/build-reference/infrastructure/).
+    const total = cart.reduce(
+      (sum, p) => sum + finalPrice(p), 0
+    );
 
-</Collapsible>
+    const code = "DJUL" + Date.now().toString().slice(-7);
 
-</FAQ>
+    const order = {
+      id: code,
+      customer,
+      phone,
+      address,
+      payment,
+      products: [...cart],
+      total,
+      status: "En attente",
+      date: new Date().toLocaleDateString("fr-FR")
+    };
 
-## Get started
+    setOrders(old => [order, ...old]);
+    setCart([]);
 
-<BoxLink
-  title="Create your first build"
-  description="It should only take a few minutes in total to get up and running for iOS and/or Android."
-  href="/build/setup"
-  Icon={Cube01Icon}
-/>
+    setCustomer("");
+    setPhone("");
+    setAddress("");
 
-<BoxLink
-  title="Share your apps with internal testers"
-  description="Expo Build can help share preview builds of your app with a single URL."
-  href="/build/internal-distribution"
-  Icon={Cube01Icon}
-/>
+    setTrackCode(code);
+    setTrackPhone(phone);
 
-<BoxLink
-  title="Automate submissions"
-  description="Learn how Expo Build can take your successful builds and handle uploading them to app stores automatically."
-  href="/build/automate-submissions"
-  Icon={Cube01Icon}
-/>
+    setTab("Suivi");
 
-<BoxLink
-  title="App version management"
-  description="Automate version bumps so you never have to think about them again."
-  href="/build-reference/app-versions"
-  Icon={Cube01Icon}
-/>
+    Alert.alert(
+      "Commande enregistrée",
+      "Ton numéro de commande : " + code
+    );
+  }
 
-<BoxLink
-  title="Run builds locally or on your own infrastructure"
-  description="Expo Build is a hosted service, and it can also run on your own machine, for example, to debug or to comply with company security policies."
-  href="/build-reference/local-builds"
-  Icon={Cube01Icon}
-/>
+  function loginAdmin() {
+    if (
+      password === ADMIN_PASSWORD &&
+      pin === ADMIN_PIN
+    ) {
+      setAdmin(true);
+      setLogin(false);
+      setPassword("");
+      setPin("");
+      setTab("Administration");
+    } else {
+      Alert.alert("Accès refusé", "Identifiants incorrects.");
+    }
+  }
 
-<BoxLink
-  title="Limitations"
-  description="Expo Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
-  href="/build-reference/limitations"
-  Icon={Cube01Icon}
-/>
+  function changeStatus(id, status) {
+    setOrders(old => old.map(o =>
+      o.id === id ? { ...o, status } : o
+    ));
+  }
+
+  function openWhatsApp() {
+    Linking.openURL("https://wa.me/224626004690");
+  }
+
+  function callShop() {
+    Linking.openURL("tel:+224669549905");
+  }
+
+  function openAddress() {
+    const url =
+      "https://www.google.com/maps/search/?api=1&query=" +
+      encodeURIComponent(CONTACTS.address);
+
+    Linking.openURL(url);
+  }
+
+  const filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(search.toLowerCase()) ||
+    p.category.toLowerCase().includes(search.toLowerCase())
+  );
+
+  function header() {
+    return (
+      <View style={s.header}>
+        <Text style={s.logo}>🛍️ DJUL SHOP</Text>
+        <Text style={s.slogan}>
+          MODE • STYLE • ÉLÉGANCE
+        </Text>
+        <Text style={s.country}>🇬🇳 GUINÉE CONAKRY</Text>
+      </View>
+    );
+  }
+
+  function productCard(p) {
+    return (
+      <View
+        key={p.id}
+        style={[s.product, { backgroundColor: card }]}
+      >
+        <Image
+          source={{ uri: p.photo }}
+          style={s.productImage}
+        />
+
+        <TouchableOpacity
+          style={s.heart}
+          onPress={() => toggleFavorite(p.id)}
+        >
+          <Text style={{ fontSize: 21 }}>
+            {favorites.includes(p.id) ? "❤️" : "♡"}
+          </Text>
+        </TouchableOpacity>
+
+        <Text style={[s.productName, { color }]}>
+          {p.name}
+        </Text>
+
+        <Text style={s.price}>
+          {money(finalPrice(p))}
+        </Text>
+
+        {p.promo > 0 && p.promo < p.price && (
+          <>
+            <Text style={s.oldPrice}>
+              {money(p.price)}
+            </Text>
+            <Text style={{ color: "#E53935", fontSize: 12 }}>
+              -{Math.round((1 - p.promo / p.price) * 100)}%
+            </Text>
+          </>
+        )}
+
+        <Text style={{ color: muted, fontSize: 12 }}>
+          {p.category}
+        </Text>
+
+        {!p.available && (
+          <Text style={{ color: "#E53935" }}>
+            Épuisé
+          </Text>
+        )}
+
+        {admin ? (
+          <>
+            <TouchableOpacity
+              style={s.secondaryButton}
+              onPress={() => toggleAvailability(p.id)}
+            >
+              <Text style={s.blueText}>
+                {p.available ? "Marquer épuisé" : "Rendre disponible"}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={s.deleteButton}
+              onPress={() => deleteProduct(p.id)}
+            >
+              <Text style={s.white}>Supprimer</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <TouchableOpacity
+            style={s.mainButton}
+            onPress={() => addToCart(p)}
+          >
+            <Text style={s.white}>Ajouter au panier</Text>
+          </TouchableOpacity>
+        )}
+      </View>
+    );
+  }
+
+  function homePage() {
+    return (
+      <>
+        {header()}
+
+        <Text style={[s.heading, { color }]}>
+          Bienvenue chez DJUL SHOP
+        </Text>
+
+        <Text style={{ color: muted }}>
+          Mode homme et femme. Découvrez nos collections.
+        </Text>
+
+        <TextInput
+          placeholder="Rechercher un vêtement..."
+          placeholderTextColor={muted}
+          value={search}
+          onChangeText={setSearch}
+          style={[s.input, { backgroundColor: card, color }]}
+        />
+
+        <Text style={[s.heading, { color }]}>
+          Catégories
+        </Text>
+
+        <ScrollView horizontal>
+          {CATEGORIES.map(c => (
+            <TouchableOpacity
+              key={c}
+              style={s.category}
+              onPress={() => {
+                setSearch(c);
+                setTab("Catégories");
+              }}
+            >
+              <Text style={s.categoryText}>{c}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        <Text style={[s.heading, { color }]}>
+          Nos vêtements
+        </Text>
+
+        <View style={s.grid}>
+          {filteredProducts.map(productCard)}
+        </View>
+
+        {!products.length && (
+          <Text style={{ color: muted, textAlign: "center", padding: 25 }}>
+            Nos nouveaux produits arrivent bientôt !
+          </Text>
+        )}
+      </>
+    );
+  }
+
+  function cartPage() {
+    const total = cart.reduce(
+      (sum, p) => sum + finalPrice(p), 0
+    );
+
+    return (
+      <>
+        {header()}
+        <Text style={[s.heading, { color }]}>
+          Mon panier
+        </Text>
+
+        {cart.map((p, i) => (
+          <View
+            key={i}
+            style={[s.stat, { backgroundColor: card }]}
+          >
+            <Text style={{ color }}>{p.name}</Text>
+            <Text style={s.price}>{money(finalPrice(p))}</Text>
+
+            <TouchableOpacity
+              onPress={() =>
+                setCart(old => old.filter((_, index) => index !== i))
+              }
+            >
+              <Text style={{ color: "#E53935" }}>
+                Retirer du panier
+              </Text>
+            </TouchableOpacity>
+          </View>
+        ))}
+
+        <Text style={[s.heading, { color }]}>
+          Total : {money(total)}
+        </Text>
+
+        <Text style={{ color: muted }}>
+          Les frais de livraison sont payés directement au livreur.
+        </Text>
+
+        <TextInput
+          placeholder="Nom complet"
+          value={customer}
+          onChangeText={setCustomer}
+          style={s.input}
+        />
+
+        <TextInput
+          placeholder="Numéro de téléphone"
+          value={phone}
+          onChangeText={setPhone}
+          keyboardType="phone-pad"
+          style={s.input}
+        />
+
+        <TextInput
+          placeholder="Ville, quartier et adresse"
+          value={address}
+          onChangeText={setAddress}
+          style={s.input}
+        />
+
+        <Text style={{ color }}>Moyen de paiement</Text>
+
+        {["Orange Money", "MTN Mobile Money"].map(p => (
+          <TouchableOpacity
+            key={p}
+            style={s.secondaryButton}
+            onPress={() => setPayment(p)}
+          >
+            <Text style={s.blueText}>
+              {payment === p ? "✓ " : ""}{p}
+            </Text>
+          </TouchableOpacity>
+        ))}
+
+        <TouchableOpacity
+          style={s.mainButton}
+          onPress={placeOrder}
+        >
+          <Text style={s.white}>Confirmer la commande</Text>
+        </TouchableOpacity>
+      </>
+    );
+  }
+
+  function adminPage() {
+    const revenue = orders
+      .filter(o => o.status === "Livrée")
+      .reduce((sum, o) => sum + o.total, 0);
+
+    return (
+      <>
+        {header()}
+
+        <Text style={[s.heading, { color }]}>
+          Administration DJUL SHOP
+        </Text>
+
+        <View style={[s.stat, { backgroundColor: card }]}>
+          <Text style={{ color: muted }}>Chiffre d'affaires livré</Text>
+          <Text style={s.statNumber}>{money(revenue)}</Text>
+          <Text style={{ color }}>Commandes : {orders.length}</Text>
+          <Text style={{ color }}>Produits : {products.length}</Text>
+        </View>
+
+        <Text style={[s.heading, { color }]}>
+          Ajouter un produit
+        </Text>
+
+        <TouchableOpacity
+          style={s.photoButton}
+          onPress={choosePhoto}
+        >
+          {photo ? (
+            <Image source={{ uri: photo }} style={s.preview}/>
+          ) : (
+            <Text style={s.white}>📸 Choisir une photo</Text>
+          )}
+        </TouchableOpacity>
+
+        <TextInput
+          placeholder="Nom du vêtement"
+          value={name}
+          onChangeText={setName}
+          style={s.input}
+        />
+
+        <Text style={{ color }}>Catégorie</Text>
+
+        <ScrollView horizontal>
+          {CATEGORIES.map(c => (
+            <TouchableOpacity
+              key={c}
+              onPress={() => setCategory(c)}
+              style={[
+                s.category,
+                category === c && { backgroundColor: BLUE }
+              ]}
+            >
+              <Text style={s.categoryText}>{c}</Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+
+        <TextInput
+          placeholder="Prix en GNF"
+          keyboardType="numeric"
+          value={price}
+          onChangeText={setPrice}
+          style={s.input}
+        />
+
+        <TextInput
+          placeholder="Prix promotionnel facultatif"
+          keyboardType="numeric"
+          value={promo}
+          onChangeText={setPromo}
+          style={s.input}
+        />
+
+        <TouchableOpacity
+          style={s.secondaryButton}
+          onPress={() => setAvailable(!available)}
+        >
+          <Text style={s.blueText}>
+            Disponibilité : {available ? "Disponible" : "Épuisé"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={s.mainButton}
+          onPress={addProduct}
+        >
+          <Text style={s.white}>+ Publier le produit</Text>
+        </TouchableOpacity>
+
+        <Text style={[s.heading, { color }]}>
+          Mes commandes
+        </Text>
+
+        {orders.map(o => (
+          <View
+            key={o.id}
+            style={[s.stat, { backgroundColor: card }]}
+          >
+            <Text style={{ color, fontWeight: "bold" }}>
+              {o.id}
+            </Text>
+            <Text style={{ color }}>Client : {o.customer}</Text>
+            <Text style={{ color }}>Téléphone : {o.phone}</Text>
+            <Text style={{ color }}>Adresse : {o.address}</Text>
+            <Text style={{ color }}>Paiement : {o.payment}</Text>
+            <Text style={{ color }}>Total : {money(o.total)}</Text>
+            <Text style={s.price}>Statut : {o.status}</Text>
+
+            {[
+              "Confirmée", "En préparation",
+              "En livraison", "Livrée", "Refusée"
+            ].map(st => (
+              <TouchableOpacity
+                key={st}
+                style={s.secondaryButton}
+                onPress={() => changeStatus(o.id, st)}
+              >
+                <Text style={s.blueText}>{st}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ))}
+      </>
+    );
+  }
+
+  function trackingPage() {
+    const found = orders.find(o =>
+      o.id === trackCode.trim() &&
+      o.phone === trackPhone.trim()
+    );
+
+    return (
+      <>
+        {header()}
+        <Text style={[s.heading, { color }]}>
+          Suivi de commande
+        </Text>
+
+        <TextInput
+          placeholder="Numéro de commande"
+          value={trackCode}
+          onChangeText={setTrackCode}
+          style={s.input}
+        />
+
+        <TextInput
+          placeholder="Numéro de téléphone"
+          value={trackPhone}
+          onChangeText={setTrackPhone}
+          style={s.input}
+        />
+
+        {found ? (
+          <View style={[s.stat, { backgroundColor: card }]}>
+            <Text style={{ color }}>Commande : {found.id}</Text>
+            <Text style={s.statNumber}>{found.status}</Text>
+            <Text style={{ color }}>Total : {money(found.total)}</Text>
+          </View>
+        ) : (
+          <Text style={{ color: muted }}>
+            Entre ton numéro de commande et ton téléphone.
+          </Text>
+        )}
+      </>
+    );
+  }
+
+  function contactPage() {
+    return (
+      <>
+        {header()}
+        <Text style={[s.heading, { color }]}>
+          Contactez DJUL SHOP
+        </Text>
+
+        <TouchableOpacity
+          style={s.whatsappButton}
+          onPress={openWhatsApp}
+        >
+          <Text style={s.white}>
+            WhatsApp : +224 626 00 46 90
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={s.mainButton}
+          onPress={callShop}
+        >
+          <Text style={s.white}>
+            Appeler : +224 669 54 99 05
+          </Text>
+        </TouchableOpacity>
+
+        <Text style={[s.heading, { color }]}>
+          Adresse de notre boutique
+        </Text>
+
+        <View style={[s.stat, { backgroundColor: card }]}>
+          <Text style={{ color, fontWeight: "bold" }}>
+            📍 Madina, Centre Commercial Diané
+          </Text>
+          <Text style={{ color, marginTop: 6 }}>
+            Conakry, Guinée 🇬🇳
+          </Text>
+          <TouchableOpacity
+            style={s.mainButton}
+            onPress={openAddress}
+          >
+            <Text style={s.white}>Voir sur Google Maps</Text>
+          </TouchableOpacity>
+        </View>
+      </>
+    );
+  }
+
+  function profilePage() {
+    return (
+      <>
+        {header()}
+        <Text style={[s.heading, { color }]}>Mon profil</Text>
+
+        {[
+          ["❤️ Mes favoris", "Favoris"],
+          ["🛒 Mon panier", "Panier"],
+          ["📦 Suivre ma commande", "Suivi"],
+          ["📞 Contacter DJUL SHOP", "Contact"]
+        ].map(([label, destination]) => (
+          <TouchableOpacity
+            key={destination}
+            style={s.secondaryButton}
+            onPress={() => setTab(destination)}
+          >
+            <Text style={s.blueText}>{label}</Text>
+          </TouchableOpacity>
+        ))}
+
+        <TouchableOpacity
+          style={s.secondaryButton}
+          onPress={() => setDark(!dark)}
+        >
+          <Text style={s.blueText}>
+            {dark ? "☀️ Mode clair" : "🌙 Mode sombre"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={s.secondaryButton}
+          onPress={() => Alert.alert(
+            "Conditions d'utilisation",
+            "Les commandes sont soumises à confirmation par DJUL SHOP. Les frais de livraison sont payés au livreur."
+          )}
+        >
+          <Text style={s.blueText}>Conditions d'utilisation</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={s.mainButton}
+          onPress={() => setLogin(true)}
+        >
+          <Text style={s.white}>🔐 Administration</Text>
+        </TouchableOpacity>
+      </>
+    );
+  }
+
+  return (
+    <View style={{ flex: 1, backgroundColor: bg }}>
+      <StatusBar barStyle={dark ? "light-content" : "dark-content"}/>
+
+      <ScrollView contentContainerStyle={{ padding: 15, paddingBottom: 30 }}>
+        {tab === "Accueil" && homePage()}
+        {tab === "Catégories" && homePage()}
+        {tab === "Panier" && cartPage()}
+        {tab === "Profil" && profilePage()}
+        {tab === "Contact" && contactPage()}
+        {tab === "Suivi" && trackingPage()}
+
+        {tab === "Favoris" && (
+          <>
+            {header()}
+            <Text style={[s.heading, { color }]}>Mes favoris</Text>
+            <View style={s.grid}>
+              {products
+                .filter(p => favorites.includes(p.id))
+                .map(productCard)}
+            </View>
+          </>
+        )}
+
+        {tab === "Administration" && admin && adminPage()}
+      </ScrollView>
+
+      <View style={s.nav}>
+        {[
+          ["Accueil", "⌂"],
+          ["Catégories", "▦"],
+          ["Panier", "🛒"],
+          ["Favoris", "♡"],
+          ["Profil", "👤"]
+        ].map(([label, icon]) => (
+          <TouchableOpacity
+            key={label}
+            onPress={() => setTab(label)}
+            style={{ alignItems: "center" }}
+          >
+            <Text style={{
+              color: tab === label ? BLUE : "#777",
+              fontSize: 21
+            }}>{icon}</Text>
+            <Text style={{
+              color: tab === label ? BLUE : "#777",
+              fontSize: 10
+            }}>{label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <Modal visible={login} transparent animationType="slide">
+        <View style={s.overlay}>
+          <View style={s.loginBox}>
+            <Text style={s.heading}>Espace administrateur</Text>
+
+            <TextInput
+              placeholder="Mot de passe"
+              secureTextEntry
+              value={password}
+              onChangeText={setPassword}
+              style={s.input}
+            />
+
+            <TextInput
+              placeholder="Code PIN"
+              secureTextEntry
+              keyboardType="numeric"
+              value={pin}
+              onChangeText={setPin}
+              style={s.input}
+            />
+
+            <TouchableOpacity
+              style={s.mainButton}
+              onPress={loginAdmin}
+            >
+              <Text style={s.white}>Se connecter</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => setLogin(false)}>
+              <Text style={{ textAlign: "center", margin: 12 }}>
+                Fermer
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
+const s = StyleSheet.create({
+  header: {
+    backgroundColor: BLUE,
+    padding: 23,
+    borderRadius: 17,
+    marginBottom: 18
+  },
+  logo: {
+    color: "#FFFFFF",
+    fontSize: 28,
+    fontWeight: "900",
+    textAlign: "center"
+  },
+  slogan: {
+    color: "#FFFFFF",
+    textAlign: "center",
+    marginTop: 6
+  },
+  country: {
+    color: "#FFFFFF",
+    textAlign: "center",
+    marginTop: 8,
+    fontSize: 11
+  },
+  heading: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginVertical: 13
+  },
+  input: {
+    backgroundColor: "#FFFFFF",
+    padding: 14,
+    borderRadius: 11,
+    marginVertical: 7,
+    color: "#172033",
+    borderWidth: 1,
+    borderColor: "#DCE5F0"
+  },
+  category: {
+    backgroundColor: "#E6F0FC",
+    padding: 12,
+    borderRadius: 20,
+    marginRight: 8,
+    marginVertical: 8
+  },
+  categoryText: {
+    color: BLUE,
+    fontWeight: "bold"
+  },
+  grid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between"
+  },
+  product: {
+    width: "48%",
+    padding: 9,
+    borderRadius: 13,
+    marginBottom: 12,
+    elevation: 2
+  },
+  productImage: {
+    width: "100%",
+    height: 140,
+    borderRadius: 10
+  },
+  productName: {
+    fontWeight: "bold",
+    marginVertical: 7
+  },
+  price: {
+    color: BLUE,
+    fontWeight: "bold",
+    marginVertical: 5
+  },
+  oldPrice: {
+    color: "#888",
+    textDecorationLine: "line-through",
+    fontSize: 12
+  },
+  heart: {
+    position: "absolute",
+    right: 13,
+    top: 12,
+    zIndex: 2
+  },
+  mainButton: {
+    backgroundColor: BLUE,
+    padding: 13,
+    borderRadius: 11,
+    marginVertical: 7,
+    alignItems: "center"
+  },
+  whatsappButton: {
+    backgroundColor: "#168B4A",
+    padding: 14,
+    borderRadius: 11,
+    marginVertical: 7,
+    alignItems: "center"
+  },
+  secondaryButton: {
+    backgroundColor: "#E6F0FC",
+    padding: 12,
+    borderRadius: 10,
+    marginVertical: 5
+  },
+  blueText: {
+    color: BLUE,
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  deleteButton: {
+    backgroundColor: "#D32F2F",
+    padding: 10,
+    borderRadius: 9,
+    marginTop: 6,
+    alignItems: "center"
+  },
+  white: {
+    color: "#FFFFFF",
+    fontWeight: "bold"
+  },
+  photoButton: {
+    backgroundColor: BLUE,
+    height: 130,
+    borderRadius: 13,
+    alignItems: "center",
+    justifyContent: "center",
+    marginVertical: 10
+  },
+  preview: {
+    width: "100%",
+    height: 130,
+    borderRadius: 13
+  },
+  stat: {
+    padding: 15,
+    borderRadius: 13,
+    marginVertical: 8
+  },
+  statNumber: {
+    color: BLUE,
+    fontSize: 22,
+    fontWeight: "bold",
+    marginVertical: 8
+  },
+  nav: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 11,
+    borderTopWidth: 1,
+    borderColor: "#E5EAF0"
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: "#0009",
+    justifyContent: "center",
+    padding: 20
+  },
+  loginBox: {
+    backgroundColor: "#FFFFFF",
+    padding: 20,
+    borderRadius: 17
+  }
+});
