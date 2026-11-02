@@ -10,7 +10,8 @@
       "bundleIdentifier": "dev.expo.routertester",
       "supportsTablet": true,
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIViewControllerBasedStatusBarAppearance": true
       }
     },
     "android": {

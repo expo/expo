@@ -44,6 +44,31 @@ public class SplitViewModule: Module {
       Events("onToolbarItemPress", "onSearchBarChangeText", "onSearchBarSearchButtonPress")
       OnViewDidUpdateProps { (view: SplitViewHeaderView) in view.apply() }
     }
+
+    AsyncFunction("showSidebar") { (columnId: String) in
+      SplitViewColumnView.columns.object(forKey: columnId as NSString)?.showSidebar()
+    }.runOnQueue(.main)
+
+    View(SplitViewColumnView.self) {
+      Prop("columnId") { (view: SplitViewColumnView, value: String) in view.columnId = value }
+      Prop("previousColumn") { (view: SplitViewColumnView, value: String) in view.previousColumn = value }
+      Events("onOwnershipChange")
+      OnViewDidUpdateProps { (view: SplitViewColumnView) in view.attach() }
+    }
+
+    View(SplitViewStackScreenView.self) {
+      Prop("columnId") { (view: SplitViewStackScreenView, value: String) in view.columnId = value }
+      Prop("active") { (view: SplitViewStackScreenView, value: Bool) in view.active = value }
+      OnViewDidUpdateProps { (view: SplitViewStackScreenView) in view.attach() }
+    }
+
+    View(SplitViewStackProbeView.self) {
+      Prop("revision") { (view: SplitViewStackProbeView, revision: Int) in
+        view.revision = revision
+      }
+      Events("onSnapshot")
+      OnViewDidUpdateProps { (view: SplitViewStackProbeView) in view.snapshotIfRequested() }
+    }
   }
 }
 

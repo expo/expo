@@ -16,6 +16,8 @@ import {
   SearchBar,
 } from 'react-native-screens';
 
+import { showSplitViewSidebar } from '../../../split-view/native';
+import type { SplitViewStackColumn } from '../../../split-view/stack-context';
 import { isLight } from '../../../utils/color';
 import { getHeaderTitle, HeaderTitle } from '../../elements';
 import { type Route, type Theme, useLocale, useTheme } from '../../native';
@@ -30,6 +32,7 @@ import { processFonts } from './FontProcessor';
 import { getPlatformHeaderTransparent, isLegacyHeaderAppearanceEnabled } from './headerAppearance';
 
 type Props = NativeStackNavigationOptions & {
+  splitViewColumn?: SplitViewStackColumn | null;
   headerTopInsetEnabled: boolean;
   headerHeight: number;
   headerBack: { title?: string | undefined; href: undefined } | undefined;
@@ -167,6 +170,7 @@ const getMenuItem = (
 };
 
 export function useHeaderConfigProps({
+  splitViewColumn,
   headerBackIcon,
   headerBackImageSource,
   headerBackButtonDisplayMode,
@@ -333,8 +337,9 @@ export function useHeaderConfigProps({
    * - Back button should stay visible when `headerLeft` is specified
    * - If `headerTitle` for Android is specified, so we only need to remove the title and keep the back button
    */
+  const showSplitSidebar = splitViewColumn?.ownsHeader && !splitViewColumn.isCollapsed;
   const backButtonInCustomView =
-    headerBackVisible ||
+    (showSplitSidebar ? (headerBackVisible ?? true) : headerBackVisible) ||
     (Platform.OS === 'android' && headerTitleElement != null && headerLeftElement == null);
 
   const translucent =
@@ -357,10 +362,26 @@ export function useHeaderConfigProps({
 
   const isCenterViewRenderedAndroid = headerTitleAlign === 'center';
 
-  const leftItems = headerLeftItems?.({
+  let leftItems = headerLeftItems?.({
     tintColor,
     canGoBack,
   });
+
+  if (showSplitSidebar) {
+    // Reuse the element rendered with the full header props; do not invoke headerLeft again.
+    const appItems: NativeStackHeaderItem[] =
+      leftItems ??
+      (headerLeftElement != null ? [{ type: 'custom', element: <>{headerLeftElement}</> }] : []);
+    leftItems = [
+      {
+        type: 'button',
+        label: 'Show Sidebar',
+        icon: { type: 'sfSymbol', name: 'sidebar.left' },
+        onPress: () => showSplitViewSidebar(splitViewColumn.columnId),
+      },
+      ...appItems,
+    ];
+  }
 
   let rightItems = headerRightItems?.({
     tintColor,

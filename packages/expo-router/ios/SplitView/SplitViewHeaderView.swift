@@ -39,8 +39,12 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
 
   override func willMove(toSuperview newSuperview: UIView?) {
     super.willMove(toSuperview: newSuperview)
-    if newSuperview == nil, navigationBarHidden {
-      navigationController?.setNavigationBarHidden(false, animated: false)
+    if newSuperview == nil {
+      if let columnCoordinator {
+        columnCoordinator.configuredHidden = false
+      } else if navigationBarHidden {
+        navigationController?.setNavigationBarHidden(false, animated: false)
+      }
     }
   }
 
@@ -119,7 +123,15 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     (superview?.next as? UIViewController)?.navigationController
   }
 
+  private var columnCoordinator: SplitViewColumnView? {
+    superview?.subviews.compactMap { $0 as? SplitViewColumnView }.first
+  }
+
   private func applyNavigationBarHidden() {
+    if let columnCoordinator {
+      columnCoordinator.configuredHidden = navigationBarHidden
+      return
+    }
     guard let navigationController, navigationController.isNavigationBarHidden != navigationBarHidden else {
       return
     }

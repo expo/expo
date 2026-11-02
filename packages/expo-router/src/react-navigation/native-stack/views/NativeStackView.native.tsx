@@ -11,7 +11,13 @@ import {
 } from 'react-native-screens';
 
 import { useRouteNode } from '../../../Route';
+import { SplitViewNativeStackScreen } from '../../../split-view/native';
+import {
+  SplitViewStackContext,
+  type SplitViewStackColumn,
+} from '../../../split-view/stack-context';
 import { useWarnOnce } from '../../../useDeprecated';
+import { IsFocusedContext } from '../../core/useIsFocused';
 import {
   getDefaultHeaderHeight,
   getHeaderTitle,
@@ -41,6 +47,8 @@ import { useHeaderConfigProps } from './useHeaderConfigProps';
 const ANDROID_DEFAULT_HEADER_HEIGHT = 56;
 
 type SceneViewProps = {
+  splitColumn: SplitViewStackColumn | null;
+  splitStackActive: boolean;
   index: number;
   focused: boolean;
   route: Route<string>;
@@ -65,6 +73,8 @@ type SceneViewProps = {
 const useNativeDriver = Platform.OS !== 'web';
 
 const SceneView = ({
+  splitColumn,
+  splitStackActive,
   index,
   focused,
   route,
@@ -270,8 +280,11 @@ const SceneView = ({
     return undefined;
   }, [canGoBack, backTitle]);
 
+  const isSplitStackScreen =
+    splitColumn && !isPreloaded && (index === 0 || !isPresentationModal) && !hasModalBelow;
   const headerConfig = useHeaderConfigProps({
     ...options,
+    splitViewColumn: isSplitStackScreen ? splitColumn : null,
     route,
     headerBackButtonMenuEnabled: isRemovalPrevented ? false : headerBackButtonMenuEnabled,
     headerBackTitle: options.headerBackTitle !== undefined ? options.headerBackTitle : undefined,
@@ -452,7 +465,13 @@ const SceneView = ({
               ) : null}
               <HeaderShownContext.Provider value={isParentHeaderShown || headerShown !== false}>
                 <HeaderBackContext.Provider value={headerBack}>
-                  {render()}
+                  <SplitViewStackContext value={null}>{render()}</SplitViewStackContext>
+                  {isSplitStackScreen && (
+                    <SplitViewNativeStackScreen
+                      columnId={splitColumn.columnId}
+                      active={splitStackActive}
+                    />
+                  )}
                 </HeaderBackContext.Provider>
               </HeaderShownContext.Provider>
             </HeaderHeightContext.Provider>
@@ -481,6 +500,8 @@ export function NativeStackView({
   isRemovalPrevented,
   unstable_nativeProps,
 }: Props) {
+  const splitColumn = use(SplitViewStackContext);
+  const splitStackActive = use(IsFocusedContext) ?? true;
   const { colors } = useTheme();
   const { setNextDismissedKey } = useDismissedRouteError(state, isPreloaded);
 
@@ -525,6 +546,8 @@ export function NativeStackView({
           return (
             <SceneView
               key={route.key}
+              splitColumn={splitColumn}
+              splitStackActive={splitStackActive}
               index={index}
               focused={isFocused}
               route={route}

@@ -1,16 +1,17 @@
-import { screen, within } from '@testing-library/react-native';
-import { Children, isValidElement, type ReactNode } from 'react';
-import { Text, type NativeSyntheticEvent } from 'react-native';
+import { act, fireEvent, screen, within } from '@testing-library/react-native';
+import { Children, isValidElement, useState, type ReactNode } from 'react';
+import { Button, Text, type NativeSyntheticEvent } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { IsWithinNativeNavigator } from '../../exports';
+import { router } from '../../imperative-api';
 import JSStack from '../../layouts/JSStack';
 import Stack from '../../layouts/StackClient';
 import { SafeAreaView, Split } from '../../optional-libraries/react-native-screens';
 import { renderRouter } from '../../testing-library';
 import { Slot } from '../../views/Navigator';
 import { SplitViewColumnHeader } from '../header';
-import { SplitViewNativeHeader } from '../native';
+import { SplitViewNativeHeader, SplitViewNativeColumn } from '../native';
 import { SplitView } from '../split-view';
 
 jest.mock('../../optional-libraries/react-native-screens', () => {
@@ -48,6 +49,10 @@ jest.mock('../native', () => {
   const { View }: typeof import('react-native') = jest.requireActual('react-native');
   return {
     SplitViewNativeHeader: jest.fn(() => <View testID="SplitViewNativeHeader" />),
+    SplitViewNativeColumn: (props: object) => <View testID="SplitViewNativeColumn" {...props} />,
+    SplitViewNativeStackScreen: (props: object) => (
+      <View testID="SplitViewNativeStackScreen" {...props} />
+    ),
   };
 });
 
@@ -268,7 +273,7 @@ it('wraps the detail column content in a horizontal SafeAreaView', async () => {
   const columnProps = jest.mocked(Split.Column).mock.calls[1]![0];
   expect(
     Children.toArray(columnProps.children).map((child) => isValidElement(child) && child.type)
-  ).toEqual([SafeAreaView]);
+  ).toEqual([SafeAreaView, SplitViewNativeColumn]);
   // The second SafeAreaView is in the detail column.
   expect(jest.mocked(SafeAreaView).mock.calls[1]![0].edges).toEqual({ left: true, right: true });
 });
@@ -300,7 +305,7 @@ it('wraps SplitView.Inspector content in a horizontal SafeAreaView', async () =>
   expect(jest.mocked(SafeAreaView).mock.calls[1]![0].edges).toEqual({ left: true, right: true });
 });
 
-it('does not render a SafeAreaView when disableHorizontalSafeAreaInsets is true', async () => {
+it('keeps the safe area wrappers with disabled edges when horizontal insets are disabled', async () => {
   await renderRouter(
     {
       _layout: () => (
@@ -318,14 +323,18 @@ it('does not render a SafeAreaView when disableHorizontalSafeAreaInsets is true'
     { initialUrl: '/' }
   );
 
-  expect(SafeAreaView).not.toHaveBeenCalled();
+  expect(jest.mocked(SafeAreaView).mock.calls.map(([props]) => props.edges)).toEqual([
+    { left: false, right: false },
+    { left: false, right: false },
+    { left: false, right: false },
+  ]);
   // The first Split.Column is the sidebar column. The second is the detail column.
   const sidebarColumnProps = jest.mocked(Split.Column).mock.calls[0]![0];
   expect(
     Children.toArray(sidebarColumnProps.children).map(
       (child) => isValidElement(child) && child.type
     )
-  ).toEqual([SafeAreaProvider]);
+  ).toEqual([SafeAreaView]);
 });
 
 it('does not pass disableHorizontalSafeAreaInsets to Split.Host', async () => {
@@ -345,6 +354,77 @@ it('does not pass disableHorizontalSafeAreaInsets to Split.Host', async () => {
 
   const hostProps = jest.mocked(Split.Host).mock.lastCall![0];
   expect('disableHorizontalSafeAreaInsets' in hostProps).toBe(false);
+});
+
+it('preserves sidebar and inspector state when global insets change during Stack ownership', async () => {
+  function Sidebar() {
+    const [count, setCount] = useState(0);
+    return <Button title={`Sidebar count ${count}`} onPress={() => setCount(count + 1)} />;
+  }
+  function Inspector() {
+    const [count, setCount] = useState(0);
+    return <Button title={`Inspector count ${count}`} onPress={() => setCount(count + 1)} />;
+  }
+  await renderRouter({
+    _layout: function Layout() {
+      const [disabled, setDisabled] = useState(false);
+      return (
+        <>
+          <Button title="Toggle all insets" onPress={() => setDisabled(!disabled)} />
+          <SplitView disableHorizontalSafeAreaInsets={disabled}>
+            <SplitView.Column>
+              <Sidebar />
+            </SplitView.Column>
+            <SplitView.Inspector>
+              <Inspector />
+            </SplitView.Inspector>
+          </SplitView>
+        </>
+      );
+    },
+    index: () => <Text>Content</Text>,
+  });
+  await fireEvent.press(screen.getByText('Sidebar count 0'));
+  await fireEvent.press(screen.getByText('Inspector count 0'));
+  await fireEvent(screen.getByTestId('SplitViewNativeColumn'), 'ownershipChange', {
+    nativeEvent: { ownsHeader: true, isCollapsed: true },
+  });
+  expect(
+    jest
+      .mocked(SafeAreaView)
+      .mock.calls.slice(-3)
+      .map(([props]) => props.edges)
+  ).toEqual([
+    { left: true, right: true },
+    { left: false, right: false },
+    { left: true, right: true },
+  ]);
+  await fireEvent.press(screen.getByText('Toggle all insets'));
+  expect(
+    jest
+      .mocked(SafeAreaView)
+      .mock.calls.slice(-3)
+      .map(([props]) => props.edges)
+  ).toEqual([
+    { left: false, right: false },
+    { left: false, right: false },
+    { left: false, right: false },
+  ]);
+  expect(screen.getByText('Sidebar count 1')).toBeVisible();
+  expect(screen.getByText('Inspector count 1')).toBeVisible();
+  await fireEvent.press(screen.getByText('Toggle all insets'));
+  expect(
+    jest
+      .mocked(SafeAreaView)
+      .mock.calls.slice(-3)
+      .map(([props]) => props.edges)
+  ).toEqual([
+    { left: true, right: true },
+    { left: false, right: false },
+    { left: true, right: true },
+  ]);
+  expect(screen.getByText('Sidebar count 1')).toBeVisible();
+  expect(screen.getByText('Inspector count 1')).toBeVisible();
 });
 
 it('passes the SplitView.Column header to the native header as flat props', async () => {
@@ -980,7 +1060,7 @@ it('renders the SplitView.Content header as the last child of the content column
     Children.toArray(contentColumnProps.children).map(
       (child) => isValidElement(child) && child.type
     )
-  ).toEqual([SafeAreaView, SplitViewColumnHeader]);
+  ).toEqual([SafeAreaView, SplitViewNativeColumn, SplitViewColumnHeader]);
 });
 
 it('renders the SplitView.Inspector header in the inspector', async () => {
@@ -1063,4 +1143,165 @@ it('rejects two SplitView.Content in a SplitView', async () => {
         index: () => <Text>Index</Text>,
       })
   ).rejects.toThrow('There can only be one SplitView.Content in the SplitView.');
+});
+
+it('keeps automatic column ownership available without Content or a header', async () => {
+  await renderRouter({
+    _layout: () => (
+      <SplitView>
+        <SplitView.Column />
+      </SplitView>
+    ),
+    index: () => <Text>Plain content</Text>,
+  });
+  expect(screen.getByTestId('SplitViewNativeColumn')).toBeVisible();
+  expect(screen.queryByTestId('SplitViewNativeHeader')).toBeNull();
+});
+
+it('removes only collapsed owned content insets without remounting routes', async () => {
+  await renderRouter({
+    _layout: () => (
+      <SplitView>
+        <SplitView.Column>
+          <Text>Sidebar</Text>
+        </SplitView.Column>
+      </SplitView>
+    ),
+    index: function Index() {
+      const [count, setCount] = useState(0);
+      return <Button title={`Count ${count}`} onPress={() => setCount(count + 1)} />;
+    },
+  });
+  await fireEvent.press(screen.getByText('Count 0'));
+  await fireEvent(screen.getByTestId('SplitViewNativeColumn'), 'ownershipChange', {
+    nativeEvent: { ownsHeader: true, isCollapsed: true },
+  });
+  expect(jest.mocked(SafeAreaView).mock.lastCall![0].edges).toEqual({ left: false, right: false });
+  expect(jest.mocked(SafeAreaView).mock.calls.at(-2)![0].edges).toEqual({
+    left: true,
+    right: true,
+  });
+  expect(screen.getByText('Count 1')).toBeVisible();
+  await fireEvent(screen.getByTestId('SplitViewNativeColumn'), 'ownershipChange', {
+    nativeEvent: { ownsHeader: true, isCollapsed: false },
+  });
+  expect(jest.mocked(SafeAreaView).mock.lastCall![0].edges).toEqual({ left: true, right: true });
+  expect(screen.getByText('Count 1')).toBeVisible();
+  await fireEvent(screen.getByTestId('SplitViewNativeColumn'), 'ownershipChange', {
+    nativeEvent: { ownsHeader: false, isCollapsed: true },
+  });
+  expect(jest.mocked(SafeAreaView).mock.lastCall![0].edges).toEqual({ left: true, right: true });
+});
+
+it('automatically registers the outermost Stack even with its header explicitly hidden', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      'stack/_layout': () => <Stack screenOptions={{ headerShown: false }} />,
+      'stack/index': () => <Text>Stack root</Text>,
+    },
+    { initialUrl: '/stack' }
+  );
+  const marker = screen.getByTestId('SplitViewNativeStackScreen');
+  expect(marker.props.columnId).toBe(screen.getByTestId('SplitViewNativeColumn').props.columnId);
+  expect(marker.props.active).toBe(true);
+});
+
+it('does not register a second Stack inside the owning Stack', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      'stack/_layout': () => <Stack />,
+      'stack/inner/_layout': () => <Stack />,
+      'stack/inner/index': () => <Text>Inner Stack</Text>,
+    },
+    { initialUrl: '/stack/inner' }
+  );
+  expect(screen.getAllByTestId('SplitViewNativeStackScreen')).toHaveLength(1);
+});
+
+it('does not register a Stack outside a SplitView', async () => {
+  await renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text>Stack root</Text>,
+  });
+  expect(screen.queryByTestId('SplitViewNativeStackScreen')).toBeNull();
+});
+
+it('unregisters the Stack automatically when navigating to plain content', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      'stack/_layout': () => <Stack />,
+      'stack/index': () => <Text>Stack root</Text>,
+      plain: () => <Text>Plain content</Text>,
+    },
+    { initialUrl: '/stack' }
+  );
+  expect(screen.getAllByTestId('SplitViewNativeStackScreen')).toHaveLength(1);
+  await act(() => router.navigate('/plain'));
+  expect(screen.queryByTestId('SplitViewNativeStackScreen')).toBeNull();
+  expect(screen.getByText('Plain content')).toBeVisible();
+});
+
+it('keeps the underlying Stack registration while excluding a presented modal', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      'stack/_layout': () => (
+        <Stack>
+          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+        </Stack>
+      ),
+      'stack/index': () => <Text>Stack root</Text>,
+      'stack/modal': () => <Text>Modal</Text>,
+    },
+    { initialUrl: '/stack' }
+  );
+  await act(() => router.push('/stack/modal'));
+  expect(
+    screen.getAllByTestId('SplitViewNativeStackScreen', { includeHiddenElements: true })
+  ).toHaveLength(1);
+  expect(
+    screen.getByTestId('SplitViewNativeStackScreen', { includeHiddenElements: true }).props.active
+  ).toBe(true);
+  await act(() => router.back());
+  expect(screen.getAllByTestId('SplitViewNativeStackScreen')).toHaveLength(1);
+});
+
+it('registers a first screen configured as modal because native presents it as a card', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      'stack/_layout': () => <Stack screenOptions={{ presentation: 'modal' }} />,
+      'stack/index': () => <Text>Stack root</Text>,
+    },
+    { initialUrl: '/stack' }
+  );
+  expect(screen.getAllByTestId('SplitViewNativeStackScreen')).toHaveLength(1);
 });

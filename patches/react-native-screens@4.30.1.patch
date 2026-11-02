@@ -1,0 +1,15 @@
+diff --git a/ios/gamma/split/RNSSplitHostController.mm b/ios/gamma/split/RNSSplitHostController.mm
+index c7d2db75965d2cd661d9a56922d4d201a89564c1..6713919f16c341576faeaf309b89534cf44ad87b 100644
+--- a/ios/gamma/split/RNSSplitHostController.mm
++++ b/ios/gamma/split/RNSSplitHostController.mm
+@@ -158,8 +158,9 @@ - (void)refreshSecondaryNavBar
+   UINavigationController *navigationController = (UINavigationController *)secondaryViewController;
+ 
+   /** The assumption is that it should come in a single batch and it won't cause any delays in rendering the content. */
++  BOOL wasHidden = navigationController.isNavigationBarHidden;
+   [navigationController setNavigationBarHidden:YES animated:NO];
+-  [navigationController setNavigationBarHidden:NO animated:NO];
++  [navigationController setNavigationBarHidden:wasHidden animated:NO];
+ }
+ 
+ #pragma mark - Helpers

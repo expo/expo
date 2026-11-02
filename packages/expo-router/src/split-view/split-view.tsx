@@ -2,6 +2,7 @@ import React, {
   isValidElement,
   use,
   useImperativeHandle,
+  useId,
   useState,
   type ReactElement,
   type ReactNode,
@@ -28,6 +29,9 @@ import {
   type SplitViewContentProps,
   type SplitViewHeader,
 } from './elements';
+import { SplitViewColumnHeader } from './header';
+import { SplitViewNativeColumn } from './native';
+import { SplitViewStackContext } from './stack-context';
 import { SplitViewContext, type SplitViewState } from './useSplitView';
 import { getColumnEventProps, useSplitViewColumns } from './useSplitViewColumns';
 
@@ -174,6 +178,9 @@ function SplitViewHost({
   ...splitViewHostProps
 }: SplitViewHostProps) {
   useAnchorWarning();
+  const columnId = useId();
+  const [ownership, setOwnership] = useState({ ownsHeader: false, isCollapsed: false });
+  const removeContentInsets = ownership.ownsHeader && ownership.isCollapsed;
   const columnNames = COLUMN_NAMES[columnChildren.length]!;
   const [host, setHost] = useState<SplitHostCommands | null>(null);
   useImperativeHandle(ref, () => ({ show: (column) => host?.show(column) }), [host]);
@@ -208,14 +215,24 @@ function SplitViewHost({
           }}>
           {columns}
           <Split.Column {...getColumnEventProps(dispatch, 'secondary')}>
-            {/* TODO(@ubax): Replace the slot with NativeStack (ENG-28658) */}
             {getSplitColumnChildren(
               {
-                children: <SplitViewContentSlot activityEnabled={activityEnabled} />,
-                header: contentHeader,
+                children: (
+                  <SplitViewStackContext value={{ columnId, ...ownership }}>
+                    <SplitViewContentSlot activityEnabled={activityEnabled} />
+                  </SplitViewStackContext>
+                ),
               },
-              disableHorizontalSafeAreaInsets
+              removeContentInsets || disableHorizontalSafeAreaInsets
             )}
+            <SplitViewNativeColumn
+              columnId={columnId}
+              previousColumn={columnChildren.length > 1 ? 'supplementary' : 'primary'}
+              onOwnershipChange={({ nativeEvent }) => {
+                setOwnership(nativeEvent);
+              }}
+            />
+            {contentHeader && <SplitViewColumnHeader key="header" header={contentHeader} />}
           </Split.Column>
           {inspectors}
         </Split.Host>

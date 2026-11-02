@@ -43,3 +43,16 @@ export interface SplitViewNativeHeaderProps {
   backVisible?: SplitViewHeader['backVisible'];
   hidden?: SplitViewHeader['hidden'];
 }
+
+export interface SplitViewNativeColumnProps {
+  columnId: string;
+  previousColumn: string;
+  onOwnershipChange: (event: {
+    nativeEvent: { ownsHeader: boolean; isCollapsed: boolean };
+  }) => void;
+}
+
+export interface SplitViewNativeStackScreenProps {
+  columnId: string;
+  active: boolean;
+}

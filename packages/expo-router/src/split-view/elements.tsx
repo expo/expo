@@ -243,10 +243,12 @@ export function getSplitColumnChildren(
   let content: ReactNode = otherChildren.length > 0 && (
     <SafeAreaProvider key="safe-area-provider">{otherChildren}</SafeAreaProvider>
   );
-  if (content && !disableHorizontalSafeAreaInsets) {
+  if (content) {
     // The provider is inside the SafeAreaView, so `useSafeAreaInsets` does not report the applied horizontal insets again.
     content = (
-      <SafeAreaView key="safe-area-view" edges={{ left: true, right: true }}>
+      <SafeAreaView
+        key="safe-area-view"
+        edges={{ left: !disableHorizontalSafeAreaInsets, right: !disableHorizontalSafeAreaInsets }}>
         {content}
       </SafeAreaView>
     );

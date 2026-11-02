@@ -43,6 +43,7 @@ minimumReleaseAgeExclude:
 patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
   react-native-reanimated: patches/react-native-reanimated.patch
+  react-native-screens@4.30.1: patches/react-native-screens@4.30.1.patch
   react-native-worklets: patches/react-native-worklets.patch
   react-server-dom-webpack: patches/react-server-dom-webpack.patch
 

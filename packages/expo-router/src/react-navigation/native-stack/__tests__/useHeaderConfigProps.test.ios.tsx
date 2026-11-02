@@ -1367,3 +1367,74 @@ describe('backTitle', () => {
     expect(result.current.backTitle).toBe('Go Back');
   });
 });
+
+it('composes the split sidebar with a custom leading view using its full props once', async () => {
+  const headerLeft = jest.fn(() => <View testID="app-leading-view" />);
+  const { result } = await renderHook(() =>
+    useHeaderConfigProps(
+      defaultProps({
+        splitViewColumn: { columnId: 'content', ownsHeader: true, isCollapsed: false },
+        headerLeft,
+        headerBack: { title: 'Previous screen', href: undefined },
+        headerTintColor: 'purple',
+        headerStyle: { backgroundColor: 'white' },
+      })
+    )
+  );
+  expect(headerLeft).toHaveBeenCalledTimes(1);
+  expect(headerLeft).toHaveBeenCalledWith({
+    tintColor: 'purple',
+    canGoBack: true,
+    backgroundColor: 'white',
+    label: 'Previous screen',
+    href: undefined,
+  });
+  expect(result.current.backButtonInCustomView).toBe(true);
+  expect(result.current.headerLeftBarButtonItems).toEqual([
+    expect.objectContaining({ type: 'button', title: 'Show Sidebar' }),
+  ]);
+  const { getByTestId } = await render(<>{result.current.children}</>);
+  expect(getByTestId('app-leading-view')).toBeVisible();
+});
+
+it('keeps explicit hidden Stack and Back options while composing split controls', async () => {
+  const { result } = await renderHook(() =>
+    useHeaderConfigProps(
+      defaultProps({
+        splitViewColumn: { columnId: 'content', ownsHeader: true, isCollapsed: false },
+        headerShown: false,
+        headerBackVisible: false,
+      })
+    )
+  );
+  expect(result.current.hidden).toBe(true);
+  expect(result.current.hideBackButton).toBe(true);
+  expect(result.current.backButtonInCustomView).toBe(false);
+  expect(result.current.headerLeftBarButtonItems).toEqual([
+    expect.objectContaining({ type: 'button', title: 'Show Sidebar' }),
+  ]);
+});
+
+it('keeps sidebar and app items when the header title updates', async () => {
+  const onPress = jest.fn();
+  const { result, rerender } = await renderHook<
+    ReturnType<typeof useHeaderConfigProps>,
+    { title: string }
+  >(
+    ({ title }) =>
+      useHeaderConfigProps(
+        defaultProps({
+          title,
+          splitViewColumn: { columnId: 'content', ownsHeader: true, isCollapsed: false },
+          unstable_headerLeftItems: () => [{ type: 'button', label: 'Edit', onPress }],
+        })
+      ),
+    { initialProps: { title: 'First' } }
+  );
+  await rerender({ title: 'Updated' });
+  expect(result.current.title).toBe('Updated');
+  expect(result.current.headerLeftBarButtonItems).toEqual([
+    expect.objectContaining({ type: 'button', title: 'Show Sidebar' }),
+    expect.objectContaining({ type: 'button', title: 'Edit', onPress }),
+  ]);
+});
