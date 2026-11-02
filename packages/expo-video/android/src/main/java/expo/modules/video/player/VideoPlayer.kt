@@ -265,6 +265,10 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   var keepScreenOnWhilePlaying by VideoPlayerKeepAwake(this, appContext)
 
   private val playerListener = object : Player.Listener {
+    override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+      sendEvent(PlayerEvent.PlaybackRequestedChanged(playWhenReady))
+    }
+
     override fun onIsPlayingChanged(isPlaying: Boolean) {
       this@VideoPlayer.playing = isPlaying
     }

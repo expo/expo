@@ -18,6 +18,10 @@ class IsPlayingEventPayload(
   @Field val oldIsPlaying: Boolean?
 ) : VideoEventPayload
 
+class PlaybackRequestedChangedEventPayload(
+  @Field val isPlaybackRequested: Boolean
+) : VideoEventPayload
+
 class VolumeChangedEventPayload(
   @Field val volume: Float,
   @Field val oldVolume: Float?

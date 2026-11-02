@@ -22,6 +22,13 @@ export type VideoPlayerEvents = {
   playingChange(payload: PlayingChangeEventPayload): void;
 
   /**
+   * Handler for an event emitted when playback is requested or stops being requested, for example
+   * after calling `play()` or `pause()`. Unlike `playingChange`, the request stays set while the
+   * player is buffering or seeking.
+   */
+  playbackRequestedChange(payload: PlaybackRequestedChangeEventPayload): void;
+
+  /**
    * Handler for an event emitted when the `playbackRate` property of the player changes.
    */
   playbackRateChange(payload: PlaybackRateChangeEventPayload): void;
@@ -123,6 +130,17 @@ export type PlayingChangeEventPayload = {
    * Previous value of the `isPlaying` property.
    */
   oldIsPlaying?: boolean;
+};
+
+/**
+ * Data delivered with the [`playbackRequestedChange`](#videoplayerevents) event.
+ */
+export type PlaybackRequestedChangeEventPayload = {
+  /**
+   * Whether playback is requested. This is `true` after `play()` until playback is paused, ends, or
+   * fails, including while the player is buffering or seeking.
+   */
+  isPlaybackRequested: boolean;
 };
 
 /**
