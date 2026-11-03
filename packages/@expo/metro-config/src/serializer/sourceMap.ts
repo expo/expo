@@ -188,9 +188,15 @@ export function normalizeExportSourceMapPaths(
   serverRoot: string
 ): ComposableSourceMap {
   const flat = flattenSourceMap(map);
+  const filesystemRoot =
+    flat.sourceRoot && path.isAbsolute(flat.sourceRoot) ? flat.sourceRoot : null;
   return {
     ...flat,
+    sourceRoot: filesystemRoot ? undefined : flat.sourceRoot,
     sources: flat.sources.map((source) => {
+      if (source != null && filesystemRoot && !URL.canParse(source)) {
+        source = path.resolve(filesystemRoot, source);
+      }
       if (source == null || !path.isAbsolute(source)) return source;
       const relative = path.relative(serverRoot, source);
       return relative !== '..' &&
