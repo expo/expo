@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { AppState } from 'react-native';
-import { clearSharedPayloads, getResolvedSharedPayloadsAsync, getSharedPayloads } from './Sharing';
+import { clearSharedPayloads as clearNativeSharedPayloads, getResolvedSharedPayloadsAsync, getSharedPayloads, } from './Sharing';
 function sharePayloadsAreEqual(a, b) {
     if (a.length !== b.length) {
         return false;
@@ -58,6 +58,14 @@ export function useIncomingShare() {
         catch (e) {
             setError(e instanceof Error ? e : new Error('Failed to resolve data'));
         }
+    }, []);
+    const clearSharedPayloads = useCallback(() => {
+        clearNativeSharedPayloads();
+        currentSharedDataRef.current = [];
+        setSharedPayloads([]);
+        setResolvedSharedPayloads([]);
+        setIsResolving(false);
+        setError(null);
     }, []);
     useEffect(() => {
         refreshSharePayloads();
