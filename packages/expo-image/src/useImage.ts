@@ -5,7 +5,12 @@ import { useEffect, useRef, useState } from 'react';
 
 import { Image } from './Image';
 import type { ImageLoadOptions, ImageRef, ImageSource } from './Image.types';
+import { captureDevToolsRequestId } from './utils/captureDevToolsRequestId';
 import { resolveSource } from './utils/resolveSources';
+
+function isRemoteHttpUri(uri: string | undefined): uri is string {
+  return !!uri && /^https?:/i.test(uri);
+}
 
 /**
  * A hook that loads an image from the given source and returns a reference
@@ -54,6 +59,16 @@ export function useImage(
 ): ImageRef | null {
   const resolvedSource = resolveSource(source) as ImageSource;
   const [image, setImage] = useState<ImageRef | null>(null);
+  const devToolsRequestIds = useRef(new Map<string, string>());
+  // Recorded while this hook is on the stack, so the initiator includes the component that called it.
+  // `loadAsync` later reuses the id instead of capturing the effect.
+  const uri = resolvedSource?.uri;
+  if (isRemoteHttpUri(uri) && !devToolsRequestIds.current.has(uri)) {
+    const devToolsRequestId = captureDevToolsRequestId();
+    if (devToolsRequestId) {
+      devToolsRequestIds.current.set(uri, devToolsRequestId);
+    }
+  }
 
   // Since options are not dependencies of the below effect, we store them in a ref.
   // Once the image is asynchronously loaded, the effect will use the most recent options,
@@ -67,7 +82,11 @@ export function useImage(
     let isEffectValid = true;
 
     function loadImage() {
-      Image.loadAsync(resolvedSource, options)
+      const devToolsRequestId = isRemoteHttpUri(uri) ? devToolsRequestIds.current.get(uri) : undefined;
+      const sourceWithInitiator = devToolsRequestId
+        ? { ...resolvedSource, devToolsRequestId }
+        : resolvedSource;
+      Image.loadAsync(sourceWithInitiator, options)
         .then((image) => {
           if (isEffectValid) {
             setImage(image);
