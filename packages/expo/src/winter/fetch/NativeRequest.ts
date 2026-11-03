@@ -16,6 +16,8 @@ export interface NativeRequestInit {
   headers?: NativeHeadersType;
   method?: string;
   redirect?: RequestRedirect;
+  /** Identifies the request to React Native DevTools, which records the JS call stack as its initiator */
+  devToolsRequestId?: string;
 }
 
 export type NativeResponseEvents = {
