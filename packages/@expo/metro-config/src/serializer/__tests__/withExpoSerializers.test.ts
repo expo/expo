@@ -1140,6 +1140,35 @@ describe('worker compatibility', () => {
 });
 
 describe(withSerializerPlugins, () => {
+  it.each(['node', 'react-server'])(
+    'preserves captured custom serializers in static %s exports',
+    async (environment) => {
+      const args = await microBundle({
+        fs: { 'index.js': 'export const value = 42;' },
+        options: { isServer: true, dev: false, output: 'static' },
+      });
+      args[2].transformOptions.customTransformOptions!.environment = environment;
+      const customSerializer = jest.fn(
+        async (...props: Parameters<typeof baseJSBundle>) =>
+          bundleToString(baseJSBundle(...props)).code + '\n// Custom instrumentation'
+      );
+      const config = withSerializerPlugins({ projectRoot, serializer: { customSerializer } }, []);
+      const result = (await config.serializer.customSerializer(...args)) as any;
+      expect(customSerializer).toHaveBeenCalledTimes(1);
+      expect(result.artifacts).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            type: 'js',
+            source: expect.stringContaining('// Custom instrumentation'),
+          }),
+        ])
+      );
+      expect(result.artifacts[0].source).toContain(
+        `module.exports = TEST_RUN_MODULE(${JSON.stringify(args[0])});`
+      );
+    }
+  );
+
   it('composes a custom wrapper without recovering it recursively', async () => {
     const args = await microBundle({ fs: { 'index.js': 'export const value = 42;' } });
     const config = {

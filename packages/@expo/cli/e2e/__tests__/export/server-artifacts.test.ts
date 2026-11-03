@@ -11,7 +11,7 @@ import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
-it.each(['pair', 'string'])(
+it.each(['pair', 'string', 'captured'])(
   'exports a custom serializer %s result as server artifacts',
   async (format) => {
     let projectRoot = getTemporaryPath();
@@ -36,9 +36,13 @@ const bundleToString = require(${JSON.stringify(require.resolve('@expo/metro/met
 config.serializer.customSerializer = (...args) => args[0].endsWith('/hello+api.ts')
   ? ${JSON.stringify(format)} === 'string' ? bundleToString(baseJSBundle(...args)).code : {
       code: 'module.exports = { GET() { return Response.json({ custom: true }); } };\\n//# sourceMappingURL=old.js.map\\n//# debugId=01234567-89ab-4cde-8fab-0123456789ab',
-      map: JSON.stringify({ version: 3, sources: ['custom://project/original.ts'], sourcesContent: ['original source'], names: [], mappings: 'AAAA', debugId: '01234567-89ab-4cde-8fab-0123456789ab' }),
+      map: JSON.stringify({ version: 3, sources: ${JSON.stringify(format)} === 'captured' ? [require('node:path').join(__dirname, 'app/hello+api.ts')] : ['custom://project/original.ts'], sourcesContent: ['original source'], names: [], mappings: 'AAAA', debugId: '01234567-89ab-4cde-8fab-0123456789ab' }),
     }
   : serialize(...args);
+if (${JSON.stringify(format)} === 'captured') {
+  const { withSerializerPlugins } = require(${JSON.stringify(require.resolve('@expo/metro-config/build/serializer/withExpoSerializers'))});
+  module.exports = withSerializerPlugins(config, []);
+}
 `
       );
       await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--api-only', '--source-maps'], {
@@ -50,12 +54,12 @@ config.serializer.customSerializer = (...args) => args[0].endsWith('/hello+api.t
       const output = path.join(serverRoot, filename);
       const { GET } = createRequire(__filename)(output);
       await expect((await GET(new Request('http://localhost/hello'))).json()).resolves.toEqual(
-        format === 'pair' ? { custom: true } : { message: 'Hello from server artifacts' }
+        format === 'string' ? { message: 'Hello from server artifacts' } : { custom: true }
       );
       const map = JSON.parse(await fs.promises.readFile(output + '.map', 'utf8'));
-      if (format === 'pair') {
+      if (format !== 'string') {
         expect(map).toMatchObject({
-          sources: ['custom://project/original.ts'],
+          sources: format === 'captured' ? ['/app/hello+api.ts'] : ['custom://project/original.ts'],
           mappings: 'AAAA',
           debugId: '01234567-89ab-4cde-8fab-0123456789ab',
         });

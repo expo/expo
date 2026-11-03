@@ -21,6 +21,7 @@ import { event } from './events';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getServerRunModuleStatement } from './getServerRunModuleStatement';
 import { graphToSerialAssetsAsync, graphToSingleChunk } from './serializeChunks';
+import { serializeServerBundleAsync } from './serializeServerBundle';
 import type { ChunkingStrategy } from './serializerAssets';
 
 export type { SerialAsset } from './serializerAssets';
@@ -183,6 +184,7 @@ function getDefaultSerializer(
       platform: graph.transformOptions?.platform,
       environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
     };
+    const isServer = context.environment === 'node' || context.environment === 'react-server';
 
     const isLoaderBundle =
       graph.transformOptions?.customTransformOptions?.isLoaderBundle === 'true';
@@ -246,7 +248,6 @@ function getDefaultSerializer(
     })();
 
     if (serializerOptions?.output !== 'static') {
-      const isServer = context.environment === 'node' || context.environment === 'react-server';
       return defaultSerializer(
         entryPoint,
         preModules,
@@ -282,20 +283,33 @@ function getDefaultSerializer(
         ? 'granular'
         : 'legacy';
 
-    const assets = await graphToSerialAssetsAsync(
-      config,
-      {
-        includeSourceMaps: !!serializerOptions.includeSourceMaps,
-        splitChunks: !!serializerOptions.splitChunks,
-        ...configOptions,
-        chunkingStrategy,
-      },
-      entryPoint,
-      preModules,
-      graph,
+    const assets =
+      isServer && fallbackSerializer
+        ? await serializeServerBundleAsync(
+            await fallbackSerializer(entryPoint, preModules, graph, {
+              ...options,
+              getRunModuleStatement: getServerRunModuleStatement(entryPoint, options),
+            }),
+            entryPoint,
+            preModules,
+            graph,
+            options,
+            config
+          )
+        : await graphToSerialAssetsAsync(
+            config,
+            {
+              includeSourceMaps: !!serializerOptions.includeSourceMaps,
+              splitChunks: !!serializerOptions.splitChunks,
+              ...configOptions,
+              chunkingStrategy,
+            },
+            entryPoint,
+            preModules,
+            graph,
 
-      options
-    );
+            options
+          );
 
     if (supportsNonSerialReturn) {
       // @ts-expect-error: this is future proofing for adding assets to the output as well.
