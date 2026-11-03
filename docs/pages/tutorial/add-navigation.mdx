@@ -271,7 +271,7 @@ export default function TabLayout() {
 
 Native tabs don't add a header to the screens, so the Home and About screens no longer have one. On web, the tabs appear as a list of labels at the top of the page.
 
-> **info** On web, the development build can log a hydration error: "A tree hydrated but some attributes of the server rendered HTML didn't match the client properties". The default template uses server rendering (`web.output: "server"` in **app.json**), and the `id` and `aria-*` values of the tabs differ between the server HTML and the browser. This is a known issue in Expo Router, tracked in [expo/expo#52249](https://github.com/expo/expo/issues/52249), and is not caused by the tutorial code. The tabs still switch screens.
+> **info** On web, the development build can log a hydration error: "A tree hydrated but some attributes of the server rendered HTML didn't match the client properties". This is a known issue in Expo Router, tracked in [expo/expo#52249](https://github.com/expo/expo/issues/52249), and is not caused by the tutorial code.
 
 Let's take a look at our app now to see the new bottom tabs:
 
