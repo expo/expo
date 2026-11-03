@@ -77,7 +77,6 @@ module.exports = [
         },
       ],
 
-      'no-useless-constructor': 'off',
       '@typescript-eslint/no-useless-constructor': 'warn',
       'no-undef': 'off',
 

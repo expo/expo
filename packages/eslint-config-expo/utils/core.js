@@ -9,13 +9,13 @@ module.exports = {
   env: { es2022: true },
   globals: {
     console: 'readonly',
-    exports: false,
-    global: false,
-    module: false,
-    require: false,
+    exports: 'readonly',
+    global: 'readonly',
+    module: 'readonly',
+    require: 'readonly',
   },
   extends: ['plugin:import/errors'],
-  plugins: ['import', 'expo'],
+  plugins: ['import'],
   rules: {
     eqeqeq: ['warn', 'smart'],
     'no-dupe-args': 'error',
@@ -46,7 +46,7 @@ module.exports = {
     'unicode-bom': ['warn', 'never'],
     'use-isnan': 'error',
     'valid-typeof': 'error',
-    'import/first': 'warn', //keep
+    'import/first': 'warn',
     'import/default': 'off',
     'no-var': 'error',
   },
@@ -63,12 +63,6 @@ module.exports = {
     },
   },
   overrides: [
-    {
-      files: ['*.d.ts'],
-      rules: {
-        'import/order': 'off',
-      },
-    },
     {
       files: ['metro.config.js'],
       env: {

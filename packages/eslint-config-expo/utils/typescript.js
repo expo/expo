@@ -40,16 +40,11 @@ module.exports = {
           { vars: 'all', args: 'none', ignoreRestSiblings: true, caughtErrors: 'all' },
         ],
 
-        'no-useless-constructor': 'off',
         '@typescript-eslint/no-useless-constructor': 'warn',
 
         // The typescript-eslint FAQ recommends turning off "no-undef" in favor of letting tsc check for
         // undefined variables, including types
         'no-undef': 'off',
-
-        // This conflicts with TypeScript's exhaustive branch checks, in case the return type allows `return;` via `undefined`
-        // "Function lacks ending return statement and ..."
-        'no-useless-return': 'off',
 
         // Prevent use of CJS `require` syntax unless importing assets to align with Metro behavior.
         '@typescript-eslint/no-require-imports': [

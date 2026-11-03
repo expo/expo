@@ -1,4 +1,3 @@
-const expo = require('eslint-plugin-expo');
 const importPlugin = require('eslint-plugin-import');
 const { jsExtensions } = require('./extensions');
 
@@ -8,17 +7,13 @@ module.exports = [
   importPlugin.flatConfigs.recommended,
   importPlugin.flatConfigs.errors,
   {
-    plugins: {
-      expo,
-    },
-
     languageOptions: {
       globals: {
         console: 'readonly',
-        exports: false,
-        global: false,
-        module: false,
-        require: false,
+        exports: 'readonly',
+        global: 'readonly',
+        module: 'readonly',
+        require: 'readonly',
       },
 
       ecmaVersion: 2022,
@@ -85,13 +80,6 @@ module.exports = [
       'import/first': 'warn',
       'import/default': 'off',
       'no-var': 'error',
-    },
-  },
-  {
-    files: ['**/*.d.ts'],
-
-    rules: {
-      'import/order': 'off',
     },
   },
   {

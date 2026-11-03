@@ -8,14 +8,6 @@ module.exports = [
       'react-hooks': pluginReactHooks,
     },
 
-    languageOptions: {
-      parserOptions: {
-        ecmaFeatures: {
-          jsx: true,
-        },
-      },
-    },
-
     settings: {
       react: {
         version: 'detect',
