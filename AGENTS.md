@@ -32,7 +32,6 @@ Run `et --help` to list the other commands.
 - Follow the style guides linked from [Style](./CONTRIBUTING.md#style). Changelog entries follow [Updating Changelogs](./guides/contributing/Updating%20Changelogs.md). Documentation prose follows the [Documentation Writing Style Guide](./guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
 - Run `et check-packages <package>` for each package you changed. That runs the same checks as CI. You can also run one task with `turbo run <task>` for `build`, `typecheck`, `depscheck`, `test`, or `lint`. See [Common package scripts](./CONTRIBUTING.md#common-package-scripts).
 - Add a changeset for a user-facing package change. Do not edit `CHANGELOG.md`. See [Recording Package Changes](./CONTRIBUTING.md#-recording-package-changes). `pnpm changeset` is interactive, so write the `.changeset/*.md` file directly. Do not add a pull request link or an author line. The changelog script adds both.
-- List only published packages in a changeset. Do not list a package with `"private": true` in its `package.json`, for example an app in `apps/`, `@expo/internal-scripts`, or `expotools`. Changesets does not version private packages, and `changeset version` fails on a changeset that lists both private and published packages.
 - If you change a config plugin, the pull request must work with `npx expo prebuild` and EAS Build.
 - If you edit versioned docs, copy the change to `docs/pages/versions/unversioned/`. See [Updating Documentation](./CONTRIBUTING.md#-updating-documentation).
 
