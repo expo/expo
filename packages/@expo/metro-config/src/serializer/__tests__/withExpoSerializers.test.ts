@@ -1,4 +1,6 @@
 import type { Module } from '@expo/metro/metro/DeltaBundler';
+import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
+import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import vm from 'node:vm';
 
 import * as graphAssets from '../../transform-worker/getAssets';
@@ -14,7 +16,7 @@ import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
 import * as chunkSerializer from '../serializeChunks';
 import { serializeServerBundleAsync, wrapServerBundle } from '../serializeServerBundle';
 import { flattenSourceMap } from '../sourceMap';
-import type { SerialAsset } from '../withExpoSerializers';
+import type { SerialAsset, Serializer } from '../withExpoSerializers';
 import {
   createSerializerFromSerialProcessors,
   createDefaultExportCustomSerializer,
@@ -1062,6 +1064,55 @@ describe('worker compatibility', () => {
 });
 
 describe(withSerializerPlugins, () => {
+  it('composes a custom wrapper without recovering it recursively', async () => {
+    const args = await microBundle({ fs: { 'index.js': 'export const value = 42;' } });
+    const config = {
+      projectRoot,
+      serializer: { customSerializer: undefined as Serializer | undefined },
+    };
+    withSerializerPlugins(config, []);
+    const original = config.serializer.customSerializer!;
+    const expected = await original(...args);
+    const customSerializer = jest.fn((...props: Parameters<typeof original>) => {
+      if (customSerializer.mock.calls.length > 2) throw new Error('Recursive custom serializer');
+      return original(...props);
+    });
+    config.serializer.customSerializer = customSerializer;
+    const wrapped = withSerializerPlugins(config, []);
+    expect(await wrapped.serializer.customSerializer!(...args)).toEqual(expected);
+    expect(customSerializer).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(['node', 'react-server'])(
+    'exports the entry through custom %s serializers',
+    async (environment) => {
+      const args = await microBundle({
+        fs: {
+          'index.js': `import './setup'; export const value = 42;`,
+          'setup.js': 'globalThis.setup = true;',
+        },
+        options: { isServer: true, dev: false },
+      });
+      args[2].transformOptions.customTransformOptions!.environment = environment;
+      args[3] = { ...args[3], runBeforeMainModule: [projectRoot + '/setup.js'] };
+      const config = withSerializerPlugins(
+        {
+          projectRoot,
+          serializer: {
+            customSerializer: async (...props: Parameters<typeof baseJSBundle>) =>
+              bundleToString(baseJSBundle(...props)).code,
+          },
+        },
+        []
+      );
+      const output = await config.serializer.customSerializer(...args);
+      expect(output).toContain(`module.exports = TEST_RUN_MODULE(${JSON.stringify(args[0])});`);
+      expect(output).not.toContain(
+        `module.exports = TEST_RUN_MODULE(${JSON.stringify(projectRoot + '/setup.js')});`
+      );
+    }
+  );
+
   it(`executes in the expected order`, async () => {
     const customSerializer = jest.fn();
     const customProcessor = jest.fn((...res) => res);
