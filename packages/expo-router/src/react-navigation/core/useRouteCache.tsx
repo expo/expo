@@ -7,12 +7,35 @@ import type { RouteProp } from './types';
 
 type RouteCache = Map<string, RouteProp<ParamListBase>>;
 
-// Navigating with the same param values creates a new `params` object, so compare params by value.
-// Nested objects and arrays are still compared by identity.
+const EMPTY_PARAMS = {};
+
+// Same as `isRecordEqual`, but compares `params` by value, because navigating with the same
+// param values creates a new `params` object. Keep the two functions aligned.
 function isRouteEqual(a: RouteProp<ParamListBase>, b: RouteProp<ParamListBase>) {
-  const { params: aParams, ...aRest } = a;
-  const { params: bParams, ...bRest } = b;
-  return isRecordEqual(aRest, bRest) && isRecordEqual({ ...aParams }, { ...bParams });
+  if (a === b) {
+    return true;
+  }
+
+  // `Object.keys` returns `string[]`, but every key comes from a route object.
+  const aKeys = Object.keys(a) as (keyof typeof a)[];
+  const bKeys = Object.keys(b);
+
+  // A route without `params` equals a route with empty `params`, so leave `params` out of the count.
+  const aKeysWithoutParamsCount = aKeys.length - Number('params' in a);
+  const bKeysWithoutParamsCount = bKeys.length - Number('params' in b);
+
+  if (aKeysWithoutParamsCount !== bKeysWithoutParamsCount) {
+    return false;
+  }
+
+  return (
+    aKeys.every((key) => key === 'params' || Object.is(a[key], b[key])) &&
+    // `params` is typed as `object`, but it is always a plain record of param values.
+    isRecordEqual(
+      (a.params ?? EMPTY_PARAMS) as Record<string, unknown>,
+      (b.params ?? EMPTY_PARAMS) as Record<string, unknown>
+    )
+  );
 }
 
 /**
