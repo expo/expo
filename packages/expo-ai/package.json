@@ -1,6 +1,6 @@
 {
   "name": "expo-ai",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Access system-provided on-device language models from Expo.",
   "keywords": [
     "ai",

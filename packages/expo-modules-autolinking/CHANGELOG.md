@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- [iOS] Preserve inherited Expo configuration flags from Xcode configuration (xcconfig) files instead of duplicating them in Xcode projects during autolinking. ([#48461](https://github.com/expo/expo/pull/48461) by [@gaetanob-sportsbet](https://github.com/gaetanob-sportsbet))
+
 ## 58.0.16
 
 ### Patch Changes

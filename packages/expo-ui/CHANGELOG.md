@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.27
+
+### Patch Changes
+
+- [iOS] Fix fixed-size `Host` content placed too high when a safe-area inset covers the `Host`, for example below the fold of a sheet. ([#52682](https://github.com/expo/expo/pull/52682) by [@dileepapeiris](https://github.com/dileepapeiris))
+- [iOS] Keep room for the minimum length of a `Spacer` in a universal `Row` or `Column`, as `HStack` and `VStack` do. A `Row` with a `Spacer` and a `TextInput` no longer gets wider than its `FieldGroup` row. ([#52807](https://github.com/expo/expo/pull/52807) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fix a universal `Column` in a `Row` staying at its ideal width, so children with `maxWidth: Infinity` did not fill it. ([#52820](https://github.com/expo/expo/pull/52820) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fix a universal `Column` with no width collapsing to 0 when it contains a `List`. ([#52792](https://github.com/expo/expo/pull/52792) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ## 58.0.26
 
 ### Patch Changes

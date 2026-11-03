@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.21
+
+### Patch Changes
+
+- [Android] Fix a startup crash (`Compiling JS failed: Buffer is smaller than the size stated in the file header`) caused by a truncated update asset. Downloaded assets are now moved into place with an atomic rename after the hash is verified, instead of being stream-copied into the final path, and an asset file that already exists on disk is only reused when it matches the hash declared in the manifest. ([#51715](https://github.com/expo/expo/pull/51715) by [@AndreiCalazans](https://github.com/AndreiCalazans))
+- Replace glob with Node glob and skip node_modules when discovering gitignore files. ([#52775](https://github.com/expo/expo/pull/52775) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#52688](https://github.com/expo/expo/pull/52688))
+  - @expo/env@2.5.4
+
 ## 58.0.20
 
 ### Patch Changes

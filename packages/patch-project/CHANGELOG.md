@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.20
+
+### Patch Changes
+
+- Replace glob with Node glob for patch discovery. ([#52779](https://github.com/expo/expo/pull/52779) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#52788](https://github.com/expo/expo/pull/52788), [#52781](https://github.com/expo/expo/pull/52781), [#52688](https://github.com/expo/expo/pull/52688))
+  - @expo/config-plugins@58.0.12
+  - @expo/config@58.0.11
+  - @expo/env@2.5.4
+
 ## 58.0.19
 
 ### Patch Changes

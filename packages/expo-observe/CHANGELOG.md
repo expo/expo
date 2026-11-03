@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.18
+
+### Patch Changes
+
+- Add `startSpan`, `withSpan`, and `recordSpan` to record custom trace spans, exported to EAS Observe alongside network request spans. ([#48893](https://github.com/expo/expo/pull/48893) by [@tsapeta](https://github.com/tsapeta))
+- Add the `errorSampleRate` config option. It sets the fraction of installations that dispatch errors and crash reports separately from `sampleRate`. ([#51930](https://github.com/expo/expo/pull/51930) by [@Ubax](https://github.com/Ubax))
+- Add the `expo.in_sample_rate` attribute to logs. ([#52313](https://github.com/expo/expo/pull/52313) by [@Ubax](https://github.com/Ubax))
+- Updated dependencies. ([#51930](https://github.com/expo/expo/pull/51930), [#48893](https://github.com/expo/expo/pull/48893), [#50849](https://github.com/expo/expo/pull/50849))
+  - expo-app-metrics@58.0.15
+
 ## 58.0.17
 
 ### Patch Changes

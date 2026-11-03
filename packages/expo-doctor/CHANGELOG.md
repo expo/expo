@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.21.6
+
+### Patch Changes
+
+- Replace glob with Node glob for local native module discovery. ([#52786](https://github.com/expo/expo/pull/52786) by [@kitten](https://github.com/kitten))
+
 ## 1.21.5
 
 ### Patch Changes

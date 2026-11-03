@@ -1,6 +1,6 @@
 {
   "name": "expo-constants",
-  "version": "58.0.14",
+  "version": "58.0.15",
   "description": "Provides system information that remains constant throughout the lifetime of your app.",
   "keywords": [
     "constants",

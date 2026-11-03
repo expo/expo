@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- Replace glob with tinyglobby and filesystem path checks. ([#52788](https://github.com/expo/expo/pull/52788) by [@kitten](https://github.com/kitten))
+
 ## 58.0.11
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- Replace glob with a native project file crawler. ([#52781](https://github.com/expo/expo/pull/52781) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#52788](https://github.com/expo/expo/pull/52788))
+  - @expo/config-plugins@58.0.12
+
 ## 58.0.10
 
 ### Patch Changes
