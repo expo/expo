@@ -13,6 +13,6 @@ open class ExpoReactNativeFactoryDelegate: RCTDefaultReactNativeFactoryDelegate 
   open override func createRootViewController() -> UIViewController {
     return ExpoAppDelegateSubscriberRepository.reactDelegateHandlers.lazy
       .compactMap { $0.createRootViewController() }
-      .first(where: { _ in true }) ?? ExpoRootViewController()
+      .first(where: { _ in true }) ?? UIViewController()
   }
 }
