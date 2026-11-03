@@ -43,7 +43,13 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     get() = this.sink.bodyUsed
 
   override fun sharedObjectDidRelease() {
-    this.sink.finalize(directBuffer = false)
+    // Release can run on the JS thread. Serialize cleanup with body reads and buffering.
+    coroutineScope.launch {
+      // Pending reads still need the buffered body.
+      if (stateChangeOnceListeners.isEmpty()) {
+        sink.discard()
+      }
+    }
     super.sharedObjectDidRelease()
   }
 
