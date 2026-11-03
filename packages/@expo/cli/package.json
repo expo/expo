@@ -94,7 +94,7 @@
     "expo-server": "workspace:^",
     "fetch-nodeshim": "^0.4.10",
     "getenv": "^2.0.0",
-    "glob": "^13.0.0",
+    "glob": "^14.0.2",
     "lan-network": "^0.2.1",
     "multitars": "^1.0.2",
     "node-forge": "^1.4.0",
