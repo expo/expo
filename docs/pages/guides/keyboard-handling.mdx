@@ -31,7 +31,7 @@ The following sections explain how to handle keyboard interactions with common A
 
 The `KeyboardAvoidingView` is a component that automatically adjusts a view's height, position, or bottom padding based on the keyboard height to remain visible while it is displayed.
 
-Set a `behavior` on both platforms. On iOS, the keyboard is drawn over the app. On Android 15 and later, Expo apps are edge-to-edge, so the window no longer resizes for the keyboard and a view without a `behavior` stays under it. `padding` usually works best. If the view is under a navigation header, pass the header height as `keyboardVerticalOffset`.
+Set a `behavior` on both platforms. On iOS, the keyboard is drawn over the app. On Android, Expo apps are edge-to-edge, so the window no longer resizes for the keyboard and a view without a `behavior` stays under it. `padding` usually works best. If the view is under a navigation header, pass the header height as `keyboardVerticalOffset`.
 
 ```tsx home-screen.tsx
 import { KeyboardAvoidingView, TextInput } from 'react-native';
