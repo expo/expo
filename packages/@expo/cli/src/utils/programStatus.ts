@@ -26,10 +26,13 @@ export async function withProgramStatus<T>(
   status: ProgramStatus,
   action: () => Promise<T>
 ): Promise<T> {
+  const clear = () => writeProgramStatus('state=clear');
   writeProgramStatus(formatProgramStatus(status));
+  process.on('exit', clear);
   try {
     return await action();
   } finally {
-    writeProgramStatus('state=clear');
+    process.off('exit', clear);
+    clear();
   }
 }
