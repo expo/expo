@@ -1,0 +1,11 @@
+package <%- project.package %>
+
+import io.github.expo.modules.v2.ExpoSharedObject
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.SharedObject
+
+@ExpoSharedObject
+class <%- project.sharedObjectName %> @JS constructor() : SharedObject() {
+  @JS
+  var count: Int = 0
+}

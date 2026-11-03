@@ -1,0 +1,10 @@
+import ExpoModulesCore
+
+@SharedObject
+public final class <%- project.sharedObjectName %>: SharedObject {
+  @JS
+  var count: Int = 0
+
+  @JS
+  public nonisolated override init() {}
+}
