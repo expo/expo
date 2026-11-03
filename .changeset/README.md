@@ -24,6 +24,8 @@ See: [#123](https://github.com/expo/expo/pull/123)
 
 Documentation, tests, apps, CI, and private tooling do not need a changeset. Do not add entries directly to package `CHANGELOG.md` files.
 
+Do not list private packages (`"private": true`) in a changeset. Changesets does not version them, and `changeset version` fails when one changeset lists both private and published packages.
+
 For pull requests targeting `main`, code review checks the release policy in [`expo.json`](./expo.json):
 
 - When `branches.main.allowMajor` is `false`, major bumps are not currently allowed and produce an error.
