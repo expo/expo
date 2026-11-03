@@ -21,6 +21,19 @@ import {
   sourceMapStringNonBlocking,
 } from './sourceMap';
 
+const TRAILING_BUNDLE_ANNOTATIONS =
+  /((?:^|\n)\/\/# (?:sourceMappingURL|sourceURL|debugId)=[^\n]*)+\s*$/;
+
+export function wrapServerBundle(source: string): string {
+  const annotations = source.match(TRAILING_BUNDLE_ANNOTATIONS)?.[0] ?? '';
+  // Only export the final entry invocation, preserving preceding calls and trailing annotations.
+  return (
+    source
+      .slice(0, source.length - annotations.length)
+      .replace(/(^|\n)(__r\([^\n]*\);)\s*$/, '$1module.exports = $2') + annotations
+  );
+}
+
 /** Ensures server artifacts, preserving complete custom bundles instead of reserializing them. */
 export async function serializeServerBundleAsync(
   bundle: unknown,
@@ -54,13 +67,11 @@ export async function serializeServerBundleAsync(
   );
   const singleBundle = bundle as string | { code: string; map: string };
   const serializerOptions = options.serializerOptions;
-  const source = typeof singleBundle === 'string' ? singleBundle : singleBundle.code;
-  const annotations =
-    source.match(/((?:^|\n)\/\/# (?:sourceMappingURL|sourceURL|debugId)=[^\n]*)+\s*$/)?.[0] ?? '';
-  // Only replace Metro's final entry invocation and trailing annotations, never embedded directives.
-  let code = source
-    .slice(0, source.length - annotations.length)
-    .replace(/(^|\n)(__r\([^\n]*\);)\s*$/, '$1module.exports = $2');
+  const source = wrapServerBundle(
+    typeof singleBundle === 'string' ? singleBundle : singleBundle.code
+  );
+  const annotations = source.match(TRAILING_BUNDLE_ANNOTATIONS)?.[0] ?? '';
+  let code = source.slice(0, source.length - annotations.length);
   const contentFilename = getExportPathForDependencyWithOptions(entryPoint, {
     src: code,
     platform: graph.transformOptions.platform ?? 'web',
