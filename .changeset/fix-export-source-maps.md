@@ -3,4 +3,4 @@
 '@expo/metro-config': patch
 ---
 
-Fix source maps for server exports and native embedded bundles.
+Improve source maps for exported API routes, server rendering, React Server Components, and native bundles. Fix missing maps and incorrect source paths, and consistently honor options to omit source code from maps.
