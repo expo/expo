@@ -6,6 +6,7 @@ import path from 'path';
 
 import { getExportPathForDependencyWithOptions, getSiblingSourceMapUrl } from '../exportPath';
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
+import { getServerRunModuleStatement } from '../getServerRunModuleStatement';
 import { transformJsAssetToHermesBytecodeAsync } from '../hermesArtifacts';
 import { getModuleReferences, type SerialAsset } from '../serializerAssets';
 import { getSourceMapOptions, sourceMapString } from '../sourceMap';
@@ -119,19 +120,13 @@ export class Chunk {
     const preModules = [...(options.preModules ?? this.preModules)];
     const dependencies = [...this.deps];
 
-    const getRunModuleStatement = this.options.getRunModuleStatement;
     const jsSplitBundle = getBaseJSBundleWithDependencies()(entryFile, preModules, dependencies, {
       ...this.options,
       sourceMapOptions: getSourceMapOptions(this.options, this.isServer),
       getRunModuleStatement:
         this.isServer && this.isEntry
-          ? (moduleId, ...args) => {
-              const statement = getRunModuleStatement(moduleId, ...args);
-              return moduleId === this.options.createModuleId(entryFile)
-                ? 'module.exports = ' + statement
-                : statement;
-            }
-          : getRunModuleStatement,
+          ? getServerRunModuleStatement(entryFile, this.options)
+          : this.options.getRunModuleStatement,
       runBeforeMainModule:
         options.runBeforeMainModule ??
         serializerConfig?.getModulesRunBeforeMainModule?.(

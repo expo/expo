@@ -19,6 +19,7 @@ import {
 } from './environmentVariableSerializerPlugin';
 import { event } from './events';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
+import { getServerRunModuleStatement } from './getServerRunModuleStatement';
 import { graphToSerialAssetsAsync, graphToSingleChunk } from './serializeChunks';
 import type { ChunkingStrategy } from './serializerAssets';
 import { normalizeSourceMapString } from './sourceMap';
@@ -311,7 +312,18 @@ function getDefaultSerializer(
     })();
 
     if (serializerOptions?.output !== 'static') {
-      return defaultSerializer(entryPoint, preModules, graph, options);
+      const isServer = context.environment === 'node' || context.environment === 'react-server';
+      return defaultSerializer(
+        entryPoint,
+        preModules,
+        graph,
+        isServer
+          ? {
+              ...options,
+              getRunModuleStatement: getServerRunModuleStatement(entryPoint, options),
+            }
+          : options
+      );
     }
 
     options.serializerOptions = { ...serializerOptions };
