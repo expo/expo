@@ -19,6 +19,31 @@ export type ObserveAttribute = LogAttributeValue;
  */
 export type ObserveAttributes = Record<string, ObserveAttribute>;
 
+// Keep in sync with `metricNameMap` in `ios/OpenTelemetry.swift` and `android/.../OpenTelemetry.kt` (except legacy entries).
+/**
+ * Name of a metric that EAS Observe sends.
+ */
+export type ObserveMetricName =
+  | 'expo.app_startup.tti'
+  | 'expo.app_startup.ttr'
+  | 'expo.app_startup.cold_launch_time'
+  | 'expo.app_startup.warm_launch_time'
+  | 'expo.app_startup.bundle_load_time'
+  | 'expo.updates.download_time'
+  | 'expo.navigation.cold_ttr'
+  | 'expo.navigation.warm_ttr'
+  | 'expo.navigation.tti';
+
+/**
+ * Name of an event that EAS Observe sends. Custom names passed to `logEvent` are allowed.
+ */
+export type ObserveEventName =
+  | 'js.exception'
+  | 'native.exception'
+  | 'reanimated.warning'
+  | 'expo-image.oversized'
+  | (string & {});
+
 export type ObserveConfig = {
   /**
    * The environment for observability events
@@ -85,6 +110,19 @@ export type ObserveConfig = {
    * @default undefined - errors follow `sampleRate`
    */
   errorSampleRate?: number;
+  /**
+   * Metric names that are not sent. Each `configure` call replaces the list.
+   *
+   * @default []
+   */
+  ignoredMetrics?: ObserveMetricName[];
+  /**
+   * Event names that are not sent, including custom names passed to `logEvent`. Each `configure`
+   * call replaces the list.
+   *
+   * @default []
+   */
+  ignoredEvents?: ObserveEventName[];
   /**
    * Whether to record unhandled JavaScript errors as `exception` log events.
    *
