@@ -222,7 +222,7 @@ Some Expo libraries provide both static types and type generation capabilities. 
 
 ### Metro config
 
-Expo CLI loads **metro.config.ts** without extra setup:
+In SDK 57 and later, Expo CLI loads **metro.config.ts** without extra setup. Rename **metro.config.js** to **metro.config.ts**, because Expo CLI uses **metro.config.js** when both exist:
 
 ```ts metro.config.ts
 import { getDefaultConfig } from 'expo/metro-config';
