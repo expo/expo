@@ -278,6 +278,43 @@ it.each(['client', 'node', 'react-server'])(
 );
 
 it.each(['node', 'react-server'])(
+  'links development %s exports to their sibling maps',
+  async (environment) => {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs: { 'index.js': 'export const value = 42;' },
+      options: {
+        isServer: environment === 'node',
+        isReactServer: environment === 'react-server',
+        dev: true,
+        output: 'static',
+        sourceMaps: true,
+      },
+    });
+    const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+    const serializerOptions: ExpoSerializerOptions = {
+      ...options,
+      serializerOptions: {
+        ...(options as ExpoSerializerOptions).serializerOptions,
+        exporting: true,
+        entryFilename: '_expo/server/render.js',
+      },
+    };
+    const { artifacts } = (await serializer(
+      entry,
+      premodules,
+      graph,
+      serializerOptions
+    )) as unknown as { artifacts: SerialAsset[] };
+    expect(artifacts.find((asset) => asset.type === 'js')!.source).toContain(
+      '//# sourceMappingURL=render.js.map'
+    );
+    expect(artifacts.find((asset) => asset.type === 'map')!.filename).toBe(
+      '_expo/server/render.js.map'
+    );
+  }
+);
+
+it.each(['node', 'react-server'])(
   'normalizes exported %s artifacts before persistence',
   async (environment) => {
     const [entry, premodules, graph, options] = await microBundle({

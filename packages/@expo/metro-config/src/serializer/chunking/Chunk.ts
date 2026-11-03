@@ -179,6 +179,16 @@ export class Chunk {
   }
 
   private getAdjustedSourceMapUrl(filename: string): string | null {
+    if (
+      this.isServer &&
+      this.options.serializerOptions?.exporting &&
+      this.options.serializerOptions.includeSourceMaps === true &&
+      this.options.sourceMapUrl &&
+      !this.options.inlineSourceMap
+    ) {
+      return getSiblingSourceMapUrl(filename);
+    }
+
     // Metro really only accounts for development, so we'll use the defaults here.
     if (this.options.dev) {
       return this.options.sourceMapUrl ?? null;
@@ -190,10 +200,6 @@ export class Chunk {
 
     if (this.options.inlineSourceMap || !this.options.sourceMapUrl) {
       return this.options.sourceMapUrl ?? null;
-    }
-
-    if (this.isServer && this.options.serializerOptions?.exporting) {
-      return getSiblingSourceMapUrl(filename);
     }
 
     const platform = this.getPlatform();
