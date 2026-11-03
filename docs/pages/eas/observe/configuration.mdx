@@ -6,7 +6,7 @@ description: Control how Expo Observe collects and dispatches metrics, including
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-Configure Expo Observe at runtime to fit your app's build setup, environment, and data routing. This page covers enabling metrics in development, sampling, using a custom endpoint, separating data by environment, and turning off data ingestion from the dashboard. For the runtime methods themselves, see the [`configure()`](/versions/latest/sdk/observe/#configureconfig) and [`dispatchEvents()`](/versions/latest/sdk/observe/#dispatchevents) API references.
+Configure Expo Observe at runtime to fit your app's build setup, environment, and data routing. This page covers enabling metrics in development, sampling, ignoring selected metrics and events, using a custom endpoint, separating data by environment, and turning off data ingestion from the dashboard. For the runtime methods themselves, see the [`configure()`](/versions/latest/sdk/observe/#configureconfig) and [`dispatchEvents()`](/versions/latest/sdk/observe/#dispatchevents) API references.
 
 ## Sampling
 
@@ -44,6 +44,21 @@ Observe.configure({
 ```
 
 `errorSampleRate` is a minimum. Installations in-sample for `sampleRate` always send errors. A lower value has no effect, and `configure()` prints a warning. An unset `sampleRate` counts as `1`.
+
+## Ignore metrics and events
+
+If you don't use some metrics or events, skip them with `ignoredMetrics` and `ignoredEvents` to send less data:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  ignoredMetrics: ['expo.app_startup.tti'],
+  ignoredEvents: ['reanimated.warning', 'checkout.completed'],
+});
+```
+
+`ignoredMetrics` matches metric names such as `expo.app_startup.tti`. `ignoredEvents` matches event names, including custom names passed to [`Observe.logEvent`](/eas/observe/events/). Ignored data is still recorded on the device but never sent.
 
 ## Enable metrics in development
 
