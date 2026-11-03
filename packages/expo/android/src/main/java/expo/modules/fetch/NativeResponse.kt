@@ -42,7 +42,13 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     get() = this.sink.bodyUsed
 
   override fun deallocate() {
-    this.sink.finalize(directBuffer = false)
+    // `deallocate` runs on the JS thread. The sink is read and written only on the modules queue.
+    coroutineScope.launch {
+      // A pending `arrayBuffer()` or `text()` still reads the body.
+      if (stateChangeOnceListeners.isEmpty()) {
+        this@NativeResponse.sink.finalize(directBuffer = false)
+      }
+    }
     super.deallocate()
   }
 
