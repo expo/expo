@@ -825,17 +825,7 @@ exports[`legacy config lints the baseline fixtures: fixtures/baseline/expo-01.js
 ]
 `;
 
-exports[`legacy config lints the baseline fixtures: fixtures/baseline/globals-00.js 1`] = `
-[
-  {
-    "column": 16,
-    "line": 10,
-    "message": "'document' is not defined.",
-    "ruleId": "no-undef",
-    "severity": "error",
-  },
-]
-`;
+exports[`legacy config lints the baseline fixtures: fixtures/baseline/globals-00.js 1`] = `[]`;
 
 exports[`legacy config lints the baseline fixtures: fixtures/baseline/globals-01.web.js 1`] = `[]`;
 

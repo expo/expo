@@ -30,6 +30,7 @@ module.exports = {
     window: 'readonly',
   },
   env: {
+    browser: true,
     'shared-node-browser': true,
   },
   settings: {
@@ -38,10 +39,4 @@ module.exports = {
       node: { extensions: allExtensions },
     },
   },
-  overrides: [
-    {
-      files: ['*.web.*'],
-      env: { browser: true },
-    },
-  ],
 };

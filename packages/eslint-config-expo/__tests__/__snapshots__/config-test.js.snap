@@ -15459,6 +15459,7 @@ exports[`legacy config resolves metro.config.js 1`] = `
   },
   "ecmaVersion": 2022,
   "env": {
+    "browser": true,
     "es2022": true,
     "node": true,
     "shared-node-browser": true,
@@ -15816,6 +15817,7 @@ exports[`legacy config resolves src/app.ios.ts 1`] = `
   },
   "ecmaVersion": 2022,
   "env": {
+    "browser": true,
     "es2022": true,
     "shared-node-browser": true,
   },
@@ -16204,6 +16206,7 @@ exports[`legacy config resolves src/app.js 1`] = `
   },
   "ecmaVersion": 2022,
   "env": {
+    "browser": true,
     "es2022": true,
     "shared-node-browser": true,
   },
@@ -16560,6 +16563,7 @@ exports[`legacy config resolves src/app.jsx 1`] = `
   },
   "ecmaVersion": 2022,
   "env": {
+    "browser": true,
     "es2022": true,
     "shared-node-browser": true,
   },
@@ -16916,6 +16920,7 @@ exports[`legacy config resolves src/app.ts 1`] = `
   },
   "ecmaVersion": 2022,
   "env": {
+    "browser": true,
     "es2022": true,
     "shared-node-browser": true,
   },
@@ -17304,6 +17309,7 @@ exports[`legacy config resolves src/app.tsx 1`] = `
   },
   "ecmaVersion": 2022,
   "env": {
+    "browser": true,
     "es2022": true,
     "shared-node-browser": true,
   },
@@ -18049,6 +18055,7 @@ exports[`legacy config resolves src/lib.cjs 1`] = `
   },
   "ecmaVersion": 2022,
   "env": {
+    "browser": true,
     "es2022": true,
     "shared-node-browser": true,
   },
@@ -18398,6 +18405,7 @@ exports[`legacy config resolves src/lib.mjs 1`] = `
   },
   "ecmaVersion": 2022,
   "env": {
+    "browser": true,
     "es2022": true,
     "shared-node-browser": true,
   },
@@ -18747,6 +18755,7 @@ exports[`legacy config resolves src/types.d.ts 1`] = `
   },
   "ecmaVersion": 2022,
   "env": {
+    "browser": true,
     "es2022": true,
     "shared-node-browser": true,
   },
