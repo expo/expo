@@ -7,7 +7,7 @@ import path from 'path';
 import { getExportPathForDependencyWithOptions } from '../exportPath';
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
 import { transformJsAssetToHermesBytecodeAsync } from '../hermesArtifacts';
-import type { SerialAsset } from '../serializerAssets';
+import { getModuleReferences, type SerialAsset } from '../serializerAssets';
 import { getExportSourceMapOptions, sourceMapString } from '../sourceMap';
 import type {
   ChunkingImplementation,
@@ -311,10 +311,7 @@ export class Chunk {
         // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
         modulePaths,
         paths: jsCode.paths,
-        expoDomComponentReferences: collectOutputReferences(this.deps, 'expoDomComponentReference'),
-        reactClientReferences: collectOutputReferences(this.deps, 'reactClientReference'),
-        reactServerReferences: collectOutputReferences(this.deps, 'reactServerReference'),
-        loaderReferences: collectOutputReferences(this.deps, 'loaderReference'),
+        ...getModuleReferences(this.deps),
       },
       source: jsCode.code,
     };
@@ -397,23 +394,4 @@ export function getSortedModules(
   return modules.sort(
     (a: Module<any>, b: Module<any>) => createModuleId(a.path) - createModuleId(b.path)
   );
-}
-
-function collectOutputReferences(modules: Iterable<Module>, key: string): string[] {
-  return [
-    ...new Set(
-      [...modules]
-        .map((module) => {
-          return module.output.map((output) => {
-            // TODO: This is a mess. This needs to be properly typed
-            const data = output.data as any;
-            if (key in data && typeof data[key] === 'string') {
-              return data[key];
-            }
-            return undefined;
-          });
-        })
-        .flat()
-    ),
-  ].filter((value): value is string => typeof value === 'string');
 }
