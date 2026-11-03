@@ -209,7 +209,7 @@ describe('createNavigationBlockingTime', () => {
     expect(onMeasured).toHaveBeenCalledWith({ ...metric, value: 0 });
   });
 
-  it('ends the previous window early when a new navigation starts', () => {
+  it('drops the previous navigation when a new navigation starts inside its window', () => {
     const onMeasured = jest.fn();
     const blockingTime = createNavigationBlockingTime(onMeasured)!;
     blockingTime.start(1000);
@@ -222,14 +222,12 @@ describe('createNavigationBlockingTime', () => {
     // The task that started the second navigation is reported after it ends.
     now = 1300;
     MockPerformanceObserver.latest.emit(longTask(1100, 200));
-    jest.advanceTimersToNextTimer();
-    expect(onMeasured).toHaveBeenCalledWith({ ...metric, value: 0.05 });
-
     MockPerformanceObserver.latest.emit(longTask(1350, 100));
     now = 3200;
     jest.advanceTimersByTime(2000);
     jest.runOnlyPendingTimers();
-    expect(onMeasured).toHaveBeenLastCalledWith({ ...metric, routeName: '/c', value: 0.15 });
+    expect(onMeasured).toHaveBeenCalledTimes(1);
+    expect(onMeasured).toHaveBeenCalledWith({ ...metric, routeName: '/c', value: 0.15 });
   });
 
   it('cancels the window and stops observing in the background', () => {

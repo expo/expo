@@ -13,8 +13,7 @@ type NavigationMetric = Omit<MetricInput, 'value'>;
 
 type Window = {
   start: number;
-  end: number;
-  timer?: ReturnType<typeof setTimeout>;
+  timer: ReturnType<typeof setTimeout>;
   metric?: NavigationMetric;
 };
 
@@ -26,15 +25,13 @@ export function createNavigationBlockingTime(onMeasured: (metric: MetricInput) =
     return;
   }
 
-  // Open windows in start order. The last one belongs to the latest navigation.
-  const windows = new Set<Window>();
-  const latestWindow = () => [...windows].pop();
+  let current: Window | undefined;
   // Kept across windows, because React Native reports long tasks at idle priority, often after
   // the navigation that the task belongs to starts its window.
   let longTasks: PerformanceEntry[] = [];
 
   const addLongTasks = (entries: PerformanceEntry[]) => {
-    const cutoff = Math.min(performance.now() - WINDOW_MS, ...[...windows].map((w) => w.start));
+    const cutoff = Math.min(performance.now() - WINDOW_MS, current?.start ?? Infinity);
     longTasks = [...longTasks, ...entries].filter(
       (entry) => entry.startTime + entry.duration > cutoff
     );
@@ -43,33 +40,28 @@ export function createNavigationBlockingTime(onMeasured: (metric: MetricInput) =
   const observer = new PerformanceObserver((list) => addLongTasks(list.getEntries()));
   const observe = () => observer.observe({ type: 'longtask' });
 
-  const remove = (window: Window) => {
-    clearTimeout(window.timer);
-    windows.delete(window);
+  const cancel = () => {
+    clearTimeout(current?.timer);
+    current = undefined;
   };
 
   const complete = (window: Window) => {
     addLongTasks(observer.takeRecords());
-    remove(window);
+    current = undefined;
     if (!window.metric) return;
     let blockingTimeMs = 0;
     for (const entry of longTasks) {
       blockingTimeMs += Math.max(
         0,
-        Math.min(entry.startTime + entry.duration, window.end) -
+        Math.min(entry.startTime + entry.duration, window.start + WINDOW_MS) -
           Math.max(entry.startTime + LONG_TASK_THRESHOLD_MS, window.start)
       );
     }
     onMeasured({ ...window.metric, value: blockingTimeMs / 1000 });
   };
 
-  const scheduleComplete = (window: Window) => {
-    clearTimeout(window.timer);
-    window.timer = setTimeout(() => complete(window), Math.max(0, window.end - performance.now()));
-  };
-
   const stop = () => {
-    windows.forEach(remove);
+    cancel();
     longTasks = [];
     observer.disconnect();
   };
@@ -80,23 +72,23 @@ export function createNavigationBlockingTime(onMeasured: (metric: MetricInput) =
   );
 
   return {
-    // Starts a window for a new navigation and ends the previous one early.
+    // Starts a window for a new navigation and drops the previous one without reporting it.
     start(startTime: number) {
       if (AppState.currentState !== 'active') return;
-      const previous = latestWindow();
-      if (previous) {
-        previous.end = Math.min(previous.end, startTime);
-        scheduleComplete(previous);
-      }
-      const window: Window = { start: startTime, end: startTime + WINDOW_MS };
-      windows.add(window);
-      scheduleComplete(window);
+      cancel();
+      const window: Window = {
+        start: startTime,
+        timer: setTimeout(
+          () => complete(window),
+          Math.max(0, startTime + WINDOW_MS - performance.now())
+        ),
+      };
+      current = window;
     },
     // Sets the metric of the latest navigation. Navigations without a metric are not reported.
     setMetric(metric: NavigationMetric, focusTime: number) {
-      const window = latestWindow();
-      if (window && !window.metric && focusTime <= window.end) {
-        window.metric = metric;
+      if (current && !current.metric && focusTime <= current.start + WINDOW_MS) {
+        current.metric = metric;
       }
     },
     dispose() {
