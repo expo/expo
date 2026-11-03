@@ -594,6 +594,88 @@ describe('Icons', () => {
       expect(consoleWarnMock).toHaveBeenCalledTimes(1);
     }
   );
+  describe('rendering mode', () => {
+    it('keeps the image colors when renderingMode is "original" and an icon color is set', async () => {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs iconColor="red">
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon src={{ uri: 'some-uri' }} renderingMode="original" />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
+      expect(TabsScreen.mock.calls[0]![0].android?.icon).toEqual({
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        tinting: 'original',
+      });
+      expect(TabsScreen.mock.calls[0]![0].android?.selectedIcon).toEqual({
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        tinting: 'original',
+      });
+    });
+
+    it('passes a different tinting for each drawable state', async () => {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon
+                drawable={{ default: 'ic_home_outline', selected: 'ic_home_filled' }}
+                renderingMode={{ default: 'template', selected: 'original' }}
+              />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
+      expect(TabsScreen.mock.calls[0]![0].android?.icon).toEqual({
+        type: 'drawableResource',
+        name: 'ic_home_outline',
+        tinting: 'tinted',
+      });
+      expect(TabsScreen.mock.calls[0]![0].android?.selectedIcon).toEqual({
+        type: 'drawableResource',
+        name: 'ic_home_filled',
+        tinting: 'original',
+      });
+    });
+
+    it('keeps the selected md icon colors when only the selected renderingMode is "original"', async () => {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon md="home" renderingMode={{ selected: 'original' }} />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      await waitFor(() => {
+        expect(TabsScreen.mock.calls.at(-1)![0].android?.selectedIcon).toBeDefined();
+      });
+      expect(TabsScreen.mock.calls.at(-1)![0].android?.icon).toEqual({
+        type: 'imageSource',
+        imageSource: { height: 0, uri: 'home', width: 0, scale: 1 },
+      });
+      expect(TabsScreen.mock.calls.at(-1)![0].android?.selectedIcon).toEqual({
+        type: 'imageSource',
+        imageSource: { height: 0, uri: 'home', width: 0, scale: 1 },
+        tinting: 'original',
+      });
+    });
+  });
 });
 
 describe('Badge', () => {
