@@ -28,6 +28,8 @@ module.exports = {
     requestIdleCallback: false,
     setImmediate: false,
     window: false,
+  },
+  env: {
     'shared-node-browser': true,
   },
   settings: {

@@ -20,6 +20,7 @@ module.exports = defineConfig([
     },
     languageOptions: {
       globals: {
+        ...globals['shared-node-browser'],
         ...globals.browser,
         __DEV__: 'readonly',
         ErrorUtils: false,
@@ -36,7 +37,6 @@ module.exports = defineConfig([
         requestIdleCallback: false,
         setImmediate: false,
         window: false,
-        'shared-node-browser': true,
       },
     },
   },

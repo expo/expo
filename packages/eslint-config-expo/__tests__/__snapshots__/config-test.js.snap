@@ -1173,7 +1173,6 @@ exports[`flat config resolves metro.config.js 1`] = `
     "setImmediate": "readonly",
     "setInterval": "readonly",
     "setTimeout": "readonly",
-    "shared-node-browser": "writable",
     "sharedStorage": "readonly",
     "showDirectoryPicker": "readonly",
     "showOpenFilePicker": "readonly",
@@ -2709,7 +2708,6 @@ exports[`flat config resolves src/app.ios.ts 1`] = `
     "setImmediate": "readonly",
     "setInterval": "readonly",
     "setTimeout": "readonly",
-    "shared-node-browser": "writable",
     "sharedStorage": "readonly",
     "showDirectoryPicker": "readonly",
     "showOpenFilePicker": "readonly",
@@ -4269,7 +4267,6 @@ exports[`flat config resolves src/app.js 1`] = `
     "setImmediate": "readonly",
     "setInterval": "readonly",
     "setTimeout": "readonly",
-    "shared-node-browser": "writable",
     "sharedStorage": "readonly",
     "showDirectoryPicker": "readonly",
     "showOpenFilePicker": "readonly",
@@ -5805,7 +5802,6 @@ exports[`flat config resolves src/app.jsx 1`] = `
     "setImmediate": "readonly",
     "setInterval": "readonly",
     "setTimeout": "readonly",
-    "shared-node-browser": "writable",
     "sharedStorage": "readonly",
     "showDirectoryPicker": "readonly",
     "showOpenFilePicker": "readonly",
@@ -7341,7 +7337,6 @@ exports[`flat config resolves src/app.ts 1`] = `
     "setImmediate": "readonly",
     "setInterval": "readonly",
     "setTimeout": "readonly",
-    "shared-node-browser": "writable",
     "sharedStorage": "readonly",
     "showDirectoryPicker": "readonly",
     "showOpenFilePicker": "readonly",
@@ -8901,7 +8896,6 @@ exports[`flat config resolves src/app.tsx 1`] = `
     "setImmediate": "readonly",
     "setInterval": "readonly",
     "setTimeout": "readonly",
-    "shared-node-browser": "writable",
     "sharedStorage": "readonly",
     "showDirectoryPicker": "readonly",
     "showOpenFilePicker": "readonly",
@@ -10461,7 +10455,6 @@ exports[`flat config resolves src/app.web.js 1`] = `
     "setImmediate": "readonly",
     "setInterval": "readonly",
     "setTimeout": "readonly",
-    "shared-node-browser": "writable",
     "sharedStorage": "readonly",
     "showDirectoryPicker": "readonly",
     "showOpenFilePicker": "readonly",
@@ -11997,7 +11990,6 @@ exports[`flat config resolves src/lib.cjs 1`] = `
     "setImmediate": "readonly",
     "setInterval": "readonly",
     "setTimeout": "readonly",
-    "shared-node-browser": "writable",
     "sharedStorage": "readonly",
     "showDirectoryPicker": "readonly",
     "showOpenFilePicker": "readonly",
@@ -13534,7 +13526,6 @@ exports[`flat config resolves src/lib.mjs 1`] = `
     "setImmediate": "readonly",
     "setInterval": "readonly",
     "setTimeout": "readonly",
-    "shared-node-browser": "writable",
     "sharedStorage": "readonly",
     "showDirectoryPicker": "readonly",
     "showOpenFilePicker": "readonly",
@@ -15071,7 +15062,6 @@ exports[`flat config resolves src/types.d.ts 1`] = `
     "setImmediate": "readonly",
     "setInterval": "readonly",
     "setTimeout": "readonly",
-    "shared-node-browser": "writable",
     "sharedStorage": "readonly",
     "showDirectoryPicker": "readonly",
     "showOpenFilePicker": "readonly",
@@ -15471,6 +15461,7 @@ exports[`legacy config resolves metro.config.js 1`] = `
   "env": {
     "es2022": true,
     "node": true,
+    "shared-node-browser": true,
   },
   "globals": {
     "ErrorUtils": "readonly",
@@ -15492,7 +15483,6 @@ exports[`legacy config resolves metro.config.js 1`] = `
     "requestIdleCallback": "readonly",
     "require": "readonly",
     "setImmediate": "readonly",
-    "shared-node-browser": "writable",
     "window": "readonly",
   },
   "parser": null,
@@ -15780,6 +15770,7 @@ exports[`legacy config resolves src/app.ios.ts 1`] = `
   "ecmaVersion": 2022,
   "env": {
     "es2022": true,
+    "shared-node-browser": true,
   },
   "globals": {
     "ErrorUtils": "readonly",
@@ -15801,7 +15792,6 @@ exports[`legacy config resolves src/app.ios.ts 1`] = `
     "requestIdleCallback": "readonly",
     "require": "readonly",
     "setImmediate": "readonly",
-    "shared-node-browser": "writable",
     "window": "readonly",
   },
   "parser": "@typescript-eslint/parser",
@@ -16121,6 +16111,7 @@ exports[`legacy config resolves src/app.js 1`] = `
   "ecmaVersion": 2022,
   "env": {
     "es2022": true,
+    "shared-node-browser": true,
   },
   "globals": {
     "ErrorUtils": "readonly",
@@ -16142,7 +16133,6 @@ exports[`legacy config resolves src/app.js 1`] = `
     "requestIdleCallback": "readonly",
     "require": "readonly",
     "setImmediate": "readonly",
-    "shared-node-browser": "writable",
     "window": "readonly",
   },
   "parser": null,
@@ -16430,6 +16420,7 @@ exports[`legacy config resolves src/app.jsx 1`] = `
   "ecmaVersion": 2022,
   "env": {
     "es2022": true,
+    "shared-node-browser": true,
   },
   "globals": {
     "ErrorUtils": "readonly",
@@ -16451,7 +16442,6 @@ exports[`legacy config resolves src/app.jsx 1`] = `
     "requestIdleCallback": "readonly",
     "require": "readonly",
     "setImmediate": "readonly",
-    "shared-node-browser": "writable",
     "window": "readonly",
   },
   "parser": null,
@@ -16739,6 +16729,7 @@ exports[`legacy config resolves src/app.ts 1`] = `
   "ecmaVersion": 2022,
   "env": {
     "es2022": true,
+    "shared-node-browser": true,
   },
   "globals": {
     "ErrorUtils": "readonly",
@@ -16760,7 +16751,6 @@ exports[`legacy config resolves src/app.ts 1`] = `
     "requestIdleCallback": "readonly",
     "require": "readonly",
     "setImmediate": "readonly",
-    "shared-node-browser": "writable",
     "window": "readonly",
   },
   "parser": "@typescript-eslint/parser",
@@ -17080,6 +17070,7 @@ exports[`legacy config resolves src/app.tsx 1`] = `
   "ecmaVersion": 2022,
   "env": {
     "es2022": true,
+    "shared-node-browser": true,
   },
   "globals": {
     "ErrorUtils": "readonly",
@@ -17101,7 +17092,6 @@ exports[`legacy config resolves src/app.tsx 1`] = `
     "requestIdleCallback": "readonly",
     "require": "readonly",
     "setImmediate": "readonly",
-    "shared-node-browser": "writable",
     "window": "readonly",
   },
   "parser": "@typescript-eslint/parser",
@@ -17422,6 +17412,7 @@ exports[`legacy config resolves src/app.web.js 1`] = `
   "env": {
     "browser": true,
     "es2022": true,
+    "shared-node-browser": true,
   },
   "globals": {
     "ErrorUtils": "readonly",
@@ -17443,7 +17434,6 @@ exports[`legacy config resolves src/app.web.js 1`] = `
     "requestIdleCallback": "readonly",
     "require": "readonly",
     "setImmediate": "readonly",
-    "shared-node-browser": "writable",
     "window": "readonly",
   },
   "parser": null,
@@ -17731,6 +17721,7 @@ exports[`legacy config resolves src/lib.cjs 1`] = `
   "ecmaVersion": 2022,
   "env": {
     "es2022": true,
+    "shared-node-browser": true,
   },
   "globals": {
     "ErrorUtils": "readonly",
@@ -17752,7 +17743,6 @@ exports[`legacy config resolves src/lib.cjs 1`] = `
     "requestIdleCallback": "readonly",
     "require": "readonly",
     "setImmediate": "readonly",
-    "shared-node-browser": "writable",
     "window": "readonly",
   },
   "parser": null,
@@ -18033,6 +18023,7 @@ exports[`legacy config resolves src/lib.mjs 1`] = `
   "ecmaVersion": 2022,
   "env": {
     "es2022": true,
+    "shared-node-browser": true,
   },
   "globals": {
     "ErrorUtils": "readonly",
@@ -18054,7 +18045,6 @@ exports[`legacy config resolves src/lib.mjs 1`] = `
     "requestIdleCallback": "readonly",
     "require": "readonly",
     "setImmediate": "readonly",
-    "shared-node-browser": "writable",
     "window": "readonly",
   },
   "parser": null,
@@ -18335,6 +18325,7 @@ exports[`legacy config resolves src/types.d.ts 1`] = `
   "ecmaVersion": 2022,
   "env": {
     "es2022": true,
+    "shared-node-browser": true,
   },
   "globals": {
     "ErrorUtils": "readonly",
@@ -18356,7 +18347,6 @@ exports[`legacy config resolves src/types.d.ts 1`] = `
     "requestIdleCallback": "readonly",
     "require": "readonly",
     "setImmediate": "readonly",
-    "shared-node-browser": "writable",
     "window": "readonly",
   },
   "parser": "@typescript-eslint/parser",

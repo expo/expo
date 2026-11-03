@@ -828,48 +828,6 @@ exports[`legacy config lints the baseline fixtures: fixtures/baseline/expo-01.js
 exports[`legacy config lints the baseline fixtures: fixtures/baseline/globals-00.js 1`] = `
 [
   {
-    "column": 17,
-    "line": 4,
-    "message": "'setTimeout' is not defined.",
-    "ruleId": "no-undef",
-    "severity": "error",
-  },
-  {
-    "column": 34,
-    "line": 4,
-    "message": "'clearTimeout' is not defined.",
-    "ruleId": "no-undef",
-    "severity": "error",
-  },
-  {
-    "column": 19,
-    "line": 5,
-    "message": "'URL' is not defined.",
-    "ruleId": "no-undef",
-    "severity": "error",
-  },
-  {
-    "column": 26,
-    "line": 6,
-    "message": "'AbortController' is not defined.",
-    "ruleId": "no-undef",
-    "severity": "error",
-  },
-  {
-    "column": 21,
-    "line": 7,
-    "message": "'TextEncoder' is not defined.",
-    "ruleId": "no-undef",
-    "severity": "error",
-  },
-  {
-    "column": 16,
-    "line": 8,
-    "message": "'structuredClone' is not defined.",
-    "ruleId": "no-undef",
-    "severity": "error",
-  },
-  {
     "column": 16,
     "line": 10,
     "message": "'document' is not defined.",
