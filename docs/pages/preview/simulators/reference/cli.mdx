@@ -266,7 +266,7 @@ After the session stops, download its saved app logs:
 
 <Terminal cmd={['$ eas simulator:logs --id <session-id> --output ./app-logs.ndjson']} />
 
-For each iOS device that writes app logs, EAS saves them as an **app-logs.ndjson** artifact. Each artifact holds only the app logs from the first 30 minutes of the session, up to 20 MiB. When a session has more than one device, the command asks you to select a file. In non-interactive mode, it stops with an error that lists the files. Pass `--artifact <index>` with a number from that list, starting at 1. Android sessions do not provide logs through this command.
+For each iOS device that writes app logs, Expo Simulators saves them as an **app-logs.ndjson** artifact. Each artifact holds only the app logs from the first 30 minutes of the session, up to 20 MiB. When a session has more than one device, the command asks you to select a file. In non-interactive mode, it stops with an error that lists the files. Pass `--artifact <index>` with a number from that list, starting at 1. Android sessions do not provide logs through this command.
 
 ## `simulator:egress`
 
