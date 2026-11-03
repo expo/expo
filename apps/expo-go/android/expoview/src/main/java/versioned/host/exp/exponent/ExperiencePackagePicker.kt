@@ -54,7 +54,6 @@ import expo.modules.notifications.notifications.channels.NotificationChannelGrou
 import expo.modules.notifications.notifications.channels.NotificationChannelManagerModule
 import expo.modules.notifications.permissions.NotificationPermissionsModule
 import expo.modules.notifications.tokens.PushTokenModule
-import expo.modules.print.PrintModule
 import expo.modules.router.ExpoRouterModule
 import expo.modules.screencapture.ScreenCaptureModule
 import expo.modules.screenorientation.ScreenOrientationModule
@@ -152,7 +151,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ExpoUIModule::class.java to null,
     FileSystemModule::class.java to null,
     FileSystemLegacyModule::class.java to null,
-    PrintModule::class.java to null,
     GLModule::class.java to null,
     ImagePickerModule::class.java to null,
     ImageManipulatorModule::class.java to null,
