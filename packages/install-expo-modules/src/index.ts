@@ -22,6 +22,7 @@ import {
 } from './plugins/ios/withIosDeploymentTarget';
 import { withIosModules } from './plugins/ios/withIosModules';
 import { assertNoLegacySourceUrl } from './plugins/ios/withIosModulesAppDelegate';
+import { migrateSceneDelegateLayout } from './plugins/ios/withIosSceneDelegate';
 import { withSwiftVersion } from './plugins/ios/withSwiftVersion';
 import { withXCParseXcodeProjectBaseMod } from './plugins/ios/withXCParseXcodeProject';
 import type { VersionInfo } from './utils/expoVersionMappings';
@@ -153,18 +154,23 @@ async function runAsync() {
     return;
   }
 
-  if (platformIos && sdkVersion && semver.gte(sdkVersion, '59.0.0')) {
+  if (platformIos && sdkVersion && semver.gte(sdkVersion, '58.0.0')) {
     const appDelegate = IOSConfig.Paths.getAppDelegate(projectRoot);
-    if (appDelegate.language === 'swift') {
-      assertNoLegacySourceUrl(appDelegate.contents, sdkVersion);
-    }
     const sceneDelegatePath = path.join(path.dirname(appDelegate.path), 'SceneDelegate.swift');
-    if (fs.existsSync(sceneDelegatePath)) {
-      assertNoLegacySourceUrl(
-        fs.readFileSync(sceneDelegatePath, 'utf8'),
-        sdkVersion,
-        'SceneDelegate.swift'
-      );
+    const sceneDelegate = fs.existsSync(sceneDelegatePath)
+      ? fs.readFileSync(sceneDelegatePath, 'utf8')
+      : null;
+    if (appDelegate.language === 'swift' && sceneDelegate) {
+      // Throws before any mod writes when the React Native 0.88 delegates have custom code.
+      migrateSceneDelegateLayout({ appDelegate: appDelegate.contents, sceneDelegate });
+    }
+    if (semver.gte(sdkVersion, '59.0.0')) {
+      if (appDelegate.language === 'swift') {
+        assertNoLegacySourceUrl(appDelegate.contents, sdkVersion);
+      }
+      if (sceneDelegate) {
+        assertNoLegacySourceUrl(sceneDelegate, sdkVersion, 'SceneDelegate.swift');
+      }
     }
   }
 

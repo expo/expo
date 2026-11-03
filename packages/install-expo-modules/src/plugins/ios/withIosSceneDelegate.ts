@@ -1,5 +1,6 @@
 import type { ConfigPlugin, InfoPlist } from '@expo/config-plugins';
 import { IOSConfig, withDangerousMod, withInfoPlist, withPlugins } from '@expo/config-plugins';
+import { findSwiftFunctionCodeBlock } from '@expo/config-plugins/build/ios/codeMod';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
@@ -22,6 +23,70 @@ class SceneDelegate: ExpoAppSceneDelegate {
 }
 `;
 
+/** `template/ios/HelloWorld/SceneDelegate.swift` from react-native-community/template 0.88-stable. */
+const REACT_NATIVE_SCENE_DELEGATE_TEMPLATE = `import React
+import React_RCTAppDelegate
+import ReactAppDependencyProvider
+import UIKit
+
+class SceneDelegate: RCTDefaultReactNativeFactoryDelegate, UIWindowSceneDelegate {
+  var window: UIWindow?
+  var reactNativeFactory: RCTReactNativeFactory?
+
+  func scene(
+    _ scene: UIScene,
+    willConnectTo session: UISceneSession,
+    options connectionOptions: UIScene.ConnectionOptions
+  ) {
+    guard let windowScene = scene as? UIWindowScene else {
+      return
+    }
+
+    dependencyProvider = RCTAppDependencyProvider()
+    reactNativeFactory = RCTReactNativeFactory(delegate: self)
+    window = UIWindow(windowScene: windowScene)
+
+    #if DEBUG
+    let devMenuConfiguration = RCTDevMenuConfiguration(
+      devMenuEnabled: true,
+      shakeGestureEnabled: true,
+      keyboardShortcutsEnabled: true
+    )
+    reactNativeFactory?.devMenuConfiguration = devMenuConfiguration
+    #endif
+
+    reactNativeFactory?.startReactNative(
+      withModuleName: "HelloWorld",
+      in: window,
+      connectionOptions: connectionOptions
+    )
+  }
+
+  func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    RCTLinkingManager.scene(scene, openURLContexts: URLContexts)
+  }
+
+  func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+    RCTLinkingManager.scene(scene, continue: userActivity)
+  }
+
+  override func bundleURL() -> URL? {
+    #if DEBUG
+    RCTBundleURLProvider.sharedSettings().jsBundleURL(forBundleRoot: "index")
+    #else
+    Bundle.main.url(forResource: "main", withExtension: "jsbundle")
+    #endif
+  }
+}
+`;
+
+const APP_DELEGATE_IMPORTS = [
+  'internal import Expo',
+  'import React',
+  'import React_RCTAppDelegate',
+  'import ReactAppDependencyProvider',
+];
+
 export const withIosSceneDelegate: ConfigPlugin = (config) => {
   return withPlugins(config, [
     withSceneDelegateFile,
@@ -35,6 +100,9 @@ const withSceneDelegateFile: ConfigPlugin = (config) => {
     'ios',
     async (config) => {
       const appDelegatePath = IOSConfig.Paths.getAppDelegateFilePath(config.modRequest.projectRoot);
+      if (appDelegatePath.endsWith('.swift')) {
+        await migrateSceneDelegateLayoutAsync(appDelegatePath);
+      }
       await writeSceneDelegateFileAsync(path.dirname(appDelegatePath));
       return config;
     },
@@ -61,6 +129,115 @@ export async function writeSceneDelegateFileAsync(directory: string): Promise<vo
     return;
   }
   await fs.promises.writeFile(filePath, SCENE_DELEGATE_CONTENTS);
+}
+
+export async function migrateSceneDelegateLayoutAsync(appDelegatePath: string): Promise<void> {
+  const sceneDelegatePath = path.join(path.dirname(appDelegatePath), SCENE_DELEGATE_FILE_NAME);
+  if (!fs.existsSync(sceneDelegatePath)) {
+    return;
+  }
+  const migrated = migrateSceneDelegateLayout({
+    appDelegate: await fs.promises.readFile(appDelegatePath, 'utf8'),
+    sceneDelegate: await fs.promises.readFile(sceneDelegatePath, 'utf8'),
+  });
+  if (!migrated) {
+    return;
+  }
+  await fs.promises.writeFile(appDelegatePath, migrated.appDelegate);
+  await fs.promises.writeFile(sceneDelegatePath, migrated.sceneDelegate);
+}
+
+type DelegateSources = { appDelegate: string; sceneDelegate: string };
+
+/**
+ * Converts the React Native 0.88 template layout, where `SceneDelegate.swift` creates the factory and
+ * starts React Native, into the SDK 58 layout, where `AppDelegate.swift` creates the factory and
+ * `ExpoAppSceneDelegate` starts React Native. Returns null for any other layout.
+ * Throws when either file has custom code that the rewrite would discard.
+ */
+export function migrateSceneDelegateLayout({
+  appDelegate,
+  sceneDelegate,
+}: DelegateSources): DelegateSources | null {
+  const moduleName = sceneDelegate.match(
+    /^class\s+SceneDelegate\s*:\s*RCTDefaultReactNativeFactoryDelegate\b[\s\S]*?startReactNative\(\s*withModuleName:\s*"([^"]+)"/m
+  )?.[1];
+  if (!moduleName || appDelegate.includes('ReactNativeFactory')) {
+    return null;
+  }
+
+  if (normalizeSwift(sceneDelegate) !== normalizeSwift(REACT_NATIVE_SCENE_DELEGATE_TEMPLATE)) {
+    throw new Error(
+      `Cannot install Expo modules because ${SCENE_DELEGATE_FILE_NAME} differs from the React Native 0.88 template. install-expo-modules replaces this file with an ExpoAppSceneDelegate subclass, which would discard your custom scene code. Restore the template ${SCENE_DELEGATE_FILE_NAME}, run install-expo-modules again, then add your custom code to the generated class. See https://docs.expo.dev/bare/installing-expo-modules/`
+    );
+  }
+
+  const bundleUrlBlock = findSwiftFunctionCodeBlock(sceneDelegate, 'bundleURL()');
+  if (!bundleUrlBlock) {
+    throw new Error(
+      `Cannot install Expo modules because ${SCENE_DELEGATE_FILE_NAME} has no bundleURL() method to move into AppDelegate.swift. Restore the template ${SCENE_DELEGATE_FILE_NAME} and run install-expo-modules again.`
+    );
+  }
+  const bundleUrlBody = bundleUrlBlock.code
+    .slice(1, -1)
+    .replace(/^\n/, '')
+    .replace(/\n[ \t]*$/, '');
+
+  const missingImports = APP_DELEGATE_IMPORTS.filter(
+    (line) => !new RegExp(`^${line}$`, 'm').test(appDelegate)
+  );
+  appDelegate = appDelegate.match(/^import UIKit$/m)
+    ? appDelegate.replace(/^import UIKit$/m, (line) => [line, ...missingImports].join('\n'))
+    : [...missingImports, appDelegate].join('\n');
+
+  appDelegate = appDelegate.replace(
+    /^(class\s+AppDelegate\s*:\s*)UIResponder,\s*UIApplicationDelegate(\s*\{\n)/m,
+    `$1ExpoAppDelegate, ExpoReactNativeFactoryProvider$2  var window: UIWindow?
+
+  var reactNativeDelegate: ReactNativeDelegate?
+  var reactNativeFactory: RCTReactNativeFactory?
+  let reactNativeFactoryModuleName = "${moduleName}"
+
+`
+  );
+
+  const launchRegExp =
+    /^([ \t]*)func (application\([^{]*didFinishLaunchingWithOptions[^{]*\{\n[\s\S]*?)^[ \t]*(?:return )?true$\n/m;
+  if (!appDelegate.includes('ExpoReactNativeFactoryProvider') || !launchRegExp.test(appDelegate)) {
+    throw new Error(
+      `Cannot install Expo modules because AppDelegate.swift differs from the React Native 0.88 template, so the React Native factory cannot be moved into it from ${SCENE_DELEGATE_FILE_NAME}. Restore the template AppDelegate.swift, run install-expo-modules again, then add your custom code back. See https://docs.expo.dev/bare/installing-expo-modules/`
+    );
+  }
+  appDelegate = appDelegate.replace(
+    launchRegExp,
+    `$1override func $2    let delegate = ReactNativeDelegate()
+    let factory = ExpoReactNativeFactory(delegate: delegate)
+    delegate.dependencyProvider = RCTAppDependencyProvider()
+
+    reactNativeDelegate = delegate
+    reactNativeFactory = factory
+
+    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+`
+  );
+
+  appDelegate = `${appDelegate.replace(/\s*$/, '')}
+
+class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
+  override func bundleURL() -> URL? {
+${bundleUrlBody}
+  }
+}
+`;
+
+  return { appDelegate, sceneDelegate: SCENE_DELEGATE_CONTENTS };
+}
+
+function normalizeSwift(contents: string): string {
+  return contents
+    .replace(/withModuleName:\s*"[^"]*"/, 'withModuleName: ""')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 export function addSceneDelegateToXcodeProject(project: XCParseXcodeProject): XCParseXcodeProject {

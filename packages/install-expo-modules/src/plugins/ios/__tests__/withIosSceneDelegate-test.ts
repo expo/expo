@@ -4,8 +4,12 @@ import path from 'path';
 import type { PBXBuildFile, PBXFileReference, PBXFrameworksBuildPhase, PBXGroup } from 'xcparse';
 import { ISA, build as xcbuild, parse as xcparse } from 'xcparse';
 
+import { updateVirtualMetroEntryIos } from '../../cli/withCliIntegration';
+import { updateModulesAppDelegateSwift } from '../withIosModulesAppDelegate';
 import {
   addSceneDelegateToXcodeProject,
+  migrateSceneDelegateLayout,
+  migrateSceneDelegateLayoutAsync,
   setSceneManifest,
   writeSceneDelegateFileAsync,
 } from '../withIosSceneDelegate';
@@ -140,5 +144,103 @@ class SceneDelegate: ExpoAppSceneDelegate {
     await fs.promises.writeFile(filePath, 'custom');
     await writeSceneDelegateFileAsync(dir);
     expect(await fs.promises.readFile(filePath, 'utf8')).toBe('custom');
+  });
+});
+
+describe(migrateSceneDelegateLayout, () => {
+  const read = (name: string) => fs.readFileSync(path.join(fixturesPath, name), 'utf8');
+  const fixtures = {
+    appDelegate: read('AppDelegate-rn088-scene.swift'),
+    sceneDelegate: read('SceneDelegate-rn088.swift'),
+  };
+  const expected = {
+    appDelegate: read('AppDelegate-rn088-scene-updated.swift'),
+    sceneDelegate: read('SceneDelegate-rn088-updated.swift'),
+  };
+
+  it('moves React Native startup from the RN 0.88 SceneDelegate into AppDelegate', () => {
+    expect(migrateSceneDelegateLayout(fixtures)).toEqual(expected);
+  });
+
+  it('is idempotent with the later AppDelegate and CLI mods', () => {
+    const migrated = migrateSceneDelegateLayout(fixtures)!;
+    expect(migrateSceneDelegateLayout(migrated)).toBeNull();
+    expect(updateModulesAppDelegateSwift(migrated.appDelegate, '58.0.0')).toBe(
+      expected.appDelegate
+    );
+    expect(updateVirtualMetroEntryIos(migrated.appDelegate)).toContain(
+      'forBundleRoot: ".expo/.virtual-metro-entry"'
+    );
+  });
+
+  it('accepts a different module name and whitespace', () => {
+    const sceneDelegate = fixtures.sceneDelegate
+      .replace('withModuleName: "HelloWorld"', 'withModuleName:"Probe"')
+      .replace(/\n\s*\n/g, '\n')
+      .replace(/^ {2}/gm, '\t');
+    const migrated = migrateSceneDelegateLayout({ ...fixtures, sceneDelegate });
+    expect(migrated?.sceneDelegate).toBe(expected.sceneDelegate);
+    expect(migrated?.appDelegate).toContain('let reactNativeFactoryModuleName = "Probe"');
+  });
+
+  it('refuses a SceneDelegate with custom scene code', () => {
+    const sceneDelegate = fixtures.sceneDelegate.replace(
+      'window = UIWindow(windowScene: windowScene)',
+      'window = UIWindow(windowScene: windowScene)\n    window?.tintColor = .red'
+    );
+    expect(() => migrateSceneDelegateLayout({ ...fixtures, sceneDelegate })).toThrow(
+      /SceneDelegate\.swift differs from the React Native 0\.88 template.*discard.*run install-expo-modules again/
+    );
+  });
+
+  it('leaves other layouts untouched', () => {
+    expect(
+      migrateSceneDelegateLayout({
+        appDelegate: read('AppDelegate-rn088.swift'),
+        sceneDelegate: expected.sceneDelegate,
+      })
+    ).toBeNull();
+  });
+});
+
+describe(migrateSceneDelegateLayoutAsync, () => {
+  let dir: string;
+  beforeEach(async () => {
+    dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'install-expo-modules-'));
+  });
+  afterEach(async () => {
+    await fs.promises.rm(dir, { recursive: true, force: true });
+  });
+
+  it('rewrites both delegate files', async () => {
+    const appDelegatePath = path.join(dir, 'AppDelegate.swift');
+    await fs.promises.copyFile(
+      path.join(fixturesPath, 'AppDelegate-rn088-scene.swift'),
+      appDelegatePath
+    );
+    await fs.promises.copyFile(
+      path.join(fixturesPath, 'SceneDelegate-rn088.swift'),
+      path.join(dir, 'SceneDelegate.swift')
+    );
+    await migrateSceneDelegateLayoutAsync(appDelegatePath);
+    expect(await fs.promises.readFile(appDelegatePath, 'utf8')).toBe(
+      await fs.promises.readFile(
+        path.join(fixturesPath, 'AppDelegate-rn088-scene-updated.swift'),
+        'utf8'
+      )
+    );
+    expect(await fs.promises.readFile(path.join(dir, 'SceneDelegate.swift'), 'utf8')).toBe(
+      await fs.promises.readFile(
+        path.join(fixturesPath, 'SceneDelegate-rn088-updated.swift'),
+        'utf8'
+      )
+    );
+  });
+
+  it('does nothing without SceneDelegate.swift', async () => {
+    const appDelegatePath = path.join(dir, 'AppDelegate.swift');
+    await fs.promises.writeFile(appDelegatePath, 'custom');
+    await migrateSceneDelegateLayoutAsync(appDelegatePath);
+    expect(await fs.promises.readFile(appDelegatePath, 'utf8')).toBe('custom');
   });
 });
