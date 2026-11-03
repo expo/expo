@@ -271,6 +271,8 @@ export default function TabLayout() {
 
 ネイティブタブは画面にヘッダーを追加しないため、Home と About 画面にはヘッダーが表示されなくなります。web では、タブはページ上部にラベルの一覧として表示されます。
 
+> **info** web では、ブラウザのコンソールにハイドレーションエラー（"A tree hydrated but some attributes of the server rendered HTML didn't match the client properties"）が出力されることがあります。これはサーバーレンダリングに関する Expo Router の既知の問題（[expo/expo#52249](https://github.com/expo/expo/issues/52249)）であり、チュートリアルのコードの問題ではありません。タブは問題なく動作します。
+
 新しいボトムタブが表示されたアプリを確認してみましょう。
 
 <ContentSpotlight
