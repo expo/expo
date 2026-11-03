@@ -22,7 +22,6 @@ import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getServerRunModuleStatement } from './getServerRunModuleStatement';
 import { graphToSerialAssetsAsync, graphToSingleChunk } from './serializeChunks';
 import type { ChunkingStrategy } from './serializerAssets';
-import { normalizeSourceMapString } from './sourceMap';
 
 export type { SerialAsset } from './serializerAssets';
 
@@ -111,7 +110,7 @@ export function withSerializerPlugins<Config extends InputConfigT = InputConfigT
   return config;
 }
 
-export function createDefaultExportCustomSerializer(
+function createConventionalSerializer(
   config: Partial<MetroConfig>,
   configOptions: SerializerConfigOptions = {}
 ): Serializer {
@@ -119,36 +118,14 @@ export function createDefaultExportCustomSerializer(
     entryPoint: string,
     preModules: readonly Module<MixedOutput>[],
     graph: ReadOnlyGraph<MixedOutput>,
-    inputOptions: ExpoSerializerOptions
+    options: ExpoSerializerOptions
   ): Promise<string | { code: string; map: string }> => {
+    const environment = graph.transformOptions.customTransformOptions?.environment;
+    const isServer = environment === 'node' || environment === 'react-server';
     // NOTE(@kitten): My guess is that this was supposed to always be disabled for `node` since we set `hot: true` manually for it
-    const isPossiblyDev =
-      graph.transformOptions.dev ||
-      graph.transformOptions.customTransformOptions?.environment === 'node';
+    const isPossiblyDev = graph.transformOptions.dev || environment === 'node';
     // TODO: Align debug-ID eligibility for conventional and artifact output.
-    const enableDebugId = inputOptions.inlineSourceMap !== true && !isPossiblyDev;
-
-    const context = {
-      platform: graph.transformOptions?.platform,
-      environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
-    };
-
-    const isServer = context.environment === 'node' || context.environment === 'react-server';
-
-    const options: ExpoSerializerOptions = {
-      ...inputOptions,
-      createModuleId: (moduleId, ...props) => {
-        if (props.length > 0) {
-          return inputOptions.createModuleId(moduleId, ...props);
-        }
-
-        return inputOptions.createModuleId(
-          moduleId,
-          // @ts-expect-error: context is added by Expo and not part of the upstream Metro implementation.
-          context
-        );
-      },
-    };
+    const enableDebugId = options.inlineSourceMap !== true && !isPossiblyDev;
 
     const chunk = graphToSingleChunk(entryPoint, preModules, graph, options);
     const serializeBundle = (preModules: readonly Module[], debugId?: string) =>
@@ -158,51 +135,15 @@ export function createDefaultExportCustomSerializer(
         debugId,
       });
 
-    let debugId: string | undefined;
-    const loadDebugId = () => {
-      if (!enableDebugId || debugId) {
-        return debugId;
-      }
-
-      // TODO: Perform this cheaper.
-      const outputCode = serializeBundle(preModules).code;
-      debugId = stringToUUID(outputCode);
-      return debugId;
-    };
-
+    // TODO(@kitten): Find a way to avoid serializing just to create a debugId
+    const debugId = enableDebugId ? stringToUUID(serializeBundle(preModules).code) : undefined;
     let premodulesToBundle = [...preModules];
-
-    let bundleCode: string | null = null;
-    let bundleMap: string | null = null;
-
-    // Only invoke the custom serializer if it's not our serializer
-    // We write the Expo serializer back to the original config object, possibly falling into recursive loops
-    const originalCustomSerializer = unwrapOriginalSerializer(config.serializer?.customSerializer);
-    if (originalCustomSerializer) {
-      const bundle = await originalCustomSerializer(entryPoint, premodulesToBundle, graph, options);
-      if (typeof bundle === 'string') {
-        bundleCode = bundle;
-      } else {
-        bundleCode = bundle.code;
-        bundleMap = bundle.map;
-      }
-    } else {
-      const debugId = loadDebugId();
-      if (configOptions.unstable_beforeAssetSerializationPlugins) {
-        for (const plugin of configOptions.unstable_beforeAssetSerializationPlugins) {
-          premodulesToBundle = plugin({ graph, premodules: [...premodulesToBundle], debugId });
-        }
-      }
-      bundleCode = serializeBundle(premodulesToBundle, debugId).code;
+    for (const plugin of configOptions.unstable_beforeAssetSerializationPlugins ?? []) {
+      premodulesToBundle = plugin({ graph, premodules: [...premodulesToBundle], debugId });
     }
+    const bundleCode = serializeBundle(premodulesToBundle, debugId).code;
 
-    const getEnsuredMaps = () => {
-      bundleMap ??= chunk.serializeToSourceMap(premodulesToBundle);
-
-      return bundleMap;
-    };
-
-    if (!bundleMap && options.sourceUrl) {
+    if (options.sourceUrl) {
       const url = isJscSafeUrl(options.sourceUrl)
         ? toNormalUrl(options.sourceUrl)
         : options.sourceUrl;
@@ -211,23 +152,16 @@ export function createDefaultExportCustomSerializer(
       if (parsed.pathname.endsWith('.map')) {
         return {
           code: bundleCode,
-          map: getEnsuredMaps(),
+          map: chunk.serializeToSourceMap(premodulesToBundle),
         };
       }
     }
 
-    if (isPossiblyDev && bundleMap == null && !isServer) {
+    if (isPossiblyDev && !isServer) {
       return bundleCode;
     }
 
-    const map = getEnsuredMaps();
-
-    return {
-      code: bundleCode,
-      map: enableDebugId
-        ? normalizeSourceMapString(JSON.parse(map), { debugId: loadDebugId() })
-        : map,
-    };
+    return { code: bundleCode, map: chunk.serializeToSourceMap(premodulesToBundle, debugId) };
   };
 }
 
@@ -237,7 +171,7 @@ function getDefaultSerializer(
   configOptions: SerializerConfigOptions = {}
 ): Serializer {
   const defaultSerializer =
-    fallbackSerializer ?? createDefaultExportCustomSerializer(config, configOptions);
+    fallbackSerializer ?? createConventionalSerializer(config, configOptions);
 
   const expoSerializer = async (
     entryPoint: string,
@@ -382,38 +316,18 @@ export function createSerializerFromSerialProcessors(
 ): Serializer {
   const finalSerializer = getDefaultSerializer(config, originalSerializer, options);
 
-  return wrapSerializerWithOriginal(
-    originalSerializer,
-    async (...props: SerializerParameters): ReturnType<Serializer> => {
-      const done = event.span();
-      for (const processor of processors) {
-        if (processor) {
-          props = await processor(...props);
-        }
+  return async (...props: SerializerParameters): ReturnType<Serializer> => {
+    const done = event.span();
+    for (const processor of processors) {
+      if (processor) {
+        props = await processor(...props);
       }
-
-      const result = await finalSerializer(...props);
-      done('serialize', { modules: props[2]?.dependencies?.size ?? 0 });
-      return result;
     }
-  );
-}
 
-function wrapSerializerWithOriginal(original: Serializer | null, expo: Serializer) {
-  return Object.assign(expo, { __originalSerializer: original });
-}
-
-export function isDefaultExpoSerializer(serializer: unknown): boolean {
-  return (
-    typeof serializer === 'function' &&
-    '__originalSerializer' in serializer &&
-    serializer.__originalSerializer === null
-  );
-}
-
-function unwrapOriginalSerializer(serializer?: Serializer | null) {
-  if (!serializer || !('__originalSerializer' in serializer)) return null;
-  return serializer.__originalSerializer as Serializer | null;
+    const result = await finalSerializer(...props);
+    done('serialize', { modules: props[2]?.dependencies?.size ?? 0 });
+    return result;
+  };
 }
 
 /**
