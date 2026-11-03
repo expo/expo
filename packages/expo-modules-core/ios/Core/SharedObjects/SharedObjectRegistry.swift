@@ -180,25 +180,37 @@ public final class SharedObjectRegistry: Sendable {
    Deletes the shared objects pair with a given ID.
    */
   internal func delete(_ id: SharedObjectId) {
-    state.withLock { state in
-      if let nativeState = state.pairs[id] {
-        let native = nativeState.native
-        nativeState.markReleased()
+    let released: (native: SharedObject, nativeState: SharedObjectNativeState)? = state.withLock { state in
+      guard let nativeState = state.pairs[id] else {
+        return nil
+      }
+      let native = nativeState.native
+      nativeState.markReleased()
 
-        // Delete the entry from the dictionary.
-        state.pairs[id] = nil
+      // Delete the entry from the dictionary.
+      state.pairs[id] = nil
 
-        // A native object that was paired again after its JS object died has a new native state and ID,
-        // and stays paired.
-        guard native.nativeState === nativeState else {
-          return
-        }
-        native.sharedObjectWillRelease()
-        // Reset an ID on the object.
+      // A native object that was paired again after its JS object died has a new native state and ID,
+      // and stays paired.
+      guard native.nativeState === nativeState else {
+        return nil
+      }
+      return (native, nativeState)
+    }
+    guard let released else {
+      return
+    }
+    let native = released.native
+    // The hooks run without the lock: they can emit events whose listeners run inline on the JavaScript
+    // thread and use the registry again, and the lock isn't reentrant.
+    native.sharedObjectWillRelease()
+    // Reset an ID on the object, unless the hook paired it again.
+    state.withLock { _ in
+      if native.nativeState === released.nativeState {
         native.sharedObjectId = 0
-        native.sharedObjectDidRelease()
       }
     }
+    native.sharedObjectDidRelease()
   }
 
   /**

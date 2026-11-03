@@ -95,7 +95,9 @@ public enum EventOptions {
   /// Runs the listeners before the call returns when it is made on the JavaScript thread, for example
   /// from a synchronous function. On any other thread, the event is scheduled, the same as without an
   /// option. It never blocks. The listeners can call back into the module or shared object before the
-  /// call returns, so emit after its state is up to date.
+  /// call returns, so emit after its state is up to date. On the JavaScript thread, the event can reach
+  /// the listeners before events emitted earlier without an option. An event emitted before the shared
+  /// object is paired with its JavaScript object, for example from its initializer, is dropped.
   case inline
 
   /// Runs the listeners before the call returns, on any thread. A call from another thread blocks until

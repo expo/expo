@@ -22,8 +22,23 @@ private final class MacroEmittingObject: SharedObject {
   var onTickedInline: (ProgressEvent) -> Void
 }
 
-@ExpoModule(classes: [MacroEmittingObject.self])
+/// Emits an inline module event when it's released, to check that the release hooks run without the
+/// shared object registry lock.
+@SharedObject
+private final class MacroReleasingObject: SharedObject {
+  @JS
+  init(tag: Int) {}
+
+  override func sharedObjectWillRelease() {
+    (appContext?.moduleRegistry.get(moduleWithName: "MacroEmitter") as? MacroEmitter)?.onObjectReleased()
+  }
+}
+
+@ExpoModule(classes: [MacroEmittingObject.self, MacroReleasingObject.self])
 private final class MacroEmitter: Module {
+  @Event(.inline)
+  var onObjectReleased: () -> Void
+
   @Event
   var onProgress: (ProgressEvent) -> Void
 
@@ -297,7 +312,8 @@ private struct MacroEventDispatchTests {
     // A timed wait, so an emit that blocks fails the test instead of hanging it.
     #expect(emitted.wait(timeout: .now() + 5) == .success)
     jsThreadReleased.signal()
-    // `result()` runs in a task that the JavaScript thread runs after the event.
+    // `result()` runs in a task that the JavaScript thread runs after the event, because the test
+    // scheduler runs tasks in order. React Native's scheduler would run its immediate priority first.
     #expect(try result() == 30)
   }
 
@@ -364,5 +380,21 @@ private struct MacroEventDispatchTests {
     jsThreadReleased.signal()
     #expect(emitted.wait(timeout: .now() + 5) == .success)
     #expect(try result() == 60)
+  }
+
+  @Test
+  func `runs the listeners of an inline event emitted from a release hook`() throws {
+    let runtime = try runtime
+    let created = try runtime.execute {
+      try runtime.eval("""
+        expo.modules.MacroEmitter.addListener('objectReleased', () => {
+          // Pairs a new shared object, which takes the registry lock.
+          globalThis.created = new expo.modules.MacroEmitter.MacroReleasingObject(2)
+        })
+        new expo.modules.MacroEmitter.MacroReleasingObject(1).release()
+        globalThis.created instanceof expo.modules.MacroEmitter.MacroReleasingObject
+        """).getBool()
+    }
+    #expect(created)
   }
 }

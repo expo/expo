@@ -186,7 +186,9 @@ public extension EventEmitter {
   /// any other thread, the event is scheduled, the same as with `emit`. It never blocks.
   ///
   /// Listeners that run inline can call back into the emitter before this function returns, so emit
-  /// after the emitter's state is up to date.
+  /// after the emitter's state is up to date. On the JavaScript thread, the event can reach the
+  /// listeners before events that `emit` scheduled earlier. An event emitted before the emitter is paired
+  /// with its JavaScript object, for example from a shared object's initializer, is dropped.
   @inlinable
   func emitInline<P: JavaScriptEncodable & ~Copyable>(event: String, payload: consuming sending P) {
     emitInline(event: event, payload: payload) { payload, slot, runtime in
@@ -345,7 +347,7 @@ internal func emitEventNow<P: ~Copyable>(
     warnNonCopyablePayloadNotEncoded(event: event, payloadType: P.self, error: error)
     return
   }
-  dispatchEventOrRetry(event: event, payload: jsPayload, from: emitter, in: runtime)
+  dispatchEvent(event: event, payload: jsPayload, from: emitter, in: runtime)
 }
 
 /// A weak reference to an event emitter that the scheduled `emit` closures capture by value, so it is stored
@@ -368,7 +370,7 @@ extension EventEmitter {
   @usableFromInline
   internal func eventRuntime(forEvent event: String) -> JavaScriptRuntime? {
     guard let appContext, let runtime = try? appContext.runtime else {
-      log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
+      warnRuntimeLost(event: event, emitterType: type(of: self))
       return nil
     }
     return runtime
@@ -414,35 +416,6 @@ internal func dispatchEvent(
   }
   if dispatched == nil {
     log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
-  }
-}
-
-/// Sends a pre-converted event payload to the JavaScript object of the given emitter, like
-/// `dispatchEvent(event:payload:from:in:)`. When the emitter isn't associated with a JavaScript object
-/// yet, it schedules one more try instead of dropping the event: an event that a shared object emits
-/// inline from its constructor runs before the object is paired with its JavaScript object.
-@JavaScriptActor
-@usableFromInline
-internal func dispatchEventOrRetry(
-  event: String,
-  payload: consuming JavaScriptValue,
-  from emitter: any EventEmitter,
-  in runtime: JavaScriptRuntime
-) {
-  let dispatched = emitter.withEventTarget { target in
-    dispatchEvent(event: event, payload: payload, to: target, in: runtime)
-    return true
-  }
-  if dispatched != nil {
-    return
-  }
-  let payload = payload.ref()
-  let weakEmitter = WeakEventEmitterReference(value: emitter)
-  runtime.schedule {
-    guard let emitter = weakEmitter.value, let payload = payload.take() else {
-      return
-    }
-    dispatchEvent(event: event, payload: payload, from: emitter, in: runtime)
   }
 }
 
