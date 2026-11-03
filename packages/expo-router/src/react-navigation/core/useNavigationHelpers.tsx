@@ -13,6 +13,7 @@ import {
 } from '../routers';
 import { isActionHandled } from '../routers/utils';
 import { NavigationContext } from './NavigationContext';
+import { runNavigationGetter } from './isRenderingComponent';
 import { type NavigationHelpers, PrivateValueStore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
 
@@ -73,15 +74,20 @@ export function useNavigationHelpers<
       dispatchSync,
       emit: emitter.emit,
       isFocused: parentNavigationHelpers ? parentNavigationHelpers.isFocused : () => true,
-      canGoBack: () => {
-        const state = getState();
-        const result = router.getStateForAction(state, CommonActions.goBack() as Action, {
-          routeNames: state.routeNames,
-          routeGetIdList: {},
-        });
+      canGoBack: () =>
+        runNavigationGetter(
+          'navigation.canGoBack()',
+          'the useCanGoBack() hook to read it for the focused screen',
+          () => {
+            const state = getState();
+            const result = router.getStateForAction(state, CommonActions.goBack() as Action, {
+              routeNames: state.routeNames,
+              routeGetIdList: {},
+            });
 
-        return isActionHandled(result) || parentNavigationHelpers?.canGoBack() || false;
-      },
+            return isActionHandled(result) || parentNavigationHelpers?.canGoBack() || false;
+          }
+        ),
       getId: () => navigatorId,
       getParent: (id?: string) => {
         if (id !== undefined) {
@@ -96,9 +102,12 @@ export function useNavigationHelpers<
 
         return parentNavigationHelpers;
       },
-      getState: (): State => {
-        return getState();
-      },
+      getState: (): State =>
+        runNavigationGetter(
+          'navigation.getState()',
+          'the useNavigationState() hook to read it',
+          getState
+        ),
     } as NavigationHelpers<ParamListBase, EventMap> & ActionHelpers;
 
     return navigationHelpers;

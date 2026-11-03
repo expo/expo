@@ -11,6 +11,7 @@ import {
 } from '../domComponents/emitDomEvent';
 import { resolveHref } from '../link/href';
 import { getCanDismiss } from '../react-navigation/core/CanDismissContext';
+import { runNavigationGetter } from '../react-navigation/core/isRenderingComponent';
 import type { Href, RoutePath, RouteInputParams } from '../types';
 import { shouldLinkExternally } from '../utils/url';
 import { navigationRef } from './navigationRef';
@@ -292,11 +293,13 @@ export function createImperativeRouter(
     dismiss: (count, options) => dismissImpl(enqueue, count, options),
     dismissAll: (options) => dismissAllImpl(enqueue, options),
     dismissTo: (href, options) => dismissToImpl(enqueue, href, options),
-    canDismiss,
+    canDismiss: () =>
+      runNavigationGetter('router.canDismiss()', 'the useCanDismiss() hook to read it', canDismiss),
     replace: (href, options) => replaceImpl(enqueue, href, options),
     back: (options) => goBackImpl(enqueue, options),
     goBack: (options) => goBackImpl(enqueue, options),
-    canGoBack,
+    canGoBack: () =>
+      runNavigationGetter('router.canGoBack()', 'the useCanGoBack() hook to read it', canGoBack),
     reload,
     prefetch: (href, options) => prefetchImpl(enqueue, href, options),
     setTransitionMode: (mode) => {

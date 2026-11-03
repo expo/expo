@@ -23,3 +23,35 @@ export function isRenderingComponent(): boolean {
   // https://github.com/react/react/blob/07dde64da1abd1525120b9ae49672386486e33c3/packages/react-reconciler/src/ReactFiberAsyncDispatcher.js#L38-L42
   return internals?.A?.getOwner?.() != null;
 }
+
+let getterDepth = 0;
+const warnedGetters = new Set<string>();
+
+/**
+ * Runs a navigation getter. In development, warns once per process when a component calls the
+ * getter during render. Getters call each other, so only the outermost call warns.
+ */
+export function runNavigationGetter<T>(
+  getter: string,
+  // The render-safe alternative, or a function that builds a custom warning.
+  alternative: string | (() => string),
+  run: () => T
+): T {
+  if (process.env.NODE_ENV === 'production') {
+    return run();
+  }
+  if (getterDepth === 0 && !warnedGetters.has(getter) && isRenderingComponent()) {
+    warnedGetters.add(getter);
+    console.warn(
+      typeof alternative === 'function'
+        ? alternative()
+        : `${getter} was called during render. During render it can return a stale value, because navigation state is updated after render. Use ${alternative} during render, or call ${getter} in an effect or event handler.`
+    );
+  }
+  getterDepth++;
+  try {
+    return run();
+  } finally {
+    getterDepth--;
+  }
+}

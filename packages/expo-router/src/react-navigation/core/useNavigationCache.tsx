@@ -8,12 +8,9 @@ import {
   type ParamListBase,
   type Router,
 } from '../routers';
-import { isRenderingComponent } from './isRenderingComponent';
+import { runNavigationGetter } from './isRenderingComponent';
 import type { NavigationHelpers, NavigationProp } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
-
-// Warn once per process, so re-renders and nested parent checks do not repeat it.
-let didWarnIsFocusedInRender = false;
 
 type Options<
   State extends NavigationState,
@@ -146,28 +143,23 @@ export function useNavigationCache<
           [route.key]: { ...o[route.key]!, ...options },
         }));
       },
-      isFocused: () => {
-        if (
-          process.env.NODE_ENV !== 'production' &&
-          !didWarnIsFocusedInRender &&
-          isRenderingComponent()
-        ) {
-          didWarnIsFocusedInRender = true;
-          console.warn(
-            `navigation.isFocused() was called while rendering the screen '${route.name}'. During render it can return a stale value, because focus state is updated after render. Use the useIsFocused() hook to read focus during render.`
-          );
-        }
+      isFocused: () =>
+        runNavigationGetter(
+          'navigation.isFocused()',
+          () =>
+            `navigation.isFocused() was called while rendering the screen '${route.name}'. During render it can return a stale value, because focus state is updated after render. Use the useIsFocused() hook to read focus during render.`,
+          () => {
+            const state = rest.getState();
 
-        const state = rest.getState();
+            if (state.routes[state.index]?.key !== route.key) {
+              return false;
+            }
 
-        if (state.routes[state.index]?.key !== route.key) {
-          return false;
-        }
-
-        // If the current screen is focused, we also need to check if parent navigator is focused
-        // This makes sure that we return the focus state in the whole tree, not just this navigator
-        return navigation ? navigation.isFocused() : true;
-      },
+            // If the current screen is focused, we also need to check if parent navigator is focused
+            // This makes sure that we return the focus state in the whole tree, not just this navigator
+            return navigation ? navigation.isFocused() : true;
+          }
+        ),
     };
 
     return navigationItem;
