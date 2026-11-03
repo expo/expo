@@ -24,34 +24,31 @@ export function isRenderingComponent(): boolean {
   return internals?.A?.getOwner?.() != null;
 }
 
-let getterDepth = 0;
-const warnedGetters = new Set<string>();
+let wrappedCallDepth = 0;
+const shownWarnings = new Set<string>();
 
 /**
- * Runs a navigation getter. In development, warns once per process when a component calls the
- * getter during render. Getters call each other, so only the outermost call warns.
+ * Returns `fn` wrapped so that, in development, `message` is warned once per process when a
+ * component calls it during render. Wrapped functions call each other, so only the outermost
+ * call warns.
  */
-export function runNavigationGetter<T>(
-  getter: string,
-  // The render-safe alternative, or a function that builds a custom warning.
-  alternative: string | (() => string),
-  run: () => T
-): T {
+export function withWarnOnceIfCalledDuringRender<Args extends unknown[], Result>(
+  fn: (...args: Args) => Result,
+  message: string
+): (...args: Args) => Result {
   if (process.env.NODE_ENV === 'production') {
-    return run();
+    return fn;
   }
-  if (getterDepth === 0 && !warnedGetters.has(getter) && isRenderingComponent()) {
-    warnedGetters.add(getter);
-    console.warn(
-      typeof alternative === 'function'
-        ? alternative()
-        : `${getter} was called during render. During render it can return a stale value, because navigation state is updated after render. Use ${alternative} during render, or call ${getter} in an effect or event handler.`
-    );
-  }
-  getterDepth++;
-  try {
-    return run();
-  } finally {
-    getterDepth--;
-  }
+  return (...args) => {
+    if (wrappedCallDepth === 0 && !shownWarnings.has(message) && isRenderingComponent()) {
+      shownWarnings.add(message);
+      console.warn(message);
+    }
+    wrappedCallDepth++;
+    try {
+      return fn(...args);
+    } finally {
+      wrappedCallDepth--;
+    }
+  };
 }

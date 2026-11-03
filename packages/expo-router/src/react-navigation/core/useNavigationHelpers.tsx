@@ -13,7 +13,7 @@ import {
 } from '../routers';
 import { isActionHandled } from '../routers/utils';
 import { NavigationContext } from './NavigationContext';
-import { runNavigationGetter } from './isRenderingComponent';
+import { withWarnOnceIfCalledDuringRender } from './isRenderingComponent';
 import { type NavigationHelpers, PrivateValueStore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
 
@@ -74,20 +74,15 @@ export function useNavigationHelpers<
       dispatchSync,
       emit: emitter.emit,
       isFocused: parentNavigationHelpers ? parentNavigationHelpers.isFocused : () => true,
-      canGoBack: () =>
-        runNavigationGetter(
-          'navigation.canGoBack()',
-          'the useCanGoBack() hook to read it for the focused screen',
-          () => {
-            const state = getState();
-            const result = router.getStateForAction(state, CommonActions.goBack() as Action, {
-              routeNames: state.routeNames,
-              routeGetIdList: {},
-            });
+      canGoBack: withWarnOnceIfCalledDuringRender(() => {
+        const state = getState();
+        const result = router.getStateForAction(state, CommonActions.goBack() as Action, {
+          routeNames: state.routeNames,
+          routeGetIdList: {},
+        });
 
-            return isActionHandled(result) || parentNavigationHelpers?.canGoBack() || false;
-          }
-        ),
+        return isActionHandled(result) || parentNavigationHelpers?.canGoBack() || false;
+      }, 'navigation.canGoBack() was called during render. During render it can return a stale value, because navigation state is updated after render. Use the useCanGoBack() hook to read it for the focused screen during render, or call navigation.canGoBack() in an effect or event handler.'),
       getId: () => navigatorId,
       getParent: (id?: string) => {
         if (id !== undefined) {
@@ -102,12 +97,10 @@ export function useNavigationHelpers<
 
         return parentNavigationHelpers;
       },
-      getState: (): State =>
-        runNavigationGetter(
-          'navigation.getState()',
-          'the useNavigationState() hook to read it',
-          getState
-        ),
+      getState: withWarnOnceIfCalledDuringRender(
+        getState,
+        'navigation.getState() was called during render. During render it can return a stale value, because navigation state is updated after render. Use the useNavigationState() hook to read it during render, or call navigation.getState() in an effect or event handler.'
+      ),
     } as NavigationHelpers<ParamListBase, EventMap> & ActionHelpers;
 
     return navigationHelpers;
