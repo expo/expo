@@ -3183,18 +3183,18 @@ importers:
       '@expo/json-file':
         specifier: workspace:^
         version: link:../json-file
+      '@expo/require-utils':
+        specifier: workspace:^
+        version: link:../require-utils
       '@react-native/normalize-colors':
         specifier: 0.88.1
         version: 0.88.1
       debug:
         specifier: ^4.3.1
         version: 4.4.3
-      expo-modules-autolinking:
-        specifier: workspace:~
-        version: link:../../expo-modules-autolinking
-      resolve-from:
-        specifier: ^5.0.0
-        version: 5.0.0
+      expo:
+        specifier: '*'
+        version: link:../../expo
       semver:
         specifier: ^7.7.4
         version: 7.7.4
@@ -3211,6 +3211,9 @@ importers:
       '@types/semver':
         specifier: ^7.7.1
         version: 7.7.1
+      expo-modules-autolinking:
+        specifier: workspace:*
+        version: link:../../expo-modules-autolinking
       memfs:
         specifier: ^3.6.0
         version: 3.6.0
