@@ -14,12 +14,11 @@ import {
 } from '../fork/__tests__/serializer-test-utils';
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
 import * as chunkSerializer from '../serializeChunks';
-import { serializeServerBundleAsync, wrapServerBundle } from '../serializeServerBundle';
+import { serializeServerBundleAsync } from '../serializeServerBundle';
 import { flattenSourceMap } from '../sourceMap';
 import type { SerialAsset, Serializer } from '../withExpoSerializers';
 import {
   createSerializerFromSerialProcessors,
-  createDefaultExportCustomSerializer,
   withSerializerPlugins,
 } from '../withExpoSerializers';
 
@@ -28,14 +27,34 @@ it.each([
   '/* Custom serializer\nfooter */\n//# sourceMappingURL=index.js.map',
   '// Custom serializer footer without a final newline',
   '// Custom serializer footer\r\n//# sourceMappingURL=index.js.map',
-])('preserves server exports before custom footer comments: %s', (footer) => {
-  const source = '__r("setup");\n/* Before entry */\n__r("entry");\n' + footer;
-  const wrapped = wrapServerBundle(source);
+])('exports server entries through custom serializers with footer comments: %s', async (footer) => {
+  const args = await microBundle({
+    fs: { 'index.js': `import './setup'; export const value = 42;`, 'setup.js': '' },
+    options: { isServer: true, dev: false },
+  });
+  args[3] = {
+    ...args[3],
+    getRunModuleStatement: (id) => `__r(${JSON.stringify(id)});`,
+    runBeforeMainModule: [projectRoot + '/setup.js'],
+  };
+  const serializer = withSerializerPlugins(
+    {
+      projectRoot,
+      serializer: {
+        customSerializer: async (...props: Parameters<typeof baseJSBundle>) =>
+          bundleToString(baseJSBundle(...props)).code + '\n' + footer,
+      },
+    },
+    []
+  ).serializer.customSerializer;
+  const source = (await serializer(...args)) as string;
   const entry = { GET: () => 'hello' };
   const module = { exports: {} };
-  vm.runInNewContext(wrapped, { module, __r: () => entry });
+  vm.runInNewContext(source, { module, __d() {}, __r: () => entry });
   expect(module.exports).toBe(entry);
-  expect(wrapped).toBe(source.replace('__r("entry");', 'module.exports = __r("entry");'));
+  expect(source).toContain(`__r(${JSON.stringify(projectRoot + '/setup.js')});`);
+  expect(source).toContain(`module.exports = __r(${JSON.stringify(args[0])});`);
+  expect(source.endsWith(footer)).toBe(true);
 });
 
 it('retains graph CSS and Metro assets when adapting custom server output', async () => {
@@ -132,13 +151,13 @@ it.each([false, true])(
   }
 );
 
-it('adapts a string server bundle, preserving embedded directives and exporting the final entry', async () => {
+it('adapts a string server bundle without changing embedded directives or entry exports', async () => {
   const [entry, premodules, graph, options] = await microBundle({
     fs: { 'index.js': `export const value = 42;` },
     options: { isServer: true, dev: false, output: 'static', sourceMaps: true },
   });
   const embedded =
-    'const text = `\n//# sourceMappingURL=embedded.map\n`;\n__r(1);\n// Custom serializer footer';
+    'const text = `\n//# sourceMappingURL=embedded.map\n`;\nmodule.exports = __r(1);\n// Custom serializer footer';
   const { artifacts } = await serializeServerBundleAsync(
     embedded +
       '\n//# sourceMappingURL=old.js.map\n//# sourceURL=http://localhost/index.bundle\n//# debugId=old-id',
@@ -318,7 +337,7 @@ it.each([false, true])(
       fs: { 'index.js': `export const value = 42;` },
       options: { dev: true, sourceMaps: true },
     });
-    const serializer = createDefaultExportCustomSerializer({ projectRoot } as any);
+    const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
     const serializerOptions: ExpoSerializerOptions = {
       ...options,
       inlineSourceMap,
@@ -348,7 +367,7 @@ it.each([false, true])('normalizes legacy server maps (inline: %s)', async (inli
     fs: { 'index.js': `export const value = 42;` },
     options: { isServer: true, dev: true, sourceMaps: true },
   });
-  const serializer = createDefaultExportCustomSerializer({ projectRoot } as any);
+  const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
   const serializerOptions: ExpoSerializerOptions = {
     ...options,
     inlineSourceMap,

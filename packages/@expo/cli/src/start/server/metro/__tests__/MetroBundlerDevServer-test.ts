@@ -1,4 +1,5 @@
 import { getConfig } from '@expo/config';
+import type { SerializerParameters } from '@expo/metro-config/build/serializer/withExpoSerializers';
 import type { ChangeEvent } from '@expo/metro/metro-file-map/flow-types';
 import { ImmutableRequest } from 'expo-server/private';
 import { fs, vol } from 'memfs';
@@ -128,9 +129,13 @@ describe('Metro error reporting', () => {
         _config: {
           projectRoot: '/app',
           transformer: { asyncRequireModulePath: 'asyncRequire' },
-          serializer: { getModulesRunBeforeMainModule: () => [] },
+          serializer: {
+            getModulesRunBeforeMainModule: () => [],
+            getRunModuleStatement: (id: number) => `__r(${id});`,
+          },
           server: {},
         },
+        _createModuleId: (file: string) => (file === '/app/index.js' ? 1 : 0),
         _reporter: { update },
         _shouldAddModuleToIgnoreList: () => false,
         _resolveRelativePath: async () => '/app/asyncRequire.js',
@@ -140,19 +145,21 @@ describe('Metro error reporting', () => {
         }),
       } as any;
       devServer['getMetroRevision'] = jest.fn().mockResolvedValue(revision);
-      devServer['getMetroSerializer'] = jest.fn().mockReturnValue(async () =>
-        format === 'single bundle' || format === 'custom conventional'
-          ? {
-              code:
-                format === 'custom conventional'
-                  ? '__r(0);\n__r(1);\n// Custom serializer footer\n//# sourceMappingURL=original.map\n//# debugId=original-id'
-                  : 'module.exports = { custom: true };',
-              map: JSON.stringify({ version: 3, sources: [], names: [], mappings: '' }),
-            }
-          : valid
-            ? { artifacts: [{ type: 'js', source: 'code' }], assets: [] }
-            : {}
-      );
+      devServer['getMetroSerializer'] = jest
+        .fn()
+        .mockReturnValue(async (...[_entry, _pre, _graph, options]: SerializerParameters) =>
+          format === 'single bundle' || format === 'custom conventional'
+            ? {
+                code:
+                  format === 'custom conventional'
+                    ? `${options.getRunModuleStatement(0, '')}\n${options.getRunModuleStatement(1, '')}\n// Custom serializer footer\n//# sourceMappingURL=original.map\n//# debugId=original-id`
+                    : 'module.exports = { custom: true };',
+                map: JSON.stringify({ version: 3, sources: [], names: [], mappings: '' }),
+              }
+            : valid
+              ? { artifacts: [{ type: 'js', source: 'code' }], assets: [] }
+              : {}
+        );
       const result = devServer['_bundleDirectAsync']('/app/index.js', {
         transformOptions: {
           dev: true,
