@@ -321,7 +321,10 @@ function getDefaultSerializer(
         }
 
         return {
-          output: url.searchParams.get('serializer.output') ?? undefined,
+          output:
+            url.searchParams.get('serializer.output') === 'static'
+              ? ('static' as const)
+              : undefined,
           usedExports: url.searchParams.get('serializer.usedExports') === 'true',
           splitChunks: url.searchParams.get('serializer.splitChunks') === 'true',
           includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
