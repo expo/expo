@@ -1,7 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
 import Foundation
 internal import React
+
+// WebSocket stays with React Native. `new WebSocket()` is `RCTWebSocketModule`, which already
+// calls `RCTInspectorWebSocketReporter`. Those calls no-op unless `fuseboxWebSocketEventsEnabled`
+// is on (default false, canary). Do not report them here. The request id is created inside
+// `WebSocket.js`, so the initiator is that file until React Native records the caller's stack.
 
 /**
  Reports the lifecycle of one network request to React Native's core network reporter
@@ -146,4 +152,97 @@ public final class ExpoNetworkReporter: @unchecked Sendable {
   }
 
   private static let requestIdPropertyKey = "ExpoNetworkReporter.requestId"
+}
+
+/**
+ Records a React Native DevTools network initiator from a synchronous host function.
+
+ Hermes drops host frames when it serializes a stack, so the initiator is the JavaScript
+ caller of that host function. A JavaScript wrapper around `createDevToolsRequestId()` would
+ be the initiator instead.
+ */
+public enum ExpoDevToolsInitiator {
+  /// The id from `__NETWORK_REPORTER__.createDevToolsRequestId()`, or nil when DevTools is not attached.
+  @JavaScriptActor
+  public static func requestId(in runtime: JavaScriptRuntime) throws -> String? {
+    let reporter = runtime.global().getProperty("__NETWORK_REPORTER__")
+    guard reporter.isObject() else {
+      return nil
+    }
+    let create = try reporter.asObject().getPropertyAsFunction("createDevToolsRequestId")
+    let id = try create.call()
+    guard !id.isUndefined(), !id.isNull() else {
+      return nil
+    }
+    return try id.asString()
+  }
+
+  /// A host function that records the initiator, then calls `implementation` with the request id appended.
+  /// An id already set on the first argument (`devToolsRequestId`) is reused, so an earlier host call can
+  /// own the stack.
+  @JavaScriptActor
+  public static func hostFunction(
+    named name: String,
+    calling implementation: borrowing JavaScriptValue,
+    in runtime: JavaScriptRuntime
+  ) throws -> JavaScriptFunction {
+    guard implementation.isFunction() else {
+      throw DevToolsInitiatorImplementationException()
+    }
+    // The closure escapes, so it holds the implementation through a reference.
+    let implementation = implementation.copy().ref()
+    return runtime.createFunction(name) { _, arguments in
+      let requestId = try Self.existingRequestId(arguments) ?? Self.requestId(in: runtime)
+      return try Self.call(
+        implementation,
+        arguments: arguments,
+        devToolsRequestId: requestId,
+        in: runtime
+      )
+    }
+  }
+
+  @JavaScriptActor
+  private static func existingRequestId(_ arguments: borrowing JavaScriptValuesBuffer) -> String? {
+    guard arguments.count > 0 else {
+      return nil
+    }
+    let source = arguments[0]
+    guard source.isObject() else {
+      return nil
+    }
+    guard let id = try? source.asObject().getProperty("devToolsRequestId").asString(), !id.isEmpty else {
+      return nil
+    }
+    return id
+  }
+
+  @JavaScriptActor
+  private static func call(
+    _ implementation: JavaScriptValue.Ref,
+    arguments: borrowing JavaScriptValuesBuffer,
+    devToolsRequestId: String?,
+    in runtime: JavaScriptRuntime
+  ) throws -> JavaScriptValue {
+    // The id's slot stays `undefined` when DevTools is not attached.
+    let forwarded = JavaScriptValuesBuffer.allocate(in: runtime, capacity: arguments.count + 1)
+    for index in 0..<arguments.count {
+      forwarded.emplace(arguments[index], at: index)
+    }
+    if let devToolsRequestId {
+      forwarded.emplace(JavaScriptValue(runtime, devToolsRequestId), at: arguments.count)
+    }
+    guard let function = try implementation.withUnwrappedValue({ (value: borrowing JavaScriptValue) in
+      try value.asFunction()
+    }) else {
+      throw DevToolsInitiatorImplementationException()
+    }
+    return try function.call(arguments: forwarded)
+  }
+}
+
+internal final class DevToolsInitiatorImplementationException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "The implementation behind a DevTools initiator host function must be a JavaScript function"
+  }
 }
