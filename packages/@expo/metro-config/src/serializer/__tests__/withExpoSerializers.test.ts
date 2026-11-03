@@ -2654,7 +2654,7 @@ describe('serializes', () => {
           }, "./other.js", "foo");
         },"/app/other.js",["/app/react-server-dom-webpack/server"]);
         __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {},"/app/react-server-dom-webpack/server",[]);
-        TEST_RUN_MODULE("/app/index.js");"
+        module.exports = TEST_RUN_MODULE("/app/index.js");"
       `);
     });
     it(`bundles with multiple client references`, async () => {
