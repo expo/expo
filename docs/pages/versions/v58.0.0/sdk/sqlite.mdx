@@ -440,7 +440,7 @@ Promise.all([
 
 The [`withExclusiveTransactionAsync()`](#withexclusivetransactionasynctask) function addresses this. Only queries that run within the scope function passed to `withExclusiveTransactionAsync()` will run within the actual SQL transaction.
 
-> **warning** `withExclusiveTransactionAsync()` runs on a new database connection, so connection settings made on your original database, such as `PRAGMA foreign_keys = ON`, do not apply inside it. `PRAGMA foreign_keys` has no effect inside a transaction, so it cannot be turned back on from `txn`. Use `withTransactionAsync()` when you need foreign key enforcement.
+> **warning** `withExclusiveTransactionAsync()` runs on a new database connection, so connection settings made on your original database, such as `PRAGMA foreign_keys = ON`, do not apply inside it. `PRAGMA foreign_keys` has no effect inside a transaction, so you cannot turn it back on from `txn`. Use `withTransactionAsync()` when you need foreign key enforcement.
 
 ### Executing PRAGMA queries
 

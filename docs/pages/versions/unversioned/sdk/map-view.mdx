@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
 
 Since you are using Google as the map provider, add the API key to the `react-native-maps` [config plugin](/config-plugins/introduction/) under `plugins.react-native-maps.androidGoogleMapsApiKey`.
 
-Paste the key into **app.json**, or store it in a **.env** file and read it from **app.config.js**. **app.json** cannot read environment variables: a value such as `"process.env.GOOGLE_MAPS_API_KEY"` is copied into the native project as that literal string.
+Paste the key into **app.json**, or store it in a **.env** file and read it from **app.config.js**. **app.json** cannot read environment variables, so a value such as `"process.env.GOOGLE_MAPS_API_KEY"` reaches the native project as that literal string.
 
 <Tabs>
 
@@ -192,7 +192,7 @@ The `config` argument holds the values from **app.json**. If **app.json** alread
 
 Since you are using Google as the map provider, add the API key to the `react-native-maps` [config plugin](/config-plugins/introduction/) under `plugins.react-native-maps.iosGoogleMapsApiKey`.
 
-Paste the key into **app.json**, or store it in a **.env** file and read it from **app.config.js**. **app.json** cannot read environment variables: a value such as `"process.env.GOOGLE_MAPS_API_KEY"` is copied into the native project as that literal string.
+Paste the key into **app.json**, or store it in a **.env** file and read it from **app.config.js**. **app.json** cannot read environment variables, so a value such as `"process.env.GOOGLE_MAPS_API_KEY"` reaches the native project as that literal string.
 
 <Tabs>
 
