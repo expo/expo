@@ -610,7 +610,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mode,
       minify,
       environment: 'client',
-      serializerIncludeMaps: includeSourceMaps,
+      includeSourceMaps: includeSourceMaps,
       mainModuleName: resolvedMainModuleName,
       lazy: !env.EXPO_NO_METRO_LAZY,
       asyncRoutes,
@@ -870,10 +870,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   private async metroImportAsArtifactsAsync(
     filePath: string,
-    specificOptions: Partial<Omit<ExpoMetroOptions, 'serializerOutput'>> = {}
+    specificOptions: Partial<Omit<ExpoMetroOptions, 'output'>> = {}
   ) {
     const results = await this.ssrLoadModuleContents(filePath, {
-      serializerOutput: 'static',
+      output: 'static',
       ...specificOptions,
     });
 
@@ -1031,7 +1031,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     exp: ExpoConfig,
     options: Omit<
       ExpoMetroOptions,
-      'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+      'routerRoot' | 'asyncRoutes' | 'isExporting' | 'output' | 'environment'
     >,
     files: ExportAssetMap,
     extraOptions: {
@@ -1054,7 +1054,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     exp: ExpoConfig,
     options: Omit<
       ExpoMetroOptions,
-      'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment'
+      'baseUrl' | 'routerRoot' | 'asyncRoutes' | 'isExporting' | 'output' | 'environment'
     >,
     files: ExportAssetMap,
     extraOptions: {
@@ -1239,7 +1239,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async legacySinglePageExportBundleAsync(
     options: Omit<
       ExpoMetroOptions,
-      'routerRoot' | 'asyncRoutes' | 'isExporting' | 'serializerOutput' | 'environment' | 'hosted'
+      'routerRoot' | 'asyncRoutes' | 'isExporting' | 'output' | 'environment' | 'hosted'
     >,
     extraOptions: {
       sourceMapUrl?: string;
@@ -1260,7 +1260,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       isExporting,
       ...options,
       environment: 'client',
-      serializerOutput: 'static',
+      output: 'static',
     };
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
