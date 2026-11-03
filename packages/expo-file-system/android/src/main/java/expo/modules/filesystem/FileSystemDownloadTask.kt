@@ -51,6 +51,7 @@ class FileSystemDownloadTask : SharedObject() {
   }
 
   private var call: Call? = null
+
   // Publish status and headers together: OkHttp callbacks and JS calls use different threads.
   @Volatile private var responseMetadata: Map<String, Any?> = emptyResponse()
 

@@ -111,7 +111,13 @@ class DownloadResponseTest {
           .addHeader("X-Response", "first")
           .addHeader("X-Response", "second")
           .addHeader("Retry-After", "60")
-          .setBody(if (status == 206) "def" else "abc")
+          .setBody(
+            if (status == 206) {
+              "def"
+            } else {
+              "abc"
+            }
+          )
           .apply {
             request.getHeader("Range")?.let { addHeader("X-Range", it) }
           }
