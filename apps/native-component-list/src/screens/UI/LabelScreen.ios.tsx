@@ -1,11 +1,16 @@
 import { Host, Label, List, Section, Text, VStack } from '@expo/ui/swift-ui';
-import { font, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+import { font, foregroundStyle, labelReservedIconWidth } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
 export default function LabelScreen() {
   return (
     <Host style={{ flex: 1 }}>
       <List>
+        <Section title="Reserved icon width" modifiers={[labelReservedIconWidth(60)]}>
+          <Label title="Notifications" systemImage="bell" />
+          <Label title="Privacy" systemImage="lock" />
+        </Section>
+
         <Section title="String title">
           <Label title="Notifications" systemImage="bell" />
           <Label title="Privacy" systemImage="lock" />

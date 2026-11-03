@@ -107,6 +107,24 @@ export default function LabelIconOnlyExample() {
 
 </ComponentExample>
 
+### Reserve icon width
+
+Use the [`labelReservedIconWidth`](modifiers/#labelreservediconwidthwidth) modifier to reserve the same width for icons and align label titles. This modifier is available on iOS 26 and later.
+
+```tsx
+import { Host, Label, VStack } from '@expo/ui/swift-ui';
+import { labelReservedIconWidth } from '@expo/ui/swift-ui/modifiers';
+
+<Host matchContents>
+  <VStack
+    alignment="leading"
+    modifiers={[labelReservedIconWidth(40)]}>
+    <Label title="Notifications" systemImage="bell" />
+    <Label title="Privacy" systemImage="lock" />
+  </VStack>
+</Host>;
+```
+
 ## API
 
 ```tsx
