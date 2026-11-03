@@ -869,11 +869,32 @@ exports[`legacy config lints the baseline fixtures: fixtures/baseline/metro.conf
 exports[`legacy config lints the baseline fixtures: fixtures/baseline/react-00.js 1`] = `
 [
   {
+    "column": 9,
+    "line": 7,
+    "message": "Missing "key" prop for element in iterator",
+    "ruleId": "react/jsx-key",
+    "severity": "error",
+  },
+  {
+    "column": 15,
+    "line": 14,
+    "message": "Do not pass children as props. Instead, nest children between the opening and closing tags.",
+    "ruleId": "react/no-children-prop",
+    "severity": "error",
+  },
+  {
+    "column": 15,
+    "line": 18,
+    "message": "\`'\` can be escaped with \`&apos;\`, \`&lsquo;\`, \`&#39;\`, \`&rsquo;\`.",
+    "ruleId": "react/no-unescaped-entities",
+    "severity": "error",
+  },
+  {
     "column": 19,
     "line": 23,
     "message": "Using string literals in ref attributes is deprecated.",
     "ruleId": "react/no-string-refs",
-    "severity": "warn",
+    "severity": "error",
   },
 ]
 `;

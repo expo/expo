@@ -15643,7 +15643,13 @@ exports[`legacy config resolves metro.config.js 1`] = `
       "error",
     ],
     "react/display-name": [
-      "warn",
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
     ],
     "react/jsx-no-duplicate-props": [
       "error",
@@ -15652,34 +15658,46 @@ exports[`legacy config resolves metro.config.js 1`] = `
       "error",
     ],
     "react/jsx-uses-react": [
-      "warn",
+      "error",
     ],
     "react/jsx-uses-vars": [
-      "warn",
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
     ],
     "react/no-danger-with-children": [
-      "warn",
+      "error",
     ],
     "react/no-deprecated": [
-      "warn",
+      "error",
     ],
     "react/no-direct-mutation-state": [
-      "warn",
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
     ],
     "react/no-string-refs": [
-      "warn",
-      {
-        "noTemplateLiterals": true,
-      },
+      "error",
     ],
     "react/no-this-in-sfc": [
       "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
     ],
     "react/no-unknown-property": [
       "warn",
     ],
     "react/require-render-return": [
-      "warn",
+      "error",
     ],
     "unicode-bom": [
       "warn",
@@ -16008,7 +16026,13 @@ exports[`legacy config resolves src/app.ios.ts 1`] = `
       "error",
     ],
     "react/display-name": [
-      "warn",
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
     ],
     "react/jsx-no-duplicate-props": [
       "error",
@@ -16017,34 +16041,46 @@ exports[`legacy config resolves src/app.ios.ts 1`] = `
       "error",
     ],
     "react/jsx-uses-react": [
-      "warn",
+      "error",
     ],
     "react/jsx-uses-vars": [
-      "warn",
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
     ],
     "react/no-danger-with-children": [
-      "warn",
+      "error",
     ],
     "react/no-deprecated": [
-      "warn",
+      "error",
     ],
     "react/no-direct-mutation-state": [
-      "warn",
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
     ],
     "react/no-string-refs": [
-      "warn",
-      {
-        "noTemplateLiterals": true,
-      },
+      "error",
     ],
     "react/no-this-in-sfc": [
       "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
     ],
     "react/no-unknown-property": [
       "warn",
     ],
     "react/require-render-return": [
-      "warn",
+      "error",
     ],
     "unicode-bom": [
       "warn",
@@ -16351,7 +16387,13 @@ exports[`legacy config resolves src/app.js 1`] = `
       "error",
     ],
     "react/display-name": [
-      "warn",
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
     ],
     "react/jsx-no-duplicate-props": [
       "error",
@@ -16360,34 +16402,46 @@ exports[`legacy config resolves src/app.js 1`] = `
       "error",
     ],
     "react/jsx-uses-react": [
-      "warn",
+      "error",
     ],
     "react/jsx-uses-vars": [
-      "warn",
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
     ],
     "react/no-danger-with-children": [
-      "warn",
+      "error",
     ],
     "react/no-deprecated": [
-      "warn",
+      "error",
     ],
     "react/no-direct-mutation-state": [
-      "warn",
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
     ],
     "react/no-string-refs": [
-      "warn",
-      {
-        "noTemplateLiterals": true,
-      },
+      "error",
     ],
     "react/no-this-in-sfc": [
       "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
     ],
     "react/no-unknown-property": [
       "warn",
     ],
     "react/require-render-return": [
-      "warn",
+      "error",
     ],
     "unicode-bom": [
       "warn",
@@ -16689,7 +16743,13 @@ exports[`legacy config resolves src/app.jsx 1`] = `
       "error",
     ],
     "react/display-name": [
-      "warn",
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
     ],
     "react/jsx-no-duplicate-props": [
       "error",
@@ -16698,34 +16758,46 @@ exports[`legacy config resolves src/app.jsx 1`] = `
       "error",
     ],
     "react/jsx-uses-react": [
-      "warn",
+      "error",
     ],
     "react/jsx-uses-vars": [
-      "warn",
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
     ],
     "react/no-danger-with-children": [
-      "warn",
+      "error",
     ],
     "react/no-deprecated": [
-      "warn",
+      "error",
     ],
     "react/no-direct-mutation-state": [
-      "warn",
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
     ],
     "react/no-string-refs": [
-      "warn",
-      {
-        "noTemplateLiterals": true,
-      },
+      "error",
     ],
     "react/no-this-in-sfc": [
       "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
     ],
     "react/no-unknown-property": [
       "warn",
     ],
     "react/require-render-return": [
-      "warn",
+      "error",
     ],
     "unicode-bom": [
       "warn",
@@ -17054,7 +17126,13 @@ exports[`legacy config resolves src/app.ts 1`] = `
       "error",
     ],
     "react/display-name": [
-      "warn",
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
     ],
     "react/jsx-no-duplicate-props": [
       "error",
@@ -17063,34 +17141,46 @@ exports[`legacy config resolves src/app.ts 1`] = `
       "error",
     ],
     "react/jsx-uses-react": [
-      "warn",
+      "error",
     ],
     "react/jsx-uses-vars": [
-      "warn",
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
     ],
     "react/no-danger-with-children": [
-      "warn",
+      "error",
     ],
     "react/no-deprecated": [
-      "warn",
+      "error",
     ],
     "react/no-direct-mutation-state": [
-      "warn",
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
     ],
     "react/no-string-refs": [
-      "warn",
-      {
-        "noTemplateLiterals": true,
-      },
+      "error",
     ],
     "react/no-this-in-sfc": [
       "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
     ],
     "react/no-unknown-property": [
       "warn",
     ],
     "react/require-render-return": [
-      "warn",
+      "error",
     ],
     "unicode-bom": [
       "warn",
@@ -17424,7 +17514,13 @@ exports[`legacy config resolves src/app.tsx 1`] = `
       "error",
     ],
     "react/display-name": [
-      "warn",
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
     ],
     "react/jsx-no-duplicate-props": [
       "error",
@@ -17433,34 +17529,46 @@ exports[`legacy config resolves src/app.tsx 1`] = `
       "error",
     ],
     "react/jsx-uses-react": [
-      "warn",
+      "error",
     ],
     "react/jsx-uses-vars": [
-      "warn",
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
     ],
     "react/no-danger-with-children": [
-      "warn",
+      "error",
     ],
     "react/no-deprecated": [
-      "warn",
+      "error",
     ],
     "react/no-direct-mutation-state": [
-      "warn",
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
     ],
     "react/no-string-refs": [
-      "warn",
-      {
-        "noTemplateLiterals": true,
-      },
+      "error",
     ],
     "react/no-this-in-sfc": [
       "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
     ],
     "react/no-unknown-property": [
       "warn",
     ],
     "react/require-render-return": [
-      "warn",
+      "error",
     ],
     "unicode-bom": [
       "warn",
@@ -17768,7 +17876,13 @@ exports[`legacy config resolves src/app.web.js 1`] = `
       "error",
     ],
     "react/display-name": [
-      "warn",
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
     ],
     "react/jsx-no-duplicate-props": [
       "error",
@@ -17777,34 +17891,46 @@ exports[`legacy config resolves src/app.web.js 1`] = `
       "error",
     ],
     "react/jsx-uses-react": [
-      "warn",
+      "error",
     ],
     "react/jsx-uses-vars": [
-      "warn",
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
     ],
     "react/no-danger-with-children": [
-      "warn",
+      "error",
     ],
     "react/no-deprecated": [
-      "warn",
+      "error",
     ],
     "react/no-direct-mutation-state": [
-      "warn",
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
     ],
     "react/no-string-refs": [
-      "warn",
-      {
-        "noTemplateLiterals": true,
-      },
+      "error",
     ],
     "react/no-this-in-sfc": [
       "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
     ],
     "react/no-unknown-property": [
       "warn",
     ],
     "react/require-render-return": [
-      "warn",
+      "error",
     ],
     "unicode-bom": [
       "warn",
@@ -18106,7 +18232,13 @@ exports[`legacy config resolves src/lib.cjs 1`] = `
       "error",
     ],
     "react/display-name": [
-      "warn",
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
     ],
     "react/jsx-no-duplicate-props": [
       "error",
@@ -18115,34 +18247,46 @@ exports[`legacy config resolves src/lib.cjs 1`] = `
       "error",
     ],
     "react/jsx-uses-react": [
-      "warn",
+      "error",
     ],
     "react/jsx-uses-vars": [
-      "warn",
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
     ],
     "react/no-danger-with-children": [
-      "warn",
+      "error",
     ],
     "react/no-deprecated": [
-      "warn",
+      "error",
     ],
     "react/no-direct-mutation-state": [
-      "warn",
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
     ],
     "react/no-string-refs": [
-      "warn",
-      {
-        "noTemplateLiterals": true,
-      },
+      "error",
     ],
     "react/no-this-in-sfc": [
       "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
     ],
     "react/no-unknown-property": [
       "warn",
     ],
     "react/require-render-return": [
-      "warn",
+      "error",
     ],
     "unicode-bom": [
       "warn",
@@ -18437,7 +18581,13 @@ exports[`legacy config resolves src/lib.mjs 1`] = `
       "error",
     ],
     "react/display-name": [
-      "warn",
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
     ],
     "react/jsx-no-duplicate-props": [
       "error",
@@ -18446,34 +18596,46 @@ exports[`legacy config resolves src/lib.mjs 1`] = `
       "error",
     ],
     "react/jsx-uses-react": [
-      "warn",
+      "error",
     ],
     "react/jsx-uses-vars": [
-      "warn",
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
     ],
     "react/no-danger-with-children": [
-      "warn",
+      "error",
     ],
     "react/no-deprecated": [
-      "warn",
+      "error",
     ],
     "react/no-direct-mutation-state": [
-      "warn",
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
     ],
     "react/no-string-refs": [
-      "warn",
-      {
-        "noTemplateLiterals": true,
-      },
+      "error",
     ],
     "react/no-this-in-sfc": [
       "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
     ],
     "react/no-unknown-property": [
       "warn",
     ],
     "react/require-render-return": [
-      "warn",
+      "error",
     ],
     "unicode-bom": [
       "warn",
@@ -18795,7 +18957,13 @@ exports[`legacy config resolves src/types.d.ts 1`] = `
       "error",
     ],
     "react/display-name": [
-      "warn",
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
     ],
     "react/jsx-no-duplicate-props": [
       "error",
@@ -18804,34 +18972,46 @@ exports[`legacy config resolves src/types.d.ts 1`] = `
       "error",
     ],
     "react/jsx-uses-react": [
-      "warn",
+      "error",
     ],
     "react/jsx-uses-vars": [
-      "warn",
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
     ],
     "react/no-danger-with-children": [
-      "warn",
+      "error",
     ],
     "react/no-deprecated": [
-      "warn",
+      "error",
     ],
     "react/no-direct-mutation-state": [
-      "warn",
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
     ],
     "react/no-string-refs": [
-      "warn",
-      {
-        "noTemplateLiterals": true,
-      },
+      "error",
     ],
     "react/no-this-in-sfc": [
       "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
     ],
     "react/no-unknown-property": [
       "warn",
     ],
     "react/require-render-return": [
-      "warn",
+      "error",
     ],
     "unicode-bom": [
       "warn",
