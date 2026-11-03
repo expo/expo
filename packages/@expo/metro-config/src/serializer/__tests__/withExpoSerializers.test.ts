@@ -353,12 +353,12 @@ it.each(['node', 'react-server'])(
       ...options,
       sourceUrl: 'http://localhost/index.bundle',
       runBeforeMainModule: ['/app/bootstrap.js'],
-      getRunModuleStatement: (moduleId) => `RUN(${JSON.stringify(moduleId)});`,
+      getRunModuleStatement: (moduleId) => `__r(${JSON.stringify(moduleId)});`,
     })) as { code: string; map: string };
     expect(result.code).toContain(
-      'RUN("/app/bootstrap.js");\nmodule.exports = RUN("/app/index.js");'
+      '__r("/app/bootstrap.js");\nmodule.exports = __r("/app/index.js");'
     );
-    expect(result.code).not.toContain('module.exports = RUN("/app/bootstrap.js");');
+    expect(result.code).not.toContain('module.exports = __r("/app/bootstrap.js");');
     expect(JSON.parse(result.map).sources).toContain('/app/index.js');
   }
 );
@@ -1164,7 +1164,7 @@ describe(withSerializerPlugins, () => {
         ])
       );
       expect(result.artifacts[0].source).toContain(
-        `module.exports = TEST_RUN_MODULE(${JSON.stringify(args[0])});`
+        `module.exports = __r(${JSON.stringify(args[0])});`
       );
     }
   );
@@ -1211,9 +1211,9 @@ describe(withSerializerPlugins, () => {
         []
       );
       const output = await config.serializer.customSerializer(...args);
-      expect(output).toContain(`module.exports = TEST_RUN_MODULE(${JSON.stringify(args[0])});`);
+      expect(output).toContain(`module.exports = __r(${JSON.stringify(args[0])});`);
       expect(output).not.toContain(
-        `module.exports = TEST_RUN_MODULE(${JSON.stringify(projectRoot + '/setup.js')});`
+        `module.exports = __r(${JSON.stringify(projectRoot + '/setup.js')});`
       );
     }
   );
@@ -1518,7 +1518,7 @@ describe('serializes', () => {
           let _global = {};
           let _exports = {};
         },"/app/index.js",[],"index.js");
-        TEST_RUN_MODULE("/app/index.js");"
+        __r("/app/index.js");"
       `);
     });
   });
@@ -1545,10 +1545,10 @@ describe('serializes', () => {
           /\/\/# sourceMappingURL=https:\/\/localhost:8081\/indedx\.bundle\?dev=false/
         );
         // Debug ID annotation is included at the end.
-        expect(artifacts.code).toMatch(/\/\/# debugId=abeba873-c91b-4b9f-b0b3-ecba23cbadfb/);
+        expect(artifacts.code).toMatch(/\/\/# debugId=c88bc539-239f-4b18-9ffb-9eb094d815d9/);
 
         // Test that the debugId is added to the source map and matches the annotation.
-        const debugId = 'abeba873-c91b-4b9f-b0b3-ecba23cbadfb';
+        const debugId = 'c88bc539-239f-4b18-9ffb-9eb094d815d9';
         expect(artifacts.code).toContain(debugId);
 
         expect(JSON.parse(artifacts.map)).toEqual(
@@ -1604,10 +1604,10 @@ describe('serializes', () => {
         /\/\/# sourceMappingURL=\/_expo\/static\/js\/web\/index-(?<md5>[0-9a-fA-F]{32})\.js\.map/
       );
       // Debug ID annotation is included at the end.
-      expect(artifacts[0].source).toMatch(/\/\/# debugId=35adadee-cd42-451d-a8cf-aaf69dd92d97/);
+      expect(artifacts[0].source).toMatch(/\/\/# debugId=84ff5caf-ca7e-4193-898a-23554a6ea654/);
 
       // Test that the debugId is added to the source map and matches the annotation.
-      const debugId = '35adadee-cd42-451d-a8cf-aaf69dd92d97';
+      const debugId = '84ff5caf-ca7e-4193-898a-23554a6ea654';
       expect(artifacts[0].source).toContain(debugId);
 
       const mapArtifact = artifacts.find(({ filename }: SerialAsset) =>
@@ -1645,10 +1645,10 @@ describe('serializes', () => {
         /\/\/# sourceMappingURL=https:\/\/localhost:8081\/_expo\/static\/js\/ios\/index-(?<md5>[0-9a-fA-F]{32})\.hbc\.map/
       );
       // Debug ID annotation is included at the end.
-      expect(artifacts[0].source).toMatch(/\/\/# debugId=35adadee-cd42-451d-a8cf-aaf69dd92d97/);
+      expect(artifacts[0].source).toMatch(/\/\/# debugId=84ff5caf-ca7e-4193-898a-23554a6ea654/);
 
       // Test that the debugId is added to the source map and matches the annotation.
-      const debugId = '35adadee-cd42-451d-a8cf-aaf69dd92d97';
+      const debugId = '84ff5caf-ca7e-4193-898a-23554a6ea654';
       expect(artifacts[0].source).toContain(debugId);
 
       const mapArtifact = artifacts.find(({ filename }: SerialAsset) =>
@@ -1928,7 +1928,7 @@ describe('serializes', () => {
         });
         const foo = 'foo';
       },"/app/foo.js",[],"foo.js");
-      TEST_RUN_MODULE("/app/index.js");"
+      __r("/app/index.js");"
     `);
   });
 
@@ -1943,7 +1943,7 @@ describe('serializes', () => {
     });
     expect(typeof str).toBe('string');
     // Ensure the module is run.
-    expect(str).toMatch(/TEST_RUN_MODULE\("\/app\/index\.js"\);/);
+    expect(str).toMatch(/__r\("\/app\/index\.js"\);/);
   });
   it(`bundles basic production native using object output`, async () => {
     const bundle = await serializeTo({
@@ -1956,7 +1956,7 @@ describe('serializes', () => {
     });
     expect(typeof bundle).toBe('object');
     // Ensure the module is run.
-    expect(bundle.code).toMatch(/TEST_RUN_MODULE\("\/app\/index\.js"\);/);
+    expect(bundle.code).toMatch(/__r\("\/app\/index\.js"\);/);
   });
 
   // This is how most people will be bundling for production.
@@ -1979,7 +1979,7 @@ describe('serializes', () => {
     });
     expect(typeof bundle).toBe('object');
     // Ensure the module is run.
-    expect(bundle.code).toMatch(/TEST_RUN_MODULE\("\/app\/index\.js"\);/);
+    expect(bundle.code).toMatch(/__r\("\/app\/index\.js"\);/);
     expect(bundle.code).toMatch(/expo-mock\/async-require/);
     expect(bundle.map).toMatch(/debugId/);
   });
@@ -2000,7 +2000,7 @@ describe('serializes', () => {
 
     expect(artifacts.map((art: SerialAsset) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-7cf5bbda0f67ef0cdf5b051d24839059.js",
+        "_expo/static/js/web/index-f631db5a9fee66d5406872a2cc2e5558.js",
         "_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js",
       ]
     `);
@@ -2008,7 +2008,7 @@ describe('serializes', () => {
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-7cf5bbda0f67ef0cdf5b051d24839059.js",
+          "filename": "_expo/static/js/web/index-f631db5a9fee66d5406872a2cc2e5558.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -2029,7 +2029,7 @@ describe('serializes', () => {
           "source": "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         _dependencyMap[0];
       },"/app/index.js",{"0":"/app/foo.js","paths":{"/app/foo.js":"/_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js"}});
-      TEST_RUN_MODULE("/app/index.js");",
+      __r("/app/index.js");",
           "type": "js",
         },
         {
@@ -2092,7 +2092,7 @@ describe('serializes', () => {
 
     expect(artifacts.map((art: SerialAsset) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-37d09d8a8e233810d0ae346a931f271e.js",
+        "_expo/static/js/web/index-a1e03706df6c963e230df48652b91bae.js",
         "_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js",
       ]
     `);
@@ -2100,7 +2100,7 @@ describe('serializes', () => {
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-37d09d8a8e233810d0ae346a931f271e.js",
+          "filename": "_expo/static/js/web/index-a1e03706df6c963e230df48652b91bae.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -2125,7 +2125,7 @@ describe('serializes', () => {
       __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         module.exports = () => 'MOCK';
       },"/app/expo-mock/async-require",[]);
-      TEST_RUN_MODULE("/app/index.js");",
+      __r("/app/index.js");",
           "type": "js",
         },
         {
@@ -2193,7 +2193,7 @@ describe('serializes', () => {
     });
 
     expect(artifacts.map((art: SerialAsset) => art.filename)).toEqual([
-      '_expo/static/js/web/index-46b289da7e31e98725166090f17b807b.js',
+      '_expo/static/js/web/index-bb55c8c42b9f1847a103b7a551da8c95.js',
       '_expo/static/js/web/index-1e9b37b7a0c3033d8b3385bd9a556dae.js',
       '_expo/static/js/web/[foo]-1a2cc21e93a511f706afa2c3afea0a7f.js',
       '_expo/static/js/web/{foo}-c42fc7ce5bc02ecac6a19badaeaf106d.js',
@@ -2256,7 +2256,7 @@ describe('serializes', () => {
 
     expect(artifacts.map((art: SerialAsset) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-6d33b8d5aa388d29c911f1ea070dd843.js",
+        "_expo/static/js/web/index-8f46e7eee056ec5f7f583193e3459d80.js",
         "_expo/static/js/web/foo-309ed73104dd28f5ce09af0d7b6b1521.js",
       ]
     `);
@@ -2264,7 +2264,7 @@ describe('serializes', () => {
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-6d33b8d5aa388d29c911f1ea070dd843.js",
+          "filename": "_expo/static/js/web/index-8f46e7eee056ec5f7f583193e3459d80.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -2295,7 +2295,7 @@ describe('serializes', () => {
       __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         module.exports = () => 'MOCK';
       },"/app/expo-mock/async-require",[]);
-      TEST_RUN_MODULE("/app/index.js");",
+      __r("/app/index.js");",
           "type": "js",
         },
         {
@@ -2386,7 +2386,7 @@ describe('serializes', () => {
 
     expect(artifacts.map((art: SerialAsset) => art.filename)).toMatchInlineSnapshot(`
       [
-        "_expo/static/js/web/index-4925080761c211aba74fbfd054336f49.js",
+        "_expo/static/js/web/index-733b8d63be178d35fb5ddeba258ccdf9.js",
         "_expo/static/js/web/a-12c7a49f9bd14cd5825ead8b8b20af16.js",
         "_expo/static/js/web/b-530ae3505b2e7d48992cf467aa3b51b5.js",
         "_expo/static/js/web/c-56e8e09d8263e0e34c2784569336ac37.js",
@@ -2398,7 +2398,7 @@ describe('serializes', () => {
     expect(artifacts).toMatchInlineSnapshot(`
       [
         {
-          "filename": "_expo/static/js/web/index-4925080761c211aba74fbfd054336f49.js",
+          "filename": "_expo/static/js/web/index-733b8d63be178d35fb5ddeba258ccdf9.js",
           "metadata": {
             "expoDomComponentReferences": [],
             "isAsync": false,
@@ -2430,7 +2430,7 @@ describe('serializes', () => {
       __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         module.exports = () => 'MOCK';
       },"/app/expo-mock/async-require",[]);
-      TEST_RUN_MODULE("/app/index.js");",
+      __r("/app/index.js");",
           "type": "js",
         },
         {
@@ -2643,7 +2643,7 @@ describe('serializes', () => {
       loaderReferences: [],
     });
     // Ensure the common chunk isn't run, just loaded.
-    expect(artifacts[4].source).not.toMatch(/TEST_RUN_MODULE/);
+    expect(artifacts[4].source).not.toMatch(/__r/);
     expect(artifacts[4].source).not.toMatch(/PRE_MODULE_TEST/);
 
     expect(artifacts[5].filename).toEqual(
@@ -2919,7 +2919,7 @@ describe('serializes', () => {
           }, "./other.js", "foo");
         },"/app/other.js",["/app/react-server-dom-webpack/server"]);
         __d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {},"/app/react-server-dom-webpack/server",[]);
-        module.exports = TEST_RUN_MODULE("/app/index.js");"
+        module.exports = __r("/app/index.js");"
       `);
     });
     it(`bundles with multiple client references`, async () => {
