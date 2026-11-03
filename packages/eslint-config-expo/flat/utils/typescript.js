@@ -5,8 +5,13 @@ const importPlugin = require('eslint-plugin-import');
 
 const allExtensions = [...jsExtensions, ...tsExtensions];
 
+const tsFiles = ['**/*.ts', '**/*.tsx', '**/*.d.ts'];
+
 module.exports = [
-  importPlugin.flatConfigs.typescript,
+  {
+    ...importPlugin.flatConfigs.typescript,
+    files: tsFiles,
+  },
   {
     files: ['**/*.js', '**/*.jsx'],
 
@@ -17,7 +22,7 @@ module.exports = [
     },
   },
   {
-    files: ['**/*.ts', '**/*.tsx', '**/*.d.ts'],
+    files: tsFiles,
 
     plugins: {
       '@typescript-eslint': typescriptEslint,

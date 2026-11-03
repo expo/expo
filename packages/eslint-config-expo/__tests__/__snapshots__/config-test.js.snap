@@ -1218,6 +1218,9 @@ exports[`flat config resolves metro.config.js 1`] = `
     "import/first": [
       "warn",
     ],
+    "import/named": [
+      "error",
+    ],
     "import/namespace": [
       "error",
     ],
@@ -1473,10 +1476,6 @@ exports[`flat config resolves metro.config.js 1`] = `
       ".ts",
       ".tsx",
       ".d.ts",
-    ],
-    "import/external-module-folders": [
-      "node_modules",
-      "node_modules/@types",
     ],
     "import/ignore": [
       "node_modules[\\\\/]+@?react-native",
@@ -4312,6 +4311,9 @@ exports[`flat config resolves src/app.js 1`] = `
     "import/first": [
       "warn",
     ],
+    "import/named": [
+      "error",
+    ],
     "import/namespace": [
       "error",
     ],
@@ -4567,10 +4569,6 @@ exports[`flat config resolves src/app.js 1`] = `
       ".ts",
       ".tsx",
       ".d.ts",
-    ],
-    "import/external-module-folders": [
-      "node_modules",
-      "node_modules/@types",
     ],
     "import/ignore": [
       "node_modules[\\\\/]+@?react-native",
@@ -5847,6 +5845,9 @@ exports[`flat config resolves src/app.jsx 1`] = `
     "import/first": [
       "warn",
     ],
+    "import/named": [
+      "error",
+    ],
     "import/namespace": [
       "error",
     ],
@@ -6102,10 +6103,6 @@ exports[`flat config resolves src/app.jsx 1`] = `
       ".ts",
       ".tsx",
       ".d.ts",
-    ],
-    "import/external-module-folders": [
-      "node_modules",
-      "node_modules/@types",
     ],
     "import/ignore": [
       "node_modules[\\\\/]+@?react-native",
@@ -10500,6 +10497,9 @@ exports[`flat config resolves src/app.web.js 1`] = `
     "import/first": [
       "warn",
     ],
+    "import/named": [
+      "error",
+    ],
     "import/namespace": [
       "error",
     ],
@@ -10755,10 +10755,6 @@ exports[`flat config resolves src/app.web.js 1`] = `
       ".ts",
       ".tsx",
       ".d.ts",
-    ],
-    "import/external-module-folders": [
-      "node_modules",
-      "node_modules/@types",
     ],
     "import/ignore": [
       "node_modules[\\\\/]+@?react-native",
@@ -12035,6 +12031,9 @@ exports[`flat config resolves src/lib.cjs 1`] = `
     "import/first": [
       "warn",
     ],
+    "import/named": [
+      "error",
+    ],
     "import/namespace": [
       "error",
     ],
@@ -12291,21 +12290,9 @@ exports[`flat config resolves src/lib.cjs 1`] = `
       ".tsx",
       ".d.ts",
     ],
-    "import/external-module-folders": [
-      "node_modules",
-      "node_modules/@types",
-    ],
     "import/ignore": [
       "node_modules[\\\\/]+@?react-native",
     ],
-    "import/parsers": {
-      "@typescript-eslint/parser": [
-        ".ts",
-        ".cts",
-        ".mts",
-        ".tsx",
-      ],
-    },
     "import/resolver": {
       "node": {
         "extensions": [
@@ -13571,6 +13558,9 @@ exports[`flat config resolves src/lib.mjs 1`] = `
     "import/first": [
       "warn",
     ],
+    "import/named": [
+      "error",
+    ],
     "import/namespace": [
       "error",
     ],
@@ -13827,21 +13817,9 @@ exports[`flat config resolves src/lib.mjs 1`] = `
       ".tsx",
       ".d.ts",
     ],
-    "import/external-module-folders": [
-      "node_modules",
-      "node_modules/@types",
-    ],
     "import/ignore": [
       "node_modules[\\\\/]+@?react-native",
     ],
-    "import/parsers": {
-      "@typescript-eslint/parser": [
-        ".ts",
-        ".cts",
-        ".mts",
-        ".tsx",
-      ],
-    },
     "import/resolver": {
       "node": {
         "extensions": [

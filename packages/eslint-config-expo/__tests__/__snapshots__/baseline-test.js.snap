@@ -374,6 +374,20 @@ exports[`flat config lints the baseline fixtures: fixtures/baseline/imports-00.j
     "ruleId": "import/no-duplicates",
     "severity": "warn",
   },
+  {
+    "column": 10,
+    "line": 5,
+    "message": "missing not found in './imports-helper'",
+    "ruleId": "import/named",
+    "severity": "error",
+  },
+  {
+    "column": 25,
+    "line": 5,
+    "message": "'<tests>/fixtures/baseline/imports-helper.js' imported multiple times.",
+    "ruleId": "import/no-duplicates",
+    "severity": "warn",
+  },
 ]
 `;
 
@@ -841,6 +855,20 @@ exports[`legacy config lints the baseline fixtures: fixtures/baseline/imports-00
   {
     "column": 19,
     "line": 2,
+    "message": "'<tests>/fixtures/baseline/imports-helper.js' imported multiple times.",
+    "ruleId": "import/no-duplicates",
+    "severity": "warn",
+  },
+  {
+    "column": 10,
+    "line": 5,
+    "message": "missing not found in './imports-helper'",
+    "ruleId": "import/named",
+    "severity": "error",
+  },
+  {
+    "column": 25,
+    "line": 5,
     "message": "'<tests>/fixtures/baseline/imports-helper.js' imported multiple times.",
     "ruleId": "import/no-duplicates",
     "severity": "warn",
