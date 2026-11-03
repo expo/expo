@@ -111,25 +111,8 @@ function createDevServerForStaticPageTests() {
   return devServer;
 }
 
-it('exports only the final SSR entry and preserves bundle annotations', async () => {
-  const devServer = createDevServerForStaticPageTests();
-  const bundle =
-    '__r(0);\n__r(1);\n// Custom serializer footer\n//# sourceMappingURL=original.map\n//# debugId=original-id';
-  devServer['metroLoadModuleContents'] = jest.fn().mockResolvedValue({
-    bundle,
-    filename: '/app/index.bundle',
-    map: 'original map',
-  });
-  const result = await devServer['ssrLoadModuleContents']('/app/index.ts');
-  expect(result).toEqual({
-    src: '__r(0);\nmodule.exports = __r(1);\n// Custom serializer footer\n//# sourceMappingURL=original.map\n//# debugId=original-id',
-    filename: '/app/index.bundle',
-    map: 'original map',
-  });
-});
-
 describe('Metro error reporting', () => {
-  it.each(['artifacts', 'single bundle', 'invalid'])(
+  it.each(['artifacts', 'single bundle', 'custom conventional', 'invalid'])(
     'reports only the final outcome after validating serializer output (%s)',
     async (format) => {
       const valid = format !== 'invalid';
@@ -158,9 +141,12 @@ describe('Metro error reporting', () => {
       } as any;
       devServer['getMetroRevision'] = jest.fn().mockResolvedValue(revision);
       devServer['getMetroSerializer'] = jest.fn().mockReturnValue(async () =>
-        format === 'single bundle'
+        format === 'single bundle' || format === 'custom conventional'
           ? {
-              code: 'module.exports = { custom: true };',
+              code:
+                format === 'custom conventional'
+                  ? '__r(0);\n__r(1);\n// Custom serializer footer\n//# sourceMappingURL=original.map\n//# debugId=original-id'
+                  : 'module.exports = { custom: true };',
               map: JSON.stringify({ version: 3, sources: [], names: [], mappings: '' }),
             }
           : valid
@@ -179,7 +165,7 @@ describe('Metro error reporting', () => {
         resolverOptions: { customResolverOptions: {}, dev: true },
         graphOptions: { lazy: false, shallow: false },
         serializerOptions: {
-          output: 'static',
+          output: format === 'custom conventional' ? undefined : 'static',
           entryFilename: 'hello.js',
           includeSourceMaps: true,
         } as any,
@@ -194,7 +180,12 @@ describe('Metro error reporting', () => {
                   expect.objectContaining({ filename: 'hello.js.map', type: 'map' }),
                 ]),
               }
-            : { bundle: 'code' }
+            : format === 'custom conventional'
+              ? {
+                  bundle:
+                    '__r(0);\nmodule.exports = __r(1);\n// Custom serializer footer\n//# sourceMappingURL=original.map\n//# debugId=original-id',
+                }
+              : { bundle: 'code' }
         );
         expect(update.mock.calls.map(([event]) => event.type)).toEqual([
           'bundle_build_started',

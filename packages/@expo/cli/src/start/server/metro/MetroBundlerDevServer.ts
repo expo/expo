@@ -14,6 +14,7 @@ import {
 } from '@expo/metro-config/build/serializer/serializeServerBundle';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { sourceMapStringNonBlocking } from '@expo/metro-config/build/serializer/sourceMap';
+import { isDefaultExpoSerializer } from '@expo/metro-config/build/serializer/withExpoSerializers';
 import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
 import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
 import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
@@ -1012,7 +1013,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const { filename, bundle, map, ...rest } = await this.metroLoadModuleContents(filePath, opts);
     return {
       ...rest,
-      src: rest.artifacts ? bundle : wrapServerBundle(bundle),
+      src: bundle,
       filename,
       map,
     };
@@ -2391,7 +2392,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           : delta.added.size + delta.modified.size + delta.deleted.size,
         lastModifiedDate: revision.date,
         nextRevId: revision.id,
-        bundle: bundleCode,
+        bundle:
+          isServer && !exportResources && !isDefaultExpoSerializer(serializer)
+            ? wrapServerBundle(bundleCode)
+            : bundleCode,
         map: bundleMap,
         ...exportResources,
       };

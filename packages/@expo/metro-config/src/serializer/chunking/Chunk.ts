@@ -64,7 +64,7 @@ export class Chunk {
     public entries: Set<Module<MixedOutput>>,
     public graph: ReadOnlyGraph<MixedOutput>,
     public options: ExpoSerializerOptions,
-    private readonly strategy: ChunkingImplementation,
+    private readonly strategy: Omit<ChunkingImplementation, 'serializeAsync'>,
     public isAsync: boolean = false,
     public isVendor: boolean = false,
     public isEntry: boolean = false
@@ -77,11 +77,9 @@ export class Chunk {
   }
 
   private getPlatform() {
-    assert(
-      this.graph.transformOptions.platform,
-      "platform is required to be in graph's transformOptions"
-    );
-    return this.graph.transformOptions.platform;
+    const platform = getPlatformOption(this.graph, this.options);
+    assert(platform, "platform is required to be in graph's transformOptions");
+    return platform;
   }
 
   getFilename(src: string) {
@@ -97,7 +95,7 @@ export class Chunk {
   getStableChunkSource(serializerConfig: Partial<SerializerConfigT>) {
     return this.options.dev
       ? ''
-      : this.serializeToCodeWithTemplates(serializerConfig, {
+      : this.serializeToCode(serializerConfig, {
           // Disable source maps when creating a sha to reduce the number of possible changes that could
           // influence the cache hit.
           serializerOptions: {
@@ -108,17 +106,17 @@ export class Chunk {
         }).code;
   }
 
-  private serializeToCodeWithTemplates(
+  serializeToCode(
     serializerConfig: Partial<SerializerConfigT>,
     options: ChunkSerializationOptions & {
-      preModules?: Set<Module>;
+      preModules?: Iterable<Module>;
     } = {}
   ) {
     const entryFile = this.name;
 
     // TODO: Disable all debugId steps when a dev server is enabled. This is an export-only feature.
 
-    const preModules = [...(options.preModules ?? this.preModules).values()];
+    const preModules = [...(options.preModules ?? this.preModules)];
     const dependencies = [...this.deps];
 
     const getRunModuleStatement = this.options.getRunModuleStatement;
@@ -135,9 +133,11 @@ export class Chunk {
             }
           : getRunModuleStatement,
       runBeforeMainModule:
+        options.runBeforeMainModule ??
         serializerConfig?.getModulesRunBeforeMainModule?.(
           path.relative(this.options.projectRoot, entryFile)
-        ) ?? [],
+        ) ??
+        [],
       runModule: this.options.runModule && !this.isVendor && (this.isEntry || !this.isAsync),
       modulesOnly: this.options.modulesOnly || preModules.length === 0,
       platform: this.getPlatform(),
@@ -149,6 +149,17 @@ export class Chunk {
     });
 
     return { code: bundleToString(jsSplitBundle).code, paths: jsSplitBundle.paths };
+  }
+
+  serializeToSourceMap(preModules: Iterable<Module> = this.preModules, debugId?: string): string {
+    const modules = [
+      ...(this.options.modulesOnly ? [] : preModules),
+      ...getSortedModules([...this.deps], this.options),
+    ];
+    return sourceMapString(modules, {
+      ...getSourceMapOptions(this.options, this.isServer),
+      debugId,
+    });
   }
 
   hasAbsolutePath(absolutePath: string): boolean {
@@ -228,7 +239,7 @@ export class Chunk {
     }
   }
 
-  private serializeToCode(
+  private serializeToAssetCode(
     serializerConfig: Partial<SerializerConfigT>,
     {
       debugId,
@@ -244,7 +255,7 @@ export class Chunk {
       preModules: Set<Module>;
     }
   ) {
-    return this.serializeToCodeWithTemplates(serializerConfig, {
+    return this.serializeToCode(serializerConfig, {
       sourceMapUrl: this.getAdjustedSourceMapUrl(filename) ?? undefined,
       debugId,
       preModules,
@@ -278,7 +289,7 @@ export class Chunk {
       }
     }
 
-    const jsCode = this.serializeToCode(serializerConfig, {
+    const jsCode = this.serializeToAssetCode(serializerConfig, {
       chunksByPath,
       filenamesByChunk,
       filename: outputFile,
@@ -325,19 +336,7 @@ export class Chunk {
       !this.options.inlineSourceMap &&
       this.options.sourceMapUrl
     ) {
-      const modules = [
-        ...(this.options.modulesOnly ? [] : finalPreModules),
-        ...getSortedModules([...this.deps], {
-          createModuleId: this.options.createModuleId,
-        }),
-      ];
-
-      // TODO: We may not need to set `debugId` on the bundler sourcemap when
-      // Hermes is enabled, since we ship a separate `.hbc.map` for that case.
-      const sourceMap = sourceMapString(modules, {
-        ...getSourceMapOptions(this.options, this.isServer),
-        debugId,
-      });
+      const sourceMap = this.serializeToSourceMap(finalPreModules, debugId);
 
       assets.push({
         filename: this.options.dev ? jsAsset.filename + '.map' : outputFile + '.map',

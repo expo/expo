@@ -244,6 +244,47 @@ it.each(['node', 'react-server'])(
   }
 );
 
+it.each(['node', 'react-server'])(
+  'exports conventional %s entries through the run-module callback',
+  async (environment) => {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs: {
+        'index.js': `import './bootstrap'; export const value = 42;`,
+        'bootstrap.js': `globalThis.boot = true;`,
+      },
+      options: {
+        dev: true,
+        sourceMaps: true,
+        isServer: environment === 'node',
+        isReactServer: environment === 'react-server',
+      },
+    });
+    const serializer = createSerializerFromSerialProcessors(
+      {
+        projectRoot,
+        serializer: {
+          getModulesRunBeforeMainModule: () => {
+            throw new Error('Pre-main modules were already supplied');
+          },
+        },
+      } as any,
+      [],
+      null
+    );
+    const result = (await serializer(entry, premodules, graph, {
+      ...options,
+      sourceUrl: 'http://localhost/index.bundle',
+      runBeforeMainModule: ['/app/bootstrap.js'],
+      getRunModuleStatement: (moduleId) => `RUN(${JSON.stringify(moduleId)});`,
+    })) as { code: string; map: string };
+    expect(result.code).toContain(
+      'RUN("/app/bootstrap.js");\nmodule.exports = RUN("/app/index.js");'
+    );
+    expect(result.code).not.toContain('module.exports = RUN("/app/bootstrap.js");');
+    expect(JSON.parse(result.map).sources).toContain('/app/index.js');
+  }
+);
+
 it.each(['true', '1'])(
   'honors excludeSource=%s in Metro inline-map requests',
   async (excludeSource) => {
@@ -413,6 +454,44 @@ it('uses an explicit entry filename without renaming async dependencies', async 
       .filename
   ).toBe(asyncAsset.filename);
 });
+
+it.each(['legacy', 'granular'] as const)(
+  'keeps worker filenames distinct from a named %s entry',
+  async (chunkingStrategy) => {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs: {
+        'index.js': `const worker = require.unstable_resolveWorker('./worker');`,
+        'worker.js': `console.log('worker');`,
+      },
+      options: {
+        dev: false,
+        output: 'static',
+        splitChunks: true,
+        sourceMaps: true,
+        chunkingStrategy,
+      },
+    });
+    const serializerOptions = options as ExpoSerializerOptions;
+    serializerOptions.serializerOptions!.entryFilename = 'main.js';
+    const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+    const { artifacts } = (await serializer(entry, premodules, graph, options)) as unknown as {
+      artifacts: SerialAsset[];
+    };
+    const filenames = artifacts.map((artifact) => artifact.filename);
+    expect(new Set(filenames).size).toBe(filenames.length);
+    const main = artifacts.find(
+      (asset) => asset.type === 'js' && asset.originFilename === 'index.js'
+    )!;
+    const worker = artifacts.find(
+      (asset) => asset.type === 'js' && asset.originFilename === 'worker.js'
+    )!;
+    expect(main.filename).toBe('main.js');
+    expect(worker.filename).toMatch(/^_expo\/static\/js\/web\/worker-.*\.js$/);
+    expect(JSON.stringify(main.metadata.paths)).toContain(worker.filename);
+    expect(filenames).toContain(main.filename + '.map');
+    expect(filenames).toContain(worker.filename + '.map');
+  }
+);
 
 it.each([false, true])(
   'uses the normal content-derived debug ID for named entries (Hermes: %s)',

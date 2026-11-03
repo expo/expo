@@ -10,10 +10,13 @@ import type { MixedOutput, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/
 
 import getMetroAssets from '../transform-worker/getAssets';
 import type { ExpoCustomTransformOptions } from '../transform-worker/types';
-import { getBaseUrlOption, getPlatformOption } from './chunking/Chunk';
+import { Chunk, getBaseUrlOption, getPlatformOption } from './chunking/Chunk';
 import type { SerializeChunkOptions } from './chunking/chunkingStrategy';
 import { createGranularChunkingStrategy } from './chunking/createGranularChunkingStrategy';
-import { createLegacyChunkingStrategy } from './chunking/createLegacyChunkingStrategy';
+import {
+  createLegacyChunkingStrategy,
+  legacyChunkSerialization,
+} from './chunking/createLegacyChunkingStrategy';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getCssSerialAssets } from './getCssDeps';
 import type { SerialAsset } from './serializerAssets';
@@ -50,6 +53,24 @@ export async function graphToSerialAssetsAsync(
 
   const resources = await collectGraphResourcesAsync(config, entryFile, graph, options);
   return { artifacts: [...jsAssets, ...resources.artifacts], assets: resources.assets };
+}
+
+export function graphToSingleChunk(...props: SerializerParameters): Chunk {
+  const [entryFile, preModules, graph, options] = props;
+  const entry = graph.dependencies.get(entryFile);
+  const chunk = new Chunk(
+    entryFile,
+    new Set(entry ? [entry] : []),
+    graph,
+    options,
+    legacyChunkSerialization,
+    false,
+    false,
+    true
+  );
+  chunk.deps = new Set(graph.dependencies.values());
+  chunk.preModules = new Set(preModules);
+  return chunk;
 }
 
 export async function collectGraphResourcesAsync(

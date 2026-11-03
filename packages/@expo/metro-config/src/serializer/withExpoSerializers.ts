@@ -8,7 +8,6 @@ import type { MetroConfig } from '@expo/metro/metro';
 import type { ConfigT, InputConfigT } from '@expo/metro/metro-config';
 import type { Module, ReadOnlyGraph, MixedOutput } from '@expo/metro/metro/DeltaBundler';
 import type { ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types';
-import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 
 import { env } from '../env';
@@ -20,9 +19,9 @@ import {
 } from './environmentVariableSerializerPlugin';
 import { event } from './events';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
-import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
+import { graphToSerialAssetsAsync, graphToSingleChunk } from './serializeChunks';
 import type { ChunkingStrategy } from './serializerAssets';
-import { getSourceMapOptions, normalizeSourceMapString, sourceMapString } from './sourceMap';
+import { normalizeSourceMapString } from './sourceMap';
 
 export type { SerialAsset } from './serializerAssets';
 
@@ -42,15 +41,6 @@ function getTreeShakeSerializer() {
     _treeShakeSerializer = require('./treeShakeSerializerPlugin').treeShakeSerializer;
   }
   return _treeShakeSerializer;
-}
-
-// Lazy-loaded to avoid pulling in metro's getAppendScripts at startup
-let _baseJSBundle: typeof import('./fork/baseJSBundle').baseJSBundle;
-function getBaseJSBundle() {
-  if (!_baseJSBundle) {
-    _baseJSBundle = require('./fork/baseJSBundle').baseJSBundle;
-  }
-  return _baseJSBundle;
 }
 
 export type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
@@ -134,7 +124,7 @@ export function createDefaultExportCustomSerializer(
     const isPossiblyDev =
       graph.transformOptions.dev ||
       graph.transformOptions.customTransformOptions?.environment === 'node';
-    // TODO: This is a temporary solution until we've converged on using the new serializer everywhere.
+    // TODO: Align debug-ID eligibility for conventional and artifact output.
     const enableDebugId = inputOptions.inlineSourceMap !== true && !isPossiblyDev;
 
     const context = {
@@ -159,6 +149,14 @@ export function createDefaultExportCustomSerializer(
       },
     };
 
+    const chunk = graphToSingleChunk(entryPoint, preModules, graph, options);
+    const serializeBundle = (preModules: readonly Module[], debugId?: string) =>
+      chunk.serializeToCode(config.serializer ?? {}, {
+        preModules,
+        runBeforeMainModule: options.runBeforeMainModule,
+        debugId,
+      });
+
     let debugId: string | undefined;
     const loadDebugId = () => {
       if (!enableDebugId || debugId) {
@@ -166,11 +164,7 @@ export function createDefaultExportCustomSerializer(
       }
 
       // TODO: Perform this cheaper.
-      const bundle = getBaseJSBundle()(entryPoint, preModules, graph, {
-        ...options,
-        debugId: undefined,
-      });
-      const outputCode = bundleToString(bundle).code;
+      const outputCode = serializeBundle(preModules).code;
       debugId = stringToUUID(outputCode);
       return debugId;
     };
@@ -198,22 +192,11 @@ export function createDefaultExportCustomSerializer(
           premodulesToBundle = plugin({ graph, premodules: [...premodulesToBundle], debugId });
         }
       }
-      bundleCode = bundleToString(
-        getBaseJSBundle()(entryPoint, premodulesToBundle, graph, {
-          ...options,
-          debugId,
-        })
-      ).code;
+      bundleCode = serializeBundle(premodulesToBundle, debugId).code;
     }
 
     const getEnsuredMaps = () => {
-      bundleMap ??= sourceMapString(
-        [
-          ...(options.modulesOnly ? [] : premodulesToBundle),
-          ...getSortedModules([...graph.dependencies.values()], options),
-        ],
-        getSourceMapOptions(options, isServer)
-      );
+      bundleMap ??= chunk.serializeToSourceMap(premodulesToBundle);
 
       return bundleMap;
     };
@@ -232,14 +215,8 @@ export function createDefaultExportCustomSerializer(
       }
     }
 
-    if (isPossiblyDev) {
-      if (bundleMap == null) {
-        return bundleCode;
-      }
-      return {
-        code: bundleCode,
-        map: bundleMap,
-      };
+    if (isPossiblyDev && bundleMap == null && !isServer) {
+      return bundleCode;
     }
 
     const map = getEnsuredMaps();
@@ -382,7 +359,7 @@ function getDefaultSerializer(
     return JSON.stringify(assets);
   };
 
-  return Object.assign(expoSerializer, { __expoSerializer: true });
+  return expoSerializer;
 }
 
 export function createSerializerFromSerialProcessors(
@@ -412,6 +389,14 @@ export function createSerializerFromSerialProcessors(
 
 function wrapSerializerWithOriginal(original: Serializer | null, expo: Serializer) {
   return Object.assign(expo, { __originalSerializer: original });
+}
+
+export function isDefaultExpoSerializer(serializer: unknown): boolean {
+  return (
+    typeof serializer === 'function' &&
+    '__originalSerializer' in serializer &&
+    serializer.__originalSerializer === null
+  );
 }
 
 function unwrapOriginalSerializer(serializer?: Serializer | null) {
