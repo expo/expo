@@ -30,7 +30,11 @@ private final class MacroReleasingObject: SharedObject {
   init(tag: Int) {}
 
   override func sharedObjectWillRelease() {
-    (appContext?.moduleRegistry.get(moduleWithName: "MacroEmitter") as? MacroEmitter)?.onObjectReleased()
+    guard let module = appContext?.moduleRegistry.get(moduleWithName: "MacroEmitter") as? MacroEmitter else {
+      return
+    }
+    module.lastReleased = self
+    module.onObjectReleased()
   }
 }
 
@@ -38,6 +42,14 @@ private final class MacroReleasingObject: SharedObject {
 private final class MacroEmitter: Module {
   @Event(.inline)
   var onObjectReleased: () -> Void
+
+  /// The last `MacroReleasingObject` whose release hook ran, which a listener can pass back to JS.
+  var lastReleased: MacroReleasingObject?
+
+  @JS
+  func takeLastReleased() -> MacroReleasingObject? {
+    return lastReleased
+  }
 
   @Event
   var onProgress: (ProgressEvent) -> Void
@@ -396,5 +408,22 @@ private struct MacroEventDispatchTests {
         """).getBool()
     }
     #expect(created)
+  }
+
+  @Test
+  func `pairs a shared object again from a listener of an inline event emitted from its release hook`() throws {
+    let runtime = try runtime
+    try runtime.execute {
+      try runtime.eval("""
+        expo.modules.MacroEmitter.addListener('objectReleased', () => {
+          // Pairs the object that is being released with a new JS object.
+          globalThis.paired = expo.modules.MacroEmitter.takeLastReleased()
+        })
+        new expo.modules.MacroEmitter.MacroReleasingObject(1).release()
+        """)
+    }
+    // The release keeps the ID that the new pairing gave the object.
+    let released = try #require(module.lastReleased)
+    #expect(released.sharedObjectId != 0)
   }
 }
