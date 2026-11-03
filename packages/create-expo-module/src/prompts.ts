@@ -10,6 +10,7 @@ import { findGitHubUserFromEmail, guessRepoUrl } from './utils/github';
 
 export const ALL_PLATFORMS = ['apple', 'android', 'web'] as const;
 export type Platform = (typeof ALL_PLATFORMS)[number];
+export type NativePlatform = Exclude<Platform, 'web'>;
 
 export function getPlatformPrompt(preSelected: readonly string[] = ALL_PLATFORMS): PromptObject {
   return {

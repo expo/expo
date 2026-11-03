@@ -5,16 +5,31 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { usesCompose, usesExpoUI, usesSwiftUI } from './features';
+import {
+  getViewsModulePlatforms,
+  isViewsModuleFeature,
+  usesCompose,
+  usesExpoUI,
+  usesSwiftUI,
+} from './features';
 import { MIN_SUPPORTED_LOCAL_SDK } from './localSdk';
-import type { Platform } from './prompts';
+import { getModulesApiV2Dir, type ModulesApi } from './modulesApi';
+import type { NativePlatform, Platform } from './prompts';
 import {
   buildAppSnippets,
   buildModuleSnippets,
   buildViewSnippets,
   buildWebModuleSnippets,
 } from './snippets';
-import type { GeneratedNames, LocalSubstitutionData, ProjectData, SubstitutionData } from './types';
+import type {
+  Feature,
+  GeneratedNames,
+  LocalSubstitutionData,
+  ProjectData,
+  SubstitutionData,
+  TemplateProjectData,
+  ViewsModule,
+} from './types';
 import { env } from './utils/env';
 import { UserError } from './utils/errors';
 import { writeFileAsync, type WriteFile } from './utils/files';
@@ -66,7 +81,7 @@ const PNPM_WORKSPACE_FILES: Record<string, string> = {
  * Maps template top-level directory names to the platform name in `expo-module.config.json`.
  * Files under these directories are only copied when the corresponding platform is selected.
  */
-export const TEMPLATE_DIR_TO_PLATFORM: Record<string, Platform> = {
+export const TEMPLATE_DIR_TO_PLATFORM: Record<string, NativePlatform> = {
   ios: 'apple',
   android: 'android',
 };
@@ -338,14 +353,37 @@ export async function withTemplateAsync<T>(
 }
 
 /**
+ * Resolves the views module of an Expo Modules API 2.0 module, on the platforms that have view
+ * features, or `null` when the module doesn't need one.
+ */
+function resolveViewsModule(
+  name: string,
+  features: readonly Feature[],
+  modulesApi: ModulesApi
+): ViewsModule | null {
+  if (modulesApi !== 'v2') {
+    return null;
+  }
+  const platforms = getViewsModulePlatforms(features, ['apple', 'android']);
+  if (platforms.length === 0) {
+    return null;
+  }
+  const viewsModuleName = `${name}Views`;
+  return { name: viewsModuleName, moduleName: `${viewsModuleName}Module`, platforms };
+}
+
+/**
  * Builds the augmented substitution data object by rendering all snippet slots.
- * Extracted from `createModuleFromTemplate` for reuse.
  */
 export async function buildAugmentedData(
   snippetsDir: string,
-  data: SubstitutionData | LocalSubstitutionData
+  substitutionData: SubstitutionData | LocalSubstitutionData,
+  modulesApi: ModulesApi
 ) {
-  const features = data.project.features;
+  const { features } = substitutionData.project;
+  const viewsModule = resolveViewsModule(substitutionData.project.name, features, modulesApi);
+  const project: TemplateProjectData = { ...substitutionData.project, modulesApi, viewsModule };
+  const data = { ...substitutionData, project };
 
   // Build view-level snippets first (used inside the View() block)
   const [viewSnippetsSwift, viewSnippetsKt] = await Promise.all([
@@ -355,9 +393,17 @@ export async function buildAugmentedData(
 
   // Build module-level snippets, passing the view snippets for injection
   const [moduleSnippetsSwift, moduleSnippetsKt] = await Promise.all([
-    buildModuleSnippets(snippetsDir, features, data, 'swift', viewSnippetsSwift),
-    buildModuleSnippets(snippetsDir, features, data, 'kt', viewSnippetsKt),
+    buildModuleSnippets(snippetsDir, features, data, 'swift', viewSnippetsSwift, modulesApi),
+    buildModuleSnippets(snippetsDir, features, data, 'kt', viewSnippetsKt, modulesApi),
   ]);
+
+  const viewsModuleFeatures = features.filter(isViewsModuleFeature);
+  const [viewsModuleSnippetsSwift, viewsModuleSnippetsKt] = viewsModule
+    ? await Promise.all([
+        buildModuleSnippets(snippetsDir, viewsModuleFeatures, data, 'swift', viewSnippetsSwift),
+        buildModuleSnippets(snippetsDir, viewsModuleFeatures, data, 'kt', viewSnippetsKt),
+      ])
+    : ['', ''];
 
   // Build web module snippets and helpers
   const webEventImport = features.includes('Event')
@@ -405,6 +451,8 @@ export async function buildAugmentedData(
     ...data,
     moduleSnippetsSwift,
     moduleSnippetsKt,
+    viewsModuleSnippetsSwift,
+    viewsModuleSnippetsKt,
     viewSnippetsSwift,
     viewSnippetsKt,
     webEventImport,
@@ -421,13 +469,15 @@ export async function buildAugmentedData(
   };
 }
 
+export type AugmentedData = Awaited<ReturnType<typeof buildAugmentedData>>;
+
 /**
  * Copies template files to the target directory.
  */
 export async function copyTemplateFiles(
   templatePath: string,
   targetPath: string,
-  augmentedData: Awaited<ReturnType<typeof buildAugmentedData>>,
+  augmentedData: AugmentedData,
   options: {
     platforms: Platform[];
     platformsOnly?: boolean;
@@ -452,18 +502,54 @@ export async function copyTemplateFiles(
       }
     }
 
-    const renderedRelativePath = ejs.render(file.replace(/^\$/, ''), augmentedData, {
-      openDelimiter: '{',
-      closeDelimiter: '}',
-      escape: (value: string) => value.replace(/\./g, path.sep),
-    });
-    const fromPath = path.join(templatePath, file);
-    const toPath = path.join(targetPath, renderedRelativePath);
-    const template = await fs.promises.readFile(fromPath, 'utf8');
-    const renderedContent = ejs.render(template, augmentedData);
-
-    await writeFile(toPath, renderedContent);
+    const sources = getTemplateFileSources(templatePath, file, requiredPlatform, augmentedData);
+    for (const [fromPath, data] of sources) {
+      const toPath = path.join(targetPath, renderTemplatePath(file, data));
+      const template = await fs.promises.readFile(fromPath, 'utf8');
+      await writeFile(toPath, ejs.render(template, data));
+    }
   }
+}
+
+/**
+ * Gets the sources to render a template file from, with their data. An Expo Modules API 2.0
+ * module uses the file's version in `snippets/v2` when there is one, which replaces the Module DSL
+ * module files. Expo Modules API 2.0 doesn't support views yet, so its views module is rendered
+ * from these Module DSL files.
+ */
+function getTemplateFileSources(
+  templatePath: string,
+  file: string,
+  platform: NativePlatform | undefined,
+  data: AugmentedData
+): [string, AugmentedData][] {
+  const templateFile = path.join(templatePath, file);
+  const v2File = path.join(getModulesApiV2Dir(templatePath), file);
+  if (data.project.modulesApi !== 'v2' || !fs.existsSync(v2File)) {
+    return [[templateFile, data]];
+  }
+  const { viewsModule } = data.project;
+  if (!viewsModule || !platform || !viewsModule.platforms.includes(platform)) {
+    return [[v2File, data]];
+  }
+  const viewsModuleData = {
+    ...data,
+    project: { ...data.project, name: viewsModule.name, moduleName: viewsModule.moduleName },
+    moduleSnippetsSwift: data.viewsModuleSnippetsSwift,
+    moduleSnippetsKt: data.viewsModuleSnippetsKt,
+  };
+  return [
+    [v2File, data],
+    [templateFile, viewsModuleData],
+  ];
+}
+
+function renderTemplatePath(file: string, data: object): string {
+  return ejs.render(file.replace(/^\$/, ''), data, {
+    openDelimiter: '{',
+    closeDelimiter: '}',
+    escape: (value: string) => value.replace(/\./g, path.sep),
+  });
 }
 
 /**
@@ -492,25 +578,15 @@ export async function copyPnpmWorkspaceFiles(
 export async function updateWebStub(
   templatePath: string,
   targetDir: string,
-  data: SubstitutionData | LocalSubstitutionData,
+  augmentedData: AugmentedData,
   writeFile: WriteFile = writeFileAsync
 ): Promise<void> {
-  const snippetsDir = path.join(templatePath, 'snippets');
-  const augmentedData = await buildAugmentedData(snippetsDir, data);
-
-  // Template filename uses EJS: src/{%- project.moduleName %}.web.ts
   const templateRelFile = path.join('src', `{%- project.moduleName %}.web.ts`);
-  const renderedFileName = ejs.render(templateRelFile.replace(/^\$/, ''), augmentedData, {
-    openDelimiter: '{',
-    closeDelimiter: '}',
-    escape: (value: string) => value.replace(/\./g, path.sep),
-  });
-
   const fromPath = path.join(templatePath, templateRelFile);
-  const toPath = path.join(targetDir, renderedFileName);
+  const toPath = path.join(targetDir, renderTemplatePath(templateRelFile, augmentedData));
   if (fs.existsSync(toPath)) {
     const currentContent = await fs.promises.readFile(toPath, 'utf8');
-    const sentinel = getGeneratedWebStubSentinel(data.project.moduleName);
+    const sentinel = getGeneratedWebStubSentinel(augmentedData.project.moduleName);
     if (!currentContent.includes(sentinel)) {
       throw new Error(
         `Refusing to overwrite ${toPath} because it does not look like the generated web stub.\n` +

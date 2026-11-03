@@ -10,11 +10,12 @@ import {
   buildViewSnippets,
   buildWebModuleSnippets,
   copyFileSnippets,
+  type FileSnippetData,
 } from '../snippets';
 import type { SubstitutionData } from '../types';
 
 // Minimal mock data matching SubstitutionData shape
-const mockData: SubstitutionData = {
+const mockData: SubstitutionData & FileSnippetData = {
   project: {
     slug: 'my-module',
     name: 'MyModule',
@@ -30,6 +31,8 @@ const mockData: SubstitutionData = {
     sharedObjectName: 'MyModuleModuleSharedObject',
     platforms: ['apple', 'android'],
     features: ['Function'],
+    modulesApi: 'v1',
+    viewsModule: null,
   },
   author: 'Test',
   license: 'MIT',

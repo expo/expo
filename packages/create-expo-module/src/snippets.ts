@@ -2,10 +2,11 @@ import ejs from 'ejs';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import type { Feature, SubstitutionData, LocalSubstitutionData } from './types';
+import type { ModulesApi } from './modulesApi';
+import type { Feature, TemplateProjectData } from './types';
 import { writeFileAsync, type WriteFile } from './utils/files';
 
-type AnySubstitutionData = SubstitutionData | LocalSubstitutionData;
+export type FileSnippetData = { project: TemplateProjectData };
 
 const MODULE_LEVEL_FEATURES: Feature[] = [
   'Event',
@@ -68,14 +69,15 @@ export async function buildModuleSnippets(
   features: string[],
   data: object,
   ext: 'swift' | 'kt',
-  viewSnippets = ''
+  viewSnippets = '',
+  modulesApi: ModulesApi = 'v1'
 ): Promise<string> {
   const dataWithView = { ...data, viewSnippets };
+  // Features that Expo Modules API 2.0 doesn't support have no `module.v2.<ext>.ejs` snippet.
+  const filename = modulesApi === 'v2' ? `module.v2.${ext}.ejs` : `module.${ext}.ejs`;
   const selected = MODULE_LEVEL_FEATURES.filter((f) => features.includes(f));
   const parts = await Promise.all(
-    selected.map((feature) =>
-      renderSnippet(snippetsDir, feature, `module.${ext}.ejs`, dataWithView)
-    )
+    selected.map((feature) => renderSnippet(snippetsDir, feature, filename, dataWithView))
   );
   return parts
     .filter(Boolean)
@@ -139,7 +141,9 @@ export async function buildAppSnippets(
 type FileSnippetSpec = {
   feature: Feature;
   source: string;
-  dest: (data: AnySubstitutionData) => string;
+  /** The source of an Expo Modules API 2.0 module, set for files that depend on the API version. */
+  v2Source?: string;
+  dest: (data: FileSnippetData) => string;
   platform?: 'apple' | 'android';
 };
 
@@ -177,12 +181,14 @@ const FILE_SNIPPET_SPECS: FileSnippetSpec[] = [
   {
     feature: 'SharedObject',
     source: 'sharedObject.swift.ejs',
+    v2Source: 'sharedObject.v2.swift.ejs',
     dest: (d) => path.join('ios', `${d.project.sharedObjectName}.swift`),
     platform: 'apple',
   },
   {
     feature: 'SharedObject',
     source: 'sharedObject.kt.ejs',
+    v2Source: 'sharedObject.v2.kt.ejs',
     dest: (d) =>
       path.join(
         'android',
@@ -264,7 +270,7 @@ const FILE_SNIPPET_SPECS: FileSnippetSpec[] = [
 async function copySnippetsInternal(
   snippetsDir: string,
   features: string[],
-  data: AnySubstitutionData,
+  data: FileSnippetData,
   targetDir: string,
   filter: (spec: (typeof FILE_SNIPPET_SPECS)[0]) => boolean,
   writeFile: WriteFile
@@ -276,7 +282,8 @@ async function copySnippetsInternal(
     if (spec.platform && !selectedPlatforms.includes(spec.platform)) continue;
     if (!filter(spec)) continue;
 
-    const template = await readSnippet(snippetsDir, spec.feature, spec.source);
+    const source = (data.project.modulesApi === 'v2' && spec.v2Source) || spec.source;
+    const template = await readSnippet(snippetsDir, spec.feature, source);
     if (!template) continue;
 
     const rendered = ejs.render(template, data);
@@ -289,7 +296,7 @@ async function copySnippetsInternal(
 export const copyFileSnippets = (
   snippetsDir: string,
   features: string[],
-  data: AnySubstitutionData,
+  data: FileSnippetData,
   targetDir: string,
   writeFile: WriteFile = writeFileAsync
 ) => copySnippetsInternal(snippetsDir, features, data, targetDir, () => true, writeFile);
@@ -297,7 +304,7 @@ export const copyFileSnippets = (
 export const copyNativeFileSnippets = (
   snippetsDir: string,
   features: string[],
-  data: AnySubstitutionData,
+  data: FileSnippetData,
   targetDir: string,
   writeFile: WriteFile = writeFileAsync
 ) =>
@@ -313,7 +320,7 @@ export const copyNativeFileSnippets = (
 export const copyWebFileSnippets = (
   snippetsDir: string,
   features: string[],
-  data: AnySubstitutionData,
+  data: FileSnippetData,
   targetDir: string,
   writeFile: WriteFile = writeFileAsync
 ) =>

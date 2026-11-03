@@ -108,7 +108,7 @@ describe('--platform option', () => {
     const moduleConfig = readJson(projectName, 'expo-module.config.json');
     expect(moduleConfig.platforms).toEqual(['apple', 'android']);
     expect(moduleConfig.apple).toBeDefined();
-    expect(moduleConfig.android).toBeDefined();
+    expect(moduleConfig.android).toBeUndefined();
 
     // Both platform directories should be present
     expectFileExists(projectName, 'ios');
@@ -138,7 +138,7 @@ describe('--platform option', () => {
     const moduleConfig = readJson(projectName, 'expo-module.config.json');
     expect(moduleConfig.platforms).toEqual(['apple', 'android', 'web']);
     expect(moduleConfig.apple).toBeDefined();
-    expect(moduleConfig.android).toBeDefined();
+    expect(moduleConfig.android).toBeUndefined();
 
     // Both platform directories should be present
     expectFileExists(projectName, 'ios');
@@ -201,7 +201,7 @@ describe('--platform option', () => {
 
     const moduleConfig = readJson(projectName, 'expo-module.config.json');
     expect(moduleConfig.platforms).toEqual(['android']);
-    expect(moduleConfig.android).toBeDefined();
+    expect(moduleConfig.android).toBeUndefined();
     expect(moduleConfig.apple).toBeUndefined();
 
     // android/ should exist, ios/ should not
@@ -235,7 +235,7 @@ describe('--platform option', () => {
     );
     expect(moduleConfig.platforms).toEqual(['apple', 'android', 'web']);
     expect(moduleConfig.apple).toBeDefined();
-    expect(moduleConfig.android).toBeDefined();
+    expect(moduleConfig.android).toBeUndefined();
   });
 
   it('warns about and ignores invalid values when mixed with valid ones', async () => {
@@ -282,7 +282,7 @@ describe('--platform option', () => {
       'expo-module.config.json'
     );
     expect(moduleConfig.platforms).toEqual(['android']);
-    expect(moduleConfig.android).toBeDefined();
+    expect(moduleConfig.android).toBeUndefined();
     expect(moduleConfig.apple).toBeUndefined();
 
     // android/ should exist, ios/ should not
@@ -633,6 +633,8 @@ describe('add-platform-support', () => {
       `expo.modules.${slug.replace(/-/g, '')}`,
       '--platform',
       ...platforms,
+      '--modules-api',
+      'v1',
       '--source',
       localTemplatePath,
     ];
