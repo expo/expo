@@ -4,6 +4,7 @@ import path from 'path';
 import { getSdkVersion } from '../../../utils/expoVersionMappings';
 import { updateVirtualMetroEntryIos } from '../../cli/withCliIntegration';
 import {
+  assertNoLegacySourceUrl,
   updateModulesAppDelegateObjcHeader,
   updateModulesAppDelegateObjcImpl,
   updateModulesAppDelegateSwift,
@@ -19,9 +20,6 @@ describe(updateModulesAppDelegateObjcHeader, () => {
     ]);
 
     if (sdkVersion === '59.0.0') {
-      expect(() => updateModulesAppDelegateSwift(rawContents, sdkVersion)).toThrow(
-        /Remove sourceURL\(for:\).*custom bundle selection.*bundleURL\(\).*run install-expo-modules again/
-      );
       rawContents = rawContents.replace(
         `  override func sourceURL(for bridge: RCTBridge) -> URL? {
     self.bundleURL()
@@ -32,7 +30,6 @@ describe(updateModulesAppDelegateObjcHeader, () => {
       );
       expectContents = expectContents.replace(
         `  override func sourceURL(for bridge: RCTBridge) -> URL? {
-    // needed to return the correct URL for expo-dev-client.
     bridge.bundleURL ?? bundleURL()
   }
 
@@ -134,9 +131,8 @@ describe(updateModulesAppDelegateObjcImpl, () => {
   });
 });
 
-describe(updateModulesAppDelegateSwift, () => {
-  describe('SDK 59 sourceURL migration', () => {
-    const delegate = (superclass: string, body: string) => `internal import Expo
+describe(assertNoLegacySourceUrl, () => {
+  const delegate = (superclass: string, body: string) => `internal import Expo
 class ReactNativeDelegate: ${superclass} {
   @objc public override func sourceURL(
     for sourceBridge: RCTBridge
@@ -146,41 +142,44 @@ class ReactNativeDelegate: ${superclass} {
 }
 `;
 
-    it.each([
-      ['ExpoReactNativeFactoryDelegate', 'sourceBridge.bundleURL ?? bundleURL()'],
-      ['BaseDelegate', 'recordLaunch(); return customBundleURL()'],
-    ])('requires manual migration for a delegate extending %s', (superclass, body) => {
-      expect(() => updateModulesAppDelegateSwift(delegate(superclass, body), '59.0.0')).toThrow(
-        /sourceURL\(for:\).*line 3.*Remove sourceURL\(for:\) and its attributes.*custom bundle selection.*bundleURL\(\).*run install-expo-modules again/
-      );
-    });
+  it.each([
+    [
+      'ExpoReactNativeFactoryDelegate',
+      'sourceBridge.bundleURL ?? bundleURL()',
+      'AppDelegate.swift',
+    ],
+    ['BaseDelegate', 'recordLaunch(); return customBundleURL()', 'SceneDelegate.swift'],
+  ])('requires manual migration for a delegate extending %s', (superclass, body, fileName) => {
+    expect(() => assertNoLegacySourceUrl(delegate(superclass, body), '59.0.0', fileName)).toThrow(
+      `${fileName} contains the legacy sourceURL(for:) method at line 3.`
+    );
+  });
 
-    it('ignores declarations in line comments', () => {
-      const contents = `internal import Expo
+  it('ignores declarations in line comments', () => {
+    const contents = `internal import Expo
 class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
   // override func sourceURL(for bridge: RCTBridge) -> URL? { self.bundleURL() }
   override func bundleURL() -> URL? { customBundleURL() }
 }
 `;
-      expect(updateModulesAppDelegateSwift(contents, '59.0.0')).toBe(contents);
-    });
-
-    it('keeps the old transformation through SDK 58 and for an unknown SDK', () => {
-      const contents = delegate('ExpoReactNativeFactoryDelegate', 'self.bundleURL()').replace(
-        'sourceURL(\n    for sourceBridge: RCTBridge\n  )',
-        'sourceURL(for bridge: RCTBridge)'
-      );
-      expect(() => updateModulesAppDelegateSwift(contents, '59.0.0')).toThrow(
-        /Remove sourceURL\(for:\)/
-      );
-      for (const sdkVersion of ['57.0.0', '58.0.0', undefined]) {
-        const updated = updateModulesAppDelegateSwift(contents, sdkVersion);
-        expect(updated).toContain('bridge.bundleURL ?? bundleURL()');
-        expect(updated).toContain('func sourceURL(');
-      }
-    });
+    expect(() => assertNoLegacySourceUrl(contents, '59.0.0')).not.toThrow();
   });
 
+  it('keeps the old transformation through SDK 58 and for an unknown SDK', () => {
+    const contents = delegate('ExpoReactNativeFactoryDelegate', 'self.bundleURL()').replace(
+      'sourceURL(\n    for sourceBridge: RCTBridge\n  )',
+      'sourceURL(for bridge: RCTBridge)'
+    );
+    for (const sdkVersion of ['57.0.0', '58.0.0', undefined]) {
+      expect(() => assertNoLegacySourceUrl(contents, sdkVersion)).not.toThrow();
+      const updated = updateModulesAppDelegateSwift(contents, sdkVersion);
+      expect(updated).toContain('bridge.bundleURL ?? bundleURL()');
+      expect(updated).toContain('func sourceURL(');
+    }
+  });
+});
+
+describe(updateModulesAppDelegateSwift, () => {
   it('should migrate from RN 0.77 AppDelegate.swift', async () => {
     const rawContents = await fs.promises.readFile(
       path.join(fixturesPath, 'AppDelegate-rn077.swift'),
