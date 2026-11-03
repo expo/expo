@@ -1,5 +1,5 @@
 ---
-'expo-modules-autolinking': patch
+'expo-modules-autolinking': minor
 'expo-modules-core': patch
 ---
 

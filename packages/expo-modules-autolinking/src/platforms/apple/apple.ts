@@ -182,8 +182,7 @@ interface GenerateModulesProviderParams {
 
 /**
  * Returns whether the `expo-modules-core` at the given path has `ExpoPackage` and `ModulesProvider.packages`.
- * A provider that overrides `packages` doesn't compile against an older core. Checking the core sources,
- * not its version, works for every release line and for canaries.
+ * A provider that overrides `packages` doesn't compile against an older core, which has no `ExpoPackage.swift`.
  */
 export async function coreSupportsPackagesAsync(
   corePath: string | null | undefined
@@ -191,15 +190,7 @@ export async function coreSupportsPackagesAsync(
   if (!corePath) {
     return false;
   }
-  try {
-    const source = await fs.promises.readFile(
-      path.join(corePath, 'ios', 'Core', 'ModulesProvider.swift'),
-      'utf8'
-    );
-    return /\bpublic struct ExpoPackage\b/.test(source);
-  } catch {
-    return false;
-  }
+  return !!(await fileExistsAsync(path.join(corePath, 'ios', 'Core', 'ExpoPackage.swift')));
 }
 
 /**

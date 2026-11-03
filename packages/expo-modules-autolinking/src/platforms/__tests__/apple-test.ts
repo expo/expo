@@ -420,22 +420,16 @@ describe(resolveExtraBuildDependenciesAsync, () => {
 });
 
 const corePath = '/app/node_modules/expo-modules-core';
-const coreProviderPath = path.join(corePath, 'ios/Core/ModulesProvider.swift');
-const coreProviderWithPackages = 'public struct ExpoPackage {}\nopen class ModulesProvider {}\n';
-const coreProviderWithoutPackages = 'open class ModulesProvider {}\n';
+const coreExpoPackagePath = path.join(corePath, 'ios/Core/ExpoPackage.swift');
 
 describe(coreSupportsPackagesAsync, () => {
-  it('supports a core that declares ExpoPackage', async () => {
-    vol.fromJSON({ [coreProviderPath]: coreProviderWithPackages });
+  it('supports a core with ExpoPackage.swift', async () => {
+    vol.fromJSON({ [coreExpoPackagePath]: '' });
     expect(await coreSupportsPackagesAsync(corePath)).toBe(true);
   });
 
-  it('does not support a core without ExpoPackage', async () => {
-    vol.fromJSON({ [coreProviderPath]: coreProviderWithoutPackages });
-    expect(await coreSupportsPackagesAsync(corePath)).toBe(false);
-  });
-
-  it('does not support a missing core or a core without the provider source', async () => {
+  it('does not support a missing core or a core without ExpoPackage.swift', async () => {
+    vol.fromJSON({ [path.join(corePath, 'ios/Core/ModulesProvider.swift')]: '' });
     expect(await coreSupportsPackagesAsync(undefined)).toBe(false);
     expect(await coreSupportsPackagesAsync(null)).toBe(false);
     expect(await coreSupportsPackagesAsync(corePath)).toBe(false);
@@ -453,7 +447,7 @@ describe(generateModulesProviderAsync, () => {
   };
 
   beforeEach(() => {
-    vol.fromJSON({ [coreProviderPath]: coreProviderWithPackages });
+    vol.fromJSON({ [coreExpoPackagePath]: '' });
   });
 
   function descriptor(packageName: string, moduleClass: string, exportedPackageName?: string) {
@@ -519,7 +513,6 @@ describe(generateModulesProviderAsync, () => {
     await generateModulesProviderAsync(modules, targetPath, null, params);
     const withPackages = readProvider();
     vol.reset();
-    vol.fromJSON({ [coreProviderPath]: coreProviderWithoutPackages });
     await generateModulesProviderAsync(modules, targetPath, null, params);
     const withoutPackages = readProvider();
 
@@ -532,14 +525,10 @@ describe(generateModulesProviderAsync, () => {
   });
 
   it.each([
-    ['a core without ExpoPackage', corePath, coreProviderWithoutPackages],
-    ['a core without the provider source', corePath, null],
-    ['no core', null, coreProviderWithPackages],
-  ])('does not generate packages for %s', async (_, testCorePath, coreProvider) => {
+    ['a core without ExpoPackage.swift', corePath],
+    ['no core', null],
+  ])('does not generate packages for %s', async (_, testCorePath) => {
     vol.reset();
-    if (coreProvider) {
-      vol.fromJSON({ [coreProviderPath]: coreProvider });
-    }
     await generateModulesProviderAsync(
       [descriptor('expo-audio', 'AudioModule')],
       targetPath,
