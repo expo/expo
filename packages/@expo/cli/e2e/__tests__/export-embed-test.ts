@@ -1,4 +1,5 @@
 import { resolveEntryPoint } from '@expo/config/paths';
+import { flattenSourceMap } from '@expo/metro-config/build/serializer/sourceMap';
 import fs from 'fs';
 import path from 'path';
 
@@ -199,6 +200,10 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
   expect(outputJS).not.toContain('//# sourceURL=');
   // Ensure `//# sourceMappingURL=output.js.map`
   expect(outputJS).toContain('//# sourceMappingURL=output.js.map');
+  const sourceMap = flattenSourceMap(
+    JSON.parse(fs.readFileSync(path.join(outputDir, 'output.js.map'), 'utf8'))
+  );
+  expect(sourceMap.sources).toContain('__e2e__/static-rendering/app/index.tsx');
 
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
@@ -276,6 +281,10 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
   expect(outputJS).not.toContain('//# sourceURL=');
   // Ensure `//# sourceMappingURL=output.js.map`
   expect(outputJS).toContain('//# sourceMappingURL=output.js.map');
+  const sourceMap = flattenSourceMap(
+    JSON.parse(fs.readFileSync(path.join(outputDir, 'output.js.map'), 'utf8'))
+  );
+  expect(sourceMap.sources).toContain('__e2e__/static-rendering/app/index.tsx');
 
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
@@ -345,6 +354,10 @@ it('runs `npx expo export:embed --bytecode`', async () => {
       'false',
       '--bytecode',
       'true',
+      '--sourcemap-output',
+      `./${output}/output.js.map`,
+      '--sourcemap-sources-root',
+      projectRoot,
     ],
     {
       env: {
@@ -360,4 +373,7 @@ it('runs `npx expo export:embed --bytecode`', async () => {
 
   // Ensure output.js is a Hermes bytecode bundle
   expect(await isHermesBytecodeBundleAsync(path.join(outputDir, 'output.js'))).toBe(true);
+  const sourceMap = JSON.parse(fs.readFileSync(path.join(outputDir, 'output.js.map'), 'utf8'));
+  expect(sourceMap.sources).toContain('__e2e__/static-rendering/app/index.tsx');
+  expect(sourceMap.x_hermes_function_offsets).toBeDefined();
 });
