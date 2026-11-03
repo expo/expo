@@ -1,8 +1,6 @@
 const importPlugin = require('eslint-plugin-import');
 const { jsExtensions } = require('./extensions');
 
-const globals = require('globals');
-
 module.exports = [
   importPlugin.flatConfigs.recommended,
   importPlugin.flatConfigs.errors,
@@ -80,13 +78,6 @@ module.exports = [
       'import/first': 'warn',
       'import/default': 'off',
       'no-var': 'error',
-    },
-  },
-  {
-    files: ['**/metro.config.js'],
-
-    languageOptions: {
-      globals: globals.node,
     },
   },
 ];

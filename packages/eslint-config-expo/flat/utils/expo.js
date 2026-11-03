@@ -1,4 +1,5 @@
 const expo = require('eslint-plugin-expo');
+const globals = require('globals');
 
 module.exports = [
   {
@@ -15,6 +16,13 @@ module.exports = [
       'expo/use-dom-exports': ['error'],
       'expo/no-env-var-destructuring': ['error'],
       'expo/no-dynamic-env-var': ['error'],
+    },
+  },
+  {
+    files: ['**/metro.config.js'],
+
+    languageOptions: {
+      globals: globals.node,
     },
   },
 ];

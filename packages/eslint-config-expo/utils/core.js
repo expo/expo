@@ -62,12 +62,4 @@ module.exports = {
       typescript: true,
     },
   },
-  overrides: [
-    {
-      files: ['metro.config.js'],
-      env: {
-        node: true,
-      },
-    },
-  ],
 };

@@ -10,4 +10,12 @@ module.exports = {
     'expo/no-env-var-destructuring': ['error'],
     'expo/no-dynamic-env-var': ['error'],
   },
+  overrides: [
+    {
+      files: ['metro.config.js'],
+      env: {
+        node: true,
+      },
+    },
+  ],
 };
