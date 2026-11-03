@@ -2168,8 +2168,8 @@ importers:
         specifier: ^1.0.2
         version: 1.0.2
       node-forge:
-        specifier: ^1.4.0
-        version: 1.4.0
+        specifier: ^1.4.1
+        version: 1.4.1
       npm-package-arg:
         specifier: ^11.0.0
         version: 11.0.3
@@ -3125,8 +3125,8 @@ importers:
   packages/@expo/pkcs12:
     dependencies:
       node-forge:
-        specifier: ^1.4.0
-        version: 1.4.0
+        specifier: ^1.4.1
+        version: 1.4.1
     devDependencies:
       '@expo/internal-scripts':
         specifier: workspace:*
@@ -13962,8 +13962,8 @@ packages:
       encoding:
         optional: true
 
-  node-forge@1.4.0:
-    resolution: {integrity: sha512-LarFH0+6VfriEhqMMcLX2F7SwSXeWwnEAJEsYm5QKWchiVYVvJyV9v7UDvUv+w5HO23ZpQTXDv/GxdDdMyOuoQ==}
+  node-forge@1.4.1:
+    resolution: {integrity: sha512-w5/MfWaeMrpR/5ba6fZyAUTLSuE6aYz7H/3cYrqwZEmf5eQS3IaaLgJt4MBv7HglGFWmV22K8h4U18RJQmw/ow==}
     engines: {node: '>= 6.13.0'}
 
   node-html-parser@6.1.13:
@@ -17426,7 +17426,7 @@ snapshots:
 
   '@expo/code-signing-certificates@0.0.7':
     dependencies:
-      node-forge: 1.4.0
+      node-forge: 1.4.1
 
   '@expo/commander@2.21.1':
     dependencies:
@@ -23543,7 +23543,7 @@ snapshots:
     optionalDependencies:
       encoding: 0.1.13
 
-  node-forge@1.4.0: {}
+  node-forge@1.4.1: {}
 
   node-html-parser@6.1.13:
     dependencies:
