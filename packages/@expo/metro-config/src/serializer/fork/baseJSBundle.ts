@@ -46,7 +46,6 @@ export type ExpoSerializerOptions = SerializerOptions & {
   includeChunkCompletion?: boolean;
   serializerOptions?: {
     baseUrl?: string;
-    skipWrapping?: boolean;
     usedExports?: boolean;
     splitChunks?: boolean;
     chunkingStrategy?: ChunkingStrategy;
@@ -115,7 +114,6 @@ export function baseJSBundle(
     baseUrl: getBaseUrlOption(graph, options),
     splitChunks: !!options.serializerOptions?.splitChunks,
     platform,
-    skipWrapping: !!options.serializerOptions?.skipWrapping,
     computedAsyncModulePaths: null,
     sourceMapOptions: getSourceMapOptions(options, isServer),
   });
@@ -129,7 +127,6 @@ export function baseJSBundleWithDependencies(
     platform: string;
     baseUrl: string;
     splitChunks: boolean;
-    skipWrapping: boolean;
     computedAsyncModulePaths: Record<string, string> | null;
     debugId?: string;
     sourceMapOptions?: ExpoSourceMapOptions;
@@ -150,7 +147,6 @@ export function baseJSBundleWithDependencies(
     platform: options.platform,
     baseUrl: options.baseUrl,
     splitChunks: options.splitChunks,
-    skipWrapping: options.skipWrapping,
     computedAsyncModulePaths: options.computedAsyncModulePaths,
     unstable_getAsyncDependencyPath: options.unstable_getAsyncDependencyPath,
   };

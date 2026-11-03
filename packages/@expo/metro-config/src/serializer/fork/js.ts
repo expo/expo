@@ -30,7 +30,6 @@ export type Options = Pick<SerializerOptions, 'unstable_getAsyncDependencyPath'>
   serverRoot: string;
   sourceUrl?: string | null;
   splitChunks: boolean;
-  skipWrapping: boolean;
   computedAsyncModulePaths: Record<string, string> | null;
 };
 

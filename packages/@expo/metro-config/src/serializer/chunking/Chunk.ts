@@ -143,7 +143,6 @@ export class Chunk {
       platform: this.getPlatform(),
       baseUrl: getBaseUrlOption(this.graph, this.options),
       splitChunks: !!this.options.serializerOptions?.splitChunks,
-      skipWrapping: true,
       computedAsyncModulePaths: null,
       ...this.strategy.getStableSerializationOptions(this),
       ...options,
@@ -246,7 +245,6 @@ export class Chunk {
     }
   ) {
     return this.serializeToCodeWithTemplates(serializerConfig, {
-      skipWrapping: false,
       sourceMapUrl: this.getAdjustedSourceMapUrl(filename) ?? undefined,
       debugId,
       preModules,

@@ -90,7 +90,6 @@ function prepareModule(module: Module<any>, graph: ReadOnlyGraph<any>, options: 
     ...options,
     sourceUrl: options.clientUrl.toString(),
     dev: true,
-    skipWrapping: false,
     computedAsyncModulePaths: null,
     splitChunks: false,
   });
