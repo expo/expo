@@ -1,5 +1,6 @@
 import type { Module } from '@expo/metro/metro/DeltaBundler';
 
+import * as graphAssets from '../../transform-worker/getAssets';
 import { createGranularChunkingStrategy } from '../chunking/createGranularChunkingStrategy';
 import * as workerScan from '../chunking/findUnsupportedWorkerAsyncDependency';
 import { microBundle, projectRoot } from '../fork/__tests__/mini-metro';
@@ -10,11 +11,406 @@ import {
 } from '../fork/__tests__/serializer-test-utils';
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
 import * as chunkSerializer from '../serializeChunks';
+import { serializeServerBundleAsync } from '../serializeServerBundle';
+import { flattenSourceMap } from '../sourceMap';
 import type { SerialAsset } from '../withExpoSerializers';
 import {
   createSerializerFromSerialProcessors,
+  createDefaultExportCustomSerializer,
   withSerializerPlugins,
 } from '../withExpoSerializers';
+
+it('retains graph CSS and Metro assets when adapting custom server output', async () => {
+  const [entry, premodules, graph, options] = await microBundle({
+    fs: { 'index.js': 'export const value = 42;' },
+    options: { isServer: true, dev: false, output: 'static' },
+  });
+  const module = graph.dependencies.get(entry)!;
+  (module.output[0]!.data as any).css = { code: 'body { color: red; }' };
+  const assets = [{ name: 'icon', type: 'png' }] as Awaited<ReturnType<typeof graphAssets.default>>;
+  const getAssets = jest.spyOn(graphAssets, 'default').mockResolvedValueOnce(assets);
+  let result;
+  try {
+    result = await serializeServerBundleAsync(
+      { code: 'module.exports = { custom: true };', map: '' },
+      entry,
+      premodules,
+      graph,
+      options
+    );
+  } finally {
+    getAssets.mockRestore();
+  }
+  expect(result.artifacts).toEqual(
+    expect.arrayContaining([
+      expect.objectContaining({ type: 'css', source: 'body { color: red; }' }),
+      expect.objectContaining({ type: 'js', source: 'module.exports = { custom: true };' }),
+    ])
+  );
+  expect(result.assets).toBe(assets);
+});
+
+it.each([false, true])(
+  'adapts a custom server bundle without replacing its map (inline: %s)',
+  async (inlineSourceMap) => {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs: { 'index.js': `export const value = 42;` },
+      options: { isServer: true, dev: false, output: 'static', sourceMaps: true },
+    });
+    const code =
+      'module.exports = { custom: true };\n//# sourceMappingURL=old.js.map\n//# debugId=01234567-89ab-4cde-8fab-0123456789ab';
+    const { artifacts } = await serializeServerBundleAsync(
+      {
+        code,
+        map: JSON.stringify({
+          version: 3,
+          sections: [
+            {
+              offset: { line: 0, column: 0 },
+              map: {
+                version: 3,
+                sources: ['custom://project/original.ts'],
+                sourcesContent: ['original source'],
+                names: ['custom'],
+                mappings: 'AAAAA',
+              },
+            },
+          ],
+          debugId: '01234567-89ab-4cde-8fab-0123456789ab',
+        }),
+      },
+      entry,
+      premodules,
+      graph,
+      {
+        ...options,
+        inlineSourceMap,
+        serializerOptions: {
+          ...(options as ExpoSerializerOptions).serializerOptions,
+          entryFilename: '_expo/server/hello world.cjs',
+          excludeSource: true,
+        },
+      }
+    );
+    const js = artifacts.find((asset) => asset.type === 'js')!;
+    expect(js.filename).toBe('_expo/server/hello world.cjs');
+    expect(js.source.startsWith('module.exports = { custom: true };')).toBe(true);
+    expect(js.source).not.toContain('old.js.map');
+    const map = inlineSourceMap
+      ? JSON.parse(Buffer.from(js.source.split('base64,')[1]!, 'base64').toString())
+      : JSON.parse(artifacts.find((asset) => asset.type === 'map')!.source);
+    expect(map).toMatchObject({
+      sources: ['custom://project/original.ts'],
+      names: ['custom'],
+      mappings: 'AAAAA',
+      debugId: '01234567-89ab-4cde-8fab-0123456789ab',
+    });
+    expect(map.sections).toBeUndefined();
+    expect(map.sourcesContent).toBeUndefined();
+    if (!inlineSourceMap)
+      expect(js.source).toContain(
+        '//# sourceMappingURL=hello%20world.cjs.map\n//# debugId=01234567-89ab-4cde-8fab-0123456789ab'
+      );
+  }
+);
+
+it('adapts a string server bundle, preserving embedded directives and exporting the final entry', async () => {
+  const [entry, premodules, graph, options] = await microBundle({
+    fs: { 'index.js': `export const value = 42;` },
+    options: { isServer: true, dev: false, output: 'static', sourceMaps: true },
+  });
+  const embedded = 'const text = `\n//# sourceMappingURL=embedded.map\n`;\n__r(1);';
+  const { artifacts } = await serializeServerBundleAsync(
+    embedded +
+      '\n//# sourceMappingURL=old.js.map\n//# sourceURL=http://localhost/index.bundle\n//# debugId=old-id',
+    entry,
+    premodules,
+    graph,
+    {
+      ...options,
+      serializerOptions: {
+        ...(options as ExpoSerializerOptions).serializerOptions,
+        outputDirectory: '_expo/server',
+        outputExtension: '.cjs',
+        excludeSource: true,
+      },
+    }
+  );
+  const js = artifacts.find((asset) => asset.type === 'js')!;
+  const map = JSON.parse(artifacts.find((asset) => asset.type === 'map')!.source);
+  expect(js.filename).toMatch(/^_expo\/server\/index-.*\.cjs$/);
+  expect(js.source).toContain('//# sourceMappingURL=embedded.map\n`;\nmodule.exports = __r(1);');
+  expect(js.source).not.toContain('old.js.map');
+  expect(js.source).not.toContain('//# sourceURL=');
+  expect(map.sources).toContain('/index.js');
+  expect(map.sourcesContent).toBeUndefined();
+  expect(js.source).toContain('//# debugId=' + map.debugId);
+});
+
+it.each(['client', 'node', 'react-server'])(
+  'keeps %s map paths private without corrupting external paths',
+  async (environment) => {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs: { 'index.js': `import '../shared';`, '../shared.js': `export const value = 42;` },
+      options: {
+        isServer: environment === 'node',
+        isReactServer: environment === 'react-server',
+        dev: false,
+        output: 'static',
+        splitChunks: false,
+        sourceMaps: true,
+      },
+    });
+    const modulePaths: string[] = [];
+    const serializerOptions: ExpoSerializerOptions = {
+      ...options,
+      shouldAddToIgnoreList(module) {
+        modulePaths.push(module.path);
+        return false;
+      },
+    };
+    const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+    const { artifacts } = (await serializer(entry, premodules, graph, serializerOptions)) as any;
+    const map = JSON.parse(artifacts.find((asset: SerialAsset) => asset.type === 'map')!.source);
+    expect(flattenSourceMap(map).sources).toEqual(
+      expect.arrayContaining(['/index.js', '../shared.js'])
+    );
+    expect(JSON.stringify(map)).not.toContain('/app/');
+    expect(modulePaths).toEqual(expect.arrayContaining(['/app/index.js', '/shared.js']));
+  }
+);
+
+it.each(['node', 'react-server'])(
+  'normalizes exported %s artifacts before persistence',
+  async (environment) => {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs: { 'index.js': `export const value = 42;` },
+      options: {
+        isServer: environment === 'node',
+        isReactServer: environment === 'react-server',
+        dev: false,
+        output: 'static',
+        splitChunks: false,
+        sourceMaps: true,
+      },
+    });
+    const serializerOptions: ExpoSerializerOptions = {
+      ...options,
+      shouldAddToIgnoreList: (module) => module.path === entry,
+    };
+    serializerOptions.excludeSource = false;
+    serializerOptions.serializerOptions = {
+      ...serializerOptions.serializerOptions,
+      entryFilename: '_expo/server/hello world.js',
+      excludeSource: true,
+    };
+    const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+    const { artifacts } = (await serializer(entry, premodules, graph, serializerOptions)) as any;
+    const js = artifacts.find((a: SerialAsset) => a.type === 'js');
+    const map = JSON.parse(artifacts.find((a: SerialAsset) => a.type === 'map').source);
+    expect(js.source).toContain('//# sourceMappingURL=hello%20world.js.map');
+    expect(js.source).toContain('module.exports = ');
+    expect(map.sections).toBeUndefined();
+    expect(map.sources).toContain('/index.js');
+    expect(map.sourcesContent).toBeUndefined();
+    expect(map.ignoreList).toEqual([map.sources.indexOf('/index.js')]);
+    expect(map.x_google_ignoreList).toEqual(map.ignoreList);
+    expect(js.source).toContain('//# debugId=' + map.debugId);
+    serializerOptions.excludeSource = true;
+    serializerOptions.serializerOptions.excludeSource = false;
+    const included = (await serializer(entry, premodules, graph, serializerOptions)) as any;
+    expect(included.artifacts.find((a: SerialAsset) => a.type === 'map').source).toContain(
+      'export const value = 42;'
+    );
+  }
+);
+
+it.each(['true', '1'])(
+  'honors excludeSource=%s in Metro inline-map requests',
+  async (excludeSource) => {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs: { 'index.js': `export const value = 42;` },
+      options: { dev: true, sourceMaps: true },
+    });
+    const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+    const requestOptions: ExpoSerializerOptions = {
+      ...options,
+      inlineSourceMap: true,
+      sourceUrl: 'http://localhost/index.bundle?excludeSource=' + excludeSource,
+      serializerOptions: undefined,
+    };
+    const code = await serializer(entry, premodules, graph, requestOptions);
+    expect(typeof code).toBe('string');
+    const encoded = (code as string).match(
+      /sourceMappingURL=data:application\/json[^,]*,([^\n]+)/
+    )![1]!;
+    const map = JSON.parse(Buffer.from(encoded, 'base64').toString());
+    expect(JSON.stringify(map)).not.toContain('export const value = 42;');
+  }
+);
+
+it.each([false, true])(
+  'respects custom source URLs and source exclusion in single-bundle client maps (inline: %s)',
+  async (inlineSourceMap) => {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs: { 'index.js': `export const value = 42;` },
+      options: { dev: true, sourceMaps: true },
+    });
+    const serializer = createDefaultExportCustomSerializer({ projectRoot } as any);
+    const serializerOptions: ExpoSerializerOptions = {
+      ...options,
+      inlineSourceMap,
+      sourceUrl: 'http://localhost/index.map',
+      getSourceUrl: (module) => 'custom:///workspace/' + module.path.split('/').pop(),
+      serializerOptions: { excludeSource: true },
+    };
+    const result = (await serializer(entry, premodules, graph, serializerOptions)) as {
+      code: string;
+      map: string;
+    };
+    const map = inlineSourceMap
+      ? JSON.parse(
+          Buffer.from(
+            result.code.match(/sourceMappingURL=data:application\/json[^,]*,([^\n]+)/)![1]!,
+            'base64'
+          ).toString()
+        )
+      : JSON.parse(result.map);
+    expect(flattenSourceMap(map).sources).toContain('custom:///workspace/index.js');
+    expect(JSON.stringify(map)).not.toContain('export const value = 42;');
+  }
+);
+
+it.each([false, true])('normalizes legacy server maps (inline: %s)', async (inlineSourceMap) => {
+  const [entry, premodules, graph, options] = await microBundle({
+    fs: { 'index.js': `export const value = 42;` },
+    options: { isServer: true, dev: true, sourceMaps: true },
+  });
+  const serializer = createDefaultExportCustomSerializer({ projectRoot } as any);
+  const serializerOptions: ExpoSerializerOptions = {
+    ...options,
+    inlineSourceMap,
+    sourceUrl: 'http://localhost/index.map',
+    serializerOptions: { excludeSource: true },
+  };
+  const result = (await serializer(entry, premodules, graph, serializerOptions)) as {
+    code: string;
+    map: string;
+  };
+  const map = inlineSourceMap
+    ? JSON.parse(
+        Buffer.from(
+          result.code.match(/sourceMappingURL=data:application\/json[^,]*,([^\n]+)/)![1]!,
+          'base64'
+        ).toString()
+      )
+    : JSON.parse(result.map);
+  expect(map.sections).toBeUndefined();
+  expect(map.sourcesContent).toBeUndefined();
+  expect(map.sources).toContain('/app/index.js');
+});
+
+it('excludes the omitted runtime from modules-only server maps', async () => {
+  const [entry, premodules, graph, options] = await microBundle({
+    fs: { 'index.js': `export const value = 42;` },
+    preModulesFs: { 'runtime.js': 'var runtime = true;' },
+    options: { isServer: true, dev: false, output: 'static', splitChunks: false, sourceMaps: true },
+  });
+  const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+  const { artifacts } = (await serializer(entry, premodules, graph, {
+    ...options,
+    modulesOnly: true,
+  })) as any;
+  const map = JSON.parse(artifacts.find((a: SerialAsset) => a.type === 'map').source);
+  expect(map.sources).not.toContain('/runtime.js');
+});
+
+it('normalizes inline server maps and excludes requested source content', async () => {
+  const [entry, premodules, graph, options] = await microBundle({
+    fs: { 'index.js': `export const value = 42;` },
+    options: { isServer: true, dev: false, output: 'static', splitChunks: false, sourceMaps: true },
+  });
+  const opts: ExpoSerializerOptions = { ...options, inlineSourceMap: true };
+  opts.serializerOptions!.excludeSource = true;
+  const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+  const { artifacts } = (await serializer(entry, premodules, graph, opts)) as any;
+  const js = artifacts.find((a: SerialAsset) => a.type === 'js');
+  const encoded = js.source.match(/sourceMappingURL=data:application\/json[^,]*,([^\n]+)/)[1];
+  const map = JSON.parse(Buffer.from(encoded, 'base64').toString());
+  expect(map.sections).toBeUndefined();
+  expect(map.sources).toContain('/index.js');
+  expect(map.sourcesContent).toBeUndefined();
+  expect(artifacts.some((a: SerialAsset) => a.type === 'map')).toBe(false);
+});
+
+it('names generated server artifacts in their final directory with an explicit extension', async () => {
+  const [entry, premodules, graph, options] = await microBundle({
+    fs: { 'index.js': `export const value = 42;` },
+    options: { isServer: true, dev: false, output: 'static', splitChunks: false, sourceMaps: true },
+  });
+  const opts = options as ExpoSerializerOptions;
+  opts.serializerOptions!.outputDirectory = '_expo/rsc/web';
+  opts.serializerOptions!.outputExtension = '.cjs';
+  const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+  const { artifacts } = (await serializer(entry, premodules, graph, opts)) as any;
+  const js = artifacts.find((a: SerialAsset) => a.type === 'js');
+  expect(js.filename).toMatch(/^_expo\/rsc\/web\/index-[a-f0-9]+\.cjs$/);
+  expect(js.source).toContain('//# sourceMappingURL=' + js.filename.split('/').pop() + '.map');
+  expect(artifacts.find((a: SerialAsset) => a.type === 'map').filename).toBe(js.filename + '.map');
+});
+
+it('uses an explicit entry filename without renaming async dependencies', async () => {
+  const [entry, premodules, graph, options] = await microBundle({
+    fs: { 'index.js': `import('./async');`, 'async.js': `export const value = 42;` },
+    options: { dev: false, output: 'static', splitChunks: true, sourceMaps: true },
+  });
+  const serializerOptions = options as ExpoSerializerOptions;
+  serializerOptions.serializerOptions = {
+    ...serializerOptions.serializerOptions,
+    entryFilename: '_expo/functions/hello+api.bundle',
+  };
+  const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+  const { artifacts } = (await serializer(entry, premodules, graph, serializerOptions)) as any;
+  const entryAsset = artifacts.find(
+    (asset: SerialAsset) => !asset.metadata.isAsync && asset.type === 'js'
+  );
+  const asyncAsset = artifacts.find(
+    (asset: SerialAsset) => asset.metadata.isAsync && asset.type === 'js'
+  );
+  expect(entryAsset.filename).toBe('_expo/functions/hello+api.bundle');
+  expect(asyncAsset.filename).toMatch(/^_expo\/static\/js\/web\/async-.*\.js$/);
+  expect(JSON.stringify(entryAsset.metadata.paths)).toContain(asyncAsset.filename);
+  expect(
+    artifacts.some((asset: SerialAsset) => asset.filename === entryAsset.filename + '.map')
+  ).toBe(true);
+  serializerOptions.serializerOptions.entryFilename = '_expo/functions/renamed.bundle';
+  const next = (await serializer(entry, premodules, graph, serializerOptions)) as any;
+  expect(
+    next.artifacts.find((asset: SerialAsset) => !asset.metadata.isAsync && asset.type === 'js')
+      .filename
+  ).toBe('_expo/functions/renamed.bundle');
+  expect(
+    next.artifacts.find((asset: SerialAsset) => asset.metadata.isAsync && asset.type === 'js')
+      .filename
+  ).toBe(asyncAsset.filename);
+});
+
+it('uses the normal content-derived debug ID for named entries', async () => {
+  const serialize = async (source: string, filename?: string) => {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs: { 'index.js': source },
+      options: { dev: false, output: 'static', splitChunks: false, sourceMaps: true },
+    });
+    (options as ExpoSerializerOptions).serializerOptions!.entryFilename = filename;
+    const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+    const { artifacts } = (await serializer(entry, premodules, graph, options)) as any;
+    return JSON.parse(artifacts.find((asset: SerialAsset) => asset.type === 'map').source).debugId;
+  };
+  const first = await serialize('export const value = 1;');
+  expect(await serialize('export const value = 1;', 'one/index.js')).toBe(first);
+  expect(await serialize('export const value = 2;', 'one/index.js')).not.toBe(first);
+  expect(await serialize('export const value = 1;', 'two/index.js')).toBe(first);
+});
 
 describe('Granular chunk emission', () => {
   const publicGraph = {
