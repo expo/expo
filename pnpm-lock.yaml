@@ -5501,18 +5501,12 @@ importers:
 
   packages/expo-modules-test-core:
     dependencies:
-      '@types/node':
-        specifier: ^22.14.0
-        version: 22.20.1
       expo:
         specifier: '*'
         version: link:../expo
       expo-type-information:
         specifier: workspace:^
         version: link:../expo-type-information
-      glob:
-        specifier: ^13.0.0
-        version: 13.0.6
       xml-js:
         specifier: ^1.6.11
         version: 1.6.11
@@ -5526,6 +5520,9 @@ importers:
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.20.1
 
   packages/expo-navigation-bar:
     dependencies:
