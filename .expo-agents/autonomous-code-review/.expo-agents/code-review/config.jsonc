@@ -1,0 +1,6 @@
+// Autonomous code review trial: the routing scope for packages that agents maintain.
+// Loaded through ../../../code-review/routing.jsonc. Auth stays in the root config.
+{
+  "model": "anthropic/claude-opus-5-5",
+  "policy": { "minSeverity": "suggestion" }
+}
