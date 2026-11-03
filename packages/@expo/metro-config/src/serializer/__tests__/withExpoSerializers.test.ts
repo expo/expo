@@ -395,22 +395,33 @@ it('uses an explicit entry filename without renaming async dependencies', async 
   ).toBe(asyncAsset.filename);
 });
 
-it('uses the normal content-derived debug ID for named entries', async () => {
-  const serialize = async (source: string, filename?: string) => {
-    const [entry, premodules, graph, options] = await microBundle({
-      fs: { 'index.js': source },
-      options: { dev: false, output: 'static', splitChunks: false, sourceMaps: true },
-    });
-    (options as ExpoSerializerOptions).serializerOptions!.entryFilename = filename;
-    const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
-    const { artifacts } = (await serializer(entry, premodules, graph, options)) as any;
-    return JSON.parse(artifacts.find((asset: SerialAsset) => asset.type === 'map').source).debugId;
-  };
-  const first = await serialize('export const value = 1;');
-  expect(await serialize('export const value = 1;', 'one/index.js')).toBe(first);
-  expect(await serialize('export const value = 2;', 'one/index.js')).not.toBe(first);
-  expect(await serialize('export const value = 1;', 'two/index.js')).toBe(first);
-});
+it.each([false, true])(
+  'uses the normal content-derived debug ID for named entries (Hermes: %s)',
+  async (hermes) => {
+    const serialize = async (source: string, filename?: string) => {
+      const [entry, premodules, graph, options] = await microBundle({
+        fs: { 'index.js': source },
+        options: {
+          dev: false,
+          output: 'static',
+          splitChunks: false,
+          sourceMaps: true,
+          hermes,
+          platform: hermes ? 'ios' : 'web',
+        },
+      });
+      (options as ExpoSerializerOptions).serializerOptions!.entryFilename = filename;
+      const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+      const { artifacts } = (await serializer(entry, premodules, graph, options)) as any;
+      return JSON.parse(artifacts.find((asset: SerialAsset) => asset.type === 'map').source)
+        .debugId;
+    };
+    const first = await serialize('export const value = 1;');
+    expect(await serialize('export const value = 1;', 'one/index.js')).toBe(first);
+    expect(await serialize('export const value = 2;', 'one/index.js')).not.toBe(first);
+    expect(await serialize('export const value = 1;', 'two/index.js')).toBe(first);
+  }
+);
 
 describe('Granular chunk emission', () => {
   const publicGraph = {
