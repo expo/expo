@@ -957,6 +957,71 @@ class BaseObservabilityManagerTest {
 
   // endregion
 
+  // region Ignored names tests
+
+  @Test
+  fun `ignored metrics are consumed across mixed and all ignored chunks`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(
+      ignoredMetrics = listOf("expo.app_startup.tti")
+    )
+    val first = listOf(metric(1, "timeToInteractive", category = "appStartup"), metric(2, "visible"))
+    val second = listOf(metric(3, "timeToInteractive", category = "appStartup"))
+    coEvery { sessionManager.getMetrics(-1, 2) } returns first
+    coEvery { sessionManager.getMetrics(2, 2) } returns second
+    coEvery { sessionManager.getMetrics(3, 2) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatch(any()) } returns DispatchResult.Success
+
+    createManager(chunkSize = 2).dispatchUnsentMetrics()
+
+    assertEquals(3, metricCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatch(match { it.single().metrics.map { metric -> metric.name } == listOf("visible") }) }
+  }
+
+  @Test
+  fun `retryable mixed metrics keep ignored rows in the batch`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(ignoredMetrics = listOf("expo.app_startup.tti"))
+    stubMetricDispatch(metrics = listOf(metric(1, "timeToInteractive", category = "appStartup"), metric(2, "visible")), result = DispatchResult.RetryableFailure(null))
+
+    createManager().dispatchUnsentMetrics()
+
+    assertEquals(-1, metricCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
+  }
+
+  @Test
+  fun `ignored events apply after error sampling and consume all ignored chunks`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(
+      sampleRate = 0.0, errorSampleRate = 1.0,
+      ignoredEvents = listOf("js.exception")
+    )
+    val first = listOf(log(1, "info"), log(2, "js.exception"), log(3, "native.exception"))
+    val second = listOf(log(4, "js.exception"))
+    coEvery { sessionManager.getLogs(-1, 3) } returns first
+    coEvery { sessionManager.getLogs(3, 3) } returns second
+    coEvery { sessionManager.getLogs(4, 3) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
+
+    createManager(chunkSize = 3).dispatchUnsentLogs()
+
+    assertEquals(4, logCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatchLogs(match { it.single().logs.map { log -> log.name } == listOf("native.exception") }) }
+  }
+
+  @Test
+  fun `retryable mixed logs keep ignored rows in the batch`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(ignoredEvents = listOf("hidden"))
+    stubLogDispatch(logs = listOf(log(1, "hidden"), log(2, "visible")), result = DispatchResult.RetryableFailure(null))
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(-1, logCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatchLogs(any()) }
+  }
+
+  // endregion
+
   // region Helper methods
 
   private fun stubMetricDispatch(
@@ -1230,10 +1295,10 @@ class BaseObservabilityManagerTest {
     coEvery { eventDispatcher.dispatchSpans(any()) } returns result
   }
 
-  private fun metric(id: Long, name: String, sessionId: String = "session") = Metric(
+  private fun metric(id: Long, name: String, sessionId: String = "session", category: String = "test") = Metric(
     sessionId = sessionId,
     timestamp = "2025-01-01T00:00:00Z",
-    category = "test",
+    category = category,
     name = name,
     value = 1.0,
     id = id

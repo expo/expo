@@ -8,6 +8,8 @@ internal struct PersistedConfig: Codable {
   var dispatchInDebug: Bool?
   var sampleRate: Double?
   var errorSampleRate: Double?
+  var ignoredMetrics: [String]?
+  var ignoredEvents: [String]?
 }
 
 /// Bundle-derived facts pushed from the JS layer at package import time.
