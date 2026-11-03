@@ -27,6 +27,10 @@ export function getChunkUrl(baseUrl: string, filename: string): string {
   return baseUrl.replace(/\/+$/, '') + '/' + filename.replace(/^\/+/, '');
 }
 
+export function getSiblingSourceMapUrl(filename: string): string {
+  return encodeURIComponent(path.posix.basename(filename) + '.map');
+}
+
 export function getExportPathForDependencyWithOptions(
   dependencyPath: string,
   { platform, src, serverRoot }: { platform: string; serverRoot: string; src: string }

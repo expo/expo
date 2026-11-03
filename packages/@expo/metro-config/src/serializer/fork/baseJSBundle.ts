@@ -9,6 +9,7 @@
  * https://github.com/facebook/metro/blob/bbdd7d7c5e6e0feb50a9967ffae1f723c1d7c4e8/packages/metro/src/DeltaBundler/Serializers/baseJSBundle.js#L1
  */
 
+import getInlineSourceMappingURL from '@expo/metro/metro/DeltaBundler/Serializers/helpers/getInlineSourceMappingURL';
 import type {
   MixedOutput,
   Module,
@@ -177,8 +178,7 @@ export function baseJSBundleWithDependencies(
       [...preModules, ...modules],
       options.sourceMapOptions ?? getSourceMapOptions(options, false)
     );
-    sourceMapUrl =
-      'data:application/json;charset=utf-8;base64,' + Buffer.from(map).toString('base64');
+    sourceMapUrl = getInlineSourceMappingURL(map);
   }
 
   const modulesWithAnnotations = getAppendScripts(entryPoint, [...preModules, ...modules], {

@@ -4,7 +4,7 @@ import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import assert from 'assert';
 import path from 'path';
 
-import { getExportPathForDependencyWithOptions } from '../exportPath';
+import { getExportPathForDependencyWithOptions, getSiblingSourceMapUrl } from '../exportPath';
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
 import { transformJsAssetToHermesBytecodeAsync } from '../hermesArtifacts';
 import { getModuleReferences, type SerialAsset } from '../serializerAssets';
@@ -191,7 +191,7 @@ export class Chunk {
     }
 
     if (this.isServer && this.options.serializerOptions?.exporting) {
-      return encodeURIComponent(path.posix.basename(filename) + '.map');
+      return getSiblingSourceMapUrl(filename);
     }
 
     const platform = this.getPlatform();

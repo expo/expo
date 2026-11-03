@@ -1,4 +1,5 @@
 import type { AssetData, MetroConfig } from '@expo/metro/metro';
+import getInlineSourceMappingURL from '@expo/metro/metro/DeltaBundler/Serializers/helpers/getInlineSourceMappingURL';
 import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 import assert from 'assert';
 import path from 'path';
@@ -6,7 +7,11 @@ import path from 'path';
 import { toPosixPath } from '../utils/filePath';
 import { getSortedModules } from './chunking/Chunk';
 import { stringToUUID } from './debugId';
-import { getExportFilename, getExportPathForDependencyWithOptions } from './exportPath';
+import {
+  getExportFilename,
+  getExportPathForDependencyWithOptions,
+  getSiblingSourceMapUrl,
+} from './exportPath';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { collectGraphResourcesAsync } from './serializeChunks';
 import { getModuleReferences, type SerialAsset } from './serializerAssets';
@@ -84,12 +89,9 @@ export async function serializeServerBundleAsync(
       parsed.debugId ?? annotations.match(/debugId=([^\s]+)/)?.[1] ?? stringToUUID(code);
     const mapSource = normalizeSourceMapString(parsed, { flatten: true, excludeSource, debugId });
     if (options.inlineSourceMap) {
-      code +=
-        '\n//# sourceMappingURL=data:application/json;charset=utf-8;base64,' +
-        Buffer.from(mapSource).toString('base64');
+      code += '\n//# sourceMappingURL=' + getInlineSourceMappingURL(mapSource);
     } else {
-      code +=
-        '\n//# sourceMappingURL=' + encodeURIComponent(path.posix.basename(filename) + '.map');
+      code += '\n//# sourceMappingURL=' + getSiblingSourceMapUrl(filename);
       code += '\n//# debugId=' + debugId;
       artifacts.push({
         filename: filename + '.map',
