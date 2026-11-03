@@ -143,8 +143,10 @@ Using the built-in `pickFileAsync` or `pickDirectoryAsync` method on Android:
 import { File } from 'expo-file-system';
 
 try {
-  const file = await File.pickFileAsync();
-  console.log(file.textSync());
+  const result = await File.pickFileAsync();
+  if (!result.canceled) {
+    console.log(result.result.textSync());
+  }
 } catch (error) {
   console.error(error);
 }
