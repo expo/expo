@@ -24,7 +24,7 @@ Most providers use the [OAuth 2](https://oauth.net/2/) standard for secure authe
 
 [Your client application code is not a secure place to store secrets](https://reactnative.dev/docs/security#storing-sensitive-info). If the provider requires a client secret, exchange the authorization code on a server, such as with [API routes](/router/web/api-routes) or [React Server Components](/guides/server-components). The server stores the client secret and sends it to the provider's token endpoint.
 
-Use [`AuthSession.exchangeCodeAsync()`](/versions/latest/sdk/auth-session/#authsessionexchangecodeasyncconfig-discovery) to exchange that `code` for an access token. If the provider accepts Proof Key for Code Exchange (PKCE) without a client secret, you can exchange the code in the app. Pass `request.codeVerifier` in `extraParams.code_verifier`. The Okta example below exchanges the code in the app with PKCE.
+Use [`AuthSession.exchangeCodeAsync()`](/versions/latest/sdk/auth-session/#authsessionexchangecodeasyncconfig-discovery) to exchange that `code` for an access token. If the provider accepts Proof Key for Code Exchange (PKCE) without a client secret, you can exchange the code in the app. Check your provider's documentation to find out if it requires a client secret. Pass `request.codeVerifier` in `extraParams.code_verifier`. The Okta example below exchanges the code in the app with PKCE.
 
 ```tsx
 import { exchangeCodeAsync } from 'expo-auth-session';
