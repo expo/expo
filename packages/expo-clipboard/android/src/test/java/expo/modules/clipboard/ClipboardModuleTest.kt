@@ -10,9 +10,19 @@ import androidx.test.core.app.ApplicationProvider
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.errorCodeOf
 import expo.modules.test.core.legacy.assertCodedException
+import io.github.expo.modules.v2.ExpoObject
+import io.github.expo.modules.v2.async.AsyncContext
+import io.github.expo.modules.v2.async.JSScheduler
+import io.github.expo.modules.v2.core.ExpoModulesV2
+import io.github.expo.modules.v2.events.Event
+import io.github.expo.modules.v2.events.EventSupport
 import io.github.expo.modules.v2.react.androidContext
 import io.mockk.every
+import io.mockk.just
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
+import io.mockk.runs
+import io.mockk.unmockkObject
 import io.mockk.unmockkStatic
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
@@ -40,7 +50,7 @@ private class ClipboardModuleTestWrapper(private val module: ClipboardModule) {
   fun hasStringAsync(): Boolean = runBlocking { module.hasStringAsync() }
 }
 
-private class ClipboardModuleMock(clipboardModule: ClipboardModule) {
+private class ClipboardModuleMock(val clipboardModule: ClipboardModule) {
   val module = ClipboardModuleTestWrapper(clipboardModule)
   val emittedEvents = mutableListOf<ClipboardChangedEvent>()
   lateinit var eventEmitter: ClipboardEventEmitter
@@ -72,6 +82,35 @@ private inline fun withClipboardMock(block: ClipboardModuleMock.() -> Unit) {
 
 /** The file class that holds `androidContext`, which mockk mocks as a static. */
 private const val REACT_CONTEXT_EXTENSIONS = "io.github.expo.modules.v2.react.ReactContextExtensionsKt"
+
+/** Keeps the emits for a runtime instead of delivering them, because delivery needs the native library. */
+private class RecordingJSScheduler : JSScheduler {
+  val jobs = mutableListOf<Runnable>()
+  override val isOnJSThread = false
+  override fun post(job: Runnable) {
+    jobs.add(job)
+  }
+}
+
+/**
+ * Adds or removes a JavaScript listener for the event that [module] exports as [jsName], the way
+ * the native side does when JavaScript calls `addListener` or `remove`.
+ */
+private fun observeEvent(
+  module: ClipboardModule,
+  jsName: String,
+  context: AsyncContext,
+  observing: Boolean
+) {
+  // `ExpoObject.events` is internal to Expo Modules v2.
+  @Suppress("UNCHECKED_CAST")
+  val events = ExpoObject::class.java.getField("events").get(module) as List<Event<*>>?
+  val index = events.orEmpty().indexOfFirst { it.name == jsName }
+  check(index >= 0) {
+    "ClipboardModule does not export '$jsName'. It exports: ${events.orEmpty().map { it.name }}"
+  }
+  EventSupport.observe(module, index, context, observing)
+}
 
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [Build.VERSION_CODES.P]) // API 28
@@ -159,6 +198,27 @@ class ClipboardModuleTest {
     // assert
     assertTrue(result)
     assertTrue(emittedEvents.single().contentTypes.contains(ContentType.PLAIN_TEXT))
+  }
+
+  @Test
+  fun `should emit onClipboardChanged to a JavaScript listener`() = withClipboardMock {
+    // An `AsyncContext` loads the native library when its class initializes.
+    mockkObject(ExpoModulesV2)
+    every { ExpoModulesV2.load() } just runs
+    try {
+      val scheduler = RecordingJSScheduler()
+      val jsContext = AsyncContext(scheduler)
+
+      observeEvent(clipboardModule, "onClipboardChanged", jsContext, observing = true)
+      module.setStringAsync("minerva mcgonagall")
+      assertEquals(1, scheduler.jobs.size)
+
+      observeEvent(clipboardModule, "onClipboardChanged", jsContext, observing = false)
+      module.setStringAsync("rubeus hagrid")
+      assertEquals(1, scheduler.jobs.size)
+    } finally {
+      unmockkObject(ExpoModulesV2)
+    }
   }
 
   @Test

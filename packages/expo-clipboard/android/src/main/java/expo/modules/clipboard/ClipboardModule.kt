@@ -114,7 +114,7 @@ class ClipboardModule : Module() {
   //endregion
 
   // region Events
-  @Event
+  @Event(name = "onClipboardChanged")
   private val onClipboardChanged = event<ClipboardChangedEvent>(
     onStartObserving = ::startListening,
     onStopObserving = ::stopListening
