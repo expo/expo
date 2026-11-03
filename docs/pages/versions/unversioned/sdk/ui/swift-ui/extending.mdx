@@ -39,27 +39,27 @@ This guide explains how to use the [Expo Modules API](/modules/overview/) to cre
 
 <Step label="1">
 
-Create a local Expo module in your project:
+Create a local Expo module with the `SwiftUIView` feature example in your project:
 
-<Terminal cmd={['$ npx create-expo-module@latest --local my-ui']} />
+<Terminal
+  cmd={[
+    '$ npx create-expo-module@latest --local my-ui --features SwiftUIView',
+  ]}
+/>
+
+The `SwiftUIView` feature adds `ExpoUI` as a dependency in the module's podspec file and creates a views module, `MyUiViewsModule`, with the JavaScript name `MyUiViews`. The Expo Modules API 2.0 doesn't support views yet, so the views module registers views with the Module DSL.
 
 </Step>
 
 <Step label="2">
 
-Add `ExpoUI` as a dependency in your module's podspec file:
+Delete the example view, because you replace it with your own view in the next steps:
 
-```ruby modules/my-ui/ios/MyUi.podspec
-Pod::Spec.new do |s|
-  s.name           = 'MyUi'
-  s.version        = '1.0.0'
-  s.summary        = 'Custom UI components extending Expo UI'
-  # ... other config
-  # Add ExpoUI dependency
-  s.dependency 'ExpoUI'
-  # ... other config
-end
-```
+<Terminal
+  cmd={[
+    '$ rm modules/my-ui/ios/MyUiSwiftUIView.swift modules/my-ui/src/MyUiSwiftUIView.tsx',
+  ]}
+/>
 
 </Step>
 
@@ -98,15 +98,15 @@ struct MyCustomView: ExpoSwiftUI.View {
 
 <Step label="4">
 
-Register the view in your module using `ExpoUIView`. This wraps your SwiftUI view with modifier support and makes it available to JavaScript:
+Register the view in the views module using `ExpoUIView`. This wraps your SwiftUI view with modifier support and makes it available to JavaScript:
 
-```swift modules/my-ui/ios/MyUiModule.swift
+```swift modules/my-ui/ios/MyUiViewsModule.swift
 import ExpoModulesCore
 import ExpoUI
 
-public class MyUiModule: Module {
+public class MyUiViewsModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("MyUi")
+    Name("MyUiViews")
 
     ExpoUIView(MyCustomView.self)
   }
@@ -130,7 +130,7 @@ export interface MyCustomViewProps extends CommonViewModifierProps {
 }
 
 const NativeMyCustomView = requireNativeView<MyCustomViewProps>(
-  'MyUi',
+  'MyUiViews',
   'MyCustomView'
 );
 
@@ -235,15 +235,15 @@ struct CustomBorderModifier: ViewModifier, Record {
 
 <Step label="2">
 
-Register your modifier with `ViewModifierRegistry` in your module definition. To avoid race conditions with the SwiftUI render thread, call `register` in `OnCreate` and `unregister` in `OnDestroy`:
+Register your modifier with `ViewModifierRegistry` in the views module definition. To avoid race conditions with the SwiftUI render thread, call `register` in `OnCreate` and `unregister` in `OnDestroy`:
 
-```swift modules/my-ui/ios/MyUiModule.swift
+```swift modules/my-ui/ios/MyUiViewsModule.swift
 import ExpoModulesCore
 import ExpoUI
 
-public class MyUiModule: Module {
+public class MyUiViewsModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("MyUi")
+    Name("MyUiViews")
 
     OnCreate {
       ViewModifierRegistry.register("customBorder") { params, appContext, _ in
