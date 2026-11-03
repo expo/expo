@@ -4,13 +4,11 @@ import expo.modules.appmetrics.AppMetadata
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.sharedobjects.SharedObject
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class SessionSharedObject(
   private val sessionManager: SessionManager,
-  private val scope: CoroutineScope,
   val type: String,
   customStartTimestamp: String? = null,
   private val metadata: AppMetadata? = null,
@@ -23,27 +21,30 @@ class SessionSharedObject(
   // The session's start timestamp, exposed to JS as `startDate`.
   val startDate: String = customStartTimestamp ?: TimeUtils.getCurrentTimestampInISOFormat()
 
-  private val sessionStartJob: Job by lazy {
-    scope.launch {
-      sessionManager.startSessionWithIdAt(sessionId, startDate, metadata)
-    }
-  }
+  private val sessionStartMutex = Mutex()
+  private var isPersisted = false
 
-  /** Suspends until the session row has been persisted. */
-  suspend fun awaitSessionPersisted() = sessionStartJob.join()
+  /** Inserts the session row if it isn't persisted yet. A failed insert throws, and the next call retries it. */
+  suspend fun ensureSessionPersisted() =
+    sessionStartMutex.withLock {
+      if (!isPersisted) {
+        sessionManager.startSessionWithIdAt(sessionId, startDate, metadata)
+        isPersisted = true
+      }
+    }
 
   suspend fun addMetrics(metrics: List<Metric>) {
-    awaitSessionPersisted()
+    ensureSessionPersisted()
     sessionManager.addMetrics(metrics, sessionId)
   }
 
   suspend fun addLogs(logs: List<LogRecord>) {
-    awaitSessionPersisted()
+    ensureSessionPersisted()
     sessionManager.addLogs(logs, sessionId)
   }
 
   suspend fun stop() {
-    awaitSessionPersisted()
+    ensureSessionPersisted()
     sessionManager.stopSession(sessionId)
   }
 

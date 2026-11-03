@@ -1,8 +1,10 @@
 package expo.modules.appmetrics.storage
 
 import android.content.Context
+import android.database.sqlite.SQLiteException
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.spyk
 import kotlinx.coroutines.launch
@@ -51,7 +53,6 @@ class SessionSharedObjectTest {
       // Arrange — a fresh session that has NOT been awaited yet.
       val session = SessionSharedObject(
         sessionManager = sessionManager,
-        scope = this,
         type = "main",
         customStartTimestamp = "2025-01-01T00:00:00.000Z"
       )
@@ -74,7 +75,6 @@ class SessionSharedObjectTest {
     runTest {
       val session = SessionSharedObject(
         sessionManager = sessionManager,
-        scope = this,
         type = "main",
         customStartTimestamp = "2025-01-01T00:00:00.000Z"
       )
@@ -95,7 +95,6 @@ class SessionSharedObjectTest {
       // No startTimestamp passed — the object stamps it from the constructor.
       val session = SessionSharedObject(
         sessionManager = sessionManager,
-        scope = this,
         type = "custom"
       )
 
@@ -103,7 +102,7 @@ class SessionSharedObjectTest {
       assertTrue(session.startDate.isNotBlank())
 
       // ...and is the timestamp persisted for the row.
-      session.awaitSessionPersisted()
+      session.ensureSessionPersisted()
       assertEquals(
         session.startDate,
         sessionManager.getSessionRow(session.sessionId)!!.startTimestamp
@@ -111,7 +110,7 @@ class SessionSharedObjectTest {
     }
 
   @Test
-  fun `awaitSessionPersisted runs the start job exactly once`() =
+  fun `ensureSessionPersisted inserts the session row exactly once`() =
     runTest {
       // Spy so we can count the real INSERT. We can't assert this via the DB:
       // session inserts use OnConflictStrategy.IGNORE, so a duplicate run would
@@ -119,29 +118,65 @@ class SessionSharedObjectTest {
       val spy = spyk(sessionManager)
       val session = SessionSharedObject(
         sessionManager = spy,
-        scope = this,
         type = "main",
         customStartTimestamp = "2025-01-01T00:00:00.000Z"
       )
 
-      // Two concurrent waiters plus a third sequential call — all join the same
-      // lazily-started job, which must execute its body only once.
-      val a = launch { session.awaitSessionPersisted() }
-      val b = launch { session.awaitSessionPersisted() }
+      // Two concurrent callers plus a third sequential call — only the first
+      // one inserts the row.
+      val a = launch { session.ensureSessionPersisted() }
+      val b = launch { session.ensureSessionPersisted() }
       a.join()
       b.join()
-      session.awaitSessionPersisted()
+      session.ensureSessionPersisted()
 
       coVerify(exactly = 1) { spy.startSessionWithIdAt(any(), any(), any(), any()) }
       assertNotNull(sessionManager.getSessionRow(session.sessionId))
     }
 
   @Test
-  fun `stop awaits the start job then stamps the end timestamp`() =
+  fun `a failed session start skips the write`() =
+    runTest {
+      val spy = spyk(sessionManager)
+      coEvery { spy.startSessionWithIdAt(any(), any(), any(), any()) } throws SQLiteException("disk I/O error")
+      val session = SessionSharedObject(
+        sessionManager = spy,
+        type = "main",
+        customStartTimestamp = "2025-01-01T00:00:00.000Z"
+      )
+
+      val result = runCatching { session.addMetrics(listOf(createMetric("metric-1", session.sessionId))) }
+
+      assertTrue(result.exceptionOrNull() is SQLiteException)
+      coVerify(exactly = 0) { spy.addMetrics(any(), any()) }
+    }
+
+  @Test
+  fun `a write after a failed session start retries the start`() =
+    runTest {
+      val spy = spyk(sessionManager)
+      coEvery { spy.startSessionWithIdAt(any(), any(), any(), any()) } throws
+        SQLiteException("disk I/O error") coAndThen {
+          sessionManager.startSessionWithIdAt(firstArg(), secondArg(), thirdArg(), arg(3))
+        }
+      val session = SessionSharedObject(
+        sessionManager = spy,
+        type = "main",
+        customStartTimestamp = "2025-01-01T00:00:00.000Z"
+      )
+      runCatching { session.addMetrics(listOf(createMetric("metric-1", session.sessionId))) }
+
+      session.addMetrics(listOf(createMetric("metric-2", session.sessionId)))
+
+      assertNotNull(sessionManager.getSessionRow(session.sessionId))
+      assertEquals(listOf("metric-2"), session.getMetrics().map { it.name })
+    }
+
+  @Test
+  fun `stop persists the session row then stamps the end timestamp`() =
     runTest {
       val session = SessionSharedObject(
         sessionManager = sessionManager,
-        scope = this,
         type = "main",
         customStartTimestamp = "2025-01-01T00:00:00.000Z"
       )
@@ -159,11 +194,10 @@ class SessionSharedObjectTest {
     runTest {
       val session = SessionSharedObject(
         sessionManager = sessionManager,
-        scope = this,
         type = "main",
         customStartTimestamp = "2025-01-01T00:00:00.000Z"
       )
-      session.awaitSessionPersisted()
+      session.ensureSessionPersisted()
 
       assertTrue(session.isActive())
       assertNull(session.getEndDate())
@@ -177,11 +211,10 @@ class SessionSharedObjectTest {
   @Test
   fun `isActive defaults to true before the row is persisted`() =
     runTest {
-      // Never awaited, so the start job hasn't inserted the row yet — the read
+      // Never persisted, so the row isn't inserted yet — the read
       // is optimistic rather than blocking.
       val session = SessionSharedObject(
         sessionManager = sessionManager,
-        scope = this,
         type = "main",
         customStartTimestamp = "2025-01-01T00:00:00.000Z"
       )
@@ -194,11 +227,10 @@ class SessionSharedObjectTest {
   @Test
   fun `getMetrics and getLogs are empty before the row is persisted`() =
     runTest {
-      // Never awaited — no row, no entries. The optimistic read returns empty
-      // collections rather than blocking on the start job.
+      // Never persisted — no row, no entries. The optimistic read returns empty
+      // collections rather than inserting the row.
       val session = SessionSharedObject(
         sessionManager = sessionManager,
-        scope = this,
         type = "main",
         customStartTimestamp = "2025-01-01T00:00:00.000Z"
       )
@@ -212,11 +244,10 @@ class SessionSharedObjectTest {
     runTest {
       val session = SessionSharedObject(
         sessionManager = sessionManager,
-        scope = this,
         type = "main",
         customStartTimestamp = "2025-01-01T00:00:00.000Z"
       )
-      session.awaitSessionPersisted()
+      session.ensureSessionPersisted()
 
       // Row exists now, but nothing has been written to it yet.
       assertTrue(session.isActive())
@@ -230,7 +261,6 @@ class SessionSharedObjectTest {
     runTest {
       val session = SessionSharedObject(
         sessionManager = sessionManager,
-        scope = this,
         type = "main",
         customStartTimestamp = "2025-01-01T00:00:00.000Z"
       )
@@ -245,12 +275,11 @@ class SessionSharedObjectTest {
   @Test
   fun `getters never trigger the session-start persist`() =
     runTest {
-      // Reads are intentionally NOT gated on awaitSessionPersisted(): they read
-      // through optimistically and must never kick off the lazy start job.
+      // Reads are intentionally NOT gated on ensureSessionPersisted(): they read
+      // through optimistically and must never insert the session row.
       val spy = spyk(sessionManager)
       val session = SessionSharedObject(
         sessionManager = spy,
-        scope = this,
         type = "main",
         customStartTimestamp = "2025-01-01T00:00:00.000Z"
       )

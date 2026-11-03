@@ -55,8 +55,11 @@ import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -67,7 +70,12 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
   // TODO(@lukmccall): Consider using appContext.backgroundCoroutineScope instead
   private val scope: CoroutineScope
-    get() = appContext.modulesQueue
+    get() = appContext.modulesQueue + backgroundTaskErrorHandler
+
+  // Telemetry must never crash the host app, so a failed task is logged and its data is dropped.
+  private val backgroundTaskErrorHandler = CoroutineExceptionHandler { _, error ->
+    Log.e(TAG, "[AppMetrics] An app metrics background task failed, so its data is not recorded.", error)
+  }
 
   lateinit var memoryMetricsManager: MemoryMetricsManager
   lateinit var updatesMonitoring: UpdatesMonitoring
@@ -244,7 +252,6 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
         mainSession = SessionSharedObject(
           sessionManager = sessionManager,
-          scope = scope,
           type = "main",
           customStartTimestamp = appSessionStartTimestamp,
           metadata = metadata,
@@ -257,17 +264,22 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           database = MetricsDatabase.getDatabase(context),
           scope = scope
         ) {
-          mainSession.awaitSessionPersisted()
+          mainSession.ensureSessionPersisted()
         }
 
         // Persist the session row eagerly so it's visible to readers
         // (`getMainSession`, …) as soon as possible. Idempotent:
-        // a racing write triggers (and joins) the same single start job.
+        // a racing write waits for the same insert.
         scope.launch {
-          mainSession.awaitSessionPersisted()
+          try {
+            mainSession.ensureSessionPersisted()
+          } catch (e: CancellationException) {
+            throw e
+          } catch (e: Exception) {
+            Log.w(TAG, "[AppMetrics] Failed to start the main session. The next write tries again.", e)
+          }
           // From here on every completed request is written to the `spans` table, attributed to
-          // the main session. The await above keeps the FK satisfied for every span insert;
-          // installation also drains requests buffered since process start.
+          // the main session. Installation also drains requests buffered since process start.
           val persistence = NetworkRequestPersistence(
             writer = spanWriter,
             // Read here rather than left to the constructor default: recording is opt-in, so
@@ -351,11 +363,14 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         networkRequestPersistence?.let { NetworkRequestMonitor.shared.uninstallPersistence(it) }
         // `modulesQueue` is cancelled immediately after this hook returns, so
         // run the UPDATE on the calling thread to make sure the end timestamp
-        // is persisted before teardown. `stop` awaits the session-start job
-        // first, so the INSERT lands before the UPDATE and the stamp doesn't
-        // silently no-op on a missing row.
-        runBlocking {
-          mainSession.stop()
+        // is persisted before teardown. `stop` inserts the session row first,
+        // so the stamp doesn't silently no-op on a missing row.
+        try {
+          runBlocking {
+            mainSession.stop()
+          }
+        } catch (e: Exception) {
+          Log.w(TAG, "[AppMetrics] Failed to stop the main session, so its end time is not recorded.", e)
         }
         // The session has ended; stop stamping it onto crashes. A crash after
         // this is captured as an orphan rather than misattributed
