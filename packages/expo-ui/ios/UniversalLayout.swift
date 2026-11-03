@@ -179,6 +179,13 @@ internal struct ParentAwareHStackLayout: Layout {
     )
   }
 
+  // A `Spacer` reads the orientation and grows only along the stack axis.
+  static var layoutProperties: LayoutProperties {
+    var properties = LayoutProperties()
+    properties.stackOrientation = .horizontal
+    return properties
+  }
+
   func makeCache(subviews: Subviews) -> StackLayoutCache {
     StackLayoutCache()
   }
@@ -215,6 +222,13 @@ internal struct ParentAwareVStackLayout: Layout {
       ownDimensions: ownDimensions,
       resolvesOwnPercentage: resolvesOwnPercentage
     )
+  }
+
+  // A `Spacer` reads the orientation and grows only along the stack axis.
+  static var layoutProperties: LayoutProperties {
+    var properties = LayoutProperties()
+    properties.stackOrientation = .vertical
+    return properties
   }
 
   func makeCache(subviews: Subviews) -> StackLayoutCache {
@@ -333,6 +347,9 @@ private struct MeasuredChild {
   var canCompress: Bool
   var priority: Double
   var maxMain: CGFloat
+  /// Main size of a flexible child at a zero offer, such as the minimum length of a `Spacer`.
+  /// Zero for other children.
+  var minMain: CGFloat
 }
 
 private struct MeasuredChildren {
@@ -392,7 +409,9 @@ private struct StackConfiguration {
       subviews: subviews,
       cache: &cache
     )
-    let fill = alignment.offset(container: crossLength(bounds.size, axis: axis), content: measurement.contentCross)
+    let fill = measurement.contentCross.isFinite
+      ? alignment.offset(container: crossLength(bounds.size, axis: axis), content: measurement.contentCross)
+      : 0
     // The origin stays leading.
     // SwiftUI mirrors a custom layout in right-to-left.
     var cursor = axis == .horizontal ? bounds.minX : bounds.minY
@@ -407,20 +426,22 @@ private struct StackConfiguration {
   private func measure(proposal: ProposedViewSize, subviews: LayoutSubviews) -> StackMeasurement {
     let spacings = stackSpacings(subviews: subviews, explicit: spacing)
     let measured = measureChildren(subviews: subviews, proposal: proposal, spacings: spacings)
-    // A flexible child reports its cross size for its final main size and no cross proposal.
-    // So a `Spacer` does not stretch the stack, and wrapped text counts its lines.
+    // A flexible child reports its cross size for its final main size, so wrapped text counts its lines.
     let dimensions = zip(subviews, measured.children).map { subview, child in
       let dimensionProposal = child.flexible
-        ? proposedSize(main: mainLength(child.size, axis: axis), cross: nil, axis: axis)
+        ? proposedSize(main: mainLength(child.size, axis: axis), cross: child.crossProposal, axis: axis)
         : child.proposal
       return subview.dimensions(in: dimensionProposal)
     }
     let guides = dimensions.map(alignment.guide)
-    let reference = guides.max() ?? 0
-    let extents = zip(dimensions, guides).map { dimension, guide in
-      crossLength(CGSize(width: dimension.width, height: dimension.height), axis: axis) - guide
-    }
-    let contentCross = reference + (extents.max() ?? 0)
+    let crossSizes = dimensions.map { crossLength(CGSize(width: $0.width, height: $0.height), axis: axis) }
+    // A child that answers an infinite probe with an infinite size has no finite center or end guide.
+    // The stack then reports that it can grow and skips the guides.
+    let growsAcross = crossSizes.contains { $0.isInfinite }
+    let reference = growsAcross ? 0 : guides.max() ?? 0
+    let contentCross = growsAcross
+      ? CGFloat.infinity
+      : reference + (zip(crossSizes, guides).map { $0 - $1 }.max() ?? 0)
     return StackMeasurement(
       size: stackSize(
         main: measured.definiteMain ?? measured.contentMain,
@@ -430,7 +451,7 @@ private struct StackConfiguration {
       sizes: measured.children.map(\.size),
       proposals: measured.children.map(\.proposal),
       spacings: spacings,
-      crossOffsets: guides.map { reference - $0 },
+      crossOffsets: growsAcross ? guides.map { _ in 0 } : guides.map { reference - $0 },
       contentCross: contentCross
     )
   }
@@ -441,7 +462,8 @@ private struct StackConfiguration {
     spacings: [CGFloat]
   ) -> MeasuredChildren {
     let offeredMain = finite(axis == .horizontal ? proposal.width : proposal.height)
-    let offeredCross = finite(axis == .horizontal ? proposal.height : proposal.width)
+    let proposedCross = axis == .horizontal ? proposal.height : proposal.width
+    let offeredCross = finite(proposedCross)
     let ownMainPoints = axis == .horizontal ? ownDimensions.widthPoints : ownDimensions.heightPoints
     let ownMainFraction = axis == .horizontal ? ownDimensions.widthFraction : ownDimensions.heightFraction
     let ownCrossPoints = axis == .horizontal ? ownDimensions.heightPoints : ownDimensions.widthPoints
@@ -478,8 +500,9 @@ private struct StackConfiguration {
       let mainFraction = axis == .horizontal ? dimensions.widthFraction : dimensions.heightFraction
       let crossFraction = axis == .horizontal ? dimensions.heightFraction : dimensions.widthFraction
       // A fraction uses the size chosen above.
-      // Every other child still gets the offered cross size, so text can wrap.
-      let crossProposal = crossFraction != nil ? definiteCross : offeredCross
+      // Every other child gets the cross proposal unchanged, so text can wrap, and an infinite probe
+      // reaches a child that can grow.
+      let crossProposal = crossFraction != nil ? definiteCross : proposedCross
 
       if mainFraction != nil, let definiteMain {
         let childProposal = proposedSize(main: definiteMain, cross: crossProposal, axis: axis)
@@ -491,7 +514,8 @@ private struct StackConfiguration {
           flexible: false,
           canCompress: false,
           priority: subview.priority,
-          maxMain: mainLength(size, axis: axis)
+          maxMain: mainLength(size, axis: axis),
+          minMain: 0
         ))
         continue
       }
@@ -502,6 +526,9 @@ private struct StackConfiguration {
       let idealMain = mainLength(ideal, axis: axis)
       let maxMain = mainLength(maxed, axis: axis)
       let flexible = offeredMain != nil && (maxMain.isInfinite || maxMain > idealMain + 1)
+      let minMain = flexible
+        ? mainLength(subview.sizeThatFits(proposedSize(main: 0, cross: crossProposal, axis: axis)), axis: axis)
+        : 0
       children.append(MeasuredChild(
         size: ideal,
         proposal: idealProposal,
@@ -509,7 +536,8 @@ private struct StackConfiguration {
         flexible: flexible,
         canCompress: !flexible,
         priority: subview.priority,
-        maxMain: maxMain
+        maxMain: maxMain,
+        minMain: minMain
       ))
     }
 
@@ -536,7 +564,8 @@ private struct StackConfiguration {
     let fixedMain = children.reduce(CGFloat(0)) { total, child in
       child.flexible ? total : total + mainLength(child.size, axis: axis)
     }
-    let overflow = fixedMain + spacings.reduce(0, +) - offeredMain
+    let flexibleMinimum = children.reduce(CGFloat(0)) { $0 + $1.minMain }
+    let overflow = fixedMain + flexibleMinimum + spacings.reduce(0, +) - offeredMain
     guard overflow > 1 else { return }
 
     var candidates: [CompressionCandidate] = []
@@ -571,7 +600,7 @@ private struct StackConfiguration {
       }
       return total + mainLength(item.element.size, axis: axis)
     }
-    var available = max(0, offeredMain - spacings.reduce(0, +) - reserved)
+    var available = max(0, offeredMain - spacings.reduce(0, +) - reserved - flexibleMinimum)
     for (position, candidate) in candidates.enumerated() {
       let rest = candidates[(position + 1)...]
       let peers = rest.prefix { $0.priority == candidate.priority }.count + 1
@@ -590,7 +619,8 @@ private struct StackConfiguration {
   }
 
   /// Flexible children share the space left by the others.
-  /// A higher priority goes first.
+  /// A higher priority goes first, and leaves room for the minimum of every child after it, as in `HStack`.
+  /// A `Spacer` reports the lowest priority, so it keeps its minimum length.
   /// Among equals, the least flexible goes first, so a capped child leaves the rest to a `Spacer`.
   private func growChildren(
     _ children: inout [MeasuredChild],
@@ -611,7 +641,9 @@ private struct StackConfiguration {
     var remaining = max(0, offeredMain - fixedMain - spacings.reduce(0, +))
     for (position, index) in order.enumerated() {
       let peers = order[(position + 1)...].prefix { children[$0].priority == children[index].priority }.count + 1
-      let share = peers == 1 ? remaining : (remaining / CGFloat(peers)).rounded(.down)
+      let laterMinimum = order[(position + peers)...].reduce(CGFloat(0)) { $0 + children[$1].minMain }
+      let available = max(0, remaining - laterMinimum)
+      let share = peers == 1 ? available : (available / CGFloat(peers)).rounded(.down)
       let proposal = proposedSize(main: share, cross: children[index].crossProposal, axis: axis)
       let size = subviews[index].sizeThatFits(proposal)
       children[index].size = size

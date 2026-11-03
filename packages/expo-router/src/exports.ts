@@ -12,6 +12,7 @@ export {
   useRootNavigation,
   useRootNavigationState,
   useCanGoBack,
+  useCanDismiss,
   useLoaderData,
   useCurrentRouteInfo,
 } from './hooks';

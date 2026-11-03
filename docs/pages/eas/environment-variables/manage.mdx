@@ -1,27 +1,27 @@
 ---
-title: Create and manage environment variables in EAS
+title: Create and manage environment variables in Expo Services
 sidebar_title: Create and manage
-description: Learn how to create, scope, and consume environment variables with EAS dashboard and EAS CLI.
+description: Learn how to create, scope, and consume environment variables with Expo dashboard and EAS CLI.
 searchRank: 7
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
-The following sections cover how to create, scope, and consume environment variables with EAS dashboard and EAS CLI.
+The following sections cover how to create, scope, and consume environment variables with Expo dashboard and EAS CLI.
 
 ## Create environment variables
 
 - [**Choose an environment or multiple environments**](/eas/environment-variables/#available-environments): `development`, `preview`, and `production` are available by default. A variable can be reused across them or customized per environment.
 - [**Choose scope**](/eas/environment-variables/#scope): Project-wide variables apply to one project. Account-wide variables can be reused across projects and are merged with project variables at build time.
-- [**Choose visibility**](/eas/environment-variables/#visibility-settings-for-environment-variables): Use **secret** for values that should never leave EAS servers, **sensitive** for values that may be revealed locally, and **plain text** for non-sensitive values.
+- [**Choose visibility**](/eas/environment-variables/#visibility-settings-for-environment-variables): Use **secret** for values that should never leave Expo servers, **sensitive** for values that may be revealed locally, and **plain text** for non-sensitive values.
 
 ### Create variables in the dashboard
 
-To create a new environment variable on EAS servers, in your project dashboard, you can navigate to the **Project settings** > [**Environment variables**](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) and then click on the **Add Variables** button.
+To create a new environment variable on Expo servers, in your project dashboard, you can navigate to the **Project settings** > [**Environment variables**](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) and then click on the **Add Variables** button.
 
 <ContentSpotlight
-  alt="Environment variable form in an EAS project dashboard"
+  alt="Environment variable form in an Expo Services project dashboard"
   src="/static/images/env-vars/creation-form.png"
   className="max-w-[600px]"
 />
@@ -44,8 +44,8 @@ Created variables appear in the list with their scope, visibility, and environme
 
 In the above example list:
 
-- The `SENTRY_AUTH_TOKEN` variable is a sensitive environment variable. It is used to authenticate Sentry to upload source maps after builds and updates, and has to be accessible outside of EAS servers.
-- The `GOOGLE_SERVICES_JSON` variable is a secret environment variable and uses an uploaded file. It is used to authenticate Google to access the Google Services JSON file, and has to be stored securely on EAS servers. This uploaded JSON file is typically added to your project's **.gitignore**.
+- The `SENTRY_AUTH_TOKEN` variable is a sensitive environment variable. It is used to authenticate Sentry to upload source maps after builds and updates, and has to be accessible outside of Expo servers.
+- The `GOOGLE_SERVICES_JSON` variable is a secret environment variable and uses an uploaded file. It is used to authenticate Google to access the Google Services JSON file, and has to be stored securely on Expo servers. This uploaded JSON file is typically added to your project's **.gitignore**.
 - All other variables, such as `APP_VARIANT` and `EXPO_PUBLIC_API_URL`, are plain text environment variables.
 
 ### Create variables with EAS CLI
@@ -145,7 +145,7 @@ export default {
 
 ### Secrets and file variables
 
-An environment variable such as `GOOGLE_SERVICES_JSON` is a secret file variable that is not readable outside of EAS servers and is used to provide the git ignored **google-services.json** file to an EAS Build job. To use it in the app config, you can use the `process.env` variable and provide a fallback value in case the variable is not set (for local development when you usually have it inside your project's repository):
+An environment variable such as `GOOGLE_SERVICES_JSON` is a secret file variable that is not readable outside of Expo servers and is used to provide the git ignored **google-services.json** file to an Expo Build job. To use it in the app config, you can use the `process.env` variable and provide a fallback value in case the variable is not set (for local development when you usually have it inside your project's repository):
 
 ```js app.config.js
 export default {
@@ -157,7 +157,7 @@ export default {
 
 ## Manage environment variables
 
-You can use [EAS dashboard](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) in your project or account to create, update, and delete environment variables.
+You can use [Expo dashboard](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) in your project or account to create, update, and delete environment variables.
 
 You can also use EAS CLI to manage them. The following commands are provided as examples for the `production` environment. When using these commands, replace `production` with the environment you want to manage.
 
@@ -181,7 +181,7 @@ You can also use EAS CLI to manage them. The following commands are provided as 
 
 ### Pull variables for local development
 
-The efficient way to use EAS environment variables for local development is to pull them into a **.env** file using the `eas env:pull --environment environment-name` command:
+The efficient way to use Expo Services environment variables for local development is to pull them into a **.env** file using the `eas env:pull --environment environment-name` command:
 
 For example, to pull the environment variables for the `production` environment into a **.env** file, you can run:
 
@@ -200,10 +200,10 @@ SENTRY_AUTH_TOKEN=token
 
 > **info** **Tip:** Keep generated **.env** files in **.gitignore** to avoid leaks and precedence conflicts between local and cloud jobs.
 
-You can also use the **Export** option in the EAS dashboard to download the file and store it inside your project.
+You can also use the **Export** option in the Expo dashboard to download the file and store it inside your project.
 
 <ContentSpotlight
-  alt="Export environment variables to a .env file from the EAS dashboard"
+  alt="Export environment variables to a .env file from the Expo dashboard"
   src="/static/images/env-vars/export.png"
   className="max-w-[600px]"
 />
@@ -214,15 +214,15 @@ You can also use the **Export** option in the EAS dashboard to download the file
 
 The three default environments are sufficient for most use-cases, but if your project relies on complex workflows and requires the flexibility to create more environments, using custom environments may come in handy.
 
-### Create a custom environment in EAS dashboard
+### Create a custom environment in Expo dashboard
 
-To create a custom environment in EAS dashboard:
+To create a custom environment in Expo dashboard:
 
 - In your project, navigate to the **Project settings** > [**Environment variables**](https://expo.dev/accounts/[account]/projects/[project]/environment-variables) and then click on the **Add Variables** button.
 - Under **Environments**, click the **plus (+) icon** to enter a name for a custom environment.
 
 <ContentSpotlight
-  alt="Create a custom environment in an EAS project dashboard"
+  alt="Create a custom environment in an Expo Services project dashboard"
   src="/static/images/env-vars/custom-environment.png"
   className="max-w-[600px]"
 />

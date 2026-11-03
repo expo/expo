@@ -52,7 +52,6 @@
     "chalk": "^4.0.0",
     "debug": "^4.3.1",
     "getenv": "^2.0.0",
-    "glob": "^13.0.0",
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {

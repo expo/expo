@@ -267,7 +267,7 @@ data class OTServiceResponse(
  */
 internal const val SEMCONV_SCHEMA_URL = "https://opentelemetry.io/schemas/1.27.0"
 
-// This must be kept in sync with the INTERNAL_TO_OTEL map in universe
+// Keep in sync with INTERNAL_TO_OTEL in universe and `ObserveMetricName` in `src/types.ts`:
 // https://github.com/expo/universe/blob/main/server/www/src/middleware/easObserveRoutes.ts#L209
 private val metricNameMap = mapOf(
   // App startup
@@ -291,6 +291,9 @@ private val metricNameMap = mapOf(
   (MetricCategory.Navigation.categoryName to "tti") to "expo.navigation.tti"
 )
 
+internal fun exportedMetricName(category: String, name: String): String =
+  metricNameMap[category to name] ?: "expo.unknown.$name"
+
 fun EASMetric.toOTMetric(): OTMetric {
   val attributes = mutableListOf(
     OTAttribute.of(key = "session.id", rawValue = sessionId)
@@ -307,7 +310,7 @@ fun EASMetric.toOTMetric(): OTMetric {
 
   return OTMetric(
     unit = "s",
-    name = metricNameMap[category to name] ?: "expo.unknown.$name",
+    name = exportedMetricName(category, name),
     gauge = OTGauge(
       dataPoints = listOf(
         OTDataPoint(

@@ -1524,7 +1524,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-safe-area-context (5.10.1):
+  - react-native-safe-area-context (5.11.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1538,8 +1538,8 @@ PODS:
     - React-graphics
     - React-ImageManager
     - React-jsi
-    - react-native-safe-area-context/common (= 5.10.1)
-    - react-native-safe-area-context/fabric (= 5.10.1)
+    - react-native-safe-area-context/common (= 5.11.1)
+    - react-native-safe-area-context/fabric (= 5.11.1)
     - React-NativeModulesApple
     - React-RCTFabric
     - React-renderercss
@@ -1549,7 +1549,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-safe-area-context/common (5.10.1):
+  - react-native-safe-area-context/common (5.11.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -1572,7 +1572,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - react-native-safe-area-context/fabric (5.10.1):
+  - react-native-safe-area-context/fabric (5.11.1):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2359,7 +2359,7 @@ DEPENDENCIES:
   - "React-Mapbuffer (from `../../../../node_modules/.pnpm/react-native@0.88.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._c9e1eeffe6458d0c6dfda6eac73c84c6/node_modules/react-native/ReactCommon`)"
   - "React-microtasksnativemodule (from `../../../../node_modules/.pnpm/react-native@0.88.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._c9e1eeffe6458d0c6dfda6eac73c84c6/node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)"
   - "React-mutationobservernativemodule (from `../../../../node_modules/.pnpm/react-native@0.88.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._c9e1eeffe6458d0c6dfda6eac73c84c6/node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver`)"
-  - "react-native-safe-area-context (from `../../../../node_modules/.pnpm/react-native-safe-area-context@5.10.1_react-native@0.88.1_@babel+core@7.29.7_@react-nat_e350bb8e0bb7abbc04fe1214ef02e484/node_modules/react-native-safe-area-context`)"
+  - "react-native-safe-area-context (from `../../../../node_modules/.pnpm/react-native-safe-area-context@5.11.1_react-native@0.88.1_@babel+core@7.29.7_@react-nat_3dd6d39e9f4dbd40ea2f217a167e3e06/node_modules/react-native-safe-area-context`)"
   - "React-NativeModulesApple (from `../../../../node_modules/.pnpm/react-native@0.88.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._c9e1eeffe6458d0c6dfda6eac73c84c6/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)"
   - "React-networking (from `../../../../node_modules/.pnpm/react-native@0.88.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._c9e1eeffe6458d0c6dfda6eac73c84c6/node_modules/react-native/ReactCommon/react/networking`)"
   - "React-oscompat (from `../../../../node_modules/.pnpm/react-native@0.88.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._c9e1eeffe6458d0c6dfda6eac73c84c6/node_modules/react-native/ReactCommon/oscompat`)"
@@ -2564,7 +2564,7 @@ EXTERNAL SOURCES:
   React-mutationobservernativemodule:
     :path: "../../../../node_modules/.pnpm/react-native@0.88.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._c9e1eeffe6458d0c6dfda6eac73c84c6/node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver"
   react-native-safe-area-context:
-    :path: "../../../../node_modules/.pnpm/react-native-safe-area-context@5.10.1_react-native@0.88.1_@babel+core@7.29.7_@react-nat_e350bb8e0bb7abbc04fe1214ef02e484/node_modules/react-native-safe-area-context"
+    :path: "../../../../node_modules/.pnpm/react-native-safe-area-context@5.11.1_react-native@0.88.1_@babel+core@7.29.7_@react-nat_3dd6d39e9f4dbd40ea2f217a167e3e06/node_modules/react-native-safe-area-context"
   React-NativeModulesApple:
     :path: "../../../../node_modules/.pnpm/react-native@0.88.1_@babel+core@7.29.7_@react-native+metro-config@0.87.1_@babel+core@7._c9e1eeffe6458d0c6dfda6eac73c84c6/node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios"
   React-networking:
@@ -2731,7 +2731,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: 50c4d7a1ff3f18413cbaf897c8b5ce46baa491b3
   React-microtasksnativemodule: 0207d6133274a7cbfc3d0dae326e3055c8cfcf9e
   React-mutationobservernativemodule: b97a67c29f724d18a92379e7390f24350acb433a
-  react-native-safe-area-context: b1c9f15a36e597e9cef4c5526e209ef2645bc2e0
+  react-native-safe-area-context: 56700b839169ce88ffcec68c40447916fe512462
   React-NativeModulesApple: 8cfb2f308f48c48068c96b932e7f0e4297c23342
   React-networking: 3325cf73ecbdaacab0da91260b094baf36061a56
   React-oscompat: a776760fdfa152e12114f8c30d833963daac27e1

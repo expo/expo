@@ -33,15 +33,31 @@ internal struct ObservabilityManager {
   /// hook waits its turn rather than sending the same rows twice.
   private static let serializer = DispatchSerializer()
 
+  /// Log names that `errorSampleRate` applies to.
+  private nonisolated static let errorLogNames: Set<String> = [jsExceptionLogName, nativeExceptionLogName]
+
   internal static func dispatch() async {
     await serializer.run {
       // Per-signal gates are checked inside `dispatchMetrics` / `dispatchLogs` /
       // `dispatchTraces` rather than here, so a backoff on one endpoint doesn't suppress the
       // others' traffic.
-      let shouldDispatch = Self.shouldDispatch()
+      let config = ObserveUserDefaults.config
+      let shouldDispatch = Self.shouldDispatch(config: config, rate: config?.sampleRate)
+      // Installations in-sample for `sampleRate` send all logs. Errors use the higher of the two rates.
+      let shouldDispatchErrors = Self.shouldDispatch(
+        config: config,
+        rate: config?.errorSampleRate ?? config?.sampleRate
+      )
 
-      await dispatchMetrics(shouldDispatch: shouldDispatch)
-      await dispatchLogs(shouldDispatch: shouldDispatch)
+      await dispatchMetrics(
+        shouldDispatch: shouldDispatch,
+        ignoredMetrics: Set(config?.ignoredMetrics ?? [])
+      )
+      await dispatchLogs(
+        shouldDispatch: shouldDispatch,
+        shouldDispatchErrors: shouldDispatchErrors,
+        ignoredEvents: Set(config?.ignoredEvents ?? [])
+      )
       await dispatchTraces(shouldDispatch: shouldDispatch)
     }
   }
@@ -74,7 +90,7 @@ internal struct ObservabilityManager {
     )
   }
 
-  private static func dispatchMetrics(shouldDispatch: Bool) async {
+  private static func dispatchMetrics(shouldDispatch: Bool, ignoredMetrics: Set<String>) async {
     guard let endpointUrl = metricsEndpointUrl else {
       return
     }
@@ -107,7 +123,7 @@ internal struct ObservabilityManager {
       },
       rowId: { $0.id },
       send: { metrics in
-        let events = try buildEvents(forMetrics: metrics)
+        let events = try buildEvents(forMetrics: filteredMetrics(metrics, ignoredMetrics: ignoredMetrics))
         guard !events.isEmpty else {
           return nil
         }
@@ -145,7 +161,11 @@ internal struct ObservabilityManager {
     )
   }
 
-  private static func dispatchLogs(shouldDispatch: Bool) async {
+  private static func dispatchLogs(
+    shouldDispatch: Bool,
+    shouldDispatchErrors: Bool,
+    ignoredEvents: Set<String>
+  ) async {
     guard let endpointUrl = logsEndpointUrl else {
       return
     }
@@ -156,7 +176,7 @@ internal struct ObservabilityManager {
     repairLogCursorIfStale()
 
     let cursor = ObserveUserDefaults.lastDispatchedLogId
-    if !shouldDispatch {
+    if !shouldDispatch && !shouldDispatchErrors {
       do {
         if let highestId = try AppMetrics.getMaxLogId() {
           ObserveUserDefaults.lastDispatchedLogId = highestId
@@ -167,6 +187,8 @@ internal struct ObservabilityManager {
       return
     }
 
+    // Fewer than `batchCount` when only errors are sent.
+    var sentCount = 0
     await DispatchLoop.drain(
       startCursor: cursor,
       fetchBatch: { cursor, limit in
@@ -177,13 +199,18 @@ internal struct ObservabilityManager {
         return logs
       },
       rowId: { $0.id },
-      send: { logs in
+      send: { fetchedLogs in
+        let logs = sampledLogs(fetchedLogs, shouldDispatch: shouldDispatch, ignoredEvents: ignoredEvents)
+        guard !logs.isEmpty else {
+          return nil
+        }
+        sentCount = logs.count
         let events = try buildEvents(forLogs: logs)
         let resourceLogs = events.compactMap { event -> OTResourceLogs? in
           guard !event.logs.isEmpty else {
             return nil
           }
-          return event.toOTResourceLogs(easClientId)
+          return event.toOTResourceLogs(easClientId, inSampleRate: shouldDispatch)
         }
         guard !resourceLogs.isEmpty else {
           return nil
@@ -199,13 +226,13 @@ internal struct ObservabilityManager {
         case .partialSuccess(let partial):
           ObserveUserDefaults.lastDispatchDate = Date.now
           observeLogger.warn(
-            "[EAS Observe] Partial success on batch of \(batchCount) log row(s) past "
+            "[EAS Observe] Partial success on batch of \(sentCount) log row(s) past "
               + "id \(highestId): server rejected \(partial.rejectedCount) "
               + "(\(partial.errorMessage ?? "no error message"))"
           )
         case .nonRetryableFailure(let reason):
           observeLogger.warn(
-            "[EAS Observe] Dropping batch of \(batchCount) log row(s) past id "
+            "[EAS Observe] Dropping batch of \(sentCount) log row(s) past id "
               + "\(highestId): \(reason)"
           )
         case .payloadTooLarge where batchCount == 1:
@@ -371,18 +398,32 @@ internal struct ObservabilityManager {
     return dispatchingEnabled && isInSample && (!isDev || dispatchInDebug)
   }
 
-  private static func shouldDispatch() -> Bool {
+  private static func shouldDispatch(config: PersistedConfig?, rate: Double?) -> Bool {
     let isJsDev = ObserveUserDefaults.bundleDefaults?.isJsDev ?? false
     let isDev = EXAppDefines.APP_DEBUG || isJsDev
-    return Self.shouldDispatch(
-      config: ObserveUserDefaults.config,
-      isDev: isDev,
-      isInSample: isInSample()
-    )
+    return Self.shouldDispatch(config: config, isDev: isDev, isInSample: isInSample(rate: rate))
   }
 
-  private static func isInSample() -> Bool {
-    guard let rate = ObserveUserDefaults.config?.sampleRate else {
+  internal nonisolated static func filteredMetrics(
+    _ metrics: [MetricRow],
+    ignoredMetrics: Set<String>
+  ) -> [MetricRow] {
+    return metrics.filter {
+      !ignoredMetrics.contains(exportedMetricName(category: $0.category, name: $0.name))
+    }
+  }
+
+  internal nonisolated static func sampledLogs(
+    _ logs: [LogRow],
+    shouldDispatch: Bool,
+    ignoredEvents: Set<String>
+  ) -> [LogRow] {
+    let eligible = shouldDispatch ? logs : logs.filter { errorLogNames.contains($0.name) }
+    return eligible.filter { !ignoredEvents.contains($0.name) }
+  }
+
+  private static func isInSample(rate: Double?) -> Bool {
+    guard let rate else {
       return true
     }
     let clamped = min(max(rate, 0.0), 1.0)

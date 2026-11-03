@@ -7,7 +7,7 @@ import {
   insertContentsInsideSwiftFunctionBlock,
 } from '@expo/config-plugins/build/ios/codeMod';
 import fs from 'fs';
-import { globSync } from 'glob';
+import path from 'node:path';
 import semver from 'semver';
 
 import {
@@ -48,14 +48,12 @@ export const withIosModulesSwiftBridgingHeader: ConfigPlugin = (config) => {
       return config;
     }
 
-    const [bridgingHeaderFilePath] = globSync(
-      `ios/${bridgingHeaderFileName.replace(/['"]/g, '')}`,
-      {
-        absolute: true,
-        cwd: config.modRequest.projectRoot,
-      }
+    const bridgingHeaderFilePath = path.resolve(
+      config.modRequest.projectRoot,
+      'ios',
+      bridgingHeaderFileName.replace(/['"]/g, '')
     );
-    if (!bridgingHeaderFilePath) {
+    if (!fs.existsSync(bridgingHeaderFilePath)) {
       return config;
     }
     let contents = await fs.promises.readFile(bridgingHeaderFilePath, 'utf8');

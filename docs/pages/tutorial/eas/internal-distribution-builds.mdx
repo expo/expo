@@ -19,7 +19,7 @@ In this chapter, we'll learn how to set up [internal distribution builds](/build
 <VideoBoxLink
   videoId="1fQuGLHxWks"
   title="Watch: How to create and share an internal distribution build"
-  description="Create an internal distribution build with EAS and share it directly with your team for testing."
+  description="Create an internal distribution build with Expo Build and share it directly with your team for testing."
 />
 
 ---
@@ -37,13 +37,13 @@ Both Google and Apple provide built-in mechanisms for sharing apps internally:
 
 However, both of these traditional methods have their limitations. For example, TestFlight limits to one active build at a time.
 
-### EAS Build for faster distribution
+### Expo Build for faster distribution
 
-EAS Build speeds up the process. It creates shareable links for our builds and provides instructions on using them. It has a default configuration designed to facilitate internal distribution, offering a more efficient alternative to traditional methods.
+Expo Build speeds up the process. It creates shareable links for our builds and provides instructions on using them. It has a default configuration designed to facilitate internal distribution, offering a more efficient alternative to traditional methods.
 
 ## Create an internal distribution build
 
-To create and distribute a build with EAS Build, we need to follow these steps:
+To create and distribute a build with Expo Build, we need to follow these steps:
 
 <Step label="1">
 
@@ -88,10 +88,10 @@ On the other hand, Apple has stricter rules for app distribution on iOS devices.
 <Terminal cmd={['$ eas build --platform android --profile preview']} />
 
 - Since our preview build uses its own Android Application ID from the previous chapter, EAS CLI prompts us to **Generate a new Android Keystore**. Press <kbd>Y</kbd>.
-- This command triggers the EAS Build, and on the EAS dashboard, we can see the build's progress:
+- This command triggers the Expo Build, and on the Expo dashboard, we can see the build's progress:
 
 <ContentSpotlight
-  alt="Android preview build details and progress in EAS dashboard"
+  alt="Android preview build details and progress in Expo dashboard"
   src="/static/images/tutorial/eas/internal-distribution-builds-android-preview-build.webp"
   className="max-w-[800px]"
 />
@@ -116,10 +116,10 @@ Apps signed with an ad hoc provisioning profile can be installed by an iOS devic
 
 <Terminal cmd={['$ eas build --platform ios --profile preview']} />
 
-- This command triggers the EAS Build, and on the EAS dashboard, we can see the build's progress:
+- This command triggers the Expo Build, and on the Expo dashboard, we can see the build's progress:
 
 <ContentSpotlight
-  alt="iOS preview build details and progress in EAS dashboard"
+  alt="iOS preview build details and progress in Expo dashboard"
   src="/static/images/tutorial/eas/internal-distribution-builds-ios-preview-build.webp"
   className="max-w-[800px]"
 />
@@ -174,7 +174,7 @@ Once the build finishes, the Build artifact section shows that the build is comp
 - Copy the link from **Send a link to a device** section and send it to the test device.
 
 <ContentSpotlight
-  alt="Install on a test device popup with a QR code and an install link in EAS dashboard"
+  alt="Install on a test device popup with a QR code and an install link in Expo dashboard"
   src="/static/images/tutorial/eas/android-development-build-qr-code.webp"
   className="max-w-[450px]"
 />
