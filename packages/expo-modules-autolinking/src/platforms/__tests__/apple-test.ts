@@ -4,7 +4,7 @@ import path from 'path';
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
 import * as iosInlineModules from '../../inlineModules/iosInlineModules';
 import {
-  coreSupportsPackages,
+  coreSupportsPackagesAsync,
   formatArrayOfReactDelegateHandler,
   generateModulesProviderAsync,
   getSwiftModuleNames,
@@ -419,26 +419,26 @@ describe(resolveExtraBuildDependenciesAsync, () => {
   });
 });
 
-describe(coreSupportsPackages, () => {
-  it('supports the minimum version and newer versions', () => {
-    expect(coreSupportsPackages('58.0.30')).toBe(true);
-    expect(coreSupportsPackages('58.0.31')).toBe(true);
-    expect(coreSupportsPackages('58.1.0')).toBe(true);
-    expect(coreSupportsPackages('59.0.0-canary-20261102-abcdef0')).toBe(true);
+const corePath = '/app/node_modules/expo-modules-core';
+const coreProviderPath = path.join(corePath, 'ios/Core/ModulesProvider.swift');
+const coreProviderWithPackages = 'public struct ExpoPackage {}\nopen class ModulesProvider {}\n';
+const coreProviderWithoutPackages = 'open class ModulesProvider {}\n';
+
+describe(coreSupportsPackagesAsync, () => {
+  it('supports a core that declares ExpoPackage', async () => {
+    vol.fromJSON({ [coreProviderPath]: coreProviderWithPackages });
+    expect(await coreSupportsPackagesAsync(corePath)).toBe(true);
   });
 
-  it('does not support older versions or a prerelease of the minimum version', () => {
-    expect(coreSupportsPackages('58.0.29')).toBe(false);
-    expect(coreSupportsPackages('57.9.99')).toBe(false);
-    expect(coreSupportsPackages('58.0.30-canary-20261102-abcdef0')).toBe(false);
+  it('does not support a core without ExpoPackage', async () => {
+    vol.fromJSON({ [coreProviderPath]: coreProviderWithoutPackages });
+    expect(await coreSupportsPackagesAsync(corePath)).toBe(false);
   });
 
-  it('does not support a missing version or one that cannot be parsed', () => {
-    expect(coreSupportsPackages(undefined)).toBe(false);
-    expect(coreSupportsPackages(null)).toBe(false);
-    expect(coreSupportsPackages('')).toBe(false);
-    expect(coreSupportsPackages('latest')).toBe(false);
-    expect(coreSupportsPackages('58.0')).toBe(false);
+  it('does not support a missing core or a core without the provider source', async () => {
+    expect(await coreSupportsPackagesAsync(undefined)).toBe(false);
+    expect(await coreSupportsPackagesAsync(null)).toBe(false);
+    expect(await coreSupportsPackagesAsync(corePath)).toBe(false);
   });
 });
 
@@ -449,8 +449,12 @@ describe(generateModulesProviderAsync, () => {
     inlineModulesTargets: { targets: [] },
     targetPath,
     appRoot: '/app',
-    coreVersion: '58.0.30',
+    corePath,
   };
+
+  beforeEach(() => {
+    vol.fromJSON({ [coreProviderPath]: coreProviderWithPackages });
+  });
 
   function descriptor(packageName: string, moduleClass: string, exportedPackageName?: string) {
     return {
@@ -515,10 +519,8 @@ describe(generateModulesProviderAsync, () => {
     await generateModulesProviderAsync(modules, targetPath, null, params);
     const withPackages = readProvider();
     vol.reset();
-    await generateModulesProviderAsync(modules, targetPath, null, {
-      ...params,
-      coreVersion: '58.0.29',
-    });
+    vol.fromJSON({ [coreProviderPath]: coreProviderWithoutPackages });
+    await generateModulesProviderAsync(modules, targetPath, null, params);
     const withoutPackages = readProvider();
 
     expect(withPackages.packages).not.toBeNull();
@@ -529,21 +531,26 @@ describe(generateModulesProviderAsync, () => {
     ).toBe(withoutPackages.content);
   });
 
-  it.each([['58.0.29'], ['58.0.30-canary-20261102-abcdef0'], [null], [undefined]])(
-    'does not generate packages when the core version is %p',
-    async (coreVersion) => {
-      await generateModulesProviderAsync(
-        [descriptor('expo-audio', 'AudioModule')],
-        targetPath,
-        null,
-        { ...params, coreVersion }
-      );
-
-      const { content, moduleClasses } = readProvider();
-      expect(content).not.toContain('ExpoPackage');
-      expect(moduleClasses).toContain('(module: AudioModule.self, name: nil)');
+  it.each([
+    ['a core without ExpoPackage', corePath, coreProviderWithoutPackages],
+    ['a core without the provider source', corePath, null],
+    ['no core', null, coreProviderWithPackages],
+  ])('does not generate packages for %s', async (_, testCorePath, coreProvider) => {
+    vol.reset();
+    if (coreProvider) {
+      vol.fromJSON({ [coreProviderPath]: coreProvider });
     }
-  );
+    await generateModulesProviderAsync(
+      [descriptor('expo-audio', 'AudioModule')],
+      targetPath,
+      null,
+      { ...params, corePath: testCorePath }
+    );
+
+    const { content, moduleClasses } = readProvider();
+    expect(content).not.toContain('ExpoPackage');
+    expect(moduleClasses).toContain('(module: AudioModule.self, name: nil)');
+  });
 
   it('lists the local package first and the other packages sorted', async () => {
     await generateModulesProviderAsync(

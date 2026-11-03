@@ -176,46 +176,32 @@ interface GenerateModulesProviderParams {
   targetPath: string;
   targetName?: string;
   appRoot: string;
-  /** Version of the installed `expo-modules-core`. The provider has `packages` only when it supports them. */
-  coreVersion?: string | null;
+  /** Path to the installed `expo-modules-core`. The provider has `packages` only when that core supports them. */
+  corePath?: string | null;
 }
 
 /**
- * The first `expo-modules-core` version with `ExpoPackage` and `ModulesProvider.packages`. A provider that overrides
- * `packages` doesn't compile against an older core.
+ * Returns whether the `expo-modules-core` at the given path has `ExpoPackage` and `ModulesProvider.packages`.
+ * A provider that overrides `packages` doesn't compile against an older core. Checking the core sources,
+ * not its version, works for every release line and for canaries.
  */
-const MIN_CORE_VERSION_WITH_PACKAGES = '58.0.30';
-
-/**
- * Returns whether the `expo-modules-core` version supports `packages` in the modules provider. A missing version,
- * or one that can't be parsed, doesn't. A prerelease of the minimum version doesn't either.
- */
-export function coreSupportsPackages(coreVersion: string | null | undefined): boolean {
-  const version = parseVersion(coreVersion);
-  const minVersion = parseVersion(MIN_CORE_VERSION_WITH_PACKAGES)!;
-  if (!version) {
+export async function coreSupportsPackagesAsync(
+  corePath: string | null | undefined
+): Promise<boolean> {
+  if (!corePath) {
     return false;
   }
-  for (let i = 0; i < 3; i++) {
-    if (version.numbers[i] !== minVersion.numbers[i]) {
-      return version.numbers[i]! > minVersion.numbers[i]!;
-    }
+  try {
+    const source = await fs.promises.readFile(
+      path.join(corePath, 'ios', 'Core', 'ModulesProvider.swift'),
+      'utf8'
+    );
+    return /\bpublic struct ExpoPackage\b/.test(source);
+  } catch {
+    return false;
   }
-  return !version.prerelease;
 }
 
-function parseVersion(
-  version: string | null | undefined
-): { numbers: number[]; prerelease: boolean } | null {
-  const match = version?.match(/^(\d+)\.(\d+)\.(\d+)(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$/);
-  if (!match) {
-    return null;
-  }
-  return {
-    numbers: [Number(match[1]), Number(match[2]), Number(match[3])],
-    prerelease: !!match[4],
-  };
-}
 /**
  * Generates Swift file that contains all autolinked Swift packages.
  */
@@ -289,6 +275,7 @@ async function generatePackageListFileContentAsync(
     .concat(...debugOnlyModules.map((module) => module.modules))
     .filter(Boolean);
   const debugOnlyPackages = groupByPackage(debugOnlyModules);
+  const supportsPackages = await coreSupportsPackagesAsync(params.corePath);
 
   const appDelegateSubscribers = ([] as string[]).concat(
     ...modulesToImport.map((module) => module.appDelegateSubscribers)
@@ -318,7 +305,7 @@ ${generateCommonImportList(swiftModules)}
 ${generateDebugOnlyImportList(debugOnlySwiftModules)}
 @objc(${className})
 internal class ${className}: ModulesProvider {
-${coreSupportsPackages(params.coreVersion) ? generatePackagesProperty(packages, debugOnlyPackages) : ''}  public override func getModuleClasses() -> [ExpoModuleTupleType] {
+${supportsPackages ? generatePackagesProperty(packages, debugOnlyPackages) : ''}  public override func getModuleClasses() -> [ExpoModuleTupleType] {
 ${generateModuleClasses(modulesClassNames, debugOnlyModulesClassNames)}
   }
 

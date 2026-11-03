@@ -9,7 +9,7 @@ interface GenerateModulesProviderParams {
   watchedDirectories: string[];
   inlineModulesTargets: { mainTarget?: string; targets: string[] };
   appRoot: string;
-  coreVersion?: string | null;
+  corePath?: string | null;
 }
 
 /** Generates ExpoModulesProvider file listing all packages to link (Apple-only)
