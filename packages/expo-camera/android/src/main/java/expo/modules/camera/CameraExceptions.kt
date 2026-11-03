@@ -10,11 +10,12 @@ class CameraExceptions {
   class ImageRetrievalException(url: String) :
     CodedException("Could not get the image from given url: '$url'")
 
+  // R8 renames these classes in release builds, so a code inferred from the class name changes.
   class BarcodeScanningCancelledException() :
-    CodedException("Barcode scanning was cancelled")
+    CodedException("ERR_BARCODE_SCANNING_CANCELLED", "Barcode scanning was cancelled", null)
 
   class BarcodeScanningFailedException :
-    CodedException("Barcode scanning failed")
+    CodedException("ERR_BARCODE_SCANNING_FAILED", "Barcode scanning failed", null)
 
   class MLKitUnavailableException :
     CodedException("MLKit is not available on this device. Barcode scanning requires Google Play Services.")
