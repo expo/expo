@@ -30,7 +30,10 @@ export function wrapServerBundle(source: string): string {
   return (
     source
       .slice(0, source.length - annotations.length)
-      .replace(/(^|\n)(__r\([^\n]*\);)\s*$/, '$1module.exports = $2') + annotations
+      .replace(
+        /(^|\n)(__r\([^\n]*\);)(?=(?:\s|\/\/[^\r\n]*|\/\*(?:[^*]|\*(?!\/))*\*\/)*$)/,
+        '$1module.exports = $2'
+      ) + annotations
   );
 }
 

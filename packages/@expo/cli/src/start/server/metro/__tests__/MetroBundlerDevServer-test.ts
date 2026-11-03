@@ -113,7 +113,8 @@ function createDevServerForStaticPageTests() {
 
 it('exports only the final SSR entry and preserves bundle annotations', async () => {
   const devServer = createDevServerForStaticPageTests();
-  const bundle = '__r(0);\n__r(1);\n//# sourceMappingURL=original.map\n//# debugId=original-id';
+  const bundle =
+    '__r(0);\n__r(1);\n// Custom serializer footer\n//# sourceMappingURL=original.map\n//# debugId=original-id';
   devServer['metroLoadModuleContents'] = jest.fn().mockResolvedValue({
     bundle,
     filename: '/app/index.bundle',
@@ -121,7 +122,7 @@ it('exports only the final SSR entry and preserves bundle annotations', async ()
   });
   const result = await devServer['ssrLoadModuleContents']('/app/index.ts');
   expect(result).toEqual({
-    src: '__r(0);\nmodule.exports = __r(1);\n//# sourceMappingURL=original.map\n//# debugId=original-id',
+    src: '__r(0);\nmodule.exports = __r(1);\n// Custom serializer footer\n//# sourceMappingURL=original.map\n//# debugId=original-id',
     filename: '/app/index.bundle',
     map: 'original map',
   });

@@ -1,4 +1,5 @@
 import type { Module } from '@expo/metro/metro/DeltaBundler';
+import vm from 'node:vm';
 
 import * as graphAssets from '../../transform-worker/getAssets';
 import { createGranularChunkingStrategy } from '../chunking/createGranularChunkingStrategy';
@@ -11,7 +12,7 @@ import {
 } from '../fork/__tests__/serializer-test-utils';
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
 import * as chunkSerializer from '../serializeChunks';
-import { serializeServerBundleAsync } from '../serializeServerBundle';
+import { serializeServerBundleAsync, wrapServerBundle } from '../serializeServerBundle';
 import { flattenSourceMap } from '../sourceMap';
 import type { SerialAsset } from '../withExpoSerializers';
 import {
@@ -19,6 +20,21 @@ import {
   createDefaultExportCustomSerializer,
   withSerializerPlugins,
 } from '../withExpoSerializers';
+
+it.each([
+  '// Custom serializer footer\n//# sourceMappingURL=index.js.map',
+  '/* Custom serializer\nfooter */\n//# sourceMappingURL=index.js.map',
+  '// Custom serializer footer without a final newline',
+  '// Custom serializer footer\r\n//# sourceMappingURL=index.js.map',
+])('preserves server exports before custom footer comments: %s', (footer) => {
+  const source = '__r("setup");\n/* Before entry */\n__r("entry");\n' + footer;
+  const wrapped = wrapServerBundle(source);
+  const entry = { GET: () => 'hello' };
+  const module = { exports: {} };
+  vm.runInNewContext(wrapped, { module, __r: () => entry });
+  expect(module.exports).toBe(entry);
+  expect(wrapped).toBe(source.replace('__r("entry");', 'module.exports = __r("entry");'));
+});
 
 it('retains graph CSS and Metro assets when adapting custom server output', async () => {
   const [entry, premodules, graph, options] = await microBundle({
@@ -119,7 +135,8 @@ it('adapts a string server bundle, preserving embedded directives and exporting 
     fs: { 'index.js': `export const value = 42;` },
     options: { isServer: true, dev: false, output: 'static', sourceMaps: true },
   });
-  const embedded = 'const text = `\n//# sourceMappingURL=embedded.map\n`;\n__r(1);';
+  const embedded =
+    'const text = `\n//# sourceMappingURL=embedded.map\n`;\n__r(1);\n// Custom serializer footer';
   const { artifacts } = await serializeServerBundleAsync(
     embedded +
       '\n//# sourceMappingURL=old.js.map\n//# sourceURL=http://localhost/index.bundle\n//# debugId=old-id',
@@ -139,7 +156,9 @@ it('adapts a string server bundle, preserving embedded directives and exporting 
   const js = artifacts.find((asset) => asset.type === 'js')!;
   const map = JSON.parse(artifacts.find((asset) => asset.type === 'map')!.source);
   expect(js.filename).toMatch(/^_expo\/server\/index-.*\.cjs$/);
-  expect(js.source).toContain('//# sourceMappingURL=embedded.map\n`;\nmodule.exports = __r(1);');
+  expect(js.source).toContain(
+    '//# sourceMappingURL=embedded.map\n`;\nmodule.exports = __r(1);\n// Custom serializer footer'
+  );
   expect(js.source).not.toContain('old.js.map');
   expect(js.source).not.toContain('//# sourceURL=');
   expect(map.sources).toContain('/index.js');
