@@ -17,7 +17,60 @@ import type {
 } from './Image.types';
 import ImageModule from './ImageModule';
 import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
+import { captureDevToolsRequestId } from './utils/captureDevToolsRequestId';
 import { resolveSource, resolveSources } from './utils/resolveSources';
+
+type LoadAsync = (
+  source: ImageSource | string | number,
+  options?: ImageLoadOptions
+) => Promise<ImageRef>;
+
+type LoadAsyncImplementation = (
+  source: ImageSource | string | number,
+  options: ImageLoadOptions | undefined,
+  devToolsRequestId: string | undefined
+) => Promise<ImageRef>;
+
+function isRemoteHttpUri(uri: string | undefined): uri is string {
+  return !!uri && /^https?:/i.test(uri);
+}
+
+function devToolsRequestIdFor(source: ImageSource, devToolsRequestId: string | undefined): ImageSource {
+  if (!devToolsRequestId || !isRemoteHttpUri(source.uri)) {
+    return source;
+  }
+  return { ...source, devToolsRequestId };
+}
+
+async function loadAsyncImplementation(
+  source: ImageSource | string | number,
+  options: ImageLoadOptions | undefined,
+  devToolsRequestId: string | undefined
+): Promise<ImageRef> {
+  const resolvedSource = resolveSource(source) as ImageSource;
+  const resolvedOptions = options?.tintColor
+    ? { ...options, tintColor: processColor(options.tintColor) as number }
+    : options;
+  return await ImageModule.loadAsync(
+    devToolsRequestIdFor(resolvedSource, devToolsRequestId),
+    resolvedOptions
+  );
+}
+
+/**
+ * On iOS, `Image.loadAsync` is the host function from `createLoadAsync`. Hermes omits host frames
+ * from the DevTools stack, so the initiator is the caller. Without the host function, the id is
+ * recorded here and the initiator is this file. `<Image>` records its own id while rendering.
+ */
+function installLoadAsync(implementation: LoadAsyncImplementation): LoadAsync {
+  const createLoadAsync = (
+    ImageModule as { createLoadAsync?: (implementation: LoadAsyncImplementation) => LoadAsync }
+  ).createLoadAsync;
+  if (typeof createLoadAsync === 'function') {
+    return createLoadAsync(implementation);
+  }
+  return (source, options) => implementation(source, options, captureDevToolsRequestId());
+}
 
 /**
  * Normalizes the `sfEffect` prop to always be an array of `SFSymbolEffectObject`.
@@ -304,15 +357,28 @@ export class Image extends React.PureComponent<ImageProps> {
    * @platform ios
    * @platform web
    */
-  static async loadAsync(
-    source: ImageSource | string | number,
-    options?: ImageLoadOptions
-  ): Promise<ImageRef> {
-    const resolvedSource = resolveSource(source) as ImageSource;
-    const resolvedOptions = options?.tintColor
-      ? { ...options, tintColor: processColor(options.tintColor) as number }
-      : options;
-    return await ImageModule.loadAsync(resolvedSource, resolvedOptions);
+  static loadAsync = installLoadAsync(loadAsyncImplementation);
+
+  private devToolsRequestIds = new Map<string, string>();
+
+  private stampDevToolsRequestIds(sources: ReturnType<typeof resolveSources>) {
+    if (!Array.isArray(sources)) {
+      return sources;
+    }
+    return sources.map((source) => {
+      if (!isRemoteHttpUri(source.uri)) {
+        return source;
+      }
+      let devToolsRequestId = this.devToolsRequestIds.get(source.uri);
+      if (!devToolsRequestId) {
+        devToolsRequestId = captureDevToolsRequestId();
+        if (!devToolsRequestId) {
+          return source;
+        }
+        this.devToolsRequestIds.set(source.uri, devToolsRequestId);
+      }
+      return { ...source, devToolsRequestId };
+    });
   }
 
   render() {
@@ -354,7 +420,10 @@ export class Image extends React.PureComponent<ImageProps> {
       loggedRenderingChildrenWarning = true;
     }
     // Resolve sources
-    const resolvedSource = resolveSources(source);
+    const resolvedSource = this.stampDevToolsRequestIds(resolveSources(source));
+    const resolvedPlaceholder = this.stampDevToolsRequestIds(
+      resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource)
+    );
     const isSFSymbol =
       Array.isArray(resolvedSource) && resolvedSource.some((s) => s?.uri?.startsWith('sf:/'));
 
@@ -369,7 +438,7 @@ export class Image extends React.PureComponent<ImageProps> {
         {...restProps}
         style={resolvedStyle}
         source={resolvedSource}
-        placeholder={resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource)}
+        placeholder={resolvedPlaceholder}
         contentFit={resolveContentFit(contentFit, resizeMode, isSFSymbol)}
         contentPosition={resolveContentPosition(contentPosition)}
         transition={resolveTransition(transition, fadeDuration)}
