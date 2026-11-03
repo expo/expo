@@ -213,6 +213,7 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   contentStyle?: Pick<
     ViewStyle,
     | 'backgroundColor'
+    | 'backgroundImage'
     | 'experimental_backgroundImage'
     | 'padding'
     | 'paddingTop'
