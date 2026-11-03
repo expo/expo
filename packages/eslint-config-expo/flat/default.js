@@ -3,10 +3,9 @@ const expoConfig = require('./utils/expo.js');
 const reactConfig = require('./utils/react.js');
 const typescriptConfig = require('./utils/typescript.js');
 const { allExtensions } = require('./utils/extensions.js');
-const { defineConfig } = require('eslint/config');
 const globals = require('globals');
 
-module.exports = defineConfig([
+module.exports = [
   ...coreConfig,
   ...typescriptConfig,
   ...reactConfig,
@@ -43,4 +42,4 @@ module.exports = defineConfig([
   {
     files: ['*.web.*'],
   },
-]);
+];
