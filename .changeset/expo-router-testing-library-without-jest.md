@@ -2,4 +2,4 @@
 'expo-router': patch
 ---
 
-Make `expo-router/testing-library` importable without Jest. Its module mocks and `renderRouter`'s fake timers now run only when a `jest` global exists, the way `@testing-library/react-native` detects Jest; under another runner the module imports and renders on real timers.
+Fix `expo-router/testing-library` throwing `jest is not defined` when imported under a test runner other than Jest. The Jest module mocks and `renderRouter`'s fake timers now run only when the `jest` global exists; the runner still needs a Jest-compatible global `expect` for the matchers.

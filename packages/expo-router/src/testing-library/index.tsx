@@ -75,11 +75,10 @@ export async function renderRouter(
   { initialUrl = '/', linking, ...options }: RenderRouterOptions = {}
 ): Promise<RenderRouterResult> {
   // See https://github.com/expo/expo/issues/46864 and https://github.com/expo/expo/pull/27648
-  const systemTime = Date.now();
-  // Only Jest's timers are driven from here, the same way
-  // @testing-library/react-native detects them. Under another runner the render
-  // uses real timers; that runner's own fake timers can be set up beforehand.
+  // Under another runner the render uses real timers; set that runner's fake
+  // timers before calling this.
   if (typeof jest !== 'undefined') {
+    const systemTime = Date.now();
     jest.useFakeTimers();
     try {
       jest.setSystemTime(systemTime);

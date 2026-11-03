@@ -1,7 +1,5 @@
-// The mocks below go into Jest's module registry, so they only run under Jest.
-// Other test runners bring their own equivalents for these libraries, and without
-// the guard importing this module throws `jest is not defined` before any of the
-// testing-library API can be used.
+// `jest.mock` needs Jest's module registry; other runners bring their own mocks
+// for these libraries.
 if (typeof jest !== 'undefined') {
   try {
     require('react-native-gesture-handler/jestSetup');
