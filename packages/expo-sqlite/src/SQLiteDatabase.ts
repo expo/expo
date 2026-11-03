@@ -162,6 +162,8 @@ export class SQLiteDatabase {
    *
    * > **Note:** This function is not supported on web.
    *
+   * > **Note:** This method runs on a new database connection, so connection settings made on the original database, such as `PRAGMA foreign_keys = ON`, do not apply inside the transaction.
+   *
    * @param task An async function to execute within a transaction. Any queries inside the transaction must be executed on the `txn` object.
    * The `txn` object has the same interfaces as the [`SQLiteDatabase`](#sqlitedatabase) object. You can use `txn` like a [`SQLiteDatabase`](#sqlitedatabase) object.
    *
