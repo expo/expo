@@ -13,37 +13,6 @@ import {
 const fixturesPath = path.resolve(__dirname, 'fixtures');
 
 describe(updateModulesAppDelegateObjcHeader, () => {
-  it.each(['58.0.0', '59.0.0'])('migrates the RN 0.88 fixture for SDK %s', async (sdkVersion) => {
-    let [rawContents, expectContents] = await Promise.all([
-      fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn088.swift'), 'utf8'),
-      fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn088-updated.swift'), 'utf8'),
-    ]);
-
-    if (sdkVersion === '59.0.0') {
-      rawContents = rawContents.replace(
-        `  override func sourceURL(for bridge: RCTBridge) -> URL? {
-    self.bundleURL()
-  }
-
-`,
-        ''
-      );
-      expectContents = expectContents.replace(
-        `  override func sourceURL(for bridge: RCTBridge) -> URL? {
-    bridge.bundleURL ?? bundleURL()
-  }
-
-`,
-        ''
-      );
-    }
-    const contents = updateModulesAppDelegateSwift(rawContents, sdkVersion);
-    expect(contents).toEqual(expectContents);
-
-    const nextContents = updateModulesAppDelegateSwift(contents, sdkVersion);
-    expect(nextContents).toEqual(expectContents);
-  });
-
   it('should migrate from react-native@>=0.83.0 AppDelegate.swift', async () => {
     const [rawContents, expectContents] = await Promise.all([
       fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn083.swift'), 'utf8'),
@@ -155,10 +124,10 @@ class ReactNativeDelegate: ${superclass} {
     );
   });
 
-  it('ignores declarations in line comments', () => {
+  it.each(['', 'let value = 1; '])('ignores declarations in line comments after %j', (prefix) => {
     const contents = `internal import Expo
 class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
-  // override func sourceURL(for bridge: RCTBridge) -> URL? { self.bundleURL() }
+  ${prefix}// override func sourceURL(for bridge: RCTBridge) -> URL? { self.bundleURL() }
   override func bundleURL() -> URL? { customBundleURL() }
 }
 `;
@@ -180,6 +149,37 @@ class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
 });
 
 describe(updateModulesAppDelegateSwift, () => {
+  it.each(['58.0.0', '59.0.0'])('migrates the RN 0.88 fixture for SDK %s', async (sdkVersion) => {
+    let [rawContents, expectContents] = await Promise.all([
+      fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn088.swift'), 'utf8'),
+      fs.promises.readFile(path.join(fixturesPath, 'AppDelegate-rn088-updated.swift'), 'utf8'),
+    ]);
+
+    if (sdkVersion === '59.0.0') {
+      rawContents = rawContents.replace(
+        `  override func sourceURL(for bridge: RCTBridge) -> URL? {
+    self.bundleURL()
+  }
+
+`,
+        ''
+      );
+      expectContents = expectContents.replace(
+        `  override func sourceURL(for bridge: RCTBridge) -> URL? {
+    bridge.bundleURL ?? bundleURL()
+  }
+
+`,
+        ''
+      );
+    }
+    const contents = updateModulesAppDelegateSwift(rawContents, sdkVersion);
+    expect(contents).toEqual(expectContents);
+
+    const nextContents = updateModulesAppDelegateSwift(contents, sdkVersion);
+    expect(nextContents).toEqual(expectContents);
+  });
+
   it('should migrate from RN 0.77 AppDelegate.swift', async () => {
     const rawContents = await fs.promises.readFile(
       path.join(fixturesPath, 'AppDelegate-rn077.swift'),
