@@ -183,6 +183,25 @@ export function flattenSourceMap(map: ComposableSourceMap | IndexedSourceMap): C
   return result;
 }
 
+export function normalizeExportSourceMapPaths(
+  map: ComposableSourceMap | IndexedSourceMap,
+  serverRoot: string
+): ComposableSourceMap {
+  const flat = flattenSourceMap(map);
+  return {
+    ...flat,
+    sources: flat.sources.map((source) => {
+      if (source == null || !path.isAbsolute(source)) return source;
+      const relative = path.relative(serverRoot, source);
+      return relative !== '..' &&
+        !relative.startsWith('..' + path.sep) &&
+        !path.isAbsolute(relative)
+        ? getExportSourceUrl(source, serverRoot)
+        : source;
+    }),
+  };
+}
+
 /** An encoded source map's `mappings` and `names`, such as a minifier's output */
 export interface EncodedMappings {
   mappings: string;

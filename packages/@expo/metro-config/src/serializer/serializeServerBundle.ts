@@ -17,6 +17,7 @@ import { serializeJavaScriptArtifactsAsync } from './serializeJavaScriptArtifact
 import { getModuleReferences, type SerialAsset } from './serializerAssets';
 import {
   getSourceMapOptions,
+  normalizeExportSourceMapPaths,
   normalizeSourceMapString,
   sourceMapStringNonBlocking,
 } from './sourceMap';
@@ -79,9 +80,11 @@ export async function serializeServerBundleAsync(
       const encodedMap = annotations.match(
         /sourceMappingURL=data:application\/json[^,]*;base64,([^\s]+)/
       )?.[1];
-      const json =
+      const suppliedMap =
         (typeof singleBundle !== 'string' && singleBundle.map) ||
-        (encodedMap && Buffer.from(encodedMap, 'base64').toString()) ||
+        (encodedMap && Buffer.from(encodedMap, 'base64').toString());
+      const json =
+        suppliedMap ||
         (await sourceMapStringNonBlocking(
           [
             ...(options.modulesOnly ? [] : preModules),
@@ -92,7 +95,11 @@ export async function serializeServerBundleAsync(
       const parsed = JSON.parse(json);
       const debugId =
         parsed.debugId ?? annotations.match(/debugId=([^\s]+)/)?.[1] ?? stringToUUID(code);
-      return { source: normalizeSourceMapString(parsed, { ...mapOptions, debugId }), debugId };
+      // Generated maps already contain virtual paths that can resemble filesystem paths.
+      const map = suppliedMap
+        ? normalizeExportSourceMapPaths(parsed, options.serverRoot ?? options.projectRoot)
+        : parsed;
+      return { source: normalizeSourceMapString(map, { ...mapOptions, debugId }), debugId };
     },
     artifact: {
       filename,

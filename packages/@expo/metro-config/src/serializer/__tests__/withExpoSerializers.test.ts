@@ -151,6 +151,63 @@ it.each([false, true])(
   }
 );
 
+it.each([false, true])(
+  'normalizes supplied server map paths (inline: %s)',
+  async (inlineSourceMap) => {
+    const args = await microBundle({
+      fs: { 'index.js': 'export const value = 42;' },
+      options: { isServer: true, dev: false, output: 'static', sourceMaps: true },
+    });
+    const sourceMap = {
+      version: 3,
+      sources: [
+        '/app/index.js',
+        '/app/shared.ts',
+        '/app-other/outside.ts',
+        'custom://project/original.ts',
+      ],
+      sourcesContent: ['entry', 'shared', 'outside', 'custom'],
+      names: [],
+      mappings: 'AAAA,CCAA,CCAA,CCAA',
+    };
+    for (const indexed of [false, true]) {
+      const result = await serializeServerBundleAsync(
+        {
+          code: 'module.exports = 42;',
+          map: JSON.stringify(
+            indexed
+              ? { version: 3, sections: [{ offset: { line: 0, column: 0 }, map: sourceMap }] }
+              : sourceMap
+          ),
+        },
+        args[0],
+        args[1],
+        args[2],
+        {
+          ...args[3],
+          inlineSourceMap,
+          serializerOptions: {
+            ...(args[3] as ExpoSerializerOptions).serializerOptions,
+            excludeSource: true,
+          },
+        }
+      );
+      const map = JSON.parse(
+        inlineSourceMap
+          ? Buffer.from(result.artifacts[0]!.source.split('base64,')[1]!, 'base64').toString()
+          : result.artifacts.find((asset) => asset.type === 'map')!.source
+      );
+      expect(map.sources).toEqual([
+        '/index.js',
+        '/shared.ts',
+        '/app-other/outside.ts',
+        'custom://project/original.ts',
+      ]);
+      expect(map.sourcesContent).toBeUndefined();
+    }
+  }
+);
+
 it('adapts a string server bundle without changing embedded directives or entry exports', async () => {
   const [entry, premodules, graph, options] = await microBundle({
     fs: { 'index.js': `export const value = 42;` },
