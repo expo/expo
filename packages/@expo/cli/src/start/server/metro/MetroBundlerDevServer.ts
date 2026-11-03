@@ -8,13 +8,10 @@ import { events } from '2g';
 import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import { getMetroServerRoot, resolveRelativeEntryPoint } from '@expo/config/paths';
-import {
-  serializeServerBundleAsync,
-  wrapServerBundle,
-} from '@expo/metro-config/build/serializer/serializeServerBundle';
+import { getServerRunModuleStatement } from '@expo/metro-config/build/serializer/getServerRunModuleStatement';
+import { serializeServerBundleAsync } from '@expo/metro-config/build/serializer/serializeServerBundle';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { sourceMapStringNonBlocking } from '@expo/metro-config/build/serializer/sourceMap';
-import { isDefaultExpoSerializer } from '@expo/metro-config/build/serializer/withExpoSerializers';
 import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
 import type { CustomResolverOptions } from '@expo/metro/metro-resolver';
 import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
@@ -2307,6 +2304,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         serializerOptions,
       };
 
+      if (isServer) {
+        options.getRunModuleStatement = getServerRunModuleStatement(resolvedEntryFilePath, options);
+      }
+
       // TODO(@kitten): Yearns for a refactor. The typings here were and are questionable
       const bundle = await serializer(
         // NOTE: Using absolute path instead of relative input path is a breaking change.
@@ -2392,10 +2393,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           : delta.added.size + delta.modified.size + delta.deleted.size,
         lastModifiedDate: revision.date,
         nextRevId: revision.id,
-        bundle:
-          isServer && !exportResources && !isDefaultExpoSerializer(serializer)
-            ? wrapServerBundle(bundleCode)
-            : bundleCode,
+        bundle: bundleCode,
         map: bundleMap,
         ...exportResources,
       };
