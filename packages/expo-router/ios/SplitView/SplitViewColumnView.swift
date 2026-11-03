@@ -134,8 +134,7 @@ final class SplitViewColumnView: ExpoView {
   private weak var column: UIViewController?
   private weak var controlledNavigation: UINavigationController?
   private var originalHidden = false
-  private var lastOwnership: Bool?
-  private var lastCollapsed: Bool?
+  private var lastOwnership: [String: Bool]?
   private var reconciling = false
 
   var configuredHidden = false {
@@ -212,6 +211,9 @@ final class SplitViewColumnView: ExpoView {
     if navigation.isNavigationBarHidden != hidden {
       navigation.setNavigationBarHidden(hidden, animated: false)
     }
+    if owner != nil {
+      hideSharedBarDuringPop(of: navigation)
+    }
     for screen in screens.allObjects {
       if screen === owner, let split {
         screen.installControls(split: split, previousColumn: previousColumn)
@@ -220,10 +222,36 @@ final class SplitViewColumnView: ExpoView {
       }
     }
     let collapsed = split?.isCollapsed ?? false
-    if lastOwnership != (owner != nil) || lastCollapsed != collapsed {
-      lastOwnership = owner != nil
-      lastCollapsed = collapsed
-      onOwnershipChange(["ownsHeader": owner != nil, "isCollapsed": collapsed])
+    // UIKit shows its sidebar button in the content column only when it is alone or other columns overlay it.
+    let showsSidebarButton = split.map {
+      !collapsed && $0.displayModeButtonVisibility != .never
+        && [.secondaryOnly, .oneOverSecondary, .twoOverSecondary].contains($0.displayMode)
+    } ?? false
+    let ownership = [
+      "ownsHeader": owner != nil, "isCollapsed": collapsed, "showsSidebarButton": showsSidebarButton,
+    ]
+    if lastOwnership != ownership {
+      lastOwnership = ownership
+      onOwnershipChange(ownership)
+    }
+  }
+
+  // When collapsed, this navigation controller is nested in the primary one and shares its bar.
+  // Popping it animates that bar over the leaving Stack header, so the bar stays invisible until the pop ends.
+  private func hideSharedBarDuringPop(of navigation: UINavigationController) {
+    guard navigation.isMovingFromParent, let primary = navigation.navigationController,
+      let coordinator = primary.transitionCoordinator, primary.navigationBar.layer.mask == nil
+    else { return }
+    let bar = primary.navigationBar
+    // UIKit animates the alpha of the bar during the transition, so an empty mask hides it instead.
+    bar.layer.mask = CALayer()
+    coordinator.animate(alongsideTransition: nil) { context in
+      bar.layer.mask = nil
+      if !context.isCancelled {
+        let fade = CATransition()
+        fade.type = .fade
+        bar.layer.add(fade, forKey: nil)
+      }
     }
   }
 

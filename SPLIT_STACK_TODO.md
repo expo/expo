@@ -2,37 +2,7 @@
 
 Issues found on the iPhone Duo simulator with `apps/router-tester`, demo `split-view-navigation`.
 
-## 1. Interactive swipe back from the Stack root overlaps two headers
-
-**Steps:** Collapsed layout. Open Settings (nested Stack root). Swipe back slowly to the previous column.
-
-**Observed:** The Stack header title ("Settings") and the previous column header title draw on top of each other during the swipe. The rail Back button stays in place and does not follow the transition.
-
-**Expected:** One header moves with each screen, as in a plain `UINavigationController` pop. The rail button changes with the transition to the previous column state.
-
-![Swipe back in progress: two titles overlap, the rail Back button stays](screenshots/split-stack-todo/swipe-back-overlap.png)
-
-**Where to look:** The root gesture is moved to the primary navigation controller in `SplitViewStackScreenView.updateRootGesture` (`packages/expo-router/ios/SplitView/SplitViewColumnView.swift`). The split column bar stays hidden while the Stack owns the header, so the transition animates two separate bars.
-
-## 2. Rail shows the sidebar button in the expanded layout
-
-**Steps:** Expanded layout (`twoBesideSecondary`). Open Settings (nested Stack root).
-
-**Observed:** The rail shows the split view display-mode (sidebar) button. In the collapsed layout the rail shows Back, which is correct.
-
-**Expected:** Not decided. Confirm the native behavior first.
-
-Expanded: the rail shows the sidebar button.
-
-![Expanded layout: sidebar button on the rail](screenshots/split-stack-todo/rail-sidebar-expanded.png)
-
-Collapsed: the rail shows Back (correct).
-
-![Collapsed layout: Back button on the rail](screenshots/split-stack-todo/rail-back-collapsed.png)
-
-**Next step:** In the expanded layout, open a content screen without a nested Stack (`router-tester://split-view-navigation/all/GitHub`). If the rail also shows the sidebar button, this is UIKit behavior. If not, the Stack header ownership causes it. The spike removes its `backAction` when expanded (`installControls`) and hides the split column bar. No Expo or Screens code sets rail items.
-
-## 3. Content under the Stack header with automatic inset adjustment
+## 1. Content under the Stack header with automatic inset adjustment
 
 **Steps:** Open `router-tester://split-view-navigation/settings` by deep link while the app shows another route.
 
@@ -43,3 +13,13 @@ Collapsed: the rail shows Back (correct).
 ![Settings links drawn under the Stack header title](screenshots/split-stack-todo/content-under-header.png)
 
 **Next step:** Find reliable steps to reproduce. Then check which navigation bar the scroll view uses for its inset while the split column bar is hidden.
+
+## Known limitation: root swipe back uses a fade
+
+**Steps:** Collapsed layout. Open Settings (nested Stack root). Swipe back to the previous column, or tap Back.
+
+**Observed:** The split bar stays invisible during the pop and fades in after it, so the previous column header does not slide in with its screen. The rail Back does not follow the swipe: the previous column Back is hidden until the pop ends. Not checked on a Duo. After a Back tap, no header shows for about 0.3 s before the fade.
+
+**Why:** UIKit draws a copy of the previous column title over the leaving Stack header when it animates the shared bar of the nested navigation controller. `SplitViewColumnView.hideSharedBarDuringPop` hides that bar until the pop ends.
+
+The expanded sidebar button rule for `.twoDisplaceSecondary` is not verified on a device. The iPad Pro 13-inch never entered that display mode.

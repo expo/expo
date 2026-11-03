@@ -1368,12 +1368,33 @@ describe('backTitle', () => {
   });
 });
 
+it('does not add the split sidebar when another column is beside the content column', async () => {
+  const { result } = await renderHook(() =>
+    useHeaderConfigProps(
+      defaultProps({
+        splitViewColumn: {
+          columnId: 'content',
+          ownsHeader: true,
+          isCollapsed: false,
+          showsSidebarButton: false,
+        },
+      })
+    )
+  );
+  expect(result.current.headerLeftBarButtonItems).toBeUndefined();
+});
+
 it('composes the split sidebar with a custom leading view using its full props once', async () => {
   const headerLeft = jest.fn(() => <View testID="app-leading-view" />);
   const { result } = await renderHook(() =>
     useHeaderConfigProps(
       defaultProps({
-        splitViewColumn: { columnId: 'content', ownsHeader: true, isCollapsed: false },
+        splitViewColumn: {
+          columnId: 'content',
+          ownsHeader: true,
+          isCollapsed: false,
+          showsSidebarButton: true,
+        },
         headerLeft,
         headerBack: { title: 'Previous screen', href: undefined },
         headerTintColor: 'purple',
@@ -1401,7 +1422,12 @@ it('keeps explicit hidden Stack and Back options while composing split controls'
   const { result } = await renderHook(() =>
     useHeaderConfigProps(
       defaultProps({
-        splitViewColumn: { columnId: 'content', ownsHeader: true, isCollapsed: false },
+        splitViewColumn: {
+          columnId: 'content',
+          ownsHeader: true,
+          isCollapsed: false,
+          showsSidebarButton: true,
+        },
         headerShown: false,
         headerBackVisible: false,
       })
@@ -1425,7 +1451,12 @@ it('keeps sidebar and app items when the header title updates', async () => {
       useHeaderConfigProps(
         defaultProps({
           title,
-          splitViewColumn: { columnId: 'content', ownsHeader: true, isCollapsed: false },
+          splitViewColumn: {
+            columnId: 'content',
+            ownsHeader: true,
+            isCollapsed: false,
+            showsSidebarButton: true,
+          },
           unstable_headerLeftItems: () => [{ type: 'button', label: 'Edit', onPress }],
         })
       ),

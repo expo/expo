@@ -337,7 +337,7 @@ export function useHeaderConfigProps({
    * - Back button should stay visible when `headerLeft` is specified
    * - If `headerTitle` for Android is specified, so we only need to remove the title and keep the back button
    */
-  const showSplitSidebar = splitViewColumn?.ownsHeader && !splitViewColumn.isCollapsed;
+  const showSplitSidebar = splitViewColumn?.ownsHeader && splitViewColumn.showsSidebarButton;
   const backButtonInCustomView =
     (showSplitSidebar ? (headerBackVisible ?? true) : headerBackVisible) ||
     (Platform.OS === 'android' && headerTitleElement != null && headerLeftElement == null);

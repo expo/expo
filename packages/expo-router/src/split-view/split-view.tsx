@@ -179,7 +179,11 @@ function SplitViewHost({
 }: SplitViewHostProps) {
   useAnchorWarning();
   const columnId = useId();
-  const [ownership, setOwnership] = useState({ ownsHeader: false, isCollapsed: false });
+  const [ownership, setOwnership] = useState({
+    ownsHeader: false,
+    isCollapsed: false,
+    showsSidebarButton: false,
+  });
   const removeContentInsets = ownership.ownsHeader && ownership.isCollapsed;
   const columnNames = COLUMN_NAMES[columnChildren.length]!;
   const [host, setHost] = useState<SplitHostCommands | null>(null);

@@ -48,7 +48,7 @@ export interface SplitViewNativeColumnProps {
   columnId: string;
   previousColumn: string;
   onOwnershipChange: (event: {
-    nativeEvent: { ownsHeader: boolean; isCollapsed: boolean };
+    nativeEvent: { ownsHeader: boolean; isCollapsed: boolean; showsSidebarButton: boolean };
   }) => void;
 }
 

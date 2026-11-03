@@ -415,6 +415,190 @@ struct SplitViewRootGestureTests {
   }
 }
 
+@Suite("SplitView root pop header")
+@MainActor
+struct SplitViewRootPopHeaderTests {
+  @Test
+  @available(iOS 17.0, *)
+  func `popping the owned column keeps the shared bar invisible until the pop completes`() async throws {
+    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 393, height: 852))
+    let split = UISplitViewController(style: .doubleColumn)
+    split.traitOverrides.horizontalSizeClass = .compact
+    let primary = UINavigationController(rootViewController: UIViewController())
+    let column = UIViewController()
+    let content = UINavigationController(rootViewController: column)
+    split.setViewController(primary, for: .primary)
+    split.setViewController(content, for: .secondary)
+    window.rootViewController = split
+    window.makeKeyAndVisible()
+    defer { window.isHidden = true }
+    try await Task.sleep(for: .milliseconds(500))
+    split.show(.secondary)
+    try await Task.sleep(for: .milliseconds(500))
+    let coordinator = SplitViewColumnView(appContext: nil)
+    coordinator.columnId = UUID().uuidString
+    column.view.addSubview(coordinator)
+    coordinator.attach()
+    let stackView = RNSScreenStackView(frame: column.view.bounds)
+    stackView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    let root = RNSScreenView(frame: .zero)
+    root.activityState = 2
+    stackView.insertReactSubview(root, at: 0)
+    column.view.addSubview(stackView)
+    stackView.setNeedsLayout()
+    stackView.layoutIfNeeded()
+    let marker = SplitViewStackScreenView(appContext: nil)
+    marker.columnId = coordinator.columnId
+    root.addSubview(marker)
+    marker.attach()
+    coordinator.reconcile()
+    #expect(primary.topViewController === content)
+    #expect(primary.isNavigationBarHidden)
+
+    primary.popViewController(animated: true)
+    try await Task.sleep(for: .milliseconds(50))
+
+    #expect(primary.transitionCoordinator != nil)
+    #expect(primary.navigationBar.layer.mask != nil)
+    try await Task.sleep(for: .milliseconds(1000))
+    #expect(primary.transitionCoordinator == nil)
+    #expect(primary.navigationBar.layer.mask == nil)
+    root.invalidateImpl()
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `a cancelled pop of the owned column restores the hidden shared bar and root Back`() async throws {
+    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 393, height: 852))
+    let split = UISplitViewController(style: .doubleColumn)
+    split.traitOverrides.horizontalSizeClass = .compact
+    let primary = UINavigationController(rootViewController: UIViewController())
+    let column = UIViewController()
+    let content = UINavigationController(rootViewController: column)
+    split.setViewController(primary, for: .primary)
+    split.setViewController(content, for: .secondary)
+    window.rootViewController = split
+    window.makeKeyAndVisible()
+    defer { window.isHidden = true }
+    try await Task.sleep(for: .milliseconds(500))
+    split.show(.secondary)
+    try await Task.sleep(for: .milliseconds(500))
+    let coordinator = SplitViewColumnView(appContext: nil)
+    coordinator.columnId = UUID().uuidString
+    column.view.addSubview(coordinator)
+    coordinator.attach()
+    let stackView = RNSScreenStackView(frame: column.view.bounds)
+    stackView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    let root = RNSScreenView(frame: .zero)
+    root.activityState = 2
+    stackView.insertReactSubview(root, at: 0)
+    column.view.addSubview(stackView)
+    stackView.setNeedsLayout()
+    stackView.layoutIfNeeded()
+    let marker = SplitViewStackScreenView(appContext: nil)
+    marker.columnId = coordinator.columnId
+    root.addSubview(marker)
+    marker.attach()
+    coordinator.reconcile()
+    let backAction = try #require(root.controller.navigationItem.backAction)
+    #expect(primary.isNavigationBarHidden)
+    // A custom interactive transition stands in for the edge swipe, which tests cannot cancel.
+    let driver = SplitViewPopDriver()
+    primary.delegate = driver
+
+    primary.popViewController(animated: true)
+    try await Task.sleep(for: .milliseconds(50))
+    driver.interaction.update(0.4)
+    try await Task.sleep(for: .milliseconds(50))
+
+    #expect(primary.transitionCoordinator?.isInteractive == true)
+    #expect(primary.navigationBar.layer.mask != nil)
+    driver.interaction.cancel()
+    try await Task.sleep(for: .milliseconds(1000))
+    #expect(primary.topViewController === content)
+    #expect(primary.navigationBar.layer.mask == nil)
+    #expect(primary.isNavigationBarHidden)
+    #expect(root.controller.navigationItem.backAction === backAction)
+    primary.delegate = nil
+    root.invalidateImpl()
+  }
+}
+
+@Suite("SplitView sidebar button")
+@MainActor
+struct SplitViewSidebarButtonTests {
+  @Test
+  @available(iOS 17.0, *)
+  func `the content column reports the sidebar button only without a column beside it`() async throws {
+    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 1366, height: 1024))
+    let split = UISplitViewController(style: .doubleColumn)
+    split.traitOverrides.horizontalSizeClass = .regular
+    split.preferredSplitBehavior = .tile
+    split.preferredDisplayMode = .oneBesideSecondary
+    let column = UIViewController()
+    split.setViewController(UINavigationController(rootViewController: UIViewController()), for: .primary)
+    split.setViewController(UINavigationController(rootViewController: column), for: .secondary)
+    window.rootViewController = split
+    window.makeKeyAndVisible()
+    defer { window.isHidden = true }
+    try await Task.sleep(for: .milliseconds(500))
+    let coordinator = SplitViewColumnView(appContext: nil)
+    var ownership: [String: Any]?
+    coordinator.onOwnershipChange.onEventSent = { ownership = $0 }
+    coordinator.columnId = UUID().uuidString
+    column.view.addSubview(coordinator)
+    coordinator.attach()
+    #expect(split.displayMode == .oneBesideSecondary)
+    #expect(ownership?["showsSidebarButton"] as? Bool == false)
+
+    split.preferredDisplayMode = .secondaryOnly
+    try await Task.sleep(for: .milliseconds(500))
+    coordinator.reconcile()
+
+    #expect(split.displayMode == .secondaryOnly)
+    #expect(ownership?["showsSidebarButton"] as? Bool == true)
+  }
+}
+
+private final class SplitViewPopDriver: NSObject, UINavigationControllerDelegate,
+  UIViewControllerAnimatedTransitioning
+{
+  let interaction = UIPercentDrivenInteractiveTransition()
+
+  func navigationController(
+    _ navigationController: UINavigationController,
+    animationControllerFor operation: UINavigationController.Operation,
+    from fromVC: UIViewController,
+    to toVC: UIViewController
+  ) -> UIViewControllerAnimatedTransitioning? {
+    self
+  }
+
+  func navigationController(
+    _ navigationController: UINavigationController,
+    interactionControllerFor animationController: UIViewControllerAnimatedTransitioning
+  ) -> UIViewControllerInteractiveTransitioning? {
+    interaction
+  }
+
+  func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+    0.3
+  }
+
+  func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+    guard let from = transitionContext.view(forKey: .from), let to = transitionContext.view(forKey: .to) else {
+      return
+    }
+    transitionContext.containerView.insertSubview(to, belowSubview: from)
+    UIView.animate(withDuration: 0.3) {
+      from.transform = CGAffineTransform(translationX: from.bounds.width, y: 0)
+    } completion: { _ in
+      from.transform = .identity
+      transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+    }
+  }
+}
+
 private final class SplitViewGesturePolicy: NSObject, UIGestureRecognizerDelegate {
   var allowsBegin = true
   weak var receivedGesture: UIGestureRecognizer?
