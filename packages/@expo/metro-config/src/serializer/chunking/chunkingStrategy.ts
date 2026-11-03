@@ -214,11 +214,14 @@ export async function serializeChunksAsync(
   { serializerConfig, serializeChunkOptions, options }: ChunkingContext
 ): Promise<SerialAsset[]> {
   const chunksByPath = makeChunkByPathLookupMap(chunks);
-  const filenamesByChunk = precomputeChunkFilenames({
+  const { filenamesByChunk, debugIdsByChunk } = precomputeChunkFilenames({
     chunks,
     chunksByPath,
     serializerConfig,
     recomputeChunkNames: !!options.serializerOptions?.exporting,
+    entryFilename: options.serializerOptions?.entryFilename,
+    outputDirectory: options.serializerOptions?.outputDirectory,
+    outputExtension: options.serializerOptions?.outputExtension,
   });
   const assets = await Promise.all(
     [...chunks].map((chunk) =>
@@ -226,6 +229,7 @@ export async function serializeChunksAsync(
         serializerConfig,
         chunksByPath,
         filenamesByChunk,
+        debugIdsByChunk,
         serializeChunkOptions
       )
     )

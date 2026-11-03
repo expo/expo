@@ -4,13 +4,11 @@ import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import assert from 'assert';
 import path from 'path';
 
-import { toPosixPath } from '../../utils/filePath';
-import { stringToUUID } from '../debugId';
 import { getExportPathForDependencyWithOptions } from '../exportPath';
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
 import { transformJsAssetToHermesBytecodeAsync } from '../hermesArtifacts';
 import type { SerialAsset } from '../serializerAssets';
-import { sourceMapString } from '../sourceMap';
+import { getExportSourceMapOptions, sourceMapString } from '../sourceMap';
 import type {
   ChunkingImplementation,
   ChunkSerializationOptions,
@@ -123,8 +121,19 @@ export class Chunk {
     const preModules = [...(options.preModules ?? this.preModules).values()];
     const dependencies = [...this.deps];
 
+    const getRunModuleStatement = this.options.getRunModuleStatement;
     const jsSplitBundle = getBaseJSBundleWithDependencies()(entryFile, preModules, dependencies, {
       ...this.options,
+      sourceMapOptions: this.getSourceMapOptions(),
+      getRunModuleStatement:
+        this.isServer && this.isEntry
+          ? (moduleId, ...args) => {
+              const statement = getRunModuleStatement(moduleId, ...args);
+              return moduleId === this.options.createModuleId(entryFile)
+                ? 'module.exports = ' + statement
+                : statement;
+            }
+          : getRunModuleStatement,
       runBeforeMainModule:
         serializerConfig?.getModulesRunBeforeMainModule?.(
           path.relative(this.options.projectRoot, entryFile)
@@ -158,6 +167,15 @@ export class Chunk {
     return (this._asyncTargets ??= this.strategy.getAsyncChunkTargets(this, chunksByPath));
   }
 
+  private get isServer(): boolean {
+    const environment = this.graph.transformOptions.customTransformOptions?.environment;
+    return environment === 'node' || environment === 'react-server';
+  }
+
+  private getSourceMapOptions() {
+    return getExportSourceMapOptions(this.options, this.isServer);
+  }
+
   private getAdjustedSourceMapUrl(filename: string): string | null {
     // Metro really only accounts for development, so we'll use the defaults here.
     if (this.options.dev) {
@@ -170,6 +188,10 @@ export class Chunk {
 
     if (this.options.inlineSourceMap || !this.options.sourceMapUrl) {
       return this.options.sourceMapUrl ?? null;
+    }
+
+    if (this.isServer && this.options.serializerOptions?.exporting) {
+      return encodeURIComponent(path.posix.basename(filename) + '.map');
     }
 
     const platform = this.getPlatform();
@@ -245,13 +267,12 @@ export class Chunk {
     serializerConfig: Partial<SerializerConfigT>,
     chunksByPath: Map<string, Chunk>,
     filenamesByChunk: Map<Chunk, string>,
+    debugIdsByChunk: Map<Chunk, string>,
     { includeSourceMaps, unstable_beforeAssetSerializationPlugins }: SerializeChunkOptions
   ): Promise<SerialAsset[]> {
     const outputFile = filenamesByChunk.get(this);
-    assert(outputFile, 'Precomputed filename missing for chunk: ' + this.name);
-    // We already use a stable hash for the output filename, so we'll reuse that for the debugId.
-    const debugId = stringToUUID(path.basename(outputFile, path.extname(outputFile)));
-
+    const debugId = debugIdsByChunk.get(this);
+    assert(outputFile && debugId, 'Precomputed output missing for chunk: ' + this.name);
     let finalPreModules = [...this.preModules];
     if (unstable_beforeAssetSerializationPlugins) {
       for (const plugin of unstable_beforeAssetSerializationPlugins) {
@@ -314,32 +335,16 @@ export class Chunk {
       this.options.sourceMapUrl
     ) {
       const modules = [
-        ...finalPreModules,
+        ...(this.options.modulesOnly ? [] : finalPreModules),
         ...getSortedModules([...this.deps], {
           createModuleId: this.options.createModuleId,
         }),
-      ].map((module) => {
-        // TODO: Make this user-configurable.
-
-        // Make all paths relative to the server root to prevent the entire user filesystem from being exposed.
-        if (path.isAbsolute(module.path)) {
-          return {
-            ...module,
-            path:
-              '/' +
-              toPosixPath(
-                path.relative(this.options.serverRoot ?? this.options.projectRoot, module.path)
-              ),
-          };
-        }
-        return module;
-      });
+      ];
 
       // TODO: We may not need to set `debugId` on the bundler sourcemap when
       // Hermes is enabled, since we ship a separate `.hbc.map` for that case.
       const sourceMap = sourceMapString(modules, {
-        excludeSource: false,
-        ...this.options,
+        ...this.getSourceMapOptions(),
         debugId,
       });
 
