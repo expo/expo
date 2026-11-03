@@ -1,3 +1,5 @@
+const globalsByEnv = require('globals');
+
 const SEVERITIES = { 0: 'off', 1: 'warn', 2: 'error', off: 'off', warn: 'warn', error: 'error' };
 const GLOBAL_KINDS = {
   false: 'readonly',
@@ -33,6 +35,32 @@ function normalizeGlobals(globals) {
   return sortKeys(normalized);
 }
 
+// Environments whose full name list the configs may declare through the `globals` package.
+const ENVS = ['browser', 'node', 'shared-node-browser', 'jest'];
+
+/**
+ * Splits a config's globals into the environments it contains in full and the names declared
+ * on top of them. The legacy config lists its environments under `env` and ESLint 8 leaves
+ * them out of `globals`; the flat config spreads them into `languageOptions.globals`, which
+ * would put the 1100+ browser names into every snapshot.
+ */
+function splitGlobals(globals) {
+  const normalized = normalizeGlobals(globals);
+  const env = {};
+  const fromEnvs = new Set();
+  for (const name of ENVS) {
+    const entries = Object.entries(normalizeGlobals(globalsByEnv[name]));
+    if (entries.every(([global, kind]) => normalized[global] === kind)) {
+      env[name] = true;
+      entries.forEach(([global]) => fromEnvs.add(global));
+    }
+  }
+  return {
+    env,
+    globals: Object.fromEntries(Object.entries(normalized).filter(([name]) => !fromEnvs.has(name))),
+  };
+}
+
 // The default parser is `null` in ESLint 8 and an `espree` object without `meta` in ESLint 9.
 function normalizeParser(parser) {
   const name = typeof parser === 'string' ? parser : parser?.meta?.name;
@@ -54,13 +82,14 @@ function normalizeConfig(config) {
   const parserOptions = isFlat
     ? (languageOptions.parserOptions ?? {})
     : (config.parserOptions ?? {});
+  const { env, globals } = splitGlobals(isFlat ? languageOptions.globals : config.globals);
   return {
     parser: normalizeParser(isFlat ? languageOptions.parser : config.parser),
     ecmaVersion: languageOptions.ecmaVersion ?? null,
     sourceType: languageOptions.sourceType ?? null,
     ecmaFeatures: parserOptions.ecmaFeatures ?? {},
-    env: isFlat ? undefined : sortKeys(config.env ?? {}),
-    globals: normalizeGlobals(isFlat ? languageOptions.globals : config.globals),
+    env: sortKeys({ ...config.env, ...env }),
+    globals,
     plugins: (isFlat ? Object.keys(config.plugins) : config.plugins)
       .filter((p) => p !== '@')
       .sort(),
