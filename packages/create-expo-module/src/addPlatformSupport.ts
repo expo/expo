@@ -1,18 +1,33 @@
 import chalk from 'chalk';
+import ejs from 'ejs';
 import fs from 'node:fs';
 import path from 'node:path';
 import prompts from 'prompts';
 
-import { detectFeaturesFromFile, findModuleDefinitionFile } from './featureDetection';
-import { filterFeaturesByPlatforms, resolveFeatures, type Feature } from './features';
+import {
+  type DetectedExpoModule,
+  detectExpoModuleFromContent,
+  detectFeaturesFromContent,
+  detectV2FeaturesFromContent,
+  findExpoModuleFile,
+  findModuleDefinitionFile,
+} from './featureDetection';
+import {
+  filterFeaturesByPlatforms,
+  getViewsModulePlatforms,
+  resolveFeatures,
+  type Feature,
+} from './features';
 import { assertSupportedLocalSdk, getLocalSdkMajorVersion } from './localSdk';
+import { MODULES_API_VERSIONS, resolveModulesApi, type ModulesApi } from './modulesApi';
 import { formatRunCommand, resolvePackageManager } from './packageManager';
-import { ALL_PLATFORMS, type Platform } from './prompts';
+import { ALL_PLATFORMS, type NativePlatform, type Platform } from './prompts';
 import { copyNativeFileSnippets, copyWebFileSnippets } from './snippets';
 import {
   buildAugmentedData,
   copyTemplateFiles,
   createSubstitutionData,
+  getViewsNativeModuleName,
   type AugmentedData,
   slugToAndroidPackage,
   updateWebStub,
@@ -43,6 +58,7 @@ type ExistingModuleInfo = {
 };
 
 const nativeModuleNamePattern = /Name\s*\(\s*["']([^"']+)["']\s*\)/;
+const nativeViewModuleNamePattern = /requireNativeView(?:<[\s\S]*?>)?\(\s*(["'`])([^"'`]+)\1/g;
 const moduleSourceNamePatterns = [
   /globalThis\.expo\?\.\s*modules\?\.\s*\[\s*(["'`])([^"'`]+)\1\s*\]/,
   /requireNativeModule(?:<[\s\S]*?>)?\(\s*(["'`])([^"'`]+)\1\s*\)/,
@@ -114,19 +130,17 @@ async function findModuleSourceFiles(moduleRoot: string): Promise<string[]> {
   });
 }
 
-async function detectPublicModuleNameFromModuleSourceFiles(
-  moduleRoot: string
-): Promise<string | null> {
-  const sourceFiles = await findModuleSourceFiles(moduleRoot);
-
-  for (const filePath of sourceFiles) {
-    const content = await fs.promises.readFile(filePath, 'utf8');
-    const moduleName = detectPublicModuleNameFromModuleSourceContent(content);
-    if (moduleName) {
-      return moduleName;
+/** Returns the first value that `find` returns for the content of a module source file. */
+async function findInModuleSourceFiles<T>(
+  moduleRoot: string,
+  find: (content: string) => T | null | undefined
+): Promise<T | null> {
+  for (const file of await findModuleSourceFiles(moduleRoot)) {
+    const found = find(await fs.promises.readFile(file, 'utf8'));
+    if (found) {
+      return found;
     }
   }
-
   return null;
 }
 
@@ -245,22 +259,30 @@ function buildSubstitutionData(
   );
 }
 
+/**
+ * Adds the new platforms to `expo-module.config.json`, with their native modules from the
+ * template's config.
+ */
 async function updateModuleConfig(
   configPath: string,
+  templatePath: string,
   newPlatforms: Platform[],
-  data: SubstitutionData | LocalSubstitutionData,
+  augmentedData: AugmentedData,
   writeFile: WriteFile
 ): Promise<void> {
   const config = JSON.parse(await fs.promises.readFile(configPath, 'utf-8'));
+  const templateConfig = JSON.parse(
+    ejs.render(
+      await fs.promises.readFile(path.join(templatePath, 'expo-module.config.json'), 'utf-8'),
+      augmentedData
+    )
+  );
   config.platforms = [...(config.platforms ?? []), ...newPlatforms];
 
   for (const platform of newPlatforms) {
-    if (platform === 'apple') {
-      config.apple = { modules: [data.project.moduleName] };
-    } else if (platform === 'android') {
-      config.android = { modules: [`${data.project.package}.${data.project.moduleName}`] };
+    if (templateConfig[platform]) {
+      config[platform] = templateConfig[platform];
     }
-    // web: no native config block needed
   }
 
   await writeFile(configPath, JSON.stringify(config, null, 2) + '\n');
@@ -269,6 +291,7 @@ async function updateModuleConfig(
 export type AddPlatformSupportOptions = {
   platform?: string[];
   features?: string[];
+  modulesApi?: ModulesApi;
   source?: string;
   ignoreCompatibilityCheck?: boolean;
 };
@@ -276,6 +299,64 @@ export type AddPlatformSupportOptions = {
 function exitWithError(message: string): never {
   console.error(chalk.red(message));
   process.exit(1);
+}
+
+/**
+ * Gets the Expo Modules API version that the module's view components expect, from the native
+ * module that they load the views from. Expo Modules API 2.0 modules define views in a separate
+ * `<Name>Views` module.
+ */
+async function detectViewComponentsModulesApi(
+  moduleRoot: string,
+  name: string
+): Promise<ModulesApi | null> {
+  return findInModuleSourceFiles(moduleRoot, (content) => {
+    const viewModuleNames = [...content.matchAll(nativeViewModuleNamePattern)].map(
+      (match) => match[2]
+    );
+    return MODULES_API_VERSIONS.find((modulesApi) =>
+      viewModuleNames.includes(getViewsNativeModuleName(name, modulesApi))
+    );
+  });
+}
+
+const MATCH_EXISTING_CODE_NEXT_STEP =
+  'The new code uses the Expo Modules API 2.0 to match the existing code of the module. Use a template and an Expo SDK that support it.';
+
+/**
+ * Gets the Expo Modules API version that the new native code should use: the requested one, or
+ * the version of the existing native code or view components, which can't fall back to another
+ * version. Exits when the requested version would define views in a module that the view
+ * components don't load.
+ */
+async function getNewCodeModulesApi(
+  moduleRoot: string,
+  moduleInfo: ExistingModuleInfo,
+  nativeSources: NativeModuleSources | null,
+  features: Feature[],
+  newNativePlatforms: NativePlatform[],
+  requested: ModulesApi | undefined
+): Promise<{ modulesApi: ModulesApi | undefined; matchesExistingCode: boolean }> {
+  const addsViews = getViewsModulePlatforms(features, newNativePlatforms).length > 0;
+  const viewComponentsModulesApi = addsViews
+    ? await detectViewComponentsModulesApi(moduleRoot, moduleInfo.name)
+    : null;
+  if (viewComponentsModulesApi) {
+    if (requested && requested !== viewComponentsModulesApi) {
+      const requestedName = requested === 'v2' ? 'Expo Modules API 2.0' : 'Expo Modules API 1.0';
+      const loadedFrom = getViewsNativeModuleName(moduleInfo.name, viewComponentsModulesApi);
+      const definedIn = getViewsNativeModuleName(moduleInfo.name, requested);
+      exitWithError(
+        `❌ Cannot generate the views with the ${requestedName}, because the view components of the module load them from the "${loadedFrom}" native module, and ${requestedName} code defines them in "${definedIn}".\n` +
+          `   Re-run the command with --modules-api ${viewComponentsModulesApi}.`
+      );
+    }
+    return { modulesApi: viewComponentsModulesApi, matchesExistingCode: true };
+  }
+  if (requested || !nativeSources) {
+    return { modulesApi: requested, matchesExistingCode: false };
+  }
+  return { modulesApi: nativeSources.expoModule ? 'v2' : 'v1', matchesExistingCode: true };
 }
 
 async function readModuleInfoOrExit(
@@ -297,28 +378,52 @@ async function readModuleInfoOrExit(
   }
 }
 
-async function findExistingModuleDefinitionFile(
+/**
+ * The native module sources of the module's existing native platform.
+ */
+type NativeModuleSources = {
+  /** The files to name in logs. */
+  files: string[];
+  /** The Expo Modules API 2.0 module class, or null for a Module DSL module. */
+  expoModule: (DetectedExpoModule & { source: string }) | null;
+  /**
+   * The source of the Module DSL definition: the module of an Expo Modules API 1.0 module, or the
+   * views module of a 2.0 module.
+   */
+  moduleDefinition: string | null;
+};
+
+async function readExistingNativeModuleSources(
   moduleRoot: string,
   moduleInfo: ExistingModuleInfo
-): Promise<string | null> {
-  const existingNativePlatform = moduleInfo.platforms.find(
-    (p): p is 'apple' | 'android' => p === 'apple' || p === 'android'
-  );
-
-  if (existingNativePlatform) {
-    const moduleDefinitionFile = await findModuleDefinitionFile(moduleRoot, existingNativePlatform);
-    if (!moduleDefinitionFile) {
-      exitWithError(
-        `❌ Could not find a module definition file in ` +
-          `${existingNativePlatform === 'apple' ? 'ios/' : 'android/src/'}.\n` +
-          `   This command only works with modules using the Expo Modules API DSL.\n` +
-          `   Older module formats are not supported.`
-      );
-    }
-    return moduleDefinitionFile;
+): Promise<NativeModuleSources | null> {
+  const existingNativePlatform = moduleInfo.platforms.find((p) => p !== 'web');
+  if (!existingNativePlatform) {
+    return null;
   }
 
-  return null;
+  const [expoModuleFile, moduleDefinitionFile] = await Promise.all([
+    findExpoModuleFile(moduleRoot, existingNativePlatform),
+    findModuleDefinitionFile(moduleRoot, existingNativePlatform),
+  ]);
+  const files = [expoModuleFile, moduleDefinitionFile].filter((file) => file !== null);
+  if (files.length === 0) {
+    exitWithError(
+      `❌ Could not find a module definition file in ` +
+        `${existingNativePlatform === 'apple' ? 'ios/' : 'android/src/'}.\n` +
+        `   This command only works with modules using the Expo Modules API.\n` +
+        `   Older module formats are not supported.`
+    );
+  }
+  const read = (file: string | null) => (file ? fs.promises.readFile(file, 'utf8') : null);
+  const [expoModuleSource, moduleDefinition] = await Promise.all([
+    read(expoModuleFile),
+    read(moduleDefinitionFile),
+  ]);
+  const expoModuleNames = expoModuleSource ? detectExpoModuleFromContent(expoModuleSource) : null;
+  const expoModule =
+    expoModuleSource && expoModuleNames ? { source: expoModuleSource, ...expoModuleNames } : null;
+  return { files, expoModule, moduleDefinition };
 }
 
 async function resolvePlatformsToAdd(
@@ -391,16 +496,20 @@ function ensureNativePlatformTargetsAvailable(
   }
 }
 
-async function resolveDetectedFeatures(
-  moduleDefinitionFile: string | null,
+function resolveDetectedFeatures(
+  sources: NativeModuleSources | null,
   options: AddPlatformSupportOptions
-): Promise<{ detectedFeatures: Feature[]; sharedObjectName: string | null }> {
+): { detectedFeatures: Feature[]; sharedObjectName: string | null } {
   if (options.features && options.features.length > 0) {
     return { detectedFeatures: resolveFeatures(options.features), sharedObjectName: null };
   }
 
-  if (moduleDefinitionFile) {
-    const { features, sharedObjectName } = await detectFeaturesFromFile(moduleDefinitionFile);
+  if (sources) {
+    const v2 = sources.expoModule ? detectV2FeaturesFromContent(sources.expoModule.source) : null;
+    const dsl = sources.moduleDefinition
+      ? detectFeaturesFromContent(sources.moduleDefinition)
+      : null;
+    const features = [...new Set([...(v2?.features ?? []), ...(dsl?.features ?? [])])];
     if (features.length === 0) {
       console.warn(
         chalk.yellow(
@@ -410,12 +519,15 @@ async function resolveDetectedFeatures(
     } else {
       console.log(
         chalk.dim(
-          `Detected features from ${path.relative(CWD, moduleDefinitionFile)} (best effort). ` +
+          `Detected features from ${sources.files.map((file) => path.relative(CWD, file)).join(', ')} (best effort). ` +
             'Use --features to override.'
         )
       );
     }
-    return { detectedFeatures: features, sharedObjectName };
+    return {
+      detectedFeatures: features,
+      sharedObjectName: v2?.sharedObjectName ?? dsl?.sharedObjectName ?? null,
+    };
   }
 
   // Web-only module adding a native platform: no ModuleDefinition to scan.
@@ -423,17 +535,25 @@ async function resolveDetectedFeatures(
   return { detectedFeatures: [], sharedObjectName: null };
 }
 
-async function updatePublicModuleNameFromSources(
+/**
+ * Reads the module names from the native sources, falling back to the module's JS sources.
+ */
+async function updateModuleNamesFromSources(
   moduleInfo: ExistingModuleInfo,
   moduleRoot: string,
-  moduleDefinitionFile: string | null
+  sources: NativeModuleSources | null
 ): Promise<void> {
+  if (sources?.expoModule) {
+    moduleInfo.name = sources.expoModule.name;
+    moduleInfo.moduleName = sources.expoModule.moduleName;
+    return;
+  }
+
   const detectedPublicModuleName =
-    (moduleDefinitionFile
-      ? detectPublicModuleNameFromNativeContent(
-          await fs.promises.readFile(moduleDefinitionFile, 'utf8')
-        )
-      : null) ?? (await detectPublicModuleNameFromModuleSourceFiles(moduleRoot));
+    (sources?.moduleDefinition
+      ? detectPublicModuleNameFromNativeContent(sources.moduleDefinition)
+      : null) ??
+    (await findInModuleSourceFiles(moduleRoot, detectPublicModuleNameFromModuleSourceContent));
 
   if (detectedPublicModuleName) {
     moduleInfo.name = detectedPublicModuleName;
@@ -532,7 +652,7 @@ export async function addPlatformSupport(
     ? (getLocalSdkMajorVersion(moduleRoot) ?? getLocalSdkMajorVersion(CWD))
     : null;
   assertSupportedLocalSdk(sdkVersion, options.ignoreCompatibilityCheck);
-  const moduleDefinitionFile = await findExistingModuleDefinitionFile(moduleRoot, moduleInfo);
+  const nativeSources = await readExistingNativeModuleSources(moduleRoot, moduleInfo);
   const platformsToAdd = await resolvePlatformsToAdd(moduleInfo, options);
   if (!platformsToAdd) {
     return;
@@ -541,13 +661,25 @@ export async function addPlatformSupport(
   ensureNativePlatformTargetsAvailable(moduleRoot, platformsToAdd);
 
   const allPlatforms: Platform[] = [...moduleInfo.platforms, ...platformsToAdd];
-  const { detectedFeatures: rawFeatures, sharedObjectName } = await resolveDetectedFeatures(
-    moduleDefinitionFile,
+  const { detectedFeatures: rawFeatures, sharedObjectName } = resolveDetectedFeatures(
+    nativeSources,
     options
   );
   const detectedFeatures = filterFeaturesByPlatforms(rawFeatures, allPlatforms);
-
-  await updatePublicModuleNameFromSources(moduleInfo, moduleRoot, moduleDefinitionFile);
+  await updateModuleNamesFromSources(moduleInfo, moduleRoot, nativeSources);
+  // Web code doesn't depend on the Expo Modules API version.
+  const newNativePlatforms = platformsToAdd.filter((platform) => platform !== 'web');
+  const newCodeModulesApi =
+    newNativePlatforms.length > 0
+      ? await getNewCodeModulesApi(
+          moduleRoot,
+          moduleInfo,
+          nativeSources,
+          detectedFeatures,
+          newNativePlatforms,
+          options.modulesApi
+        )
+      : null;
 
   const data = buildSubstitutionData(
     moduleInfo,
@@ -562,11 +694,18 @@ export async function addPlatformSupport(
       sdkVersion,
     },
     async (templatePath) => {
-      // This command doesn't generate Expo Modules API 2.0 code yet.
+      const modulesApi = newCodeModulesApi
+        ? resolveModulesApi(
+            newCodeModulesApi.modulesApi,
+            templatePath,
+            sdkVersion,
+            newCodeModulesApi.matchesExistingCode ? MATCH_EXISTING_CODE_NEXT_STEP : undefined
+          )
+        : 'v1';
       const augmentedData = await buildAugmentedData(
         path.join(templatePath, 'snippets'),
         data,
-        'v1'
+        modulesApi
       );
       await withFileRollback(async (writeFile) => {
         await addNativePlatformFiles(
@@ -588,7 +727,13 @@ export async function addPlatformSupport(
         );
 
         await newStep('Updating expo-module.config.json', async (step) => {
-          await updateModuleConfig(configPath, platformsToAdd, data, writeFile);
+          await updateModuleConfig(
+            configPath,
+            templatePath,
+            platformsToAdd,
+            augmentedData,
+            writeFile
+          );
           step.succeed('Updated expo-module.config.json');
         });
       });

@@ -353,6 +353,14 @@ export async function withTemplateAsync<T>(
 }
 
 /**
+ * Gets the JavaScript name of the native module that defines the views, which the view components
+ * load the views from. An Expo Modules API 2.0 module defines them in a separate views module.
+ */
+export function getViewsNativeModuleName(name: string, modulesApi: ModulesApi): string {
+  return modulesApi === 'v2' ? `${name}Views` : name;
+}
+
+/**
  * Resolves the views module of an Expo Modules API 2.0 module, on the platforms that have view
  * features, or `null` when the module doesn't need one.
  */
@@ -368,7 +376,7 @@ function resolveViewsModule(
   if (platforms.length === 0) {
     return null;
   }
-  const viewsModuleName = `${name}Views`;
+  const viewsModuleName = getViewsNativeModuleName(name, modulesApi);
   return { name: viewsModuleName, moduleName: `${viewsModuleName}Module`, platforms };
 }
 
