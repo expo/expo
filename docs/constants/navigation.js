@@ -408,6 +408,7 @@ export const general = [
       makePage('guides/using-convex.mdx'),
       makePage('guides/using-firebase.mdx'),
       makePage('guides/using-supabase.mdx'),
+      makePage('guides/using-surrealdb.mdx'),
     ]),
     makeGroup('Emails', [makePage('guides/using-resend.mdx')]),
     makeGroup('Feature flags', [makePage('guides/using-feature-flags.mdx')]),
