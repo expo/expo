@@ -21,7 +21,9 @@ export async function transformJsAssetToHermesBytecodeAsync(
 ): Promise<void> {
   if (Buffer.isBuffer(jsAsset.source)) return;
 
-  const debugId = stringToUUID(path.basename(jsAsset.filename, path.extname(jsAsset.filename)));
+  const debugId =
+    (mapAsset && JSON.parse(mapAsset.source).debugId) ??
+    stringToUUID(path.basename(jsAsset.filename, path.extname(jsAsset.filename)));
   const adjustedSource = jsAsset.source.replace(/^\/\/# (sourceMappingURL)=(.*)$/gm, (...props) => {
     if (props[1] === 'sourceMappingURL') {
       const mapName = props[2].replace(/\.js\.map$/, '.hbc.map');
