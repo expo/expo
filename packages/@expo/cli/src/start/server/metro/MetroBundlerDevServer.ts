@@ -8,7 +8,10 @@ import { events } from '2g';
 import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import { getMetroServerRoot, resolveRelativeEntryPoint } from '@expo/config/paths';
-import { serializeServerBundleAsync } from '@expo/metro-config/build/serializer/serializeServerBundle';
+import {
+  serializeServerBundleAsync,
+  wrapServerBundle,
+} from '@expo/metro-config/build/serializer/serializeServerBundle';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import { sourceMapStringNonBlocking } from '@expo/metro-config/build/serializer/sourceMap';
 import type { TransformProfile } from '@expo/metro/metro-babel-transformer';
@@ -1007,11 +1010,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // https://github.com/facebook/metro/blob/2405f2f6c37a1b641cc379b9c733b1eff0c1c2a1/packages/metro/src/lib/parseOptionsFromUrl.js#L55-L87
     const { filename, bundle, map, ...rest } = await this.metroLoadModuleContents(filePath, opts);
-    const scriptContents = rest.artifacts ? bundle : wrapBundle(bundle);
-
     return {
       ...rest,
-      src: scriptContents,
+      src: rest.artifacts ? bundle : wrapServerBundle(bundle),
       filename,
       map,
     };
@@ -2477,13 +2478,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
 function getBuildID(buildNumber: number): string {
   return buildNumber.toString(36);
-}
-
-function wrapBundle(str: string) {
-  // Skip the metro runtime so debugging is a bit easier.
-  // Replace the __r() call with an export statement.
-  // Use gm to apply to the last require line. This is needed when the bundle has side-effects.
-  return str.replace(/^(__r\(.*\);)$/gm, 'module.exports = $1');
 }
 
 function unique<T>(array: T[]): T[] {
