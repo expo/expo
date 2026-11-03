@@ -198,10 +198,42 @@ type SpawnChangesetsAsync = typeof spawnAsync;
 
 export async function runChangesetsAsync(
   args: string[],
-  spawnChangesetsAsync: SpawnChangesetsAsync = spawnAsync
+  spawnChangesetsAsync: SpawnChangesetsAsync = spawnAsync,
+  env?: NodeJS.ProcessEnv
 ): Promise<void> {
   await spawnChangesetsAsync('pnpm', ['exec', 'changeset', ...args], {
     cwd: EXPO_DIR,
     stdio: 'inherit',
+    ...(env && { env }),
   });
+}
+
+// `changeset publish` runs up to 10 `pnpm publish` processes at once, and each one runs the
+// package's `prepublishOnly`. Most of those scripts delete and rebuild `build`, while other
+// packages read that output during their own build, e.g. `expo-doctor` bundles workspace
+// devDependencies with ncc and `@expo/log-box` runs the `expo` CLI. Changesets orders publishes by
+// dependencies only, and some of these edges are devDependencies, undeclared, or in cycles. So we
+// run the publish lifecycle scripts here one package at a time, and then run `changeset publish`
+// with `getSkipScriptsEnv()`.
+const PUBLISH_LIFECYCLE_SCRIPTS = ['prepublishOnly', 'prepack'];
+
+export function getSkipScriptsEnv(): NodeJS.ProcessEnv {
+  return { ...process.env, pnpm_config_ignore_scripts: 'true' };
+}
+
+export async function runPublishLifecycleScriptsAsync(
+  packageNames: string[],
+  spawnScriptsAsync: SpawnChangesetsAsync = spawnAsync
+): Promise<void> {
+  const filters = packageNames.map((name) => `--filter=${name}`);
+  for (const script of PUBLISH_LIFECYCLE_SCRIPTS) {
+    await spawnScriptsAsync(
+      'pnpm',
+      [...filters, '--workspace-concurrency=1', '--if-present', 'run', script],
+      {
+        cwd: EXPO_DIR,
+        stdio: 'inherit',
+      }
+    );
+  }
 }
