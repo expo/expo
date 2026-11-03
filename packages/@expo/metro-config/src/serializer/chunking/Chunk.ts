@@ -8,6 +8,7 @@ import { getExportPathForDependencyWithOptions, getSiblingSourceMapUrl } from '.
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
 import { getServerRunModuleStatement } from '../getServerRunModuleStatement';
 import { transformJsAssetToHermesBytecodeAsync } from '../hermesArtifacts';
+import { serializeJavaScriptArtifactsAsync } from '../serializeJavaScriptArtifacts';
 import { getModuleReferences, type SerialAsset } from '../serializerAssets';
 import { getSourceMapOptions, sourceMapString } from '../sourceMap';
 import type {
@@ -234,30 +235,6 @@ export class Chunk {
     }
   }
 
-  private serializeToAssetCode(
-    serializerConfig: Partial<SerializerConfigT>,
-    {
-      debugId,
-      chunksByPath,
-      filenamesByChunk,
-      filename,
-      preModules,
-    }: {
-      debugId: string;
-      chunksByPath: Map<string, Chunk>;
-      filenamesByChunk: Map<Chunk, string>;
-      filename: string;
-      preModules: Set<Module>;
-    }
-  ) {
-    return this.serializeToCode(serializerConfig, {
-      sourceMapUrl: this.getAdjustedSourceMapUrl(filename) ?? undefined,
-      debugId,
-      preModules,
-      ...this.strategy.getSerializationOptions(this, chunksByPath, filenamesByChunk),
-    });
-  }
-
   private boolishTransformOption(name: string) {
     const value = this.graph.transformOptions?.customTransformOptions?.[name];
     return value === true || value === 'true' || value === '1';
@@ -284,63 +261,55 @@ export class Chunk {
       }
     }
 
-    const jsCode = this.serializeToAssetCode(serializerConfig, {
-      chunksByPath,
-      filenamesByChunk,
-      filename: outputFile,
+    const preModules = new Set(finalPreModules);
+    const assets = await serializeJavaScriptArtifactsAsync({
+      includeSourceMaps: includeSourceMaps && !!this.options.sourceMapUrl,
+      inlineSourceMap: !!this.options.inlineSourceMap,
+      sourceMapUrl: this.getAdjustedSourceMapUrl(outputFile),
       debugId,
-      preModules: new Set(finalPreModules),
-    });
-
-    const relativeEntry = path.relative(this.options.projectRoot, this.name);
-
-    const { modulePaths, ...chunkMetadata } = this.strategy.getMetadata(this, filenamesByChunk);
-    const jsAsset: SerialAsset = {
-      filename: outputFile,
-      originFilename: relativeEntry,
-      type: 'js',
-      metadata: {
-        ...chunkMetadata,
-        isAsync: this.isAsync,
-        requires: [...this.requiredChunks.values()].map((chunk) => {
-          const filename = filenamesByChunk.get(chunk);
-          assert(filename, 'Precomputed filename missing for required chunk: ' + chunk.name);
-          return filename;
-        }),
-        // Provide a list of module paths that can be used for matching chunks to routes.
-        // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
-        modulePaths,
-        paths: jsCode.paths,
-        ...getModuleReferences(this.deps),
+      getSourceMap: () => ({
+        source: this.serializeToSourceMap(
+          this.options.inlineSourceMap ? preModules : finalPreModules,
+          this.options.inlineSourceMap ? this.options.debugId : debugId
+        ),
+      }),
+      artifact: (annotations) => {
+        const jsCode = this.serializeToCode(serializerConfig, {
+          ...annotations,
+          preModules,
+          // Inline map data is already prepared; emit its URL through Metro's annotation modules.
+          ...(this.options.inlineSourceMap
+            ? {
+                inlineSourceMap: false,
+                serializerOptions: { ...this.options.serializerOptions, includeSourceMaps: true },
+              }
+            : {}),
+          ...this.strategy.getSerializationOptions(this, chunksByPath, filenamesByChunk),
+        });
+        const { modulePaths, ...chunkMetadata } = this.strategy.getMetadata(this, filenamesByChunk);
+        return {
+          filename: outputFile,
+          originFilename: path.relative(this.options.projectRoot, this.name),
+          type: 'js',
+          metadata: {
+            ...chunkMetadata,
+            isAsync: this.isAsync,
+            requires: [...this.requiredChunks.values()].map((chunk) => {
+              const filename = filenamesByChunk.get(chunk);
+              assert(filename, 'Precomputed filename missing for required chunk: ' + chunk.name);
+              return filename;
+            }),
+            // Provide a list of module paths that can be used for matching chunks to routes.
+            // TODO: Move HTML serializing closer to this code so we can reduce passing this much data around.
+            modulePaths,
+            paths: jsCode.paths,
+            ...getModuleReferences(this.deps),
+          },
+          source: jsCode.code,
+        };
       },
-      source: jsCode.code,
-    };
-
-    const assets: SerialAsset[] = [jsAsset];
-
-    // debugId is passed into `sourceMapString` so the bundler-map path
-    // emits it inline rather than a JSON.parse + JSON.stringify
-    // roundtrip; the Hermes branch below has to splice into a finished
-    // JSON string because `buildHermesBundleAsync` is opaque.
-    // NOTE: skipped for inline source maps since they don't need
-    // disambiguation. We only emit `debugId` (Sentry also reads
-    // `debug_id`, but bun doesn't).
-    if (
-      // Only include the source map if the `options.sourceMapUrl` option is provided and we are exporting a static build.
-      includeSourceMaps &&
-      !this.options.inlineSourceMap &&
-      this.options.sourceMapUrl
-    ) {
-      const sourceMap = this.serializeToSourceMap(finalPreModules, debugId);
-
-      assets.push({
-        filename: this.options.dev ? jsAsset.filename + '.map' : outputFile + '.map',
-        originFilename: jsAsset.originFilename,
-        type: 'map',
-        metadata: {},
-        source: sourceMap,
-      });
-    }
+    });
+    const jsAsset = assets[0]!;
 
     if (
       this.boolishTransformOption('bytecode') &&

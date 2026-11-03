@@ -1,5 +1,4 @@
 import type { AssetData, MetroConfig } from '@expo/metro/metro';
-import getInlineSourceMappingURL from '@expo/metro/metro/DeltaBundler/Serializers/helpers/getInlineSourceMappingURL';
 import type { MixedOutput, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
 import assert from 'assert';
 import path from 'path';
@@ -14,6 +13,7 @@ import {
 } from './exportPath';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { collectGraphResourcesAsync } from './serializeChunks';
+import { serializeJavaScriptArtifactsAsync } from './serializeJavaScriptArtifacts';
 import { getModuleReferences, type SerialAsset } from './serializerAssets';
 import {
   getSourceMapOptions,
@@ -59,7 +59,7 @@ export async function serializeServerBundleAsync(
   const serializerOptions = options.serializerOptions;
   const source = typeof singleBundle === 'string' ? singleBundle : singleBundle.code;
   const annotations = source.match(TRAILING_BUNDLE_ANNOTATIONS)?.[0] ?? '';
-  let code = source.slice(0, source.length - annotations.length);
+  const code = source.slice(0, source.length - annotations.length);
   const contentFilename = getExportPathForDependencyWithOptions(entryPoint, {
     src: code,
     platform: graph.transformOptions.platform ?? 'web',
@@ -67,49 +67,42 @@ export async function serializeServerBundleAsync(
   });
   const filename = getExportFilename(contentFilename, serializerOptions ?? {});
   const originFilename = toPosixPath(path.relative(options.projectRoot, entryPoint));
-  const artifacts: SerialAsset[] = [];
-  if (serializerOptions?.includeSourceMaps || options.inlineSourceMap) {
-    const excludeSource = serializerOptions?.excludeSource ?? !!options.excludeSource;
-    const encodedMap = annotations.match(
-      /sourceMappingURL=data:application\/json[^,]*;base64,([^\s]+)/
-    )?.[1];
-    const json =
-      (typeof singleBundle !== 'string' && singleBundle.map) ||
-      (encodedMap && Buffer.from(encodedMap, 'base64').toString()) ||
-      (await sourceMapStringNonBlocking(
-        [
-          ...(options.modulesOnly ? [] : preModules),
-          ...getSortedModules([...graph.dependencies.values()], options),
-        ],
-        { ...getSourceMapOptions(options, true), flatten: false }
-      ));
-    const parsed = JSON.parse(json);
-    const debugId =
-      parsed.debugId ?? annotations.match(/debugId=([^\s]+)/)?.[1] ?? stringToUUID(code);
-    const mapSource = normalizeSourceMapString(parsed, { flatten: true, excludeSource, debugId });
-    if (options.inlineSourceMap) {
-      code += '\n//# sourceMappingURL=' + getInlineSourceMappingURL(mapSource);
-    } else {
-      code += '\n//# sourceMappingURL=' + getSiblingSourceMapUrl(filename);
-      code += '\n//# debugId=' + debugId;
-      artifacts.push({
-        filename: filename + '.map',
-        originFilename,
-        type: 'map',
-        source: mapSource,
-        metadata: {},
-      });
-    }
-  }
   const modules = [...graph.dependencies.values()];
-  artifacts.unshift({
-    filename,
-    originFilename,
-    type: 'js',
-    source: code,
-    metadata: {
-      modulePaths: modules.map((module) => module.path),
-      ...getModuleReferences(modules),
+  const artifacts = await serializeJavaScriptArtifactsAsync({
+    includeSourceMaps: !!serializerOptions?.includeSourceMaps,
+    inlineSourceMap: !!options.inlineSourceMap,
+    sourceMapUrl: serializerOptions?.includeSourceMaps
+      ? getSiblingSourceMapUrl(filename)
+      : undefined,
+    getSourceMap: async () => {
+      const mapOptions = getSourceMapOptions(options, true);
+      const encodedMap = annotations.match(
+        /sourceMappingURL=data:application\/json[^,]*;base64,([^\s]+)/
+      )?.[1];
+      const json =
+        (typeof singleBundle !== 'string' && singleBundle.map) ||
+        (encodedMap && Buffer.from(encodedMap, 'base64').toString()) ||
+        (await sourceMapStringNonBlocking(
+          [
+            ...(options.modulesOnly ? [] : preModules),
+            ...getSortedModules([...graph.dependencies.values()], options),
+          ],
+          { ...mapOptions, flatten: false }
+        ));
+      const parsed = JSON.parse(json);
+      const debugId =
+        parsed.debugId ?? annotations.match(/debugId=([^\s]+)/)?.[1] ?? stringToUUID(code);
+      return { source: normalizeSourceMapString(parsed, { ...mapOptions, debugId }), debugId };
+    },
+    artifact: {
+      filename,
+      originFilename,
+      type: 'js',
+      source: code,
+      metadata: {
+        modulePaths: modules.map((module) => module.path),
+        ...getModuleReferences(modules),
+      },
     },
   });
   const resources = await collectGraphResourcesAsync(config, entryPoint, graph, options);
