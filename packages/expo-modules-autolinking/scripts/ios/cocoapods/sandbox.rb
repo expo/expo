@@ -21,6 +21,10 @@ module Pod
       spec = _original_store_podspec.bind(self).(name, podspec, _external_source, json)
       patched_spec = nil
 
+      # Specs linked inline (ExpoModulesCore) embed absolute tarball paths, keep their checksum portable.
+      portable_checksum = Expo::PrecompiledModules.portable_checksum_for_inline_linked_spec(spec)
+      spec.instance_variable_set(:@checksum, portable_checksum) if portable_checksum
+
       # Patch podspecs to define module
       if REACT_DEFINE_MODULES_LIST.include? name
         spec_json = JSON.parse(podspec.to_pretty_json)

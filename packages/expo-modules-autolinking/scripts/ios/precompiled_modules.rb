@@ -26,6 +26,7 @@
 #   artifacts/<Product>-release.tar.gz        (copied by prepare_command)
 #   artifacts/.last_build_configuration       (written by prepare_command / switch script)
 
+require 'digest'
 require 'fileutils'
 require 'json'
 require 'net/http'
@@ -773,7 +774,32 @@ module Expo
         spec.prepare_command = prepare_command_script(product_name, pod_info[:build_output_dir])
         add_script_phases(spec, product_name, pod_info)
 
+        @inline_linked_pods ||= Set.new
+        @inline_linked_pods.add(spec.name)
+
         true
+      end
+
+      # Returns a Podfile.lock checksum for a spec linked inline via try_link_with_prebuilt_xcframework.
+      #
+      # CocoaPods checksums the stored JSON spec, which for inline-linked specs embeds the absolute
+      # tarball path (in `source` and `prepare_command`), so the checksum differs per checkout location.
+      # Hashing the spec with these paths relative to the Podfile directory keeps Podfile.lock stable.
+      #
+      # @param spec [Pod::Specification] The stored spec
+      # @return [String, nil] The checksum, or nil if the spec was not linked inline
+      def portable_checksum_for_inline_linked_spec(spec)
+        return nil unless @inline_linked_pods&.include?(spec.name)
+
+        pod_info, product_name, default_tarball = resolve_prebuilt_status(spec.name)[:resolved]
+        project_root = Pod::Config.instance.installation_root
+        tarball_rel = Pathname.new(default_tarball).relative_path_from(project_root).to_s
+        build_output_dir_rel = Pathname.new(pod_info[:build_output_dir]).relative_path_from(project_root).to_s
+
+        spec_json = JSON.parse(spec.to_pretty_json)
+        spec_json['source'] = { 'http' => tarball_rel, 'flatten' => false }
+        spec_json['prepare_command'] = prepare_command_script(product_name, build_output_dir_rel)
+        Digest::SHA1.hexdigest(JSON.pretty_generate(spec_json))
       end
 
       # Takes a fully-evaluated podspec (with source-build attributes set),
