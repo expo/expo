@@ -346,6 +346,8 @@ Supported values:
 - `crash`
 - `screenshot`
 
+The [`app_store_connect`](/eas/workflows/environment/#app_store_connect) context of this event has only the `id`, `type`, and `url` of the feedback. To read the feedback in a job, run [`eas testflight:feedback`](/eas/cli/#eas-testflight-feedback-id) with the URL, for example `eas testflight:feedback "${{ app_store_connect.beta_feedback.url }}" --json`. The job must run `eas/checkout` first, because the command reads your [app config](/workflow/configuration/) and **eas.json**. The command uses the App Store Connect API key from the `production` submit profile, or the profile that you pass with `--profile`. The key can also come from environment variables, or from a key that Expo servers store for your project or account. The command returns the full crash log for a crash, or the tester's comment and the screenshot URLs for a screenshot. For a complete workflow, see [Triage a bug report with an AI agent](/agentic-workflows/bug-triage/).
+
 All filter values must be lowercase and are case-sensitive.
 
 ```yaml
