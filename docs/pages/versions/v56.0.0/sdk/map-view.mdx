@@ -136,19 +136,21 @@ Paste the key into **app.json**, or store it in a **.env** file and read it from
 <Tab label="app.config.js">
 
 ```js app.config.js
-export default {
-  expo: {
-    plugins: [
-      [
-        'react-native-maps',
-        {
-          androidGoogleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
-        },
-      ],
+export default ({ config }) => ({
+  ...config,
+  plugins: [
+    ...(config.plugins ?? []),
+    [
+      'react-native-maps',
+      {
+        androidGoogleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+      },
     ],
-  },
-};
+  ],
+});
 ```
+
+The `config` argument holds the values from **app.json**. If **app.json** already lists `react-native-maps`, remove that entry.
 
 </Tab>
 
@@ -216,19 +218,21 @@ Paste the key into **app.json**, or store it in a **.env** file and read it from
 <Tab label="app.config.js">
 
 ```js app.config.js
-export default {
-  expo: {
-    plugins: [
-      [
-        'react-native-maps',
-        {
-          iosGoogleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
-        },
-      ],
+export default ({ config }) => ({
+  ...config,
+  plugins: [
+    ...(config.plugins ?? []),
+    [
+      'react-native-maps',
+      {
+        iosGoogleMapsApiKey: process.env.GOOGLE_MAPS_API_KEY,
+      },
     ],
-  },
-};
+  ],
+});
 ```
+
+The `config` argument holds the values from **app.json**. If **app.json** already lists `react-native-maps`, remove that entry.
 
 </Tab>
 
