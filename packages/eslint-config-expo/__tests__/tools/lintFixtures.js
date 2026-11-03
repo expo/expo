@@ -35,7 +35,8 @@ module.exports = async function lintFixtures({ ESLint, options }, pattern) {
       ...(fatal ? { fatal } : {}),
       line,
       column,
-      message,
+      // Some rules name the file they refer to by absolute path.
+      message: message.split(options.cwd).join('<tests>'),
     })),
   }));
 };

@@ -316,6 +316,120 @@ exports[`flat config lints the baseline fixtures: fixtures/baseline/all-07.js 1`
 ]
 `;
 
+exports[`flat config lints the baseline fixtures: fixtures/baseline/expo-00.js 1`] = `
+[
+  {
+    "column": 7,
+    "line": 1,
+    "message": "Unexpected destructuring. Cannot destructure EXPO_PUBLIC_API_URL from process.env",
+    "ruleId": "expo/no-env-var-destructuring",
+    "severity": "error",
+  },
+  {
+    "column": 14,
+    "line": 5,
+    "message": "Unexpected dynamic access. Cannot dynamically access EXPO_PUBLIC_TOKEN from process.env",
+    "ruleId": "expo/no-dynamic-env-var",
+    "severity": "error",
+  },
+  {
+    "column": 14,
+    "line": 6,
+    "message": "Unexpected dynamic access. Cannot dynamically access key from process.env",
+    "ruleId": "expo/no-dynamic-env-var",
+    "severity": "error",
+  },
+]
+`;
+
+exports[`flat config lints the baseline fixtures: fixtures/baseline/expo-01.js 1`] = `
+[
+  {
+    "column": 1,
+    "line": 3,
+    "message": "Files with the "use dom" directive may not contain named exports or other default exports.",
+    "ruleId": "expo/use-dom-exports",
+    "severity": "error",
+  },
+]
+`;
+
+exports[`flat config lints the baseline fixtures: fixtures/baseline/globals-00.js 1`] = `[]`;
+
+exports[`flat config lints the baseline fixtures: fixtures/baseline/globals-01.web.js 1`] = `[]`;
+
+exports[`flat config lints the baseline fixtures: fixtures/baseline/imports-00.js 1`] = `
+[
+  {
+    "column": 19,
+    "line": 1,
+    "message": "'<tests>/fixtures/baseline/imports-helper.js' imported multiple times.",
+    "ruleId": "import/no-duplicates",
+    "severity": "warn",
+  },
+  {
+    "column": 19,
+    "line": 2,
+    "message": "'<tests>/fixtures/baseline/imports-helper.js' imported multiple times.",
+    "ruleId": "import/no-duplicates",
+    "severity": "warn",
+  },
+]
+`;
+
+exports[`flat config lints the baseline fixtures: fixtures/baseline/imports-helper.js 1`] = `[]`;
+
+exports[`flat config lints the baseline fixtures: fixtures/baseline/imports-module.mjs 1`] = `[]`;
+
+exports[`flat config lints the baseline fixtures: fixtures/baseline/imports-platform.ios.js 1`] = `[]`;
+
+exports[`flat config lints the baseline fixtures: fixtures/baseline/metro.config.js 1`] = `[]`;
+
+exports[`flat config lints the baseline fixtures: fixtures/baseline/react-00.js 1`] = `
+[
+  {
+    "column": 9,
+    "line": 7,
+    "message": "Missing "key" prop for element in iterator",
+    "ruleId": "react/jsx-key",
+    "severity": "error",
+  },
+  {
+    "column": 15,
+    "line": 14,
+    "message": "Do not pass children as props. Instead, nest children between the opening and closing tags.",
+    "ruleId": "react/no-children-prop",
+    "severity": "error",
+  },
+  {
+    "column": 15,
+    "line": 18,
+    "message": "\`'\` can be escaped with \`&apos;\`, \`&lsquo;\`, \`&#39;\`, \`&rsquo;\`.",
+    "ruleId": "react/no-unescaped-entities",
+    "severity": "error",
+  },
+  {
+    "column": 19,
+    "line": 23,
+    "message": "Using string literals in ref attributes is deprecated.",
+    "ruleId": "react/no-string-refs",
+    "severity": "error",
+  },
+]
+`;
+
+exports[`flat config lints the baseline fixtures: fixtures/baseline/types-00.d.ts 1`] = `
+[
+  {
+    "column": 22,
+    "line": 2,
+    "message": "Array type using 'Array<string>' is forbidden. Use 'string[]' instead.",
+    "ruleId": "@typescript-eslint/array-type",
+    "severity": "warn",
+  },
+]
+`;
+
 exports[`flat config lints the baseline fixtures: fixtures/baseline/web-native-00.js 1`] = `[]`;
 
 exports[`flat config lints the baseline fixtures: fixtures/baseline/web-native-01.js 1`] = `[]`;
@@ -669,6 +783,144 @@ exports[`legacy config lints the baseline fixtures: fixtures/baseline/all-07.js 
     "message": "Unable to resolve path to module 'b'.",
     "ruleId": "import/no-unresolved",
     "severity": "error",
+  },
+]
+`;
+
+exports[`legacy config lints the baseline fixtures: fixtures/baseline/expo-00.js 1`] = `
+[
+  {
+    "column": 7,
+    "line": 1,
+    "message": "Unexpected destructuring. Cannot destructure EXPO_PUBLIC_API_URL from process.env",
+    "ruleId": "expo/no-env-var-destructuring",
+    "severity": "error",
+  },
+  {
+    "column": 14,
+    "line": 5,
+    "message": "Unexpected dynamic access. Cannot dynamically access EXPO_PUBLIC_TOKEN from process.env",
+    "ruleId": "expo/no-dynamic-env-var",
+    "severity": "error",
+  },
+  {
+    "column": 14,
+    "line": 6,
+    "message": "Unexpected dynamic access. Cannot dynamically access key from process.env",
+    "ruleId": "expo/no-dynamic-env-var",
+    "severity": "error",
+  },
+]
+`;
+
+exports[`legacy config lints the baseline fixtures: fixtures/baseline/expo-01.js 1`] = `
+[
+  {
+    "column": 1,
+    "line": 3,
+    "message": "Files with the "use dom" directive may not contain named exports or other default exports.",
+    "ruleId": "expo/use-dom-exports",
+    "severity": "error",
+  },
+]
+`;
+
+exports[`legacy config lints the baseline fixtures: fixtures/baseline/globals-00.js 1`] = `
+[
+  {
+    "column": 17,
+    "line": 4,
+    "message": "'setTimeout' is not defined.",
+    "ruleId": "no-undef",
+    "severity": "error",
+  },
+  {
+    "column": 34,
+    "line": 4,
+    "message": "'clearTimeout' is not defined.",
+    "ruleId": "no-undef",
+    "severity": "error",
+  },
+  {
+    "column": 19,
+    "line": 5,
+    "message": "'URL' is not defined.",
+    "ruleId": "no-undef",
+    "severity": "error",
+  },
+  {
+    "column": 26,
+    "line": 6,
+    "message": "'AbortController' is not defined.",
+    "ruleId": "no-undef",
+    "severity": "error",
+  },
+  {
+    "column": 21,
+    "line": 7,
+    "message": "'TextEncoder' is not defined.",
+    "ruleId": "no-undef",
+    "severity": "error",
+  },
+  {
+    "column": 16,
+    "line": 8,
+    "message": "'structuredClone' is not defined.",
+    "ruleId": "no-undef",
+    "severity": "error",
+  },
+  {
+    "column": 16,
+    "line": 10,
+    "message": "'document' is not defined.",
+    "ruleId": "no-undef",
+    "severity": "error",
+  },
+]
+`;
+
+exports[`legacy config lints the baseline fixtures: fixtures/baseline/globals-01.web.js 1`] = `[]`;
+
+exports[`legacy config lints the baseline fixtures: fixtures/baseline/imports-00.js 1`] = `
+[
+  {
+    "column": 19,
+    "line": 3,
+    "message": "Unable to resolve path to module './imports-module'.",
+    "ruleId": "import/no-unresolved",
+    "severity": "error",
+  },
+]
+`;
+
+exports[`legacy config lints the baseline fixtures: fixtures/baseline/imports-helper.js 1`] = `[]`;
+
+exports[`legacy config lints the baseline fixtures: fixtures/baseline/imports-module.mjs 1`] = `[]`;
+
+exports[`legacy config lints the baseline fixtures: fixtures/baseline/imports-platform.ios.js 1`] = `[]`;
+
+exports[`legacy config lints the baseline fixtures: fixtures/baseline/metro.config.js 1`] = `[]`;
+
+exports[`legacy config lints the baseline fixtures: fixtures/baseline/react-00.js 1`] = `
+[
+  {
+    "column": 19,
+    "line": 23,
+    "message": "Using string literals in ref attributes is deprecated.",
+    "ruleId": "react/no-string-refs",
+    "severity": "warn",
+  },
+]
+`;
+
+exports[`legacy config lints the baseline fixtures: fixtures/baseline/types-00.d.ts 1`] = `
+[
+  {
+    "column": 22,
+    "line": 2,
+    "message": "Array type using 'Array<string>' is forbidden. Use 'string[]' instead.",
+    "ruleId": "@typescript-eslint/array-type",
+    "severity": "warn",
   },
 ]
 `;
