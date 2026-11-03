@@ -65,7 +65,7 @@ import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddle
 import { OpenHostSupportEntry, OpenMiddleware, OpenPlatform } from '../middleware/OpenMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
-import type { ExpoMetroOptions } from '../middleware/metroOptions';
+import type { ExpoMetroOptions, SerializerOptions } from '../middleware/metroOptions';
 import {
   convertPathToModuleSpecifier,
   createBundleUrlPath,
@@ -2143,8 +2143,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         customResolverOptions: CustomResolverOptions;
         dev: boolean;
       };
-      serializerOptions: {
-        output?: 'string' | ({} & string);
+      serializerOptions: SerializerOptions & {
         modulesOnly: boolean;
         runModule: boolean;
         sourceMapUrl: string;
