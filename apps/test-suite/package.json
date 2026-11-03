@@ -79,7 +79,7 @@
     "react": "19.3.0",
     "react-native": "0.88.1",
     "react-native-gesture-handler": "~3.3.0",
-    "react-native-safe-area-context": "~5.10.1",
+    "react-native-safe-area-context": "~5.11.1",
     "semver": "^7.7.4"
   },
   "devDependencies": {
