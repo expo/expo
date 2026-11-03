@@ -56,7 +56,7 @@ class ResolvingShareIntentDataParser {
 
     private fun resolveUri(context: Context, uri: Uri, mimeType: String): ResolvedSharePayload {
       val contentResolver = context.contentResolver
-      val fileName = safeShareFileName(getFileName(contentResolver, uri), "unknown")
+      val fileName = safeShareFileName(getFileName(contentResolver, uri).orEmpty(), "unknown")
       val fileSize = getFileSize(contentResolver, uri)
       val specificMimeType = contentResolver.getType(uri) ?: mimeType
       val type = ShareType.fromMimeType(specificMimeType)

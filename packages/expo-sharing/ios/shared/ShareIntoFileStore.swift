@@ -1,7 +1,7 @@
 import Foundation
 
-func safeShareFileName(_ name: String?, fallback: String) -> String {
-  let safeName = (name ?? "")
+func safeShareFileName(_ name: String = "", fallback: String) -> String {
+  let safeName = name
     .replacingOccurrences(of: "/", with: "_")
     .replacingOccurrences(of: "\\", with: "_")
     .replacingOccurrences(of: "\u{0}", with: "_")

@@ -3,8 +3,8 @@ package expo.modules.sharing
 import java.io.File
 import java.util.UUID
 
-internal fun safeShareFileName(name: String?, fallback: String): String {
-  val safeName = name.orEmpty().replace('/', '_').replace('\\', '_').replace('\u0000', '_')
+internal fun safeShareFileName(name: String = "", fallback: String): String {
+  val safeName = name.replace('/', '_').replace('\\', '_').replace('\u0000', '_')
   return if (safeName.isEmpty() || safeName == "." || safeName == "..") {
     fallback
   } else {
