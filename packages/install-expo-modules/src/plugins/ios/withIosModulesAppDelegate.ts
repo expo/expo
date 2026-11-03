@@ -131,6 +131,26 @@ export function updateModulesAppDelegateObjcHeader(
   return contents;
 }
 
+export function assertNoLegacySourceUrl(
+  contents: string,
+  sdkVersion: string | undefined,
+  fileName = 'AppDelegate.swift'
+): void {
+  if (!sdkVersion || semver.lt(sdkVersion, '59.0.0')) {
+    return;
+  }
+
+  const legacySourceUrl = contents.match(
+    /^(?![ \t]*\/\/)[^\n]*\bfunc\s+sourceURL\s*\(\s*for\s+\w+\s*:\s*(?:React\.)?RCTBridge\b/m
+  );
+  if (legacySourceUrl) {
+    const line = contents.slice(0, legacySourceUrl.index).split('\n').length;
+    throw new Error(
+      `Cannot install Expo modules because ${fileName} contains the legacy sourceURL(for:) method at line ${line}. SDK 59 and later require bundleURL() instead. Remove sourceURL(for:), including any attached annotations such as @objc. If it contains custom bundle selection, move that logic to bundleURL() first. Then run install-expo-modules again.`
+    );
+  }
+}
+
 export function updateModulesAppDelegateSwift(
   contents: string,
   sdkVersion: string | undefined
@@ -141,18 +161,6 @@ export function updateModulesAppDelegateSwift(
     }
     if (semver.lt(sdkVersion, '53.0.0')) {
       return updateModulesAppDelegateSwiftSdk52(contents, sdkVersion);
-    }
-  }
-
-  if (sdkVersion && semver.gte(sdkVersion, '59.0.0')) {
-    const legacySourceUrl = contents.match(
-      /^(?![ \t]*\/\/)[^\n]*\bfunc\s+sourceURL\s*\(\s*for\s+\w+\s*:\s*(?:React\.)?RCTBridge\b/m
-    );
-    if (legacySourceUrl) {
-      const line = contents.slice(0, legacySourceUrl.index).split('\n').length;
-      throw new Error(
-        `Cannot install Expo modules because AppDelegate.swift contains the legacy sourceURL(for:) method at line ${line}. SDK 59 and later require bundleURL() instead. Remove sourceURL(for:) and its attributes. If it contains custom bundle selection, move that logic to bundleURL() first. Then run install-expo-modules again.`
-      );
     }
   }
 
@@ -185,10 +193,8 @@ export function updateModulesAppDelegateSwift(
   );
   if (!sdkVersion || semver.lt(sdkVersion, '59.0.0')) {
     contents = contents.replace(
-      /(\boverride.*\ssourceURL\(.*\{[\s\S]+?)(\s+self\.bundleURL\(\))/m,
-      `$1\
-    // needed to return the correct URL for expo-dev-client.
-    bridge.bundleURL ?? bundleURL()`
+      /(\boverride.*\ssourceURL\(.*\{[\s\S]+?)(\s+)self\.bundleURL\(\)/m,
+      '$1$2bridge.bundleURL ?? bundleURL()'
     );
   }
   if (sdkVersion && semver.gte(sdkVersion, '58.0.0')) {
