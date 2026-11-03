@@ -22,9 +22,9 @@ When using the `AuthSession` API, the following rules apply to all authenticatio
 
 Most providers use the [OAuth 2](https://oauth.net/2/) standard for secure authentication and authorization. In the authorization code grant, the identity provider returns a one-time code. This code is then exchanged for the user's access token.
 
-Since [your client application code is not a secure place to store secrets](https://reactnative.dev/docs/security#storing-sensitive-info), it is necessary to exchange the authorization code in a server such as with [API routes](/router/web/api-routes) or [React Server Components](/guides/server-components). This will allow you to securely store and use a client secret to access the provider's token endpoint.
+[Your client application code is not a secure place to store secrets](https://reactnative.dev/docs/security#storing-sensitive-info). If the provider requires a client secret, exchange the authorization code on a server, such as with [API routes](/router/web/api-routes) or [React Server Components](/guides/server-components). The server stores the client secret and sends it to the provider's token endpoint.
 
-Use [`AuthSession.exchangeCodeAsync()`](/versions/latest/sdk/auth-session/#authsessionexchangecodeasyncconfig-discovery) to exchange that `code` for an access token. If the provider requires a client secret, call `exchangeCodeAsync` on your server. If the provider supports Proof Key for Code Exchange (PKCE), you can exchange the code in the app without a client secret. Pass `request.codeVerifier` in `extraParams.code_verifier`. The Okta example below exchanges the code in the app with PKCE.
+Use [`AuthSession.exchangeCodeAsync()`](/versions/latest/sdk/auth-session/#authsessionexchangecodeasyncconfig-discovery) to exchange that `code` for an access token. If the provider accepts Proof Key for Code Exchange (PKCE) without a client secret, you can exchange the code in the app. Check your provider's documentation to find out if it requires a client secret. Pass `request.codeVerifier` in `extraParams.code_verifier`. The Okta example below exchanges the code in the app with PKCE.
 
 ```tsx
 import { exchangeCodeAsync } from 'expo-auth-session';
