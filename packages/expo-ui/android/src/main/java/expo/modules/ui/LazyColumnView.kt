@@ -12,15 +12,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.currentRecomposeScope
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.unit.dp
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
@@ -47,7 +39,6 @@ data class LazyColumnProps(
   val verticalArrangement: MutableState<VerticalArrangement?> = mutableStateOf(null),
   val horizontalAlignment: MutableState<HorizontalAlignment?> = mutableStateOf(null),
   val contentPadding: MutableState<ContentPadding?> = mutableStateOf(null),
-  val dismissKeyboardOnScroll: MutableState<Boolean> = mutableStateOf(false),
   val modifiers: MutableState<ModifierList> = mutableStateOf(emptyList())
 ) : ComposeProps
 
@@ -77,26 +68,8 @@ class LazyColumnView(context: Context, appContext: AppContext) :
 
     val padding = props.contentPadding.value
 
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-    // Mirrors the iOS `scrollDismissesKeyboard("immediately")`: a user drag clears focus and hides the keyboard.
-    val dismissKeyboardConnection = remember(focusManager, keyboardController) {
-      object : NestedScrollConnection {
-        override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-          if (source == NestedScrollSource.UserInput && available.y != 0f) {
-            focusManager.clearFocus()
-            keyboardController?.hide()
-          }
-          return Offset.Zero
-        }
-      }
-    }
-    val dismissKeyboardModifier =
-      if (props.dismissKeyboardOnScroll.value) Modifier.nestedScroll(dismissKeyboardConnection) else Modifier
-
     LazyColumn(
-      modifier = dismissKeyboardModifier
-        .then(ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher))
+      modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
         .lazyRecycledItemsCrossAxis(this@LazyColumnView, isVertical = true),
       verticalArrangement = verticalArrangement,
       horizontalAlignment = horizontalAlignment,

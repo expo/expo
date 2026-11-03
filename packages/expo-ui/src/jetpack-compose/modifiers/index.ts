@@ -653,5 +653,19 @@ export const verticalScroll = () => createModifier('verticalScroll');
  */
 export const horizontalScroll = () => createModifier('horizontalScroll');
 
+/**
+ * Hides the software keyboard and clears focus when the user starts to drag the scrollable content.
+ * Works on `LazyColumn`, `LazyRow`, and on a `Column` or `Row` with a scroll modifier.
+ * Also clears the focus of a React Native `TextInput` outside the `Host`.
+ *
+ * Put it before `verticalScroll()` or `horizontalScroll()` in the modifier list.
+ *
+ * @example
+ * ```tsx
+ * <LazyColumn modifiers={[fillMaxWidth(), scrollDismissesKeyboard()]}>
+ * ```
+ */
+export const scrollDismissesKeyboard = () => createModifier('scrollDismissesKeyboard');
+
 export { createModifier, createModifierWithEventListener } from './createModifier';
 export { createViewModifierEventListener } from './utils';

@@ -54,10 +54,6 @@ export interface LazyColumnProps {
    */
   contentPadding?: ContentPadding;
   /**
-   * Hides the keyboard and clears focus when the user starts scrolling.
-   */
-  dismissKeyboardOnScroll?: boolean;
-  /**
    * Modifiers for the component.
    */
   modifiers?: ExpoModifier[];
