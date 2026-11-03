@@ -22,7 +22,7 @@ import { event } from './events';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getSortedModules, graphToSerialAssetsAsync } from './serializeChunks';
 import type { ChunkingStrategy } from './serializerAssets';
-import { sourceMapString } from './sourceMap';
+import { getSourceMapOptions, normalizeSourceMapString, sourceMapString } from './sourceMap';
 
 export type { SerialAsset } from './serializerAssets';
 
@@ -142,6 +142,8 @@ export function createDefaultExportCustomSerializer(
       environment: graph.transformOptions?.customTransformOptions?.environment ?? 'client',
     };
 
+    const isServer = context.environment === 'node' || context.environment === 'react-server';
+
     const options: ExpoSerializerOptions = {
       ...inputOptions,
       createModuleId: (moduleId, ...props) => {
@@ -206,12 +208,11 @@ export function createDefaultExportCustomSerializer(
 
     const getEnsuredMaps = () => {
       bundleMap ??= sourceMapString(
-        [...premodulesToBundle, ...getSortedModules([...graph.dependencies.values()], options)],
-        {
-          excludeSource: options.serializerOptions?.excludeSource ?? false,
-          processModuleFilter: options.processModuleFilter,
-          shouldAddToIgnoreList: options.shouldAddToIgnoreList,
-        }
+        [
+          ...(options.modulesOnly ? [] : premodulesToBundle),
+          ...getSortedModules([...graph.dependencies.values()], options),
+        ],
+        getSourceMapOptions(options, isServer)
       );
 
       return bundleMap;
@@ -241,30 +242,13 @@ export function createDefaultExportCustomSerializer(
       };
     }
 
-    // Exports....
-
-    bundleMap ??= getEnsuredMaps();
-
-    if (enableDebugId) {
-      const mutateSourceMapWithDebugId = (sourceMap: string) => {
-        // NOTE: debugId isn't required for inline source maps because the source map is included in the same file, therefore
-        // we don't need to disambiguate between multiple source maps.
-        const sourceMapObject = JSON.parse(sourceMap);
-        sourceMapObject.debugId = loadDebugId();
-        // NOTE: Sentry does this, but bun does not.
-        // sourceMapObject.debug_id = debugId;
-        return JSON.stringify(sourceMapObject);
-      };
-
-      return {
-        code: bundleCode,
-        map: mutateSourceMapWithDebugId(bundleMap),
-      };
-    }
+    const map = getEnsuredMaps();
 
     return {
       code: bundleCode,
-      map: bundleMap,
+      map: enableDebugId
+        ? normalizeSourceMapString(JSON.parse(map), { debugId: loadDebugId() })
+        : map,
     };
   };
 }
@@ -335,6 +319,11 @@ function getDefaultSerializer(
           : options.sourceUrl;
 
         const url = new URL(sourceUrl, 'https://expo.dev');
+        // TODO(@kitten): Remove URL recovery once Metro forwards excludeSource to custom serializers.
+        const excludeSource = url.searchParams.get('excludeSource');
+        if (options.excludeSource == null && excludeSource != null) {
+          options.excludeSource = excludeSource === 'true' || excludeSource === '1';
+        }
 
         return {
           outputMode: url.searchParams.get('serializer.output'),
