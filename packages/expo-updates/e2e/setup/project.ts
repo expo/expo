@@ -3,7 +3,6 @@
 import spawnAsync from '@expo/spawn-async';
 import { rmSync, existsSync } from 'fs';
 import fs from 'fs/promises';
-import { glob } from 'glob';
 import nullthrows from 'nullthrows';
 import path from 'path';
 
