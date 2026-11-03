@@ -839,17 +839,7 @@ exports[`legacy config lints the baseline fixtures: fixtures/baseline/globals-00
 
 exports[`legacy config lints the baseline fixtures: fixtures/baseline/globals-01.web.js 1`] = `[]`;
 
-exports[`legacy config lints the baseline fixtures: fixtures/baseline/imports-00.js 1`] = `
-[
-  {
-    "column": 19,
-    "line": 3,
-    "message": "Unable to resolve path to module './imports-module'.",
-    "ruleId": "import/no-unresolved",
-    "severity": "error",
-  },
-]
-`;
+exports[`legacy config lints the baseline fixtures: fixtures/baseline/imports-00.js 1`] = `[]`;
 
 exports[`legacy config lints the baseline fixtures: fixtures/baseline/imports-helper.js 1`] = `[]`;
 
