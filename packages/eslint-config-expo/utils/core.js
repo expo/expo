@@ -14,7 +14,7 @@ module.exports = {
     module: 'readonly',
     require: 'readonly',
   },
-  extends: ['plugin:import/errors'],
+  extends: ['plugin:import/recommended'],
   plugins: ['import'],
   rules: {
     eqeqeq: ['warn', 'smart'],

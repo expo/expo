@@ -3,7 +3,6 @@ const { jsExtensions } = require('./extensions');
 
 module.exports = [
   importPlugin.flatConfigs.recommended,
-  importPlugin.flatConfigs.errors,
   {
     languageOptions: {
       globals: {

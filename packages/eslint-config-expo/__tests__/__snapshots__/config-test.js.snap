@@ -15518,6 +15518,15 @@ exports[`legacy config resolves metro.config.js 1`] = `
     "import/namespace": [
       "error",
     ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
     "import/no-unresolved": [
       "error",
     ],
@@ -15893,6 +15902,15 @@ exports[`legacy config resolves src/app.ios.ts 1`] = `
     "import/namespace": [
       "error",
     ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
     "import/no-unresolved": [
       "error",
     ],
@@ -16207,6 +16225,15 @@ exports[`legacy config resolves src/app.js 1`] = `
     ],
     "import/namespace": [
       "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
     ],
     "import/no-unresolved": [
       "error",
@@ -16536,6 +16563,15 @@ exports[`legacy config resolves src/app.jsx 1`] = `
     ],
     "import/namespace": [
       "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
     ],
     "import/no-unresolved": [
       "error",
@@ -16912,6 +16948,15 @@ exports[`legacy config resolves src/app.ts 1`] = `
     "import/namespace": [
       "error",
     ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
     "import/no-unresolved": [
       "error",
     ],
@@ -17273,6 +17318,15 @@ exports[`legacy config resolves src/app.tsx 1`] = `
     "import/namespace": [
       "error",
     ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
     "import/no-unresolved": [
       "error",
     ],
@@ -17588,6 +17642,15 @@ exports[`legacy config resolves src/app.web.js 1`] = `
     ],
     "import/namespace": [
       "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
     ],
     "import/no-unresolved": [
       "error",
@@ -17918,6 +17981,15 @@ exports[`legacy config resolves src/lib.cjs 1`] = `
     "import/namespace": [
       "error",
     ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
     "import/no-unresolved": [
       "error",
     ],
@@ -18239,6 +18311,15 @@ exports[`legacy config resolves src/lib.mjs 1`] = `
     ],
     "import/namespace": [
       "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
     ],
     "import/no-unresolved": [
       "error",
@@ -18607,6 +18688,15 @@ exports[`legacy config resolves src/types.d.ts 1`] = `
     ],
     "import/namespace": [
       "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
     ],
     "import/no-unresolved": [
       "error",
