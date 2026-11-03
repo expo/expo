@@ -1,10 +1,12 @@
 import { router } from 'expo-router';
-import { Button, View } from 'react-native';
+import { Button, ScrollView } from 'react-native';
 
 export default function Modal() {
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={{ flexGrow: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Button title="router.back()" onPress={() => router.back()} />
-    </View>
+    </ScrollView>
   );
 }
