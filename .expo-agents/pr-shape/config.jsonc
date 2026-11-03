@@ -1,0 +1,31 @@
+// A fast first pass on the shape of a pull request: its purpose, title, description and
+// test plan. It runs before the full review and uses a small model.
+{
+  "model": "anthropic/claude-haiku-5-5",
+  "policy": { "minSeverity": "suggestion" },
+  "noise": {
+    "additionalIgnores": [
+      "**/build/**",
+      "**/__generated__/**",
+      "**/vendored/**",
+      "**/ios/Pods/**",
+      "**/*.pbxproj",
+      "**/Podfile.lock"
+    ]
+  },
+  "research": { "enabled": false },
+  "review": {
+    "trigger": "label",
+    "label": "ai-review",
+    // No readyForHumanLabel: this pass must never mark a PR ready before the full review runs.
+    "skipLabel": "ai-review:skip"
+  },
+  "breakGlass": { "marker": "/skip-review" },
+  // A separate tag, so this pass never edits the main review comment.
+  "commentTag": "expo-ai-pr-shape",
+  "auth": {
+    "providers": {
+      "anthropic": { "tokenEnv": "CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN" }
+    }
+  }
+}
