@@ -16,6 +16,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
 import java.lang.ref.WeakReference
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -25,6 +26,11 @@ private const val ORIENTATION_LANDSCAPE = "landscape"
 
 class PrintModule : Module() {
   private val jobName = "Printing"
+
+  // The task owns an off-screen WebView. A local variable is not a GC root after render() returns,
+  // so a collection mid-render drops the WebView and the continuation never settles.
+  private val activeRenderTasks: MutableSet<PrintPDFRenderTask> = ConcurrentHashMap.newKeySet<PrintPDFRenderTask>()
+
   override fun definition() = ModuleDefinition {
     Name("ExpoPrint")
 
@@ -52,14 +58,19 @@ class PrintModule : Module() {
       suspendCancellableCoroutine { continuation ->
         if (options.html != null) {
           // Renders HTML to PDF and then prints
+          val renderTask = PrintPDFRenderTask(context, options)
+          activeRenderTasks.add(renderTask)
+          continuation.invokeOnCancellation { activeRenderTasks.remove(renderTask) }
           try {
-            val renderTask = PrintPDFRenderTask(context, options)
             renderTask.render(
               null,
               null,
-              createPrintCallbacks(options, continuation)
+              createPrintCallbacks(options, continuation) {
+                activeRenderTasks.remove(renderTask)
+              }
             )
           } catch (e: Exception) {
+            activeRenderTasks.remove(renderTask)
             continuation.resumeWithException(UnexpectedPrintException("There was an error while trying to print HTML ", e))
           }
         } else {
@@ -100,18 +111,32 @@ class PrintModule : Module() {
     return withContext(Dispatchers.Main) {
       return@withContext suspendCancellableCoroutine { continuation ->
         val renderTask = PrintPDFRenderTask(context, options)
-        renderTask.render(
-          outputFile,
-          fileDescriptor,
-          createPrintToFileCallbacks(options, continuation)
-        )
+        activeRenderTasks.add(renderTask)
+        continuation.invokeOnCancellation { activeRenderTasks.remove(renderTask) }
+        try {
+          renderTask.render(
+            outputFile,
+            fileDescriptor,
+            createPrintToFileCallbacks(options, continuation) {
+              activeRenderTasks.remove(renderTask)
+            }
+          )
+        } catch (e: Exception) {
+          activeRenderTasks.remove(renderTask)
+          continuation.resumeWithException(e)
+        }
       }
     }
   }
 
-  private fun createPrintToFileCallbacks(options: PrintOptions, continuation: Continuation<FilePrintResult>): PrintPDFRenderTask.Callbacks {
+  private fun createPrintToFileCallbacks(
+    options: PrintOptions,
+    continuation: Continuation<FilePrintResult>,
+    onSettled: () -> Unit
+  ): PrintPDFRenderTask.Callbacks {
     return object : PrintPDFRenderTask.Callbacks() {
       override fun onRenderFinished(document: PrintDocumentAdapter, outputFile: File?, numberOfPages: Int) {
+        onSettled()
         val uri = FileUtils.uriFromFile(outputFile).toString()
         var base64: String? = null
         if (options.base64) {
@@ -127,19 +152,26 @@ class PrintModule : Module() {
       }
 
       override fun onRenderError(exception: CodedException) {
+        onSettled()
         continuation.resumeWithException(exception)
       }
     }
   }
 
-  private fun createPrintCallbacks(options: PrintOptions, continuation: Continuation<Unit>): PrintPDFRenderTask.Callbacks {
+  private fun createPrintCallbacks(
+    options: PrintOptions,
+    continuation: Continuation<Unit>,
+    onSettled: () -> Unit
+  ): PrintPDFRenderTask.Callbacks {
     return object : PrintPDFRenderTask.Callbacks() {
       override fun onRenderFinished(document: PrintDocumentAdapter, outputFile: File?, numberOfPages: Int) {
+        onSettled()
         printDocumentToPrinter(document, options)
         continuation.resume(Unit)
       }
 
       override fun onRenderError(exception: CodedException) {
+        onSettled()
         continuation.resumeWithException(exception)
       }
     }
