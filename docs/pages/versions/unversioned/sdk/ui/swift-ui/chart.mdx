@@ -64,7 +64,7 @@ export default function BarChartExample() {
 
 ### Pie chart
 
-Pie charts require iOS 17 and later.
+Pie charts require iOS 17 and later, or tvOS 17 and later. On older versions, the chart shows no slices.
 
 ```tsx PieChartExample.tsx
 import { Host, Chart } from '@expo/ui/swift-ui';
@@ -124,7 +124,7 @@ export default function PointAreaExample() {
 
 ### Per-point colors
 
-Provide a `color` for individual data points to override the automatic category colors. This is useful when each data point represents a distinct category (for example, days of the week) rather than a series.
+Set `color` on a data point to choose its color in `bar`, `pie`, `point`, and `rectangle` charts. `line` and `area` charts ignore it. In `bar` and `pie` charts, any per-point `color` turns off the automatic category colors and the legend.
 
 ```tsx PerPointColorExample.tsx
 import { Host, Chart } from '@expo/ui/swift-ui';
@@ -147,7 +147,7 @@ export default function PerPointColorExample() {
 
 ### Reference lines
 
-Use `referenceLines` together with `ruleStyle` to overlay horizontal rule marks, for example to highlight a target or average value.
+Use `referenceLines` to draw a horizontal rule at each entry's `y` value, for example to highlight a target or average value. The chart does not draw an entry's `x` value, but each entry needs a unique `x`. Style the rules with `ruleStyle`.
 
 ```tsx ReferenceLinesExample.tsx
 import { Host, Chart } from '@expo/ui/swift-ui';
@@ -195,7 +195,7 @@ export default function StyledChartExample() {
         ]}
         showGrid={false}
         showLegend={false}
-        animate
+        animate={false}
         lineStyle={{
           color: '#6366F1',
           width: 3,
