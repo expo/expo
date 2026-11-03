@@ -891,3 +891,187 @@ describe('exportServerRouteAsync', () => {
     expect(files.has('_expo/server/render.js.map')).toBe(true);
   });
 });
+
+describe('exportServerRouteAsync', () => {
+  it('rejects multiple server bundles instead of dropping dependencies', async () => {
+    const devServer = new MetroBundlerDevServer('/', getPlatformBundlers('/', {}));
+    const entry = serverContents('entry.js');
+    await expect(
+      devServer['exportServerRouteAsync']({
+        contents: {
+          ...entry,
+          artifacts: [...entry.artifacts, ...serverContents('dependency.js').artifacts],
+        } as any,
+        artifactFilename: 'entry.js',
+        files: new Map(),
+        descriptor: {},
+      })
+    ).rejects.toThrow('Server bundle splitting is not supported');
+  });
+
+  it('persists serializer artifacts without rewriting code, maps, or metadata', async () => {
+    const devServer = new MetroBundlerDevServer('/', getPlatformBundlers('/', {}));
+    const files: ExportAssetMap = new Map();
+    const source =
+      'module.exports = {};\n//# sourceMappingURL=render.js.map\n//# debugId=bundle-id';
+    const map =
+      '{ "version":3,"sources":["../shared.ts"],"names":[],"mappings":"","debugId":"bundle-id","ignoreList":[0] }';
+    const filename = await devServer['exportServerRouteAsync']({
+      contents: {
+        src: 'unused legacy code',
+        map,
+        artifacts: [
+          {
+            type: 'js',
+            filename: '_expo/server/render.js',
+            source,
+            originFilename: 'render.ts',
+            metadata: {},
+          },
+          {
+            type: 'map',
+            filename: '_expo/server/render.js.map',
+            source: map,
+            originFilename: 'render.ts',
+            metadata: {},
+          },
+        ],
+      },
+      artifactFilename: 'unused.js',
+      files,
+      includeSourceMaps: true,
+      descriptor: { apiRouteId: '/hello' },
+    });
+    expect(filename).toBe('_expo/server/render.js');
+    expect(files.get(filename)).toEqual(
+      expect.objectContaining({
+        contents: source,
+        originFilename: 'render.ts',
+        targetDomain: 'server',
+        apiRouteId: '/hello',
+      })
+    );
+    expect(files.get(filename + '.map')!.contents).toBe(map);
+  });
+});
+
+it('caches API bundles by platform and output filename', async () => {
+  const devServer = new MetroBundlerDevServer('/', getPlatformBundlers('/', {}));
+  devServer['instanceMetroOptions'] = { isExporting: true } as any;
+  jest
+    .spyOn(devServer as any, 'ssrLoadModuleContents')
+    .mockImplementation(async (_file, options: any) => ({
+      src: `${options.platform}:${options.entryFilename}`,
+    }));
+  const first = await devServer['bundleApiRoute']('/hello.ts', {
+    platform: 'web',
+    entryFilename: 'first.js',
+  });
+  const second = await devServer['bundleApiRoute']('/hello.ts', {
+    platform: 'web',
+    entryFilename: 'second.js',
+  });
+  const third = await devServer['bundleApiRoute']('/hello.ts', {
+    platform: 'ios',
+    entryFilename: 'first.js',
+  });
+  expect(second?.src).toBe('web:second.js');
+  expect(third?.src).toBe('ios:first.js');
+  expect(
+    await devServer['bundleApiRoute']('/hello.ts', { platform: 'web', entryFilename: 'first.js' })
+  ).toBe(first);
+});
+
+describe('exportExpoRouterApiRoutesAsync', () => {
+  it('serializes routes and middleware with their output filenames', async () => {
+    const devServer = new MetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+    devServer['instanceMetroOptions'] = {
+      routerRoot: 'app',
+    };
+    jest.spyOn(devServer as any, 'getExpoRouterRoutesManifestAsync').mockResolvedValueOnce({
+      apiRoutes: [
+        { file: 'hello+api.ts', page: '/hello' },
+        { file: 'rsc.ts', page: '/_flight/[...rsc]' },
+      ],
+      middleware: { file: '+middleware.ts' },
+    } as any);
+    jest
+      .spyOn(devServer as any, 'bundleApiRoute')
+      .mockImplementation(async (_file: unknown, options: any) =>
+        serverContents(options.entryFilename)
+      );
+    const { files, manifest } = await devServer.exportExpoRouterApiRoutesAsync({
+      outputDir: '_expo/functions',
+      platform: 'web',
+      prerenderManifest: { htmlRoutes: [] } as any,
+    });
+    expect(manifest.apiRoutes.map((route) => route.file)).toEqual([
+      '_expo/functions/hello+api.js',
+      '_expo/functions/_flight/[...rsc].js',
+    ]);
+    expect(manifest.middleware?.file).toBe('_expo/functions/+middleware.js');
+    expect(devServer['bundleApiRoute']).toHaveBeenCalledWith('/app/hello+api.ts', {
+      platform: 'web',
+      entryFilename: '_expo/functions/hello+api.js',
+      includeSourceMaps: false,
+    });
+    expect(devServer['bundleApiRoute']).toHaveBeenCalledWith('/app/+middleware.ts', {
+      platform: 'web',
+      entryFilename: '_expo/functions/+middleware.js',
+      includeSourceMaps: false,
+    });
+    expect([...files.keys()]).toEqual(
+      expect.arrayContaining(manifest.apiRoutes.map((route) => route.file))
+    );
+  });
+});
+
+it('serializes renderers and loaders with their output filenames', async () => {
+  const devServer = new MetroBundlerDevServer('/', getPlatformBundlers('/', {}));
+  jest
+    .spyOn(devServer as any, 'ssrLoadModuleContents')
+    .mockImplementation(async (_file: unknown, options: any) =>
+      serverContents(options.entryFilename)
+    );
+  jest
+    .spyOn(devServer as any, 'bundleLoader')
+    .mockImplementation(async (_file: unknown, options: any) =>
+      serverContents(options.entryFilename)
+    );
+  const files: ExportAssetMap = new Map();
+  const renderer = await devServer.exportExpoRouterRenderModuleAsync({ files });
+  expect(files.has('_expo/server/render.js')).toBe(true);
+  expect(renderer).toBe('_expo/server/render.js');
+  const loaders = await devServer.exportExpoRouterLoadersAsync({
+    platform: 'web',
+    entryPoints: [{ file: '/app/index.tsx', page: '/index' }],
+    files,
+    outputDir: '_expo/loaders',
+    includeSourceMaps: false,
+  });
+  expect(files.has('_expo/loaders/index.js')).toBe(true);
+  expect(loaders.get('/index')).toBe('_expo/loaders/index.js');
+  expect(devServer['ssrLoadModuleContents']).toHaveBeenCalledWith(expect.any(String), {
+    environment: 'node',
+    platform: 'web',
+    entryFilename: '_expo/server/render.js',
+    includeSourceMaps: false,
+  });
+  expect(devServer['bundleLoader']).toHaveBeenCalledWith('/app/index.tsx', {
+    platform: 'web',
+    entryFilename: '_expo/loaders/index.js',
+    includeSourceMaps: false,
+  });
+  expect(getConfig).not.toHaveBeenCalled();
+});
+
+function serverContents(filename: string) {
+  const src = 'module.exports = {};';
+  return {
+    src,
+    artifacts: [{ type: 'js', filename, source: src, originFilename: 'entry.ts', metadata: {} }],
+  };
+}
