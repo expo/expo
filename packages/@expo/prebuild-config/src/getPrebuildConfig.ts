@@ -57,7 +57,9 @@ function getPrebuildConfig(
   config = withVersionedExpoSDKPlugins(config);
   config = withLegacyExpoPlugins(config);
 
-  if (platforms.includes('ios')) {
+  // tvOS is configured through the iOS plugins and the `ios` config shape, so it needs them
+  // registered even when `ios` itself isn't being prebuilt.
+  if (platforms.includes('ios') || platforms.includes('tvos')) {
     if (!config.ios) config.ios = {};
     config.ios.bundleIdentifier =
       bundleIdentifier ?? config.ios.bundleIdentifier ?? `com.placeholder.appid`;

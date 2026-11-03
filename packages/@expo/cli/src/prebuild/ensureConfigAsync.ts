@@ -22,7 +22,7 @@ export async function ensureConfigAsync(
     await getOrPromptForPackageAsync(projectRoot);
   }
 
-  if (platforms.includes('ios')) {
+  if (platforms.includes('ios') || platforms.includes('tvos')) {
     await getOrPromptForBundleIdentifierAsync(projectRoot);
   }
 

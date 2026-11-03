@@ -1,4 +1,5 @@
 import JsonFile from '@expo/json-file';
+import { PREBUILD_APPLE_PLATFORMS } from '@expo/platforms';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -167,8 +168,8 @@ export async function downloadAndExtractExampleAsync(
 }
 
 function exampleHasNativeCode(root: string): boolean {
-  return [path.join(root, 'android'), path.join(root, 'ios')].some((folder) =>
-    fs.existsSync(folder)
+  return ['android', ...PREBUILD_APPLE_PLATFORMS].some((folder) =>
+    fs.existsSync(path.join(root, folder))
   );
 }
 

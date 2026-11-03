@@ -2,6 +2,8 @@ import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import type { ModPlatform } from '@expo/config-plugins';
 import { updateXcodeProject } from '@expo/inline-modules';
+import type { AppleTargetPlatformName } from '@expo/platforms';
+import { isPrebuildApplePlatform } from '@expo/platforms';
 import chalk from 'chalk';
 
 import { installAsync } from '../install/installAsync';
@@ -73,8 +75,11 @@ export async function prebuildAsync(
   const initialExp = getConfig(projectRoot).exp;
   const { platforms } = initialExp;
   if (platforms?.length) {
-    // Filter out platforms that aren't in the app.json.
-    const finalPlatforms = options.platforms.filter((platform) => platforms.includes(platform));
+    // Filter out platforms that aren't in the app.json. `platforms` from
+    // app.json is typed as ('android' | 'ios' | 'web')[] and doesn't yet
+    // include 'tvos', so widen for the .includes() check.
+    const appPlatforms = platforms as string[];
+    const finalPlatforms = options.platforms.filter((platform) => appPlatforms.includes(platform));
     if (finalPlatforms.length > 0) {
       options.platforms = finalPlatforms;
     } else {
@@ -193,16 +198,25 @@ export async function prebuildAsync(
 
   await onProjectReady?.();
 
+  // Install CocoaPods for each Apple platform. Swift Package Manager setup supports only iOS, so
+  // with it enabled, iOS uses it and the other Apple platforms still use CocoaPods.
+  const cocoaPodsPlatforms = options.platforms.filter(
+    (platform): platform is AppleTargetPlatformName =>
+      isPrebuildApplePlatform(platform) && !(useSwiftPM && platform === 'ios')
+  );
   let podsInstalled: boolean = false;
-  // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
   if (useSwiftPM) {
-    event('pods:installed', { ms: 0, skipped: true });
     await setupSwiftPMAsync(projectRoot, { install: !!options.install });
-  } else if (options.platforms.includes('ios') && options.install && needsPodInstall) {
+  }
+  // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
+  if (cocoaPodsPlatforms.length && options.install && needsPodInstall) {
     const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
 
     const startedAt = Date.now();
-    podsInstalled = await installCocoaPodsAsync(projectRoot);
+    podsInstalled = true;
+    for (const platform of cocoaPodsPlatforms) {
+      podsInstalled = (await installCocoaPodsAsync(projectRoot, { platform })) && podsInstalled;
+    }
     event('pods:installed', { ms: Date.now() - startedAt, skipped: false });
   } else {
     event('pods:installed', { ms: 0, skipped: true });

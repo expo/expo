@@ -3,10 +3,12 @@ import {
   KNOWN_PLATFORMS,
   OUT_OF_TREE_PLATFORMS,
   PLATFORM_EXTENSIONS,
+  PREBUILD_APPLE_PLATFORMS,
   REACT_NATIVE_HOST_PACKAGES,
   getReactNativeHostPackage,
   isAppleTargetPlatform,
   isOutOfTreePlatform,
+  isPrebuildApplePlatform,
 } from '..';
 
 describe('platform sets', () => {
@@ -24,6 +26,12 @@ describe('platform sets', () => {
   it(`every Apple target platform is a known platform`, () => {
     for (const platform of APPLE_TARGET_PLATFORMS) {
       expect(KNOWN_PLATFORMS).toContain(platform);
+    }
+  });
+
+  it(`every prebuild Apple platform is an Apple target platform`, () => {
+    for (const platform of PREBUILD_APPLE_PLATFORMS) {
+      expect(APPLE_TARGET_PLATFORMS).toContain(platform);
     }
   });
 });
@@ -55,6 +63,19 @@ describe(isAppleTargetPlatform, () => {
     expect(isAppleTargetPlatform('android')).toBe(false);
     expect(isAppleTargetPlatform('web')).toBe(false);
     expect(isAppleTargetPlatform(null)).toBe(false);
+  });
+});
+
+describe(isPrebuildApplePlatform, () => {
+  it(`identifies the Apple platforms that prebuild generates`, () => {
+    expect(isPrebuildApplePlatform('ios')).toBe(true);
+    expect(isPrebuildApplePlatform('tvos')).toBe(true);
+  });
+
+  it(`rejects macos and non-Apple platforms`, () => {
+    expect(isPrebuildApplePlatform('macos')).toBe(false);
+    expect(isPrebuildApplePlatform('android')).toBe(false);
+    expect(isPrebuildApplePlatform(null)).toBe(false);
   });
 });
 

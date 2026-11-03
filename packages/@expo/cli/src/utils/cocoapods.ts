@@ -2,6 +2,7 @@ import type { PackageJSONConfig } from '@expo/config';
 import { getConfig, getPackageJson } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
+import type { AppleTargetPlatformName } from '@expo/platforms';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
@@ -74,7 +75,10 @@ export async function hasPackageJsonDependencyListChangedAsync(
   return hasNewDependencies;
 }
 
-export async function installCocoaPodsAsync(projectRoot: string): Promise<boolean> {
+export async function installCocoaPodsAsync(
+  projectRoot: string,
+  { platform = 'ios' }: { platform?: AppleTargetPlatformName } = {}
+): Promise<boolean> {
   let step = logNewSection('Installing CocoaPods...');
   if (process.platform !== 'darwin') {
     step.succeed('Skipped installing CocoaPods because operating system is not on macOS.');
@@ -82,7 +86,7 @@ export async function installCocoaPodsAsync(projectRoot: string): Promise<boolea
   }
 
   const packageManager = new PackageManager.CocoaPodsPackageManager({
-    cwd: path.join(projectRoot, 'ios'),
+    cwd: path.join(projectRoot, platform),
     silent: !(env.EXPO_DEBUG || env.CI),
   });
 
@@ -100,7 +104,7 @@ export async function installCocoaPodsAsync(projectRoot: string): Promise<boolea
         },
       });
       step.succeed('Installed CocoaPods CLI.');
-      step = logNewSection('Running `pod install` in the `ios` directory.');
+      step = logNewSection(`Running \`pod install\` in the \`${platform}\` directory.`);
     } catch (error: any) {
       step.stopAndPersist({
         symbol: '⚠️ ',
@@ -124,7 +128,9 @@ export async function installCocoaPodsAsync(projectRoot: string): Promise<boolea
   } catch (error: any) {
     step.stopAndPersist({
       symbol: '⚠️ ',
-      text: chalk.red('Something went wrong running `pod install` in the `ios` directory.'),
+      text: chalk.red(
+        `Something went wrong running \`pod install\` in the \`${platform}\` directory.`
+      ),
     });
     if (error instanceof PackageManager.CocoaPodsError) {
       Log.log(error.message);

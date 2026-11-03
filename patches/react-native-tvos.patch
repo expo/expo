@@ -165,6 +165,15 @@ diff --git a/scripts/react_native_pods.rb b/scripts/react_native_pods.rb
 index fe20cf3..b2c6270 100644
 --- a/scripts/react_native_pods.rb
 +++ b/scripts/react_native_pods.rb
+@@ -41,7 +41,7 @@ end
+ # By using this function, you won't have to manually change your Podfile
+ # when we change the minimum version supported by the framework.
+ def min_supported_versions
+-  return  { :ios => min_ios_version_supported, :tvos => min_ios_version_supported }
++  return  { :tvos => min_ios_version_supported }
+ end
+ 
+ # This function prepares the project for React Native, before processing
 @@ -87,7 +87,7 @@ end
  # - app_path: path to the React Native app. Required by the New Architecture.
  # - config_file_dir: directory of the `package.json` file, required by the New Architecture.
