@@ -8,6 +8,8 @@ Observe.configure({
   environment: 'custom-env',
   dispatchingEnabled: true,
   dispatchInDebug: true,
+  sampleRate: 1,
+  errorSampleRate: 1,
   integrations: {
     'expo-router': { filteredParams: ['accountId', 'firstName'] },
     'expo-image': {
