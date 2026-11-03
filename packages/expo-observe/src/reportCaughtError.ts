@@ -37,15 +37,17 @@ function normalizeReportedError(error: unknown): NormalizedReportedError {
 
 /**
  * Reports a caught value as a non-fatal error through the AppMetrics module, shared by the native
- * and web `Observe.reportError` implementations and by integrations. `source` is `reportedByUser`
- * for an error the app reports, and `integration` for an error an integration reports for a library.
+ * and web `Observe.reportError` implementations, by integrations, and by the rejection tracker.
+ * `source` is `reportedByUser` for an error the app reports, `integration` for an error an
+ * integration reports for a library, and `unhandledRejection` for a promise rejection that no handler
+ * caught.
  *
  * Never throws: it's called from a `catch` block, so a failure here (a pathological thrown value, or
  * a native call that rejects the payload) must not turn a handled error into an unhandled one.
  */
 export function reportCaughtError(
   error: unknown,
-  source: 'reportedByUser' | 'integration' = 'reportedByUser'
+  source: 'reportedByUser' | 'integration' | 'unhandledRejection' = 'reportedByUser'
 ): void {
   try {
     AppMetrics.reportError({

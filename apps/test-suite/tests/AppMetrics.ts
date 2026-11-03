@@ -7,6 +7,8 @@ import AppMetrics, {
   type NetworkRequestStartedEvent,
 } from 'expo-app-metrics';
 import { fetch } from 'expo/fetch';
+// Installs the unhandled promise rejection tracker.
+import 'expo-observe';
 
 import type { JasmineInterface } from '../types';
 import { gateOnHostAsync } from '../utils/HostReachability';
@@ -608,6 +610,47 @@ export async function test({ describe, expect, it, afterEach, ...t }: JasmineInt
       } finally {
         AppMetrics.reportError = originalReportError;
       }
+    });
+
+    // expo-observe tracks rejections only when `__DEV__` is false. In development, React Native's
+    // own tracker shows them in LogBox.
+    describe('unhandled promise rejections', () => {
+      it('records an unhandled rejection as a js.exception log event', async () => {
+        if (__DEV__) {
+          t.pending('expo-observe tracks unhandled rejections only when __DEV__ is false');
+          return;
+        }
+        const message = `test-suite unhandled rejection ${Date.now()}`;
+        Promise.reject(new TypeError(message));
+
+        const log = await waitForJsExceptionLog(
+          (entry) => readAttributes(entry)['exception.message'] === message
+        );
+        const attributes = readAttributes(log);
+        expect(attributes['exception.type']).toBe('TypeError');
+        expect(attributes['expo.error.source']).toBe('unhandledRejection');
+        expect(attributes['expo.error.is_fatal']).toBe(false);
+      });
+
+      it('does not record a rejection that gets a handler before the delay ends', async () => {
+        if (__DEV__) {
+          t.pending('expo-observe tracks unhandled rejections only when __DEV__ is false');
+          return;
+        }
+        const message = `test-suite handled rejection ${Date.now()}`;
+        const rejection = Promise.reject(new Error(message));
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        rejection.catch(() => {});
+        // Hermes reports an `Error` rejection after 2000 ms, so wait past that.
+        await new Promise((resolve) => setTimeout(resolve, 2500));
+
+        const logs = await AppMetrics.getMainSession().getLogs();
+        const recorded = logs.some(
+          (log) =>
+            log.name === 'js.exception' && readAttributes(log)['exception.message'] === message
+        );
+        expect(recorded).toBe(false);
+      }, 10_000);
     });
   });
 }
