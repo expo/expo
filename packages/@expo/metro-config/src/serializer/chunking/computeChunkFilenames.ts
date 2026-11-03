@@ -146,7 +146,7 @@ export function precomputeChunkFilenames({
   const setOutput = (chunk: Chunk, contentFilename: string) => {
     const filename = recomputeChunkNames
       ? getExportFilename(contentFilename, {
-          entryFilename: chunk.isEntry ? entryFilename : undefined,
+          entryFilename: chunk.isEntry && !chunk.sealed ? entryFilename : undefined,
           outputDirectory,
           outputExtension,
         })
