@@ -3752,9 +3752,6 @@ importers:
       react:
         specifier: 19.3.0
         version: 19.3.0
-      react-native:
-        specifier: 0.88.1
-        version: 0.88.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
 
   packages/eslint-config-universe:
     dependencies:

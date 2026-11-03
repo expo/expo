@@ -485,6 +485,8 @@ exports[`flat config lints the baseline fixtures: fixtures/baseline/web-native-0
 ]
 `;
 
+exports[`flat config lints the baseline fixtures: fixtures/baseline/web-native-view.js 1`] = `[]`;
+
 exports[`legacy config lints the baseline fixtures: fixtures/baseline/all-00.js 1`] = `
 [
   {
@@ -969,3 +971,5 @@ exports[`legacy config lints the baseline fixtures: fixtures/baseline/web-native
   },
 ]
 `;
+
+exports[`legacy config lints the baseline fixtures: fixtures/baseline/web-native-view.js 1`] = `[]`;
