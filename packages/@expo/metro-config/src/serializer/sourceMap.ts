@@ -34,18 +34,11 @@ export function getSourceMapOptions(
     ...options,
     excludeSource: options.serializerOptions?.excludeSource ?? !!options.excludeSource,
     flatten: isServer,
-  };
-}
-
-export function getExportSourceMapOptions(
-  options: ExpoSerializerOptions,
-  isServer: boolean
-): ExpoSourceMapOptions {
-  return {
-    ...getSourceMapOptions(options, isServer),
     getSourceUrl:
       options.getSourceUrl ??
-      ((module) => getExportSourceUrl(module.path, options.serverRoot ?? options.projectRoot)),
+      (options.serializerOptions?.output === 'static'
+        ? (module) => getExportSourceUrl(module.path, options.serverRoot ?? options.projectRoot)
+        : undefined),
   };
 }
 

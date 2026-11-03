@@ -8,7 +8,7 @@ import { getExportPathForDependencyWithOptions, getSiblingSourceMapUrl } from '.
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
 import { transformJsAssetToHermesBytecodeAsync } from '../hermesArtifacts';
 import { getModuleReferences, type SerialAsset } from '../serializerAssets';
-import { getExportSourceMapOptions, sourceMapString } from '../sourceMap';
+import { getSourceMapOptions, sourceMapString } from '../sourceMap';
 import type {
   ChunkingImplementation,
   ChunkSerializationOptions,
@@ -124,7 +124,7 @@ export class Chunk {
     const getRunModuleStatement = this.options.getRunModuleStatement;
     const jsSplitBundle = getBaseJSBundleWithDependencies()(entryFile, preModules, dependencies, {
       ...this.options,
-      sourceMapOptions: this.getSourceMapOptions(),
+      sourceMapOptions: getSourceMapOptions(this.options, this.isServer),
       getRunModuleStatement:
         this.isServer && this.isEntry
           ? (moduleId, ...args) => {
@@ -170,10 +170,6 @@ export class Chunk {
   private get isServer(): boolean {
     const environment = this.graph.transformOptions.customTransformOptions?.environment;
     return environment === 'node' || environment === 'react-server';
-  }
-
-  private getSourceMapOptions() {
-    return getExportSourceMapOptions(this.options, this.isServer);
   }
 
   private getAdjustedSourceMapUrl(filename: string): string | null {
@@ -341,7 +337,7 @@ export class Chunk {
       // TODO: We may not need to set `debugId` on the bundler sourcemap when
       // Hermes is enabled, since we ship a separate `.hbc.map` for that case.
       const sourceMap = sourceMapString(modules, {
-        ...this.getSourceMapOptions(),
+        ...getSourceMapOptions(this.options, this.isServer),
         debugId,
       });
 

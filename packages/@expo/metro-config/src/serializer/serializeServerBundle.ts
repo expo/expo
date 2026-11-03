@@ -16,7 +16,7 @@ import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { collectGraphResourcesAsync } from './serializeChunks';
 import { getModuleReferences, type SerialAsset } from './serializerAssets';
 import {
-  getExportSourceMapOptions,
+  getSourceMapOptions,
   normalizeSourceMapString,
   sourceMapStringNonBlocking,
 } from './sourceMap';
@@ -82,7 +82,7 @@ export async function serializeServerBundleAsync(
           ...(options.modulesOnly ? [] : preModules),
           ...getSortedModules([...graph.dependencies.values()], options),
         ],
-        { ...getExportSourceMapOptions(options, true), flatten: false }
+        { ...getSourceMapOptions(options, true), flatten: false }
       ));
     const parsed = JSON.parse(json);
     const debugId =
