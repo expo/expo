@@ -242,7 +242,6 @@ describe('platform scoping', () => {
       '/tvos/HelloWorld/HelloWorld.entitlements': tvosEntitlements,
     });
 
-
     let config: ExpoConfig = { name: 'bacon', slug: 'bacon' };
     config = withInfoPlist(config, (config) => {
       config.modResults.CFBundleDisplayName = 'bacon';
@@ -296,7 +295,6 @@ describe('infoPlist', () => {
       '/ios/HelloWorld.xcodeproj/project.pbxproj': pbxproj,
       '/ios/HelloWorld/Info.plist': plist.build({ CFBundleName: '$(PRODUCT_NAME)' }),
     });
-
 
     let config: ExpoConfig = { name: 'bacon', slug: 'bacon' };
     config = withInfoPlist(config, (config) => {
