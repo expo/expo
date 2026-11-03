@@ -716,7 +716,7 @@ export interface NativeTabTriggerProps {
    *
    * The `"search"` role makes this tab the system search tab
    * ([`UISearchTab`](https://developer.apple.com/documentation/uikit/uisearchtab)) on iOS 26.1 and later.
-   * Do not change `role` after the tab renders.
+   * Changing `role` to or from `"search"` remounts the tab and resets its state.
    *
    * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem).
    * @platform ios
