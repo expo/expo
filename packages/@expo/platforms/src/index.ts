@@ -55,12 +55,15 @@ export function isAppleTargetPlatform(
  * directory in the project template. `macos` is absent until the template provides a `macos/`
  * directory.
  */
-export const PREBUILD_APPLE_PLATFORMS: readonly AppleTargetPlatformName[] = ['ios', 'tvos'];
+export type PrebuildApplePlatformName = Extract<AppleTargetPlatformName, 'ios' | 'tvos'>;
+
+/** Apple target platforms that `expo prebuild` generates a native project for. */
+export const PREBUILD_APPLE_PLATFORMS: readonly PrebuildApplePlatformName[] = ['ios', 'tvos'];
 
 /** Whether `expo prebuild` generates a native project for the Apple target platform. */
 export function isPrebuildApplePlatform(
   platform: string | null | undefined
-): platform is AppleTargetPlatformName {
+): platform is PrebuildApplePlatformName {
   return (PREBUILD_APPLE_PLATFORMS as readonly string[]).includes(platform!);
 }
 

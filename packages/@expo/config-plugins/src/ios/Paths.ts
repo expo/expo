@@ -1,4 +1,4 @@
-import type { AppleTargetPlatformName } from '@expo/platforms';
+import type { PrebuildApplePlatformName } from '@expo/platforms';
 import { PREBUILD_APPLE_PLATFORMS, isPrebuildApplePlatform } from '@expo/platforms';
 import { existsSync, readFileSync } from 'fs';
 import * as path from 'path';
@@ -12,8 +12,8 @@ import * as Entitlements from './Entitlements';
 
 const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
 
-/** An Apple platform with its own native project directory. */
-export type ApplePlatform = AppleTargetPlatformName;
+/** An Apple platform with its own native project directory and its own mod platform key. */
+export type ApplePlatform = PrebuildApplePlatformName;
 
 const ALL_PLATFORMS_GLOB = `{${PREBUILD_APPLE_PLATFORMS.join(',')}}`;
 

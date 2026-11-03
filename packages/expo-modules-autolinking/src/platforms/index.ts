@@ -1,4 +1,4 @@
-import { getReactNativeHostPackage } from '@expo/platforms';
+import { REACT_NATIVE_HOST_PACKAGES, getReactNativeHostPackage } from '@expo/platforms';
 
 import type { SupportedPlatform } from '../types';
 
@@ -60,16 +60,11 @@ export { getLinkingImplementationForPlatform };
  * platforms, which a project installs alongside its own (e.g. `react-native` and
  * `react-native-tvos` are both dependencies of an app that builds for iOS and tvOS).
  */
-const REACT_NATIVE_HOST_PACKAGES = new Set([
-  'react-native',
-  'react-native-tvos',
-  'react-native-macos',
-  'react-native-windows',
-]);
+const HOST_PACKAGE_NAMES = new Set(Object.values(REACT_NATIVE_HOST_PACKAGES));
 
 /** Whether the package is a react-native host for any platform, and so must not be autolinked. */
 export function isReactNativeHostPackage(packageName: string): boolean {
-  return REACT_NATIVE_HOST_PACKAGES.has(packageName);
+  return HOST_PACKAGE_NAMES.has(packageName);
 }
 
 export function getSupportPackageForPlatform(platform: SupportedPlatform): string | null {

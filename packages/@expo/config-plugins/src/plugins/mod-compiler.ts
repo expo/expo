@@ -1,3 +1,4 @@
+import { PREBUILD_APPLE_PLATFORMS, isPrebuildApplePlatform } from '@expo/platforms';
 import Debug from 'debug';
 import path from 'path';
 
@@ -16,10 +17,9 @@ export function withDefaultBaseMods(
   config: ExportedConfig,
   props: ForwardedBaseModOptions = {}
 ): ExportedConfig {
-  config = withIosBaseMods(config, props);
-  // tvOS builds through the same Apple mods, registered under its own key so that the mod compiler
-  // reports `tvos` and the providers resolve inside `<projectRoot>/tvos`.
-  config = withIosBaseMods(config, { ...props, platform: 'tvos' });
+  for (const platform of PREBUILD_APPLE_PLATFORMS) {
+    config = withIosBaseMods(config, { ...props, platform });
+  }
   config = withAndroidBaseMods(config, props);
   return config;
 }
@@ -120,10 +120,9 @@ const applePrecedences = {
   finalized: 1,
 };
 
-const precedences: Record<string, Record<string, number>> = {
-  ios: applePrecedences,
-  tvos: applePrecedences,
-};
+const precedences: Record<string, Record<string, number>> = Object.fromEntries(
+  PREBUILD_APPLE_PLATFORMS.map((platform) => [platform, applePrecedences])
+);
 /**
  * A generic plugin compiler.
  *
@@ -164,10 +163,9 @@ export async function evalModsAsync(
       entries = sortMods(entries, precedences[platformName] ?? { dangerous: -1, finalized: 1 });
       debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
       const platformProjectRoot = path.join(projectRoot, platformName);
-      const projectName =
-        platformName === 'ios' || platformName === 'tvos'
-          ? getHackyProjectName(projectRoot, config, platformName)
-          : undefined;
+      const projectName = isPrebuildApplePlatform(platformName)
+        ? getHackyProjectName(projectRoot, config, platformName)
+        : undefined;
 
       for (const [modName, mod] of entries) {
         const modRequest = {

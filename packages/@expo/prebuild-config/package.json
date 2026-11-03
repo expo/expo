@@ -42,6 +42,7 @@
     "@expo/config-types": "workspace:^",
     "@expo/image-utils": "workspace:^",
     "@expo/json-file": "workspace:^",
+    "@expo/platforms": "workspace:^",
     "@expo/require-utils": "workspace:^",
     "@react-native/normalize-colors": "0.88.1",
     "debug": "^4.3.1",

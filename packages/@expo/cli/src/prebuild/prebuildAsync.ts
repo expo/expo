@@ -2,7 +2,7 @@ import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import type { ModPlatform } from '@expo/config-plugins';
 import { updateXcodeProject } from '@expo/inline-modules';
-import type { AppleTargetPlatformName } from '@expo/platforms';
+import type { PlatformName, PrebuildApplePlatformName } from '@expo/platforms';
 import { isPrebuildApplePlatform } from '@expo/platforms';
 import chalk from 'chalk';
 
@@ -75,10 +75,9 @@ export async function prebuildAsync(
   const initialExp = getConfig(projectRoot).exp;
   const { platforms } = initialExp;
   if (platforms?.length) {
-    // Filter out platforms that aren't in the app.json. `platforms` from
-    // app.json is typed as ('android' | 'ios' | 'web')[] and doesn't yet
-    // include 'tvos', so widen for the .includes() check.
-    const appPlatforms = platforms as string[];
+    // Filter out platforms that aren't in the app.json. `expo.platforms` comes from the generated
+    // config schema, which does not list the out-of-tree platforms yet.
+    const appPlatforms = platforms as PlatformName[];
     const finalPlatforms = options.platforms.filter((platform) => appPlatforms.includes(platform));
     if (finalPlatforms.length > 0) {
       options.platforms = finalPlatforms;
@@ -201,7 +200,7 @@ export async function prebuildAsync(
   // Install CocoaPods for each Apple platform. Swift Package Manager setup supports only iOS, so
   // with it enabled, iOS uses it and the other Apple platforms still use CocoaPods.
   const cocoaPodsPlatforms = options.platforms.filter(
-    (platform): platform is AppleTargetPlatformName =>
+    (platform): platform is PrebuildApplePlatformName =>
       isPrebuildApplePlatform(platform) && !(useSwiftPM && platform === 'ios')
   );
   let podsInstalled: boolean = false;

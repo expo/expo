@@ -1,3 +1,4 @@
+import type { PrebuildApplePlatformName } from '@expo/platforms';
 import plist from '@expo/plist';
 import { getConfig } from 'expo/config';
 import { XML, AndroidConfig, IOSConfig } from 'expo/config-plugins';
@@ -8,7 +9,7 @@ import { Workflow } from '../../utils/build/workflow';
 
 type SyncConfigurationToNativeOptions = {
   projectRoot: string;
-  platform: 'ios' | 'tvos' | 'android';
+  platform: PrebuildApplePlatformName | 'android';
   workflow: Workflow;
 };
 
@@ -23,15 +24,10 @@ export async function syncConfigurationToNativeAsync(
     return;
   }
 
-  switch (options.platform) {
-    case 'android':
-      await syncConfigurationToNativeAndroidAsync(options);
-      break;
-    // tvOS uses the iOS config shape and its own `tvos/` project directory.
-    case 'ios':
-    case 'tvos':
-      await syncConfigurationToNativeAppleAsync(options, options.platform);
-      break;
+  if (options.platform === 'android') {
+    await syncConfigurationToNativeAndroidAsync(options);
+  } else {
+    await syncConfigurationToNativeAppleAsync(options, options.platform);
   }
 }
 

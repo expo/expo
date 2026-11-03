@@ -1,5 +1,6 @@
 import { getConfig } from '@expo/config';
 import type { ModPlatform } from '@expo/config-plugins';
+import { isPrebuildApplePlatform } from '@expo/platforms';
 
 import { getAutolinkedPackagesAsync } from './getAutolinkedPackages';
 import {
@@ -57,9 +58,9 @@ function getPrebuildConfig(
   config = withVersionedExpoSDKPlugins(config);
   config = withLegacyExpoPlugins(config);
 
-  // tvOS is configured through the iOS plugins and the `ios` config shape, so it needs them
-  // registered even when `ios` itself isn't being prebuilt.
-  if (platforms.includes('ios') || platforms.includes('tvos')) {
+  // Every Apple platform is configured through the iOS plugins and the `ios` config shape, so
+  // they need them registered even when `ios` itself isn't being prebuilt.
+  if (platforms.some(isPrebuildApplePlatform)) {
     if (!config.ios) config.ios = {};
     config.ios.bundleIdentifier =
       bundleIdentifier ?? config.ios.bundleIdentifier ?? `com.placeholder.appid`;

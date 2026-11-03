@@ -1,3 +1,4 @@
+import type { PrebuildApplePlatformName } from '@expo/platforms';
 import { AndroidConfig, IOSConfig } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
@@ -8,7 +9,7 @@ export type Workflow = 'managed' | 'generic';
 
 export async function resolveWorkflowAsync(
   projectDir: string,
-  platform: 'ios' | 'tvos' | 'android'
+  platform: PrebuildApplePlatformName | 'android'
 ): Promise<Workflow> {
   const vcsClient = await getVCSClientAsync(projectDir);
 

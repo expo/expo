@@ -1,6 +1,7 @@
 import type { ExpoConfig } from '@expo/config';
 import type { ExportedConfig, ModPlatform } from '@expo/config-plugins';
 import { compileModsAsync } from '@expo/config-plugins';
+import { isPrebuildApplePlatform } from '@expo/platforms';
 import { getPrebuildConfigAsync } from '@expo/prebuild-config';
 
 import { logConfig } from '../config/configAsync';
@@ -24,7 +25,7 @@ export async function configureProjectAsync(
   }
 ): Promise<ExpoConfig> {
   let bundleIdentifier: string | undefined;
-  if (platforms.includes('ios') || platforms.includes('tvos')) {
+  if (platforms.some(isPrebuildApplePlatform)) {
     // Check bundle ID before reading the config because it may mutate the config if the user is prompted to define it.
     bundleIdentifier = await getOrPromptForBundleIdentifierAsync(projectRoot, exp);
   }
@@ -46,12 +47,15 @@ export async function configureProjectAsync(
     config._internal.templateChecksum = templateChecksum;
   }
 
-  // Plugins register the Apple mods under the `ios` key, since tvOS shares the iOS mod shape.
-  // Copy them onto the `tvos` key so the mod compiler runs the same chain once per platform,
-  // each against its own native directory (`ios/` and `tvos/`).
-  const moddedConfig = config as ExportedConfig;
-  if (platforms.includes('tvos') && moddedConfig.mods?.ios) {
-    moddedConfig.mods.tvos = { ...moddedConfig.mods.ios };
+  // Plugins register the Apple mods under the `ios` key. Copy them onto each other requested Apple
+  // platform, so the mod compiler runs the same chain once for each platform's native directory.
+  const mods = (config as ExportedConfig).mods;
+  if (mods?.ios) {
+    for (const platform of platforms) {
+      if (isPrebuildApplePlatform(platform) && platform !== 'ios') {
+        mods[platform] = { ...mods.ios };
+      }
+    }
   }
 
   // compile all plugins and mods
