@@ -203,7 +203,7 @@ describe('ObserveNavigationContainer', () => {
     const rootState = { index: 0, routes: [{ key: 'a', name: 'A' }] };
     fakeNavigationRef.getRootState.mockReturnValueOnce(rootState);
     stateCall![1]();
-    expect(stateChangeHandler).toHaveBeenCalledWith(rootState);
+    expect(stateChangeHandler).toHaveBeenLastCalledWith(rootState, undefined);
   });
 
   it('passes other NavigationContainer props through (e.g. theme)', async () => {

@@ -2,7 +2,7 @@ import AppMetrics from 'expo-app-metrics';
 
 import type { ObserveIntegrationsConfig } from '../../types';
 import { getNavigationMetricParams } from '../navigationConfig';
-import { createNavigationBlockingTime } from './blockingTime';
+import { createNavigationBlockingTime } from '../shared/navigation/blockingTime';
 import { emitTTI } from './emitTTI';
 import { buildRoutePattern } from './routeName';
 import {

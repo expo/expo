@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import AppMetrics from 'expo-app-metrics';
 
-import { createNavigationBlockingTime } from '../blockingTime';
+import { createNavigationBlockingTime } from '../../shared/navigation/blockingTime';
 import { initListeners, initRouterIntegration } from '../init';
 import type { RouterPerformanceMark, RouterPerformanceObserver } from '../router';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
@@ -23,7 +23,7 @@ jest.mock('expo-app-metrics', () => {
 });
 
 jest.mock('../router', () => ({ optionalRouter: undefined, isRouterInstalled: false }));
-jest.mock('../blockingTime', () => ({
+jest.mock('../../shared/navigation/blockingTime', () => ({
   createNavigationBlockingTime: jest.fn(() => ({
     start: jest.fn(),
     setMetric: jest.fn(),

@@ -39,11 +39,12 @@ let cleanup: () => void;
 beforeEach(() => {
   storage = createReactNavigationIntegrationStorage();
   ref = createFakeNavigationRef();
-  cleanup = attachActionListener(ref, storage);
+  cleanup = attachActionListener(ref, storage, undefined);
 });
 
 afterEach(() => {
   cleanup?.();
+  jest.restoreAllMocks();
 });
 
 describe('attachActionListener', () => {
@@ -68,5 +69,24 @@ describe('attachActionListener', () => {
     ref.fire(action('NAVIGATE'));
     expect(storage.pendingActions).toHaveLength(0);
     cleanup = () => {};
+  });
+
+  it('starts a tbt window at the dispatch time of each navigation after app launch', () => {
+    const blockingTime = { start: jest.fn(), setMetric: jest.fn(), dispose: jest.fn() };
+    cleanup();
+    cleanup = attachActionListener(ref, storage, blockingTime);
+    const now = jest.spyOn(performance, 'now');
+
+    now.mockReturnValue(1000);
+    ref.fire(action('NAVIGATE'));
+    storage.hasRecordedInitialTtr = true;
+    ref.fire(action('PRELOAD'));
+    ref.fire(action('NAVIGATE', { noop: true }));
+    now.mockReturnValue(1200);
+    ref.fire(action('NAVIGATE'));
+    now.mockReturnValue(1300);
+    ref.fire(action('SET_PARAMS'));
+
+    expect(blockingTime.start.mock.calls).toEqual([[1200], [1300]]);
   });
 });
