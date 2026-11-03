@@ -141,7 +141,7 @@ export function assertNoLegacySourceUrl(
   }
 
   const legacySourceUrl = contents.match(
-    /^(?![ \t]*\/\/)[^\n]*\bfunc\s+sourceURL\s*\(\s*for\s+\w+\s*:\s*(?:React\.)?RCTBridge\b/m
+    /^(?:(?!\/\/)[^\n])*\bfunc\s+sourceURL\s*\(\s*for\s+\w+\s*:\s*(?:React\.)?RCTBridge\b/m
   );
   if (legacySourceUrl) {
     const line = contents.slice(0, legacySourceUrl.index).split('\n').length;
