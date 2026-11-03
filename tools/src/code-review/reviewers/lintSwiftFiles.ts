@@ -1,5 +1,5 @@
-import minimatch from 'minimatch';
 import path from 'path';
+import picomatch from 'picomatch';
 
 import Git from '../../Git';
 import { lintStringAsync, LintViolation } from '../../linting/SwiftLint';
@@ -15,7 +15,7 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
     return (
       !fileDiff.deleted &&
       path.extname(fileDiff.path) === '.swift' &&
-      !IGNORED_PATHS.some((pattern) => minimatch(fileDiff.to!, pattern))
+      !IGNORED_PATHS.some((pattern) => picomatch.isMatch(fileDiff.to!, pattern))
     );
   });
 

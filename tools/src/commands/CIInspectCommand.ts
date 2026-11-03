@@ -1,7 +1,7 @@
 import { Command } from '@expo/commander';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import { glob } from 'glob';
+import { glob } from 'node:fs/promises';
 import ora from 'ora';
 import path from 'path';
 
@@ -330,7 +330,7 @@ function printAuthStatus(auth: AuthStatus): void {
 
 async function findEASProjectDirs(): Promise<string[]> {
   const pattern = 'apps/*/.eas/workflows';
-  const matches = await glob(pattern, { cwd: EXPO_DIR });
+  const matches = await Array.fromAsync(glob(pattern, { cwd: EXPO_DIR }));
   return matches.map((match) => path.resolve(EXPO_DIR, path.dirname(path.dirname(match))));
 }
 
@@ -644,12 +644,14 @@ function showCompactStatus(
   const ghTotal = ghItems.reduce((s, w) => s + w.total, 0);
   const ghSuccess = ghItems.reduce((s, w) => s + w.success, 0);
   const ghCancelled = ghItems.reduce((s, w) => s + w.cancelled, 0);
-  const ghRate = ghTotal > 0 ? ((ghSuccess + ghCancelled) / ghTotal) * 100 : 0;
+  const ghConcluded = ghSuccess + ghCancelled + ghItems.reduce((s, w) => s + w.failed, 0);
+  const ghRate = ghConcluded > 0 ? ((ghSuccess + ghCancelled) / ghConcluded) * 100 : 0;
 
   const easTotal = easItems.reduce((s, w) => s + w.total, 0);
   const easSuccess = easItems.reduce((s, w) => s + w.success, 0);
   const easCancelled = easItems.reduce((s, w) => s + w.cancelled, 0);
-  const easRate = easTotal > 0 ? ((easSuccess + easCancelled) / easTotal) * 100 : 0;
+  const easConcluded = easSuccess + easCancelled + easItems.reduce((s, w) => s + w.failed, 0);
+  const easRate = easConcluded > 0 ? ((easSuccess + easCancelled) / easConcluded) * 100 : 0;
 
   const brokenCount = categories.find((c) => c.key === 'broken')?.items.length ?? 0;
   const attentionCount = categories.find((c) => c.key === 'attention')?.items.length ?? 0;

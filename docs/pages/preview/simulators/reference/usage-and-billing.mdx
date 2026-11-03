@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-Expo Simulators is an EAS service. To control usage, stop each session when you finish and set a maximum duration.
+Expo Simulators is part of Expo Services. To control usage, stop each session when you finish and set a maximum duration.
 
 ## Access
 
@@ -22,7 +22,7 @@ The check is read-only. It does not start a device or consume usage. If `availab
 
 ## Session duration limits
 
-Each session has a maximum duration. When the session reaches it, EAS stops the session.
+Each session has a maximum duration. When the session reaches it, Expo Simulators stops the session.
 
 | Plan | Maximum session duration |
 | ---- | ------------------------ |
@@ -35,7 +35,7 @@ The session timer starts when the session is ready. The job that runs the sessio
 
 ## Concurrency and queueing
 
-Sessions run as EAS jobs and use your account's job concurrency. When the account has no free concurrency, the session waits in a queue. EAS CLI shows that the session is queued or waiting for available concurrency. Queue time does not count toward the 15-minute startup timeout.
+Sessions run as Expo Services jobs and use your account's job concurrency. When the account has no free concurrency, the session waits in a queue. EAS CLI shows that the session is queued or waiting for available concurrency. Queue time does not count toward the 15-minute startup timeout.
 
 ## Control usage
 
@@ -52,7 +52,7 @@ Controller activity from agent-device, Argent, or Appium resets the idle timer. 
 
 > **warning** `--non-interactive` does not stop the session when the command returns, and a CI job that ends does not stop the session. A session that you do not stop runs until its maximum duration, or until its idle limit if you set one.
 
-Each time someone opens a create session link, EAS starts a new session. See [Share a live Expo Simulators session or start one from a link](/preview/simulators/how-to/hand-off-a-session/#start-a-session-from-a-link).
+Each time someone opens a create session link, Expo Simulators starts a new session. See [Share a live Expo Simulators session or start one from a link](/preview/simulators/how-to/hand-off-a-session/#start-a-session-from-a-link).
 
 ## Common questions
 

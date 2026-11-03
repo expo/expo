@@ -71,7 +71,7 @@ Read the [Expo Community Guidelines](https://expo.dev/guidelines) before interac
 
 ## 📚 Documentation
 
-<p>Learn about building and deploying universal apps <a aria-label="expo documentation" href="https://docs.expo.dev">in our official docs!</a></p>
+<p>Learn about building and deploying universal apps <a aria-label="expo documentation" href="https://docs.expo.dev">in our official docs</a>!</p>
 
 - [Getting Started](https://docs.expo.dev/)
 - [API Reference](https://docs.expo.dev/versions/latest/)

@@ -119,7 +119,7 @@ struct UpdatesLogReaderTests {
     let epoch = Date()
 
     // Write a log message
-    logger.error(cause: UpdatesError.appLoaderFailedToLoadAllAssets, code: .noUpdatesAvailable)
+    logger.error(cause: UpdatesError.fileDownloaderRemoteUpdateMissingBody, code: .noUpdatesAvailable)
 
     // Write another log message
     logger.warn(message: "Warning message", code: .assetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
@@ -138,7 +138,7 @@ struct UpdatesLogReaderTests {
     let logEntry = UpdatesLogEntry.create(from: logEntryText)
     let timestamp = Double(logEntry!.timestamp / 1_000)
     #expect(abs(timestamp - epoch.timeIntervalSince1970) < 120)
-    #expect(logEntry?.message == "Failed to load all assets")
+    #expect(logEntry?.message == "Missing body in remote update")
     #expect(logEntry?.code == "NoUpdatesAvailable")
     #expect(logEntry?.level == "error")
     #expect(logEntry?.updateId == nil)
