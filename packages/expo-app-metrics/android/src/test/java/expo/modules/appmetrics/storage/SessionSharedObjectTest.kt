@@ -265,6 +265,26 @@ class SessionSharedObjectTest {
       assertNull(sessionManager.getSessionRow(session.sessionId))
     }
 
+  @Test
+  fun `writes after clearStoredEntries are stored in the recreated session row`() =
+    runTest {
+      val session = SessionSharedObject(
+        sessionManager = sessionManager,
+        scope = this,
+        type = "main",
+        customStartTimestamp = "2025-01-01T00:00:00.000Z"
+      )
+      session.addMetrics(listOf(createMetric("metric-1", session.sessionId)))
+
+      session.clearStoredEntries()
+      session.addMetrics(listOf(createMetric("metric-2", session.sessionId)))
+      session.addLogs(listOf(createLog("log-1", session.sessionId)))
+
+      assertNotNull(sessionManager.getSessionRow(session.sessionId))
+      assertEquals(listOf("metric-2"), session.getMetrics().map { it.name })
+      assertEquals(listOf("log-1"), session.getLogs().map { it.name })
+    }
+
   // region Helpers
 
   private fun createMetric(

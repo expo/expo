@@ -47,6 +47,8 @@ class SessionSharedObject(
     sessionManager.stopSession(sessionId)
   }
 
+  suspend fun clearStoredEntries() = sessionManager.clearAllDataAndStartSession(sessionId, startDate, metadata)
+
   suspend fun isActive(): Boolean = sessionManager.getSessionRow(sessionId)?.isActive ?: true
 
   suspend fun getEndDate(): String? = sessionManager.getSessionRow(sessionId)?.endTimestamp

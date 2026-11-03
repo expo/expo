@@ -385,7 +385,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         return@Coroutine memoryMetricsManager.takeMemorySnapshot(sessionId)
       }
 
-      AsyncFunction("clearStoredEntries") Coroutine { -> sessionManager.clearAllData() }
+      AsyncFunction("clearStoredEntries") Coroutine { -> mainSession.clearStoredEntries() }
 
       AsyncFunction("addCustomMetricToSession") Coroutine { metric: JsMetric ->
         sessionManager.addMetrics(listOf(metric.toMetric()), sessionId = metric.sessionId)

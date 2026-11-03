@@ -178,6 +178,14 @@ class SessionManager(
     database.crashReportDao().deleteAll()
   }
 
+  // One transaction, so a concurrent write to this session can't run while its row is missing.
+  suspend fun clearAllDataAndStartSession(sessionId: String, timestamp: String, metadata: AppMetadata?) {
+    database.withTransaction {
+      clearAllData()
+      startSessionWithIdAt(sessionId, timestamp, metadata)
+    }
+  }
+
   suspend fun deactivateAllSessionsBefore(timestamp: String) {
     database.sessionDao().deactivateAllSessionsBefore(timestamp)
   }
