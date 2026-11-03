@@ -306,12 +306,7 @@ function getDefaultSerializer(
 
     const serializerOptions = (() => {
       if (customSerializerOptions) {
-        return {
-          outputMode: customSerializerOptions.output,
-          splitChunks: customSerializerOptions.splitChunks,
-          usedExports: customSerializerOptions.usedExports,
-          includeSourceMaps: customSerializerOptions.includeSourceMaps,
-        };
+        return customSerializerOptions;
       }
       if (options.sourceUrl) {
         const sourceUrl = isJscSafeUrl(options.sourceUrl)
@@ -326,7 +321,7 @@ function getDefaultSerializer(
         }
 
         return {
-          outputMode: url.searchParams.get('serializer.output'),
+          output: url.searchParams.get('serializer.output') ?? undefined,
           usedExports: url.searchParams.get('serializer.usedExports') === 'true',
           splitChunks: url.searchParams.get('serializer.splitChunks') === 'true',
           includeSourceMaps: url.searchParams.get('serializer.map') === 'true',
@@ -335,15 +330,11 @@ function getDefaultSerializer(
       return null;
     })();
 
-    if (serializerOptions?.outputMode !== 'static') {
+    if (serializerOptions?.output !== 'static') {
       return defaultSerializer(entryPoint, preModules, graph, options);
     }
 
-    // Mutate the serializer options with the parsed options.
-    options.serializerOptions = {
-      ...options.serializerOptions,
-      ...serializerOptions,
-    };
+    options.serializerOptions = { ...serializerOptions };
 
     const customTransformOptions = graph.transformOptions.customTransformOptions;
     const isLazyBundle = options.includeAsyncPaths;
