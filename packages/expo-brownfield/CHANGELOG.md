@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.19
+
+### Patch Changes
+
+- Replace glob with Node glob for template tarball discovery. ([#52774](https://github.com/expo/expo/pull/52774) by [@kitten](https://github.com/kitten))
+- [iOS] Reduce the overhead of calling the throwing `as…()` conversions of `JavaScriptValue` and `JavaScriptUnownedValue` from another module. `JavaScriptValue.TypeError` is now `@frozen`. ([#52477](https://github.com/expo/expo/pull/52477) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#52688](https://github.com/expo/expo/pull/52688))
+  - @expo/env@2.5.4
+
 ## 58.0.18
 
 ### Patch Changes

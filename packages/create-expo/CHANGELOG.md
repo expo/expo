@@ -1,5 +1,11 @@
 # Changelog
 
+## 5.1.7
+
+### Patch Changes
+
+- Replace glob with tinyglobby. ([#52785](https://github.com/expo/expo/pull/52785) by [@kitten](https://github.com/kitten))
+
 ## 5.1.6
 
 ### Patch Changes

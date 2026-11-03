@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- Mock the `AssetRegistry` that `import { AssetRegistry } from 'react-native'` returns, so `expo-asset` and `@expo/vector-icons` no longer fail with `Module "1" is missing from the asset registry`. ([#52048](https://github.com/expo/expo/pull/52048) by [@expo-bot](https://github.com/expo-bot))
+
 ## 58.0.13
 
 ### Patch Changes

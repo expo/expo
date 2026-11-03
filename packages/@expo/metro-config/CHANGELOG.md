@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.21
+
+### Patch Changes
+
+- Fix corruption of unrelated string literals in native exports containing DOM components by resolving HTML filenames before Hermes compilation. Defer Hermes compilation only for chunks that reference DOM components. ([#52752](https://github.com/expo/expo/pull/52752) by [@kitten](https://github.com/kitten))
+- Replace glob with Node glob and tinyglobby for workspace package discovery. ([#52777](https://github.com/expo/expo/pull/52777) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#52781](https://github.com/expo/expo/pull/52781), [#52688](https://github.com/expo/expo/pull/52688))
+  - @expo/config@58.0.11
+  - @expo/env@2.5.4
+
 ## 58.0.20
 
 ### Patch Changes

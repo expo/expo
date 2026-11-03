@@ -1,5 +1,25 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- Upgrade `react-native-safe-area-context` to 5.11.1. ([#52852](https://github.com/expo/expo/pull/52852) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix `StatusBar` hidden and style changes having no effect in apps built with the iOS 27 SDK. ([#52728](https://github.com/expo/expo/pull/52728) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated dependencies. ([#48461](https://github.com/expo/expo/pull/48461), [#52741](https://github.com/expo/expo/pull/52741), [#52727](https://github.com/expo/expo/pull/52727), [#52443](https://github.com/expo/expo/pull/52443), [#52238](https://github.com/expo/expo/pull/52238), [#52752](https://github.com/expo/expo/pull/52752), [#52788](https://github.com/expo/expo/pull/52788), [#52781](https://github.com/expo/expo/pull/52781), [#52762](https://github.com/expo/expo/pull/52762), [#52777](https://github.com/expo/expo/pull/52777), [#52463](https://github.com/expo/expo/pull/52463))
+  - expo-modules-autolinking@58.0.17
+  - @expo/cli@58.1.19
+  - expo-modules-core@58.0.30
+  - @expo/metro-config@58.0.21
+  - @expo/config-plugins@58.0.12
+  - @expo/config@58.0.11
+  - @expo/log-box@58.0.15
+  - expo-constants@58.0.15
+  - babel-preset-expo@58.0.24
+  - @expo/fingerprint@0.21.9
+  - @expo/local-build-cache-provider@58.0.11
+  - expo-asset@58.0.20
+
 ## 58.0.22
 
 ### Patch Changes

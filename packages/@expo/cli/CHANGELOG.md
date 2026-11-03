@@ -1,5 +1,21 @@
 # Changelog
 
+## 58.1.19
+
+### Patch Changes
+
+- Fix `expo run:ios --device` staying open after installing and launching an app on a network-paired device when the bundler is disabled. ([#52741](https://github.com/expo/expo/pull/52741) by [@kitten](https://github.com/kitten))
+- Fix corruption of unrelated string literals in native exports containing DOM components by resolving HTML filenames before Hermes compilation. Defer Hermes compilation only for chunks that reference DOM components. ([#52752](https://github.com/expo/expo/pull/52752) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#52752](https://github.com/expo/expo/pull/52752), [#52788](https://github.com/expo/expo/pull/52788), [#52781](https://github.com/expo/expo/pull/52781), [#52762](https://github.com/expo/expo/pull/52762), [#52777](https://github.com/expo/expo/pull/52777), [#52688](https://github.com/expo/expo/pull/52688))
+  - @expo/metro-config@58.0.21
+  - @expo/config-plugins@58.0.12
+  - @expo/config@58.0.11
+  - @expo/log-box@58.0.15
+  - @expo/env@2.5.4
+  - @expo/prebuild-config@58.0.19
+  - @expo/inline-modules@0.2.9
+  - @expo/router-server@58.0.21
+
 ## 58.1.18
 
 ### Patch Changes

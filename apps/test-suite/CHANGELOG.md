@@ -1,5 +1,64 @@
 # test-suite
 
+## 1.0.17
+
+### Patch Changes
+
+- Updated dependencies. ([#51930](https://github.com/expo/expo/pull/51930), [#52852](https://github.com/expo/expo/pull/52852), [#52727](https://github.com/expo/expo/pull/52727), [#52443](https://github.com/expo/expo/pull/52443), [#52238](https://github.com/expo/expo/pull/52238), [#52728](https://github.com/expo/expo/pull/52728), [#52682](https://github.com/expo/expo/pull/52682), [#52807](https://github.com/expo/expo/pull/52807), [#52820](https://github.com/expo/expo/pull/52820), [#48893](https://github.com/expo/expo/pull/48893), [#52313](https://github.com/expo/expo/pull/52313), [#52463](https://github.com/expo/expo/pull/52463), [#52139](https://github.com/expo/expo/pull/52139), [#52619](https://github.com/expo/expo/pull/52619), [#52587](https://github.com/expo/expo/pull/52587), [#52729](https://github.com/expo/expo/pull/52729), [#52792](https://github.com/expo/expo/pull/52792), [#50849](https://github.com/expo/expo/pull/50849))
+  - expo-app-metrics@58.0.15
+  - expo@58.0.23
+  - expo-modules-core@58.0.30
+  - @expo/ui@58.0.27
+  - expo-observe@58.0.18
+  - expo-router@58.0.30
+  - expo-screen-orientation@58.0.4
+  - expo-image@58.0.18
+  - expo-constants@58.0.15
+  - expo-file-system@58.0.13
+  - expo-video@58.0.13
+  - expo-asset@58.0.20
+  - expo-auth-session@58.0.17
+  - expo-linking@58.0.16
+  - expo-notifications@58.1.8
+  - expo-store-review@58.0.2
+  - expo-application@58.1.2
+  - expo-audio@58.0.11
+  - expo-background-fetch@58.0.12
+  - expo-battery@58.0.3
+  - expo-blob@58.0.3
+  - expo-blur@58.0.5
+  - expo-brightness@58.0.2
+  - expo-calendar@58.0.6
+  - expo-camera@58.0.14
+  - expo-cellular@58.0.3
+  - expo-checkbox@58.0.2
+  - expo-clipboard@58.0.4
+  - expo-contacts@58.0.10
+  - expo-crypto@58.0.7
+  - expo-device@58.0.5
+  - expo-eas-client@58.0.2
+  - expo-font@58.0.11
+  - expo-gl@58.0.4
+  - expo-glass-effect@58.0.5
+  - expo-haptics@58.0.7
+  - expo-image-manipulator@58.0.16
+  - expo-image-picker@58.0.10
+  - expo-keep-awake@58.0.3
+  - expo-linear-gradient@58.0.3
+  - expo-localization@58.0.5
+  - expo-location@58.0.20
+  - expo-media-library@58.0.13
+  - expo-navigation-bar@58.0.4
+  - expo-network@58.0.4
+  - expo-secure-store@58.0.2
+  - expo-sms@58.0.2
+  - expo-speech@58.0.3
+  - expo-sqlite@58.0.15
+  - expo-system-ui@58.0.7
+  - expo-task-manager@58.0.13
+  - expo-web-browser@58.0.7
+  - @expo/html-elements@58.0.3
+
 ## 1.0.16
 
 ### Patch Changes

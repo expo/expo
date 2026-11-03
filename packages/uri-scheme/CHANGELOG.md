@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.3.2
+
+### Patch Changes
+
+- Replace glob with filesystem directory listings and path checks. ([#52782](https://github.com/expo/expo/pull/52782) by [@kitten](https://github.com/kitten))
+
 ## 2.3.1
 
 ### Patch Changes

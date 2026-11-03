@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- Replace glob with filesystem directory listings. ([#52762](https://github.com/expo/expo/pull/52762) by [@kitten](https://github.com/kitten))
+
 ## 58.0.14
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # expo-modules-test-core
 
+## 58.0.6
+
+### Patch Changes
+
+- Remove the unused glob dependency and move @types/node to devDependencies. ([#52761](https://github.com/expo/expo/pull/52761) by [@kitten](https://github.com/kitten))
+
 ## 58.0.5
 
 ### Patch Changes

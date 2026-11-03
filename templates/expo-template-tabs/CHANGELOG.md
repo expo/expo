@@ -1,5 +1,17 @@
 # expo-template-tabs
 
+## 58.0.32
+
+### Patch Changes
+
+- Upgrade `react-native-safe-area-context` to 5.11.1. ([#52852](https://github.com/expo/expo/pull/52852) by [@tsapeta](https://github.com/tsapeta))
+- Updated dependencies. ([#52852](https://github.com/expo/expo/pull/52852), [#52728](https://github.com/expo/expo/pull/52728), [#52139](https://github.com/expo/expo/pull/52139), [#52619](https://github.com/expo/expo/pull/52619), [#52587](https://github.com/expo/expo/pull/52587))
+  - expo@58.0.23
+  - expo-router@58.0.30
+  - expo-constants@58.0.15
+  - expo-splash-screen@58.0.13
+  - expo-linking@58.0.16
+
 ## 58.0.31
 
 ### Patch Changes

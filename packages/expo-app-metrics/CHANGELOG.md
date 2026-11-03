@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.15
+
+### Patch Changes
+
+- [Internal] Export the `js.exception` and `native.exception` log names as constants. ([#51930](https://github.com/expo/expo/pull/51930) by [@Ubax](https://github.com/Ubax))
+- Add `startSpan`, `withSpan`, and `recordSpan` to record custom trace spans, exported to EAS Observe alongside network request spans. ([#48893](https://github.com/expo/expo/pull/48893) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fix a crash when a frame duration is zero, negative, infinite or NaN. ([#50849](https://github.com/expo/expo/pull/50849) by [@JoaoPauloCMarra](https://github.com/JoaoPauloCMarra))
+
 ## 58.0.14
 
 ### Patch Changes

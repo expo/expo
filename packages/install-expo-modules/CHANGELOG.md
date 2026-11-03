@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.18.3
+
+### Patch Changes
+
+- Replace glob with a filesystem path check for bridging headers. ([#52773](https://github.com/expo/expo/pull/52773) by [@kitten](https://github.com/kitten))
+
 ## 0.18.2
 
 ### Patch Changes
