@@ -1,6 +1,8 @@
 const expo = require('eslint-plugin-expo');
 const globals = require('globals');
 
+const { expoRules } = require('../../shared/rules');
+
 module.exports = [
   {
     // JS files can end up in build intermediates, eg:
@@ -12,11 +14,7 @@ module.exports = [
       expo,
     },
 
-    rules: {
-      'expo/use-dom-exports': ['error'],
-      'expo/no-env-var-destructuring': ['error'],
-      'expo/no-dynamic-env-var': ['error'],
-    },
+    rules: expoRules,
   },
   {
     files: ['**/metro.config.js'],

@@ -24,6 +24,7 @@
     "default.js",
     "flat.js",
     "flat",
+    "shared",
     "utils"
   ],
   "jest": {

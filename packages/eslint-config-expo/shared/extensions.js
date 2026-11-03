@@ -1,6 +1,6 @@
 const jsExtensions = ['.cjs', '.mjs', '.js', '.jsx'];
-
 const tsExtensions = ['.ts', '.tsx', '.d.ts'];
+const sourceExtensions = [...jsExtensions, ...tsExtensions];
 
 const platformSubextensions = ['.android', '.ios', '.web', '.native'];
 
@@ -14,8 +14,14 @@ function computeExpoExtensions(baseExtensions, platformSubextensions) {
   return expoExtensions;
 }
 
+// Every source extension, with and without a platform suffix: `.ios.tsx`, `.web.js`, `.ts`, ...
+const allExtensions = computeExpoExtensions(sourceExtensions, platformSubextensions);
+
 module.exports = {
   jsExtensions,
   tsExtensions,
-  allExtensions: computeExpoExtensions([...jsExtensions, ...tsExtensions], platformSubextensions),
+  sourceExtensions,
+  platformSubextensions,
+  computeExpoExtensions,
+  allExtensions,
 };
