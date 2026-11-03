@@ -79,8 +79,9 @@ export function NativeTabsView(props: NativeTabsViewProps) {
   }
 
   const children = tabs.map((tab, index) => (
+    // react-native-screens picks UISearchTab vs UITab once at creation, so remount when the search role changes.
     <Screen
-      key={tab.name}
+      key={tab.options.role === 'search' ? `${tab.name}:search` : tab.name}
       name={tab.name}
       routeKey={tab.routeKey}
       options={tab.options}
