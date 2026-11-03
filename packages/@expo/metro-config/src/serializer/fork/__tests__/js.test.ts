@@ -19,7 +19,6 @@ async function helpWrap(src: string, options: Partial<Parameters<typeof wrapModu
       includeAsyncPaths: false,
       projectRoot,
       serverRoot: projectRoot,
-      skipWrapping: false,
       sourceUrl: 'http://localhost:8081/index.bundle?platform=web&dev=true&minify=false',
       splitChunks: false,
       ...options,
@@ -46,7 +45,6 @@ describe(wrapModule, () => {
         unstable_getAsyncDependencyPath: callback,
         computedAsyncModulePaths: null,
         splitChunks: true,
-        skipWrapping: false,
       });
       expect(callback).not.toHaveBeenCalled();
       expect(res.paths).toEqual({});
@@ -252,10 +250,8 @@ describe(wrapModule, () => {
     `);
   });
 
-  // Disabled wrapping is used to calculate content hashes without knowing all the module paths ahead of time.
-  it(`disables module wrapping in dev`, async () => {
+  it(`emits async development URLs when dev is false`, async () => {
     const res = await helpWrap(`const evan = import('bacon');`, {
-      skipWrapping: true,
       dev: false,
       includeAsyncPaths: true,
     });
@@ -267,25 +263,6 @@ describe(wrapModule, () => {
       "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
         const evan = require(_dependencyMap[1], "expo-mock/async-require")(_dependencyMap[0], _dependencyMap.paths, "bacon");
       },"/app/index.js",{"0":"/app/node_modules/bacon/index.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/node_modules/bacon/index.js":"/node_modules/bacon/index.bundle?platform=web&dev=true&minify=false&modulesOnly=true&runModule=false"}});"
-    `);
-  });
-  it(`disables module wrapping in prod`, async () => {
-    const res = await helpWrap(`const evan = import('bacon');`, {
-      dev: false,
-      includeAsyncPaths: false,
-      splitChunks: true,
-      skipWrapping: true,
-      computedAsyncModulePaths: {
-        '/app/node_modules/bacon/index.js': '/_expo/static/js/web/0.chunk.js',
-      },
-    });
-    expect(res.paths).toEqual({
-      '/app/node_modules/bacon/index.js': '/_expo/static/js/web/0.chunk.js',
-    });
-    expect(res.src).toMatchInlineSnapshot(`
-      "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
-        const evan = require(_dependencyMap[1], "expo-mock/async-require")(_dependencyMap[0], _dependencyMap.paths, "bacon");
-      },"/app/index.js",{"0":"/app/node_modules/bacon/index.js","1":"/app/node_modules/expo-mock/async-require/index.js","paths":{"/app/node_modules/bacon/index.js":"/_expo/static/js/web/0.chunk.js"}});"
     `);
   });
 });
