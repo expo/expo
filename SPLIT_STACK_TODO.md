@@ -10,6 +10,8 @@ Issues found on the iPhone Duo simulator with `apps/router-tester`, demo `split-
 
 **Expected:** One header moves with each screen, as in a plain `UINavigationController` pop. The rail button changes with the transition to the previous column state.
 
+![Swipe back in progress: two titles overlap, the rail Back button stays](screenshots/split-stack-todo/swipe-back-overlap.png)
+
 **Where to look:** The root gesture is moved to the primary navigation controller in `SplitViewStackScreenView.updateRootGesture` (`packages/expo-router/ios/SplitView/SplitViewColumnView.swift`). The split column bar stays hidden while the Stack owns the header, so the transition animates two separate bars.
 
 ## 2. Rail shows the sidebar button in the expanded layout
@@ -20,6 +22,14 @@ Issues found on the iPhone Duo simulator with `apps/router-tester`, demo `split-
 
 **Expected:** Not decided. Confirm the native behavior first.
 
+Expanded: the rail shows the sidebar button.
+
+![Expanded layout: sidebar button on the rail](screenshots/split-stack-todo/rail-sidebar-expanded.png)
+
+Collapsed: the rail shows Back (correct).
+
+![Collapsed layout: Back button on the rail](screenshots/split-stack-todo/rail-back-collapsed.png)
+
 **Next step:** In the expanded layout, open a content screen without a nested Stack (`router-tester://split-view-navigation/all/GitHub`). If the rail also shows the sidebar button, this is UIKit behavior. If not, the Stack header ownership causes it. The spike removes its `backAction` when expanded (`installControls`) and hides the split column bar. No Expo or Screens code sets rail items.
 
 ## 3. Content under the Stack header with automatic inset adjustment
@@ -29,5 +39,7 @@ Issues found on the iPhone Duo simulator with `apps/router-tester`, demo `split-
 **Observed:** One time, the `ScrollView` with `contentInsetAdjustmentBehavior="automatic"` got no top inset. The links showed under the "Settings" title. Two screenshots a few seconds apart showed the same layout. Later runs showed the content below the header.
 
 **Expected:** The content always starts below the Stack header.
+
+![Settings links drawn under the Stack header title](screenshots/split-stack-todo/content-under-header.png)
 
 **Next step:** Find reliable steps to reproduce. Then check which navigation bar the scroll view uses for its inset while the split column bar is hidden.
