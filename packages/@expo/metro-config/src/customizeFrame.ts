@@ -12,19 +12,19 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
   [
     '/Libraries/Renderer/implementations/.+\\.js$',
     '/Libraries/BatchedBridge/MessageQueue\\.js$',
-    '/Libraries/YellowBox/.+\\.js$',
     '/Libraries/LogBox/.+\\.js$',
-    '/Libraries/Core/Timers/.+\\.js$',
+    '/Libraries/Core/.+\\.js$',
+    '/Libraries/Network/.+\\.js$',
+    '/Libraries/Pressability/.+\\.js$',
+    '/Libraries/Utilities/.+\\.js$',
+    '/Libraries/vendor/.+\\.js$',
+    '/Libraries/WebSocket/.+\\.js$',
+    '/src/private/renderer/errorhandling/.+\\.js$',
+    'node_modules/react-native/index\\.js$',
+    'node_modules/@react-native/js-polyfills/.+\\.js$',
     'node_modules/react-devtools-core/.+\\.js$',
     'node_modules/react-refresh/.+\\.js$',
     'node_modules/scheduler/.+\\.js$',
-    // Metro replaces `require()` with a different method,
-    // we want to omit this method from the stack trace.
-    // This is akin to most React tooling.
-    '/metro/.*/polyfills/require.js$',
-    // Hide frames related to a fast refresh.
-    '/metro/.*/lib/bundle-modules/.+\\.js$',
-    'node_modules/react-native/Libraries/Utilities/HMRClient.js$',
     'node_modules/eventemitter3/index.js',
     'node_modules/event-target-shim/dist/.+\\.js$',
     // Improve errors thrown by invariant (ex: `Invariant Violation: "main" has not been registered`).
@@ -43,14 +43,8 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     'node_modules/react-dom/.+\\.js$',
     // Hide node.js evaluation code
     'node_modules/require-from-string/.+\\.js$',
-    // Block expo's metro-runtime
-    '@expo/metro-runtime/.+\\.ts',
-    '@expo/server/.+\\.ts',
-    'expo-server/.+\\.ts',
     // Block upstream metro-runtime
     '/metro-runtime/.+\\.js$',
-    // Expo's metro-runtime require patch:
-    '@expo/metro-config/require/.+',
 
     // Block all whatwg polyfills
     'node_modules/whatwg-.+\\.js$',
@@ -65,8 +59,9 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     // React Server Components adapter (note we should probably use an Expo-Metro-specific version in the future).
     'node_modules/react-server-dom-webpack/.+\\.js$',
 
-    // Block all node modules.
-    'node_modules/.+/',
+    'node_modules/expo/build/launch/withDevTools(?:\\.\\w+)?\\.js$',
+    'node_modules/expo/build/async-require/setupHMR\\.js$',
+    'node_modules/@expo/log-box/build/.+\\.js$',
   ].join('|')
 );
 

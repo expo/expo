@@ -21,7 +21,6 @@ public:
 
   // sqlite3 bindings
   int sqlite3_changes();
-  void sqlite3_finalize_all_statement();
   int sqlite3_close();
   void sqlite3_interrupt();
   std::string sqlite3_db_filename(const std::string &databaseName);

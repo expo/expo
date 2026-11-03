@@ -31,9 +31,9 @@ const requestWindow = (first: number, last: number, revision = nativeProps().rev
 
 beforeEach(() => jest.clearAllMocks());
 
-it('mounts a bounded pool for 10,000 items and recenters after a distant request', () => {
+it('mounts a bounded pool for 10,000 items and recenters after a distant request', async () => {
   const renderItem = jest.fn(({ index }) => <Text>{index}</Text>);
-  render(
+  await render(
     <LazyColumn>
       <LazyColumn.Items data={data} keyExtractor={keyExtractor}>
         {renderItem}
@@ -43,13 +43,13 @@ it('mounts a bounded pool for 10,000 items and recenters after a distant request
   expect(renderItem).toHaveBeenCalledTimes(11);
   expect(nativeProps().itemKeys).toHaveLength(10_000);
   expect(nativeProps().estimatedItemSize).toBe(64);
-  requestWindow(500, 510);
+  await requestWindow(500, 510);
   const indices = indicesOf();
   expect(indices).toHaveLength(31);
   for (let index = 500; index <= 510; index++) expect(indices).toContain(index);
 });
 
-it('reuses overlapping slots without rerendering them and preserves parent context', () => {
+it('reuses overlapping slots without rerendering them and preserves parent context', async () => {
   const Context = createContext('missing');
   let mounts = 0;
   function Row({ index }: { index: number }) {
@@ -57,7 +57,7 @@ it('reuses overlapping slots without rerendering them and preserves parent conte
     return <Text>{`${useContext(Context)}:${index}:${slot}`}</Text>;
   }
   const renderItem = jest.fn(({ index }) => <Row index={index} />);
-  const screen = render(
+  const screen = await render(
     <Context.Provider value="parent">
       <LazyColumn>
         <LazyColumn.Items data={data} keyExtractor={keyExtractor} overscanCount={3}>
@@ -66,39 +66,39 @@ it('reuses overlapping slots without rerendering them and preserves parent conte
       </LazyColumn>
     </Context.Provider>
   );
-  requestWindow(10, 11);
+  await requestWindow(10, 11);
   expect(mounts).toBe(8);
   const calls = renderItem.mock.calls.length;
   const slot = screen.getAllByText(/^parent:7:/)[0]!.props.children.split(':')[2];
-  requestWindow(12, 13); // Two rows enter, reusing the slots of rows 7 and 8.
+  await requestWindow(12, 13); // Two rows enter, reusing the slots of rows 7 and 8.
   expect(renderItem).toHaveBeenCalledTimes(calls + 2);
   expect(mounts).toBe(8);
   expect(screen.getByText(`parent:15:${slot}`)).toBeTruthy();
 });
 
-it('grows once with headroom and keeps slot assignments stable as rows enter and leave', () => {
-  render(
+it('grows once with headroom and keeps slot assignments stable as rows enter and leave', async () => {
+  await render(
     <LazyColumn>
       <LazyColumn.Items data={data} keyExtractor={keyExtractor}>
         {() => <View />}
       </LazyColumn.Items>
     </LazyColumn>
   );
-  requestWindow(500, 509);
-  requestWindow(500, 510); // A row appears at the bottom before the top row disappears.
+  await requestWindow(500, 509);
+  await requestWindow(500, 510); // A row appears at the bottom before the top row disappears.
   const grown = indicesOf();
   expect(grown).toHaveLength(41);
-  requestWindow(501, 510); // The top row disappears.
+  await requestWindow(501, 510); // The top row disappears.
   const shifted = indicesOf();
   expect(shifted).toHaveLength(41);
   expect(shifted.filter((index, slot) => index !== grown[slot])).toHaveLength(1);
-  requestWindow(501, 511); // The next row appears without moving any slot.
+  await requestWindow(501, 511); // The next row appears without moving any slot.
   expect(indicesOf()).toEqual(shifted);
   shifted.forEach((index, slot) => expect(index % shifted.length).toBe(slot));
 });
 
-it('grows to cover 100 visible rows plus overscan and keeps its capacity at the list edges', () => {
-  render(
+it('grows to cover 100 visible rows plus overscan and keeps its capacity at the list edges', async () => {
+  await render(
     <LazyColumn>
       <LazyColumn.Items data={data} keyExtractor={keyExtractor}>
         {() => <View />}
@@ -106,25 +106,25 @@ it('grows to cover 100 visible rows plus overscan and keeps its capacity at the 
     </LazyColumn>
   );
   const revision = nativeProps().revision;
-  requestWindow(500, 599);
+  await requestWindow(500, 599);
   expect(indicesOf()).toHaveLength(120);
   expect([...indicesOf()].sort((a, b) => a - b)).toEqual(
     Array.from({ length: 120 }, (_, index) => index + 490)
   );
   expect(nativeProps().revision).toBe(revision);
-  requestWindow(500, 509);
+  await requestWindow(500, 509);
   expect(indicesOf()).toHaveLength(120);
-  requestWindow(0, 99);
+  await requestWindow(0, 99);
   expect(Math.min(...indicesOf())).toBe(0);
-  requestWindow(9900, 9999);
+  await requestWindow(9900, 9999);
   expect(Math.max(...indicesOf())).toBe(9999);
 });
 
-it('bumps the revision on a data change, ignores stale requests, and clamps after shrinking', () => {
+it('bumps the revision on a data change, ignores stale requests, and clamps after shrinking', async () => {
   const renderItem = ({ item }: { item: { id: string; title?: string } }) => (
     <Text>{item.title ?? item.id}</Text>
   );
-  const screen = render(
+  const screen = await render(
     <LazyColumn>
       <LazyColumn.Items data={data} keyExtractor={keyExtractor}>
         {renderItem}
@@ -133,7 +133,7 @@ it('bumps the revision on a data change, ignores stale requests, and clamps afte
   );
   const revision = nativeProps().revision;
   const updated = [{ id: 'item-0', title: 'Updated' }, ...data.slice(1)];
-  screen.rerender(
+  await screen.rerender(
     <LazyColumn>
       <LazyColumn.Items data={updated} keyExtractor={keyExtractor}>
         {renderItem}
@@ -142,11 +142,11 @@ it('bumps the revision on a data change, ignores stale requests, and clamps afte
   );
   expect(screen.getByText('Updated')).toBeTruthy();
   expect(nativeProps().revision).not.toBe(revision);
-  requestWindow(9900, 9905);
+  await requestWindow(9900, 9905);
   expect(indicesOf()).toContain(9900);
-  requestWindow(0, 10, revision); // Sent before the data changed.
+  await requestWindow(0, 10, revision); // Sent before the data changed.
   expect(indicesOf()).toContain(9900);
-  screen.rerender(
+  await screen.rerender(
     <LazyColumn>
       <LazyColumn.Items data={data.slice(0, 3)} keyExtractor={keyExtractor}>
         {renderItem}
@@ -154,7 +154,7 @@ it('bumps the revision on a data change, ignores stale requests, and clamps afte
     </LazyColumn>
   );
   expect(indicesOf()).toEqual([0, 1, 2]);
-  screen.rerender(
+  await screen.rerender(
     <LazyColumn>
       <LazyColumn.Items data={[]} keyExtractor={keyExtractor}>
         {renderItem}
@@ -165,8 +165,8 @@ it('bumps the revision on a data change, ignores stale requests, and clamps afte
   expect(nativeProps().itemKeys).toHaveLength(0);
 });
 
-it('drops malformed window events', () => {
-  render(
+it('drops malformed window events', async () => {
+  await render(
     <LazyColumn>
       <LazyColumn.Items data={data} keyExtractor={keyExtractor}>
         {() => <View />}
@@ -174,13 +174,13 @@ it('drops malformed window events', () => {
     </LazyColumn>
   );
   const before = indicesOf();
-  requestWindow(510, 500);
-  requestWindow(NaN, 10);
+  await requestWindow(510, 500);
+  await requestWindow(NaN, 10);
   expect(indicesOf()).toEqual(before);
 });
 
-it('publishes the item keys and the pooled slot props to the native views', () => {
-  render(
+it('publishes the item keys and the pooled slot props to the native views', async () => {
+  await render(
     <LazyColumn>
       <LazyColumn.Items
         data={data.slice(0, 5)}
@@ -199,32 +199,34 @@ it('publishes the item keys and the pooled slot props to the native views', () =
   expect(slots.every((props) => props.revision === nativeProps().revision)).toBe(true);
 });
 
-it.each([-1, 1.5, NaN, Infinity])('rejects invalid overscan %s', (overscanCount) => {
-  expect(() =>
-    render(
-      <LazyColumn>
-        <LazyColumn.Items data={data} keyExtractor={keyExtractor} overscanCount={overscanCount}>
-          {() => <View />}
-        </LazyColumn.Items>
-      </LazyColumn>
-    )
-  ).toThrow('LazyColumn.Items overscanCount must be a non-negative integer');
+it.each([-1, 1.5, NaN, Infinity])('rejects invalid overscan %s', async (overscanCount) => {
+  await expect(
+    async () =>
+      await render(
+        <LazyColumn>
+          <LazyColumn.Items data={data} keyExtractor={keyExtractor} overscanCount={overscanCount}>
+            {() => <View />}
+          </LazyColumn.Items>
+        </LazyColumn>
+      )
+  ).rejects.toThrow('LazyColumn.Items overscanCount must be a non-negative integer');
 });
 
-it('names LazyRow.Items in its own errors', () => {
-  expect(() =>
-    render(
-      <LazyRow>
-        <LazyRow.Items data={data} keyExtractor={keyExtractor} overscanCount={-1}>
-          {() => <View />}
-        </LazyRow.Items>
-      </LazyRow>
-    )
-  ).toThrow('LazyRow.Items overscanCount must be a non-negative integer');
+it('names LazyRow.Items in its own errors', async () => {
+  await expect(
+    async () =>
+      await render(
+        <LazyRow>
+          <LazyRow.Items data={data} keyExtractor={keyExtractor} overscanCount={-1}>
+            {() => <View />}
+          </LazyRow.Items>
+        </LazyRow>
+      )
+  ).rejects.toThrow('LazyRow.Items overscanCount must be a non-negative integer');
 });
 
-it('maintains independent windows for a LazyColumn and a LazyRow block', () => {
-  render(
+it('maintains independent windows for a LazyColumn and a LazyRow block', async () => {
+  await render(
     <>
       <LazyColumn>
         <LazyColumn.Items data={data} keyExtractor={keyExtractor} overscanCount={3}>
@@ -239,12 +241,14 @@ it('maintains independent windows for a LazyColumn and a LazyRow block', () => {
     </>
   );
   const [column, row] = mockItems.mock.calls.map(([props]) => props);
-  act(() =>
+  await act(() =>
     column.onWindowChange({ nativeEvent: { first: 500, last: 502, revision: column.revision } })
   );
   expect(indicesOf()).toContain(500);
   expect(indicesOf(row)).toEqual([0, 1]);
-  act(() => row.onWindowChange({ nativeEvent: { first: 15, last: 16, revision: row.revision } }));
+  await act(() =>
+    row.onWindowChange({ nativeEvent: { first: 15, last: 16, revision: row.revision } })
+  );
   expect(nativeProps().itemKeys).toHaveLength(20);
   expect(indicesOf()).toContain(15);
 });

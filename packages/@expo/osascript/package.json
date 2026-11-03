@@ -41,8 +41,8 @@
     "@expo/spawn-async": "^1.8.0"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*",
+    "@types/node": "^22.14.0"
   },
   "engines": {
     "node": ">=12"

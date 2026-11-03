@@ -46,12 +46,12 @@
     "expo-json-utils": "workspace:~"
   },
   "devDependencies": {
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

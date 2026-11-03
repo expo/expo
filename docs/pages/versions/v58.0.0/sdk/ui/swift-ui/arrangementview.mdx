@@ -1,0 +1,230 @@
+---
+title: ArrangementView
+description: A SwiftUI ArrangementView component that arranges a primary and a secondary view with an adaptive layout.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-58/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+
+Expo UI ArrangementView matches the official SwiftUI [ArrangementView API](https://developer.apple.com/documentation/swiftui/arrangementview) and arranges a primary and a secondary view. The layout adapts to the available size and to hardware features, such as a foldable display.
+
+<ContentSpotlight
+  variant="component"
+  aspect="landscape"
+  src="/static/images/expo-ui/arrangementview/ios-light.webp"
+  darkSrc="/static/images/expo-ui/arrangementview/ios-dark.webp"
+  alt="A photo placeholder on the left and a Details form on the right"
+/>
+
+> **info** ArrangementView requires iOS 27.1 or later. On earlier versions, the children render without a container.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+Put the views in `ArrangementView.Primary` and `ArrangementView.Secondary`, and choose the layout with the [`arrangementViewStyle`](modifiers/#arrangementviewstylestyle) modifier.
+
+### Split
+
+The `'split'` style places the two views side by side. Limit the size of a view with the [`splitArrangementLayoutSize`](modifiers/#splitarrangementlayoutsizeconstraints) modifier. The other view takes the remaining space.
+
+<ComponentExample
+  title="SplitArrangementExample.tsx"
+  src="/static/images/expo-ui/examples/arrangementview-split-duo-light.webp"
+  darkSrc="/static/images/expo-ui/examples/arrangementview-split-duo-dark.webp"
+  alt="A photo placeholder on the left and a Details form on the right">
+
+```tsx
+import {
+  ArrangementView,
+  Form,
+  Host,
+  Image,
+  LabeledContent,
+  Section,
+  Text,
+  ZStack,
+} from '@expo/ui/swift-ui';
+import {
+  arrangementViewStyle,
+  background,
+  frame,
+  listSectionMargins,
+  splitArrangementLayoutSize,
+} from '@expo/ui/swift-ui/modifiers';
+
+const fill = frame({ maxWidth: Infinity, maxHeight: Infinity });
+const sectionMargin = listSectionMargins({
+  edges: 'leading',
+  length: 20,
+});
+
+export default function SplitArrangementExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <ArrangementView
+        modifiers={[arrangementViewStyle('split'), fill]}>
+        <ArrangementView.Primary>
+          <ZStack
+            modifiers={[
+              fill,
+              background({
+                type: 'linearGradient',
+                colors: ['#F6D365', '#FDA085', '#5B86E5'],
+                startPoint: { x: 0, y: 0 },
+                endPoint: { x: 0, y: 1 },
+              }),
+            ]}>
+            <Image
+              systemName="mountain.2.fill"
+              size={96}
+              color="#FFFFFF"
+            />
+          </ZStack>
+        </ArrangementView.Primary>
+        <ArrangementView.Secondary>
+          <Form
+            modifiers={[
+              splitArrangementLayoutSize({
+                minWidth: 260,
+                idealWidth: 320,
+                maxWidth: 400,
+              }),
+            ]}>
+            <Section title="Details" modifiers={[sectionMargin]}>
+              <LabeledContent label="Taken">
+                <Text>Sep 28 at 18:42</Text>
+              </LabeledContent>
+              <LabeledContent label="Location">
+                <Text>Glacier Point</Text>
+              </LabeledContent>
+            </Section>
+            <Section title="Camera" modifiers={[sectionMargin]}>
+              <LabeledContent label="Lens">
+                <Text>Main, 24 mm</Text>
+              </LabeledContent>
+              <LabeledContent label="Exposure">
+                <Text>ƒ1.8 · 1/250 s</Text>
+              </LabeledContent>
+              <LabeledContent label="ISO">
+                <Text>80</Text>
+              </LabeledContent>
+            </Section>
+          </Form>
+        </ArrangementView.Secondary>
+      </ArrangementView>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+### Overlay
+
+The `'overlay'` style layers the primary view over the secondary view. Set the edge a view occupies when the arrangement changes to a horizontal or vertical layout with the [`overlayArrangementEdge`](modifiers/#overlayarrangementedgeedge) modifier.
+
+<ComponentExample
+  title="OverlayArrangementExample.tsx"
+  src="/static/images/expo-ui/examples/arrangementview-overlay-duo-light.webp"
+  darkSrc="/static/images/expo-ui/examples/arrangementview-overlay-duo-dark.webp"
+  alt="Playback controls on a blurred panel over a video placeholder">
+
+```tsx
+import {
+  ArrangementView,
+  Button,
+  Host,
+  HStack,
+  Image,
+  Spacer,
+  Text,
+  VStack,
+  ZStack,
+} from '@expo/ui/swift-ui';
+import {
+  arrangementViewStyle,
+  background,
+  font,
+  frame,
+  labelStyle,
+  overlayArrangementEdge,
+  padding,
+} from '@expo/ui/swift-ui/modifiers';
+
+const fill = frame({ maxWidth: Infinity, maxHeight: Infinity });
+
+export default function OverlayArrangementExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <ArrangementView
+        modifiers={[arrangementViewStyle('overlay'), fill]}>
+        <ArrangementView.Primary>
+          <VStack modifiers={[overlayArrangementEdge('bottom')]}>
+            <Spacer />
+            <VStack
+              spacing={12}
+              modifiers={[
+                padding({ all: 20 }),
+                frame({ maxWidth: Infinity }),
+                background({ type: 'material', material: 'thin' }),
+              ]}>
+              <Text modifiers={[font({ textStyle: 'headline' })]}>
+                Episode 4: The Long Way Round
+              </Text>
+              <HStack
+                spacing={32}
+                modifiers={[labelStyle('iconOnly')]}>
+                <Button
+                  label="Back 10 seconds"
+                  systemImage="gobackward.10"
+                  onPress={() => {}}
+                />
+                <Button
+                  label="Play"
+                  systemImage="play.fill"
+                  onPress={() => {}}
+                />
+                <Button
+                  label="Forward 10 seconds"
+                  systemImage="goforward.10"
+                  onPress={() => {}}
+                />
+              </HStack>
+            </VStack>
+          </VStack>
+        </ArrangementView.Primary>
+        <ArrangementView.Secondary>
+          <ZStack modifiers={[fill, background('#3A1C71')]}>
+            <Image
+              systemName="play.rectangle.fill"
+              size={72}
+              color="#FFFFFF"
+            />
+          </ZStack>
+        </ArrangementView.Secondary>
+      </ArrangementView>
+    </Host>
+  );
+}
+```
+
+</ComponentExample>
+
+## API
+
+```tsx
+import { ArrangementView } from '@expo/ui/swift-ui';
+```
+
+<APISection
+  packageName="expo-ui/swift-ui/arrangementview"
+  apiName="ArrangementView"
+/>

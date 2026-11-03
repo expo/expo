@@ -80,7 +80,7 @@ describe('FallbackWatcher', () => {
   });
 
   async function startWatcher(): Promise<void> {
-    watcher = new FallbackWatcher(root, { dot: true, globs: [], ignored: null });
+    watcher = new FallbackWatcher(root, { included: null, ignored: null });
     watcher.onFileEvent((event) => {
       events.push(event);
     });

@@ -2,10 +2,11 @@ import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import { glob } from 'glob';
+import fs from 'fs/promises';
 import inquirer from 'inquirer';
 import ora from 'ora';
 import path from 'path';
+import { glob } from 'tinyglobby';
 
 import { EXPO_DIR } from '../Constants';
 import Git from '../Git';
@@ -17,6 +18,10 @@ const PACKAGES_DIR = path.join(EXPO_DIR, 'packages');
 const TEMPLATES_DIR = path.join(EXPO_DIR, 'templates');
 
 const BUNDLED_NATIVE_MODULES_PATH = path.join(EXPO_DIR, 'packages/expo/bundledNativeModules.json');
+const MODULE_TEMPLATE_PACKAGE_JSON_PATH = path.join(
+  PACKAGES_DIR,
+  'expo-module-template/$package.json'
+);
 
 const REACT_NATIVE_PACKAGE = 'react-native';
 const REACT_NATIVE_SCOPE = '@react-native/';
@@ -52,6 +57,10 @@ async function main(options: { version?: string; pods: boolean }) {
   }
 
   if (await updateRootOverride(newVersion)) {
+    totalUpdated++;
+  }
+
+  if (await updateModuleTemplate(newVersion)) {
     totalUpdated++;
   }
 
@@ -103,9 +112,9 @@ async function findAllPackageJsonPaths(): Promise<string[]> {
   const appsIgnore = [...ignore, 'expo-go/modules/**'];
 
   const [appPaths, packagePaths, templatePaths] = await Promise.all([
-    glob('**/package.json', { cwd: APPS_DIR, ignore: appsIgnore }),
-    glob('**/package.json', { cwd: PACKAGES_DIR, ignore }),
-    glob('*/package.json', { cwd: TEMPLATES_DIR, ignore }),
+    glob('**/package.json', { cwd: APPS_DIR, ignore: appsIgnore, followSymbolicLinks: false }),
+    glob('**/package.json', { cwd: PACKAGES_DIR, ignore, followSymbolicLinks: false }),
+    glob('*/package.json', { cwd: TEMPLATES_DIR, ignore, followSymbolicLinks: false }),
   ]);
 
   return [
@@ -187,6 +196,34 @@ async function updateRootOverride(newVersion: string): Promise<boolean> {
     { cwd: EXPO_DIR }
   );
   logger.log(`  Updated ${chalk.cyan('pnpm-workspace.yaml')} (overrides)`);
+  return true;
+}
+
+/**
+ * Updates react-native and @react-native/* versions in the contents of the module template's
+ * `$package.json`. It's an EJS template rather than JSON, so the versions are replaced as text.
+ * Only version ranges are replaced, so that peer dependencies such as `"react-native": "*"` stay intact.
+ */
+export function updateModuleTemplateVersions(contents: string, newVersion: string): string {
+  return contents.replace(
+    /("(?:react-native|@react-native\/[^"]+)"\s*:\s*")([~^]?)\d[^"]*(")/g,
+    (_, start, prefix, end) => `${start}${prefix}${newVersion}${end}`
+  );
+}
+
+/**
+ * Updates react-native and @react-native/* versions in the module template that `create-expo-module`
+ * renders into new modules. The `package.json` search skips it because of its `$package.json` name.
+ * Returns true if the file was modified.
+ */
+async function updateModuleTemplate(newVersion: string): Promise<boolean> {
+  const contents = await fs.readFile(MODULE_TEMPLATE_PACKAGE_JSON_PATH, 'utf8');
+  const updated = updateModuleTemplateVersions(contents, newVersion);
+  if (updated === contents) {
+    return false;
+  }
+  await fs.writeFile(MODULE_TEMPLATE_PACKAGE_JSON_PATH, updated);
+  logger.log(`  Updated ${chalk.cyan(path.relative(EXPO_DIR, MODULE_TEMPLATE_PACKAGE_JSON_PATH))}`);
   return true;
 }
 

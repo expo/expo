@@ -10,7 +10,7 @@ add_library(
 
 use_expo_common(expo-modules-jsi)
 
-target_precompile_headers(expo-modules-jsi REUSE_FROM expo-modules-pch)
+use_expo_pch(expo-modules-jsi)
 
 target_include_directories(
   expo-modules-jsi

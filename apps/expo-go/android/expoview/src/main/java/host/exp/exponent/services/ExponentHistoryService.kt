@@ -3,6 +3,7 @@ package host.exp.exponent.services
 import android.util.Log
 import com.google.gson.FormattingStyle
 import com.google.gson.GsonBuilder
+import com.google.gson.annotations.SerializedName
 import com.google.gson.reflect.TypeToken
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.analytics.EXL
@@ -13,10 +14,10 @@ import java.util.Date
 import javax.inject.Singleton
 
 data class HistoryItem(
-  val manifestUrl: String,
-  val name: String,
-  val iconUrl: String?,
-  val timestamp: Long = Date().time
+  @SerializedName("manifestUrl") val manifestUrl: String,
+  @SerializedName("name") val name: String,
+  @SerializedName("iconUrl") val iconUrl: String?,
+  @SerializedName("timestamp") val timestamp: Long = Date().time
 ) {
   constructor(manifestUrl: String, manifest: Manifest) : this(
     manifestUrl = manifestUrl,
@@ -76,7 +77,13 @@ class ExponentHistoryService(
       exponentSharedPreferences.delete(
         ExponentSharedPreferences.ExponentSharedPreferencesKey.HISTORY
       )
-    }.getOrNull() ?: emptyList()
+    }.getOrNull()
+      // Gson skips Kotlin null checks, so an item saved under other field names restores with nulls.
+      ?.filter {
+        @Suppress("SENSELESS_COMPARISON")
+        (it.manifestUrl != null)
+      }
+      ?: emptyList()
   }
 
   fun clearHistory() {

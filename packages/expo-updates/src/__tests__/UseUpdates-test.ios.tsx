@@ -163,7 +163,7 @@ describe('useUpdates()', () => {
     }, 8000);
 
     it('Shows available update after receiving state change', async () => {
-      render(<UseUpdatesTestApp />);
+      await render(<UseUpdatesTestApp />);
       await act(async () => {
         emitTestStateChangeEvent(isCheckingEvent);
       });
@@ -182,7 +182,7 @@ describe('useUpdates()', () => {
     });
 
     it('Shows no available update after receiving state change', async () => {
-      render(<UseUpdatesTestApp />);
+      await render(<UseUpdatesTestApp />);
       await act(async () => {
         emitTestStateChangeEvent(isCheckingEvent);
       });
@@ -202,7 +202,7 @@ describe('useUpdates()', () => {
     });
 
     it('Handles error in checkForUpdate()', async () => {
-      render(<UseUpdatesTestApp />);
+      await render(<UseUpdatesTestApp />);
       await act(async () => {
         emitTestStateChangeEvent(isCheckingEvent);
       });
@@ -216,7 +216,7 @@ describe('useUpdates()', () => {
     });
 
     it('Shows downloaded update after receiving state change', async () => {
-      render(<UseUpdatesTestApp />);
+      await render(<UseUpdatesTestApp />);
       await act(async () => {
         emitTestStateChangeEvent(isDownloadingEvent);
       });
@@ -232,7 +232,7 @@ describe('useUpdates()', () => {
     });
 
     it('Handles error during downloadUpdate()', async () => {
-      render(<UseUpdatesTestApp />);
+      await render(<UseUpdatesTestApp />);
       await act(async () => {
         emitTestStateChangeEvent(isDownloadingEvent);
       });
@@ -248,7 +248,7 @@ describe('useUpdates()', () => {
     });
 
     it('Handles rollback', async () => {
-      render(<UseUpdatesTestApp />);
+      await render(<UseUpdatesTestApp />);
       await act(async () => {
         emitTestStateChangeEvent(isCheckingEvent);
       });

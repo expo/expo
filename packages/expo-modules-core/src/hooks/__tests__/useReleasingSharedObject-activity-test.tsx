@@ -46,21 +46,21 @@ it('preserves the object across repeated hide/show without rerendering the conte
   // A stable, memoized child must survive effect reconnection without relying on another render.
   const content = <Content />;
   const tree = (mode: Mode) => <Activity mode={mode}>{content}</Activity>;
-  const screen = render(tree('visible'), { concurrentRoot: true });
+  const screen = await render(tree('visible'));
   const original = committed;
 
   for (let cycle = 0; cycle < 2; cycle++) {
-    screen.rerender(tree('hidden'));
+    await screen.rerender(tree('hidden'));
     await flushEffects();
     expect(original.release).not.toHaveBeenCalled();
 
-    screen.rerender(tree('visible'));
+    await screen.rerender(tree('visible'));
     await flushEffects();
     expect(committed).toBe(original);
     expect(original.release).not.toHaveBeenCalled();
     expect(factory).toHaveBeenCalledTimes(1);
   }
-  screen.unmount();
+  await screen.unmount();
   await flushEffects();
   expect(original.release).toHaveBeenCalledTimes(1);
   expect(cleanup).toHaveBeenCalledTimes(3);
@@ -92,22 +92,22 @@ it('keeps the hidden object alive when its pending update settles', async () => 
       <Content source={source} />
     </Activity>
   );
-  const screen = render(tree('visible', 0), { concurrentRoot: true });
+  const screen = await render(tree('visible', 0));
   const original = committed;
-  screen.rerender(tree('visible', 1));
-  screen.rerender(tree('hidden', 1));
+  await screen.rerender(tree('visible', 1));
+  await screen.rerender(tree('hidden', 1));
   await flushEffects();
   expect(original.release).not.toHaveBeenCalled();
 
   await act(async () => finishUpdate());
   expect(original.release).not.toHaveBeenCalled();
-  screen.rerender(tree('visible', 1));
+  await screen.rerender(tree('visible', 1));
   await flushEffects();
   expect(committed).toBe(original);
   expect(original.release).not.toHaveBeenCalled();
   expect(update).toHaveBeenCalledTimes(1);
 
-  screen.unmount();
+  await screen.unmount();
   await flushEffects();
   expect(original.release).toHaveBeenCalledTimes(1);
 });
@@ -125,15 +125,15 @@ it.each<Mode>(['visible', 'hidden'])(
         <Content />
       </Activity>
     );
-    const screen = render(tree(initialMode), { concurrentRoot: true });
+    const screen = await render(tree(initialMode));
     await flushEffects();
     expect(factory).toHaveBeenCalledTimes(1);
     const object = factory.mock.results[0]!.value;
-    if (initialMode === 'visible') screen.rerender(tree('hidden'));
+    if (initialMode === 'visible') await screen.rerender(tree('hidden'));
     await flushEffects();
     expect(object.release).not.toHaveBeenCalled();
 
-    screen.unmount();
+    await screen.unmount();
     await flushEffects();
     expect(object.release).toHaveBeenCalledTimes(1);
   }
@@ -157,19 +157,19 @@ it.each([0, 2])(
         <Content source={source} />
       </Activity>
     );
-    const screen = render(tree('visible', 0), { concurrentRoot: true });
+    const screen = await render(tree('visible', 0));
     const original = current;
-    screen.rerender(tree('hidden', 0));
-    screen.rerender(tree('hidden', 1));
+    await screen.rerender(tree('hidden', 0));
+    await screen.rerender(tree('hidden', 1));
     await flushEffects();
-    screen.rerender(tree('hidden', finalSource));
+    await screen.rerender(tree('hidden', finalSource));
     await flushEffects();
     expect(current).toBe(original);
     expect(factory).toHaveBeenCalledTimes(1);
     expect(update).not.toHaveBeenCalled();
     expect(original.release).not.toHaveBeenCalled();
 
-    screen.rerender(tree('visible', finalSource));
+    await screen.rerender(tree('visible', finalSource));
     await flushEffects();
     expect(current).toBe(original);
     expect(update).toHaveBeenCalledTimes(finalSource === 0 ? 0 : 1);
@@ -179,7 +179,7 @@ it.each([0, 2])(
         dependencies: [finalSource],
       });
     }
-    screen.unmount();
+    await screen.unmount();
     await flushEffects();
     expect(original.release).toHaveBeenCalledTimes(1);
   }

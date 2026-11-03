@@ -81,9 +81,11 @@ it(`supports global CSS files with URL imports`, async () => {
   );
   expect(artifacts.length).toBe(3);
 
-  expect(artifacts[1].source).toMatch(
-    '<link rel="stylesheet" href="https://example.com/other.css">'
-  );
+  expect(artifacts[1]).toMatchObject({
+    type: 'css-external',
+    filename: 'https://example.com/other.css',
+    source: '',
+  });
   expect(artifacts[2].source).toMatch('#1e90ff');
 });
 
@@ -234,9 +236,11 @@ describe('css modules', () => {
     );
     expect(artifacts.length).toBe(3);
 
-    expect(artifacts[1].source).toMatch(
-      '<link rel="stylesheet" href="https://example.com/image.png">'
-    );
+    expect(artifacts[1]).toMatchObject({
+      type: 'css-external',
+      filename: 'https://example.com/image.png',
+      source: '',
+    });
     expect(artifacts[2].source).toMatch('#1e90ff');
   });
 });

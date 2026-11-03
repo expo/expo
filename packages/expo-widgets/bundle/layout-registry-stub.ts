@@ -33,6 +33,25 @@ export function createLiveActivity() {
   return noopLiveActivityFactory;
 }
 
+const noopCustomNotificationFactory = {
+  post() {
+    return Promise.resolve({});
+  },
+  get() {
+    return Promise.resolve(null);
+  },
+  getActive() {
+    return Promise.resolve([]);
+  },
+  cancelAll() {
+    return Promise.resolve();
+  },
+};
+
+export function createCustomNotification() {
+  return noopCustomNotificationFactory;
+}
+
 export function addUserInteractionListener() {
   return { remove() {} };
 }

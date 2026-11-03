@@ -805,6 +805,14 @@ export default function HomeScreen() {
 }
 ```
 
+On iOS 18 and later, the tab bar animates when it hides and shows. To hide and show it immediately, set the `disableHiddenAnimation` prop.
+
+```tsx src/app/_layout.tsx
+<NativeTabs hidden={isTabBarHidden} disableHiddenAnimation>
+  {/* Triggers */}
+</NativeTabs>
+```
+
 ### Hiding a tab conditionally
 
 > **warning** Dynamically hiding tabs will remount the navigator and the state will be reset. Change the visibility of the tabs only before the navigator is mounted or when it is not visible to the user.
@@ -1154,6 +1162,8 @@ export default function SearchIndex() {
 }
 ```
 
+In SDK 58 and later, selecting a search tab activates its search field when the screen has a search bar. This works on iOS 26.1 and later. To leave the field inactive, set `disableAutomaticSearchActivation` on `NativeTabs.Trigger`. On iOS 27, the search tab appears separately only while search activation is enabled.
+
 #### Tab bar minimize behavior
 
 <ContentSpotlight
@@ -1306,6 +1316,78 @@ const styles = StyleSheet.create({
     padding: 16,
   },
 });
+```
+
+### Sidebar placement
+
+> **info** This feature is available in SDK 58 and later. To use it, compile your app with Xcode 27 or higher. The placement has an effect on iOS 27 and later.
+
+When the device can show only the sidebar or only the tab bar, use the [`preferredPlacement`](/versions/latest/sdk/router/native-tabs/#preferredplacement) prop to select which one shows.
+
+<ContentSpotlight
+  alt="A screenshot of an iPhone in landscape orientation with the tabs in a sidebar."
+  src="/static/images/expo-router/ios-27-sidebar-placement-sidebar.webp"
+  caption="The sidebar placement."
+  className="max-w-[540px]"
+/>
+
+<ContentSpotlight
+  alt="A screenshot of an iPhone in landscape orientation with the tabs in a tab bar."
+  src="/static/images/expo-router/ios-27-sidebar-placement-tab-bar.webp"
+  caption="The tab bar placement."
+  className="max-w-[540px]"
+/>
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs preferredPlacement="sidebar">
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      <NativeTabs.Trigger name="settings">
+        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
+```
+
+### Prominent tab
+
+> **info** This feature is available in SDK 58 and later. To use it, compile your app with Xcode 27 or higher. The prominent tab has an effect on iOS 27 and later.
+
+A prominent tab shows on its own surface in the tab bar. It stays visible when the tab bar minimizes, for example with [`minimizeBehavior`](/versions/latest/sdk/router/native-tabs/#minimizebehavior) set to `"onScrollDown"`. To make a tab prominent, set the `prominent` prop on its `NativeTabs.Trigger` in the layout file.
+
+In the following recording, the Radio tab is prominent. It stays separate from the other tabs, also when the tab bar minimizes.
+
+<ContentSpotlight
+  alt="A video of a tab bar with a prominent tab on its own surface. The tab bar minimizes on scroll down, and the prominent tab stays visible next to the bottom accessory."
+  file="expo-router/ios-27-prominent-tab.mp4"
+/>
+
+Only one tab can be prominent. When more than one trigger sets `prominent`, the first visible one is prominent and Expo Router shows a warning in development.
+
+```tsx src/app/_layout.tsx
+import { NativeTabs } from 'expo-router/native-tabs';
+
+export default function TabLayout() {
+  return (
+    <NativeTabs minimizeBehavior="onScrollDown">
+      <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+      {/* ... */}
+      {/* Shows on its own surface and stays visible when the tab bar minimizes. */}
+      <NativeTabs.Trigger name="radio" prominent>
+        <NativeTabs.Trigger.Icon sf="dot.radiowaves.left.and.right" />
+        <NativeTabs.Trigger.Label>Radio</NativeTabs.Trigger.Label>
+      </NativeTabs.Trigger>
+    </NativeTabs>
+  );
+}
 ```
 
 ### Keyboard avoidance on Android

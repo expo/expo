@@ -1,15 +1,15 @@
 /** @jest-environment jsdom */
 
-import { Text } from 'react-native';
+import { View } from 'react-native';
 
 import { renderRouter, screen } from '../testing-library';
 
-test('renders the initial URL with search params and a hash', () => {
-  const Second = jest.fn(() => <Text>second</Text>);
+test('renders the initial URL with search params and a hash', async () => {
+  const Second = jest.fn(() => <View testID="second" />);
 
-  const result = renderRouter(
+  const result = await renderRouter(
     {
-      index: () => <Text>index</Text>,
+      index: () => <View testID="index" />,
       second: Second,
     },
     { initialUrl: '/second?x=1#hash' }
@@ -20,7 +20,7 @@ test('renders the initial URL with search params and a hash', () => {
     expect(screen).toHavePathname('/second');
     expect(screen).toHaveSearchParams({ x: '1', '#': 'hash' });
   } finally {
-    result.unmount();
+    await result.unmount();
     jest.useRealTimers();
   }
 });

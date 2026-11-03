@@ -572,7 +572,7 @@ describe('getRouteInfoFromState', () => {
       ],
     });
 
-    expect(result.params['__proto__']).toBe('x');
+    expect(Reflect.get(result.params, '__proto__')).toBe('x');
     expect(result.pathnameWithParams).toBe('/post?__proto__=x');
   });
 

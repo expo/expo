@@ -1,3 +1,4 @@
+import { getOriginalEnv } from '@expo/env';
 import spawnAsync from '@expo/spawn-async';
 import resolveFrom, { silent as silentResolveFrom } from 'resolve-from';
 
@@ -19,10 +20,13 @@ export async function expoUpdatesCommandAsync(projectDir: string, args: string[]
   }
 
   try {
+    const commandEnv = getOriginalEnv();
+    commandEnv.__EXPO_CONFIG_MODE = 'development';
+
     return (
       await spawnAsync(expoUpdatesCli, args, {
         stdio: 'pipe',
-        env: { ...process.env },
+        env: commandEnv as NodeJS.ProcessEnv,
       })
     ).stdout;
   } catch (e: any) {

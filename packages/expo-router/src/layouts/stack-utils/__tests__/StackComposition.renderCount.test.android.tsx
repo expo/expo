@@ -29,10 +29,10 @@ const ScreenStackHeaderSearchBarView = _ScreenStackHeaderSearchBarView as jest.M
 >;
 
 describe('Stack composition components render count', () => {
-  it('initial render with composition components produces two ScreenStackItem calls', () => {
+  it('initial render with composition components produces two ScreenStackItem calls', async () => {
     const indexRender = jest.fn();
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: function Index() {
         indexRender();
@@ -61,11 +61,11 @@ describe('Stack composition components render count', () => {
     expect(finalProps.headerConfig?.backgroundColor).toBe('blue');
   });
 
-  it('navigation to another screen does not rerender first screen', () => {
+  it('navigation to another screen does not rerender first screen', async () => {
     const indexRender = jest.fn();
     const detailRender = jest.fn();
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: function Index() {
         indexRender();
@@ -97,7 +97,7 @@ describe('Stack composition components render count', () => {
 
     jest.clearAllMocks();
 
-    act(() => router.push('/detail'));
+    await act(() => router.push('/detail'));
 
     expect(screen.getByTestId('detail')).toBeVisible();
 
@@ -119,7 +119,7 @@ describe('Stack composition components render count', () => {
 
     jest.clearAllMocks();
 
-    act(() => router.back());
+    await act(() => router.back());
 
     expect(screen.getByTestId('index')).toBeVisible();
 
@@ -137,10 +137,10 @@ describe('Stack composition components render count', () => {
     expect(homeCall).toBeDefined();
   });
 
-  it('multiple composition components on same screen do not trigger extra renders', () => {
+  it('multiple composition components on same screen do not trigger extra renders', async () => {
     const indexRender = jest.fn();
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: function Index() {
         indexRender();
@@ -171,12 +171,12 @@ describe('Stack composition components render count', () => {
     expect(ScreenStackHeaderSearchBarView).toHaveBeenCalled();
   });
 
-  it('unfocused screens with composition do not trigger extra renders on further navigation', () => {
+  it('unfocused screens with composition do not trigger extra renders on further navigation', async () => {
     const screenARender = jest.fn();
     const screenBRender = jest.fn();
     const screenCRender = jest.fn();
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: function ScreenA() {
         screenARender();
@@ -207,7 +207,7 @@ describe('Stack composition components render count', () => {
 
     // Navigate A -> B
     jest.clearAllMocks();
-    act(() => router.push('/screen-b'));
+    await act(() => router.push('/screen-b'));
     expect(screen.getByTestId('screenB')).toBeVisible();
     expect(screenARender).not.toHaveBeenCalled();
     expect(screenBRender).toHaveBeenCalledTimes(1);
@@ -221,7 +221,7 @@ describe('Stack composition components render count', () => {
 
     // Navigate B -> C
     jest.clearAllMocks();
-    act(() => router.push('/screen-c'));
+    await act(() => router.push('/screen-c'));
     expect(screen.getByTestId('screenC')).toBeVisible();
 
     // Neither A nor B should rerender when navigating to C
@@ -240,7 +240,7 @@ describe('Stack composition components render count', () => {
     expect(screenCCall).toBeDefined();
   });
 
-  it('local state changes do not trigger composition re-registration', () => {
+  it('local state changes do not trigger composition re-registration', async () => {
     const indexRender = jest.fn();
 
     function Index() {
@@ -255,7 +255,7 @@ describe('Stack composition components render count', () => {
       );
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: Index,
     });
@@ -266,8 +266,8 @@ describe('Stack composition components render count', () => {
     jest.clearAllMocks();
 
     // Increment counter — triggers rerender of screen component
-    act(() => {
-      fireEvent.press(screen.getByTestId('increment'));
+    await act(async () => {
+      await fireEvent.press(screen.getByTestId('increment'));
     });
 
     expect(screen.getByTestId('count')).toHaveTextContent('1');
@@ -280,7 +280,7 @@ describe('Stack composition components render count', () => {
     expect(ScreenStackItem).not.toHaveBeenCalled();
   });
 
-  it('changed composition options DO trigger ScreenStackItem update', () => {
+  it('changed composition options DO trigger ScreenStackItem update', async () => {
     const indexRender = jest.fn();
 
     function Index() {
@@ -295,7 +295,7 @@ describe('Stack composition components render count', () => {
       );
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: Index,
     });
@@ -310,8 +310,8 @@ describe('Stack composition components render count', () => {
     jest.clearAllMocks();
 
     // Change the title — composition options actually change
-    act(() => {
-      fireEvent.press(screen.getByTestId('changeTitle'));
+    await act(async () => {
+      await fireEvent.press(screen.getByTestId('changeTitle'));
     });
 
     expect(screen.getByTestId('title')).toHaveTextContent('Updated');
@@ -323,7 +323,7 @@ describe('Stack composition components render count', () => {
     expect(ScreenStackItem.mock.calls[0]![0].headerConfig?.title).toBe('Updated');
   });
 
-  it('conditionally removed composition component clears its options', () => {
+  it('conditionally removed composition component clears its options', async () => {
     function Index() {
       const [showBackButton, setShowBackButton] = useState(true);
       return (
@@ -340,7 +340,7 @@ describe('Stack composition components render count', () => {
       );
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: Index,
     });
@@ -355,8 +355,8 @@ describe('Stack composition components render count', () => {
     jest.clearAllMocks();
 
     // Remove the BackButton component
-    act(() => {
-      fireEvent.press(screen.getByTestId('toggleBackButton'));
+    await act(async () => {
+      await fireEvent.press(screen.getByTestId('toggleBackButton'));
     });
 
     // ScreenStackItem should be called — unregister fires, registry changes
@@ -370,7 +370,7 @@ describe('Stack composition components render count', () => {
     expect(finalProps.headerConfig?.backTitle).toBeUndefined();
   });
 
-  it('switching composition suites mounts/unmounts components with minimal updates', () => {
+  it('switching composition suites mounts/unmounts components with minimal updates', async () => {
     const indexRender = jest.fn();
 
     function Index() {
@@ -403,7 +403,7 @@ describe('Stack composition components render count', () => {
       );
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: Index,
     });
@@ -421,8 +421,8 @@ describe('Stack composition components render count', () => {
 
     // Switch to suite 1
     jest.clearAllMocks();
-    act(() => {
-      fireEvent.press(screen.getByTestId('nextSuite'));
+    await act(async () => {
+      await fireEvent.press(screen.getByTestId('nextSuite'));
     });
 
     // One screen render (state change), one batched ScreenStackItem update
@@ -437,8 +437,8 @@ describe('Stack composition components render count', () => {
 
     // Switch to suite 2
     jest.clearAllMocks();
-    act(() => {
-      fireEvent.press(screen.getByTestId('nextSuite'));
+    await act(async () => {
+      await fireEvent.press(screen.getByTestId('nextSuite'));
     });
 
     expect(indexRender).toHaveBeenCalledTimes(1);
@@ -451,7 +451,7 @@ describe('Stack composition components render count', () => {
     expect(suite2Props.headerConfig?.backgroundColor).toBe('rgb(255, 255, 255)');
   });
 
-  it('composition suite switch on top screen does not rerender screen below', () => {
+  it('composition suite switch on top screen does not rerender screen below', async () => {
     const indexRender = jest.fn();
     const detailRender = jest.fn();
 
@@ -494,7 +494,7 @@ describe('Stack composition components render count', () => {
       );
     }
 
-    renderRouter({
+    await renderRouter({
       _layout: () => <Stack />,
       index: Index,
       detail: Detail,
@@ -503,14 +503,14 @@ describe('Stack composition components render count', () => {
     expect(screen.getByTestId('index')).toBeVisible();
 
     // Navigate to detail
-    act(() => router.push('/detail'));
+    await act(() => router.push('/detail'));
     expect(screen.getByTestId('detail')).toBeVisible();
 
     jest.clearAllMocks();
 
     // Switch suite on detail screen
-    act(() => {
-      fireEvent.press(screen.getByTestId('toggleSuite'));
+    await act(async () => {
+      await fireEvent.press(screen.getByTestId('toggleSuite'));
     });
 
     // Index screen should NOT rerender — stack preserves screens, composition change is local

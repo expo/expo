@@ -96,12 +96,11 @@ export function mergeWithDuplicate(
   } else if (!target.version && duplicate.version) {
     target.version = duplicate.version;
   }
-  if (duplicate.duplicates?.length) {
-    duplicates.push(
-      ...duplicate.duplicates.filter((child) =>
-        duplicates.every((parent) => parent.path !== child.path)
-      )
-    );
+  for (const child of duplicate.duplicates ?? []) {
+    if (child.path === target.path || duplicates.some((existing) => existing.path === child.path)) {
+      continue;
+    }
+    duplicates.push(child);
   }
   return target;
 }

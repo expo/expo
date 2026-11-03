@@ -4,10 +4,21 @@ description: 'Install and configure ccache'
 runs:
   using: 'composite'
   steps:
-    - name: 🍺 Install ccache
+    # A pinned upstream release, verified by checksum. `brew install` would install whatever
+    # version the runner's Homebrew resolves.
+    - name: 📦 Install ccache
       if: runner.os == 'macOS'
       shell: bash
-      run: brew install ccache
+      env:
+        CCACHE_VERSION: 4.14.1
+        CCACHE_SHA256: c279fa81e2e806b4d9e64d4a06cb569a84ef54151feef796e5d4f4e95a464563
+      run: |
+        archive="$RUNNER_TEMP/ccache.tar.gz"
+        curl -fsSL -o "$archive" "https://github.com/ccache/ccache/releases/download/v$CCACHE_VERSION/ccache-$CCACHE_VERSION-darwin.tar.gz"
+        echo "$CCACHE_SHA256  $archive" | shasum -a 256 -c -
+        mkdir -p "$RUNNER_TEMP/ccache"
+        tar -xzf "$archive" -C "$RUNNER_TEMP/ccache" --strip-components=1
+        echo "$RUNNER_TEMP/ccache" >> "$GITHUB_PATH"
 
     - name: 🔧 Configure ccache for iOS
       if: runner.os == 'macOS'

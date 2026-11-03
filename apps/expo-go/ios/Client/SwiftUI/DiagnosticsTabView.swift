@@ -32,11 +32,12 @@ struct DiagnosticsTabView: View {
         }
         .buttonStyle(PlainButtonStyle())
       }
+      .maxContentWidth()
       .padding()
     }
     .background(Color.expoSystemBackground)
-    .navigationTitle("Diagnostics")
-    .navigationBarTitleDisplayMode(.inline)
+    .navigationTitle(HomeTab.diagnostics.title)
+    .navigationBarTitleDisplayMode(.large)
   }
 }
 

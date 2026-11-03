@@ -1,0 +1,53 @@
+import { Platform } from 'react-native';
+
+import { optionalRequire } from '../../navigation/routeBuilder';
+import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
+
+export const MediaLibraryScreens = [
+  {
+    name: 'Asset',
+    route: 'medialibrary/asset',
+    getComponent() {
+      return optionalRequire(() => require('./AssetScreen'));
+    },
+  },
+  {
+    name: 'Add Asset to Album',
+    route: 'medialibrary/add-asset-to-album',
+    getComponent() {
+      return optionalRequire(() => require('./AddAssetToAlbumScreen'));
+    },
+  },
+  {
+    name: 'Sort',
+    route: 'medialibrary/sort',
+    getComponent() {
+      return optionalRequire(() => require('./SortScreen'));
+    },
+  },
+];
+
+if (Platform.OS === 'ios') {
+  MediaLibraryScreens.push({
+    name: 'Media Subtype',
+    route: 'medialibrary/media-subtype',
+    getComponent() {
+      return optionalRequire(() => require('./MediaSubtypeScreen'));
+    },
+  });
+}
+
+if (Platform.OS === 'android' && Platform.Version >= 33) {
+  MediaLibraryScreens.push({
+    name: 'Granular Permissions',
+    route: 'medialibrary/granular-permissions',
+    getComponent() {
+      return optionalRequire(() => require('./GranularPermissionsScreen'));
+    },
+  });
+}
+
+export default function MediaLibraryScreen() {
+  const apis = apiScreensToListElements(MediaLibraryScreens);
+  return <ComponentListScreen apis={apis} sort={false} />;
+}

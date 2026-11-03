@@ -1,7 +1,7 @@
 // @ts-ignore
 import chalk from 'chalk';
 
-import { DevToolsPlugin } from '../../server/DevToolsPlugin';
+import { DevToolsPlugin } from '../../server/devtools/DevToolsPlugin';
 import { createDevToolsMenuItems } from '../createDevToolsMenuItems';
 
 const DEFAULT_SERVER_URL = 'http://localhost:19006';

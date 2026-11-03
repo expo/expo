@@ -472,7 +472,7 @@ async function testDeletedPageRedirectsAsync(): Promise<void> {
   if (
     easRedirect.status !== 301 ||
     !easLocation.includes(
-      '?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build'
+      '?buildenv=build-with-expo-services#how-would-you-like-to-build-your-development-build'
     )
   ) {
     throw new Error(
@@ -499,12 +499,37 @@ async function testDeletedPageRedirectsAsync(): Promise<void> {
   });
   const mdLocation = mdRedirect.headers.get('location') ?? '';
 
-  if (mdRedirect.status !== 301 || !mdLocation.includes('?buildenv=build-with-eas')) {
+  if (mdRedirect.status !== 301 || !mdLocation.includes('?buildenv=build-with-expo-services')) {
     throw new Error(
       `Expected the markdown request to pass through the page redirect, got: HTTP ${mdRedirect.status} -> ${mdLocation}`
     );
   }
   console.log('✓ Accept: text/markdown request passes through page redirects');
+}
+
+async function testRemovedSdkRedirectsAsync(): Promise<void> {
+  console.log('\n--- Testing removed SDK 54 and expo-av redirects ---');
+
+  const cases = [
+    { from: '/versions/latest/sdk/av', to: '/versions/latest/sdk/audio' },
+    { from: '/versions/latest/sdk/av.md', to: '/versions/latest/sdk/audio.md' },
+    { from: '/versions/latest/sdk/audio-av', to: '/versions/latest/sdk/audio' },
+    { from: '/versions/latest/sdk/video-av', to: '/versions/latest/sdk/video' },
+    { from: '/versions/v54.0.0', to: '/versions/latest' },
+    { from: '/versions/v54.0.0/sdk/camera', to: '/versions/latest/sdk/camera' },
+  ];
+
+  for (const { from, to } of cases) {
+    const response = await fetch(`${BASE_URL}${from}`, { redirect: 'manual' });
+    const location = response.headers.get('location') ?? '';
+
+    if (response.status !== 301 || !location.endsWith(to)) {
+      throw new Error(
+        `Expected ${from} to 301 to ${to}, got: HTTP ${response.status} -> ${location}`
+      );
+    }
+    console.log(`✓ ${from} redirects to ${to}`);
+  }
 }
 
 async function testAgentDiscoveryRedirectsAsync(): Promise<void> {
@@ -594,6 +619,7 @@ async function mainAsync(): Promise<void> {
     await testAcceptQualityValuesAsync();
     await testUpgradePairNegotiationAsync();
     await testDeletedPageRedirectsAsync();
+    await testRemovedSdkRedirectsAsync();
     await testAgentDiscoveryRedirectsAsync();
     await testHtmlNotFoundAsync();
     await testUrlRecoveryAsync();

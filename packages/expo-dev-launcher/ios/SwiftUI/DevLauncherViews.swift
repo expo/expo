@@ -32,26 +32,26 @@ public struct DevLauncherRootView: View {
     }
   }
 
-  @ViewBuilder
+  private var appName: String? {
+    guard let name = viewModel.buildInfo["appName"] as? String, !name.isEmpty else {
+      return nil
+    }
+    return name
+  }
+
   private var mainContent: some View {
-    let tabView = TabView {
-      HomeTabView()
-        .tabItem {
-          Image(systemName: "house.fill")
-          Text("Home")
-        }
+    TabView {
+      TabNavigation(.home, title: appName) {
+        HomeTabView()
+      }
 
-      UpdatesTabView()
-        .tabItem {
-          Image(systemName: "arrow.2.circlepath")
-          Text("Updates")
-        }
+      TabNavigation(.updates) {
+        UpdatesTabView()
+      }
 
-      SettingsTabView()
-        .tabItem {
-          Image(systemName: "gearshape")
-          Text("Settings")
-        }
+      TabNavigation(.settings) {
+        SettingsTabView()
+      }
     }
     .onAppear {
       DevLauncherTabBarManager.shared.setCustomAppearance()
@@ -59,23 +59,8 @@ public struct DevLauncherRootView: View {
     .onDisappear {
       DevLauncherTabBarManager.shared.restoreOriginalAppearance()
     }
-#if !os(macOS)
-    .navigationBarHidden(true)
-#endif
     .environmentObject(viewModel)
     .environmentObject(DevLauncherNavigation(showingUserProfile: $showingUserProfile))
-
-#if !os(macOS)
-    let navigationStack = NavigationView {
-      tabView
-    }.navigationViewStyle(.stack)
-#else
-    let navigationStack = NavigationStack {
-      tabView
-    }
-#endif
-
-    navigationStack
     .onAppear {
       viewModel.startServerDiscovery()
     }
@@ -152,17 +137,17 @@ struct RecentlyOpenedAppRow: View {
         VStack(alignment: .leading) {
           Text(app.name)
             .font(.headline)
-            .foregroundColor(.primary)
+            .foregroundStyle(Color.primary)
           Text(app.url)
             .font(.caption)
-            .foregroundColor(.secondary)
+            .foregroundStyle(Color.secondary)
             .lineLimit(1)
         }
 
         Spacer()
         Image(systemName: "chevron.right")
           .font(.caption)
-          .foregroundColor(.secondary)
+          .foregroundStyle(Color.secondary)
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)

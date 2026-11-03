@@ -99,6 +99,15 @@ public struct Exceptions {
     }
   }
 
+  /// An exception thrown when JavaScript calls `new` on a class whose native instance only the
+  /// native side can build. The class exposes no `@JS init` and no DSL `Constructor`, so there is
+  /// nothing to construct it with.
+  public final class ConstructorUnavailable: GenericException<String> {
+    override public var reason: String {
+      "'\(param)' cannot be constructed from JavaScript because its native instance is created by the module that owns it. Get an instance from that module's API instead of calling `new \(param)()`."
+    }
+  }
+
   /**
    An exception to throw when there is no module implementing the `EXPermissionsInterface` interface.
    - Note: This should never happen since the module is a part of `expo-modules-core`, but for compatibility reasons

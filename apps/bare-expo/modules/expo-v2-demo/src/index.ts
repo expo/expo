@@ -1,3 +1,5 @@
+import { requireOptionalNativeModule } from 'expo';
+
 export type Point = { x: number; y: number };
 
 export type ExpoV2DemoModule = {
@@ -7,5 +9,5 @@ export type ExpoV2DemoModule = {
 };
 
 export function getExpoV2Demo(): ExpoV2DemoModule | null {
-  return (globalThis as any).expoV2?.modules?.ExpoV2Demo ?? null;
+  return requireOptionalNativeModule<ExpoV2DemoModule>('ExpoV2Demo');
 }

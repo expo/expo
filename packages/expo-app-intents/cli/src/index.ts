@@ -8,6 +8,7 @@ type InitCommandOptions = {
   directory?: string;
   examples?: string[];
   visualIntelligence?: boolean;
+  donations?: boolean;
 };
 
 const TEMPLATES_DIRECTORY_NAME = 'templates';
@@ -42,10 +43,11 @@ async function runInitCommand(options: InitCommandOptions): Promise<void> {
   const interactive = isInteractive();
   const directory = normalizeDirectory(options.directory ?? options.dir);
   printScaffoldIntro(directory);
-  const { examples, visualIntelligence } = await resolveExamplesAsync(
+  const { examples, visualIntelligence, donations } = await resolveExamplesAsync(
     interactive,
     options.examples,
-    options.visualIntelligence ?? false
+    options.visualIntelligence ?? false,
+    options.donations ?? false
   );
 
   await runInit({
@@ -53,6 +55,7 @@ async function runInitCommand(options: InitCommandOptions): Promise<void> {
     directory,
     examples,
     visualIntelligence,
+    donations,
     templatesDir:
       process.env.EXPO_APP_INTENTS_TEMPLATES_DIR ??
       path.join(__dirname, '..', '..', TEMPLATES_DIRECTORY_NAME),
@@ -76,6 +79,11 @@ program
   .option(
     '--visual-intelligence',
     'Extend the mail example with Spotlight indexing, a Transferable export, and an open intent.'
+  )
+  .option(
+    '--donations',
+    'Add native class extensions that let JavaScript donate the intents of the selected examples with ' +
+      'donateIntentAsync().'
   )
   .action(runInitCommand);
 

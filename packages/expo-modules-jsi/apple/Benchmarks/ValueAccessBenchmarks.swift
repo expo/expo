@@ -42,6 +42,49 @@ extension JSIBenchmarks {
     }
   }
 
+  /// A string short enough for Swift to store inline, so the read doesn't allocate.
+  @Test
+  func `value to short string`() async throws {
+    try await benchmarkCase { runtime in
+      let value = try runtime.eval("'benchmark'")
+      try benchmark("JavaScriptValue.getString(): 9B ASCII", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = value.getString()
+        }
+      }
+    }
+  }
+
+  @Test
+  func `unowned value to string`() async throws {
+    try await benchmarkCase { runtime in
+      let buffer = JavaScriptValuesBuffer.allocate(
+        in: runtime,
+        with: try runtime.eval("'benchmark string value'").ref()
+      )
+      try benchmark("JavaScriptUnownedValue.getString()", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = buffer.unownedValue(at: 0).getString()
+        }
+      }
+    }
+  }
+
+  @Test
+  func `unowned decode of a string`() async throws {
+    try await benchmarkCase { runtime in
+      let buffer = JavaScriptValuesBuffer.allocate(
+        in: runtime,
+        with: try runtime.eval("'benchmark string value'").ref()
+      )
+      try benchmark("String.decode(unowned)", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try String.decode(buffer.unownedValue(at: 0), in: runtime)
+        }
+      }
+    }
+  }
+
   @Test
   func `value to double`() async throws {
     try await benchmarkCase { runtime in
@@ -92,6 +135,81 @@ extension JSIBenchmarks {
     }
   }
 
+  // The conversions below run on a temporary, so the engine value can be moved into the wrapper
+  // instead of cloned. Read them against `JavaScriptObject.getProperty(_:): object value` above.
+
+  @Test
+  func `object property to object`() async throws {
+    try await benchmarkCase { runtime in
+      let object = try runtime.eval("({ answer: { value: 42 } })").getObject()
+      try benchmark("JavaScriptObject.getProperty(_:).getObject()", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = object.getProperty("answer").getObject()
+        }
+      }
+    }
+  }
+
+  @Test
+  func `object property to array`() async throws {
+    try await benchmarkCase { runtime in
+      let object = try runtime.eval("({ answer: [1, 2, 3] })").getObject()
+      try benchmark("JavaScriptObject.getProperty(_:).getArray()", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = object.getProperty("answer").getArray()
+        }
+      }
+    }
+  }
+
+  @Test
+  func `object property to function`() async throws {
+    try await benchmarkCase { runtime in
+      let object = try runtime.eval("({ answer() {} })").getObject()
+      try benchmark("JavaScriptObject.getProperty(_:).getFunction()", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = object.getProperty("answer").getFunction()
+        }
+      }
+    }
+  }
+
+  @Test
+  func `object property to array buffer`() async throws {
+    try await benchmarkCase { runtime in
+      let object = try runtime.eval("({ answer: new ArrayBuffer(8) })").getObject()
+      try benchmark("JavaScriptObject.getProperty(_:).getArrayBuffer()", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = object.getProperty("answer").getArrayBuffer()
+        }
+      }
+    }
+  }
+
+  @Test
+  func `object property to typed array`() async throws {
+    try await benchmarkCase { runtime in
+      let object = try runtime.eval("({ answer: new Uint8Array(8) })").getObject()
+      try benchmark("JavaScriptObject.getProperty(_:).getTypedArray()", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = object.getProperty("answer").getTypedArray()
+        }
+      }
+    }
+  }
+
+  @Test
+  func `function to object`() async throws {
+    try await benchmarkCase { runtime in
+      let function = try runtime.eval("(function answer() {})").getFunction()
+      try benchmark("JavaScriptFunction.asObject()", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = function.asObject()
+        }
+      }
+    }
+  }
+
   @Test
   func `nested property traversal`() async throws {
     try await benchmarkCase { runtime in
@@ -125,6 +243,41 @@ extension JSIBenchmarks {
       try benchmark("JavaScriptArray.getValue(at:)", runtime: runtime) { iterations in
         for _ in 0..<iterations {
           _ = try array.getValue(at: 0)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `define a property`() async throws {
+    try await benchmarkCase { runtime in
+      try benchmark("JavaScriptObject.defineProperty(_:value:options:)", runtime: runtime) { iterations in
+        for index in 0..<iterations {
+          let object = runtime.createObject()
+          object.defineProperty("__expo_shared_object_id__", value: index, options: [.writable])
+        }
+      }
+    }
+  }
+
+  @Test
+  func `create an object`() async throws {
+    try await benchmarkCase { runtime in
+      try benchmark("JavaScriptRuntime.createObject()", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = runtime.createObject()
+        }
+      }
+    }
+  }
+
+  @Test
+  func `create an object with a prototype`() async throws {
+    try await benchmarkCase { runtime in
+      let prototype = runtime.createObject()
+      try benchmark("JavaScriptRuntime.createObject(prototype:)", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = runtime.createObject(prototype: prototype)
         }
       }
     }

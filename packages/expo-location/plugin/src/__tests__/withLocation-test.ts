@@ -82,3 +82,102 @@ describe('withLocation iOS motion configuration', () => {
     expect(infoPlist.NSMotionUsageDescription).toBeUndefined();
   });
 });
+
+describe('withLocation iOS full accuracy message', () => {
+  const DEFAULT_MESSAGE = 'Allow $(PRODUCT_NAME) to access your precise location';
+
+  it('sets the default message when locationFullAccuracyPermission is not provided', async () => {
+    const config: ExportedConfig = withLocation(fakeConfig(), {});
+    const infoPlist = await evalIosModAsync(config, config.mods?.ios?.infoPlist, {});
+    expect(infoPlist.NSLocationTemporaryUsageDescriptionDictionary).toEqual({
+      ExpoLocationFullAccuracy: DEFAULT_MESSAGE,
+    });
+  });
+
+  it('sets the provided message', async () => {
+    const config: ExportedConfig = withLocation(fakeConfig(), {
+      locationFullAccuracyPermission: 'Allow precise location',
+    });
+    const infoPlist = await evalIosModAsync(config, config.mods?.ios?.infoPlist, {});
+    expect(infoPlist.NSLocationTemporaryUsageDescriptionDictionary).toEqual({
+      ExpoLocationFullAccuracy: 'Allow precise location',
+    });
+  });
+
+  it('does not write the dictionary when locationFullAccuracyPermission is false', async () => {
+    const config: ExportedConfig = withLocation(fakeConfig(), {
+      locationFullAccuracyPermission: false,
+    });
+    const infoPlist = await evalIosModAsync(config, config.mods?.ios?.infoPlist, {});
+    expect(infoPlist.NSLocationTemporaryUsageDescriptionDictionary).toBeUndefined();
+  });
+
+  it('keeps other purpose keys already in the dictionary', async () => {
+    const config: ExportedConfig = withLocation(fakeConfig(), {
+      locationFullAccuracyPermission: 'Allow precise location',
+    });
+    const infoPlist = await evalIosModAsync(config, config.mods?.ios?.infoPlist, {
+      NSLocationTemporaryUsageDescriptionDictionary: { Delivery: 'Track your delivery' },
+    });
+    expect(infoPlist.NSLocationTemporaryUsageDescriptionDictionary).toEqual({
+      Delivery: 'Track your delivery',
+      ExpoLocationFullAccuracy: 'Allow precise location',
+    });
+  });
+
+  it('leaves other purpose keys untouched when locationFullAccuracyPermission is false', async () => {
+    const config: ExportedConfig = withLocation(fakeConfig(), {
+      locationFullAccuracyPermission: false,
+    });
+    const infoPlist = await evalIosModAsync(config, config.mods?.ios?.infoPlist, {
+      NSLocationTemporaryUsageDescriptionDictionary: { Delivery: 'Track your delivery' },
+    });
+    expect(infoPlist.NSLocationTemporaryUsageDescriptionDictionary).toEqual({
+      Delivery: 'Track your delivery',
+    });
+  });
+
+  it('overwrites an existing ExpoLocationFullAccuracy message with the provided one', async () => {
+    const config: ExportedConfig = withLocation(fakeConfig(), {
+      locationFullAccuracyPermission: 'Allow precise location',
+    });
+    const infoPlist = await evalIosModAsync(config, config.mods?.ios?.infoPlist, {
+      NSLocationTemporaryUsageDescriptionDictionary: { ExpoLocationFullAccuracy: 'Old message' },
+    });
+    expect(infoPlist.NSLocationTemporaryUsageDescriptionDictionary).toEqual({
+      ExpoLocationFullAccuracy: 'Allow precise location',
+    });
+  });
+});
+
+describe('withLocation iOS reduced accuracy default', () => {
+  it('sets NSLocationDefaultAccuracyReduced when isIosReducedAccuracyByDefault is true', async () => {
+    const config: ExportedConfig = withLocation(fakeConfig(), {
+      isIosReducedAccuracyByDefault: true,
+    });
+    const infoPlist = await evalIosModAsync(config, config.mods?.ios?.infoPlist, {});
+    expect(infoPlist.NSLocationDefaultAccuracyReduced).toBe(true);
+  });
+
+  it('does not write NSLocationDefaultAccuracyReduced when isIosReducedAccuracyByDefault is false', async () => {
+    const config: ExportedConfig = withLocation(fakeConfig(), {
+      isIosReducedAccuracyByDefault: false,
+    });
+    const infoPlist = await evalIosModAsync(config, config.mods?.ios?.infoPlist, {});
+    expect(infoPlist.NSLocationDefaultAccuracyReduced).toBeUndefined();
+  });
+
+  it('does not write NSLocationDefaultAccuracyReduced when isIosReducedAccuracyByDefault is not provided', async () => {
+    const config: ExportedConfig = withLocation(fakeConfig(), {});
+    const infoPlist = await evalIosModAsync(config, config.mods?.ios?.infoPlist, {});
+    expect(infoPlist.NSLocationDefaultAccuracyReduced).toBeUndefined();
+  });
+
+  it('leaves an existing NSLocationDefaultAccuracyReduced in place when isIosReducedAccuracyByDefault is not provided', async () => {
+    const config: ExportedConfig = withLocation(fakeConfig(), {});
+    const infoPlist = await evalIosModAsync(config, config.mods?.ios?.infoPlist, {
+      NSLocationDefaultAccuracyReduced: true,
+    });
+    expect(infoPlist.NSLocationDefaultAccuracyReduced).toBe(true);
+  });
+});

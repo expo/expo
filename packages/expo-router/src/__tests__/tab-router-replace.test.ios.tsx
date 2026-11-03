@@ -5,8 +5,8 @@ import { Tabs } from '../layouts/Tabs';
 import { Redirect } from '../link/Link';
 import { renderRouter } from '../testing-library';
 
-it('removes the replaced tab from history', () => {
-  renderRouter({
+it('removes the replaced tab from history', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs backBehavior="history">
         <Tabs.Screen name="index" />
@@ -19,16 +19,16 @@ it('removes the replaced tab from history', () => {
     third: () => null,
   });
 
-  act(() => router.push('/second'));
-  act(() => router.push('/third'));
-  act(() => router.replace('/'));
+  await act(() => router.push('/second'));
+  await act(() => router.push('/third'));
+  await act(() => router.replace('/'));
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/second');
 });
 
-it('removes a redirecting tab from history', () => {
-  renderRouter({
+it('removes a redirecting tab from history', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs backBehavior="history">
         <Tabs.Screen name="index" />
@@ -43,11 +43,11 @@ it('removes a redirecting tab from history', () => {
     redirected: () => <Redirect href="/" />,
   });
 
-  act(() => router.push('/second'));
-  act(() => router.push('/third'));
-  act(() => router.push('/redirected'));
+  await act(() => router.push('/second'));
+  await act(() => router.push('/third'));
+  await act(() => router.push('/redirected'));
 
   expect(screen).toHavePathname('/');
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/third');
 });

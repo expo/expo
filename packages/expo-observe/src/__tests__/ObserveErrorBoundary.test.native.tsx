@@ -37,8 +37,8 @@ describe('ObserveErrorBoundary', () => {
     expect(ObserveErrorBoundary).toBe(AppMetricsErrorBoundary);
   });
 
-  it('catches a render error and renders the fallback through the Observe entry point', () => {
-    render(
+  it('catches a render error and renders the fallback through the Observe entry point', async () => {
+    await render(
       <ObserveErrorBoundary fallback={<Text testID="fallback">Something broke</Text>}>
         <Boom />
       </ObserveErrorBoundary>

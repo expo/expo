@@ -11,7 +11,7 @@ beforeEach(() => {
   MockRouterKey.current = 0;
 });
 
-test('gets route prop from context', () => {
+test('gets route prop from context', async () => {
   expect.assertions(1);
 
   const TestNavigator = (props: any): any => {
@@ -32,7 +32,7 @@ test('gets route prop from context', () => {
     return null;
   };
 
-  render(
+  await render(
     <BaseNavigationContainer initialState={{ routes: [{ name: 'foo', params: { x: 1 } }] }}>
       <TestNavigator>
         <Screen name="foo" component={Test} />

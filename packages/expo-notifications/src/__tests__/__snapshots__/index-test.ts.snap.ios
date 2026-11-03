@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Notifications exports 1`] = `
 {
@@ -150,6 +150,7 @@ exports[`Notifications exports 1`] = `
   "getAllScheduledNotificationsAsync": [Function],
   "getBadgeCountAsync": [Function],
   "getDevicePushTokenAsync": [Function],
+  "getExactAlarmPermissionsAsync": [Function],
   "getExpoPushTokenAsync": [Function],
   "getLastNotificationResponse": [Function],
   "getLastNotificationResponseAsync": [Function],
@@ -162,6 +163,7 @@ exports[`Notifications exports 1`] = `
   "getPermissionsAsync": [Function],
   "getPresentedNotificationsAsync": [Function],
   "registerTaskAsync": [Function],
+  "requestExactAlarmPermissionsAsync": [Function],
   "requestPermissionsAsync": [Function],
   "scheduleNotificationAsync": [Function],
   "setAutoServerRegistrationEnabledAsync": [Function],

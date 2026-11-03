@@ -1,16 +1,12 @@
 package expo.modules.crypto
 
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Record
 
-@OptimizedRecord
-class DigestOptions : Record {
-  @Field
-  var encoding: Encoding = Encoding.HEX
-
-  enum class Encoding(val value: String) : Enumerable {
+@Record
+data class DigestOptions(
+  val encoding: Encoding = Encoding.HEX
+) {
+  enum class Encoding(val value: String) {
     HEX("hex"),
     BASE64("base64")
   }

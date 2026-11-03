@@ -49,7 +49,7 @@ struct JavaScriptCodableAnyTests {
 
   @Test
   func `decodes from a borrowed value`() throws {
-    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("({ a: 'x' })"))
+    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("({ a: 'x' })").ref())
     let decoded = try JavaScriptValue.decodeAny(buffer.unownedValue(at: 0), in: runtime)
     #expect((decoded as? [String: Any])?["a"] as? String == "x")
   }
@@ -92,7 +92,7 @@ struct JavaScriptCodableAnyTests {
 
   @Test
   func `throws TypeError for a borrowed function`() throws {
-    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("(() => {})"))
+    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("(() => {})").ref())
     #expect(throws: JavaScriptValue.TypeError.self) {
       try JavaScriptValue.decodeAny(buffer.unownedValue(at: 0), in: runtime)
     }
@@ -100,7 +100,7 @@ struct JavaScriptCodableAnyTests {
 
   @Test
   func `decodes a borrowed bigint as Int64`() throws {
-    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("7n"))
+    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("7n").ref())
     let decoded = try JavaScriptValue.decodeAny(buffer.unownedValue(at: 0), in: runtime)
     #expect(decoded as? Int64 == 7)
   }
@@ -113,7 +113,7 @@ struct JavaScriptCodableAnyTests {
 
   @Test
   func `decodes a borrowed Date as Date`() throws {
-    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("new Date(1500)"))
+    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("new Date(1500)").ref())
     let decoded = try JavaScriptValue.decodeAny(buffer.unownedValue(at: 0), in: runtime)
     #expect(decoded as? Date == Date(timeIntervalSince1970: 1.5))
   }
@@ -261,7 +261,7 @@ struct JavaScriptCodableAnyTests {
 
   @Test
   func `decodes a borrowed top-level Set as its elements`() throws {
-    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("new Set([1, 'two'])"))
+    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("new Set([1, 'two'])").ref())
     let decoded = try JavaScriptValue.decodeAnyArray(buffer.unownedValue(at: 0), in: runtime)
     try #require(decoded.count == 2)
     #expect(decoded[1] as? String == "two")
@@ -276,7 +276,7 @@ struct JavaScriptCodableAnyTests {
 
   @Test
   func `decodes an array from a borrowed value`() throws {
-    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("[1, 2]"))
+    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("[1, 2]").ref())
     let decoded = try JavaScriptValue.decodeAnyArray(buffer.unownedValue(at: 0), in: runtime)
     #expect(decoded.compactMap { $0 as? Double } == [1, 2])
   }
@@ -317,7 +317,7 @@ struct JavaScriptCodableAnyTests {
 
   @Test
   func `decodes a borrowed top-level Map with string keys as a dictionary`() throws {
-    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("new Map([['a', 1]])"))
+    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("new Map([['a', 1]])").ref())
     let decoded = try JavaScriptValue.decodeAnyDictionary(buffer.unownedValue(at: 0), in: runtime)
     #expect(decoded["a"] as? Double == 1)
   }
@@ -340,7 +340,7 @@ struct JavaScriptCodableAnyTests {
 
   @Test
   func `decodes an object from a borrowed value`() throws {
-    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("({ k: true })"))
+    let buffer = try JavaScriptValuesBuffer.allocate(in: runtime, with: runtime.eval("({ k: true })").ref())
     let decoded = try JavaScriptValue.decodeAnyDictionary(buffer.unownedValue(at: 0), in: runtime)
     #expect(decoded["k"] as? Bool == true)
   }
@@ -415,10 +415,10 @@ struct JavaScriptCodableAnyTests {
   @Test
   func `throws for an Int outside the safe-integer range, like Int.encode`() throws {
     #expect(throws: (any Error).self) {
-      try JavaScriptValue.encodeAny(9_007_199_254_740_993, in: runtime)
+      _ = try JavaScriptValue.encodeAny(9_007_199_254_740_993, in: runtime)
     }
     #expect(throws: (any Error).self) {
-      try JavaScriptValue.encodeAnyDictionary(["big": 9_007_199_254_740_993], in: runtime)
+      _ = try JavaScriptValue.encodeAnyDictionary(["big": 9_007_199_254_740_993], in: runtime)
     }
   }
 
@@ -426,9 +426,9 @@ struct JavaScriptCodableAnyTests {
   func `encodes boolean NSNumbers as booleans and other NSNumbers as numbers`() throws {
     let yes = try JavaScriptValue.encodeAny(NSNumber(value: true), in: runtime)
     let one = try JavaScriptValue.encodeAny(NSNumber(value: 1), in: runtime)
-    #expect(yes.isBool())
+    #expect(yes.isBool() == true)
     #expect(yes.getBool() == true)
-    #expect(one.isNumber())
+    #expect(one.isNumber() == true)
     #expect(one.getDouble() == 1)
   }
 
@@ -457,7 +457,7 @@ struct JavaScriptCodableAnyTests {
   func `encodes JavaScriptEncodable values`() throws {
     let date = Date(timeIntervalSince1970: 1)
     let encoded = try JavaScriptValue.encodeAny(date, in: runtime)
-    #expect(encoded.isObject())
+    #expect(encoded.isObject() == true)
     #expect(try JavaScriptValue.encodeAny([1, 2] as [Int], in: runtime).getArray().length == 2)
   }
 
@@ -465,22 +465,15 @@ struct JavaScriptCodableAnyTests {
   func `round-trips a bigint through Int64`() throws {
     let decoded = try JavaScriptValue.decodeAny(runtime.eval("9007199254740993n"), in: runtime)
     let encoded = try JavaScriptValue.encodeAny(decoded, in: runtime)
-    try #require(encoded.isBigInt())
+    try #require(encoded.isBigInt() == true)
     #expect(try encoded.getBigInt().asInt64() == 9_007_199_254_740_993)
-  }
-
-  @Test
-  func `passes a JavaScriptValue through`() throws {
-    let object = try runtime.eval("({ marker: 7 })")
-    let encoded = try JavaScriptValue.encodeAny(object, in: runtime)
-    #expect(encoded.getObject().getProperty("marker").getInt() == 7)
   }
 
   @Test
   func `throws for a value with no JavaScript representation`() throws {
     struct Opaque {}
     #expect(throws: JavaScriptValue.EncodingError.self) {
-      try JavaScriptValue.encodeAny(Opaque(), in: runtime)
+      _ = try JavaScriptValue.encodeAny(Opaque(), in: runtime)
     }
   }
 

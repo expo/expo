@@ -1,3 +1,4 @@
+import { events } from '2g';
 import { vol } from 'memfs';
 
 import { envIsWebcontainer } from '../../../utils/env';
@@ -17,6 +18,11 @@ jest.mock('../../../utils/interactive', () => ({
   isInteractive: jest.fn(() => true),
 }));
 jest.mock(`../../../log`);
+jest.mock('2g', () => {
+  const actual = jest.requireActual('2g');
+  const event = Object.assign(jest.fn(), actual.events('devserver'));
+  return { ...actual, events: Object.assign(() => event, actual.events) };
+});
 jest.mock('../AsyncNgrok');
 jest.mock('../AsyncWsTunnel');
 jest.mock('../DevelopmentSession');
@@ -201,6 +207,12 @@ describe('startHeadlessAsync', () => {
       host: 'localhost',
     });
     expect(devServer.getUrlCreator().constructUrl({})).toBe('http://100.100.1.100:3000');
+    await devServer.stopAsync();
+    expect(events('devserver')).not.toHaveBeenCalledWith('stop', expect.anything());
+
+    await devServer.startAsync({ location: {}, port: 3000 });
+    await devServer.stopAsync();
+    expect(events('devserver')).toHaveBeenCalledWith('stop', expect.anything());
   });
 });
 
@@ -277,6 +289,7 @@ describe('stopAsync', () => {
     });
     const tunnel = server.getTunnel();
     const devSession = server.getTunnel();
+    expect(events('devserver')).not.toHaveBeenCalledWith('stop', expect.anything());
 
     // Ensure services were started.
     expect(tunnel?.startAsync).toHaveBeenCalled();
@@ -290,6 +303,13 @@ describe('stopAsync', () => {
     expect(tunnel?.stopAsync).toHaveBeenCalled();
     expect(devSession?.stopAsync).toHaveBeenCalled();
     expect(server.getInstance()).toBeNull();
+    expect(events('devserver')).toHaveBeenCalledWith('stop', {
+      bundler: 'fake',
+      ms: expect.any(Number),
+    });
+    jest.mocked(events('devserver')).mockClear();
+    await server.stopAsync();
+    expect(events('devserver')).not.toHaveBeenCalledWith('stop', expect.anything());
   });
 });
 

@@ -71,9 +71,9 @@ describe('useZoomTransitionPrimitives', () => {
       href: `/nonAndZoom?${INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME}=123`,
       expected: { pathname: '/nonAndZoom', baseParams: {} },
     },
-  ])('computes href with zoom transition id for string href $href', ({ href, expected }) => {
+  ])('computes href with zoom transition id for string href $href', async ({ href, expected }) => {
     const id = nanoid();
-    const { result } = renderHook(() => useZoomHref({ href }), {
+    const { result } = await renderHook(() => useZoomHref({ href }), {
       wrapper: ({ children }) => (
         <ZoomTransitionSourceContext
           value={{
@@ -123,9 +123,9 @@ describe('useZoomTransitionPrimitives', () => {
     },
   ])(
     'computes href with zoom transition id for object href with params: $params',
-    ({ params, expectedParams }) => {
+    async ({ params, expectedParams }) => {
       const id = nanoid();
-      const { result } = renderHook(
+      const { result } = await renderHook(
         () =>
           useZoomHref({
             href: { pathname: '/test', params },
@@ -173,9 +173,9 @@ describe('useZoomTransitionPrimitives', () => {
         params: { a: '1' },
       },
     },
-  ])('returns original href $href when no zoom source', ({ href }) => {
+  ])('returns original href $href when no zoom source', async ({ href }) => {
     const id = nanoid();
-    const { result } = renderHook(() => useZoomHref({ href }), {
+    const { result } = await renderHook(() => useZoomHref({ href }), {
       wrapper: ({ children }) => (
         <ZoomTransitionSourceContext
           value={{

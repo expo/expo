@@ -2,10 +2,47 @@ import { Log } from '../../../../log';
 import { event, isWatchEnabled, prewarmTransformPool } from '../instantiateMetro';
 
 jest.mock('../../../../log');
+jest.mock('2g', () => {
+  const actual = jest.requireActual('2g');
+  return {
+    ...actual,
+    events: Object.assign(
+      (category: string) => Object.assign(jest.fn(), actual.events(category)),
+      actual.events
+    ),
+  };
+});
 jest.mock(
   '@expo/metro/metro-config/defaults/getMaxWorkers',
   () => (workers?: number) => workers ?? 2
 );
+
+describe('server console events', () => {
+  let stderr: jest.SpyInstance;
+
+  beforeEach(() => {
+    stderr = jest.spyOn(process.stderr, 'write').mockReturnValue(true);
+  });
+
+  afterEach(() => {
+    stderr.mockRestore();
+  });
+
+  it('records warning arguments while preserving terminal formatting', () => {
+    console.warn('Deep import: %s', 'react-native/asset-registry');
+    expect(event).toHaveBeenCalledWith('server_log', {
+      level: 'warn',
+      data: ['Deep import: %s', 'react-native/asset-registry'],
+    });
+    expect(stderr).toHaveBeenCalledWith('Deep import: react-native/asset-registry\n');
+  });
+
+  it('does not record blank separator calls', () => {
+    console.warn();
+    expect(event).not.toHaveBeenCalled();
+    expect(stderr).toHaveBeenCalledWith('\n');
+  });
+});
 
 describe(prewarmTransformPool, () => {
   afterEach(() => {

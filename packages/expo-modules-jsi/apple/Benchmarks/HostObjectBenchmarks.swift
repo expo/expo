@@ -43,7 +43,7 @@ extension JSIBenchmarks {
   func `host object property set`() async throws {
     try await benchmarkCase { runtime in
       let hostObject = runtime.createHostObject(
-        get: { _ in .undefined },
+        get: { _ in .undefined() },
         set: { _, _ in }
       )
       runtime.global().setProperty("benchHostObject", value: hostObject)

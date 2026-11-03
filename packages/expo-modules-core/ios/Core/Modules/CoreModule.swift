@@ -5,6 +5,7 @@ import Foundation
 import ExpoModulesJSI
 
 // The core module that describes the `global.expo` object.
+@ExpoModule
 internal final class CoreModule: Module {
   internal func definition() -> ModuleDefinition {
     Constant("expoModulesCoreVersion") {
@@ -29,53 +30,6 @@ internal final class CoreModule: Module {
 
     Constant("isRunningOnQuest") {
       false
-    }
-
-    Function("installOnUIRuntime") { (uiRuntimeHolder: JavaScriptValue) in
-      guard let appContext else {
-        throw Exceptions.AppContextLost()
-      }
-
-      // Check if was already installed
-      if appContext._uiRuntime != nil {
-        return
-      }
-
-      let runtime = try appContext.runtime
-      guard uiRuntimeHolder.isObject() else {
-        throw WorkletUIRuntimeException()
-      }
-
-      guard let factory = AppContext.uiRuntimeFactory else {
-        throw WorkletUIRuntimeException()
-      }
-
-      // Use a Sendable box to safely capture error across isolation boundaries
-      final class ErrorHolder: @unchecked Sendable {
-        var error: (any Error)?
-      }
-      let errorHolder = ErrorHolder()
-
-      let block = {
-        do {
-          let uiRuntime = try factory(appContext, uiRuntimeHolder, runtime)
-          appContext._uiRuntime = uiRuntime
-        } catch {
-          errorHolder.error = error
-        }
-      }
-
-      if Thread.isMainThread {
-        block()
-      } else {
-        DispatchQueue.main.sync {
-          block()
-        }
-      }
-
-      if let error = errorHolder.error {
-        throw error
-      }
     }
 
     // Expose some common classes and maybe even the `modules` host object in the future.
@@ -130,6 +84,42 @@ internal final class CoreModule: Module {
 
     return viewName
   }
+
+  /**
+   Installs the worklet UI runtime from the holder object that the worklets JS code passes to
+   `global.expo.installOnUIRuntime`.
+   */
+  @JS
+  nonisolated internal func installOnUIRuntime(_ uiRuntimeHolder: borrowing JavaScriptValue) throws {
+    guard let appContext else {
+      throw Exceptions.AppContextLost()
+    }
+
+    // Check if was already installed
+    if appContext._uiRuntime != nil {
+      return
+    }
+
+    let runtime = try appContext.runtime
+    guard uiRuntimeHolder.isObject() else {
+      throw WorkletUIRuntimeException()
+    }
+
+    guard let factory = AppContext.uiRuntimeFactory else {
+      throw WorkletUIRuntimeException()
+    }
+
+    // The runtime is created and stored on the main thread: setting `_uiRuntime` prepares it there.
+    // `DispatchQueue.main.sync` doesn't escape its closure and rethrows, so the closure can borrow the
+    // holder and the error reaches the caller directly.
+    if Thread.isMainThread {
+      appContext._uiRuntime = try factory(appContext, uiRuntimeHolder, runtime)
+    } else {
+      try DispatchQueue.main.sync {
+        appContext._uiRuntime = try factory(appContext, uiRuntimeHolder, runtime)
+      }
+    }
+  }
 }
 
 internal final class WorkletUIRuntimeException: Exception, @unchecked Sendable {
@@ -137,4 +127,3 @@ internal final class WorkletUIRuntimeException: Exception, @unchecked Sendable {
     "Cannot find UI worklet runtime"
   }
 }
-

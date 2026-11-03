@@ -1,3 +1,3 @@
-import resolveAssetSource from 'react-native/Libraries/Image/resolveAssetSource';
+import { Image } from 'react-native';
 
-export default resolveAssetSource;
+export default Image.resolveAssetSource;

@@ -1,7 +1,7 @@
 import type { ExpoConfig } from '@expo/config';
+import { resolveFrom } from '@expo/require-utils';
 import fs from 'fs';
 import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import { packNpmTarballAsync, extractLocalNpmTarballAsync } from '../utils/npm';
 import { debugEvent } from './events';
@@ -45,7 +45,11 @@ export async function resolveLocalTemplateAsync({
     }
   } else {
     // The default is to use `expo/template.tgz` which exists in all published versions of it
-    templatePath = resolveFrom(projectRoot, 'expo/template.tgz');
+    const resolvedTemplatePath = resolveFrom(projectRoot, 'expo/template.tgz', { extensions: [] });
+    if (!resolvedTemplatePath) {
+      throw new Error(`Cannot resolve 'expo/template.tgz' from '${projectRoot}'`);
+    }
+    templatePath = resolvedTemplatePath;
     debugEvent('local_template_fallback', { path: debugEvent.path(templatePath) });
   }
 

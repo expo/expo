@@ -24,9 +24,11 @@ import {
   font,
   foregroundStyle,
   frame,
+  navigationBarTitleDisplayMode,
   navigationTitle,
   padding,
   tag,
+  toolbarTitleDisplayMode,
 } from '@expo/ui/swift-ui/modifiers';
 import * as React from 'react';
 
@@ -205,7 +207,7 @@ export default function NavigationStackScreen() {
         onPreferredCompactColumnChange={setCompactColumn}>
         <NavigationSplitView.Sidebar>
           <NavigationStack path={path} onPathChange={setPath}>
-            <Toolbar modifiers={[navigationTitle('Birds')]}>
+            <Toolbar modifiers={[navigationTitle('Birds'), navigationBarTitleDisplayMode('large')]}>
               {/* Controlled in both directions, for the same reason as `preferredCompactColumn`:
                   a selection prop without its callback leaves the two sides diverged. */}
               <List
@@ -316,7 +318,11 @@ export default function NavigationStackScreen() {
 
         <NavigationSplitView.Detail>
           <NavigationStack>
-            <Toolbar modifiers={[navigationTitle(selected?.name ?? '')]}>
+            <Toolbar
+              modifiers={[
+                navigationTitle(selected?.name ?? ''),
+                toolbarTitleDisplayMode('inlineLarge'),
+              ]}>
               {selected ? (
                 <ScrollView>
                   <VStack alignment="leading" spacing={16} modifiers={[padding({ all: 20 })]}>

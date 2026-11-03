@@ -3,6 +3,7 @@ import path from 'path';
 
 import {
   expoPluginInput,
+  resolveInputFilename,
   isPathInsideRoot,
   type Noxcturnal,
   type NoxcturnalTransformInput,
@@ -35,7 +36,7 @@ export function createExpoRouterServerExportsPlugin(
         : path.join(input.projectRoot, routerRoot);
       return {
         input,
-        enabled: isPathInsideRoot(absoluteRouterRoot, input.filename),
+        enabled: isPathInsideRoot(absoluteRouterRoot, resolveInputFilename(input)),
         isLoaderBundle: String(input.options.customTransformOptions?.isLoaderBundle) === 'true',
         isServer: input.options.customTransformOptions?.environment === 'node',
         performConstantFolding: false,
@@ -90,7 +91,7 @@ export function createExpoRouterServerExportsPlugin(
               );
             }
             if (name === 'loader') {
-              state.loaderReference = path.resolve(state.input.projectRoot, state.input.filename);
+              state.loaderReference = resolveInputFilename(state.input);
             }
             const remove = state.isLoaderBundle
               ? name !== 'loader'
@@ -107,7 +108,7 @@ export function createExpoRouterServerExportsPlugin(
             const id = declarator.getChild('id');
             const name = id?.node.type === 'Identifier' ? id.node.name : undefined;
             if (name === 'loader') {
-              state.loaderReference = path.resolve(state.input.projectRoot, state.input.filename);
+              state.loaderReference = resolveInputFilename(state.input);
             }
             return state.isLoaderBundle
               ? name === 'loader'

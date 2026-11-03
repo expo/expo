@@ -16,6 +16,10 @@ open class SharedRef<RefType>: SharedObject, AnySharedRef {
     "unknown"
   }
 
+  internal override var sharedRefType: String? {
+    return nativeRefType
+  }
+
   @available(*, deprecated, renamed: "ref", message: "it has been renamed to 'ref' in Expo SDK 52")
   public var pointer: RefType {
     return ref

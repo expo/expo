@@ -39,26 +39,46 @@ describe(getDefaultCustomizeFrame, () => {
     });
   });
 
-  it('collapses node_modules frames with POSIX separators', () => {
+  it('does not collapse library frames', () => {
     const customizeFrame = getDefaultCustomizeFrame();
 
     expect(
       customizeFrame({
-        file: '/Users/app/node_modules/react/index.js',
+        file: '/Users/app/node_modules/some-library/index.js',
         lineNumber: 10,
         column: 20,
         methodName: 'render',
       })
     ).toEqual({
-      file: '/Users/app/node_modules/react/index.js',
+      file: '/Users/app/node_modules/some-library/index.js',
       lineNumber: 10,
       column: 20,
       methodName: 'render',
-      collapse: true,
+      collapse: false,
     });
   });
 
-  it('collapses node_modules frames with Windows separators', () => {
+  it.each([
+    '/Users/app/node_modules/react-native/Libraries/Network/XMLHttpRequest.js',
+    '/Users/app/node_modules/react-native/Libraries/Pressability/Pressability.js',
+    '/Users/app/node_modules/react-native/Libraries/Utilities/BackHandler.android.js',
+    '/Users/app/node_modules/react-native/Libraries/vendor/emitter/EventEmitter.js',
+    '/Users/app/node_modules/react-native/Libraries/WebSocket/WebSocket.js',
+    '/Users/app/node_modules/react-native/src/private/renderer/errorhandling/ErrorHandlers.js',
+    '/Users/app/node_modules/react-native/index.js',
+    '/Users/app/node_modules/@react-native/js-polyfills/error-guard.js',
+    '/Users/app/node_modules/expo/build/launch/withDevTools.ios.js',
+    '/Users/app/node_modules/expo/build/async-require/setupHMR.js',
+    '/Users/app/node_modules/@expo/log-box/build/LogBox.js',
+  ])('collapses internal frame %s', (file) => {
+    const customizeFrame = getDefaultCustomizeFrame();
+
+    expect(customizeFrame({ file, lineNumber: 10, column: 20, methodName: 'render' })).toEqual(
+      expect.objectContaining({ collapse: true })
+    );
+  });
+
+  it('collapses internal frames with Windows separators', () => {
     jest.isolateModules(() => {
       mockWindowsPath();
 
@@ -68,13 +88,13 @@ describe(getDefaultCustomizeFrame, () => {
 
       expect(
         customizeFrame({
-          file: 'C:\\Users\\app\\node_modules\\react\\index.js',
+          file: 'C:\\Users\\app\\node_modules\\react-native\\Libraries\\Core\\ExceptionsManager.js',
           lineNumber: 10,
           column: 20,
           methodName: 'render',
         })
       ).toEqual({
-        file: 'C:\\Users\\app\\node_modules\\react\\index.js',
+        file: 'C:\\Users\\app\\node_modules\\react-native\\Libraries\\Core\\ExceptionsManager.js',
         lineNumber: 10,
         column: 20,
         methodName: 'render',

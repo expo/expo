@@ -1,10 +1,6 @@
 {
   "platforms": ["apple", "android", "web"],
-  "apple": {
-    "modules": ["ApplicationModule"]
-  },
   "android": {
-    "modules": ["expo.modules.application.ApplicationModule"],
     "publication": {
       "groupId": "host.exp.exponent",
       "artifactId": "expo.modules.application",

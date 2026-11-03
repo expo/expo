@@ -17,9 +17,9 @@ jest.mock('react-native-drawer-layout', () => {
   };
 });
 
-it('removes the replaced drawer route from history', () => {
+it('removes the replaced drawer route from history', async () => {
   const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Drawer backBehavior="history">
         <Drawer.Screen name="index" />
@@ -32,11 +32,11 @@ it('removes the replaced drawer route from history', () => {
     third: () => null,
   });
 
-  act(() => router.push('/second'));
-  act(() => router.push('/third'));
-  act(() => router.replace('/'));
+  await act(() => router.push('/second'));
+  await act(() => router.push('/third'));
+  await act(() => router.replace('/'));
 
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen).toHavePathname('/second');
   expect(warn).not.toHaveBeenCalled();
   warn.mockRestore();

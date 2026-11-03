@@ -32,9 +32,17 @@ class LanguageModelBackendTest {
       val capabilities = value.getJSONObject("capabilities")
       assertEquals("google-mlkit", capabilities.getString("provider"))
       assertEquals("on-device", capabilities.getString("execution"))
-      listOf("constrainedOutput", "runtimeToolDeclarations", "images").forEach {
+      listOf("constrainedOutput", "runtimeToolDeclarations").forEach {
         assertEquals("unsupported", capabilities.getString(it))
       }
+      assertEquals(
+        if (status == ModelStatus.UNAVAILABLE) {
+          "unsupported"
+        } else {
+          "unknown"
+        },
+        capabilities.getString("images")
+      )
       if (status == ModelStatus.AVAILABLE) {
         assertEquals("test-model", capabilities.getString("model"))
         assertEquals(4096, capabilities.getInt("contextTokens"))
@@ -107,6 +115,24 @@ class LanguageModelBackendTest {
     assertCode("ERR_INVALID_ARGUMENT") { LanguageModelRequestOptions.parse("""{"maximumToolCalls":17}""") }
     assertCode("ERR_INVALID_ARGUMENT") { LanguageModelRequestOptions.parse("""{"unexpected":true}""") }
     assertEquals(128, LanguageModelRequestOptions.parse("""{"maximumOutputTokens":128}""").maximumOutputTokens)
+  }
+
+  @Test
+  fun `request options carry images in order`() {
+    val json = """{"images":[{"uri":"file:///data/a.png","label":"first"},{"uri":"file:///data/b.jpg","label":"second"}]}"""
+    assertEquals(
+      listOf(LanguageModelImage("file:///data/a.png", "first"), LanguageModelImage("file:///data/b.jpg", "second")),
+      LanguageModelRequestOptions.parse(json).images
+    )
+    assertEquals(emptyList<LanguageModelImage>(), LanguageModelRequestOptions.parse("{}").images)
+  }
+
+  @Test
+  fun `request options reject image URLs that are not local files`() {
+    for (uri in listOf("file://otherhost/x.png", "file:///x.png?size=2", "file:///x.png#top", "file:///x%00.png", "file:///x\\u0001.png", "file:", "content://media/x")) {
+      assertCode("ERR_INVALID_ARGUMENT") { LanguageModelRequestOptions.parse("""{"images":[{"uri":"$uri","label":"a"}]}""") }
+    }
+    assertEquals("file://localhost/x.png", LanguageModelRequestOptions.parse("""{"images":[{"uri":"file://localhost/x.png","label":"a"}]}""").images.single().uri)
   }
 
   @Test

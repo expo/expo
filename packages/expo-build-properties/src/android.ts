@@ -12,6 +12,7 @@ import fs from 'fs';
 import path from 'path';
 
 import {
+  PCH_CCACHE_CMAKE_CONTENTS,
   PCH_CMAKE_CONTENTS,
   PCH_HEADER_CONTENTS,
   PCH_ONLOAD_CONTENTS,
@@ -412,6 +413,7 @@ export const withAndroidPrecompiledHeaders: ConfigPlugin<PluginConfigType> = (co
           path.join(jniDir, 'appmodules_pch_owner.cpp'),
           PCH_OWNER_SOURCE_CONTENTS
         ),
+        fs.promises.writeFile(path.join(jniDir, 'pch-ccache.cmake'), PCH_CCACHE_CMAKE_CONTENTS),
       ]);
       return config;
     },

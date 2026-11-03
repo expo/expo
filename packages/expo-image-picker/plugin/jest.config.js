@@ -1,1 +1,1 @@
-module.exports = require('expo-module-scripts/jest-preset-plugin');
+module.exports = require('@expo/internal-scripts/jest-preset-plugin');

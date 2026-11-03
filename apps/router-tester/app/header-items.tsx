@@ -12,6 +12,7 @@ import {
   Platform,
   TextInput,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { searchIcon, sendIcon, deleteIcon } from './icons';
 
@@ -416,224 +417,225 @@ export default function HeaderItemsScreen() {
         </Stack.Toolbar>
       </Stack.Screen>
 
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-        contentInsetAdjustmentBehavior="automatic">
-        <Text style={styles.title}>Stack Header Items E2E Test Screen</Text>
+      <ScrollView style={styles.container} contentInsetAdjustmentBehavior="automatic">
+        <SafeAreaView edges={['left', 'right']} style={styles.contentContainer}>
+          <Text style={styles.title}>Stack Header Items E2E Test Screen</Text>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Left Header Items</Text>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Left Header Items</Text>
 
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Left Button 1</Text>
-            <Switch
-              testID="toggle-left-button-1"
-              value={showLeftButton1}
-              onValueChange={setShowLeftButton1}
-            />
-          </View>
-
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Left Button 2</Text>
-            <Switch
-              testID="toggle-left-button-2"
-              value={showLeftButton2}
-              onValueChange={setShowLeftButton2}
-            />
-          </View>
-
-          {showLeftButton2 && (
-            <>
-              <View style={styles.switchRow}>
-                <Text style={styles.label}>Left Button 2 Selected</Text>
-                <Switch
-                  testID="toggle-left-button-2-selected"
-                  value={leftButton2Selected}
-                  onValueChange={setLeftButton2Selected}
-                />
-              </View>
-
-              <View style={styles.switchRow}>
-                <Text style={styles.label}>Left Button 2 Separate Background</Text>
-                <Switch
-                  testID="toggle-left-button-2-separate-background"
-                  value={leftButton2SeparateBackground}
-                  onValueChange={setLeftButton2SeparateBackground}
-                />
-              </View>
-            </>
-          )}
-
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Left Custom Item</Text>
-            <Switch
-              testID="toggle-left-custom-item"
-              value={showLeftCustomItem}
-              onValueChange={setShowLeftCustomItem}
-            />
-          </View>
-
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Left Menu</Text>
-            <Switch
-              testID="toggle-left-menu"
-              value={showLeftMenu}
-              onValueChange={setShowLeftMenu}
-            />
-          </View>
-
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Menu Badge Content</Text>
-            <TextInput
-              testID="input-menu-badge-content"
-              style={styles.textInput}
-              value={menuBadgeContent}
-              onChangeText={setMenuBadgeContent}
-              placeholder="Badge text"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Right Header Items</Text>
-
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Right Menu 1</Text>
-            <Switch
-              testID="toggle-right-menu-1"
-              value={showRightMenu1}
-              onValueChange={setShowRightMenu1}
-            />
-          </View>
-
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Right Menu 2</Text>
-            <Switch
-              testID="toggle-right-menu-2"
-              value={showRightMenu2}
-              onValueChange={setShowRightMenu2}
-            />
-          </View>
-
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Right Button</Text>
-            <Switch
-              testID="toggle-right-button"
-              value={showRightButton}
-              onValueChange={setShowRightButton}
-            />
-          </View>
-
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Search Button</Text>
-            <Switch
-              testID="toggle-search-button"
-              value={showSearchButton}
-              onValueChange={setShowSearchButton}
-            />
-          </View>
-
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Xcasset Button (expo-logo)</Text>
-            <Switch
-              testID="toggle-xcasset-button-1"
-              value={showXcassetButton1}
-              onValueChange={setShowXcassetButton1}
-            />
-          </View>
-
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Xcasset Button (expo-transparent)</Text>
-            <Switch
-              testID="toggle-xcasset-button-2"
-              value={showXcassetButton2}
-              onValueChange={setShowXcassetButton2}
-            />
-          </View>
-
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Xcasset Menu (expo-logo)</Text>
-            <Switch
-              testID="toggle-xcasset-menu-1"
-              value={showXcassetMenu1}
-              onValueChange={setShowXcassetMenu1}
-            />
-          </View>
-
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Show Xcasset Menu (expo-transparent)</Text>
-            <Switch
-              testID="toggle-xcasset-menu-2"
-              value={showXcassetMenu2}
-              onValueChange={setShowXcassetMenu2}
-            />
-          </View>
-        </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Header Customization</Text>
-
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Hide Back Button</Text>
-            <Switch
-              testID="toggle-hide-back-button"
-              value={hideBackButton}
-              onValueChange={setHideBackButton}
-            />
-          </View>
-
-          <View style={styles.switchRow}>
-            <Text style={styles.label}>Header Background Color</Text>
-            <View style={styles.colorButtonsRow}>
-              <Pressable
-                testID="color-white"
-                style={[styles.colorButton, { backgroundColor: '#fff' }]}
-                onPress={() => setHeaderBackgroundColor('#fff')}
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Left Button 1</Text>
+              <Switch
+                testID="toggle-left-button-1"
+                value={showLeftButton1}
+                onValueChange={setShowLeftButton1}
               />
-              <Pressable
-                testID="color-transparent"
-                style={[styles.colorButton, { backgroundColor: 'transparent', borderWidth: 1 }]}
-                onPress={() => setHeaderBackgroundColor('transparent')}
+            </View>
+
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Left Button 2</Text>
+              <Switch
+                testID="toggle-left-button-2"
+                value={showLeftButton2}
+                onValueChange={setShowLeftButton2}
               />
-              <Pressable
-                testID="color-blue"
-                style={[styles.colorButton, { backgroundColor: '#007AFF' }]}
-                onPress={() => setHeaderBackgroundColor('#007AFF')}
+            </View>
+
+            {showLeftButton2 && (
+              <>
+                <View style={styles.switchRow}>
+                  <Text style={styles.label}>Left Button 2 Selected</Text>
+                  <Switch
+                    testID="toggle-left-button-2-selected"
+                    value={leftButton2Selected}
+                    onValueChange={setLeftButton2Selected}
+                  />
+                </View>
+
+                <View style={styles.switchRow}>
+                  <Text style={styles.label}>Left Button 2 Separate Background</Text>
+                  <Switch
+                    testID="toggle-left-button-2-separate-background"
+                    value={leftButton2SeparateBackground}
+                    onValueChange={setLeftButton2SeparateBackground}
+                  />
+                </View>
+              </>
+            )}
+
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Left Custom Item</Text>
+              <Switch
+                testID="toggle-left-custom-item"
+                value={showLeftCustomItem}
+                onValueChange={setShowLeftCustomItem}
               />
-              <Pressable
-                testID="color-red"
-                style={[styles.colorButton, { backgroundColor: '#FF3B30' }]}
-                onPress={() => setHeaderBackgroundColor('#FF3B30')}
+            </View>
+
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Left Menu</Text>
+              <Switch
+                testID="toggle-left-menu"
+                value={showLeftMenu}
+                onValueChange={setShowLeftMenu}
+              />
+            </View>
+
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Menu Badge Content</Text>
+              <TextInput
+                testID="input-menu-badge-content"
+                style={styles.textInput}
+                value={menuBadgeContent}
+                onChangeText={setMenuBadgeContent}
+                placeholder="Badge text"
+                autoCapitalize="none"
+                autoCorrect={false}
               />
             </View>
           </View>
-        </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Current State</Text>
-          <Text style={styles.stateText}>View Mode: {viewMode}</Text>
-          <Text style={styles.stateText}>Sort By: {sortBy}</Text>
-          <Text style={styles.stateText}>Emails Archived: {emailsArchived ? 'Yes' : 'No'}</Text>
-          <Text style={styles.stateText}>
-            Notifications: {notificationsEnabled ? 'Enabled' : 'Disabled'}
-          </Text>
-          <Text style={styles.stateText}>Favorite Colors: {favoriteColors.join(', ')}</Text>
-          <Text style={styles.stateText}>Header Background: {headerBackgroundColor}</Text>
-        </View>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Right Header Items</Text>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Instructions</Text>
-          <Text style={styles.instruction}>1. Toggle switches above to show/hide header items</Text>
-          <Text style={styles.instruction}>2. Test left and right header buttons</Text>
-          <Text style={styles.instruction}>3. Test nested menus and submenus</Text>
-          <Text style={styles.instruction}>4. Test menu item states (selected, disabled)</Text>
-          <Text style={styles.instruction}>5. Test custom header element and badge displays</Text>
-          <Text style={styles.instruction}>6. Test palette menu and destructive actions</Text>
-          <Text style={styles.instruction}>7. Observe state changes reflected in menu items</Text>
-        </View>
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Right Menu 1</Text>
+              <Switch
+                testID="toggle-right-menu-1"
+                value={showRightMenu1}
+                onValueChange={setShowRightMenu1}
+              />
+            </View>
+
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Right Menu 2</Text>
+              <Switch
+                testID="toggle-right-menu-2"
+                value={showRightMenu2}
+                onValueChange={setShowRightMenu2}
+              />
+            </View>
+
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Right Button</Text>
+              <Switch
+                testID="toggle-right-button"
+                value={showRightButton}
+                onValueChange={setShowRightButton}
+              />
+            </View>
+
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Search Button</Text>
+              <Switch
+                testID="toggle-search-button"
+                value={showSearchButton}
+                onValueChange={setShowSearchButton}
+              />
+            </View>
+
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Xcasset Button (expo-logo)</Text>
+              <Switch
+                testID="toggle-xcasset-button-1"
+                value={showXcassetButton1}
+                onValueChange={setShowXcassetButton1}
+              />
+            </View>
+
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Xcasset Button (expo-transparent)</Text>
+              <Switch
+                testID="toggle-xcasset-button-2"
+                value={showXcassetButton2}
+                onValueChange={setShowXcassetButton2}
+              />
+            </View>
+
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Xcasset Menu (expo-logo)</Text>
+              <Switch
+                testID="toggle-xcasset-menu-1"
+                value={showXcassetMenu1}
+                onValueChange={setShowXcassetMenu1}
+              />
+            </View>
+
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Show Xcasset Menu (expo-transparent)</Text>
+              <Switch
+                testID="toggle-xcasset-menu-2"
+                value={showXcassetMenu2}
+                onValueChange={setShowXcassetMenu2}
+              />
+            </View>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Header Customization</Text>
+
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Hide Back Button</Text>
+              <Switch
+                testID="toggle-hide-back-button"
+                value={hideBackButton}
+                onValueChange={setHideBackButton}
+              />
+            </View>
+
+            <View style={styles.switchRow}>
+              <Text style={styles.label}>Header Background Color</Text>
+              <View style={styles.colorButtonsRow}>
+                <Pressable
+                  testID="color-white"
+                  style={[styles.colorButton, { backgroundColor: '#fff' }]}
+                  onPress={() => setHeaderBackgroundColor('#fff')}
+                />
+                <Pressable
+                  testID="color-transparent"
+                  style={[styles.colorButton, { backgroundColor: 'transparent', borderWidth: 1 }]}
+                  onPress={() => setHeaderBackgroundColor('transparent')}
+                />
+                <Pressable
+                  testID="color-blue"
+                  style={[styles.colorButton, { backgroundColor: '#007AFF' }]}
+                  onPress={() => setHeaderBackgroundColor('#007AFF')}
+                />
+                <Pressable
+                  testID="color-red"
+                  style={[styles.colorButton, { backgroundColor: '#FF3B30' }]}
+                  onPress={() => setHeaderBackgroundColor('#FF3B30')}
+                />
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Current State</Text>
+            <Text style={styles.stateText}>View Mode: {viewMode}</Text>
+            <Text style={styles.stateText}>Sort By: {sortBy}</Text>
+            <Text style={styles.stateText}>Emails Archived: {emailsArchived ? 'Yes' : 'No'}</Text>
+            <Text style={styles.stateText}>
+              Notifications: {notificationsEnabled ? 'Enabled' : 'Disabled'}
+            </Text>
+            <Text style={styles.stateText}>Favorite Colors: {favoriteColors.join(', ')}</Text>
+            <Text style={styles.stateText}>Header Background: {headerBackgroundColor}</Text>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Instructions</Text>
+            <Text style={styles.instruction}>
+              1. Toggle switches above to show/hide header items
+            </Text>
+            <Text style={styles.instruction}>2. Test left and right header buttons</Text>
+            <Text style={styles.instruction}>3. Test nested menus and submenus</Text>
+            <Text style={styles.instruction}>4. Test menu item states (selected, disabled)</Text>
+            <Text style={styles.instruction}>5. Test custom header element and badge displays</Text>
+            <Text style={styles.instruction}>6. Test palette menu and destructive actions</Text>
+            <Text style={styles.instruction}>7. Observe state changes reflected in menu items</Text>
+          </View>
+        </SafeAreaView>
       </ScrollView>
     </>
   );

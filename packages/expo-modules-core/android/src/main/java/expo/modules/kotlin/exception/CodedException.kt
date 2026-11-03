@@ -3,6 +3,7 @@ package expo.modules.kotlin.exception
 import com.facebook.react.bridge.ReadableType
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.types.descriptors.TypeDescriptor
+import io.github.expo.modules.v2.JavaScriptThrowable
 import java.util.*
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
@@ -23,13 +24,13 @@ inline fun Throwable?.toCodedException() = when (this) {
 open class CodedException(
   message: String?,
   cause: Throwable? = null
-) : Exception(message, cause) {
+) : JavaScriptThrowable(message, cause) {
   // We need that secondary property, cause we can't access
   // the javaClass property in the constructor.
   private var providedCode: String? = null
 
   @get:DoNotStrip
-  val code
+  final override val code: String
     get() = providedCode ?: inferCode(javaClass)
 
   constructor(code: String?, message: String?, cause: Throwable?) : this(message = message, cause = cause) {

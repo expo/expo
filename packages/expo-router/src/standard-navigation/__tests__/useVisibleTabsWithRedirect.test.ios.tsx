@@ -2,6 +2,7 @@ import { renderHook as renderHookWithoutProvider } from '@testing-library/react-
 import { use, type PropsWithChildren } from 'react';
 
 import { useRouteNode } from '../../Route';
+import { node } from '../../global-state/__tests__/__fixtures__/routeNode';
 import type { RoutingIntent } from '../../global-state/routingQueue';
 import {
   PendingIntentsContext,
@@ -46,13 +47,15 @@ const descriptors = {
 };
 const routeNames = routes.map((route) => route.name);
 
-function routeNode(initialRouteName: string) {
-  // Only route names are relevant to this hook test fixture.
+function routeNode(anchor: string) {
   return {
-    initialRouteName,
+    ...node(
+      '_layout',
+      routes.map(({ name }) => node(name)),
+      anchor
+    ),
     contextKey: './_layout.js',
-    children: routes.map(({ name }) => ({ route: name })),
-  } as ReturnType<typeof useRouteNode>;
+  };
 }
 
 let warnSpy: jest.SpyInstance;
@@ -93,8 +96,8 @@ afterEach(() => {
 });
 
 describe('useVisibleTabsWithRedirect', () => {
-  it('returns only visible layout routes and their focused index', () => {
-    const { result } = renderHook(() =>
+  it('returns only visible layout routes and their focused index', async () => {
+    const { result } = await renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
         routeNames,
@@ -107,8 +110,8 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(result.current.focusedIndex).toBe(1);
   });
 
-  it('does not focus another tab when the focused route is not visible', () => {
-    const { result } = renderHook(() =>
+  it('does not focus another tab when the focused route is not visible', async () => {
+    const { result } = await renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
         routeNames,
@@ -120,9 +123,9 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(result.current.focusedIndex).toBe(-1);
   });
 
-  it('redirects an unavailable focused route to the configured visible route', () => {
+  it('redirects an unavailable focused route to the configured visible route', async () => {
     mockedUseRouteNode.mockReturnValue(routeNode('settings'));
-    renderHook(() =>
+    await renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
         routeNames,
@@ -134,14 +137,15 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(pendingIntents).toEqual([
       {
         type: 'NAVIGATE_TO_HREF',
+        actionId: expect.any(Number),
         payload: { href: '/href/settings/index', options: { event: 'REPLACE' } },
       },
     ]);
   });
 
-  it('keeps a focused filesystem +not-found route as fallback content', () => {
+  it('keeps a focused filesystem +not-found route as fallback content', async () => {
     const notFoundRoute = { key: 'not-found-key', name: '+not-found' };
-    const { result } = renderHook(() =>
+    const { result } = await renderHook(() =>
       useVisibleTabsWithRedirect({
         routes: [...routes, notFoundRoute],
         routeNames: [...routeNames, notFoundRoute.name],
@@ -158,9 +162,9 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(pendingIntents).toEqual([]);
   });
 
-  it('builds the redirect href from the selected route', () => {
+  it('builds the redirect href from the selected route', async () => {
     mockedUseRouteNode.mockReturnValue(routeNode('settings'));
-    renderHook(() =>
+    await renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
         routeNames,
@@ -172,26 +176,27 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(buildHref).toHaveBeenCalledWith(routes[1]);
   });
 
-  it('throws when the configured route is unavailable', () => {
+  it('throws when the configured route is unavailable', async () => {
     mockedUseRouteNode.mockReturnValue(routeNode('missing'));
-    expect(() =>
-      renderHook(() =>
-        useVisibleTabsWithRedirect({
-          routes,
-          routeNames,
-          focusedRouteKey: 'hidden-key',
-          descriptors,
-        })
-      )
-    ).toThrow(
+    await expect(
+      async () =>
+        await renderHook(() =>
+          useVisibleTabsWithRedirect({
+            routes,
+            routeNames,
+            focusedRouteKey: 'hidden-key',
+            descriptors,
+          })
+        )
+    ).rejects.toThrow(
       'The initial route name "missing" was not found in the layout at "./_layout.js". Available routes are: "home", "settings/index", "hidden", "filesystem". Set `unstable_settings.anchor` to the name of a route in this layout.'
     );
   });
 
-  it('redirects when a navigator with no visible focused route becomes focused', () => {
+  it('redirects when a navigator with no visible focused route becomes focused', async () => {
     mockedUseIsFocused.mockReturnValue(false);
 
-    const { result, rerender } = renderHook(() =>
+    const { result, rerender } = await renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
         routeNames,
@@ -204,18 +209,19 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(pendingIntents).toEqual([]);
 
     mockedUseIsFocused.mockReturnValue(true);
-    rerender({});
+    await rerender({});
 
     expect(pendingIntents).toEqual([
       {
         type: 'NAVIGATE_TO_HREF',
+        actionId: expect.any(Number),
         payload: { href: '/href/home', options: { event: 'REPLACE' } },
       },
     ]);
   });
 
-  it('does not redirect when the focused route is visible', () => {
-    renderHook(() =>
+  it('does not redirect when the focused route is visible', async () => {
+    await renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
         routeNames,
@@ -228,11 +234,11 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(pendingIntents).toEqual([]);
   });
 
-  it('does not redirect when there are no visible routes', () => {
+  it('does not redirect when there are no visible routes', async () => {
     mockedUseRouteNode.mockReturnValue({ contextKey: './app/_layout.tsx' } as ReturnType<
       typeof useRouteNode
     >);
-    renderHook(() =>
+    await renderHook(() =>
       useVisibleTabsWithRedirect({
         routes: [routes[3]!],
         routeNames: ['filesystem'],
@@ -245,8 +251,8 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(warnSpy.mock.calls).toMatchSnapshot();
   });
 
-  it('orders visible routes and redirect fallback by route names', () => {
-    const { result } = renderHook(() =>
+  it('orders visible routes and redirect fallback by route names', async () => {
+    const { result } = await renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
         routeNames: ['settings/index', 'home', 'hidden', 'filesystem'],
@@ -259,15 +265,16 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(pendingIntents).toEqual([
       {
         type: 'NAVIGATE_TO_HREF',
+        actionId: expect.any(Number),
         payload: { href: '/href/settings/index', options: { event: 'REPLACE' } },
       },
     ]);
   });
 
-  it('does not redirect inside a link preview', () => {
+  it('does not redirect inside a link preview', async () => {
     mockedUseIsPreview.mockReturnValue(true);
 
-    renderHook(() =>
+    await renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
         routeNames,

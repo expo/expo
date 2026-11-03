@@ -465,3 +465,42 @@ function supportsSerialize(): boolean {
 async function delayAsync(timeMs: number) {
   return new Promise((resolve) => setTimeout(resolve, timeMs));
 }
+
+describe('Database - serialize result', () => {
+  // Android hands the serialized bytes over as an ArrayBuffer and iOS as a Uint8Array; both
+  // reach the caller as a Uint8Array over the same bytes.
+  it('serializeAsync turns an ArrayBuffer from the native database into a Uint8Array', async () => {
+    const db = await openDatabaseAsync(':memory:');
+    const bytes = new Uint8Array([1, 2, 3]);
+    jest.spyOn(db.nativeDatabase, 'serializeAsync').mockResolvedValueOnce(bytes.buffer);
+
+    const serialized = await db.serializeAsync();
+    await db.closeAsync();
+
+    expect(serialized).toBeInstanceOf(Uint8Array);
+    expect(Array.from(serialized)).toEqual([1, 2, 3]);
+  });
+
+  it('serializeSync turns an ArrayBuffer from the native database into a Uint8Array', () => {
+    const db = openDatabaseSync(':memory:');
+    const bytes = new Uint8Array([4, 5]);
+    jest.spyOn(db.nativeDatabase, 'serializeSync').mockReturnValueOnce(bytes.buffer);
+
+    const serialized = db.serializeSync();
+    db.closeSync();
+
+    expect(serialized).toBeInstanceOf(Uint8Array);
+    expect(Array.from(serialized)).toEqual([4, 5]);
+  });
+
+  it('serializeSync passes a Uint8Array from the native database through', () => {
+    const db = openDatabaseSync(':memory:');
+    const bytes = new Uint8Array([6]);
+    jest.spyOn(db.nativeDatabase, 'serializeSync').mockReturnValueOnce(bytes);
+
+    const serialized = db.serializeSync();
+    db.closeSync();
+
+    expect(serialized).toBe(bytes);
+  });
+});

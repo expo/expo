@@ -47,12 +47,6 @@ abstract class DevLauncherExpoAppLoader(
           },
           predicate = { currentValue -> currentValue == null }
         )
-
-        appearanceModule::class.java.setProtectedDeclaredField(
-          obj = appearanceModule,
-          filedName = "colorScheme",
-          newValue = userInterfaceStyle
-        )
       } catch (e: Exception) {
         Log.w("DevLauncher", e)
       }

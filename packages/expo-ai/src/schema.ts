@@ -290,21 +290,6 @@ export function validateValue(
   visit(value, schema, '$', 0);
 }
 
-/** Whether a schema contains numeric constraints unsupported by the browser Prompt API. */
-export function hasNumericBounds(schema: ModelSchema): boolean {
-  switch (schema.type) {
-    case 'number':
-    case 'integer':
-      return schema.minimum !== undefined || schema.maximum !== undefined;
-    case 'array':
-      return hasNumericBounds(schema.items);
-    case 'object':
-      return Object.values(schema.properties).some(hasNumericBounds);
-    default:
-      return false;
-  }
-}
-
 export function parseResponse(
   text: string,
   schema: ModelSchema,

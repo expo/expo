@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.21.6
+
+### Patch Changes
+
+- Include the ES modules that an ES module config or config plugin imports in the fingerprint on Node.js 22.15 and later. Older Node versions still omit them, so the fingerprint of such a project differs between Node versions. On Node.js 22.15 and later, it changes once on upgrade. ([#51504](https://github.com/expo/expo/pull/51504) by [@YevheniiKotyrlo](https://github.com/YevheniiKotyrlo))
+- Updated dependencies. ([#51946](https://github.com/expo/expo/pull/51946))
+  - @expo/env@2.5.3
+
+## 0.21.5
+
+### Patch Changes
+
+- Updated dependencies. ([#51321](https://github.com/expo/expo/pull/51321))
+  - @expo/env@2.5.2
+
+## 0.21.4
+
+### Patch Changes
+
+- Fix the Expo config being silently left out of the fingerprint on Node 22.18+ when `app.config.ts` imports a `.ts` file. The module capture hook now forwards every `Module._compile` argument, so Node can still strip types from the imported file. ([#51168](https://github.com/expo/expo/pull/51168) by [@oikalyptus](https://github.com/oikalyptus))
+
+## 0.21.3
+
+### Patch Changes
+
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+
 ## 0.21.2
 
 ### Patch Changes

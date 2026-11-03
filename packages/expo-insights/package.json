@@ -1,6 +1,6 @@
 {
   "name": "expo-insights",
-  "version": "58.0.10",
+  "version": "58.0.11",
   "description": "Expo module that offers developers insight into the usage data of the app",
   "keywords": [
     "EAS",
@@ -36,8 +36,8 @@
     "expo-eas-client": "workspace:~"
   },
   "devDependencies": {
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*",
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"

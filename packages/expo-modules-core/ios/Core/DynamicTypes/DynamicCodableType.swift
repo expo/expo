@@ -17,11 +17,11 @@ internal struct DynamicCodableType<InnerType>: AnyDynamicType {
     return type is Self
   }
 
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     guard let DecodableType = InnerType.self as? Decodable.Type else {
       throw Conversions.CastingJSValueException<InnerType>(jsValue.kind)
     }
-    let decoder = try JSValueDecoder(value: jsValue, appContext: appContext)
+    let decoder = try JSValueDecoder(value: jsValue.copy(), appContext: appContext)
     return try DecodableType.init(from: decoder)
   }
 
@@ -37,8 +37,8 @@ internal struct DynamicCodableType<InnerType>: AnyDynamicType {
   }
 
   func castToJS<ValueType>(_ value: ValueType, appContext: AppContext, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
-    if let value = value as? JavaScriptValue {
-      return value
+    if let converted = value as? ConvertedJavaScriptValue {
+      return converted.takeValue()
     }
     if let value = value as? Encodable {
       let encoder = JSValueEncoder(appContext: appContext, runtime: runtime)
@@ -50,7 +50,7 @@ internal struct DynamicCodableType<InnerType>: AnyDynamicType {
 
   func convertResult<ResultType>(_ result: ResultType, appContext: AppContext) throws -> Any {
     // TODO: We should get rid of this function, but it seems it's still used in some places
-    return try castToJS(result, appContext: appContext)
+    return ConvertedJavaScriptValue(try castToJS(result, appContext: appContext))
   }
 
   var description: String {

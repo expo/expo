@@ -12,7 +12,7 @@ import { renderRouter } from '../testing-library';
  */
 
 it('will default to the anchor', async () => {
-  renderRouter(
+  await renderRouter(
     {
       _layout: {
         unstable_settings: { anchor: 'apple' },
@@ -32,7 +32,7 @@ it('will default to the anchor', async () => {
 });
 
 it('initialURL overrides anchor', async () => {
-  renderRouter(
+  await renderRouter(
     {
       _layout: {
         unstable_settings: { anchor: 'index' },
@@ -57,7 +57,7 @@ it('render the initial route with local params', async () => {
   // In this example, the initialRoute should not have 'id' as a param, but React Navigation passes the same params
   // To both the initialRoute and the route that is focused.
   // To fix this, we would need update getStateFromPath so that the initialRoute is loaded with its own params
-  renderRouter(
+  await renderRouter(
     {
       index: () => null,
       '[fruit]/_layout': {
@@ -80,15 +80,15 @@ it('render the initial route with local params', async () => {
   expect(screen).toHaveSearchParams({ fruit: 'apple', id: '1' });
   expect(screen.getByTestId('second')).toHaveTextContent('{"fruit":"apple","id":"1"}');
 
-  act(() => router.back());
+  await act(() => router.back());
 
   expect(screen).toHavePathname('/apple');
   expect(screen).toHaveSearchParams({ fruit: 'apple', id: '1' });
   expect(screen.getByTestId('first')).toHaveTextContent('{"fruit":"apple","id":"1"}');
 });
 
-it('push should include (group)/index as an anchor route when using withAnchor', () => {
-  renderRouter({
+it('push should include (group)/index as an anchor route when using withAnchor', async () => {
+  await renderRouter({
     index: () => null,
     '(group)/_layout': {
       unstable_settings: {
@@ -129,7 +129,7 @@ it('push should include (group)/index as an anchor route when using withAnchor',
     routeKeySeq: expect.any(Number),
   });
 
-  act(() => router.push('/orange', { withAnchor: true }));
+  await act(() => router.push('/orange', { withAnchor: true }));
 
   expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,
@@ -187,8 +187,8 @@ it('push should include (group)/index as an anchor route when using withAnchor',
   });
 });
 
-it('push should ignore (group)/index as an initial route if no anchor is specified', () => {
-  renderRouter({
+it('push should ignore (group)/index as an initial route if no anchor is specified', async () => {
+  await renderRouter({
     index: () => null,
     '(group)/_layout': {
       default: () => <Stack />,
@@ -226,7 +226,7 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
     routeKeySeq: expect.any(Number),
   });
 
-  act(() => router.push('/orange'));
+  await act(() => router.push('/orange'));
 
   expect(navigationRef.getRootState()).toStrictEqual({
     index: 0,

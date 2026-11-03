@@ -1,8 +1,17 @@
 import { requireNativeModule } from 'expo';
-import AppMetrics, { setErrorHandlerEnabled } from 'expo-app-metrics';
+import AppMetrics, {
+  recordSpan,
+  setErrorHandlerEnabled,
+  startSpan,
+  withSpan,
+} from 'expo-app-metrics';
 
 import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
+import {
+  disableReanimatedIntegration,
+  initReanimatedIntegration,
+} from './integrations/react-native-reanimated/init';
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
 import { reportCaughtError } from './reportCaughtError';
@@ -80,12 +89,31 @@ const Observe: ObserveModule = new Proxy(native, {
         } else if (shouldInitReactNavigationIntegration) {
           initReactNavigationIntegration(config.integrations?.['react-navigation']);
         }
+        const reanimatedConfig = config.integrations?.['react-native-reanimated'];
+        if (reanimatedConfig) {
+          initReanimatedIntegration(reanimatedConfig);
+        } else {
+          disableReanimatedIntegration();
+        }
         return target.configure(config);
       };
     }
 
     if (prop === 'reportError') {
       return (error: unknown) => reportCaughtError(error);
+    }
+
+    // The span wrappers add JS-side behavior over the raw native functions (`parent` folding,
+    // `withSpan`'s auto-end), so forward them explicitly instead of letting the fallback below
+    // reach the native members with the same names.
+    if (prop === 'startSpan') {
+      return startSpan;
+    }
+    if (prop === 'withSpan') {
+      return withSpan;
+    }
+    if (prop === 'recordSpan') {
+      return recordSpan;
     }
 
     if (prop === 'registerIntegration') {

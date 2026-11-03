@@ -46,6 +46,7 @@ class AudioRecorder(
   var startTime = 0L
   var isRecording = false
   var isPaused = false
+  private var isPausedBySystem = false
   private var recordingTimerJob: Job? = null
   private var durationLimitMillis: Long? = null
   var useForegroundService = false
@@ -89,10 +90,6 @@ class AudioRecorder(
       throw AudioRecorderAlreadyPreparedException()
     }
 
-    if (useForegroundService && !hasNotificationPermissions()) {
-      throw NotificationPermissionsException()
-    }
-
     val recordingOptions = options ?: this.options
     val mediaRecorder = createRecorder(recordingOptions)
     recorder = mediaRecorder
@@ -113,6 +110,7 @@ class AudioRecorder(
   }
 
   fun record() {
+    isPausedBySystem = false
     if (useForegroundService) {
       serviceConnection.recordingServiceBinder?.service?.registerRecorder(this) ?: run {
         throw AudioRecordingServiceException("The service connection is not bound, but `allowsBackgroundRecording` is set to `true`")
@@ -161,12 +159,26 @@ class AudioRecorder(
   }
 
   fun pauseRecording() {
+    isPausedBySystem = false
     recordingTimerJob?.cancel()
     recordingTimerJob = null
     recorder?.pause()
     durationAlreadyRecorded = getAudioRecorderDurationMillis()
     isRecording = false
     isPaused = true
+  }
+
+  fun pauseForSystem() {
+    if (isRecording) {
+      pauseRecording()
+      isPausedBySystem = true
+    }
+  }
+
+  fun resumeAfterSystemPause() {
+    if (isPausedBySystem && isPaused) {
+      record()
+    }
   }
 
   private fun scheduleRecordingStop() {
@@ -461,14 +473,6 @@ class AudioRecorder(
 
   private fun hasRecordingPermissions() =
     ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
-
-  private fun hasNotificationPermissions(): Boolean {
-    // POST_NOTIFICATIONS permission is only required on Android 13+ (API 33+)
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-      return true
-    }
-    return ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
-  }
 
   fun getAvailableInputs(audioManager: AudioManager) =
     audioManager.getDevices(AudioManager.GET_DEVICES_INPUTS).mapNotNull { deviceInfo ->

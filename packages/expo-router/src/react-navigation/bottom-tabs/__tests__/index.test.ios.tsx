@@ -1,6 +1,7 @@
 import { userEvent } from '@testing-library/react-native';
 import { useEffect, useState } from 'react';
 import {
+  Animated,
   type EmitterSubscription,
   Keyboard,
   type KeyboardEventListener,
@@ -12,11 +13,12 @@ import {
 import { router } from '../../../imperative-api';
 import { Stack } from '../../../layouts/Stack';
 import { Tabs } from '../../../layouts/Tabs';
-import { act, renderRouter, screen } from '../../../testing-library';
+import { act, fireEvent, renderHook, renderRouter, screen } from '../../../testing-library';
 import { useNavigation } from '../../../useNavigation';
 import { Text } from '../../elements';
 import type { ParamListBase } from '../../native';
 import type { BottomTabBarProps, BottomTabNavigationProp } from '../types';
+import { useAnimatedHashMap } from '../utils/useAnimatedHashMap';
 
 let warnSpy: jest.SpyInstance;
 
@@ -30,7 +32,7 @@ afterEach(() => {
 });
 
 test('renders a bottom tab navigator and navigates between screens on tab press', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -55,7 +57,7 @@ test('renders a bottom tab navigator and navigates between screens on tab press'
 });
 
 test('an unvisited tab option can navigate with its placeholder navigation', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -81,7 +83,7 @@ test('an unvisited tab option can navigate with its placeholder navigation', asy
   expect(screen.queryByText('Screen second')).not.toBeNull();
 });
 
-test('renders tabs in route names order while preserving focus', () => {
+test('renders tabs in route names order while preserving focus', async () => {
   let reverse!: () => void;
 
   function Layout() {
@@ -94,14 +96,14 @@ test('renders tabs in route names order while preserving focus', () => {
     return <Tabs>{reversed ? screens.reverse() : screens}</Tabs>;
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: Layout,
     index: () => <Text>Screen index</Text>,
     second: () => <Text>Screen second</Text>,
   });
 
-  act(() => router.navigate('/second'));
-  act(reverse);
+  await act(() => router.navigate('/second'));
+  await act(reverse);
 
   expect(
     screen.getByRole('button', { name: 'second, tab, 1 of 2' }).props.accessibilityState
@@ -114,8 +116,8 @@ test('renders tabs in route names order while preserving focus', () => {
   expect(screen.queryByText('Screen second')).not.toBeNull();
 });
 
-test('handles screens preloading', () => {
-  renderRouter({
+test('handles screens preloading', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -128,13 +130,13 @@ test('handles screens preloading', () => {
 
   expect(screen.queryByText('Screen second', { includeHiddenElements: true })).toBeNull();
 
-  act(() => router.prefetch('/second'));
+  await act(() => router.prefetch('/second'));
 
   expect(screen.queryByText('Screen second', { includeHiddenElements: true })).not.toBeNull();
 });
 
-test('preloads a non-lazy screen after mount', () => {
-  renderRouter({
+test('preloads a non-lazy screen after mount', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -165,7 +167,7 @@ test('tab bar cannot be tapped when hidden', async () => {
     } as EmitterSubscription;
   });
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs screenOptions={{ tabBarHideOnKeyboard: true }}>
         <Tabs.Screen name="index" />
@@ -182,7 +184,7 @@ test('tab bar cannot be tapped when hidden', async () => {
 
   expect(screen.queryByText('Screen second')).not.toBeNull();
 
-  act(() => {
+  await act(() => {
     // Show the keyboard to hide the tab bar
     listeners.keyboardWillShow.forEach((listener) =>
       // @ts-expect-error: mock event
@@ -208,7 +210,7 @@ test('does not navigate when a tabPress listener prevents the default action', a
     return <View testID="second" />;
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -234,7 +236,7 @@ test('a focused tabPress listener does not intercept an unvisited tab', async ()
     return <View testID="index" />;
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -253,7 +255,7 @@ test('a focused tabPress listener does not intercept an unvisited tab', async ()
 test('an unvisited tabPress listener can prevent navigation', async () => {
   const secondTabPress = jest.fn((event) => event.preventDefault());
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -271,7 +273,7 @@ test('an unvisited tabPress listener can prevent navigation', async () => {
 });
 
 test('keeps the search params of a tab when it is re-selected', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -282,7 +284,7 @@ test('keeps the search params of a tab when it is re-selected', async () => {
     second: () => <View testID="second" />,
   });
 
-  act(() => router.navigate('/second?foo=bar'));
+  await act(() => router.navigate('/second?foo=bar'));
   expect(screen).toHaveSearchParams({ foo: 'bar' });
 
   await userEvent.press(screen.getByRole('button', { name: 'index, tab, 1 of 2' }));
@@ -301,7 +303,7 @@ test('does not remount a tab when it is re-selected', async () => {
     return <View testID="second" />;
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -312,7 +314,7 @@ test('does not remount a tab when it is re-selected', async () => {
     second: Second,
   });
 
-  act(() => router.navigate('/second?foo=bar'));
+  await act(() => router.navigate('/second?foo=bar'));
   expect(mountCount).toBe(1);
 
   await userEvent.press(screen.getByRole('button', { name: 'index, tab, 1 of 2' }));
@@ -324,7 +326,7 @@ test('does not remount a tab when it is re-selected', async () => {
 });
 
 test('keeps the dynamic segment of a tab when it is re-selected', async () => {
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -344,8 +346,8 @@ test('keeps the dynamic segment of a tab when it is re-selected', async () => {
   expect(screen).toHavePathname('/abc');
 });
 
-test('removes and redirects from a tab whose href is null', () => {
-  renderRouter({
+test('removes and redirects from a tab whose href is null', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -359,13 +361,13 @@ test('removes and redirects from a tab whose href is null', () => {
   expect(screen.queryByRole('button', { name: /second/ })).toBeNull();
   expect(screen.getByRole('button', { name: 'index, tab, 1 of 1' })).toBeVisible();
 
-  act(() => router.push('/second'));
+  await act(() => router.push('/second'));
 
   expect(screen).toHavePathname('/');
   expect(screen.queryByTestId('second')).toBeNull();
 });
 
-test('redirects when the focused tab href becomes null', () => {
+test('redirects when the focused tab href becomes null', async () => {
   let setHidden!: (hidden: boolean) => void;
   function Layout() {
     const [hidden, set] = useState(false);
@@ -378,24 +380,24 @@ test('redirects when the focused tab href becomes null', () => {
     );
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: Layout,
     index: () => <View testID="index" />,
     second: () => <View testID="second" />,
   });
 
-  act(() => router.push('/second'));
+  await act(() => router.push('/second'));
   expect(screen).toHavePathname('/second');
 
-  act(() => setHidden(true));
+  await act(() => setHidden(true));
 
   expect(screen).toHavePathname('/');
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.queryByTestId('second')).toBeNull();
 });
 
-test('renders only screens declared in the layout and redirects from undeclared routes', () => {
-  renderRouter({
+test('renders only screens declared in the layout and redirects from undeclared routes', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -407,14 +409,14 @@ test('renders only screens declared in the layout and redirects from undeclared 
 
   expect(screen.getAllByRole('button', { name: /tab/ })).toHaveLength(1);
 
-  act(() => router.push('/second'));
+  await act(() => router.push('/second'));
 
   expect(screen).toHavePathname('/');
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
-test('redirects an undeclared route to the configured initial tab', () => {
-  renderRouter({
+test('redirects an undeclared route to the configured initial tab', async () => {
+  await renderRouter({
     _layout: {
       unstable_settings: { initialRouteName: 'second' },
       default: () => (
@@ -429,14 +431,14 @@ test('redirects an undeclared route to the configured initial tab', () => {
     undeclared: () => <View testID="undeclared" />,
   });
 
-  act(() => router.push('/undeclared'));
+  await act(() => router.push('/undeclared'));
 
   expect(screen).toHavePathname('/second');
   expect(screen.getByTestId('second')).toBeVisible();
 });
 
-test('renders no tab UI when no screens are declared in the layout', () => {
-  renderRouter({
+test('renders no tab UI when no screens are declared in the layout', async () => {
+  await renderRouter({
     _layout: () => <Tabs />,
     index: () => <View testID="index" />,
   });
@@ -446,8 +448,8 @@ test('renders no tab UI when no screens are declared in the layout', () => {
   expect(warnSpy.mock.calls).toMatchSnapshot();
 });
 
-test('prefers a protected screen redirect over the tab visibility fallback', () => {
-  renderRouter(
+test('prefers a protected screen redirect over the tab visibility fallback', async () => {
+  await renderRouter(
     {
       _layout: () => <Stack />,
       'tabs/_layout': () => (
@@ -469,8 +471,8 @@ test('prefers a protected screen redirect over the tab visibility fallback', () 
   expect(screen.getByTestId('login')).toBeVisible();
 });
 
-test('redirects a fully guarded layout without warning that no screens are declared', () => {
-  renderRouter(
+test('redirects a fully guarded layout without warning that no screens are declared', async () => {
+  await renderRouter(
     {
       _layout: () => <Stack />,
       'tabs/_layout': () => (
@@ -493,17 +495,18 @@ test('redirects a fully guarded layout without warning that no screens are decla
   expect(warnSpy).not.toHaveBeenCalled();
 });
 
-test('throws when a screen uses both href and tabBarButton', () => {
-  expect(() =>
-    renderRouter({
-      _layout: () => (
-        <Tabs>
-          <Tabs.Screen name="index" options={{ href: '/index', tabBarButton: () => null }} />
-        </Tabs>
-      ),
-      index: () => null,
-    })
-  ).toThrow('Cannot use `href` and `tabBarButton` together.');
+test('throws when a screen uses both href and tabBarButton', async () => {
+  await expect(
+    async () =>
+      await renderRouter({
+        _layout: () => (
+          <Tabs>
+            <Tabs.Screen name="index" options={{ href: '/index', tabBarButton: () => null }} />
+          </Tabs>
+        ),
+        index: () => null,
+      })
+  ).rejects.toThrow('Cannot use `href` and `tabBarButton` together.');
 });
 
 test('renders a custom tabBar and lets it emit and navigate', async () => {
@@ -531,7 +534,7 @@ test('renders a custom tabBar and lets it emit and navigate', async () => {
     );
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs tabBar={(props) => <CustomTabBar {...props} />}>
         <Tabs.Screen name="index" />
@@ -550,8 +553,8 @@ test('renders a custom tabBar and lets it emit and navigate', async () => {
   expect(screen).toHavePathname('/second');
 });
 
-test('warns when a custom tabBar navigates to an unknown target', () => {
-  renderRouter({
+test('warns when a custom tabBar navigates to an unknown target', async () => {
+  await renderRouter({
     _layout: () => (
       <Tabs
         tabBar={({ navigateToTab }) => (
@@ -563,7 +566,7 @@ test('warns when a custom tabBar navigates to an unknown target', () => {
     index: () => null,
   });
 
-  act(() => screen.getByTestId('unknown-tab').props.onPress());
+  await act(() => screen.getByTestId('unknown-tab').props.onPress());
 
   expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Bottom tabs could not switch'));
 });
@@ -602,7 +605,7 @@ test('lets a tabPress listener prevent navigation from a custom tabBar', async (
     );
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs tabBar={(props) => <CustomTabBar {...props} />}>
         <Tabs.Screen name="index" />
@@ -619,7 +622,7 @@ test('lets a tabPress listener prevent navigation from a custom tabBar', async (
 });
 
 test('resets a nested stack when its tab loses focus with popToTopOnBlur', async () => {
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -635,7 +638,7 @@ test('resets a nested stack when its tab loses focus with popToTopOnBlur', async
     { initialUrl: '/one' }
   );
 
-  act(() => router.push('/one/details'));
+  await act(() => router.push('/one/details'));
 
   expect(screen.getByTestId('one-details')).toBeVisible();
 
@@ -648,4 +651,140 @@ test('resets a nested stack when its tab loses focus with popToTopOnBlur', async
   // Without `popToTopOnBlur`, the details screen would still be active.
   expect(screen.getByTestId('one-index')).toBeVisible();
   expect(screen.queryByTestId('one-details')).toBeNull();
+});
+
+// Mirrors the activity states `BottomTabView` hands to `MaybeScreen`.
+const STATE_INACTIVE = 0;
+const STATE_TRANSITIONING_OR_BELOW_TOP = 1;
+const STATE_ON_TOP = 2;
+
+/** Reads the activity state of the screen container wrapping `text`. */
+function getActivityState(text: string) {
+  let node = screen.getByText(text, { includeHiddenElements: true }).parent;
+
+  while (node && node.props.activityState === undefined) {
+    node = node.parent;
+  }
+
+  return node?.props.activityState;
+}
+
+test('keeps the outgoing tab attached until its transition has settled', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Tabs screenOptions={{ animation: 'fade' }}>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="second" />
+      </Tabs>
+    ),
+    index: () => <Text>Screen index</Text>,
+    second: () => <Text>Screen second</Text>,
+  });
+
+  expect(getActivityState('Screen index')).toBe(STATE_ON_TOP);
+
+  await fireEvent.press(screen.getByRole('button', { name: 'second, tab, 2 of 2' }));
+
+  // The outgoing screen has to stay attached for the whole transition, otherwise
+  // it is detached mid-animation and the arriving tab renders blank.
+  expect(getActivityState('Screen index')).toBe(STATE_TRANSITIONING_OR_BELOW_TOP);
+  expect(getActivityState('Screen second')).toBe(STATE_ON_TOP);
+
+  // Once the animation finishes, the delayed clear detaches it.
+  await act(() => {
+    jest.advanceTimersByTime(1000);
+  });
+
+  expect(getActivityState('Screen index')).toBe(STATE_INACTIVE);
+  expect(getActivityState('Screen second')).toBe(STATE_ON_TOP);
+});
+
+test('fades an unvisited lazy tab in on its first visit', async () => {
+  const startingValues: number[] = [];
+  const timing = Animated.timing;
+  jest.spyOn(Animated, 'timing').mockImplementation((value, config) => {
+    if (config.toValue === 0) {
+      // BottomTabView passes scalar values; React Native's types omit this test-only accessor.
+      startingValues.push((value as Animated.Value & { __getValue(): number }).__getValue());
+    }
+    return timing(value, config);
+  });
+
+  await renderRouter({
+    _layout: () => (
+      <Tabs screenOptions={{ animation: 'fade' }}>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="second" />
+      </Tabs>
+    ),
+    index: () => <Text>Screen index</Text>,
+    second: () => <Text>Screen second</Text>,
+  });
+
+  startingValues.length = 0;
+  await fireEvent.press(screen.getByRole('button', { name: 'second, tab, 2 of 2' }));
+
+  expect(startingValues).toEqual([1]);
+});
+
+test('creates an animated value for a tab named constructor', async () => {
+  const { result } = await renderHook(() =>
+    useAnimatedHashMap({
+      index: 0,
+      routes: [{ key: 'constructor-placeholder', name: 'constructor' }],
+    })
+  );
+
+  expect(result.current.constructor).toBeInstanceOf(Animated.Value);
+});
+
+test('shifts an unvisited lazy tab in from the side of the previous tab', async () => {
+  const startingValues: number[] = [];
+  const timing = Animated.timing;
+  jest.spyOn(Animated, 'timing').mockImplementation((value, config) => {
+    if (config.toValue === 0) {
+      // BottomTabView passes scalar values; React Native's types omit this test-only accessor.
+      startingValues.push((value as Animated.Value & { __getValue(): number }).__getValue());
+    }
+    return timing(value, config);
+  });
+
+  await renderRouter(
+    {
+      _layout: () => (
+        <Tabs screenOptions={{ animation: 'shift' }}>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="second" />
+          <Tabs.Screen name="third" />
+        </Tabs>
+      ),
+      index: () => <Text>Screen index</Text>,
+      second: () => <Text>Screen second</Text>,
+      third: () => <Text>Screen third</Text>,
+    },
+    { initialUrl: '/third' }
+  );
+
+  startingValues.length = 0;
+  await fireEvent.press(screen.getByRole('button', { name: 'second, tab, 2 of 3' }));
+
+  expect(startingValues).toEqual([-1]);
+});
+
+test('detaches the outgoing tab immediately when the transition is not animated', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Tabs screenOptions={{ animation: 'none' }}>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="second" />
+      </Tabs>
+    ),
+    index: () => <Text>Screen index</Text>,
+    second: () => <Text>Screen second</Text>,
+  });
+
+  await fireEvent.press(screen.getByRole('button', { name: 'second, tab, 2 of 2' }));
+
+  expect(getActivityState('Screen index')).toBe(STATE_INACTIVE);
+  expect(getActivityState('Screen second')).toBe(STATE_ON_TOP);
 });

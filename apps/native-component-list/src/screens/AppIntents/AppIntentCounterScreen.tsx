@@ -40,7 +40,7 @@ export default function AppIntentCounterScreen() {
           <BodyText style={styles.count}>{counterState.count}</BodyText>
           <BodyText>
             {openedBySiri
-              ? 'Opened after a counter intent ran.'
+              ? 'Opened after the Increase Counter intent ran.'
               : 'Opened manually from the API list.'}
           </BodyText>
         </View>
@@ -71,12 +71,10 @@ export default function AppIntentCounterScreen() {
       <Section title="Donations">
         <View style={styles.controls}>
           <BodyText>
-            Donation Probe has no params and is not an App Shortcut, so the system suggests it only
-            after a donation. Add to Counter takes an amount, which the donation passes as its
-            DonationParams record.
+            Increase Counter takes no params, so conforming to DonatableAppIntent is all it needs.
+            Donate it after the user increases the counter in the app.
           </BodyText>
-          <AppIntentDonationButtons title="Donation Probe" intent="donationProbe" />
-          <AppIntentDonationButtons title="Add 5" intent="addToCounter" params={{ amount: 5 }} />
+          <AppIntentDonationButtons title="Increase Counter" intent="increaseCounter" />
         </View>
       </Section>
     </ScrollPage>

@@ -1,9 +1,10 @@
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Sheet() {
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['left', 'right']} style={styles.container}>
       <View style={styles.header}>
         <Pressable accessibilityRole="button" onPress={() => router.back()}>
           <Text style={styles.action}>Cancel</Text>
@@ -21,7 +22,7 @@ export default function Sheet() {
         placeholderTextColor="#71717a"
         style={styles.input}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 

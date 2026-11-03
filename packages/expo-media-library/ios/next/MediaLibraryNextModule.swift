@@ -153,6 +153,10 @@ public final class MediaLibraryNextModule: Module {
         try this.within(assetField, values)
       }
 
+      Function("contains") { (this: Query, assetField: AssetField, value: MediaSubtypeNext) in
+        this.contains(assetField, value)
+      }
+
       Function("gt") { (this: Query, assetField: AssetField, value: Int) in
         this.gt(assetField, value)
       }

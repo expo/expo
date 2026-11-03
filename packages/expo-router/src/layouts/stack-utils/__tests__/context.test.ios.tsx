@@ -4,20 +4,20 @@ import React from 'react';
 import { ToolbarPlacementContext, useToolbarPlacement } from '../toolbar/context';
 
 describe('ToolbarPlacementContext', () => {
-  it('has null as default value', () => {
-    const { result } = renderHook(() => useToolbarPlacement());
+  it('has null as default value', async () => {
+    const { result } = await renderHook(() => useToolbarPlacement());
     expect(result.current).toBeNull();
   });
 
   it.each(['left', 'right', 'bottom'] as const)(
     'returns "%s" when provided via context',
-    (placement) => {
+    async (placement) => {
       const wrapper = ({ children }: { children: React.ReactNode }) => (
         <ToolbarPlacementContext.Provider value={placement}>
           {children}
         </ToolbarPlacementContext.Provider>
       );
-      const { result } = renderHook(() => useToolbarPlacement(), { wrapper });
+      const { result } = await renderHook(() => useToolbarPlacement(), { wrapper });
       expect(result.current).toBe(placement);
     }
   );

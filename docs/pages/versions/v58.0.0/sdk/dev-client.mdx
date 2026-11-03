@@ -23,7 +23,7 @@ Expo documentation refers to debug builds that include `expo-dev-client` as [dev
 
 <APIInstallSection hideBareInstructions />
 
-When you create a build with EAS Build, set `developmentClient` to `true` on a build profile in your **eas.json**. Without it, EAS Build produces a standalone build with no development tools. For example:
+When you create a build with Expo Build, set `developmentClient` to `true` on a build profile in your **eas.json**. Without it, Expo Build produces a standalone build with no development tools. For example:
 
 ```json eas.json
 {
@@ -104,6 +104,12 @@ You can configure development client launcher using its built-in [config plugin]
       default: 'true',
     },
     {
+      name: 'embeddedBundle',
+      description:
+        'Whether to enable loading an embedded JavaScript bundle from the launcher. When enabled and a bundle file is present in the app, a "Load embedded bundle" option appears in the launcher.',
+      default: 'false',
+    },
+    {
       name: 'skipOnboarding',
       description:
         'Skip the onboarding screen that shows in the dev menu on the first launch of the app.',
@@ -117,10 +123,12 @@ You can configure development client launcher using its built-in [config plugin]
   ]}
 />
 
+These properties set build-time defaults. To skip onboarding, hide the tools button, or keep the dev menu closed for one launch, add `__expo_disable_onboarding=1`, `__expo_disable_fab=1`, or `__expo_disable_auto_launch=1` to the launch URL. See [Deep linking to an update's URL](/develop/development-builds/development-workflows/#deep-linking-to-an-updates-url).
+
 ## TV support
 
 - **Android TV**: All operations are supported, similar to an Android phone.
-- **Apple TV**: Basic operations with a local or tunneled packager are supported. Authentication to EAS and listing of EAS builds and updates is not yet supported.
+- **Apple TV**: Basic operations with a local or tunneled packager are supported. Authentication to Expo Services and listing of builds and updates is not yet supported.
 
 ## API
 

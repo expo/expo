@@ -16,14 +16,14 @@ function createScrollableScreen(scrollTo: jest.Mock) {
   };
 }
 
-function flushAnimationFrame() {
-  act(() => jest.runAllTimers());
+async function flushAnimationFrame() {
+  await act(() => jest.runAllTimers());
 }
 
 test('scrolls a screen directly in the focused tab to the top', async () => {
   const scrollTo = jest.fn();
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -35,7 +35,7 @@ test('scrolls a screen directly in the focused tab to the top', async () => {
   });
 
   await userEvent.press(screen.getByRole('button', { name: 'index, tab, 1 of 2' }));
-  flushAnimationFrame();
+  await flushAnimationFrame();
 
   expect(scrollTo).toHaveBeenCalledWith({ y: 0, animated: true });
 });
@@ -43,7 +43,7 @@ test('scrolls a screen directly in the focused tab to the top', async () => {
 test('does not scroll a screen in an unfocused tab', async () => {
   const scrollTo = jest.fn();
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" />
@@ -55,7 +55,7 @@ test('does not scroll a screen in an unfocused tab', async () => {
   });
 
   await userEvent.press(screen.getByRole('button', { name: 'index, tab, 1 of 2' }));
-  flushAnimationFrame();
+  await flushAnimationFrame();
 
   expect(scrollTo).not.toHaveBeenCalled();
 });
@@ -63,7 +63,7 @@ test('does not scroll a screen in an unfocused tab', async () => {
 test('scrolls the first screen of a stack nested in a tab to the top', async () => {
   const scrollTo = jest.fn();
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -80,7 +80,7 @@ test('scrolls the first screen of a stack nested in a tab to the top', async () 
   );
 
   await userEvent.press(screen.getByRole('button', { name: 'one, tab, 1 of 2' }));
-  flushAnimationFrame();
+  await flushAnimationFrame();
 
   expect(scrollTo).toHaveBeenCalledWith({ y: 0, animated: true });
 });
@@ -88,7 +88,7 @@ test('scrolls the first screen of a stack nested in a tab to the top', async () 
 test('does not scroll a non-first screen of a stack nested in a tab', async () => {
   const scrollTo = jest.fn();
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Tabs>
@@ -112,7 +112,7 @@ test('does not scroll a non-first screen of a stack nested in a tab', async () =
   await userEvent.press(screen.getByRole('button', { name: 'Details' }));
 
   await userEvent.press(screen.getByRole('button', { name: 'one, tab, 1 of 2' }));
-  flushAnimationFrame();
+  await flushAnimationFrame();
 
   expect(scrollTo).not.toHaveBeenCalled();
 });
@@ -120,7 +120,7 @@ test('does not scroll a non-first screen of a stack nested in a tab', async () =
 test('does not scroll when another tabPress listener prevents the default action', async () => {
   const scrollTo = jest.fn();
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Tabs>
         <Tabs.Screen name="index" listeners={{ tabPress: (event) => event.preventDefault() }} />
@@ -132,7 +132,7 @@ test('does not scroll when another tabPress listener prevents the default action
   });
 
   await userEvent.press(screen.getByRole('button', { name: 'index, tab, 1 of 2' }));
-  flushAnimationFrame();
+  await flushAnimationFrame();
 
   expect(scrollTo).not.toHaveBeenCalled();
 });

@@ -63,7 +63,8 @@ struct HeaderView: View {
     .task {
       await loadIcon(from: viewModel.appInfo?.appIcon)
     }
-    .padding()
+    .padding([.horizontal, .bottom])
+    .padding(.top, 24)
   }
 
   private func loadIcon(from path: String?) async {

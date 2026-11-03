@@ -6,7 +6,11 @@ import { useEffect, useState } from 'react';
 import { EasCliLogo } from './EasCliLogo';
 import { MethodSelectCard } from './MethodSelectCard';
 
-type BuildMethod = 'build-locally' | 'build-with-eas' | 'eas-cli-local';
+type BuildMethod = 'build-locally' | 'build-with-expo-services' | 'eas-cli-local';
+
+const RENAMED_BUILD_METHODS: Partial<Record<string, BuildMethod>> = {
+  'build-with-eas': 'build-with-expo-services',
+};
 
 export function BuildMethodForm() {
   const router = useRouter();
@@ -16,7 +20,17 @@ export function BuildMethodForm() {
   useEffect(
     function queryDidUpdate() {
       if (isReady) {
-        if (query.buildenv === 'build-with-eas' || query.buildenv === 'eas-cli-local') {
+        const renamedMethod =
+          typeof query.buildenv === 'string' ? RENAMED_BUILD_METHODS[query.buildenv] : undefined;
+        if (renamedMethod) {
+          void router.replace(
+            { query: { ...query, buildenv: renamedMethod }, hash: window.location.hash },
+            undefined,
+            { shallow: true, scroll: false }
+          );
+          return;
+        }
+        if (query.buildenv === 'build-with-expo-services' || query.buildenv === 'eas-cli-local') {
           setMethod(query.buildenv);
         } else {
           setMethod('build-locally');
@@ -58,17 +72,17 @@ export function BuildMethodForm() {
       />
       <MethodSelectCard
         Icon={PlanEnterpriseIcon}
-        title="Build with EAS"
-        description="Compile in the cloud on EAS servers. No native build tools needed and you can also create iOS builds from any operating system."
-        isSelected={method === 'build-with-eas'}
+        title="Build with Expo Build"
+        description="Compile in the cloud on Expo servers. No native build tools needed and you can also create iOS builds from any operating system."
+        isSelected={method === 'build-with-expo-services'}
         onClick={() => {
-          onRadioChange('build-with-eas');
+          onRadioChange('build-with-expo-services');
         }}
       />
       <MethodSelectCard
         Icon={EasCliLogo}
         title="Build locally with EAS CLI"
-        description='Run the same EAS Build on your own machine with the "--local" flag. EAS still manages signing and profiles.'
+        description='Run the same Expo Build on your own machine with the "--local" flag. Expo Build still manages signing and profiles.'
         isSelected={method === 'eas-cli-local'}
         onClick={() => {
           onRadioChange('eas-cli-local');

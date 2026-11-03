@@ -8,8 +8,6 @@ import '../../types';
 import { installFormDataPatch } from './FormData';
 import { installGlobal as install } from './installGlobal';
 
-// https://encoding.spec.whatwg.org/#textdecoder
-install('TextDecoder', () => require('./TextDecoder').TextDecoder);
 // https://encoding.spec.whatwg.org/#interface-textdecoderstream
 install('TextDecoderStream', () => require('./TextDecoderStream').TextDecoderStream);
 // https://encoding.spec.whatwg.org/#interface-textencoderstream

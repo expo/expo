@@ -220,4 +220,9 @@ describe(_isLocalHostname, () => {
     expect(_isLocalHostname('localghost')).toBe(false);
     expect(_isLocalHostname('example.com')).toBe(false);
   });
+
+  it('rejects dot-free hostnames that merely start with 127', () => {
+    expect(_isLocalHostname('127a1b1c1')).toBe(false);
+    expect(_isLocalHostname('127x999x999x999')).toBe(false);
+  });
 });

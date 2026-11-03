@@ -1,6 +1,6 @@
 {
   "name": "expo-speech",
-  "version": "58.0.2",
+  "version": "58.0.3",
   "description": "Provides text-to-speech functionality.",
   "keywords": [
     "expo",
@@ -37,13 +37,13 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "@expo/internal-scripts": "workspace:*",
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*"
   },
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "@expo/internal-scripts"
   }
 }

@@ -29,7 +29,7 @@ Creating an organization account is useful when:
 - Expenses need to be isolated.
 - Granting different levels of access by assigning a role to each member of the organization.
 - Structuring projects for different contexts. For example, when working for different clients, a new organization may be created for each client.
-- Sharing an [EAS Subscription](/eas/).
+- Sharing an [Expo Services subscription](/eas/).
 
 ### Create a new organization
 
@@ -67,14 +67,14 @@ When you are going through this process, we take a lot of care to make sure that
 - You can continue to deliver updates and push notifications to your users.
 - You can still use any Android or iOS credentials stored on Expo's servers.
 - Any integrations using your personal access token or webhooks will continue to operate and are transferred to the new designated owner.
-- Your EAS subscription will continue without interruption.
+- Your Expo Services subscription will continue without interruption.
 - Your production apps will continue to operate without interruption.
 
 ### Invite a member
 
 Other Expo users can be invited to join your Organization. To invite a new member:
 
-- Navigate to [**Members**](https://expo.dev/settings/members) under **Organization settings** in the EAS dashboard.
+- Navigate to [**Members**](https://expo.dev/settings/members) under **Organization settings** in the Expo dashboard.
 - Click the button **Invite**. This will open a form to invite a member to the organization.
 - In the form, enter the email of the user you want to invite and select the role they should have upon joining the organization. For more information, see [role privileges in Manage access](#manage-access).
 
@@ -94,14 +94,14 @@ When inviting a new member, keep in mind:
 
 To change the role privileges of a member, make sure you have either an [**Owner** or **Admin** role](/accounts/account-types/#manage-access) and follow the steps below:
 
-- Navigate to [**Members**](https://expo.dev/settings/members) under **Organization settings** in the EAS dashboard.
+- Navigate to [**Members**](https://expo.dev/settings/members) under **Organization settings** in the Expo dashboard.
 - Next to the member whose role you want to change, click on the three-dotted menu icon and change the role.
 
 ### Remove a member
 
 To remove a member, make sure you have either an [**Owner** or **Admin** role](/accounts/account-types/#manage-access) and follow the steps below:
 
-- Navigate to [**Members**](https://expo.dev/settings/members) under **Organization settings** in the EAS dashboard.
+- Navigate to [**Members**](https://expo.dev/settings/members) under **Organization settings** in the Expo dashboard.
 - Next to the member you want to remove, click on the three-dotted menu icon.
 - Click **Remove member**.
 
@@ -133,17 +133,16 @@ Projects can be transferred a limited number of times. A user must be an Owner o
 
 ### Manage access
 
-Access for members is managed through a role-based system. Users can have the _owner_, _admin_, _release manager_, _developer_, or _viewer_ role within an Organization account. Each role can do everything the roles below it can do.
+Access for members is managed through a role-based system. Users can have the _owner_, _admin_, _release manager_, _developer_, _runner_, or _viewer_ role within an Organization account. Each role can do everything the roles below it can do.
 
 | Role                | Description                                                                                                                                               |
 | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Owner**           | Can take any action on an account or any projects, including deleting them.                                                                               |
 | **Admin**           | Can control most settings on your account, including signing up for paid services, changing permissions of other users, and managing programmatic access. |
-| **Release Manager** | Can manage protected channels and publish updates to the branches they point to.                                                                          |
+| **Release Manager** | Can manage [protected resources](/eas/protected-resources/), including publishing updates to protected channels.                                          |
 | **Developer**       | Can create new projects, make new builds, release updates, and manage credentials.                                                                        |
+| **Runner**          | Can view your projects and perform low-risk actions on them.                                                                                              |
 | **Viewer**          | Can only view your projects through Expo Go but cannot modify your projects in any way.                                                                   |
-
-> **info** A protected channel restricts who can publish updates to it. Protected channels are in private beta and will be available on the Enterprise plan. Any account can assign the Release Manager role, but unless protected channels are enabled for an account, a Release Manager has the same access as a Developer.
 
 ### Security activity
 

@@ -15,13 +15,14 @@ fi
 source $DIR/install-app-ios.sh $DEVICE_ID
 
 # Run the tests
-maestro test \
+maestro --device "$DEVICE_ID" test \
   -e APP_ID=$APP_ID \
   $DIR/../maestro/__tests__/common/communication.yml \
-  $DIR/../maestro/__tests__/common/navigation.yml
+  $DIR/../maestro/__tests__/common/navigation.yml \
+  $DIR/../maestro/__tests__/common/state.yml || exit 1
 
 if [ "$CONFIGURATION" = "Debug" ]; then
-  maestro test \
+  maestro --device "$DEVICE_ID" test \
     -e APP_ID=$APP_ID \
-    $DIR/../maestro/__tests__/common/dev-menu.yml
+    $DIR/../maestro/__tests__/common/dev-menu.yml || exit 1
 fi

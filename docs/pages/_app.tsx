@@ -12,9 +12,10 @@ import { getLocaleFromPath, messages } from '~/common/i18n';
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import { useNProgress } from '~/common/useNProgress';
 import { DocumentationPageWrapper } from '~/components/DocumentationPageWrapper';
-import { websiteSchema } from '~/constants/structured-data';
+import { buildWebsiteSchema } from '~/constants/structured-data';
 import { useAnalyticsPageTracking } from '~/providers/Analytics';
 import { CodeBlockSettingsProvider } from '~/providers/CodeBlockSettingsProvider';
+import { CometlyPixel } from '~/providers/CometlyPixel';
 import { TutorialChapterCompletionProvider } from '~/providers/TutorialChapterCompletionProvider';
 import { ApiDataProvider } from '~/providers/api-data';
 import { HreflangAlternates } from '~/ui/components/HreflangAlternates';
@@ -22,7 +23,6 @@ import { markdownComponents } from '~/ui/components/Markdown';
 import { CodeSelectionCopy } from '~/ui/components/Snippet/CodeSelectionCopy';
 import { StructuredData } from '~/ui/components/StructuredData';
 import * as Tooltip from '~/ui/components/Tooltip';
-import '~/common/suppress-trailing-slash-warning';
 import '@expo/styleguide/dist/expo-theme.css';
 import '@expo/styleguide-search-ui/dist/expo-search-ui.css';
 
@@ -73,7 +73,7 @@ export default function App({ Component, pageProps }: AppProps) {
   useAnalyticsPageTracking();
   return (
     <>
-      <StructuredData id="website" data={websiteSchema} />
+      <StructuredData id="website" data={buildWebsiteSchema(locale)} />
       <HreflangAlternates />
       {/* oxlint-disable-next-line react/no-unknown-property */}
       <style jsx global>{`
@@ -97,6 +97,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <MotionConfig reducedMotion="user">
           <ThemeProvider>
             <CookieConsentProvider ga4Id="G-YKNPYCMLWY">
+              <CometlyPixel />
               <TutorialChapterCompletionProvider>
                 <CodeBlockSettingsProvider>
                   <MDXProvider components={rootMarkdownComponents}>

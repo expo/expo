@@ -29,8 +29,8 @@ function getVerticalSliderProps() {
 }
 
 describe('VerticalSlider', () => {
-  it('passes slider props and reverseDirection to the native view', () => {
-    render(
+  it('passes slider props and reverseDirection to the native view', async () => {
+    await render(
       <VerticalSlider value={0.4} min={-1} max={2} steps={5} enabled={false} reverseDirection />
     );
 
@@ -46,10 +46,10 @@ describe('VerticalSlider', () => {
     );
   });
 
-  it('unwraps native value change events', () => {
+  it('unwraps native value change events', async () => {
     const onValueChange = jest.fn();
     const onValueChangeFinished = jest.fn();
-    render(
+    await render(
       <VerticalSlider onValueChange={onValueChange} onValueChangeFinished={onValueChangeFinished} />
     );
 
@@ -61,8 +61,8 @@ describe('VerticalSlider', () => {
     expect(onValueChangeFinished).toHaveBeenCalledTimes(1);
   });
 
-  it('renders custom thumb and track slots', () => {
-    const { getByTestId } = render(
+  it('renders custom thumb and track slots', async () => {
+    const { getByTestId } = await render(
       <VerticalSlider>
         <VerticalSlider.Thumb>
           <View testID="vertical-slider-thumb" />

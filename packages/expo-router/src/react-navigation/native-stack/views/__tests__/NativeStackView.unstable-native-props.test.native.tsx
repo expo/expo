@@ -24,11 +24,11 @@ jest.mock('react-native-screens', () => {
 const ScreenStack = _ScreenStack as jest.MockedFunction<typeof _ScreenStack>;
 const ScreenStackItem = _ScreenStackItem as jest.MockedFunction<typeof _ScreenStackItem>;
 
-function renderStack(
+async function renderStack(
   options?: NativeStackNavigationOptions,
   Screen = () => <Text testID="index">Index</Text>
 ) {
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Stack>
         <Stack.Screen name="index" options={options} />
@@ -48,8 +48,8 @@ describe('unstable_nativeProps', () => {
     ScreenStackItem.mockClear();
   });
 
-  it('forwards raw screen props to ScreenStackItem', () => {
-    const props = renderStack({
+  it('forwards raw screen props to ScreenStackItem', async () => {
+    const props = await renderStack({
       unstable_nativeProps: {
         gestureEnabled: false,
       },
@@ -58,8 +58,8 @@ describe('unstable_nativeProps', () => {
     expect(props.gestureEnabled).toBe(false);
   });
 
-  it('lets raw screen props re-enable screen freezing', () => {
-    const props = renderStack({
+  it('lets raw screen props re-enable screen freezing', async () => {
+    const props = await renderStack({
       unstable_nativeProps: {
         freezeOnBlur: true,
       },
@@ -68,11 +68,11 @@ describe('unstable_nativeProps', () => {
     expect(props.freezeOnBlur).toBe(true);
   });
 
-  it('forwards raw stack host props from Stack', () => {
+  it('forwards raw stack host props from Stack', async () => {
     const onFinishTransitioning = jest.fn();
     const nativeContainerStyle = { backgroundColor: 'red' } as const;
 
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <Stack
           unstable_nativeProps={{
@@ -96,8 +96,8 @@ describe('unstable_nativeProps', () => {
     expect(ScreenStackItem.mock.calls[0]![0].testID).toBeUndefined();
   });
 
-  it('lets raw screen props override expo-router optional props', () => {
-    const props = renderStack({
+  it('lets raw screen props override expo-router optional props', async () => {
+    const props = await renderStack({
       animation: 'fade',
       unstable_nativeProps: {
         stackAnimation: 'none',
@@ -107,9 +107,9 @@ describe('unstable_nativeProps', () => {
     expect(props.stackAnimation).toBe('none');
   });
 
-  it('lets raw screen props override wired handlers', () => {
+  it('lets raw screen props override wired handlers', async () => {
     const onDismissed = jest.fn();
-    const props = renderStack({
+    const props = await renderStack({
       unstable_nativeProps: {
         onDismissed,
       } as unknown as NativeStackNavigationOptions['unstable_nativeProps'],
@@ -118,8 +118,8 @@ describe('unstable_nativeProps', () => {
     expect(props.onDismissed).toBe(onDismissed);
   });
 
-  it('forwards raw header props to headerConfig', () => {
-    const props = renderStack({
+  it('forwards raw header props to headerConfig', async () => {
+    const props = await renderStack({
       unstable_nativeProps: {
         headerConfig: { disableTopInsetApplication: true },
       },
@@ -128,8 +128,8 @@ describe('unstable_nativeProps', () => {
     expect(props.headerConfig?.disableTopInsetApplication).toBe(true);
   });
 
-  it('lets raw header props override expo-router optional props', () => {
-    const props = renderStack({
+  it('lets raw header props override expo-router optional props', async () => {
+    const props = await renderStack({
       headerShadowVisible: true,
       unstable_nativeProps: {
         headerConfig: { hideShadow: true },
@@ -139,9 +139,9 @@ describe('unstable_nativeProps', () => {
     expect(props.headerConfig?.hideShadow).toBe(true);
   });
 
-  it('lets raw header props override composed children', () => {
+  it('lets raw header props override composed children', async () => {
     const rawChildren = <Text testID="raw-header-children">Raw</Text>;
-    const props = renderStack({
+    const props = await renderStack({
       unstable_nativeProps: {
         headerConfig: { children: rawChildren },
       } as unknown as NativeStackNavigationOptions['unstable_nativeProps'],
@@ -150,29 +150,29 @@ describe('unstable_nativeProps', () => {
     expect(props.headerConfig?.children).toBe(rawChildren);
   });
 
-  it('renders without unstable_nativeProps', () => {
-    const props = renderStack();
+  it('renders without unstable_nativeProps', async () => {
+    const props = await renderStack();
 
     expect(props.headerConfig?.title).toBe('index');
   });
 });
 
-it('ignores the deprecated freezeOnBlur screen option', () => {
+it('ignores the deprecated freezeOnBlur screen option', async () => {
   ScreenStackItem.mockClear();
 
-  const props = renderStack({ freezeOnBlur: true });
+  const props = await renderStack({ freezeOnBlur: true });
 
   expect(props.freezeOnBlur).toBe(false);
 });
 
-it('sets preventNativeDismiss from usePreventRemove', () => {
+it('sets preventNativeDismiss from usePreventRemove', async () => {
   ScreenStackItem.mockClear();
   const ProtectedScreen = () => {
     usePreventRemove(true, () => {});
     return <Text testID="index">Index</Text>;
   };
 
-  const props = renderStack(undefined, ProtectedScreen);
+  const props = await renderStack(undefined, ProtectedScreen);
 
   expect(props.preventNativeDismiss).toBe(true);
 });

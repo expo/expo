@@ -29,6 +29,7 @@
 #import <ExpoModulesCore/EXTaskInterface.h>
 #import <ExpoModulesCore/EXTaskLaunchReason.h>
 #import <ExpoModulesCore/EXTaskManagerInterface.h>
+#import <ExpoModulesCore/EXTaskRunnerInterface.h>
 #import <ExpoModulesCore/EXTaskServiceInterface.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
 #import <ExpoModulesCore/EXSharedObjectUtils.h>

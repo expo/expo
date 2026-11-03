@@ -32,6 +32,13 @@ class AssetFieldPredicateBuilder {
     return NSPredicate(format: "\(assetField.photosKey()) \(symbol) %@", argumentArray: [NSNumber(value: value)])
   }
 
+  static func buildPredicate(assetField: AssetField, contains subtype: MediaSubtypeNext) -> NSPredicate {
+    return NSPredicate(
+      format: "(\(assetField.photosKey()) & %@) != 0",
+      argumentArray: [NSNumber(value: subtype.toPHAssetMediaSubtype().rawValue)]
+    )
+  }
+
   static func buildPredicate(assetField: AssetField, value: EitherOfThree<MediaTypeNext, Int, Bool>, symbol: String) throws -> NSPredicate {
     if let boolVal: Bool = value.get() {
       return buildPredicate(assetField: assetField, value: boolVal, symbol: symbol)

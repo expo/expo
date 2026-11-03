@@ -23,7 +23,7 @@ internal final class JSValueEncoder: Encoder {
    The result of encoding to `JavaScriptValue`. Use this property after running `encode(to:)` on the encodable.
    */
   var value: JavaScriptValue {
-    return valueHolder.value
+    return valueHolder.take()
   }
 
   /**
@@ -120,7 +120,7 @@ private func encodeUsingDynamicType<ValueType: Encodable>(
     valueHolder: holder
   )
   try value.encode(to: encoder)
-  return holder.value
+  return holder.take()
 }
 
 // MARK: - Containers
@@ -129,7 +129,14 @@ private func encodeUsingDynamicType<ValueType: Encodable>(
  An object that holds a JS value, mutated by an encoding container as it makes progress.
  */
 private final class JSValueHolder {
-  var value: JavaScriptValue = .undefined
+  // Optional so the value can be moved out: a non-copyable stored property of a class cannot be
+  // consumed, but `Optional.take()` can run on it.
+  var value: JavaScriptValue?
+
+  /// Moves the encoded value out, leaving the holder empty. An empty holder yields `undefined`.
+  func take() -> JavaScriptValue {
+    return value.take() ?? .undefined()
+  }
 }
 
 /**
@@ -149,7 +156,7 @@ private struct JSValueEncodingContainer: SingleValueEncodingContainer {
   }
 
   mutating func encodeNil() throws {
-    valueHolder.value = .null
+    valueHolder.value = .null()
   }
 
   mutating func encode<ValueType: Encodable>(_ value: ValueType) throws {
@@ -190,7 +197,7 @@ private final class JSObjectEncodingContainer<Key: CodingKey>: KeyedEncodingCont
   }
 
   func encodeNil(forKey key: Key) throws {
-    object.setProperty(key.stringValue, value: JavaScriptValue.null)
+    object.setProperty(key.stringValue, value: JavaScriptValue.null())
   }
 
   func encode<ValueType: Encodable>(_ value: ValueType, forKey key: Key) throws {
@@ -247,7 +254,7 @@ private final class JSObjectEncodingContainer<Key: CodingKey>: KeyedEncodingCont
       runtime: runtime,
       codingPath: codingPath + [key]
     )
-    object.setProperty(key.stringValue, value: holder.value)
+    object.setProperty(key.stringValue, value: holder.take())
     return KeyedEncodingContainer(container)
   }
 
@@ -259,7 +266,7 @@ private final class JSObjectEncodingContainer<Key: CodingKey>: KeyedEncodingCont
       runtime: runtime,
       codingPath: codingPath + [key]
     )
-    object.setProperty(key.stringValue, value: holder.value)
+    object.setProperty(key.stringValue, value: holder.take())
     return container
   }
 
@@ -299,7 +306,7 @@ private final class JSArrayEncodingContainer: UnkeyedEncodingContainer {
   }
 
   func encodeNil() throws {
-    array[count] = JavaScriptValue.null
+    array[count] = JavaScriptValue.null()
     count += 1
   }
 
@@ -322,7 +329,7 @@ private final class JSArrayEncodingContainer: UnkeyedEncodingContainer {
       runtime: runtime,
       codingPath: codingPath + [AnyCodingKey(intValue: count)]
     )
-    array[count] = holder.value
+    array[count] = holder.take()
     count += 1
     return KeyedEncodingContainer(container)
   }
@@ -335,7 +342,7 @@ private final class JSArrayEncodingContainer: UnkeyedEncodingContainer {
       runtime: runtime,
       codingPath: codingPath + [AnyCodingKey(intValue: count)]
     )
-    array[count] = holder.value
+    array[count] = holder.take()
     count += 1
     return container
   }

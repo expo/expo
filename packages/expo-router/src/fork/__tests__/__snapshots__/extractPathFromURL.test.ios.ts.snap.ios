@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`extractExpoPathFromURL Bare parses "/?url=https://expo.dev" 1`] = `"?url=https://expo.dev"`;
 

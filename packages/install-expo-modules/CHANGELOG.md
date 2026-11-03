@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.18.2
+
+### Patch Changes
+
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+
 ## 0.18.1
 
 ### Patch Changes

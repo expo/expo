@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react-native';
-import { Suspense, startTransition, useEffect, type PropsWithChildren } from 'react';
+import { StrictMode, Suspense, startTransition, useEffect, type PropsWithChildren } from 'react';
 
 import { SharedObject } from '../../SharedObject';
 import { useReleasingSharedObject } from '../useReleasingSharedObject';
@@ -19,9 +19,8 @@ class TestSharedObject extends SharedObject {
   }
 }
 
-// React 19.2 only replays effects when StrictMode is enabled at the renderer's root.
-// Testing Library forwards this option to react-test-renderer.
-const strictRootOptions = { concurrentRoot: true, unstable_strictMode: true };
+// Effects are only replayed inside a StrictMode subtree, so wrap the hook in one.
+const strictRootOptions = { wrapper: StrictMode };
 
 function deferred() {
   let resolve!: () => void;
@@ -52,7 +51,7 @@ it('keeps the object alive through StrictMode effect replay and consumer cleanup
   const factory = jest.fn(() => new TestSharedObject());
   const setup = jest.fn();
   const cleanup = jest.fn();
-  const { result, unmount } = renderHook(() => {
+  const { result, unmount } = await renderHook(() => {
     const object = useReleasingSharedObject(factory, []);
     useEffect(() => {
       setup(object.read());
@@ -68,7 +67,7 @@ it('keeps the object alive through StrictMode effect replay and consumer cleanup
   expect(cleanup).toHaveBeenCalledTimes(1);
   expect(object.release).not.toHaveBeenCalled();
 
-  unmount();
+  await unmount();
   await flushCleanup();
   expect(cleanup).toHaveBeenCalledTimes(2);
   expect(object.release).toHaveBeenCalledTimes(1);
@@ -77,7 +76,7 @@ it('keeps the object alive through StrictMode effect replay and consumer cleanup
 it('preserves identity with Object.is dependencies and releases every committed replacement after render', async () => {
   const factory = jest.fn(() => new TestSharedObject());
   let previous: TestSharedObject | undefined;
-  const { result, rerender, unmount } = renderHook(
+  const { result, rerender, unmount } = await renderHook(
     ({ source }: { source: number }) => {
       const object = useReleasingSharedObject(factory, [source]);
       previous?.read();
@@ -86,14 +85,14 @@ it('preserves identity with Object.is dependencies and releases every committed 
     { initialProps: { source: NaN }, ...strictRootOptions }
   );
   previous = result.current;
-  rerender({ source: NaN });
+  await rerender({ source: NaN });
   expect(result.current).toBe(previous);
   expect(factory).toHaveBeenCalledTimes(1);
 
   const objects = [result.current];
   // Commit several replacements without flushing release microtasks between them.
   for (const source of [0, -0, 1]) {
-    rerender({ source });
+    await rerender({ source });
     expect(result.current).not.toBe(previous);
     previous = result.current;
     objects.push(result.current);
@@ -103,7 +102,7 @@ it('preserves identity with Object.is dependencies and releases every committed 
   for (const object of objects.slice(0, -1)) expect(object.release).toHaveBeenCalledTimes(1);
   expect(result.current.release).not.toHaveBeenCalled();
 
-  unmount();
+  await unmount();
   await flushCleanup();
   for (const object of objects) expect(object.release).toHaveBeenCalledTimes(1);
 });
@@ -114,7 +113,7 @@ it('updates once per committed dependency change using the latest callbacks', as
   const secondRelease = jest.fn();
   const firstUpdate = jest.fn();
   const secondUpdate = jest.fn();
-  const { result, rerender, unmount } = renderHook(
+  const { result, rerender, unmount } = await renderHook(
     ({ source, release, update }: { source: number; release: jest.Mock; update: jest.Mock }) =>
       useReleasingSharedObjectWithLifecycle(
         { factory, shouldRecreate: () => false, release, update },
@@ -128,9 +127,9 @@ it('updates once per committed dependency change using the latest callbacks', as
   const object = result.current;
   expect(firstUpdate).not.toHaveBeenCalled();
 
-  rerender({ source: 1, release: firstRelease, update: secondUpdate });
+  await rerender({ source: 1, release: firstRelease, update: secondUpdate });
   // Changing callbacks alone must refresh release without replaying the update.
-  rerender({ source: 1, release: secondRelease, update: secondUpdate });
+  await rerender({ source: 1, release: secondRelease, update: secondUpdate });
   await flushCleanup();
   expect(result.current).toBe(object);
   expect(factory).toHaveBeenCalledTimes(1);
@@ -144,7 +143,7 @@ it('updates once per committed dependency change using the latest callbacks', as
     dependencies: [1],
   });
 
-  unmount();
+  await unmount();
   await flushCleanup();
   expect(firstRelease).not.toHaveBeenCalled();
   expect(secondRelease).toHaveBeenCalledTimes(1);
@@ -166,7 +165,7 @@ it.each([
       .mockReturnValueOnce(jobs[0]!.promise)
       .mockReturnValueOnce(jobs[1]!.promise)
       .mockReturnValueOnce(jobs[2]!.promise);
-    const { result, rerender, unmount } = renderHook(
+    const { result, rerender, unmount } = await renderHook(
       ({ source }: { source: number }) =>
         useReleasingSharedObjectWithLifecycle(
           {
@@ -179,9 +178,9 @@ it.each([
       { initialProps: { source: 0 }, ...strictRootOptions }
     );
     const object = result.current;
-    for (const source of [1, 2, 3]) rerender({ source });
+    for (const source of [1, 2, 3]) await rerender({ source });
     expect(update).toHaveBeenCalledTimes(3);
-    if (!settleBeforeUnmount) unmount();
+    if (!settleBeforeUnmount) await unmount();
     await flushCleanup();
     expect(object.release).not.toHaveBeenCalled();
 
@@ -192,7 +191,7 @@ it.each([
       await flushCleanup();
       expect(object.release).toHaveBeenCalledTimes(position === 2 ? 1 : 0);
       if (position === 0 && settleBeforeUnmount) {
-        unmount();
+        await unmount();
         await flushCleanup();
         expect(object.release).not.toHaveBeenCalled();
       }
@@ -209,7 +208,7 @@ it.each(['original', 'replacement'] as const)(
     const replacementRelease = jest.fn((object: TestSharedObject) => object.release());
     const originalUpdate = deferred();
     const replacementUpdate = deferred();
-    const { result, rerender, unmount } = renderHook(
+    const { result, rerender, unmount } = await renderHook(
       ({ kind, source }: { kind: number; source: number }) =>
         useReleasingSharedObjectWithLifecycle(
           {
@@ -224,12 +223,12 @@ it.each(['original', 'replacement'] as const)(
       { initialProps: { kind: 0, source: 0 }, ...strictRootOptions }
     );
     const original = result.current;
-    rerender({ kind: 0, source: 1 });
-    rerender({ kind: 1, source: 0 });
+    await rerender({ kind: 0, source: 1 });
+    await rerender({ kind: 1, source: 0 });
     const replacement = result.current;
     expect(replacement).not.toBe(original);
-    rerender({ kind: 1, source: 1 });
-    unmount();
+    await rerender({ kind: 1, source: 1 });
+    await unmount();
     await flushCleanup();
     expect(original.release).not.toHaveBeenCalled();
     expect(replacement.release).not.toHaveBeenCalled();
@@ -257,7 +256,7 @@ it.each(['original', 'replacement'] as const)(
 it('does not apply an interrupted render or treat its dependencies as committed', async () => {
   const never = new Promise<void>(() => {});
   const update = jest.fn();
-  const { result, rerender } = renderHook(
+  const { result, rerender } = await renderHook(
     ({ source, suspend }: { source: number; suspend: boolean }) => {
       const object = useReleasingSharedObjectWithLifecycle(
         {
@@ -273,18 +272,17 @@ it('does not apply an interrupted render or treat its dependencies as committed'
     {
       initialProps: { source: 0, suspend: false },
       wrapper: SuspenseWrapper,
-      concurrentRoot: true,
     }
   );
   const object = result.current;
-  act(() => {
-    startTransition(() => rerender({ source: 1, suspend: true }));
+  await act(() => {
+    startTransition(async () => await rerender({ source: 1, suspend: true }));
   });
   await flushCleanup();
   expect(object.release).not.toHaveBeenCalled();
   expect(update).not.toHaveBeenCalled();
 
-  rerender({ source: 2, suspend: false });
+  await rerender({ source: 2, suspend: false });
   expect(result.current).toBe(object);
   expect(update).toHaveBeenCalledTimes(1);
   expect(update).toHaveBeenCalledWith(object, {
@@ -297,7 +295,7 @@ it('does not reconsider unchanged committed dependencies after an abandoned repl
   const never = new Promise<void>(() => {});
   const factory = jest.fn(() => new TestSharedObject());
   const shouldRecreate = jest.fn(() => true);
-  const { result, rerender, unmount } = renderHook(
+  const { result, rerender, unmount } = await renderHook(
     ({ source, suspend }: { source: number; suspend: boolean }) => {
       const object = useReleasingSharedObjectWithLifecycle({ factory, shouldRecreate }, [source]);
       if (suspend) throw never;
@@ -306,13 +304,12 @@ it('does not reconsider unchanged committed dependencies after an abandoned repl
     {
       initialProps: { source: 0, suspend: false },
       wrapper: SuspenseWrapper,
-      concurrentRoot: true,
     }
   );
   const original = result.current;
   expect(shouldRecreate).not.toHaveBeenCalled();
-  act(() => {
-    startTransition(() => rerender({ source: 1, suspend: true }));
+  await act(() => {
+    startTransition(async () => await rerender({ source: 1, suspend: true }));
   });
   await flushCleanup();
   expect(factory).toHaveBeenCalledTimes(2);
@@ -322,13 +319,13 @@ it('does not reconsider unchanged committed dependencies after an abandoned repl
   });
   shouldRecreate.mockClear();
 
-  rerender({ source: 0, suspend: false });
+  await rerender({ source: 0, suspend: false });
   await flushCleanup();
   expect(result.current).toBe(original);
   expect(factory).toHaveBeenCalledTimes(2);
   expect(shouldRecreate).not.toHaveBeenCalled();
   expect(original.release).not.toHaveBeenCalled();
-  unmount();
+  await unmount();
   await flushCleanup();
   expect(original.release).toHaveBeenCalledTimes(1);
 });
@@ -337,7 +334,7 @@ it('does not use a release callback from an abandoned render', async () => {
   const never = new Promise<void>(() => {});
   const committedRelease = jest.fn();
   const abandonedRelease = jest.fn();
-  const { result, rerender, unmount } = renderHook(
+  const { result, rerender, unmount } = await renderHook(
     ({ release, suspend }: { release: jest.Mock; suspend: boolean }) => {
       const object = useReleasingSharedObjectWithLifecycle(
         { factory: () => new TestSharedObject(), release },
@@ -349,15 +346,14 @@ it('does not use a release callback from an abandoned render', async () => {
     {
       initialProps: { release: committedRelease, suspend: false },
       wrapper: SuspenseWrapper,
-      concurrentRoot: true,
     }
   );
   const original = result.current;
-  act(() => {
-    startTransition(() => rerender({ release: abandonedRelease, suspend: true }));
+  await act(() => {
+    startTransition(async () => await rerender({ release: abandonedRelease, suspend: true }));
   });
   await flushCleanup();
-  unmount();
+  await unmount();
   await flushCleanup();
   expect(abandonedRelease).not.toHaveBeenCalled();
   expect(committedRelease).toHaveBeenCalledTimes(1);
@@ -371,7 +367,7 @@ it('logs a custom release error once without interrupting consumer cleanup', asy
     throw error;
   });
   const cleanup = jest.fn();
-  const { unmount } = renderHook(() => {
+  const { unmount } = await renderHook(() => {
     const object = useReleasingSharedObjectWithLifecycle(
       { factory: () => new TestSharedObject(), release },
       []
@@ -381,7 +377,7 @@ it('logs a custom release error once without interrupting consumer cleanup', asy
 
   await flushCleanup();
   expect(release).not.toHaveBeenCalled();
-  unmount();
+  await unmount();
   await flushCleanup();
   expect(cleanup).toHaveBeenCalledTimes(2);
   expect(release).toHaveBeenCalledTimes(1);
@@ -397,7 +393,7 @@ it('creates from a null resource even when shouldRecreate would keep an existing
   const shouldRecreate = jest.fn((_, { dependencies }) => dependencies[0] < 0);
   const update = jest.fn();
   const release = jest.fn((object: TestSharedObject) => object.release());
-  const { result, rerender, unmount } = renderHook(
+  const { result, rerender, unmount } = await renderHook(
     ({ source }: { source: number }) =>
       useReleasingSharedObjectWithLifecycle(
         { factory: () => factory(source), shouldRecreate, update, release },
@@ -406,24 +402,24 @@ it('creates from a null resource even when shouldRecreate would keep an existing
     { initialProps: { source: -1 }, ...strictRootOptions }
   );
   expect(result.current).toBeNull();
-  rerender({ source: -1 });
+  await rerender({ source: -1 });
   expect(factory).toHaveBeenCalledTimes(1);
 
-  rerender({ source: 0 });
+  await rerender({ source: 0 });
   const object = result.current;
   expect(object).toBeInstanceOf(TestSharedObject);
   expect(shouldRecreate).not.toHaveBeenCalled();
   expect(update).not.toHaveBeenCalled();
-  rerender({ source: 1 });
+  await rerender({ source: 1 });
   expect(result.current).toBe(object);
   expect(update).toHaveBeenCalledTimes(1);
 
-  rerender({ source: -1 });
+  await rerender({ source: -1 });
   expect(result.current).toBeNull();
   await flushCleanup();
   expect(release).toHaveBeenCalledTimes(1);
   expect(release).toHaveBeenCalledWith(object);
-  unmount();
+  await unmount();
   await flushCleanup();
   expect(release).toHaveBeenCalledTimes(1);
 });

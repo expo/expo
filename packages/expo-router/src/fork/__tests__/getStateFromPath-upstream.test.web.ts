@@ -45,7 +45,7 @@ test('converts path string to initial state', () => {
 
   expect(getStateFromPath<object>(path)).toEqual(state);
   expect(getStateFromPath<object>(getPathFromState<object>(state))).toEqual(
-    changePath(state, '/foo/bar/baz%20qux?author=jane%20%26%20co&valid=true')
+    changePath(state, '/foo/bar/baz%20qux?author=jane+%26+co&valid=true')
   );
 });
 

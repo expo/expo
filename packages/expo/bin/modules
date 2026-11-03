@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+
+// Executes the expo-modules CLI, declared as `expo-modules` in `package.json:bin` of `expo`,
+// so that modules can run it without depending on expo-modules-cli themselves.
+require('expo-modules-cli/bin/expo-modules');

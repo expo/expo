@@ -473,7 +473,7 @@ struct ${widget.name}EntryView: View {
       let node = evaluateLayout(layout: layout, props: entry.props, environment: widgetEnvironment)
       WidgetsDynamicView(name: entry.name, kind: .widget, node: node, entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)
     } else {
-      WidgetsDynamicView(name: entry.name, kind: .widget, node: createRedBox(message: "No layout found for \\(WidgetsStorage.appGroupIdentifier ?? "")::\\(entry.name)"), entryIndex: entry.entryIndex, environmentString: widgetEnvironmentString)
+      EmptyWidgetView()
     }
   }
 }

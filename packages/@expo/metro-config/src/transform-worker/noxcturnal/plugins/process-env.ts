@@ -3,6 +3,7 @@ import type { DefinedNativePlugin } from 'noxcturnal';
 
 import {
   expoPluginInput,
+  resolveInputFilename,
   mappedLiteral,
   usesPublicEnvPlugin,
   type Noxcturnal,
@@ -36,11 +37,15 @@ function routerRoot(state: ProcessEnvState): string {
 }
 
 /**
- * Mirrors `getAsyncRoutes` in `babel-preset-expo`. Production async routes are web-only: native
- * production bundles are never split, so they must keep the synchronous Router import mode even
- * when the bundler request enables async routes.
+ * Mirrors `getAsyncRoutes` in `babel-preset-expo`. Server bundles are never split, so they keep
+ * the synchronous Router import mode. Production async routes are web-only: native production
+ * bundles are never split either, so they must keep the synchronous Router import mode even when
+ * the bundler request enables async routes.
  */
 function isAsyncRoutesEnabled(options: NoxcturnalTransformInput['options']): boolean {
+  if (['node', 'react-server'].includes(String(options.customTransformOptions?.environment))) {
+    return false;
+  }
   if (String(options.customTransformOptions?.asyncRoutes) !== 'true') {
     return false;
   }
@@ -51,14 +56,10 @@ function processEnvReplacement(
   name: string,
   state: ProcessEnvState
 ): unknown | typeof NO_PROCESS_ENV_REPLACEMENT {
-  const { filename, options, projectRoot } = state.input;
+  const { options } = state.input;
   switch (name) {
-    case 'EXPO_PROJECT_ROOT':
-      return projectRoot;
-    case 'EXPO_ROUTER_ABS_APP_ROOT':
-      return routerRoot(state);
     case 'EXPO_ROUTER_APP_ROOT':
-      return path.relative(path.dirname(filename), routerRoot(state));
+      return path.relative(path.dirname(resolveInputFilename(state.input)), routerRoot(state));
     case 'EXPO_ROUTER_IMPORT_MODE':
       return isAsyncRoutesEnabled(options) ? 'lazy' : 'sync';
     default:

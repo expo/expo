@@ -33,8 +33,8 @@ public class AudioModule: Module {
       setupInterruptionHandling()
     }
 
-    AsyncFunction("setAudioModeAsync") { (mode: AudioMode) in
-      try setAudioMode(mode: mode)
+    AsyncFunction("setAudioModeAsync") { (mode: PartialAudioMode) in
+      try setAudioMode(mode: mode.merged(into: lastConfiguredMode ?? AudioMode()))
     }
 
     AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool) in
@@ -136,14 +136,13 @@ public class AudioModule: Module {
           avPlayer = cachedPlayer
         } else {
           avPlayer = AudioUtils.createAVPlayer(from: source)
-          if preferredForwardBufferDuration > 0 {
-            avPlayer.currentItem?.preferredForwardBufferDuration = preferredForwardBufferDuration
-          }
         }
         avPlayer.allowsExternalPlayback = allowsExternalPlayback
         let player = AudioPlayer(avPlayer, interval: updateInterval, source: source)
         player.owningRegistry = self.registry
         player.keepAudioSessionActive = keepAudioSessionActive
+        // Store the preference so it is re-applied whenever the item is replaced.
+        player.preferredForwardBufferDuration = preferredForwardBufferDuration
         let playerId = player.id
         player.onRelease = { [weak audioModule = self] in
           audioModule?.unregisterAudioSessionActivityKeeper(playerId)
@@ -579,7 +578,10 @@ public class AudioModule: Module {
 
       AsyncFunction("start") { (stream: AudioStream) in
         try checkPermissions()
-        try stream.start()
+        let deactivateSessionOnFailure = sessionQueue.sync {
+          !sessionIsActive && audioSessionActivityKeepers.isEmpty
+        }
+        try stream.start(deactivateSessionOnFailure: deactivateSessionOnFailure)
         self.recordSessionActive(true)
       }
 
@@ -685,9 +687,7 @@ public class AudioModule: Module {
 
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
-      if recorder.isRecording {
-        recorder.pauseRecording()
-      }
+      recorder.pauseForSystem()
     }
 #endif
 
@@ -774,9 +774,7 @@ public class AudioModule: Module {
 
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
-      if recorder.allowsRecording && !recorder.isRecording {
-        _ = try? recorder.startRecording()
-      }
+      try? recorder.resumeAfterSystemPause()
     }
 #endif
 
@@ -805,9 +803,7 @@ public class AudioModule: Module {
   private func pauseAllRecorders() {
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
-      if recorder.isRecording {
-        recorder.pauseRecording()
-      }
+      recorder.pauseForSystem()
     }
 #endif
   }
@@ -815,9 +811,7 @@ public class AudioModule: Module {
   private func resumeAllRecorders() {
 #if os(iOS)
     registry.allRecorders.values.forEach { recorder in
-      if recorder.allowsRecording && !recorder.isRecording {
-        _ = try? recorder.startRecording()
-      }
+      try? recorder.resumeAfterSystemPause()
     }
 #endif
   }

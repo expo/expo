@@ -9,7 +9,8 @@
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
-        "simulator": true
+        "simulator": true,
+        "image": "macos-tahoe-26.6-xcode-27.1"
       }
     },
     "android-apk": {
@@ -23,7 +24,8 @@
       "pnpm": "12.2.1",
       "distribution": "internal",
       "ios": {
-        "simulator": true
+        "simulator": true,
+        "image": "macos-tahoe-26.6-xcode-27.1"
       }
     },
     "ios-testflight": {

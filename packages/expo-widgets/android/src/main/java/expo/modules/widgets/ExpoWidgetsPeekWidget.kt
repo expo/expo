@@ -28,6 +28,6 @@ internal class ExpoWidgetsPeekWidget(
     val environment = getWidgetEnvironment(appContext)
     val node = evaluateLayout(appContext, layout, props, environment)
 
-    return node.toPeekRoot(appContext, widgetName, size)
+    return node.toPeekRoot(appContext, InteractionSource.Widget(widgetName), size)
   }
 }

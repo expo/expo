@@ -41,6 +41,23 @@
                 },
                 "version": {
                     "$ref": "#/definitions/spmPackageVersion"
+                },
+                "manifestPatches": {
+                    "type": "array",
+                    "description": "Exact text replacements applied to the package's Package.swift before it is built as a shared dependency. The build fails when a 'find' string is missing.",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "find": {
+                                "type": "string"
+                            },
+                            "replace": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [ "find", "replace" ],
+                        "additionalProperties": false
+                    }
                 }
             },
             "required": [ "url", "productName", "version" ],
@@ -189,6 +206,14 @@
                     },
                     "required": [ "script", "output" ],
                     "additionalProperties": false
+                },
+                "headersXCFramework": {
+                    "type": "boolean",
+                    "description": "When true, the prebuild also writes <Product>Headers.xcframework under output/headers/xcframeworks/: a compile-only copy of the product (headers, module map, Swift interfaces) around a stub static library. Apps compile against it while React Native links and embeds the real framework."
+                },
+                "publishAbiDescriptor": {
+                    "type": "boolean",
+                    "description": "When true, prepack publishes the product's release arm64-apple-ios-simulator.abi.json at prebuilds/abi/<Product>/, so the Swift ABI check has a baseline for a product whose release binary is not in the npm package."
                 },
                 "sourceOnly": {
                     "type": "boolean",

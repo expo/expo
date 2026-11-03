@@ -1,5 +1,18 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- Updated dependencies. ([#51635](https://github.com/expo/expo/pull/51635))
+  - @expo/schema-utils@58.0.2
+
+## 58.0.10
+
+### Patch Changes
+
+- Bump `semver` to `^7.7.4`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.9
 
 ### Patch Changes
@@ -47,6 +60,10 @@ _This version does not introduce any user-facing changes._
 _This version does not introduce any user-facing changes._
 
 ## 58.0.0 — 2026-09-10
+
+### 🎉 New features
+
+- Add Android GIF and WebP image support build properties: `android.gifEnabled`, `android.webpEnabled`, and `android.webpAnimated`. ([#45269](https://github.com/expo/expo/pull/45269) by [@shubh73](https://github.com/shubh73))
 
 ### 🐛 Bug fixes
 
@@ -185,7 +202,6 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
-- Add Android GIF and WebP image support build properties: `android.gifEnabled`, `android.webpEnabled`, and `android.webpAnimated`. ([#45269](https://github.com/expo/expo/pull/45269) by [@shubh73](https://github.com/shubh73))
 
 ### 💡 Others
 

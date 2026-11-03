@@ -2,11 +2,20 @@ package expo.modules.devlauncher.launcher
 
 import android.os.Build
 import android.os.Bundle
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import expo.modules.devlauncher.compose.BindingView
 import expo.modules.devlauncher.helpers.enableEdgeToEdge
+import expo.modules.devlauncher.services.PackagerService
+import expo.modules.devlauncher.services.injectService
 
 class DevLauncherActivity : AppCompatActivity() {
+  private val localNetworkPermissionRequest = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+    if (granted) {
+      injectService<PackagerService>().restart()
+    }
+  }
+
   override fun onStart() {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
       @Suppress("DEPRECATION")
@@ -28,6 +37,10 @@ class DevLauncherActivity : AppCompatActivity() {
     setContentView(
       BindingView(this)
     )
+
+    LocalNetworkPermission.requestIfNeeded(this) {
+      localNetworkPermissionRequest.launch(LocalNetworkPermission.PERMISSION)
+    }
   }
 
   override fun onPause() {

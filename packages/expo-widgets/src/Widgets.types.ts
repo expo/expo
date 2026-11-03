@@ -8,6 +8,7 @@ import type { after } from './Widgets';
  * - `fullColor` — Home screen widgets (default).
  * - `accented` — Tinted widgets (iOS 18+) and watchOS.
  * - `vibrant` — Lock screen widgets.
+ * @platform ios
  */
 export type WidgetRenderingMode = 'fullColor' | 'accented' | 'vibrant';
 
@@ -102,9 +103,13 @@ export type WidgetEnvironment<T extends object | undefined = undefined> = {
   configuration: T;
 };
 
+/**
+ * @platform ios
+ */
 export type LiveActivityEnvironment = {
   /**
    * The color scheme of the activity's environment.
+   * @platform ios
    */
   colorScheme: 'light' | 'dark';
   /**
@@ -143,6 +148,9 @@ export type LiveActivityEnvironment = {
   levelOfDetail?: LevelOfDetail;
 };
 
+/**
+ * @platform ios
+ */
 export type WidgetTimelineEntry<T extends object = object> = {
   /**
    * Date when widget should update.
@@ -177,6 +185,7 @@ export type ExpoTimelineEntry = {
 
 /**
  * Defines the layout sections for an iOS Live Activity.
+ * @platform ios
  */
 export type LiveActivityLayout = {
   /**
@@ -219,6 +228,7 @@ export type LiveActivityLayout = {
 
 /**
  * A function that returns the layout for a Live Activity.
+ * @platform ios
  */
 export type LiveActivityComponent<T extends object = object> = (
   props: T,
@@ -238,6 +248,11 @@ export type UserInteractionEvent = {
    */
   target: string;
   /**
+   * The key of the custom notification that contains the button. Absent for widget interactions.
+   * @platform android
+   */
+  notificationId?: string;
+  /**
    * Timestamp of the event.
    */
   timestamp: number;
@@ -249,6 +264,7 @@ export type UserInteractionEvent = {
 
 /**
  * Event emitted when a push token is received for a live activity.
+ * @platform ios
  */
 export type PushTokenEvent = {
   /**
@@ -263,6 +279,7 @@ export type PushTokenEvent = {
 
 /**
  * Event emitted when a push-to-start token is received.
+ * @platform ios
  */
 export type PushToStartTokenEvent = {
   /**
@@ -276,22 +293,29 @@ export type PushToStartTokenEvent = {
  * - `'default'` - The system’s default dismissal policy for the Live Activity.
  * - `'immediate'` - The system immediately removes the Live Activity that ended.
  * - `after(date)` - The system removes the Live Activity that ended at the specified time within a four-hour window.
+ * @platform ios
  */
 export type LiveActivityDismissalPolicy = 'default' | 'immediate' | ReturnType<typeof after>;
 
+/** @hidden */
 export type ExpoWidgetsEvents = {
   /**
    * Function that is invoked when user interacts with a widget.
    * @param event Interaction event details.
+   * @platform ios
    */
   onExpoWidgetsUserInteraction: (event: UserInteractionEvent) => void;
   /**
    * Function that is invoked when a push-to-start token is received.
    * @param event Token event details.
+   * @platform ios
    */
   onExpoWidgetsPushToStartTokenReceived: (event: PushToStartTokenEvent) => void;
 };
 
+/**
+ * @platform ios
+ */
 export type LiveActivityEvents = {
   /**
    * Function that is invoked when a push token is received for a live activity.

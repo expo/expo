@@ -91,6 +91,30 @@ export type SetStringAndroidOptions = {
   isSensitive?: boolean;
 };
 
+/**
+ * @platform ios
+ */
+export type SetStringIOSOptions = {
+  /**
+   * Whether the clipboard content should stay on this device.
+   *
+   * When `true`, sets the
+   * [`UIPasteboard.OptionsKey.localOnly`](https://developer.apple.com/documentation/uikit/uipasteboard/optionskey/localonly)
+   * option, so the content isn't shared with the user's other devices through Universal Clipboard.
+   *
+   * @default false
+   */
+  localOnly?: boolean;
+  /**
+   * The time after which the system removes the copied content from the clipboard.
+   *
+   * Sets the
+   * [`UIPasteboard.OptionsKey.expirationDate`](https://developer.apple.com/documentation/uikit/uipasteboard/optionskey/expirationdate)
+   * option.
+   */
+  expiresAt?: Date;
+};
+
 export type SetStringOptions = {
   /**
    * The input format of the provided string.
@@ -104,6 +128,11 @@ export type SetStringOptions = {
    * @platform android
    */
   android?: SetStringAndroidOptions;
+  /**
+   * iOS-specific options for clipboard behavior.
+   * @platform ios
+   */
+  ios?: SetStringIOSOptions;
 };
 
 /**

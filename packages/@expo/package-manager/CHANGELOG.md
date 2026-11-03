@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.14.2
+
+### Patch Changes
+
+- Drop legacy Node `url` usage in favor of `URL` ([#51602](https://github.com/expo/expo/pull/51602) by [@byCedric](https://github.com/byCedric))
+
 ## 1.14.1
 
 ### Patch Changes

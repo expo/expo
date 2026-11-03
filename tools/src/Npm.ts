@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import { glob } from 'glob';
+import { glob } from 'node:fs/promises';
 import os from 'os';
 import path from 'path';
 
@@ -95,7 +95,7 @@ export async function downloadPackageTarballAsync(
     cwd: targetDir,
     stdio: 'ignore',
   });
-  const result = await glob('*.tgz', { cwd: targetDir });
+  const result = await Array.fromAsync(glob('*.tgz', { cwd: targetDir }));
   if (result.length === 0) {
     throw new Error('Download tarball not found');
   }
@@ -119,11 +119,11 @@ export async function packToTarballAsync(packageDir: string): Promise<PackResult
   await spawnAsync('pnpm', ['pack', '--pack-destination', destination], {
     cwd: packageDir,
     stdio: 'ignore',
-    // Prevent expo-module-scripts from auto-adding --watch during lifecycle scripts
+    // Prevent @expo/internal-scripts from auto-adding --watch during lifecycle scripts
     env: { ...process.env, EXPO_NONINTERACTIVE: '1' },
   });
 
-  const tarballs = await glob('*.tgz', { cwd: destination, absolute: true });
+  const tarballs = await Array.fromAsync(glob('*.tgz', { cwd: destination }));
   if (tarballs.length !== 1) {
     throw new Error(
       `Expected \`pnpm pack\` to produce exactly one tarball for ${packageDir} in ${destination}, found ${tarballs.length}.`
@@ -131,7 +131,7 @@ export async function packToTarballAsync(packageDir: string): Promise<PackResult
   }
 
   const { name, version } = require(path.join(packageDir, 'package.json'));
-  return { name, version, filePath: tarballs[0], files: [] };
+  return { name, version, filePath: path.join(destination, tarballs[0]), files: [] };
 }
 
 type PublishOptions = {
@@ -165,7 +165,7 @@ export async function publishPackageAsync(
   args.push(...maybeNpmOtpFlag());
   await spawnAsync('pnpm', args, {
     cwd: packageDir,
-    // Prevent expo-module-scripts from auto-adding --watch during lifecycle scripts
+    // Prevent @expo/internal-scripts from auto-adding --watch during lifecycle scripts
     env: { ...process.env, EXPO_NONINTERACTIVE: '1' },
     ...options.spawnOptions,
   });

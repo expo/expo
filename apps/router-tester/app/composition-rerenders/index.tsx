@@ -1,6 +1,7 @@
 import { Link, Stack, type Href } from 'expo-router';
 import { useRef, useState } from 'react';
 import { Text, Pressable, ScrollView, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const SUITES = ['Default', 'Browse', 'Search'] as const;
 
@@ -33,23 +34,24 @@ const HomeIndex = () => {
       )}
       <ScrollView
         style={{ flex: 1, backgroundColor: '#fff' }}
-        contentContainerStyle={{ alignItems: 'center', gap: 16 }}
         contentInsetAdjustmentBehavior="automatic">
-        <View>
-          <Text>Composition Rerenders - Index</Text>
-          <Text testID="index-render-count" style={{ fontSize: 32 }}>
-            Renders: {renderCount.current}
-          </Text>
-        </View>
-        <Pressable
-          testID="index-cycle-config"
-          onPress={() => setConfigSuite((s) => (s + 1) % SUITES.length)}
-          style={{ backgroundColor: 'rgb(175, 103, 11)', padding: 16, borderRadius: 8 }}>
-          <Text style={{ color: '#fff' }}>Config: {SUITES[configSuite]} (tap to cycle)</Text>
-        </Pressable>
-        {Array.from({ length: 2 }).map((_, i) => (
-          <CaseLink key={i} href={`/composition-rerenders/${i}`} text={`Go to ${i}`} />
-        ))}
+        <SafeAreaView edges={['left', 'right']} style={{ alignItems: 'center', gap: 16 }}>
+          <View>
+            <Text>Composition Rerenders - Index</Text>
+            <Text testID="index-render-count" style={{ fontSize: 32 }}>
+              Renders: {renderCount.current}
+            </Text>
+          </View>
+          <Pressable
+            testID="index-cycle-config"
+            onPress={() => setConfigSuite((s) => (s + 1) % SUITES.length)}
+            style={{ backgroundColor: 'rgb(175, 103, 11)', padding: 16, borderRadius: 8 }}>
+            <Text style={{ color: '#fff' }}>Config: {SUITES[configSuite]} (tap to cycle)</Text>
+          </Pressable>
+          {Array.from({ length: 2 }).map((_, i) => (
+            <CaseLink key={i} href={`/composition-rerenders/${i}`} text={`Go to ${i}`} />
+          ))}
+        </SafeAreaView>
       </ScrollView>
     </>
   );

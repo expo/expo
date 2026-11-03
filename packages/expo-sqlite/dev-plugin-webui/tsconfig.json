@@ -6,7 +6,8 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "rootDir": "src"
+    "rootDir": "src",
+    "types": ["node"]
   },
   "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
 }

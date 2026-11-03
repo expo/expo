@@ -113,7 +113,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
 
     delegate?.startupProcedureDidLaunch(self)
 
-    ErrorRecovery.writeErrorOrExceptionToLog(error, logger)
+    ErrorRecovery.writeErrorOrExceptionToLog(error, logger, code: .initializationError)
   }
 
   // MARK: - AppLoaderTaskDelegate
@@ -186,7 +186,6 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
   }
 
   func appLoaderTask(_: AppLoaderTask, didFinishWithError error: Error) {
-    logger.error(cause: UpdatesError.startupProcedureDidFinishWithError(cause: error), code: .updateFailedToLoad)
     self.procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
     emergencyLaunch(fatalError: error)
   }
@@ -203,12 +202,9 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       guard let error = error else {
         preconditionFailure("Background update with error status must have a nonnull error object")
       }
-      logger.error(
-        cause: UpdatesError.startupProcedureDidFinishBackgroundUpdateWithStatusWithError(cause: error),
-        code: .updateFailedToLoad,
-        updateId: update?.loggingId(),
-        assetId: nil
-      )
+      logger.errorForLoadFailure(error, otherwise: .updateFailedToLoad, updateId: update?.loggingId()) {
+        UpdatesError.startupProcedureDidFinishBackgroundUpdateWithStatusWithError(cause: $0)
+      }
       // Since errors can happen through a number of paths, we do these checks
       // to make sure the state machine is valid
       switch self.procedureContext.getCurrentState() {
@@ -314,7 +310,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       self.remoteLoadStatus = updateResponse != nil ? .NewUpdateLoaded : .Idle
       self.errorRecovery.notify(newRemoteLoadStatus: self.remoteLoadStatus)
     } error: { error in
-      self.logger.error(cause: error, code: .updateFailedToLoad)
+      self.logger.errorForLoadFailure(error, otherwise: .updateFailedToLoad)
       self.remoteLoadStatus = .Idle
       self.errorRecovery.notify(newRemoteLoadStatus: self.remoteLoadStatus)
     }

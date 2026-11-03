@@ -1,4 +1,4 @@
-import type { RefObject } from 'react';
+import type { ComponentRef, Ref, RefObject } from 'react';
 import type { ViewProps, View } from 'react-native';
 
 /**
@@ -27,7 +27,7 @@ export type BlurViewProps = {
    *
    * @platform android
    */
-  blurTarget?: RefObject<View | null>;
+  blurTarget?: RefObject<ComponentRef<typeof View> | null>;
   /**
    * A tint mode which will be applied to the view.
    *
@@ -74,7 +74,7 @@ export type BlurViewProps = {
 } & ViewProps;
 
 export type BlurTargetViewProps = {
-  ref?: RefObject<View | null>;
+  ref?: Ref<ComponentRef<typeof View>>;
 } & ViewProps;
 
 export type BlurTint =

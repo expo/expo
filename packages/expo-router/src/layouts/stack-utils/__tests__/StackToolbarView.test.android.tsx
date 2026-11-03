@@ -49,8 +49,8 @@ describe('StackToolbarView component', () => {
     consoleWarnSpy.mockRestore();
   });
 
-  it('renders Box and RNHostView in bottom placement', () => {
-    render(
+  it('renders Box and RNHostView in bottom placement', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarView>
           <Text>Custom Content</Text>
@@ -64,22 +64,22 @@ describe('StackToolbarView component', () => {
     expect(consoleWarnSpy).not.toHaveBeenCalled();
   });
 
-  it('throws error when used outside a toolbar (no placement context)', () => {
-    expect(() => {
-      render(
+  it('throws error when used outside a toolbar (no placement context)', async () => {
+    await expect(async () => {
+      await render(
         <ToolbarPlacementContext.Provider value={null as any}>
           <StackToolbarView>
             <Text>Custom Content</Text>
           </StackToolbarView>
         </ToolbarPlacementContext.Provider>
       );
-    }).toThrow('Stack.Toolbar.View must be used inside a Stack.Toolbar');
+    }).rejects.toThrow('Stack.Toolbar.View must be used inside a Stack.Toolbar');
 
     expect(consoleWarnSpy).not.toHaveBeenCalled();
   });
 
-  it('passes children through to RNHostView', () => {
-    render(
+  it('passes children through to RNHostView', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarView>
           <Text testID="custom-content">Custom Content</Text>
@@ -93,8 +93,8 @@ describe('StackToolbarView component', () => {
     expect(consoleWarnSpy).not.toHaveBeenCalled();
   });
 
-  it.each([true, false, undefined])('passes hidden=%s as visible={!hidden}', (hidden) => {
-    render(
+  it.each([true, false, undefined])('passes hidden=%s as visible={!hidden}', async (hidden) => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarView hidden={hidden}>
           <Text>Content</Text>
@@ -122,8 +122,8 @@ describe('NativeToolbarView', () => {
     consoleWarnSpy.mockRestore();
   });
 
-  it('renders Box with contentAlignment="center"', () => {
-    render(
+  it('renders Box with contentAlignment="center"', async () => {
+    await render(
       <NativeToolbarView>
         <Text>Content</Text>
       </NativeToolbarView>
@@ -136,8 +136,8 @@ describe('NativeToolbarView', () => {
     expect(consoleWarnSpy).not.toHaveBeenCalled();
   });
 
-  it('wraps children in AnimatedItemContainer with visible={!hidden}', () => {
-    render(
+  it('wraps children in AnimatedItemContainer with visible={!hidden}', async () => {
+    await render(
       <NativeToolbarView hidden>
         <Text>Content</Text>
       </NativeToolbarView>
@@ -150,8 +150,8 @@ describe('NativeToolbarView', () => {
     expect(consoleWarnSpy).not.toHaveBeenCalled();
   });
 
-  it('wraps children in RNHostView with matchContents', () => {
-    render(
+  it('wraps children in RNHostView with matchContents', async () => {
+    await render(
       <NativeToolbarView>
         <Text testID="child">Content</Text>
       </NativeToolbarView>

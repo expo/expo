@@ -25,6 +25,8 @@ export interface InlineModulesScanOptions {
 const nativeExtensions = ['.kt', '.swift'];
 // Checks for func definition() -> <anything>ModuleDefinition. <anything> because ExpoModulesCore.ModuleDefinition is a valid usage
 const swiftModuleDefinitionRegex = /\bfunc\s+definition\s*\(\s*\)\s*->\s*[\w.]*ModuleDefinition\b/;
+// Expo Modules 2.0 classes declare `@ExpoModule` instead of a `definition()` DSL.
+const swiftExpoModuleMacroRegex = /@ExpoModule\b/;
 // Checks for `override fun definition() = <anything>ModuleDefinition`
 const kotlinModuleDefinitionRegex =
   /\boverride\s+fun\s+definition\s*\(\s*\)\s*=\s*[\w.]*ModuleDefinition\b/;
@@ -96,7 +98,7 @@ export function getSwiftModuleClassName(absoluteFilePath: string): string {
 export async function hasSwiftModuleDefinition(absoluteFilePath: string): Promise<boolean> {
   try {
     const contents = await fs.promises.readFile(absoluteFilePath, 'utf8');
-    return swiftModuleDefinitionRegex.test(contents);
+    return swiftModuleDefinitionRegex.test(contents) || swiftExpoModuleMacroRegex.test(contents);
   } catch {
     warn(`Swift inline module '${absoluteFilePath}' could not be opened.`);
     return false;

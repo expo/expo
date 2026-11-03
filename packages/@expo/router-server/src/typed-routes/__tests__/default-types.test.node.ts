@@ -37,6 +37,7 @@ const assertions = ts`
   expectTypeOf({ pathname: '/apple' } as const).toExtend<Href>();
   expectTypeOf({ pathname: '/apple', params: { test: 'true' } } as const).toExtend<Href>();
   expectTypeOf('/invalid' as const).not.toExtend<Href>();
+  expectTypeOf({ pathname: '/invalid' } as const).not.toExtend<Href>();
   expectTypeOf({ pathname: '/apple', params: { ONLY_STRINGS_ALLOWED: true } }).not.toExtend<Href>();
 
   // Href — relative routes
@@ -49,8 +50,10 @@ const assertions = ts`
   // Href — dynamic routes
   expectTypeOf('/colors/blue' as const).toExtend<Href>();
   expectTypeOf('/colors/blue?test=1' as const).toExtend<Href>();
+  expectTypeOf('/colors/blue#hash' as const).toExtend<Href>();
   expectTypeOf('/animals/cat' as const).toExtend<Href>();
   expectTypeOf('/animals/cat/dog?test=1' as const).toExtend<Href>();
+  expectTypeOf('/animals/cat/dog#hash' as const).toExtend<Href>();
   expectTypeOf('/(group)/(a)/folder/slug1' as const).toExtend<Href>();
   expectTypeOf('/(group)/(b)/folder/slug1/slug2' as const).toExtend<Href>();
   expectTypeOf('/(group)/(a)/folder/slug1/slug2/slug2' as const).toExtend<Href>();
@@ -159,6 +162,7 @@ const assertions = ts`
   expectTypeOf(router.setParams<'/folder/[...slug]'>({ slug: ['test'] })).toEqualTypeOf<void>();
   expectTypeOf(router.setParams<'/folder/[slug]'>({ hello: 'world' })).toEqualTypeOf<void>();
   expectTypeOf(router.setParams({ hello: 'world' })).toEqualTypeOf<void>();
+  expectTypeOf(router.setParams<'/static'>({ hello: 'world' })).toEqualTypeOf<void>();
   // @ts-expect-error a single-segment param must be a string
   router.setParams<'/folder/[slug]'>({ slug: ['test'] });
   // @ts-expect-error a catch-all param must be an array

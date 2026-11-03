@@ -1,8 +1,7 @@
-import * as queryString from 'query-string';
-
 import { removeInternalExpoRouterParams } from '../navigationParams';
 import type { PathConfig, PathConfigMap } from '../react-navigation/native';
 import type { NavigationState, PartialState, Route } from '../react-navigation/routers';
+import { stringifySearchParams } from '../utils/queryParams';
 import * as expo from './getPathFromState-forks';
 import type { ExpoConfigItem, ExpoOptions } from './getPathFromState-forks';
 import { validatePathConfig } from './validatePathConfig';
@@ -202,7 +201,7 @@ export function getPathDataFromState<ParamList extends object>(
       delete focusedParams['#'];
       focusedParams = removeInternalExpoRouterParams(focusedParams);
 
-      const query = queryString.stringify(focusedParams, { sort: false });
+      const query = stringifySearchParams(focusedParams);
       if (query) {
         path += `?${query}`;
       }

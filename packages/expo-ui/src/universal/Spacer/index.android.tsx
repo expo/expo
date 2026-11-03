@@ -48,10 +48,12 @@ export function Spacer({
     layoutMods.push(sizeModifier(size, size));
   }
 
-  const modifiers = transformToModifiers(style, { disabled, hidden, testID }, [
-    ...layoutMods,
-    ...(extraModifiers ?? []),
-  ]);
+  const modifiers = transformToModifiers(
+    style,
+    { disabled, hidden, testID },
+    [...layoutMods, ...(extraModifiers ?? [])],
+    { componentName: 'Spacer' }
+  );
 
   return <ComposeSpacer modifiers={modifiers} />;
 }

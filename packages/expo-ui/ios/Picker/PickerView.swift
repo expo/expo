@@ -12,6 +12,7 @@ internal final class PickerProps: UIBaseViewProps {
 
 internal struct PickerView: ExpoSwiftUI.View {
   @State var selection: AnyHashable?
+  @State private var previousSelection: AnyHashable?
   @ObservedObject var props: PickerProps
   
   init(props: PickerProps) {
@@ -38,11 +39,8 @@ internal struct PickerView: ExpoSwiftUI.View {
 
     picker
     .onChange(of: selection) { newValue in
-      guard let newValue else { return }
-      let currentSelection = Self.getHashableFromEither(props.selection)
-      if currentSelection == newValue {
-        return
-      }
+      guard let newValue, newValue != previousSelection else { return }
+      previousSelection = newValue
       let payload: [String: Any]
       if let stringValue = newValue as? String {
         payload = ["selection": stringValue]
@@ -54,10 +52,14 @@ internal struct PickerView: ExpoSwiftUI.View {
       props.onSelectionChange(payload)
     }
     .onChange(of: props.selection) { newValue in
-      selection = Self.getHashableFromEither(newValue)
+      let newSelection = Self.getHashableFromEither(newValue)
+      previousSelection = newSelection
+      selection = newSelection
     }
     .onAppear {
-      selection = Self.getHashableFromEither(props.selection)
+      let initialSelection = Self.getHashableFromEither(props.selection)
+      previousSelection = initialSelection
+      selection = initialSelection
     }
   }
 

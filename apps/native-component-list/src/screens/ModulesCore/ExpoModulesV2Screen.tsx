@@ -1,3 +1,4 @@
+import { requireOptionalNativeModule } from 'expo';
 import { getExpoV2Demo } from 'expo-v2-demo';
 import { ScrollView, StyleSheet } from 'react-native';
 
@@ -7,7 +8,7 @@ import MonoText from '../../components/MonoText';
 function describeExpoV2Demo(): string {
   const demo = getExpoV2Demo();
   if (!demo) {
-    return 'expoV2.modules.ExpoV2Demo is not installed';
+    return 'expo.modules.ExpoV2Demo is not installed';
   }
 
   try {
@@ -29,11 +30,11 @@ export default function ExpoModulesV2Screen() {
       <HeadingText>ExpoV2Demo</HeadingText>
       <MonoText>{describeExpoV2Demo()}</MonoText>
 
-      <HeadingText>Runtime globals</HeadingText>
+      <HeadingText>Shared namespace</HeadingText>
       <MonoText>
         {[
-          `typeof expoV2.modules = ${typeof (globalThis as any).expoV2?.modules}`,
-          `typeof expo.modules = ${typeof (globalThis as any).expo?.modules}`,
+          `Object.keys(expo.modules) has ExpoV2Demo = ${Object.keys((globalThis as any).expo?.modules ?? {}).includes('ExpoV2Demo')}`,
+          `requireOptionalNativeModule('ExpoAsset') = ${typeof requireOptionalNativeModule('ExpoAsset')}`,
         ].join('\n')}
       </MonoText>
     </ScrollView>

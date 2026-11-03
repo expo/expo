@@ -75,9 +75,14 @@ export async function androidNativeUnitTests({
   if (type === 'instrumented') {
     const testCommand = 'connectedAndroidTest';
     const uninstallTestCommand = 'uninstallDebugAndroidTest';
+    // A local emulator can still have test apps from an earlier run, so uninstall them before
+    // and after the tests. CI always starts a fresh emulator, where each uninstall is only an
+    // extra Gradle run
+    const shouldUninstallTestApps = !process.env.CI;
 
-    // TODO: remove this once avd cache saved to storage
-    await runGradlew(androidPackages, uninstallTestCommand, BARE_EXPO_DIR);
+    if (shouldUninstallTestApps) {
+      await runGradlew(androidPackages, uninstallTestCommand, BARE_EXPO_DIR);
+    }
 
     // We should build and test expo-modules-core first
     // that to make the `isExpoModulesCoreTests` in _expo-modules-core/android/build.gradle_ working.
@@ -90,8 +95,9 @@ export async function androidNativeUnitTests({
 
     await runGradlew(androidPackages.filter(isNotExpoModulesCore), testCommand, BARE_EXPO_DIR);
 
-    // Cleanup installed test app
-    await runGradlew(androidPackages, uninstallTestCommand, BARE_EXPO_DIR);
+    if (shouldUninstallTestApps) {
+      await runGradlew(androidPackages, uninstallTestCommand, BARE_EXPO_DIR);
+    }
   } else if (type === 'spotless') {
     const spotlessApplyCommand = 'spotlessApply';
     const spotlessCheckCommand = 'spotlessCheck';

@@ -41,11 +41,11 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {
+    "@expo/internal-scripts": "workspace:*",
     "@expo/package-manager": "workspace:*",
     "@vercel/ncc": "^0.38.4",
     "chalk": "^4.0.0",
     "commander": "^12.1.0",
-    "expo-module-scripts": "workspace:*",
     "terminal-link": "^2.1.1",
     "update-check": "^1.5.4"
   }

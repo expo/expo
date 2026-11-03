@@ -44,7 +44,6 @@ internal class NativeDatabaseBinding : Closeable {
   // region sqlite3 bindings
 
   external fun sqlite3_changes(): Int
-  external fun sqlite3_finalize_all_statement()
   external fun sqlite3_close(): Int
   external fun sqlite3_interrupt()
   external fun sqlite3_db_filename(databaseName: String): String

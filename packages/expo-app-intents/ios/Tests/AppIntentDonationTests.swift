@@ -1,4 +1,5 @@
 import AppIntents
+import ExpoModulesTestCore
 import Foundation
 import Testing
 
@@ -161,7 +162,7 @@ struct AppIntentDonationRegistryTests {
   private let donor: RecordingDonor
   private let entities = AppEntityIdentifierRegistry()
   private let registry: AppIntentDonationRegistry
-  private let appContext = AppContext.create()
+  private let appContext = TestAppContext()
 
   init() throws {
     donor = try RecordingDonor()

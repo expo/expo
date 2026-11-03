@@ -3,11 +3,9 @@
           xmlns:tools="http://schemas.android.com/tools"
           android:installLocation="auto">
 
-    <meta-data android:name="com.oculus.supportedDevices" android:value="quest2|questpro|quest3|quest3s" />
-
     <!-- ADD PERMISSIONS HERE -->
     <!-- BEGIN OPTIONAL PERMISSIONS -->
-    <uses-feature android:name="android.hardware.vr.headtracking" android:required="true" android:version="1"/>
+    <uses-feature android:name="android.hardware.vr.headtracking" android:required="false" android:version="1"/>
     <uses-feature android:name="oculus.software.overlay_keyboard"  android:required="true"/>
     <uses-feature android:name="com.oculus.feature.VIRTUAL_KEYBOARD" android:required="true" />
     <uses-permission android:name="horizonos.permission.HEADSET_CAMERA"/>
@@ -131,6 +129,8 @@
     <uses-permission android:name="com.android.voicemail.permission.WRITE_VOICEMAIL" tools:node="remove" />
     <uses-permission android:name="android.permission.USB_CAMERA" tools:node="remove" />
     <application>
+        <meta-data android:name="com.oculus.supportedDevices" android:value="quest2|questpro|quest3|quest3s" />
+
         <!-- android:excludeFromRecents is required for submission to the Quest store -->
         <activity
                 android:name=".LauncherActivity"

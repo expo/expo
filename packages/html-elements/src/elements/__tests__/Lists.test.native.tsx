@@ -3,8 +3,8 @@ import { render } from '@testing-library/react-native';
 
 import { LI, UL } from '../Lists';
 
-it('renders UL nested in LI', () => {
-  const { toJSON } = render(
+it('renders UL nested in LI', async () => {
+  const { toJSON } = await render(
     <LI>
       <LI>item</LI>
       <UL>

@@ -206,8 +206,8 @@ describe.each(navigatorLayouts)('%s', (_, Layout) => {
   it.each([
     ['explicitly', true],
     ['implicitly', false],
-  ])('opens +not-found when it is %s declared', (_, explicitNotFound) => {
-    renderRouter({
+  ])('opens +not-found when it is %s declared', async (_, explicitNotFound) => {
+    await renderRouter({
       _layout: () => Layout(explicitNotFound),
       index: () => <View testID="index" />,
       '+not-found': () => <Text testID="not-found">Not found</Text>,
@@ -215,7 +215,7 @@ describe.each(navigatorLayouts)('%s', (_, Layout) => {
 
     expect(screen.getByTestId('index')).toBeVisible();
 
-    act(() => router.push('/unknown'));
+    await act(() => router.push('/unknown'));
 
     expect(screen.getByTestId('not-found')).toBeVisible();
     expect(screen).toHavePathname('/unknown');

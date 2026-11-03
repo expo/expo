@@ -24,7 +24,7 @@ beforeEach(() => {
 });
 
 describe('RadioButton', () => {
-  it('passes enabled and state colors to the native view', () => {
+  it('passes enabled and state colors to the native view', async () => {
     const colors = {
       selectedColor: '#ff0000',
       unselectedColor: '#00ff00',
@@ -32,7 +32,7 @@ describe('RadioButton', () => {
       disabledUnselectedColor: '#777777',
     };
 
-    render(<RadioButton selected enabled={false} colors={colors} />);
+    await render(<RadioButton selected enabled={false} colors={colors} />);
 
     const [viewName, props] = mockNativeViewFn.mock.calls[0];
     expect(viewName).toBe('RadioButtonView');
@@ -45,8 +45,8 @@ describe('RadioButton', () => {
     );
   });
 
-  it('leaves enabled and colors undefined when they are not specified', () => {
-    render(<RadioButton selected={false} />);
+  it('leaves enabled and colors undefined when they are not specified', async () => {
+    await render(<RadioButton selected={false} />);
 
     const [, props] = mockNativeViewFn.mock.calls[0];
     expect(props.enabled).toBeUndefined();

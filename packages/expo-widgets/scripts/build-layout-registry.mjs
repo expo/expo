@@ -19,7 +19,7 @@ const registryEntryPath = path.join(__dirname, '../bundle/layout-registry-entry.
 const registryMetroConfigPath = path.join(__dirname, '../layout-registry.metro.config.js');
 
 async function main() {
-  const projectRoot = path.resolve(possibleProjectRoot);
+  const projectRoot = fs.realpathSync(path.resolve(possibleProjectRoot));
   const outputPath = path.resolve(projectRoot, registryOutput ?? defaultOutputPath);
   const defaultConfigPath =
     platform === 'android'
@@ -154,6 +154,8 @@ function createLayoutRegistry(expectedWidgets, capturedLayouts) {
   return registry;
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === __filename) {
+// Node resolves symlinks in `import.meta.url`, so compare against the real path of the invoked
+// script. Package managers like pnpm expose the package through a symlink.
+if (process.argv[1] && fs.realpathSync(process.argv[1]) === __filename) {
   await main();
 }

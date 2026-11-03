@@ -37,10 +37,10 @@ describe('LinkAppleZoomTarget', () => {
     consoleWarnSpy.mockRestore();
   });
 
-  it('warns when multiple children are passed and renders null', () => {
+  it('warns when multiple children are passed and renders null', async () => {
     // Pass multiple children directly (not wrapped in a fragment)
     // so Children.count sees > 1
-    render(
+    await render(
       <ZoomTransitionTargetContext value={makeContextValue()}>
         <LinkAppleZoomTarget>
           <Text>First</Text>
@@ -57,8 +57,8 @@ describe('LinkAppleZoomTarget', () => {
     expect(screen.queryByText('Second')).toBeNull();
   });
 
-  it('does not warn with a single child and passes identifier to detector', () => {
-    render(
+  it('does not warn with a single child and passes identifier to detector', async () => {
+    await render(
       <ZoomTransitionTargetContext value={makeContextValue()}>
         <LinkAppleZoomTarget>
           <Text testID="child">Single child</Text>
@@ -72,8 +72,8 @@ describe('LinkAppleZoomTarget', () => {
     expect(screen.getByTestId('alignment-rect-detector')).toBeTruthy();
   });
 
-  it('renders children directly when context has no identifier', () => {
-    render(
+  it('renders children directly when context has no identifier', async () => {
+    await render(
       <ZoomTransitionTargetContext value={makeContextValue(null)}>
         <LinkAppleZoomTarget>
           <Text testID="direct-child">Direct child</Text>

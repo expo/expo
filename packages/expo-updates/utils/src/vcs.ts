@@ -1,6 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
-import { glob } from 'glob';
 import createIgnore, { Ignore as SingleFileIgnore } from 'ignore';
 import path from 'path';
 
@@ -91,13 +90,7 @@ class Ignore {
   constructor(private rootDir: string) {}
 
   public async initIgnoreAsync(): Promise<void> {
-    const ignoreFilePaths = (
-      await glob(`**/${GITIGNORE_FILENAME}`, {
-        cwd: this.rootDir,
-        ignore: ['node_modules'],
-        follow: false,
-      })
-    )
+    const ignoreFilePaths = (await findIgnoreFilesAsync(this.rootDir))
       // ensure that parent dir is before child directories
       .sort((a, b) => a.length - b.length && a.localeCompare(b));
 
@@ -120,4 +113,13 @@ class Ignore {
     }
     return false;
   }
+}
+
+async function findIgnoreFilesAsync(root: string): Promise<string[]> {
+  return Array.fromAsync(
+    fs.glob(`**/${GITIGNORE_FILENAME}`, {
+      cwd: root,
+      exclude: (entry) => path.basename(entry) === 'node_modules',
+    })
+  );
 }

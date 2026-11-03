@@ -3,8 +3,8 @@ import { View } from 'react-native';
 
 import { renderRouter } from '../testing-library';
 
-it('can use redirectSystemPath initial', () => {
-  renderRouter({
+it('can use redirectSystemPath initial', async () => {
+  await renderRouter({
     index: () => <View testID="index" />,
     page: () => <View testID="page" />,
     '+native-intent': {
@@ -24,7 +24,7 @@ it('can use async redirectSystemPath', async () => {
   let resolve: (path: string) => void;
   const promise = new Promise<string>((res) => (resolve = res));
 
-  renderRouter({
+  await renderRouter({
     index: () => <View testID="index" />,
     page: () => <View testID="page" />,
     '+native-intent': {
@@ -44,10 +44,10 @@ it('can use async redirectSystemPath', async () => {
   expect(screen.getByTestId('page')).toBeVisible();
 });
 
-it('legacy_subscribe', () => {
+it('legacy_subscribe', async () => {
   let listener: (url: string) => void = () => {};
 
-  renderRouter({
+  await renderRouter({
     index: () => <View testID="index" />,
     apple: () => <View testID="apple" />,
     '+native-intent': {
@@ -60,6 +60,6 @@ it('legacy_subscribe', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
 
-  act(() => listener('/apple'));
+  await act(() => listener('/apple'));
   expect(screen.getByTestId('apple')).toBeVisible();
 });

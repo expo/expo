@@ -12,7 +12,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import expo.modules.kotlin.viewevent.getValue
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.views.OptimizedComposeProps
@@ -33,9 +32,11 @@ data class VerticalSliderProps(
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
-fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) {
-  val onValueChange by remember { this@VerticalSliderContent.EventDispatcher<SliderValueChangedEvent>() }
-  val onValueChangeFinished by remember { this@VerticalSliderContent.EventDispatcher<Unit>() }
+fun FunctionalComposableScope.VerticalSliderContent(
+  props: VerticalSliderProps,
+  onValueChange: (SliderValueChangedEvent) -> Unit,
+  onValueChangeFinished: (Unit) -> Unit
+) {
   val interactionSource = remember { MutableInteractionSource() }
 
   val effectiveLower = maxOf(props.min, props.lowerLimit ?: Float.NEGATIVE_INFINITY)
@@ -49,7 +50,7 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
     SliderState(
       value = localValue.coerceIn(effectiveLower, effectiveUpper),
       steps = props.steps,
-      valueRange = props.min..props.max
+      trackRange = props.min..props.max
     )
   }
 
@@ -77,16 +78,17 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
     globalEventDispatcher
   )
 
+  val handleValueChange: (Float) -> Unit = {
+    val clamped = it.coerceIn(effectiveLower, effectiveUpper)
+    localValue = clamped
+    sliderState.value = clamped
+    onValueChange(SliderValueChangedEvent(clamped))
+  }
+  val handleValueChangeFinished: () -> Unit = {
+    onValueChangeFinished(Unit)
+  }
+
   SideEffect {
-    sliderState.onValueChange = {
-      val clamped = it.coerceIn(effectiveLower, effectiveUpper)
-      localValue = clamped
-      sliderState.value = clamped
-      onValueChange(SliderValueChangedEvent(clamped))
-    }
-    sliderState.onValueChangeFinished = {
-      onValueChangeFinished(Unit)
-    }
     val target = localValue.coerceIn(effectiveLower, effectiveUpper)
     if (sliderState.value != target) {
       sliderState.value = target
@@ -97,7 +99,9 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
     thumbSlotView != null && trackSlotView != null -> VerticalSlider(
       state = sliderState,
       enabled = props.enabled,
-      reverseDirection = props.reverseDirection,
+      onValueChange = handleValueChange,
+      onValueChangeFinished = handleValueChangeFinished,
+      topToBottom = !props.reverseDirection,
       colors = sliderColors,
       interactionSource = interactionSource,
       thumb = {
@@ -112,7 +116,9 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
     thumbSlotView != null -> VerticalSlider(
       state = sliderState,
       enabled = props.enabled,
-      reverseDirection = props.reverseDirection,
+      onValueChange = handleValueChange,
+      onValueChangeFinished = handleValueChangeFinished,
+      topToBottom = !props.reverseDirection,
       colors = sliderColors,
       interactionSource = interactionSource,
       thumb = {
@@ -124,7 +130,9 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
     trackSlotView != null -> VerticalSlider(
       state = sliderState,
       enabled = props.enabled,
-      reverseDirection = props.reverseDirection,
+      onValueChange = handleValueChange,
+      onValueChangeFinished = handleValueChangeFinished,
+      topToBottom = !props.reverseDirection,
       colors = sliderColors,
       interactionSource = interactionSource,
       track = {
@@ -136,7 +144,9 @@ fun FunctionalComposableScope.VerticalSliderContent(props: VerticalSliderProps) 
     else -> VerticalSlider(
       state = sliderState,
       enabled = props.enabled,
-      reverseDirection = props.reverseDirection,
+      onValueChange = handleValueChange,
+      onValueChangeFinished = handleValueChangeFinished,
+      topToBottom = !props.reverseDirection,
       colors = sliderColors,
       interactionSource = interactionSource,
       modifier = modifier

@@ -1,12 +1,14 @@
 // Copyright © 2024 650 Industries.
 
-/// <reference path="ts-declarations/NativeComponentRegistry.d.ts" />
-
 'use client';
 
 import { type Component, type ComponentType, createRef, PureComponent } from 'react';
-import { type ReactNativeElement, findNodeHandle, type HostComponent } from 'react-native';
-import { get as componentRegistryGet } from 'react-native/Libraries/NativeComponent/NativeComponentRegistry';
+import {
+  type ReactNativeElement,
+  findNodeHandle,
+  type HostComponent,
+  NativeComponentRegistry,
+} from 'react-native';
 
 import { SharedObject } from './SharedObject';
 import { requireNativeModule } from './requireNativeModule';
@@ -44,7 +46,7 @@ declare namespace globalThis {
 /**
  * Requires a React Native component using the static view config from an Expo module.
  */
-function requireNativeComponent<Props>(
+function requireNativeComponent<Props extends object>(
   moduleName: string,
   viewName?: string
 ): HostComponent<Props> {
@@ -55,7 +57,7 @@ function requireNativeComponent<Props>(
     ? `ViewManagerAdapter_${moduleName}_${viewName}${viewNameSuffix}`
     : `ViewManagerAdapter_${moduleName}${viewNameSuffix}`;
 
-  return componentRegistryGet<Props>(nativeViewName, () => {
+  return NativeComponentRegistry.get<Props>(nativeViewName, () => {
     const expoViewConfig = globalThis.expo?.getViewConfig(moduleName, viewName);
 
     if (!expoViewConfig) {
@@ -113,7 +115,7 @@ function addAttributeProcessing(validAttributes: Record<string, any>): Record<st
  * "Tried to register two views with the same name" errors on fast refresh, but
  * also when there are multiple versions of the same package with native component.
  */
-function requireCachedNativeComponent<Props>(
+function requireCachedNativeComponent<Props extends object>(
   moduleName: string,
   viewName?: string
 ): HostComponent<Props> {
@@ -129,9 +131,89 @@ function requireCachedNativeComponent<Props>(
 }
 
 /**
+ * Maps `aria-*`, `id` and `tabIndex` props to native props.
+ * Mirrors `Libraries/Components/View/View.js` in React Native 0.88.
+ */
+function mapAriaProps(props: Record<string, any>): Record<string, any> {
+  const {
+    accessibilityState,
+    accessibilityValue,
+    'aria-busy': ariaBusy,
+    'aria-checked': ariaChecked,
+    'aria-disabled': ariaDisabled,
+    'aria-expanded': ariaExpanded,
+    'aria-hidden': ariaHidden,
+    'aria-label': ariaLabel,
+    'aria-labelledby': ariaLabelledBy,
+    'aria-live': ariaLive,
+    'aria-selected': ariaSelected,
+    'aria-valuemax': ariaValueMax,
+    'aria-valuemin': ariaValueMin,
+    'aria-valuenow': ariaValueNow,
+    'aria-valuetext': ariaValueText,
+    id,
+    tabIndex,
+    ...resolvedProps
+  } = props;
+
+  if (ariaLabelledBy !== undefined) {
+    resolvedProps.accessibilityLabelledBy = ariaLabelledBy.split(/\s*,\s*/g);
+  }
+  if (ariaLabel !== undefined) {
+    resolvedProps.accessibilityLabel = ariaLabel;
+  }
+  if (ariaLive !== undefined) {
+    resolvedProps.accessibilityLiveRegion = ariaLive === 'off' ? 'none' : ariaLive;
+  }
+  if (ariaHidden !== undefined) {
+    resolvedProps.accessibilityElementsHidden = ariaHidden;
+    if (ariaHidden === true) {
+      resolvedProps.importantForAccessibility = 'no-hide-descendants';
+    }
+  }
+  if (id !== undefined) {
+    resolvedProps.nativeID = id;
+  }
+  if (tabIndex !== undefined) {
+    resolvedProps.focusable = !tabIndex;
+  }
+  if (
+    accessibilityState != null ||
+    ariaBusy != null ||
+    ariaChecked != null ||
+    ariaDisabled != null ||
+    ariaExpanded != null ||
+    ariaSelected != null
+  ) {
+    resolvedProps.accessibilityState = {
+      busy: ariaBusy ?? accessibilityState?.busy,
+      checked: ariaChecked ?? accessibilityState?.checked,
+      disabled: ariaDisabled ?? accessibilityState?.disabled,
+      expanded: ariaExpanded ?? accessibilityState?.expanded,
+      selected: ariaSelected ?? accessibilityState?.selected,
+    };
+  }
+  if (
+    accessibilityValue != null ||
+    ariaValueMax != null ||
+    ariaValueMin != null ||
+    ariaValueNow != null ||
+    ariaValueText != null
+  ) {
+    resolvedProps.accessibilityValue = {
+      max: ariaValueMax ?? accessibilityValue?.max,
+      min: ariaValueMin ?? accessibilityValue?.min,
+      now: ariaValueNow ?? accessibilityValue?.now,
+      text: ariaValueText ?? accessibilityValue?.text,
+    };
+  }
+  return resolvedProps;
+}
+
+/**
  * A drop-in replacement for `requireNativeComponent`.
  */
-export function requireNativeViewManager<P>(
+export function requireNativeViewManager<P extends object>(
   moduleName: string,
   viewName?: string
 ): ComponentType<P> {
@@ -158,7 +240,7 @@ export function requireNativeViewManager<P>(
     }
 
     render() {
-      return <ReactNativeComponent {...this.props} ref={this.nativeRef} />;
+      return <ReactNativeComponent {...mapAriaProps(this.props)} ref={this.nativeRef} />;
     }
   }
 

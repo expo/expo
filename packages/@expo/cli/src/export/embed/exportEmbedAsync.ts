@@ -11,6 +11,7 @@ import Server from '@expo/metro/metro/Server';
 import splitBundleOptions from '@expo/metro/metro/lib/splitBundleOptions';
 import * as output from '@expo/metro/metro/shared/output/bundle';
 import type { BundleOptions } from '@expo/metro/metro/shared/types';
+import { isAppleTargetPlatform } from '@expo/platforms';
 import assert from 'assert';
 import fs from 'fs';
 import { sync as globSync } from 'glob';
@@ -32,6 +33,7 @@ import { stripAnsi } from '../../utils/ansi';
 import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
+import { compileHermesArtifactsAsync } from '../compileHermesArtifacts';
 import { debugEvent } from '../events';
 import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
@@ -114,8 +116,7 @@ export async function exportEmbedAsync(projectRoot: string, options: Options) {
 
 // Apple platforms (ios/tvos/macos) all build via Xcode and share the same bundle output and
 // error-reporting handling.
-const isApplePlatform = (platform: string): boolean =>
-  platform === 'ios' || platform === 'tvos' || platform === 'macos';
+const isApplePlatform = isAppleTargetPlatform;
 
 export async function exportEmbedInternalAsync(projectRoot: string, options: Options) {
   // Ensure we delete the old bundle to trigger a failure if the bundle cannot be created.
@@ -280,6 +281,10 @@ export async function exportEmbedBundleAndAssetsAsync(
           }
         })
       );
+    }
+
+    if (options.bytecode && isHermes && !options.dev) {
+      await compileHermesArtifactsAsync(projectRoot, bundles.artifacts);
     }
 
     return {

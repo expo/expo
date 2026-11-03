@@ -1,3 +1,4 @@
+import { events, flushEventLogger, type SerializedError } from '2g';
 import { AssertionError } from 'assert';
 import chalk from 'chalk';
 import { execSync } from 'child_process';
@@ -5,6 +6,14 @@ import { execSync } from 'child_process';
 import { exit, exception, warn } from '../log';
 
 const ERROR_PREFIX = 'Error: ';
+
+declare module '2g' {
+  interface EventRegistry {
+    'cli:error': { error: SerializedError };
+  }
+}
+
+const event = events('cli');
 
 /**
  * General error, formatted as a message in red text when caught by expo-cli (no stack trace is printed). Should be used in favor of `log.error()` in most cases.
@@ -52,14 +61,18 @@ export class SilentError extends CommandError {
   }
 }
 
-export function logCmdError(error: any): never {
+export async function logCmdError(error: any): Promise<never> {
   if (!(error instanceof Error)) {
     throw error;
   }
   if (error instanceof AbortCommandError || error instanceof SilentError) {
     // Do nothing, this is used for prompts or other cases that were custom logged.
+    await flushEventLogger();
     process.exit(1);
-  } else if (
+  }
+  event('error', { error: event.error(error) });
+  await flushEventLogger();
+  if (
     error instanceof CommandError ||
     error instanceof AssertionError ||
     error.name === 'ApiV2Error' ||

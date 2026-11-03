@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.4
+
+### Patch Changes
+
+- [iOS] Fix network state listeners that never receive events after the last listener was removed. ([#51474](https://github.com/expo/expo/pull/51474) by [@expo-bot](https://github.com/expo-bot))
+
+## 58.0.3
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
 ## 58.0.2
 
 ### Patch Changes

@@ -1,5 +1,7 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import UIKit
+
 /**
  Transformer that makes sure the image is oriented up and not mirrored.
  Guarantees that the original pixel data matches the displayed orientation and that image size is in pixels.

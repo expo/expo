@@ -1,7 +1,7 @@
 ---
 title: 'Using Git tags to trigger production deployments'
 sidebar_title: Tag-based releases
-description: Learn how to trigger production deployments from Git tags on EAS Workflows.
+description: Learn how to trigger production deployments from Git tags on Expo Workflows.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -15,12 +15,12 @@ Pushing to a release branch runs the production workflow on every commit, even o
 ## Learning outcomes
 
 - Switch the production workflow trigger from a `release/*` branch to a Git tag matching `v*.*.*`
-- Cut a release by pushing a tag from `main` and watch the workflow run on the EAS dashboard
+- Cut a release by pushing a tag from `main` and watch the workflow run on the Expo dashboard
 - Exclude pre-release tags like `v1.0.0-rc.1` from production and run release candidates in a separate workflow
 
 ## Tags as release events
 
-EAS Workflows supports tag-based triggers through [`on.push`](/eas/workflows/syntax/#onpush) with a `tags` list. The workflow runs only when a tag matching a glob pattern is pushed to the remote. A Git tag is a one-time event tied to a specific commit and version, unlike a branch that can be updated over time. That makes tags well-suited for marking releases.
+Expo Workflows supports tag-based triggers through [`on.push`](/eas/workflows/syntax/#onpush) with a `tags` list. The workflow runs only when a tag matching a glob pattern is pushed to the remote. A Git tag is a one-time event tied to a specific commit and version, unlike a branch that can be updated over time. That makes tags well-suited for marking releases.
 
 A tag-based release workflow fits teams that:
 
@@ -151,10 +151,10 @@ Make a TypeScript/JavaScript change in our example project, commit it, and push 
   cmdCopy="git add . && git commit -m 'Fix welcome copy' && git tag v0.1.0 && git push origin main --tags"
 />
 
-The workflow triggers on the `v0.1.0` tag. Open the EAS dashboard, and under **Workflows**, notice "Deploy to production" running with `refs/tags/v0.1.0` as its branch:
+The workflow triggers on the `v0.1.0` tag. Open the Expo dashboard, and under **Workflows**, notice "Deploy to production" running with `refs/tags/v0.1.0` as its branch:
 
 <ContentSpotlight
-  alt="EAS Workflows dashboard showing a tag-triggered production workflow run with fingerprint, get-build, and update jobs for Android and iOS."
+  alt="Expo Workflows dashboard showing a tag-triggered production workflow run with fingerprint, get-build, and update jobs for Android and iOS."
   src="/static/images/tutorial/cicd/eas-workflows-tag-based-production-run.webp"
   className="max-w-160"
 />
@@ -162,7 +162,7 @@ The workflow triggers on the `v0.1.0` tag. Open the EAS dashboard, and under **W
 Since this is the first production run with the fingerprint generated for a tag-based release, the `build` jobs run for both Android and iOS. Subsequent tags that point to TypeScript/JavaScript changes skip the build jobs and go straight to `update` jobs.
 
 <ContentSpotlight
-  alt="EAS Workflows dashboard showing parallel Android and iOS production build jobs for a v0.1.0 tag release."
+  alt="Expo Workflows dashboard showing parallel Android and iOS production build jobs for a v0.1.0 tag release."
   src="/static/images/tutorial/cicd/eas-workflows-tag-based-build-android-ios.png"
   className="max-w-160"
 />

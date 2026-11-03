@@ -329,7 +329,7 @@ describe('StackView.getDerivedStateFromProps', () => {
     test('restores a route when its close animation is cancelled', () => {
       const routeA = createRoute('A');
       const routeB = createRoute('B');
-      const restoreRoute = jest.fn(() => true);
+      const restoreRoute = jest.fn((_route: Route<string>) => true);
       const view = new StackView({ ...createProps([routeA]), restoreRoute });
       view.state = createState({ closingRouteKeys: ['B'] }, [routeA, routeB]);
 
