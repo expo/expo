@@ -8,6 +8,10 @@ globalThis.TextEncoder = require('node:util').TextEncoder;
 const mockStart = jest.fn(async () => {});
 
 jest.mock('../ExpoFetchModule', () => {
+  const state: { createFetch?: (implementation: Function) => Function } = {
+    createFetch: (implementation) => (input, init) => implementation(input, init, 'from-host'),
+  };
+
   class StubNativeResponse {
     addListener() {}
     removeListener() {}
@@ -17,9 +21,13 @@ jest.mock('../ExpoFetchModule', () => {
     cancel() {}
   }
   return {
+    __state: state,
     ExpoFetchModule: {
       NativeRequest: StubNativeRequest,
       NativeResponse: StubNativeResponse,
+      get createFetch() {
+        return state.createFetch;
+      },
     },
   };
 });
@@ -52,5 +60,70 @@ describe('Setting the Content-Type header from the body', () => {
       body: new Blob(['hello']),
     });
     expect(getStartedHeaders()).toEqual([['Content-Type', 'image/jpeg']]);
+  });
+});
+
+describe('DevTools request id', () => {
+  const { __state } = require('../ExpoFetchModule');
+
+  beforeEach(() => {
+    mockStart.mockClear();
+  });
+
+  afterEach(() => {
+    delete (globalThis as any).__NETWORK_REPORTER__;
+    __state.createFetch = (implementation: Function) => (input: unknown, init: unknown) =>
+      implementation(input, init, 'from-host');
+  });
+
+  it('takes the DevTools request id from the native host function instead of fetch.js', async () => {
+    const createDevToolsRequestId = jest.fn(() => 'from-js');
+    (globalThis as any).__NETWORK_REPORTER__ = { createDevToolsRequestId };
+
+    const pending = fetch('https://example.com/', { body: 'hello', method: 'POST' });
+    expect(createDevToolsRequestId).not.toHaveBeenCalled();
+    await pending;
+
+    expect(mockStart).toHaveBeenCalledWith(
+      'https://example.com/',
+      expect.objectContaining({ devToolsRequestId: 'from-host' }),
+      expect.anything()
+    );
+  });
+
+  it('creates the DevTools request id in JS when the native host function is unavailable', async () => {
+    __state.createFetch = undefined;
+
+    let fallbackFetch: typeof fetch;
+    jest.isolateModules(() => {
+      fallbackFetch = require('../fetch').fetch;
+    });
+
+    const createDevToolsRequestId = jest.fn(() => 'from-js');
+    (globalThis as any).__NETWORK_REPORTER__ = { createDevToolsRequestId };
+
+    const pending = fallbackFetch!('https://example.com/');
+    expect(createDevToolsRequestId).toHaveBeenCalledTimes(1);
+    await pending;
+
+    expect(mockStart).toHaveBeenCalledWith(
+      'https://example.com/',
+      expect.objectContaining({ devToolsRequestId: 'from-js' }),
+      null
+    );
+  });
+
+  it('passes no DevTools request id when the network reporter is unavailable', async () => {
+    __state.createFetch = undefined;
+
+    let fallbackFetch: typeof fetch;
+    jest.isolateModules(() => {
+      fallbackFetch = require('../fetch').fetch;
+    });
+
+    await fallbackFetch!('https://example.com/');
+
+    const [, requestInit] = mockStart.mock.calls[0] as any[];
+    expect(requestInit.devToolsRequestId).toBeUndefined();
   });
 });
