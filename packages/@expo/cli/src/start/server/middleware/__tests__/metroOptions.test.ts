@@ -138,7 +138,7 @@ describe(getMetroDirectBundleOptions, () => {
         mainModuleName: '/index.js',
         mode: 'development',
         platform: 'ios',
-        serializerIncludeMaps: true,
+        includeSourceMaps: true,
         isExporting: false,
         bytecode: false,
         reactCompiler: false,

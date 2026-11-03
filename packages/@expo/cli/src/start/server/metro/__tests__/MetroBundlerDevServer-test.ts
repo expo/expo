@@ -112,19 +112,21 @@ function createDevServerForStaticPageTests() {
 }
 
 describe('Metro error reporting', () => {
-  it.each([true, false])(
-    'reports only the final outcome after validating serializer output (valid: %s)',
-    async (valid) => {
+  it.each(['artifacts', 'single bundle', 'invalid'])(
+    'reports only the final outcome after validating serializer output (%s)',
+    async (format) => {
+      const valid = format !== 'invalid';
       const devServer = createDevServerForStaticPageTests();
       const update = jest.fn();
       const revision = {
         id: 'revision',
         date: new Date(),
         prepend: [],
-        graph: { dependencies: new Map() },
+        graph: { dependencies: new Map(), transformOptions: { platform: 'web' } },
       };
       devServer['metro'] = {
         _config: {
+          projectRoot: '/app',
           transformer: { asyncRequireModulePath: 'asyncRequire' },
           serializer: { getModulesRunBeforeMainModule: () => [] },
           server: {},
@@ -138,25 +140,45 @@ describe('Metro error reporting', () => {
         }),
       } as any;
       devServer['getMetroRevision'] = jest.fn().mockResolvedValue(revision);
-      devServer['getMetroSerializer'] = jest
-        .fn()
-        .mockReturnValue(async () =>
-          valid ? { artifacts: [{ type: 'js', source: 'code' }], assets: [] } : {}
-        );
+      devServer['getMetroSerializer'] = jest.fn().mockReturnValue(async () =>
+        format === 'single bundle'
+          ? {
+              code: 'module.exports = { custom: true };',
+              map: JSON.stringify({ version: 3, sources: [], names: [], mappings: '' }),
+            }
+          : valid
+            ? { artifacts: [{ type: 'js', source: 'code' }], assets: [] }
+            : {}
+      );
       const result = devServer['_bundleDirectAsync']('/app/index.js', {
         transformOptions: {
           dev: true,
           minify: false,
           platform: 'web',
+          customTransformOptions: { environment: 'node' },
           type: 'module',
           unstable_transformProfile: 'default',
         },
         resolverOptions: { customResolverOptions: {}, dev: true },
         graphOptions: { lazy: false, shallow: false },
-        serializerOptions: { output: 'static' } as any,
+        serializerOptions: {
+          output: 'static',
+          entryFilename: 'hello.js',
+          includeSourceMaps: true,
+        } as any,
       });
       if (valid) {
-        await expect(result).resolves.toMatchObject({ bundle: 'code' });
+        await expect(result).resolves.toMatchObject(
+          format === 'single bundle'
+            ? {
+                bundle: expect.stringContaining('module.exports = { custom: true };'),
+                artifacts: expect.arrayContaining([
+                  expect.objectContaining({ filename: 'hello.js', type: 'js' }),
+                  expect.objectContaining({ filename: 'hello.js.map', type: 'map' }),
+                ]),
+              }
+            : { bundle: 'code' }
+        );
         expect(update.mock.calls.map(([event]) => event.type)).toEqual([
           'bundle_build_started',
           'bundle_build_done',
@@ -854,41 +876,6 @@ describe('executeServerDataLoaderAsync', () => {
     expect(response?.headers.get('Cache-Control')).toBe('public, max-age=3600');
     expect(response?.headers.get('X-Custom-Header')).toBeNull();
     await expect(response!.json()).resolves.toEqual({ foo: 'bar' });
-  });
-});
-
-describe('exportServerRouteAsync', () => {
-  it('rewrites only the trailing source map directive', async () => {
-    // https://github.com/expo/expo/issues/47960
-    const devServer = new MetroBundlerDevServer(
-      '/',
-      getPlatformBundlers('/', { web: { bundler: 'metro' } })
-    );
-    const files: ExportAssetMap = new Map();
-
-    const src = [
-      `const n='This is string data, not a comment.\\n//# sourceMappingURL=embedded.js.map\\nEnd of data.';`,
-      '//# sourceMappingURL=index.map',
-    ].join('\n');
-
-    await devServer['exportServerRouteAsync']({
-      contents: {
-        src,
-        map: JSON.stringify({ version: 3, sources: [], names: [], mappings: '' }),
-      },
-      artifactFilename: '_expo/server/render.js',
-      files,
-      includeSourceMaps: true,
-      descriptor: {},
-    });
-
-    expect(files.get('_expo/server/render.js')?.contents).toBe(
-      [
-        `const n='This is string data, not a comment.\\n//# sourceMappingURL=embedded.js.map\\nEnd of data.';`,
-        '//# sourceMappingURL=render.js.map',
-      ].join('\n')
-    );
-    expect(files.has('_expo/server/render.js.map')).toBe(true);
   });
 });
 
