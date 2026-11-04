@@ -93,18 +93,22 @@ struct RNHostView: ExpoSwiftUI.View {
       // Not `ReportSizeToYogaNodeModifier`: `onGeometryChange` reports an animated resize once,
       // with its destination size, so the hosted content snapped to its final layout while the
       // frame was still animating (expo/expo#52396). The animatable reporter is driven through
-      // every interpolated size instead.
-      GeometryReader { geometry in
-        Children()
-          .frame(maxWidth: .infinity, maxHeight: .infinity)
-          .modifier(
-            AnimatedSizeReporter(
-              size: geometry.size,
-              shadowNodeProxy: props.shadowNodeProxy,
-              lastReported: lastReportedSize
+      // every interpolated size instead. It sits in a background so the `GeometryReader` does not
+      // take part in the layout: as the container it would turn an axis with no proposal, such
+      // as the height in a vertical `ScrollView`, into its own 10 pt default.
+      Children()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(
+          GeometryReader { geometry in
+            Color.clear.modifier(
+              AnimatedSizeReporter(
+                size: geometry.size,
+                shadowNodeProxy: props.shadowNodeProxy,
+                lastReported: lastReportedSize
+              )
             )
-          )
-      }
+          }
+        )
     }
   }
 
