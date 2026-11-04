@@ -15,6 +15,8 @@
 
 - Update `glob` to 14.0.3. ([#52819](https://github.com/expo/expo/pull/52819) by [@kitten](https://github.com/kitten))
 - [Internal] Drop and replace `deepmerge` dependency. ([#52602](https://github.com/expo/expo/pull/52602) by [@kitten](https://gthub.com/kitten))
+- Drop the getenv dependency. ([#52932](https://github.com/expo/expo/pull/52932) by [@kitten](https://github.com/kitten))
+- Remove the already deprecated EXPO_USE_METRO_WORKSPACE_ROOT environment variable. ([#52932](https://github.com/expo/expo/pull/52932) by [@kitten](https://github.com/kitten))
 
 ## 55.0.21 — 2026-08-25
 

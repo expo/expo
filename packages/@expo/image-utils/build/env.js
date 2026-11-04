@@ -1,15 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.env = void 0;
-const getenv_1 = require("getenv");
 class Env {
     /** Enable image utils related debugging messages */
     get EXPO_IMAGE_UTILS_DEBUG() {
-        return (0, getenv_1.boolish)('EXPO_IMAGE_UTILS_DEBUG', false);
+        return ['true', '1'].includes((process.env.EXPO_IMAGE_UTILS_DEBUG ?? '').toLowerCase());
     }
     /** Disable all Sharp related functionality. */
     get EXPO_IMAGE_UTILS_NO_SHARP() {
-        return (0, getenv_1.boolish)('EXPO_IMAGE_UTILS_NO_SHARP', false);
+        return ['true', '1'].includes((process.env.EXPO_IMAGE_UTILS_NO_SHARP ?? '').toLowerCase());
     }
 }
 exports.env = new Env();

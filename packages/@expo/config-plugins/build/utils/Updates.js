@@ -35,13 +35,6 @@ function _fs() {
   };
   return data;
 }
-function _getenv() {
-  const data = require("getenv");
-  _getenv = function () {
-    return data;
-  };
-  return data;
-}
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
@@ -73,6 +66,13 @@ function AndroidVersion() {
 function IOSVersion() {
   const data = _interopRequireWildcard(require("../ios/Version"));
   IOSVersion = function () {
+    return data;
+  };
+  return data;
+}
+function _env() {
+  const data = require("./env");
+  _env = function () {
     return data;
   };
   return data;
@@ -125,7 +125,7 @@ async function getRuntimeVersionNullableAsync(...[projectRoot, config, platform]
   try {
     return await getRuntimeVersionAsync(projectRoot, config, platform);
   } catch (e) {
-    if ((0, _getenv().boolish)('EXPO_DEBUG', false)) {
+    if (_env().env.EXPO_DEBUG) {
       console.log(e);
     }
     return null;

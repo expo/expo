@@ -61,7 +61,6 @@
     "@expo/sdk-runtime-versions": "^1.0.0",
     "chalk": "^4.1.2",
     "debug": "^4.3.5",
-    "getenv": "^2.0.0",
     "glob": "^14.0.3",
     "resolve-from": "^5.0.0",
     "semver": "^7.5.4",

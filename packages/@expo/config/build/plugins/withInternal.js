@@ -2,14 +2,7 @@
 
 exports.__esModule = true;
 exports.withInternal = exports.EXPO_DEBUG = void 0;
-function _getenv() {
-  const data = require("getenv");
-  _getenv = function () {
-    return data;
-  };
-  return data;
-}
-const EXPO_DEBUG = exports.EXPO_DEBUG = (0, _getenv().boolish)('EXPO_DEBUG', false);
+const EXPO_DEBUG = exports.EXPO_DEBUG = ['true', '1'].includes((process.env.EXPO_DEBUG ?? '').toLowerCase());
 
 /**
  * Adds the _internal object.

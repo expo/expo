@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Drop the getenv dependency. ([#52932](https://github.com/expo/expo/pull/52932) by [@kitten](https://github.com/kitten))
+
 ## 0.8.17 — 2026-08-25
 
 _This version does not introduce any user-facing changes._
