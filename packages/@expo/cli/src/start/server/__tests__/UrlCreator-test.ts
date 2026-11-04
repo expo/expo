@@ -57,9 +57,14 @@ describe('constructDevClientUrl', () => {
     );
   });
   it(`creates tunnel`, () => {
-    expect(
-      createDefaultCreator().constructDevClientUrl({ scheme: 'bacon', hostType: 'tunnel' })
-    ).toMatchInlineSnapshot(`"bacon://expo-development-client/?url=http%3A%2F%2Ftunnel.dev"`);
+    const creator = createDefaultCreator();
+    creator.defaults.hostType = 'tunnel';
+    expect(creator.constructDevClientUrl({ scheme: 'bacon' })).toBe(
+      'bacon://expo-development-client/?url=http%3A%2F%2Ftunnel.dev'
+    );
+    expect(creator.constructDevClientUrl({ scheme: 'bacon', hostType: 'lan' })).toBe(
+      'bacon://expo-development-client/?url=http%3A%2F%2F100.100.1.100%3A8081'
+    );
   });
   it(`creates localhost`, () => {
     expect(
@@ -146,5 +151,38 @@ describe('constructUrl', () => {
         hostname: 'foobar.dev',
       })
     ).toMatchInlineSnapshot(`"foobar://localhost:9999"`);
+  });
+});
+
+describe('HTTPS tunnel transport', () => {
+  const creator = new UrlCreator(
+    { hostType: 'tunnel', scheme: 'myapp' },
+    { port: 8081, getTunnelUrl: () => 'https://project.on.expo.app:4443/' }
+  );
+
+  it('converts the resolved transport to the Expo Go scheme', () => {
+    expect(creator.constructExpoGoUrl()).toBe('exps://project.on.expo.app:4443');
+    expect(creator.constructExpoGoUrl({ hostType: 'lan' })).toBe('exp://100.100.1.100:8081');
+    expect(createDefaultCreator().constructExpoGoUrl({ hostType: 'tunnel' })).toBe(
+      'exp://tunnel.dev'
+    );
+  });
+
+  it('resolves a tunnel selected per call for both runtimes', () => {
+    const perCallCreator = new UrlCreator(
+      { scheme: 'myapp' },
+      { port: 8081, getTunnelUrl: () => 'https://project.on.expo.app/' }
+    );
+    expect(perCallCreator.constructExpoGoUrl({ hostType: 'tunnel' })).toBe(
+      'exps://project.on.expo.app'
+    );
+    expect(perCallCreator.constructDevClientUrl({ hostType: 'tunnel' })).toBe(
+      'myapp://expo-development-client/?url=https%3A%2F%2Fproject.on.expo.app'
+    );
+  });
+
+  it('resolves HTTPS proxy transport before choosing the Expo Go scheme', () => {
+    process.env.EXPO_PACKAGER_PROXY_URL = 'https://proxy.test:4443';
+    expect(createDefaultCreator().constructExpoGoUrl()).toBe('exps://proxy.test:4443');
   });
 });

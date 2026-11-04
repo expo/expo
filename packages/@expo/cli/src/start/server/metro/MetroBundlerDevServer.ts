@@ -1378,9 +1378,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           if (runtime === 'custom') {
             return this.urlCreator?.constructDevClientUrl();
           } else {
-            return this.urlCreator?.constructUrl({
-              scheme: 'exp',
-            });
+            return this.urlCreator?.constructExpoGoUrl();
           }
         },
       });

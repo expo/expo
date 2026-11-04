@@ -13,6 +13,7 @@
 - Fix corruption of unrelated string literals in native exports containing DOM components by resolving HTML filenames before Hermes compilation. Defer Hermes compilation only for chunks that reference DOM components. ([#52752](https://github.com/expo/expo/pull/52752) by [@kitten](https://github.com/kitten))
 - Fix `expo run:ios --device` staying open after installing and launching an app on a network-paired device when the bundler is disabled. ([#52741](https://github.com/expo/expo/pull/52741) by [@kitten](https://github.com/kitten))
 - Fix opening browser URLs with query parameters and special characters on Windows and WSL. ([#52747](https://github.com/expo/expo/pull/52747) by [@kitten](https://github.com/kitten))
+- Preserve HTTPS tunnel URLs when opening Expo Go, development builds, and the runtime selection page. ([#52750](https://github.com/expo/expo/pull/52750) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

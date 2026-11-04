@@ -77,13 +77,18 @@ export class UrlCreator {
 
     const manifestUrl = this.constructUrl({
       ...options,
-      scheme: this.defaults?.hostType === 'tunnel' ? 'https' : 'http',
+      scheme: 'http',
     });
     const devClientUrl = `${protocol}://expo-development-client/?url=${encodeURIComponent(
       manifestUrl
     )}`;
     debug(`Dev client URL: ${devClientUrl} -- manifestUrl: ${manifestUrl} -- %O`, options);
     return devClientUrl;
+  }
+
+  /** Create a URL for launching in Expo Go, e.g. `exp://192.168.1.10:8081`. */
+  public constructExpoGoUrl(options?: Partial<CreateURLOptions> | null): string {
+    return this.constructUrl({ ...options, scheme: 'http' }).replace(/^http/, 'exp');
   }
 
   /** Create a generic URL. */
@@ -106,7 +111,7 @@ export class UrlCreator {
     return this.defaults?.scheme ?? null;
   }
 
-  /** Get the URL components from the Ngrok server URL. */
+  /** Get the URL components from the tunnel URL. */
   private getTunnelUrlComponents(options: Pick<CreateURLOptions, 'scheme'>): UrlComponents | null {
     const tunnelUrl = this.bundlerInfo.getTunnelUrl?.();
     if (!tunnelUrl) {
@@ -116,7 +121,10 @@ export class UrlCreator {
     return {
       port: parsed.port,
       hostname: parsed.hostname,
-      protocol: options.scheme ?? 'http',
+      protocol:
+        parsed.protocol === 'https:' && (options.scheme == null || options.scheme === 'http')
+          ? 'https'
+          : (options.scheme ?? 'http'),
     };
   }
 
