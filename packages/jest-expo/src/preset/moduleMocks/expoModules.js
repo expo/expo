@@ -634,6 +634,11 @@ module.exports = {
             argumentsCount: 3,
             key: 'setNotificationCategoryAsync',
           },
+          {
+            name: 'setNotificationCategoriesAsync',
+            argumentsCount: 1,
+            key: 'setNotificationCategoriesAsync',
+          },
         ],
         ExpoNotificationPermissionsModule: [
           { name: 'getPermissionsAsync', argumentsCount: 0, key: 'getPermissionsAsync' },
@@ -1464,6 +1469,7 @@ module.exports = {
           deleteNotificationCategoryAsync: { type: 'function' },
           getNotificationCategoriesAsync: { type: 'function' },
           removeListeners: { type: 'function' },
+          setNotificationCategoriesAsync: { type: 'function' },
           setNotificationCategoryAsync: { type: 'function' },
         },
         ExpoNotificationPermissionsModule: {
