@@ -3149,9 +3149,6 @@ importers:
       '@xmldom/xmldom':
         specifier: ^0.8.8
         version: 0.8.11
-      base64-js:
-        specifier: ^1.5.1
-        version: 1.5.1
       xmlbuilder:
         specifier: ^15.1.1
         version: 15.1.1
