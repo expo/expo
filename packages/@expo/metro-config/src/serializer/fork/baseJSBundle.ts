@@ -50,6 +50,9 @@ export type ExpoSerializerOptions = SerializerOptions & {
     splitChunks?: boolean;
     chunkingStrategy?: ChunkingStrategy;
     output?: 'static';
+    entryFilename?: string;
+    outputDirectory?: string;
+    outputExtension?: string;
     includeSourceMaps?: boolean;
     exporting?: boolean;
     excludeSource?: boolean;
