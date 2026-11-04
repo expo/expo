@@ -10,9 +10,9 @@ function _chalk() {
   };
   return data;
 }
-function _getenv() {
-  const data = require("getenv");
-  _getenv = function () {
+function _env() {
+  const data = require("../utils/env");
+  _env = function () {
     return data;
   };
   return data;
@@ -25,7 +25,7 @@ function _errors() {
   return data;
 }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-const EXPO_DEBUG = (0, _getenv().boolish)('EXPO_DEBUG', false);
+const EXPO_DEBUG = _env().env.EXPO_DEBUG;
 /**
  * Plugin to intercept execution of a given `mod` with the given `action`.
  * If an action was already set on the given `config` config for `mod`, then it

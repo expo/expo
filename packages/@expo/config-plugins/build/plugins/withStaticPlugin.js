@@ -9,9 +9,9 @@ function _assert() {
   };
   return data;
 }
-function _getenv() {
-  const data = require("getenv");
-  _getenv = function () {
+function _env() {
+  const data = require("../utils/env");
+  _env = function () {
     return data;
   };
   return data;
@@ -31,13 +31,13 @@ function _pluginResolver() {
   return data;
 }
 function _interopRequireDefault(e) { return e && e.__esModule ? e : { default: e }; }
-const EXPO_DEBUG = (0, _getenv().boolish)('EXPO_DEBUG', false);
+const EXPO_DEBUG = _env().env.EXPO_DEBUG;
 
 // Show all error info related to plugin resolution.
-const EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS = (0, _getenv().boolish)('EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS', false);
+const EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS = _env().env.EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS;
 // Force using the fallback unversioned plugin instead of a local versioned copy,
 // this should only be used for testing the CLI.
-const EXPO_USE_UNVERSIONED_PLUGINS = (0, _getenv().boolish)('EXPO_USE_UNVERSIONED_PLUGINS', false);
+const EXPO_USE_UNVERSIONED_PLUGINS = _env().env.EXPO_USE_UNVERSIONED_PLUGINS;
 function isModuleMissingError(name, error) {
   // @ts-ignore
   if (['MODULE_NOT_FOUND', 'PLUGIN_NOT_FOUND'].includes(error.code)) {
