@@ -78,10 +78,11 @@ function createRequiredRoutes<NavigatorOptions extends object>(
   }
   const minter = createRouteKeyMinter(state);
   const routes = screens.reduce<Route[]>((added, screen) => {
-    const { name, params } =
-      typeof screen === 'string'
-        ? { name: screen, params: getPathParams(screen, focused.params) }
-        : screen;
+    const name = typeof screen === 'string' ? screen : screen.name;
+    const params = toCatchAllArrays(
+      name,
+      typeof screen === 'string' ? getPathParams(screen, focused.params) : screen.params
+    );
     if (!state.routeNames.includes(name) || isAtOrBelowFocus(state, { name, params }, added)) {
       return added;
     }
@@ -103,6 +104,17 @@ function getPathParams(name: string, focusedParams: object | undefined) {
   });
   // The values come from the focused route's path params, which have the input param types.
   return entries.length > 0 ? (Object.fromEntries(entries) as UnknownInputParams) : undefined;
+}
+
+/** Wraps scalar catch-all params of `name` in an array, the form that URL parsing gives. */
+function toCatchAllArrays(name: string, params: UnknownInputParams | undefined) {
+  return name.split('/').reduce((result, segment) => {
+    const match = matchDynamicName(segment);
+    const value = match?.deep ? result?.[match.name] : undefined;
+    return match && value != null && !Array.isArray(value)
+      ? { ...result, [match.name]: [value] }
+      : result;
+  }, params);
 }
 
 /**

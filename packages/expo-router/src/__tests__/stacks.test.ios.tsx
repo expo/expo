@@ -1209,6 +1209,72 @@ describe('unstable_requiredScreensBelow', () => {
     expect(IdScreen).toHaveBeenCalledTimes(1);
   });
 
+  it('adds a catch-all required screen that has a string param', async () => {
+    function SlugScreen() {
+      return <Text testID="slug">{useLocalSearchParams().slug}</Text>;
+    }
+
+    await renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Screen
+              name="details"
+              unstable_requiredScreensBelow={[{ name: '[...slug]', params: { slug: 'docs' } }]}
+            />
+          </Stack>
+        ),
+        '[...slug]': SlugScreen,
+        details: () => null,
+      },
+      { initialUrl: '/details' }
+    );
+
+    expect(screen.getByTestId('slug', { includeHiddenElements: true })).toHaveTextContent('docs');
+    expect(navigationRef.getRootState()).toMatchObject({
+      routes: [
+        {
+          state: {
+            routes: [{ name: '[...slug]', params: { slug: ['docs'] } }, { name: 'details' }],
+          },
+        },
+      ],
+    });
+  });
+
+  it('adds a catch-all required screen from a string param of the focused route', async () => {
+    function SlugScreen() {
+      return <Text testID="slug">{useLocalSearchParams().slug}</Text>;
+    }
+
+    await renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="[slug]/details" unstable_requiredScreensBelow={['[...slug]']} />
+          </Stack>
+        ),
+        '[...slug]': SlugScreen,
+        '[slug]/details': () => null,
+      },
+      { initialUrl: '/docs/details' }
+    );
+
+    expect(screen.getByTestId('slug', { includeHiddenElements: true })).toHaveTextContent('docs');
+    expect(navigationRef.getRootState()).toMatchObject({
+      routes: [
+        {
+          state: {
+            routes: [
+              { name: '[...slug]', params: { slug: ['docs'] } },
+              { name: '[slug]/details', params: { slug: 'docs' } },
+            ],
+          },
+        },
+      ],
+    });
+  });
+
   it('does not add required screens when the prop changes on a screen already in the stack', async () => {
     let setRequired: (screens: string[]) => void = () => {};
     function Layout() {
