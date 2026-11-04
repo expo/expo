@@ -1,4 +1,5 @@
 import { resolveEntryPoint } from '@expo/config/paths';
+import { flattenSourceMap } from '@expo/metro-config/build/serializer/sourceMap';
 import fs from 'fs';
 import path from 'path';
 
@@ -199,6 +200,10 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
   expect(outputJS).not.toContain('//# sourceURL=');
   // Ensure `//# sourceMappingURL=output.js.map`
   expect(outputJS).toContain('//# sourceMappingURL=output.js.map');
+  const sourceMap = flattenSourceMap(
+    JSON.parse(fs.readFileSync(path.join(outputDir, 'output.js.map'), 'utf8'))
+  );
+  expect(sourceMap.sources).toContain('__e2e__/static-rendering/app/index.tsx');
 
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
@@ -227,6 +232,39 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
     'output.js',
     'output.js.map',
   ]);
+});
+
+it('uses export-relative source paths when no embed source root is specified', async () => {
+  const projectRoot = ensureTesterReady('static-rendering');
+  const output = 'dist-export-embed-default-source-maps';
+  await executeExpoAsync(
+    projectRoot,
+    [
+      'export:embed',
+      '--entry-file',
+      resolveEntryPoint(projectRoot, { platform: 'ios' }),
+      '--bundle-output',
+      `./${output}/output.js`,
+      '--platform',
+      'ios',
+      '--dev',
+      'false',
+      '--sourcemap-output',
+      `./${output}/output.js.map`,
+    ],
+    {
+      env: {
+        NODE_ENV: 'production',
+        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_ASYNC: 'development',
+      },
+    }
+  );
+  const map = flattenSourceMap(
+    JSON.parse(fs.readFileSync(path.join(projectRoot, output, 'output.js.map'), 'utf8'))
+  );
+  expect(map.sources).toContain('/apps/router-e2e/__e2e__/static-rendering/app/index.tsx');
+  expect(JSON.stringify(map.sources)).not.toContain(projectRoot);
 });
 
 it('runs `npx expo export:embed --platform android` with source maps', async () => {
@@ -276,6 +314,10 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
   expect(outputJS).not.toContain('//# sourceURL=');
   // Ensure `//# sourceMappingURL=output.js.map`
   expect(outputJS).toContain('//# sourceMappingURL=output.js.map');
+  const sourceMap = flattenSourceMap(
+    JSON.parse(fs.readFileSync(path.join(outputDir, 'output.js.map'), 'utf8'))
+  );
+  expect(sourceMap.sources).toContain('__e2e__/static-rendering/app/index.tsx');
 
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
@@ -345,6 +387,10 @@ it('runs `npx expo export:embed --bytecode`', async () => {
       'false',
       '--bytecode',
       'true',
+      '--sourcemap-output',
+      `./${output}/output.js.map`,
+      '--sourcemap-sources-root',
+      projectRoot,
     ],
     {
       env: {
@@ -360,4 +406,7 @@ it('runs `npx expo export:embed --bytecode`', async () => {
 
   // Ensure output.js is a Hermes bytecode bundle
   expect(await isHermesBytecodeBundleAsync(path.join(outputDir, 'output.js'))).toBe(true);
+  const sourceMap = JSON.parse(fs.readFileSync(path.join(outputDir, 'output.js.map'), 'utf8'));
+  expect(sourceMap.sources).toContain('__e2e__/static-rendering/app/index.tsx');
+  expect(sourceMap.x_hermes_function_offsets).toBeDefined();
 });
