@@ -66,11 +66,11 @@ every reviewer.
    helper or type name. Do not stop at the members the diff touches.
 3. **Check each untouched member.** Decide whether it needs the same change. A member on a
    path the PR says it fixes, left without the change, keeps the bug for the same users.
+   That fails right solution: report a `critical` `Right solution:` finding at the changed
+   line that fixes its sibling, and cite the member's file and line.
    When you decide that a member does NOT need the change because of how a tool behaves
    (for example, that a flag or the working directory does not affect its result), that is
    a claim to prove, not a fact you know. Check it in the sandbox or the docs first.
-   That fails right solution: report a `critical` `Right solution:` finding at the changed
-   line that fixes its sibling, and cite the member's file and line.
 4. **Show the group.** Make the second `trace.checked` item `Siblings: ` followed by each
    group and the members you checked.
 - Read any file for context. Report findings only in the changed files. When the change
