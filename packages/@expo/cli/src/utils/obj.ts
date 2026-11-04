@@ -4,7 +4,8 @@ export function get(obj: any, key: string): any | null {
   let current: any = obj;
   let branch: string | undefined;
   while ((branch = branches.shift())) {
-    if (!(branch in current)) {
+    // A section can be `null`, `undefined` or a primitive, and `in` throws for those.
+    if (current == null || typeof current !== 'object' || !(branch in current)) {
       return null;
     }
     current = current[branch];
