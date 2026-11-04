@@ -1,12 +1,15 @@
 package expo.modules.maps
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.graphics.drawable.Drawable
 import android.view.MotionEvent
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.toBitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -111,7 +114,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
       modifier = Modifier.fillMaxSize(),
       cameraPositionState = cameraState,
       uiSettings = props.uiSettings.value.toMapUiSettings(),
-      properties = props.properties.value.toMapProperties(),
+      properties = props.properties.value.toMapProperties(context.hasLocationPermission()),
       contentPadding = props.contentPadding.value.let {
         PaddingValues(start = it.start.dp, end = it.end.dp, top = it.top.dp, bottom = it.bottom.dp)
       },
@@ -468,3 +471,7 @@ private fun MapCircles(
     )
   }
 }
+
+internal fun Context.hasLocationPermission(): Boolean =
+  ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+    ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
