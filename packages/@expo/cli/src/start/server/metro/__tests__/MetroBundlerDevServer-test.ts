@@ -1,4 +1,5 @@
 import { getConfig } from '@expo/config';
+import type { SerializerParameters } from '@expo/metro-config/build/serializer/withExpoSerializers';
 import type { ChangeEvent } from '@expo/metro/metro-file-map/flow-types';
 import { ImmutableRequest } from 'expo-server/private';
 import { fs, vol } from 'memfs';
@@ -112,23 +113,29 @@ function createDevServerForStaticPageTests() {
 }
 
 describe('Metro error reporting', () => {
-  it.each([true, false])(
-    'reports only the final outcome after validating serializer output (valid: %s)',
-    async (valid) => {
+  it.each(['artifacts', 'workers', 'single bundle', 'custom conventional', 'invalid'])(
+    'reports only the final outcome after validating serializer output (%s)',
+    async (format) => {
+      const valid = format !== 'invalid';
       const devServer = createDevServerForStaticPageTests();
       const update = jest.fn();
       const revision = {
         id: 'revision',
         date: new Date(),
         prepend: [],
-        graph: { dependencies: new Map() },
+        graph: { dependencies: new Map(), transformOptions: { platform: 'web' } },
       };
       devServer['metro'] = {
         _config: {
+          projectRoot: '/app',
           transformer: { asyncRequireModulePath: 'asyncRequire' },
-          serializer: { getModulesRunBeforeMainModule: () => [] },
+          serializer: {
+            getModulesRunBeforeMainModule: () => [],
+            getRunModuleStatement: (id: number) => `__r(${id});`,
+          },
           server: {},
         },
+        _createModuleId: (file: string) => (file === '/app/index.js' ? 1 : 0),
         _reporter: { update },
         _shouldAddModuleToIgnoreList: () => false,
         _resolveRelativePath: async () => '/app/asyncRequire.js',
@@ -140,23 +147,76 @@ describe('Metro error reporting', () => {
       devServer['getMetroRevision'] = jest.fn().mockResolvedValue(revision);
       devServer['getMetroSerializer'] = jest
         .fn()
-        .mockReturnValue(async () =>
-          valid ? { artifacts: [{ type: 'js', source: 'code' }], assets: [] } : {}
+        .mockReturnValue(async (...[_entry, _pre, _graph, options]: SerializerParameters) =>
+          format === 'single bundle' || format === 'custom conventional'
+            ? {
+                code:
+                  format === 'custom conventional'
+                    ? `${options.getRunModuleStatement(0, '')}\n${options.getRunModuleStatement(1, '')}\n// Custom serializer footer\n//# sourceMappingURL=original.map\n//# debugId=original-id`
+                    : 'module.exports = { custom: true };',
+                map: JSON.stringify({ version: 3, sources: [], names: [], mappings: '' }),
+              }
+            : valid
+              ? {
+                  artifacts:
+                    format === 'workers'
+                      ? [
+                          {
+                            type: 'js',
+                            filename: 'worker.js',
+                            source: 'worker',
+                            metadata: { isAsync: true },
+                          },
+                          { type: 'map', filename: 'worker.js.map', source: 'worker map' },
+                          {
+                            type: 'js',
+                            filename: 'hello.js',
+                            source: 'code',
+                            metadata: { isAsync: false },
+                          },
+                          { type: 'map', filename: 'hello.js.map', source: 'entry map' },
+                        ]
+                      : [{ type: 'js', source: 'code' }],
+                  assets: [],
+                }
+              : {}
         );
       const result = devServer['_bundleDirectAsync']('/app/index.js', {
         transformOptions: {
           dev: true,
           minify: false,
           platform: 'web',
+          customTransformOptions: { environment: 'node' },
           type: 'module',
           unstable_transformProfile: 'default',
         },
         resolverOptions: { customResolverOptions: {}, dev: true },
         graphOptions: { lazy: false, shallow: false },
-        serializerOptions: { output: 'static' } as any,
+        serializerOptions: {
+          output: format === 'custom conventional' ? undefined : 'static',
+          entryFilename: 'hello.js',
+          includeSourceMaps: true,
+        } as any,
       });
       if (valid) {
-        await expect(result).resolves.toMatchObject({ bundle: 'code' });
+        await expect(result).resolves.toMatchObject(
+          format === 'single bundle'
+            ? {
+                bundle: expect.stringContaining('module.exports = { custom: true };'),
+                artifacts: expect.arrayContaining([
+                  expect.objectContaining({ filename: 'hello.js', type: 'js' }),
+                  expect.objectContaining({ filename: 'hello.js.map', type: 'map' }),
+                ]),
+              }
+            : format === 'custom conventional'
+              ? {
+                  bundle:
+                    '__r(0);\nmodule.exports = __r(1);\n// Custom serializer footer\n//# sourceMappingURL=original.map\n//# debugId=original-id',
+                }
+              : format === 'workers'
+                ? { bundle: 'code', map: 'entry map' }
+                : { bundle: 'code' }
+        );
         expect(update.mock.calls.map(([event]) => event.type)).toEqual([
           'bundle_build_started',
           'bundle_build_done',
@@ -858,36 +918,185 @@ describe('executeServerDataLoaderAsync', () => {
 });
 
 describe('exportServerRouteAsync', () => {
-  it('rewrites only the trailing source map directive', async () => {
-    // https://github.com/expo/expo/issues/47960
+  it('rejects multiple server bundles instead of dropping dependencies', async () => {
+    const devServer = new MetroBundlerDevServer('/', getPlatformBundlers('/', {}));
+    const entry = serverContents('entry.js');
+    await expect(
+      devServer['exportServerRouteAsync']({
+        contents: {
+          ...entry,
+          artifacts: [...entry.artifacts, ...serverContents('dependency.js').artifacts],
+        } as any,
+        artifactFilename: 'entry.js',
+        files: new Map(),
+        descriptor: {},
+      })
+    ).rejects.toThrow('Server bundle splitting is not supported');
+  });
+
+  it('persists serializer artifacts without rewriting code, maps, or metadata', async () => {
+    const devServer = new MetroBundlerDevServer('/', getPlatformBundlers('/', {}));
+    const files: ExportAssetMap = new Map();
+    const source =
+      'module.exports = {};\n//# sourceMappingURL=render.js.map\n//# debugId=bundle-id';
+    const map =
+      '{ "version":3,"sources":["../shared.ts"],"names":[],"mappings":"","debugId":"bundle-id","ignoreList":[0] }';
+    const filename = await devServer['exportServerRouteAsync']({
+      contents: {
+        src: 'unused legacy code',
+        map,
+        artifacts: [
+          {
+            type: 'js',
+            filename: '_expo/server/render.js',
+            source,
+            originFilename: 'render.ts',
+            metadata: {},
+          },
+          {
+            type: 'map',
+            filename: '_expo/server/render.js.map',
+            source: map,
+            originFilename: 'render.ts',
+            metadata: {},
+          },
+        ],
+      },
+      artifactFilename: 'unused.js',
+      files,
+      includeSourceMaps: true,
+      descriptor: { apiRouteId: '/hello' },
+    });
+    expect(filename).toBe('_expo/server/render.js');
+    expect(files.get(filename)).toEqual(
+      expect.objectContaining({
+        contents: source,
+        originFilename: 'render.ts',
+        targetDomain: 'server',
+        apiRouteId: '/hello',
+      })
+    );
+    expect(files.get(filename + '.map')!.contents).toBe(map);
+  });
+});
+
+it('caches API bundles by platform and output filename', async () => {
+  const devServer = new MetroBundlerDevServer('/', getPlatformBundlers('/', {}));
+  devServer['instanceMetroOptions'] = { isExporting: true } as any;
+  jest
+    .spyOn(devServer as any, 'ssrLoadModuleContents')
+    .mockImplementation(async (_file, options: any) => ({
+      src: `${options.platform}:${options.entryFilename}`,
+    }));
+  const first = await devServer['bundleApiRoute']('/hello.ts', {
+    platform: 'web',
+    entryFilename: 'first.js',
+  });
+  const second = await devServer['bundleApiRoute']('/hello.ts', {
+    platform: 'web',
+    entryFilename: 'second.js',
+  });
+  const third = await devServer['bundleApiRoute']('/hello.ts', {
+    platform: 'ios',
+    entryFilename: 'first.js',
+  });
+  expect(second?.src).toBe('web:second.js');
+  expect(third?.src).toBe('ios:first.js');
+  expect(
+    await devServer['bundleApiRoute']('/hello.ts', { platform: 'web', entryFilename: 'first.js' })
+  ).toBe(first);
+});
+
+describe('exportExpoRouterApiRoutesAsync', () => {
+  it('serializes routes and middleware with their output filenames', async () => {
     const devServer = new MetroBundlerDevServer(
       '/',
       getPlatformBundlers('/', { web: { bundler: 'metro' } })
     );
-    const files: ExportAssetMap = new Map();
-
-    const src = [
-      `const n='This is string data, not a comment.\\n//# sourceMappingURL=embedded.js.map\\nEnd of data.';`,
-      '//# sourceMappingURL=index.map',
-    ].join('\n');
-
-    await devServer['exportServerRouteAsync']({
-      contents: {
-        src,
-        map: JSON.stringify({ version: 3, sources: [], names: [], mappings: '' }),
-      },
-      artifactFilename: '_expo/server/render.js',
-      files,
-      includeSourceMaps: true,
-      descriptor: {},
+    devServer['instanceMetroOptions'] = {
+      routerRoot: 'app',
+    };
+    jest.spyOn(devServer as any, 'getExpoRouterRoutesManifestAsync').mockResolvedValueOnce({
+      apiRoutes: [
+        { file: 'hello+api.ts', page: '/hello' },
+        { file: 'rsc.ts', page: '/_flight/[...rsc]' },
+      ],
+      middleware: { file: '+middleware.ts' },
+    } as any);
+    jest
+      .spyOn(devServer as any, 'bundleApiRoute')
+      .mockImplementation(async (_file: unknown, options: any) =>
+        serverContents(options.entryFilename)
+      );
+    const { files, manifest } = await devServer.exportExpoRouterApiRoutesAsync({
+      outputDir: '_expo/functions',
+      platform: 'web',
+      prerenderManifest: { htmlRoutes: [] } as any,
     });
-
-    expect(files.get('_expo/server/render.js')?.contents).toBe(
-      [
-        `const n='This is string data, not a comment.\\n//# sourceMappingURL=embedded.js.map\\nEnd of data.';`,
-        '//# sourceMappingURL=render.js.map',
-      ].join('\n')
+    expect(manifest.apiRoutes.map((route) => route.file)).toEqual([
+      '_expo/functions/hello+api.js',
+      '_expo/functions/_flight/[...rsc].js',
+    ]);
+    expect(manifest.middleware?.file).toBe('_expo/functions/+middleware.js');
+    expect(devServer['bundleApiRoute']).toHaveBeenCalledWith('/app/hello+api.ts', {
+      platform: 'web',
+      entryFilename: '_expo/functions/hello+api.js',
+      includeSourceMaps: false,
+    });
+    expect(devServer['bundleApiRoute']).toHaveBeenCalledWith('/app/+middleware.ts', {
+      platform: 'web',
+      entryFilename: '_expo/functions/+middleware.js',
+      includeSourceMaps: false,
+    });
+    expect([...files.keys()]).toEqual(
+      expect.arrayContaining(manifest.apiRoutes.map((route) => route.file))
     );
-    expect(files.has('_expo/server/render.js.map')).toBe(true);
   });
 });
+
+it('serializes renderers and loaders with their output filenames', async () => {
+  const devServer = new MetroBundlerDevServer('/', getPlatformBundlers('/', {}));
+  jest
+    .spyOn(devServer as any, 'ssrLoadModuleContents')
+    .mockImplementation(async (_file: unknown, options: any) =>
+      serverContents(options.entryFilename)
+    );
+  jest
+    .spyOn(devServer as any, 'bundleLoader')
+    .mockImplementation(async (_file: unknown, options: any) =>
+      serverContents(options.entryFilename)
+    );
+  const files: ExportAssetMap = new Map();
+  const renderer = await devServer.exportExpoRouterRenderModuleAsync({ files });
+  expect(files.has('_expo/server/render.js')).toBe(true);
+  expect(renderer).toBe('_expo/server/render.js');
+  const loaders = await devServer.exportExpoRouterLoadersAsync({
+    platform: 'web',
+    entryPoints: [{ file: '/app/index.tsx', page: '/index' }],
+    files,
+    outputDir: '_expo/loaders',
+    includeSourceMaps: false,
+  });
+  expect(files.has('_expo/loaders/index.js')).toBe(true);
+  expect(loaders.get('/index')).toBe('_expo/loaders/index.js');
+  expect(devServer['ssrLoadModuleContents']).toHaveBeenCalledWith(expect.any(String), {
+    environment: 'node',
+    platform: 'web',
+    entryFilename: '_expo/server/render.js',
+    includeSourceMaps: false,
+  });
+  expect(devServer['bundleLoader']).toHaveBeenCalledWith('/app/index.tsx', {
+    platform: 'web',
+    entryFilename: '_expo/loaders/index.js',
+    includeSourceMaps: false,
+  });
+  expect(getConfig).not.toHaveBeenCalled();
+});
+
+function serverContents(filename: string) {
+  const src = 'module.exports = {};';
+  return {
+    src,
+    artifacts: [{ type: 'js', filename, source: src, originFilename: 'entry.ts', metadata: {} }],
+  };
+}

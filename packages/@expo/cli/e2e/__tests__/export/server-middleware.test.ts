@@ -1,3 +1,4 @@
+import { getMetroServerRoot } from '@expo/config/paths';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -7,7 +8,7 @@ import {
   RUNTIME_WORKERD,
   setupServer,
 } from '../../utils/runtime';
-import { findProjectFiles, getHtml } from '../utils';
+import { findProjectFiles, getHtml, getRouterE2ERoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
@@ -151,11 +152,18 @@ describe('exports middleware', () => {
       const middlewareMapFile = 'server/_expo/functions/+middleware.js.map';
       expect(files).toContain(middlewareMapFile);
 
-      // Load the sourcemap and check that the paths are relative
+      // Exported source names are URLs relative to the Metro server root.
       const sourceMap = JSON.parse(
         fs.readFileSync(path.join(server.outputDir, middlewareMapFile), 'utf8')
       );
-      expect(sourceMap.sources).toContain('__e2e__/server-middleware-async/app/+middleware.ts');
+      const projectRoot = getRouterE2ERoot();
+      const sourceFile = path.join(
+        projectRoot,
+        '__e2e__/server-middleware-async/app/+middleware.ts'
+      );
+      expect(sourceMap.sources).toContain(
+        '/' + path.relative(getMetroServerRoot(projectRoot), sourceFile).split(path.sep).join('/')
+      );
     });
   });
 });
