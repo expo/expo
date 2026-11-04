@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Drop the base64-js dependency. ([#52929](https://github.com/expo/expo/pull/52929) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 0.8.1 — 2026-07-15
