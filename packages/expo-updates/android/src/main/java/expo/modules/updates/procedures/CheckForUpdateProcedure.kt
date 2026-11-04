@@ -39,7 +39,8 @@ class CheckForUpdateProcedure(
       database,
       updatesConfiguration,
       launchedUpdate,
-      embeddedUpdate
+      embeddedUpdate,
+      updatesLogger
     )
 
     try {

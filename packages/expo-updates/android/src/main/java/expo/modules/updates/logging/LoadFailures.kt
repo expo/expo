@@ -1,6 +1,7 @@
 package expo.modules.updates.logging
 
 import expo.modules.updatesinterface.UpdatesLogMessage
+import java.io.IOException
 import java.net.ConnectException
 import java.net.NoRouteToHostException
 import java.net.SocketException
@@ -16,6 +17,12 @@ data class AssetFailureGroup(
   val httpStatus: Int?,
   val error: Exception
 )
+
+/**
+ * Thrown for a failure that was already logged where it happened. Load failure logging skips an
+ * error with one of these in its cause chain, so the failure is not logged twice.
+ */
+class LoggedException(message: String, cause: Throwable) : IOException(message, cause)
 
 object LoadFailures {
   /**
