@@ -64,7 +64,9 @@ export async function prebuildAsync(
     };
     /** List of node modules to skip updating. */
     skipDependencyUpdate?: string[];
-  }
+  },
+  /** Runs after native configuration, before native dependency installation. */
+  onProjectReady?: () => Promise<void>
 ): Promise<PrebuildResults | null> {
   setNodeEnv('development');
   loadEnvFiles(projectRoot);
@@ -171,11 +173,14 @@ export async function prebuildAsync(
     throw error;
   }
 
+  await onProjectReady?.();
+
   // Install CocoaPods
   let podsInstalled: boolean = false;
   // err towards running pod install less because it's slow and users can easily run npx pod-install afterwards.
   if (options.platforms.includes('ios') && options.install && needsPodInstall) {
-    const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
+    const { installCocoaPodsAsync } =
+      require('../utils/cocoapods') as typeof import('../utils/cocoapods');
 
     podsInstalled = await installCocoaPodsAsync(projectRoot);
   } else {
