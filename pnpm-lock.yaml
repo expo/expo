@@ -2158,9 +2158,6 @@ importers:
       getenv:
         specifier: ^2.0.0
         version: 2.0.0
-      glob:
-        specifier: ^13.0.0
-        version: 13.0.6
       lan-network:
         specifier: ^0.2.1
         version: 0.2.1
@@ -2215,6 +2212,9 @@ importers:
       terminal-link:
         specifier: ^2.1.1
         version: 2.1.1
+      tinyglobby:
+        specifier: ^0.2.15
+        version: 0.2.15
       toqr:
         specifier: ^0.1.1
         version: 0.1.1
