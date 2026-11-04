@@ -1,11 +1,13 @@
 import chalk from 'chalk';
-import { boolish } from 'getenv';
 import console from 'node:console';
 import fs from 'node:fs';
 import path from 'node:path';
 
 import { isIgnoredEnvKey, isLocalEnvKey, isUnsafeAllowedEnvKey } from './constants';
+import { boolish } from './getenv';
 import { parse, expand, type EnvOutput } from './parse';
+
+export { boolish, int, string } from './getenv';
 
 const debug = require('debug')('expo:env') as typeof console.log;
 

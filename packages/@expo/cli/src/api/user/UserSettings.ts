@@ -1,7 +1,6 @@
-import { getOriginalEnvValue } from '@expo/env';
+import { boolish, getOriginalEnvValue } from '@expo/env';
 import JsonFile from '@expo/json-file';
 import crypto from 'crypto';
-import { boolish } from 'getenv';
 import { homedir } from 'os';
 import * as path from 'path';
 

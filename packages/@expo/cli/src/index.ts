@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { installEventLogger } from '2g';
+import { boolish } from '@expo/env';
 import arg from 'arg';
 import chalk from 'chalk';
-import { boolish } from 'getenv';
 
 // Bridge the legacy `EXPO_DEBUG`/`DEBUG=expo:*` switches onto `2g`'s `LOG_DEBUG` so existing
 // muscle memory keeps surfacing debug events. This must run before `installEventLogger()` so the
