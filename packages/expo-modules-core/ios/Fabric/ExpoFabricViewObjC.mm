@@ -1,9 +1,5 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-#import <objc/runtime.h>
-#import <string.h>
-
-#import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
@@ -412,123 +408,23 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor<>::Flavor> _c
 
 #pragma mark - Component registration
 
-+ (void)registerComponent:(nonnull id)viewModule appContext:(nonnull id<EXAppContextProtocol>)appContext
++ (void)registerComponentViewClass:(nonnull Class)viewClass
 {
-  // Cache classes and selectors using dispatch_once to avoid repeated lookups
-  static Class viewModuleWrapperClass;
-  static Class expoFabricViewClass;
-  static SEL createWrapperSelector;
-  static SEL makeViewSelector;
-  static SEL moduleNameSelector;
-  static SEL viewNameSelector;
+  [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
+}
 
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    // EXViewModuleWrapper is defined in Swift - use runtime lookup
-    viewModuleWrapperClass = NSClassFromString(@"EXViewModuleWrapper");
-    if (!viewModuleWrapperClass) {
-      NSLog(@"[ExpoFabricViewObjC] Warning: Could not find class "
-            @"'EXViewModuleWrapper'");
-    }
-    // ExpoFabricView is defined in Swift - use runtime lookup
-    expoFabricViewClass = NSClassFromString(@"ExpoFabricView");
-    if (!expoFabricViewClass) {
-      NSLog(@"[ExpoFabricViewObjC] Warning: Could not find class "
-            @"'ExpoFabricView'");
-    }
-    // Cache all selectors
-    createWrapperSelector =
-        NSSelectorFromString(@"createViewModuleWrapperClassWithModule:appId:");
-    makeViewSelector = NSSelectorFromString(
-        @"makeViewClassForAppContext:moduleName:viewName:className:");
-    moduleNameSelector = NSSelectorFromString(@"moduleName");
-    viewNameSelector = NSSelectorFromString(@"viewName");
-  });
++ (instancetype)new
+{
+  // `RCTComponentViewFactory` creates component views with `[viewClass new]` and gives no other way
+  // to customize it. The created view doesn't have to be an instance of the registered class.
+  id componentView = [self createComponentView];
+  return componentView ?: [super new];
+}
 
-  if (!viewModuleWrapperClass) {
-    NSLog(@"[ExpoFabricViewObjC] Error: Cannot register component - "
-          @"EXViewModuleWrapper class not found");
-    return;
-  }
-
-  if (!expoFabricViewClass) {
-    NSLog(@"[ExpoFabricViewObjC] Error: Cannot register component - "
-          @"ExpoFabricView class not found");
-    return;
-  }
-
-  Class wrappedViewModuleClass = nil;
-  NSString *appId = [appContext appIdentifier];
-
-  if (![viewModuleWrapperClass respondsToSelector:createWrapperSelector]) {
-    NSLog(@"[ExpoFabricViewObjC] Error: EXViewModuleWrapper does not respond "
-          @"to createViewModuleWrapperClassWithModule:appId:");
-    return;
-  }
-
-  NSMethodSignature *sig =
-      [viewModuleWrapperClass methodSignatureForSelector:createWrapperSelector];
-  NSInvocation *invocation = [NSInvocation invocationWithMethodSignature:sig];
-  [invocation setTarget:viewModuleWrapperClass];
-  [invocation setSelector:createWrapperSelector];
-  [invocation setArgument:&viewModule atIndex:2];
-  [invocation setArgument:&appId atIndex:3];
-  [invocation invoke];
-  [invocation getReturnValue:&wrappedViewModuleClass];
-
-  if (!wrappedViewModuleClass) {
-    NSLog(@"[ExpoFabricViewObjC] Error: Failed to create wrapped view module "
-          @"class for module: %@",
-          viewModule);
-    return;
-  }
-
-  if (![expoFabricViewClass respondsToSelector:makeViewSelector]) {
-    NSLog(@"[ExpoFabricViewObjC] Error: ExpoFabricView does not respond to "
-          @"makeViewClassForAppContext:moduleName:viewName:className:");
-    return;
-  }
-
-  // Get moduleName and viewName from viewModule using cached selectors
-  NSString *moduleName = nil;
-  NSString *viewName = nil;
-  if ([viewModule respondsToSelector:moduleNameSelector]) {
-    moduleName = [viewModule performSelector:moduleNameSelector];
-  } else {
-    NSLog(@"[ExpoFabricViewObjC] Warning: viewModule does not respond to "
-          @"moduleName selector");
-  }
-  if ([viewModule respondsToSelector:viewNameSelector]) {
-    viewName = [viewModule performSelector:viewNameSelector];
-  } else {
-    NSLog(@"[ExpoFabricViewObjC] Warning: viewModule does not respond to "
-          @"viewName selector");
-  }
-
-  NSString *className = NSStringFromClass(wrappedViewModuleClass);
-  NSMethodSignature *makeViewSig =
-      [expoFabricViewClass methodSignatureForSelector:makeViewSelector];
-  NSInvocation *makeViewInvocation =
-      [NSInvocation invocationWithMethodSignature:makeViewSig];
-  [makeViewInvocation setTarget:expoFabricViewClass];
-  [makeViewInvocation setSelector:makeViewSelector];
-  id appContextArg = appContext;
-  [makeViewInvocation setArgument:&appContextArg atIndex:2];
-  [makeViewInvocation setArgument:&moduleName atIndex:3];
-  [makeViewInvocation setArgument:&viewName atIndex:4];
-  [makeViewInvocation setArgument:&className atIndex:5];
-  [makeViewInvocation invoke];
-
-  Class viewClass = nil;
-  [makeViewInvocation getReturnValue:&viewClass];
-
-  if (viewClass) {
-    [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
-  } else {
-    NSLog(@"[ExpoFabricViewObjC] Error: Failed to create view class for "
-          @"module: %@, view: %@",
-          moduleName, viewName);
-  }
++ (nullable id)createComponentView
+{
+  // Implemented in `ExpoFabricView.swift`
+  return nil;
 }
 
 @end

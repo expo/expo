@@ -253,12 +253,12 @@ export class LanguageModelSession {
     options.images = snapshotImages(options.images);
     if (
       options.images?.length &&
-      this.capabilities.images !== 'supported' &&
+      this.capabilities.images === 'unsupported' &&
       !(this.capabilities.imageTools === 'supported' && this.tools.some((tool) => tool.builtin))
     ) {
       throw new LanguageModelError(
         'ERR_UNSUPPORTED_FEATURE',
-        'This provider cannot use images. Apple text-only models require an image tool.'
+        'The request includes images, but the selected model accepts text only. Remove the images, or on Apple platforms add an image tool such as Tools.ocr from expo-ai/apple.'
       );
     }
     const schema = options.schema === undefined ? undefined : compileSchema(options.schema);

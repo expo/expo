@@ -12,7 +12,7 @@ import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptPr
 import { printItem } from '../interface/commandsTable';
 import { resolveSchemeAsync } from '../resolveOptions';
 import type { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
-import DevToolsPluginManager from './DevToolsPluginManager';
+import DevToolsPluginManager from './devtools/DevToolsPluginManager';
 import { debugEvent } from './events';
 import { getPlatformBundlers } from './platformBundlers';
 

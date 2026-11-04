@@ -13,13 +13,13 @@ Expo Simulators works with any app that is built for the Android Emulator or the
 
 ## Compatibility
 
-| Toolchain                                                                        | Application sources                                            | Device-level control | React Native features |
-| -------------------------------------------------------------------------------- | -------------------------------------------------------------- | -------------------- | --------------------- |
-| [Expo and React Native](/preview/simulators/works-with/expo-and-react-native/)   | EAS Build ID, fingerprint, archive URL, local build            | Yes                  | Yes                   |
-| [Expo Go](/preview/simulators/works-with/expo-go/)                               | `--expo-go`                                                    | Yes                  | Yes                   |
-| [Native Android and iOS](/preview/simulators/works-with/native-ios-and-android/) | Archive URL, local build, EAS Build ID for EAS Build artifacts | Yes                  | No                    |
-| [Flutter](/preview/simulators/works-with/flutter/)                               | Archive URL, local build                                       | Yes                  | No                    |
-| [Unity and hybrid](/preview/simulators/works-with/unity-and-hybrid/)             | Archive URL, local build                                       | Yes                  | No                    |
+| Toolchain                                                                        | Application sources                                              | Device-level control | React Native features |
+| -------------------------------------------------------------------------------- | ---------------------------------------------------------------- | -------------------- | --------------------- |
+| [Expo and React Native](/preview/simulators/works-with/expo-and-react-native/)   | Expo Build ID, fingerprint, archive URL, local build             | Yes                  | Yes                   |
+| [Expo Go](/preview/simulators/works-with/expo-go/)                               | `--expo-go`                                                      | Yes                  | Yes                   |
+| [Native Android and iOS](/preview/simulators/works-with/native-ios-and-android/) | Archive URL, local build, Expo Build ID for Expo Build artifacts | Yes                  | No                    |
+| [Flutter](/preview/simulators/works-with/flutter/)                               | Archive URL, local build                                         | Yes                  | No                    |
+| [Unity and hybrid](/preview/simulators/works-with/unity-and-hybrid/)             | Archive URL, local build                                         | Yes                  | No                    |
 
 **Device-level control** acts through the operating system. It includes opening apps, reading the accessibility tree, pressing elements, entering text, screenshots, and recordings. Accessibility-based actions need an app that exposes an accessibility tree, which Unity apps do not do by default.
 
@@ -48,7 +48,7 @@ See [Which build to install on Expo Simulators](/preview/simulators/how-it-works
 
 <Collapsible summary="Does my app need the expo package?">
 
-No. The device runs any simulator or emulator build. EAS CLI needs a project directory with **package.json** and an app config that contains the EAS project ID. The REST API needs only the project ID.
+No. The device runs any simulator or emulator build. EAS CLI needs a project directory with **package.json** and an app config that contains the Expo Services project ID. The REST API needs only the project ID.
 
 </Collapsible>
 

@@ -93,8 +93,6 @@
     "dnssd-advertise": "^1.1.6",
     "expo-server": "workspace:^",
     "fetch-nodeshim": "^0.4.10",
-    "getenv": "^2.0.0",
-    "glob": "^13.0.0",
     "lan-network": "^0.2.1",
     "multitars": "^1.0.2",
     "node-forge": "^1.4.0",
@@ -112,10 +110,10 @@
     "stacktrace-parser": "^0.1.10",
     "structured-headers": "^0.4.1",
     "terminal-link": "^2.1.1",
+    "tinyglobby": "^0.2.15",
     "toqr": "^0.1.1",
     "wrap-ansi": "^7.0.0",
-    "ws": "^8.12.1",
-    "zod": "^3.25.76"
+    "ws": "^8.12.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
@@ -132,7 +130,6 @@
     "@types/eslint": "^8.56.12",
     "@types/execa": "^0.9.0",
     "@types/express": "^5.0.3",
-    "@types/getenv": "^1.0.3",
     "@types/klaw-sync": "^6.0.0",
     "@types/node": "^22.14.0",
     "@types/npm-package-arg": "^6.1.0",
@@ -164,14 +161,19 @@
     "react": "19.3.0",
     "react-refresh": "^0.14.2",
     "react-test-renderer": "19.3.0",
-    "tree-kill": "^1.2.2"
+    "tree-kill": "^1.2.2",
+    "zod": "^3.25.76"
   },
   "peerDependencies": {
     "expo": "*",
+    "expo-mcp": "*",
     "expo-router": "*",
     "react-native": "*"
   },
   "peerDependenciesMeta": {
+    "expo-mcp": {
+      "optional": true
+    },
     "expo-router": {
       "optional": true
     },

@@ -11,11 +11,11 @@ import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-An Expo web app can be served locally for testing the production behavior, and deployed to a hosting service. We recommend deploying to [EAS Hosting](/eas/hosting) for the best feature support. You can also self-host or use a third-party service.
+An Expo web app can be served locally for testing the production behavior, and deployed to a hosting service. We recommend deploying to [Expo Hosting](/eas/hosting) for the best feature support. You can also self-host or use a third-party service.
 
 <BoxLink
-  title="Deploying instantly with EAS"
-  description="EAS Hosting is the best way to deploy your web app with support for custom domains, SSL, and more."
+  title="Deploying instantly with Expo Hosting"
+  description="Expo Hosting is the best way to deploy your web app with support for custom domains, SSL, and more."
   href="/eas/hosting/get-started"
   Icon={Cloud01Icon}
 />
@@ -47,7 +47,7 @@ The default and tabs templates configure `web.output: "server"` in SDK 58 and la
 | `server`           | <YesIcon /> | Enabled by default | Creates **client** and **server** directories. In SDK 58 and later, HTML is rendered on each request. Requires a deployed server for rendering and API routes. |
 | `static`           | <YesIcon /> | Opt-in             | Outputs separate HTML files for every route in the **app** directory.                                                                                          |
 
-For server output, deploy both the client assets and the server code to a provider that supports Expo Router server rendering, such as [EAS Hosting](/eas/hosting/introduction/). Uploading only the **client** directory to a static host does not provide server rendering.
+For server output, deploy both the client assets and the server code to a provider that supports Expo Router server rendering, such as [Expo Hosting](/eas/hosting/introduction/). Uploading only the **client** directory to a static host does not provide server rendering.
 
 In SDK 58 and later, set `apiRoutes: true` in the `expo-router` config plugin to enable API routes with `static` output. API routes are enabled by default with `server` output. Set `apiRoutes: false` to disable them in either mode. See [API routes](/router/web/api-routes/#create-an-api-route) for configuration and deployment requirements.
 
@@ -87,13 +87,13 @@ Use `npx expo serve` to quickly test locally how your website will be hosted in 
 
 Open [`http://localhost:8081`](http://localhost:8081) to see your project in action. This is **HTTP only**, so permissions, camera, location, and many other secure features may not work as expected.
 
-## Hosting with EAS
+## Expo Hosting
 
 When you're ready to go to production, you can instantly deploy your website with EAS CLI.
 
 <BoxLink
-  title="Deploying instantly with EAS"
-  description="EAS Hosting is the best way to deploy your web app with support for custom domains, SSL, and more."
+  title="Deploying instantly with Expo Hosting"
+  description="Expo Hosting is the best way to deploy your web app with support for custom domains, SSL, and more."
   href="/eas/hosting/get-started"
   Icon={Cloud01Icon}
 />

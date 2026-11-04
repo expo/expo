@@ -14,6 +14,7 @@
  */
 
 import { type FileDigestAlgorithm, FileMode } from '../src/File.types';
+import type { DownloadResponse } from '../src/NetworkTasks.types';
 
 export type URL = string;
 export type FileSystemPath = any;
@@ -810,14 +811,31 @@ export class FileSystemUploadTask extends SharedObject {
 }
 
 export class FileSystemDownloadTask extends SharedObject {
+  private cancelled = false;
+  private responseMetadata: DownloadResponse = { status: null, headers: {} };
+
+  get response(): DownloadResponse {
+    return { ...this.responseMetadata, headers: { ...this.responseMetadata.headers } };
+  }
+
+  private async completeDownload(): Promise<string> {
+    this.cancelled = false;
+    this.responseMetadata = { status: null, headers: {} };
+    await Promise.resolve();
+    if (!this.cancelled) {
+      this.responseMetadata = { status: 200, headers: {} };
+    }
+    return 'file:///mock/downloaded-file';
+  }
+
   start(_url: string, _to: any, _options?: any): Promise<string | null> {
-    return Promise.resolve('file:///mock/downloaded-file');
+    return this.completeDownload();
   }
   pause(): { resumeData: string } {
     return { resumeData: 'mock-resume-data' };
   }
   resume(_url: string, _to: any, _resumeData: string, _options?: any): Promise<string | null> {
-    return Promise.resolve('file:///mock/downloaded-file');
+    return this.completeDownload();
   }
   release(): void {
     super.release();
@@ -826,7 +844,9 @@ export class FileSystemDownloadTask extends SharedObject {
     return Promise.resolve();
   }
 
-  cancel(): void {}
+  cancel(): void {
+    this.cancelled = true;
+  }
 }
 
 function directChildren(dirUri: string): { uri: string; kind: 'file' | 'dir' }[] {

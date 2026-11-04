@@ -159,6 +159,60 @@ public final class UpdatesLogger: NSObject {
     error(cause: cause, code: code, updateId: nil, assetId: nil)
   }
 
+  /**
+   Logs a failed update load as the error that `wrap` makes from it. When assets of the update failed
+   to load, logs one error for each group of asset failures with the same code and HTTP status, so
+   that one kind of failure does not hide another.
+   */
+  func errorForLoadFailure(
+    _ error: Error,
+    otherwise code: UpdatesErrorCode,
+    updateId: String? = nil,
+    wrap: (Error) -> UpdatesError
+  ) {
+    logLoadFailure(error, as: wrap(error), otherwise: code, updateId: updateId) { wrap($0) }
+  }
+
+  /**
+   Logs a failed update load as `error` itself, with the same grouping of asset failures as
+   `errorForLoadFailure(_:otherwise:updateId:wrap:)`.
+   */
+  func errorForLoadFailure(
+    _ error: UpdatesError,
+    otherwise code: UpdatesErrorCode,
+    updateId: String? = nil
+  ) {
+    logLoadFailure(error, as: error, otherwise: code, updateId: updateId) { $0 }
+  }
+
+  private func logLoadFailure(
+    _ error: Error,
+    as loggedError: UpdatesError,
+    otherwise code: UpdatesErrorCode,
+    updateId: String?,
+    wrapGroup: (UpdatesError) -> UpdatesError
+  ) {
+    guard let failures = assetLoadFailures(in: error) else {
+      self.error(cause: loggedError, code: UpdatesErrorCode.forLoadFailure(error, otherwise: code), updateId: updateId, assetId: nil)
+      return
+    }
+    for group in UpdatesErrorCode.groups(of: failures) {
+      let groupError = UpdatesError.appLoaderFailedToLoadAllAssets(failures: group.failures)
+      self.error(cause: wrapGroup(groupError), code: group.code, updateId: updateId, assetId: nil)
+    }
+  }
+
+  private func assetLoadFailures(in error: Error) -> [AssetLoadFailure]? {
+    var current: Error? = error
+    while let error = current {
+      if case let .appLoaderFailedToLoadAllAssets(failures)? = error as? UpdatesError {
+        return failures
+      }
+      current = (error as? UpdatesError)?.cause
+    }
+    return nil
+  }
+
   func fatal(
     cause: UpdatesError,
     code: UpdatesErrorCode = .none,

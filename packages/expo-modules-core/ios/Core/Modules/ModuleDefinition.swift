@@ -106,11 +106,6 @@ public final class ModuleDefinition: ObjectDefinition {
       viewPrototypesObject.setProperty(key == DEFAULT_MODULE_VIEW ? name : "\(name)_\(view.name)", value: reactComponentPrototype)
     }
 
-    if !eventObservers.isEmpty {
-      try EventObservingDecorator(definitions: eventObservers)
-        .decorate(object: object, appContext: appContext)
-    }
-
     object.setProperty("ViewPrototypes", value: viewPrototypesObject)
     // Give the module object a name. It's used for compatibility reasons, see `EventEmitter.ts`.
     object.defineProperty("__expo_module_name__", value: name, options: [])

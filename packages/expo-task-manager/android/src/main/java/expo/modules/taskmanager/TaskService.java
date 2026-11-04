@@ -249,7 +249,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     // Determine in which table the task manager will be stored.
     // Having two tables for them is to prevent race condition problems,
     // when both foreground and background apps are launching at the same time.
-    boolean isHeadless = isStartedByHeadlessLoader(appScopeKey);
+    boolean isHeadless = isRunningInHeadlessMode(appScopeKey);
     Map<String, WeakReference<TaskManagerInterface>> taskManagers = isHeadless ? sHeadlessTaskManagers : sTaskManagers;
 
     // Set task manager in appropriate map.
@@ -274,10 +274,10 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   @Override
-  public boolean isStartedByHeadlessLoader(String appScopeKey) {
-    HeadlessAppLoader appLoader = getAppLoader();
-    if (appLoader != null) {
-      return appLoader.isRunning(appScopeKey);
+  public boolean isRunningInHeadlessMode(String appScopeKey) {
+    HeadlessAppLoader headlessAppLoader = getHeadlessAppLoader();
+    if (headlessAppLoader != null) {
+      return headlessAppLoader.isRunningInHeadlessMode(appScopeKey);
     }
     return false;
   }
@@ -424,7 +424,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
     mTasksAndEventsRepository.putEventForAppScopeKey(appScopeKey, body);
 
-    getAppLoader().loadApp(mContextRef.get(),
+    getHeadlessAppLoader().loadApp(mContextRef.get(),
       new HeadlessAppLoader.Params(appScopeKey, task.getAppUrl()),
       () -> {
       },
@@ -443,7 +443,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   //endregion
   //region helpers
 
-  private HeadlessAppLoader getAppLoader() {
+  private HeadlessAppLoader getHeadlessAppLoader() {
     if (mContextRef.get() != null) {
       return AppLoaderProvider.getLoader("react-native-headless", mContextRef.get());
     } else {
@@ -610,9 +610,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   private void invalidateAppRecord(String appScopeKey) {
-    HeadlessAppLoader appLoader = getAppLoader();
-    if (appLoader != null) {
-      appLoader.invalidateApp(appScopeKey);
+    HeadlessAppLoader headlessAppLoader = getHeadlessAppLoader();
+    if (headlessAppLoader != null) {
+      headlessAppLoader.invalidateApp(appScopeKey);
     }
   }
 

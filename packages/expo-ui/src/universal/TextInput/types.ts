@@ -53,6 +53,11 @@ export interface TextInputProps {
   placeholder?: string;
 
   /**
+   * Label announced by screen readers, including when the field contains text.
+   */
+  accessibilityLabel?: string;
+
+  /**
    * If true, focuses the input on mount.
    * @default false
    */

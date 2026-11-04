@@ -6,7 +6,7 @@ const TRIM_SECTION_PAGE_THRESHOLD = 30;
 const AREA_LABELS: Record<string, string> = {
   home: 'Home',
   general: 'Guides',
-  eas: 'EAS',
+  eas: 'Expo Services',
   reference: 'Reference',
   learn: 'Learn',
 };

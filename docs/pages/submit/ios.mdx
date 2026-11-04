@@ -1,7 +1,7 @@
 ---
-title: Submit to the Apple App Store with EAS Submit
+title: Submit to the Apple App Store with Expo Submit
 sidebar_title: Submit to Apple App Store
-description: Learn how to submit your iOS app to the Apple App Store with EAS Submit.
+description: Learn how to submit your iOS app to the Apple App Store with Expo Submit.
 ---
 
 import { AppleAppStoreIcon } from '@expo/styleguide-icons/custom/AppleAppStoreIcon';
@@ -13,7 +13,7 @@ import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { CODE } from '~/ui/components/Text';
 
-[EAS Submit](/deploy/submit-to-app-stores/) is the recommended way to upload your iOS app to the Apple App Store. The `eas submit` command works the same way on your machine and inside CI/CD. [EAS Workflows](/eas/workflows/introduction/) is the simplest way to run it automatically after a build. EAS Submit works on macOS, Linux, and Windows, so you don't need a Mac to ship iOS builds.
+[Expo Submit](/deploy/submit-to-app-stores/) is the recommended way to upload your iOS app to the Apple App Store. The `eas submit` command works the same way on your machine and inside CI/CD. [Expo Workflows](/eas/workflows/introduction/) is the simplest way to run it automatically after a build. Expo Submit works on macOS, Linux, and Windows, so you don't need a Mac to ship iOS builds.
 
 ## Prerequisites
 
@@ -50,7 +50,7 @@ import { CODE } from '~/ui/components/Text';
 
 ## Build a production app
 
-You need a production **.ipa** to submit. Create one with [EAS Build](/build/introduction/):
+You need a production **.ipa** to submit. Create one with [Expo Build](/build/introduction/):
 
 <Terminal cmd={['$ eas build --platform ios --profile production']} />
 
@@ -99,22 +99,22 @@ See the [eas.json reference](/eas/json/#ios-specific-options-1) for every availa
 
 ### Build and submit in one step
 
-Pass `--auto-submit` to `eas build` to hand the finished build off to EAS Submit automatically:
+Pass `--auto-submit` to `eas build` to hand the finished build off to Expo Submit automatically:
 
 <Terminal cmd={['$ eas build --platform ios --auto-submit']} />
 
 See [Automate submissions](/build/automate-submissions/) for details.
 
-## Automate with EAS Workflows
+## Automate with Expo Workflows
 
-[EAS Workflows](/eas/workflows/introduction/) runs the same submit step on EAS infrastructure, triggered by a git push or run manually from the CLI. First, configure an App Store Connect API Key so workflows can authenticate with Apple non-interactively:
+[Expo Workflows](/eas/workflows/introduction/) runs the same submit step on Expo infrastructure, triggered by a git push or run manually from the CLI. First, configure an App Store Connect API Key so workflows can authenticate with Apple non-interactively:
 
 <Terminal cmd={['$ eas credentials --platform ios']} />
 
 1. Select the `production` build profile.
 2. Log in with your Apple Developer account and follow the prompts.
 3. Select **App Store Connect: Manage your API Key**.
-4. Select **Set up your project to use an API Key for EAS Submit**.
+4. Select **Set up your project to use an API Key for Expo Submit**.
 
 <Collapsible summary="Prefer to bring your own credentials?">
 
@@ -169,11 +169,11 @@ With `--non-interactive`, `eas submit` and `eas build --auto-submit` cannot prom
 App Store Connect API Keys cannot be set up in --non-interactive mode.
 ```
 
-To fix this, assign a key to your app or bring your own credentials, as described in [Automate with EAS Workflows](#automate-with-eas-workflows). In non-interactive mode, your submission profile also needs [`ascAppId`](#configure-a-submission-profile).
+To fix this, assign a key to your app or bring your own credentials, as described in [Automate with Expo Workflows](#automate-with-expo-workflows). In non-interactive mode, your submission profile also needs [`ascAppId`](#configure-a-submission-profile).
 
 ## Manual fallback
 
-If EAS Submit is temporarily unavailable, you can upload to the Apple App Store manually from a Mac with Xcode.
+If Expo Submit is temporarily unavailable, you can upload to the Apple App Store manually from a Mac with Xcode.
 
 <BoxLink
   title="Manually submit an iOS app with Xcode"

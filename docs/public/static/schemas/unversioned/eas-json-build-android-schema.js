@@ -40,7 +40,7 @@ export default [
       ' - `"versionCode"` (or `true`) - bumps `expo.android.versionCode` (for example, `3` to `4`).',
       " - `false` - versions won't be bumped automatically (default).",
       '',
-      'Based on the value of [`cli.appVersionSource` in **eas.json**](/build-reference/app-versions/), the values will be updated locally in your project or on EAS servers.',
+      'Based on the value of [`cli.appVersionSource` in **eas.json**](/build-reference/app-versions/), the values will be updated locally in your project or on Expo servers.',
     ],
   },
   {
@@ -64,7 +64,7 @@ export default [
     name: 'applicationArchivePath',
     type: 'string',
     description: [
-      'Path (or pattern) where EAS Build is going to look for the application archive. EAS Build uses [glob patterns](https://github.com/isaacs/node-glob#glob-primer) for pattern matching. The default value is `android/app/build/outputs/**/*.{apk,aab}`.',
+      'Path (or pattern) where Expo Build is going to look for the application archive. Expo Build uses [glob patterns](https://github.com/isaacs/node-glob#glob-primer) for pattern matching. The default value is `android/app/build/outputs/**/*.{apk,aab}`.',
     ],
   },
   {
