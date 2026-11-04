@@ -143,16 +143,32 @@ describe('inlineModules.ts', () => {
       });
     });
 
-    it('does not treat an @ExpoModule mention in a string or a block comment as the macro', async () => {
+    it('keeps a file that mentions @ExpoModule in a string or a comment as an inline module, but not as the macro', async () => {
       vol.fromJSON({
         '/example-project/Helpers.swift':
           'import Foundation\n/* Move to\n   @ExpoModule */\nlet hint = "Use @ExpoModule"\nlet raw = #"@ExpoModule \\"#\nlet text = """\n@ExpoModule\n"""\n',
       });
 
       await expect(getSwiftInlineModuleInfo('/example-project/Helpers.swift')).resolves.toEqual({
-        hasModuleDefinition: false,
+        hasModuleDefinition: true,
         declaredWithMacro: false,
       });
+    });
+
+    it('keeps a module after a regex literal with a quote as an inline module', async () => {
+      // The quote looks like the start of a string, so the macro isn't found in the stripped source. The file
+      // must still be an inline module, so that `getModuleClasses()` lists it as before.
+      vol.fromJSON({
+        '/example-project/QuoteModule.swift':
+          'import ExpoModulesCore\nlet quote = /"/\n@ExpoModule\npublic final class QuoteModule: Module {}',
+      });
+
+      await expect(getSwiftInlineModuleInfo('/example-project/QuoteModule.swift')).resolves.toEqual(
+        {
+          hasModuleDefinition: true,
+          declaredWithMacro: false,
+        }
+      );
     });
   });
 

@@ -27,8 +27,7 @@ export interface InlineModulesScanOptions {
 const nativeExtensions = ['.kt', '.swift'];
 // Checks for func definition() -> <anything>ModuleDefinition. <anything> because ExpoModulesCore.ModuleDefinition is a valid usage
 const swiftModuleDefinitionRegex = /\bfunc\s+definition\s*\(\s*\)\s*->\s*[\w.]*ModuleDefinition\b/;
-// Expo Modules 2.0 classes declare `@ExpoModule` instead of a `definition()` DSL. It's matched in the code
-// without comments and string literals (see `stripSwiftCommentsAndStrings`), so a mention there doesn't count.
+// Expo Modules 2.0 classes declare `@ExpoModule` instead of a `definition()` DSL.
 const swiftExpoModuleMacroRegex = /@ExpoModule\b/;
 // The opening delimiter of a Swift string literal, with the `#` of a raw string. Sticky, to match at a position.
 const swiftStringStartRegex = /(#*)("""|")/y;
@@ -121,10 +120,14 @@ export async function getSwiftInlineModuleInfo(
     warn(`Swift inline module '${absoluteFilePath}' could not be opened.`);
     return { hasModuleDefinition: false, declaredWithMacro: false };
   }
-  const declaredWithMacro = swiftExpoModuleMacroRegex.test(stripSwiftCommentsAndStrings(contents));
+  // Any mention of the macro makes the file an inline module, so that `getModuleClasses()` lists the same modules
+  // as before `packages` was added. Only `packages` ignores a mention in a comment or a string.
+  const hasModuleDefinition =
+    swiftModuleDefinitionRegex.test(contents) || swiftExpoModuleMacroRegex.test(contents);
   return {
-    hasModuleDefinition: declaredWithMacro || swiftModuleDefinitionRegex.test(contents),
-    declaredWithMacro,
+    hasModuleDefinition,
+    declaredWithMacro:
+      hasModuleDefinition && swiftExpoModuleMacroRegex.test(stripSwiftCommentsAndStrings(contents)),
   };
 }
 
