@@ -1,8 +1,8 @@
 #!/usr/bin/env node
+import { boolish } from '@expo/env';
 import arg from 'arg';
 import chalk from 'chalk';
 import Debug from 'debug';
-import { boolish } from 'getenv';
 
 import { runLegacyCLIAsync } from './runLegacyCLIAsync';
 import { logCmdError } from './utils/errors';
