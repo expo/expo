@@ -28,7 +28,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.build = build;
-const base64_js_1 = __importDefault(require("base64-js"));
 const xmlbuilder_1 = __importDefault(require("xmlbuilder"));
 /**
  * Accepts a `Date` instance and returns an ISO date string.
@@ -140,11 +139,11 @@ function walk_obj(next, next_child) {
         next_child.ele('string').txt(next);
     }
     else if (name === 'ArrayBuffer') {
-        next_child.ele('data').raw(base64_js_1.default.fromByteArray(next));
+        next_child.ele('data').raw(Buffer.from(next).toString('base64'));
     }
     else if (next && next.buffer && type(next.buffer) === 'ArrayBuffer') {
         // a typed array
-        next_child.ele('data').raw(base64_js_1.default.fromByteArray(new Uint8Array(next.buffer)));
+        next_child.ele('data').raw(Buffer.from(next.buffer).toString('base64'));
     }
 }
 //# sourceMappingURL=build.js.map
