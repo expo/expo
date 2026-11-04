@@ -81,10 +81,12 @@ class TaskManagerModule : Module() {
     }
 
     OnStartObserving {
+      // Resolve the internal module now. The app context can be gone when the delayed runnable runs.
+      val internal = taskManagerInternal
       val handler = Handler(Looper.getMainLooper())
       handler.postDelayed(
         {
-          taskManagerInternal?.flushQueuedEvents()
+          internal?.flushQueuedEvents()
         },
         1000
       )
