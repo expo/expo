@@ -61,7 +61,10 @@
           "linkedFrameworks": ["Foundation", "UserNotifications", "AVKit", "AVFoundation", "UIKit"],
           "includeDirectories": ["."],
           "compilerFlags": {
-            "common": ["-DEXPO_MODULES_CORE_VERSION=${PACKAGE_VERSION}"]
+            "common": [
+              "-DEXPO_MODULES_CORE_VERSION=${PACKAGE_VERSION}",
+              "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_MINOR_VERSION}"
+            ]
           }
         },
         {
