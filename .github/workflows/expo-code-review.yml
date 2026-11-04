@@ -201,6 +201,34 @@ jobs:
         run: |
           printf 'Pull request title: %s\n\nPull request body:\n%s\n' "$PR_TITLE" "$PR_BODY" > "$RUNNER_TEMP/pr-description.md"
 
+      # routing.jsonc is the one list of autonomous review paths. This checkout is the
+      # default branch, so a PR cannot change the list it is checked against.
+      # Only full-line `//` comments are stripped, so keep the file free of trailing ones.
+      - name: Find files in the autonomous review scope
+        id: scope
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          mapfile -t globs < <(sed 's#^[[:space:]]*//.*##' .expo-agents/code-review/routing.jsonc \
+            | jq -r '.scopes[] | select(.name == "autonomous") | .paths[]')
+          if [ "${#globs[@]}" -eq 0 ]; then
+            echo "::warning::Could not read the autonomous scope paths from routing.jsonc."
+          fi
+          files=$(gh api --paginate "repos/$REPO/pulls/$PR/files" --jq '.[].filename' || true)
+          autonomous=false
+          while IFS= read -r file; do
+            for glob in "${globs[@]}"; do
+              # Unquoted on purpose: the right side is a glob pattern.
+              if [[ -n $file && $file == $glob ]]; then
+                autonomous=true
+                break 2
+              fi
+            done
+          done <<< "$files"
+          echo "autonomous=$autonomous" >> "$GITHUB_OUTPUT"
+
       # A sandbox lets reviewers check how a tool behaves by running it. The parent
       # EXPO_SANDBOX_MCP_TOKEN reaches only this step and the revoke step. The review
       # gets a child token with one sandbox, no builds, and the tools listed here.
@@ -210,25 +238,16 @@ jobs:
       # AI_REVIEW_FORK_PRS starts its review without a label.
       - name: Mint sandbox token
         if: >-
-          github.event.pull_request.head.repo.full_name == github.repository
-          || contains(github.event.pull_request.labels.*.name, 'ai-review')
+          steps.scope.outputs.autonomous == 'true'
+          && (github.event.pull_request.head.repo.full_name == github.repository
+          || contains(github.event.pull_request.labels.*.name, 'ai-review'))
         continue-on-error: true
         env:
           MCP_URL: https://agile-minnow-543.convex.site
           EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
           SANDBOX_MCP_CONFIG: ${{ runner.temp }}/review-sandbox-mcp.json
           RUN_ID: ${{ github.run_id }}
-          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
-          REPO: ${{ github.repository }}
-          PR: ${{ github.event.pull_request.number }}
-          # Keep in sync with the autonomous scope paths in .expo-agents/code-review/routing.jsonc.
-          AUTONOMOUS_PATHS: '^packages/patch-project/'
         run: |
-          files=$(gh api --paginate "repos/$REPO/pulls/$PR/files" --jq '.[].filename' || true)
-          if ! grep -qE "$AUTONOMOUS_PATHS" <<< "$files"; then
-            echo "No file in the autonomous review scope. The review runs without a sandbox."
-            exit 0
-          fi
           body=$(jq -cn --arg name "ecr-review-$RUN_ID" '{
             sandboxBudget: 1, buildBudget: 0, ttlSeconds: 6000, name: $name,
             allowedTools: ["list_sandboxes", "create_sandbox", "sandbox_write_file", "sandbox_exec", "destroy_sandbox"]
