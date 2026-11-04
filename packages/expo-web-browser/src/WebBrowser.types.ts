@@ -65,6 +65,24 @@ export type WebBrowserOpenOptions = {
    */
   useProxyActivity?: boolean;
   /**
+   * A URI to pass as [`Intent.EXTRA_REFERRER`](https://developer.android.com/reference/android/content/Intent#EXTRA_REFERRER)
+   * on the Custom Tabs intent, so that the opened website can read the referring app.
+   * The conventional value is `android-app://<your.package.name>`, where the package
+   * name can be read at runtime from [`expo-application`](./application).
+   *
+   * @example
+   * ```ts
+   * import * as Application from 'expo-application';
+   * import * as WebBrowser from 'expo-web-browser';
+   *
+   * WebBrowser.openBrowserAsync(url, {
+   *   referrer: `android-app://${Application.applicationId}`,
+   * });
+   * ```
+   * @platform android
+   */
+  referrer?: string;
+  /**
    * Tint color for controls in SKSafariViewController. Supports React Native [color formats](https://reactnative.dev/docs/colors).
    * @platform ios
    */
