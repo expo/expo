@@ -1663,9 +1663,6 @@ importers:
       express:
         specifier: ^5.1.0
         version: 5.2.1
-      getenv:
-        specifier: ^2.0.0
-        version: 2.0.0
       morgan:
         specifier: ^1.11.0
         version: 1.11.0
@@ -1965,9 +1962,6 @@ importers:
       expo-web-browser:
         specifier: workspace:*
         version: link:../../packages/expo-web-browser
-      getenv:
-        specifier: ^2.0.0
-        version: 2.0.0
       i18n-js:
         specifier: ^3.1.0
         version: 3.9.2
@@ -2005,9 +1999,6 @@ importers:
       '@types/async-retry':
         specifier: ^1.4.5
         version: 1.4.9
-      '@types/getenv':
-        specifier: ^1.0.3
-        version: 1.0.3
       '@types/invariant':
         specifier: ^2.2.35
         version: 2.2.37
@@ -7168,9 +7159,6 @@ importers:
       fs-extra:
         specifier: ^11.2.0
         version: 11.3.4
-      getenv:
-        specifier: ^2.0.0
-        version: 2.0.0
       inquirer:
         specifier: ^8.2.2
         version: 8.2.7(@types/node@22.20.1)
@@ -7247,9 +7235,6 @@ importers:
       '@types/fs-extra':
         specifier: ^11.0.4
         version: 11.0.4
-      '@types/getenv':
-        specifier: ^1.0.3
-        version: 1.0.3
       '@types/inquirer':
         specifier: ^8.2.10
         version: 8.2.12
