@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update `glob` to 14.0.3. ([#52819](https://github.com/expo/expo/pull/52819) by [@kitten](https://github.com/kitten))
+
 ## 1.20.4 — 2026-08-26
 
 ### 🐛 Bug fixes

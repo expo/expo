@@ -84,7 +84,7 @@
     "babel-plugin-dynamic-import-node": "^2.3.3",
     "commander": "^12.1.0",
     "eslint-config-universe": "workspace:^16.0.0",
-    "glob": "^13.0.0",
+    "glob": "^14.0.3",
     "jest-expo": "workspace:~57.0.6",
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",
