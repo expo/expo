@@ -71,6 +71,58 @@ describe('scriptPhasesForModules', () => {
     const twice = scriptPhasesForModules(['expo-constants', 'expo', 'expo-constants']);
     expect(twice).toEqual(once);
   });
+
+  describe('launcher', () => {
+    const [{ script }] = scriptPhasesForModules(['expo-constants']);
+    let tmp;
+    let srcRoot;
+
+    afterEach(() => {
+      fs.rmSync(tmp, { recursive: true, force: true });
+    });
+
+    // npm nests expo-constants under expo when the app does not list it, so it is not
+    // reachable from the app root.
+    it('finds expo-constants through expo when it is not reachable from the app root', () => {
+      tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'expo-constants-launcher-')));
+      const app = path.join(tmp, 'app');
+      srcRoot = path.join(app, 'ios');
+      fs.mkdirSync(srcRoot, { recursive: true });
+      const expoDir = path.join(app, 'node_modules', 'expo');
+      const constantsDir = path.join(expoDir, 'node_modules', 'expo-constants');
+      for (const [dir, name] of [
+        [expoDir, 'expo'],
+        [constantsDir, 'expo-constants'],
+      ]) {
+        fs.mkdirSync(dir, { recursive: true });
+        fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({ name }));
+      }
+      fs.mkdirSync(path.join(constantsDir, 'scripts'));
+      fs.writeFileSync(
+        path.join(constantsDir, 'scripts', 'get-app-config-ios.sh'),
+        '#!/bin/bash\necho "SCRIPT=$0"\n',
+        { mode: 0o755 }
+      );
+
+      const result = spawnSync('bash', ['-c', script], {
+        cwd: srcRoot,
+        encoding: 'utf8',
+        env: {
+          HOME: tmp,
+          PATH: process.env.PATH,
+          SRCROOT: srcRoot,
+          NODE_BINARY: process.execPath,
+          TARGET_BUILD_DIR: path.join(tmp, 'build'),
+          UNLOCALIZED_RESOURCES_FOLDER_PATH: 'App.app',
+        },
+      });
+      expect(result.stderr).toBe('');
+      expect(result.status).toBe(0);
+      expect(result.stdout).toBe(
+        `SCRIPT=${path.join(constantsDir, 'scripts', 'get-app-config-ios.sh')}\n`
+      );
+    });
+  });
 });
 
 describe('the ExpoModulesJSI build phase', () => {

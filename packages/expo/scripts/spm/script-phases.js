@@ -51,9 +51,19 @@ export PROJECT_ROOT="\${PROJECT_ROOT:-$SRCROOT/..}"
 
 # Resolve the package from the app at BUILD time; a path baked in at generation
 # time dangles as soon as the store layout changes.
-EXPO_CONSTANTS_DIR="$("$NODE_BINARY" --print "require('path').dirname(require.resolve('expo-constants/package.json', { paths: [process.argv[1]] }))" "$PROJECT_ROOT" 2>/dev/null || true)"
+# expo-constants is a dependency of expo. When the app does not list it, npm can nest it under
+# expo and pnpm does not link it to the app root, so try the app root first, then expo.
+EXPO_CONSTANTS_DIR="$("$NODE_BINARY" --print "
+  const path = require('path');
+  const root = process.argv[1];
+  let expoDir = root;
+  try {
+    expoDir = path.dirname(require.resolve('expo/package.json', { paths: [root] }));
+  } catch {}
+  path.dirname(require.resolve('expo-constants/package.json', { paths: [root, expoDir] }));
+" "$PROJECT_ROOT" 2>/dev/null || true)"
 if [ -z "$EXPO_CONSTANTS_DIR" ] || [ ! -f "$EXPO_CONSTANTS_DIR/scripts/get-app-config-ios.sh" ]; then
-  echo "error: expo-constants could not be resolved from $PROJECT_ROOT, so the embedded app config was not generated. Reinstall your dependencies, or remove expo-constants if it is no longer used." >&2
+  echo "error: expo-constants could not be resolved from $PROJECT_ROOT or through expo, so the embedded app config was not generated. Reinstall your dependencies, or remove expo-constants if it is no longer used." >&2
   exit 1
 fi
 
