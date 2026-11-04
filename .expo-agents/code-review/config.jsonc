@@ -93,7 +93,7 @@
       "url": "https://agile-minnow-543.convex.site/mcp",
       "tokenEnv": "REVIEW_SANDBOX_TOKEN",
       "tools": ["list_sandboxes", "create_sandbox", "sandbox_write_file", "sandbox_exec"],
-      "agents": ["deep", "correctness", "verifier"]
+      "agents": ["deep", "verifier"]
     }
   },
   "research": {
