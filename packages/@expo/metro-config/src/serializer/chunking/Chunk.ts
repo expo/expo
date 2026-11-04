@@ -10,7 +10,7 @@ import { getServerRunModuleStatement } from '../getServerRunModuleStatement';
 import { transformJsAssetToHermesBytecodeAsync } from '../hermesArtifacts';
 import { serializeJavaScriptArtifactsAsync } from '../serializeJavaScriptArtifacts';
 import { getModuleReferences, type SerialAsset } from '../serializerAssets';
-import { getSourceMapOptions, sourceMapString } from '../sourceMap';
+import { getSourceMapOptions, sourceMapStringNonBlocking } from '../sourceMap';
 import type {
   ChunkingImplementation,
   ChunkSerializationOptions,
@@ -147,12 +147,15 @@ export class Chunk {
     return { code: bundleToString(jsSplitBundle).code, paths: jsSplitBundle.paths };
   }
 
-  serializeToSourceMap(preModules: Iterable<Module> = this.preModules, debugId?: string): string {
+  async serializeToSourceMapAsync(
+    preModules: Iterable<Module> = this.preModules,
+    debugId?: string
+  ): Promise<string> {
     const modules = [
       ...(this.options.modulesOnly ? [] : preModules),
       ...getSortedModules([...this.deps], this.options),
     ];
-    return sourceMapString(modules, {
+    return sourceMapStringNonBlocking(modules, {
       ...getSourceMapOptions(this.options, this.isServer),
       debugId,
     });
@@ -273,8 +276,8 @@ export class Chunk {
       inlineSourceMap: !!this.options.inlineSourceMap,
       sourceMapUrl: this.getAdjustedSourceMapUrl(outputFile),
       debugId,
-      getSourceMap: () => ({
-        source: this.serializeToSourceMap(
+      getSourceMap: async () => ({
+        source: await this.serializeToSourceMapAsync(
           this.options.inlineSourceMap ? preModules : finalPreModules,
           this.options.inlineSourceMap ? this.options.debugId : debugId
         ),

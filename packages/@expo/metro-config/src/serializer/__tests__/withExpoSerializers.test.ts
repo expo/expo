@@ -1,6 +1,8 @@
 import type { Module } from '@expo/metro/metro/DeltaBundler';
 import baseJSBundle from '@expo/metro/metro/DeltaBundler/Serializers/baseJSBundle';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
+import { TraceMap, originalPositionFor } from '@jridgewell/trace-mapping';
+import { performance } from 'node:perf_hooks';
 import vm from 'node:vm';
 
 import * as graphAssets from '../../transform-worker/getAssets';
@@ -360,6 +362,87 @@ it.each(['node', 'react-server'])(
 );
 
 it.each(['node', 'react-server'])(
+  'keeps %s development maps aligned with plugin-injected premodules',
+  async (environment) => {
+    for (const inlineSourceMap of [false, true]) {
+      const args = await microBundle({
+        fs: { 'index.js': 'export const value = 42;' },
+        options: {
+          dev: true,
+          sourceMaps: true,
+          isServer: environment === 'node',
+          isReactServer: environment === 'react-server',
+        },
+      });
+      const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null, {
+        unstable_beforeAssetSerializationPlugins: [
+          ({ premodules }) => [
+            createJSVirtualModule('injected', 'globalThis.injected = true;\n\n'),
+            ...premodules,
+          ],
+        ],
+      });
+      const result = (await serializer(args[0], args[1], args[2], {
+        ...args[3],
+        inlineSourceMap,
+      })) as { code: string; map: string };
+      expect(typeof result).toBe('object');
+      const lines = result.code.split('\n');
+      const line = lines.findIndex((line) => line.includes('const value = 42'));
+      const map = new TraceMap(JSON.parse(result.map));
+      expect(
+        originalPositionFor(map, { line: line + 1, column: lines[line]!.indexOf('const') })
+      ).toMatchObject({ source: '/app/index.js', line: 1 });
+      if (inlineSourceMap) {
+        const inline = Buffer.from(result.code.match(/base64,([^\n]+)/)![1]!, 'base64').toString();
+        expect(JSON.parse(inline)).toEqual(JSON.parse(result.map));
+      }
+    }
+  }
+);
+
+it.each([
+  [undefined, false],
+  ['static', false],
+  [undefined, true],
+  ['static', true],
+] as const)(
+  'yields during slow source collection for %s server output (inline: %s)',
+  async (output, inlineSourceMaps) => {
+    const args = await microBundle({
+      fs: {
+        'index.js': "import './a'; import './b'; import './c'; export const value = 42;",
+        'a.js': 'console.log(1);',
+        'b.js': 'console.log(2);',
+        'c.js': 'console.log(3);',
+      },
+      options: { dev: true, isServer: true, sourceMaps: true, output, inlineSourceMaps },
+    });
+    for (const module of args[2].dependencies.values()) {
+      const getSource = module.getSource.bind(module);
+      Object.defineProperty(module, 'getSource', {
+        value: () => {
+          const start = performance.now();
+          while (performance.now() - start < 20) {}
+          return getSource();
+        },
+      });
+    }
+    const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+    let yielded = false;
+    const tick = setImmediate(() => {
+      yielded = true;
+    });
+    try {
+      await serializer(...args);
+      expect(yielded).toBe(true);
+    } finally {
+      clearImmediate(tick);
+    }
+  }
+);
+
+it.each(['node', 'react-server'])(
   'exports conventional %s entries through the run-module callback',
   async (environment) => {
     const [entry, premodules, graph, options] = await microBundle({
@@ -388,7 +471,7 @@ it.each(['node', 'react-server'])(
     );
     const result = (await serializer(entry, premodules, graph, {
       ...options,
-      sourceUrl: 'http://localhost/index.bundle',
+      sourceUrl: 'http://localhost/index.map',
       runBeforeMainModule: ['/app/bootstrap.js'],
       getRunModuleStatement: (moduleId) => `__r(${JSON.stringify(moduleId)});`,
     })) as { code: string; map: string };

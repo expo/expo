@@ -7,6 +7,7 @@
 import type { MetroConfig } from '@expo/metro/metro';
 import type { ConfigT, InputConfigT } from '@expo/metro/metro-config';
 import type { Module, ReadOnlyGraph, MixedOutput } from '@expo/metro/metro/DeltaBundler';
+import getInlineSourceMappingURL from '@expo/metro/metro/DeltaBundler/Serializers/helpers/getInlineSourceMappingURL';
 import type { ReadOnlyDependencies } from '@expo/metro/metro/DeltaBundler/types';
 import { isJscSafeUrl, toNormalUrl } from 'jsc-safe-url';
 
@@ -129,11 +130,18 @@ function createConventionalSerializer(
     const enableDebugId = options.inlineSourceMap !== true && !isPossiblyDev;
 
     const chunk = graphToSingleChunk(entryPoint, preModules, graph, options);
-    const serializeBundle = (preModules: readonly Module[], debugId?: string) =>
+    const serializeBundle = (preModules: readonly Module[], debugId?: string, inlineMap?: string) =>
       chunk.serializeToCode(config.serializer ?? {}, {
         preModules,
         runBeforeMainModule: options.runBeforeMainModule,
         debugId,
+        ...(inlineMap != null
+          ? {
+              inlineSourceMap: false,
+              sourceMapUrl: getInlineSourceMappingURL(inlineMap),
+              serializerOptions: { ...options.serializerOptions, includeSourceMaps: true },
+            }
+          : {}),
       });
 
     // TODO(@kitten): Find a way to avoid serializing just to create a debugId
@@ -142,7 +150,10 @@ function createConventionalSerializer(
     for (const plugin of configOptions.unstable_beforeAssetSerializationPlugins ?? []) {
       premodulesToBundle = plugin({ graph, premodules: [...premodulesToBundle], debugId });
     }
-    const bundleCode = serializeBundle(premodulesToBundle, debugId).code;
+    const inlineMap = options.inlineSourceMap
+      ? await chunk.serializeToSourceMapAsync(premodulesToBundle, options.debugId)
+      : undefined;
+    const bundleCode = serializeBundle(premodulesToBundle, debugId, inlineMap).code;
 
     if (options.sourceUrl) {
       const url = isJscSafeUrl(options.sourceUrl)
@@ -153,7 +164,7 @@ function createConventionalSerializer(
       if (parsed.pathname.endsWith('.map')) {
         return {
           code: bundleCode,
-          map: chunk.serializeToSourceMap(premodulesToBundle),
+          map: inlineMap ?? (await chunk.serializeToSourceMapAsync(premodulesToBundle)),
         };
       }
     }
@@ -162,7 +173,10 @@ function createConventionalSerializer(
       return bundleCode;
     }
 
-    return { code: bundleCode, map: chunk.serializeToSourceMap(premodulesToBundle, debugId) };
+    return {
+      code: bundleCode,
+      map: inlineMap ?? (await chunk.serializeToSourceMapAsync(premodulesToBundle, debugId)),
+    };
   };
 }
 
