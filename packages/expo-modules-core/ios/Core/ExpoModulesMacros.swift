@@ -141,6 +141,8 @@ public macro Event(_ options: EventOptions...) =
 /// marked with `@JS` and binds them directly into the module's JS object by a synthesized
 /// `_decorateModule(object:in:)`. The `@SharedObject` classes in the `classes:` argument are
 /// emitted as a `_classTypes` static, and core adds their JavaScript classes to the module's JS object.
+/// The `@ExpoView` classes in the `views:` argument are emitted as a `_viewTypes` static, and core
+/// registers them as native components.
 ///
 /// The module's JavaScript name is synthesized into a `_jsName` static and read by core, so there
 /// is no `Name(…)` DSL entry. It defaults to the class name; pass `@ExpoModule("CustomName")` to
@@ -161,11 +163,11 @@ public macro Event(_ options: EventOptions...) =
 @attached(
   member,
   names:
-    named(_jsName), named(_classTypes), named(appContext), named(init),
+    named(_jsName), named(_classTypes), named(_viewTypes), named(appContext), named(init),
     named(_decorateModule), named(_assertTypesConformance))
 @attached(memberAttribute)
 @attached(extension, conformances: AnyModule, Sendable)
-public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = []) =
+public macro ExpoModule(_ name: String? = nil, classes: [Any.Type] = [], views: [Any.Type] = []) =
   #externalMacro(module: "ExpoModulesMacros", type: "ExpoModuleMacro")
 
 /// Member macro applied to a `SharedObject` subclass. Scans the class body for declarations
@@ -302,3 +304,24 @@ public macro Union() =
 @attached(extension, conformances: AnyViewProps, names: named(allProps), named(propSet), named(_decode))
 public macro ViewProps() =
   #externalMacro(module: "ExpoModulesMacros", type: "ViewPropsMacro")
+
+/// Member + extension macro applied to an `ExpoNativeView` subclass, the view class of Expo Modules v2.
+/// It binds the class to its `@ViewProps` type, which is the generic argument, and conforms it to
+/// `AnyNativeView`. The module registers the view with `@ExpoModule(views:)`.
+///
+/// Usage:
+///
+///     @ExpoView<CardProps>
+///     final class CardView: ExpoNativeView {
+///       let titleLabel = UILabel()
+///
+///       func didUpdateProps(_ diff: CardProps.Diff) {
+///         if diff.changed(.title) {
+///           titleLabel.text = props.title
+///         }
+///       }
+///     }
+@attached(member, names: named(Props))
+@attached(extension, conformances: AnyNativeView)
+public macro ExpoView<Props: AnyViewProps>() =
+  #externalMacro(module: "ExpoModulesMacros", type: "ExpoViewMacro")

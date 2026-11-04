@@ -51,13 +51,24 @@ internal final class CoreModule: Module {
       var directEventTypes: [String: Any] = [:]
       let moduleHolder = appContext?.moduleRegistry.get(moduleHolderForName: moduleName)
 
-      guard let viewDefinition = moduleHolder?.definition.views[viewName ?? DEFAULT_MODULE_VIEW] else {
+      let propNames: [String]
+      let eventNames: [String]
+
+      if let viewDefinition = moduleHolder?.definition.views[viewName ?? DEFAULT_MODULE_VIEW] {
+        // A view of Expo Modules v1, declared with `View` in the module definition.
+        propNames = viewDefinition.getSupportedPropNames()
+        eventNames = viewDefinition.getSupportedEventNames()
+      } else if let viewType = moduleHolder?.nativeViewTypes[viewName ?? DEFAULT_MODULE_VIEW] {
+        // A view of Expo Modules v2, an `@ExpoView` class in `@ExpoModule(views:)`.
+        propNames = viewType.propNames
+        eventNames = viewType.eventNames
+      } else {
         return nil
       }
-      for propName in viewDefinition.getSupportedPropNames() {
+      for propName in propNames {
         validAttributes[propName] = true
       }
-      for eventName in viewDefinition.getSupportedEventNames() {
+      for eventName in eventNames {
         guard let normalizedEventName = RCTNormalizeInputEventName(eventName) else {
           continue
         }

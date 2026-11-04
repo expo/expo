@@ -35,7 +35,7 @@
           "type": "objc",
           "name": "ExpoModulesCore_ios_objc",
           "path": "ios",
-          "pattern": "**/*.{m,mm}",
+          "pattern": "**/*.{m,mm,cpp}",
           "headerPattern": "**/*.h",
           "exclude": [
             "Tests/**",
