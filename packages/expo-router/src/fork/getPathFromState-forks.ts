@@ -175,7 +175,7 @@ function segmentMatchesConvention(segment: string): boolean {
 function encodeURISegment(str: string, { preserveBrackets = false } = {}) {
   // Valid characters according to
   // https://datatracker.ietf.org/doc/html/rfc3986#section-3.3 (see pchar definition)
-  str = String(str).replace(/[^A-Za-z0-9\-._~!$&'()*+,;=:@]/g, (char) => encodeURIComponent(char));
+  str = String(str).replace(/[^A-Za-z0-9\-._~!$&'()*+,;=:@]/gu, (char) => encodeURIComponent(char));
 
   if (preserveBrackets) {
     // Preserve brackets
