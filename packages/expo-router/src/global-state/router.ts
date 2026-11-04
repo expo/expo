@@ -295,14 +295,14 @@ export function createImperativeRouter(
     dismissTo: (href, options) => dismissToImpl(enqueue, href, options),
     canDismiss: withWarnOnceIfCalledDuringRender(
       canDismiss,
-      'router.canDismiss() was called during render. During render it can return a stale value, because navigation state is updated after render. Use the useCanDismiss() hook to read it during render, or call router.canDismiss() in an effect or event handler.'
+      'router.canDismiss() was called during render, which can return a stale value. Use the useCanDismiss() hook to read it during render, or call router.canDismiss() in an effect or event handler.'
     ),
     replace: (href, options) => replaceImpl(enqueue, href, options),
     back: (options) => goBackImpl(enqueue, options),
     goBack: (options) => goBackImpl(enqueue, options),
     canGoBack: withWarnOnceIfCalledDuringRender(
       canGoBack,
-      'router.canGoBack() was called during render. During render it can return a stale value, because navigation state is updated after render. Use the useCanGoBack() hook to read it during render, or call router.canGoBack() in an effect or event handler.'
+      'router.canGoBack() was called during render, which can return a stale value. Use the useCanGoBack() hook to read it during render, or call router.canGoBack() in an effect or event handler.'
     ),
     reload,
     prefetch: (href, options) => prefetchImpl(enqueue, href, options),

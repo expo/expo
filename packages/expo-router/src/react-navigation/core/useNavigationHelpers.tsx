@@ -82,7 +82,7 @@ export function useNavigationHelpers<
         });
 
         return isActionHandled(result) || parentNavigationHelpers?.canGoBack() || false;
-      }, 'navigation.canGoBack() was called during render. During render it can return a stale value, because navigation state is updated after render. Use the useCanGoBack() hook to read it for the focused screen during render, or call navigation.canGoBack() in an effect or event handler.'),
+      }, 'navigation.canGoBack() was called during render, which can return a stale value. Use the useCanGoBack() hook to read it for the focused screen during render, or call navigation.canGoBack() in an effect or event handler.'),
       getId: () => navigatorId,
       getParent: (id?: string) => {
         if (id !== undefined) {
@@ -99,7 +99,7 @@ export function useNavigationHelpers<
       },
       getState: withWarnOnceIfCalledDuringRender(
         getState,
-        'navigation.getState() was called during render. During render it can return a stale value, because navigation state is updated after render. Use the useNavigationState() hook to read it during render, or call navigation.getState() in an effect or event handler.'
+        'navigation.getState() was called during render, which can return a stale value. Use the useNavigationState() hook to read it during render, or call navigation.getState() in an effect or event handler.'
       ),
     } as NavigationHelpers<ParamListBase, EventMap> & ActionHelpers;
 

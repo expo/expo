@@ -153,7 +153,7 @@ export function useNavigationCache<
         // If the current screen is focused, we also need to check if parent navigator is focused
         // This makes sure that we return the focus state in the whole tree, not just this navigator
         return navigation ? navigation.isFocused() : true;
-      }, 'navigation.isFocused() was called during render. During render it can return a stale value, because focus state is updated after render. Use the useIsFocused() hook to read focus during render, or call navigation.isFocused() in an effect or event handler.'),
+      }, 'navigation.isFocused() was called during render, which can return a stale value. Use the useIsFocused() hook to read focus during render, or call navigation.isFocused() in an effect or event handler.'),
     };
 
     return navigationItem;

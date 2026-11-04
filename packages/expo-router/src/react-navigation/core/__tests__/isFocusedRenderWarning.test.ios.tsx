@@ -43,7 +43,7 @@ test('warns once when navigation.isFocused() is called during render', async () 
 
   expect(warn.mock.calls).toEqual([
     [
-      'navigation.isFocused() was called during render. During render it can return a stale value, because focus state is updated after render. Use the useIsFocused() hook to read focus during render, or call navigation.isFocused() in an effect or event handler.',
+      'navigation.isFocused() was called during render, which can return a stale value. Use the useIsFocused() hook to read focus during render, or call navigation.isFocused() in an effect or event handler.',
     ],
   ]);
 });
