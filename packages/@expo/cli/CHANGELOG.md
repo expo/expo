@@ -12,6 +12,7 @@
 - Fix server stack traces in development pointing at the wrong source file on Node 24.22 and later. Server bundle source maps are now read before their temporary files are removed, and loader bundles are marked in their bundle URL so Metro symbolicates them against the right bundle. ([#52102](https://github.com/expo/expo/pull/52102) by [@brentvatne](https://github.com/brentvatne))
 - Fix corruption of unrelated string literals in native exports containing DOM components by resolving HTML filenames before Hermes compilation. Defer Hermes compilation only for chunks that reference DOM components. ([#52752](https://github.com/expo/expo/pull/52752) by [@kitten](https://github.com/kitten))
 - Fix `expo run:ios --device` staying open after installing and launching an app on a network-paired device when the bundler is disabled. ([#52741](https://github.com/expo/expo/pull/52741) by [@kitten](https://github.com/kitten))
+- Fix opening browser URLs with query parameters and special characters on Windows and WSL. ([#52747](https://github.com/expo/expo/pull/52747) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
