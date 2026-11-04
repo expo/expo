@@ -6311,12 +6311,6 @@ importers:
       fetch-nodeshim:
         specifier: ^0.4.10
         version: 0.4.10
-      temp-dir:
-        specifier: ~2.0.0
-        version: 2.0.0
-      unique-string:
-        specifier: ~2.0.0
-        version: 2.0.0
     devDependencies:
       '@babel/core':
         specifier: ^7.23.7
@@ -11553,10 +11547,6 @@ packages:
   crypt@0.0.2:
     resolution: {integrity: sha512-mCxBlsHFYh9C+HVpiEacem8FEBnMXgU9gy4zmNC+SXAZNB/1idgp/aulFJ4FgCi7GPEVbfyng092GqL2k2rmow==}
 
-  crypto-random-string@2.0.0:
-    resolution: {integrity: sha512-v1plID3y9r/lPhviJ1wrXpLeyUIGAZ2SHNYTEapm7/8A9nLPoyvVp3RK/EPFqn5kEznyWgYZNsRtYYIWbuG8KA==}
-    engines: {node: '>=8'}
-
   css-font-parser@0.2.3:
     resolution: {integrity: sha512-QhdfNV+RjQLVg24d/ls4I8UrA/5WCeEfUmi1je8ISPr7RGZJXwWU2AwZpCiUmWuLZW7dKaB3ER0Bq1W9UhEUag==}
 
@@ -15378,10 +15368,6 @@ packages:
     engines: {node: '>= 4.6'}
     hasBin: true
 
-  temp-dir@2.0.0:
-    resolution: {integrity: sha512-aoBAniQmmwtcKp/7BzsH8Cxzv8OL736p7v1ihGb5e9DJ9kTwGWHrQrVB5+lfVDzfGrdRzXch+ig7LHaY1JTOrg==}
-    engines: {node: '>=8'}
-
   terminal-link@2.1.1:
     resolution: {integrity: sha512-un0FmiRUQNr5PJqy9kP7c40F5BOfpGlYTrxonDChEZB7pzZxRNp/bt+ymiy9/npwXya9KH99nJ/GXFIiUkYGFQ==}
     engines: {node: '>=8'}
@@ -15676,10 +15662,6 @@ packages:
   unicorn-magic@0.3.0:
     resolution: {integrity: sha512-+QBBXBCvifc56fsbuxZQ6Sic3wqqc3WWaqxs58gvJrcOuN83HGTCwz3oS5phzU9LthRNE9VrJCFCLUgHeeFnfA==}
     engines: {node: '>=18'}
-
-  unique-string@2.0.0:
-    resolution: {integrity: sha512-uNaeirEPvpZWSgzwsPGtU2zVSTrn/8L5q/IexZmH0eH6SA73CmAA5U4GwORTxQAZs95TAXLNqeLoPPNO5gZfWg==}
-    engines: {node: '>=8'}
 
   universal-user-agent@6.0.1:
     resolution: {integrity: sha512-yCzhz6FN2wU1NiiQRogkTQszlQSlpWaw8SvVegAc+bDxbzHgh1vX8uIe8OYyMH6DwH+sdTJsgMl36+mSMdRJIQ==}
@@ -20677,8 +20659,6 @@ snapshots:
 
   crypt@0.0.2: {}
 
-  crypto-random-string@2.0.0: {}
-
   css-font-parser@0.2.3: {}
 
   css-in-js-utils@3.1.0:
@@ -25241,8 +25221,6 @@ snapshots:
       mri: 1.2.0
       tinydate: 1.3.0
 
-  temp-dir@2.0.0: {}
-
   terminal-link@2.1.1:
     dependencies:
       ansi-escapes: 4.3.2
@@ -25505,10 +25483,6 @@ snapshots:
   unicode-property-aliases-ecmascript@2.2.0: {}
 
   unicorn-magic@0.3.0: {}
-
-  unique-string@2.0.0:
-    dependencies:
-      crypto-random-string: 2.0.0
 
   universal-user-agent@6.0.1: {}
 
