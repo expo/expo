@@ -41,7 +41,6 @@ export function applyRedirects(
 export function getRedirectModule(redirectConfig: RedirectConfig) {
   return {
     default: function RedirectComponent() {
-      // `usePathname()` omits the query string. Static pages need it so `/old/abc?utm=x` stays `?utm=x`.
       const path = require('./hooks').useRouteInfo().pathnameWithParams;
 
       const isExternal = shouldLinkExternally(redirectConfig.destination);
@@ -73,8 +72,6 @@ export function getRedirectModule(redirectConfig: RedirectConfig) {
 export function convertRedirect(path: string, config: RedirectConfig) {
   const params: Record<string, string | string[]> = {};
 
-  // Static redirect configs drop the leading slash (`old/[id]`). The pathname still has one
-  // (`/old/abc`), so comparing raw `split('/')` results shifts every dynamic segment by one.
   const suffixIndex = path.search(/[?#]/);
   const pathname = suffixIndex === -1 ? path : path.slice(0, suffixIndex);
   const suffix = suffixIndex === -1 ? '' : path.slice(suffixIndex);
@@ -94,7 +91,6 @@ export function convertRedirect(path: string, config: RedirectConfig) {
     }
   }
 
-  // `mergeVariablesWithPath` drops the empty segment from a leading slash, so prefix one here.
   return `/${mergeVariablesWithPath(config.destination, params)}${suffix}`;
 }
 
