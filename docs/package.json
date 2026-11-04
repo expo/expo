@@ -45,9 +45,9 @@
   },
   "dependencies": {
     "@expo/sdk-compatibility": "link:../packages/@expo/sdk-compatibility",
-    "@expo/styleguide": "^14.4.0",
-    "@expo/styleguide-base": "^3.3.0",
-    "@expo/styleguide-cookie-consent": "^2.3.0",
+    "@expo/styleguide": "^15.0.2",
+    "@expo/styleguide-base": "^4.0.1",
+    "@expo/styleguide-cookie-consent": "^3.0.1",
     "@expo/styleguide-icons": "^4.4.0",
     "@expo/styleguide-search-ui": "^10.0.3",
     "@kapaai/react-sdk": "^0.9.6",
