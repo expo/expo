@@ -331,7 +331,7 @@ struct AesCryptoModuleTests {
       encrypt(plaintext, { nonce: nonce }).then(function (sealedData) {
         return Promise.all([
           sealedData.iv('base64'),
-          sealedData.ciphertext({ outputFormat: 'base64' }),
+          sealedData.ciphertext({ encoding: 'base64' }),
           sealedData.tag('base64'),
           sealedData.combined('base64'),
         ]);

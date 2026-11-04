@@ -150,7 +150,7 @@ final class SealedData: SharedObject {
   @JS
   func ciphertext(options: CiphertextOptions?) async -> BinaryOutput {
     return ciphertext(withTag: options?.includeTag ?? false)
-      .formatted(with: options?.outputFormat)
+      .formatted(with: options?.encoding)
   }
 
   var nativeValue: AES.GCM.SealedBox { inner }
