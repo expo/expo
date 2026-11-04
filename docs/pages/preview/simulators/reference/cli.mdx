@@ -156,10 +156,10 @@ https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<sessi
 
 With `--public-link`, EAS CLI prints a public link that contains the preview token, with a warning. Anyone who has a public link can view the simulator without an Expo login, and on iOS, control it.
 
-| `--json` field                                            | Private links (default) | Public links (`--public-link`)              |
-| --------------------------------------------------------- | ----------------------- | ------------------------------------------- |
-| `remoteConfig.webPreviewUrl` or `remoteConfig.previewUrl` | The private link        | The public link, with the preview token     |
-| `remoteConfig.previewApiUrl`                              | Not included            | The preview API URL, with the preview token |
+| `--json` field                                            | Private links (default) | Public links (`--public-link`)               |
+| --------------------------------------------------------- | ----------------------- | -------------------------------------------- |
+| `remoteConfig.webPreviewUrl` or `remoteConfig.previewUrl` | The private link        | The public link, with the preview token      |
+| `remoteConfig.previewApiUrl`                              | Not included            | The preview host URL, with the preview token |
 
 With `--frame-ancestor` or `--cors-origin`, `remoteConfig.previewApiUrl` contains the preview host URL with the preview token, even for a session with private links. The terminal output also shows this URL, with a warning. A web page on an allowed origin uses this URL to show the session. See [Show an Expo Simulators session on your own web page](/preview/simulators/how-to/embed-a-session/).
 
