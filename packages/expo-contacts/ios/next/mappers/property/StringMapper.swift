@@ -13,8 +13,7 @@ struct StringMapper: PropertyMapper {
   }
 
   func extract(from contact: CNContact) throws -> String? {
-    // The repository does not fetch the note when the app cannot access it, and reading a key that
-    // was not fetched raises an Objective-C exception that stops the app.
+    // Reading or writing a key that was not fetched raises an Objective-C exception, which Swift cannot catch.
     guard contact.isKeyAvailable(keyString) else {
       return nil
     }
