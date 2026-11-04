@@ -2,4 +2,4 @@
 "@expo/fingerprint": patch
 ---
 
-Replace glob with Node glob and minimatch with picomatch, and skip node_modules during gitignore discovery
+Replace glob with filesystem searches and minimatch with picomatch, and skip node_modules during gitignore discovery

@@ -72,7 +72,6 @@
     "expo-splash-screen": "workspace:*",
     "memfs": "^3.6.0",
     "require-from-string": "^2.0.2",
-    "temp-dir": "^2.0.0",
-    "tinyglobby": "^0.2.15"
+    "temp-dir": "^2.0.0"
   }
 }

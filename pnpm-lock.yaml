@@ -2660,9 +2660,6 @@ importers:
       temp-dir:
         specifier: ^2.0.0
         version: 2.0.0
-      tinyglobby:
-        specifier: ^0.2.15
-        version: 0.2.15
 
   packages/@expo/image-utils:
     dependencies:

@@ -158,12 +158,7 @@ class Ignore {
   constructor(private rootDir: string) {}
 
   public async initIgnoreAsync(): Promise<void> {
-    const ignoreFilePaths = await Array.fromAsync(
-      fs.glob(`**/${GITIGNORE_FILENAME}`, {
-        cwd: this.rootDir,
-        exclude: (entry) => path.basename(entry) === 'node_modules',
-      })
-    );
+    const ignoreFilePaths = await findIgnoreFilesAsync(this.rootDir);
     // ensure that parent dir is before child directories
     ignoreFilePaths.sort((a, b) => a.length - b.length && a.localeCompare(b));
 
@@ -189,3 +184,24 @@ class Ignore {
 }
 
 //#endregion - a copy of vcs client and ignore handler from expo-updates
+
+async function findIgnoreFilesAsync(root: string): Promise<string[]> {
+  const files: string[] = [];
+  const directories = [''];
+  for (const directory of directories) {
+    const entries = await fs
+      .readdir(path.join(root, directory), { withFileTypes: true })
+      .catch(() => []);
+    for (const entry of entries) {
+      const file = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        if (entry.name !== 'node_modules' && !entry.name.startsWith('.')) {
+          directories.push(file);
+        }
+      } else if (entry.name === GITIGNORE_FILENAME) {
+        files.push(file);
+      }
+    }
+  }
+  return files;
+}
