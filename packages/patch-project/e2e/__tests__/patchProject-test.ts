@@ -1,6 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
 import crypto from 'crypto';
+import { realpathSync } from 'fs';
 import fs from 'fs/promises';
+import os from 'os';
 import path from 'path';
 
 import {
@@ -15,7 +17,7 @@ const originalCI = process.env.CI;
 
 describe('patch-project', () => {
   jest.setTimeout(600000);
-  const tmpDir = require('temp-dir');
+  const tmpDir = realpathSync(os.tmpdir());
   const projectName = 'patch-project-test';
   const projectRoot = path.join(tmpDir, projectName);
   let blankTemplateTarball: string;

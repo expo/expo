@@ -1,6 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
 import { randomUUID } from 'crypto';
+import { realpathSync } from 'fs';
 import fs from 'fs/promises';
+import os from 'os';
 import path from 'path';
 
 import type { FingerprintSource } from '../../src/Fingerprint.types';
@@ -75,7 +77,7 @@ jest.mock('../../src/ExpoConfigLoader', () => ({
 
 describe('managed project test', () => {
   jest.setTimeout(600000);
-  const tmpDir = require('temp-dir');
+  const tmpDir = realpathSync(os.tmpdir());
   const projectName = 'fingerprint-e2e-managed';
   const projectRoot = path.join(tmpDir, projectName);
   let originalConfig: any;
@@ -276,7 +278,7 @@ describe('managed project test', () => {
     const hash = await createProjectHashAsync(projectRoot);
 
     // Simulate the EAS environment secrets file path
-    const tmpDir = require('temp-dir');
+    const tmpDir = realpathSync(os.tmpdir());
     const googleServicesPathNew = path.join(tmpDir, 'eas-environment-secrets', randomUUID());
     try {
       await fs.mkdir(path.dirname(googleServicesPathNew), { recursive: true });
@@ -295,7 +297,7 @@ describe('managed project test', () => {
 
 describe(`getHashSourcesAsync - managed project`, () => {
   jest.setTimeout(600000);
-  const tmpDir = require('temp-dir');
+  const tmpDir = realpathSync(os.tmpdir());
   const projectName = 'fingerprint-e2e-managed';
   const projectRoot = path.join(tmpDir, projectName);
 

@@ -1,17 +1,14 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SelfPath = void 0;
 exports.temporaryDirectory = temporaryDirectory;
+const crypto_1 = require("crypto");
 const fs_1 = require("fs");
+const os_1 = require("os");
 const path_1 = require("path");
-const temp_dir_1 = __importDefault(require("temp-dir"));
-const unique_string_1 = __importDefault(require("unique-string"));
 exports.SelfPath = (0, path_1.join)(__dirname, '..');
 function temporaryDirectory() {
-    const directory = (0, path_1.join)(temp_dir_1.default, (0, unique_string_1.default)());
+    const directory = (0, path_1.join)((0, fs_1.realpathSync)((0, os_1.tmpdir)()), (0, crypto_1.randomBytes)(16).toString('hex'));
     (0, fs_1.mkdirSync)(directory);
     return directory;
 }
