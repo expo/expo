@@ -43,6 +43,8 @@ struct JavaScriptRuntimeLookupTests {
     let owner = JavaScriptRuntime()
 
     owner.withUnsafePointee { pointer in
+      #expect(JavaScriptRuntime.for(unsafePointer: pointer) === owner)
+
       // A second wrapper of the same engine runtime, which it doesn't own, so releasing it leaves the
       // engine runtime alive at the same address.
       var adopted: JavaScriptRuntime? = JavaScriptRuntime(unsafePointer: pointer)
