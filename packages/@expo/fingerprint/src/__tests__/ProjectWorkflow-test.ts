@@ -57,6 +57,25 @@ describe(resolveProjectWorkflowAsync, () => {
     expect(await resolveProjectWorkflowAsync('/app', 'ios', ignorePaths)).toEqual('managed');
   });
 
+  it('reads root and nested gitignore files outside Git', async () => {
+    const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
+    mockSpawnAsync.mockRejectedValue(
+      Object.assign(new Error('Git unavailable'), { code: 'ENOENT' })
+    );
+    try {
+      vol.fromJSON({
+        '/app/.gitignore': 'android/\n',
+        '/app/android/app/build.gradle': '',
+        '/app/ios/.gitignore': 'app.xcodeproj/\n',
+        '/app/ios/app.xcodeproj/project.pbxproj': '',
+      });
+      expect(await resolveProjectWorkflowAsync('/app', 'android', [])).toEqual('managed');
+      expect(await resolveProjectWorkflowAsync('/app', 'ios', [])).toEqual('managed');
+    } finally {
+      mockSpawnAsync.mockImplementation(defaultSpawnAsync as unknown as typeof spawnAsync);
+    }
+  });
+
   it('should return managed workflow for a project with native project files and ignored by gitignore', async () => {
     const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
     // The mock returns partial `SpawnResult`-shaped objects that cover only the fields read by
