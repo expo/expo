@@ -268,7 +268,7 @@ describe('DownloadTask', () => {
     expect(task.state).toBe('idle');
   });
 
-  it('has no response before the download starts', async () => {
+  it('has no response before the download starts', () => {
     const task = new DownloadTask(url, destination);
     expect(task.response).toEqual({ status: null, headers: {} });
     expect(task.state).toBe('idle');
