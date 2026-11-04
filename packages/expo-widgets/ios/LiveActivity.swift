@@ -17,8 +17,12 @@ final class LiveActivity: SharedObject {
       throw LiveActivityNotFoundException(id)
     }
 
-    let newState = LiveActivityAttributes.ContentState(name: name, props: props)
-    await activity.update(ActivityContent(state: newState, staleDate: options.staleDate))
+    let content = ActivityContent(
+      state: LiveActivityAttributes.ContentState(name: name, props: props),
+      staleDate: options.staleDate,
+      relevanceScore: options.relevanceScore
+    )
+    await activity.update(content)
   }
 
   func end(dismissalPolicy: LiveActivityDismissalPolicy?, afterDate: Date?, props: String?, contentDate: Date?) async throws {

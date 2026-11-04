@@ -28,15 +28,27 @@ it.each([{ url, staleDate }, { staleDate }, { url }, {}])(
   }
 );
 
-it('passes an empty native options record for a props-only update', () => {
+it('starts with a relevance score without requiring a URL or stale date', () => {
+  factory.start(props, { relevanceScore: 5 });
+  expect(mockStart.mock.calls).toEqual([[JSON.stringify(props), { relevanceScore: 5 }]]);
+});
+
+it.each([
+  [undefined, {}],
+  [{ relevanceScore: 0 }, { relevanceScore: 0 }],
+  [
+    { relevanceScore: 5, staleDate },
+    { relevanceScore: 5, staleDate: staleDate.getTime() },
+  ],
+] as const)('updates with the native options record for %j', (options, nativeOptions) => {
   const activity = factory.start(props);
   const updatedProps = { status: 'Arriving' };
 
-  activity.update(updatedProps);
-  expect(mockUpdate.mock.calls).toEqual([[JSON.stringify(updatedProps), {}]]);
+  activity.update(updatedProps, options);
+  expect(mockUpdate.mock.calls).toEqual([[JSON.stringify(updatedProps), nativeOptions]]);
 });
 
-it('preserves the positional stale date when updating', () => {
+it('preserves the positional stale date when updating without a relevance score', () => {
   const activity = factory.start(props);
 
   activity.update(props, { staleDate });
