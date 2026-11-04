@@ -450,6 +450,23 @@ it('passes the back button options of the SplitView.Column header to the native 
   expect(props.backVisible).toBe(false);
 });
 
+it('passes the hidden option of the SplitView.Column header to the native header', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column header={{ hidden: true }} />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0]).toMatchObject({ hidden: true });
+});
+
 it('passes the toolbar item menu to the native header with an id for each action', async () => {
   await renderRouter(
     {
