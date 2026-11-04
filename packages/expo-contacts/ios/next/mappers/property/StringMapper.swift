@@ -13,11 +13,19 @@ struct StringMapper: PropertyMapper {
   }
 
   func extract(from contact: CNContact) throws -> String? {
+    // The repository does not fetch the note when the app cannot access it, and reading a key that
+    // was not fetched raises an Objective-C exception that stops the app.
+    guard contact.isKeyAvailable(keyString) else {
+      return nil
+    }
     let value = contact.value(forKey: keyString) as? String
     return (value?.isEmpty ?? true) ? nil : value
   }
 
   func apply(_ value: String?, to contact: CNMutableContact) throws {
+    guard contact.isKeyAvailable(keyString) else {
+      throw ContactFieldNotAccessibleException(keyString)
+    }
     contact[keyPath: keyPath] = value ?? ""
   }
 }

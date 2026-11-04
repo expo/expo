@@ -47,3 +47,9 @@ internal final class FailedToParseDate: Exception {
     "Could not parse date"
   }
 }
+
+internal final class ContactFieldNotAccessibleException: GenericException<String> {
+  override var reason: String {
+    "Could not write the '\(param)' field of the contact, because the app cannot access this field. On iOS the note field requires the com.apple.developer.contacts.notes entitlement: set `ios.accessesContactNotes` to `true` in the app config and create a development build"
+  }
+}
