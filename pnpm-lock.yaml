@@ -2011,6 +2011,9 @@ importers:
       '@types/lodash':
         specifier: ^4.14.184
         version: 4.17.24
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.20.1
       '@types/react':
         specifier: ~19.3.0
         version: 19.3.0
