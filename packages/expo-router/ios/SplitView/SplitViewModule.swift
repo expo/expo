@@ -33,6 +33,8 @@ struct SplitViewToolbarItemRecord: Record {
   @Field var title: String = ""
   @Field var icon: String?
   @Field var menu: SplitViewMenuRecord?
+  @Field var disabled: Bool = false
+  @Field var selected: Bool = false
 }
 
 struct SplitViewMenuRecord: Record {
