@@ -51,11 +51,8 @@ extension ExpoSwiftUI {
   }
 
   /**
-   Decides which SwiftUI instance of a child holds its view. SwiftUI can build more than one instance of
-   the same child, and a `List` builds a new cell for a row while the old cell still exists. Each instance
-   has its own container, but the view can be in only one. The container in a window that SwiftUI displayed
-   last holds it. When there is no such container, the view stays where it is, or goes to the container that
-   SwiftUI displayed last, or to the newest container.
+   SwiftUI can build more than one instance of a child, such as a `List` cell it only measures. Each instance
+   has its own container, but the view can be in only one. The lease gives it to the displayed instance.
    */
   private final class HostedViewLease {
     weak var view: UIView?
@@ -102,8 +99,7 @@ extension ExpoSwiftUI {
       let displayed = live.filter { $0.displayOrder != nil }.sorted { ($0.displayOrder ?? 0) < ($1.displayOrder ?? 0) }
       // SwiftUI calls `onAppear` for an instance outside a window too, such as one it only measures.
       let shown = displayed.last { $0.window != nil }
-      // Moving the view resigns its first responder and cancels its touches. Keep it in place until another container
-      // is shown; a container that enters a window calls `reconcile()` again.
+      // Moving the view resigns its first responder and cancels its touches, so keep it until a container is shown.
       let current = live.first { view.superview === $0 }
       let owner = shown ?? current ?? displayed.last ?? live.last
       owner?.adopt(view)
@@ -124,14 +120,9 @@ extension ExpoSwiftUI {
     }
   }
   #else
-  /**
-   One SwiftUI instance of a hosted child. Its appear and disappear events tell the lease which
-   container is displayed.
-   */
   private struct HostedViewInstance: SwiftUI.View {
     let lease: HostedViewLease
-    // Keep this state here, not in `UIViewHost`: SwiftUI shows one `UIViewHost` value in more than
-    // one place, but builds this view again for each instance. `@StateObject` makes the first layout slower.
+    // Here, not in `UIViewHost`: SwiftUI shows one `UIViewHost` in many places. `@StateObject` slows the first layout.
     @State private var state = HostedViewInstanceState()
 
     var body: some SwiftUI.View {
