@@ -12,6 +12,7 @@ import expo.modules.updates.errorrecovery.ErrorRecovery
 import expo.modules.updates.errorrecovery.ErrorRecoveryDelegate
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
+import expo.modules.updates.loader.AssetsFailedToLoadException
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.LoaderTask
@@ -19,6 +20,7 @@ import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updatesinterface.UpdatesLogMessage
 import expo.modules.updates.manifest.Update
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
@@ -156,7 +158,12 @@ class StartupProcedure(
             if (exception == null) {
               throw AssertionError("Background update with error status must have a nonnull exception object")
             }
-            logger.errorForLoadFailure("Failed to load remote update", exception, UpdatesErrorCode.UpdateFailedToLoad)
+            logger.errorForLoadFailure(
+              UpdatesLogMessage.StartupRemoteLoadFailed,
+              UpdatesLogMessage.StartupRemoteLoadUnreachable,
+              exception,
+              AssetsFailedToLoadException.failureGroups(exception)
+            )
             remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
 
             // Since errors can happen through a number of paths, we do these checks
@@ -277,9 +284,10 @@ class StartupProcedure(
             throw e
           } catch (e: Exception) {
             logger.errorForLoadFailure(
-              "Failed to load remote update for error recovery",
+              UpdatesLogMessage.StartupErrorRecoveryLoadFailed,
+              UpdatesLogMessage.StartupErrorRecoveryLoadUnreachable,
               e,
-              UpdatesErrorCode.UpdateFailedToLoad,
+              AssetsFailedToLoadException.failureGroups(e),
               launchedUpdate?.loggingId
             )
             setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)

@@ -1,5 +1,6 @@
 //  Copyright (c) 2026 650 Industries, Inc. All rights reserved.
 
+import EXUpdatesInterface
 import Foundation
 import Testing
 
@@ -50,53 +51,73 @@ struct AssetLoadFailureTests {
       AssetLoadFailure(assetKey: "d", error: .fileDownloaderHTTPResponseError(statusCode: 500, body: "server exploded"))
     ])
 
-    logger.errorForLoadFailure(error, otherwise: .updateFailedToLoad) {
-      UpdatesError.fetchUpdateProcedureFailed(cause: $0)
-    }
+    logger.errorForLoadFailure(error, failed: .remoteFetchFailed, unreachable: .remoteFetchUnreachable)
     try await Task.sleep(for: .seconds(0.1))
 
-    let errors = logReader.getLogEntries(newerThan: epoch)
-      .compactMap { UpdatesLogEntry.create(from: $0) }
-      .filter { $0.level == "error" }
+    let errors = readErrors(newerThan: epoch)
+    #expect(errors.map { $0.key } == ["remote.assetsFailed", "remote.assetsUnreachable", "remote.assetsFailed"])
     #expect(errors.map { $0.code } == ["AssetsFailedToLoad", "UpdateServerUnreachable", "AssetsFailedToLoad"])
     #expect(errors.map { $0.message } == [
-      "Failed to download new update: Failed to load 2 assets (a, c): HTTP response error 404: not found",
-      "Failed to download new update: Failed to load 1 asset (b): \(UpdatesError.fileDownloaderUnknownError(cause: URLError(.timedOut)).localizedDescription)",
-      "Failed to download new update: Failed to load 1 asset (d): HTTP response error 500: server exploded"
+      "Failed to load 2 asset(s) (a, c): HTTP response error 404: not found",
+      "Could not reach the update server to load 1 asset(s) (b): \(UpdatesError.fileDownloaderUnknownError(cause: URLError(.timedOut)).localizedDescription)",
+      "Failed to load 1 asset(s) (d): HTTP response error 500: server exploded"
     ])
+    #expect(errors.first?.values?["httpStatus"] == "404")
+    #expect(errors.first?.values?["assetKeys"] == "a, c")
+    #expect(errors[1].values?["httpStatus"] == nil)
   }
 
   @Test
-  func `a failed load without asset failures logs one error`() async throws {
+  func `a group of more than five failed assets names the first five`() async throws {
     let epoch = Date()
+    let error = UpdatesError.appLoaderFailedToLoadAllAssets(failures: (0..<7).map { notFound("k\($0)") })
 
-    logger.errorForLoadFailure(UpdatesError.fileDownloaderHTTPResponseError(statusCode: 500, body: "server exploded"), otherwise: .updateFailedToLoad) {
-      UpdatesError.fetchUpdateProcedureFailed(cause: $0)
-    }
+    logger.errorForLoadFailure(error, failed: .remoteFetchFailed, unreachable: .remoteFetchUnreachable)
     try await Task.sleep(for: .seconds(0.1))
 
-    let errors = logReader.getLogEntries(newerThan: epoch)
-      .compactMap { UpdatesLogEntry.create(from: $0) }
-      .filter { $0.level == "error" }
+    let errors = readErrors(newerThan: epoch)
+    #expect(errors.map { $0.values?["assetKeys"] } == ["k0, k1, k2, k3, k4, and 2 more"])
+    #expect(errors.map { $0.values?["count"] } == ["7"])
+  }
+
+  @Test
+  func `a failed load without asset failures logs the failed key`() async throws {
+    let epoch = Date()
+
+    logger.errorForLoadFailure(
+      UpdatesError.fileDownloaderHTTPResponseError(statusCode: 500, body: "server exploded"),
+      failed: .remoteFetchFailed,
+      unreachable: .remoteFetchUnreachable
+    )
+    try await Task.sleep(for: .seconds(0.1))
+
+    let errors = readErrors(newerThan: epoch)
+    #expect(errors.map { $0.key } == ["remote.fetchFailed"])
     #expect(errors.map { $0.code } == ["UpdateFailedToLoad"])
+    #expect(errors.map { $0.message } == ["Failed to download new update: HTTP response error 500: server exploded"])
   }
 
   @Test
-  func `a failed load logged without a wrapper logs each group as it is`() async throws {
+  func `a failed load that cannot reach the server logs the unreachable key`() async throws {
     let epoch = Date()
-    let error = UpdatesError.appLoaderFailedToLoadAllAssets(failures: [
-      notFound("a"),
-      AssetLoadFailure(assetKey: "b", error: .fileDownloaderUnknownError(cause: URLError(.timedOut)))
-    ])
 
-    logger.errorForLoadFailure(error, otherwise: .updateFailedToLoad)
+    logger.errorForLoadFailure(
+      UpdatesError.fileDownloaderUnknownError(cause: URLError(.notConnectedToInternet)),
+      failed: .remoteCheckFailed,
+      unreachable: .remoteCheckUnreachable
+    )
     try await Task.sleep(for: .seconds(0.1))
 
-    let errors = logReader.getLogEntries(newerThan: epoch)
+    let errors = readErrors(newerThan: epoch)
+    #expect(errors.map { $0.key } == ["remote.checkUnreachable"])
+    #expect(errors.map { $0.code } == ["UpdateServerUnreachable"])
+    #expect(errors.first?.message.hasPrefix("Could not reach the update server to check for an update: ") == true)
+  }
+
+  private func readErrors(newerThan epoch: Date) -> [UpdatesLogEntry] {
+    return logReader.getLogEntries(newerThan: epoch)
       .compactMap { UpdatesLogEntry.create(from: $0) }
       .filter { $0.level == "error" }
-    #expect(errors.map { $0.code } == ["AssetsFailedToLoad", "UpdateServerUnreachable"])
-    #expect(errors.first?.message == "Failed to load 1 asset (a): HTTP response error 404: not found")
   }
 
   private func notFound(_ assetKey: String) -> AssetLoadFailure {

@@ -202,9 +202,12 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       guard let error = error else {
         preconditionFailure("Background update with error status must have a nonnull error object")
       }
-      logger.errorForLoadFailure(error, otherwise: .updateFailedToLoad, updateId: update?.loggingId()) {
-        UpdatesError.startupProcedureDidFinishBackgroundUpdateWithStatusWithError(cause: $0)
-      }
+      logger.errorForLoadFailure(
+        error,
+        failed: .startupRemoteLoadFailed,
+        unreachable: .startupRemoteLoadUnreachable,
+        updateId: update?.loggingId()
+      )
       // Since errors can happen through a number of paths, we do these checks
       // to make sure the state machine is valid
       switch self.procedureContext.getCurrentState() {
@@ -310,7 +313,11 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       self.remoteLoadStatus = updateResponse != nil ? .NewUpdateLoaded : .Idle
       self.errorRecovery.notify(newRemoteLoadStatus: self.remoteLoadStatus)
     } error: { error in
-      self.logger.errorForLoadFailure(error, otherwise: .updateFailedToLoad)
+      self.logger.errorForLoadFailure(
+        error,
+        failed: .startupErrorRecoveryLoadFailed,
+        unreachable: .startupErrorRecoveryLoadUnreachable
+      )
       self.remoteLoadStatus = .Idle
       self.errorRecovery.notify(newRemoteLoadStatus: self.remoteLoadStatus)
     }
