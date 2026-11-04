@@ -42,7 +42,9 @@ export type DefaultNavigatorOptions<
 
   /**
    * Enables React Activity for nested Expo Router screens. For stack navigators, a number specifies
-   * how many screens must be above a route before its content is hidden.
+   * how many screens must be above a route before its content is hidden. When a route that holds a
+   * nested navigator hides, the screens of that navigator also hide, unless they set
+   * `activityEnabled={false}`.
    * @default false
    */
   activityEnabled?: State extends { type?: 'stack' } ? boolean | number : boolean;
@@ -678,6 +680,7 @@ export type RouteConfigProps<
   /**
    * Overrides React Activity behavior inherited from the navigator for this Expo Router screen.
    * Stack screens also accept the number of screens that must be above the route before it hides.
+   * `false` also keeps the screens of a nested navigator in this route active.
    */
   activityEnabled?: State extends { type?: 'stack' } ? boolean | number : boolean;
 };

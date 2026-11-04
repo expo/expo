@@ -239,13 +239,14 @@ export function useDescriptors<
       });
     }
 
-    const activityThreshold = getActivityThreshold(
-      screen.activityEnabled ?? activityEnabled,
-      activityDefaultThreshold
-    );
+    const screenActivityEnabled = screen.activityEnabled ?? activityEnabled;
+    const activityThreshold = getActivityThreshold(screenActivityEnabled, activityDefaultThreshold);
 
     return (
-      <NavigationActivityProvider key={route.key} activityThreshold={activityThreshold}>
+      <NavigationActivityProvider
+        key={route.key}
+        activityThreshold={activityThreshold}
+        activityDisabled={screenActivityEnabled !== undefined && activityThreshold === undefined}>
         <NavigationBuilderContext.Provider value={context}>
           <NavigationProvider route={route} navigation={navigation}>
             {element}

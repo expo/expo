@@ -1,9 +1,10 @@
 'use client';
-import type { ReactNode } from 'react';
+import { use, type ReactNode } from 'react';
 
-import { useRouteNode } from '../Route';
+import { useRouteNode, type RouteNode } from '../Route';
 import { useIsFocused, useNavigationState, useRoute } from '../react-navigation/native';
 import { ActivityContents } from './ActivityContents';
+import { AncestorHiddenContext, useActivityThreshold } from './NavigationActivityContext';
 
 export type ActivityMode = 'visible' | 'hidden';
 
@@ -65,12 +66,78 @@ export function NavigationAwareActivity({
 
 function NavigationAwareScreenActivity({
   hideWhenNestedAtLevel,
+  ancestorHidden,
   children,
 }: {
-  hideWhenNestedAtLevel: number;
+  hideWhenNestedAtLevel: number | undefined;
+  ancestorHidden?: boolean;
   children: ReactNode;
 }) {
-  const mode = useActivityMode(hideWhenNestedAtLevel);
+  const hidden = useRouteHidden(hideWhenNestedAtLevel, ancestorHidden);
 
-  return <ActivityContents mode={mode}>{children}</ActivityContents>;
+  return <ActivityContents mode={hidden ? 'hidden' : 'visible'}>{children}</ActivityContents>;
+}
+
+function LayoutAncestorHiddenProvider({
+  hideWhenNestedAtLevel,
+  ancestorHidden,
+  children,
+}: {
+  hideWhenNestedAtLevel: number | undefined;
+  ancestorHidden: boolean | undefined;
+  children: ReactNode;
+}) {
+  const hidden = useRouteHidden(hideWhenNestedAtLevel, ancestorHidden);
+
+  return (
+    <AncestorHiddenContext value={hideWhenNestedAtLevel === undefined ? ancestorHidden : hidden}>
+      {children}
+    </AncestorHiddenContext>
+  );
+}
+
+function useRouteHidden(
+  hideWhenNestedAtLevel: number | undefined,
+  ancestorHidden: boolean | undefined
+) {
+  // `Infinity` never hides the route by depth, so only the ancestor state applies.
+  const mode = useActivityMode(hideWhenNestedAtLevel ?? Infinity);
+  return ancestorHidden === true || mode === 'hidden';
+}
+
+/**
+ * @internal
+ * Hides a route when its navigator or an ancestor navigator hides it.
+ */
+export function RouteActivity({
+  type,
+  children,
+}: {
+  type: RouteNode['type'];
+  children: ReactNode;
+}) {
+  const activityThreshold = useActivityThreshold();
+  const ancestorHidden = use(AncestorHiddenContext);
+
+  if (type === 'layout') {
+    return (
+      <LayoutAncestorHiddenProvider
+        hideWhenNestedAtLevel={activityThreshold}
+        ancestorHidden={ancestorHidden}>
+        {children}
+      </LayoutAncestorHiddenProvider>
+    );
+  }
+
+  if (type === 'route' && (activityThreshold !== undefined || ancestorHidden !== undefined)) {
+    return (
+      <NavigationAwareScreenActivity
+        hideWhenNestedAtLevel={activityThreshold}
+        ancestorHidden={ancestorHidden}>
+        {children}
+      </NavigationAwareScreenActivity>
+    );
+  }
+
+  return children;
 }
