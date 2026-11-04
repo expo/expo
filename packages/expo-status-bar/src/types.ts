@@ -1,3 +1,5 @@
+import type { StatusBar as NativeStatusBar } from 'react-native';
+
 // @docsMissing
 export type StatusBarStyle = 'auto' | 'inverted' | 'light' | 'dark';
 
@@ -43,6 +45,18 @@ export type StatusBarProps = {
    * @platform ios
    */
   verticalBarBehaviorIOS?: VerticalBarBehaviorIOS;
+};
+
+/**
+ * An entry on the status bar stack. `StatusBar.pushStackEntry()` and
+ * `StatusBar.replaceStackEntry()` return one. Pass it to `StatusBar.replaceStackEntry()` or
+ * `StatusBar.popStackEntry()`.
+ */
+export type StatusBarStackEntry = {
+  /** @hidden */
+  nativeEntry: ReturnType<typeof NativeStatusBar.pushStackEntry>;
+  /** @hidden */
+  verticalBarBehaviorEntry: { behavior?: VerticalBarBehaviorIOS };
 };
 
 /**

@@ -4,11 +4,13 @@ import {
   StatusBar as NativeStatusBar,
   useColorScheme,
   type ColorSchemeName,
+  type StatusBarProps as NativeStatusBarProps,
 } from 'react-native';
 
 import ExpoStatusBar from './ExpoStatusBar';
 import type {
   StatusBarProps,
+  StatusBarStackEntry,
   StatusBarStyle,
   StatusBarAnimation,
   VerticalBarBehaviorIOS,
@@ -126,6 +128,80 @@ StatusBar.setHidden = (hidden: boolean, animation?: StatusBarAnimation): void =>
 export const setStatusBarHidden = StatusBar.setHidden;
 
 /**
+ * Push an entry onto the status bar stack. An entry works like a mounted `StatusBar` component:
+ * the most recent entry or component wins for each prop that it sets. A prop that the entry does
+ * not set comes from the entries below. Use this to change the status bar outside a component,
+ * for example while a system picker is open.
+ *
+ * @param props The props of the entry. An `'auto'` or `'inverted'` style resolves when you push
+ * or replace the entry, as in `StatusBar.setStyle()`.
+ * @return The entry. Pass it to `StatusBar.popStackEntry()` when you are done.
+ *
+ * @example
+ * ```ts
+ * const entry = StatusBar.pushStackEntry({ style: 'light' });
+ * try {
+ *   await pickImage();
+ * } finally {
+ *   StatusBar.popStackEntry(entry);
+ * }
+ * ```
+ */
+StatusBar.pushStackEntry = (props: StatusBarProps): StatusBarStackEntry => {
+  const verticalBarBehaviorEntry = { behavior: props.verticalBarBehaviorIOS };
+  verticalBarBehaviorStack.push(verticalBarBehaviorEntry);
+  updateVerticalBarBehavior();
+  return {
+    nativeEntry: NativeStatusBar.pushStackEntry(toNativeStackProps(props)),
+    verticalBarBehaviorEntry,
+  };
+};
+
+/**
+ * Replace the props of an entry from `StatusBar.pushStackEntry()`. The entry keeps its place in
+ * the stack.
+ *
+ * @param entry The entry to replace.
+ * @param props The new props of the entry.
+ * @return The new entry. Use it instead of the old entry.
+ *
+ * @example
+ * ```ts
+ * entry = StatusBar.replaceStackEntry(entry, { style: 'dark' });
+ * ```
+ */
+StatusBar.replaceStackEntry = (
+  entry: StatusBarStackEntry,
+  props: StatusBarProps
+): StatusBarStackEntry => {
+  entry.verticalBarBehaviorEntry.behavior = props.verticalBarBehaviorIOS;
+  updateVerticalBarBehavior();
+  return {
+    nativeEntry: NativeStatusBar.replaceStackEntry(entry.nativeEntry, toNativeStackProps(props)),
+    verticalBarBehaviorEntry: entry.verticalBarBehaviorEntry,
+  };
+};
+
+/**
+ * Remove an entry from `StatusBar.pushStackEntry()` or `StatusBar.replaceStackEntry()`.
+ *
+ * @param entry The entry to remove.
+ *
+ * @example
+ * ```ts
+ * StatusBar.popStackEntry(entry);
+ * ```
+ */
+StatusBar.popStackEntry = (entry: StatusBarStackEntry): void => {
+  NativeStatusBar.popStackEntry(entry.nativeEntry);
+  const index = verticalBarBehaviorStack.indexOf(entry.verticalBarBehaviorEntry);
+  if (index !== -1) {
+    verticalBarBehaviorStack.splice(index, 1);
+  }
+  updateVerticalBarBehavior();
+};
+
+/**
  * Get the edge where the system places the vertical bar, such as the side rail on iPhone Duo.
  * The edge stays the same while `verticalBarBehaviorIOS` is `'disabled'`.
  *
@@ -218,4 +294,18 @@ function styleToBarStyle(
   }
 
   return resolvedStyle === 'light' ? 'light-content' : 'dark-content';
+}
+
+function toNativeStackProps({
+  style,
+  animated,
+  hidden,
+  hideTransitionAnimation,
+}: StatusBarProps): NativeStatusBarProps {
+  return {
+    barStyle: style === undefined ? undefined : styleToBarStyle(style),
+    hidden,
+    animated,
+    showHideTransition: hideTransitionAnimation === 'none' ? undefined : hideTransitionAnimation,
+  };
 }
