@@ -13,7 +13,10 @@ import {
 } from './exportPath';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { collectGraphResourcesAsync } from './serializeChunks';
-import { serializeJavaScriptArtifactsAsync } from './serializeJavaScriptArtifacts';
+import {
+  serializeJavaScriptArtifactsAsync,
+  TRAILING_BUNDLE_ANNOTATIONS,
+} from './serializeJavaScriptArtifacts';
 import { getModuleReferences, type SerialAsset } from './serializerAssets';
 import {
   getSourceMapOptions,
@@ -22,10 +25,7 @@ import {
   sourceMapStringNonBlocking,
 } from './sourceMap';
 
-const TRAILING_BUNDLE_ANNOTATIONS =
-  /((?:^|\n)\/\/# (?:sourceMappingURL|sourceURL|debugId)=[^\n]*)+\s*$/;
-
-/** Ensures server artifacts, preserving complete custom bundles instead of reserializing them. */
+/** Adapts legacy serializers' single bundles to server artifacts without reserializing their code. */
 export async function serializeServerBundleAsync(
   bundle: unknown,
   entryPoint: string,
@@ -83,6 +83,7 @@ export async function serializeServerBundleAsync(
       const suppliedMap =
         (typeof singleBundle !== 'string' && singleBundle.map) ||
         (encodedMap && Buffer.from(encodedMap, 'base64').toString());
+      // Legacy string serializers may omit a map; only then fall back to the graph's mappings.
       const json =
         suppliedMap ||
         (await sourceMapStringNonBlocking(
