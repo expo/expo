@@ -1,8 +1,8 @@
 #!/usr/bin/env node
+import { boolish } from '@expo/env';
 import chalk from 'chalk';
 import Debug from 'debug';
 import { constants, promises as fs } from 'fs';
-import { boolish } from 'getenv';
 import path from 'path';
 
 import { actionAsync } from './doctor';

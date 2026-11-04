@@ -2146,9 +2146,6 @@ importers:
       fetch-nodeshim:
         specifier: ^0.4.10
         version: 0.4.10
-      getenv:
-        specifier: ^2.0.0
-        version: 2.0.0
       lan-network:
         specifier: ^0.2.1
         version: 0.2.1
@@ -2258,9 +2255,6 @@ importers:
       '@types/express':
         specifier: ^5.0.3
         version: 5.0.6
-      '@types/getenv':
-        specifier: ^1.0.3
-        version: 1.0.3
       '@types/klaw-sync':
         specifier: ^6.0.0
         version: 6.0.5
@@ -2541,9 +2535,6 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.4.3
-      getenv:
-        specifier: ^2.0.0
-        version: 2.0.0
     devDependencies:
       '@expo/internal-scripts':
         specifier: workspace:*
@@ -2551,9 +2542,6 @@ importers:
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
-      '@types/getenv':
-        specifier: ^1.0.3
-        version: 1.0.3
       memfs:
         specifier: ^3.6.0
         version: 3.6.0
@@ -2575,9 +2563,6 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.4.3
-      getenv:
-        specifier: ^2.0.0
-        version: 2.0.0
       glob:
         specifier: ^13.0.0
         version: 13.0.6
@@ -2606,9 +2591,6 @@ importers:
       '@types/debug':
         specifier: ^4.1.5
         version: 4.1.12
-      '@types/getenv':
-        specifier: ^1.0.3
-        version: 1.0.3
       '@types/node':
         specifier: ^22.14.0
         version: 22.20.1
@@ -2894,9 +2876,6 @@ importers:
       expo:
         specifier: '*'
         version: link:../../expo
-      getenv:
-        specifier: ^2.0.0
-        version: 2.0.0
       hermes-parser:
         specifier: ^0.36.0
         version: 0.36.1
@@ -2943,9 +2922,6 @@ importers:
       '@types/babel__generator':
         specifier: ^7.27.0
         version: 7.27.0
-      '@types/getenv':
-        specifier: ^1.0.3
-        version: 1.0.3
       '@types/picomatch':
         specifier: ^4.0.2
         version: 4.0.2
@@ -3516,6 +3492,9 @@ importers:
       '@expo/config':
         specifier: workspace:*
         version: link:../@expo/config
+      '@expo/env':
+        specifier: workspace:*
+        version: link:../@expo/env
       '@expo/internal-scripts':
         specifier: workspace:*
         version: link:../@expo/internal-scripts
@@ -3534,9 +3513,6 @@ importers:
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
-      '@types/getenv':
-        specifier: ^1.0.3
-        version: 1.0.3
       '@types/node':
         specifier: ^22.14.0
         version: 22.20.1
@@ -3558,9 +3534,6 @@ importers:
       debug:
         specifier: ^4.3.4
         version: 4.4.3
-      getenv:
-        specifier: ^2.0.0
-        version: 2.0.0
       memfs:
         specifier: ^3.6.0
         version: 3.6.0
@@ -3594,6 +3567,9 @@ importers:
 
   packages/create-expo-module:
     devDependencies:
+      '@expo/env':
+        specifier: workspace:*
+        version: link:../@expo/env
       '@expo/internal-scripts':
         specifier: workspace:*
         version: link:../@expo/internal-scripts
@@ -3615,9 +3591,6 @@ importers:
       '@types/ejs':
         specifier: ^3.1.5
         version: 3.1.5
-      '@types/getenv':
-        specifier: ^1.0.3
-        version: 1.0.3
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
@@ -3648,9 +3621,6 @@ importers:
       ejs:
         specifier: ^3.1.10
         version: 3.1.10
-      getenv:
-        specifier: ^2.0.0
-        version: 2.0.0
       multitars:
         specifier: ^1.0.2
         version: 1.0.2
@@ -4712,9 +4682,6 @@ importers:
       '@types/debug':
         specifier: ^4.1.8
         version: 4.1.12
-      '@types/getenv':
-        specifier: ^1.0.3
-        version: 1.0.3
       '@types/semver':
         specifier: ^7.7.1
         version: 7.7.1
@@ -4733,9 +4700,6 @@ importers:
       expo-modules-autolinking:
         specifier: workspace:*
         version: link:../expo-modules-autolinking
-      getenv:
-        specifier: ^2.0.0
-        version: 2.0.0
       ignore:
         specifier: ^5.3.2
         version: 5.3.2
@@ -6438,9 +6402,6 @@ importers:
       expo-updates-interface:
         specifier: workspace:~
         version: link:../expo-updates-interface
-      getenv:
-        specifier: ^2.0.0
-        version: 2.0.0
       ignore:
         specifier: ^5.3.1
         version: 5.3.2
@@ -6469,9 +6430,6 @@ importers:
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
-      '@types/getenv':
-        specifier: ^1.0.3
-        version: 1.0.3
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
@@ -6783,9 +6741,6 @@ importers:
       debug:
         specifier: ^4.3.1
         version: 4.4.3
-      getenv:
-        specifier: ^2.0.0
-        version: 2.0.0
       resolve-from:
         specifier: ^5.0.0
         version: 5.0.0
@@ -6799,9 +6754,6 @@ importers:
       '@types/debug':
         specifier: ^4.1.5
         version: 4.1.12
-      '@types/getenv':
-        specifier: ^1.0.3
-        version: 1.0.3
       expo:
         specifier: workspace:*
         version: link:../expo
