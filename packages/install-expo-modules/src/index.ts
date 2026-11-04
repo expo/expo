@@ -22,6 +22,7 @@ import {
 } from './plugins/ios/withIosDeploymentTarget';
 import { withIosModules } from './plugins/ios/withIosModules';
 import { assertNoLegacySourceUrl } from './plugins/ios/withIosModulesAppDelegate';
+import { getSceneDelegatePath } from './plugins/ios/withIosSceneDelegate';
 import { withSwiftVersion } from './plugins/ios/withSwiftVersion';
 import { withXCParseXcodeProjectBaseMod } from './plugins/ios/withXCParseXcodeProject';
 import type { VersionInfo } from './utils/expoVersionMappings';
@@ -158,12 +159,12 @@ async function runAsync() {
     if (appDelegate.language === 'swift') {
       assertNoLegacySourceUrl(appDelegate.contents, sdkVersion);
     }
-    const sceneDelegatePath = path.join(path.dirname(appDelegate.path), 'SceneDelegate.swift');
+    const sceneDelegatePath = getSceneDelegatePath(appDelegate.path);
     if (fs.existsSync(sceneDelegatePath)) {
       assertNoLegacySourceUrl(
         fs.readFileSync(sceneDelegatePath, 'utf8'),
         sdkVersion,
-        'SceneDelegate.swift'
+        path.basename(sceneDelegatePath)
       );
     }
   }

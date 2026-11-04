@@ -189,6 +189,8 @@ export function updateModulesAppDelegateSwift(
     /\bRCTDefaultReactNativeFactoryDelegate\b/,
     'ExpoReactNativeFactoryDelegate'
   );
+  // SDK 59 and later keep no sourceURL(for:) method. `runAsync` rejects a legacy one with
+  // `assertNoLegacySourceUrl` before any mod runs, so this transform does not check again.
   if (!sdkVersion || semver.lt(sdkVersion, '59.0.0')) {
     contents = contents.replace(
       /(\boverride.*\ssourceURL\(.*\{[\s\S]+?)(\s+)self\.bundleURL\(\)/m,

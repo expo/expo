@@ -2,4 +2,4 @@
 'install-expo-modules': patch
 ---
 
-Require manual migration of legacy iOS `sourceURL(for:)` methods for SDK 59 and later.
+Prepare the SDK 59 install to stop on a legacy iOS `sourceURL(for:)` method with migration instructions. The check runs once the SDK 59 version mapping is added.
