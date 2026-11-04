@@ -80,10 +80,10 @@ export interface ModuleDescriptorIos extends CommonNativeModuleDescriptor {
   exportedPackageName?: string;
   modules: ModuleIosConfig[];
   /**
-   * Whether `modules` were found by `scan-modules`, so they're declared with the `@ExpoModule` macro
+   * The modules from `modules` that `scan-modules` found, so they're declared with the `@ExpoModule` macro
    * (Expo Modules API 2.0). The generated modules provider also lists these modules by package in `packages`.
    */
-  modulesFromScan?: boolean;
+  expoModules?: ModuleIosConfig[];
   pods: ModuleIosPodspecInfo[];
   flags: Record<string, any> | undefined;
   swiftModuleNames: string[];

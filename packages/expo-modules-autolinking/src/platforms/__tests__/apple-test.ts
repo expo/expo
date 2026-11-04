@@ -217,7 +217,7 @@ describe(resolveModuleAsync, () => {
       { name: null, class: 'ClipboardModule' },
       { name: null, class: 'ClipboardPasteButtonModule' },
     ]);
-    expect(result?.modulesFromScan).toBe(true);
+    expect(result?.expoModules).toEqual(result?.modules);
   });
 
   it('orders scanned modules by code unit, independent of the host locale', async () => {
@@ -274,7 +274,7 @@ describe(resolveModuleAsync, () => {
     );
 
     expect(result?.modules).toEqual([]);
-    expect(result?.modulesFromScan).toBeUndefined();
+    expect(result?.expoModules).toBeUndefined();
   });
 
   it('ignores scanned modules when the config declares any, as an explicit override', async () => {
@@ -305,6 +305,38 @@ describe(resolveModuleAsync, () => {
     );
 
     expect(result?.modules).toEqual([{ name: null, class: 'ClipboardModule' }]);
+    expect(result?.expoModules).toEqual([{ name: null, class: 'ClipboardModule' }]);
+  });
+
+  it('marks only the declared modules that the scan found as declared with the macro', async () => {
+    const name = 'expo-clipboard';
+    const pkgDir = path.join('node_modules', name);
+
+    vol.fromJSON({ [`ios/ExpoClipboard.podspec`]: '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name: '',
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({
+          platforms: ['apple'],
+          apple: { modules: ['LegacyClipboardModule', 'ClipboardModule'] },
+        }),
+      },
+      {
+        scannedModules: {
+          [name]: [{ name: null, class: 'ClipboardModule' }],
+        },
+      }
+    );
+
+    expect(result?.modules).toEqual([
+      { name: null, class: 'LegacyClipboardModule' },
+      { name: null, class: 'ClipboardModule' },
+    ]);
+    expect(result?.expoModules).toEqual([{ name: null, class: 'ClipboardModule' }]);
   });
 
   it('should contain coreFeature field', async () => {
@@ -458,7 +490,7 @@ describe(generateModulesProviderAsync, () => {
       flags: undefined,
       swiftModuleNames: [],
       modules: [{ name: null, class: moduleClass }],
-      modulesFromScan: true,
+      expoModules: [{ name: null, class: moduleClass }],
       appDelegateSubscribers: [],
       reactDelegateHandlers: [],
       debugOnly: false,
@@ -490,7 +522,7 @@ describe(generateModulesProviderAsync, () => {
   it('lists all modules in getModuleClasses() and the scanned modules also in packages', async () => {
     await generateModulesProviderAsync(
       [
-        { ...descriptor('expo-camera', 'CameraModule'), modulesFromScan: false },
+        { ...descriptor('expo-camera', 'CameraModule'), expoModules: undefined },
         descriptor('expo-audio', 'AudioModule'),
       ],
       targetPath,
@@ -507,7 +539,7 @@ describe(generateModulesProviderAsync, () => {
 
   it('generates getModuleClasses() the same way with and without packages', async () => {
     const modules = [
-      { ...descriptor('expo-camera', 'CameraModule'), modulesFromScan: false },
+      { ...descriptor('expo-camera', 'CameraModule'), expoModules: undefined },
       descriptor('expo-audio', 'AudioModule'),
     ];
     await generateModulesProviderAsync(modules, targetPath, null, params);

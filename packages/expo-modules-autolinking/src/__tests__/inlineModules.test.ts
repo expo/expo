@@ -14,6 +14,7 @@ import {
   hasSwiftModuleDefinition,
   getSwiftInlineModuleInfo,
   inlineModuleFileNameInformation,
+  stripSwiftCommentsAndStrings,
 } from '../inlineModules/inlineModules';
 import { isTargetInInlineModulesTargets } from '../inlineModules/iosInlineModules';
 
@@ -116,6 +117,62 @@ describe('inlineModules.ts', () => {
       await expect(
         getSwiftInlineModuleInfo('/example-project/AppIntentsSetup.swift')
       ).resolves.toEqual({ hasModuleDefinition: true, declaredWithMacro: false });
+    });
+
+    it('reports the macro after an attribute with parentheses in a string', async () => {
+      vol.fromJSON({
+        '/example-project/OldModule.swift':
+          'import ExpoModulesCore\n@available(*, deprecated, message: "Use NewModule() instead") @ExpoModule\npublic final class OldModule: Module {}',
+      });
+
+      await expect(getSwiftInlineModuleInfo('/example-project/OldModule.swift')).resolves.toEqual({
+        hasModuleDefinition: true,
+        declaredWithMacro: true,
+      });
+    });
+
+    it('reports the macro after a multiline attribute', async () => {
+      vol.fromJSON({
+        '/example-project/OldModule.swift':
+          'import ExpoModulesCore\n@available(\n  *,\n  deprecated\n) @ExpoModule\npublic final class OldModule: Module {}',
+      });
+
+      await expect(getSwiftInlineModuleInfo('/example-project/OldModule.swift')).resolves.toEqual({
+        hasModuleDefinition: true,
+        declaredWithMacro: true,
+      });
+    });
+
+    it('does not treat an @ExpoModule mention in a string or a block comment as the macro', async () => {
+      vol.fromJSON({
+        '/example-project/Helpers.swift':
+          'import Foundation\n/* Move to\n   @ExpoModule */\nlet hint = "Use @ExpoModule"\nlet raw = #"@ExpoModule \\"#\nlet text = """\n@ExpoModule\n"""\n',
+      });
+
+      await expect(getSwiftInlineModuleInfo('/example-project/Helpers.swift')).resolves.toEqual({
+        hasModuleDefinition: false,
+        declaredWithMacro: false,
+      });
+    });
+  });
+
+  describe('stripSwiftCommentsAndStrings', () => {
+    it('removes line, block and nested block comments', () => {
+      expect(stripSwiftCommentsAndStrings('a // b\nc /* d /* e */ f */ g')).toBe('a \nc   g');
+    });
+
+    it('empties string literals, keeping escaped quotes inside them', () => {
+      expect(stripSwiftCommentsAndStrings('a "b \\" // c" d')).toBe('a "" d');
+    });
+
+    it('empties multiline and raw strings', () => {
+      expect(stripSwiftCommentsAndStrings('a """\n"b"\n""" c ##"x"# "##d')).toBe('a "" c ""d');
+    });
+
+    it('keeps code that only looks like a raw string', () => {
+      expect(stripSwiftCommentsAndStrings('#if DEBUG\n#selector(f)\n#endif')).toBe(
+        '#if DEBUG\n#selector(f)\n#endif'
+      );
     });
   });
 

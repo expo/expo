@@ -27,9 +27,11 @@ export interface InlineModulesScanOptions {
 const nativeExtensions = ['.kt', '.swift'];
 // Checks for func definition() -> <anything>ModuleDefinition. <anything> because ExpoModulesCore.ModuleDefinition is a valid usage
 const swiftModuleDefinitionRegex = /\bfunc\s+definition\s*\(\s*\)\s*->\s*[\w.]*ModuleDefinition\b/;
-// Expo Modules 2.0 classes declare `@ExpoModule` instead of a `definition()` DSL. The attribute is at the start
-// of a line, possibly after other attributes, so a mention in a comment doesn't count.
-const swiftExpoModuleAttributeRegex = /^[ \t]*(?:@\w+(?:\([^)\n]*\))?[ \t]+)*@ExpoModule\b/m;
+// Expo Modules 2.0 classes declare `@ExpoModule` instead of a `definition()` DSL. It's matched in the code
+// without comments and string literals (see `stripSwiftCommentsAndStrings`), so a mention there doesn't count.
+const swiftExpoModuleMacroRegex = /@ExpoModule\b/;
+// The opening delimiter of a Swift string literal, with the `#` of a raw string. Sticky, to match at a position.
+const swiftStringStartRegex = /(#*)("""|")/y;
 // Checks for `override fun definition() = <anything>ModuleDefinition`
 const kotlinModuleDefinitionRegex =
   /\boverride\s+fun\s+definition\s*\(\s*\)\s*=\s*[\w.]*ModuleDefinition\b/;
@@ -119,11 +121,65 @@ export async function getSwiftInlineModuleInfo(
     warn(`Swift inline module '${absoluteFilePath}' could not be opened.`);
     return { hasModuleDefinition: false, declaredWithMacro: false };
   }
-  const declaredWithMacro = swiftExpoModuleAttributeRegex.test(contents);
+  const declaredWithMacro = swiftExpoModuleMacroRegex.test(stripSwiftCommentsAndStrings(contents));
   return {
     hasModuleDefinition: declaredWithMacro || swiftModuleDefinitionRegex.test(contents),
     declaredWithMacro,
   };
+}
+
+/**
+ * Returns the Swift source without its comments and with empty string literals, so that a search for an attribute
+ * doesn't match a mention in a comment or a string. Handles nested block comments, multiline strings and raw
+ * strings. A string literal inside an interpolation ends the outer string early, which can only keep a mention.
+ */
+export function stripSwiftCommentsAndStrings(source: string): string {
+  let result = '';
+  let i = 0;
+  while (i < source.length) {
+    if (source.startsWith('//', i)) {
+      const end = source.indexOf('\n', i);
+      i = end === -1 ? source.length : end;
+      continue;
+    }
+    if (source.startsWith('/*', i)) {
+      let depth = 0;
+      while (i < source.length) {
+        if (source.startsWith('/*', i)) {
+          depth++;
+          i += 2;
+        } else if (source.startsWith('*/', i)) {
+          depth--;
+          i += 2;
+          if (depth === 0) {
+            break;
+          }
+        } else {
+          i++;
+        }
+      }
+      result += ' ';
+      continue;
+    }
+    swiftStringStartRegex.lastIndex = i;
+    const stringStart =
+      source[i] === '"' || source[i] === '#' ? swiftStringStartRegex.exec(source) : null;
+    if (stringStart) {
+      const hashes = stringStart[1] ?? '';
+      const closing = (stringStart[2] ?? '"') + hashes;
+      i += stringStart[0].length;
+      while (i < source.length && !source.startsWith(closing, i)) {
+        // A backslash escapes the next character, except in a raw string, where only the closing delimiter matters.
+        i += !hashes && source[i] === '\\' ? 2 : 1;
+      }
+      i += closing.length;
+      result += '""';
+      continue;
+    }
+    result += source[i];
+    i++;
+  }
+  return result;
 }
 
 export async function hasSwiftModuleDefinition(absoluteFilePath: string): Promise<boolean> {

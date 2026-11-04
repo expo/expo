@@ -133,11 +133,14 @@ export async function resolveModuleAsync(
       ?.appleModules()
       .map((module) => (typeof module === 'string' ? { name: null, class: module } : module)) ?? [];
 
-  const declaresModules = revision.config?.declaresAppleModules() ?? false;
+  const scannedModules = extraOutput.scannedModules?.[packageName] ?? [];
   const modules = pickModules(
-    declaresModules ? configModules : null,
-    extraOutput.scannedModules?.[packageName] ?? []
+    revision.config?.declaresAppleModules() ? configModules : null,
+    scannedModules
   );
+  // A module that the config declares is declared with the macro too when the scan found it.
+  const scannedClassNames = new Set(scannedModules.map((module) => module.class));
+  const expoModules = modules.filter((module) => scannedClassNames.has(module.class));
 
   return {
     packageName,
@@ -146,7 +149,7 @@ export async function resolveModuleAsync(
     swiftModuleNames,
     flags: extraOutput.flags,
     modules,
-    ...(!declaresModules && modules.length > 0 ? { modulesFromScan: true } : {}),
+    ...(expoModules.length > 0 ? { expoModules } : {}),
     appDelegateSubscribers: revision.config?.appleAppDelegateSubscribers() ?? [],
     reactDelegateHandlers: revision.config?.appleReactDelegateHandlers() ?? [],
     debugOnly: revision.config?.appleDebugOnly() ?? false,
@@ -361,13 +364,17 @@ interface PackageExports {
 }
 
 /**
- * Groups the modules that `scan-modules` found by the package they are exported in: the npm package name,
- * or the name that the descriptor overrides it with (for example, for local modules).
+ * Groups the modules declared with the `@ExpoModule` macro by the package they are exported in: the npm package
+ * name, or the name that the descriptor overrides it with (for example, for local modules).
  */
 function groupByPackage(modules: ModuleDescriptorIos[]): Map<string, PackageExports> {
   const packages = new Map<string, PackageExports>();
-  for (const module of modules.filter((module) => module.modulesFromScan)) {
-    addToPackage(packages, module.exportedPackageName ?? module.packageName, module.modules);
+  for (const module of modules) {
+    addToPackage(
+      packages,
+      module.exportedPackageName ?? module.packageName,
+      module.expoModules ?? []
+    );
   }
   return packages;
 }
