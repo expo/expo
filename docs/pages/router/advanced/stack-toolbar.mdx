@@ -777,6 +777,25 @@ export default function Home() {
 
 </Collapsible>
 
+## Keeping an item in the horizontal bar
+
+On iPhone Duo, iOS 27 moves a header or toolbar item into the vertical rail when the item has an icon. A titled item with no icon stays in the horizontal bar. Set `axisBehavior="horizontalOnly"` on `Stack.Toolbar.Button` or `Stack.Toolbar.Menu` to keep an item with an icon in that bar. `verticalPreferred` prefers the rail. `automatic` leaves the choice to the system.
+
+```tsx
+<Stack.Toolbar placement="right">
+  <Stack.Toolbar.Button icon="questionmark.circle" axisBehavior="horizontalOnly" onPress={showHelp}>
+    Help
+  </Stack.Toolbar.Button>
+  <Stack.Toolbar.Button icon="square.grid.2x2" onPress={toggleLayout}>
+    Grid
+  </Stack.Toolbar.Button>
+</Stack.Toolbar>
+```
+
+`horizontalOnly` on one item in a bottom toolbar keeps the whole toolbar horizontal. The item is hidden when no horizontal bar is present. Android ignores `axisBehavior`.
+
+The header reads the value from `react-native-screens`. Until a release of that library reads `axisBehavior`, a header item stays on `automatic`.
+
 ## Known limitations
 
 <Collapsible summary="Native only">
