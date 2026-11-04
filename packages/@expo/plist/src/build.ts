@@ -142,9 +142,11 @@ function walk_obj(next: any, next_child: any): void {
   } else if (name === 'String') {
     next_child.ele('string').txt(next);
   } else if (name === 'ArrayBuffer') {
-    next_child.ele('data').raw(base64.fromByteArray(next));
+    next_child.ele('data').raw(base64.fromByteArray(new Uint8Array(next)));
   } else if (next && next.buffer && type(next.buffer) === 'ArrayBuffer') {
-    // a typed array
-    next_child.ele('data').raw(base64.fromByteArray(new Uint8Array(next.buffer)));
+    // a typed array, which may view only part of its buffer
+    next_child
+      .ele('data')
+      .raw(base64.fromByteArray(new Uint8Array(next.buffer, next.byteOffset, next.byteLength)));
   }
 }
