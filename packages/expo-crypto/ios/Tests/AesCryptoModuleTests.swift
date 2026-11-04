@@ -479,6 +479,19 @@ struct AesCryptoModuleTests {
   }
 
   @Test
+  func `fromCombined rejects lengths whose sum overflows`() throws {
+    // The sum of these lengths doesn't fit in `Int`, so a check that adds them would trap.
+    let result = try runtime.eval(
+      """
+      thrownCode(function () {
+        return AES.SealedData.fromCombined(new Uint8Array(40), { ivLength: 2 ** 62, tagLength: 2 ** 62 });
+      })
+      """
+    )
+    #expect(try result.asString() == "ERR_INVALID_SEALED_DATA_CONFIG")
+  }
+
+  @Test
   func `encryptAsync rejects a negative nonce length`() async throws {
     let result = try await runtime.evalAsync("rejectionCode(encrypt(plaintext, { nonce: -1 }))")
     #expect(try result.asString() == "ERR_NONCE_GENERATION_FAILED")

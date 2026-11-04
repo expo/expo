@@ -22,7 +22,8 @@ final class SealedData: SharedObject {
   }
 
   init(ivLength: Int, tagLength: Int, content: Data) throws {
-    guard ivLength >= 0, tagLength >= 0, content.count >= ivLength + tagLength else {
+    // Compare without adding the lengths, so that huge values can't overflow and trap.
+    guard ivLength >= 0, tagLength >= 0, ivLength <= content.count, tagLength <= content.count - ivLength else {
       throw InvalidSealedDataConfigException()
     }
     // SealedBox(combined:) works only if IV length is 12 (default)
