@@ -1,3 +1,7 @@
+# This package contains both Expo modules and an RN image loader.
+# The expo module uses `ios/ExpoMediaLibrary.podspec`
+# The RN module uses this root podspec
+# Keep the loader's sources exclusive to this pod
 require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
