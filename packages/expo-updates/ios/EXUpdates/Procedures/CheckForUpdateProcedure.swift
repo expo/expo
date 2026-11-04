@@ -2,6 +2,7 @@
 
 // swiftlint:disable closure_body_length
 
+import EXUpdatesInterface
 import ExpoModulesCore
 
 final class CheckForUpdateProcedure: StateMachineProcedure {

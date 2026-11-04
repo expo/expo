@@ -25,7 +25,7 @@ class UpdatesErrorCodeTest {
     )) {
       Assert.assertEquals(
         UpdatesErrorCode.UpdateServerUnreachable,
-        UpdatesErrorCode.forLoadFailure(error, otherwise = UpdatesErrorCode.UpdateFailedToLoad)
+        LoadFailureCodes.forLoadFailure(error, otherwise = UpdatesErrorCode.UpdateFailedToLoad)
       )
     }
   }
@@ -35,7 +35,7 @@ class UpdatesErrorCodeTest {
     val error = IOException("Failed to download asset", IOException("Request failed", ConnectException("Failed to connect")))
     Assert.assertEquals(
       UpdatesErrorCode.UpdateServerUnreachable,
-      UpdatesErrorCode.forLoadFailure(error, otherwise = UpdatesErrorCode.AssetsFailedToLoad)
+      LoadFailureCodes.forLoadFailure(error, otherwise = UpdatesErrorCode.AssetsFailedToLoad)
     )
   }
 
@@ -52,7 +52,7 @@ class UpdatesErrorCodeTest {
     )) {
       Assert.assertEquals(
         UpdatesErrorCode.AssetsFailedToLoad,
-        UpdatesErrorCode.forLoadFailure(error, otherwise = UpdatesErrorCode.AssetsFailedToLoad)
+        LoadFailureCodes.forLoadFailure(error, otherwise = UpdatesErrorCode.AssetsFailedToLoad)
       )
     }
   }
@@ -67,7 +67,7 @@ class UpdatesErrorCodeTest {
       AssetLoadFailure("e", IOException("Failed to download asset", UnknownHostException("Unable to resolve host")))
     )
 
-    val groups = UpdatesErrorCode.groups(failures)
+    val groups = LoadFailureCodes.groups(failures)
 
     Assert.assertEquals(
       listOf(UpdatesErrorCode.AssetsFailedToLoad, UpdatesErrorCode.UpdateServerUnreachable, UpdatesErrorCode.AssetsFailedToLoad),

@@ -3,6 +3,7 @@
 // swiftlint:disable closure_body_length
 // swiftlint:disable force_unwrapping
 
+import EXUpdatesInterface
 import Foundation
 
 public typealias AppLauncherUpdateCompletionBlock = (_ error: UpdatesError?, _ update: Update?) -> Void

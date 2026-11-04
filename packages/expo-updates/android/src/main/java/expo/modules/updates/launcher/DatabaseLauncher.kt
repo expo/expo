@@ -12,6 +12,7 @@ import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.LoaderFiles
+import expo.modules.updates.logging.LoadFailureCodes
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
@@ -272,7 +273,7 @@ class DatabaseLauncher(
         logger.error(
           "Failed to load asset from disk or network",
           e,
-          UpdatesErrorCode.forLoadFailure(e, otherwise = UpdatesErrorCode.AssetsFailedToLoad)
+          LoadFailureCodes.forLoadFailure(e, otherwise = UpdatesErrorCode.AssetsFailedToLoad)
         )
         if (asset.isLaunchAsset) {
           launchAssetException = e
