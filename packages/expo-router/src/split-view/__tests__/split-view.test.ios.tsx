@@ -476,6 +476,224 @@ it('passes disabled and selected of toolbar items to the native header', async (
   ]);
 });
 
+it('passes tintColor, hidesSharedBackground and accessibility props of toolbar items to the native header', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column
+            header={{
+              rightToolbar: [
+                {
+                  title: 'Compose',
+                  icon: 'square.and.pencil',
+                  tintColor: 'red',
+                  hidesSharedBackground: true,
+                  accessibilityLabel: 'New message',
+                  accessibilityHint: 'Opens a new message',
+                  onPress: () => {},
+                },
+              ],
+            }}
+          />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].rightToolbarItems).toEqual([
+    {
+      id: 'right.0',
+      title: 'Compose',
+      icon: 'square.and.pencil',
+      tintColor: 'red',
+      hidesSharedBackground: true,
+      accessibilityLabel: 'New message',
+      accessibilityHint: 'Opens a new message',
+    },
+  ]);
+});
+
+it('passes the variant of toolbar items to the native header as barButtonItemStyle', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column
+            header={{
+              rightToolbar: [
+                { title: 'Cancel', variant: 'plain', onPress: () => {} },
+                { title: 'Done', variant: 'done', onPress: () => {} },
+                { title: 'Send', variant: 'prominent', onPress: () => {} },
+              ],
+            }}
+          />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].rightToolbarItems).toEqual([
+    { id: 'right.0', title: 'Cancel', barButtonItemStyle: 'plain' },
+    { id: 'right.1', title: 'Done', barButtonItemStyle: 'prominent' },
+    { id: 'right.2', title: 'Send', barButtonItemStyle: 'prominent' },
+  ]);
+});
+
+it('passes separateBackground of toolbar items to the native header as sharesBackground', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column
+            header={{
+              rightToolbar: [
+                { title: 'Search', separateBackground: true, onPress: () => {} },
+                { title: 'Move', separateBackground: false, onPress: () => {} },
+              ],
+            }}
+          />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].rightToolbarItems).toEqual([
+    { id: 'right.0', title: 'Search', sharesBackground: false },
+    { id: 'right.1', title: 'Move', sharesBackground: true },
+  ]);
+});
+
+it('passes the badge of toolbar items to the native header as a flat badgeConfiguration', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column
+            header={{
+              rightToolbar: [
+                {
+                  title: 'Inbox',
+                  badge: {
+                    value: 3,
+                    style: {
+                      color: 'white',
+                      backgroundColor: 'blue',
+                      fontFamily: 'Menlo',
+                      fontSize: 12,
+                      fontWeight: 'bold',
+                    },
+                  },
+                  onPress: () => {},
+                },
+                { title: 'Drafts', badge: { value: 'new' }, onPress: () => {} },
+                { title: 'Sent', badge: {}, onPress: () => {} },
+              ],
+            }}
+          />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].rightToolbarItems).toEqual([
+    {
+      id: 'right.0',
+      title: 'Inbox',
+      badgeConfiguration: {
+        value: '3',
+        color: 'white',
+        backgroundColor: 'blue',
+        fontFamily: 'Menlo',
+        fontSize: 12,
+        fontWeight: 'bold',
+      },
+    },
+    { id: 'right.1', title: 'Drafts', badgeConfiguration: { value: 'new' } },
+    { id: 'right.2', title: 'Sent', badgeConfiguration: {} },
+  ]);
+});
+
+it('passes an xcasset icon of toolbar items to the native header as xcassetName', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column
+            header={{
+              rightToolbar: [{ title: 'Logo', icon: { xcasset: 'logo' }, onPress: () => {} }],
+            }}
+          />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].rightToolbarItems).toEqual([
+    { id: 'right.0', title: 'Logo', xcassetName: 'logo', imageRenderingMode: 'original' },
+  ]);
+});
+
+it('renders xcasset icons of toolbar items as template when tintColor is set', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column
+            header={{
+              rightToolbar: [
+                { title: 'Logo', icon: { xcasset: 'logo' }, tintColor: 'red', onPress: () => {} },
+                {
+                  title: 'Original logo',
+                  icon: { xcasset: 'logo' },
+                  tintColor: 'red',
+                  iconRenderingMode: 'original',
+                  onPress: () => {},
+                },
+              ],
+            }}
+          />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].rightToolbarItems).toEqual([
+    {
+      id: 'right.0',
+      title: 'Logo',
+      xcassetName: 'logo',
+      tintColor: 'red',
+      imageRenderingMode: 'template',
+    },
+    {
+      id: 'right.1',
+      title: 'Original logo',
+      xcassetName: 'logo',
+      tintColor: 'red',
+      imageRenderingMode: 'original',
+    },
+  ]);
+});
+
 it('renders the SplitView.Column header as the last child of its Split.Column', async () => {
   await renderRouter(
     {
