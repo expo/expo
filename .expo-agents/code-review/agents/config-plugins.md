@@ -1,5 +1,20 @@
 ---
 description: Config plugins, prebuild and autolinking — non-idempotent native file edits, dangerous mods that bypass a typed base mod, unscoped or renamed merge tags, unguarded anchor regexes, unvalidated values written into native files, and expo-module.config.json or podspec/spm.config declarations left out of sync.
+# The packages and files listed below, plus native sources: a new `Module` subclass or a moved iOS
+# source directory needs its declarations updated even when the PR changes no declaration file.
+paths:
+  - "packages/@expo/config-plugins/**"
+  - "packages/@expo/prebuild-config/**"
+  - "packages/@expo/config/**"
+  - "packages/expo-modules-autolinking/**"
+  - "packages/**/plugin/**"
+  - "packages/**/expo-module.config.json"
+  - "packages/**/*.podspec"
+  - "packages/**/spm.config.json"
+  - "packages/**/build.gradle"
+  - "packages/**/ios/**"
+  - "packages/**/apple/**"
+  - "packages/**/android/src/**"
 ---
 
 # Config plugins & prebuild
@@ -93,3 +108,25 @@ Prebuild bugs are proven by walking the second run. Before reporting a non-idemp
 finding, describe in your rationale what changes on the second prebuild — keep `evidence`
 to the single mod or write line that causes it, never a pasted excerpt of a generated
 native file. Prefer zero findings over a low-value one.
+
+<!-- Code this prompt cites, kept true by `ecr ref-check`. A path that is prose (a
+     per-package directory name, a root file the text does not mean, a submodule
+     path the review checkout lacks) is listed as ignored instead. -->
+<!-- @ref glob:**/*.podspec -->
+<!-- @ref glob:**/AndroidManifest.xml -->
+<!-- @ref glob:**/Expo.plist -->
+<!-- @ref glob:**/Info.plist -->
+<!-- @ref glob:**/Podfile.lock -->
+<!-- @ref glob:**/Podfile.properties.json -->
+<!-- @ref glob:**/build.gradle -->
+<!-- @ref glob:**/colors.xml -->
+<!-- @ref glob:**/expo-module.config.json -->
+<!-- @ref glob:**/gradle.properties -->
+<!-- @ref glob:**/settings.gradle -->
+<!-- @ref glob:**/spm.config.json -->
+<!-- @ref glob:**/strings.xml -->
+<!-- @ref glob:**/styles.xml -->
+<!-- @ref glob:packages/*/android/build.gradle -->
+<!-- @ref tools/src/prebuilds/SPMConfig.types.ts -->
+<!-- @ref tools/src/prebuilds/schemas/spm.config.schema.json -->
+<!-- @ref-ignore android/src/ apple/ ios/ package.json packages/@expo/config packages/@expo/config-plugins packages/@expo/prebuild-config packages/expo-modules-autolinking plugin/ -->

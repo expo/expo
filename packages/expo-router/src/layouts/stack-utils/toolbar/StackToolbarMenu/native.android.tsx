@@ -12,6 +12,7 @@ import {
   DEFAULT_TOOLBAR_BACKGROUND_COLOR,
   DEFAULT_TOOLBAR_TINT_COLOR,
 } from '../defaults';
+import { getIconButtonContainerColors } from '../getIconButtonContainerColors';
 import type { NativeToolbarMenuActionProps, NativeToolbarMenuProps } from './types';
 
 const arrowRightIcon = require('../../../../../assets/arrow_right.xml');
@@ -138,7 +139,9 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
     <IconButton
       onClick={() => setExpanded(true)}
       enabled={!props.disabled}
-      modifiers={[background(backgroundColor)]}>
+      colors={getIconButtonContainerColors(toolbarColors.buttonContainerColor)}
+      // The background modifier would paint a square behind the round container
+      modifiers={toolbarColors.buttonContainerColor ? [] : [background(backgroundColor)]}>
       <Icon
         source={props.source}
         tint={sourceTint}

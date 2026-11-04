@@ -368,6 +368,15 @@ public final class ErrorRecovery: NSObject {
   }
 
   public static func writeErrorOrExceptionToLog(_ errorOrException: Any, _ logger: UpdatesLogger, dispatchQueue: DispatchQueue = DispatchQueue.global()) {
+    writeErrorOrExceptionToLog(errorOrException, logger, code: .jsRuntimeError, dispatchQueue: dispatchQueue)
+  }
+
+  internal static func writeErrorOrExceptionToLog(
+    _ errorOrException: Any,
+    _ logger: UpdatesLogger,
+    code: UpdatesErrorCode,
+    dispatchQueue: DispatchQueue = DispatchQueue.global()
+  ) {
     dispatchQueue.async {
       var serializedError: String
       if let errorOrException = errorOrException as? UpdatesError {
@@ -380,7 +389,7 @@ public final class ErrorRecovery: NSObject {
         return
       }
 
-      logger.error(cause: UpdatesError.errorRecoveryFatalException(serializedError: serializedError), code: .jsRuntimeError)
+      logger.error(cause: UpdatesError.errorRecoveryFatalException(serializedError: serializedError), code: code)
       let data = serializedError.data(using: .utf8)!
       let errorLogFile = ErrorRecovery.errorLogFile()
       if FileManager.default.fileExists(atPath: errorLogFile.path) {

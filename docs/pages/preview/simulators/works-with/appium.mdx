@@ -10,7 +10,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-Expo Simulators runs [Appium](https://appium.io/docs/en/) tests. Start a session with `--type appium`. EAS provisions an Appium server next to the remote device and gives you its URL and capabilities. Your Appium client connects to that server as it does to a local one.
+Expo Simulators runs [Appium](https://appium.io/docs/en/) tests. Start a session with `--type appium`. Expo Simulators provisions an Appium server next to the remote device and gives you its URL and capabilities. Your Appium client connects to that server as it does to a local one.
 
 ## Start an Appium session
 
@@ -49,7 +49,7 @@ The start flags `--build-id`, `--build-fingerprint`, `--application-archive-url`
 
 ## Limit the session length
 
-Controller activity from agent-device, Argent, or Appium resets the idle timer. Browser preview activity does not. EAS records Appium commands as session events, so a session that uses `--max-idle-time-minutes` stays active while your tests send commands. Use `--max-duration-minutes` to set an upper limit. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
+Controller activity from agent-device, Argent, or Appium resets the idle timer. Browser preview activity does not. Expo Simulators records Appium commands as session events, so a session that uses `--max-idle-time-minutes` stays active while your tests send commands. Use `--max-duration-minutes` to set an upper limit. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
 
 ## Use the REST API
 
@@ -73,13 +73,13 @@ See [Expo Simulators REST API](/preview/simulators/reference/rest-api/).
 
 <Collapsible summary="Do I need to install an Appium server?">
 
-No. EAS runs the Appium server for the session. You need only an Appium client.
+No. Expo Simulators runs the Appium server for the session. You need only an Appium client.
 
 </Collapsible>
 
 <Collapsible summary="Are Appium commands shown in session activity?">
 
-Yes. EAS records Appium commands as session events with the producer `appium`. `eas simulator:events` shows them together with activity from agent-device and Argent.
+Yes. Expo Simulators records Appium commands as session events with the producer `appium`. `eas simulator:events` shows them together with activity from agent-device and Argent.
 
 </Collapsible>
 

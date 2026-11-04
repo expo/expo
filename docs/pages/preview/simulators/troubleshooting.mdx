@@ -45,7 +45,7 @@ Log in interactively or provide `EXPO_TOKEN` in a headless environment:
 
 ### EAS CLI reports that the project is not linked
 
-Run the command inside the Expo project and initialize EAS:
+Run the command inside the Expo project and link it to Expo Services:
 
 <Terminal cmd={['$ eas init']} />
 
@@ -83,7 +83,7 @@ Use `--no-force` when you want `simulator:start` to fail instead of creating a n
 
 ### The start command shows that the session is queued
 
-The session waits for available concurrency on your account. Sessions use the same job concurrency as other EAS jobs, such as EAS Build. Queue time does not count toward the 15-minute startup timeout. Stop sessions that you do not need to free concurrency:
+The session waits for available concurrency on your account. Sessions use the same job concurrency as other Expo Services jobs, such as Expo Build. Queue time does not count toward the 15-minute startup timeout. Stop sessions that you do not need to free concurrency:
 
 <Terminal cmd={['$ eas simulator:list --status new --status in-progress']} />
 
@@ -154,8 +154,8 @@ Open an installed app before taking the screenshot:
 
 `--launch-arg` and `--open-url` apply to an application installed during session startup. Pass exactly one source with the command:
 
-- `--build-id <build-id>` for an EAS Build
-- `--build-fingerprint <fingerprint-hash>` for the most recent finished EAS Build with that fingerprint
+- `--build-id <build-id>` for an Expo Build
+- `--build-fingerprint <fingerprint-hash>` for the most recent finished Expo Build with that fingerprint
 - `--application-archive-url <url>` for a remote application archive
 - `--expo-go` for the Expo Go version matching the project SDK
 
@@ -171,7 +171,7 @@ This is expected when the session starts without `--build-id`, `--build-fingerpr
 
 ### The screenshot shows old source code
 
-A release build embeds JavaScript at build time. Rebuild it from the current source, confirm that an existing EAS Build has the matching fingerprint, or install a development build and connect it to Metro.
+A release build embeds JavaScript at build time. Rebuild it from the current source, confirm that an existing Expo Build has the matching fingerprint, or install a development build and connect it to Metro.
 
 Changing source files does not update an already-installed release build.
 

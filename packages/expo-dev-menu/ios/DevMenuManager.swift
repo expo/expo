@@ -126,6 +126,8 @@ open class DevMenuManager: NSObject {
 
   var currentScreen: String?
 
+  private(set) var onboardingContentHeight: CGFloat?
+
   private var isNavigatingHome = false
 
   private var isReloading = false
@@ -434,6 +436,16 @@ open class DevMenuManager: NSObject {
   @objc
   public func setOnboardingFinished(_ finished: Bool) {
     DevMenuPreferences.isOnboardingFinished = finished
+  }
+
+  func setOnboardingContentHeight(_ height: CGFloat?) {
+    guard onboardingContentHeight != height else {
+      return
+    }
+    onboardingContentHeight = height
+    #if os(iOS)
+    window?.invalidateSheetDetents()
+    #endif
   }
 
   func readAutoLaunchDisabledState() {

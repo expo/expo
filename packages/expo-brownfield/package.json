@@ -1,6 +1,6 @@
 {
   "name": "expo-brownfield",
-  "version": "58.0.13",
+  "version": "58.0.16",
   "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
   "keywords": [
     "brownfield",
@@ -74,8 +74,7 @@
     "@types/prompts": "^2.0.6",
     "@types/react": "~19.3.0",
     "create-expo": "workspace:*",
-    "expo": "workspace:*",
-    "glob": "^13.0.6"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

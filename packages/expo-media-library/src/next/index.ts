@@ -20,6 +20,8 @@ export {
   type Shape,
   type Location,
   type AssetFieldValueMap,
+  type CollectionAssetField,
+  type SortableAssetField,
   type AssetInfo,
   type AssetMetadata,
   type AssetUriOptions,

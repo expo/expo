@@ -71,6 +71,11 @@ public final class ExpoRequestCdpInterceptor: NSObject, ExpoRequestInterceptorPr
     let params3 = CdpNetwork.LoadingFinishedParams(now: now, requestId: requestId, encodedDataLength: task.countOfBytesReceived)
     dispatchEvent(CdpNetwork.Event(method: "Network.loadingFinished", params: params3))
   }
+
+  func didFailLoading(requestId: String, task: URLSessionTask, error: Error) {
+    let params = CdpNetwork.LoadingFailedParams(now: Date().timeIntervalSince1970, requestId: requestId, error: error)
+    dispatchEvent(CdpNetwork.Event(method: "Network.loadingFailed", params: params))
+  }
 }
 
 /**

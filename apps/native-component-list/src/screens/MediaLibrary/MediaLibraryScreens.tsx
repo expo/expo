@@ -27,6 +27,16 @@ export const MediaLibraryScreens = [
   },
 ];
 
+if (Platform.OS === 'ios') {
+  MediaLibraryScreens.push({
+    name: 'Media Subtype',
+    route: 'medialibrary/media-subtype',
+    getComponent() {
+      return optionalRequire(() => require('./MediaSubtypeScreen'));
+    },
+  });
+}
+
 if (Platform.OS === 'android' && Platform.Version >= 33) {
   MediaLibraryScreens.push({
     name: 'Granular Permissions',

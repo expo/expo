@@ -21,6 +21,9 @@ let reactNative =
   ProcessInfo.processInfo.environment["RN_ROOT"]
   ?? ProcessInfo.processInfo.environment["REACT_NATIVE_PATH"]
   ?? "\(podsRoot)/../../node_modules/react-native"
+// Also listed in packages/expo-modules-jsi/apple/scripts/build-swiftpm-app-phase.sh (stage_link) and
+// tools/src/prebuilds/CustomBuild.ts (RN_HEADER_POD_LAYOUT). A header root added to one must be
+// added to the others, or SwiftPM apps fail at build time with a missing header.
 let headerSearchPaths = [
   publicHeaders,
   "\(publicHeaders)/React-jsi",
@@ -52,8 +55,12 @@ let headerSearchPaths = [
 // `scripts/generate-modulemap.sh` script writes this file at build time so
 // the absolute header path can be resolved against the runtime PODS_ROOT.
 // Lives outside `.build/` so SwiftPM state can be wiped without losing this
-// file.
-let generatedModuleMap = "\(packageDir)/.generated/module.modulemap"
+// file. `EXPO_CUSTOM_BUILD_ROOT` is forwarded from build-xcframework.sh when
+// the build must not write into the package, e.g. inside a SwiftPM app's
+// node_modules.
+let customBuildRoot = ProcessInfo.processInfo.environment["EXPO_CUSTOM_BUILD_ROOT"] ?? ""
+let buildRoot = customBuildRoot.isEmpty ? packageDir : customBuildRoot
+let generatedModuleMap = "\(buildRoot)/.generated/module.modulemap"
 let apiNotesPath = "\(packageDir)/APINotes"
 
 let cxxIncludeFlags = headerSearchPaths.map({ "-I\($0)" })

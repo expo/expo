@@ -12,6 +12,18 @@ internal final class ImageLoader {
   )
 
   func load(_ source: ImageSource, options: ImageLoadOptions) async throws -> UIImage {
+    // `maxSize` isn't applied to asset catalog images. Downscaling a bundled asset through
+    // `loadAsync` is not a case worth a resize path here, see the known gaps in the docs.
+    if let image = assetCatalogImage(for: source.uri) {
+      guard let tintColor = options.tintColor else {
+        return image
+      }
+      // `withTintColor` returns a new image without the format set by `assetCatalogImage`.
+      let tinted = image.withTintColor(tintColor)
+      tinted.sd_imageFormat = image.sd_imageFormat
+      return tinted
+    }
+
     // This loader uses only the disk cache. We may want to give more control on this, but the memory cache
     // doesn't make much sense for shared refs as they're kept in memory as long as their JS objects.
     var context = createSDWebImageContext(forSource: source, cachePolicy: .disk)

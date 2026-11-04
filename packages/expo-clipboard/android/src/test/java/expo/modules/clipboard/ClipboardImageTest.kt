@@ -79,7 +79,7 @@ class ClipboardImageTest {
   fun `imageFromContentUri should compress bitmap`() = runBlocking {
     val bitmap = mockk<Bitmap>(relaxed = true)
     val uri = mockk<Uri>(relaxed = true)
-    val options = GetImageOptions().apply { jpegQuality = 0.42 }
+    val options = GetImageOptions(jpegQuality = 0.42)
 
     mockkStatic(::bitmapFromContentUriAsync)
     coEvery { bitmapFromContentUriAsync(any(), any()) } returns bitmap
@@ -87,7 +87,7 @@ class ClipboardImageTest {
     imageFromContentUri(ApplicationProvider.getApplicationContext(), uri, options)
 
     verify {
-      bitmap.compress(options.imageFormat.compressFormat, 42, any())
+      bitmap.compress(options.format.compressFormat, 42, any())
     }
   }
 
@@ -95,7 +95,7 @@ class ClipboardImageTest {
   fun `imageFromContentUri should return the bitmap data`() = runBlocking {
     val bitmap = bitmapFromBase64String(IMG_BASE64)
     val uri = mockk<Uri>(relaxed = true)
-    val options = GetImageOptions().apply { imageFormat = ImageFormat.PNG }
+    val options = GetImageOptions(format = ImageFormat.PNG)
 
     mockkStatic(::bitmapFromContentUriAsync)
     coEvery { bitmapFromContentUriAsync(any(), any()) } returns bitmap

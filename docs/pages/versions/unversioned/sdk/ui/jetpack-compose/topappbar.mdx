@@ -1,0 +1,94 @@
+---
+title: TopAppBar
+description: A Jetpack Compose TopAppBar component for displaying a title, a navigation icon, and actions at the top of a screen.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI TopAppBar matches the official Jetpack Compose [`TopAppBar`](https://developer.android.com/develop/ui/compose/components/app-bars#small) API. It displays a title, a navigation icon, and action buttons at the top of a screen.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic top app bar
+
+Put content in the `TopAppBar.Title`, `TopAppBar.NavigationIcon`, and `TopAppBar.Actions` slots. Each slot is optional. Set `style={{ typography: 'titleLarge' }}` on the title `Text` to use Material 3 title typography.
+
+```tsx BasicTopAppBar.tsx
+import {
+  Host,
+  Icon,
+  IconButton,
+  Text,
+  TopAppBar,
+} from '@expo/ui/jetpack-compose';
+import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
+
+const CLOSE_ICON = require('./assets/close.xml');
+const EDIT_ICON = require('./assets/edit.xml');
+
+export default function BasicTopAppBar() {
+  return (
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <TopAppBar modifiers={[fillMaxWidth()]}>
+        <TopAppBar.NavigationIcon>
+          <IconButton onClick={() => console.log('Close')}>
+            <Icon source={CLOSE_ICON} contentDescription="Close" />
+          </IconButton>
+        </TopAppBar.NavigationIcon>
+        <TopAppBar.Title>
+          <Text style={{ typography: 'titleLarge' }}>Inbox</Text>
+        </TopAppBar.Title>
+        <TopAppBar.Actions>
+          <IconButton onClick={() => console.log('Edit')}>
+            <Icon source={EDIT_ICON} contentDescription="Edit" />
+          </IconButton>
+        </TopAppBar.Actions>
+      </TopAppBar>
+    </Host>
+  );
+}
+```
+
+### Window insets
+
+By default, the app bar adds the status bar height above its content. It also adds any system bar or display cutout inset at its sides. These insets assume the bar is at the top edge of the window, even inside a nested `Host`. If a parent view already handles the insets, pass `windowInsets={{}}`. This removes both the top and horizontal insets.
+
+```tsx TopAppBarWithoutInsets.tsx
+import { Host, Text, TopAppBar } from '@expo/ui/jetpack-compose';
+import { fillMaxWidth } from '@expo/ui/jetpack-compose/modifiers';
+
+export default function TopAppBarWithoutInsets() {
+  return (
+    <Host
+      matchContents={{ vertical: true }}
+      style={{ width: '100%' }}>
+      <TopAppBar windowInsets={{}} modifiers={[fillMaxWidth()]}>
+        <TopAppBar.Title>
+          <Text style={{ typography: 'titleLarge' }}>Settings</Text>
+        </TopAppBar.Title>
+      </TopAppBar>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { TopAppBar } from '@expo/ui/jetpack-compose';
+```
+
+<APISection
+  packageName="expo-ui/jetpack-compose/topappbar"
+  apiName="TopAppBar"
+/>

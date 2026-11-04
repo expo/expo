@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- Add `seekForwardIntervalSeconds` and `seekBackwardIntervalSeconds` to `AudioLockScreenOptions` to customize the lock screen skip intervals. Both default to 10 seconds and are clamped to at least 0.1 seconds. ([#44804](https://github.com/expo/expo/pull/44804) by [@radko93](https://github.com/radko93))
+
 ## 58.0.9
 
 ### Patch Changes

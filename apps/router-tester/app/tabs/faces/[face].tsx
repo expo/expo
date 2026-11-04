@@ -1,6 +1,7 @@
 import { Link, Stack, useIsFocused, useIsPreview, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ScrollView, Switch, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { useFaceColors } from '../../../components/faces';
 import { TabBarHiddenToggle } from '../../../components/tab-bar-hidden-context';
@@ -30,33 +31,35 @@ export default function Index() {
         contentContainerStyle={{
           height: '150%',
         }}>
-        <TabBarHiddenToggle />
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'center',
-            alignItems: 'center',
-            gap: 8,
-          }}>
-          <Text style={{ color: '#fff' }}>Heavy Computation</Text>
-          <Switch
-            value={shouldPerformHeavyComputation}
-            onValueChange={setShouldPerformHeavyComputation}
-          />
-        </View>
-        <Text
-          testID="face-id"
-          style={{
-            color: '#fff',
-            fontSize: 32,
-            fontWeight: 'bold',
-            marginTop: 16,
-          }}>
-          Face {face}
-        </Text>
-        <Link href="/404" style={{ color: '#fff', fontSize: 18, marginTop: 16 }}>
-          Go to 404
-        </Link>
+        <SafeAreaView edges={['left', 'right']}>
+          <TabBarHiddenToggle />
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: 8,
+            }}>
+            <Text style={{ color: '#fff' }}>Heavy Computation</Text>
+            <Switch
+              value={shouldPerformHeavyComputation}
+              onValueChange={setShouldPerformHeavyComputation}
+            />
+          </View>
+          <Text
+            testID="face-id"
+            style={{
+              color: '#fff',
+              fontSize: 32,
+              fontWeight: 'bold',
+              marginTop: 16,
+            }}>
+            Face {face}
+          </Text>
+          <Link href="/404" style={{ color: '#fff', fontSize: 18, marginTop: 16 }}>
+            Go to 404
+          </Link>
+        </SafeAreaView>
       </ScrollView>
     </>
   );

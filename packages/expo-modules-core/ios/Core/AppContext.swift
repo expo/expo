@@ -60,6 +60,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    */
   private var hostWrapper: ExpoHostWrapper?
 
+  /// Observes the surface presenter of the host to know when the views of this app context are created.
+  private var surfacePresenterObserver: SurfacePresenterObserver?
+
   /**
    Underlying JSI runtime of the running app.
    */
@@ -134,7 +137,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   /// The application identifier that distinguishes app contexts that are alive at the same time,
   /// for example during a reload or when more than one `RCTHost` is running. It's `nil` for the first
-  /// app context, so its view names have no suffix.
+  /// app context.
   @objc
   public var appIdentifier: String? {
     return AppContext.appIdentifier(forIndex: appIndex)
@@ -230,24 +233,18 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   internal lazy var sharedObjectRegistry = SharedObjectRegistry(appContext: self)
 
-  /**
-   A registry containing references to JavaScript classes.
-   - ToDo: Make one registry per module, not the entire app context.
-   Perhaps it should be kept by the `ModuleHolder`.
-   */
+  /// A registry containing references to the prototypes of JavaScript classes.
+  /// - ToDo: Make one registry per module, not the entire app context.
+  /// Perhaps it should be kept by the `ModuleHolder`.
   internal let classRegistry = ClassRegistry()
 
-  /**
-   Creates a new JavaScript object with the class prototype associated with the given native class.
-   - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
-   */
+  /// Creates a new JavaScript object with the class prototype associated with the given native class.
+  /// Returns `nil` when no JavaScript class is registered for the native class.
+  /// - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
   internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
-    guard let jsClass = classRegistry.getJavaScriptClass(nativeClassId: nativeClassId) else {
-      throw JavaScriptClassNotFoundException()
-    }
-    return try JavaScriptActor.assumeIsolated {
-      let prototype = try jsClass.getProperty("prototype").asObject()
-      return try runtime.createObject(prototype: prototype)
+    let runtime = try self.runtime
+    return classRegistry.withPrototype(nativeClassId: nativeClassId) { (prototype: borrowing JavaScriptObject) in
+      return runtime.createObject(prototype: prototype)
     }
   }
 
@@ -433,10 +430,42 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   @MainActor
   private func registerNativeViews() {
     for holder in moduleRegistry {
-      for (key, viewDefinition) in holder.definition.views {
-        let viewModule = ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
-        ExpoFabricView.registerComponent(viewModule, appContext: self)
+      for viewName in holder.definition.views.keys {
+        ExpoFabricView.registerComponent(moduleName: holder.name, viewName: viewName)
       }
+    }
+    AppContext.viewsRegisteringAppContext = self
+  }
+
+  // MARK: - Mounting views
+
+  /// The app context whose host is mounting views right now. It's set by `SurfacePresenterObserver`.
+  @MainActor
+  internal static weak var mountingAppContext: AppContext?
+
+  /// The app context that registered native views most recently. Views are created for this context
+  /// when no host is mounting, for example when the host isn't wrapped by `ExpoHostWrapper`.
+  @MainActor
+  internal static weak var viewsRegisteringAppContext: AppContext?
+
+  /// The app context that the views being created belong to. Component view classes are shared by all app contexts,
+  /// so this is how the views get their app context.
+  @MainActor
+  internal static var appContextForNewViews: AppContext? {
+    return mountingAppContext ?? viewsRegisteringAppContext
+  }
+
+  /// Starts observing the surface presenter of the host, so the views created while the host is mounting
+  /// get this app context.
+  @MainActor
+  private func observeMounting(with hostWrapper: ExpoHostWrapper) {
+    guard let surfacePresenter = hostWrapper.surfacePresenter() else {
+      log.warn("The host has no surface presenter, so its views are created for the app context that registered views last")
+      return
+    }
+    let observer = SurfacePresenterObserver(appContext: self)
+    if observer.observe(surfacePresenter) {
+      surfacePresenterObserver = observer
     }
   }
 
@@ -488,10 +517,6 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     // it be recovered from the runtime via `AppContext.from(runtime:)`. This is the main
     // runtime, so its teardown owns the app context's `destroy()`.
     installer.installAppContextNativeState(on: coreObject, ownsLifecycle: true)
-
-    if let appIdentifier {
-      coreObject.defineProperty("__expo_app_identifier__", value: appIdentifier)
-    }
 
     try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
 
@@ -588,12 +613,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       }) {
         instance = cachedInstance
       } else {
-        guard let classDefinition = self.findClassDefinition(for: typeId) else {
-          throw SharedObjectClassNotRegisteredException(String(describing: type(of: nativeObject)))
-        }
-        let built = try classDefinition.buildPrototype(
+        let built = try self.buildWorkletPrototype(
+          for: type(of: nativeObject),
           in: runtime,
-          appContext: self,
           basePrototype: sharedObjectBaseProto.getObject()
         )
         instance = runtime.createObject(prototype: built)
@@ -607,6 +629,25 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     sharedObjectClass.setProperty("__resolveInWorklet", value: resolveInWorklet.asObject())
   }
 
+  /// Builds the worklet prototype for a native shared object class, from the `ClassDefinition` of a module
+  /// that defines it or from a module that registers it in `_classTypes`.
+  @JavaScriptActor
+  private func buildWorkletPrototype(
+    for nativeType: SharedObject.Type,
+    in runtime: JavaScriptRuntime,
+    basePrototype: consuming JavaScriptObject
+  ) throws -> JavaScriptObject {
+    let typeId = ObjectIdentifier(nativeType)
+
+    if let classDefinition = findClassDefinition(for: typeId) {
+      return try classDefinition.buildPrototype(in: runtime, appContext: self, basePrototype: basePrototype)
+    }
+    if let classType = findClassType(for: typeId) {
+      return try JavaScriptBindings.buildSharedObjectPrototype(classType, in: runtime, basePrototype: basePrototype)
+    }
+    throw SharedObjectClassNotRegisteredException(String(describing: nativeType))
+  }
+
   /**
    Finds the ClassDefinition for a given native type identifier by searching all modules.
    */
@@ -617,6 +658,17 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
            sharedObjectType.typeIdentifier == typeId {
           return classDefinition
         }
+      }
+    }
+    return nil
+  }
+
+  /// Finds the `@SharedObject` class for a given native type identifier among the classes that modules
+  /// register in `_classTypes`.
+  private func findClassType(for typeId: ObjectIdentifier) -> SharedObject.Type? {
+    for module in moduleRegistry {
+      if let classType = type(of: module.module)._classTypes.first(where: { ObjectIdentifier($0) == typeId }) {
+        return classType
       }
     }
     return nil
@@ -691,11 +743,12 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
         guard let nativeState = nativeState as? NativeState, nativeState.ownsLifecycle else {
           return
         }
-        // `destroy()` asserts it runs on the JS thread (`JavaScriptActor.assumeIsolated`). That
-        // holds for the intended path, where the native state dies as the runtime finalizes on
-        // its own thread. A future cross-runtime sharing path that could drop this state's last
-        // JSI slot from another thread (see `JavaScriptNativeState.acquireShared`) would need to
-        // hop back to the JS thread here first.
+        // Hermes runs this on its finalizer thread while the JS thread waits in the runtime's
+        // destructor, so nothing else uses the runtime and `destroy()` can release JS objects
+        // here. Don't send that work to another thread: it would run after Hermes frees its
+        // values. A future cross-runtime sharing path that could drop this state's last JSI slot
+        // while the runtime still runs JavaScript (see `JavaScriptNativeState.acquireShared`)
+        // would need to hop to the JS thread here first.
         nativeState.appContext.destroy()
       }
     }
@@ -731,6 +784,16 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   @objc
   public func setHostWrapper(_ wrapper: ExpoHostWrapper) {
     self.hostWrapper = wrapper
+
+    // This is called on the JS thread, possibly before `RCTHost` stores the instance that owns this runtime,
+    // so its surface presenter can't be read yet. The host stores the instance on the main thread
+    // in the same call that starts the runtime, so the presenter is available on the next main queue turn.
+    DispatchQueue.main.async { [weak self] in
+      guard let self, let hostWrapper = self.hostWrapper else {
+        return
+      }
+      self.observeMounting(with: hostWrapper)
+    }
   }
 
   // MARK: - Statics

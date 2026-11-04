@@ -105,13 +105,15 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
   <uses-permission android:name="android.permission.ACCESS_MEDIA_LOCATION" />
   ```
 
-- [Scoped storage](https://developer.android.com/training/data-storage#scoped-storage) is available from Android 10. To make `expo-media-library` work with scoped storage, you need to add the following configuration to your **android/app/src/main/AndroidManifest.xml**:
+- [Scoped storage](https://developer.android.com/training/data-storage#scoped-storage) is available from Android 10. To [opt your app out of scoped storage](https://developer.android.com/training/data-storage/use-cases#opt-out-in-production-app) on Android 10, add the following configuration to your **android/app/src/main/AndroidManifest.xml**:
 
   ```xml
   <manifest ... >
     <application android:requestLegacyExternalStorage="true" ...>
   </manifest>
   ```
+
+  Android 11 and later ignore `requestLegacyExternalStorage` when your app targets Android 11 (API level 30) or later.
 
 **iOS**
 

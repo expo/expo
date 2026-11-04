@@ -1,8 +1,10 @@
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function RouteInSlot() {
   return (
-    <View
+    <SafeAreaView
+      edges={['left', 'right']}
       style={{
         flex: 1,
         justifyContent: 'center',
@@ -10,6 +12,6 @@ export default function RouteInSlot() {
         backgroundColor: '#000',
       }}>
       <Text style={{ color: '#fff' }}>Route in Slot</Text>
-    </View>
+    </SafeAreaView>
   );
 }

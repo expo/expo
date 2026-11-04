@@ -16,7 +16,7 @@ android {
 }
 
 dependencies {
-  implementation 'androidx.work:work-runtime-ktx:2.9.1'
+  implementation 'androidx.work:work-runtime-ktx:2.10.5'
   implementation 'com.facebook.react:react-android'
 
   testImplementation 'junit:junit:4.13.2'

@@ -309,6 +309,7 @@ test('PRELOAD rebuilds route history without dropping drawer status', () => {
   );
 
   expect(state!.state.history).toEqual([
+    { type: 'route', key: 'bar' },
     { type: 'route', key: 'baz:drawer-0' },
     { type: 'route', key: 'qux-key' },
     { type: 'drawer', status: 'open' },

@@ -41,6 +41,7 @@ export function TextInput({
   value,
   onChangeText,
   placeholder,
+  accessibilityLabel,
   autoFocus,
   editable,
   multiline,
@@ -107,6 +108,7 @@ export function TextInput({
       ref={innerRef}
       value={state.value}
       placeholder={placeholder}
+      accessibilityLabel={accessibilityLabel}
       placeholderTextColor={placeholderTextColor ?? colors.gray[500]}
       autoFocus={autoFocus}
       editable={editable}

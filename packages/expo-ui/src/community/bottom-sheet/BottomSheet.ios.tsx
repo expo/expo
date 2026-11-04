@@ -135,10 +135,14 @@ export function BottomSheet(props: BottomSheetProps) {
     } else if (indexProp >= 0) {
       closedRef.current = false;
       setIsPresented(true);
-      const clampedIndex = Math.min(indexProp, detents.length - 1);
-      setCurrentIndex(clampedIndex);
-      currentIndexRef.current = clampedIndex;
     }
+  }, [indexProp]);
+
+  useEffect(() => {
+    const requestedIndex = indexProp >= 0 ? indexProp : currentIndexRef.current;
+    const clampedIndex = Math.min(requestedIndex, detents.length - 1);
+    setCurrentIndex(clampedIndex);
+    currentIndexRef.current = clampedIndex;
   }, [indexProp, detents.length]);
 
   const handlePresentedChange = useCallback((presented: boolean) => {

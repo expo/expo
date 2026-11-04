@@ -4,6 +4,7 @@ import type { DefinedNativePlugin } from 'noxcturnal';
 
 import {
   expoPluginInput,
+  resolveInputFilename,
   serverBoundary,
   type Noxcturnal,
   type NoxcturnalTransformInput,
@@ -138,7 +139,10 @@ export function createReactServerClientProxyPlugin(
       }
       const outputKey =
         './' +
-        path.relative(state.input.projectRoot, state.input.filename).split(path.sep).join('/');
+        path
+          .relative(state.input.projectRoot, resolveInputFilename(state.input))
+          .split(path.sep)
+          .join('/');
       const exports = [...state.exports];
       const proxy = [
         `const proxy = /*@__PURE__*/ require("react-server-dom-webpack/server").createClientModuleProxy(${JSON.stringify(outputKey)});`,
@@ -160,7 +164,10 @@ export function createReactServerClientProxyPlugin(
       const shebang = context.source.match(/^#![^\r\n]*(?:\r?\n|$)/)?.[0] ?? '';
       context.editor.overwrite(0, context.source.length, shebang + proxy.join('\n'), 'sourceless');
       context.metadata.set('proxyExports', exports);
-      context.metadata.set('reactClientReference', pathToFileURL(state.input.filename).href);
+      context.metadata.set(
+        'reactClientReference',
+        pathToFileURL(resolveInputFilename(state.input)).href
+      );
     },
   });
 }

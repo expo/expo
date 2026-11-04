@@ -38,7 +38,7 @@ it('releases an image that finishes loading after unmount', async () => {
   expect(load.image.release).toHaveBeenCalledTimes(1);
 });
 
-it('releases each loaded image when its source is replaced or unmounted', async () => {
+it('releases each loaded image after the next image replaces it or on unmount', async () => {
   const first = createImageLoad();
   const second = createImageLoad();
   jest
@@ -54,10 +54,12 @@ it('releases each loaded image when its source is replaced or unmounted', async 
 
   await act(async () => first.finish());
   await rerender({ uri: 'second.jpg' });
-  expect(first.image.release).toHaveBeenCalledTimes(1);
+  expect(result.current).toBe(first.image);
+  expect(first.image.release).not.toHaveBeenCalled();
 
   await act(async () => second.finish());
   expect(result.current).toBe(second.image);
+  expect(first.image.release).toHaveBeenCalledTimes(1);
   expect(second.image.release).not.toHaveBeenCalled();
   await unmount();
   expect(first.image.release).toHaveBeenCalledTimes(1);

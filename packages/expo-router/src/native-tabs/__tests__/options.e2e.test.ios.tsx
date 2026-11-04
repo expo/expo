@@ -167,6 +167,69 @@ describe('disabled', () => {
   });
 });
 
+describe('search role', () => {
+  it('forwards role="search" as a search tab with search activation on', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" role="search" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalled();
+    expect(TabsScreen.mock.calls.at(-1)![0].ios).toMatchObject({
+      systemItem: 'search',
+      role: 'search',
+      automaticallyActivatesSearch: true,
+    });
+  });
+
+  it('turns search activation off when the layout trigger sets disableAutomaticSearchActivation', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" role="search" disableAutomaticSearchActivation />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalled();
+    expect(TabsScreen.mock.calls.at(-1)![0].ios).toMatchObject({
+      systemItem: 'search',
+      role: 'search',
+      automaticallyActivatesSearch: false,
+    });
+  });
+
+  it('turns search activation off when the screen trigger sets disableAutomaticSearchActivation', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" role="search" />
+        </NativeTabs>
+      ),
+      index: () => (
+        <View testID="index">
+          <NativeTabs.Trigger disableAutomaticSearchActivation />
+        </View>
+      ),
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalled();
+    expect(TabsScreen.mock.calls.at(-1)![0].ios).toMatchObject({
+      systemItem: 'search',
+      role: 'search',
+      automaticallyActivatesSearch: false,
+    });
+  });
+});
+
 describe('testID and accessibilityLabel', () => {
   it('forwards testID and accessibilityLabel to Tabs.Screen tab bar item props', async () => {
     await renderRouter({

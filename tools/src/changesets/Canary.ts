@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import { glob } from 'glob';
+import { glob } from 'node:fs/promises';
 import path from 'node:path';
 import semver from 'semver';
 
@@ -84,10 +84,14 @@ export async function normalizeCanaryVersionsAsync(
 }
 
 async function readPublicManifestsAsync(root: string): Promise<Manifest[]> {
-  const manifestPaths = await glob(
-    ['packages/*/package.json', 'packages/@expo/*/package.json', 'templates/*/package.json'],
-    { cwd: root, absolute: true }
-  );
+  const manifestPaths = (
+    await Array.fromAsync(
+      glob(
+        ['packages/*/package.json', 'packages/@expo/*/package.json', 'templates/*/package.json'],
+        { cwd: root }
+      )
+    )
+  ).map((file) => path.resolve(root, file));
   const manifests = await Promise.all(
     manifestPaths.map(async (file) => ({ ...(await fs.readJson(file)), path: path.dirname(file) }))
   );

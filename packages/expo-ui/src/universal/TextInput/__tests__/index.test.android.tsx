@@ -33,3 +33,22 @@ describe('TextInput placeholder', () => {
     }
   );
 });
+
+describe('TextInput secureTextEntry', () => {
+  it('tells the keyboard the field is a password', async () => {
+    await render(<TextInput secureTextEntry autoCorrect />);
+
+    expect(findNativeViewProps('BasicTextFieldView')?.keyboardOptions).toMatchObject({
+      keyboardType: 'password',
+      autoCorrectEnabled: false,
+    });
+  });
+
+  it('uses a number password keyboard for a numeric secure field', async () => {
+    await render(<TextInput secureTextEntry keyboardType="number-pad" />);
+
+    expect(findNativeViewProps('BasicTextFieldView')?.keyboardOptions).toMatchObject({
+      keyboardType: 'numberPassword',
+    });
+  });
+});

@@ -41,6 +41,8 @@ declare module 'react-native' {
     /** @platform web */
     clip?: string;
     /** @platform web */
+    cursor?: string;
+    /** @platform web */
     gridAutoColumns?: string;
     /** @platform web */
     gridAutoFlow?: string;
@@ -91,7 +93,7 @@ declare module 'react-native' {
     /** @platform web */
     transitionTimingFunction?: string | Function | (string | Function)[];
     /** @platform web */
-    userSelect?: string;
+    userSelect?: 'auto' | 'text' | 'none' | 'contain' | 'all';
     /** @platform web */
     visibility?: string;
     /** @platform web */
@@ -188,7 +190,7 @@ declare module 'react-native' {
     /** @platform web */
     transitionDelay?: string | string[];
     /** @platform web */
-    transitionDuration?: string | string[];
+    transitionDuration?: string | string[] | number;
     /** @platform web */
     transitionProperty?: string | string[];
     /** @platform web */

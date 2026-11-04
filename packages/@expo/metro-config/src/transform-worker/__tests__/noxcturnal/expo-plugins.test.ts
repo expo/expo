@@ -1890,3 +1890,50 @@ it.each([
     expect(result.result.code).not.toContain('<View');
   }
 );
+
+describe('project-relative filenames', () => {
+  const projectRoot = '/workspace/apps/mobile';
+
+  function transform(
+    filename: string,
+    source: string,
+    customTransformOptions: JsTransformOptions['customTransformOptions'] = {},
+    dev = false
+  ) {
+    const result = transformFileFullyWithNoxcturnalSync({
+      filename,
+      source,
+      projectRoot,
+      isDefaultExpoTransformer: true,
+      options: options({
+        dev,
+        inlinePlatform: false,
+        customTransformOptions: { engine: 'hermes', ...customTransformOptions },
+      }),
+      config: fullConfig(),
+    });
+    if (result.status !== 'complete') throw new Error(result.reason);
+    return result.result;
+  }
+
+  it.each([
+    { filename: 'app/index.tsx', routerRoot: 'app' },
+    { filename: '../shared/app/index.tsx', routerRoot: '../shared/app' },
+  ])('recognizes the router directory for $filename', ({ filename, routerRoot }) => {
+    const result = transform(
+      filename,
+      'export async function loader() { return null; } export default function Route() { return null; }',
+      { routerRoot }
+    );
+    expect(result.metadata.loaderReference).toBe(path.resolve(projectRoot, filename));
+    expect(result.code).not.toMatch(/\bloader\b/);
+  });
+
+  it('computes EXPO_ROUTER_APP_ROOT relative to the app file, independently of cwd', () => {
+    const result = transform(
+      'src/entry.js',
+      'export const root = process.env.EXPO_ROUTER_APP_ROOT;'
+    );
+    expect(result.code).toContain('"../app"');
+  });
+});

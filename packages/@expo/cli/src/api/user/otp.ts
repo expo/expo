@@ -21,7 +21,7 @@ async function promptForOTPAsync(): Promise<string | null> {
       name: 'otp',
       message: `One-time password or backup code (${enterMessage}):`,
     },
-    { nonInteractiveHelp }
+    { nonInteractiveHelp, programStatusKind: 'auth' }
   );
   return otp || null;
 }

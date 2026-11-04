@@ -34,7 +34,8 @@ export function Button({
   const universalModifiers = transformToModifiers(
     style,
     { onAppear, onDisappear, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'Button' }
   );
 
   const modifiers = [...buttonSpecificModifiers, ...universalModifiers];

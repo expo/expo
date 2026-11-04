@@ -51,6 +51,23 @@ function expectedPaths(packageRoot, product, flavor, root) {
   };
 }
 
+const ABI_FILE = 'arm64-apple-ios-simulator.abi.json';
+
+function abiPaths(packageRoot, product) {
+  const { framework } = expectedPaths(packageRoot, product, 'release', '.expo-prebuild/output');
+  return {
+    raw: path.join(
+      framework,
+      'ios-arm64_x86_64-simulator',
+      `${product.name}.framework`,
+      'Modules',
+      `${product.name}.swiftmodule`,
+      ABI_FILE
+    ),
+    staged: path.join(packageRoot, 'prebuilds/abi', product.name, ABI_FILE),
+  };
+}
+
 function requireDirectory(directory, description) {
   let stat;
   try {
@@ -79,6 +96,15 @@ export function validateRawIosPrebuilds(packageRoot = process.cwd()) {
     for (const flavor of getFlavors(product)) {
       const { framework } = expectedPaths(packageRoot, product, flavor, '.expo-prebuild/output');
       requireRawXCFramework(framework, `${product.name} ${flavor} XCFramework`);
+    }
+    if (product.publishAbiDescriptor === true) {
+      const { raw } = abiPaths(packageRoot, product);
+      if (!fs.statSync(raw, { throwIfNoEntry: false })?.isFile()) {
+        throw new Error(
+          `${product.name} release ABI file is missing: ${raw}\n` +
+            'Run `et prebuild-package-for-publish` in this package to rebuild the prebuilds.'
+        );
+      }
     }
   }
   for (const dependencyName of getSpmDependencyNames(products)) {
@@ -114,6 +140,12 @@ export function validatePublishedIosPrebuilds(packageRoot = process.cwd()) {
         throw new Error(`${tarball} does not contain ${name}.xcframework`);
       }
     }
+    if (product.publishAbiDescriptor === true) {
+      const { staged } = abiPaths(packageRoot, product);
+      if (!fs.statSync(staged, { throwIfNoEntry: false })?.isFile()) {
+        throw new Error(`${product.name} ABI file is missing: ${staged}`);
+      }
+    }
   }
   for (const dependencyName of getSpmDependencyNames(products)) {
     for (const flavor of FLAVORS) {
@@ -134,10 +166,16 @@ export function validatePublishedIosPrebuilds(packageRoot = process.cwd()) {
 }
 
 export function stageIosPrebuilds(packageRoot = process.cwd(), runTar = spawnSync) {
-  const products = readPublishedIosProducts(packageRoot);
-  if (!products) return false;
-  validateRawIosPrebuilds(packageRoot);
   const stagingRoot = path.join(packageRoot, 'prebuilds');
+  const products = readPublishedIosProducts(packageRoot);
+  if (!products) {
+    // Output staged before the package stopped publishing prebuilds would still be packed.
+    if (fs.existsSync(path.join(packageRoot, 'spm.config.json'))) {
+      fs.rmSync(stagingRoot, { recursive: true, force: true });
+    }
+    return false;
+  }
+  validateRawIosPrebuilds(packageRoot);
   fs.rmSync(stagingRoot, { recursive: true, force: true });
   for (const product of products) {
     for (const flavor of getFlavors(product)) {
@@ -152,6 +190,11 @@ export function stageIosPrebuilds(packageRoot = process.cwd(), runTar = spawnSyn
       if (result.status !== 0) {
         throw new Error(`Failed to create ${staged.tarball}: ${result.stderr.trim()}`);
       }
+    }
+    if (product.publishAbiDescriptor === true) {
+      const { raw, staged } = abiPaths(packageRoot, product);
+      fs.mkdirSync(path.dirname(staged), { recursive: true });
+      fs.copyFileSync(raw, staged);
     }
   }
   for (const dependencyName of getSpmDependencyNames(products)) {

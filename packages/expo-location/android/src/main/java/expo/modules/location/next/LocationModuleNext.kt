@@ -3,7 +3,6 @@ package expo.modules.location.next
 import android.content.Context
 import android.location.LocationManager
 import android.os.Build
-import android.util.Log
 import androidx.core.location.LocationManagerCompat
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
@@ -44,7 +43,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 private const val MISSING_NOTIFICATION_PERMISSION_WARNING =
-  "Starting the location foreground service without the `android.permission.POST_NOTIFICATIONS` " +
+  "[expo-location] Starting the location foreground service without the `android.permission.POST_NOTIFICATIONS` " +
     "permission. The service runs and location updates are not throttled, but its notification " +
     "does not appear in the notification drawer."
 class TaskManagerNotFoundException : CodedException("TaskManager module not found")
@@ -62,14 +61,15 @@ class LocationModuleNext : Module() {
 
     val gmsLocationProvider = GmsLocationProvider(
       fusedLocationProvider,
-      LocationServices.getSettingsClient(context)
+      LocationServices.getSettingsClient(context),
+      appContext.jsLogger
     ) { GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(context) == ConnectionResult.SUCCESS }
 
     SharedRef(gmsLocationProvider)
   }
 
   val androidLocationProviderInstance: SharedRef<LocationProvider> by lazy {
-    SharedRef(AndroidLocationProvider(context))
+    SharedRef(AndroidLocationProvider(context, appContext.jsLogger))
   }
   private val taskManager: TaskManagerInterface by lazy {
     appContext.legacyModule<TaskManagerInterface>()
@@ -258,7 +258,7 @@ class LocationModuleNext : Module() {
         }
         permissionsManager.ensureForegroundServicePermissions()
         if (!permissionsManager.hasNotificationPermission()) {
-          Log.w("ExpoLocation", MISSING_NOTIFICATION_PERMISSION_WARNING)
+          appContext.jsLogger?.warn(MISSING_NOTIFICATION_PERMISSION_WARNING)
         }
 
         val requested = backgroundSessionOptions
@@ -360,7 +360,7 @@ class LocationModuleNext : Module() {
         } catch (e: CancellationException) {
           throw e
         } catch (e: Exception) {
-          Log.w("ExpoLocation", "Could not restart the background session after entering the foreground", e)
+          appContext.jsLogger?.warn("[expo-location] Could not restart the background session after entering the foreground", e)
         }
       }
     }

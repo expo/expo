@@ -14,10 +14,12 @@ export type {
 export { DrawerActions, DrawerRouter } from './DrawerRouter';
 export { extendRouter, extendRouterActions } from './extendRouter';
 export type {
+  ExtendedRouter,
   RouterActionContext,
   RouterActionReducer,
   RouterExtension,
   RouterExtensionContext,
+  RouterExtensionMembers,
   RouterExtensionOptions,
 } from './extendRouter';
 export type {

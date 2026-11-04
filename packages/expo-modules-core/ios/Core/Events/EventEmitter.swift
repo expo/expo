@@ -1,6 +1,6 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
-import ExpoModulesJSI
+@_spi(Internal) import ExpoModulesJSI
 
 /**
  A protocol for native objects that have an associated JavaScript object capable of receiving events.
@@ -27,6 +27,7 @@ public extension EventEmitter {
   /**
    Schedules an event with the given name to be emitted to the associated JavaScript object.
    */
+  @inlinable
   func emit(event: String) {
     emit(event: event, payload: JavaScriptUndefined())
   }
@@ -71,9 +72,12 @@ public extension EventEmitter {
   /**
    Schedules an event with the given name and payload to be emitted to the associated JavaScript object.
    */
+  @inlinable
   func emit<P: JavaScriptEncodable>(event: String, payload: sending P) {
-    guard let appContext, let runtime = try? appContext.runtime else {
-      log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
+    // Inlinable, so `P` and the scheduled closure specialize in the caller's module. Unspecialized, the
+    // payload is boxed and `P.encode` goes through the witness table on every event. The non-generic
+    // parts are calls into this module.
+    guard let runtime = eventRuntime(forEvent: event) else {
       return
     }
     // See the note in `emit(event:payload:)` above - the emitter is captured in a weak, `@unchecked
@@ -89,22 +93,51 @@ public extension EventEmitter {
       do {
         jsPayload = try P.encode(payload, in: runtime)
       } catch {
-        log.warn("Failed to convert payload for event '\(event)' on \(P.self); the event will not be emitted: \(error)")
+        warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
         return
       }
-      let dispatched = emitter.withEventTarget { target in
-        dispatchEvent(event: event, payload: jsPayload, to: target, in: runtime)
-        return true
+      dispatchEvent(event: event, payload: jsPayload, from: emitter, in: runtime)
+    }
+  }
+
+  /// Schedules an event with the given name and payload to be emitted to the associated JavaScript object,
+  /// converting the payload with `encode`, which writes it into a slot like
+  /// `JavaScriptEncodable.encode(_:into:in:)`. The `@Event` macro uses it for payload types that can't
+  /// conform to `JavaScriptEncodable`, such as tuples.
+  @inlinable
+  func emit<P>(
+    event: String,
+    payload: sending P,
+    encode: @escaping @JavaScriptActor @Sendable (P, borrowing JavaScriptValue.Slot, borrowing JavaScriptRuntime) throws
+      -> Void
+  ) {
+    guard let runtime = eventRuntime(forEvent: event) else {
+      return
+    }
+    // See the note in `emit(event:payload:)` above.
+    let emitter = WeakEventEmitterReference(value: self)
+
+    runtime.schedule {
+      guard let emitter = emitter.value else {
+        return
       }
-      if dispatched == nil {
-        log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
+      let jsPayload: JavaScriptValue
+      do {
+        jsPayload = try JavaScriptValue.encoding(in: runtime) { slot in
+          try encode(payload, slot, runtime)
+        }
+      } catch {
+        warnPayloadNotEncoded(event: event, payloadType: P.self, error: error)
+        return
       }
+      dispatchEvent(event: event, payload: jsPayload, from: emitter, in: runtime)
     }
   }
 
   /**
    Schedules an event with the given name and payload to be emitted to the associated JavaScript object.
-   Payloads that are `JavaScriptEncodable` use the overload above, which converts them statically.
+   Payloads that are `JavaScriptEncodable` use the `emit(event:payload:)` overload for them, which converts
+   them statically.
    */
   @_disfavoredOverload
   func emit<P: AnyArgument>(event: String, payload: sending P) {
@@ -140,9 +173,57 @@ public extension EventEmitter {
 }
 
 /// A weak reference to an event emitter that the scheduled `emit` closures capture by value, so it is stored
-/// in the closure context without an allocation of its own.
-private struct WeakEventEmitterReference: @unchecked Sendable {
+/// in the closure context without an allocation of its own. Frozen, because with library evolution the
+/// inlinable initializer can't assign the stored property of a struct whose layout isn't fixed.
+@frozen
+@usableFromInline
+internal struct WeakEventEmitterReference: @unchecked Sendable {
+  @usableFromInline
   weak var value: (any EventEmitter)?
+
+  @inlinable
+  init(value: any EventEmitter) {
+    self.value = value
+  }
+}
+
+extension EventEmitter {
+  /// The runtime to schedule an event on, or `nil` after logging a warning when it has been lost.
+  @usableFromInline
+  internal func eventRuntime(forEvent event: String) -> JavaScriptRuntime? {
+    guard let appContext, let runtime = try? appContext.runtime else {
+      log.warn("Trying to send event '\(event)' to \(type(of: self)), but the JS runtime has been lost")
+      return nil
+    }
+    return runtime
+  }
+}
+
+/// Logs that the payload of an event couldn't be converted, so the event is not emitted.
+@usableFromInline
+internal func warnPayloadNotEncoded(event: String, payloadType: Any.Type, error: any Error) {
+  log.warn(
+    "Failed to convert payload for event '\(event)' on \(payloadType); the event will not be emitted: \(error)"
+  )
+}
+
+/// Sends a pre-converted event payload to the JavaScript object of the given emitter. Logs a warning
+/// when the emitter is no longer associated with a JavaScript object.
+@JavaScriptActor
+@usableFromInline
+internal func dispatchEvent(
+  event: String,
+  payload: borrowing JavaScriptValue,
+  from emitter: any EventEmitter,
+  in runtime: JavaScriptRuntime
+) {
+  let dispatched = emitter.withEventTarget { target in
+    dispatchEvent(event: event, payload: payload, to: target, in: runtime)
+    return true
+  }
+  if dispatched == nil {
+    log.warn("Trying to send event '\(event)' to JS, but the JS object is no longer associated with the native instance")
+  }
 }
 
 /**
@@ -151,19 +232,15 @@ private struct WeakEventEmitterReference: @unchecked Sendable {
  */
 @JavaScriptActor
 internal func dispatchEvent(event: String, payload: borrowing JavaScriptValue, to target: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) {
-  runtime.withUnsafePointee { runtimePtr in
-    target.withUnsafePointee { objectPtr in
-      payload.withUnsafePointee { payloadPtr in
-        event.withCString { eventName in
-          emitJSEvent(
-            utf8Name: eventName,
-            runtimePointer: runtimePtr,
-            objectPointer: objectPtr,
-            argumentsPointer: payloadPtr,
-            argumentCount: 1
-          )
-        }
-      }
+  runtime.withUnsafePointees(object: target, value: payload) { runtimePtr, objectPtr, payloadPtr in
+    event.withCString { eventName in
+      emitJSEvent(
+        utf8Name: eventName,
+        runtimePointer: runtimePtr,
+        objectPointer: objectPtr,
+        argumentsPointer: payloadPtr,
+        argumentCount: 1
+      )
     }
   }
 }

@@ -47,6 +47,24 @@ const styles = StyleSheet.create({
 });
 ```
 
+### Use with Reanimated
+
+The `expo-hinge/reanimated` entry provides the hinge as a [Reanimated](https://docs.swmansion.com/react-native-reanimated/) shared value. The UI thread updates this value on each hinge change and does not wait for the JavaScript thread. Animations that read it stay in sync with the hinge, even when the JavaScript thread is busy. This entry requires [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
+
+```tsx
+import { useAnimatedHinge } from 'expo-hinge/reanimated';
+import Animated, { useAnimatedStyle } from 'react-native-reanimated';
+
+export default function Lid() {
+  const hinge = useAnimatedHinge();
+  const style = useAnimatedStyle(() => ({
+    transform: [{ rotate: `${(hinge.get()?.angle ?? 180) - 180}deg` }],
+  }));
+
+  return <Animated.View style={[{ width: 120, height: 8, backgroundColor: 'gray' }, style]} />;
+}
+```
+
 ## API
 
 ```ts

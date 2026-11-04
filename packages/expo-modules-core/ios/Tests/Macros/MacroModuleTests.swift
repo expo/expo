@@ -13,7 +13,7 @@ private struct MacroOptions {
   var count: Int = 0
 }
 
-// `@unchecked Sendable`: the `@JS(.concurrent)` members send `self` off the JavaScript thread,
+// `@unchecked Sendable`: the `.concurrent` and `.withAsync` members send `self` off the JavaScript thread,
 // which Swift 6 mode allows only for a `Sendable` module.
 @ExpoModule
 private final class MacroGreeter: Module, @unchecked Sendable {
@@ -75,6 +75,12 @@ private final class MacroGreeter: Module, @unchecked Sendable {
   @JS("renamedOffThread", .concurrent)
   func offThreadWithName(value: String) async throws -> String {
     return value
+  }
+
+  // A synchronous function that is also bound as a promise-returning variant.
+  @JS("joinSync", .withAsync("join"))
+  func join(first: String, second: String) -> String {
+    return first + second
   }
 }
 
@@ -227,6 +233,14 @@ private struct MacroModuleTests {
     let result = try await runtime.evalAsync("expo.modules.MacroGreeter.renamedOffThread('done')")
     #expect(try await result.asString() == "done")
     #expect(try runtime.eval("'offThreadWithName' in expo.modules.MacroGreeter").asBool() == false)
+  }
+
+  @Test
+  func `binds a @JS(.withAsync) variant that returns a promise`() async throws {
+    register(MacroGreeter(appContext: appContext))
+    #expect(try runtime.eval("expo.modules.MacroGreeter.joinSync('a', 'b')").asString() == "ab")
+    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.join('a', 'b').then((value) => value + '!')")
+    #expect(try await result.asString() == "ab!")
   }
 
   // MARK: - Non-primitive decode/encode

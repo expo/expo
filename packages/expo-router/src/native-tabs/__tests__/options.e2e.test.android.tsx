@@ -1010,6 +1010,7 @@ describe('Tab options', () => {
       expect((children.props as ComponentProps<typeof SafeAreaView>).edges).toStrictEqual({
         bottom: true,
       });
+      expect(children).toMatchObject({ props: { insetType: 'all' } });
     }
   );
   it('When disableAutomaticContentInsets is true, the content of the screen is not wrapped with SafeAreaView', async () => {
@@ -1032,7 +1033,7 @@ describe('Tab options', () => {
     expect(children.type).not.toBe(SafeAreaView);
   });
 
-  it('does not wrap the screen content with SafeAreaView when the tab bar is hidden', async () => {
+  it('keeps system bottom insets when the tab bar is initially hidden', async () => {
     await renderRouter({
       _layout: () => (
         <NativeTabs hidden>
@@ -1045,9 +1046,11 @@ describe('Tab options', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
     const children = TabsScreen.mock.calls[0]![0].children;
-    expect(isValidElement(children)).toBe(true);
-    if (!isValidElement(children)) throw new Error();
-    expect(children.type).not.toBe(SafeAreaView);
+    expect(isValidElement<ComponentProps<typeof SafeAreaView>>(children)).toBe(true);
+    expect(children).toMatchObject({
+      type: SafeAreaView,
+      props: { edges: { bottom: true }, insetType: 'system' },
+    });
   });
 });
 

@@ -28,6 +28,12 @@ inputs:
   native-tests-pods:
     description: 'Restore /apps/native-tests/ios pods cache'
     required: false
+  expo-modules-jsi-xcframework:
+    description: >
+      Restore the ExpoModulesJSI xcframework built by the `Build ExpoModulesJSI xcframework`
+      build phase. The phase rebuilds a slice only when its recorded source hash changed, so
+      a stale entry only means a rebuild.
+    required: false
   gradle:
     description: 'Restore Gradle cache'
     required: false
@@ -71,6 +77,9 @@ outputs:
   native-tests-pods-hit:
     description: 'Returns true, if /apps/native-tests/ios pods cache is up-to-date'
     value: ${{ steps.native-tests-pods-cache.outputs.cache-hit || steps.native-tests-pods-cache-read-only.outputs.cache-hit }}
+  expo-modules-jsi-xcframework-hit:
+    description: 'Returns true, if the ExpoModulesJSI xcframework cache is up-to-date'
+    value: ${{ steps.expo-modules-jsi-xcframework-cache.outputs.cache-hit || steps.expo-modules-jsi-xcframework-cache-read-only.outputs.cache-hit }}
 
 runs:
   using: 'composite'
@@ -194,6 +203,23 @@ runs:
       with:
         path: apps/native-tests/ios/Pods
         key: ${{ runner.os }}-native-tests-pods-${{ hashFiles('apps/native-tests/ios/Podfile.lock') }}
+
+    - name: ♻️ Restore ExpoModulesJSI xcframework from cache
+      if: inputs.expo-modules-jsi-xcframework == 'true' && steps.cache-policy.outputs.read-only != 'true'
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      id: expo-modules-jsi-xcframework-cache
+      with:
+        path: packages/expo-modules-jsi/apple/Products
+        key: ${{ runner.os }}-expo-modules-jsi-xcframework-${{ hashFiles('packages/expo-modules-jsi/apple/**', 'apps/bare-expo/ios/Podfile.lock') }}
+        restore-keys: ${{ runner.os }}-expo-modules-jsi-xcframework-
+    - name: ♻️ Restore ExpoModulesJSI xcframework from cache (read-only)
+      if: inputs.expo-modules-jsi-xcframework == 'true' && steps.cache-policy.outputs.read-only == 'true'
+      uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+      id: expo-modules-jsi-xcframework-cache-read-only
+      with:
+        path: packages/expo-modules-jsi/apple/Products
+        key: ${{ runner.os }}-expo-modules-jsi-xcframework-${{ hashFiles('packages/expo-modules-jsi/apple/**', 'apps/bare-expo/ios/Podfile.lock') }}
+        restore-keys: ${{ runner.os }}-expo-modules-jsi-xcframework-
 
     - name: ♻️ Restore Gradle cache
       if: inputs.ndk == 'true' || inputs.gradle == 'true'

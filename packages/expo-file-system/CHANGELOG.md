@@ -1,5 +1,17 @@
 # Changelog
 
+## 58.0.11
+
+### Patch Changes
+
+- [Android] Fix `Paths.availableDiskSpace` returning space reserved for the system. It now returns the space the app can use. ([#51922](https://github.com/expo/expo/pull/51922) by [@eleddie](https://github.com/eleddie))
+
+## 58.0.10
+
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-core@58.0.23. ([#51823](https://github.com/expo/expo/pull/51823) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.9
 
 ### Patch Changes

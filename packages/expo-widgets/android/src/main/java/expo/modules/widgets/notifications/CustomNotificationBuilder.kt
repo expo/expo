@@ -14,8 +14,8 @@ import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import expo.modules.widgets.R
-import io.github.jakex7.peek.notification.PeekNotificationViews
-import io.github.jakex7.peek.notification.setPeekContent
+import io.github.expo.peek.notification.PeekNotificationViews
+import io.github.expo.peek.notification.setPeekContent
 
 internal object CustomNotificationBuilder {
   private const val DEFAULT_CHANNEL_ID = "expo_widgets_notifications"

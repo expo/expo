@@ -19,6 +19,15 @@ internal func capturingCppErrors<R: ~Copyable>(_ block: () throws -> R) throws -
   return result
 }
 
+/// Throws the error that a C++ helper stored when it returned `false`.
+@inline(__always)
+internal func throwCppErrorUnlessSucceeded(_ succeeded: Bool) throws {
+  // A call that succeeded reads no thread-local storage.
+  if !succeeded, let cppError = getCurrentCppError() {
+    throw cppError
+  }
+}
+
 /// Runs a Swift trampoline body called from a C++ host callback and forwards any thrown error
 /// to `expo::CppError`'s thread-local storage so the C++ side can rethrow it as a `jsi::JSError`.
 /// On the failure branch returns `undefined`, since the C++ side will overwrite it by throwing

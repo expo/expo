@@ -70,7 +70,7 @@ test('queues an incoming deep link using its extracted app path', async () => {
       payload: {
         href: '/home?from=link',
         originalHref: 'example://home?from=link',
-        options: { event: 'NAVIGATE' },
+        options: { event: 'NAVIGATE', __internal__popToNavigator: true },
       },
     },
   ]);

@@ -83,7 +83,12 @@ export type RouterExtension<
 
 // `Omit` replaces the method. A plain intersection keeps `Router`'s signature as the first
 // overload, so callers would still see `null` in the return type.
-type ExtendedRouter<State extends NavigationState, Action extends NavigationAction> = Omit<
+/**
+ * The router that a factory from `extendRouter` or `extendRouterActions` creates. Its
+ * `getStateForAction` returns `RouterActionHandling.Unhandled`, never `null`, for an action that
+ * it does not handle.
+ */
+export type ExtendedRouter<State extends NavigationState, Action extends NavigationAction> = Omit<
   Router<State, Action>,
   'getStateForAction'
 > & {

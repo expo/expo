@@ -228,9 +228,14 @@ function compileModule(code: string, filename: string, opts: ModuleOptions) {
     throw error;
   } finally {
     if (mapPath) {
+      // Node 24.22 and later lazily parse the source-map, at which point it'll be removed. Looking it up now, forces this to be done in time
+      try {
+        nodeModule.findSourceMap?.(compileFilename);
+      } catch {
+        /* noop */
+      }
       // Restore, so subsequent requires of node_modules won't have their source-maps read
       setSourceMapsState(priorSourceMapsState ?? { enabled: false });
-      // Node parses source maps eagerly during _compile, so the file can be removed now.
       try {
         fs.unlinkSync(mapPath);
       } catch {

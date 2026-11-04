@@ -171,7 +171,8 @@ rm -f "$log_dir/model-env-reason"
 # Fresh config so a runner-image login cannot mask a bad secret, and so CI
 # matches a laptop canary that set CLAUDE_CONFIG_DIR.
 probe_cfg=$(mktemp -d)
-trap 'rm -rf "$probe_cfg"' EXIT
+probe_cwd=$(mktemp -d)
+trap 'rm -rf "$probe_cfg" "$probe_cwd"' EXIT
 
 probe_with_env() {
   local env_name="$1"
@@ -181,17 +182,25 @@ probe_with_env() {
   export CLAUDE_CONFIG_DIR="$probe_cfg"
   export "$env_name=$token"
   set +e
-  if command -v timeout >/dev/null 2>&1; then
-    timeout 90 claude -p "Reply with the single word ok. Say nothing else." \
-      --model "$model" \
-      --disallowedTools Bash \
-      >"$out" 2>&1
-  else
-    claude -p "Reply with the single word ok. Say nothing else." \
-      --model "$model" \
-      --disallowedTools Bash \
-      >"$out" 2>&1
-  fi
+  # The probe needs no project files, so it runs from an empty directory with every
+  # customization off: no CLAUDE.md, settings, hooks or MCP servers from the checkout
+  # reach a process that holds a model credential.
+  (
+    cd "$probe_cwd" || exit 1
+    if command -v timeout >/dev/null 2>&1; then
+      timeout 90 claude -p "Reply with the single word ok. Say nothing else." \
+        --model "$model" \
+        --safe-mode \
+        --disallowedTools Bash \
+        >"$out" 2>&1
+    else
+      claude -p "Reply with the single word ok. Say nothing else." \
+        --model "$model" \
+        --safe-mode \
+        --disallowedTools Bash \
+        >"$out" 2>&1
+    fi
+  )
   local rc=$?
   set -e
   return "$rc"

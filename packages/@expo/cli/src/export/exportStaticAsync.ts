@@ -273,7 +273,7 @@ export async function exportFromServerAsync(
       const normalizedPathname =
         pathname === '' ? '/' : pathname.startsWith('/') ? pathname : `/${pathname}`;
 
-      const renderOpts: GetStaticContentOptions = {};
+      const renderOpts: Omit<GetStaticContentOptions, 'route' | 'params'> = {};
 
       const contextKey = getLoaderRouteContextKey(route);
 
@@ -512,7 +512,7 @@ export async function exportFromServerAsync(
       });
     }
   } else {
-    warnPossibleInvalidExportType(appDir, mode);
+    await warnPossibleInvalidExportType(appDir, mode);
   }
 
   return files;
@@ -758,13 +758,13 @@ async function exportApiRoutesAsync({
   return files;
 }
 
-function warnPossibleInvalidExportType(appDir: string, mode: Options['mode']) {
-  const apiRoutes = getApiRoutesForDirectory(appDir);
+async function warnPossibleInvalidExportType(appDir: string, mode: Options['mode']) {
+  const apiRoutes = await getApiRoutesForDirectory(appDir);
   if (apiRoutes.length) {
     warnInvalidWebOutput(apiRoutes.map((route) => path.relative(appDir, route)));
   }
 
-  const middlewareFile = getMiddlewareForDirectory(appDir, mode);
+  const middlewareFile = await getMiddlewareForDirectory(appDir, mode);
   if (middlewareFile) {
     Log.warn(
       chalk.yellow`Skipping export for middleware because \`web.output\` is not "server" and API routes are disabled. Set \`apiRoutes: true\` in the \`expo-router\` config plugin to enable them. You may want to remove ${path.relative(appDir, middlewareFile)}`

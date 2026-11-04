@@ -8,9 +8,9 @@ import expo.modules.widgets.WidgetsStorage
 import expo.modules.widgets.evaluateLayout
 import expo.modules.widgets.getWidgetEnvironment
 import expo.modules.widgets.toPeekRoot
-import io.github.jakex7.peek.emittables.peekEmittableNotificationViews
-import io.github.jakex7.peek.notification.PeekNotificationSizes
-import io.github.jakex7.peek.notification.PeekNotificationViews
+import io.github.expo.peek.emittables.peekEmittableNotificationViews
+import io.github.expo.peek.notification.PeekNotificationSizes
+import io.github.expo.peek.notification.PeekNotificationViews
 
 internal object CustomNotificationRenderer {
   suspend fun render(context: Context, state: CustomNotificationState): PeekNotificationViews {

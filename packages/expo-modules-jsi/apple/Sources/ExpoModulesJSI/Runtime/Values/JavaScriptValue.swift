@@ -355,6 +355,15 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptBigInt(runtimeHandle, pointee.getBigInt(jsiRuntime))
   }
 
+  /// Returns the value as a symbol, or asserts if not a symbol.
+  public func getSymbol() -> JavaScriptSymbol {
+    guard let runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
+      FatalError.runtimeLost()
+    }
+    assert(isSymbol(), "Value is not a symbol")
+    return JavaScriptSymbol(runtimeHandle, pointee.getSymbol(jsiRuntime))
+  }
+
   /// Returns the value as an object, or asserts if not an object.
   public func getObject() -> JavaScriptObject {
     guard let runtimeHandle, let jsiRuntime = runtimeHandle.pointee else {
@@ -455,6 +464,14 @@ public struct JavaScriptValue: JavaScriptType, Sendable, ~Copyable {
       throw TypeError(type: JavaScriptBigInt.self)
     }
     return getBigInt()
+  }
+
+  @JavaScriptActor
+  public func asSymbol() throws(TypeError) -> JavaScriptSymbol {
+    guard isSymbol() else {
+      throw TypeError(type: JavaScriptSymbol.self)
+    }
+    return getSymbol()
   }
 
   @JavaScriptActor
@@ -812,12 +829,18 @@ extension JavaScriptValue: JSIRepresentable {
 // MARK: - Errors
 
 extension JavaScriptValue {
+  // `@frozen` so client modules, which call the typed-throwing `as…()` conversions, know its size instead
+  // of asking the type's metadata accessor for it before each call.
+  @frozen
   public struct TypeError: Error, CustomStringConvertible {
+    @usableFromInline
     let type: any ~Copyable.Type
     /// A specific explanation that replaces the generic message, when the failure needs one.
+    @usableFromInline
     var reason: String? = nil
     /// Where inside the converted value the failure happened, such as `.user.tags[1]`. Empty when it's
     /// the value itself.
+    @usableFromInline
     var path: String = ""
 
     public var description: String {

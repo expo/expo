@@ -11,6 +11,10 @@ internal final class TestJavaScriptThread: @unchecked Sendable {
   private var isStopping = false
   private var threadID: UInt64 = 0
 
+  /// Runs on this thread after each scheduled operation, like the microtask checkpoint that React
+  /// Native's runtime scheduler performs after each task. Set and read only on this thread.
+  var afterEachOperation: (() -> Void)?
+
   init() {
     let started = DispatchSemaphore(value: 0)
     let thread = Thread { [self] in
@@ -77,6 +81,7 @@ internal final class TestJavaScriptThread: @unchecked Sendable {
       condition.unlock()
 
       operation()
+      afterEachOperation?()
     }
   }
 }

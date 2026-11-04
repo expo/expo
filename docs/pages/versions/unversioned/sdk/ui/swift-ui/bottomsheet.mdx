@@ -199,7 +199,7 @@ export default function BottomSheetFitsContentExample() {
 
 By default, a sheet uses the system's translucent material background (Liquid Glass on iOS 26). Use the [`presentationBackground`](modifiers/#presentationbackgroundstyle) modifier on `Group` to paint the sheet yourself, which also opts the sheet out of that translucent material. It accepts any `ShapeStyle`: a solid color, a material, or a gradient.
 
-> **info** iOS 26 renders a material, such as `{ type: 'material', material: 'ultraThin' }`, as a flat color rather than a translucent blur. Pick a background that also reads well opaque.
+> **info** On iOS 26 and later, a material passed to the `presentationBackground` modifier, such as `{ type: 'material', material: 'ultraThin' }`, renders as a flat color rather than a translucent blur. For a translucent material, use the [`presentationBackground` prop](#translucent-material-background) instead.
 
 > **info** Prefer `presentationBackground` over a `background` modifier on the sheet's content. A `background` sits _behind_ the content's own background, so a `Form` or `List` covers it, and the color shows inconsistently as the sheet moves between detents. `presentationBackground` colors the sheet surface itself, so it stays consistent at every detent. When the content is a `Form` or `List`, also add [`scrollContentBackground('hidden')`](modifiers/#scrollcontentbackgroundvisible) so the sheet color shows through the grouped background.
 
@@ -264,6 +264,63 @@ export default function BottomSheetBackgroundColorExample() {
 ```
 
 </ComponentExample>
+
+### Translucent material background
+
+Use the `presentationBackground` prop to fill the whole sheet with a view. This matches SwiftUI's [`presentationBackground(alignment:content:)`](<https://developer.apple.com/documentation/swiftui/view/presentationbackground(alignment:content:)>). A material in this view stays a translucent blur on iOS 26 and later.
+
+```tsx
+import { useState } from 'react';
+import {
+  Host,
+  BottomSheet,
+  Button,
+  Group,
+  Rectangle,
+  Text,
+} from '@expo/ui/swift-ui';
+import {
+  foregroundStyle,
+  padding,
+  presentationDetents,
+} from '@expo/ui/swift-ui/modifiers';
+
+export default function BottomSheetMaterialExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <BottomSheet
+        isPresented={isPresented}
+        onIsPresentedChange={setIsPresented}
+        anchor={
+          <Button
+            label="Open sheet"
+            onPress={() => setIsPresented(true)}
+          />
+        }
+        presentationBackground={
+          <Rectangle
+            modifiers={[
+              foregroundStyle({
+                type: 'material',
+                material: 'ultraThin',
+              }),
+            ]}
+          />
+        }>
+        <Group
+          modifiers={[
+            presentationDetents(['medium']),
+            padding({ all: 20 }),
+          ]}>
+          <Text>Translucent sheet background</Text>
+        </Group>
+      </BottomSheet>
+    </Host>
+  );
+}
+```
 
 ### Color scheme
 

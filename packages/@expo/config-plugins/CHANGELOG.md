@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.10
+
+### Patch Changes
+
+- Update `xcode` to 4.0.0. ([#51986](https://github.com/expo/expo/pull/51986) by [@zoontek](https://github.com/zoontek))
+
 ## 58.0.9
 
 ### Patch Changes

@@ -47,8 +47,22 @@ struct DataListForEachItemView: ExpoSwiftUI.View {
   }
 
   var body: some View {
-    Children()
+    content
       .publishZeroContentOrigin(props.shadowNodeProxy)
+  }
+
+  // `List` reads row traits such as `moveDisabled` from the row's root view, and a nested
+  // `ForEach` breaks `onMove`. So a single child is the root itself.
+  @ViewBuilder
+  private var content: some View {
+    if let children = props.children, children.count == 1 {
+      let view: any View = children[0].childView
+      AnyView(view)
+    } else {
+      VStack(alignment: .leading, spacing: 0) {
+        Children()
+      }
+    }
   }
 }
 
@@ -112,8 +126,9 @@ private struct DataListForEachRow: View {
     return slots[index % slots.count].childView as? DataListForEachItemView
   }
 
+  // A `Group`, not a stack, so the row's traits reach `List`.
   var body: some View {
-    VStack(alignment: .leading, spacing: 0) {
+    Group {
       if let slot {
         DataListForEachSlotContent(
           props: slot.props,
@@ -178,12 +193,15 @@ private struct DataListForEachSlotContent: View {
   var body: some View {
     Group {
       if showsContent {
+        // Measured in the background: `onGeometryChange` on the item hides its row traits from `List`.
         DataListForEachItemView(props: props)
           .id(itemKey)
-          .onGeometryChange(
-            for: CGFloat.self,
-            of: { axis == .horizontal ? $0.size.width : $0.size.height },
-            action: { size in window.measure(size, for: itemKey, revision: revision) }
+          .background(
+            Color.clear.onGeometryChange(
+              for: CGFloat.self,
+              of: { axis == .horizontal ? $0.size.width : $0.size.height },
+              action: { size in window.measure(size, for: itemKey, revision: revision) }
+            )
           )
       } else {
         // Hide the previous item while JS updates this slot.
