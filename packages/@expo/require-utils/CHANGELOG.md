@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Support the TypeScript 7.1 `typescript/sync` entrypoint alongside the previous `typescript/unstable/sync` ([#52831](https://github.com/expo/expo/pull/52831) by [@kitten](https://github.com/kitten))
+
 ## 56.1.8 — 2026-10-21
 
 ### 🐛 Bug fixes

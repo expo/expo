@@ -4,12 +4,24 @@ import { formatDiagnostic } from '../codeframe';
 
 describe('transpile', () => {
   beforeEach(() => {
+    jest.doMock(
+      'typescript/sync',
+      () => {
+        throw Object.assign(new Error('Package subpath is not exported'), {
+          code: 'ERR_PACKAGE_PATH_NOT_EXPORTED',
+        });
+      },
+      { virtual: true }
+    );
+    jest.doMock('typescript/proto', () => ({}), { virtual: true });
     jest.doMock('typescript/unstable/sync', () => ({}), { virtual: true });
     jest.doMock('typescript/unstable/proto', () => ({}), { virtual: true });
   });
 
   afterEach(() => {
     jest.dontMock('typescript');
+    jest.dontMock('typescript/sync');
+    jest.dontMock('typescript/proto');
     jest.dontMock('typescript/unstable/sync');
     jest.dontMock('typescript/unstable/proto');
   });
@@ -111,53 +123,65 @@ describe('transpile', () => {
     });
   });
 
-  it('uses the native export and its enums, and reuses the API instance', () => {
-    const transpileModule = jest.fn(() => ({ outputText: 'module.exports = 1;' }));
-    const API = jest.fn(() => ({ transpileModule }));
-    Object.defineProperty(API.prototype, 'transpileModule', {
-      get() {
-        throw new Error('The transpileModule getter must not be invoked on the prototype');
-      },
-    });
-    // Deliberately omit a version: capability detection must depend on exports.
-    jest.doMock('typescript', () => ({}));
-    jest.doMock('typescript/unstable/sync', () => ({ API }), { virtual: true });
-    jest.doMock(
-      'typescript/unstable/proto',
-      () => ({
-        ModuleKind: { CommonJS: 1, ESNext: 99, Preserve: 200 },
-        ModuleResolutionKind: { Bundler: 100 },
-        ScriptTarget: { ESNext: 99 },
-        NewLineKind: { LF: 2 },
-      }),
-      { virtual: true }
-    );
-    withTranspiler((transpile) => {
-      for (const [format, module] of [
-        ['commonjs-typescript', 1],
-        ['module-typescript', 99],
-        ['typescript', 200],
-      ] as const) {
-        expect(transpile('module.exports = 1 as number;', 'test.ts', format)).toEqual({
-          outputText: 'module.exports = 1;',
-        });
-        expect(transpileModule).toHaveBeenLastCalledWith('module.exports = 1 as number;', {
-          fileName: 'test.ts',
-          reportDiagnostics: true,
-          compilerOptions: {
-            module,
-            moduleResolution: 100,
-            target: 99,
-            newLine: 2,
-            verbatimModuleSyntax: false,
-            inlineSourceMap: true,
-            esModuleInterop: true,
+  it.each(['typescript', 'typescript/unstable'])(
+    '%s uses its native export and enums, and reuses the API instance',
+    (namespace) => {
+      const transpileModule = jest.fn(() => ({ outputText: 'module.exports = 1;' }));
+      const API = jest.fn(() => ({ transpileModule }));
+      Object.defineProperty(API.prototype, 'transpileModule', {
+        get() {
+          throw new Error('The transpileModule getter must not be invoked on the prototype');
+        },
+      });
+      // Deliberately omit a version: capability detection must depend on exports.
+      jest.doMock('typescript', () => ({}));
+      jest.doMock(`${namespace}/sync`, () => ({ API }), { virtual: true });
+      jest.doMock(
+        `${namespace}/proto`,
+        () => ({
+          ModuleKind: { CommonJS: 1, ESNext: 99, Preserve: 200 },
+          ModuleResolutionKind: { Bundler: 100 },
+          ScriptTarget: { ESNext: 99 },
+          NewLineKind: { LF: 2 },
+        }),
+        { virtual: true }
+      );
+      if (namespace === 'typescript') {
+        jest.doMock(
+          'typescript/unstable/sync',
+          () => {
+            throw new Error('The current entry point must take precedence');
           },
-        });
+          { virtual: true }
+        );
       }
-      expect(API).toHaveBeenCalledTimes(1);
-    });
-  });
+      withTranspiler((transpile) => {
+        for (const [format, module] of [
+          ['commonjs-typescript', 1],
+          ['module-typescript', 99],
+          ['typescript', 200],
+        ] as const) {
+          expect(transpile('module.exports = 1 as number;', 'test.ts', format)).toEqual({
+            outputText: 'module.exports = 1;',
+          });
+          expect(transpileModule).toHaveBeenLastCalledWith('module.exports = 1 as number;', {
+            fileName: 'test.ts',
+            reportDiagnostics: true,
+            compilerOptions: {
+              module,
+              moduleResolution: 100,
+              target: 99,
+              newLine: 2,
+              verbatimModuleSyntax: false,
+              inlineSourceMap: true,
+              esModuleInterop: true,
+            },
+          });
+        }
+        expect(API).toHaveBeenCalledTimes(1);
+      });
+    }
+  );
 
   it('normalizes native diagnostics and message chains for code frames', () => {
     jest.doMock('typescript', () => ({ version: '7.1.0' }));
