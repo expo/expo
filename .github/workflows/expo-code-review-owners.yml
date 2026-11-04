@@ -1,0 +1,57 @@
+name: AI code review owners
+
+# routing.jsonc lists the autonomous review paths. CODEOWNERS must give the same
+# paths to expo-bot, because that review request is what starts the review.
+# GitHub reads CODEOWNERS as it is, so this check keeps the two lists equal.
+#
+# SECURITY: `pull_request`, no secrets, read-only. It reads two files and runs no PR code.
+on:
+  pull_request:
+    paths:
+      - .github/CODEOWNERS
+      - .expo-agents/code-review/routing.jsonc
+      - .github/workflows/expo-code-review-owners.yml
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          sparse-checkout: |
+            .github/CODEOWNERS
+            .expo-agents/code-review/routing.jsonc
+          sparse-checkout-cone-mode: false
+
+      - name: Compare CODEOWNERS with the autonomous scope paths
+        run: |
+          set -euo pipefail
+          # Only full-line `//` comments are stripped, as in expo-code-review.yml.
+          globs=$(sed 's#^[[:space:]]*//.*##' .expo-agents/code-review/routing.jsonc \
+            | jq -r '.scopes[] | select(.name == "autonomous") | .paths[]')
+          want=""
+          while IFS= read -r glob; do
+            [ -n "$glob" ] || continue
+            case "$glob" in
+              */\*\*) want+="/${glob%/\*\*}/"$'\n' ;;
+              *)
+                echo "::error file=.expo-agents/code-review/routing.jsonc::The autonomous scope path \"$glob\" does not end in /**, so this check cannot turn it into a CODEOWNERS path. Use a directory glob, or change this check."
+                exit 1
+                ;;
+            esac
+          done <<< "$globs"
+          want=$(sort -u <<< "$want" | sed '/^$/d')
+          have=$(awk '!/^#/ && /@expo-bot/ { print $1 }' .github/CODEOWNERS | sort -u)
+          if [ "$want" != "$have" ]; then
+            echo "::error file=.github/CODEOWNERS::The paths that CODEOWNERS gives to @expo-bot do not match the autonomous scope paths in .expo-agents/code-review/routing.jsonc. Add or remove the CODEOWNERS line for each path below."
+            diff <(echo "$want") <(echo "$have") | sed -n 's/^< \(..*\)/missing in CODEOWNERS: \1/p; s/^> \(..*\)/not in routing.jsonc: \1/p'
+            exit 1
+          fi
+          echo "CODEOWNERS matches routing.jsonc:"
+          echo "$want"

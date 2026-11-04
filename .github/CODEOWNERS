@@ -1,3 +1,5 @@
 # expo-bot is requested so that the AI review starts (see expo-code-review-request.yml).
 # A human owner approves and merges.
+# Keep the expo-bot paths equal to the autonomous scope in .expo-agents/code-review/routing.jsonc.
+# expo-code-review-owners.yml checks this.
 /packages/patch-project/ @expo-bot @Kudo
