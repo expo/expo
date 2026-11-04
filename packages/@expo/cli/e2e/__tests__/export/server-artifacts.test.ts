@@ -1,3 +1,4 @@
+import spawnAsync from '@expo/spawn-async';
 import fs from 'node:fs';
 import { createRequire } from 'node:module';
 import path from 'node:path';
@@ -10,6 +11,8 @@ import { findProjectFiles, getRouterE2ERoot, getTemporaryPath } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
+
+jest.unmock('@expo/spawn-async');
 
 it.each(['pair', 'string', 'captured'])(
   'exports a custom serializer %s result as server artifacts',
@@ -81,6 +84,70 @@ if (${JSON.stringify(format)} === 'captured') {
     }
   }
 );
+
+it('exports and runs a server route with a standalone worker', async () => {
+  let projectRoot = getTemporaryPath();
+  try {
+    await fs.promises.cp(
+      path.join(__dirname, '../../fixtures/with-server-artifacts'),
+      projectRoot,
+      { recursive: true }
+    );
+    projectRoot = await fs.promises.realpath(projectRoot);
+    await fs.promises.symlink(
+      path.join(getRouterE2ERoot(), 'node_modules'),
+      path.join(projectRoot, 'node_modules'),
+      'junction'
+    );
+    await fs.promises.writeFile(
+      path.join(projectRoot, 'app/hello+api.ts'),
+      `
+import { Worker as NodeWorker } from 'node:worker_threads';
+import path from 'node:path';
+export async function GET() {
+  const workerPath = require.unstable_resolveWorker('../worker');
+  const worker = new NodeWorker(path.join(__dirname, '../..', workerPath));
+  const value = await new Promise((resolve, reject) => {
+    worker.once('message', resolve);
+    worker.once('error', reject);
+  });
+  await worker.terminate();
+  return Response.json({ value, workerPath });
+}
+`
+    );
+    await fs.promises.writeFile(
+      path.join(projectRoot, 'worker.ts'),
+      `
+import { parentPort } from 'node:worker_threads';
+parentPort.postMessage('worker result');
+`
+    );
+    await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--api-only', '--source-maps'], {
+      env: { NODE_ENV: 'production' },
+    });
+    const serverRoot = path.join(projectRoot, 'dist/server');
+    const { stdout } = await spawnAsync(
+      process.execPath,
+      [
+        '-e',
+        'require(process.argv[1]).GET().then(async (response) => console.log(JSON.stringify(await response.json()))).catch((error) => { console.error(error); process.exitCode = 1; });',
+        path.join(serverRoot, '_expo/functions/hello+api.js'),
+      ],
+      { cwd: projectRoot }
+    ).catch((error) => {
+      throw new Error(error.stderr || error.message);
+    });
+    const result = JSON.parse(stdout);
+    expect(result.value).toBe('worker result');
+    expect(result.workerPath).toMatch(/worker-.*\.js$/);
+    const workerFilename = path.join(serverRoot, result.workerPath);
+    expect(fs.existsSync(workerFilename)).toBe(true);
+    expect(fs.existsSync(workerFilename + '.map')).toBe(true);
+  } finally {
+    await fs.promises.rm(projectRoot, { recursive: true, force: true });
+  }
+});
 
 describe.each(['SSR', 'RSC'])('serialized server artifacts: %s', (mode) => {
   let projectRoot = getTemporaryPath();

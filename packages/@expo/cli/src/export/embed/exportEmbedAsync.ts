@@ -296,6 +296,7 @@ export async function exportEmbedBundleAndAssetsAsync(
       await compileHermesArtifactsAsync(projectRoot, bundles.artifacts);
     }
 
+    // NOTE(@kitten): Workers are only supported on web, so native embedding expects a single bundle.
     return {
       files,
       bundle: {

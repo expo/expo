@@ -178,6 +178,7 @@ it('emits workers as standalone bundles when ordinary chunk splitting is disable
   expect(ordinaryAsyncChunk).toBe(entryChunk);
   expect(workerChunk.metadata.modulePaths).toEqual(['/app/worker.js']);
   expect(workerChunk).not.toBe(entryChunk);
+  expect(entryChunk.source).toContain(workerChunk.filename);
 });
 
 describe('lazy development bundles', () => {

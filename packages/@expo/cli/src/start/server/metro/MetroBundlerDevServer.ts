@@ -2351,7 +2351,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             ? getServerEntryArtifact(artifacts)
             : artifacts.find((asset) => asset.type === 'js');
           bundleCode = entry!.source;
-          bundleMap = artifacts.find((asset) => asset.type === 'map')?.source ?? '';
+          bundleMap =
+            artifacts.find(
+              (asset) => asset.type === 'map' && asset.filename === entry!.filename + '.map'
+            )?.source ?? '';
           exportResources = { artifacts, assets };
         } catch (error: any) {
           throw new Error(

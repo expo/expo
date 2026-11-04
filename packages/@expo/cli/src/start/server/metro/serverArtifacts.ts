@@ -4,7 +4,9 @@ import assert from 'node:assert';
 import type { ExportAssetDescriptor, ExportAssetMap } from '../../../export/saveAssets';
 
 export function getServerEntryArtifact(artifacts: SerialAsset[]): SerialAsset {
-  const bundles = artifacts.filter((artifact) => artifact.type === 'js');
+  const bundles = artifacts.filter(
+    (artifact) => artifact.type === 'js' && !artifact.metadata?.isAsync
+  );
   assert(
     bundles.length === 1,
     'Expected one server bundle. Server bundle splitting is not supported.'

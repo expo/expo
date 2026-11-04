@@ -113,7 +113,7 @@ function createDevServerForStaticPageTests() {
 }
 
 describe('Metro error reporting', () => {
-  it.each(['artifacts', 'single bundle', 'custom conventional', 'invalid'])(
+  it.each(['artifacts', 'workers', 'single bundle', 'custom conventional', 'invalid'])(
     'reports only the final outcome after validating serializer output (%s)',
     async (format) => {
       const valid = format !== 'invalid';
@@ -157,7 +157,28 @@ describe('Metro error reporting', () => {
                 map: JSON.stringify({ version: 3, sources: [], names: [], mappings: '' }),
               }
             : valid
-              ? { artifacts: [{ type: 'js', source: 'code' }], assets: [] }
+              ? {
+                  artifacts:
+                    format === 'workers'
+                      ? [
+                          {
+                            type: 'js',
+                            filename: 'worker.js',
+                            source: 'worker',
+                            metadata: { isAsync: true },
+                          },
+                          { type: 'map', filename: 'worker.js.map', source: 'worker map' },
+                          {
+                            type: 'js',
+                            filename: 'hello.js',
+                            source: 'code',
+                            metadata: { isAsync: false },
+                          },
+                          { type: 'map', filename: 'hello.js.map', source: 'entry map' },
+                        ]
+                      : [{ type: 'js', source: 'code' }],
+                  assets: [],
+                }
               : {}
         );
       const result = devServer['_bundleDirectAsync']('/app/index.js', {
@@ -192,7 +213,9 @@ describe('Metro error reporting', () => {
                   bundle:
                     '__r(0);\nmodule.exports = __r(1);\n// Custom serializer footer\n//# sourceMappingURL=original.map\n//# debugId=original-id',
                 }
-              : { bundle: 'code' }
+              : format === 'workers'
+                ? { bundle: 'code', map: 'entry map' }
+                : { bundle: 'code' }
         );
         expect(update.mock.calls.map(([event]) => event.type)).toEqual([
           'bundle_build_started',
