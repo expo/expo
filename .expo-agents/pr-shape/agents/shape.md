@@ -2,8 +2,6 @@
 description: Checks the shape of the pull request before the full review. One purpose, a title and description that match the diff, and a test plan that proves the change.
 alwaysRun: true
 model: anthropic/claude-haiku-5-5
-# Trial: patch-project only. A PR with no file here makes no model call.
-paths: ["packages/patch-project/**"]
 ---
 
 # Shape check
