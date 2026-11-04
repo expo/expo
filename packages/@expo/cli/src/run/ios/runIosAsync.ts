@@ -65,7 +65,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
   }
 
   // NOTE(@kitten): Pod installation may have created a workspace after options were resolved.
-  props.xcodeProject = resolveXcodeProject(projectRoot);
+  props.xcodeProject = await resolveXcodeProject(projectRoot);
 
   // We only support build cache for simulator builds for now.
   if (!options.binary && props.buildCacheProvider && props.isSimulator) {
