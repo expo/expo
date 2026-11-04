@@ -206,7 +206,12 @@ jobs:
       # gets a child token with one sandbox, no builds, and the tools listed here.
       # Minting creates no sandbox. If it fails, the review runs without one.
       # Only the autonomous scope has sandbox rules, so other PRs get no token.
+      # A fork PR gets a sandbox only after a maintainer labels it, even when
+      # AI_REVIEW_FORK_PRS starts its review without a label.
       - name: Mint sandbox token
+        if: >-
+          github.event.pull_request.head.repo.full_name == github.repository
+          || contains(github.event.pull_request.labels.*.name, 'ai-review')
         continue-on-error: true
         env:
           MCP_URL: https://agile-minnow-543.convex.site
