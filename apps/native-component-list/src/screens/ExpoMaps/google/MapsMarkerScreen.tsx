@@ -1,6 +1,6 @@
 import { GoogleMaps } from 'expo-maps';
 import { useRef, useState } from 'react';
-import { View, Text, FlatList, Pressable, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Pressable, StyleSheet, Switch } from 'react-native';
 
 const MARKERS: GoogleMaps.Marker[] = [
   {
@@ -39,6 +39,9 @@ const MARKERS: GoogleMaps.Marker[] = [
 export default function MapsMarkerScreen() {
   const mapRef = useRef<GoogleMaps.MapView>(null);
   const [selectedMarkerId, setSelectedMarkerId] = useState<string | undefined>();
+  const [animateMarkers, setAnimateMarkers] = useState(true);
+  const [showEveryMarker, setShowEveryMarker] = useState(true);
+  const markers = showEveryMarker ? MARKERS : MARKERS.filter((_, index) => index % 2 === 0);
 
   const handleMarkerSelect = async (markerId: string) => {
     setSelectedMarkerId(markerId);
@@ -77,11 +80,23 @@ export default function MapsMarkerScreen() {
           zoom: 7,
         }}
         onMarkerClick={onMarkerClick}
-        markers={MARKERS}
+        markers={markers}
+        animateMarkers={animateMarkers}
         onMapClick={onMapClick}
       />
 
       <View style={styles.listContainer}>
+        <View style={styles.toggleRow}>
+          <Text style={styles.listTitle}>Animate markers</Text>
+          <Switch value={animateMarkers} onValueChange={setAnimateMarkers} />
+          <Pressable
+            style={styles.toggleButton}
+            onPress={() => setShowEveryMarker((show) => !show)}>
+            <Text style={styles.toggleButtonText}>
+              {showEveryMarker ? 'Remove #2 and #4' : 'Add #2 and #4'}
+            </Text>
+          </Pressable>
+        </View>
         <Text style={styles.listTitle}>Select a marker (via ref):</Text>
         <FlatList
           data={MARKERS}
@@ -132,6 +147,27 @@ const styles = StyleSheet.create({
     color: '#586069',
     marginLeft: 16,
     marginBottom: 8,
+  },
+  toggleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+    marginRight: 16,
+  },
+  toggleButton: {
+    marginLeft: 'auto',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    borderWidth: 2,
+    borderColor: '#e1e4e8',
+  },
+  toggleButtonText: {
+    fontSize: 13,
+    color: '#24292e',
+    fontWeight: '500',
   },
   listContent: {
     paddingHorizontal: 12,

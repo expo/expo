@@ -399,6 +399,15 @@ export type GoogleMapsViewProps = {
   markers?: GoogleMapsMarker[];
 
   /**
+   * Whether markers fade in when they are added to `markers` and fade out when they are removed,
+   * instead of appearing and disappearing instantly. Markers are matched between updates by their
+   * `id`. Useful when the set of markers changes often, for example when markers are clustered by
+   * zoom level.
+   * @default false
+   */
+  animateMarkers?: boolean;
+
+  /**
    * The array of polylines to display on the map.
    */
   polylines?: GoogleMapsPolyline[];
