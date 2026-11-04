@@ -69,6 +69,30 @@ export type GoogleMapsMarker = {
    * @default 0
    */
   zIndex?: number;
+
+  /**
+   * The color of a ripple drawn natively beneath the marker, similar to the user location pulse.
+   * The ripple is drawn only when both `pulseColor` and `pulseRadius` are set.
+   */
+  pulseColor?: string;
+
+  /**
+   * The radius the ripple expands to, in density-independent pixels.
+   * @default 0
+   */
+  pulseRadius?: number;
+
+  /**
+   * The duration of one ripple, in seconds.
+   * @default 2.4
+   */
+  pulseDuration?: number;
+
+  /**
+   * The duration, in seconds, over which a change of `coordinates` is animated. When `0`, the marker jumps to its new position.
+   * @default 0
+   */
+  moveDuration?: number;
 };
 
 /**

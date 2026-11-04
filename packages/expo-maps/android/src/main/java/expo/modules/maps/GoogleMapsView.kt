@@ -17,6 +17,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.withFrameNanos
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import kotlin.math.cos
+import kotlin.math.pow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -88,6 +97,7 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
 
   // Selection state management
   private lateinit var markerState: State<List<Pair<MarkerRecord, MarkerState>>>
+  private val persistentMarkerStates = mutableMapOf<String, MarkerState>()
 
   override fun dispatchTouchEvent(event: MotionEvent): Boolean {
     if (event.action == MotionEvent.ACTION_DOWN) {
@@ -196,6 +206,47 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
         key(marker.id) {
           val icon = remember(marker.icon) { getIconDescriptor(marker) }
 
+          LaunchedEffect(marker.coordinates) {
+            val target = marker.coordinates.toLatLng()
+            val start = state.position
+            val durationNanos = marker.moveDuration * 1_000_000_000
+            if (durationNanos <= 0 || start == target) {
+              state.position = target
+              return@LaunchedEffect
+            }
+            val startedAt = withFrameNanos { it }
+            while (true) {
+              val t = ((withFrameNanos { it } - startedAt) / durationNanos).coerceIn(0.0, 1.0)
+              state.position = LatLng(
+                start.latitude + (target.latitude - start.latitude) * t,
+                start.longitude + (target.longitude - start.longitude) * t
+              )
+              if (t >= 1.0) break
+            }
+          }
+
+          val pulseColor = marker.pulseColor
+          if (pulseColor != null && marker.pulseRadius > 0) {
+            val progress by rememberInfiniteTransition(label = "pulse").animateFloat(
+              initialValue = 0f,
+              targetValue = 1f,
+              animationSpec = infiniteRepeatable(
+                tween((marker.pulseDuration * 1000).toInt(), easing = LinearOutSlowInEasing),
+                RepeatMode.Restart
+              ),
+              label = "pulse"
+            )
+            val latitude = state.position.latitude
+            val metresPerDp = 156_543.03392 * cos(Math.toRadians(latitude)) / 2.0.pow(cameraState.position.zoom.toDouble())
+            Circle(
+              center = state.position,
+              radius = (0.14 + 0.86 * progress) * marker.pulseRadius * metresPerDp,
+              fillColor = Color(pulseColor).copy(alpha = 0.55f * (1f - progress)),
+              strokeWidth = 0f,
+              zIndex = marker.zIndex - 1
+            )
+          }
+
           Marker(
             state = state,
             title = marker.title.takeIf { it.isNotEmpty() },
@@ -302,8 +353,10 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   private fun markerStateFromProps() =
     remember {
       derivedStateOf {
+        val live = props.markers.value.map { it.id }.toSet()
+        persistentMarkerStates.keys.retainAll(live)
         props.markers.value.map { marker ->
-          marker to MarkerState(position = marker.coordinates.toLatLng())
+          marker to persistentMarkerStates.getOrPut(marker.id) { MarkerState(position = marker.coordinates.toLatLng()) }
         }
       }
     }

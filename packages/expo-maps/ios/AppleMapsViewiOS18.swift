@@ -63,6 +63,14 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
   @ObservedObject private var state = AppleMapsViewiOS18State()
 
+  private var annotationSnapshot: [String] {
+    props.annotations.map { annotation in
+      let icon = annotation.icon.map { "\(ObjectIdentifier($0.ref))" } ?? ""
+      let pulse = "\(String(describing: annotation.pulseColor))|\(annotation.pulseRadius)|\(annotation.pulseDuration)"
+      return "\(annotation.id)|\(annotation.coordinates.latitude)|\(annotation.coordinates.longitude)|\(annotation.title)|\(annotation.text)|\(annotation.backgroundColor)|\(annotation.textColor)|\(annotation.anchor.x)|\(annotation.anchor.y)|\(icon)|\(pulse)"
+    }
+  }
+
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
       state.mapCameraPosition = config.map(convertToMapCamera) ?? .userLocation(fallback: state.mapCameraPosition)
@@ -161,7 +169,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
           renderCircle(circle)
         }
 
-        ForEach(props.annotations) { annotation in
+        ForEach(state.shownAnnotations) { annotation in
           Annotation(
             annotation.title,
             coordinate: annotation.clLocationCoordinate2D,
@@ -179,6 +187,11 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
               Text(annotation.text)
                 .foregroundStyle(annotation.textColor)
                 .padding(5)
+            }
+            .background {
+              if let pulseColor = annotation.pulseColor, annotation.pulseRadius > 0 {
+                AnnotationPulse(color: pulseColor, radius: annotation.pulseRadius, duration: annotation.pulseDuration)
+              }
             }
           }
           .tag(MapSelection(annotation.mapItem))
@@ -288,6 +301,15 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       }
       .onChange(of: props.cameraPosition) { _, newValue in
         state.mapCameraPosition = convertToMapCamera(position: newValue)
+      }
+      .onAppear { state.shownAnnotations = props.annotations }
+      .onChange(of: annotationSnapshot) { _, _ in
+        let duration = props.annotations.map(\.moveDuration).max() ?? 0
+        if duration > 0 {
+          withAnimation(.linear(duration: duration)) { state.shownAnnotations = props.annotations }
+        } else {
+          state.shownAnnotations = props.annotations
+        }
       }
       .onChange(of: state.selection, perform: handleSelectionChange)
       .onMapCameraChange(frequency: .onEnd) { context in
@@ -444,5 +466,25 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
     let tapPoint = MKMapPoint(tapCoordinate)
     let centerPoint = MKMapPoint(circleCenter)
     return tapPoint.distance(to: centerPoint) <= radius
+  }
+}
+
+@available(iOS 18.0, *)
+private struct AnnotationPulse: View {
+  let color: Color
+  let radius: Double
+  let duration: Double
+  @State private var expanded = false
+
+  var body: some View {
+    SwiftUI.Circle()
+      .fill(color)
+      .frame(width: radius * 2, height: radius * 2)
+      .scaleEffect(expanded ? 1 : 0.14)
+      .opacity(expanded ? 0 : 0.55)
+      .allowsHitTesting(false)
+      .onAppear {
+        withAnimation(.easeOut(duration: duration).repeatForever(autoreverses: false)) { expanded = true }
+      }
   }
 }
