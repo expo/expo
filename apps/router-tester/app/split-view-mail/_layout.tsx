@@ -31,6 +31,7 @@ export default function Layout() {
   const [showHeaders, setShowHeaders] = useState(true);
   const [alternateTitles, setAlternateTitles] = useState(false);
   const [largeTitle, setLargeTitle] = useState(true);
+  const [showSubtitle, setShowSubtitle] = useState(false);
   const [iconButtons, setIconButtons] = useState(true);
   const [threeColumns, setThreeColumns] = useState(true);
   const [showInspector, setShowInspector] = useState(false);
@@ -59,6 +60,7 @@ export default function Layout() {
             showHeaders
               ? {
                   title: alternateTitles ? 'Folders' : 'Mailboxes',
+                  subtitle: showSubtitle ? '3 unread' : undefined,
                   largeTitle,
                   rightToolbar: [button('Edit')],
                   searchBar: {
@@ -109,6 +111,12 @@ export default function Layout() {
                 testID="split-view-mail-large-title"
                 value={largeTitle}
                 onValueChange={setLargeTitle}
+              />
+              <ToggleRow
+                label="Subtitle"
+                testID="split-view-mail-subtitle"
+                value={showSubtitle}
+                onValueChange={setShowSubtitle}
               />
               <ToggleRow
                 label="Icon buttons"
