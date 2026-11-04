@@ -26,6 +26,29 @@ export default function HomeRoute() {
           <RouteLink href="/api/with-page" />
         </RouteLinks>
       </Section>
+      <Section title="Loaders">
+        <RouteLinks>
+          <RouteLink href="/loaders" />
+          <RouteLink href="/loaders/second" />
+          <RouteLink href="/loaders/slow" />
+          <RouteLink href="/loaders/env" />
+          <RouteLink href="/loaders/request" />
+          <RouteLink href="/loaders/response" />
+          <RouteLink href="/loaders/meta" />
+          <RouteLink href="/loaders/error" />
+          <RouteLink href="/loaders/no-loader" />
+          <RouteLink href="/loaders/large-suspense" />
+          <RouteLink href="/loaders/nested" />
+          <RouteLink href="/loaders/groups/(group)" />
+          <RouteLink href="/loaders/groups/platform/alpha/beta" />
+          <RouteLink href="/loaders/posts/static-post-1" />
+          <RouteLink href="/loaders/posts/static-post-2" />
+          <RouteLink href="/loaders/nullish/null" />
+          <RouteLink href="/loaders/nullish/undefined" />
+          <RouteLink href="/loaders/static-helper" />
+          <RouteLink href="/loaders/server-helper" />
+        </RouteLinks>
+      </Section>
       <Section title="Routing">
         <RouteLinks>
           <RouteLink href="/routing" />
