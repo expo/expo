@@ -205,6 +205,7 @@ jobs:
       # EXPO_SANDBOX_MCP_TOKEN reaches only this step and the revoke step. The review
       # gets a child token with one sandbox, no builds, and the tools listed here.
       # Minting creates no sandbox. If it fails, the review runs without one.
+      # Only the autonomous scope has sandbox rules, so other PRs get no token.
       - name: Mint sandbox token
         continue-on-error: true
         env:
@@ -212,7 +213,17 @@ jobs:
           EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
           SANDBOX_MCP_CONFIG: ${{ runner.temp }}/review-sandbox-mcp.json
           RUN_ID: ${{ github.run_id }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          # Keep in sync with the autonomous scope paths in .expo-agents/code-review/routing.jsonc.
+          AUTONOMOUS_PATHS: '^packages/patch-project/'
         run: |
+          files=$(gh api --paginate "repos/$REPO/pulls/$PR/files" --jq '.[].filename' || true)
+          if ! grep -qE "$AUTONOMOUS_PATHS" <<< "$files"; then
+            echo "No file in the autonomous review scope. The review runs without a sandbox."
+            exit 0
+          fi
           body=$(jq -cn --arg name "ecr-review-$RUN_ID" '{
             sandboxBudget: 1, buildBudget: 0, ttlSeconds: 6000, name: $name,
             allowedTools: ["list_sandboxes", "create_sandbox", "sandbox_write_file", "sandbox_exec", "destroy_sandbox"]
