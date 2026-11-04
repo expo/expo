@@ -126,7 +126,7 @@ The `event` object contains the full [GitHub webhook payload](https://docs.githu
 
 ### `inputs`
 
-A record of the inputs provided when you start the workflow manually with [`workflow_dispatch`](/eas/workflows/syntax/#onworkflow_dispatchinputs). In a [called run](/eas/workflows/reusable-workflows/#context-of-a-called-run), it contains the inputs of that run. Empty when the workflow is triggered another way.
+A record of the inputs provided when you start the workflow manually with [`workflow_dispatch`](/eas/workflows/syntax/#onworkflow_dispatchinputs). In a [called run](/eas/workflows/reusable-workflows/#context-of-a-called-run), it contains the inputs of that run. Empty when another trigger starts the workflow.
 
 ```yaml
 jobs:

@@ -1,5 +1,5 @@
 ---
-title: Reusable workflows in EAS Workflows
+title: Reusable workflows in Expo Workflows
 sidebar_title: Reusable workflows
 description: Learn how to call a workflow from another workflow to reuse its jobs.
 ---
@@ -30,7 +30,7 @@ When the calling job runs, it starts the called run and waits for its result.
 
 The reusable workflow declares its inputs in [`on.workflow_call.inputs`](/eas/workflows/syntax/#onworkflow_callinputs) and reads them as `${{ inputs.<input_name> }}`. The calling job sets their values in `with`. For the expressions and value types that `with` accepts, see [`jobs.<job_id>.with`](/eas/workflows/syntax/#jobsjob_idwith).
 
-The reusable workflow declares its outputs in [`on.workflow_call.outputs`](/eas/workflows/syntax/#onworkflow_calloutputs). EAS evaluates them after the called run succeeds. The calling run reads them through the `needs` context of the calling job.
+The reusable workflow declares its outputs in [`on.workflow_call.outputs`](/eas/workflows/syntax/#onworkflow_calloutputs). Expo Workflows evaluates them after the called run succeeds. The calling run reads them through the `needs` context of the calling job.
 
 ## Context of a called run
 
@@ -38,13 +38,13 @@ A called run uses the same commit, Git ref, and [`github`](/eas/workflows/syntax
 
 Environment variables do not carry over. Each job in the reusable workflow reads [`env`](/eas/workflows/syntax/#env) from its own [`environment`](/eas/workflows/syntax/#jobsjob_idenvironment).
 
-A called run uses the [`run_name`](/eas/workflows/syntax/#run_name) and [`concurrency`](/eas/workflows/syntax/#concurrency) settings from the reusable workflow file. If the called run's [`concurrency.group`](/eas/workflows/syntax/#concurrencygroup) matches a run above it in the call chain, EAS does not start it, and the calling job fails. For example, this happens when both workflows use a group built only from `github` values, such as `${{ github.ref_name }}`, because both runs share that context.
+A called run uses the [`run_name`](/eas/workflows/syntax/#run_name) and [`concurrency`](/eas/workflows/syntax/#concurrency) settings from the reusable workflow file. If the called run's [`concurrency.group`](/eas/workflows/syntax/#concurrencygroup) matches a run above it in the call chain, Expo Workflows does not start it, and the calling job fails. For example, this happens when both workflows use a group built only from `github` values, such as `${{ github.ref_name }}`, because both runs share that context.
 
 ## Status and cancellation
 
 The calling job ends with the status of the called run: success, failure, or canceled. If the called run fails, its errors appear on the calling job.
 
-When you cancel the calling run, EAS also cancels the called run.
+When you cancel the calling run, Expo Workflows also cancels the called run.
 
 ## Nesting and limits
 
