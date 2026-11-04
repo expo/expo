@@ -54,6 +54,7 @@ const MenuItemShapeContext = createContext<MenuShapePosition | undefined>(undefi
 
 type MenuEntryProps = { hidden?: boolean; inline?: boolean; children?: ReactNode };
 type MenuEntry = ReactElement<MenuEntryProps>;
+type MenuGroup = { key: string; entries: MenuEntry[] };
 
 /**
  * Returns the actions and submenus that a menu shows. Labels, icons, and badges configure the menu
@@ -73,24 +74,30 @@ function getVisibleMenuEntries(children: ReactNode): MenuEntry[] {
 
 /**
  * Splits the entries of a menu into Material 3 Expressive groups. An inline submenu is a section
- * on iOS, so it gets its own group. Other entries next to each other share a group.
+ * on iOS, so its entries get their own group, and each inline submenu inside it gets another group.
+ * Other entries next to each other share a group.
  */
-function groupMenuEntries(children: ReactNode): MenuEntry[][] {
-  const groups: MenuEntry[][] = [];
-  let items: MenuEntry[] = [];
+function groupMenuEntries(children: ReactNode, keyPrefix = ''): MenuGroup[] {
+  const groups: MenuGroup[] = [];
+  let entries: MenuEntry[] = [];
+  // The key of a run of entries comes from the inline submenu before it, not from its first entry.
+  // So the group does not remount, and an open submenu in it does not close, when an entry hides.
+  let runKey = `${keyPrefix}^`;
   for (const entry of getVisibleMenuEntries(children)) {
     if (entry.props.inline) {
-      if (items.length > 0) {
-        groups.push(items);
-        items = [];
+      if (entries.length > 0) {
+        groups.push({ key: runKey, entries });
+        entries = [];
       }
-      groups.push([entry]);
+      const sectionKey = `${keyPrefix}${entry.key}`;
+      groups.push(...groupMenuEntries(entry.props.children, `${sectionKey}/`));
+      runKey = `${sectionKey}$`;
     } else {
-      items.push(entry);
+      entries.push(entry);
     }
   }
-  if (items.length > 0) {
-    groups.push(items);
+  if (entries.length > 0) {
+    groups.push({ key: runKey, entries });
   }
   return groups;
 }
@@ -116,18 +123,14 @@ function MenuGroups({
   } = requireExpoUI(EXPO_UI_REQUIRED_MESSAGE);
   const groups = groupMenuEntries(children);
 
-  return groups.map((group, index) => {
-    const isSection = group.length === 1 && group[0]!.props.inline;
-    return (
-      <Fragment key={group[0]!.key}>
-        {index > 0 && <Spacer modifiers={[height(MENU_GROUP_SPACING)]} />}
-        <DropdownMenuGroup shapes={{ index, count: groups.length }} containerColor={containerColor}>
-          {/* An inline submenu renders its own items, see `NativeToolbarMenu`. */}
-          {isSection ? group[0] : <MenuItems entries={group} />}
-        </DropdownMenuGroup>
-      </Fragment>
-    );
-  });
+  return groups.map((group, index) => (
+    <Fragment key={group.key}>
+      {index > 0 && <Spacer modifiers={[height(MENU_GROUP_SPACING)]} />}
+      <DropdownMenuGroup shapes={{ index, count: groups.length }} containerColor={containerColor}>
+        <MenuItems entries={group.entries} />
+      </DropdownMenuGroup>
+    </Fragment>
+  ));
 }
 
 /**
@@ -149,8 +152,8 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
   const tintColor = props.tintColor ?? toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR();
   // `tint={null}` tells `<Icon>` to draw the source in its original colors.
   // `undefined` would fall back to `LocalContentColor` (i.e. still a tint).
-  // Only the user-provided source respects `imageRenderingMode`; internal
-  // ornaments (submenu arrow, action checkmark) are always tinted.
+  // Only the user-provided source respects `imageRenderingMode`; the submenu
+  // arrow is always tinted.
   const sourceTint = props.imageRenderingMode === 'original' ? null : tintColor;
 
   const closeMenu = useCallback(() => {
@@ -168,11 +171,6 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
     console.warn(
       'Stack.Toolbar.Menu `cornerRadius` has no effect on Android. The Material 3 Expressive menu sets the corner shape of each group. Remove the `cornerRadius` prop.'
     );
-  }
-
-  // Inline nested: the parent menu puts this section in its own group.
-  if (isNested && props.inline) {
-    return <MenuItems entries={getVisibleMenuEntries(props.children)} />;
   }
 
   const menuContent = (
@@ -309,9 +307,18 @@ export const NativeToolbarMenuAction: React.FC<NativeToolbarMenuActionProps> = (
         colors={{
           textColor: tintColor,
           leadingIconColor: tintColor,
-          // Compose gives an unselected item the default group color. Match the group color instead.
+          // A selected item keeps the Compose colors that match its selected container. Only the
+          // destructive color must stay.
+          ...(props.destructive
+            ? { selectedTextColor: tintColor, selectedLeadingIconColor: tintColor }
+            : {}),
+          // Compose gives an unselected or disabled item the default group color. Match the group
+          // color instead.
           ...(toolbarColors.backgroundColor
-            ? { containerColor: toolbarColors.backgroundColor }
+            ? {
+                containerColor: toolbarColors.backgroundColor,
+                disabledContainerColor: toolbarColors.backgroundColor,
+              }
             : {}),
         }}>
         <SelectableDropdownMenuItem.Text>{text}</SelectableDropdownMenuItem.Text>

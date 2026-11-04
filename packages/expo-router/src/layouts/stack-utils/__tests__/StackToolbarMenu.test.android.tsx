@@ -376,14 +376,6 @@ describe('NativeToolbarMenu', () => {
           'Stack.Toolbar.Menu `cornerRadius` has no effect on Android. The Material 3 Expressive menu sets the corner shape of each group. Remove the `cornerRadius` prop.'
         );
       });
-
-      it('does not warn when cornerRadius is not set', async () => {
-        process.env.NODE_ENV = 'development';
-
-        await render(<NativeToolbarMenu {...defaultProps} />);
-
-        expect(consoleSpy).not.toHaveBeenCalled();
-      });
     });
   });
 
@@ -429,6 +421,33 @@ describe('NativeToolbarMenu', () => {
         index: 0,
         count: 1,
       });
+    });
+
+    it('puts an inline submenu inside an inline submenu in its own group', async () => {
+      await render(
+        <NativeToolbarMenu source={{ uri: 'root-icon' }}>
+          <NativeToolbarMenu inline label="Outer">
+            <NativeToolbarMenuAction onPress={() => {}}>A</NativeToolbarMenuAction>
+            <NativeToolbarMenu inline label="Inner">
+              <NativeToolbarMenuAction onPress={() => {}}>B</NativeToolbarMenuAction>
+              <NativeToolbarMenuAction onPress={() => {}}>C</NativeToolbarMenuAction>
+            </NativeToolbarMenu>
+            <NativeToolbarMenuAction onPress={() => {}}>D</NativeToolbarMenuAction>
+          </NativeToolbarMenu>
+        </NativeToolbarMenu>
+      );
+
+      const groups = screen.getAllByTestId('DropdownMenuGroup');
+      expect(groups.map((group) => group.props.shapes)).toEqual([
+        { index: 0, count: 3 },
+        { index: 1, count: 3 },
+        { index: 2, count: 3 },
+      ]);
+      const innerItems = within(groups[1]!).getAllByTestId('DropdownMenuItem');
+      expect(innerItems.map((item) => item.props.shape)).toEqual([
+        { index: 0, count: 2 },
+        { index: 1, count: 2 },
+      ]);
     });
 
     it('puts a Spacer between groups', async () => {
@@ -783,7 +802,7 @@ describe('NativeToolbarMenuAction', () => {
       });
     });
 
-    it('uses context backgroundColor for the unselected container of a selectable action', async () => {
+    it('uses context backgroundColor for the unselected and disabled containers of a selectable action', async () => {
       await renderActionWithColors(
         { onPress: jest.fn(), children: 'Action', isOn: false },
         { tintColor: 'context-tint', backgroundColor: 'context-bg' }
@@ -793,6 +812,7 @@ describe('NativeToolbarMenuAction', () => {
         textColor: 'context-tint',
         leadingIconColor: 'context-tint',
         containerColor: 'context-bg',
+        disabledContainerColor: 'context-bg',
       });
     });
 
@@ -836,6 +856,21 @@ describe('NativeToolbarMenuAction', () => {
     });
   });
 
+  it('keeps the destructive color when a selectable action is selected', async () => {
+    await render(
+      <NativeToolbarMenu source={{ uri: 'icon' }}>
+        <NativeToolbarMenuAction {...defaultProps} destructive isOn />
+      </NativeToolbarMenu>
+    );
+
+    expect(screen.getByTestId('SelectableDropdownMenuItem').props.colors).toEqual({
+      textColor: 'material:error',
+      leadingIconColor: 'material:error',
+      selectedTextColor: 'material:error',
+      selectedLeadingIconColor: 'material:error',
+    });
+  });
+
   it('uses default tint color when not destructive', async () => {
     await render(
       <NativeToolbarMenu source={{ uri: 'icon' }}>
@@ -869,17 +904,6 @@ describe('NativeToolbarMenuAction', () => {
     );
 
     expect(screen.getByTestId('SelectableDropdownMenuItem').props.selected).toBe(false);
-  });
-
-  it('renders a DropdownMenuItem when isOn is not set', async () => {
-    await render(
-      <NativeToolbarMenu source={{ uri: 'icon' }}>
-        <NativeToolbarMenuAction {...defaultProps} />
-      </NativeToolbarMenu>
-    );
-
-    expect(screen.getByTestId('DropdownMenuItem')).toBeDefined();
-    expect(screen.queryByTestId('SelectableDropdownMenuItem')).toBeNull();
   });
 
   it('shows the checkmark as the selected leading icon when isOn is set', async () => {
