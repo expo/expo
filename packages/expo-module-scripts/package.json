@@ -84,7 +84,7 @@
     "babel-preset-expo": "~55.0.25",
     "commander": "^12.1.0",
     "eslint-config-universe": "^15.0.4",
-    "glob": "^13.0.0",
+    "glob": "^14.0.3",
     "jest-expo": "~55.0.22",
     "jest-snapshot-prettier": "npm:prettier@^2",
     "jest-watch-typeahead": "2.2.1",

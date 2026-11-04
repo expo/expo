@@ -44,7 +44,7 @@
     "chalk": "^4.0.0",
     "commander": "^12.1.0",
     "expo-module-scripts": "^55.0.2",
-    "glob": "^13.0.0",
+    "glob": "^14.0.3",
     "prompts": "^2.3.2",
     "update-check": "^1.5.4"
   }

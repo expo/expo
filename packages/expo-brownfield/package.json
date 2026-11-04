@@ -61,7 +61,7 @@
   "devDependencies": {
     "@bacons/xcode": "1.0.0-alpha.29",
     "@types/diff": "^5.2.0",
-    "expo-module-scripts": "^55.0.2"
+    "glob": "^14.0.3"
   },
   "peerDependencies": {
     "expo": "*",
