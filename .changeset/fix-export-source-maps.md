@@ -1,5 +1,6 @@
 ---
+'@expo/cli': patch
 '@expo/metro-config': patch
 ---
 
-Improve source maps and entry exports for server bundles, preserving custom serializers and matching maps when output files are named explicitly.
+Improve source maps for exported API routes, server rendering, and React Server Components. Preserve emitted filenames, source-map metadata, and server worker artifacts.
