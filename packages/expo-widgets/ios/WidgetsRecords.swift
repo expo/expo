@@ -23,6 +23,15 @@ struct WidgetConfigurationOptionRecord: Record {
   }
 }
 
+struct LiveActivityStartOptions: Record {
+  @Field var url: URL?
+  @Field var staleDate: Date?
+}
+
+struct LiveActivityUpdateOptions: Record {
+  @Field var staleDate: Date?
+}
+
 internal enum LiveActivityDismissalPolicy: String, Enumerable {
   case `default`
   case immediate
