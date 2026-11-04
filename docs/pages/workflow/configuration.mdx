@@ -69,7 +69,7 @@ For more customization, you can use the JavaScript (**app.config.js**) or [TypeS
 
 - Comments, variables, and single quotes.
 - ESM `import` syntax in both **app.config.js** and **app.config.ts**, including importing other JavaScript files.
-- TypeScript support (**app.config.ts**) with nullish coalescing and optional chaining. Importing other TypeScript files or customizing language features requires [`tsx`](/guides/typescript/#appconfigjs).
+- TypeScript support (**app.config.ts**) with nullish coalescing and optional chaining. Importing other TypeScript files or customizing language features requires [`tsx`](/guides/typescript/#app-config).
 - Updated whenever Metro bundler reloads.
 - Provide environment information to your app.
 - Does not support Promises.
@@ -169,7 +169,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
 });
 ```
 
-To import other TypeScript files into **app.config.ts** or customize the language features, we recommend using [`tsx`](/guides/typescript/#appconfigjs). `tsx` also enables using `import` syntax in any file imported by **app.config.ts**. This means you can write local [config plugins](/config-plugins/introduction/) in TypeScript with full language features.
+To import other TypeScript files into **app.config.ts** or customize the language features, we recommend using [`tsx`](/guides/typescript/#app-config). `tsx` also enables using `import` syntax in any file imported by **app.config.ts**. This means you can write local [config plugins](/config-plugins/introduction/) in TypeScript with full language features.
 
 ### Configuration resolution rules
 

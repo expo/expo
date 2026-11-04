@@ -119,9 +119,9 @@ public protocol AppControllerInterface {
   @objc weak var delegate: AppControllerDelegate? { get set }
 
   /**
-   The URL on disk to source asset for the RCTBridge.
+   The URL on disk of the JavaScript bundle to launch.
    Will be null until the AppController delegate method is called.
-   This should be provided in the `sourceURLForBridge:` method of RCTBridgeDelegate.
+   Return this URL from the React Native factory delegate's `bundleURL()` method.
    */
   @objc func launchAssetUrl() -> URL?
 

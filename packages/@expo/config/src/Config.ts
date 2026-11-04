@@ -3,7 +3,7 @@ import type { JSONObject } from '@expo/json-file';
 import JsonFile from '@expo/json-file';
 import { OUT_OF_TREE_PLATFORMS, getReactNativeHostPackage } from '@expo/platforms';
 import { resolveFrom } from '@expo/require-utils';
-import { sync as globSync } from 'glob';
+import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 import slugify from 'slugify';
@@ -626,21 +626,28 @@ function isBareWorkflowProject(projectRoot: string): boolean {
     return false;
   }
 
-  const xcodeprojFiles = globSync('ios/**/*.xcodeproj', {
-    absolute: true,
-    cwd: projectRoot,
-  });
-  if (xcodeprojFiles.length) {
-    return true;
-  }
-  const gradleFiles = globSync('android/**/*.gradle', {
-    absolute: true,
-    cwd: projectRoot,
-  });
-  if (gradleFiles.length) {
-    return true;
-  }
+  return (
+    hasNativeProjectFile(path.join(projectRoot, 'ios'), '.xcodeproj') ||
+    hasNativeProjectFile(path.join(projectRoot, 'android'), '.gradle')
+  );
+}
 
+function hasNativeProjectFile(parentPath: string, extension: string): boolean {
+  const queue = [parentPath];
+  let targetPath: string | undefined;
+  while ((targetPath = queue.shift()) != null) {
+    try {
+      const entries = fs.readdirSync(targetPath, { withFileTypes: true });
+      for (const entry of entries) {
+        if (entry.name.startsWith('.')) continue;
+        if (entry.name.endsWith(extension)) return true;
+        if (entry.isDirectory()) queue.push(path.join(targetPath, entry.name));
+      }
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code !== 'ENOENT' && code !== 'ENOTDIR') throw error;
+    }
+  }
   return false;
 }
 

@@ -43,6 +43,11 @@ export default function ExamplesIndex() {
         description="Report Reanimated warnings and errors from both runtimes"
         onPress={() => router.push('/examples/reanimated')}
       />
+      <Button
+        title="Trace spans"
+        description="Custom spans (startSpan / withSpan / recordSpan) and network span capture"
+        onPress={() => router.push('/examples/traces')}
+      />
     </ScrollView>
   );
 }

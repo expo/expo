@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 
-const SIMULATORS_LAUNCH_AT = new Date('2026-11-05T18:00:00Z');
+const SIMULATORS_LAUNCH_AT = new Date('2026-11-10T18:00:00Z');
 
 export function SimulatorsLaunchCallout() {
   const [isLoaded, setIsLoaded] = useState(false);

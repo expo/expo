@@ -46,16 +46,16 @@ UUID means universally unique identifier.
 
 | Field                   | Type          | Required | Description                                                                                                                                                                                                                            |
 | ----------------------- | ------------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `appId`                 | string (UUID) | Yes      | The EAS project ID. Find it on the project page or in [app config](/workflow/configuration/) under `extra.eas.projectId`.                                                                                                              |
+| `appId`                 | string (UUID) | Yes      | The Expo Services project ID. Find it on the project page or in [app config](/workflow/configuration/) under `extra.eas.projectId`.                                                                                                    |
 | `platform`              | string        | Yes      | `android` or `ios`.                                                                                                                                                                                                                    |
 | `name`                  | string        | No       | A descriptive session name, up to 255 characters. Must not be blank.                                                                                                                                                                   |
-| `tags`                  | string[]      | No       | Labels that group sessions, such as one tag for each app variant. Up to 16 tags of 1 to 64 characters each. EAS stores tags in lowercase, trims whitespace, and removes duplicate tags.                                                |
+| `tags`                  | string[]      | No       | Labels that group sessions, such as one tag for each app variant. Up to 16 tags of 1 to 64 characters each. Expo Simulators stores tags in lowercase, trims whitespace, and removes duplicate tags.                                    |
 | `type`                  | string        | No       | `agent-device`, `appium`, `argent`, or `web-preview-only`. Defaults to `agent-device`. The removed `serve-sim` type returns `400`. Use `web-preview-only` instead.                                                                     |
 | `packageVersion`        | string        | No       | Version of the package for the selected session type. Omit to use the service default.                                                                                                                                                 |
 | `deviceIdentifier`      | string        | No       | Android virtual device hardware profile, or iOS Simulator name or unique device identifier (UDID). The runner chooses a device when omitted.                                                                                           |
 | `maxDurationMinutes`    | integer       | No       | Automatic session stop time in minutes. Must be between 0 and 115 inclusive, and within the account's duration limit. The job that runs the session has a hard limit of this value plus five minutes. Omit to use the account maximum. |
 | `maxIdleTimeMinutes`    | integer       | No       | Stop after this many minutes without session activity. Must be positive and less than 115. It must be smaller than `maxDurationMinutes` when both are set. Omit to disable the idle timeout. Not supported for `web-preview-only`.     |
-| `buildId`               | string (UUID) | No       | An EAS Build to download, install, and launch. Use an Android **.apk** or an iOS Simulator build.                                                                                                                                      |
+| `buildId`               | string (UUID) | No       | An Expo Build to download, install, and launch. Use an Android **.apk** or an iOS Simulator build.                                                                                                                                     |
 | `applicationArchiveUrl` | string        | No       | An HTTP or HTTPS URL for an installable application archive, up to 2,048 characters. On iOS, use a **.tar.gz** or **.tgz** file that contains the **.app**. On Android, use an **.apk**.                                               |
 | `expoGo`                | boolean       | No       | Set to `true` to install and launch Expo Go.                                                                                                                                                                                           |
 | `sdkVersion`            | string        | No       | Expo SDK version used to select Expo Go, such as `"58"`. Only valid with `expoGo: true`. Omit to use the current Expo Go release for the platform.                                                                                     |
@@ -67,11 +67,11 @@ The application source options install and launch the app for every session type
 
 The REST API ignores fields that it does not list here. Build fingerprint matching, local egress, and network capture are available only through EAS CLI: `--build-fingerprint`, `--egress local`, and `--network-capture`.
 
-A `web-preview-only` session provides the browser preview without a controller. It does not support an idle timeout. Other session types provide a controller and include a browser preview. Sessions created before EAS removed `serve-sim` still return `"type": "serve-sim"`.
+A `web-preview-only` session provides the browser preview without a controller. It does not support an idle timeout. Other session types provide a controller and include a browser preview. Sessions created before Expo Simulators removed `serve-sim` still return `"type": "serve-sim"`.
 
 ### Example
 
-Replace `appId` and `buildId` with your EAS project ID and a compatible build ID:
+Replace `appId` and `buildId` with your Expo Services project ID and a compatible build ID:
 
 <Terminal
   cmdCopy={`curl -X POST "https://api.expo.dev/v2/device-run-sessions" -H "Authorization: Bearer $EXPO_TOKEN" -H "Content-Type: application/json" -d '{"appId":"a415eac6-231a-4b38-b481-3255a59f13b8","platform":"ios","type":"agent-device","name":"Checkout flow screenshots","tags":["checkout"],"buildId":"f9609423-5072-4ea2-a0a5-c345eedf2c2a","maxDurationMinutes":30,"maxIdleTimeMinutes":5}'`}
@@ -191,14 +191,14 @@ An agent-device session that is ready returns connection details alongside its m
 
 The REST API returns lowercase status values:
 
-| Value         | Meaning                                                                           |
-| ------------- | --------------------------------------------------------------------------------- |
-| `new`         | EAS created the session and has not queued its job yet. `remoteConfig` is `null`. |
-| `queued`      | The session's job waits in the queue for a worker. `remoteConfig` is `null`.      |
-| `starting`    | A worker prepares the device and the controller. `remoteConfig` is `null`.        |
-| `in-progress` | The session is running. Connect when `remoteConfig` is not `null`.                |
-| `stopped`     | The session has stopped. Terminal. `remoteConfig` is `null`.                      |
-| `errored`     | The session ended with an error. Terminal. `remoteConfig` is `null`.              |
+| Value         | Meaning                                                                                       |
+| ------------- | --------------------------------------------------------------------------------------------- |
+| `new`         | Expo Simulators created the session and has not queued its job yet. `remoteConfig` is `null`. |
+| `queued`      | The session's job waits in the queue for a worker. `remoteConfig` is `null`.                  |
+| `starting`    | A worker prepares the device and the controller. `remoteConfig` is `null`.                    |
+| `in-progress` | The session is running. Connect when `remoteConfig` is not `null`.                            |
+| `stopped`     | The session has stopped. Terminal. `remoteConfig` is `null`.                                  |
+| `errored`     | The session ended with an error. Terminal. `remoteConfig` is `null`.                          |
 
 Poll this endpoint every five seconds until `status` is `in-progress` and `remoteConfig` is not `null`, then connect using that configuration. Set a timeout in your integration. If the status becomes `stopped` or `errored`, stop polling and inspect the session page at `url`.
 

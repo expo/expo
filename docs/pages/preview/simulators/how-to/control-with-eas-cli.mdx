@@ -52,6 +52,62 @@ Tap coordinates range from 0 to 1, relative to the screen. This example taps the
 
 Writing the clipboard does not paste. Focus the intended field before pasting. Keep passwords and access tokens out of command arguments and shell history.
 
+## Swipe and drag
+
+`tap` sends one touch. For a swipe or a drag, pass a JSON array of touch events to `gesture`. The array starts with a `begin` event, continues with `move` events, and ends with an `end` event. Coordinates range from 0 to 1, as with `tap`. This example swipes up from the lower part of the screen:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control gesture \\',
+    `  '[{"type":"begin","x":0.5,"y":0.8},{"type":"move","x":0.5,"y":0.5},{"type":"end","x":0.5,"y":0.2}]' \\`,
+    '  --id <session-id>',
+  ]}
+  cmdCopy={`eas simulator:control gesture '[{"type":"begin","x":0.5,"y":0.8},{"type":"move","x":0.5,"y":0.5},{"type":"end","x":0.5,"y":0.2}]' --id <session-id>`}
+/>
+
+By default, events are 40 milliseconds apart. To change the wait before an event, add `delayMs` to it, from 0 to 1000. A gesture has 2 to 256 events and lasts at most 30 seconds. The command waits until the simulator finishes the gesture input.
+
+## Simulate location, rotation, and button presses
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control location.set 37.3349 -122.0090 --id <session-id>',
+    '$ eas simulator:control rotate landscape_left --id <session-id>',
+    '$ eas simulator:control button home --id <session-id>',
+  ]}
+/>
+
+`location.set` takes a latitude and a longitude in decimal degrees. `location.clear` stops the simulated location.
+
+`rotate` accepts `portrait`, `portrait_upside_down`, `landscape_left`, or `landscape_right`. An app can still limit the orientations that it supports.
+
+`button` takes a button name, such as `home`, `lock`, `siri`, `volume-up`, or `volume-down`. `springboard.restart` restarts SpringBoard, the process that shows the Home screen. The app in the foreground goes to the background.
+
+### Fold iPhone Duo
+
+On iPhone Duo, `hinge.set` folds or unfolds the device. Pass `fold`, `half`, `unfold`, or an angle in degrees, from 0 (folded) to 180 (unfolded). `hinge.get` reads the current hinge state:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control hinge.set unfold --id <session-id>',
+    '$ eas simulator:control hinge.get --id <session-id>',
+  ]}
+/>
+
+Hinge actions return an error on a device that does not fold.
+
+## Install an app
+
+`app.install` uploads a file from your computer and installs it on the simulator. Pass an **.ipa** file that contains an iOS Simulator build, not a device build:
+
+<Terminal cmd={['$ eas simulator:control app.install ./MyApp.ipa --id <session-id>']} />
+
+The upload accepts a file, not a folder. To install a **.app** folder, put it in a **Payload** folder and compress that folder into an **.ipa** file:
+
+<Terminal cmd={['$ mkdir Payload && cp -R MyApp.app Payload/', '$ zip -qry MyApp.ipa Payload']} />
+
+A controller can also install a **.app** folder. See [Install a local build](/preview/simulators/how-to/install-your-app/#install-a-local-build).
+
 ## Restart an installed app
 
 Use `app.launch` to restart an installed app. Replace `com.example.app` with the installed build's bundle identifier, which can differ from your project's [app config](/workflow/configuration/):
@@ -70,6 +126,12 @@ To pass launch arguments, use a JSON array of strings. Your app defines what the
 />
 
 Use double quotes inside the JSON and single quotes around the shell argument. Every item must be a string, including values such as `"1"`. Omitting `launchArgs` or passing `'launchArgs=[]'` launches without custom arguments. It does not reuse or merge arguments from a previous launch or session startup.
+
+`app.launch` stops the app before it starts it. To start the app without stopping it first, pass `restart=false`. If the app is already running, it keeps running and does not get new launch arguments:
+
+<Terminal
+  cmd={['$ eas simulator:control app.launch com.example.app restart=false --id <session-id>']}
+/>
 
 Add `openUrl` to open a deep link after restarting. Quote the URL so your shell preserves query parameters such as `&`:
 
@@ -110,6 +172,14 @@ To send a deep link without restarting the app, use `app.openUrl`:
 
 For a custom scheme URL, the simulator host approves the scheme for the app before it opens the URL. If that approval fails, the Simulator can ask for confirmation. Check that the app shows the expected screen before sending more input.
 
+A custom scheme URL that another tool opens with `simctl openurl` can show the system **Open in** dialog. To approve a scheme for an app before such a URL opens, use `app.approveUrlScheme`:
+
+<Terminal
+  cmd={['$ eas simulator:control app.approveUrlScheme com.example.app myapp --id <session-id>']}
+/>
+
+Pass the scheme without `://`. `http` and `https` links do not need approval. The approval covers only URLs that `simctl openurl` opens. A link in Safari can still ask for confirmation.
+
 ## Save a screenshot on your computer
 
 `screenshot.capture` captures only the active screen by default, including on iPhone Duo.
@@ -138,13 +208,19 @@ On iPhone Duo, `display=1` selects the outer screen. Use `display=3` for the inn
   ]}
 />
 
-The captures do not happen at the same instant. `display` selects a screen without activating it. Fold or unfold iPhone Duo in the preview before capturing the app on that screen.
+The captures do not happen at the same instant. `display` selects a screen without activating it. Fold or unfold iPhone Duo with [`hinge.set`](#fold-iphone-duo) or in the preview before capturing the app on that screen.
 
 ## Transfer a file
 
 Use `media.add` to upload a photo or video from your computer into the simulator's Photos library:
 
 <Terminal cmd={['$ eas simulator:control media.add ./fixture.png --id <session-id>']} />
+
+`media.add` and `app.install` read the file from your computer. If the file does not exist, the command fails before it sends the action. To use a file that is already on the simulator host, prefix its absolute path with `host:`:
+
+<Terminal cmd={['$ eas simulator:control media.add host:<absolute-path> --id <session-id>']} />
+
+The simulator host accepts only paths in the folders that it uses for simulators, uploads, and screenshots. `app.file.upload` accepts only a file from your computer.
 
 Use app data transfers to seed test fixtures or inspect files your app saves. The app must understand the file's path and format.
 

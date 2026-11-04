@@ -140,11 +140,11 @@ For example, if an associated website is `https://expo.dev/`, the `applinks` is:
 }
 ```
 
-Build your iOS app with [EAS Build](/build/setup/) which ensures that the entitlement is registered with Apple automatically.
+Build your iOS app with [Expo Build](/build/setup/) which ensures that the entitlement is registered with Apple automatically.
 
 <Collapsible summary="Manual native configuration">
 
-If you're not using EAS or [Continuous Native Generation](/workflow/continuous-native-generation) (`npx expo prebuild`), you have to [manually configure](/build-reference/ios-capabilities#manual-setup) the **Associated Domains** capability for your bundle identifier.
+If you're not using Expo Build or [Continuous Native Generation](/workflow/continuous-native-generation) (`npx expo prebuild`), you have to [manually configure](/build-reference/ios-capabilities#manual-setup) the **Associated Domains** capability for your bundle identifier.
 
 If you enable through the [Apple Developer Console](/build-reference/ios-capabilities#apple-developer-console), then make sure to add the following entitlements in your **ios/[app]/[app].entitlements** file:
 

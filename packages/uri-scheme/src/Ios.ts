@@ -4,27 +4,16 @@ import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
-import { globSync } from 'glob';
 import * as path from 'path';
 
 import type { Options } from './Options';
 import { CommandError } from './Options';
 import { escapeUriParams } from './URIScheme';
 
-const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
-
 export function isAvailable(projectRoot: string): boolean {
-  const reactNativeIos = globSync('ios/*.xcodeproj', {
-    ignore: ignoredPaths,
-    absolute: true,
-    cwd: projectRoot,
-  });
-  const currentIos = globSync('*.xcodeproj', {
-    ignore: ignoredPaths,
-    absolute: true,
-    cwd: projectRoot,
-  });
-  return !!currentIos.length || !!reactNativeIos.length;
+  return [projectRoot, path.join(projectRoot, 'ios')].some((directory) =>
+    readProjectEntries(directory).some((file) => file.endsWith('.xcodeproj'))
+  );
 }
 
 export async function addAsync({
@@ -105,9 +94,10 @@ export async function getAsync({
 
 function getInfoPlistsInDirectory(projectRoot: string): string[] {
   // longer name means more suffixes, we want the shortest possible one to be first.
-  return globSync('*/Info.plist', { ignore: ignoredPaths, absolute: true, cwd: projectRoot }).sort(
-    (a, b) => a.length - b.length
-  );
+  return readProjectEntries(projectRoot)
+    .map((entry) => path.join(entry, 'Info.plist'))
+    .filter((file) => fs.existsSync(file))
+    .sort((a, b) => a.length - b.length);
 }
 
 export function getConfigPath(projectRoot: string): string {
@@ -154,4 +144,23 @@ export function escapeUri(uri: string) {
   const [uriWithoutParams, uriParams = ''] = uri.split('?', 2);
 
   return `${uriWithoutParams}?${escapeUriParams(uriParams)}`;
+}
+
+function readProjectEntries(directory: string): string[] {
+  let names: string[];
+  try {
+    names = fs.readdirSync(directory);
+  } catch (error) {
+    const code = (error as NodeJS.ErrnoException).code;
+    if (code === 'ENOENT' || code === 'ENOTDIR') return [];
+    throw error;
+  }
+  return names
+    .filter(
+      (name) =>
+        !name.startsWith('.') && !['Carthage', 'Pods', 'vendor', 'node_modules'].includes(name)
+    )
+    .sort()
+    .reverse()
+    .map((name) => path.resolve(directory, name));
 }

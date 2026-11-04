@@ -19,8 +19,8 @@ The EAS CLI integration automates the standard setup: authorizing your Supabase 
     Sign up for an [Expo account](https://expo.dev/signup).
   </Requirement>
   <Requirement title="EAS CLI">Install EAS CLI globally with `npm install -g eas-cli`.</Requirement>
-  <Requirement title="Expo project linked to EAS">
-    Create an Expo project and link it to EAS with `eas init`.
+  <Requirement title="Expo project linked to Expo Services">
+    Create an Expo project and link it to Expo Services with `eas init`.
   </Requirement>
   <Requirement title="Supabase account">
     Sign up for a [Supabase
@@ -55,7 +55,7 @@ This command:
 - Asks which Supabase **organization** to use, if your account has more than one.
 - Asks for a **region** from Americas, Europe/Middle East/Africa, and Asia Pacific, then creates the project and waits until it's ready. The region sets your data residency and can't be changed after the project is created.
 - Installs `@supabase/supabase-js` and `expo-sqlite`, which stores the auth session, and adds the `expo-sqlite` config plugin to your [app config](/workflow/configuration/). If you use a [dynamic app config](/workflow/configuration/#dynamic-configuration), the command prints the plugin entry for you to add instead.
-- Writes `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` to **.env.local** and to your EAS environment variables across the Production, Preview, and Development environments.
+- Writes `EXPO_PUBLIC_SUPABASE_URL` and `EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY` to **.env.local** and to your Expo Services environment variables across the Production, Preview, and Development environments.
 
 Both values are meant to be public, so your app can ship them. Anyone who has them can query your database, so row level security is what keeps your data private. Enable it and add policies on every table your app reads or writes.
 
@@ -79,7 +79,7 @@ Re-running `connect` is safe: it reuses your existing connection and Supabase pr
 
 <Collapsible summary="Running in CI or non-interactively">
 
-EAS Build and EAS Update read the variables from the environment they run in, so run `connect` in CI only when CI creates or links the project:
+Expo Build and Expo Update read the variables from the environment they run in, so run `connect` in CI only when CI creates or links the project:
 
 <Terminal
   cmd={['$ eas integrations:supabase:connect --non-interactive --region us-east-1 --overwrite']}
@@ -223,7 +223,7 @@ OAuth providers and magic links need a deep link back into your app, covered in 
 
 ## Set up environments
 
-`connect` stores the values as [EAS environment variables](/eas/environment-variables/), so each build or update reads them from the environment it runs in.
+`connect` stores the values as [Expo Services environment variables](/eas/environment-variables/), so each build or update reads them from the environment it runs in.
 
 A Supabase project holds one environment's data, so separate environments mean separate projects. Check your [Supabase plan limits](https://supabase.com/pricing?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) before creating a second project.
 
@@ -264,13 +264,13 @@ Don't do this if any build profile in **eas.json** sets `"environment": "develop
 
 **Production** uses the project that `connect` set up.
 
-**Preview** has no project of its own by default. To give Preview, or any other EAS environment, its own hosted project, re-run `connect` with `--environment`. This creates a second project, which counts toward your plan's active-project limit:
+**Preview** has no project of its own by default. To give Preview, or any other Expo Services environment, its own hosted project, re-run `connect` with `--environment`. This creates a second project, which counts toward your plan's active-project limit:
 
 <Terminal cmd={['$ eas integrations:supabase:connect --environment preview']} />
 
 The new project's URL and key go to the named environments only, and your other environments keep pointing at the first project. If the target environments already hold `EXPO_PUBLIC_SUPABASE_*` values, the command asks to confirm before replacing them. Unlike `connect` without `--environment`, this doesn't install the SDK or touch **.env.local**. You can't combine `--environment` with `--link`, `--reauth`, or `--organization`.
 
-To point an EAS environment at a Supabase project you already have, set the two variables yourself with [`eas env:set`](/eas/environment-variables/) rather than using `--environment`. Replace the shared variable with two first, as shown above, so your other environments keep their current project.
+To point an Expo Services environment at a Supabase project you already have, set the two variables yourself with [`eas env:set`](/eas/environment-variables/) rather than using `--environment`. Replace the shared variable with two first, as shown above, so your other environments keep their current project.
 
 ## Manage the integration
 

@@ -33,6 +33,7 @@ import { stripAnsi } from '../../utils/ansi';
 import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
+import { compileHermesArtifactsAsync } from '../compileHermesArtifacts';
 import { debugEvent } from '../events';
 import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
@@ -280,6 +281,10 @@ export async function exportEmbedBundleAndAssetsAsync(
           }
         })
       );
+    }
+
+    if (options.bytecode && isHermes && !options.dev) {
+      await compileHermesArtifactsAsync(projectRoot, bundles.artifacts);
     }
 
     return {

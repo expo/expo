@@ -1,7 +1,7 @@
 ---
 title: Share a live Expo Simulators session or start one from a link
 sidebar_title: Hand off a session
-description: Share the browser preview of a running Expo Simulators session, or build an authenticated expo.dev link that starts a new session from an EAS Build, fingerprint, archive, or Expo Go.
+description: Share the browser preview of a running Expo Simulators session, or build an authenticated expo.dev link that starts a new session from an Expo Build, fingerprint, archive, or Expo Go.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -50,7 +50,7 @@ Open the browser preview URL in a desktop browser. Do not open it on the remote 
 
 ## Start a session from a link
 
-A create session link starts a session from an EAS Build, build fingerprint, application archive, or Expo Go. The link opens the session's browser preview when the preview is ready. Use one to add an Expo Simulators action to a pull request, CI result, or an internal tool without integrating the [REST API](/preview/simulators/reference/rest-api/).
+A create session link starts a session from an Expo Build, build fingerprint, application archive, or Expo Go. The link opens the session's browser preview when the preview is ready. Use one to add an Expo Simulators action to a pull request, CI result, or an internal tool without integrating the [REST API](/preview/simulators/reference/rest-api/).
 
 Create session links start browser-preview-only sessions. They do not provision agent-device, Appium, or Argent. Use [EAS CLI](/preview/simulators/reference/cli/) or the [REST API](/preview/simulators/reference/rest-api/) when you need a controller, a blank device, or custom duration and idle limits.
 
@@ -72,16 +72,16 @@ The person opening the link must sign in to an Expo account that can access the 
 
 Every create session link requires exactly one application source:
 
-| Parameter               | Description                                                                                                                                                                                                                                                                                                                      |
-| ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `buildId`               | ID of a finished, unexpired EAS Build. An Android build must be an APK, and an iOS build must target the iOS Simulator. The build determines the platform.                                                                                                                                                                       |
-| `buildFingerprint`      | Fingerprint hash of an EAS Build. Requires `platform`. EAS resolves it to the most recent finished, non-expired build with this fingerprint on the requested platform. On iOS, the build must target the iOS Simulator. On Android, EAS can select a build of any distribution type, so use a build profile that creates an APK. |
-| `applicationArchiveUrl` | URL of a downloadable application archive. Encode this URL because it is nested inside the create session URL. For iOS, use a **.tar.gz** or **.tgz** archive that contains the **.app**. For Android, use an **.apk**.                                                                                                          |
-| `expoGo`                | Set to `true` to install and launch Expo Go instead of a project build. Requires `platform`. Use `sdkVersion` to choose the Expo Go version, and `openUrl` to load your project from Metro. `false` and `0` are treated as absent.                                                                                               |
+| Parameter               | Description                                                                                                                                                                                                                                                                                                                                               |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `buildId`               | ID of a finished, unexpired Expo Build. An Android build must be an APK, and an iOS build must target the iOS Simulator. The build determines the platform.                                                                                                                                                                                               |
+| `buildFingerprint`      | Fingerprint hash of an Expo Build. Requires `platform`. Expo Simulators resolves it to the most recent finished, non-expired build with this fingerprint on the requested platform. On iOS, the build must target the iOS Simulator. On Android, Expo Simulators can select a build of any distribution type, so use a build profile that creates an APK. |
+| `applicationArchiveUrl` | URL of a downloadable application archive. Encode this URL because it is nested inside the create session URL. For iOS, use a **.tar.gz** or **.tgz** archive that contains the **.app**. For Android, use an **.apk**.                                                                                                                                   |
+| `expoGo`                | Set to `true` to install and launch Expo Go instead of a project build. Requires `platform`. Use `sdkVersion` to choose the Expo Go version, and `openUrl` to load your project from Metro. `false` and `0` are treated as absent.                                                                                                                        |
 
 Do not include more than one application source. A link with more than one, such as `buildId` together with `expoGo=true`, shows a validation error and does not create a session. A link without an application source cannot create a session.
 
-EAS treats an empty application source value, such as `buildId=`, as absent.
+Expo Simulators treats an empty application source value, such as `buildId=`, as absent.
 
 #### Add other parameters
 
@@ -112,7 +112,7 @@ console.log(url.toString());
 
 ### Examples
 
-#### Start a session from an EAS Build
+#### Start a session from an Expo Build
 
 ```text
 https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?buildId=BUILD_UUID
@@ -126,7 +126,7 @@ The build must be finished, and its artifact must not be expired. An iOS build m
 https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?buildFingerprint=FINGERPRINT_HASH&platform=ios
 ```
 
-EAS resolves the fingerprint to the most recent installable iOS Simulator build. If no installable build with this fingerprint exists, the link shows a validation error. Use `buildId` instead when you need to select one specific build.
+Expo Simulators resolves the fingerprint to the most recent installable iOS Simulator build. If no installable build with this fingerprint exists, the link shows a validation error. Use `buildId` instead when you need to select one specific build.
 
 #### Name the session and choose a device
 
@@ -152,7 +152,7 @@ https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?buildId
 https://expo.dev/accounts/acme/projects/my-app/simulator-sessions/create?expoGo=true&platform=ios&sdkVersion={{expoSdkMajorVersion}}&openUrl=exp%3A%2F%2Fmetro.example.ngrok.dev
 ```
 
-EAS installs the Expo Go release for the requested SDK version and opens the `openUrl` value in it. Omit `sdkVersion` to use the current Expo Go release. The remote simulator must be able to reach Metro. Start Metro with a public tunnel before you open the link:
+Expo Simulators installs the Expo Go release for the requested SDK version and opens the `openUrl` value in it. Omit `sdkVersion` to use the current Expo Go release. The remote simulator must be able to reach Metro. Start Metro with a public tunnel before you open the link:
 
 <Terminal cmd={['$ EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel']} />
 
