@@ -118,7 +118,7 @@ describe('processHeaderItemsForPlatform (iOS)', () => {
     processHeaderItemsForPlatform(<StackToolbarButton image={image} icon="star" />, 'right');
 
     expect(warn).toHaveBeenCalledWith(
-      'Stack.Toolbar.Button does not support the image prop with placement="right" on iOS. Use the icon prop instead.'
+      'Stack.Toolbar.Button does not support the image prop with placement="right" on iOS. Use an SF Symbol name or an image source with icon. Use placement="bottom" to display an ImageRef with image.'
     );
     warn.mockRestore();
   });
