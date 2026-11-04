@@ -220,10 +220,13 @@ export async function exportEmbedBundleAndAssetsAsync(
       files,
       {
         sourceMapUrl,
-        getSourceUrl: (module) =>
-          sourcemapSourcesRoot != null && path.isAbsolute(module.path)
-            ? toPosixPath(path.relative(sourcemapSourcesRoot, module.path))
-            : module.path,
+        getSourceUrl:
+          sourcemapSourcesRoot != null
+            ? (module) =>
+                path.isAbsolute(module.path)
+                  ? toPosixPath(path.relative(sourcemapSourcesRoot, module.path))
+                  : module.path
+            : undefined,
         unstable_transformProfile: (options.unstableTransformProfile ||
           (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
       }

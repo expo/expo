@@ -234,6 +234,39 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
   ]);
 });
 
+it('uses export-relative source paths when no embed source root is specified', async () => {
+  const projectRoot = ensureTesterReady('static-rendering');
+  const output = 'dist-export-embed-default-source-maps';
+  await executeExpoAsync(
+    projectRoot,
+    [
+      'export:embed',
+      '--entry-file',
+      resolveEntryPoint(projectRoot, { platform: 'ios' }),
+      '--bundle-output',
+      `./${output}/output.js`,
+      '--platform',
+      'ios',
+      '--dev',
+      'false',
+      '--sourcemap-output',
+      `./${output}/output.js.map`,
+    ],
+    {
+      env: {
+        NODE_ENV: 'production',
+        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_ASYNC: 'development',
+      },
+    }
+  );
+  const map = flattenSourceMap(
+    JSON.parse(fs.readFileSync(path.join(projectRoot, output, 'output.js.map'), 'utf8'))
+  );
+  expect(map.sources).toContain('/apps/router-e2e/__e2e__/static-rendering/app/index.tsx');
+  expect(JSON.stringify(map.sources)).not.toContain(projectRoot);
+});
+
 it('runs `npx expo export:embed --platform android` with source maps', async () => {
   const projectRoot = ensureTesterReady('static-rendering');
   const output = 'dist-export-embed-source-maps-android';
