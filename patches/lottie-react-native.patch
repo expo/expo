@@ -1,0 +1,12 @@
+diff --git a/ios/LottieReactNative/AnimationViewManagerModule.swift b/ios/LottieReactNative/AnimationViewManagerModule.swift
+--- a/ios/LottieReactNative/AnimationViewManagerModule.swift
++++ b/ios/LottieReactNative/AnimationViewManagerModule.swift
+@@ -19,7 +19,7 @@ class AnimationViewManagerModule: RCTViewManager {
+         return ContainerView()
+     }
+ 
+-    @objc override func constantsToExport() -> [AnyHashable: Any]! {
++    @objc override func constantsToExport() -> [AnyHashable: Any] {
+         return ["VERSION": 1]
+     }
+ 

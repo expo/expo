@@ -43,6 +43,8 @@ minimumReleaseAgeExclude:
 
 patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
+  lottie-react-native: patches/lottie-react-native.patch
+  react-native-maps: patches/react-native-maps.patch
   react-native-reanimated: patches/react-native-reanimated.patch
   react-native-worklets: patches/react-native-worklets.patch
   react-server-dom-webpack: patches/react-server-dom-webpack.patch

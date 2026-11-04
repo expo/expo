@@ -4667,7 +4667,7 @@ DEPENDENCIES:
   - GoogleDataTransport
   - GoogleUtilities
   - hermes-engine (from `../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec`)
-  - "lottie-react-native (from `../../../node_modules/.pnpm/lottie-react-native@7.5.0_@lottiefiles+dotlottie-react@0.13.5_react@19.3.0__react-nativ_b5af8785be52b578875bef2f0444b116/node_modules/lottie-react-native`)"
+  - "lottie-react-native (from `../../../node_modules/.pnpm/lottie-react-native@7.5.0_patch_hash=c573205561bc30560581ae4e627193e6d0262af6e34fdf831e_19e9e574eeb9e10192ef39d0f713ce35/node_modules/lottie-react-native`)"
   - MBProgressHUD (~> 1.2.0)
   - nanopb
   - RCT-Folly (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec`)
@@ -4711,7 +4711,7 @@ DEPENDENCIES:
   - React-microtasksnativemodule (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/microtasks`)
   - React-mutationobservernativemodule (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/react/nativemodule/mutationobserver`)
   - "react-native-keyboard-controller (from `../../../node_modules/.pnpm/react-native-keyboard-controller@1.22.7_react-native-reanimated@4.7.1_patch_hash=0f735c_2dc317b1e63e1bf57d058b598ffddfab/node_modules/react-native-keyboard-controller`)"
-  - "react-native-maps/Maps (from `../../../node_modules/.pnpm/react-native-maps@1.29.11_react-native-web@0.21.2_encoding@0.1.13_react-dom@19.3.0_reac_44647630cad2b3f515435379d676a2da/node_modules/react-native-maps`)"
+  - "react-native-maps/Maps (from `../../../node_modules/.pnpm/react-native-maps@1.29.11_patch_hash=e31b57d83e18805bd5a551c2d167297490c1abf97da6e85cd7_c0311b570760be03a964b42f3661ab82/node_modules/react-native-maps`)"
   - "react-native-netinfo (from `../../../node_modules/.pnpm/@react-native-community+netinfo@12.0.1_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_c600f98fabcb3ca2090feb26e756ec45/node_modules/@react-native-community/netinfo`)"
   - "react-native-pager-view (from `../../../node_modules/.pnpm/react-native-pager-view@9.0.7_react-native@0.89.0-rc.0_@babel+core@7.29.7_@react-native_df83bb0488f96e44c105d9c9b8d9e4c3/node_modules/react-native-pager-view`)"
   - "react-native-safe-area-context (from `../../../node_modules/.pnpm/react-native-safe-area-context@5.11.1_react-native@0.89.0-rc.0_@babel+core@7.29.7_@reac_a2fa2b07ceae886377766322d4a2e6ee/node_modules/react-native-safe-area-context`)"
@@ -4982,7 +4982,7 @@ EXTERNAL SOURCES:
     :podspec: "../../../react-native-lab/react-native/packages/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-v260318099.0.6
   lottie-react-native:
-    :path: "../../../node_modules/.pnpm/lottie-react-native@7.5.0_@lottiefiles+dotlottie-react@0.13.5_react@19.3.0__react-nativ_b5af8785be52b578875bef2f0444b116/node_modules/lottie-react-native"
+    :path: "../../../node_modules/.pnpm/lottie-react-native@7.5.0_patch_hash=c573205561bc30560581ae4e627193e6d0262af6e34fdf831e_19e9e574eeb9e10192ef39d0f713ce35/node_modules/lottie-react-native"
   RCT-Folly:
     :podspec: "../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
@@ -5064,7 +5064,7 @@ EXTERNAL SOURCES:
   react-native-keyboard-controller:
     :path: "../../../node_modules/.pnpm/react-native-keyboard-controller@1.22.7_react-native-reanimated@4.7.1_patch_hash=0f735c_2dc317b1e63e1bf57d058b598ffddfab/node_modules/react-native-keyboard-controller"
   react-native-maps:
-    :path: "../../../node_modules/.pnpm/react-native-maps@1.29.11_react-native-web@0.21.2_encoding@0.1.13_react-dom@19.3.0_reac_44647630cad2b3f515435379d676a2da/node_modules/react-native-maps"
+    :path: "../../../node_modules/.pnpm/react-native-maps@1.29.11_patch_hash=e31b57d83e18805bd5a551c2d167297490c1abf97da6e85cd7_c0311b570760be03a964b42f3661ab82/node_modules/react-native-maps"
   react-native-netinfo:
     :path: "../../../node_modules/.pnpm/@react-native-community+netinfo@12.0.1_patch_hash=ced0cb79848978ecc3e780a4d812d94868434_c600f98fabcb3ca2090feb26e756ec45/node_modules/@react-native-community/netinfo"
   react-native-pager-view:
