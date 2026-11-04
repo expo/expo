@@ -28,6 +28,7 @@ const HomeIndex = () => {
           <CaseLink href="/link-preview" text="Link Preview" />
           <CaseLink href="/split-view" text="Split View" />
           <CaseLink href="/toolbar" text="Toolbar" />
+          <CaseLink href="/toolbar-axis" text="Toolbar axis behavior" />
           <CaseLink href="/header-items" text="Header Items" />
         </Section>
         <Section title="Composition">

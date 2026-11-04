@@ -146,6 +146,24 @@ describe('StackToolbarButton component', () => {
     }
   );
 
+  it.each(['automatic', 'horizontalOnly', 'verticalPreferred'] as const)(
+    'passes axisBehavior %s to RouterToolbarItem',
+    async (axisBehavior) => {
+      await render(
+        <ToolbarPlacementContext.Provider value="bottom">
+          <StackToolbarButton icon="checkmark.circle" axisBehavior={axisBehavior}>
+            Select
+          </StackToolbarButton>
+        </ToolbarPlacementContext.Provider>
+      );
+
+      expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+        expect.objectContaining({ axisBehavior }),
+        undefined
+      );
+    }
+  );
+
   it('passes SF Symbol icon to RouterToolbarItem', async () => {
     await render(
       <ToolbarPlacementContext.Provider value="bottom">

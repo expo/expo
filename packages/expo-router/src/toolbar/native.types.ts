@@ -22,6 +22,7 @@ export interface RouterToolbarItemProps {
   tintColor?: ColorValue;
   hidesSharedBackground?: boolean;
   sharesBackground?: boolean;
+  axisBehavior?: 'automatic' | 'horizontalOnly' | 'verticalPreferred';
   barButtonItemStyle?: 'plain' | 'prominent';
   width?: number;
   hidden?: boolean;
