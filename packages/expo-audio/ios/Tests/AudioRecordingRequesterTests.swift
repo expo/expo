@@ -45,9 +45,6 @@ struct AudioRecordingRequesterTests {
     #expect(resolved?["status"] as? UInt32 == EXPermissionStatusDenied.rawValue)
   }
 
-  // The system only guarantees the outcome it hands to the request callback. Re-reading
-  // `AVAudioSession.recordPermission` from inside that callback can still return `.undetermined`,
-  // which used to resolve a permission the user just granted as `granted: false`.
   @Test(arguments: [
     (true, EXPermissionStatusGranted),
     (false, EXPermissionStatusDenied),
