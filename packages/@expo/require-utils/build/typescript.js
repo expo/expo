@@ -55,11 +55,12 @@ function loadTranspiler() {
   }
 
   // NOTE(@kitten): Typescript 7.1+ API shape
-  const native = requireOptional('typescript/unstable/sync');
+  const current = requireOptional('typescript/sync');
+  const native = current ?? requireOptional('typescript/unstable/sync');
   if (typeof native?.API !== 'function' || !('transpileModule' in native.API.prototype)) {
     return null;
   }
-  const enums = require('typescript/unstable/proto');
+  const enums = require(current ? 'typescript/proto' : 'typescript/unstable/proto');
   const api = new native.API();
   return (code, filename, format) => {
     const output = api.transpileModule(code, {
