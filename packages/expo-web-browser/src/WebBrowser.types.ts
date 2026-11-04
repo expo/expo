@@ -67,6 +67,7 @@ export type WebBrowserOpenOptions = {
   /**
    * A URI to pass as [`Intent.EXTRA_REFERRER`](https://developer.android.com/reference/android/content/Intent#EXTRA_REFERRER)
    * on the Custom Tabs intent, so that the opened website can read the referring app.
+   * The conventional value is `android-app://<your.package.name>`.
    *
    * @platform android
    */
