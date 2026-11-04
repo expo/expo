@@ -90,12 +90,10 @@ struct RNHostView: ExpoSwiftUI.View {
       // surrounding SwiftUI container - e.g. a spurious empty row in a `Form`'s `Section`.
       EmptyView()
     } else {
-      // Not `ReportSizeToYogaNodeModifier`: `onGeometryChange` reports an animated resize once,
-      // with its destination size, so the hosted content snapped to its final layout while the
-      // frame was still animating (expo/expo#52396). The animatable reporter is driven through
-      // every interpolated size instead. It sits in a background so the `GeometryReader` does not
-      // take part in the layout: as the container it would turn an axis with no proposal, such
-      // as the height in a vertical `ScrollView`, into its own 10 pt default.
+      // Reports every size SwiftUI lays the content out at, including each frame of an animated
+      // resize, which `onGeometryChange` would report once at its destination. The reader sits
+      // in a background so it takes no part in the layout: as the container it would give an
+      // axis with no proposal, e.g. the height in a vertical `ScrollView`, its own 10 pt default.
       Children()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(
@@ -304,9 +302,9 @@ private struct ReportSizeToYogaNodeModifier: ViewModifier {
   }
 }
 
-// Sets Yoga node size from every size SwiftUI lays the hosted content out at. SwiftUI drives
-// `animatableData` of an `Animatable` modifier through each interpolated size of an animated
-// resize, not only its destination, so the hosted React Native tree follows the animation.
+// Sets Yoga node size from every size SwiftUI lays the hosted content out at
+// SwiftUI drives `animatableData` through each interpolated size of an animated resize, not only
+// its destination, so the hosted React Native tree follows the animation
 private struct AnimatedSizeReporter: ViewModifier, Animatable {
   var size: CGSize
   let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
