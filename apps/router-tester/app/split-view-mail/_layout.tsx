@@ -1,14 +1,18 @@
-import { useGlobalSearchParams, useRouter } from 'expo-router';
+import { useGlobalSearchParams, useNavigation, useRouter } from 'expo-router';
+import {
+  CommonActions,
+  type NavigationProp,
+  type ParamListBase,
+} from 'expo-router/react-navigation';
 import {
   SplitView,
   type SplitViewHeader,
   type SplitViewToolbarItem,
 } from 'expo-router/unstable-split-view';
 import { SymbolView } from 'expo-symbols';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { PlatformColor, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import type { SplitHostCommands } from 'react-native-screens/experimental';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { ToggleRow } from '@/components/ToggleRow';
@@ -34,10 +38,11 @@ const BACK_BUTTONS: { label: string; options: SplitViewHeader }[] = [
 
 export default function Layout() {
   const router = useRouter();
-  // Navigation does not reveal a column, so the selected column is shown with the split view commands.
-  const splitRef = useRef<SplitHostCommands>(null);
-  const [collapsed, setCollapsed] = useState(false);
-  const { id } = useGlobalSearchParams<{ id?: string }>();
+  const navigation = useNavigation<NavigationProp<ParamListBase>>();
+  const { id, mailbox: selectedMailbox = 'Inbox' } = useGlobalSearchParams<{
+    id?: string;
+    mailbox?: string;
+  }>();
   const message = MESSAGES.find((m) => m.id === id);
 
   const [showHeaders, setShowHeaders] = useState(true);
@@ -65,12 +70,7 @@ export default function Layout() {
 
   return (
     <ToolbarPressContext value={pressLabel}>
-      <SplitView
-        ref={splitRef}
-        preferredDisplayMode="twoBesideSecondary"
-        showInspector={showInspector}
-        onCollapse={() => setCollapsed(true)}
-        onExpand={() => setCollapsed(false)}>
+      <SplitView preferredDisplayMode="twoBesideSecondary" showInspector={showInspector}>
         <SplitView.Column
           header={
             showHeaders
@@ -95,17 +95,30 @@ export default function Layout() {
               <Pressable
                 key={mailbox.name}
                 style={styles.row}
-                onPress={() => {
-                  // When expanded, `show` would close the sidebar overlay.
-                  if (collapsed && threeColumns) splitRef.current?.show('supplementary');
-                }}>
+                onPress={() =>
+                  router.setParams(
+                    { mailbox: mailbox.name },
+                    threeColumns ? { splitViewColumnName: 'supplementary' } : undefined
+                  )
+                }>
                 <SymbolView name={mailbox.icon} size={20} />
                 <Text style={styles.rowTitle}>{mailbox.name}</Text>
               </Pressable>
             ))}
             <View style={styles.controls}>
               <Text style={styles.sectionTitle}>Test cases</Text>
-              <Pressable testID="split-view-mail-home" onPress={() => router.replace('/')}>
+              {/* A reset removes the SplitView routes from the root history, so the root layout uses a Stack again. */}
+              <Pressable
+                testID="split-view-mail-home"
+                onPress={() =>
+                  navigation.dispatch(
+                    CommonActions.reset({
+                      ...navigation.getState(),
+                      index: 0,
+                      routes: [{ name: 'index' }],
+                    })
+                  )
+                }>
                 <Text style={styles.link}>Back to home</Text>
               </Pressable>
               <Text testID="split-view-mail-press">Last toolbar press: {pressLabel}</Text>
@@ -186,7 +199,7 @@ export default function Layout() {
               showHeaders
                 ? {
                     ...backButton.options,
-                    title: alternateTitles ? 'Gmail' : 'Inbox Gmail',
+                    title: alternateTitles ? 'Gmail' : `${selectedMailbox} Gmail`,
                     rightToolbar: [
                       {
                         title: 'Filter',
@@ -228,10 +241,15 @@ export default function Layout() {
                       styles.message,
                       m.id === id && { backgroundColor: PlatformColor('systemGray5') },
                     ]}
-                    onPress={() => {
-                      router.replace(`/split-view-mail/${m.id}`);
-                      splitRef.current?.show('secondary');
-                    }}>
+                    onPress={() =>
+                      router.replace(
+                        {
+                          pathname: '/split-view-mail/[id]',
+                          params: { id: m.id, mailbox: selectedMailbox },
+                        },
+                        { splitViewColumnName: 'secondary' }
+                      )
+                    }>
                     <Text style={styles.sender}>{m.sender}</Text>
                     <Text>{m.subject}</Text>
                   </Pressable>

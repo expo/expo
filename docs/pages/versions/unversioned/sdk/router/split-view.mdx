@@ -32,40 +32,67 @@ On iPhone, `SplitView` automatically collapses all columns into a single view. O
 
 ### Choosing the initial column
 
-Use the `topColumnForCollapsing` prop to control which column is displayed when the split view is collapsed:
+Use the `topColumnForCollapsing` prop to control which column is displayed when the split view first collapses:
 
 ```tsx
 <SplitView topColumnForCollapsing="primary">{/* ... */}</SplitView>
 ```
 
-Accepted values are `primary`, `supplementary`, and `secondary`. When not set, the system uses its default behavior.
+Accepted values are `primary`, `supplementary`, and `secondary`. The first `SplitView.Column` is `primary`, the second is `supplementary`, and the column with the current route is always `secondary`. When not set, the system uses its default behavior.
+
+`SplitView` reads the prop on the first render only. After that, column requests and the columns that the user opens set the column. To start on the route content when the app opens a deep link, compute the value once:
+
+```tsx app/_layout.tsx
+import { useSegments } from 'expo-router';
+import { SplitView } from 'expo-router/unstable-split-view';
+import { useState } from 'react';
+
+export default function Layout() {
+  const segments = useSegments();
+  const [initialColumn] = useState(() => (segments.length === 0 ? 'primary' : 'secondary'));
+  return <SplitView topColumnForCollapsing={initialColumn}>{/* ... */}</SplitView>;
+}
+```
 
 ### Navigating between columns
 
-> **info** The `.show()` method requires `react-native-screens` 4.24.0 or later. SDK 55 bundles `~4.23.0`, so you need to install `react-native-screens@~4.24.0` manually to use this feature.
-
-Use a `ref` to programmatically show a specific column with the `show` method:
+A route does not tell which column to show, so a navigation names the column with the `splitViewColumnName` option. `Link`, `router.push`, `router.navigate`, `router.replace`, and `router.setParams` accept it:
 
 ```tsx
-import { useRef } from 'react';
+<Link href="/42" splitViewColumnName="secondary">
+  Open message
+</Link>
+```
+
+```ts
+router.navigate('/42', { splitViewColumnName: 'secondary' });
+// Changes the folder and shows the message list. The selected message stays.
+router.setParams({ folder: 'sent' }, { splitViewColumnName: 'supplementary' });
+```
+
+A collapsed split view shows the column. An expanded split view keeps the column for the next collapse, and does not open or close a sidebar overlay. A navigation without the option, `router.back()`, and closing a modal do not change the column. The option is not part of the URL.
+
+To show a column without navigation, use the `useSplitView` hook in a `SplitView.Column` or in a route. It also returns whether the split view is collapsed and which column it shows when collapsed:
+
+```tsx
+import { useSplitView } from 'expo-router/unstable-split-view';
 import { Pressable, Text } from 'react-native';
-import { SplitView } from 'expo-router/unstable-split-view';
-import type { SplitHostCommands } from 'react-native-screens/experimental';
 
-export default function Layout() {
-  const ref = useRef<SplitHostCommands>(null);
-
+function ShowListButton() {
+  const { show } = useSplitView();
   return (
-    <SplitView ref={ref} topColumnForCollapsing="primary">
-      <SplitView.Column>
-        <Pressable onPress={() => ref.current?.show('secondary')}>
-          <Text>Show main content</Text>
-        </Pressable>
-      </SplitView.Column>
-    </SplitView>
+    <Pressable onPress={() => show('supplementary')}>
+      <Text>Show list</Text>
+    </Pressable>
   );
 }
 ```
+
+The layout that renders `SplitView` is outside the split view, so `useSplitView` throws there. In that layout, use a `ref` and its `show` method. The `ref` calls the native split view directly, also when it is expanded.
+
+### Route history
+
+The split view keeps only the current route, like tabs with `backBehavior: 'none'`. `router.push`, `router.navigate`, and `router.replace` replace the current route, and `router.push` shows a development warning. `router.back()` goes to the parent navigator, so `router.canGoBack()` returns `false` when the split view is the root layout. To keep history in a route, use a `Stack` in that route. On Android and web, `SplitView` renders a `Slot` that keeps the route history.
 
 ## Known limitations
 
@@ -99,9 +126,9 @@ The current API surface is minimal and may not cover all use cases. Additional p
 
 </Collapsible>
 
-<Collapsible summary="Going back to previous column on iPhone">
+<Collapsible summary="Column request lost when the layout suspends">
 
-To go back to a previous column, tap the system back button in the navigation bar. A future release will add more granular programmatic control over back navigation.
+If the layout that renders `SplitView` suspends, for example with async routes, the column request of the navigation that mounts it is lost.
 
 </Collapsible>
 

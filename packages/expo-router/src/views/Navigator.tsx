@@ -133,7 +133,7 @@ export function useNavigatorContext() {
   return context;
 }
 
-function SlotContent({ state, descriptors }: NavigatorContentProps<any>) {
+export function SlotContent({ state, descriptors }: NavigatorContentProps<any>) {
   const focusedRouteKey = state.routes[state.index]?.key;
 
   return focusedRouteKey ? (descriptors[focusedRouteKey]?.render() ?? null) : null;
