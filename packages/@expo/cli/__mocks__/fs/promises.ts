@@ -1,2 +1,1 @@
-import { fs } from 'memfs';
-module.exports = fs.promises;
+module.exports = require('../fs').promises;
