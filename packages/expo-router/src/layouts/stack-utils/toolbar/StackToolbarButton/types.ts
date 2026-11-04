@@ -22,6 +22,20 @@ export interface StackToolbarButtonProps {
    */
   accessibilityHint?: string;
   /**
+   * Where this item sits when iOS 27 moves icon items into the vertical rail on iPhone Duo.
+   *
+   * A titled item with no icon already stays in the horizontal bar. `horizontalOnly` does that for an item with an icon. `verticalPreferred` prefers the rail. `automatic` leaves the choice to the system.
+   *
+   * On a bottom toolbar, `horizontalOnly` on one item keeps the whole toolbar horizontal. The item is hidden when no horizontal bar is present.
+   *
+   * Android ignores this prop.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/axisbehavior) for more information.
+   *
+   * @platform ios 27.1+
+   */
+  axisBehavior?: 'automatic' | 'horizontalOnly' | 'verticalPreferred';
+  /**
    * There are two ways to specify the content of the button:
    *
    * @example
@@ -179,6 +193,7 @@ export interface NativeToolbarButtonProps {
   possibleTitles?: string[];
   selected?: boolean;
   separateBackground?: boolean;
+  axisBehavior?: 'automatic' | 'horizontalOnly' | 'verticalPreferred';
   style?: StyleProp<BasicTextStyle>;
   tintColor?: ColorValue;
   variant?: 'plain' | 'done' | 'prominent';

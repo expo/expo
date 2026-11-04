@@ -46,6 +46,7 @@ export interface NativeLinkPreviewActionProps {
   // They're included for API consistency with toolbar items.
   sharesBackground?: boolean;
   hidesSharedBackground?: boolean;
+  axisBehavior?: 'automatic' | 'horizontalOnly' | 'verticalPreferred';
   onSelected: () => void;
   titleStyle?: BasicTextStyle;
 }
