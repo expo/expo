@@ -70,7 +70,7 @@ The private preview page on expo.dev cannot be embedded on other sites. Use the 
 
 ## Render the screen with `@expo/hub-client`
 
-[`@expo/hub-client`](https://www.npmjs.com/package/@expo/hub-client) provides React components that stream the device screen to your page and send touch, scroll, and keyboard input back to the device. Use it when you want only the device screen, inside your own layout.
+[`@expo/hub-client`](https://www.npmjs.com/package/@expo/hub-client) provides React components that stream the device screen to your page and send touch and keyboard input back to the device. On iOS, they also send scrolling from a mouse wheel or a trackpad. Use it when you want only the device screen, inside your own layout.
 
 Start the session with `--cors-origin` set to the origin of your page:
 
