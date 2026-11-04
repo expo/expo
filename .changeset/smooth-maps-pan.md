@@ -2,4 +2,4 @@
 'expo-maps': patch
 ---
 
-Fix Android map gestures when nested in a ScrollView.
+[Android] Fix `GoogleMaps.View` pan gestures being taken over by a parent `ScrollView`.

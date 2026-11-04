@@ -92,7 +92,9 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   override fun dispatchTouchEvent(event: MotionEvent): Boolean {
     when (event.actionMasked) {
       MotionEvent.ACTION_DOWN -> {
-        parent?.requestDisallowInterceptTouchEvent(true)
+        if (props.uiSettings.value.scrollGesturesEnabled) {
+          parent?.requestDisallowInterceptTouchEvent(true)
+        }
         lastTouchPoint = Point(event.x.toInt(), event.y.toInt())
       }
 
