@@ -13,6 +13,7 @@
 
 ### 💡 Others
 
+- Update `glob` to 14.0.3. ([#52819](https://github.com/expo/expo/pull/52819) by [@kitten](https://github.com/kitten))
 - [Internal] Drop and replace `deepmerge` dependency. ([#52602](https://github.com/expo/expo/pull/52602) by [@kitten](https://gthub.com/kitten))
 
 ## 56.0.15 — 2026-10-21

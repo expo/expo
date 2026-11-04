@@ -15,6 +15,7 @@
 
 ### 💡 Others
 
+- Update `glob` to 14.0.3. ([#52819](https://github.com/expo/expo/pull/52819) by [@kitten](https://github.com/kitten))
 - Remove the Zod production dependency by using schema-utils for DevTools validation and loading Zod from the optional MCP integration. Declare `expo-mcp` as an optional peer dependency. ([#52599](https://github.com/expo/expo/pull/52599) by [@kitten](https://github.com/kitten))
 
 ## 56.1.27 — 2026-10-21

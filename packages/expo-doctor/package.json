@@ -52,7 +52,7 @@
     "expo-module-scripts": "workspace:*",
     "expo": "workspace:*",
     "getenv": "^2.0.0",
-    "glob": "^13.0.0",
+    "glob": "^14.0.3",
     "ignore": "^5.3.2",
     "ora": "3.4.0",
     "resolve-from": "^5.0.0",
