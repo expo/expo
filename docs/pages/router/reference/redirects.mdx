@@ -88,11 +88,13 @@ Use the `redirects` option of the `expo-router` config plugin in your [app confi
 
 See [`RedirectConfig`](/versions/latest/sdk/router/#redirectconfig-1) in the API reference for the properties of a redirect rule.
 
-The `source` and `destination` are URL paths, not the route files on disk. Do not add the `/index` suffix for a directory route or `+api` for an API route. An internal `destination` must match a route in your project. Otherwise, the development server throws an error.
+### Rules
+
+`source` and `destination` are URL paths, not the route files on disk. Do not add the `/index` suffix for a directory route or `+api` for an API route.
 
 ### Permanent redirects
 
-Set `permanent` to `true` when the redirect is final. Clients and search engines can then cache the redirect. The default is `false`.
+Set `permanent` to `true` when the resource has a new permanent URL. Clients should then use `destination` for all future requests, and can cache the redirect. The default is `false`, which means the resource is temporarily at a different URL.
 
 ```json app.json
 {
@@ -213,7 +215,7 @@ To redirect only some HTTP methods, list them in `methods`. Screen requests use 
 
 > **warning** Rewrites only work with `web.output: "server"`. Static output does not support them. See [Server rules in the app](#server-rules-in-the-app) for the in-app behavior.
 
-Use the `rewrites` option of the `expo-router` config plugin to serve one route at another URL. The server changes the request URL to `destination`, then matches the routes as usual. The browser keeps the `source` URL, and the response has no redirect status code.
+Use the `rewrites` option of the `expo-router` config plugin to serve one route at another URL. The server handles a request for `source` as if the client had requested `destination`. The URL in the browser does not change, and the server does not send a redirect status code.
 
 ```json app.json
 {
@@ -233,7 +235,7 @@ Use the `rewrites` option of the `expo-router` config plugin to serve one route 
 }
 ```
 
-See [`RewriteConfig`](/versions/latest/sdk/router/#rewriteconfig) in the API reference for the properties of a rewrite rule. The `destination` must match a route in your project. Otherwise, the development server throws an error. External URLs are not supported.
+See [`RewriteConfig`](/versions/latest/sdk/router/#rewriteconfig) in the API reference for the properties of a rewrite rule. The [rules](#rules) for redirects also apply to rewrites, with one difference: an external URL is not a valid `destination`.
 
 Dynamic segments work the same way as in [redirects](#dynamic-segments).
 
