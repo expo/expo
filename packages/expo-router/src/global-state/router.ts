@@ -11,6 +11,7 @@ import {
 } from '../domComponents/emitDomEvent';
 import { resolveHref } from '../link/href';
 import { getCanDismiss } from '../react-navigation/core/CanDismissContext';
+import { withWarnOnceIfCalledDuringRender } from '../react-navigation/core/isRenderingComponent';
 import type { Href, RoutePath, RouteInputParams } from '../types';
 import { shouldLinkExternally } from '../utils/url';
 import { navigationRef } from './navigationRef';
@@ -292,11 +293,17 @@ export function createImperativeRouter(
     dismiss: (count, options) => dismissImpl(enqueue, count, options),
     dismissAll: (options) => dismissAllImpl(enqueue, options),
     dismissTo: (href, options) => dismissToImpl(enqueue, href, options),
-    canDismiss,
+    canDismiss: withWarnOnceIfCalledDuringRender(
+      canDismiss,
+      'router.canDismiss() was called during render, which can return a stale value. Use the useCanDismiss() hook to read it during render, or call router.canDismiss() in an effect or event handler.'
+    ),
     replace: (href, options) => replaceImpl(enqueue, href, options),
     back: (options) => goBackImpl(enqueue, options),
     goBack: (options) => goBackImpl(enqueue, options),
-    canGoBack,
+    canGoBack: withWarnOnceIfCalledDuringRender(
+      canGoBack,
+      'router.canGoBack() was called during render, which can return a stale value. Use the useCanGoBack() hook to read it during render, or call router.canGoBack() in an effect or event handler.'
+    ),
     reload,
     prefetch: (href, options) => prefetchImpl(enqueue, href, options),
     setTransitionMode: (mode) => {
