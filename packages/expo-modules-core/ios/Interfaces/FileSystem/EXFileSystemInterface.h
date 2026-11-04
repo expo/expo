@@ -8,6 +8,8 @@ typedef NS_OPTIONS(unsigned int, EXFileSystemPermissionFlags) {
   EXFileSystemPermissionWrite = 1 << 2,
 };
 
+NS_ASSUME_NONNULL_BEGIN
+
 // TODO: Maybe get rid of this interface in favor of EXFileSystemManager and private utilities classes
 @protocol EXFileSystemInterface
 
@@ -21,3 +23,5 @@ typedef NS_OPTIONS(unsigned int, EXFileSystemPermissionFlags) {
 - (BOOL)ensureDirExistsWithPath:(NSString *)path;
 
 @end
+
+NS_ASSUME_NONNULL_END

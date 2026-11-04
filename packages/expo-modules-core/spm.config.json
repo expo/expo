@@ -49,6 +49,11 @@
               "from": "Core/Views/SwiftUI/SwiftUIVirtualViewSharedImpl+Private.h",
               "to": "Core/Views/SwiftUI/{filename}",
               "type": "source"
+            },
+            {
+              "from": "Legacy/ModuleRegistryAdapter/EXModuleRegistryHolderReactModule+Private.h",
+              "to": "Legacy/ModuleRegistryAdapter/{filename}",
+              "type": "source"
             }
           ],
           "dependencies": [
