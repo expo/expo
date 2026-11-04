@@ -796,8 +796,6 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
               continuation.resume(results)
             }
 
-            // The default `onError` is a no-op, so without this override the promise never settles
-            // when the geocoder fails (for example, when the device is offline).
             override fun onError(errorMessage: String?) {
               continuation.resumeWithException(GeocodeException(errorMessage))
             }
@@ -855,7 +853,6 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
               continuation.resume(results)
             }
 
-            // See the comment in `geocode`.
             override fun onError(errorMessage: String?) {
               continuation.resumeWithException(GeocodeException(errorMessage))
             }
