@@ -254,6 +254,36 @@ export type LiveActivityStartOptions = {
    * @default 0
    */
   relevanceScore?: number;
+  /**
+   * When to start the activity and how to alert the user. Omit to start immediately.
+   * Scheduling on an earlier version of iOS throws an error.
+   * @platform iOS 26+
+   */
+  schedule?: LiveActivityScheduleOptions;
+};
+
+/**
+ * Options for scheduling a Live Activity.
+ * @platform iOS 26+
+ */
+export type LiveActivityScheduleOptions = {
+  /** The future date when the activity should start. */
+  startDate: Date;
+  /** The alert the system presents when the activity starts. */
+  alertConfiguration: LiveActivityAlertConfiguration;
+};
+
+/**
+ * The alert the system presents when a scheduled Live Activity starts.
+ * @platform iOS 26+
+ */
+export type LiveActivityAlertConfiguration = {
+  /** The title of the alert. */
+  title: string;
+  /** The message to display in the alert. */
+  body: string;
+  /** The name of a sound file in the app bundle. Omit to use the system's default sound. */
+  sound?: string;
 };
 
 /**
@@ -368,8 +398,12 @@ export declare class NativeWidgetObject extends SharedObject {
   setConfigurationParameterEnum(parameterName: string, options?: WidgetConfigurationEnum[]): void;
 }
 
-export type NativeLiveActivityStartOptions = Omit<LiveActivityStartOptions, 'staleDate'> & {
+export type NativeLiveActivityStartOptions = Omit<
+  LiveActivityStartOptions,
+  'staleDate' | 'schedule'
+> & {
   staleDate?: number;
+  schedule?: Omit<LiveActivityScheduleOptions, 'startDate'> & { startDate: number };
 };
 
 export declare class NativeLiveActivityFactory extends SharedObject {
