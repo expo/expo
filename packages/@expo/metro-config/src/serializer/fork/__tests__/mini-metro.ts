@@ -292,7 +292,7 @@ export async function microBundle({
       },
       dev,
       getRunModuleStatement(moduleId: number | string) {
-        return `TEST_RUN_MODULE(${JSON.stringify(moduleId)});`;
+        return `__r(${JSON.stringify(moduleId)});`;
       },
       includeAsyncPaths: options.lazy ?? dev,
       shouldAddToIgnoreList(_module: Module) {
