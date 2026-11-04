@@ -488,6 +488,11 @@ public final class UpdatesDatabase: NSObject {
       let launchAssetId: NSNumber? = row.optionalValue(forKey: "launch_asset_id")
       if status.intValue == UpdateStatus.StatusReady.rawValue && launchAssetId == nil {
         let updateId: UUID = row.requiredValue(forKey: "id")
+        UpdatesLogger().warn(
+          .localMissingLaunchAsset,
+          values: ["debugInfo": "id=\(updateId.uuidString), demoted to pending"],
+          updateId: updateId.uuidString
+        )
         let demoteSql = "UPDATE updates SET status = ?1 WHERE id = ?2;"
         _ = try execute(sql: demoteSql, withArgs: [UpdateStatus.StatusPending.rawValue, updateId])
       } else {

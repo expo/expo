@@ -221,9 +221,10 @@ struct UpdatesStateMachineTests {
     // warning is the only record of what was lost.
     machine.processEventForTesting(.downloadError(errorMessage: "Failed to download remote update: HTTP 502"))
 
-    let entry = try await droppedEventWarning(logReader: logReader, newerThan: since)
-    #expect(entry.contains("event = downloadError"))
-    #expect(entry.contains("Failed to download remote update: HTTP 502"))
+    let entry = try #require(UpdatesLogEntry.create(from: try await droppedEventWarning(logReader: logReader, newerThan: since)))
+    #expect(entry.key == "system.stateMachineEventDropped")
+    #expect(entry.message.contains("event = downloadError"))
+    #expect(entry.values?["error"] == "Failed to download remote update: HTTP 502")
   }
 
   /// The log handler writes asynchronously, so poll until the warning lands.

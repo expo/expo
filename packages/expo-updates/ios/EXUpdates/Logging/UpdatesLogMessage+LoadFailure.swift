@@ -77,13 +77,3 @@ extension UpdatesLogMessage {
     return nil
   }
 }
-
-extension UpdatesErrorCode {
-  /**
-   The code for a failed update or asset load: `updateServerUnreachable` when the device could not
-   reach the server, and `code` for any other failure.
-   */
-  static func forLoadFailure(_ error: Error, otherwise code: UpdatesErrorCode) -> UpdatesErrorCode {
-    return UpdatesLogMessage.isServerUnreachable(error) ? .updateServerUnreachable : code
-  }
-}

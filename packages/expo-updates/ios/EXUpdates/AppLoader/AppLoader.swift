@@ -183,8 +183,7 @@ open class AppLoader: NSObject {
           return
         }
 
-        // swiftlint:disable:next line_length
-        self.logger.warn(message: "AppLoader: Loaded an update with the same ID but a different scopeKey than one we already have on disk. This is a server error. Overwriting the scopeKey and loading the existing update.")
+        self.logger.warn(.localScopeKeyMismatch)
       }
 
       if let existingUpdate = existingUpdate,
@@ -203,7 +202,7 @@ open class AppLoader: NSObject {
         self.updateResponseContainingManifest = updateResponse
       } else {
         if let existingUpdateError = existingUpdateError {
-          self.logger.warn(message: "Failed to select old update from DB: \(existingUpdateError.localizedDescription)")
+          self.logger.warn(.localSelectUpdateFailed, cause: existingUpdateError)
         }
 
         // no update already exists with this ID, so we need to insert it and download everything.
@@ -252,7 +251,7 @@ open class AppLoader: NSObject {
             do {
               try self.database.mergeAsset(asset, withExistingEntry: matchingDbEntry)
             } catch {
-              self.logger.warn(message: "Failed to merge asset with existing database entry: \(error.localizedDescription)")
+              self.logger.warn(.localMergeAssetFailed, cause: error)
             }
 
             // make sure the file actually exists on disk
@@ -308,7 +307,7 @@ open class AppLoader: NSObject {
     }
 
     guard let data = try? Data(contentsOf: URL(fileURLWithPath: bundlePath), options: .mappedIfSafe) else {
-      logger.warn(message: "AppLoader: could not read embedded asset \(key), downloading it instead")
+      logger.warn(.embeddedAssetFallback, values: ["assetKey": key, "reason": "unreadable"])
       return false
     }
 
@@ -317,7 +316,8 @@ open class AppLoader: NSObject {
       let actualHash = UpdatesUtils.base64UrlEncodedSHA256WithData(data)
       if expectedHash != actualHash {
         logger.warn(
-          message: "AppLoader: embedded asset \(key) hashed to \(actualHash) but the update expects \(expectedHash), downloading it instead"
+          .embeddedAssetFallback,
+          values: ["assetKey": key, "reason": "hashMismatch", "expectedHash": expectedHash, "actualHash": actualHash]
         )
         return false
       }
@@ -326,7 +326,7 @@ open class AppLoader: NSObject {
     do {
       try data.write(to: directory.appendingPathComponent(asset.filename), options: .atomic)
     } catch {
-      logger.warn(message: "AppLoader: could not copy embedded asset \(key) into the updates directory, downloading it instead")
+      logger.warn(.embeddedAssetFallback, cause: error, values: ["assetKey": key, "reason": "copyFailed"])
       return false
     }
 
@@ -351,8 +351,9 @@ open class AppLoader: NSObject {
   public func handleAssetDownload(withError error: UpdatesError, asset: UpdateAsset) {
     let assetKey = asset.key ?? asset.filename
     logger.warn(
-      message: "Failed to download asset \(assetKey): \(error.localizedDescription)",
-      code: UpdatesErrorCode.forLoadFailure(error, otherwise: .assetsFailedToLoad),
+      UpdatesLogMessage.forLoadFailure(error, failed: .remoteAssetDownloadFailed, unreachable: .remoteAssetDownloadUnreachable),
+      cause: error,
+      values: ["assetKey": assetKey],
       updateId: updateResponseContainingManifest?.manifestUpdateResponsePart?.updateManifest.loggingId(),
       assetId: assetKey
     )

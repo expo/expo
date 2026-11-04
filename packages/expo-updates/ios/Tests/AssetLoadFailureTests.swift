@@ -114,6 +114,20 @@ struct AssetLoadFailureTests {
     #expect(errors.first?.message.hasPrefix("Could not reach the update server to check for an update: ") == true)
   }
 
+  @Test
+  func `a code signing failure is not logged again`() async throws {
+    let epoch = Date()
+
+    logger.errorForLoadFailure(
+      UpdatesError.appLoaderUnknownError(cause: UpdatesError.fileDownloaderCodeSigningIncorrectSignature),
+      failed: .remoteFetchFailed,
+      unreachable: .remoteFetchUnreachable
+    )
+    try await Task.sleep(for: .seconds(0.1))
+
+    #expect(readErrors(newerThan: epoch).isEmpty)
+  }
+
   private func readErrors(newerThan epoch: Date) -> [UpdatesLogEntry] {
     return logReader.getLogEntries(newerThan: epoch)
       .compactMap { UpdatesLogEntry.create(from: $0) }
