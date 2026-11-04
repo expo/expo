@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Update `glob` to 14.0.3. ([#52819](https://github.com/expo/expo/pull/52819) by [@kitten](https://github.com/kitten))
+- Drop the getenv dependency. ([#52932](https://github.com/expo/expo/pull/52932) by [@kitten](https://github.com/kitten))
 
 ## 56.0.17 — 2026-10-21
 

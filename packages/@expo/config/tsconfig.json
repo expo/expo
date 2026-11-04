@@ -4,6 +4,7 @@
   "exclude": ["**/__mocks__/*", "**/__tests__/*"],
   "compilerOptions": {
     "rootDir": "./src",
+    "types": ["node"],
     "outDir": "./build"
   }
 }

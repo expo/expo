@@ -2155,9 +2155,6 @@ importers:
       '@expo/require-utils':
         specifier: workspace:^56.1.8
         version: link:../require-utils
-      getenv:
-        specifier: ^2.0.0
-        version: 2.0.0
       glob:
         specifier: ^14.0.3
         version: 14.0.3
@@ -2177,9 +2174,9 @@ importers:
       '@types/babel__code-frame':
         specifier: ^7.27.0
         version: 7.27.0
-      '@types/getenv':
-        specifier: ^1.0.0
-        version: 1.0.3
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.19.15
       '@types/semver':
         specifier: ^7.5.8
         version: 7.7.1
@@ -2210,9 +2207,6 @@ importers:
       debug:
         specifier: ^4.3.5
         version: 4.4.3
-      getenv:
-        specifier: ^2.0.0
-        version: 2.0.0
       glob:
         specifier: ^14.0.3
         version: 14.0.3
@@ -2235,9 +2229,6 @@ importers:
       '@types/debug':
         specifier: ^4.1.5
         version: 4.1.12
-      '@types/getenv':
-        specifier: ^1.0.0
-        version: 1.0.3
       '@types/semver':
         specifier: ^7.7.0
         version: 7.7.1
@@ -2410,9 +2401,6 @@ importers:
       chalk:
         specifier: ^4.0.0
         version: 4.1.2
-      getenv:
-        specifier: ^2.0.0
-        version: 2.0.0
       jimp-compact:
         specifier: 0.16.1
         version: 0.16.1
@@ -2423,9 +2411,6 @@ importers:
         specifier: ^7.6.0
         version: 7.7.4
     devDependencies:
-      '@types/getenv':
-        specifier: ^1.0.0
-        version: 1.0.3
       '@types/semver':
         specifier: ^7.0.0
         version: 7.7.1
