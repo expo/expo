@@ -17,12 +17,17 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
   var leftToolbarItems: [SplitViewToolbarItemRecord] = []
   var rightToolbarItems: [SplitViewToolbarItemRecord] = []
   var searchBar: SplitViewSearchBarRecord?
+  var backButtonDisplayMode: UINavigationItem.BackButtonDisplayMode = .default
+  var backTitle: String?
+  var backVisible = true
   let onToolbarItemPress = EventDispatcher()
   let onSearchBarChangeText = EventDispatcher()
   let onSearchBarSearchButtonPress = EventDispatcher()
 
   private weak var navigationItem: UINavigationItem?
   private var searchController: UISearchController?
+  // The item of the previous column, which holds the back button options of this column.
+  private weak var backButtonNavigationItem: UINavigationItem?
 
   func configureNavigationItem(_ navigationItem: UINavigationItem) {
     self.navigationItem = navigationItem
@@ -41,8 +46,18 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
       navigationItem.leftBarButtonItems = nil
       navigationItem.rightBarButtonItems = nil
       navigationItem.searchController = nil
+      navigationItem.hidesBackButton = false
       searchController = nil
       self.navigationItem = nil
+      applyBackButton()
+    }
+  }
+
+  // The previous column is known only after this column is pushed onto the collapsed split view.
+  override func didMoveToWindow() {
+    super.didMoveToWindow()
+    if window != nil {
+      applyBackButton()
     }
   }
 
@@ -67,6 +82,8 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     navigationItem.leftBarButtonItems = barButtonItems(leftToolbarItems)
     navigationItem.rightBarButtonItems = barButtonItems(rightToolbarItems)
     applySearchBar(to: navigationItem)
+    navigationItem.hidesBackButton = !backVisible
+    applyBackButton()
   }
 
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -80,6 +97,39 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
 
   func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
     onSearchBarSearchButtonPress(["text": searchBar.text ?? ""])
+  }
+
+  // UIKit reads the title and the display mode of a back button from the item below it in the navigation stack.
+  // When the split view is collapsed, that is the item of the previous column.
+  private func applyBackButton() {
+    // Keeps the last found item, because the previous column is found only while collapsed.
+    let previousItem = navigationItem == nil ? nil : previousNavigationItem() ?? backButtonNavigationItem
+    if backButtonNavigationItem !== previousItem {
+      backButtonNavigationItem?.backButtonTitle = nil
+      backButtonNavigationItem?.backButtonDisplayMode = .default
+      backButtonNavigationItem = previousItem
+    }
+    guard let previousItem else {
+      return
+    }
+    previousItem.backButtonTitle = backTitle?.isEmpty == false ? backTitle : nil
+    previousItem.backButtonDisplayMode = backButtonDisplayMode
+  }
+
+  // Each column is the root of its own navigation controller. When the split view collapses,
+  // UIKit pushes these navigation controllers onto the navigation controller of the first column.
+  private func previousNavigationItem() -> UINavigationItem? {
+    var controller = superview?.next as? UIViewController
+    while let current = controller,
+      let navigationController = current.navigationController,
+      let index = navigationController.viewControllers.firstIndex(of: current) {
+      if index > 0 {
+        let previous = navigationController.viewControllers[index - 1]
+        return ((previous as? UINavigationController)?.topViewController ?? previous).navigationItem
+      }
+      controller = navigationController
+    }
+    return nil
   }
 
   private func applySearchBar(to navigationItem: UINavigationItem) {

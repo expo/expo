@@ -395,6 +395,35 @@ it('passes the SplitView.Column header subtitle to the native header', async () 
   expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].subtitle).toBe('3 unread');
 });
 
+it('passes the back button options of the SplitView.Column header to the native header', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column header={{ title: 'Mailboxes' }} />
+          <SplitView.Column
+            header={{
+              title: 'Inbox',
+              backButtonDisplayMode: 'minimal',
+              backTitle: 'Mail',
+              backVisible: false,
+            }}
+          />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  const props = jest.mocked(SplitViewNativeHeader).mock.lastCall![0];
+  expect(props.title).toBe('Inbox');
+  expect(props.backButtonDisplayMode).toBe('minimal');
+  expect(props.backTitle).toBe('Mail');
+  expect(props.backVisible).toBe(false);
+});
+
 it('passes the toolbar item menu to the native header with an id for each action', async () => {
   await renderRouter(
     {

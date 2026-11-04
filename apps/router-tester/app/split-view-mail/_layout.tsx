@@ -1,5 +1,9 @@
 import { useGlobalSearchParams, useRouter } from 'expo-router';
-import { SplitView, type SplitViewToolbarItem } from 'expo-router/unstable-split-view';
+import {
+  SplitView,
+  type SplitViewHeader,
+  type SplitViewToolbarItem,
+} from 'expo-router/unstable-split-view';
 import { SymbolView } from 'expo-symbols';
 import { useRef, useState } from 'react';
 import { PlatformColor, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -18,6 +22,14 @@ const MAILBOXES: { name: string; icon: SFSymbol }[] = [
   { name: 'Junk', icon: 'xmark.bin' },
   { name: 'Bin', icon: 'trash' },
   { name: 'All Mail', icon: 'tray.2' },
+];
+
+// Applied to every column after the first, whose back button shows when the split view is collapsed.
+const BACK_BUTTONS: { label: string; options: SplitViewHeader }[] = [
+  { label: 'Default', options: {} },
+  { label: 'Minimal', options: { backButtonDisplayMode: 'minimal' } },
+  { label: 'Custom title', options: { backTitle: 'Back to list' } },
+  { label: 'Hidden', options: { backVisible: false } },
 ];
 
 export default function Layout() {
@@ -40,6 +52,8 @@ export default function Layout() {
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [buttonStates, setButtonStates] = useState(false);
   const [styledButtons, setStyledButtons] = useState(false);
+  const [backButtonIndex, setBackButtonIndex] = useState(0);
+  const backButton = BACK_BUTTONS[backButtonIndex];
 
   const button = (title: string, icon?: SFSymbol): SplitViewToolbarItem => ({
     title,
@@ -137,6 +151,11 @@ export default function Layout() {
                 value={styledButtons}
                 onValueChange={setStyledButtons}
               />
+              <Pressable
+                testID="split-view-mail-back-button"
+                onPress={() => setBackButtonIndex((index) => (index + 1) % BACK_BUTTONS.length)}>
+                <Text style={styles.link}>Back button: {backButton.label}</Text>
+              </Pressable>
               <ToggleRow
                 label="Three columns"
                 testID="split-view-mail-three-columns"
@@ -157,6 +176,7 @@ export default function Layout() {
             header={
               showHeaders
                 ? {
+                    ...backButton.options,
                     title: alternateTitles ? 'Gmail' : 'Inbox Gmail',
                     rightToolbar: [
                       {
@@ -215,6 +235,7 @@ export default function Layout() {
           header={
             showHeaders
               ? {
+                  ...backButton.options,
                   title: alternateTitles ? 'Message' : (message?.sender ?? 'Mail'),
                   leftToolbar: [
                     {
