@@ -4,6 +4,7 @@ import path from 'path';
 
 import { taskAll } from '../concurrency';
 import { maybeRealpath, scanFilesRecursively } from '../utils';
+import { stripSwiftCommentsAndStrings } from './swiftSource';
 
 /**
  * For a given project contains information about all of the inline modules inside.
@@ -29,8 +30,6 @@ const nativeExtensions = ['.kt', '.swift'];
 const swiftModuleDefinitionRegex = /\bfunc\s+definition\s*\(\s*\)\s*->\s*[\w.]*ModuleDefinition\b/;
 // Expo Modules 2.0 classes declare `@ExpoModule` instead of a `definition()` DSL.
 const swiftExpoModuleMacroRegex = /@ExpoModule\b/;
-// The opening delimiter of a Swift string literal, with the `#` of a raw string. Sticky, to match at a position.
-const swiftStringStartRegex = /(#*)("""|")/y;
 // Checks for `override fun definition() = <anything>ModuleDefinition`
 const kotlinModuleDefinitionRegex =
   /\boverride\s+fun\s+definition\s*\(\s*\)\s*=\s*[\w.]*ModuleDefinition\b/;
@@ -129,60 +128,6 @@ export async function getSwiftInlineModuleInfo(
     declaredWithMacro:
       hasModuleDefinition && swiftExpoModuleMacroRegex.test(stripSwiftCommentsAndStrings(contents)),
   };
-}
-
-/**
- * Returns the Swift source without its comments and with empty string literals, so that a search for an attribute
- * doesn't match a mention in a comment or a string. Handles nested block comments, multiline strings and raw
- * strings. A string literal inside an interpolation ends the outer string early, which can only keep a mention.
- */
-export function stripSwiftCommentsAndStrings(source: string): string {
-  let result = '';
-  let i = 0;
-  while (i < source.length) {
-    if (source.startsWith('//', i)) {
-      const end = source.indexOf('\n', i);
-      i = end === -1 ? source.length : end;
-      continue;
-    }
-    if (source.startsWith('/*', i)) {
-      let depth = 0;
-      while (i < source.length) {
-        if (source.startsWith('/*', i)) {
-          depth++;
-          i += 2;
-        } else if (source.startsWith('*/', i)) {
-          depth--;
-          i += 2;
-          if (depth === 0) {
-            break;
-          }
-        } else {
-          i++;
-        }
-      }
-      result += ' ';
-      continue;
-    }
-    swiftStringStartRegex.lastIndex = i;
-    const stringStart =
-      source[i] === '"' || source[i] === '#' ? swiftStringStartRegex.exec(source) : null;
-    if (stringStart) {
-      const hashes = stringStart[1] ?? '';
-      const closing = (stringStart[2] ?? '"') + hashes;
-      i += stringStart[0].length;
-      while (i < source.length && !source.startsWith(closing, i)) {
-        // A backslash escapes the next character, except in a raw string, where only the closing delimiter matters.
-        i += !hashes && source[i] === '\\' ? 2 : 1;
-      }
-      i += closing.length;
-      result += '""';
-      continue;
-    }
-    result += source[i];
-    i++;
-  }
-  return result;
 }
 
 export async function hasSwiftModuleDefinition(absoluteFilePath: string): Promise<boolean> {

@@ -14,9 +14,9 @@ import {
   hasSwiftModuleDefinition,
   getSwiftInlineModuleInfo,
   inlineModuleFileNameInformation,
-  stripSwiftCommentsAndStrings,
 } from '../inlineModules/inlineModules';
 import { isTargetInInlineModulesTargets } from '../inlineModules/iosInlineModules';
+import { stripSwiftCommentsAndStrings } from '../inlineModules/swiftSource';
 
 jest.mock('fs', () => require('memfs').fs);
 jest.mock('fs/promises', () => require('memfs').fs.promises);
@@ -155,9 +155,7 @@ describe('inlineModules.ts', () => {
       });
     });
 
-    it('keeps a module after a regex literal with a quote as an inline module', async () => {
-      // The quote looks like the start of a string, so the macro isn't found in the stripped source. The file
-      // must still be an inline module, so that `getModuleClasses()` lists it as before.
+    it('reports the macro after a regex literal with a quote', async () => {
       vol.fromJSON({
         '/example-project/QuoteModule.swift':
           'import ExpoModulesCore\nlet quote = /"/\n@ExpoModule\npublic final class QuoteModule: Module {}',
@@ -166,7 +164,7 @@ describe('inlineModules.ts', () => {
       await expect(getSwiftInlineModuleInfo('/example-project/QuoteModule.swift')).resolves.toEqual(
         {
           hasModuleDefinition: true,
-          declaredWithMacro: false,
+          declaredWithMacro: true,
         }
       );
     });
@@ -188,6 +186,34 @@ describe('inlineModules.ts', () => {
     it('keeps code that only looks like a raw string', () => {
       expect(stripSwiftCommentsAndStrings('#if DEBUG\n#selector(f)\n#endif')).toBe(
         '#if DEBUG\n#selector(f)\n#endif'
+      );
+    });
+
+    it('keeps an interpolation from ending the string early', () => {
+      expect(stripSwiftCommentsAndStrings('a "\\(String("@ExpoModule"))" b')).toBe('a "" b');
+      expect(stripSwiftCommentsAndStrings('a "\\(f("/*"), g(1))" @ExpoModule')).toBe(
+        'a "" @ExpoModule'
+      );
+    });
+
+    it('handles escapes and interpolations of raw strings', () => {
+      expect(stripSwiftCommentsAndStrings('a #"\\#"@ExpoModule"# b')).toBe('a "" b');
+      expect(stripSwiftCommentsAndStrings('a #"\\#(f(")"))"# b')).toBe('a "" b');
+    });
+
+    it('empties regex literals but keeps divisions', () => {
+      expect(stripSwiftCommentsAndStrings('let q = /"/\nlet r = #/"/#\nlet d = a / b / c')).toBe(
+        'let q = ""\nlet r = ""\nlet d = a / b / c'
+      );
+      expect(stripSwiftCommentsAndStrings('return /a"b/')).toBe('return ""');
+      expect(stripSwiftCommentsAndStrings('let d = x/y; let e = f(x)/2')).toBe(
+        'let d = x/y; let e = f(x)/2'
+      );
+    });
+
+    it('ends an unterminated single-line string at the end of its line', () => {
+      expect(stripSwiftCommentsAndStrings('let s = "abc\n@ExpoModule')).toBe(
+        'let s = ""\n@ExpoModule'
       );
     });
   });

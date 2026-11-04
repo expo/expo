@@ -106,6 +106,21 @@ function pickModules(
   return [...scannedModules].sort((a, b) => (a.class < b.class ? -1 : a.class > b.class ? 1 : 0));
 }
 
+/**
+ * Splits a class name such as `ExpoFoo.FooModule` into the Swift module name and the class name. The module name is
+ * null when the class name isn't qualified.
+ */
+function splitQualifiedClassName(qualifiedClassName: string): [string | null, string] {
+  const separatorIndex = qualifiedClassName.lastIndexOf('.');
+  if (separatorIndex === -1) {
+    return [null, qualifiedClassName];
+  }
+  return [
+    qualifiedClassName.slice(0, separatorIndex),
+    qualifiedClassName.slice(separatorIndex + 1),
+  ];
+}
+
 /** Resolves module search result with additional details required for iOS platform. */
 export async function resolveModuleAsync(
   packageName: string,
@@ -138,9 +153,16 @@ export async function resolveModuleAsync(
     revision.config?.declaresAppleModules() ? configModules : null,
     scannedModules
   );
-  // A module that the config declares is declared with the macro too when the scan found it.
+  // A module that the config declares is declared with the macro too when the scan found it. The config can
+  // qualify the class with the Swift module of the package, as in `ExpoFoo.FooModule`.
   const scannedClassNames = new Set(scannedModules.map((module) => module.class));
-  const expoModules = modules.filter((module) => scannedClassNames.has(module.class));
+  const expoModules = modules.filter((module) => {
+    const [swiftModuleName, className] = splitQualifiedClassName(module.class);
+    return (
+      scannedClassNames.has(className) &&
+      (swiftModuleName === null || swiftModuleNames.includes(swiftModuleName))
+    );
+  });
 
   return {
     packageName,

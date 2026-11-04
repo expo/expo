@@ -339,6 +339,36 @@ describe(resolveModuleAsync, () => {
     expect(result?.expoModules).toEqual([{ name: null, class: 'ClipboardModule' }]);
   });
 
+  it('matches a declared class qualified with the Swift module of the package', async () => {
+    const name = 'expo-clipboard';
+    const pkgDir = path.join('node_modules', name);
+
+    vol.fromJSON({ [`ios/ExpoClipboard.podspec`]: '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name: '',
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({
+          platforms: ['apple'],
+          apple: { modules: ['ExpoClipboard.ClipboardModule', 'OtherModule.PasteModule'] },
+        }),
+      },
+      {
+        scannedModules: {
+          [name]: [
+            { name: null, class: 'ClipboardModule' },
+            { name: null, class: 'PasteModule' },
+          ],
+        },
+      }
+    );
+
+    expect(result?.expoModules).toEqual([{ name: null, class: 'ExpoClipboard.ClipboardModule' }]);
+  });
+
   it('should contain coreFeature field', async () => {
     const name = 'react-native-third-party';
     const podName = 'RNThirdParty';
