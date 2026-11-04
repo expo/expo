@@ -9,8 +9,8 @@ import {
   RoutingQueueProvider,
 } from '../../global-state/routingQueueContext';
 import { useIsPreview } from '../../link/preview/PreviewRouteContext';
+import { NavigatorStateContext } from '../../react-navigation/core/useNavigationState';
 import { useIsFocused } from '../../react-navigation/native';
-import { useBuildHref } from '../useBuildHref';
 import { useVisibleTabsWithRedirect } from '../useVisibleTabsWithRedirect';
 
 jest.mock('../../react-navigation/native', () => {
@@ -19,7 +19,6 @@ jest.mock('../../react-navigation/native', () => {
   ) as typeof import('../../react-navigation/native');
   return { ...actualNavigation, useIsFocused: jest.fn() };
 });
-jest.mock('../useBuildHref');
 jest.mock('../../link/preview/PreviewRouteContext', () => ({
   useIsPreview: jest.fn(),
 }));
@@ -29,7 +28,6 @@ jest.mock('../../Route', () => ({
 }));
 
 const mockedUseIsFocused = useIsFocused as jest.MockedFunction<typeof useIsFocused>;
-const mockedUseBuildHref = useBuildHref as jest.MockedFunction<typeof useBuildHref>;
 const mockedUseRouteNode = useRouteNode as jest.MockedFunction<typeof useRouteNode>;
 const mockedUseIsPreview = useIsPreview as jest.MockedFunction<typeof useIsPreview>;
 
@@ -59,7 +57,6 @@ function routeNode(anchor: string) {
 }
 
 let warnSpy: jest.SpyInstance;
-let buildHref: jest.Mock;
 let pendingIntents: RoutingIntent[];
 
 function PendingIntentsProbe() {
@@ -70,8 +67,11 @@ function PendingIntentsProbe() {
 function wrapper({ children }: PropsWithChildren) {
   return (
     <RoutingQueueProvider>
-      {children}
-      <PendingIntentsProbe />
+      <NavigatorStateContext.Provider
+        value={{ stale: false, routeKeySeq: 0, key: 'tabs-key', index: 2, routeNames, routes }}>
+        {children}
+        <PendingIntentsProbe />
+      </NavigatorStateContext.Provider>
     </RoutingQueueProvider>
   );
 }
@@ -82,8 +82,6 @@ function renderHook<Result>(callback: () => Result) {
 
 beforeEach(() => {
   pendingIntents = [];
-  buildHref = jest.fn((route) => `/href/${route.name}`);
-  mockedUseBuildHref.mockReturnValue(buildHref);
   mockedUseIsPreview.mockReturnValue(false);
   mockedUseIsFocused.mockReturnValue(true);
   // Prevent route data from leaking between tests.
@@ -136,9 +134,16 @@ describe('useVisibleTabsWithRedirect', () => {
 
     expect(pendingIntents).toEqual([
       {
-        type: 'NAVIGATE_TO_HREF',
+        type: 'ACTION',
         actionId: expect.any(Number),
-        payload: { href: '/href/settings/index', options: { event: 'REPLACE' } },
+        payload: {
+          action: {
+            type: 'REPLACE',
+            payload: { name: 'settings/index', params: undefined },
+            target: 'tabs-key',
+          },
+          originKey: 'tabs-key',
+        },
       },
     ]);
   });
@@ -160,20 +165,6 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(result.current.visibleRoutes).toEqual([routes[0], routes[1]]);
     expect(result.current.focusedFallbackRoute).toEqual(notFoundRoute);
     expect(pendingIntents).toEqual([]);
-  });
-
-  it('builds the redirect href from the selected route', async () => {
-    mockedUseRouteNode.mockReturnValue(routeNode('settings'));
-    await renderHook(() =>
-      useVisibleTabsWithRedirect({
-        routes,
-        routeNames,
-        focusedRouteKey: 'hidden-key',
-        descriptors,
-      })
-    );
-
-    expect(buildHref).toHaveBeenCalledWith(routes[1]);
   });
 
   it('throws when the configured route is unavailable', async () => {
@@ -213,9 +204,16 @@ describe('useVisibleTabsWithRedirect', () => {
 
     expect(pendingIntents).toEqual([
       {
-        type: 'NAVIGATE_TO_HREF',
+        type: 'ACTION',
         actionId: expect.any(Number),
-        payload: { href: '/href/home', options: { event: 'REPLACE' } },
+        payload: {
+          action: {
+            type: 'REPLACE',
+            payload: { name: 'home', params: undefined },
+            target: 'tabs-key',
+          },
+          originKey: 'tabs-key',
+        },
       },
     ]);
   });
@@ -230,7 +228,6 @@ describe('useVisibleTabsWithRedirect', () => {
       })
     );
 
-    expect(buildHref).toHaveBeenCalledWith(routes[0]);
     expect(pendingIntents).toEqual([]);
   });
 
@@ -264,9 +261,16 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(result.current.visibleRoutes).toEqual([routes[1], routes[0]]);
     expect(pendingIntents).toEqual([
       {
-        type: 'NAVIGATE_TO_HREF',
+        type: 'ACTION',
         actionId: expect.any(Number),
-        payload: { href: '/href/settings/index', options: { event: 'REPLACE' } },
+        payload: {
+          action: {
+            type: 'REPLACE',
+            payload: { name: 'settings/index', params: undefined },
+            target: 'tabs-key',
+          },
+          originKey: 'tabs-key',
+        },
       },
     ]);
   });

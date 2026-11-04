@@ -31,6 +31,22 @@ const TabsScreen = Tabs.Screen as jest.MockedFunction<(props: TabsScreenProps) =
 
 afterEach(() => router.setTransitionMode('preload-only'));
 
+it('redirects an untriggered root route to the first screen in a group tab', async () => {
+  await renderRouter({
+    _layout: () => (
+      <NativeTabs>
+        <NativeTabs.Trigger name="(feed)" />
+      </NativeTabs>
+    ),
+    index: () => <View testID="untriggered-root" />,
+    '(feed)/_layout': () => <Stack />,
+    '(feed)/feed': () => <View testID="feed" />,
+  });
+
+  expect(screen.getByTestId('feed')).toBeOnTheScreen();
+  expect(screen).toHavePathname('/feed');
+});
+
 describe('Native Bottom Tabs Navigation', () => {
   function expectOneRender() {
     expect(TabsScreen).toHaveBeenCalledTimes(2);

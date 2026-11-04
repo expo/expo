@@ -86,6 +86,23 @@ test('renders only declared drawer items and redirects from unavailable routes',
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
+test('redirects an undeclared root route to the first screen in a group drawer item', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Drawer>
+        <Drawer.Screen name="(feed)" />
+      </Drawer>
+    ),
+    index: () => <View testID="undeclared-root" />,
+    '(feed)/_layout': () => <Stack />,
+    '(feed)/feed': () => <View testID="feed" />,
+  });
+
+  expect(screen.getByTestId('feed')).toBeVisible();
+  expect(screen).toHavePathname('/feed');
+  expect(screen.queryByTestId('undeclared-root')).toBeNull();
+});
+
 test('renders no drawer UI when no screens are declared in the layout', async () => {
   await renderRouter({
     _layout: () => <Drawer />,
