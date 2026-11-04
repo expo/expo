@@ -3,20 +3,32 @@
 #include "NewComponentDescriptor.h"
 #include "RawPropsAccess.h"
 
+#include <stdexcept>
 #include <utility>
 #include <vector>
 
 #include <folly/dynamic.h>
-#include <react/debug/react_native_assert.h>
 
 namespace react = facebook::react;
 
 namespace expo::views {
 
+#if REACT_NATIVE_TARGET_VERSION >= 87
+// `cloneProps` parses the base view props with `RawPropsParser`. If `NewViewProps` had its own `setProp`,
+// `ConcreteComponentDescriptor` would skip preparing that parser under `enableCppPropsIteratorSetter`.
+static_assert(!react::HasIteratorSetterCtor<NewViewProps>, "NewViewProps must not opt into the iterator setter");
+#endif
+
 NewComponentDescriptor::NewComponentDescriptor(const react::ComponentDescriptorParameters &parameters)
   : ConcreteComponentDescriptor(parameters) {
-  react_native_assert(flavor_ != nullptr && "expo::views::NewComponentDescriptor requires a NewComponentFlavor");
-  react_native_assert(componentFlavor().decoder != nullptr && "expo::views::NewComponentFlavor requires a decoder");
+  // `react_native_assert` does nothing in release builds, where a missing flavor would crash later on a
+  // null pointer, so this checks it in every build.
+  if (flavor_ == nullptr) {
+    throw std::invalid_argument("expo::views::NewComponentDescriptor requires a NewComponentFlavor");
+  }
+  if (componentFlavor().decoder == nullptr) {
+    throw std::invalid_argument("expo::views::NewComponentFlavor requires a decoder");
+  }
 }
 
 react::ComponentDescriptorProvider NewComponentDescriptor::provider(std::shared_ptr<const NewComponentFlavor> flavor) {

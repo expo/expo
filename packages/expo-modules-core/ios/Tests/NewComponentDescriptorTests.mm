@@ -2,6 +2,9 @@
 
 #import <XCTest/XCTest.h>
 
+// The tests run the descriptor with a Hermes runtime, which a build without Hermes doesn't have.
+#ifdef USE_HERMES
+
 #import <ExpoModulesCore/NewComponentDescriptor.h>
 
 #include <algorithm>
@@ -37,10 +40,15 @@ class RecordingDecoder final : public views::NewPropsDecoder {
 public:
   mutable int decodeCount = 0;
   mutable std::vector<std::string> skippedPropNames;
+  // When set, `decode` returns no decoded props, as a decoder that has nothing to decode may.
+  bool returnsNothing = false;
 
   views::DecodedProps decode(jsi::Runtime &runtime, const jsi::Value &props, const views::DecodedProps &previous)
     const override {
     decodeCount++;
+    if (returnsNothing) {
+      return nullptr;
+    }
     std::vector<std::string> keys;
     auto names = props.getObject(runtime).getPropertyNames(runtime);
     for (size_t i = 0; i < names.size(runtime); i++) {
@@ -67,7 +75,7 @@ RecordedDecode *decodeOf(const react::Props::Shared &props) {
   return (__bridge RecordedDecode *)newViewProps(props).decodedProps.get();
 }
 
-react::RawProps jsiRawProps(jsi::Runtime &runtime, const char *source) {
+react::RawProps makeJSIRawProps(jsi::Runtime &runtime, const char *source) {
   auto value = runtime.evaluateJavaScript(std::make_shared<jsi::StringBuffer>(source), "test");
   return react::RawProps(runtime, value);
 }
@@ -117,7 +125,7 @@ react::RawProps jsiRawProps(jsi::Runtime &runtime, const char *source) {
 
 - (react::Props::Shared)cloneProps:(const react::Props::Shared &)props jsi:(const char *)source
 {
-  auto rawProps = jsiRawProps(*_runtime, source);
+  auto rawProps = makeJSIRawProps(*_runtime, source);
   return [self cloneProps:props rawProps:&rawProps];
 }
 
@@ -194,4 +202,33 @@ react::RawProps jsiRawProps(jsi::Runtime &runtime, const char *source) {
   XCTAssertTrue(newViewProps(cloned).decodedProps == newViewProps(created).decodedProps);
 }
 
+- (void)testDecodedPropsLiveAsLongAsThePropsThatHoldThem
+{
+  __weak RecordedDecode *weakDecode;
+  {
+    react::Props::Shared props;
+    @autoreleasepool {
+      props = [self cloneProps:nullptr jsi:"({ title: 'Title' })"];
+      weakDecode = decodeOf(props);
+    }
+    XCTAssertNotNil(weakDecode);
+    // A copy retains the decoded props, and destroying it releases them.
+    auto copy = newViewProps(props).decodedProps;
+    XCTAssertTrue(copy == newViewProps(props).decodedProps);
+  }
+  XCTAssertNil(weakDecode);
+}
+
+- (void)testDecoderWithoutResultLeavesNoDecodedProps
+{
+  _decoder->returnsNothing = true;
+  auto props = [self cloneProps:nullptr jsi:"({ title: 'Title', opacity: 0.5 })"];
+
+  XCTAssertEqual(_decoder->decodeCount, 1);
+  XCTAssertFalse(newViewProps(props).decodedProps);
+  XCTAssertEqual(newViewProps(props).opacity, 0.5);
+}
+
 @end
+
+#endif // USE_HERMES

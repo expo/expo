@@ -79,6 +79,10 @@ private:
 /**
  Decodes the props of one view type. `NewComponentDescriptor` calls it from `cloneProps`, on the thread
  that commits the props. The arguments are valid only during the call.
+
+ One decoder serves every descriptor of its view type, in every React Native host, and it's called from
+ more than one thread: the JavaScript thread for React's props, and the main thread, for example for
+ Reanimated's props. So an implementation must be thread-safe.
  */
 class NewPropsDecoder {
 public:
@@ -97,9 +101,13 @@ public:
 
   /**
    Called instead of `decode` for props that come as `folly::dynamic`, without a runtime, for example
-   from Reanimated or `setNativeProps`. They aren't decoded yet, so the decoded props keep their values.
-   `propNames` has all keys of the update, the base view props too, so the decoder can report the ones
-   it would have decoded.
+   from Reanimated or React Native's animations. They aren't decoded yet, so the decoded props keep their
+   values. `propNames` has all keys of the update, the base view props too, so the decoder can report the
+   ones it would have decoded.
+
+   After `setNativeProps` is called on a view, React Native merges every later React update of that view
+   into `folly::dynamic` too, for as long as the view exists. So until these props are decoded, such a
+   view stops getting React's updates of its own props.
    */
   virtual void didSkipProps(const std::vector<std::string_view> &propNames) const = 0;
 };

@@ -4,6 +4,6 @@
 
 namespace expo::views {
 
-extern const char placeholderComponentName[] = "ExpoView";
+extern const char placeholderComponentName[] = "ExpoNewViewPlaceholderName";
 
 } // namespace expo::views

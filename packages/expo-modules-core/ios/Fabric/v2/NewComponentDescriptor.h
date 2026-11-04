@@ -17,7 +17,8 @@ namespace expo::views {
 
 /**
  What tells the descriptors of different view types apart: the component name and the props decoder.
- Fabric uses the address of `name` as the component handle, so a flavor must keep its address for as
+ Fabric uses `name.c_str()` as the component handle. For a short name, that buffer is inside the flavor
+ object itself, so the flavor must stay alive at the same address, and `name` must not change, for as
  long as views of its type can exist, also across reloads.
  */
 struct NewComponentFlavor {
