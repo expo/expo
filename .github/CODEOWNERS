@@ -1,0 +1,3 @@
+# expo-bot is requested so that the AI review starts (see expo-code-review-request.yml).
+# A human owner approves and merges.
+/packages/patch-project/ @expo-bot @Kudo
