@@ -1,5 +1,4 @@
-import { getOriginalEnvValue } from '@expo/env';
-import { boolish, int, string } from 'getenv';
+import { boolish, int, string, getOriginalEnvValue } from '@expo/env';
 import process from 'node:process';
 
 // @expo/webpack-config -> expo-pwa -> @expo/image-utils: EXPO_IMAGE_UTILS_NO_SHARP

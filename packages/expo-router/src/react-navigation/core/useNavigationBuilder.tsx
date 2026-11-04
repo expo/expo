@@ -513,6 +513,7 @@ export function useNavigationBuilder<
     addListener,
     router,
     emitter,
+    routeNode,
   });
   useCurrentRender({
     state,

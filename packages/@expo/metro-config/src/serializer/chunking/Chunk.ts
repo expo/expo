@@ -8,22 +8,14 @@ import { toPosixPath } from '../../utils/filePath';
 import { stringToUUID } from '../debugId';
 import { getExportPathForDependencyWithOptions } from '../exportPath';
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
+import { transformJsAssetToHermesBytecodeAsync } from '../hermesArtifacts';
 import type { SerialAsset } from '../serializerAssets';
-import { appendDebugIdToSourceMap, sourceMapString } from '../sourceMap';
+import { sourceMapString } from '../sourceMap';
 import type {
   ChunkingImplementation,
   ChunkSerializationOptions,
   SerializeChunkOptions,
 } from './chunkingStrategy';
-
-// Lazy-loaded to avoid pulling in metro-source-map at startup
-let _buildHermesBundleAsync: typeof import('../exportHermes').buildHermesBundleAsync;
-function getBuildHermesBundleAsync() {
-  if (!_buildHermesBundleAsync) {
-    _buildHermesBundleAsync = require('../exportHermes').buildHermesBundleAsync;
-  }
-  return _buildHermesBundleAsync;
-}
 
 let _baseJSBundleWithDependencies: typeof import('../fork/baseJSBundle').baseJSBundleWithDependencies;
 function getBaseJSBundleWithDependencies() {
@@ -360,59 +352,12 @@ export class Chunk {
       });
     }
 
-    if (this.boolishTransformOption('bytecode') && this.isHermesEnabled()) {
-      const adjustedSource = jsAsset.source.replace(
-        /^\/\/# (sourceMappingURL)=(.*)$/gm,
-        (...props) => {
-          if (props[1] === 'sourceMappingURL') {
-            const mapName = props[2].replace(/\.js\.map$/, '.hbc.map');
-            return `//# ${props[1]}=` + mapName;
-          }
-          return '';
-        }
-      );
-
-      // TODO: Generate hbc for each chunk
-      const hermesBundleOutput = await getBuildHermesBundleAsync()({
-        projectRoot: this.options.projectRoot,
-        filename: this.name,
-        code: adjustedSource,
-        map: assets[1] ? assets[1].source : null,
-        // TODO: Maybe allow prod + no minify.
-        minify: true, //!this.options.dev,
-      });
-
-      if (hermesBundleOutput.hbc) {
-        // TODO: Unclear if we should add multiple assets, link the assets, or mutate the first asset.
-        // jsAsset.metadata.hbc = hermesBundleOutput.hbc;
-        // @ts-expect-error: TODO
-        jsAsset.source = hermesBundleOutput.hbc;
-        jsAsset.filename = jsAsset.filename.replace(/\.js$/, '.hbc');
-
-        // Replace mappings with hbc
-        if (jsAsset.metadata.paths) {
-          jsAsset.metadata.paths = Object.fromEntries(
-            Object.entries(jsAsset.metadata.paths).map(([key, value]) => [
-              key,
-              Object.fromEntries(
-                Object.entries(value).map(([key, value]) => {
-                  assert(
-                    value == null || typeof value === 'string',
-                    'Hermes async paths must remain scalar.'
-                  );
-                  return [key, value ? value.replace(/\.js$/, '.hbc') : value];
-                })
-              ),
-            ])
-          );
-        }
-      }
-      if (assets[1] && hermesBundleOutput.sourcemap) {
-        assets[1].source = debugId
-          ? appendDebugIdToSourceMap(hermesBundleOutput.sourcemap, debugId)
-          : hermesBundleOutput.sourcemap;
-        assets[1].filename = assets[1].filename.replace(/\.js\.map$/, '.hbc.map');
-      }
+    if (
+      this.boolishTransformOption('bytecode') &&
+      this.isHermesEnabled() &&
+      !jsAsset.metadata.expoDomComponentReferences?.length
+    ) {
+      await transformJsAssetToHermesBytecodeAsync(this.options.projectRoot, jsAsset, assets[1]);
     }
 
     return assets;
@@ -423,9 +368,6 @@ export class Chunk {
   }
 
   isHermesEnabled() {
-    // TODO: Revisit.
-    // TODO: There could be an issue with having the serializer for export:embed output hermes since the native scripts will
-    // also create hermes bytecode. We may need to disable in one of the two places.
     return (
       !this.options.dev &&
       this.supportsBytecode() &&

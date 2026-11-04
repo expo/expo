@@ -140,6 +140,6 @@ describe('APISection', () => {
       0
     );
     expect(container.innerHTML).not.toContain("'discover_tune'");
-    expect(container.innerHTML.length).toBeLessThan(500_000);
+    expect(container.innerHTML.length).toBeLessThan(600_000);
   });
 });

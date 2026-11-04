@@ -1,7 +1,7 @@
 ---
 title: Use an iOS Simulator on Linux or Windows
 sidebar_title: Work without a Mac
-description: Build an iOS app with EAS Build and run it on a remote iOS Simulator from Linux, Windows, or a cloud sandbox with Expo Simulators.
+description: Build an iOS app with Expo Build and run it on a remote iOS Simulator from Linux, Windows, or a cloud sandbox with Expo Simulators.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -11,7 +11,7 @@ import { Step } from '~/ui/components/Step';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-The iOS Simulator runs only on macOS. With Expo Simulators, the iOS Simulator runs on a Mac on EAS, and you control it from any computer. Use EAS Build to create the iOS Simulator build, then install it on an Expo Simulators session.
+The iOS Simulator runs only on macOS. With Expo Simulators, the iOS Simulator runs on an Expo-hosted Mac, and you control it from any computer. Use Expo Build to create the iOS Simulator build, then install it on an Expo Simulators session.
 
 This workflow also works in a cloud sandbox or for a background coding agent that cannot run a local simulator.
 
@@ -21,7 +21,7 @@ This workflow also works in a cloud sandbox or for a background coding agent tha
 
 ### Add a simulator build profile
 
-Add an EAS Build profile that targets the iOS Simulator. For live edits with Fast Refresh, also add `developmentClient: true`:
+Add an Expo Build profile that targets the iOS Simulator. For live edits with Fast Refresh, also add `developmentClient: true`:
 
 ```json eas.json
 {
@@ -36,7 +36,7 @@ Add an EAS Build profile that targets the iOS Simulator. For live edits with Fas
 }
 ```
 
-iOS Simulator builds are not signed, so EAS Build does not ask for credentials for this build.
+iOS Simulator builds are not signed, so Expo Build does not ask for credentials for this build.
 
 For a fixed build without live edits, leave out `developmentClient`, skip step 3, and remove the `--open-url` flag from the command in step 4.
 
@@ -44,7 +44,7 @@ For a fixed build without live edits, leave out `developmentClient`, skip step 3
 
 <Step label="2">
 
-### Create the build on EAS
+### Create the build with Expo Build
 
 <Terminal cmd={['$ eas build --platform ios --profile development-simulator --non-interactive']} />
 
@@ -115,7 +115,7 @@ You can also run the examples as written in Windows Subsystem for Linux (WSL) or
 
 <Collapsible summary="Do I need Xcode?">
 
-No. EAS Build creates the iOS Simulator build, and Expo Simulators runs the iOS Simulator. You need Xcode only to create a build on your own computer.
+No. Expo Build creates the iOS Simulator build, and Expo Simulators runs the iOS Simulator. You need Xcode only to create a build on your own computer.
 
 </Collapsible>
 

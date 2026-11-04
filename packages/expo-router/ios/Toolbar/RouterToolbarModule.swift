@@ -41,6 +41,9 @@ public class RouterToolbarModule: Module {
       Prop("sharesBackground") { (view: RouterToolbarItemView, sharesBackground: Bool) in
         view.sharesBackground = sharesBackground
       }
+      Prop("axisBehavior") { (view: RouterToolbarItemView, axisBehavior: String?) in
+        view.axisBehavior = axisBehavior
+      }
       Prop("disableForceFlatten") { (_: RouterToolbarItemView, _: Bool) in
         // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
       }

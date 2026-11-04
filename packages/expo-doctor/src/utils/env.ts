@@ -1,4 +1,4 @@
-import { boolish } from 'getenv';
+import { boolish } from '@expo/env';
 
 class Env {
   /** Is running in non-interactive CI mode */

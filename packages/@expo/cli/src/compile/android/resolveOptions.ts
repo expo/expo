@@ -4,6 +4,7 @@ import path from 'path';
 import { hasRequiredAndroidFilesAsync } from '../../prebuild/clearNativeFolder';
 import { CommandError } from '../../utils/errors';
 import type { ResolvedOptions } from '../resolveOptions';
+import { resolveOutputDir } from '../resolveOptions';
 
 export type BuildProps = ResolvedOptions & {
   variant: string;
@@ -13,19 +14,6 @@ export async function resolveOptionsAsync(
   projectRoot: string,
   options: ResolvedOptions
 ): Promise<BuildProps> {
-  if (options.device) {
-    throw new CommandError(
-      'BAD_ARGS',
-      'Device builds are not supported yet. Omit --device to build for all architectures.'
-    );
-  }
-  if (options.outputType !== 'apk') {
-    throw new CommandError(
-      'BAD_ARGS',
-      `Building an ${options.outputType} is not supported yet. Omit --output-type to build an apk.`
-    );
-  }
-
   if (!fs.existsSync(path.join(projectRoot, 'android'))) {
     throw new CommandError(
       'ANDROID_MALFORMED',
@@ -41,6 +29,7 @@ export async function resolveOptionsAsync(
 
   return {
     ...options,
+    outputDir: resolveOutputDir(projectRoot, options.outputDir),
     variant: options.mode === 'production' ? 'release' : 'debug',
   };
 }

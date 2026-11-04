@@ -1,7 +1,7 @@
 ---
 title: Expo Simulators security, permissions, and data retention
 sidebar_title: Security and data
-description: Learn who can start and view Expo Simulators sessions, how to protect session tokens and preview links, and how long EAS keeps recordings, screenshots, and logs.
+description: Learn who can start and view Expo Simulators sessions, how to protect session tokens and preview links, and how long Expo Simulators keeps recordings, screenshots, and logs.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -9,9 +9,9 @@ import { FAQ } from '~/ui/components/FAQ';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-An Expo Simulators session belongs to an EAS project. Account roles control who can start, view, and stop sessions. Session tokens and preview links give direct access to the remote device, so treat them as secrets.
+An Expo Simulators session belongs to an Expo Services project. Account roles control who can start, view, and stop sessions. Session tokens and preview links give direct access to the remote device, so treat them as secrets.
 
-For how long EAS keeps job logs and artifacts, see [Retention and deletion](#retention-and-deletion).
+For how long Expo Simulators keeps job logs and artifacts, see [Retention and deletion](#retention-and-deletion).
 
 For how the parts connect, see [Expo Simulators security model](/preview/simulators/how-it-works/security-model/).
 
@@ -28,11 +28,11 @@ For how the parts connect, see [Expo Simulators security model](/preview/simulat
 
 For automation, create a [robot user](/accounts/programmatic-access/#robot-users-and-access-tokens) with the [Developer role](/accounts/account-types/#manage-access). Developer is the minimum role that can create and stop sessions.
 
-If the user who started a session is deleted, EAS stops the session.
+If the user who started a session is deleted, Expo Simulators stops the session.
 
 ## Session tokens
 
-The connection details of a session include tokens for the controller. EAS stores the connection details encrypted.
+The connection details of a session include tokens for the controller. Expo Simulators stores the connection details encrypted.
 
 | Where the tokens appear                                     | What to do                                                         |
 | ----------------------------------------------------------- | ------------------------------------------------------------------ |
@@ -65,12 +65,12 @@ A session with private links still has a preview token. The REST API returns it 
 ## Network access
 
 - **Metro tunnel:** a Metro URL from `npx expo start --tunnel` is public while the tunnel runs. It does not require authentication. Stop Metro when you finish.
-- **Default egress:** without local egress, all traffic from the simulator exits from EAS infrastructure.
+- **Default egress:** without local egress, all traffic from the simulator exits from Expo infrastructure.
 - **Local egress:** with `--egress local`, device traffic exits from your computer: all TCP traffic on Android, and traffic that honors the system proxy on iOS. The egress client refuses local, private, link-local, and multicast addresses. Only the exact `host:port` entries that you pass with `--egress-allow` are exceptions.
 
 See [Network traffic and local egress in Expo Simulators](/preview/simulators/how-it-works/network-inspection/).
 
-## Data that EAS stores
+## Data that Expo Simulators stores
 
 | Data                                                         | Where it appears                                    |
 | ------------------------------------------------------------ | --------------------------------------------------- |
@@ -83,7 +83,7 @@ See [Network traffic and local egress in Expo Simulators](/preview/simulators/ho
 
 One artifact can be up to about 5 GiB.
 
-EAS records the request origin and agent identifiers that a client sends when it creates a session. EAS uses these values for analytics only, not for authorization.
+Expo Simulators records the request origin and agent identifiers that a client sends when it creates a session. Expo Simulators uses these values for analytics only, not for authorization.
 
 ## Artifact downloads
 
@@ -94,10 +94,10 @@ The `downloadUrl` does not change. Each request to it redirects to a new signed 
 ## Retention and deletion
 
 - Job logs on the session page are available for 30 days after the session is created.
-- EAS keeps session artifacts, such as screenshots and recordings, until you delete the session.
+- Expo Simulators keeps session artifacts, such as screenshots and recordings, until you delete the session.
 - You can delete a session after it finishes. You cannot delete a running session.
-- When you delete a session, EAS also deletes its recordings and screenshots. You cannot undo this.
-- When you delete the project, EAS also deletes its sessions and their artifacts.
+- When you delete a session, Expo Simulators also deletes its recordings and screenshots. You cannot undo this.
+- When you delete the project, Expo Simulators also deletes its sessions and their artifacts.
 
 ## Common questions
 
@@ -117,7 +117,7 @@ Only with a public link. A private link requires an Expo login with access to th
 
 <Collapsible summary="How do I remove recordings of a session?">
 
-Delete the finished session from its page on expo.dev. EAS deletes its recordings and screenshots.
+Delete the finished session from its page on expo.dev. Expo Simulators deletes its recordings and screenshots.
 
 </Collapsible>
 

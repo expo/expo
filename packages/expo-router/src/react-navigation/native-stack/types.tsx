@@ -964,6 +964,15 @@ type SharedHeaderItem = {
    */
   sharesBackground?: boolean;
   /**
+   * Where this item sits when iOS 27 moves icon items into the vertical rail on iPhone Duo.
+   * `automatic` follows the system. `horizontalOnly` keeps the item in the horizontal bar.
+   * `verticalPreferred` prefers the rail.
+   * Only available from iOS 27.1 and later.
+   *
+   * Read more: https://developer.apple.com/documentation/uikit/uibarbuttonitem/axisbehavior
+   */
+  axisBehavior?: 'automatic' | 'horizontalOnly' | 'verticalPreferred';
+  /**
    * An identifier used to match items across transitions.
    * Only available from iOS 26.0 and later.
    *

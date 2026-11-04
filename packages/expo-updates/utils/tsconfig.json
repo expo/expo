@@ -1,6 +1,7 @@
 {
   "extends": "@expo/internal-scripts/tsconfig.plugin",
   "compilerOptions": {
+    "lib": ["es2023", "esnext.array"],
     "composite": true,
     "noEmit": true,
     "rootDir": "src"

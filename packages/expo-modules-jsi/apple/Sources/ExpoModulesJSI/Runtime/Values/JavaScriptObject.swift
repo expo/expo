@@ -239,6 +239,28 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     }
   }
 
+  /// Calls `body` with the name and the value of each enumerable property of the object, in the order of
+  /// `getPropertyNames()`. Like `jsi::Object::getPropertyNames`, it includes enumerable properties that the
+  /// object inherits, as `for...in` does. The value is lent as a `JavaScriptUnownedValue`, valid only for the
+  /// duration of the call. Each value is read with the `jsi::String` name from the property names array,
+  /// so unlike `getPropertyNames()` followed by `getProperty(_:)`, no name is converted back from Swift.
+  public func forEachProperty(_ body: (String, borrowing JavaScriptUnownedValue) throws -> Void) rethrows {
+    guard let jsiRuntime else {
+      FatalError.runtimeLost()
+    }
+    let propertyNames: facebook.jsi.Array = pointee.getPropertyNames(jsiRuntime)
+    let count = propertyNames.size(jsiRuntime)
+
+    for i in 0..<count {
+      let name = propertyNames.getValueAtIndex(jsiRuntime, i).getString(jsiRuntime)
+      let property = pointee.getProperty(jsiRuntime, name)
+      let swiftName = String(jsiString: name, in: jsiRuntime)
+      try withUnowned(property, in: jsiRuntime) { value in
+        try body(swiftName, value)
+      }
+    }
+  }
+
   /// Same as `getProperty(name).getObject()`, but throws instead of aborting when the property is
   /// not an object.
   public func getPropertyAsObject(_ name: String) throws -> JavaScriptObject {

@@ -39,48 +39,53 @@ public final class EventObservingDefinition: AnyEventObservingDefinition, @unche
   }
 }
 
-public struct EventObservingDecorator: JavaScriptObjectDecorator {
+/// Calls the `OnStartObserving` and `OnStopObserving` definitions of a module when its JavaScript object
+/// gets the first listener for an event, or loses the last listener for an event.
+internal final class EventObservers {
   let definitions: [any AnyEventObservingDefinition]
 
-  /**
-   Decorates the given object with `startObserving` and `stopObserving` functions.
-   These functions are automatically called by the `EventEmitter` implementation.
-   */
-  @JavaScriptActor
-  func decorate(object: borrowing JavaScriptObject, appContext: AppContext) throws {
-    // We need to keep track the number of observed events
-    // so we can call observers not attached to any event in the right moment.
-    var observingEvents: Int = 0
+  // The number of events that have listeners. The event emitter changes it on the JS thread only.
+  private var observingEvents: Int = 0
 
-    let startObserving = AsyncFunctionDefinition(
-      EventObservingType.startObserving.rawValue,
-      firstArgType: String.self,
-      dynamicArgumentTypes: [~String.self]
-    ) { (event: String) in
-      observingEvents += 1
+  init(definitions: [any AnyEventObservingDefinition]) {
+    self.definitions = definitions
+  }
 
-      for definition in definitions where definition.type == .startObserving {
-        if definition.event == event || (observingEvents == 1 && definition.event == nil) {
-          definition.call()
-        }
+  func didStartListening(event: String, appContext: AppContext) {
+    observingEvents += 1
+    // Observers not attached to any event are called when the first event gets a listener.
+    call(.startObserving, event: event, includingObserversOfAllEvents: observingEvents == 1, appContext: appContext)
+  }
+
+  func didStopListening(event: String, appContext: AppContext) {
+    observingEvents -= 1
+    // Observers not attached to any event are called when no event has listeners.
+    call(.stopObserving, event: event, includingObserversOfAllEvents: observingEvents == 0, appContext: appContext)
+  }
+
+  private func call(
+    _ type: EventObservingType,
+    event: String,
+    includingObserversOfAllEvents: Bool,
+    appContext: AppContext
+  ) {
+    let definitions = definitions.filter { definition in
+      return definition.type == type
+        && (definition.event == event || (includingObserversOfAllEvents && definition.event == nil))
+    }
+    if definitions.isEmpty {
+      return
+    }
+    let callDefinitions = {
+      for definition in definitions {
+        definition.call()
       }
     }
-
-    let stopObserving = AsyncFunctionDefinition(
-      EventObservingType.stopObserving.rawValue,
-      firstArgType: String.self,
-      dynamicArgumentTypes: [~String.self]
-    ) { (event: String) in
-      observingEvents -= 1
-
-      for definition in definitions where definition.type == .stopObserving {
-        if definition.event == event || (observingEvents == 0 && definition.event == nil) {
-          definition.call()
-        }
-      }
+    // The observers run on the queue of async functions. Without a host scheduler (e.g. in tests), they run inline.
+    if (try? appContext.runtime.supportsAsyncScheduling) == true {
+      asyncFunctionQueue.async(execute: callDefinitions)
+    } else {
+      callDefinitions()
     }
-
-    object.setProperty(startObserving.name, value: try startObserving.build(appContext: appContext))
-    object.setProperty(stopObserving.name, value: try stopObserving.build(appContext: appContext))
   }
 }

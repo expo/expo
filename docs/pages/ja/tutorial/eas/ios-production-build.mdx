@@ -18,7 +18,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 <VideoBoxLink
   videoId="VZL_e0cEwo8"
   title="視聴：iOS 向けの本番ビルドを作成してリリースする"
-  description="EAS で iOS の本番ビルドを作成し、TestFlight でテストして、App Store に提出します。"
+  description="Expo Build で iOS の本番ビルドを作成し、TestFlight でテストして、App Store に提出します。"
 />
 
 ---
@@ -57,13 +57,13 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 ## 本番ビルドを作成する
 
-デフォルトの `production` プロファイルで iOS の本番ビルドを作成するには、ターミナルを開いて次のコマンドを実行します。EAS の設定では `production` がデフォルトプロファイルになっているため、`--profile` フラグで明示的に指定する必要はありません。
+デフォルトの `production` プロファイルで iOS の本番ビルドを作成するには、ターミナルを開いて次のコマンドを実行します。**eas.json** では `production` がデフォルトプロファイルになっているため、`--profile` フラグで明示的に指定する必要はありません。
 
 <Terminal cmd={['$ eas build --platform ios']} />
 
 > **info** **このプロジェクトで初めて iOS ビルドを作成する場合のみ:** EAS CLI が **iOS app only uses standard/exempt encryption?**（この iOS アプリは標準的な、または適用除外の暗号化のみを使いますか？）と尋ねます。<kbd>Y</kbd> を押してデフォルト値を選びます。このアプリは適用除外ではない暗号化を使っていないため、EAS CLI が [アプリ設定](/workflow/configuration/) に `ios.infoPlist.ITSAppUsesNonExemptEncryption: false` を追加します。この値によって、TestFlight や App Store にアプリをリリースする際のコンプライアンスチェックが処理されます。自分のアプリが適用除外ではない暗号化を使っている場合は、<kbd>N</kbd> を押し、続く質問で確認します。その場合、EAS CLI はアプリ設定を変更しません。暗号化のステータスは App Store Connect で設定します。
 
-このコマンドでビルドがキューに入ります。EAS ダッシュボードの **Version** 列に、自動的にインクリメントされたビルド番号が括弧内に表示されていることに注目してください（例: `1.0.0 (2)`）。
+このコマンドでビルドがキューに入ります。Expo ダッシュボードの **Version** 列に、自動的にインクリメントされたビルド番号が括弧内に表示されていることに注目してください（例: `1.0.0 (2)`）。
 
 </Step>
 
@@ -71,7 +71,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 ## アプリのバイナリを App Store に提出する
 
-直近の EAS Build で作成したアプリのバイナリを提出するには、[`eas submit`](/submit/ios/) コマンドを実行します。
+直近の Expo Build で作成したアプリのバイナリを提出するには、[`eas submit`](/submit/ios/) コマンドを実行します。
 
 <Terminal cmd={['$ eas submit --platform ios']} />
 
@@ -180,7 +180,7 @@ App Store への提出に向けてアプリを準備するには、**App Store**
       への配布について確認して、<CODE>--auto-submit</CODE> でリリースプロセスを自動化しました。
     </>
   }
-  nextChapterDescription="次の章では、EAS Update を使って OTA（アプリストアを介さない）アップデートを配信し、チームにプレビューを共有する方法を学びます。"
+  nextChapterDescription="次の章では、Expo Update を使って OTA（アプリストアを介さない）アップデートを配信し、チームにプレビューを共有する方法を学びます。"
   nextChapterTitle="チームにプレビューを共有する"
   nextChapterLink="/ja/tutorial/eas/team-development/"
 />

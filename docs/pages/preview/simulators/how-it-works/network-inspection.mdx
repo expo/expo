@@ -10,13 +10,13 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-By default, network traffic from an Expo Simulators device exits from EAS infrastructure. Third-party servers see an EAS IP address, and the device cannot reach servers on your computer or private network. With **local egress**, an iOS Simulator session sends its proxied traffic through your computer instead. Your servers then see your IP address, and the simulator can reach destinations that you allow on your network.
+By default, network traffic from an Expo Simulators device exits from Expo infrastructure. Third-party servers see an Expo IP address, and the device cannot reach servers on your computer or private network. With **local egress**, an iOS Simulator session sends its proxied traffic through your computer instead. Your servers then see your IP address, and the simulator can reach destinations that you allow on your network.
 
 ## Default network path
 
-| Traffic                                 | Exits from         |
-| --------------------------------------- | ------------------ |
-| All traffic from the device, by default | EAS infrastructure |
+| Traffic                                 | Exits from          |
+| --------------------------------------- | ------------------- |
+| All traffic from the device, by default | Expo infrastructure |
 
 To reach Metro on your computer without local egress, start Metro with a public tunnel. See [Use Fast Refresh with Metro on a remote simulator](/preview/simulators/how-to/iterate-on-your-code/).
 
@@ -26,7 +26,7 @@ Local egress is an experimental feature for Android and iOS sessions. It is avai
 
 When you start a session with `--egress local`, these steps occur:
 
-1. On Android, the emulator sends all of its TCP traffic to a proxy on the EAS machine. On iOS, the EAS machine points its macOS system proxy, which the iOS Simulator uses, at a port on that machine.
+1. On Android, the emulator sends all of its TCP traffic to a proxy on the remote machine. On iOS, the remote machine points its macOS system proxy, which the iOS Simulator uses, at a port on that machine.
 2. A reverse tunnel connects that port to the egress client on your computer.
 3. The egress client sends each request to the internet from your computer.
 4. The response returns through the tunnel to the simulator.
@@ -43,7 +43,7 @@ In interactive mode, the start command runs the egress client in the same termin
 
 ## Which traffic local egress covers
 
-On Android, all TCP traffic from the emulator exits from your computer. Traffic that cannot use the proxy, such as UDP and QUIC, is refused. DNS for apps that ignore the system proxy resolves on the EAS machine.
+On Android, all TCP traffic from the emulator exits from your computer. Traffic that cannot use the proxy, such as UDP and QUIC, is refused. DNS for apps that ignore the system proxy resolves on the remote machine.
 
 On iOS, coverage depends on the client:
 
@@ -119,7 +119,7 @@ Repeat the flag, or pass a comma-separated list:
 
 ### Download the recording
 
-The recording exists only while capture is on. EAS does not save it as a session artifact. Download it before you stop the session or select **Turn off and restart** under **Network requests**, because both actions delete it. The download is an HTTP Archive (HAR) file, which browser developer tools and HTTP debugging tools can open.
+The recording exists only while capture is on. Expo Simulators does not save it as a session artifact. Download it before you stop the session or select **Turn off and restart** under **Network requests**, because both actions delete it. The download is an HTTP Archive (HAR) file, which browser developer tools and HTTP debugging tools can open.
 
 To download it in the browser, open the **Tools** panel in the browser preview. Under **Network requests**, select the download icon, whose tooltip reads **Download session as HAR**.
 

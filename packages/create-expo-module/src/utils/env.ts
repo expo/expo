@@ -1,4 +1,4 @@
-import { boolish } from 'getenv';
+import { boolish } from '@expo/env';
 
 export const env = {
   /** Enable debug logging */

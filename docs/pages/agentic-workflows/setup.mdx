@@ -13,7 +13,7 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 Each agentic workflow guide uses the same project setup. Do the steps on this page one time for your project. Then add the workflows from the guides.
 
-Agentic CI and QA Swarm need the steps from [Add a build profile for the remote device](#add-a-build-profile-for-the-remote-device) to [Push the files](#push-the-files). Issue to PR and Bug triage also need [Add a GitHub token to EAS](#add-a-github-token-to-eas).
+Agentic CI and QA Swarm need the steps from [Add a build profile for the remote device](#add-a-build-profile-for-the-remote-device) to [Push the files](#push-the-files). Issue to PR and Bug triage also need [Add a GitHub token to Expo Services](#add-a-github-token-to-expo-services).
 
 <Prerequisites>
   <Requirement title="An Expo project in a GitHub repository">
@@ -76,7 +76,7 @@ Agentic CI and QA Swarm need the steps from [Add a build profile for the remote 
   </Requirement>
   <Requirement title="Expo Simulators access">
     The account that owns the project needs Expo Simulators access. In your project directory, link
-    the project to EAS and check the access:
+    the project to Expo Services and check the access:
 
     <Terminal cmd={['$ eas login', '$ eas init', '$ eas simulator:availability --json']} />
 
@@ -126,7 +126,7 @@ An Android Emulator session runs an APK:
 }
 ```
 
-EAS signs the APK with an Android keystore. If the project has no Android keystore yet, create one before the first run. Run this command, select the `preview` profile, and let EAS generate a new keystore:
+Expo Build signs the APK with an Android keystore. If the project has no Android keystore yet, create one before the first run. Run this command, select the `preview` profile, and let Expo Services generate a new keystore:
 
 <Terminal cmd={['$ eas credentials --platform android']} />
 
@@ -162,9 +162,9 @@ If your `preview` profile already makes builds for physical devices, `ios.simula
 
 <Step label="2">
 
-## Connect GitHub to the EAS project
+## Connect GitHub to the Expo Services project
 
-The workflows start on GitHub events and post comments on PRs. Connect your GitHub repository to the EAS project. See [Automate workflows with GitHub events](/eas/workflows/get-started/#automate-workflows-with-github-events).
+The workflows start on GitHub events and post comments on PRs. Connect your GitHub repository to the Expo Services project. See [Automate workflows with GitHub events](/eas/workflows/get-started/#automate-workflows-with-github-events).
 
 If the app is in a subdirectory of the repository, such as **apps/my-app**, set the **Base directory** to that path. See [Configure your repository settings](/build/building-from-github/#configure-your-repository-settings) and [Use a monorepo](#use-a-monorepo).
 
@@ -184,7 +184,7 @@ Keep this token and the key of your agent out of files, logs, and chat.
 
 <Step label="4">
 
-## Add the tokens to EAS
+## Add the tokens to Expo Services
 
 In the project dashboard, open **Project settings** > [**Environment variables**](https://expo.dev/accounts/[account]/projects/[project]/environment-variables). Select **Add Variables**. Add these variables with the **Secret** visibility:
 
@@ -496,7 +496,7 @@ If you changed **app.json**, also add it. If you use Cursor, also add **.cursor/
 
 <Step label="8">
 
-## Add a GitHub token to EAS
+## Add a GitHub token to Expo Services
 
 Issue to PR and Bug triage need this step. Issue to PR pushes a branch, opens a PR, and adds comments to the issue. Bug triage creates issues for TestFlight feedback and posts its verdict on the issue. QA Swarm needs this step only to post its report on a PR. These tasks need a GitHub token.
 
@@ -562,19 +562,19 @@ The job script of Issue to PR finds the root of the repository and the app direc
 
 The agent reads text from PRs, issues, and TestFlight feedback. Another person can write instructions for the agent in that text. These workflows limit what the agent can do:
 
-- The agent can read each variable of the environment that the job uses, and the session file **.env.eas-simulator**. This file has a token for the current session. Keep no other secrets in that environment. See [Add the tokens to EAS](#add-the-tokens-to-eas).
-- EAS does not start `pull_request` workflows for PRs from forks.
+- The agent can read each variable of the environment that the job uses, and the session file **.env.eas-simulator**. This file has a token for the current session. Keep no other secrets in that environment. See [Add the tokens to Expo Services](#add-the-tokens-to-expo-services).
+- Expo Workflows does not start `pull_request` workflows for PRs from forks.
 
 Each agent also has its own limits:
 
 | Agent            | Limit in these workflows                                                                                                                                                                                                                                                                        |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Claude&nbsp;Code | `--allowedTools` allows the file tools and the commands of one mode. The `device` mode allows agent-device through `eas simulator:exec`, and the Argent CLI. The `change` mode allows `npx tsc --noEmit`.                                                                                       |
-| Codex            | The runner does not read the mode, so the `device` and the `change` jobs give the agent the same rights. The agent can run any command on the EAS worker. Each job runs on its own worker.                                                                                                      |
+| Codex            | The runner does not read the mode, so the `device` and the `change` jobs give the agent the same rights. The agent can run any command on the Expo Workflows worker. Each job runs on its own worker.                                                                                           |
 | Cursor           | The runner does not read the mode, so the `device` and the `change` jobs give the agent the same rights. The agent can run each command that **.cursor/cli.json** does not deny. The file allows `Shell(npx)`, and `npx` can run any npm package. So the deny list is a weak limit.             |
 | Grok             | `--allow` allows file changes and the commands of one mode. The `device` mode allows agent-device through `eas simulator:exec`, and the Argent CLI. The `change` mode allows `npx tsc --noEmit`. Grok also runs its read-only commands, such as `ls` and `cat`. It does not run other commands. |
 | Other&nbsp;agent | The limits depend on the permission settings of its command-line tool.                                                                                                                                                                                                                          |
 
-The code of a branch also runs in some workflows. In Agentic CI, the `check` job checks out the PR. In QA Swarm, each lane checks out the branch of `--ref`. So the code of that branch can change **.eas/agents/run-agent.sh** and the workflow files, and read `EXPO_TOKEN_SIMULATOR` and the key of your agent. It can also read `GITHUB_TOKEN` if you did [Add a GitHub token to EAS](#add-a-github-token-to-eas). Each person who can push a branch to the repository can add such code.
+The code of a branch also runs in some workflows. In Agentic CI, the `check` job checks out the PR. In QA Swarm, each lane checks out the branch of `--ref`. So the code of that branch can change **.eas/agents/run-agent.sh** and the workflow files, and read `EXPO_TOKEN_SIMULATOR` and the key of your agent. It can also read `GITHUB_TOKEN` if you did [Add a GitHub token to Expo Services](#add-a-github-token-to-expo-services). Each person who can push a branch to the repository can add such code.
 
 So use a robot token with the Developer role, not your personal access token. A PR that reads the robot token can do only what the Developer role allows.
