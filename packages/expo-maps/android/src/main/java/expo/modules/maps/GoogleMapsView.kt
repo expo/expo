@@ -472,10 +472,6 @@ private fun MapCircles(
   }
 }
 
-/**
- * Whether the app can show the user's location. The Maps SDK throws a `SecurityException` from
- * `setMyLocationEnabled` unless one of these is granted.
- */
 internal fun Context.hasLocationPermission(): Boolean =
   ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
     ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
