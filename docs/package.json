@@ -87,6 +87,7 @@
     "remark-mdx": "^3.1.1",
     "remark-mdx-disable-explicit-jsx": "^0.1.0",
     "remark-mdx-frontmatter": "^5.2.0",
+    "svgo": "^4.1.0",
     "tippy.js": "^6.3.7",
     "yet-another-react-lightbox": "^3.30.1"
   },
