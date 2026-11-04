@@ -128,8 +128,8 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(use-sync-external-store@1.6.0(react@19.3.1))
       '@expo/styleguide-icons':
-        specifier: ^4.4.0
-        version: 4.4.0(react@19.3.1)(tailwindcss@4.3.3)
+        specifier: ^5.0.1
+        version: 5.0.1(react@19.3.1)(tailwindcss@4.3.3)
       '@expo/styleguide-search-ui':
         specifier: ^10.0.3
         version: 10.0.3(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(next@16.4.3(patch_hash=df8944496510e3928fe3170294ad359cc4666e08b8a75d67bd08c729e4f30d8e)(@babel/core@7.29.7)(@opentelemetry/api@1.9.1)(@types/node@24.13.3)(react-dom@19.3.1(react@19.3.1))(react@19.3.1))(react-dom@19.3.1(react@19.3.1))(react@19.3.1)(tailwindcss@4.3.3)
@@ -862,11 +862,6 @@ packages:
     resolution: {integrity: sha512-eb9xxd/LbuEGSdua4NumCu/McVB9EM+F/JxB9pWgnERw4HQ9XyTNH1KapG6oqLWR8TuRK2LQfzJlmNi94CVobw==}
     engines: {node: '>=12'}
 
-  '@expo/styleguide-base@3.3.0':
-    resolution: {integrity: sha512-3thu6Hr85uVVaa0vmPhrvLqBNVugfudiDqtWhGjgIUdUXGq4yOwM8uC1aCbmyVE7v6g+rqu8xyim0yoVC8ilVw==}
-    peerDependencies:
-      react: '>= 19'
-
   '@expo/styleguide-base@4.0.1':
     resolution: {integrity: sha512-JbR10ZnazSWIeBCJ1Y6i2kZxXnr9kxBfwX/j7Oi56qBOvvDWTLwxz22aJDp+vvZicCkfxz4TvM6xgQG/l8kFEA==}
     peerDependencies:
@@ -876,12 +871,6 @@ packages:
     resolution: {integrity: sha512-tMZ4gd19s9eCxUFwoZU0TY9tCAa3SEQT/ySUGqMN82ALkRuyqLS2dTmwH8HLTRwObpvCRHDa1tm51X6YHpWT+w==}
     peerDependencies:
       react: '>= 19'
-
-  '@expo/styleguide-icons@4.4.0':
-    resolution: {integrity: sha512-keiOn7Mgl0Aea9ZeFpVO83aSbD/cZGAWiuVgUrtwB9zaINTlpijqMY/o3le9kznmZ1e+42YLgQfg7Dmf93/o4Q==}
-    peerDependencies:
-      react: '>= 19'
-      tailwindcss: ^4.2.2
 
   '@expo/styleguide-icons@5.0.1':
     resolution: {integrity: sha512-vt/85YytvjycDNh7LszntI8P6B5TZ3ocRNH6YFgNwme5LwWmx56YD121BxBsCyWIdEfnR7+AMbk42LrsSKGjsQ==}
@@ -7805,12 +7794,6 @@ snapshots:
     dependencies:
       cross-spawn: 7.0.6
 
-  '@expo/styleguide-base@3.3.0(react@19.3.1)':
-    dependencies:
-      '@radix-ui/colors': 3.0.0
-      react: 19.3.1
-      tailwind-merge: 3.6.0
-
   '@expo/styleguide-base@4.0.1(react@19.3.1)':
     dependencies:
       '@radix-ui/colors': 3.0.0
@@ -7831,12 +7814,6 @@ snapshots:
       - immer
       - react-dom
       - use-sync-external-store
-
-  '@expo/styleguide-icons@4.4.0(react@19.3.1)(tailwindcss@4.3.3)':
-    dependencies:
-      '@expo/styleguide-base': 3.3.0(react@19.3.1)
-      react: 19.3.1
-      tailwindcss: 4.3.3
 
   '@expo/styleguide-icons@5.0.1(react@19.3.1)(tailwindcss@4.3.3)':
     dependencies:
