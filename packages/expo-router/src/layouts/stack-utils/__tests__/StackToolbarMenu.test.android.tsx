@@ -367,13 +367,15 @@ describe('NativeToolbarMenu', () => {
         consoleSpy.mockRestore();
       });
 
-      it('warns in development that cornerRadius has no effect', async () => {
+      it('warns once in development that cornerRadius is deprecated', async () => {
         process.env.NODE_ENV = 'development';
 
-        await render(<NativeToolbarMenu {...defaultProps} cornerRadius={8} />);
+        const { rerender } = await render(<NativeToolbarMenu {...defaultProps} cornerRadius={8} />);
+        await rerender(<NativeToolbarMenu {...defaultProps} cornerRadius={8} />);
 
+        expect(consoleSpy).toHaveBeenCalledTimes(1);
         expect(consoleSpy).toHaveBeenCalledWith(
-          'Stack.Toolbar.Menu `cornerRadius` has no effect on Android. The Material 3 Expressive menu sets the corner shape of each group. Remove the `cornerRadius` prop.'
+          'Stack.Toolbar.Menu `cornerRadius` is deprecated and has no effect on Android. The Material 3 Expressive menu sets the corner shape of each group. Remove the `cornerRadius` prop.'
         );
       });
     });

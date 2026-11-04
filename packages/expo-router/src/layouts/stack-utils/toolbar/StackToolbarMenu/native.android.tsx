@@ -16,6 +16,7 @@ import type { ColorValue } from 'react-native';
 import { requireExpoUI } from '../../../../optional-libraries/expo-ui';
 import { Label } from '../../../../primitives';
 import { AnimatedItemContainer } from '../../../../toolbar/AnimatedItemContainer';
+import { useWarnOnce } from '../../../../useDeprecated';
 import { getFirstChildOfType, isChildOfType } from '../../../../utils/children';
 import { getBadgeContentDescription, ToolbarItemBadge } from '../ToolbarItemBadge';
 import { useToolbarColors } from '../context';
@@ -167,11 +168,10 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
     );
   }
 
-  if (process.env.NODE_ENV !== 'production' && props.cornerRadius !== undefined) {
-    console.warn(
-      'Stack.Toolbar.Menu `cornerRadius` has no effect on Android. The Material 3 Expressive menu sets the corner shape of each group. Remove the `cornerRadius` prop.'
-    );
-  }
+  useWarnOnce(
+    'Stack.Toolbar.Menu `cornerRadius` is deprecated and has no effect on Android. The Material 3 Expressive menu sets the corner shape of each group. Remove the `cornerRadius` prop.',
+    props.cornerRadius !== undefined
+  );
 
   const menuContent = (
     <ToolbarMenuCloseContext value={closeMenu}>
