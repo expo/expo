@@ -15,7 +15,7 @@ You can show a running Expo Simulators session on a web page that you own, such 
 | [Embed the preview in an iframe](#embed-the-preview-in-an-iframe)                   | The complete preview page of the preview host        | `--frame-ancestor <origin>`   |
 | [Render the screen with `@expo/hub-client`](#render-the-screen-with-expohub-client) | Only the device screen, inside your own React layout | `--cors-origin <origin>`      |
 
-By default, only expo.dev can embed the preview or call the preview host's API. Each flag adds the origin of your page to an allow list for one session. The [EAS Simulator embed example](https://github.com/expo/eas-simulator-embed-example) is a small Expo web app that shows both methods. It runs at [simulator-embed-example.expo.app](https://simulator-embed-example.expo.app).
+By default, only expo.dev can embed the preview or call the preview host's API. Each flag adds the origin of your page to an allow list for one session. The [Expo Simulators embed example](https://github.com/expo/eas-simulator-embed-example) is a small Expo web app that shows both methods. It runs at [simulator-embed-example.expo.app](https://simulator-embed-example.expo.app).
 
 > **warning** Your page needs the preview token of the session. Anyone who can read your page or its network traffic can get the token, and with it, view and control the simulator. Show an embedded session only to people who should control the device, and set a maximum duration on the session.
 
