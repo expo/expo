@@ -163,7 +163,7 @@ With `--public-link`, EAS CLI prints a public link that contains the preview tok
 
 With `--frame-ancestor` or `--cors-origin`, `remoteConfig.previewApiUrl` contains the preview host URL with the preview token, even for a session with private links. The terminal output also shows this URL, with a warning. A web page on an allowed origin uses this URL to show the session. See [Show an Expo Simulators session on your own web page](/preview/simulators/how-to/embed-a-session/).
 
-EAS saves the setting with the session, and `simulator:get` prints the kind of link that the saved setting selects. `simulator:get` does not include `previewApiUrl` for a session with private links, even when the session started with `--frame-ancestor` or `--cors-origin`. See [Expo Simulators security model](/preview/simulators/how-it-works/security-model/#the-browser-preview).
+EAS saves the `--public-link` setting with the session, and `simulator:get` prints the kind of link that the saved setting selects. `simulator:get` does not include `previewApiUrl` for a session with private links, even when the session started with `--frame-ancestor` or `--cors-origin`. See [Expo Simulators security model](/preview/simulators/how-it-works/security-model/#the-browser-preview).
 
 ### Interactive and non-interactive behavior
 
