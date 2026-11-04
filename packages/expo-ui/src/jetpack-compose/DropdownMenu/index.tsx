@@ -136,6 +136,14 @@ export interface DropdownMenuPopupProps {
   onDismissRequest?: () => void;
 
   /**
+   * The side of the anchor where the menu opens, through Compose's `MenuAnchorPosition`. When
+   * there is not sufficient space on that side, Compose moves the menu to a different side. Use
+   * `'end'` for a submenu that opens next to its item.
+   * @default 'below'
+   */
+  anchorPosition?: 'below' | 'above' | 'start' | 'end' | 'left' | 'right';
+
+  /**
    * Properties for the popup window of the menu.
    */
   properties?: PopupProperties;
@@ -149,6 +157,7 @@ export interface DropdownMenuPopupProps {
 type NativeMenuPopupProps = {
   expanded?: boolean;
   onDismissRequest?: () => void;
+  anchorPosition?: DropdownMenuPopupProps['anchorPosition'];
   properties?: PopupProperties;
   modifiers?: ModifierConfig[];
   children?: ReactNode;
