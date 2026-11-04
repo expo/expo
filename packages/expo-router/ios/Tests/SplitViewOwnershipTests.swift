@@ -524,6 +524,201 @@ struct SplitViewRootPopHeaderTests {
   }
 }
 
+@MainActor
+@available(iOS 17.0, *)
+private final class SplitViewRootPopFixture {
+  let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 393, height: 852))
+  let split = UISplitViewController(style: .doubleColumn)
+  let primary = UINavigationController(rootViewController: UIViewController())
+  let column = UIViewController()
+  let content: UINavigationController
+  let coordinator = SplitViewColumnView(appContext: nil)
+  let root = RNSScreenView(frame: .zero)
+  let marker = SplitViewStackScreenView(appContext: nil)
+  // UIKit's own policy rejects the synthetic gesture check, so a permissive policy stands in for it.
+  let policy = SplitViewGesturePolicy()
+
+  var stack: UINavigationController? { root.controller.navigationController }
+  var gesture: UIGestureRecognizer? { primary.interactivePopGestureRecognizer }
+
+  init() async throws {
+    content = UINavigationController(rootViewController: column)
+    split.traitOverrides.horizontalSizeClass = .compact
+    split.setViewController(primary, for: .primary)
+    split.setViewController(content, for: .secondary)
+    window.rootViewController = split
+    window.makeKeyAndVisible()
+    try await Task.sleep(for: .milliseconds(500))
+    split.show(.secondary)
+    try await Task.sleep(for: .milliseconds(500))
+    try await waitForTransition(of: primary)
+    column.navigationItem.title = "Entry"
+    primary.interactivePopGestureRecognizer?.delegate = policy
+    coordinator.columnId = UUID().uuidString
+    column.view.addSubview(coordinator)
+    coordinator.attach()
+    let stackView = RNSScreenStackView(frame: column.view.bounds)
+    stackView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    root.activityState = 2
+    stackView.insertReactSubview(root, at: 0)
+    column.view.addSubview(stackView)
+    stackView.setNeedsLayout()
+    stackView.layoutIfNeeded()
+    root.controller.navigationItem.title = "Settings"
+    marker.columnId = coordinator.columnId
+    root.addSubview(marker)
+    marker.attach()
+    coordinator.reconcile()
+  }
+
+  func tearDown() {
+    primary.delegate = nil
+    root.invalidateImpl()
+    window.isHidden = true
+  }
+}
+
+@MainActor
+private func waitForTransition(of navigation: UINavigationController) async throws {
+  for _ in 0..<40 where navigation.transitionCoordinator != nil {
+    try await Task.sleep(for: .milliseconds(50))
+  }
+  #expect(navigation.transitionCoordinator == nil)
+}
+
+@Suite("SplitView root pop")
+@MainActor
+struct SplitViewRootPopTests {
+  @Test
+  @available(iOS 17.0, *)
+  func `the root gesture pops one shared bar from the Stack root item`() async throws {
+    let fixture = try await SplitViewRootPopFixture()
+    defer { fixture.tearDown() }
+    let gesture = try #require(fixture.gesture)
+    let stack = try #require(fixture.stack)
+    #expect(fixture.primary.isNavigationBarHidden)
+
+    #expect(gesture.delegate?.gestureRecognizerShouldBegin?(gesture) == true)
+    fixture.primary.popViewController(animated: true)
+    try await Task.sleep(for: .milliseconds(50))
+
+    #expect(fixture.primary.transitionCoordinator != nil)
+    #expect(!fixture.primary.isNavigationBarHidden)
+    #expect(fixture.primary.navigationBar.layer.mask == nil)
+    #expect(fixture.column.navigationItem.title == "Settings")
+    #expect(stack.navigationBar.layer.mask != nil)
+    try await waitForTransition(of: fixture.primary)
+    #expect(fixture.primary.transitionCoordinator == nil)
+    #expect(fixture.column.navigationItem.title == "Entry")
+    #expect(stack.navigationBar.layer.mask == nil)
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `the root Back pops one shared bar from the Stack root item`() async throws {
+    let fixture = try await SplitViewRootPopFixture()
+    defer { fixture.tearDown() }
+    let backAction = try #require(fixture.root.controller.navigationItem.backAction)
+
+    UIButton(primaryAction: backAction).sendActions(for: .primaryActionTriggered)
+    try await Task.sleep(for: .milliseconds(50))
+
+    #expect(fixture.primary.transitionCoordinator != nil)
+    #expect(!fixture.primary.isNavigationBarHidden)
+    #expect(fixture.column.navigationItem.title == "Settings")
+    try await waitForTransition(of: fixture.primary)
+    #expect(fixture.primary.topViewController !== fixture.content)
+    #expect(fixture.column.navigationItem.title == "Entry")
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `the root Back does not take the shared bar during another transition`() async throws {
+    let fixture = try await SplitViewRootPopFixture()
+    defer { fixture.tearDown() }
+    let stack = try #require(fixture.stack)
+    let backAction = try #require(fixture.root.controller.navigationItem.backAction)
+
+    fixture.primary.pushViewController(UIViewController(), animated: true)
+    #expect(fixture.primary.transitionCoordinator != nil)
+    UIButton(primaryAction: backAction).sendActions(for: .primaryActionTriggered)
+
+    #expect(fixture.column.navigationItem.title == "Entry")
+    #expect(stack.navigationBar.layer.mask == nil)
+    try await waitForTransition(of: fixture.primary)
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `a cancelled root gesture restores the Stack header and the hidden shared bar`() async throws {
+    let fixture = try await SplitViewRootPopFixture()
+    defer { fixture.tearDown() }
+    let gesture = try #require(fixture.gesture)
+    let stack = try #require(fixture.stack)
+    let backAction = try #require(fixture.root.controller.navigationItem.backAction)
+    let safeArea = fixture.column.additionalSafeAreaInsets
+    // A custom interactive transition stands in for the edge swipe, which tests cannot cancel.
+    let driver = SplitViewPopDriver()
+    fixture.primary.delegate = driver
+
+    #expect(gesture.delegate?.gestureRecognizerShouldBegin?(gesture) == true)
+    fixture.primary.popViewController(animated: true)
+    try await Task.sleep(for: .milliseconds(50))
+    driver.interaction.update(0.4)
+    try await Task.sleep(for: .milliseconds(50))
+
+    #expect(fixture.primary.transitionCoordinator?.isInteractive == true)
+    #expect(!fixture.primary.isNavigationBarHidden)
+    #expect(fixture.column.navigationItem.title == "Settings")
+    driver.interaction.cancel()
+    try await waitForTransition(of: fixture.primary)
+    try await Task.sleep(for: .milliseconds(100))
+    #expect(fixture.primary.topViewController === fixture.content)
+    #expect(fixture.primary.isNavigationBarHidden)
+    #expect(fixture.column.navigationItem.title == "Entry")
+    #expect(fixture.column.additionalSafeAreaInsets == safeArea)
+    #expect(stack.navigationBar.layer.mask == nil)
+    #expect(fixture.root.controller.navigationItem.backAction === backAction)
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `a root gesture that starts no transition restores the column`() async throws {
+    let fixture = try await SplitViewRootPopFixture()
+    defer { fixture.tearDown() }
+    let gesture = try #require(fixture.gesture)
+    let stack = try #require(fixture.stack)
+    let safeArea = fixture.column.additionalSafeAreaInsets
+
+    #expect(gesture.delegate?.gestureRecognizerShouldBegin?(gesture) == true)
+    #expect(fixture.column.navigationItem.title == "Settings")
+    try await Task.sleep(for: .milliseconds(100))
+
+    #expect(fixture.primary.isNavigationBarHidden)
+    #expect(fixture.column.navigationItem.title == "Entry")
+    #expect(fixture.column.additionalSafeAreaInsets == safeArea)
+    #expect(stack.navigationBar.layer.mask == nil)
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `removing the column during a root pop restores the previous column Back`() async throws {
+    let fixture = try await SplitViewRootPopFixture()
+    defer { fixture.tearDown() }
+    let gesture = try #require(fixture.gesture)
+    let previousItem = try #require(fixture.primary.viewControllers.first?.navigationItem)
+
+    #expect(gesture.delegate?.gestureRecognizerShouldBegin?(gesture) == true)
+    fixture.primary.popViewController(animated: true)
+    try await Task.sleep(for: .milliseconds(50))
+    #expect(previousItem.backButtonTitle == "Back")
+    fixture.coordinator.removeFromSuperview()
+
+    #expect(previousItem.backButtonTitle == nil)
+    #expect(fixture.column.navigationItem.title == "Entry")
+  }
+}
+
 @Suite("SplitView sidebar button")
 @MainActor
 struct SplitViewSidebarButtonTests {

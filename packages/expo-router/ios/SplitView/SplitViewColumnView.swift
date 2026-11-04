@@ -101,8 +101,11 @@ private final class SplitViewRootGestureDelegate: NSObject, UIGestureRecognizerD
   }
 
   func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-    guard screen?.canBeginRootGesture(gestureRecognizer) == true else { return false }
-    return original?.gestureRecognizerShouldBegin?(gestureRecognizer) ?? true
+    guard screen?.canBeginRootGesture(gestureRecognizer) == true,
+      original?.gestureRecognizerShouldBegin?(gestureRecognizer) ?? true
+    else { return false }
+    screen?.beginRootPop()
+    return true
   }
 
   // UIKit's private admission callback rejects hidden bars. Preserve its public gesture policy.
@@ -136,6 +139,7 @@ final class SplitViewColumnView: ExpoView {
   private var originalHidden = false
   private var lastOwnership: [String: Bool]?
   private var reconciling = false
+  private var rootPop: RootPop?
 
   var configuredHidden = false {
     didSet { reconcile() }
@@ -144,6 +148,7 @@ final class SplitViewColumnView: ExpoView {
   override func didMoveToSuperview() {
     super.didMoveToSuperview()
     if superview == nil {
+      restoreRootPop()
       restoreNavigation()
       observer.detach()
       Self.columns.removeObject(forKey: columnId as NSString)
@@ -207,18 +212,24 @@ final class SplitViewColumnView: ExpoView {
       }
       return false
     }
-    let hidden = configuredHidden || owner != nil
+    if let rootPop {
+      finishRootPopIfEnded(rootPop)
+    }
+    let hidden = configuredHidden || (owner != nil && rootPop == nil)
     if navigation.isNavigationBarHidden != hidden {
       navigation.setNavigationBarHidden(hidden, animated: false)
     }
-    if owner != nil {
-      hideSharedBarDuringPop(of: navigation)
-    }
-    for screen in screens.allObjects {
-      if screen === owner, let split {
-        screen.installControls(split: split, previousColumn: previousColumn)
-      } else {
-        screen.restoreControls()
+    // The root Back and gestures of the popping Stack stay as they are until the pop ends.
+    if rootPop == nil {
+      if owner != nil {
+        hideSharedBarDuringPop(of: navigation)
+      }
+      for screen in screens.allObjects {
+        if screen === owner, let split {
+          screen.installControls(split: split, previousColumn: previousColumn)
+        } else {
+          screen.restoreControls()
+        }
       }
     }
     let collapsed = split?.isCollapsed ?? false
@@ -255,6 +266,59 @@ final class SplitViewColumnView: ExpoView {
     }
   }
 
+  // Before a root pop, the shared bar shows the Stack root item in place of the Stack header,
+  // so UIKit animates one bar from the Stack root to the previous column like a regular pop.
+  func beginRootPop(from screen: SplitViewStackScreenView) {
+    guard rootPop == nil, let column, let navigation = column.navigationController,
+      let primary = navigation.navigationController, primary.transitionCoordinator == nil,
+      let controller = screen.screenController, let stack = controller.navigationController,
+      stack.transitionCoordinator == nil,
+      let index = primary.viewControllers.firstIndex(of: navigation), index > 0
+    else { return }
+    let previous = primary.viewControllers[index - 1]
+    let previousItem = ((previous as? UINavigationController)?.topViewController ?? previous).navigationItem
+    let item = column.navigationItem
+    let source = controller.navigationItem
+    let pop = RootPop(
+      primary: primary, stack: stack, item: item, previousItem: previousItem, title: item.title,
+      largeTitleDisplayMode: item.largeTitleDisplayMode, backTitle: previousItem.backButtonTitle,
+      backDisplayMode: previousItem.backButtonDisplayMode, barHeight: stack.navigationBar.frame.height)
+    rootPop = pop
+    item.title = source.title
+    item.largeTitleDisplayMode = source.largeTitleDisplayMode
+    // The Stack root shows its Back title even with a minimal display mode.
+    previousItem.backButtonTitle = source.backAction?.title
+    previousItem.backButtonDisplayMode = .default
+    // The Stack header keeps its layout but is not drawn while the shared bar shows its item.
+    stack.navigationBar.layer.mask = CALayer()
+    column.additionalSafeAreaInsets.top -= pop.barHeight
+    navigation.setNavigationBarHidden(false, animated: false)
+    // A gesture that does not start a transition leaves nothing to finish it.
+    DispatchQueue.main.async { [weak self] in self?.reconcile() }
+  }
+
+  private func finishRootPopIfEnded(_ pop: RootPop) {
+    if let coordinator = pop.primary?.transitionCoordinator {
+      if !pop.observing {
+        rootPop?.observing = true
+        coordinator.animate(alongsideTransition: nil) { [weak self] _ in self?.reconcile() }
+      }
+      return
+    }
+    restoreRootPop()
+  }
+
+  private func restoreRootPop() {
+    guard let pop = rootPop else { return }
+    rootPop = nil
+    pop.item?.title = pop.title
+    pop.item?.largeTitleDisplayMode = pop.largeTitleDisplayMode
+    pop.previousItem?.backButtonTitle = pop.backTitle
+    pop.previousItem?.backButtonDisplayMode = pop.backDisplayMode
+    pop.stack?.navigationBar.layer.mask = nil
+    column?.additionalSafeAreaInsets.top += pop.barHeight
+  }
+
   func showSidebar() {
     column?.splitViewController?.show(.primary)
   }
@@ -263,6 +327,19 @@ final class SplitViewColumnView: ExpoView {
     controlledNavigation?.setNavigationBarHidden(originalHidden, animated: false)
     controlledNavigation = nil
   }
+}
+
+private struct RootPop {
+  weak var primary: UINavigationController?
+  weak var stack: UINavigationController?
+  weak var item: UINavigationItem?
+  weak var previousItem: UINavigationItem?
+  let title: String?
+  let largeTitleDisplayMode: UINavigationItem.LargeTitleDisplayMode
+  let backTitle: String?
+  let backDisplayMode: UINavigationItem.BackButtonDisplayMode
+  let barHeight: CGFloat
+  var observing = false
 }
 
 final class SplitViewStackScreenView: ExpoView {
@@ -345,13 +422,20 @@ final class SplitViewStackScreenView: ExpoView {
       if navigation.viewControllers.first === controller, item.backAction == nil,
         split.viewController(for: previous) != nil
       {
-        item.backAction = UIAction(title: "Back") { [weak split] _ in split?.show(previous) }
+        item.backAction = UIAction(title: "Back") { [weak split, weak self] _ in
+          self?.beginRootPop()
+          split?.show(previous)
+        }
         backAction = item.backAction
       }
     } else {
       removeBackAction()
     }
     updateRootGesture()
+  }
+
+  fileprivate func beginRootPop() {
+    owner?.beginRootPop(from: self)
   }
 
   fileprivate func canBeginRootGesture(_ gesture: UIGestureRecognizer) -> Bool {

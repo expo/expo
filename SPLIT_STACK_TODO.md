@@ -14,12 +14,20 @@ Issues found on the iPhone Duo simulator with `apps/router-tester`, demo `split-
 
 **Next step:** Find reliable steps to reproduce. Then check which navigation bar the scroll view uses for its inset while the split column bar is hidden.
 
-## Known limitation: root swipe back uses a fade
+## Known limitations
 
-**Steps:** Collapsed layout. Open Settings (nested Stack root). Swipe back to the previous column, or tap Back.
+### Stack root header items hide during the root pop
 
-**Observed:** The split bar stays invisible during the pop and fades in after it, so the previous column header does not slide in with its screen. The rail Back does not follow the swipe: the previous column Back is hidden until the pop ends. Not checked on a Duo. After a Back tap, no header shows for about 0.3 s before the fade.
+**Steps:** Collapsed layout. Add `headerRight` to the Settings root (`apps/router-tester/app/split-view-navigation/settings/index.tsx`). Open Settings and swipe back slowly, or tap Back.
 
-**Why:** UIKit draws a copy of the previous column title over the leaving Stack header when it animates the shared bar of the nested navigation controller. `SplitViewColumnView.hideSharedBarDuringPop` hides that bar until the pop ends.
+**Observed:** The shared split bar shows only the Stack root title and Back. `headerRight` and `headerLeft` items, a search bar and a custom `headerTitle` are hidden from the gesture start until the pop ends or is cancelled. The shared bar copies the large title display mode of the Stack root, but a large title root was not checked on a device.
+
+**Next step:** Mirror the items through an API that Screens supports, or get approval for a Screens change.
+
+The bar is prepared in `gestureRecognizerShouldBegin`, because UIKit starts the pop from its own gesture target before any target Expo could add. If UIKit then starts no transition, the column is restored in the same run loop turn. A one-frame flicker in that case is not expected but was not measured.
+
+### Other root pops still fade
+
+Root pops that start from JavaScript, for example `router.back()` or `show('primary')`, reach UIKit without the Expo preparation. They still use the fallback that hides the shared bar and fades in the previous column header. This path was not tested on a device.
 
 The expanded sidebar button rule for `.twoDisplaceSecondary` is not verified on a device. The iPad Pro 13-inch never entered that display mode.
