@@ -70,7 +70,6 @@
     "expo-task-manager": "workspace:*",
     "expo-video": "workspace:*",
     "expo-web-browser": "workspace:*",
-    "getenv": "^2.0.0",
     "i18n-js": "^3.1.0",
     "invariant": "^2.2.4",
     "jasmine-core": "^5.6.0",
@@ -85,7 +84,6 @@
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",
     "@types/async-retry": "^1.4.5",
-    "@types/getenv": "^1.0.3",
     "@types/invariant": "^2.2.35",
     "@types/jasmine": "^5.1.15",
     "@types/jest": "^30.0.0",
