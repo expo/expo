@@ -42,6 +42,12 @@ export interface StackHeaderItemSharedProps {
    * @default 'plain'
    */
   variant?: 'plain' | 'done' | 'prominent';
+  /**
+   * Where this item sits when iOS 27 moves icon items into the vertical rail on iPhone Duo.
+   *
+   * @platform ios 27.1+
+   */
+  axisBehavior?: 'automatic' | 'horizontalOnly' | 'verticalPreferred';
 }
 
 // We need to pick these properties, as the SharedHeaderItem is not exported by React Navigation
@@ -56,6 +62,7 @@ type RNSharedHeaderItem = Pick<
   | 'width'
   | 'hidesSharedBackground'
   | 'sharesBackground'
+  | 'axisBehavior'
   | 'identifier'
   | 'badge'
   | 'accessibilityLabel'

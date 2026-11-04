@@ -69,6 +69,21 @@ describe('processHeaderItemsForPlatform (iOS)', () => {
     });
   });
 
+  it('unstable_headerRightItems() includes axisBehavior', () => {
+    const result = processHeaderItemsForPlatform(
+      <StackToolbarButton icon="checkmark.circle" axisBehavior="horizontalOnly">
+        Select
+      </StackToolbarButton>,
+      'right'
+    )!;
+
+    const items = result.unstable_headerRightItems!(headerItemProps);
+    expect(items[0]).toMatchObject({
+      type: 'button',
+      axisBehavior: 'horizontalOnly',
+    });
+  });
+
   it('unstable_headerRightItems() returns button items with correct structure', () => {
     const result = processHeaderItemsForPlatform(<StackToolbarButton icon="gear" />, 'right')!;
 
