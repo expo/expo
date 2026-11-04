@@ -29,7 +29,7 @@ To see source changes on a remote device without a new build, connect a [develop
 
 ### Create a development build for the simulator
 
-If you cannot create the native build on your computer, add an EAS Build profile with both `developmentClient: true` and `ios.simulator: true`:
+If you cannot create the native build on your computer, add an Expo Build profile with both `developmentClient: true` and `ios.simulator: true`:
 
 ```json eas.json
 {
@@ -56,7 +56,7 @@ For Android, run the same command with `--platform android`. The profile produce
 
 ### Start Metro with a tunnel
 
-The remote device must reach Metro over the internet. Start Metro with the Expo tunnel **before** you start the session, because EAS opens the Metro URL while the session starts:
+The remote device must reach Metro over the internet. Start Metro with the Expo tunnel **before** you start the session, because Expo Simulators opens the Metro URL while the session starts:
 
 <Terminal cmd={['$ EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel']} />
 
@@ -110,7 +110,7 @@ Edit a source file, then take another screenshot to confirm the change.
 
 ## Connect a local development build
 
-The start command installs a development build only from EAS Build, a fingerprint, or an archive URL. For a local development **.app**, start a blank session and connect through agent-device:
+The start command installs a development build only from Expo Build, a fingerprint, or an archive URL. For a local development **.app**, start a blank session and connect through agent-device:
 
 <Terminal
   cmd={[

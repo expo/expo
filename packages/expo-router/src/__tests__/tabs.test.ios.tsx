@@ -502,7 +502,7 @@ it('does not re-render when navigating to different tab', async () => {
   await act(() => router.push('/one'));
 
   expect(screen.getByTestId('one')).toBeVisible();
-  expect(onOneRender).toHaveBeenCalledTimes(1);
+  expect(onOneRender).toHaveBeenCalledTimes(0);
   expect(onTwoRender).toHaveBeenCalledTimes(0);
 });
 

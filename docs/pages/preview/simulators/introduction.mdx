@@ -1,7 +1,7 @@
 ---
 title: Introduction to Expo Simulators
 sidebar_title: Introduction
-description: Run and control remote Android Emulators and iOS Simulators on EAS infrastructure from the CLI, REST API, an AI agent, or a browser.
+description: Run and control remote Android Emulators and iOS Simulators on Expo infrastructure from the CLI, REST API, an AI agent, or a browser.
 ---
 
 import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
@@ -12,7 +12,7 @@ import { RelatedSkills } from '~/ui/components/RelatedSkills';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-**Expo Simulators** runs a remote Android Emulator or iOS Simulator on EAS infrastructure. You can install an app, inspect its user interface, and interact with it. You can also collect screenshots and recordings or share a browser preview without running the device locally.
+**Expo Simulators** runs a remote Android Emulator or iOS Simulator on Expo infrastructure. You can install an app, inspect its user interface, and interact with it. You can also collect screenshots and recordings or share a browser preview without running the device locally.
 
 Expo Simulators is built for agentic development. It gives coding agents a real device runtime for verifying agent-written code. Agents can fix issues they observe and return evidence from the running app.
 
@@ -23,7 +23,7 @@ Expo Simulators is especially useful when:
 - You want a temporary, shareable browser preview
 - You need to offload simulator compute or test on a remote platform
 
-> **info** If you use Linux or Windows, Expo Simulators gives you an iOS Simulator. It also helps when your computer has limited resources, because the device runs on EAS.
+> **info** If you use Linux or Windows, Expo Simulators gives you an iOS Simulator. It also helps when your computer has limited resources, because the device runs on Expo infrastructure.
 
 Expo Simulators does not replace local Xcode or Android Studio workflows when you already have the required local device runtime. Use it when you need remote or shareable access.
 
@@ -43,14 +43,14 @@ The agent can then complete the runtime loop:
 
 ### Typical setup: a Cursor cloud agent
 
-A common setup is a [Cursor cloud agent](https://cursor.com/cloud) or another background coding agent working in a cloud project checkout. The environment can edit and build the project, but it cannot launch a local iOS Simulator. With the Expo Simulators skill, the agent starts a remote device on EAS and controls it through agent-device or Argent. It then returns the result to the task or pull request, while your computer does not need to host the simulator.
+A common setup is a [Cursor cloud agent](https://cursor.com/cloud) or another background coding agent working in a cloud project checkout. The environment can edit and build the project, but it cannot launch a local iOS Simulator. With the Expo Simulators skill, the agent starts a remote device on Expo infrastructure and controls it through agent-device or Argent. It then returns the result to the task or pull request, while your computer does not need to host the simulator.
 
 ## How it works
 
 An Expo Simulators workflow has four stages:
 
 1. **Start a session** with EAS CLI, the [REST API](/preview/simulators/reference/rest-api/), or an authenticated [create session link](/preview/simulators/how-to/hand-off-a-session/#start-a-session-from-a-link). Give the session a descriptive name, choose a remote device and session type, and optionally set automatic duration or idle limits.
-2. **Install your app.** Pass an EAS Build, build fingerprint, application archive URL, or Expo Go to the start command. You can also install a local build through the controller after the session starts. A session without an application source starts with a blank device.
+2. **Install your app.** Pass an Expo Build, build fingerprint, application archive URL, or Expo Go to the start command. You can also install a local build through the controller after the session starts. A session without an application source starts with a blank device.
 3. **Drive the device.** Use [agent-device](/agents/agent-device/), [Argent](/agents/argent/), or [Appium](https://appium.io/docs/en/) for programmatic control. Each session also includes a browser preview.
 4. **Stop the session.** Stop it explicitly when you finish. An unattended non-interactive session continues consuming usage until it stops or reaches a configured limit.
 
@@ -70,7 +70,7 @@ EAS CLI manages the session lifecycle and connection configuration. Use the REST
 | Physical device access                                         | <NoIcon />                                           |
 | Fast Refresh with Metro using Expo Go or a development build   | <YesIcon />                                          |
 
-Use [EAS Build](/build/introduction/) to create installable builds, and use local device tooling for physical devices.
+Use [Expo Build](/build/introduction/) to create installable builds, and use local device tooling for physical devices.
 
 ## Next steps
 
@@ -83,7 +83,7 @@ Use [EAS Build](/build/introduction/) to create installable builds, and use loca
 
 <BoxLink
   title="Install an app on a remote Android Emulator or iOS Simulator"
-  description="Install an EAS Build, a fingerprint match, an archive, Expo Go, or a local build."
+  description="Install an Expo Build, a fingerprint match, an archive, Expo Go, or a local build."
   href="/preview/simulators/how-to/install-your-app/"
   Icon={Cloud01Icon}
 />

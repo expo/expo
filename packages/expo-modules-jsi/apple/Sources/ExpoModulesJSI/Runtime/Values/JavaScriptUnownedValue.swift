@@ -58,6 +58,12 @@ public struct JavaScriptUnownedValue: ~Copyable {
     self.rawPointer = UnsafeRawPointer(pointer)
   }
 
+  /// Borrows the `jsi::Value` at the given raw pointer, without copying it. `runtime` must be the runtime
+  /// that owns the value, and the value must stay alive and in place while the returned value is used.
+  public init(_ runtime: borrowing JavaScriptRuntime, unsafeValuePointer pointer: UnsafeRawPointer) {
+    self.init(runtime.pointee, pointer.assumingMemoryBound(to: facebook.jsi.Value.self))
+  }
+
   /// Materializes an owning ``JavaScriptValue`` by copying the borrowed `jsi::Value`. Use it when the
   /// value must outlive the decode call (stored, captured, handed to a `Promise`). Takes the
   /// `JavaScriptRuntime` wrapper since the owning value needs it; the caller has it in scope.
@@ -215,6 +221,14 @@ public struct JavaScriptUnownedValue: ~Copyable {
     assert(isBigInt(), "Value is not a BigInt")
     assert(isOwned(by: runtime), "`getBigInt(in:)` must be passed the runtime that owns the borrowed value")
     return JavaScriptBigInt(runtime, pointer.pointee.getBigInt(self.runtime))
+  }
+
+  /// Returns the value as a ``JavaScriptSymbol``, or asserts if it is not a symbol. The zero-copy
+  /// counterpart of ``JavaScriptValue/getSymbol()``, with the same runtime contract as ``getObject(in:)``.
+  public func getSymbol(in runtime: JavaScriptRuntime) -> JavaScriptSymbol {
+    assert(isSymbol(), "Value is not a symbol")
+    assert(isOwned(by: runtime), "`getSymbol(in:)` must be passed the runtime that owns the borrowed value")
+    return JavaScriptSymbol(runtime, pointer.pointee.getSymbol(self.runtime))
   }
 
   /// The kind of the value. The zero-copy counterpart of ``JavaScriptValue/kind``.

@@ -26,12 +26,12 @@ extension Data {
     }
   }
 
-  func formatted(with format: DataFormat?) -> Any {
+  func formatted(with format: DataFormat?) -> BinaryOutput {
     switch format {
     case .bytes, nil:
-      return self
+      return .bytes(self)
     case .base64:
-      return self.base64EncodedString()
+      return .base64(self.base64EncodedString())
     }
   }
 }

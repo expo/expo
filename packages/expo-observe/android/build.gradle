@@ -49,7 +49,7 @@ dependencies {
   // This is a workaround for IDE warning - https://youtrack.jetbrains.com/issue/KTIJ-31549
   implementation "androidx.annotation:annotation-experimental:1.5.1"
 
-  implementation 'androidx.work:work-runtime-ktx:2.9.1'
+  implementation 'androidx.work:work-runtime-ktx:2.10.5'
 
   testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.robolectric:robolectric:4.11.1'

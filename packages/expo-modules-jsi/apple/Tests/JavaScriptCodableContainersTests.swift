@@ -195,6 +195,19 @@ struct JavaScriptCodableContainersTests {
   }
 
   @Test
+  func `decodes a present and absent optional of a non-copyable type`() throws {
+    let present = try JavaScriptObject?.decode(runtime.eval("({ x: 1 })"), in: runtime)
+    switch consume present {
+    case .some(let object):
+      #expect(object.getProperty("x").getInt() == 1)
+    case .none:
+      Issue.record("an object decoded as nil")
+    }
+    #expect(try JavaScriptObject?.decode(runtime.eval("null"), in: runtime) == nil)
+    #expect(try JavaScriptObject?.decode(runtime.eval("undefined"), in: runtime) == nil)
+  }
+
+  @Test
   func `decodes an array of optionals`() throws {
     let decoded = try [Int?].decode(runtime.eval("[1, null, 3]"), in: runtime)
     #expect(decoded == [1, nil, 3])

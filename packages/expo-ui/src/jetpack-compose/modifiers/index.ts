@@ -653,5 +653,18 @@ export const verticalScroll = () => createModifier('verticalScroll');
  */
 export const horizontalScroll = () => createModifier('horizontalScroll');
 
+/**
+ * Hides the keyboard and clears focus when the user starts to drag the scrollable content.
+ *
+ * When used with `verticalScroll()` or `horizontalScroll()` modifier, it must be placed
+ * before them in the modifier list.
+ *
+ * @example
+ * ```tsx
+ * modifiers={[scrollDismissesKeyboard(), verticalScroll()]}
+ * ```
+ */
+export const scrollDismissesKeyboard = () => createModifier('scrollDismissesKeyboard');
+
 export { createModifier, createModifierWithEventListener } from './createModifier';
 export { createViewModifierEventListener } from './utils';

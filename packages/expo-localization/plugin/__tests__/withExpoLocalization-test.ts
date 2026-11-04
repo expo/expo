@@ -93,6 +93,16 @@ describe('setResourceConfigurations', () => {
     expect(result).toContain('resourceConfigurations += ["b+en", "b+fr"]');
   });
 
+  it.each(['1.0.0-beta.1', '0.0.0-dryrun.22', '2.1.0-rc.1+build.5'])(
+    'inserts resourceConfigurations when versionName is "%s"',
+    (version) => {
+      const gradle = buildGradle.replace('versionName "1.0.0"', `versionName "${version}"`);
+      const result = setResourceConfigurations(gradle, ['b+en', 'b+fr']);
+      expect(result).toContain('resourceConfigurations += ["b+en", "b+fr"]');
+      expect(result).toContain(`versionName "${version}"`);
+    }
+  );
+
   it('is idempotent across repeated prebuilds without --clean', () => {
     const once = setResourceConfigurations(buildGradle, ['b+en', 'b+fr']);
     const twice = setResourceConfigurations(once, ['b+en', 'b+fr']);

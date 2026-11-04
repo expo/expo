@@ -170,6 +170,35 @@ it('uses web-only href attributes', () => {
   `);
 });
 
+describe('parentheses in hrefs', () => {
+  it('preserves search params containing parentheses', () => {
+    const { getByTestId } = render(
+      <Link testID="link" href={{ pathname: '/test', params: { a: '(a)', b: 'b' } }}>
+        Foo
+      </Link>
+    );
+    expect(getByTestId('link').getAttribute('href')).toBe('/test?a=(a)&b=b');
+  });
+
+  it('strips groups from the path but not the search params', () => {
+    const { getByTestId } = render(
+      <Link testID="link" href="/(app)/test?a=(a)">
+        Foo
+      </Link>
+    );
+    expect(getByTestId('link').getAttribute('href')).toBe('/test?a=(a)');
+  });
+
+  it('does not strip parentheses from external URLs', () => {
+    const { getByTestId } = render(
+      <Link testID="link" href="https://example.com/my/cool/(file).pdf">
+        Foo
+      </Link>
+    );
+    expect(getByTestId('link').getAttribute('href')).toBe('https://example.com/my/cool/(file).pdf');
+  });
+});
+
 describe('base url relative links', () => {
   let old_base_url: string | undefined = undefined;
 

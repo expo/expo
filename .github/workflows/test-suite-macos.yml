@@ -76,7 +76,8 @@ jobs:
         uses: ruby/setup-ruby@26e5b7d197ebf60545ee9667bcbace0be11ccaec # v1.334.0
         with:
           bundler-cache: true
-          ruby-version: 3.4.11
+          # Ruby 3.4.11 breaks `pod install` at random (https://bugs.ruby-lang.org/issues/22479). Bump to 3.4.13 or later.
+          ruby-version: 3.2.2
       - name: 🔨 Install pnpm
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
