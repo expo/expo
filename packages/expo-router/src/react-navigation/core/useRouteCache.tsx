@@ -7,6 +7,37 @@ import type { RouteProp } from './types';
 
 type RouteCache = Map<string, RouteProp<ParamListBase>>;
 
+const EMPTY_PARAMS = {};
+
+// Same as `isRecordEqual`, but compares `params` by value, because navigating with the same
+// param values creates a new `params` object. Keep the two functions aligned.
+function isRouteEqual(a: RouteProp<ParamListBase>, b: RouteProp<ParamListBase>) {
+  if (a === b) {
+    return true;
+  }
+
+  // `Object.keys` returns `string[]`, but every key comes from a route object.
+  const aKeys = Object.keys(a) as (keyof typeof a)[];
+  const bKeys = Object.keys(b);
+
+  // A route without `params` equals a route with empty `params`, so leave `params` out of the count.
+  const aKeysWithoutParamsCount = aKeys.length - Number('params' in a);
+  const bKeysWithoutParamsCount = bKeys.length - Number('params' in b);
+
+  if (aKeysWithoutParamsCount !== bKeysWithoutParamsCount) {
+    return false;
+  }
+
+  return (
+    aKeys.every((key) => key === 'params' || Object.is(a[key], b[key])) &&
+    // `params` is typed as `object`, but it is always a plain record of param values.
+    isRecordEqual(
+      (a.params ?? EMPTY_PARAMS) as Record<string, unknown>,
+      (b.params ?? EMPTY_PARAMS) as Record<string, unknown>
+    )
+  );
+}
+
 /**
  * Utilities such as `getFocusedRouteNameFromRoute` need to access state.
  * So we need a way to suppress the warning for those use cases.
@@ -28,7 +59,7 @@ export function useRouteCache<State extends NavigationState>(routes: State['rout
 
     let proxy;
 
-    if (previous && isRecordEqual(previous, routeWithoutState)) {
+    if (previous && isRouteEqual(previous, routeWithoutState)) {
       // If a cached route object already exists, reuse it
       proxy = previous;
     } else {
