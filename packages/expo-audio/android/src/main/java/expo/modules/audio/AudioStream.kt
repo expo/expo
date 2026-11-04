@@ -52,6 +52,7 @@ class AudioStream(
     private set
   var channels: Int = 0
     private set
+
   @Volatile
   var isStreaming: Boolean = false
     private set
