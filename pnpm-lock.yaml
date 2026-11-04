@@ -1617,9 +1617,6 @@ importers:
       expo-sqlite:
         specifier: workspace:*
         version: link:../../packages/expo-sqlite
-      jose:
-        specifier: ^5
-        version: 5.10.0
       react:
         specifier: 19.3.0
         version: 19.3.0
@@ -1812,6 +1809,9 @@ importers:
       expo-splash-screen:
         specifier: workspace:*
         version: link:../../packages/expo-splash-screen
+      jose:
+        specifier: ^5
+        version: 5.10.0
       react:
         specifier: 19.3.0
         version: 19.3.0

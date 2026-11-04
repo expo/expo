@@ -240,6 +240,12 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "./middleware/index.tsx",
+      "namedRegex": "^/middleware(?:/)?$",
+      "page": "/middleware/index",
+      "routeKeys": {},
+    },
+    {
       "file": "./api/checks/post-json.tsx",
       "namedRegex": "^/api/checks/post\\-json(?:/)?$",
       "page": "/api/checks/post-json",
@@ -273,6 +279,12 @@ exports[`server-output express requests exported files has expected routes manif
       "file": "./api/checks/post-methods.tsx",
       "namedRegex": "^/api/checks/post\\-methods(?:/)?$",
       "page": "/api/checks/post-methods",
+      "routeKeys": {},
+    },
+    {
+      "file": "./middleware/redirect-target.tsx",
+      "namedRegex": "^/middleware/redirect\\-target(?:/)?$",
+      "page": "/middleware/redirect-target",
       "routeKeys": {},
     },
     {
@@ -319,6 +331,9 @@ exports[`server-output express requests exported files has expected routes manif
       },
     },
   ],
+  "middleware": {
+    "file": "_expo/functions/+middleware.js",
+  },
   "notFoundRoutes": [
     {
       "file": "./+not-found.tsx",
@@ -586,6 +601,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "./middleware/index.tsx",
+      "namedRegex": "^/middleware(?:/)?$",
+      "page": "/middleware/index",
+      "routeKeys": {},
+    },
+    {
       "file": "./api/checks/post-json.tsx",
       "namedRegex": "^/api/checks/post\\-json(?:/)?$",
       "page": "/api/checks/post-json",
@@ -619,6 +640,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       "file": "./api/checks/post-methods.tsx",
       "namedRegex": "^/api/checks/post\\-methods(?:/)?$",
       "page": "/api/checks/post-methods",
+      "routeKeys": {},
+    },
+    {
+      "file": "./middleware/redirect-target.tsx",
+      "namedRegex": "^/middleware/redirect\\-target(?:/)?$",
+      "page": "/middleware/redirect-target",
       "routeKeys": {},
     },
     {
@@ -665,6 +692,9 @@ exports[`server-output workerd requests exported files has expected routes manif
       },
     },
   ],
+  "middleware": {
+    "file": "_expo/functions/+middleware.js",
+  },
   "notFoundRoutes": [
     {
       "file": "./+not-found.tsx",
