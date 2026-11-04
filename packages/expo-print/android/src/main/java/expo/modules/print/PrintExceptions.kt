@@ -11,11 +11,11 @@ internal class UnexpectedPrintException(message: String, cause: Throwable? = nul
 internal class CannotLoadUriException(uri: String? = "null", cause: Throwable? = null) :
   CodedException("An error occurred while trying to load the following data URI: $uri", cause)
 
-internal class InvalidUriException(uri: String? = "null") :
-  CodedException("Given URI: $uri is not valid")
+internal class InvalidUriException(uri: String) :
+  CodedException("Cannot print '$uri' because it is not a supported URI. Use a file://, content://, http:// or https:// URI, or a base64 data URI")
 
 internal class NullUriException :
-  CodedException("Given URI is null")
+  CodedException("No data to print. Specify the `uri` or the `html` option")
 
 internal class PdfWriteException(cause: Throwable? = null) :
   CodedException("An error occurred while writing the PDF data", cause)
