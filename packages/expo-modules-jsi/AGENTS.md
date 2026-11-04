@@ -31,7 +31,7 @@ apple/
 ├── Tests/                         # Swift Testing suites, one per type
 ```
 
-In-package C++ headers (consumed by `ExpoModulesJSI`'s own Swift sources) live in `apple/Sources/ExpoModulesJSI-Cxx/include/`: `CppError.h`, `HermesRuntime.h`, `HostFunctionClosure.h`, `HostObject.h`, `HostObjectCallbacks.h`, `JSIUtils.h`, `MemoryBuffer.h`, `Microtasks.h`, `RetainedSwiftPointer.h`, `RuntimeScheduler.h`, `TypedArray.h`.
+In-package C++ headers (consumed by `ExpoModulesJSI`'s own Swift sources) live in `apple/Sources/ExpoModulesJSI-Cxx/include/`: `CppError.h`, `HermesRuntime.h`, `HostFunctionClosure.h`, `HostObject.h`, `HostObjectCallbacks.h`, `JSIUtils.h`, `MemoryBuffer.h`, `Microtasks.h`, `RetainedSwiftPointer.h`, `RuntimeLookupCache.h`, `RuntimeScheduler.h`, `TypedArray.h`.
 
 Headers under `include/Public/` (today just `NativeState.h`) are additionally copied into the xcframework's `Headers/` directory by `build-xcframework.sh` and exposed via a `requires cplusplus` modulemap submodule, so non-interop C++ consumers (e.g. `expo-modules-core`) can include them via `<ExpoModulesJSI/NativeState.h>` and use `__has_include` for graceful fallback on non-Apple platforms.
 
