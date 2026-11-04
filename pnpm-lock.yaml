@@ -2648,9 +2648,6 @@ importers:
       require-from-string:
         specifier: ^2.0.2
         version: 2.0.2
-      temp-dir:
-        specifier: ^2.0.0
-        version: 2.0.0
 
   packages/@expo/image-utils:
     dependencies:
