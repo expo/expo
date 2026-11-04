@@ -150,7 +150,13 @@ export async function getFilesToExportFromServerAsync(
         try {
           const targetDomain = exportServer ? 'server' : 'client';
           files.set(filePath, { contents: '', targetDomain });
-          const data = await renderAsync({ route, filePath, pathname });
+          const done = debugEvent.span();
+          let data: string;
+          try {
+            data = await renderAsync({ route, filePath, pathname });
+          } finally {
+            done('static:render', { pathname });
+          }
           files.set(filePath, {
             contents: data,
             routeId: pathname,

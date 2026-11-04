@@ -17,6 +17,7 @@ declare module '2g' {
       total: number;
       withLoaders: number;
     };
+    'export:static:render': { pathname: string };
     'export:eager:starting': { bundleOutput: string };
     'export:embed:nonstandard_location': { bundleOutput: string };
     'export:embed:possible_previous_bundle': { possiblePath: string };
