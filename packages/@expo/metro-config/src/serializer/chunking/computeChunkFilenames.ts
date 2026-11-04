@@ -1,5 +1,8 @@
 import type { SerializerConfigT } from '@expo/metro/metro-config';
+import path from 'path';
 
+import { stringToUUID } from '../debugId';
+import { getExportFilename } from '../exportPath';
 import type { Chunk } from './Chunk';
 
 interface TopologicalSet {
@@ -116,6 +119,9 @@ interface PrecomputeChunkFilenamesInput {
   chunksByPath: Map<string, Chunk>;
   serializerConfig: Partial<SerializerConfigT>;
   recomputeChunkNames: boolean;
+  entryFilename?: string;
+  outputDirectory?: string;
+  outputExtension?: string;
 }
 
 /** Precompute each chunk's emitted filename.
@@ -128,15 +134,36 @@ export function precomputeChunkFilenames({
   chunksByPath,
   serializerConfig,
   recomputeChunkNames,
-}: PrecomputeChunkFilenamesInput): Map<Chunk, string> {
-  const filenames = new Map<Chunk, string>();
+  entryFilename,
+  outputDirectory,
+  outputExtension,
+}: PrecomputeChunkFilenamesInput): {
+  filenamesByChunk: Map<Chunk, string>;
+  debugIdsByChunk: Map<Chunk, string>;
+} {
+  const filenamesByChunk = new Map<Chunk, string>();
+  const debugIdsByChunk = new Map<Chunk, string>();
+  const setOutput = (chunk: Chunk, contentFilename: string) => {
+    const filename = recomputeChunkNames
+      ? getExportFilename(contentFilename, {
+          entryFilename: chunk.isEntry && !chunk.sealed ? entryFilename : undefined,
+          outputDirectory,
+          outputExtension,
+        })
+      : contentFilename;
+    filenamesByChunk.set(chunk, filename);
+    debugIdsByChunk.set(
+      chunk,
+      stringToUUID(path.basename(contentFilename, path.extname(contentFilename)))
+    );
+  };
 
   // When not exporting, chunk.getFilename ignores its input
   if (!recomputeChunkNames) {
     for (const chunk of chunks) {
-      filenames.set(chunk, chunk.name);
+      setOutput(chunk, chunk.name);
     }
-    return filenames;
+    return { filenamesByChunk, debugIdsByChunk };
   }
 
   const intrinsics = makeIntrinsics(serializerConfig);
@@ -149,7 +176,8 @@ export function precomputeChunkFilenames({
         parts.push(intrinsics.getHash(candidate));
       }
     }
-    filenames.set(chunk, chunk.getFilename(parts.join('\n')));
+    setOutput(chunk, chunk.getFilename(parts.join('\n')));
   }
-  return filenames;
+  // TODO(@kitten): Provide an intermediary method for getting filenames and debugIds by chunk.
+  return { filenamesByChunk, debugIdsByChunk };
 }
