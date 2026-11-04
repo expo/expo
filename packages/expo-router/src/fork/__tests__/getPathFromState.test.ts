@@ -1,7 +1,6 @@
 import { getPathFromState } from '../getPathFromState';
 import { getStateFromPath } from '../getStateFromPath';
 
-// Runs on every platform: the path builder is shared by web and native linking.
 it.each([['a?b c', '50%', 'd#e'], 'a?b c/50%/d#e'])(
   'encodes each catch-all segment (%j)',
   (slug) => {
