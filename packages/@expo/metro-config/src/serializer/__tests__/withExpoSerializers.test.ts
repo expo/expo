@@ -59,6 +59,67 @@ it.each([
   expect(source.endsWith(footer)).toBe(true);
 });
 
+it.each([
+  [false, false],
+  [true, false],
+  [true, true],
+])(
+  'normalizes conventional custom server maps (exclude source: %s, inline: %s)',
+  async (excludeSource, inlineSourceMap) => {
+    const args = await microBundle({
+      fs: { 'index.js': 'export const value = 42;' },
+      options: { dev: true, isServer: true, sourceMaps: true },
+    });
+    const custom = {
+      code: 'module.exports = 42;',
+      map: JSON.stringify({
+        version: 3,
+        debugId: 'custom-id',
+        sections: [
+          {
+            offset: { line: 0, column: 0 },
+            map: {
+              version: 3,
+              sources: ['custom://project/entry.ts'],
+              sourcesContent: ['source text'],
+              names: [],
+              mappings: 'AAAA',
+              x_google_ignoreList: [0],
+            },
+          },
+        ],
+      }),
+    };
+    if (inlineSourceMap)
+      custom.code +=
+        '\n//# sourceMappingURL=data:application/json;base64,' +
+        Buffer.from(custom.map).toString('base64');
+    const serializer = withSerializerPlugins(
+      { projectRoot, serializer: { customSerializer: (async () => custom) as Serializer } },
+      []
+    ).serializer.customSerializer;
+    const result = (await serializer(args[0], args[1], args[2], {
+      ...args[3],
+      inlineSourceMap,
+      serializerOptions: { excludeSource },
+    } as ExpoSerializerOptions)) as { code: string; map: string };
+    const map = JSON.parse(result.map);
+    if (inlineSourceMap) {
+      const embedded = Buffer.from(result.code.match(/base64,([^\n]+)/)![1]!, 'base64').toString();
+      expect(JSON.parse(embedded)).toEqual(map);
+    } else expect(result.code).toBe(custom.code);
+    expect(map.sections).toBeUndefined();
+    expect(map).toMatchObject({
+      debugId: 'custom-id',
+      sources: ['custom://project/entry.ts'],
+      mappings: 'AAAA',
+      ignoreList: [0],
+      x_google_ignoreList: [0],
+    });
+    expect(map.sourcesContent).toEqual(excludeSource ? undefined : ['source text']);
+  }
+);
+
 it('retains graph CSS and Metro assets when adapting custom server output', async () => {
   const [entry, premodules, graph, options] = await microBundle({
     fs: { 'index.js': 'export const value = 42;' },

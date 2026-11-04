@@ -1,7 +1,9 @@
 import crypto from 'crypto';
+import resolveFrom from 'resolve-from';
 
 import {
   addDomBundleToMetadataAsync,
+  exportDomComponentAsync,
   transformDomEntryForMd5Filename,
   transformNativeBundleForMd5Filename,
 } from '../exportDomComponents';
@@ -27,6 +29,50 @@ const mockMd5 = jest.fn().mockReturnValue('MOCK_CONTENTS_MD5_HASH');
     return self;
   }
   return jest.fn();
+});
+
+it('keeps DOM bundle map references valid after choosing MD5 filenames', async () => {
+  jest.mocked(resolveFrom).mockReturnValueOnce('/app/dom-entry.js');
+  const bundle: BundleOutput = {
+    assets: [],
+    artifacts: [
+      {
+        filename: 'entry.js',
+        originFilename: 'entry.ts',
+        type: 'js',
+        source: 'console.log(42);\n//# sourceMappingURL=entry.js.map\n//# debugId=original-id',
+        metadata: {},
+      },
+      {
+        filename: 'entry.js.map',
+        originFilename: 'entry.ts',
+        type: 'map',
+        source: JSON.stringify({
+          version: 3,
+          sources: ['entry.ts'],
+          names: [],
+          mappings: 'AAAA',
+          debugId: 'original-id',
+        }),
+        metadata: {},
+      },
+    ],
+  };
+  await exportDomComponentAsync({
+    filePath: '/app/Dom.tsx',
+    projectRoot: '/app',
+    dev: false,
+    isHermes: false,
+    includeSourceMaps: true,
+    exp: {} as any,
+    files: new Map(),
+    useMd5Filename: true,
+    devServer: { legacySinglePageExportBundleAsync: async () => bundle } as any,
+  });
+  const js = bundle.artifacts.find((asset) => asset.type === 'js')!;
+  const map = bundle.artifacts.find((asset) => asset.type === 'map')!;
+  expect(js.source.match(/sourceMappingURL=([^\n]+)/)?.[1]).toBe(map.filename);
+  expect(js.source).toContain('//# debugId=original-id');
 });
 
 describe(addDomBundleToMetadataAsync, () => {
