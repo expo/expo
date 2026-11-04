@@ -93,9 +93,18 @@ class GoogleMapsView(context: Context, appContext: AppContext) :
   private lateinit var markerState: State<List<Pair<MarkerRecord, MarkerState>>>
 
   override fun dispatchTouchEvent(event: MotionEvent): Boolean {
-    if (event.action == MotionEvent.ACTION_DOWN) {
-      lastTouchPoint = Point(event.x.toInt(), event.y.toInt())
+    when (event.actionMasked) {
+      MotionEvent.ACTION_DOWN -> {
+        if (props.uiSettings.value.scrollGesturesEnabled) {
+          parent?.requestDisallowInterceptTouchEvent(true)
+        }
+        lastTouchPoint = Point(event.x.toInt(), event.y.toInt())
+      }
+
+      MotionEvent.ACTION_UP,
+      MotionEvent.ACTION_CANCEL -> parent?.requestDisallowInterceptTouchEvent(false)
     }
+
     return super.dispatchTouchEvent(event)
   }
 
