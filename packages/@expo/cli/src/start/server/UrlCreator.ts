@@ -98,9 +98,7 @@ export class UrlCreator {
       return null;
     }
 
-    // We fallback to the assumed scheme based on whether we have our own proxy (a tunnel)
-    const scheme =
-      options?.forwarded?.protocol ?? (this.defaults?.hostType === 'tunnel' ? 'https' : 'http');
+    const scheme = options?.forwarded?.protocol ?? 'http';
     const manifestUrl = this.constructUrl({ ...options, scheme });
     const manifestUrlEncoded = encodeURIComponent(manifestUrl);
     const devClientUrl = withDevMenuLaunchParams(`${protocol}://?__expo_url=${manifestUrlEncoded}`);
@@ -113,7 +111,11 @@ export class UrlCreator {
     options?: Partial<CreateURLOptions> | null,
     scheme: 'exp' | 'exps' = 'exp'
   ): string {
-    return withDevMenuLaunchParams(this.constructUrl({ ...options, scheme }));
+    const url = this.constructUrl({
+      ...options,
+      scheme: scheme === 'exps' ? 'https' : (options?.forwarded?.protocol ?? 'http'),
+    });
+    return withDevMenuLaunchParams(url.replace(/^http/, 'exp'));
   }
 
   /** Create a generic URL. */
@@ -135,7 +137,7 @@ export class UrlCreator {
     return this.defaults?.scheme ?? null;
   }
 
-  /** Get the URL components from the Ngrok server URL. */
+  /** Get the URL components from the tunnel URL. */
   private getTunnelUrlComponents(options: Pick<CreateURLOptions, 'scheme'>): UrlComponents | null {
     const tunnelUrl = this.bundlerInfo.getTunnelUrl?.();
     if (!tunnelUrl) {
@@ -145,7 +147,10 @@ export class UrlCreator {
     return {
       port: parsed.port,
       hostname: parsed.hostname,
-      protocol: options.scheme ?? 'http',
+      protocol:
+        parsed.protocol === 'https:' && (options.scheme == null || options.scheme === 'http')
+          ? 'https'
+          : (options.scheme ?? 'http'),
     };
   }
 
