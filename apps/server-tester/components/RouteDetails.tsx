@@ -1,11 +1,17 @@
 import { useGlobalSearchParams, usePathname, useSegments } from 'expo-router';
+import { ReactNode } from 'react';
 
 import { Json } from './Json';
 import { Panel } from './Panel';
 import { PanelGroup } from './PanelGroup';
 import { Section } from './Section';
 
-export function RouteDetails() {
+interface RouteDetailsProps {
+  /** Extra sections laid out with the route and params sections. */
+  children?: ReactNode;
+}
+
+export function RouteDetails({ children }: RouteDetailsProps) {
   const pathname = usePathname();
   const segments = useSegments();
   const params = useGlobalSearchParams();
@@ -21,6 +27,7 @@ export function RouteDetails() {
           <Json value={params} testID="route-params" />
         </Panel>
       </Section>
+      {children}
     </PanelGroup>
   );
 }

@@ -100,6 +100,20 @@ exports[`server-output express requests exported files has expected routes manif
   },
   "htmlRoutes": [
     {
+      "file": "./loaders/nested/index.tsx",
+      "loader": "_expo/loaders/loaders/nested/index.js",
+      "namedRegex": "^/loaders/nested(?:/)?$",
+      "page": "/loaders/nested/index",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/index.tsx",
+      "loader": "_expo/loaders/loaders/index.js",
+      "namedRegex": "^/loaders(?:/)?$",
+      "page": "/loaders/index",
+      "routeKeys": {},
+    },
+    {
       "file": "./index.tsx",
       "namedRegex": "^/(?:/)?$",
       "page": "/index",
@@ -109,6 +123,13 @@ exports[`server-output express requests exported files has expected routes manif
       "file": "./routing/(alpha)/beta.tsx",
       "namedRegex": "^/routing(?:/\\(alpha\\))?/beta(?:/)?$",
       "page": "/routing/(alpha)/beta",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/groups/(group)/index.tsx",
+      "loader": "_expo/loaders/loaders/groups/(group)/index.js",
+      "namedRegex": "^/loaders/groups(?:/\\(group\\))?(?:/)?$",
+      "page": "/loaders/groups/(group)/index",
       "routeKeys": {},
     },
     {
@@ -130,6 +151,55 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "./loaders/env.tsx",
+      "loader": "_expo/loaders/loaders/env.js",
+      "namedRegex": "^/loaders/env(?:/)?$",
+      "page": "/loaders/env",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/slow.tsx",
+      "loader": "_expo/loaders/loaders/slow.js",
+      "namedRegex": "^/loaders/slow(?:/)?$",
+      "page": "/loaders/slow",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/meta.tsx",
+      "loader": "_expo/loaders/loaders/meta.js",
+      "namedRegex": "^/loaders/meta(?:/)?$",
+      "page": "/loaders/meta",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/error.tsx",
+      "loader": "_expo/loaders/loaders/error.js",
+      "namedRegex": "^/loaders/error(?:/)?$",
+      "page": "/loaders/error",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/second.tsx",
+      "loader": "_expo/loaders/loaders/second.js",
+      "namedRegex": "^/loaders/second(?:/)?$",
+      "page": "/loaders/second",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/request.tsx",
+      "loader": "_expo/loaders/loaders/request.js",
+      "namedRegex": "^/loaders/request(?:/)?$",
+      "page": "/loaders/request",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/response.tsx",
+      "loader": "_expo/loaders/loaders/response.js",
+      "namedRegex": "^/loaders/response(?:/)?$",
+      "page": "/loaders/response",
+      "routeKeys": {},
+    },
+    {
       "file": "expo-router/build/views/Sitemap.js",
       "generated": true,
       "namedRegex": "^/_sitemap(?:/)?$",
@@ -137,9 +207,36 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "./loaders/no-loader.tsx",
+      "namedRegex": "^/loaders/no\\-loader(?:/)?$",
+      "page": "/loaders/no-loader",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/static-helper.tsx",
+      "loader": "_expo/loaders/loaders/static-helper.js",
+      "namedRegex": "^/loaders/static\\-helper(?:/)?$",
+      "page": "/loaders/static-helper",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/server-helper.tsx",
+      "loader": "_expo/loaders/loaders/server-helper.js",
+      "namedRegex": "^/loaders/server\\-helper(?:/)?$",
+      "page": "/loaders/server-helper",
+      "routeKeys": {},
+    },
+    {
       "file": "./api/with-page.tsx",
       "namedRegex": "^/api/with\\-page(?:/)?$",
       "page": "/api/with-page",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/large-suspense.tsx",
+      "loader": "_expo/loaders/loaders/large-suspense.js",
+      "namedRegex": "^/loaders/large\\-suspense(?:/)?$",
+      "page": "/loaders/large-suspense",
       "routeKeys": {},
     },
     {
@@ -194,6 +291,33 @@ exports[`server-output express requests exported files has expected routes manif
         "postId": "postId",
       },
     },
+    {
+      "file": "./loaders/posts/[postId].tsx",
+      "loader": "_expo/loaders/loaders/posts/[postId].js",
+      "namedRegex": "^/loaders/posts/(?<postId>[^/]+?)(?:/)?$",
+      "page": "/loaders/posts/[postId]",
+      "routeKeys": {
+        "postId": "postId",
+      },
+    },
+    {
+      "file": "./loaders/nullish/[value].tsx",
+      "loader": "_expo/loaders/loaders/nullish/[value].js",
+      "namedRegex": "^/loaders/nullish/(?<value>[^/]+?)(?:/)?$",
+      "page": "/loaders/nullish/[value]",
+      "routeKeys": {
+        "value": "value",
+      },
+    },
+    {
+      "file": "./loaders/groups/(group)/platform/[...slug].web.tsx",
+      "loader": "_expo/loaders/loaders/groups/(group)/platform/[...slug].js",
+      "namedRegex": "^/loaders/groups(?:/\\(group\\))?/platform(?:/(?<slug>.+?))?(?:/)?$",
+      "page": "/loaders/groups/(group)/platform/[...slug]",
+      "routeKeys": {
+        "slug": "slug",
+      },
+    },
   ],
   "notFoundRoutes": [
     {
@@ -203,6 +327,14 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {
         "notfound": "not-found",
       },
+    },
+  ],
+  "pageHeaders": [
+    {
+      "headers": {
+        "Cache-Control": "no-store",
+      },
+      "namedRegex": "^/_expo/loaders/.+$",
     },
   ],
   "redirects": [],
@@ -314,6 +446,20 @@ exports[`server-output workerd requests exported files has expected routes manif
   },
   "htmlRoutes": [
     {
+      "file": "./loaders/nested/index.tsx",
+      "loader": "_expo/loaders/loaders/nested/index.js",
+      "namedRegex": "^/loaders/nested(?:/)?$",
+      "page": "/loaders/nested/index",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/index.tsx",
+      "loader": "_expo/loaders/loaders/index.js",
+      "namedRegex": "^/loaders(?:/)?$",
+      "page": "/loaders/index",
+      "routeKeys": {},
+    },
+    {
       "file": "./index.tsx",
       "namedRegex": "^/(?:/)?$",
       "page": "/index",
@@ -323,6 +469,13 @@ exports[`server-output workerd requests exported files has expected routes manif
       "file": "./routing/(alpha)/beta.tsx",
       "namedRegex": "^/routing(?:/\\(alpha\\))?/beta(?:/)?$",
       "page": "/routing/(alpha)/beta",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/groups/(group)/index.tsx",
+      "loader": "_expo/loaders/loaders/groups/(group)/index.js",
+      "namedRegex": "^/loaders/groups(?:/\\(group\\))?(?:/)?$",
+      "page": "/loaders/groups/(group)/index",
       "routeKeys": {},
     },
     {
@@ -344,6 +497,55 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "./loaders/env.tsx",
+      "loader": "_expo/loaders/loaders/env.js",
+      "namedRegex": "^/loaders/env(?:/)?$",
+      "page": "/loaders/env",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/slow.tsx",
+      "loader": "_expo/loaders/loaders/slow.js",
+      "namedRegex": "^/loaders/slow(?:/)?$",
+      "page": "/loaders/slow",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/meta.tsx",
+      "loader": "_expo/loaders/loaders/meta.js",
+      "namedRegex": "^/loaders/meta(?:/)?$",
+      "page": "/loaders/meta",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/error.tsx",
+      "loader": "_expo/loaders/loaders/error.js",
+      "namedRegex": "^/loaders/error(?:/)?$",
+      "page": "/loaders/error",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/second.tsx",
+      "loader": "_expo/loaders/loaders/second.js",
+      "namedRegex": "^/loaders/second(?:/)?$",
+      "page": "/loaders/second",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/request.tsx",
+      "loader": "_expo/loaders/loaders/request.js",
+      "namedRegex": "^/loaders/request(?:/)?$",
+      "page": "/loaders/request",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/response.tsx",
+      "loader": "_expo/loaders/loaders/response.js",
+      "namedRegex": "^/loaders/response(?:/)?$",
+      "page": "/loaders/response",
+      "routeKeys": {},
+    },
+    {
       "file": "expo-router/build/views/Sitemap.js",
       "generated": true,
       "namedRegex": "^/_sitemap(?:/)?$",
@@ -351,9 +553,36 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "./loaders/no-loader.tsx",
+      "namedRegex": "^/loaders/no\\-loader(?:/)?$",
+      "page": "/loaders/no-loader",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/static-helper.tsx",
+      "loader": "_expo/loaders/loaders/static-helper.js",
+      "namedRegex": "^/loaders/static\\-helper(?:/)?$",
+      "page": "/loaders/static-helper",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/server-helper.tsx",
+      "loader": "_expo/loaders/loaders/server-helper.js",
+      "namedRegex": "^/loaders/server\\-helper(?:/)?$",
+      "page": "/loaders/server-helper",
+      "routeKeys": {},
+    },
+    {
       "file": "./api/with-page.tsx",
       "namedRegex": "^/api/with\\-page(?:/)?$",
       "page": "/api/with-page",
+      "routeKeys": {},
+    },
+    {
+      "file": "./loaders/large-suspense.tsx",
+      "loader": "_expo/loaders/loaders/large-suspense.js",
+      "namedRegex": "^/loaders/large\\-suspense(?:/)?$",
+      "page": "/loaders/large-suspense",
       "routeKeys": {},
     },
     {
@@ -408,6 +637,33 @@ exports[`server-output workerd requests exported files has expected routes manif
         "postId": "postId",
       },
     },
+    {
+      "file": "./loaders/posts/[postId].tsx",
+      "loader": "_expo/loaders/loaders/posts/[postId].js",
+      "namedRegex": "^/loaders/posts/(?<postId>[^/]+?)(?:/)?$",
+      "page": "/loaders/posts/[postId]",
+      "routeKeys": {
+        "postId": "postId",
+      },
+    },
+    {
+      "file": "./loaders/nullish/[value].tsx",
+      "loader": "_expo/loaders/loaders/nullish/[value].js",
+      "namedRegex": "^/loaders/nullish/(?<value>[^/]+?)(?:/)?$",
+      "page": "/loaders/nullish/[value]",
+      "routeKeys": {
+        "value": "value",
+      },
+    },
+    {
+      "file": "./loaders/groups/(group)/platform/[...slug].web.tsx",
+      "loader": "_expo/loaders/loaders/groups/(group)/platform/[...slug].js",
+      "namedRegex": "^/loaders/groups(?:/\\(group\\))?/platform(?:/(?<slug>.+?))?(?:/)?$",
+      "page": "/loaders/groups/(group)/platform/[...slug]",
+      "routeKeys": {
+        "slug": "slug",
+      },
+    },
   ],
   "notFoundRoutes": [
     {
@@ -417,6 +673,14 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {
         "notfound": "not-found",
       },
+    },
+  ],
+  "pageHeaders": [
+    {
+      "headers": {
+        "Cache-Control": "no-store",
+      },
+      "namedRegex": "^/_expo/loaders/.+$",
     },
   ],
   "redirects": [],

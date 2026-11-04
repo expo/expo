@@ -6,7 +6,8 @@ const serverConfig :Workerd.Config = (
   sockets = [ ( name = "http", address = "*:8787", http = (), service = "main" ) ]
 );
 
-# workerd embeds modules by name. Add one entry for every exported API route under `_expo/functions/`.
+# workerd embeds modules by name. Add one entry for every exported API route under `_expo/functions/`
+# and every exported loader under `_expo/loaders/`.
 const server :Workerd.Worker = (
   modules = [
     (name = "worker", esModule = embed "workerd.js"),
@@ -26,6 +27,24 @@ const server :Workerd.Worker = (
     (name = "_expo/functions/api/throws+api.js", commonJsModule = embed "_expo/functions/api/throws+api.js"),
     (name = "_expo/functions/api/with-page+api.js", commonJsModule = embed "_expo/functions/api/with-page+api.js"),
     (name = "_expo/functions/routing/(a,b)/multi-group-api+api.js", commonJsModule = embed "_expo/functions/routing/(a,b)/multi-group-api+api.js"),
+    (name = "_expo/loaders/loaders/index.js", commonJsModule = embed "_expo/loaders/loaders/index.js"),
+    (name = "_expo/loaders/loaders/env.js", commonJsModule = embed "_expo/loaders/loaders/env.js"),
+    (name = "_expo/loaders/loaders/large-suspense.js", commonJsModule = embed "_expo/loaders/loaders/large-suspense.js"),
+    (name = "_expo/loaders/loaders/meta.js", commonJsModule = embed "_expo/loaders/loaders/meta.js"),
+    (name = "_expo/loaders/loaders/nested/index.js", commonJsModule = embed "_expo/loaders/loaders/nested/index.js"),
+    (name = "_expo/loaders/loaders/second.js", commonJsModule = embed "_expo/loaders/loaders/second.js"),
+    (name = "_expo/loaders/loaders/posts/[postId].js", commonJsModule = embed "_expo/loaders/loaders/posts/[postId].js"),
+    (name = "_expo/loaders/loaders/nullish/[value].js", commonJsModule = embed "_expo/loaders/loaders/nullish/[value].js"),
+    (name = "_expo/loaders/loaders/request.js", commonJsModule = embed "_expo/loaders/loaders/request.js"),
+    (name = "_expo/loaders/loaders/response.js", commonJsModule = embed "_expo/loaders/loaders/response.js"),
+    (name = "_expo/loaders/loaders/groups/(group)/index.js", commonJsModule = embed "_expo/loaders/loaders/groups/(group)/index.js"),
+    (name = "_expo/loaders/loaders/groups/(group)/platform/[...slug].js", commonJsModule = embed "_expo/loaders/loaders/groups/(group)/platform/[...slug].js"),
+    (name = "_expo/loaders/loaders/static-helper.js", commonJsModule = embed "_expo/loaders/loaders/static-helper.js"),
+    (name = "_expo/loaders/loaders/server-helper.js", commonJsModule = embed "_expo/loaders/loaders/server-helper.js"),
+  ],
+  bindings = [
+    (name = "TEST_SECRET_RUNTIME_KEY", text = "runtime-secret-value"),
+    (name = "E2E_ROUTER_WEB_OUTPUT", text = "server"),
   ],
   compatibilityDate = "2025-05-05",
   compatibilityFlags = [
