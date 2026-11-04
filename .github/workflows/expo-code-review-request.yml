@@ -36,25 +36,18 @@ jobs:
           REPO: ${{ github.repository }}
           PR: ${{ github.event.pull_request.number }}
           SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
-          AUTHOR_ASSOCIATION: ${{ github.event.pull_request.author_association }}
+          AUTHOR: ${{ github.event.pull_request.user.login }}
           SENDER: ${{ github.event.sender.login }}
           HAS_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'ai-review') }}
         run: |
-          allowed=false
-          if [ "$SAME_REPO" = true ]; then
-            allowed=true
-          else
-            case "$AUTHOR_ASSOCIATION" in
-              OWNER | MEMBER | COLLABORATOR) allowed=true ;;
+          # A collaborator can have read access only, so check the permission itself.
+          can_write() {
+            case "$(gh api "repos/$REPO/collaborators/$1/permission" --jq .permission 2>/dev/null || true)" in
+              admin | maintain | write) return 0 ;;
             esac
-          fi
-          if [ "$allowed" != true ]; then
-            permission=$(gh api "repos/$REPO/collaborators/$SENDER/permission" --jq .permission 2>/dev/null || true)
-            case "$permission" in
-              admin | maintain | write) allowed=true ;;
-            esac
-          fi
-          if [ "$allowed" != true ]; then
+            return 1
+          }
+          if [ "$SAME_REPO" != true ] && ! can_write "$AUTHOR" && ! can_write "$SENDER"; then
             echo "Not starting the AI review: a maintainer can add the ai-review label."
             exit 0
           fi
