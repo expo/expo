@@ -33,6 +33,7 @@ import { stripAnsi } from '../../utils/ansi';
 import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
+import { toPosixPath } from '../../utils/filePath';
 import { compileHermesArtifactsAsync } from '../compileHermesArtifacts';
 import { debugEvent } from '../events';
 import { exportDomComponentAsync } from '../exportDomComponents';
@@ -144,7 +145,7 @@ export async function exportEmbedInternalAsync(projectRoot: string, options: Opt
 
   // Persist bundle and source maps.
   await Promise.all([
-    output.save(bundle, options, Log.log),
+    output.save(bundle, { ...options, sourcemapSourcesRoot: undefined }, Log.log),
 
     // Write dom components proxy files.
     hasDomComponents ? persistMetroFilesAsync(files, domComponentProxyOutputDir) : null,
@@ -193,6 +194,7 @@ export async function exportEmbedBundleAndAssetsAsync(
   const isHermes = isEnableHermesManaged(exp, options.platform);
 
   let sourceMapUrl = options.sourcemapOutput;
+  const { sourcemapSourcesRoot } = options;
   if (sourceMapUrl && !options.sourcemapUseAbsolutePath) {
     sourceMapUrl = path.basename(sourceMapUrl);
   }
@@ -218,6 +220,13 @@ export async function exportEmbedBundleAndAssetsAsync(
       files,
       {
         sourceMapUrl,
+        getSourceUrl:
+          sourcemapSourcesRoot != null
+            ? (module) =>
+                path.isAbsolute(module.path)
+                  ? toPosixPath(path.relative(sourcemapSourcesRoot, module.path))
+                  : module.path
+            : undefined,
         unstable_transformProfile: (options.unstableTransformProfile ||
           (isHermes ? 'hermes-stable' : 'default')) as BundleOptions['unstable_transformProfile'],
       }
@@ -287,6 +296,7 @@ export async function exportEmbedBundleAndAssetsAsync(
       await compileHermesArtifactsAsync(projectRoot, bundles.artifacts);
     }
 
+    // NOTE(@kitten): Workers are only supported on web, so native embedding expects a single bundle.
     return {
       files,
       bundle: {
