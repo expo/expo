@@ -51,7 +51,7 @@ jobs:
             echo "Not starting the AI review: a maintainer can add the ai-review label."
             exit 0
           fi
-          # Re-adding the label is what starts a new review on a re-request.
+          # Re-adding the label starts the review workflow again on a re-request.
           if [ "$HAS_LABEL" = true ]; then
             gh pr edit "$PR" --repo "$REPO" --remove-label ai-review
           fi
