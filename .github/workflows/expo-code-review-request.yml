@@ -1,0 +1,65 @@
+name: AI code review request
+
+# Requesting expo-bot's review starts the AI review. CODEOWNERS requests it for some
+# paths, and anyone can re-request it. This workflow only adds the `ai-review` label;
+# expo-code-review.yml runs the review on that label, as when a maintainer adds it.
+#
+# SECURITY: `pull_request_target`, and no checkout: this job reads nothing from the PR
+# and runs no PR code.
+on:
+  pull_request_target:
+    types: [review_requested]
+    branches: [main, 'sdk-*']
+
+# The label is added with EXPO_BOT_REVIEW_TOKEN, so the `labeled` event starts the
+# review workflow. A label added with GITHUB_TOKEN would not.
+permissions: {}
+
+concurrency:
+  group: ai-code-review-request-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  label:
+    if: >-
+      ${{ github.event.requested_reviewer.login == 'expo-bot'
+      && !github.event.pull_request.draft
+      && !contains(github.event.pull_request.labels.*.name, 'ai-review:skip') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      # A PR from a fork by someone outside the team needs a maintainer, as before:
+      # an automatic review spends model and sandbox budget.
+      - name: Add the ai-review label
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+          SAME_REPO: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+          AUTHOR_ASSOCIATION: ${{ github.event.pull_request.author_association }}
+          SENDER: ${{ github.event.sender.login }}
+          HAS_LABEL: ${{ contains(github.event.pull_request.labels.*.name, 'ai-review') }}
+        run: |
+          allowed=false
+          if [ "$SAME_REPO" = true ]; then
+            allowed=true
+          else
+            case "$AUTHOR_ASSOCIATION" in
+              OWNER | MEMBER | COLLABORATOR) allowed=true ;;
+            esac
+          fi
+          if [ "$allowed" != true ]; then
+            permission=$(gh api "repos/$REPO/collaborators/$SENDER/permission" --jq .permission 2>/dev/null || true)
+            case "$permission" in
+              admin | maintain | write) allowed=true ;;
+            esac
+          fi
+          if [ "$allowed" != true ]; then
+            echo "Not starting the AI review: a maintainer can add the ai-review label."
+            exit 0
+          fi
+          # Re-adding the label is what starts a new review on a re-request.
+          if [ "$HAS_LABEL" = true ]; then
+            gh pr edit "$PR" --repo "$REPO" --remove-label ai-review
+          fi
+          gh pr edit "$PR" --repo "$REPO" --add-label ai-review
