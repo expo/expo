@@ -2365,7 +2365,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       } else if (typeof bundle === 'string') {
         bundleCode = bundle;
 
-        // Create the source map in a second pass...
+        // Legacy string serializers omit the map, so recover it from the graph. Expo's serializer
+        // returns its finished map with the bundle and does not need this compatibility path.
         let { prepend, graph } = revision;
         if (serializerOptions.modulesOnly) {
           prepend = [];

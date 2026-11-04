@@ -22,8 +22,10 @@ import { event } from './events';
 import type { ExpoSerializerOptions } from './fork/baseJSBundle';
 import { getServerRunModuleStatement } from './getServerRunModuleStatement';
 import { graphToSerialAssetsAsync, graphToSingleChunk } from './serializeChunks';
+import { replaceSourceMapUrl } from './serializeJavaScriptArtifacts';
 import { serializeServerBundleAsync } from './serializeServerBundle';
 import type { ChunkingStrategy } from './serializerAssets';
+import { getSourceMapOptions, normalizeSourceMapString } from './sourceMap';
 
 export type { SerialAsset } from './serializerAssets';
 
@@ -262,7 +264,7 @@ function getDefaultSerializer(
     })();
 
     if (serializerOptions?.output !== 'static') {
-      return defaultSerializer(
+      const result = await defaultSerializer(
         entryPoint,
         preModules,
         graph,
@@ -273,6 +275,19 @@ function getDefaultSerializer(
             }
           : options
       );
+      // Legacy serializers captured by Expo may return unnormalized maps. Wrappers around Expo
+      // run after this boundary and remain responsible for any changes to Expo's finished output.
+      if (isServer && fallbackSerializer && typeof result !== 'string' && result.map) {
+        const map = normalizeSourceMapString(result.map, getSourceMapOptions(options, true));
+        return {
+          ...result,
+          code: options.inlineSourceMap
+            ? replaceSourceMapUrl(result.code, getInlineSourceMappingURL(map))
+            : result.code,
+          map,
+        };
+      }
+      return result;
     }
 
     options.serializerOptions = { ...serializerOptions };
@@ -297,6 +312,8 @@ function getDefaultSerializer(
         ? 'granular'
         : 'legacy';
 
+    // Legacy server serializers return single bundles instead of artifacts, so adapt their output
+    // rather than replacing their generated code with Expo's chunk serialization.
     const assets =
       isServer && fallbackSerializer
         ? await serializeServerBundleAsync(

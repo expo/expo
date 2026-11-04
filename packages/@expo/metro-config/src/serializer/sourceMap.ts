@@ -66,6 +66,7 @@ export type {
 // what `composeSourceMaps` actually reads and writes.
 export interface ComposableSourceMap {
   version: number;
+  debugId?: string;
   file?: string;
   mappings: string;
   names: string[];
@@ -144,6 +145,7 @@ function loadTraceMapping(): TraceMappingModule {
 /** An indexed source map, as Metro emits for bundles */
 export interface IndexedSourceMap {
   version: number;
+  debugId?: string;
   file?: string;
   sections: {
     offset: { line: number; column: number };
@@ -170,6 +172,7 @@ export function flattenSourceMap(map: ComposableSourceMap | IndexedSourceMap): C
     names: flat.names,
     sources: flat.sources,
   };
+  if (map.debugId != null) result.debugId = map.debugId;
   if (flat.file != null) {
     result.file = flat.file;
   }
