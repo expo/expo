@@ -116,9 +116,9 @@ export function connectSurreal() {
 
 ### Define a table and an access method
 
-Run `eas integrations:surrealdb:dashboard` to open [Surrealist](https://app.surrealdb.com?utm_source=expo&utm_medium=referral&utm_term=expo-react-native), connect to your instance as a system user, and select your namespace and database. Then run the following in the query editor:
+Run `eas integrations:surrealdb:dashboard` to open [SurrealDB Studio](https://studio.surrealdb.com?utm_source=expo&utm_medium=referral&utm_term=expo-react-native), connect to your instance as a system user, and select your namespace and database. Then run the following in the query editor:
 
-```sql Surrealist query editor
+```sql SurrealDB Studio query editor
 DEFINE TABLE user SCHEMAFULL
   PERMISSIONS FOR select, update, delete WHERE id = $auth.id;
 DEFINE FIELD email ON user TYPE string ASSERT string::is_email($value);
@@ -309,7 +309,7 @@ Two commands manage the integration afterward:
   cmd={['$ eas integrations:surrealdb:dashboard', '', '$ eas integrations:surrealdb:disconnect']}
 />
 
-`dashboard` lists the endpoint for each Expo Services environment and opens Surrealist. `disconnect` removes the three `EXPO_PUBLIC_SURREAL_*` variables from **.env.local** and from every Expo Services environment. Your SurrealDB instance, its data, and the installed packages stay unchanged.
+`dashboard` lists the endpoint for each Expo Services environment and opens SurrealDB Studio. `disconnect` removes the three `EXPO_PUBLIC_SURREAL_*` variables from **.env.local** and from every Expo Services environment. Your SurrealDB instance, its data, and the installed packages stay unchanged.
 
 ## Manual setup
 
