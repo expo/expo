@@ -113,10 +113,20 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
   }
 
   private func applyNavigationBarHidden() {
-    guard let navigationController, navigationController.isNavigationBarHidden != navigationBarHidden else {
+    guard window != nil, let navigationController,
+      navigationController.isNavigationBarHidden != navigationBarHidden
+    else {
       return
     }
-    navigationController.setNavigationBarHidden(navigationBarHidden, animated: false)
+    let wasHidden = navigationController.isNavigationBarHidden
+    let coordinator = navigationController.transitionCoordinator
+    navigationController.setNavigationBarHidden(navigationBarHidden, animated: coordinator != nil)
+    // Collapsed columns share bar visibility. A cancelled pop must restore the outgoing column's value.
+    coordinator?.animate(alongsideTransition: nil) { [weak navigationController] context in
+      if context.isCancelled {
+        navigationController?.setNavigationBarHidden(wasHidden, animated: false)
+      }
+    }
   }
 
   // UIKit reads the title and the display mode of a back button from the item below it in the navigation stack.

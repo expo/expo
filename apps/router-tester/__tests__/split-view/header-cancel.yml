@@ -1,0 +1,28 @@
+appId: dev.expo.routertester
+name: SplitView header after cancelled back gesture
+---
+# Run on an iPhone with the SplitView collapsed.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - stopApp: dev.expo.routertester
+      - openLink: router-tester://expo-development-client/?url=http%3A%2F%2Flocalhost%3A8081
+      - extendedWaitUntil:
+          visible: 'Current Path: /'
+          timeout: 60000
+      - openLink: router-tester://split-view-mail
+      - tapOn:
+          id: BackButton
+      - assertNotVisible: 'Filter'
+      - tapOn: 'Google Photos, Welcome to Google Photos'
+      - assertVisible: 'Unread'
+      # Release before halfway to cancel the pop.
+      - swipe:
+          start: 3%, 50%
+          end: 28%, 50%
+          duration: 1800
+      - assertVisible: 'Welcome to Google Photos'
+      - assertVisible: 'Unread'
+      - tapOn: 'Unread'
+      - assertVisible: 'Last toolbar press: Unread \(1\)'
