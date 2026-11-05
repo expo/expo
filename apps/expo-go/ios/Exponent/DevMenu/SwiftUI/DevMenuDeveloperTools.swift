@@ -62,7 +62,7 @@ struct DevMenuDeveloperTools: View {
 
           DevMenuActionButton(
             title: "Open DevTools",
-            icon: "chevron.left.chevron.right",
+            icon: "chevron.left.forwardslash.chevron.right",
             action: viewModel.openJSInspector
           )
         }

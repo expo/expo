@@ -8,6 +8,13 @@ internal class DeviceHeadingStreamer: BaseStreamer {
 
   private var headingStream: DeviceHeadingStream?
   private var continuation: DeviceHeadingStream.Continuation?
+  private var headingFilter: CLLocationDegrees?
+
+  @MainActor
+  init(options: LocationOptions, headingOptions: HeadingOptions) {
+    self.headingFilter = headingOptions.headingFilter
+    super.init(options: options)
+  }
 
   deinit {
     if continuation != nil {
@@ -25,6 +32,9 @@ internal class DeviceHeadingStreamer: BaseStreamer {
     }
     let stream = DeviceHeadingStream { continuation in
       self.continuation = continuation
+      if let headingFilter = headingFilter {
+        manager.headingFilter = headingFilter <= 0 ? kCLHeadingFilterNone : headingFilter
+      }
       manager.startUpdatingHeading()
     }
     headingStream = stream

@@ -642,10 +642,12 @@ struct JavaScriptValueTests {
 
   @Test
   func `asPromise returns JavaScriptPromise for promise values`() async throws {
-    let promiseValue = try runtime.eval("Promise.resolve(42)")
-    let promise = try promiseValue.asPromise()
-    let result = try await promise.await()
-    #expect(result.getDouble() == 42.0)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promiseValue = try runtime.eval("Promise.resolve(42)")
+      let promise = try promiseValue.asPromise()
+      let result = try await promise.await()
+      #expect(result.getDouble() == 42.0)
+    }
   }
 
   @Test

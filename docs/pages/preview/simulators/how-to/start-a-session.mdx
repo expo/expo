@@ -11,7 +11,7 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-An Expo Simulators **session** is one remote Android Emulator or iOS Simulator that runs on EAS infrastructure for a limited time. To start a session, run `eas simulator:start` with a platform and a session type. The command waits until the device is ready, then writes the connection details to **.env.eas-simulator**.
+An Expo Simulators **session** is one remote Android Emulator or iOS Simulator that runs on Expo infrastructure for a limited time. To start a session, run `eas simulator:start` with a platform and a session type. The command waits until the device is ready, then writes the connection details to **.env.eas-simulator**.
 
 This page shows the four ways to start a session and how to confirm that the session is ready. For a first-time walkthrough that includes account setup, see [Get started with Expo Simulators](/preview/simulators/get-started/).
 
@@ -81,6 +81,7 @@ You can add more flags to the same command:
 | -------------------------------------------------- | --------------------------------------------------------------------------------------- | -------------------------------------------------------------------------- |
 | Install and launch an app during startup           | One of `--build-id`, `--build-fingerprint`, `--application-archive-url`, or `--expo-go` | [Install your app](/preview/simulators/how-to/install-your-app/)           |
 | Select a device model                              | `--device <avd-profile>` on Android, or `--device "<name-or-UDID>"` on iOS              | [Devices](/preview/simulators/reference/devices/)                          |
+| Select an Android version and image variant        | `--system-image "<system-image-package>"`                                               | [Devices](/preview/simulators/reference/devices/)                          |
 | Stop the session automatically                     | `--max-duration-minutes <minutes>`, `--max-idle-time-minutes <minutes>`                 | [Session lifetime](/preview/simulators/how-it-works/session-lifetime/)     |
 | Group the session with others                      | `--tag <tag>`, repeated for each tag                                                    | [Organize sessions](/preview/simulators/how-to/organize-sessions/)         |
 | Route device network traffic through your computer | `--egress local`                                                                        | [Network inspection](/preview/simulators/how-it-works/network-inspection/) |
@@ -183,7 +184,7 @@ Startup time varies with capacity. A session can wait in a queue, then take time
 
 <Collapsible summary="Can I start a session without an Expo project?">
 
-Yes. You need an EAS project, but not a local Expo project directory. The REST API, expo.dev, and create session links need only the EAS project. EAS CLI needs a project directory with **package.json** and an app config that contains the EAS project ID. See [Run a native Android or iOS app on Expo Simulators](/preview/simulators/works-with/native-ios-and-android/).
+Yes. You need an Expo Services project, but not a local Expo project directory. The REST API, expo.dev, and create session links need only the Expo Services project. EAS CLI needs a project directory with **package.json** and an app config that contains the Expo Services project ID. See [Run a native Android or iOS app on Expo Simulators](/preview/simulators/works-with/native-ios-and-android/).
 
 </Collapsible>
 

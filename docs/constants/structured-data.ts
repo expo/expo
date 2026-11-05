@@ -1,4 +1,4 @@
-import { BASE_DESCRIPTIONS } from '../common/i18n';
+import { BASE_DESCRIPTIONS, SITE_NAMES, type SupportedLocale } from '../common/i18n';
 
 type BreadcrumbItem = {
   name: string;
@@ -26,21 +26,39 @@ type TechArticleInput = {
   title: string;
   description?: string;
   modificationDate?: string;
+  image?: string;
   url: string;
 };
+
+function toISODateTime(date: string) {
+  const parsed = new Date(date.replace(/(\d+)(st|nd|rd|th)/, '$1'));
+  if (Number.isNaN(parsed.getTime())) {
+    return undefined;
+  }
+
+  const year = parsed.getFullYear();
+  const month = String(parsed.getMonth() + 1).padStart(2, '0');
+  const day = String(parsed.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}T00:00:00Z`;
+}
 
 export function buildTechArticleSchema({
   title,
   description,
   modificationDate,
+  image,
   url,
 }: TechArticleInput) {
+  const dateModified = modificationDate ? toISODateTime(modificationDate) : undefined;
+
   return {
     '@context': 'https://schema.org',
     '@type': 'TechArticle',
     headline: title,
     ...(description ? { description } : {}),
-    ...(modificationDate ? { dateModified: modificationDate } : {}),
+    ...(dateModified ? { dateModified } : {}),
+    ...(image ? { image } : {}),
+    author: websiteSchema.publisher,
     publisher: websiteSchema.publisher,
     url,
   };
@@ -103,3 +121,7 @@ export const websiteSchema = {
     ],
   },
 };
+
+export function buildWebsiteSchema(locale: SupportedLocale) {
+  return { ...websiteSchema, name: SITE_NAMES[locale], description: BASE_DESCRIPTIONS[locale] };
+}

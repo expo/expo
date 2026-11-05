@@ -118,6 +118,42 @@
   [self _addTaskToConfig:task];
 }
 
+- (id<EXTaskInterface>)registerTaskIfAbsentWithName:(NSString *)taskName
+                                              appId:(NSString *)appId
+                                             appUrl:(nullable NSString *)appUrl
+                                      consumerClass:(Class)consumerClass
+                                            options:(nullable NSDictionary *)options
+{
+  Class unversionedConsumerClass = [self _unversionedClassFromClass:consumerClass];
+
+  if (![unversionedConsumerClass conformsToProtocol:@protocol(EXTaskConsumerInterface)]) {
+    NSString *reason = @"Invalid `consumer` argument. It must be a class that conforms to EXTaskConsumerInterface protocol.";
+    @throw [NSException exceptionWithName:@"E_INVALID_TASK_CONSUMER" reason:reason userInfo:nil];
+  }
+
+  EXTask *task;
+  // The check and the insert share the lock that every insert takes, so this never replaces a task.
+  @synchronized (_lockTarget) {
+    id<EXTaskInterface> existingTask = _tasks[appId][taskName];
+    if (existingTask) {
+      return existingTask;
+    }
+    task = [[EXTask alloc] initWithName:taskName
+                                  appId:appId
+                                 appUrl:appUrl
+                          consumerClass:unversionedConsumerClass
+                                options:options
+                               delegate:self];
+    NSMutableDictionary *appTasks = [_tasks[appId] mutableCopy] ?: [NSMutableDictionary new];
+    [appTasks setObject:task forKey:taskName];
+    [_tasks setObject:appTasks forKey:appId];
+  }
+
+  [task.consumer didRegisterTask:task];
+  [self _addTaskToConfig:task];
+  return task;
+}
+
 /**
  *  Unregisters task with given name and for given appId. Also removes the task from the config.
  */
@@ -212,7 +248,7 @@
       [results addObject:@{
         @"taskName": taskName,
         @"taskType": task.consumer.taskType,
-        @"options": task.options,
+        @"options": EXNullIfNil(task.options),
       }];
     }
   }
@@ -232,6 +268,9 @@
   }
   if ([task.consumer respondsToSelector:@selector(didFinish)]) {
     [task.consumer didFinish];
+  }
+  if ([task.consumer conformsToProtocol:@protocol(EXTaskResponseConsumer)]) {
+    [(id<EXTaskResponseConsumer>)task.consumer didFinishEventWithResponse:response];
   }
   
   // Inform requests about finished tasks
@@ -310,9 +349,9 @@
 
 # pragma mark - EXTaskDelegate
 
-- (void)executeTask:(nonnull id<EXTaskInterface>)task
-           withData:(nullable NSDictionary *)data
-          withError:(nullable NSError *)error
+- (nonnull NSString *)executeTask:(nonnull id<EXTaskInterface>)task
+                         withData:(nullable NSDictionary *)data
+                        withError:(nullable NSError *)error
 {
   id<EXTaskManagerInterface> taskManager = [self _taskManagerForAppId:task.appId];
   NSDictionary *executionInfo = [self _executionInfoForTask:task];
@@ -334,7 +373,7 @@
   if (taskManager != nil) {
     // Task manager is initialized and can execute events
     [taskManager executeWithBody:body];
-    return;
+    return executionInfo[@"eventId"];
   }
 
   BOOL hasAppRecord;
@@ -354,7 +393,7 @@
     [appEventsQueue addObject:body];
     [_eventsQueues setObject:appEventsQueue forKey:task.appId];
   }
-  return;
+  return executionInfo[@"eventId"];
 }
 
 # pragma mark - statics
@@ -443,12 +482,19 @@
                                       options:options
                                      delegate:self];
 
+  id<EXTaskInterface> replacedTask;
   @synchronized (_lockTarget) {
     NSMutableDictionary *appTasks = [[self _getTasksForAppId:appId] mutableCopy] ?: [NSMutableDictionary new];
+    replacedTask = appTasks[task.name];
     [appTasks setObject:task forKey:task.name];
     [_tasks setObject:appTasks forKey:appId];
   }
 
+  // Read under the lock, so the consumer that is told is the one that was really replaced, even when
+  // another registration of the name happened since the caller looked it up.
+  if ([replacedTask.consumer respondsToSelector:@selector(didUnregister)]) {
+    [replacedTask.consumer didUnregister];
+  }
   [task.consumer didRegisterTask:task];
   return task;
 }

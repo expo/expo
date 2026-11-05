@@ -2,6 +2,7 @@ import { act } from '@testing-library/react-native';
 import { expectTypeOf } from 'expect-type';
 
 import { router, Slot } from '../../exports';
+import Stack from '../../layouts/Stack';
 import { renderRouter } from '../../testing-library';
 import type { UnknownOutputParams } from '../../types';
 import { useLocalSearchParams } from '../useLocalSearchParams';
@@ -12,6 +13,73 @@ interface SearchParamsWithOmittedId extends UnknownOutputParams {
 }
 
 describe(useLocalSearchParams, () => {
+  it.each(['initial URL', 'replace'])(
+    'reads child query params in layouts on %s',
+    async (method) => {
+      let layoutParams: UnknownOutputParams = {};
+      let leafParams: UnknownOutputParams = {};
+      const href = '/play/flag/150?onboarding=1&tag=a&tag=b';
+
+      await renderRouter(
+        {
+          index: () => null,
+          'play/flag/[region]/_layout': function Layout() {
+            layoutParams = useLocalSearchParams();
+            return <Slot />;
+          },
+          'play/flag/[region]/index': function Index() {
+            leafParams = useLocalSearchParams();
+            return null;
+          },
+        },
+        { initialUrl: method === 'initial URL' ? href : '/' }
+      );
+
+      if (method === 'replace') {
+        await act(() => router.replace(href));
+      }
+
+      expect(layoutParams).toEqual({ region: '150', onboarding: '1', tag: ['a', 'b'] });
+      expect(layoutParams).toEqual(leafParams);
+
+      await act(() => router.setParams({ onboarding: '%252F', tag: undefined }));
+      expect(layoutParams).toEqual({ region: '150', onboarding: '%2F' });
+      expect(layoutParams).toEqual(leafParams);
+
+      await act(() => router.replace('/play/flag/150'));
+      expect(layoutParams).toEqual({ region: '150' });
+    }
+  );
+
+  it('keeps child query params local to retained and preloaded layouts', async () => {
+    const paramsByRegion = new Map<string | string[] | undefined, UnknownOutputParams>();
+
+    await renderRouter(
+      {
+        _layout: () => <Stack />,
+        '[region]/_layout': function Layout() {
+          const params = useLocalSearchParams();
+          paramsByRegion.set(params.region, params);
+          return <Slot />;
+        },
+        '[region]/index': () => null,
+      },
+      { initialUrl: '/150?onboarding=1' }
+    );
+
+    await act(() => router.prefetch('/200?onboarding=2'));
+    expect(paramsByRegion.get('150')).toEqual({ region: '150', onboarding: '1' });
+    expect(paramsByRegion.get('200')).toEqual({ region: '200', onboarding: '2' });
+
+    await act(() => router.push('/200?onboarding=2'));
+    await act(() => router.setParams({ onboarding: '3' }));
+    expect(paramsByRegion.get('150')).toEqual({ region: '150', onboarding: '1' });
+    expect(paramsByRegion.get('200')).toEqual({ region: '200', onboarding: '3' });
+
+    await act(() => router.back());
+    expect(paramsByRegion.get('150')).toEqual({ region: '150', onboarding: '1' });
+  });
+
   it(`return styles of deeply nested routes`, async () => {
     const { result } = await renderHook(
       () => useLocalSearchParams(),

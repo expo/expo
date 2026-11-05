@@ -271,7 +271,6 @@ export interface NoxcturnalSourceFacts {
   hasSpread: boolean;
   hasSlash: boolean;
   hasJsxCandidate: boolean;
-  hasComments: boolean;
 }
 
 const SOURCE_SIGNAL =
@@ -303,7 +302,6 @@ export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFac
     hasSpread: source.includes('...'),
     hasSlash: source.includes('/'),
     hasJsxCandidate: source.includes('<'),
-    hasComments: source.includes('/*') || source.includes('//'),
   };
   for (const match of source.matchAll(SOURCE_SIGNAL)) {
     const signal = match[0];
@@ -1054,11 +1052,8 @@ function createFullMetroPipeline(
   input: NoxcturnalMetroTransformInput,
   pluginData: MetroTransformPluginData
 ): NativePipeline {
-  const preserveSourceComments =
-    pluginData.sourceFacts.hasComments &&
-    (!input.options.minify || input.config.minifierConfig?.output?.comments === true);
   const sourcePhases = [...createPipeline(nox, input, pluginData, false).phases];
-  if (!input.options.dev && !preserveSourceComments) {
+  if (!input.options.dev) {
     sourcePhases.push({
       name: 'metro-optimization',
       native: {
@@ -1090,6 +1085,10 @@ function createMetroOutputPipeline(
   return nox.defineNativePipeline({
     phases: [
       ...phases,
+      // `comments: false` strips. The default keeps them.
+      ...(input.options.minify
+        ? [{ name: 'metro-strip-comments', native: { comments: false } }]
+        : []),
       ...(input.config.unstable_compactOutput
         ? [{ name: 'metro-compact-output', native: { compact: true } }]
         : []),

@@ -68,7 +68,7 @@ export type GetStreamingContentOptions = {
 function prepareRenderContext(location: URL, options: GetStreamingContentOptions) {
   const headContext: { helmet?: any } = {};
   const Root = getRootComponent();
-  const { pathname, params } = getRouteInfoForMatchedRoute(
+  const { pathname, params, searchParams } = getRouteInfoForMatchedRoute(
     options.route,
     options.params ?? {},
     location
@@ -91,7 +91,8 @@ function prepareRenderContext(location: URL, options: GetStreamingContentOptions
 
   resetReactNavigationContexts();
 
-  const loaderKey = options.loader ? options.loader.key + location.search : null;
+  const search = searchParams.toString();
+  const loaderKey = options.loader ? options.loader.key + (search ? `?${search}` : '') : null;
 
   const loadedData = loaderKey
     ? {

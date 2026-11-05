@@ -10,7 +10,9 @@ import { Terminal } from '~/ui/components/Snippet';
 
 > **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
 
-EAS CLI manages the session, but it does not press buttons or type text. Device actions come from the **controller** that you selected with `--type` when the session started. Run each controller command through `eas simulator:exec`, which loads the connection details for the active session and then runs the command.
+Use a **controller** for accessibility snapshots and actions that select elements by their labels. The controller comes from the `--type` that you selected when the session started. Run each controller command through `eas simulator:exec`, which loads the connection details for the active session and then runs the command.
+
+For direct iOS actions, use [`eas simulator:control`](/preview/simulators/how-to/control-with-eas-cli/). It also works in an iOS `web-preview-only` session.
 
 ## How `simulator:exec` works
 
@@ -74,7 +76,7 @@ On iOS, a snapshot can take tens of seconds. If an action times out, take a new 
   cmd={['$ eas simulator:exec npx agent-device@latest open "myapp://profile/42" --platform ios']}
 />
 
-The first time a scheme opens, iOS can show an **Open in** dialog. Accept it with `alert accept`. You can also start the session with `--open-url`. EAS then tries to approve the scheme so that the dialog does not appear. `--open-url` requires an application source, such as `--build-id`. See [Install an app on a remote Android Emulator or iOS Simulator](/preview/simulators/how-to/install-your-app/).
+The first time a scheme opens, iOS can show an **Open in** dialog. Accept it with `alert accept`. You can also start the session with `--open-url`. Expo Simulators then tries to approve the scheme so that the dialog does not appear. `--open-url` requires an application source, such as `--build-id`. See [Install an app on a remote Android Emulator or iOS Simulator](/preview/simulators/how-to/install-your-app/).
 
 Do not open the browser preview URL on the device. The preview URL is a browser stream for people, not a deep link.
 
@@ -126,7 +128,7 @@ For more information, see [Run Appium tests on a remote Android Emulator or iOS 
 
 Every session type includes a live browser preview. Open the browser preview URL from the start output, or select **Open preview** on the session page on expo.dev, to see the device. On iOS, you can also interact with it. In `--json` output, the URL is `remoteConfig.webPreviewUrl`, or `remoteConfig.previewUrl` for a `web-preview-only` session. By default, the URL requires an Expo login with access to the project. See [Share a live Expo Simulators session or start one from a link](/preview/simulators/how-to/hand-off-a-session/).
 
-The session page on expo.dev shows an **Open preview** button that opens the browser preview in a new tab. Android support is still in development, so some features that work on iOS may not work on Android yet.
+The session page on expo.dev shows an **Open preview** button that opens the browser preview in a new tab.
 
 Browser preview activity does not reset the idle timer. See [How long an Expo Simulators session runs](/preview/simulators/how-it-works/session-lifetime/).
 

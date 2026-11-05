@@ -99,6 +99,21 @@ open class SharedObject: AnySharedObject {
     return appContext?.sharedObjectRegistry.toJavaScriptObject(self)
   }
 
+  /// The native state, or `nil` if the object was released. A released native state can outlive the
+  /// release on a JS object that couldn't drop it (for example a frozen one).
+  internal var unreleasedNativeState: SharedObjectNativeState? {
+    guard let nativeState, !nativeState.isReleased else {
+      return nil
+    }
+    return nativeState
+  }
+
+  /// The JS object paired with this object in the given runtime, read off its native state. Returns
+  /// `nil` when the object isn't paired in that runtime or was released.
+  internal func object(in runtime: borrowing JavaScriptRuntime) -> JavaScriptObject? {
+    return unreleasedNativeState?.javaScriptObject(in: runtime)
+  }
+
   /**
    Backwards-compatible overload that forwards to `emit(event:payload:)`. Existing single-argument
    call sites keep working unchanged; the parameter has been renamed to `payload` to make the
@@ -110,6 +125,12 @@ open class SharedObject: AnySharedObject {
   }
 
   // MARK: - Macro-synthesized JSI hooks
+
+  /// The name of the class in JavaScript. Overridden by the `@SharedObject` macro with the class name
+  /// or the `@SharedObject("CustomName")` argument. A module registers the class through `_classTypes`.
+  open class var _jsName: String {
+    return unqualifiedTypeName(self)
+  }
 
   /// Binds the class's `@JS` members onto its JavaScript prototype. Overridden by the `@SharedObject`
   /// macro; a `class func` (not a protocol requirement) so dispatch resolves per subclass.
@@ -132,7 +153,9 @@ open class SharedObject: AnySharedObject {
 extension SharedObject: EventEmitter {
   @JavaScriptActor
   public func withEventTarget<R>(_ body: (borrowing JavaScriptObject) throws -> R) rethrows -> R? {
-    guard let target = getJavaScriptObject() else {
+    // The same lookup as `getJavaScriptObject()`, without going through the registry, since it runs
+    // for every emitted event.
+    guard let runtime = try? appContext?.runtime, let target = object(in: runtime) else {
       return nil
     }
     return try body(target)

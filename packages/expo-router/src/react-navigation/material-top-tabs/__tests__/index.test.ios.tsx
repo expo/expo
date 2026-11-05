@@ -5,6 +5,7 @@ import type { PagerViewProps } from 'react-native-pager-view';
 import { TabView, type TabBarProps, type TabViewProps } from 'react-native-tab-view';
 
 import { router } from '../../../imperative-api';
+import { Stack } from '../../../layouts/Stack';
 import { TopTabs } from '../../../layouts/TopTabs';
 import { act, renderRouter, screen } from '../../../testing-library';
 import { useNavigation } from '../../../useNavigation';
@@ -152,6 +153,23 @@ test('renders only declared tabs and redirects from undeclared routes', async ()
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.queryByTestId('second')).toBeNull();
   expect(screen).toHavePathname('/');
+});
+
+test('redirects an undeclared root route to the first screen in a group tab', async () => {
+  await renderRouter({
+    _layout: () => (
+      <TopTabs>
+        <TopTabs.Screen name="(feed)" />
+      </TopTabs>
+    ),
+    index: () => <View testID="undeclared-root" />,
+    '(feed)/_layout': () => <Stack />,
+    '(feed)/feed': () => <View testID="feed" />,
+  });
+
+  expect(screen.getByTestId('feed')).toBeVisible();
+  expect(screen).toHavePathname('/feed');
+  expect(screen.queryByTestId('undeclared-root')).toBeNull();
 });
 
 test('removes and redirects from a hidden tab', async () => {

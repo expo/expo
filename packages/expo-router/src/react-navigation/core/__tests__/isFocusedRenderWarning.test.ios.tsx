@@ -6,8 +6,6 @@ import { Stack } from '../../../layouts/Stack';
 import { renderRouter } from '../../../testing-library';
 import { useNavigation } from '../../../useNavigation';
 
-const WARNING = expect.stringContaining('navigation.isFocused() was called while rendering');
-
 afterEach(() => {
   jest.restoreAllMocks();
 });
@@ -27,7 +25,7 @@ test('does not warn when navigation.isFocused() is called in an effect', async (
     },
   });
 
-  expect(warn).not.toHaveBeenCalledWith(WARNING);
+  expect(warn).not.toHaveBeenCalled();
 });
 
 test('warns once when navigation.isFocused() is called during render', async () => {
@@ -43,7 +41,9 @@ test('warns once when navigation.isFocused() is called during render', async () 
   // Re-render the screen to check that the warning is not repeated.
   await act(() => router.setParams({ value: '1' }));
 
-  expect(warn.mock.calls.filter(([message]) => /navigation\.isFocused\(\)/.test(message))).toEqual([
-    [expect.stringContaining("while rendering the screen 'index'")],
+  expect(warn.mock.calls).toEqual([
+    [
+      'navigation.isFocused() was called during render, which can return a stale value. Use the useIsFocused() hook to read focus during render, or call navigation.isFocused() in an effect or event handler.',
+    ],
   ]);
 });

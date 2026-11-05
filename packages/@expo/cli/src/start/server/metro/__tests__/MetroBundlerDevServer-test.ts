@@ -366,6 +366,16 @@ describe('startAsync', () => {
     );
   });
 
+  it(`listens on 127.0.0.1 with --localhost`, async () => {
+    const devServer = await getStartedDevServer({ location: { hostType: 'localhost' } });
+
+    expect(instantiateMetroAsync).toHaveBeenLastCalledWith(
+      devServer,
+      expect.objectContaining({ host: '127.0.0.1' }),
+      expect.anything()
+    );
+  });
+
   it(`reports the resolved port, not the port the socket came back with`, async () => {
     jest.mocked(instantiateMetroAsync).mockResolvedValueOnce({
       metro: { _config: {}, _bundler: {} },

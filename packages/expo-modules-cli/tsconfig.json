@@ -4,6 +4,11 @@
   "compilerOptions": {
     "rootDir": "./src",
     "noEmit": true,
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+    // The CLI scans with the macros that `expo-modules-core` depends on, so it is typed and tested
+    // against the same copy.
+    "paths": {
+      "expo-modules-macros": ["../expo-modules-core/node_modules/expo-modules-macros"]
+    }
   }
 }

@@ -11,7 +11,11 @@ export function createPlatformSelectPlugin(
     contract: { syntax: { anyOf: ['CallExpression'] } },
     visitors: [
       nox.defineVisitor(
-        'CallExpression',
+        {
+          route: 'CallExpression',
+          where: { calleePath: { equals: 'Platform.select' } },
+          children: { arguments: { route: 'ObjectExpression' } },
+        },
         {
           scope: true,
           children: {

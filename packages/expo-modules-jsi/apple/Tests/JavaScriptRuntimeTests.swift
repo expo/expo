@@ -1,4 +1,4 @@
-import ExpoModulesJSI
+@_spi(Internal) import ExpoModulesJSI
 import Foundation
 import Testing
 
@@ -143,10 +143,12 @@ struct JavaScriptRuntimeTests {
 
   @Test
   func `execute async awaits JavaScript evaluation`() async throws {
-    let result = try await runtime.execute {
-      try await self.runtime.evalAsync("Promise.resolve('async result')").getString()
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let result = try await runtime.execute {
+        try await runtime.evalAsync("Promise.resolve('async result')").ref()
+      }
+      #expect(try await runtime.execute { try result.take().getString() } == "async result")
     }
-    #expect(result == "async result")
   }
 
   @Test
@@ -934,6 +936,89 @@ struct JavaScriptRuntimeTests {
     #expect(result[2].getInt() == 2)
   }
 
+  // MARK: - Host functions with a result slot
+
+  @Test
+  func `host function writes its result into the slot`() throws {
+    let fn = runtime.createFunction("add") {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      let a = try Int.decode(arguments.unownedValue(at: 0), in: runtime)
+      let b = try Int.decode(arguments.unownedValue(at: 1), in: runtime)
+      try Int.encode(a + b, into: result, in: runtime)
+    }
+    runtime.global().setProperty("add", value: fn.asValue())
+
+    #expect(try runtime.eval("add(3, 38)").getInt() == 41)
+  }
+
+  @Test
+  func `host function result slot holds strings, objects and the default path`() throws {
+    let object = runtime.createObject()
+    object.setProperty("greet") {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      let name = try String.decode(arguments.unownedValue(at: 0), in: runtime)
+      try String.encode("hello \(name)", into: result, in: runtime)
+    }
+    object.setProperty("pair") {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      try [String: Int].encode(["a": 1], into: result, in: runtime)
+    }
+    runtime.global().setProperty("host", value: object.asValue())
+
+    let result = try runtime.eval("[host.greet('café'), host.pair().a]").getArray()
+
+    #expect(result[0].getString() == "hello café")
+    #expect(result[1].getInt() == 1)
+  }
+
+  @Test
+  func `host function that writes nothing returns undefined`() throws {
+    let fn = runtime.createFunction("nothing") {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+    }
+    runtime.global().setProperty("nothing", value: fn.asValue())
+
+    #expect(try runtime.eval("nothing()").isUndefined() == true)
+  }
+
+  @Test
+  func `throwing host function with a result slot propagates error to JavaScript`() throws {
+    let fn = runtime.createFunction("unsafe") {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      try Int.encode(Int.max, into: result, in: runtime)
+    }
+    runtime.global().setProperty("unsafe", value: fn.asValue())
+
+    let result = try runtime.eval("try { unsafe(); 'no error' } catch (e) { e.message }")
+
+    #expect(result.getString().contains("Int64 or UInt64"))
+  }
+
   // MARK: - Async functions
 
   @Test
@@ -966,79 +1051,89 @@ struct JavaScriptRuntimeTests {
 
   @Test
   func `async function resolves with value`() async throws {
-    let fn = runtime.createAsyncFunction("asyncFn") { this, arguments in
-      return {
-        return JavaScriptValue(self.runtime, 42)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let fn = runtime.createAsyncFunction("asyncFn") { this, arguments in
+        return {
+          return JavaScriptValue(runtime, 42)
+        }
       }
-    }
 
-    let result = try await fn.call().getPromise().await()
-    #expect(result.getInt() == 42)
+      let result = try await fn.call().getPromise().await()
+      #expect(result.getInt() == 42)
+    }
   }
 
   @Test
   func `async function receives arguments`() async throws {
-    let fn = runtime.createAsyncFunction("add") { this, arguments in
-      // Decode phase: the buffer is only borrowed here and cannot escape into the body.
-      let a = arguments[0].getInt()
-      let b = arguments[1].getInt()
-      return {
-        return JavaScriptValue(self.runtime, a + b)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let fn = runtime.createAsyncFunction("add") { this, arguments in
+        // Decode phase: the buffer is only borrowed here and cannot escape into the body.
+        let a = arguments[0].getInt()
+        let b = arguments[1].getInt()
+        return {
+          return JavaScriptValue(runtime, a + b)
+        }
       }
-    }
 
-    let result = try await fn.call(arguments: 20, 22).getPromise().await()
-    #expect(result.getInt() == 42)
+      let result = try await fn.call(arguments: 20, 22).getPromise().await()
+      #expect(result.getInt() == 42)
+    }
   }
 
   @Test
   func `async function rejects on error thrown from the body`() async throws {
-    struct TestError: Error {
-      var localizedDescription: String { "something went wrong" }
-    }
-
-    let fn = runtime.createAsyncFunction("failing") { this, arguments in
-      return {
-        throw TestError()
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      struct TestError: Error {
+        var localizedDescription: String { "something went wrong" }
       }
-    }
 
-    await #expect(throws: Error.self) {
-      _ = try await fn.call().getPromise().await()
+      let fn = runtime.createAsyncFunction("failing") { this, arguments in
+        return {
+          throw TestError()
+        }
+      }
+
+      await #expect(throws: Error.self) {
+        _ = try await fn.call().getPromise().await()
+      }
     }
   }
 
   @Test
   func `async function rejects on error thrown from the decode phase`() async throws {
-    struct TestError: Error {
-      var localizedDescription: String { "something went wrong" }
-    }
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      struct TestError: Error {
+        var localizedDescription: String { "something went wrong" }
+      }
 
-    let fn = runtime.createAsyncFunction("failing") { this, arguments in
-      throw TestError()
-    }
+      let fn = runtime.createAsyncFunction("failing") { this, arguments in
+        throw TestError()
+      }
 
-    // The closure throws before any suspension, but the call itself must not throw —
-    // matching JavaScript's async-function semantics, the returned promise rejects instead.
-    let promise = try fn.call().getPromise()
-    await #expect(throws: Error.self) {
-      _ = try await promise.await()
+      // The closure throws before any suspension, but the call itself must not throw —
+      // matching JavaScript's async-function semantics, the returned promise rejects instead.
+      let promise = try fn.call().getPromise()
+      await #expect(throws: Error.self) {
+        _ = try await promise.await()
+      }
     }
   }
 
   @Test
   func `async function callable from JavaScript`() async throws {
-    let fn = runtime.createAsyncFunction("greet") { this, arguments in
-      let name = arguments[0].getString()
-      return {
-        return JavaScriptValue(self.runtime, "Hello, \(name)!")
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let fn = runtime.createAsyncFunction("greet") { this, arguments in
+        let name = arguments[0].getString()
+        return {
+          return JavaScriptValue(runtime, "Hello, \(name)!")
+        }
       }
+
+      runtime.global().setProperty("greet", value: fn.asValue())
+      let result = try await runtime.evalAsync("Promise.resolve(greet('World'))").ref()
+
+      #expect(try await runtime.execute { try result.take().getString() } == "Hello, World!")
     }
-
-    runtime.global().setProperty("greet", value: fn.asValue())
-    let result = try await runtime.evalAsync("Promise.resolve(greet('World'))")
-
-    #expect(result.getString() == "Hello, World!")
   }
 
   @Test
@@ -1219,6 +1314,24 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `withUnsafePointees passes the same pointees as withUnsafePointee`() {
+    let object = runtime.createObject()
+    let value = JavaScriptValue(runtime, 42)
+    let runtimePointee = runtime.withUnsafePointee { return $0 }
+    let objectPointee = object.withUnsafePointee { return $0 }
+    let valuePointee = value.withUnsafePointee { return $0 }
+    var callCount = 0
+
+    runtime.withUnsafePointees(object: object, value: value) { runtimePointer, objectPointer, valuePointer in
+      callCount += 1
+      #expect(runtimePointer == runtimePointee)
+      #expect(objectPointer == objectPointee)
+      #expect(valuePointer == valuePointee)
+    }
+    #expect(callCount == 1)
+  }
+
+  @Test
   func `init from unsafePointer creates functional runtime`() throws {
     let newRuntime = runtime.withUnsafePointee { runtimePointee in
       return JavaScriptRuntime(unsafePointer: runtimePointee)
@@ -1330,6 +1443,81 @@ struct JavaScriptRuntimeTests {
     // without a crash is the assertion.
     wrapper = nil
     _ = wrapper
+  }
+
+  // MARK: - Microtasks
+
+  @Test
+  func `promise reactions run after the synchronous code`() throws {
+    try runtime.eval(
+      """
+      globalThis.log = [];
+      Promise.resolve().then(() => log.push('then'));
+      log.push('sync');
+      """
+    )
+    // Like in React Native, reactions wait for the host to drain the queue after the task.
+    #expect(try runtime.eval("log.join(',')").getString() == "sync")
+
+    try runtime.drainMicrotasks()
+    #expect(try runtime.eval("log.join(',')").getString() == "sync,then")
+  }
+
+  @Test
+  func `drainMicrotasks throws the first error after running the rest of the queue`() throws {
+    try runtime.eval("globalThis.log = []")
+    runtime.queueMicrotask(try runtime.eval("() => { throw new Error('first') }").getFunction())
+    runtime.queueMicrotask(try runtime.eval("() => { throw new Error('second') }").getFunction())
+    runtime.queueMicrotask(try runtime.eval("() => { log.push('after') }").getFunction())
+
+    let error = #expect(throws: JavaScriptError.self) {
+      try runtime.drainMicrotasks()
+    }
+    #expect(error?.toValue().getObject().getProperty("message").getString() == "first")
+    #expect(try runtime.eval("log.join(',')").getString() == "after")
+  }
+
+  @Test
+  func `drainMicrotasks called from a microtask leaves the rest of the queue for later`() throws {
+    let drain = runtime.createFunction("drain") { [runtime] _, _ in
+      try runtime.drainMicrotasks()
+      return .undefined()
+    }
+    runtime.global().setProperty("drain", value: drain)
+    try runtime.eval(
+      """
+      globalThis.log = [];
+      Promise.resolve().then(() => {
+        log.push('first start');
+        drain();
+        log.push('first end');
+      });
+      Promise.resolve().then(() => log.push('second'));
+      """
+    )
+    try runtime.drainMicrotasks()
+    // Like React Native's checkpoint, the nested call returns at once, so the first microtask runs
+    // to completion before the second one starts.
+    #expect(try runtime.eval("log.join(',')").getString() == "first start,first end,second")
+  }
+
+  @Test
+  func `awaits in a loop do not grow the native stack`() async throws {
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      // Each `await` continuation runs from the microtask queue, not nested in the code that
+      // resolved its promise, so the loop needs no more native stack than a single iteration.
+      let result = try await runtime.evalAsync(
+        """
+        (async () => {
+          for (let i = 0; i < 10000; i++) {
+            await null;
+          }
+          return 'done';
+        })()
+        """
+      ).ref()
+      #expect(try await runtime.execute { try result.take().getString() } == "done")
+    }
   }
 
   // MARK: - Garbage collection

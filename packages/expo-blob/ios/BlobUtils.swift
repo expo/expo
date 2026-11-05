@@ -1,21 +1,25 @@
 import ExpoModulesCore
 
-func processBlobParts(_ blobParts: [EitherOfThree<String, Blob, TypedArray>]?, endings: EndingType) -> [BlobPart] {
+@Union
+enum BlobPartInput {
+  case string(String)
+  case blob(Blob)
+  case typedArray(TypedArray)
+}
+
+func processBlobParts(_ blobParts: [BlobPartInput]?, endings: EndingType) -> [BlobPart] {
   return blobParts?.map { part in
-    if let part: String = part.get() {
-      let str = (endings == .native) ? toNativeNewlines(part) : part
-      return .string(str)
-    }
-    if let part: Blob = part.get() {
-      return .blob(part)
-    }
-    if let part: TypedArray = part.get() {
+    switch part {
+    case .string(let str):
+      return .string((endings == .native) ? toNativeNewlines(str) : str)
+    case .blob(let blob):
+      return .blob(blob)
+    case .typedArray(let typedArray):
       // TODO: Consider optimization to avoid copying TypedArray data while preventing early GC
       // This would require careful lifetime management and architectural changes
-      let copiedData = Data(bytes: part.rawPointer, count: part.byteLength)
+      let copiedData = Data(bytes: typedArray.rawPointer, count: typedArray.byteLength)
       return .data(copiedData)
     }
-    return .string("")
   } ?? []
 }
 

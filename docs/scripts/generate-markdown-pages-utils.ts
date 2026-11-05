@@ -574,6 +574,16 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     }
   });
 
+  main.find('[data-md="package-version"]').each((_, el) => {
+    const $el = $(el);
+    const versionRange = $el.attr('data-md-version');
+    if (versionRange) {
+      $el.replaceWith(`<p>Recommended version: ${escapeHtml(versionRange)}</p>`);
+    } else {
+      $el.remove();
+    }
+  });
+
   // Extract platform text from badge elements BEFORE removing skip/select-none elements.
   // data-md="platform-badge" is the stable marker; fallback matches .select-none.rounded-full.border.
   main.find('[data-md="platform-badge"]').each((_, el) => {

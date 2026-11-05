@@ -61,7 +61,7 @@ class LoginViewModel: ObservableObject {
   }
 
   func submitOTP() async -> String? {
-    guard canSubmitOTP else { return nil }
+    guard !isLoading, canSubmitOTP else { return nil }
 
     isLoading = true
     errorMessage = nil

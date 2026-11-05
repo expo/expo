@@ -72,6 +72,9 @@ finding per review. Those two rules do not apply to you. Use these levels, all w
   other suggestion, about performance, design or tests, has no prefix, even when its impact is
   low.
 
+Never use the `design` or `nit` severities: a cost you can name is a `warning`, and a nit is a
+`suggestion` titled `Nit:`.
+
 Report at most five suggestions and nits, the most useful first.
 
 ## What to flag

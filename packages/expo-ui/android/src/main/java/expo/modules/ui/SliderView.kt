@@ -14,7 +14,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.viewevent.getValue
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.kotlin.types.OptimizedRecord
@@ -58,9 +57,11 @@ data class SliderValueChangedEvent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FunctionalComposableScope.SliderContent(props: SliderProps) {
-  val onValueChange by remember { this@SliderContent.EventDispatcher<SliderValueChangedEvent>() }
-  val onValueChangeFinished by remember { this@SliderContent.EventDispatcher<Unit>() }
+fun FunctionalComposableScope.SliderContent(
+  props: SliderProps,
+  onValueChange: (SliderValueChangedEvent) -> Unit,
+  onValueChangeFinished: (Unit) -> Unit
+) {
   val interactionSource = remember { MutableInteractionSource() }
 
   val effectiveLower = maxOf(props.min, props.lowerLimit ?: Float.NEGATIVE_INFINITY)

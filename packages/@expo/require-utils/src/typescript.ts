@@ -92,14 +92,16 @@ function loadTranspiler(): Transpiler | null {
   }
 
   // NOTE(@kitten): Typescript 7.1+ API shape
-  const native = requireOptional<{ API?: new () => NativeAPI }>('typescript/unstable/sync');
+  const current = requireOptional<{ API?: new () => NativeAPI }>('typescript/sync');
+  const native =
+    current ?? requireOptional<{ API?: new () => NativeAPI }>('typescript/unstable/sync');
   if (typeof native?.API !== 'function' || !('transpileModule' in native.API.prototype)) {
     return null;
   }
 
   const enums: CompilerEnums & {
     NewLineKind: { LF: number };
-  } = require('typescript/unstable/proto');
+  } = require(current ? 'typescript/proto' : 'typescript/unstable/proto');
   const api = new native.API();
 
   return (code, filename, format) => {
