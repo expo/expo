@@ -1,7 +1,6 @@
 import { PermissionStatus } from 'expo';
 import {
   BackgroundSessionState,
-  defineLocationTask,
   Location,
   LocationAccuracy,
   LocationProfile,
@@ -17,7 +16,6 @@ import {
   type Address,
   type Coordinates,
   type LocationPermissionResponse,
-  type Position,
   type PositionWatchStatus,
 } from 'expo-location/next';
 import * as TaskManager from 'expo-task-manager';
@@ -27,18 +25,22 @@ import { Platform } from 'react-native';
 import * as TestUtils from '../TestUtils';
 import type { JasmineInterface, TestPortal } from '../types';
 import { requireNotNull } from '../utils/requireNotNull';
+import {
+  BACKGROUND_LOCATION_TASK,
+  describeForEachProvider,
+  expectPosition,
+  PERMISSION_TIMEOUT,
+  selectDefaultProvider,
+  TASK_TIMEOUT,
+} from './LocationNextHelpers';
 import { mountAndWaitForWithTimeout, waitFor } from './helpers';
 
-const BACKGROUND_LOCATION_TASK = 'next-background-location-updates';
-const GEOCODING_TIMEOUT = 15000;
-const POSITION_TIMEOUT = 25000;
-const HOOK_TIMEOUT = 10000;
-const TASK_TIMEOUT = 15000;
-const SESSION_TIMEOUT = 15000;
+const GEOCODING_TIMEOUT = 3000;
+const GET_POSITION_TIMEOUT = 4000;
+const HOOK_TIMEOUT = 3000;
+const SESSION_TIMEOUT = 3000;
 const SESSION_POLL_INTERVAL = 100;
 const ANDROID_O = 26;
-const EARLIEST_FIX_TIMESTAMP = Date.UTC(2000, 0, 1);
-const CLOCK_SKEW_TOLERANCE = 60000;
 const PLACE_TOLERANCE_DEGREES = 1;
 
 const INFINITE_LOOP = {
@@ -73,34 +75,8 @@ const ANDROID_BACKGROUND_UPDATES = {
 
 type Place = { isoCountryCode: string; coordinates: Coordinates };
 type RegisteredProfile = keyof typeof ANDROID_BACKGROUND_UPDATES;
-type PositionDeferred = { resolve: (position: Position) => void };
 
 export const name = 'Location@Next';
-
-let pendingTaskPosition: PositionDeferred | null = null;
-let lastTaskError: string | null = null;
-
-function nextTaskPosition(timeoutMs: number): Promise<Position> {
-  lastTaskError = null;
-  const deferred: PositionDeferred = { resolve: () => {} };
-  pendingTaskPosition = deferred;
-  return new Promise<Position>((resolve, reject) => {
-    const timer = setTimeout(() => {
-      if (pendingTaskPosition === deferred) {
-        pendingTaskPosition = null;
-      }
-      const lastError = lastTaskError === null ? '' : `, last task error: ${lastTaskError}`;
-      reject(new Error(`the task received no position within ${timeoutMs} ms${lastError}`));
-    }, timeoutMs);
-    deferred.resolve = (position) => {
-      clearTimeout(timer);
-      if (pendingTaskPosition === deferred) {
-        pendingTaskPosition = null;
-      }
-      resolve(position);
-    };
-  });
-}
 
 const useForegroundPermission = () => useForegroundLocationPermissions()[0];
 const useBackgroundPermission = () => useBackgroundLocationPermissions()[0];
@@ -168,50 +144,6 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
     ]).toContain(permission.accuracy);
     t.expect(permission.accuracy === LocationAccuracy.NOT_GRANTED).toBe(
       permission.scope === LocationScope.NOT_GRANTED
-    );
-  }
-
-  function expectPosition(position: Position) {
-    const now = Date.now();
-    t.expect(typeof position.coordinates.latitude).toBe('number');
-    t.expect(typeof position.coordinates.longitude).toBe('number');
-    t.expect(position.coordinates.latitude).toBeGreaterThanOrEqual(-90);
-    t.expect(position.coordinates.latitude).toBeLessThanOrEqual(90);
-    t.expect(position.coordinates.longitude).toBeGreaterThanOrEqual(-180);
-    t.expect(position.coordinates.longitude).toBeLessThanOrEqual(180);
-    t.expect(typeof position.timestamp).toBe('number');
-    t.expect(position.timestamp).toBeGreaterThanOrEqual(EARLIEST_FIX_TIMESTAMP);
-    t.expect(position.timestamp).toBeLessThanOrEqual(now + CLOCK_SKEW_TOLERANCE);
-    t.expect(typeof position.mocked).toBe('boolean');
-
-    const nullableFields = [
-      'horizontalAccuracy',
-      'altitude',
-      'mslAltitude',
-      'verticalAccuracy',
-      'heading',
-      'headingAccuracy',
-      'speed',
-      'speedAccuracy',
-    ] as const;
-    for (const field of nullableFields) {
-      const value = position[field];
-      t.expect(value === null || typeof value === 'number').toBe(true);
-    }
-
-    const nonNegativeFields = [
-      'horizontalAccuracy',
-      'verticalAccuracy',
-      'headingAccuracy',
-      'speed',
-      'speedAccuracy',
-    ] as const;
-    for (const field of nonNegativeFields) {
-      const value = position[field];
-      t.expect(value === null || value >= 0).toBe(true);
-    }
-    t.expect(position.heading === null || (position.heading >= 0 && position.heading <= 360)).toBe(
-      true
     );
   }
 
@@ -287,12 +219,6 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
     return Location.watchPosition({ onPosition: () => {} });
   }
 
-  function selectDefaultProvider() {
-    Location.setLocationProvider(
-      LocationProvider.Fallback([LocationProvider.Gms(), LocationProvider.Android()])
-    );
-  }
-
   async function registeredLocationTask() {
     const tasks = await TaskManager.getRegisteredTasksAsync();
     return requireNotNull(tasks.find((task) => task.taskName === BACKGROUND_LOCATION_TASK));
@@ -318,43 +244,6 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
     return Location.getBackgroundSessionStatus();
   }
 
-  const providerPasses = [
-    {
-      label: 'the Android framework provider',
-      providerName: 'Android',
-      select: () => Location.setLocationProvider(LocationProvider.Android()),
-    },
-    {
-      label: 'the default fallback provider',
-      providerName: 'Fallback: GMS -> Android',
-      select: selectDefaultProvider,
-    },
-    {
-      label: 'the Google Play services provider',
-      providerName: 'GMS',
-      select: () => Location.setLocationProvider(LocationProvider.Gms()),
-    },
-  ];
-
-  function describeForEachProvider(define: () => void) {
-    if (!isAndroid) {
-      define();
-      return;
-    }
-    for (const pass of providerPasses) {
-      t.describe(`with ${pass.label}`, () => {
-        t.beforeAll(() => pass.select());
-        t.afterAll(() => selectDefaultProvider());
-
-        t.it('runs with the selected provider', () => {
-          t.expect(Location.getSelectedLocationProviderName()).toBe(pass.providerName);
-        });
-
-        define();
-      });
-    }
-  }
-
   t.describe('Location (next)', () => {
     describeWithPermissions('Location.requestForegroundPermissions()', () => {
       t.it(
@@ -369,7 +258,7 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
           t.expect(permission.status).toBe(PermissionStatus.GRANTED);
           t.expect(permission.scope).not.toBe(LocationScope.NOT_GRANTED);
         },
-        POSITION_TIMEOUT
+        PERMISSION_TIMEOUT
       );
 
       t.it('keeps the granted accuracy on a reduced accuracy request', async () => {
@@ -404,7 +293,7 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
           t.expect(permission.granted).toBe(true);
           t.expect(permission.scope).toBe(LocationScope.ALWAYS);
         },
-        POSITION_TIMEOUT
+        PERMISSION_TIMEOUT
       );
     });
 
@@ -454,7 +343,7 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
               );
               t.expect(permission.granted).toBe(permission.status === PermissionStatus.GRANTED);
             },
-            POSITION_TIMEOUT
+            PERMISSION_TIMEOUT
           );
         });
       } else {
@@ -468,7 +357,7 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
     });
 
     t.describe('Location.hasLocationServicesEnabled()', () => {
-      t.it('reports the device switch the position specs rely on', () => {
+      t.it('location services are on', () => {
         t.expect(Location.hasLocationServicesEnabled()).toBe(true);
       });
     });
@@ -476,94 +365,80 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
     t.describe('Location.enableLocationServices()', () => {
       if (isAndroid) {
         t.it('resolves with true when services are already on', async () => {
-          if (!Location.hasLocationServicesEnabled()) {
-            t.pending('location services are turned off on this device');
-            return;
-          }
           t.expect(await Location.enableLocationServices()).toBe(true);
         });
       }
     });
 
-    describeForEachProvider(() => {
+    describeForEachProvider(t, () => {
       describeWithPermissions('Location.getPosition()', () => {
-        t.beforeAll(async () => {
-          await Location.getPosition({ timeout: 15 }).catch(() => null);
-        }, POSITION_TIMEOUT);
-
         t.it(
           'resolves with a position of the documented shape',
           async () => {
             const position = await Location.getPosition({
-              profile: LocationProfile.DEFAULT,
-              timeout: 15,
+              profile: LocationProfile.AUTOMOTIVE_NAVIGATION,
+              timeout: 1,
             });
-            expectPosition(requireNotNull(position));
+            expectPosition(t, requireNotNull(position));
           },
-          POSITION_TIMEOUT
+          GET_POSITION_TIMEOUT
         );
 
         t.it(
-          'returns the last known position or null with a zero timeout',
+          'returns the last known position with a zero timeout',
           async () => {
-            const position = await Location.getPosition({ timeout: 0 });
-            if (position !== null) {
-              expectPosition(position);
+            const position = await Location.getPosition({
+              profile: LocationProfile.AUTOMOTIVE_NAVIGATION,
+              timeout: 0,
+            });
+            if (position === null) {
+              t.pending('no last known position');
+              return;
             }
+            expectPosition(t, position);
           },
-          POSITION_TIMEOUT
+          GET_POSITION_TIMEOUT
         );
 
         t.it(
           'returns a cached fix within maxCachedAge',
           async () => {
-            const first = requireNotNull(await Location.getPosition({ timeout: 15 }));
-            // const requestedAt = Date.now();
-            const cached = requireNotNull(
-              await Location.getPosition({ maxCachedAge: 600, timeout: 15 })
+            const first = requireNotNull(
+              await Location.getPosition({
+                profile: LocationProfile.AUTOMOTIVE_NAVIGATION,
+                timeout: 0,
+              })
             );
-            expectPosition(cached);
+            const cached = requireNotNull(
+              await Location.getPosition({
+                profile: LocationProfile.AUTOMOTIVE_NAVIGATION,
+                maxCachedAge: 600,
+                timeout: 3,
+              })
+            );
+            expectPosition(t, cached);
             t.expect(cached.timestamp).toBeGreaterThanOrEqual(first.timestamp);
-            // t.expect(cached.timestamp).toBeLessThanOrEqual(requestedAt + 1000);
           },
-          POSITION_TIMEOUT * 2
+          GET_POSITION_TIMEOUT * 2
         );
 
         t.it(
-          'accepts every profile',
+          'returns the last known position for every profile',
           async () => {
             for (const profile of Object.values(LocationProfile)) {
               const position = await Location.getPosition({ profile, timeout: 0 });
-              if (position !== null) {
-                expectPosition(position);
+              if (position === null) {
+                t.pending('no last known position');
+                return;
               }
+              expectPosition(t, position);
             }
           },
-          POSITION_TIMEOUT
+          GET_POSITION_TIMEOUT
         );
       });
 
       describeWithPermissions('Location.watchPosition()', () => {
-        t.it(
-          'delivers a position of the documented shape',
-          async () => {
-            let handle: PositionWatchHandle | undefined;
-            try {
-              const position = await new Promise<Position>((resolve, reject) => {
-                handle = Location.watchPosition({
-                  profile: LocationProfile.FITNESS,
-                  onPosition: resolve,
-                  onError: (error) => reject(new Error(`${error.code}: ${error.message}`)),
-                });
-              });
-              expectPosition(position);
-            } finally {
-              handle?.dispose();
-            }
-          },
-          POSITION_TIMEOUT
-        );
-
         t.it('reports the watcher flags', () => {
           const handle = watchHandle();
           try {
@@ -581,62 +456,6 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
             handle.dispose();
           }
         });
-
-        t.it('pauses and resumes the delivery', () => {
-          const handle = watchHandle();
-          try {
-            handle.pause();
-            t.expect(handle.status().isPaused).toBe(true);
-            t.expect(handle.status().isSubscribed).toBe(false);
-
-            t.expect(handle.resume()).toBe(true);
-            const resumed = handle.status();
-            t.expect(resumed.isPaused).toBe(false);
-            t.expect(resumed.isSubscribed).toBe(true);
-          } finally {
-            handle.dispose();
-          }
-        });
-
-        t.it('stages a profile and an interval for the next restart', () => {
-          const handle = watchHandle();
-          try {
-            handle.withProfile(LocationProfile.LOW_POWER).withInterval(2);
-            t.expect(handle.restart()).toBe(true);
-            const restarted = handle.status();
-            t.expect(restarted.isSubscribed).toBe(true);
-            t.expect(restarted.isHandleAlive).toBe(true);
-            t.expect(restarted.isPaused).toBe(false);
-          } finally {
-            handle.dispose();
-          }
-        });
-
-        t.it('rejects an interval that is negative or not finite', () => {
-          const handle = watchHandle();
-          try {
-            expectThrownCode(() => handle.withInterval(-1), 'ERR_INVALID_WATCH_INTERVAL');
-            expectThrownCode(
-              () => handle.withInterval(Number.POSITIVE_INFINITY),
-              'ERR_INVALID_WATCH_INTERVAL'
-            );
-          } finally {
-            handle.dispose();
-          }
-        });
-
-        t.it('throws on a disposed handle', () => {
-          const handle = watchHandle();
-          handle.dispose();
-
-          let error: unknown = null;
-          try {
-            handle.status();
-          } catch (caught) {
-            error = caught;
-          }
-          t.expect(error).not.toBeNull();
-        });
       });
 
       describeWithPermissions('Location.PositionWatchHandle', () => {
@@ -652,7 +471,7 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
           }
         });
 
-        t.it('starts the delivery with the first listener on Android', () => {
+        t.it('starts on the first listener', () => {
           const handle = new PositionWatchHandle();
           try {
             const subscription = handle.addListener(() => {});
@@ -676,19 +495,10 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
         });
 
         t.it(
-          'reports no delivery before start()',
-          async () => {
-            const handle = new LocationUpdatesHandle(BACKGROUND_LOCATION_TASK);
-            t.expect(await handle.hasStarted()).toBe(false);
-          },
-          TASK_TIMEOUT
-        );
-
-        t.it(
           'starts and stops the delivery',
           async () => {
             const handle = new LocationUpdatesHandle(BACKGROUND_LOCATION_TASK).withProfile(
-              LocationProfile.FITNESS
+              LocationProfile.AUTOMOTIVE_NAVIGATION
             );
 
             await handle.start();
@@ -698,46 +508,6 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
             t.expect(await handle.hasStarted()).toBe(false);
           },
           TASK_TIMEOUT
-        );
-
-        t.it(
-          'registers the profile staged before start()',
-          async () => {
-            const handle = new LocationUpdatesHandle(BACKGROUND_LOCATION_TASK);
-            try {
-              await handle.start();
-              expectRegisteredProfile(await registeredLocationTask(), LocationProfile.DEFAULT);
-
-              handle.withProfile(LocationProfile.LOW_POWER);
-              expectRegisteredProfile(await registeredLocationTask(), LocationProfile.DEFAULT);
-
-              await handle.stop();
-              await handle.start();
-              expectRegisteredProfile(await registeredLocationTask(), LocationProfile.LOW_POWER);
-            } finally {
-              await handle.stop();
-            }
-          },
-          TASK_TIMEOUT
-        );
-
-        t.it(
-          'delivers a position to the task',
-          async () => {
-            const handle = new LocationUpdatesHandle(BACKGROUND_LOCATION_TASK).withProfile(
-              LocationProfile.AUTOMOTIVE_NAVIGATION
-            );
-            try {
-              const [position] = await Promise.all([
-                nextTaskPosition(POSITION_TIMEOUT),
-                handle.start(),
-              ]);
-              expectPosition(position);
-            } finally {
-              await handle.stop();
-            }
-          },
-          POSITION_TIMEOUT + TASK_TIMEOUT
         );
 
         if (isAndroid) {
@@ -763,6 +533,84 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
           );
         }
       });
+    });
+
+    describeWithPermissions('Location.watchPosition()', () => {
+      t.it('toggles paused and subscribed', () => {
+        const handle = watchHandle();
+        try {
+          handle.pause();
+          t.expect(handle.status().isPaused).toBe(true);
+          t.expect(handle.status().isSubscribed).toBe(false);
+
+          t.expect(handle.resume()).toBe(true);
+          const resumed = handle.status();
+          t.expect(resumed.isPaused).toBe(false);
+          t.expect(resumed.isSubscribed).toBe(true);
+        } finally {
+          handle.dispose();
+        }
+      });
+
+      t.it('restarts with staged settings', () => {
+        const handle = watchHandle();
+        try {
+          handle.withProfile(LocationProfile.LOW_POWER).withInterval(2);
+          t.expect(handle.restart()).toBe(true);
+          const restarted = handle.status();
+          t.expect(restarted.isSubscribed).toBe(true);
+          t.expect(restarted.isHandleAlive).toBe(true);
+          t.expect(restarted.isPaused).toBe(false);
+        } finally {
+          handle.dispose();
+        }
+      });
+
+      t.it('rejects an interval that is negative or not finite', () => {
+        const handle = watchHandle();
+        try {
+          expectThrownCode(() => handle.withInterval(-1), 'ERR_INVALID_WATCH_INTERVAL');
+          expectThrownCode(
+            () => handle.withInterval(Number.POSITIVE_INFINITY),
+            'ERR_INVALID_WATCH_INTERVAL'
+          );
+        } finally {
+          handle.dispose();
+        }
+      });
+
+      t.it('throws on a disposed handle', async () => {
+        const handle = watchHandle();
+        handle.dispose();
+        t.expect(await TestUtils.expectMethodToThrowAsync(() => handle.status())).toBeDefined();
+      });
+    });
+
+    describeWithPermissions('Location.LocationUpdatesHandle', () => {
+      t.beforeAll(async () => {
+        await new LocationUpdatesHandle(BACKGROUND_LOCATION_TASK).stop();
+      });
+
+      t.afterAll(async () => {
+        await new LocationUpdatesHandle(BACKGROUND_LOCATION_TASK).stop();
+      });
+
+      t.it(
+        'registers the profile staged before start()',
+        async () => {
+          const handle = new LocationUpdatesHandle(BACKGROUND_LOCATION_TASK);
+          await handle.start();
+          expectRegisteredProfile(await registeredLocationTask(), LocationProfile.DEFAULT);
+
+          handle.withProfile(LocationProfile.LOW_POWER);
+          expectRegisteredProfile(await registeredLocationTask(), LocationProfile.DEFAULT);
+
+          await handle.stop();
+          await handle.start();
+          expectRegisteredProfile(await registeredLocationTask(), LocationProfile.LOW_POWER);
+        },
+        TASK_TIMEOUT
+      );
     });
 
     describeWithPermissions('Location permission hooks', () => {
@@ -841,7 +689,7 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
       );
 
       t.it(
-        'localizes the country name for the requested locale',
+        'varies the country name by locale',
         async () => {
           const [english] = await geocodingOrPending(() =>
             Location.geocode(VIENNA.query, { locale: 'en-US' })
@@ -892,21 +740,15 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
       });
 
       t.it('rejects coordinates that are not numbers', async () => {
-        let error: unknown = null;
-        try {
-          await Location.reverseGeocode({
-            latitude: '60',
-            longitude: '24',
-          } as unknown as Coordinates);
-        } catch (caught) {
-          error = caught;
-        }
-        t.expect(error).not.toBeNull();
+        const error = await TestUtils.expectMethodToThrowAsync(() =>
+          Location.reverseGeocode({ latitude: '60', longitude: '24' } as unknown as Coordinates)
+        );
+        t.expect(error).toBeDefined();
       });
     });
 
     t.describe('Location.defineLocationTask()', () => {
-      t.it('defines the task that receives background positions', () => {
+      t.it('defines the task', () => {
         t.expect(TaskManager.isTaskDefined(BACKGROUND_LOCATION_TASK)).toBe(true);
       });
     });
@@ -994,11 +836,3 @@ export async function test(t: JasmineInterface, portal: TestPortal) {
     }
   });
 }
-
-defineLocationTask({
-  taskName: BACKGROUND_LOCATION_TASK,
-  onPosition: (position) => pendingTaskPosition?.resolve(position),
-  onError: (error) => {
-    lastTaskError = `${error.code}: ${error.message}`;
-  },
-});

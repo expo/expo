@@ -32,6 +32,9 @@ function optionalRequire<T>(requirer: () => T): T | undefined {
 // which is called in one of the components).
 const LocationTestScreen = optionalRequire(() => require('./tests/Location'));
 const LocationNextTestScreen = optionalRequire(() => require('./tests/LocationNext'));
+const LocationNextDeliveryTestScreen = optionalRequire(() =>
+  require('./tests/LocationNextDelivery')
+);
 const TaskManagerTestScreen = optionalRequire(() => require('./tests/TaskManager'));
 
 export type Module = { name: string; route?: string; test: Function };
@@ -148,6 +151,7 @@ export function getTestModules() {
     // Popup to request device's location which uses Google's location service
     modules.push(LocationTestScreen);
     modules.push(LocationNextTestScreen);
+    modules.push(LocationNextDeliveryTestScreen);
     // Fails to redirect because of malformed URL in published version with release channel parameter
     modules.push(optionalRequire(() => require('./tests/Linking')));
     // Has uncontrolled view controllers
