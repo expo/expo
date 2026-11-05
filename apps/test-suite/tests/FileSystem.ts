@@ -114,6 +114,33 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
           const dir = await Directory.pickDirectoryAsync(Paths.cache.uri);
           expect(dir.exists).toBe(true);
         });
+
+        it('Supports file handles on SAF files', async () => {
+          const safDirectory = await Directory.pickDirectoryAsync();
+          safDirectory.list().forEach((sd) => {
+            sd.delete();
+          });
+          const file = safDirectory.createFile('handle.txt', 'text/plain');
+          file.writeSync('hello world');
+
+          const reader = file.open(FileMode.Read);
+          expect(reader.size).toBe(11);
+          expect(await reader.readBytes(5)).toEqual(new Uint8Array([104, 101, 108, 108, 111])); // hello
+          expect(reader.offset).toBe(5);
+          reader.offset = 6;
+          expect(reader.readBytesSync(5)).toEqual(new Uint8Array([119, 111, 114, 108, 100])); // world
+          expect(reader.readBytesSync(5)).toEqual(new Uint8Array([]));
+          reader.close();
+
+          const appender = file.open(FileMode.Append);
+          expect(appender.offset).toBe(11);
+          await appender.writeBytes(new Uint8Array([33]));
+          appender.writeBytesSync(new Uint8Array([33]));
+          expect(appender.offset).toBe(13);
+          appender.close();
+          expect(file.textSync()).toBe('hello world!!');
+          file.delete();
+        });
       }
 
       if (Platform.OS === 'ios') {
