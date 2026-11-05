@@ -1,15 +1,18 @@
 import type { DefinedNativePlugin } from 'noxcturnal';
 
 import type { Noxcturnal } from '../noxcturnal-transformer';
+import { createPlatformBindingChecker } from './platform-binding';
 
 export function createPlatformSelectPlugin(
   nox: Noxcturnal,
   platform: string | null | undefined
 ): DefinedNativePlugin {
+  const { isPlatformBinding, visitor } = createPlatformBindingChecker(nox);
   return nox.defineNativePlugin({
     name: 'expo-minify-platform-select',
     contract: { syntax: { anyOf: ['CallExpression'] } },
     visitors: [
+      visitor,
       nox.defineVisitor(
         {
           route: 'CallExpression',
@@ -18,6 +21,7 @@ export function createPlatformSelectPlugin(
         },
         {
           scope: true,
+          controlFlow: ['dynamic-subscriptions'],
           children: {
             callee: { route: 'Expression', fields: ['memberPath', 'name'] },
             arguments: {
@@ -34,7 +38,10 @@ export function createPlatformSelectPlugin(
         },
         (call) => {
           const callee = call.getChild('callee');
-          if (!callee?.matchesPattern('Platform.select') || call.scope.hasBinding('Platform'))
+          if (
+            !callee?.matchesPattern('Platform.select') ||
+            !isPlatformBinding(call.scope, call.context)
+          )
             return;
           const argument = call.getChildList('arguments')[0];
           if (!argument?.is('ObjectExpression')) return;
