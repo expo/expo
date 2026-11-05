@@ -13,9 +13,8 @@ struct StringMapper: PropertyMapper {
   }
 
   func extract(from contact: CNContact) throws -> String? {
-    // Reading or writing a key that was not fetched raises an Objective-C exception, which Swift cannot catch.
     guard contact.isKeyAvailable(keyString) else {
-      return nil
+      throw ContactKeyNotFetchedException(keyString)
     }
     let value = contact.value(forKey: keyString) as? String
     return (value?.isEmpty ?? true) ? nil : value
@@ -23,7 +22,7 @@ struct StringMapper: PropertyMapper {
 
   func apply(_ value: String?, to contact: CNMutableContact) throws {
     guard contact.isKeyAvailable(keyString) else {
-      throw ContactFieldNotAccessibleException(keyString)
+      throw ContactKeyNotFetchedException(keyString)
     }
     contact[keyPath: keyPath] = value ?? ""
   }

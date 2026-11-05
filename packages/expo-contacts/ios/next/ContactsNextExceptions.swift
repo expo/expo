@@ -1,4 +1,3 @@
-import Contacts
 import ExpoModulesCore
 
 internal final class FailedToGetMutableContact: Exception {
@@ -49,13 +48,15 @@ internal final class FailedToParseDate: Exception {
   }
 }
 
-internal final class ContactFieldNotAccessibleException: GenericException<String> {
+internal final class ContactNotesNotAccessibleException: Exception {
   override var reason: String {
-    if param == CNContactNoteKey {
-      return "Could not write the note of the contact, because the app cannot access the note field. "
-        + "The note field requires the com.apple.developer.contacts.notes entitlement: "
-        + "set `ios.accessesContactNotes` to `true` in the app config and create a development build"
-    }
-    return "Could not write the '\(param)' field of the contact, because the field was not fetched"
+    "Could not access the note of the contact, because the app does not have the com.apple.developer.contacts.notes entitlement. "
+      + "Request the entitlement from Apple, set `ios.accessesContactNotes` to `true` in the app config, and create a development build"
+  }
+}
+
+internal final class ContactKeyNotFetchedException: GenericException<String> {
+  override var reason: String {
+    "The contact was fetched without the key '\(param)'. This is a bug in expo-contacts, please report it"
   }
 }
