@@ -5,9 +5,9 @@ import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 
+import { env } from './env';
 import * as AndroidVersion from '../android/Version';
 import * as IOSVersion from '../ios/Version';
-import { env } from './env';
 
 export type ExpoConfigUpdates = Pick<
   ExpoConfig,
