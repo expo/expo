@@ -10,6 +10,7 @@ import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.module.LibraryGlideModule
 import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.image.events.OkHttpProgressListener
+import expo.modules.kotlin.devtools.ExpoNetworkReporter
 import java.io.InputStream
 
 /**
@@ -69,6 +70,9 @@ class GlideUrlWithCustomCacheKey(
 data class GlideUrlWrapper(val glideUrl: GlideUrl) {
   var progressListener: OkHttpProgressListener? = null
 
+  /** The React Native DevTools request id the download is reported under, when JS created one. */
+  var devToolsRequestId: String? = null
+
   override fun toString(): String {
     return glideUrl.toString()
   }
@@ -78,6 +82,9 @@ data class GlideUrlWrapper(val glideUrl: GlideUrl) {
 class ExpoImageOkHttpClientGlideModule : LibraryGlideModule() {
   override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
     val client = OkHttpClientProvider.createClient()
+      .newBuilder()
+      .addInterceptor(ExpoNetworkReporter())
+      .build()
     // We don't use the `GlideUrl` directly but we want to replace the default okhttp loader anyway
     // to make sure that the app will use only one client.
     registry.replace(GlideUrl::class.java, InputStream::class.java, OkHttpUrlLoader.Factory(client))

@@ -66,7 +66,8 @@ data class SourceMap(
   @Field override val height: Int = 0,
   @Field override val scale: Double = 1.0,
   @Field val headers: Map<String, String>? = null,
-  @Field val cacheKey: String? = null
+  @Field val cacheKey: String? = null,
+  @Field val devToolsRequestId: String? = null
 ) : Source, Record {
   private var parsedUri: Uri? = null
 
@@ -139,7 +140,9 @@ data class SourceMap(
     } else {
       GlideUrlWithCustomCacheKey(uri, getCustomHeaders(), cacheKey)
     }
-    return UrlModelProvider(glideUrl)
+    return UrlModelProvider(glideUrl).apply {
+      devToolsRequestId = this@SourceMap.devToolsRequestId
+    }
   }
 
   override fun createGlideOptions(context: Context): RequestOptions {
