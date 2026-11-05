@@ -419,6 +419,11 @@ function checkEntries(
           `${filePath} entry at line ${entry.lineNumber} has no text before the trailer. Describe the change before the trailer, as the changeset summary does.`
         );
       }
+      if (entry.text.reduce(openFenceAfter, null) !== null) {
+        errors.push(
+          `${filePath} entry at line ${entry.lineNumber} has a code block that does not close. Keep the closing fence of the summary unchanged, and put the trailer on its own line after the code block.`
+        );
+      }
     }
     entry = null;
   };
@@ -455,6 +460,20 @@ function checkEntries(
   finishEntry();
 
   return { entryCount, errors };
+}
+
+/**
+ * Returns the fence of the code block that is open after the trimmed `line`, or `null`. As in
+ * CommonMark, a closing fence uses the same character as the opening fence, is at least as long,
+ * and has nothing else on the line.
+ */
+function openFenceAfter(openFence: string | null, line: string): string | null {
+  const fence = /^(`{3,}|~{3,})/.exec(line)?.[1] ?? null;
+  if (openFence === null) {
+    return fence;
+  }
+  const closes = fence === line && fence[0] === openFence[0] && fence.length >= openFence.length;
+  return closes ? null : openFence;
 }
 
 function diffLines(

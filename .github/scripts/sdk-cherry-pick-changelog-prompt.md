@@ -34,12 +34,25 @@ For each changeset, and for each package that it names:
 - If the summary has more than one paragraph, keep all of them in the same entry. Put a blank line between paragraphs, and indent each line after the first by two spaces.
 - Remove a `See:` line from the summary. The trailer replaces it.
 - End the last line of the entry with one space and the trailer. Copy the trailer exactly.
+- If the summary ends in a fenced code block, keep the closing fence unchanged. Add a blank line, then put the trailer on its own line, indented by two spaces.
 
 An entry with the trailer for pull request 12345 by `octocat`:
 
 ```md
 - [iOS] Fix `CameraView` freezing the UI when the capture session cannot start. ([#12345](https://github.com/expo/expo/pull/12345) by [@octocat](https://github.com/octocat))
 ```
+
+An entry whose summary ends in a code block:
+
+````md
+- Add the `useCamera` hook. Use it like this:
+
+  ```js
+  const camera = useCamera();
+  ```
+
+  ([#12345](https://github.com/expo/expo/pull/12345) by [@octocat](https://github.com/octocat))
+````
 
 ## Rules
 

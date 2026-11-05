@@ -476,6 +476,44 @@ describe('checkBackportChangelog', () => {
     );
   });
 
+  it('rejects a trailer on the closing fence of a code block, but accepts it after the block', () => {
+    const entry = (closingLines: string[]) =>
+      replaceLine(CORE_BEFORE, '### 💡 Others', [
+        '- Call it like this:',
+        '',
+        '  ```js',
+        '  foo();',
+        ...closingLines,
+        '',
+        '### 💡 Others',
+      ]);
+    assert.deepEqual(
+      checkBackportChangelog(withCoreAfter(validInput(), entry(['  ```', '', `  ${TRAILER}`]))),
+      { ok: true, errors: [] }
+    );
+    assertSingleError(
+      withCoreAfter(validInput(), entry([`  \`\`\` ${TRAILER}`])),
+      /packages\/expo-modules-core\/CHANGELOG\.md/,
+      /entry at line \d+ has a code block that does not close/
+    );
+  });
+
+  it('rejects an entry whose code block never closes', () => {
+    const after = replaceLine(CORE_BEFORE, '### 💡 Others', [
+      '- Call it like this:',
+      '',
+      '  ```js',
+      `  foo(); ${TRAILER}`,
+      '',
+      '### 💡 Others',
+    ]);
+    assertSingleError(
+      withCoreAfter(validInput(), after),
+      /packages\/expo-modules-core\/CHANGELOG\.md/,
+      /entry at line \d+ has a code block that does not close/
+    );
+  });
+
   it('rejects an indented line that continues an existing entry', () => {
     const input = withFile(validInput(), {
       status: 'modified',
