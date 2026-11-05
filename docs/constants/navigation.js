@@ -389,6 +389,7 @@ export const general = [
         makePage('modules/v2/reference/concurrency.mdx'),
         makePage('modules/v2/reference/cli.mdx'),
       ]),
+      makeSection('Migration', [makePage('modules/v2/migrate/from-v1.mdx')]),
     ],
     { expanded: false, isBeta: true }
   ),
