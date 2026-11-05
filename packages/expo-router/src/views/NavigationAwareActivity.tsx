@@ -66,14 +66,14 @@ export function NavigationAwareActivity({
 
 function NavigationAwareScreenActivity({
   hideWhenNestedAtLevel,
-  ancestorHidden,
+  forceHidden,
   children,
 }: {
   hideWhenNestedAtLevel: number | undefined;
-  ancestorHidden?: boolean;
+  forceHidden?: boolean;
   children: ReactNode;
 }) {
-  const hidden = useRouteHidden(hideWhenNestedAtLevel, ancestorHidden);
+  const hidden = useRouteHidden(hideWhenNestedAtLevel, forceHidden);
 
   return <ActivityContents mode={hidden ? 'hidden' : 'visible'}>{children}</ActivityContents>;
 }
@@ -98,11 +98,11 @@ function LayoutAncestorHiddenProvider({
 
 function useRouteHidden(
   hideWhenNestedAtLevel: number | undefined,
-  ancestorHidden: boolean | undefined
+  forceHidden: boolean | undefined
 ) {
-  // `Infinity` never hides the route by depth, so only the ancestor state applies.
+  // `Infinity` never hides the route by depth, so only `forceHidden` applies.
   const mode = useActivityMode(hideWhenNestedAtLevel ?? Infinity);
-  return ancestorHidden === true || mode === 'hidden';
+  return forceHidden === true || mode === 'hidden';
 }
 
 /**
@@ -133,7 +133,7 @@ export function RouteActivity({
     return (
       <NavigationAwareScreenActivity
         hideWhenNestedAtLevel={activityThreshold}
-        ancestorHidden={ancestorHidden}>
+        forceHidden={ancestorHidden}>
         {children}
       </NavigationAwareScreenActivity>
     );
