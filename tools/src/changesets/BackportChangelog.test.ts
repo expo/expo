@@ -5,6 +5,7 @@ import {
   BackportChangedFile,
   BackportChangelogInput,
   checkBackportChangelog,
+  resolveBackportPackages,
 } from './BackportChangelog';
 
 const PR = 51463;
@@ -229,6 +230,20 @@ describe('checkBackportChangelog', () => {
     assertSingleError(input, /expo-modules-jsi/, /does not exist on this branch/);
   });
 
+  it('names the package.json files it cannot read when a named package does not exist', () => {
+    const input = {
+      ...withoutFile(validInput(), JSI_CHANGELOG),
+      packageDirs: new Map([['expo-modules-core', 'packages/expo-modules-core']]),
+      unreadablePackageJsonPaths: ['packages/expo-modules-jsi/package.json'],
+    };
+    assertSingleError(
+      input,
+      /"expo-modules-jsi"/,
+      /does not exist on this branch/,
+      /packages\/expo-modules-jsi\/package\.json/
+    );
+  });
+
   it('rejects a removed line', () => {
     const after = replaceLine(CORE_BEFORE, '## 57.0.23 — 2026-10-14', []);
     const input = withCoreAfter(
@@ -382,6 +397,47 @@ describe('checkBackportChangelog', () => {
       withCoreAfter(validInput(), after),
       /packages\/expo-modules-core\/CHANGELOG\.md/,
       /outside the "## Unpublished" section/
+    );
+  });
+
+  it('rejects an added subsection heading that "## Unpublished" already has', () => {
+    const after = replaceLine(CORE_BEFORE, '### 💡 Others', [
+      '### 🐛 Bug fixes',
+      '',
+      ENTRY,
+      '',
+      '### 💡 Others',
+    ]);
+    assertSingleError(
+      withCoreAfter(validInput(), after),
+      /packages\/expo-modules-core\/CHANGELOG\.md line 11 adds the heading "### 🐛 Bug fixes"/,
+      /already has it at line 9/
+    );
+  });
+
+  it('rejects an added subsection that breaks the order of the "## Unpublished" subsections', () => {
+    const released = '## 57.0.23 — 2026-10-14';
+    const before = [
+      '# Changelog',
+      '',
+      '## Unpublished',
+      '',
+      '### 🐛 Bug fixes',
+      '',
+      released,
+      '',
+    ].join('\n');
+    const input = withFile(validInput(), {
+      status: 'modified',
+      mode: '100644',
+      path: CORE_CHANGELOG,
+      before,
+      after: replaceLine(before, released, ['### 🎉 New features', '', ENTRY, '', released]),
+    });
+    assertSingleError(
+      input,
+      /packages\/expo-modules-core\/CHANGELOG\.md line 7 has the heading "### 🎉 New features" after "### 🐛 Bug fixes"/,
+      /"### 🛠 Breaking changes", "### 🎉 New features", "### 🐛 Bug fixes", "### 💡 Others"/
     );
   });
 
@@ -557,5 +613,21 @@ describe('checkBackportChangelog', () => {
       /packages\/expo-modules-jsi\/CHANGELOG\.md/,
       /adds 1 entry, but 2 changesets name/
     );
+  });
+});
+
+describe('resolveBackportPackages', () => {
+  it('rejects a package name with a control character and does not list the package', () => {
+    const name = 'foo\0packages/victim/CHANGELOG.md\x7fbar';
+    const content = '---\n"foo\\0packages/victim/CHANGELOG.md\\x7fbar": patch\n---\n\nFix foo.\n';
+    const result = resolveBackportPackages({
+      changesets: [{ path: '.changeset/nul.md', content }],
+      packageDirs: new Map([[name, 'packages/foo']]),
+    });
+    assert.deepEqual(result.packages, []);
+    assert.equal(result.errors.length, 1);
+    assert.match(result.errors[0], /\.changeset\/nul\.md/);
+    assert.match(result.errors[0], /control character/);
+    assert.doesNotMatch(result.errors[0], /[\u0000-\u001f\u007f]/);
   });
 });

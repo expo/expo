@@ -27,6 +27,16 @@ export type BackportChangelogInput = {
   packageDirs: ReadonlyMap<string, string>;
   /** Maps each package name that more than one package on the target branch uses to those directories. */
   duplicatePackageDirs?: ReadonlyMap<string, readonly string[]>;
+  /** Each `package.json` on the target branch that does not parse or has no name. */
+  unreadablePackageJsonPaths?: readonly string[];
+};
+
+/** A package that a changeset names. `changelog` is null when the target branch has no single package with that name. */
+export type BackportPackage = {
+  name: string;
+  changelog: string | null;
+  /** The changesets that name this package. Each one needs its own entry. */
+  changesetPaths: string[];
 };
 
 export type BackportChangelogResult = {
@@ -43,6 +53,9 @@ const SUBSECTION_HEADINGS = [
   '### 🐛 Bug fixes',
   '### 💡 Others',
 ];
+
+const MAX_LISTED_PATHS = 10;
+const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/g;
 
 type Changelog = {
   path: string;
@@ -80,41 +93,11 @@ export function checkBackportChangelog(input: BackportChangelogInput): BackportC
     }
   }
 
-  const changesetsByPackage = new Map<string, string[]>();
-  for (const changeset of input.changesets) {
-    try {
-      for (const release of parseChangesetFile(changeset.content).releases) {
-        const paths = changesetsByPackage.get(release.name) ?? [];
-        changesetsByPackage.set(release.name, [...paths, changeset.path]);
-      }
-    } catch (error) {
-      const reason = error instanceof Error ? error.message.split('\n')[0] : String(error);
-      errors.push(
-        `${changeset.path} cannot be parsed (${reason}), so the packages it names are unknown. Convert this backport by hand.`
-      );
-    }
-  }
-
-  const changelogs: Changelog[] = [];
-  for (const [packageName, changesetPaths] of changesetsByPackage) {
-    const packageDir = input.packageDirs.get(packageName);
-    const duplicateDirs = input.duplicatePackageDirs?.get(packageName);
-    if (duplicateDirs) {
-      errors.push(
-        `More than one package is named "${packageName}" on this branch (${[...duplicateDirs].sort().join(', ')}), so the check cannot tell which CHANGELOG.md belongs to it. Convert this backport by hand.`
-      );
-    } else if (packageDir === undefined) {
-      errors.push(
-        `The package "${packageName}", named by ${changesetPaths.join(', ')}, does not exist on this branch. Convert this backport by hand.`
-      );
-    } else {
-      changelogs.push({
-        path: path.posix.join(packageDir, 'CHANGELOG.md'),
-        packageName,
-        changesetPaths,
-      });
-    }
-  }
+  const resolved = resolveBackportPackages(input);
+  errors.push(...resolved.errors);
+  const changelogs: Changelog[] = resolved.packages.flatMap(({ name, changelog, changesetPaths }) =>
+    changelog === null ? [] : [{ path: changelog, packageName: name, changesetPaths }]
+  );
 
   const changelogPaths = new Set(changelogs.map((changelog) => changelog.path));
   for (const file of input.changedFiles) {
@@ -145,6 +128,81 @@ export function checkBackportChangelog(input: BackportChangelogInput): BackportC
   }
 
   return { ok: errors.length === 0, errors };
+}
+
+/**
+ * Reads the packages that the changesets name, and finds the `CHANGELOG.md` of each one on the
+ * target branch. The check and `et list-backport-changesets` both use it, so the files that the
+ * conversion edits are the files that the check expects.
+ */
+export function resolveBackportPackages(
+  input: Pick<
+    BackportChangelogInput,
+    'changesets' | 'packageDirs' | 'duplicatePackageDirs' | 'unreadablePackageJsonPaths'
+  >
+): { packages: BackportPackage[]; errors: string[] } {
+  const errors: string[] = [];
+  const changesetsByPackage = new Map<string, string[]>();
+  for (const changeset of input.changesets) {
+    try {
+      for (const release of parseChangesetFile(changeset.content).releases) {
+        const paths = changesetsByPackage.get(release.name) ?? [];
+        changesetsByPackage.set(release.name, [...paths, changeset.path]);
+      }
+    } catch (error) {
+      const reason = error instanceof Error ? error.message.split('\n')[0] : String(error);
+      errors.push(
+        `${changeset.path} cannot be parsed (${reason}), so the packages it names are unknown. Convert this backport by hand.`
+      );
+    }
+  }
+
+  const packages = [...changesetsByPackage].flatMap(([name, changesetPaths]): BackportPackage[] => {
+    const shownName = name.replace(
+      CONTROL_CHARACTERS,
+      (character) => `\\u${character.charCodeAt(0).toString(16).padStart(4, '0')}`
+    );
+    if (shownName !== name) {
+      errors.push(
+        `${changesetPaths.join(', ')} names the package "${shownName}", which has a control character, so it is not a valid package name. Correct the changeset, or convert this backport by hand.`
+      );
+      // The name cannot go into the list: a reader that splits on control characters would read it wrong.
+      return [];
+    }
+    const packageDir = input.packageDirs.get(name);
+    const duplicateDirs = input.duplicatePackageDirs?.get(name);
+    if (duplicateDirs) {
+      errors.push(
+        `More than one package is named "${name}" on this branch (${[...duplicateDirs].sort().join(', ')}), so the check cannot tell which CHANGELOG.md belongs to it. Convert this backport by hand.`
+      );
+    } else if (packageDir === undefined) {
+      errors.push(
+        missingPackageError(name, changesetPaths, input.unreadablePackageJsonPaths ?? [])
+      );
+    } else {
+      return [{ name, changelog: path.posix.join(packageDir, 'CHANGELOG.md'), changesetPaths }];
+    }
+    return [{ name, changelog: null, changesetPaths }];
+  });
+  return { packages, errors };
+}
+
+/** A `package.json` without a readable name can belong to the missing package, so the error names those files. */
+function missingPackageError(
+  name: string,
+  changesetPaths: string[],
+  unreadablePaths: readonly string[]
+): string {
+  const missing = `The package "${name}", named by ${changesetPaths.join(', ')}, does not exist on this branch.`;
+  if (unreadablePaths.length === 0) {
+    return `${missing} Convert this backport by hand.`;
+  }
+  const shown = [...unreadablePaths].sort().slice(0, MAX_LISTED_PATHS);
+  const more =
+    unreadablePaths.length > shown.length
+      ? `, and ${unreadablePaths.length - shown.length} more`
+      : '';
+  return `${missing} These package.json files do not parse or have no name, so one of them can be "${name}": ${shown.join(', ')}${more}. Correct that package.json, or convert this backport by hand.`;
 }
 
 function checkChangelog(
@@ -179,6 +237,7 @@ function checkChangelog(
     addedBlocks.flatMap((block) => block.lines.map((_, offset) => block.start + offset))
   );
   errors.push(...checkPlacement(filePath, afterLines, addedBlocks, addedLines));
+  errors.push(...checkSubsections(filePath, afterLines, addedLines));
   errors.push(...checkSplitEntries(filePath, afterLines, addedBlocks, addedLines));
 
   let entryCount = 0;
@@ -206,16 +265,13 @@ function checkPlacement(
   addedBlocks: AddedBlock[],
   addedLines: ReadonlySet<number>
 ): string[] {
-  const unpublished = lines.findIndex((line) => /^## Unpublished\s*$/.test(line));
-  if (unpublished === -1) {
+  const section = findUnpublishedSection(lines);
+  if (!section) {
     return addedBlocks.length > 0
       ? [`${filePath} has no "## Unpublished" section. Convert this changelog by hand.`]
       : [];
   }
-  const nextSection = lines.findIndex(
-    (line, index) => index > unpublished && line.startsWith('## ')
-  );
-  const sectionEnd = nextSection === -1 ? lines.length : nextSection;
+  const { heading: unpublished, end: sectionEnd } = section;
 
   const errors: string[] = [];
   for (const block of addedBlocks) {
@@ -249,6 +305,61 @@ function checkPlacement(
         );
         break;
       }
+    }
+  }
+  return errors;
+}
+
+/** `heading` is the index of the `## Unpublished` line, and `end` the index of the next `## ` section or the line count. */
+function findUnpublishedSection(lines: string[]): { heading: number; end: number } | null {
+  const heading = lines.findIndex((line) => /^## Unpublished\s*$/.test(line));
+  if (heading === -1) {
+    return null;
+  }
+  const nextSection = lines.findIndex((line, index) => index > heading && line.startsWith('## '));
+  return { heading, end: nextSection === -1 ? lines.length : nextSection };
+}
+
+/** A heading that the change adds to `## Unpublished` must not repeat a heading or break the order of `SUBSECTION_HEADINGS`. */
+function checkSubsections(
+  filePath: string,
+  lines: string[],
+  addedLines: ReadonlySet<number>
+): string[] {
+  const section = findUnpublishedSection(lines);
+  if (!section) {
+    return [];
+  }
+  const headings: { index: number; rank: number }[] = [];
+  for (let index = section.heading + 1; index < section.end; index++) {
+    const rank = SUBSECTION_HEADINGS.indexOf(lines[index]);
+    if (rank !== -1) {
+      headings.push({ index, rank });
+    }
+  }
+
+  const errors: string[] = [];
+  // Only a pair with an added heading is the conversion's fault. Other errors, such as a removed
+  // `## ` line, already report a change that moves existing headings into the section.
+  const outOfOrder = headings.findIndex(
+    (heading, i) =>
+      i > 0 &&
+      heading.rank < headings[i - 1].rank &&
+      (addedLines.has(heading.index) || addedLines.has(headings[i - 1].index))
+  );
+  if (outOfOrder !== -1) {
+    const { index } = headings[outOfOrder];
+    const previous = headings[outOfOrder - 1];
+    errors.push(
+      `${filePath} line ${index + 1} has the heading "${lines[index]}" after "${lines[previous.index]}". Keep the subsections of "## Unpublished" in this order: ${SUBSECTION_HEADINGS.map((name) => `"${name}"`).join(', ')}.`
+    );
+  }
+  for (const { index, rank } of headings) {
+    const existing = headings.find((other) => other.rank === rank && other.index !== index);
+    if (addedLines.has(index) && existing) {
+      errors.push(
+        `${filePath} line ${index + 1} adds the heading "${lines[index]}", but "## Unpublished" already has it at line ${existing.index + 1}. Add the entry under the existing heading.`
+      );
     }
   }
   return errors;

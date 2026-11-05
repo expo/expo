@@ -55,11 +55,16 @@ function write(repo: string, file: string, content: string): void {
   fs.writeFileSync(path.join(repo, file), content);
 }
 
-/** Creates a repository whose HEAD is a cherry-pick commit that adds a changeset for `expo-foo`. */
+/**
+ * Creates a repository whose HEAD is a cherry-pick commit that adds a changeset for `expo-foo`.
+ * `files` are written to the first commit after the default files, so they can replace them.
+ */
 function createRepo({
   duplicatePackage = false,
   unnamedDuplicatePackage = false,
   submodule = false,
+  files = {} as Record<string, string>,
+  changeset = "---\n'expo-foo': patch\n---\n\nFix a bug.\n",
 } = {}): {
   repo: string;
   base: string;
@@ -69,6 +74,9 @@ function createRepo({
   git(repo, 'init', '-q', '-b', 'sdk-57');
   write(repo, 'packages/expo-foo/package.json', '{ "name": "expo-foo" }\n');
   write(repo, CHANGELOG_PATH, CHANGELOG);
+  for (const [file, content] of Object.entries(files)) {
+    write(repo, file, content);
+  }
   if (duplicatePackage) {
     write(repo, 'packages/expo-foo-copy/package.json', '{ "name": "expo-foo" }\n');
   }
@@ -85,7 +93,7 @@ function createRepo({
     git(repo, 'update-index', '--add', '--cacheinfo', `160000,${'a'.repeat(40)},lab`);
   }
   git(repo, 'commit', '-q', '-m', 'Initial commit');
-  write(repo, CHANGESET_PATH, "---\n'expo-foo': patch\n---\n\nFix a bug.\n");
+  write(repo, CHANGESET_PATH, changeset);
   git(repo, 'add', '-A');
   git(repo, 'commit', '-q', '-m', `Fix a bug (#${PR})`);
   return { repo, base: git(repo, 'rev-parse', 'HEAD') };
@@ -215,6 +223,29 @@ describe('runBackportChangelogCheckAsync', () => {
     const report = await checkAsync(repo, base);
     assert.deepEqual(report, { ok: true, errors: [], tree: git(repo, 'write-tree') });
   });
+
+  it('accepts a conversion when the package.json of another package is not valid JSON', async () => {
+    const { repo, base } = createRepo({
+      files: { 'packages/expo-broken/package.json': '{ "name": ' },
+    });
+    stageConversion(repo);
+    const report = await checkAsync(repo, base);
+    assert.deepEqual(report, { ok: true, errors: [], tree: git(repo, 'write-tree') });
+  });
+
+  for (const [kind, content] of [
+    ['is not valid JSON', '{ "name": "expo-foo",'],
+    ['has no string name', '{ "name": 5 }\n'],
+  ]) {
+    it(`rejects a named package whose package.json ${kind}, and names that file`, async () => {
+      const { repo, base } = createRepo({ files: { 'packages/expo-foo/package.json': content } });
+      stageConversion(repo);
+      assertFailsWith(
+        await checkAsync(repo, base),
+        /"expo-foo".*does not exist on this branch.*packages\/expo-foo\/package\.json/
+      );
+    });
+  }
 
   it('rejects a pull request number that is not a plain positive integer', async () => {
     const { repo, base } = createRepo();

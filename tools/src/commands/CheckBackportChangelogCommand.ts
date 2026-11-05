@@ -1,4 +1,5 @@
 import { Command } from '@expo/commander';
+import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import picomatch from 'picomatch';
@@ -56,7 +57,7 @@ function splitNul(output: string): string[] {
   return output.split('\0').filter(Boolean);
 }
 
-async function readAddedChangesetsAsync(
+export async function readAddedChangesetsAsync(
   git: GitDirectory,
   base: string
 ): Promise<BackportChangeset[]> {
@@ -82,30 +83,107 @@ async function readAddedChangesetsAsync(
   );
 }
 
-/** Maps package names to directories as they are at `base`, with the same globs as `getListOfPackagesAsync`. */
-async function readPackageDirsAsync(
+/** Reads objects with one `git cat-file --batch`. An object that is missing or is not a blob reads as null. */
+async function readBlobsAsync(git: GitDirectory, objects: string[]): Promise<(Buffer | null)[]> {
+  if (objects.length === 0) {
+    return [];
+  }
+  const output = await new Promise<Buffer>((resolve, reject) => {
+    const child = spawn('git', [...GIT_GLOBAL_OPTIONS, 'cat-file', '--batch'], { cwd: git.path });
+    const chunks: Buffer[] = [];
+    let stderr = '';
+    child.stdout.on('data', (chunk: Buffer) => chunks.push(chunk));
+    child.stderr.on('data', (chunk: Buffer) => {
+      stderr += chunk.toString();
+    });
+    child.stdin.on('error', reject);
+    child.on('error', reject);
+    child.on('close', (code) => {
+      if (code === 0) {
+        resolve(Buffer.concat(chunks));
+      } else {
+        reject(new Error(`"git cat-file --batch" failed with exit code ${code}: ${stderr.trim()}`));
+      }
+    });
+    child.stdin.end(objects.map((object) => `${object}\n`).join(''));
+  });
+
+  // Each object is "<oid> <type> <size>\n<content>\n", or "<oid> missing\n". The size counts bytes.
+  const blobs: (Buffer | null)[] = [];
+  let offset = 0;
+  for (const object of objects) {
+    const headerEnd = output.indexOf('\n', offset);
+    if (headerEnd === -1) {
+      throw new Error(`"git cat-file --batch" did not return ${object}.`);
+    }
+    const [, type, size] = output.toString('utf8', offset, headerEnd).split(' ');
+    offset = headerEnd + 1;
+    if (size === undefined) {
+      blobs.push(null);
+      continue;
+    }
+    const end = offset + Number(size);
+    blobs.push(type === 'blob' ? output.subarray(offset, end) : null);
+    offset = end + 1;
+  }
+  return blobs;
+}
+
+function readPackageName(packageJson: Buffer | null): string | null {
+  let json: unknown;
+  try {
+    json = JSON.parse(packageJson?.toString('utf8') ?? '');
+  } catch {
+    return null;
+  }
+  if (json && typeof json === 'object' && 'name' in json && typeof json.name === 'string') {
+    return json.name || null;
+  }
+  return null;
+}
+
+/**
+ * Maps package names to directories as they are at `base`, with the same globs as `getListOfPackagesAsync`.
+ * A `package.json` that does not parse or has no name is listed in `unreadablePackageJsonPaths`, so
+ * that it fails the conversion only when a changeset names a package that the map does not have.
+ */
+export async function readPackageDirsAsync(
   git: GitDirectory,
   base: string
-): Promise<{ packageDirs: Map<string, string>; duplicatePackageDirs: Map<string, string[]> }> {
-  const dirsByName = new Map<string, string[]>();
+): Promise<{
+  packageDirs: Map<string, string>;
+  duplicatePackageDirs: Map<string, string[]>;
+  unreadablePackageJsonPaths: string[];
+}> {
+  const entries: { file: string; object: string }[] = [];
   for (const root of PACKAGE_ROOTS) {
     const isPackageJson = picomatch(PACKAGE_JSON_GLOB, { ignore: root.ignore });
-    const files = splitNul(
-      await gitAsync(git, ['ls-tree', '-r', '--name-only', '-z', base, '--', root.dir])
-    ).filter((file) => isPackageJson(path.posix.relative(root.dir, file)));
-
-    await Promise.all(
-      files.map(async (file) => {
-        const packageJson: { name?: unknown } = JSON.parse(
-          await gitAsync(git, ['show', `${base}:${file}`])
-        );
-        if (typeof packageJson.name === 'string' && packageJson.name) {
-          const dirs = dirsByName.get(packageJson.name) ?? [];
-          dirsByName.set(packageJson.name, [...dirs, path.posix.dirname(file)]);
-        }
-      })
-    );
+    for (const record of splitNul(
+      await gitAsync(git, ['ls-tree', '-r', '-z', base, '--', root.dir])
+    )) {
+      // "<mode> <type> <object>\t<file>"
+      const tab = record.indexOf('\t');
+      const file = record.slice(tab + 1);
+      if (isPackageJson(path.posix.relative(root.dir, file))) {
+        entries.push({ file, object: record.slice(0, tab).split(' ')[2] });
+      }
+    }
   }
+
+  const blobs = await readBlobsAsync(
+    git,
+    entries.map((entry) => entry.object)
+  );
+  const dirsByName = new Map<string, string[]>();
+  const unreadablePackageJsonPaths: string[] = [];
+  entries.forEach(({ file }, index) => {
+    const name = readPackageName(blobs[index]);
+    if (name === null) {
+      unreadablePackageJsonPaths.push(file);
+    } else {
+      dirsByName.set(name, [...(dirsByName.get(name) ?? []), path.posix.dirname(file)]);
+    }
+  });
 
   const packageDirs = new Map<string, string>();
   const duplicatePackageDirs = new Map<string, string[]>();
@@ -116,7 +194,7 @@ async function readPackageDirsAsync(
       duplicatePackageDirs.set(name, dirs);
     }
   }
-  return { packageDirs, duplicatePackageDirs };
+  return { packageDirs, duplicatePackageDirs, unreadablePackageJsonPaths };
 }
 
 async function readObjectAsync(git: GitDirectory, mode: string, object: string): Promise<string> {
@@ -225,7 +303,7 @@ function validateOptions(options: BackportChangelogCheckOptions): string[] {
   return errors;
 }
 
-async function resolveCommitAsync(git: GitDirectory, ref: string): Promise<string | null> {
+export async function resolveCommitAsync(git: GitDirectory, ref: string): Promise<string | null> {
   try {
     return (await gitAsync(git, ['rev-parse', '--verify', '--quiet', `${ref}^{commit}`])).trim();
   } catch {
@@ -288,20 +366,18 @@ export async function runBackportChangelogCheckAsync(
     };
   }
 
-  const [stagingErrors, changesets, changedFiles, { packageDirs, duplicatePackageDirs }] =
-    await Promise.all([
-      checkEverythingIsStagedAsync(git),
-      readAddedChangesetsAsync(git, base),
-      readChangedFilesAsync(git, base, tree),
-      readPackageDirsAsync(git, base),
-    ]);
+  const [stagingErrors, changesets, changedFiles, packages] = await Promise.all([
+    checkEverythingIsStagedAsync(git),
+    readAddedChangesetsAsync(git, base),
+    readChangedFilesAsync(git, base, tree),
+    readPackageDirsAsync(git, base),
+  ]);
   const core = checkBackportChangelog({
     changesets,
     changedFiles: changedFiles.value,
     prNumber: Number(pr),
     author,
-    packageDirs,
-    duplicatePackageDirs,
+    ...packages,
   });
   const errors = [...headErrors, ...stagingErrors, ...changedFiles.errors, ...core.errors];
   return errors.length > 0 ? { ok: false, errors } : { ok: true, errors, tree };

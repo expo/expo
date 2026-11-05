@@ -45,18 +45,32 @@ jobs:
       sdks: ${{ steps.select.outputs.sdks }}
     steps:
       # On `closed`, every `sdk-NN` label. On `labeled`, only the label that was added. A label with
-      # a leading zero, such as `sdk-058`, is ignored with a warning.
+      # a leading zero, such as `sdk-058`, is ignored with a warning. The bot backports only to SDK
+      # 55 and later. An older `sdk-NN` label names an SDK that the change affects, so it is
+      # ignored with a notice.
       - name: Select SDK versions
         id: select
         run: |
-          jq -r '
+          min_sdk=55
+          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
+            sdk=$(jq -r '.inputs.sdk | tostring' "$GITHUB_EVENT_PATH")
+            if ! [[ "$sdk" =~ ^[1-9][0-9]*$ ]] || [ "$sdk" -lt "$min_sdk" ]; then
+              echo "::error::The bot backports only to SDK $min_sdk and later, but the sdk input is \"$sdk\". Run the workflow again with an SDK version of $min_sdk or later."
+              exit 1
+            fi
+          fi
+          jq -r --argjson min "$min_sdk" '
             if .action == "labeled" then .label.name else .pull_request.labels[]?.name end
-            | select(test("^sdk-0[0-9]*$"))
-            | "::warning::The label \"\(.)\" is ignored because its version starts with 0. Use a label such as \"sdk-58\"."
+            | if test("^sdk-0[0-9]*$") then
+                "::warning::The label \"\(.)\" is ignored because its version starts with 0. Use a label such as \"sdk-58\"."
+              elif test("^sdk-[1-9][0-9]*$") and (.[4:] | tonumber) < $min then
+                "::notice::The label \"\(.)\" is ignored because the bot backports only to SDK \($min) and later."
+              else empty
+              end
           ' "$GITHUB_EVENT_PATH"
-          sdks=$(jq -c --arg event "$GITHUB_EVENT_NAME" '
-            def sdk: capture("^sdk-(?<version>[1-9][0-9]*)$").version;
-            if $event == "workflow_dispatch" then [.inputs.sdk | tostring | select(test("^[1-9][0-9]*$"))]
+          sdks=$(jq -c --arg event "$GITHUB_EVENT_NAME" --argjson min "$min_sdk" '
+            def sdk: capture("^sdk-(?<version>[1-9][0-9]*)$").version | select(tonumber >= $min);
+            if $event == "workflow_dispatch" then [.inputs.sdk | tostring]
             elif .action == "labeled" then [.label.name | sdk]
             else [.pull_request.labels[]?.name | sdk]
             end

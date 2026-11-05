@@ -46,7 +46,10 @@ bot_email='expo-bot@users.noreply.github.com'
 author_pattern='^[A-Za-z0-9-]+$'
 changeset_pattern='^\.changeset/[A-Za-z0-9._-]+\.md$'
 package_name_pattern='^[@A-Za-z0-9._/-]+$'
-# The same rule as `et check-sdk-prs`: the first match in a commit subject is the pull request.
+# No path segment starts with a dot, so `.` and `..` cannot occur.
+changelog_pattern='^(packages|templates)/([A-Za-z0-9@_-][A-Za-z0-9@._-]*/)+CHANGELOG\.md$'
+# Keep this rule the same as the one in tools/src/commands/CheckSdkPrsCommand.ts
+# (`et check-sdk-prs`): the first match in a commit subject is the pull request.
 pr_reference_pattern='\(#([0-9]+)\)'
 
 die() {
@@ -156,23 +159,12 @@ cleanup() {
   fi
 }
 
-# Prints "<name><TAB><dir>" for each package on the target branch.
-list_packages() {
-  local file name
-  tgit ls-files -z -- ':(glob)packages/*/package.json' ':(glob)packages/@*/*/package.json' \
-    ':(glob)templates/*/package.json' |
-    while IFS= read -r -d '' file; do
-      name=$(tgit cat-file blob "$base:$file" | jq -r '.name // empty' 2>/dev/null) || continue
-      if [ -n "$name" ]; then
-        printf '%s\t%s\n' "$name" "${file%/package.json}"
-      fi
-    done
-}
-
-# Prints the package names in the front matter of the changeset on stdin.
-changeset_packages() {
-  awk 'NR == 1 { if ($0 != "---") exit; next } $0 == "---" { exit } { print }' |
-    sed -nE "s/^[[:space:]]*[\"']?([^\"':[:space:]]+)[\"']?[[:space:]]*:.*/\1/p"
+# Prints the errors of a JSON report from expotools as a Markdown list for a comment.
+error_list() {
+  jq -r '
+    (.errors[:10][] | "- `" + (gsub("`"; "") | gsub("[\r\n]"; " ") | .[:300]) + "`"),
+    (.errors | length - 10 | select(. > 0) | "- \(.) more. The run log lists every error.")
+  ' "$1"
 }
 
 run_model() {
@@ -209,52 +201,20 @@ run_model() {
   )
 }
 
-convert_changesets() {
-  local changesets=() meta path mode name dir dirs changelog changelogs=()
-  local package_list="$run_dir/packages.tsv" names="$run_dir/names.txt"
-
-  while IFS= read -r -d '' meta && IFS= read -r -d '' path; do
-    if ! [[ "$path" =~ ^\.changeset/[^/]+\.md$ ]] || [ "$path" = .changeset/README.md ]; then
-      continue
-    fi
-    mode=$(cut -d' ' -f2 <<<"$meta")
-    if [ "$mode" != 100644 ] || ! [[ "$path" =~ $changeset_pattern ]]; then
-      finish_with_comment "$(printf 'The changeset `%s` is not a regular file with a plain name, so the bot did not convert it.\n\n%s' "$(comment_text "$path")" "$(manual_steps no)")"
-      return
-    fi
-    changesets+=("$path")
-  done < <(tgit diff-tree -r -z --raw --no-renames --diff-filter=A "$base^" "$base" -- .changeset)
-
-  if [ ${#changesets[@]} -eq 0 ]; then
-    conversion=none
-    return
-  fi
-
+# Lets the model add the entries for `changesets` to the files in `changelogs`, then copies the
+# files back to the target worktree.
+add_entries_with_model() {
+  local path changelog
   model_dir="$run_dir/model"
   mkdir -p "$model_dir/.changeset"
-  : >"$names"
   for path in "${changesets[@]}"; do
     tgit cat-file blob "$base:$path" >"$model_dir/$path"
-    changeset_packages <"$model_dir/$path" >>"$names"
   done
-
-  list_packages >"$package_list"
-  while IFS= read -r name; do
-    dirs=$(awk -F '\t' -v name="$name" '$1 == name { print $2 }' "$package_list")
-    if ! [[ "$name" =~ $package_name_pattern ]] || [ -z "$dirs" ] || [ "$(wc -l <<<"$dirs")" -ne 1 ]; then
-      finish_with_comment "$(printf 'A changeset names the package `%s`, but `%s` has no single package with that name, so the bot did not convert the changesets.\n\n%s' "$(comment_text "$name")" "$target_branch" "$(manual_steps no)")"
-      return
-    fi
-    dir=$dirs
-    changelog="$dir/CHANGELOG.md"
-    if [ "$(tgit ls-tree "$base" -- "$changelog" | cut -d' ' -f1)" != 100644 ]; then
-      finish_with_comment "$(printf '`%s` is missing or is not a regular file on `%s`, so the bot did not convert the changesets.\n\n%s' "$changelog" "$target_branch" "$(manual_steps no)")"
-      return
-    fi
-    mkdir -p "$model_dir/$dir"
-    tgit cat-file blob "$base:$changelog" >"$model_dir/$changelog"
-    changelogs+=("$name"$'\t'"$changelog")
-  done < <(sort -u "$names")
+  for changelog in "${changelogs[@]}"; do
+    path=${changelog#*$'\t'}
+    mkdir -p "$model_dir/$(dirname "$path")"
+    tgit cat-file blob "$base:$path" >"$model_dir/$path"
+  done
 
   {
     cat "$prompt_file"
@@ -288,6 +248,80 @@ convert_changesets() {
     fi
     cat "$model_dir/$path" >"$target_dir/$path"
   done
+}
+
+convert_changesets() {
+  local changesets=() changelogs=() path mode name changelog list_status=0
+  local list_json="$run_dir/changesets.json"
+
+  # The check reads the changesets and the packages with the same code, so the files that the model
+  # edits are the files that the check expects.
+  node "$expotools" list-backport-changesets --repo "$target_dir" --base "$base" \
+    --json "$list_json" 2>&1 | print_untrusted || list_status=$?
+  # Exit code 1 with a complete report means that the report has errors. Any other failure can
+  # leave an empty or partial file. The loops below split the report on NUL characters, so a
+  # control character in a value could pair a package with the wrong CHANGELOG.md.
+  if [ "$list_status" -gt 1 ] || ! jq -en --argjson status "$list_status" '
+    def plain: type == "string" and (test("[\u0000-\u001f\u007f]") | not);
+    [inputs] | length == 1 and (.[0] | type == "object"
+      and (.ok | type == "boolean")
+      and (.errors | type == "array" and all(plain))
+      and .ok == (.errors | length == 0)
+      and .ok == ($status == 0)
+      and (.changesets | type == "array" and all(plain))
+      and (.packages | type == "array" and all(
+        type == "object" and (.name | plain) and (.changelog == null or (.changelog | plain)))))
+  ' "$list_json" >/dev/null 2>&1; then
+    finish_with_comment "$(printf 'The bot could not list the changesets of this pull request with `et list-backport-changesets`, so no backport pull request was opened.%s\n\n%s' "$(run_log_link)" "$(manual_steps no)")"
+    return
+  fi
+
+  while IFS= read -r -d '' path; do
+    mode=''
+    if [[ "$path" =~ $changeset_pattern ]]; then
+      mode=$(tgit ls-tree "$base" -- "$path" | cut -d' ' -f1)
+    fi
+    if [ "$mode" != 100644 ]; then
+      finish_with_comment "$(printf 'The changeset `%s` is not a regular file with a plain name, so the bot did not convert it.\n\n%s' "$(comment_text "$path")" "$(manual_steps no)")"
+      return
+    fi
+    changesets+=("$path")
+  done < <(jq -j '.changesets[] | ., "\u0000"' "$list_json")
+
+  while IFS= read -r -d '' name && IFS= read -r -d '' changelog; do
+    if ! [[ "$name" =~ $package_name_pattern ]]; then
+      finish_with_comment "$(printf 'A changeset names the package `%s`, which is not a valid package name, so the bot did not convert the changesets.\n\n%s' "$(comment_text "$name")" "$(manual_steps no)")"
+      return
+    fi
+    changelogs+=("$name"$'\t'"$changelog")
+  done < <(jq -j '.packages[] | .name, "\u0000", (.changelog // ""), "\u0000"' "$list_json")
+
+  if [ "$(jq '.errors | length' "$list_json")" -ne 0 ]; then
+    finish_with_comment "$(printf 'The bot could not find the `CHANGELOG.md` files for the changesets of this pull request, so no backport pull request was opened.\n\n%s\n\n%s' "$(error_list "$list_json")" "$(manual_steps no)")"
+    return
+  fi
+
+  if [ ${#changesets[@]} -eq 0 ]; then
+    conversion=none
+    return
+  fi
+
+  for changelog in ${changelogs[@]+"${changelogs[@]}"}; do
+    path=${changelog#*$'\t'}
+    if ! [[ "$path" =~ $changelog_pattern ]] || [ "$(tgit ls-tree "$base" -- "$path" | cut -d' ' -f1)" != 100644 ]; then
+      finish_with_comment "$(printf '`%s` is missing or is not a regular file on `%s`, so the bot did not convert the changesets.\n\n%s' "$(comment_text "$path")" "$target_branch" "$(manual_steps no)")"
+      return
+    fi
+  done
+
+  if [ ${#changelogs[@]} -gt 0 ]; then
+    add_entries_with_model
+    if [ -f "$state_dir/outcome" ]; then
+      return
+    fi
+  else
+    echo "The changesets name no packages, so there are no CHANGELOG.md entries to add. The bot deletes them without the model."
+  fi
   tgit rm --quiet -- "${changesets[@]}"
   tgit add -A
 
@@ -303,19 +337,23 @@ convert_changesets() {
   if ! [[ "$tree" =~ ^[0-9a-f]{40}$ ]]; then
     local reasons='The check did not write a result.'
     if [ -f "$gate_json" ]; then
-      reasons=$(jq -r '
-        (.errors[:10][] | "- `" + (gsub("`"; "") | gsub("[\r\n]"; " ") | .[:300]) + "`"),
-        (.errors | length - 10 | select(. > 0) | "- \(.) more. The run log lists every error.")
-      ' "$gate_json")
+      reasons=$(error_list "$gate_json")
     fi
-    finish_with_comment "$(printf 'The changesets of this pull request were converted into `CHANGELOG.md` entries, but `et check-backport-changelog` rejected the result, so no backport pull request was opened.\n\n%s\n\n%s' "$reasons" "$(manual_steps no)")"
+    finish_with_comment "$(printf 'The changesets of this pull request were converted, but `et check-backport-changelog` rejected the result, so no backport pull request was opened.\n\n%s\n\n%s' "$reasons" "$(manual_steps no)")"
     return
   fi
 
-  head=$(tgit commit-tree "$tree" -p "$base" \
-    -m "Convert changesets to CHANGELOG entries" \
-    -m "$target_branch does not use changesets. This commit moves the changesets of #$PR_NUMBER into CHANGELOG.md entries.")
-  conversion=converted
+  if [ ${#changelogs[@]} -gt 0 ]; then
+    head=$(tgit commit-tree "$tree" -p "$base" \
+      -m "Convert changesets to CHANGELOG entries" \
+      -m "$target_branch does not use changesets. This commit moves the changesets of #$PR_NUMBER into CHANGELOG.md entries.")
+    conversion=converted
+  else
+    head=$(tgit commit-tree "$tree" -p "$base" \
+      -m "Delete changesets" \
+      -m "$target_branch does not use changesets. The changesets of #$PR_NUMBER name no packages, so this commit deletes them.")
+    conversion=deleted
+  fi
 }
 
 # Prints "<sha> <subject>" for each commit on the target branch that main does not have, that is,
@@ -342,8 +380,19 @@ prepare() {
   # A failed `ls-remote` inside `[ ]` would read as a missing branch. An assignment stops on it.
   local target_heads
   target_heads=$(git -C "$REPO_DIR" ls-remote --heads origin "refs/heads/$target_branch")
+  # An `sdk-NN` label can name an SDK that a change affects, or a release that has no branch yet.
   if [ -z "$target_heads" ]; then
-    finish_with_comment "This pull request has the \`$target_branch\` label, but the \`$target_branch\` branch does not exist, so no backport was made."
+    finish_without_comment "The $target_branch branch does not exist, so no backport was made."
+    return
+  fi
+
+  # A pull request that merged into main before the branch cut is already on the target branch,
+  # and a label added later must not backport it again. The clone is shallow, so the compare API
+  # tells whether the target branch contains the merge commit.
+  local ancestry
+  ancestry=$(gh api "repos/$REPO/compare/$target_branch...$MERGE_SHA?per_page=1" --jq .status)
+  if [ "$ancestry" = behind ] || [ "$ancestry" = identical ]; then
+    finish_without_comment "#$PR_NUMBER is already on $target_branch: $target_branch contains $MERGE_SHA."
     return
   fi
 
@@ -462,6 +511,7 @@ EOF
     kept) conversion_note="\`$target_branch\` uses changesets, so the changesets of #$PR_NUMBER are kept as they are." ;;
     none) conversion_note="#$PR_NUMBER adds no changesets, so there was nothing to convert." ;;
     converted) conversion_note="\`$target_branch\` does not use changesets. Claude moved the changesets of #$PR_NUMBER into \`CHANGELOG.md\` entries, and \`et check-backport-changelog\` checked the result. That change is in its own commit. Review the entries before you merge." ;;
+    deleted) conversion_note="\`$target_branch\` does not use changesets. The changesets of #$PR_NUMBER name no packages, so the bot deleted them, and \`et check-backport-changelog\` checked the result. That change is in its own commit." ;;
   esac
   cat >"$state_dir/body.md" <<EOF
 Backport of #$PR_NUMBER to \`$target_branch\`. The bot cherry-picked $MERGE_SHA with \`git cherry-pick -x\`.
