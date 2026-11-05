@@ -8,6 +8,7 @@ import {
   type NavigationState,
   type ParamListBase,
   type Router,
+  TabRouter,
 } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Group } from '../Group';
@@ -95,6 +96,50 @@ test("doesn't crash when initialState is null", () => {
   );
 
   expect(() => render(element)).not.toThrow();
+});
+
+test("doesn't treat a string state route param as nested navigation state", () => {
+  const TestNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+
+    return (
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
+    );
+  };
+
+  const TabNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(TabRouter, props);
+
+    return (
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
+    );
+  };
+
+  const TestComponent = ({ route }: any) => route.name;
+
+  const navigation = createNavigationContainerRef<ParamListBase>();
+
+  const element = render(
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        routes: [{ name: 'states', params: { state: 'co' } }],
+      }}>
+      <TestNavigator>
+        <Screen name="states">
+          {() => (
+            <TabNavigator>
+              <Screen name="(near-me)" component={TestComponent} />
+              <Screen name="(plan)" component={TestComponent} />
+            </TabNavigator>
+          )}
+        </Screen>
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  expect(element).toMatchInlineSnapshot(`"(near-me)"`);
+  expect(navigation.getRootState().routes[0]!.params).toEqual({ state: 'co' });
 });
 
 test('throws for incorrect initialRouteName', () => {
