@@ -473,6 +473,22 @@ public final class FileSystemModule: Module {
         try fileHandle.write(bytes)
       }
 
+      AsyncFunction("readAt") { (fileHandle, position: UInt64, length: Int) in
+        try fileHandle.readAt(position, length)
+      }
+
+      Function("readAtSync") { (fileHandle, position: UInt64, length: Int) in
+        try fileHandle.readAt(position, length)
+      }
+
+      AsyncFunction("writeAt") { (fileHandle, position: UInt64, data: ArrayBuffer) in
+        try fileHandle.writeAt(position, data)
+      }
+
+      Function("writeAtSync") { (fileHandle, position: UInt64, data: ArrayBuffer) in
+        try fileHandle.writeAt(position, data)
+      }
+
       Function("close") { fileHandle in
         try fileHandle.close()
       }

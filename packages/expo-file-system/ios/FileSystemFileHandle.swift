@@ -158,19 +158,93 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
     }
   }
 
+  /// Size of the file via `fstat(2)`, or `nil` when the handle is closed or the call fails.
   var size: UInt64? {
-    lock.lock()
-    defer {
-      lock.unlock()
-    }
-
-    do {
-      let offset = try handle.offset()
-      let size = try handle.seekToEnd()
-      handle.seek(toFileOffset: offset)
-      return size
-    } catch {
+    if isClosed {
       return nil
     }
+    var status = stat()
+    guard fstat(handle.fileDescriptor, &status) == 0 else {
+      return nil
+    }
+    return UInt64(status.st_size)
+  }
+
+  private func ensureIsOpen() throws {
+    if isClosed {
+      throw UnableToReadHandleException("file handle is closed")
+    }
+  }
+
+  /// Reads up to `length` bytes starting at `position` with `pread(2)`, which never touches the
+  /// descriptor's own offset. The result is sized to the bytes actually read: shorter at the end of
+  /// the file, empty at or past it. Safe to call from any thread.
+  func readAt(_ position: UInt64, _ length: Int) throws -> ArrayBuffer {
+    try ensureIsOpen()
+    if mode.writeOnly {
+      throw UnableToReadHandleException("File opened write-only")
+    }
+
+    let fileSize = size ?? 0
+    let available = position < fileSize ? Int(clamping: fileSize - position) : 0
+    let toRead = max(0, min(length, available))
+    let buffer = ArrayBuffer(size: toRead, initializeToZero: false)
+    if toRead == 0 {
+      return buffer
+    }
+
+    var total = 0
+    try buffer.withUnsafeMutableBytes { raw in
+      guard let base = raw.baseAddress else {
+        return
+      }
+      while total < toRead {
+        let count = pread(handle.fileDescriptor, base + total, toRead - total, off_t(position) + off_t(total))
+        if count < 0 {
+          throw UnableToReadHandleException(String(cString: strerror(errno)))
+        }
+        if count == 0 {
+          break
+        }
+        total += count
+      }
+    }
+    if total == toRead {
+      return buffer
+    }
+    // The file shrank between the size check and the read; hand back only what was read.
+    return buffer.withUnsafeBytes { raw in
+      guard let base = raw.baseAddress else {
+        return ArrayBuffer(size: 0)
+      }
+      return ArrayBuffer.copy(of: base, count: total)
+    }
+  }
+
+  /// Writes all of `data` at `position` with `pwrite(2)` and returns the offset right after the
+  /// written bytes. In append mode the position is ignored and the data goes to the end of the file.
+  /// Safe to call from any thread.
+  func writeAt(_ position: UInt64, _ data: ArrayBuffer) throws -> UInt64 {
+    try ensureIsOpen()
+    if mode.readOnly {
+      throw UnableToWriteHandleException("File opened read-only")
+    }
+
+    let start = mode == .append ? (size ?? 0) : position
+    let length = data.byteLength
+    var total = 0
+    try data.withUnsafeBytes { raw in
+      guard let base = raw.baseAddress else {
+        return
+      }
+      while total < length {
+        let count = pwrite(handle.fileDescriptor, base + total, length - total, off_t(start) + off_t(total))
+        if count < 0 {
+          throw UnableToWriteHandleException(String(cString: strerror(errno)))
+        }
+        total += count
+      }
+    }
+    return start + UInt64(length)
   }
 }
