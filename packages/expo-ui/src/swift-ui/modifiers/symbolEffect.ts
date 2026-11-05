@@ -1,5 +1,6 @@
 import { getStateId, type ObservableState } from '../../State';
 import { createModifier } from './createModifier';
+import { flattenOptions } from './symbolEffectOptions';
 
 // https://developer.apple.com/documentation/symbols/appearsymboleffect
 type AppearSymbolEffect = {
@@ -101,6 +102,40 @@ export type SymbolEffect =
   | WiggleSymbolEffect;
 
 /**
+ * The symbol effect that the system selects for the content transition.
+ *
+ * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/automaticsymboleffect).
+ */
+export type AutomaticSymbolEffect = {
+  effect: 'automatic';
+};
+
+/**
+ * A symbol effect that replaces one symbol with another symbol.
+ *
+ * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/replacesymboleffect).
+ */
+export type ReplaceSymbolEffect = {
+  effect: 'replace';
+  /**
+   * How the effect scales the outgoing and incoming symbols.
+   * - `'downUp'` - scales the outgoing symbol down and the incoming symbol up.
+   * - `'upUp'` - scales both symbols up.
+   * - `'offUp'` - removes the outgoing symbol and scales the incoming symbol up.
+   */
+  direction?: 'downUp' | 'upUp' | 'offUp';
+  /** Whether the effect animates each layer of the symbol or the symbol as a whole. */
+  scope?: 'byLayer' | 'wholeSymbol';
+};
+
+/**
+ * A symbol effect for the `symbolEffect` content transition.
+ *
+ * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/contenttransitionsymboleffect).
+ */
+export type ContentTransitionSymbolEffect = AutomaticSymbolEffect | ReplaceSymbolEffect;
+
+/**
  * Animation options for a symbol effect.
  *
  * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/symboleffectoptions).
@@ -154,27 +189,6 @@ export const symbolEffect = (
     value: value ? getStateId(value) : undefined,
   });
 };
-
-function flattenOptions(options?: SymbolEffectOptions) {
-  if (!options) return undefined;
-  const { speed } = options;
-  const repeatField = options.repeat;
-  if (repeatField === undefined) {
-    return { speed };
-  }
-  if (repeatField === 'nonRepeating') {
-    return { repeatKind: 'nonRepeating' as const, speed };
-  }
-  if (repeatField === 'continuous') {
-    return { repeatKind: 'continuous' as const, speed };
-  }
-  return {
-    repeatKind: 'periodic' as const,
-    repeatCount: repeatField.count,
-    repeatDelay: repeatField.delay,
-    speed,
-  };
-}
 
 // exported for docs api data
 export { type ObservableState };

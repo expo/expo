@@ -23,7 +23,12 @@ import { progressViewStyle } from './progressViewStyle';
 import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
 import { id, scrollPosition } from './scrollPosition';
 import { resolveShapeStyle, type ShapeStyle } from './shapeStyle';
-import { symbolEffect } from './symbolEffect';
+import {
+  symbolEffect,
+  type ContentTransitionSymbolEffect,
+  type SymbolEffectOptions,
+} from './symbolEffect';
+import { flattenOptions } from './symbolEffectOptions';
 import type { Color } from './types';
 import { activityBackgroundTint, widgetAccentedRenderingMode, widgetURL } from './widgets';
 
@@ -1708,24 +1713,6 @@ export const textContentType = (
 ) => createModifier('textContentType', { textContentType });
 
 /**
- * The SF Symbol replace effect used by the `symbolEffect` content transition.
- *
- * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/replacesymboleffect).
- */
-export type ContentTransitionSymbolEffect = {
-  effect: 'replace';
-  /**
-   * How the effect scales the outgoing and incoming symbols.
-   * - `'downUp'` - scales the outgoing symbol down and the incoming symbol up.
-   * - `'upUp'` - scales both symbols up.
-   * - `'offUp'` - removes the outgoing symbol and scales the incoming symbol up.
-   */
-  direction?: 'downUp' | 'upUp' | 'offUp';
-  /** Whether the effect animates each layer of the symbol or the symbol as a whole. */
-  scope?: 'byLayer' | 'wholeSymbol';
-};
-
-/**
  * Sets the content transition type for a view.
  * Useful for animating changes in text content, especially numeric text.
  * Use with the [`animation`](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
@@ -1733,7 +1720,8 @@ export type ContentTransitionSymbolEffect = {
  * @param transitionType - The type of content transition. The `'symbolEffect'` type animates an SF Symbol that changes to another symbol. It requires iOS 17.0+, tvOS 17.0+, and macOS 14.0+. On earlier versions, the view does not change.
  * @param params - Optional parameters.
  * @param params.countsDown - Whether the numeric text counts down.
- * @param params.symbolEffect - The symbol effect to use with the `'symbolEffect'` type. Omit it for the automatic symbol effect.
+ * @param params.symbolEffect - The symbol effect to use with the `'symbolEffect'` type. Defaults to `{ effect: 'automatic' }`.
+ * @param params.options - The animation options to use with the `'symbolEffect'` type.
  *
  * @example
  * ```tsx
@@ -1759,12 +1747,17 @@ export type ContentTransitionSymbolEffect = {
  */
 export const contentTransition = (
   transitionType: 'numericText' | 'identity' | 'opacity' | 'interpolate' | 'symbolEffect',
-  params?: { countsDown?: boolean; symbolEffect?: ContentTransitionSymbolEffect }
+  params?: {
+    countsDown?: boolean;
+    symbolEffect?: ContentTransitionSymbolEffect;
+    options?: SymbolEffectOptions;
+  }
 ) =>
   createModifier('contentTransition', {
     transitionType,
     countsDown: params?.countsDown,
     symbolEffect: params?.symbolEffect,
+    options: flattenOptions(params?.options),
   });
 
 export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
