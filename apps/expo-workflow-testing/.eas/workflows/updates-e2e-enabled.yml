@@ -26,6 +26,9 @@ on:
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
       - templates/expo-template-bare-minimum/**
+      - '!**/ios/Tests/**'
+      - '!**/android/src/test/**'
+      - '!**/android/src/androidTest/**'
   pull_request:
     if: ${{ !startsWith(github.event.pull_request.head.ref, 'changeset-release/') }}
     paths:
@@ -47,6 +50,9 @@ on:
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
       - templates/expo-template-bare-minimum/**
+      - '!**/ios/Tests/**'
+      - '!**/android/src/test/**'
+      - '!**/android/src/androidTest/**'
   schedule:
     - cron: '0 20 * * SUN' # 22:00 UTC every Sunday
 

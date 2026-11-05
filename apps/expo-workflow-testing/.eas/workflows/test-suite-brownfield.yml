@@ -18,6 +18,9 @@ on:
       - '!**/*.md'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
+      - '!**/ios/Tests/**'
+      - '!**/android/src/test/**'
+      - '!**/android/src/androidTest/**'
 
 concurrency:
   group: ${{ workflow.filename }}-${{ github.ref }}
