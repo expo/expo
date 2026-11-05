@@ -3058,3 +3058,84 @@ it('preserves unwrapped require.context arguments natively', async () => {
     mode: 'lazy',
   });
 });
+
+it.each([
+  "module.exports = import('pkg');",
+  "module.exports = () => import('pkg');",
+  "module.exports = function (value = import('pkg')) { return value; };",
+  "class Value { value = import('pkg'); } module.exports = () => new Value().value;",
+  "module.exports = async () => await import('pkg');",
+  "import('first'); module.exports = import('second');",
+  "module.exports = () => { if (false) return import('first'); return import('second'); };",
+])('matches Babel unwrapped import values and shim timing natively: %s', async (source) => {
+  const collectDependencies = require('../../collect-dependencies').default;
+  let shimAdded = false;
+  const collected = collectDependencies(babel.parseSync(source), {
+    asyncRequireModulePath: 'metro-runtime',
+    dynamicRequires: 'reject',
+    inlineableCalls: [],
+    keepRequireNames: false,
+    allowOptionalDependencies: false,
+    unstable_allowRequireContext: false,
+    dependencyTransformer: {
+      transformSyncRequire() {},
+      transformImportMaybeSyncCall() {},
+      transformPrefetch() {},
+      transformIllegalDynamicRequire() {},
+      transformImportCall(call: babel.NodePath) {
+        if (shimAdded) return;
+        call.insertAfter(
+          babel.types.callExpression(babel.types.identifier('require'), [
+            babel.types.stringLiteral('metro-runtime'),
+          ])
+        );
+        shimAdded = true;
+      },
+    },
+  });
+  const expected = babel.transformFromAstSync(collected.ast, undefined, {
+    babelrc: false,
+    configFile: false,
+  })!.code!;
+  const native = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options({ dev: true }),
+    isDefaultExpoTransformer: true,
+    config: { ...fullConfig(), unstable_disableModuleWrapping: true },
+  });
+  if (native.status !== 'complete') throw new Error(native.reason);
+  async function run(code: string) {
+    const events: string[] = [];
+    const token = {};
+    const ast = babel.parseSync(code)!;
+    babel.traverse(ast, {
+      CallExpression(call) {
+        if (call.node.callee.type === 'Import') call.node.callee = babel.types.identifier('__load');
+      },
+    });
+    const executable = babel.transformFromAstSync(ast, undefined, {
+      babelrc: false,
+      configFile: false,
+    })!.code!;
+    const module: { exports: unknown } = { exports: null };
+    new Function('require', 'module', '__load', executable)(
+      (name: string) => {
+        events.push('require:' + name);
+      },
+      module,
+      (name: string) => {
+        events.push('import:' + name);
+        return token;
+      }
+    );
+    const value = await (typeof module.exports === 'function' ? module.exports() : module.exports);
+    return { events, preserved: value === token };
+  }
+  expect(await run(native.result.code)).toEqual(await run(expected));
+  expect(native.result.code).not.toContain(native.dependencyMapName);
+  expect(native.dependencies.map(({ name }) => name).sort()).toEqual(
+    collected.dependencies.map(({ name }: { name: string }) => name).sort()
+  );
+});
