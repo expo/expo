@@ -20,6 +20,7 @@
 - Fix `expo run:ios --device` staying open after installing and launching an app on a network-paired device when the bundler is disabled. ([#52741](https://github.com/expo/expo/pull/52741) by [@kitten](https://github.com/kitten))
 - Fix opening browser URLs with query parameters and special characters on Windows and WSL. ([#52747](https://github.com/expo/expo/pull/52747) by [@kitten](https://github.com/kitten))
 - Preserve HTTPS tunnel URLs when opening Expo Go, development builds, and the runtime selection page. ([#52750](https://github.com/expo/expo/pull/52750) by [@kitten](https://github.com/kitten))
+- Fix `expo start` skipping all manifest assets (icons, splash images) when a config section on an asset path, such as `splash`, is `null` or `undefined` ([#52975](https://github.com/expo/expo/pull/52975) by [@Shaurya55555](https://github.com/Shaurya55555))
 
 ### 💡 Others
 
