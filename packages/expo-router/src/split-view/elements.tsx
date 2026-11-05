@@ -251,11 +251,7 @@ export function getSplitColumnChildren(
       </SafeAreaView>
     );
   }
-  return [
-    ...nativeChildren,
-    content,
-    <SplitViewColumnHeader key="header" header={header} />,
-  ];
+  return [...nativeChildren, content, <SplitViewColumnHeader key="header" header={header} />];
 }
 
 /**
