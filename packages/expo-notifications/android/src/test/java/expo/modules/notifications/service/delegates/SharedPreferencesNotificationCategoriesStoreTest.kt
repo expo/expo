@@ -273,6 +273,20 @@ class SharedPreferencesNotificationCategoriesStoreTest {
   }
 
   @Test
+  fun `scoped bulk replacement keeps categories outside the scope`() {
+    saveLegacyCategory(NotificationCategory("other/legacy", listOf(NotificationAction("a", "A", true))))
+    store.saveNotificationCategory(NotificationCategoryRecord("other/json", listOf(createActionRecord("a", "A", true))))
+    store.saveNotificationCategory(NotificationCategoryRecord("mine/old", listOf(createActionRecord("a", "A", true))))
+    saveLegacyCategory(NotificationCategory("mine/legacy", listOf(NotificationAction("a", "A", true))))
+
+    store.setNotificationCategories(
+      listOf(NotificationCategoryRecord("mine/new", listOf(createActionRecord("a", "A", true))))
+    ) { it.startsWith("mine/") }
+
+    assertEquals(setOf("other/legacy", "other/json", "mine/new"), store.allNotificationCategories.map { it.identifier }.toSet())
+  }
+
+  @Test
   fun `invalid bulk replacement preserves existing categories`() {
     saveLegacyCategory(NotificationCategory("legacy", listOf(NotificationAction("a", "A", true))))
     try {

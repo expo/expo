@@ -28,11 +28,12 @@ actor CategoryManager {
     return exists
   }
 
-  func setCategories(_ categories: [CategoryRecord]) throws {
+  func setCategories(_ categories: [CategoryRecord], replacing replaces: @Sendable (String) -> Bool) async throws {
     guard Set(categories.map { $0.identifier }).count == categories.count else {
       throw Exception(name: "DuplicateCategoryIdentifier", description: "Could not replace notification categories because identifiers are duplicated. Use a unique identifier for each category.")
     }
-    updateCategories(Set(categories.map { $0.toUNNotificationCategory() }))
+    let kept = await loadCategories().filter { !replaces($0.identifier) }
+    updateCategories(kept.union(categories.map { $0.toUNNotificationCategory() }))
   }
 
   private func loadCategories() async -> Set<UNNotificationCategory> {
@@ -82,7 +83,14 @@ open class CategoriesModule: Module {
   }
 
   open func setNotificationCategoriesAsync(categories: [CategoryRecord]) async throws {
-    try await categoryManager.setCategories(categories)
+    try await replaceNotificationCategories(categories) { _ in true }
+  }
+
+  public final func replaceNotificationCategories(
+    _ categories: [CategoryRecord],
+    replacing replaces: @Sendable (String) -> Bool
+  ) async throws {
+    try await categoryManager.setCategories(categories, replacing: replaces)
   }
 
   open func setNotificationCategoryAsync(identifier: String, actions: [CategoryActionRecord], options: CategoryOptionsRecord?) async -> CategoryRecord {
