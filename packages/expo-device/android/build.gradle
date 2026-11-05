@@ -19,5 +19,5 @@ android {
 }
 
 dependencies {
-  api 'com.facebook.device.yearclass:yearclass:2.1.0'
+  testImplementation 'junit:junit:4.13.2'
 }

@@ -97,7 +97,14 @@ export const productName: string | null = ExpoDevice ? ExpoDevice.productName ||
 export const deviceType: DeviceType | null = ExpoDevice ? ExpoDevice.deviceType : null;
 
 /**
- * The [device year class](https://github.com/facebook/device-year-class) of this device. On web, this value is always `null`.
+ * The year in which this device was a high-end device, or would have been one. On web, this value is always `null`.
+ *
+ * On iOS, the value is the year in which Apple released the device model. A model that is newer than the library reports the current year.
+ *
+ * On Android, the value comes from the memory and the CPU of the device, with the same tiers as the
+ * [device year class](https://github.com/facebook/device-year-class) library. These tiers stop at 2016.
+ * A device that declares a [media performance class](https://developer.android.com/reference/android/os/Build.VERSION#MEDIA_PERFORMANCE_CLASS)
+ * reports the year of that class instead, from 2020 on.
  */
 export const deviceYearClass: number | null = ExpoDevice ? ExpoDevice.deviceYearClass : null;
 
