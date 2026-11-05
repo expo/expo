@@ -93,6 +93,7 @@ function LayoutAncestorHiddenProvider({
   const hidden = ancestorHidden === true || mode === 'hidden';
 
   return (
+    // Keep `undefined` when nothing can hide this subtree, so routes below skip the Activity wrapper.
     <AncestorHiddenContext value={hideWhenNestedAtLevel === undefined ? ancestorHidden : hidden}>
       {children}
     </AncestorHiddenContext>
