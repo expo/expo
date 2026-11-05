@@ -102,18 +102,18 @@ export type SymbolEffect =
   | WiggleSymbolEffect;
 
 /**
- * A type that applies the default animation to a symbol-based image in a context-sensitive manner.
+ * A transition that applies the default animation to a symbol-based image in a context-sensitive manner.
  *
- * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/automaticsymboleffect).
+ * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/symboleffect/automatic).
  */
 export type AutomaticSymbolEffect = {
   effect: 'automatic';
 };
 
 /**
- * A type that replaces the layers of one symbol-based image with those of another.
+ * An animation that replaces the layers of one symbol-based image with those of another.
  *
- * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/replacesymboleffect).
+ * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/symboleffect/replace).
  */
 export type ReplaceSymbolEffect = {
   effect: 'replace';
