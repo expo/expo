@@ -1,19 +1,13 @@
 import { withProgramStatus } from '../programStatus';
 
+jest.mock('../interactive', () => ({
+  isInteractive: () => {
+    throw new Error('Invalid value for environment variable');
+  },
+}));
+
 describe(withProgramStatus, () => {
-  const originalCI = process.env.CI;
-
-  afterEach(() => {
-    if (originalCI === undefined) {
-      delete process.env.CI;
-    } else {
-      process.env.CI = originalCI;
-    }
-  });
-
-  it(`runs the action when isInteractive throws on an invalid CI value`, async () => {
-    process.env.CI = 'yes';
-
+  it(`runs the action when the status write throws`, async () => {
     await expect(
       withProgramStatus({ state: 'blocked', kind: 'auth' }, async () => 'result')
     ).resolves.toBe('result');
