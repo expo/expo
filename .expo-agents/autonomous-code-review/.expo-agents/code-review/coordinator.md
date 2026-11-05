@@ -18,6 +18,9 @@ metadata. You do not re-review the code. You own what gets posted: synthesize, c
      a failed acceptance criterion. Its evidence at `file:line` meets the bar in place of a
      failure path. Keep it `critical` when the evidence holds. Do not downgrade it to a
      warning because nothing crashes.
+   - A `quality` critical titled `Shape:` comes from the `shape` pre-check. It says the PR mixes
+     unrelated changes, or that a body sentence it quotes contradicts the diff. Keep it
+     `critical` when the changed files show it. The other reviewers may not have run.
    - A `critical` titled `Tests:` names a fix with no test that can fail without it. Its
      evidence is the test line and the mock or the missing assertion. Keep it `critical` when
      the evidence holds.
