@@ -93,8 +93,8 @@ export type ExpoModuleConfig = {
 };
 
 const SPMConfigFileName = 'spm.config.json';
-const PACKAGE_JSON_GLOB = '**/package.json';
-const PACKAGE_GLOB_IGNORE = [
+export const PACKAGE_JSON_GLOB = '**/package.json';
+export const PACKAGE_GLOB_IGNORE = [
   '**/example/**',
   '**/node_modules/**',
   '**/static/**',
@@ -103,7 +103,7 @@ const PACKAGE_GLOB_IGNORE = [
   '**/__fixtures__/**',
   '**/e2e/**',
 ];
-const TEMPLATE_GLOB_IGNORE = [
+export const TEMPLATE_GLOB_IGNORE = [
   '**/node_modules/**',
   '**/__tests__/**',
   '**/__mocks__/**',
