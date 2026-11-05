@@ -78,7 +78,7 @@ struct MotionPermissionRequesterTests {
 
     let permissions = requester.getPermissions()
 
-    #expect(infoDictionary.requestedKeys == ["NSMotionUsageDescription"])
+    #expect(infoDictionary.requestedKeys == ["ExpoSensors_disableMotionPermission", "NSMotionUsageDescription"])
     #expect(permissions["status"] as? UInt32 == EXPermissionStatusGranted.rawValue)
   }
 
@@ -93,7 +93,7 @@ struct MotionPermissionRequesterTests {
 
     let permissions = requester.getPermissions()
 
-    #expect(infoDictionary.requestedKeys == ["NSMotionUsageDescription"])
+    #expect(infoDictionary.requestedKeys == ["ExpoSensors_disableMotionPermission", "NSMotionUsageDescription"])
     #expect(authorizationStatus.reads == 0)
     #expect(permissions["status"] as? UInt32 == EXPermissionStatusDenied.rawValue)
   }
@@ -114,7 +114,59 @@ struct MotionPermissionRequesterTests {
       Issue.record("requestPermissions rejected instead of resolving")
     }
 
-    #expect(infoDictionary.requestedKeys == ["NSMotionUsageDescription"])
+    #expect(infoDictionary.requestedKeys == ["ExpoSensors_disableMotionPermission", "NSMotionUsageDescription"])
+    #expect(authorizationStatus.reads == 0)
+    #expect(resolved?["status"] as? UInt32 == EXPermissionStatusDenied.rawValue)
+  }
+
+  @Test
+  func `is disabled when the Info.plist opt-out is true`() {
+    let infoDictionary = InfoDictionarySpy(["ExpoSensors_disableMotionPermission": true])
+
+    #expect(MotionPermissionRequester.isMotionPermissionDisabled(infoDictionaryValue: infoDictionary.value(forKey:)))
+    #expect(infoDictionary.requestedKeys == ["ExpoSensors_disableMotionPermission"])
+  }
+
+  @Test(arguments: [nil, false, "true"] as [Any?])
+  func `is not disabled when the Info.plist opt-out is not true`(value: Any?) {
+    let infoDictionary = InfoDictionarySpy(value.map { ["ExpoSensors_disableMotionPermission": $0] } ?? [:])
+
+    #expect(!MotionPermissionRequester.isMotionPermissionDisabled(infoDictionaryValue: infoDictionary.value(forKey:)))
+  }
+
+  @Test
+  func `getPermissions reports denied without touching CoreMotion when the opt-out is set`() {
+    let infoDictionary = InfoDictionarySpy(["ExpoSensors_disableMotionPermission": true])
+    let authorizationStatus = AuthorizationStatusSpy()
+    let requester = MotionPermissionRequester(
+      infoDictionaryValue: infoDictionary.value(forKey:),
+      authorizationStatus: authorizationStatus.read
+    )
+
+    let permissions = requester.getPermissions()
+
+    #expect(infoDictionary.requestedKeys == ["ExpoSensors_disableMotionPermission"])
+    #expect(authorizationStatus.reads == 0)
+    #expect(permissions["status"] as? UInt32 == EXPermissionStatusDenied.rawValue)
+  }
+
+  @Test
+  func `requestPermissions resolves denied without touching CoreMotion when the opt-out is set`() {
+    let infoDictionary = InfoDictionarySpy(["ExpoSensors_disableMotionPermission": true])
+    let authorizationStatus = AuthorizationStatusSpy()
+    let requester = MotionPermissionRequester(
+      infoDictionaryValue: infoDictionary.value(forKey:),
+      authorizationStatus: authorizationStatus.read
+    )
+    var resolved: [AnyHashable: Any]?
+
+    requester.requestPermissions { result in
+      resolved = result as? [AnyHashable: Any]
+    } rejecter: { _, _, _ in
+      Issue.record("requestPermissions rejected instead of resolving")
+    }
+
+    #expect(!infoDictionary.requestedKeys.contains("NSMotionUsageDescription"))
     #expect(authorizationStatus.reads == 0)
     #expect(resolved?["status"] as? UInt32 == EXPermissionStatusDenied.rawValue)
   }
