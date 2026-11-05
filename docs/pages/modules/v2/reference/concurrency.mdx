@@ -12,7 +12,7 @@ JavaScript calls the functions of a module on the JavaScript thread. Long work o
 
 <LanguageSupport feature="concurrent-functions" />
 
-In Kotlin, a `suspend` function chooses its thread with `withContext`. In Swift, the `.concurrent` option of `@JS` runs the body of an `async` function on the concurrent thread pool.
+A `suspend` function in Kotlin and an `async` function in Swift start on the JavaScript thread too. In Kotlin, move the work to another thread with `withContext`. In Swift, the `.concurrent` option of `@JS` runs the body of an `async` function on the concurrent thread pool.
 
 <CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
 

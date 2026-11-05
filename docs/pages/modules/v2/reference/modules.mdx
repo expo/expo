@@ -118,7 +118,7 @@ fun getUptimeAsync(): Promise<Double> =
   Promise.resolve(SystemClock.uptimeMillis().toDouble())
 ```
 
-An asynchronous function doesn't run on another thread automatically. To learn how to move work off the JavaScript thread, see [Concurrency](/modules/v2/reference/concurrency/).
+An asynchronous function starts on the JavaScript thread, the same as a synchronous function. To learn how to move work off the JavaScript thread, see [Concurrency](/modules/v2/reference/concurrency/).
 
 ## Properties
 
