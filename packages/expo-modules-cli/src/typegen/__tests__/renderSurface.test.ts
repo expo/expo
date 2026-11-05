@@ -57,6 +57,7 @@ function render(fixture: SurfaceFixture) {
       properties: m.properties.map(property),
       events: m.events.map(event),
     })),
+    views: [],
   });
 }
 
@@ -71,6 +72,7 @@ const FILE = '/repo/packages/expo-video/ios/Demo.swift';
 const sampleSurface: SurfaceFixture = {
   enums: [],
   unions: [],
+  views: [],
   records: [
     {
       name: 'Options',
@@ -195,6 +197,7 @@ const emptySurface: SurfaceFixture = {
   records: [],
   enums: [],
   unions: [],
+  views: [],
 };
 
 describe(renderSurface, () => {
