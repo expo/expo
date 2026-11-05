@@ -29,7 +29,7 @@ export default function Layout() {
         },
       }}>
       {/* SplitView cannot be inside a native navigator. */}
-      {segments[0] === 'split-view-mail' ? (
+      {segments[0] === 'split-view-mail' || segments[0] === 'split-view-native-stack' ? (
         <Slot />
       ) : (
         <Stack screenOptions={{ headerShown: false }} />

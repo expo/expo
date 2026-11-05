@@ -28,6 +28,7 @@ const HomeIndex = () => {
           <CaseLink href="/link-preview" text="Link Preview" />
           <CaseLink href="/split-view" text="Split View" />
           <CaseLink href="/split-view-mail" text="Split View Mail" />
+          <CaseLink href="/split-view-native-stack" text="Split View native Stack spike" />
           <CaseLink href="/toolbar" text="Toolbar" />
           <CaseLink href="/header-items" text="Header Items" />
         </Section>

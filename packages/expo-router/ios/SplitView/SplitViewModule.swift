@@ -4,6 +4,13 @@ public class SplitViewModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoRouterSplitViewModule")
 
+    View(SplitViewNativeStackView.self) {
+      Events("onOwnershipChange")
+      Prop("revision") { (view: SplitViewNativeStackView, _: Int) in
+        view.scheduleReconcile()
+      }
+    }
+
     View(SplitViewHeaderView.self) {
       Prop("title") { (view: SplitViewHeaderView, title: String?) in
         view.headerTitle = title
