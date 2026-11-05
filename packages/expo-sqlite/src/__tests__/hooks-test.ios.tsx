@@ -72,12 +72,12 @@ describe(useSQLiteContext, () => {
       );
     }
 
-    const { rerender } = render(<App flag={false} />);
+    const { rerender } = await render(<App flag={false} />);
     await waitFor(() => {
       expect(screen.queryByText('before')).not.toBeNull();
     });
 
-    rerender(<App flag />);
+    await rerender(<App flag />);
     await waitFor(() => {
       expect(screen.queryByText('after')).not.toBeNull();
     });
