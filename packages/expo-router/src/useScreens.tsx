@@ -13,8 +13,8 @@ import {
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
-import { isRouteGuarded, useGuardRedirect, type GuardedRedirects } from './layouts/GuardContext';
-import { Redirect } from './link/Redirect';
+import { isRouteGuarded, useResolvedGuard, type GuardedRedirects } from './layouts/GuardContext';
+import { GuardedRouteRedirect } from './layouts/GuardedRouteRedirect';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
 import { LoaderRouteLifecycle } from './loaders/LoaderRouteLifecycle';
@@ -316,8 +316,8 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
     const activityThreshold = useActivityThreshold();
-    const redirectHref = useGuardRedirect(value.route);
-    const isGuarded = redirectHref !== undefined;
+    const guard = useResolvedGuard(value.route);
+    const isGuarded = guard !== undefined;
     const isRouteType = value.type === 'route';
     const resolvedLoaderPath = useMemo(() => {
       if (!isRouteType || isGuarded) {
@@ -361,7 +361,15 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       // so the navigator and its state stay mounted.
       return (
         <Route node={value} params={route?.params}>
-          {redirectHref != null ? <Redirect href={redirectHref} /> : <AllRoutesProtectedWarning />}
+          {guard.redirect != null ? (
+            <GuardedRouteRedirect
+              href={guard.redirect}
+              isRedirectExplicit={guard.isRedirectExplicit}
+              navigation={navigation}
+            />
+          ) : (
+            <AllRoutesProtectedWarning />
+          )}
         </Route>
       );
     }
