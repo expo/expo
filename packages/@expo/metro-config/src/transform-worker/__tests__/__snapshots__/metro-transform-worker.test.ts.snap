@@ -18,7 +18,7 @@ function _interopNamespace(e) {
   return n;
 }
 Object.defineProperty(exports, "test", { enumerable: true, get: function () { return test; } });
-var _testModule = require(_dependencyMap[0], "test-module");
+var _testModule = require(_dependencyMap[0]);
 var test = _interopNamespace(_testModule);
 
 
