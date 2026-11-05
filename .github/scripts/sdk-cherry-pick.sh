@@ -356,6 +356,28 @@ convert_changesets() {
   fi
 }
 
+# Older branches track `build/` in git, and check-packages fails when it does not match the source.
+# The bot never runs code from the pull request, so it does not rebuild. It names the command instead.
+build_note() {
+  local file dir dirs=''
+  while IFS= read -r -d '' file; do
+    [[ "$file" == */src/* ]] || continue
+    [[ "$file" == */__tests__/* || "$file" == */__mocks__/* ]] && continue
+    dir=${file%%/src/*}
+    if tgit cat-file -e "$base:$dir/build" 2>/dev/null; then
+      dirs+="$(comment_text "$dir")"$'\n'
+    fi
+  done < <(tgit diff-tree -r -z --no-commit-id --name-only "$base")
+  if [ -z "$dirs" ]; then
+    return
+  fi
+  printf '\n`%s` tracks `build/` directories in git. This backport changes the source next to these directories:\n\n' "$target_branch"
+  while IFS= read -r dir; do
+    printf -- '- `%s/build`\n' "$dir"
+  done < <(sort -u <<<"${dirs%$'\n'}")
+  printf '\ncheck-packages fails if the build output changes. In a checkout of this branch, run `et check-packages --since origin/%s`, then commit and push the changed `build/` files.\n' "$target_branch"
+}
+
 # Prints "<sha> <subject>" for each commit on the target branch that main does not have, that is,
 # each commit since the branch cut. The checkout has only the tip of main, and a shallow git fetch
 # of that range fails on GitHub when the range is empty, so the compare API lists the commits.
@@ -517,6 +539,7 @@ EOF
 Backport of #$PR_NUMBER to \`$target_branch\`. The bot cherry-picked $MERGE_SHA with \`git cherry-pick -x\`.
 
 $conversion_note
+$(build_note)
 EOF
   printf '%s\n' "$target_tip" >"$state_dir/target-tip"
   printf '%s\n' "$head" >"$state_dir/commit"
