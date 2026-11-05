@@ -2162,6 +2162,89 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
       handle2.close();
     });
 
+    it('Advances offset by the bytes actually read at the end of the file', () => {
+      const src = new File(testDirectory, 'short-read.txt');
+      src.writeSync('abcde');
+      const handle = src.open();
+      handle.offset = 3;
+      expect(handle.readBytesSync(10)).toEqual(new Uint8Array([100, 101])); // de
+      expect(handle.offset).toBe(5);
+      expect(handle.readBytesSync(1)).toEqual(new Uint8Array([]));
+      expect(handle.offset).toBe(5);
+      handle.close();
+    });
+
+    it('Keeps offset unchanged after a failed write', () => {
+      const src = new File(testDirectory, 'failed-write.txt');
+      src.writeSync('abcde');
+      const handle = src.open(FileMode.ReadOnly);
+      handle.readBytesSync(2);
+      expect(() => handle.writeBytesSync(new Uint8Array([65]))).toThrow();
+      expect(handle.offset).toBe(2);
+      handle.close();
+    });
+
+    it('Reports size while open in Truncate mode', () => {
+      const src = new File(testDirectory, 'truncate-size.txt');
+      src.writeSync('Old content');
+      const handle = src.open(FileMode.Truncate);
+      expect(handle.size).toBe(0);
+      handle.writeBytesSync(new Uint8Array([78, 101, 119])); // New
+      expect(handle.size).toBe(3);
+      expect(handle.offset).toBe(3);
+      handle.close();
+    });
+
+    it('Starts at the end of the file in Append mode', () => {
+      const src = new File(testDirectory, 'append-offset.txt');
+      src.writeSync('Hello');
+      const handle = src.open(FileMode.Append);
+      expect(handle.offset).toBe(5);
+      handle.writeBytesSync(new Uint8Array([33])); // !
+      expect(handle.offset).toBe(6);
+      expect(handle.size).toBe(6);
+      handle.close();
+      expect(src.textSync()).toBe('Hello!');
+    });
+
+    it('Reads nothing from an offset past the end of the file', () => {
+      const src = new File(testDirectory, 'past-eof.txt');
+      src.writeSync('abc');
+      const handle = src.open();
+      handle.offset = 100;
+      expect(handle.readBytesSync(2)).toEqual(new Uint8Array([]));
+      expect(handle.offset).toBe(100);
+      handle.close();
+    });
+
+    it('Keeps a pending async write intact while size is read', async () => {
+      const src = new File(testDirectory, 'write-race.txt');
+      src.create();
+      const handle = src.open();
+      const payload = new Uint8Array(64 * 1024).fill(120); // 'x'
+      const pending = handle.writeBytes(payload);
+      expect(typeof handle.size).toBe('number');
+      await pending;
+      expect(handle.offset).toBe(payload.length);
+      expect(handle.size).toBe(payload.length);
+      handle.close();
+      expect(src.size).toBe(payload.length);
+    });
+
+    it('Returns consecutive chunks from concurrent async reads', async () => {
+      const src = new File(testDirectory, 'read-race.txt');
+      src.writeSync('abcdef');
+      const handle = src.open();
+      const chunks = await Promise.all([handle.readBytes(2), handle.readBytes(2)]);
+      // Only the set of chunks is pinned: the order the two calls run in is not part of the contract.
+      expect(chunks.map((chunk) => Array.from(chunk).join(',')).sort()).toEqual([
+        '97,98',
+        '99,100',
+      ]);
+      expect(handle.offset).toBe(4);
+      handle.close();
+    });
+
     it('Reads a file in chunks', () => {
       const src = new File(testDirectory, 'abcs.txt');
       const alphabet = 'abcdefghijklmnopqrstuvwxyz';

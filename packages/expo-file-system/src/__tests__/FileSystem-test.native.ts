@@ -529,6 +529,81 @@ describe('expo-file-system behavioral mock', () => {
       expect(handle.size).toBeNull();
     });
 
+    it('advances offset by the bytes actually read at the end of the file', () => {
+      const file = makeFile('short-read.txt', 'abcde');
+      const handle = file.open();
+      handle.offset = 3;
+      expect(handle.readBytesSync(10)).toEqual(encode('de'));
+      expect(handle.offset).toBe(5);
+      expect(handle.readBytesSync(1)).toEqual(new Uint8Array([]));
+      expect(handle.offset).toBe(5);
+      handle.close();
+    });
+
+    it('keeps offset unchanged after a failed write', () => {
+      const file = makeFile('failed-write.txt', 'abcde');
+      const handle = file.open(FileMode.ReadOnly);
+      handle.readBytesSync(2);
+      expect(() => handle.writeBytesSync(encode('A'))).toThrow();
+      expect(handle.offset).toBe(2);
+      handle.close();
+    });
+
+    it('reports size while open in Truncate mode', () => {
+      const file = makeFile('truncate-size.txt', 'Old content');
+      const handle = file.open(FileMode.Truncate);
+      expect(handle.size).toBe(0);
+      handle.writeBytesSync(encode('New'));
+      expect(handle.size).toBe(3);
+      expect(handle.offset).toBe(3);
+      handle.close();
+    });
+
+    it('starts at the end of the file in Append mode', () => {
+      const file = makeFile('append-offset.txt', 'Hello');
+      const handle = file.open(FileMode.Append);
+      expect(handle.offset).toBe(5);
+      handle.writeBytesSync(encode('!'));
+      expect(handle.offset).toBe(6);
+      expect(handle.size).toBe(6);
+      handle.close();
+      expect(file.textSync()).toBe('Hello!');
+    });
+
+    it('reads nothing from an offset past the end of the file', () => {
+      const file = makeFile('past-eof.txt', 'abc');
+      const handle = file.open();
+      handle.offset = 100;
+      expect(handle.readBytesSync(2)).toEqual(new Uint8Array([]));
+      expect(handle.offset).toBe(100);
+      handle.close();
+    });
+
+    it('keeps a pending async write intact while size is read', async () => {
+      const file = makeFile('write-race.txt', '');
+      const handle = file.open();
+      const payload = new Uint8Array(64 * 1024).fill(120);
+      const pending = handle.writeBytes(payload);
+      expect(typeof handle.size).toBe('number');
+      await pending;
+      expect(handle.offset).toBe(payload.length);
+      expect(handle.size).toBe(payload.length);
+      handle.close();
+      expect(file.size).toBe(payload.length);
+    });
+
+    it('returns consecutive chunks from concurrent async reads', async () => {
+      const file = makeFile('read-race.txt', 'abcdef');
+      const handle = file.open();
+      const chunks = await Promise.all([handle.readBytes(2), handle.readBytes(2)]);
+      expect(chunks.map((chunk) => Array.from(chunk).join(',')).sort()).toEqual([
+        '97,98',
+        '99,100',
+      ]);
+      expect(handle.offset).toBe(4);
+      handle.close();
+    });
+
     it('honors offset writes and appends when offset is past the file size', () => {
       const file = makeFile('offset-writes.txt', 'abcd');
       const handle = file.open(FileMode.ReadWrite);
