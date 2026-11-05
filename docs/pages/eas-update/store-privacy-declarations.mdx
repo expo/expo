@@ -29,7 +29,7 @@ The library does not send personal information such as a name, email address, or
 
 ## What Expo stores
 
-Expo Update stores the client ID with each request record, including the failed update IDs when the request carries them. It uses the records to count installations and failed installs per update for the deployments dashboard and to measure usage. Expo does not derive a location from the request, does not combine this data with data from other apps, does not use it for advertising, and does not share it with data brokers. Expo processes it on your behalf, as your service provider, under Expo's data processing agreement. See [privacy explained](https://expo.dev/privacy-explained) for what Expo collects across its services.
+Expo Update stores the client ID and the IP address with each request record, including the failed update IDs when the request carries them. It uses the records to count installations and failed installs per update for the deployments dashboard and to measure usage. It also uses the client ID to decide which installations get an update during a rollout. Expo does not derive a location from the request. It does not combine this data with data from other apps, use it for advertising, or share it with data brokers. Expo processes it on your behalf, as your service provider, under Expo's data processing agreement. See [privacy explained](https://expo.dev/privacy-explained) for what Expo collects across its services.
 
 The answers below assume you use Expo Update as your update server. If you [host updates yourself](/eas-update/standalone-service/), the same headers go to your server, and you declare what your server stores instead.
 
