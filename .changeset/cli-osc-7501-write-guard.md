@@ -2,4 +2,4 @@
 '@expo/cli': patch
 ---
 
-Fix `expo login --browser` failing on invalid `CI` or `EXPO_UNSTABLE_HEADLESS` values.
+Stop failing on invalid `CI` values, and only treat `1` and `true` as CI.
