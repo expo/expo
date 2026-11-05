@@ -259,6 +259,39 @@ public final class JavaScriptCallback: Sendable {
     return try runBlocking(call: call).value
   }
 
+  /// Calls the function like ``invokeBlocking(_:argumentCount:returning:emplacing:)``, and converts its
+  /// result with `decode` instead of a `JavaScriptDecodable` type. The macros use it for result types
+  /// that can't conform, such as tuples.
+  @available(*, noasync)
+  @inlinable
+  public func invokeBlocking<Values, R>(
+    _ values: Values,
+    argumentCount: Int,
+    decoding decode:
+      @escaping @JavaScriptActor (borrowing JavaScriptUnownedValue, borrowing JavaScriptRuntime) throws -> R,
+    emplacing:
+      @escaping @JavaScriptActor (Values, borrowing JavaScriptValuesBuffer, borrowing JavaScriptRuntime)
+      throws -> Void
+  ) throws -> sending R {
+    let box = UncheckedSendableBox(values)
+    @JavaScriptActor
+    func call(_ function: borrowing JavaScriptFunction, _ runtime: JavaScriptRuntime) throws -> UncheckedSendableBox<R>
+    {
+      let decoded = try function.call(argumentCount: argumentCount, in: runtime) { buffer, runtime in
+        try emplacing(box.value, buffer, runtime)
+      } withResult: { result, runtime in
+        return try decode(result, runtime)
+      }
+      return UncheckedSendableBox(decoded)
+    }
+    // Set synchronously inside `callInline`.
+    nonisolated(unsafe) var inlineResult: R?
+    if try callInline({ function, runtime in inlineResult = try call(function, runtime).value }) {
+      return inlineResult!
+    }
+    return try runBlocking(call: call).value
+  }
+
   /// Calls the function with `arguments` and suspends until it returns, awaiting a returned promise.
   @inlinable
   public func invokeAsync<each A: JavaScriptEncodable>(_ arguments: repeat each A) async throws {

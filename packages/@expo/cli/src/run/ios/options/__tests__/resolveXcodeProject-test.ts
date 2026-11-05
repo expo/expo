@@ -4,7 +4,7 @@ import { resolveXcodeProject } from '../resolveXcodeProject';
 
 describe(resolveXcodeProject, () => {
   afterEach(() => vol.reset());
-  it(`resolves xcworkspace with higher priority than xcodeproj`, () => {
+  it(`resolves xcworkspace with higher priority than xcodeproj`, async () => {
     vol.fromJSON(
       {
         'ios/MyProject.xcworkspace': '',
@@ -13,12 +13,12 @@ describe(resolveXcodeProject, () => {
       '/'
     );
 
-    expect(resolveXcodeProject('/')).toEqual({
+    await expect(resolveXcodeProject('/')).resolves.toEqual({
       name: '/ios/MyProject.xcworkspace',
       isWorkspace: true,
     });
   });
-  it(`resolves xcodeproj if xcworkspace is not available`, () => {
+  it(`resolves xcodeproj if xcworkspace is not available`, async () => {
     vol.fromJSON(
       {
         'ios/MyProject.xcodeproj': '',
@@ -26,15 +26,15 @@ describe(resolveXcodeProject, () => {
       '/'
     );
 
-    expect(resolveXcodeProject('/')).toEqual({
+    await expect(resolveXcodeProject('/')).resolves.toEqual({
       name: '/ios/MyProject.xcodeproj',
       isWorkspace: false,
     });
   });
-  it(`throws if neither xcworkspace nor xcodeproj are available`, () => {
+  it(`throws if neither xcworkspace nor xcodeproj are available`, async () => {
     vol.fromJSON({}, '/');
 
-    expect(() => resolveXcodeProject('/')).toThrow(
+    await expect(resolveXcodeProject('/')).rejects.toThrow(
       'Xcode project not found in project: /. You can generate a project with `npx expo prebuild`'
     );
   });

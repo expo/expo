@@ -87,7 +87,7 @@ public class DisabledAppController: InternalAppControllerInterface, UpdatesInter
     }
 
     if let initializationError = self.initializationError {
-      ErrorRecovery.writeErrorOrExceptionToLog(initializationError, logger)
+      ErrorRecovery.writeErrorOrExceptionToLog(initializationError, logger, code: .initializationError)
     }
   }
 

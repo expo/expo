@@ -104,11 +104,13 @@
   //   "trigger": "all"   — review every PR, unless it has the `skipLabel`.
   //   "trigger": "label" — review only PRs labeled `label` (or `label:<agent>`).
   //
-  // OPT-IN ONLY here: a PR is reviewed when a maintainer adds `ai-review`, and never
-  // otherwise. expo-code-review.yml ALSO gates its job on that label, so a runner does
-  // not spin up for every PR in a repo this busy. Both must agree — this file is the
-  // real policy and `ecr ci` re-checks it, but if the workflow gate were dropped the
-  // config alone would still prevent an unlabeled review.
+  // OPT-IN here: a PR is reviewed when a maintainer adds `ai-review`.
+  // expo-code-review.yml ALSO gates its job on that label, so a runner does not spin up
+  // for every PR in a repo this busy. Both must agree — this file is the real policy
+  // and `ecr ci` re-checks it, but if the workflow gate were dropped the config alone
+  // would still prevent an unlabeled review. The one exception is the workflow's
+  // automatic review of fork PRs (repo variable AI_REVIEW_FORK_PRS, off by default),
+  // which passes `--force`.
   //
   // `ai-review:<agent>` narrows a run to one agent (e.g. `ai-review:security`).
   // `skipLabel` is write-gated (only maintainers can add labels), so a PR author

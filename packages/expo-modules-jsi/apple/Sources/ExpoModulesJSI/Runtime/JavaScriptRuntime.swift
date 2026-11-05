@@ -62,6 +62,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.scheduler = Scheduler(expo.RuntimeScheduler.create(), handle: handle)
     self.ownsRuntime = false
     handle.attach(self)
+    JavaScriptRuntimeRegistry.add(handle, runtimePointer: runtimeAddress)
     installLongLivedObjectsTeardown()
   }
 
@@ -80,6 +81,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.scheduler = Scheduler(expo.RuntimeScheduler.create(), handle: handle)
     self.ownsRuntime = true
     handle.attach(self)
+    JavaScriptRuntimeRegistry.add(handle, runtimePointer: runtimeAddress)
     installLongLivedObjectsTeardown()
   }
 
@@ -94,6 +96,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.scheduler = Scheduler(expo.RuntimeScheduler.create(), handle: handle)
     self.ownsRuntime = false
     handle.attach(self)
+    JavaScriptRuntimeRegistry.add(handle, runtimePointer: runtimeAddress)
     installLongLivedObjectsTeardown()
   }
 
@@ -128,11 +131,13 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.scheduler = Scheduler(expo.RuntimeScheduler.create(scheduler, fn), handle: handle)
     self.ownsRuntime = false
     handle.attach(self)
+    JavaScriptRuntimeRegistry.add(handle, runtimePointer: runtimeAddress)
     installLongLivedObjectsTeardown()
   }
 
   deinit {
     scheduler.markRuntimeGone()
+    JavaScriptRuntimeRegistry.remove(handle)
     handle.detach()
     // Destroy the runtime only if this wrapper created it (standalone `init()`); adopted runtimes
     // are owned elsewhere (e.g. React Native) and must not be freed here.
@@ -157,6 +162,11 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// The pointer is valid only for the duration of the closure and must not be stored or escaped.
   public func withUnsafePointee<R>(_ body: (UnsafeMutableRawPointer) throws -> R) rethrows -> R {
     return try body(Unmanaged<facebook.jsi.Runtime>.passUnretained(runtimePointee).toOpaque())
+  }
+
+  /// The address of the underlying `facebook.jsi.Runtime`, as ``withUnsafePointee(_:)`` gives it.
+  private var runtimeAddress: UnsafeRawPointer {
+    return UnsafeRawPointer(Unmanaged<facebook.jsi.Runtime>.passUnretained(runtimePointee).toOpaque())
   }
 
   /// Provides scoped access to raw pointers to the underlying `facebook.jsi.Runtime`, the
@@ -346,10 +356,31 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     count: Int,
     _ element: (_ index: Int, _ slot: borrowing JavaScriptValue.Slot) throws -> Void
   ) throws -> JavaScriptValue {
+    var array = try createJSIArray(count: count, element)
+    return JavaScriptValue(handle, expo.takeValueFromArray(&array))
+  }
+
+  /// Same as ``createArray(count:_:)``, but moves the array into `slot` instead of returning it, with no
+  /// `JavaScriptValue` in between.
+  @usableFromInline
+  internal final func createArray(
+    count: Int,
+    into slot: borrowing JavaScriptValue.Slot,
+    _ element: (_ index: Int, _ slot: borrowing JavaScriptValue.Slot) throws -> Void
+  ) throws {
+    var array = try createJSIArray(count: count, element)
+    expo.emplaceMovedArray(slot.pointer, &array)
+  }
+
+  /// The array that the `createArray(count:…)` variants return or move into a slot.
+  private final func createJSIArray(
+    count: Int,
+    _ element: (_ index: Int, _ slot: borrowing JavaScriptValue.Slot) throws -> Void
+  ) throws -> facebook.jsi.Array {
     guard count > 0 else {
-      return createArray(length: 0).takeValue()
+      return facebook.jsi.Array(pointee, 0)
     }
-    var array = expo.createArrayForPushing(pointee, count)
+    let array = expo.createArrayForPushing(pointee, count)
     // `withUnsafeTemporaryAllocation` keeps a buffer of up to 1 KiB on the stack and allocates a larger
     // one on the heap.
     let chunkCapacity = 1024 / MemoryLayout<facebook.jsi.Value>.stride
@@ -379,7 +410,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
         expo.pushValues(pointee, array, pushed, start, pending)
       }
     }
-    return JavaScriptValue(handle, expo.takeValueFromArray(&array))
+    return array
   }
 
   /// Keeps the ABI symbol of `createArray(count:_:)` with a closure that returns each value, which prebuilt

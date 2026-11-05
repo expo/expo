@@ -2,6 +2,7 @@
   "extends": "@expo/internal-scripts/tsconfig.plugin",
   "compilerOptions": {
     "composite": true,
+    "types": ["node"],
     "noEmit": true,
     "rootDir": "src"
   },

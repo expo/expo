@@ -100,6 +100,8 @@ class FileDownloader(
 
   data class FileDownloadResult(val file: File, val hash: ByteArray)
   data class AssetDownloadResult(val assetEntity: AssetEntity, val isNew: Boolean)
+  class AssetHttpResponseException(val statusCode: Int, body: String) :
+    IOException("HTTP response error $statusCode: $body")
 
   @VisibleForTesting
   internal suspend fun downloadAssetAndVerifyHashAndWriteToPath(
@@ -119,10 +121,10 @@ class FileDownloader(
       val response = downloadData(request, progressListener)
       val hash = response.use { resp ->
         if (!resp.isSuccessful) {
-          val message = "Asset download request not successful"
-          val cause = IOException(resp.body?.string() ?: "Unknown error")
-          logger.error(message, cause, UpdatesErrorCode.AssetsFailedToLoad)
-          throw IOException(message, cause)
+          throw IOException(
+            "Asset download request not successful",
+            AssetHttpResponseException(resp.code, truncateForErrorMessage(resp.body?.string() ?: "Unknown error"))
+          )
         }
 
         val responseBody = resp.body
@@ -185,9 +187,9 @@ class FileDownloader(
                 expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash,
                 embeddedAssetExtractor = embeddedAssetExtractor
               )
-            }.getOrElse {
+            }.getOrElse { e ->
               logger.warn(
-                "Patch application failed for asset ${asset.key}; retrying with full asset download",
+                "Patch application failed for asset ${asset.key}; retrying with full asset download: ${e.localizedMessageWithCauseLocalizedMessage()}",
                 UpdatesErrorCode.AssetsFailedToLoad,
                 requestedUpdateId,
                 asset.key
@@ -205,9 +207,7 @@ class FileDownloader(
       }
       return FileDownloadResult(destination, hash)
     } catch (e: IOException) {
-      val message = "Failed to download asset from URL ${request.url}"
-      logger.error(message, e, UpdatesErrorCode.AssetsFailedToLoad)
-      throw IOException(message, e)
+      throw IOException("Failed to download asset from URL ${request.url}", e)
     }
   }
 
@@ -232,7 +232,10 @@ class FileDownloader(
 
       fallbackBody.use { body ->
         if (!fallbackResp.isSuccessful) {
-          throw IOException(body.string())
+          throw IOException(
+            "Fallback asset download request not successful",
+            AssetHttpResponseException(fallbackResp.code, truncateForErrorMessage(body.string()))
+          )
         }
 
         body.byteStream().use { inputStream ->
@@ -477,13 +480,7 @@ class FileDownloader(
         return result
       }
     } catch (e: Exception) {
-      val ioException = e as? IOException ?: IOException("Failed to apply patch", e)
-      logger.error(
-        "Failed to apply patch for asset ${asset.key}",
-        ioException,
-        UpdatesErrorCode.AssetsFailedToLoad
-      )
-      throw ioException
+      throw e as? IOException ?: IOException("Failed to apply patch", e)
     } finally {
       if (patchFile.exists()) {
         patchFile.delete()
@@ -514,10 +511,7 @@ class FileDownloader(
         )
       }
 
-      val message = "Invalid update response"
-      val cause = IOException("Empty body")
-      logger.error(message, cause, UpdatesErrorCode.UpdateFailedToLoad)
-      throw IOException(message, cause)
+      throw IOException("Invalid update response", IOException("Empty body"))
     }
 
     val isMultipart = responseBody.contentType()?.type == "multipart"
@@ -579,26 +573,20 @@ class FileDownloader(
         }
       } catch (e: Exception) {
         // okhttp multipart reader doesn't support empty multipart bodies, but our spec does
-        val message = "Error while reading multipart remote update response"
-        logger.error(message, e, UpdatesErrorCode.UpdateFailedToLoad)
-        throw IOException(message, e)
+        throw IOException("Error while reading multipart remote update response", e)
       }
     }
 
     val extensions = try {
       extensionsBody?.let { JSONObject(it) }
     } catch (e: Exception) {
-      val message = "Failed to parse multipart remote update extensions part"
-      logger.error(message, e, UpdatesErrorCode.UpdateFailedToLoad)
-      throw IOException(message, e)
+      throw IOException("Failed to parse multipart remote update extensions part", e)
     }
 
     // in v0 compatibility mode require a manifest
     if (configuration.enableExpoUpdatesProtocolV0CompatibilityMode && manifestPartBodyAndHeaders == null) {
-      val message = "Invalid update response"
       val cause = IOException("Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the response being for a different protocol version.")
-      logger.error(message, cause, UpdatesErrorCode.UpdateFailedToLoad)
-      throw IOException(message, cause)
+      throw IOException("Invalid update response", cause)
     }
 
     val manifestResponseInfo = manifestPartBodyAndHeaders?.let {
@@ -733,17 +721,12 @@ class FileDownloader(
       )
 
       if (!response.isSuccessful) {
-        val message = "Remote update request not successful"
-        val underlyingError = IOException(describeUnsuccessfulResponse(response))
-        logger.error(message, underlyingError, UpdatesErrorCode.UpdateFailedToLoad)
-        throw IOException(message, underlyingError)
+        throw IOException("Remote update request not successful", IOException(describeUnsuccessfulResponse(response)))
       }
 
       return parseRemoteUpdateResponse(response)
     } catch (e: Exception) {
-      val message = "Failed to download remote update"
-      logger.error(message, e, UpdatesErrorCode.UpdateFailedToLoad)
-      throw IOException(message, e)
+      throw IOException("Failed to download remote update", e)
     }
   }
 
@@ -757,61 +740,106 @@ class FileDownloader(
     embeddedAssetExtractor: EmbeddedAssetExtractor? = null
   ): AssetDownloadResult {
     if (asset.url == null) {
-      val message = "Failed to download asset ${asset.key}"
-      val error = Exception("Asset missing URL")
-      logger.error(message, error, UpdatesErrorCode.AssetsFailedToLoad)
-      throw IOException(message, error)
+      throw logAssetDownloadFailure(asset, requestedUpdate, Exception("Asset missing URL"))
     }
 
     val filename = UpdatesUtils.createFilenameForAsset(asset)
     if (!UpdatesUtils.isSafeFilename(filename)) {
-      val message = "Failed to download asset ${asset.key}"
-      val error = IOException("Asset filename \"$filename\" would resolve outside the updates directory")
-      logger.error(message, error, UpdatesErrorCode.AssetsFailedToLoad)
-      throw IOException(message, error)
+      throw logAssetDownloadFailure(
+        asset,
+        requestedUpdate,
+        IOException("Asset filename \"$filename\" would resolve outside the updates directory")
+      )
     }
     val path = File(destinationDirectory, filename)
 
     if (path.exists()) {
-      asset.relativePath = filename
-      return AssetDownloadResult(asset, false)
-    } else {
-      val canApplyPatch =
-        asset.isLaunchAsset &&
-          launchedUpdate != null &&
-          requestedUpdate != null &&
-          launchedUpdate.id != requestedUpdate.id
+      if (isExistingAssetFileValid(path, asset, requestedUpdate)) {
+        asset.relativePath = filename
+        return AssetDownloadResult(asset, false)
+      }
+      // the file on disk is not the asset we expect (for example, it was truncated when a previous
+      // process was killed); throw it away and download again
+      path.delete()
+    }
 
-      try {
-        val downloadResult = downloadAssetAndVerifyHashAndWriteToPath(
+    val canApplyPatch =
+      asset.isLaunchAsset &&
+        launchedUpdate != null &&
+        requestedUpdate != null &&
+        launchedUpdate.id != requestedUpdate.id
+
+    try {
+      val downloadResult = downloadAssetAndVerifyHashAndWriteToPath(
+        asset,
+        extraHeaders,
+        createRequestForAsset(
           asset,
           extraHeaders,
-          createRequestForAsset(
-            asset,
-            extraHeaders,
-            configuration,
-            allowPatch = canApplyPatch
-          ),
-          asset.expectedHash,
-          path,
-          destinationDirectory,
-          assetLoadProgressListener?.let { listener -> { listener.invoke(it) } },
-          allowPatch = canApplyPatch,
-          launchedUpdate = launchedUpdate,
-          requestedUpdate = requestedUpdate,
-          embeddedAssetExtractor = embeddedAssetExtractor
-        )
+          configuration,
+          allowPatch = canApplyPatch
+        ),
+        asset.expectedHash,
+        path,
+        destinationDirectory,
+        assetLoadProgressListener?.let { listener -> { listener.invoke(it) } },
+        allowPatch = canApplyPatch,
+        launchedUpdate = launchedUpdate,
+        requestedUpdate = requestedUpdate,
+        embeddedAssetExtractor = embeddedAssetExtractor
+      )
 
-        asset.downloadTime = Date()
-        asset.relativePath = filename
-        asset.hash = downloadResult.hash
-        return AssetDownloadResult(asset, true)
-      } catch (e: Exception) {
-        val message = "Failed to download asset ${asset.key}"
-        logger.error(message, e, UpdatesErrorCode.AssetsFailedToLoad)
-        throw IOException(message, e)
-      }
+      asset.downloadTime = Date()
+      asset.relativePath = filename
+      asset.hash = downloadResult.hash
+      return AssetDownloadResult(asset, true)
+    } catch (e: Exception) {
+      throw logAssetDownloadFailure(asset, requestedUpdate, e)
     }
+  }
+
+  /**
+   * An asset file that already exists on disk is only reused when its contents match the hash the
+   * manifest declares for the asset. Trusting the file because it exists is unsafe: a process
+   * killed while the file was being written leaves a truncated file behind, and the launch asset
+   * then fails to load with a Hermes `Buffer is smaller than the size stated in the file header`
+   * error. When the manifest has no hash for the asset there is nothing to verify against, so the
+   * file is reused as before.
+   */
+  private fun isExistingAssetFileValid(path: File, asset: AssetEntity, requestedUpdate: UpdateEntity?): Boolean {
+    val expectedHash = asset.expectedHash ?: return true
+    val actualHash = try {
+      UpdatesUtils.toBase64Url(UpdatesUtils.sha256(path))
+    } catch (e: Exception) {
+      logger.warn(
+        "Failed to hash existing file for asset ${asset.key}; re-downloading: ${e.message}",
+        UpdatesErrorCode.AssetsFailedToLoad,
+        requestedUpdate?.id?.toString(),
+        asset.key
+      )
+      return false
+    }
+    if (actualHash == expectedHash) {
+      return true
+    }
+    logger.warn(
+      "Existing file for asset ${asset.key} did not match expected hash (size ${path.length()} bytes); re-downloading",
+      UpdatesErrorCode.AssetsFailedToLoad,
+      requestedUpdate?.id?.toString(),
+      asset.key
+    )
+    return false
+  }
+
+  private fun logAssetDownloadFailure(asset: AssetEntity, requestedUpdate: UpdateEntity?, cause: Exception): IOException {
+    val error = IOException("Failed to download asset ${asset.key}", cause)
+    logger.warn(
+      error.localizedMessageWithCauseLocalizedMessage(),
+      UpdatesErrorCode.forLoadFailure(cause, otherwise = UpdatesErrorCode.AssetsFailedToLoad),
+      requestedUpdate?.loggingId,
+      asset.key
+    )
+    return error
   }
 
   private suspend fun downloadData(request: Request, progressListener: FileDownloadProgressListener? = null): Response =

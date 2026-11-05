@@ -248,23 +248,14 @@ public final class SharedObjectRegistry: Sendable {
     guard let runtime = try? appContext?.runtime else {
       return nil
     }
-    return unreleasedNativeState(of: nativeObject)?.javaScriptObject(in: runtime)
-  }
-
-  /// Returns the native object's native state, or `nil` if it was released. A released native state can
-  /// outlive the release on a JS object that couldn't drop it (for example a frozen one).
-  private func unreleasedNativeState(of nativeObject: SharedObject) -> SharedObjectNativeState? {
-    guard let nativeState = nativeObject.nativeState, !nativeState.isReleased else {
-      return nil
-    }
-    return nativeState
+    return nativeObject.object(in: runtime)
   }
 
   /// Returns the JS object paired with the native object in this registry's runtime, if it is alive and
   /// still holds the native object's native state.
   private func pairedObjectHoldingNativeState(of nativeObject: SharedObject, in runtime: JavaScriptRuntime?) -> JavaScriptObject? {
     guard let runtime,
-      let nativeState = unreleasedNativeState(of: nativeObject),
+      let nativeState = nativeObject.unreleasedNativeState,
       let pairedObject = nativeState.javaScriptObject(in: runtime),
       pairedObject.getNativeState(as: SharedObjectNativeState.self) === nativeState
     else {

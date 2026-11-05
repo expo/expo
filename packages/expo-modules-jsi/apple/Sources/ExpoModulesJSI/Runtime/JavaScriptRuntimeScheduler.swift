@@ -205,7 +205,10 @@ extension JavaScriptRuntime {
       }
       if isOnJavaScriptThread() {
         try JavaScriptActor.assumeIsolated { try checkAlive() }
-        return try await Task.immediate_polyfill(priority: .high, operation: closure).value
+        // A caller isolated to `JavaScriptActor` awaits the closure on its own executor, with no new
+        // task. A task started here would run its first job inside the caller's job, which aborts on
+        // iOS 17 with "freed pointer was not the last allocation".
+        return try await closure()
       }
       return try await withUnsafeThrowingContinuation { continuation in
         pointee.scheduleTask(.ImmediatePriority) { [completion = ContinuationCompletion(continuation)] in

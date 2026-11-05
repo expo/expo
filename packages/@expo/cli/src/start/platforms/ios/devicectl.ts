@@ -215,7 +215,7 @@ export async function launchBinaryOnMacAsync(
 async function installAppWithDeviceCtlAsync(
   uuid: string,
   bundleIdOrAppPath: string,
-  onProgress: (event: { status: string; isComplete: boolean; progress: number }) => void
+  onProgress: (event: { status: string; progress: number }) => void
 ): Promise<void> {
   const maxAttempts = 3;
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
@@ -242,7 +242,7 @@ async function installAppWithDeviceCtlAsync(
 async function installAppWithDeviceCtlInternalAsync(
   uuid: string,
   bundleIdOrAppPath: string,
-  onProgress: (event: { status: string; isComplete: boolean; progress: number }) => void,
+  onProgress: (event: { status: string; progress: number }) => void,
   attempt: number
 ): Promise<void> {
   // 𝝠 xcrun devicectl device install app --device 00001110-001111110110101A /Users/evanbacon/Library/Developer/Xcode/DerivedData/Router-hgbqaxzhrhkiftfweydvhgttadvn/Build/Products/Debug-iphoneos/Router.app --verbose
@@ -271,7 +271,6 @@ async function installAppWithDeviceCtlInternalAsync(
       const statusPrefix = attempt > 1 ? `Installing (attempt ${attempt})` : 'Installing';
       onProgress({
         progress,
-        isComplete: progress === 100,
         status: statusPrefix,
       });
     }
@@ -397,24 +396,14 @@ export async function installAndLaunchAppAsync(props: {
     await installAppWithDeviceCtlAsync(
       udid,
       bundle,
-      ({
-        status,
-        isComplete,
-        progress,
-      }: {
-        status: string;
-        isComplete: boolean;
-        progress: number;
-      }) => {
+      ({ status, progress }: { status: string; progress: number }) => {
         if (!indicator) {
           indicator = ora(status).start();
         }
         indicator.text = `${chalk.bold(status)} ${progress}%`;
-        if (isComplete) {
-          indicator.succeed();
-        }
       }
     );
+    indicator.succeed(`Installed on ${deviceName}`);
   } catch (error: any) {
     if (indicator) {
       indicator.fail();

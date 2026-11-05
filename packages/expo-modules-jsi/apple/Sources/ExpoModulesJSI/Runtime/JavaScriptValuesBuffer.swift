@@ -220,6 +220,14 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
     try T.encode(value, into: emptySlot(at: index), in: runtime)
   }
 
+  /// Moves the value that `encode` writes into the slot at `index` into the buffer, and releases the value it
+  /// replaces, for a value that has no `JavaScriptEncodable` conformance to pass to `emplace(_:at:in:)`, such
+  /// as a tuple. `encode` must write exactly one value unless it throws (see ``JavaScriptValue/Slot``).
+  @JavaScriptActor
+  public func emplace(at index: Int, encodingWith encode: (borrowing JavaScriptValue.Slot) throws -> Void) rethrows {
+    try encode(emptySlot(at: index))
+  }
+
   /// Releases the value at `index` and returns its slot, which holds `undefined` until an encode writes
   /// into it. `undefined` owns nothing, so the encode may construct its value over it, and the slot stays
   /// valid when the encode throws.

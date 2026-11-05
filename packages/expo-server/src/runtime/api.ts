@@ -44,7 +44,7 @@ export function requestHeaders(): ImmutableHeaders {
 
 /** Returns the request's environment, if the server runtime supports this.
  *
- * In EAS Hosting, the returned environment name is the
+ * In Expo Hosting, the returned environment name is the
  * [alias or deployment identifier](https://docs.expo.dev/eas/hosting/deployments-and-aliases/),
  * but the value may differ for other providers.
  *

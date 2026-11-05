@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import { glob } from 'glob';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,9 +22,8 @@ async function runAsync() {
   await commandRunner(path.join(dirname, 'expo-module-readme'));
 
   const templatesDir = path.join(dirname, '..', 'templates');
-  const templateDirents = await glob('**/*', {
-    cwd: templatesDir,
-    dot: true,
+  const templateDirents = await fs.promises.readdir(templatesDir, {
+    recursive: true,
     withFileTypes: true,
   });
   const templateFiles = templateDirents

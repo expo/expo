@@ -274,6 +274,22 @@ inline void emplaceMovedValue(jsi::Value *_Nonnull slot, jsi::Value *_Nonnull so
 }
 
 /**
+ Moves the object at `source` into the slot as an object value. Placement new, like the helpers above: the slot
+ must hold a value that owns nothing. `source` is left holding a null pointer, so destroying it afterwards
+ releases nothing.
+ */
+inline void emplaceMovedObject(jsi::Value *_Nonnull slot, jsi::Object *_Nonnull source) noexcept {
+  ::new (slot) jsi::Value(std::move(*source));
+}
+
+/**
+ Same as `emplaceMovedObject`, for an array.
+ */
+inline void emplaceMovedArray(jsi::Value *_Nonnull slot, jsi::Array *_Nonnull source) noexcept {
+  ::new (slot) jsi::Value(std::move(*source));
+}
+
+/**
  Moves the value at `source` into the slot. Placement new, like the helpers above: the slot must hold a
  value that owns nothing. A value without an engine handle (undefined, null, a boolean or a number) is
  copied with the inline constructors, which skips the out-of-line `jsi::Value` move.

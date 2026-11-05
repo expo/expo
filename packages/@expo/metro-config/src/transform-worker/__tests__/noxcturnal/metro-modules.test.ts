@@ -744,6 +744,26 @@ it('collects static CommonJS dependencies and wraps a module without Babel', asy
   expect(result.result.map.mappings.length).toBeGreaterThan(0);
 });
 
+it.each([
+  ['(Object).assign(exports, { value: 1 });', true],
+  ["((Object))['assign'](module.exports, { value: 1 });", true],
+  ['(function () { (Object).assign(exports, { value: 1 }); })();', true],
+  ['(function (Object) { (Object).assign(exports, { value: 1 }); })({});', false],
+  ['(Object.assign)(exports, { value: 1 });', false],
+])('preserves CommonJS detection for %s', async (source, hasCjsExports) => {
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.metadata.hasCjsExports).toBe(hasCjsExports);
+});
+
 it('inlines stable top-level require aliases before native dependency collection', async () => {
   const result = await transformFileFullyWithNoxcturnal({
     filename,
@@ -1688,6 +1708,49 @@ it('uses the last duplicate Platform.select entry while preserving fallback prec
   expect(result.result.code).toContain(`var nativePrecedence = 'last-native'`);
   expect(result.result.code).toContain(`var computed = Platform.select`);
   expect(result.result.code).toContain(`var spread = Platform.select`);
+});
+
+it.each([
+  ['parenthesized receiver', '(Platform).select', "{ ios: 'selected' }"],
+  ['nested parenthesized receiver', '((Platform)).select', "{ ios: 'selected' }"],
+  ['computed member', "Platform['select']", "{ ios: 'selected' }"],
+  ['optional call', 'Platform.select?.', "{ ios: 'selected' }"],
+  ['optional member', 'Platform?.select', "{ ios: 'selected' }"],
+])('folds Platform.select with a %s', async (_name, callee, args) => {
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source: `var selected = ${callee}(${args});`,
+    options: options(),
+    isDefaultExpoTransformer: true,
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toContain(`var selected = 'selected'`);
+});
+
+it('preserves shadowed Platform.select calls and calls without object arguments', async () => {
+  const source = `
+    var selected = Platform.select(value);
+    var later = Platform.select(other, { ios: 'later' });
+    function shadow(Platform) {
+      return Platform.select({ ios: 'shadowed' });
+    }
+  `;
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toContain(`Platform.select(value)`);
+  expect(result.result.code).toContain(`Platform.select(other, { ios: 'later' })`);
+  expect(result.result.code).toContain(`Platform.select({ ios: 'shadowed' })`);
 });
 
 it('inlines EXPO_PUBLIC environment variables in production and preserves assignments', async () => {

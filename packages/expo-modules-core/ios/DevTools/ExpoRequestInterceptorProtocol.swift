@@ -17,6 +17,7 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
   )
   private var requestId: String?
   private var dataTask_: URLSessionDataTask?
+  private weak var originalTask: URLSessionTask?
   private let responseBody = NSMutableData()
   private var responseBodyExceedsLimit = false
 
@@ -69,6 +70,17 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     dataTask_ = dataTask
   }
 
+  @objc
+  public convenience init(
+    task: URLSessionTask,
+    cachedResponse: CachedURLResponse?,
+    client: URLProtocolClient?
+  ) {
+    // swiftlint:disable:next force_unwrapping
+    self.init(request: task.currentRequest!, cachedResponse: cachedResponse, client: client)
+    originalTask = task
+  }
+
   public override class func canonicalRequest(for request: URLRequest) -> URLRequest {
     request
   }
@@ -97,6 +109,9 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
 
   public func urlSession(_: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
     if let error = error {
+      if let requestId {
+        Self.delegate.didFailLoading(requestId: requestId, task: task, error: error)
+      }
       client?.urlProtocol(self, didFailWithError: error)
     } else {
       if let response = task.response as? HTTPURLResponse,
@@ -179,28 +194,13 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     // Workaround to get the original task's URLSessionDelegate through the internal property and send upload process
     // Fixes https://github.com/expo/expo/issues/28269
     // swiftlint:enable line_length
-    guard let dataTask = dataTask_ else {
-      return
-    }
-
-    // Prevent recursive delegate calls
-    if task === dataTask {
-      return
-    }
-
-    if #available(iOS 15.0, tvOS 15.0, macOS 12.0, *), let delegate = dataTask.delegate {
-      // For the case if the task has a dedicated delegate than the default delegate from its URLSession
-      delegate.urlSession?(
-        session, task: dataTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend
-      )
-      return
-    }
-    guard let session = task.value(forKey: "session") as? URLSession,
-      let delegate = session.delegate as? URLSessionTaskDelegate else {
+    guard let originalTask,
+      let originalSession = originalTask.value(forKey: "session") as? URLSession,
+      let delegate = originalTask.delegate ?? originalSession.delegate as? URLSessionTaskDelegate else {
       return
     }
     delegate.urlSession?(
-      session, task: dataTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend
+      originalSession, task: originalTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend
     )
   }
 
@@ -223,6 +223,9 @@ protocol ExpoRequestInterceptorProtocolDelegate: Sendable {
 
   @objc
   func didReceiveResponse(requestId: String, task: URLSessionTask, responseBody: Data, isText: Bool, responseBodyExceedsLimit: Bool)
+
+  @objc
+  func didFailLoading(requestId: String, task: URLSessionTask, error: Error)
 }
 
 /**

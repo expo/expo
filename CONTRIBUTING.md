@@ -34,7 +34,7 @@ Manual smoke tests are included in `apps/native-component-list`, which is a good
 
 1. If you are an Expo team member, clone the repository. If you are an external contributor, [fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉). You can use `git clone --depth 1 --single-branch --branch main git@github.com:expo/expo.git`, skipping most of the branches and history to clone it faster.
 2. Install [direnv](https://direnv.net/). On macOS: `brew install direnv`. Don't forget to install the [shell hook](https://direnv.net/docs/hook.html) to your shell profile.
-3. Install Ruby 3.3 or later. On macOS: `brew install ruby@3.3`
+3. Install Ruby 3.4 or later. On macOS: `brew install ruby@3.4`
 4. Install [Node LTS](https://nodejs.org/).
 5. Some of the scripts in this repository require Bun. You won't need it for most tasks, but can install it via [these options](https://bun.com/docs/installation).
 
@@ -85,7 +85,7 @@ The repo's `.envrc` automatically sets `CCACHE_BASEDIR` via direnv, so cache is 
 
 ### Set up iOS
 
-If you will be working with the iOS project, ensure **ruby 3.3** is installed on your machine. macOS comes with ruby 2.6, which is not supported in this repository; if you use Homebrew you can just run `brew install ruby@3.3`. You will also need to have the latest stable version of Xcode installed, along with Xcode command line tools.
+If you will be working with the iOS project, ensure **ruby 3.4** is installed on your machine. macOS comes with ruby 2.6, which is not supported in this repository; if you use Homebrew you can just run `brew install ruby@3.4`. You will also need to have the latest stable version of Xcode installed, along with Xcode command line tools.
 
 ### Verify native installation is successful
 
@@ -166,8 +166,10 @@ public package, and choose `patch` for a fix, `minor` for a compatible feature, 
 breaking change. Do not use `major` on an `sdk-*` release branch.
 
 Write a short summary for package users and edit the generated `.changeset/*.md` file instead of a
-package's `CHANGELOG.md`. Changes that only affect documentation, tests, apps, CI, or private tooling
-do not need a changeset.
+package's `CHANGELOG.md`. Changes that only affect documentation, tests, CI, or private packages
+(`"private": true`, such as apps and internal tooling) do not need a changeset. Do not list private
+packages in a changeset: `changeset version` fails when a changeset lists both private and published
+packages.
 
 See [Updating Changelogs](guides/contributing/Updating%20Changelogs.md) for examples and formatting
 options.

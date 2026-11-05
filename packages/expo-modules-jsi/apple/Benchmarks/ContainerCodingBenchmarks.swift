@@ -121,6 +121,42 @@ extension JSIBenchmarks {
     }
   }
 
+  @Test
+  func `encode nested arrays of ints`() async throws {
+    try await benchmarkCase { runtime in
+      let arrays = (0..<10).map { row in (0..<10).map { row * 10 + $0 } }
+      try benchmark("[[Int]].encode: 10 x 10 elements", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try [[Int]].encode(arrays, in: runtime)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `encode a dictionary of ints`() async throws {
+    try await benchmarkCase { runtime in
+      let dictionary = Dictionary(uniqueKeysWithValues: (0..<10).map { ("key\($0)", $0) })
+      try benchmark("[String: Int].encode: 10 entries", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try [String: Int].encode(dictionary, in: runtime)
+        }
+      }
+    }
+  }
+
+  @Test
+  func `encode an array of dictionaries`() async throws {
+    try await benchmarkCase { runtime in
+      let dictionaries = (0..<10).map { index in ["a": index, "b": index + 1, "c": index + 2, "d": index + 3] }
+      try benchmark("[[String: Int]].encode: 10 x 4 entries", runtime: runtime) { iterations in
+        for _ in 0..<iterations {
+          _ = try [[String: Int]].encode(dictionaries, in: runtime)
+        }
+      }
+    }
+  }
+
   @Test(arguments: [10, 1000])
   func `encode a Set of ints`(count: Int) async throws {
     try await benchmarkCase { runtime in
