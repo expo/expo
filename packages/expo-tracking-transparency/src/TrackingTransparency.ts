@@ -11,8 +11,10 @@ import { Platform } from 'react-native';
 import ExpoTrackingTransparency from './ExpoTrackingTransparency';
 
 /**
- * Prefer [`getAdvertisingIdAsync()`](#getadvertisingidasync). This function returns the same value
- * synchronously.
+ * Gets the advertising ID synchronously. This blocks the JS thread until the native lookup returns.
+ *
+ * @deprecated Use [`getAdvertisingIdAsync()`](#getadvertisingidasync) instead. It returns the same
+ * value without blocking the JS thread.
  *
  * @return The advertising ID as a UUID `string`, or `null` in the cases listed for
  * [`getAdvertisingIdAsync()`](#getadvertisingidasync).
