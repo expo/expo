@@ -245,7 +245,7 @@ export function getSplitColumnChildren(
   return [
     ...nativeChildren,
     content,
-    header && <SplitViewColumnHeader key="header" header={header} />,
+    <SplitViewColumnHeader key="header" header={header} />,
   ];
 }
 
@@ -256,7 +256,7 @@ export function SplitViewInspector({ children, header }: SplitViewColumnProps) {
   return (
     <Split.Inspector>
       {children}
-      {header && <SplitViewColumnHeader header={header} />}
+      <SplitViewColumnHeader header={header} />
     </Split.Inspector>
   );
 }
