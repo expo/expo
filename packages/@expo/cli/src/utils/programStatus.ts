@@ -8,9 +8,11 @@ export type ProgramStatus = {
 };
 
 function writeProgramStatus(body: string) {
-  if (isInteractive()) {
-    process.stdout.write(`\x1b]7501;${body}\x1b\\`);
-  }
+  try {
+    if (isInteractive()) {
+      process.stdout.write(`\x1b]7501;${body}\x1b\\`);
+    }
+  } catch {}
 }
 
 function formatProgramStatus({ state, kind, msg }: ProgramStatus): string {
