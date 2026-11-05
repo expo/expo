@@ -116,7 +116,7 @@ class ContactRepository {
     }
   }
 
-  private func ensureAccessible(_ key: CNKeyDescriptor) throws {
+  func ensureAccessible(_ key: CNKeyDescriptor) throws {
     if let keyString = key as? String, keyString == CNContactNoteKey, !canAccessNotesField() {
       throw ContactNotesNotAccessibleException()
     }
