@@ -49,6 +49,9 @@ Do not report what deterministic checks already report: a missing changeset, a d
 ## Severity
 
 This replaces the shared severity levels for you. Report `critical` and `warning` only.
+The shared acceptance criteria, the unfit-PR rule and the `Tests` severities are for the other
+reviewers. Never report a `Right solution:`, `Clean solution:`, `Low maintenance:` or
+`Tests:` finding. Your only criticals are the two cases below.
 
 - **critical**, category `quality`, title starting `Shape:`. Only two cases:
   - The PR mixes unrelated changes, and the changed files show it.
@@ -65,6 +68,7 @@ This replaces the shared severity levels for you. Report `critical` and `warning
 - **A finding about the diff:** put the changed line, copied exactly, in `evidence`, and set
   `file` and `line` to it.
 - **A finding about the title or body:** use category `quality`, so the verifier gets the PR
-  text. Leave `evidence` empty. Quote the title or the body sentence in the first sentence of
-  `rationale`. Set `file` to the changed file the claim is about, or to the first changed
-  file, and set `line` to `null`.
+  text. Put one changed line, copied exactly, in `evidence`, and set `file` and `line` to it:
+  the line the claim is about, or the first changed line when the diff lacks what the body
+  claims. In `rationale`, quote the title or body sentence, then say what the diff shows or
+  omits.
