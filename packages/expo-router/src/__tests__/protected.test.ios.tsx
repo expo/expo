@@ -913,6 +913,73 @@ describe('all routes guarded', () => {
     expect(screen).toHavePathname('/');
   });
 
+  it('redirects to the root index when a guarded group shares its URL', async () => {
+    let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+    await renderRouter(
+      {
+        _layout: function Layout() {
+          const [signedIn, setState] = useState(true);
+          setSignedIn = setState;
+          return (
+            <Stack>
+              <Stack.Protected guard={signedIn}>
+                <Stack.Screen name="(app)" />
+              </Stack.Protected>
+              <Stack.Protected guard={!signedIn}>
+                <Stack.Screen name="index" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        index: () => <Text testID="login">Login</Text>,
+        '(app)/_layout': () => (
+          <Tabs>
+            <Tabs.Screen name="(home)" />
+          </Tabs>
+        ),
+        '(app)/(home)/_layout': () => <Stack />,
+        '(app)/(home)/index': () => <Text testID="home">Home</Text>,
+      },
+      { initialUrl: '/(app)/(home)' }
+    );
+
+    expect(screen.getByTestId('home')).toBeVisible();
+    await act(() => setSignedIn(false));
+    expect(screen.getByTestId('login')).toBeVisible();
+    expect(screen).toHavePathname('/');
+    expect(navigationRef.getRootState().routes[0]!.state!.routes[0]!.name).toBe('index');
+  });
+
+  it('opens the root index when signed out on a cold start at a grouped route sharing /', async () => {
+    await renderRouter(
+      {
+        _layout: () => (
+          <Stack>
+            <Stack.Protected guard={false}>
+              <Stack.Screen name="(app)" />
+            </Stack.Protected>
+            <Stack.Screen name="index" />
+          </Stack>
+        ),
+        '(app)/_layout': () => (
+          <Tabs>
+            <Tabs.Screen name="(home)" />
+          </Tabs>
+        ),
+        '(app)/(home)/_layout': () => <Stack />,
+        '(app)/(home)/index': () => <Text testID="home">Home</Text>,
+        index: () => <Text testID="login">Login</Text>,
+      },
+      { initialUrl: '/(app)/(home)' }
+    );
+
+    expect(screen.getByTestId('login')).toBeVisible();
+    expect(screen.queryByTestId('home')).toBeNull();
+    expect(screen).toHavePathname('/');
+    expect(navigationRef.getRootState().routes[0]!.state!.routes[0]!.name).toBe('index');
+  });
+
   it('preserves params in a dynamic parent anchor', async () => {
     await renderRouter(
       {

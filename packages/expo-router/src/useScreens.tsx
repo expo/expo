@@ -13,7 +13,8 @@ import {
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
-import { isRouteGuarded, useGuardRedirect, type GuardedRedirects } from './layouts/GuardContext';
+import { isRouteGuarded, useResolvedGuard, type GuardedRedirects } from './layouts/GuardContext';
+import { GuardedStackRedirect } from './layouts/GuardedStackRedirect';
 import { Redirect } from './link/Redirect';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
@@ -28,6 +29,7 @@ import {
 import { isEnabled as isPerformanceEnabled, mark } from './performance';
 import { Screen } from './primitives';
 import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
+import { NavigatorTypeContext } from './react-navigation/core/NavigatorTypeContext';
 import {
   CommonActions,
   type DescriptorRouteProp,
@@ -315,9 +317,11 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const routeInfo = useCurrentRouteInfo();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
+    const navigatorType = use(NavigatorTypeContext);
     const activityThreshold = useActivityThreshold();
-    const redirectHref = useGuardRedirect(value.route);
-    const isGuarded = redirectHref !== undefined;
+    const resolvedGuard = useResolvedGuard(value.route);
+    const redirectHref = resolvedGuard?.redirect;
+    const isGuarded = resolvedGuard !== undefined;
     const isRouteType = value.type === 'route';
     const resolvedLoaderPath = useMemo(() => {
       if (!isRouteType || isGuarded) {
@@ -361,7 +365,18 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       // so the navigator and its state stay mounted.
       return (
         <Route node={value} params={route?.params}>
-          {redirectHref != null ? <Redirect href={redirectHref} /> : <AllRoutesProtectedWarning />}
+          {redirectHref != null ? (
+            resolvedGuard?.fallbackRoute && navigatorType === 'stack' ? (
+              <GuardedStackRedirect
+                navigation={navigation}
+                fallbackRoute={resolvedGuard.fallbackRoute}
+              />
+            ) : (
+              <Redirect href={redirectHref} />
+            )
+          ) : (
+            <AllRoutesProtectedWarning />
+          )}
         </Route>
       );
     }
