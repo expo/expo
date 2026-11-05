@@ -4,6 +4,8 @@ sidebar_title: Privacy declarations
 description: Learn what the expo-updates library sends off the device, what Expo stores, and how to declare it in the Google Play Data safety form and the App Store privacy details.
 ---
 
+import { NoIcon } from '~/ui/components/DocIcons';
+
 Google Play requires every app with a store listing to complete the [Data safety form](https://support.google.com/googleplay/android-developer/answer/10787469) in Play Console. The App Store requires the same for [app privacy details](https://developer.apple.com/app-store/app-privacy-details/) in App Store Connect. Both cover every library in your app, so your answers include what `expo-updates` sends to Expo Update. This guide lists that data and the answers that match it.
 
 > **info** You are responsible for the accuracy of your declarations. This guide covers only the data that `expo-updates` and Expo Update handle. Combine it with the data practices of the rest of your app before you submit either form.
@@ -56,12 +58,12 @@ Select these data types for Expo Update:
 
 For each selected data type, the form asks how the data is collected and used. Use these answers:
 
-| Question                                    | Device or other IDs          | Crash logs |
-| ------------------------------------------- | ---------------------------- | ---------- |
-| Is this data collected, shared, or both?    | Collected                    | Collected  |
-| Is this data processed ephemerally?         | No                           | No         |
-| Is this data required, or can users choose? | Required                     | Required   |
-| Why is this user data collected?            | App functionality, Analytics | Analytics  |
+| Question                                                                        | Device or other IDs          | Crash logs |
+| ------------------------------------------------------------------------------- | ---------------------------- | ---------- |
+| Is this data collected, shared, or both?                                        | Collected                    | Collected  |
+| Is this data processed ephemerally?                                             | <NoIcon />                   | <NoIcon /> |
+| Is this data required for your app, or can users choose whether it's collected? | Required                     | Required   |
+| Why is this user data collected?                                                | App functionality, Analytics | Analytics  |
 
 The data is **collected** rather than **shared** because Expo acts as your service provider. Google's form treats a transfer to a service provider, an entity that processes data only on your behalf and on your instructions, as collection by your app, not as sharing with a third party.
 
