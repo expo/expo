@@ -11,6 +11,7 @@ import androidx.annotation.RequiresApi
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
+import expo.modules.kotlin.jni.ArrayBuffer
 import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -362,6 +363,25 @@ class FileSystemModule : Module() {
       }
       Function("writeBytesSync") { fileHandle: FileSystemFileHandle, data: ByteArray ->
         fileHandle.write(data)
+      }
+      AsyncFunction("readAt") Coroutine { fileHandle: FileSystemFileHandle, position: Long, length: Long ->
+        withContext(Dispatchers.IO) {
+          ArrayBuffer.wrap(fileHandle.readAt(position, length))
+        }
+      }
+      Function("readAtSync") { fileHandle: FileSystemFileHandle, position: Long, length: Long ->
+        ArrayBuffer.wrap(fileHandle.readAt(position, length))
+      }
+      AsyncFunction("writeAt") Coroutine { fileHandle: FileSystemFileHandle, position: Long, data: ArrayBuffer ->
+        // Zero-copy for native-backed buffers, one copy through the JS queue for JS-heap-backed ones.
+        // Done before the hop so the file write itself never runs on the JS thread.
+        val buffer = data.toDirectBuffer()
+        withContext(Dispatchers.IO) {
+          fileHandle.writeAt(position, buffer)
+        }
+      }
+      Function("writeAtSync") { fileHandle: FileSystemFileHandle, position: Long, data: ArrayBuffer ->
+        data.withJSBytes { buffer -> fileHandle.writeAt(position, buffer) }
       }
       Function("close") { fileHandle: FileSystemFileHandle ->
         fileHandle.close()

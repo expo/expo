@@ -166,6 +166,57 @@ class FileSystemFileHandle private constructor(
     }
   }
 
+  /**
+   * Reads up to [length] bytes starting at [position] without touching the channel's own position.
+   * Returns a direct buffer sized to the bytes actually read: shorter at the end of the file, empty
+   * at or past it. Safe to call from any thread.
+   */
+  fun readAt(position: Long, length: Long): ByteBuffer {
+    ensureIsOpen()
+    mode.ensureCanRead()
+
+    try {
+      val toRead = min(length, fileChannel.size() - position).coerceIn(0L, Int.MAX_VALUE.toLong()).toInt()
+      val buffer = ByteBuffer.allocateDirect(toRead)
+      var readPosition = position
+      while (buffer.hasRemaining()) {
+        val result = fileChannel.read(buffer, readPosition)
+        if (result == -1) {
+          break
+        }
+        readPosition += result
+      }
+      buffer.flip()
+      return buffer
+    } catch (e: Exception) {
+      throw UnableToReadHandleException(e.message ?: "unknown error")
+    }
+  }
+
+  /**
+   * Writes [data] (from its position to its limit) at [position] and returns the offset right after
+   * the written bytes. In [FileMode.APPEND] the position is ignored and the data goes to the end of
+   * the file. Safe to call from any thread.
+   */
+  fun writeAt(position: Long, data: ByteBuffer): Long {
+    ensureIsOpen()
+    mode.ensureCanWrite()
+
+    try {
+      var writePosition = if (mode == FileMode.APPEND) {
+        fileChannel.size()
+      } else {
+        position
+      }
+      while (data.hasRemaining()) {
+        writePosition += fileChannel.write(data, writePosition)
+      }
+      return writePosition
+    } catch (e: Exception) {
+      throw UnableToWriteHandleException(e.message ?: "unknown error")
+    }
+  }
+
   var offset: Long?
     get() {
       synchronized(lock) {
