@@ -398,7 +398,7 @@ export function createMetroDependencyPlugin(
           (runtime.data.locs as any[]).push(call.getLocation());
           if (!collectOnly && input.config.unstable_disableModuleWrapping !== true) {
             call.replaceWith({
-              code: `${nativeRequireCall(state, runtime.index, runtimeName)}(${state.dependencyMapName}[${target.index}], ${state.dependencyMapName}.paths${nativeModuleNameArgument(state, name, optional)})`,
+              code: `${nativeRequireCall(state, runtime.index, runtimeName)}(${state.dependencyMapName}[${target.index}], ${state.dependencyMapName}.paths${nativeModuleNameArgument(state, name, target.data.isOptional)})`,
               mapping: 'anchor-boundaries',
             });
           }
@@ -604,7 +604,12 @@ export function createMetroDependencyPlugin(
             (dependency.data.locs as any[]).push(call.getLocation());
             if (!collectOnly) {
               call.replaceWith({
-                code: nativeRequireCall(state, dependency.index, directory as string, optional),
+                code: nativeRequireCall(
+                  state,
+                  dependency.index,
+                  directory as string,
+                  dependency.data.isOptional
+                ),
                 mapping: 'anchor-boundaries',
               });
             }
@@ -771,7 +776,7 @@ export function createMetroDependencyPlugin(
                   : '';
             if (!collectOnly) {
               call.replaceWith({
-                code: `${runtimeRequire}${method}(${state.dependencyMapName}[${target.index}], ${state.dependencyMapName}.paths${nativeModuleNameArgument(state, name, optional)})`,
+                code: `${runtimeRequire}${method}(${state.dependencyMapName}[${target.index}], ${state.dependencyMapName}.paths${nativeModuleNameArgument(state, name, target.data.isOptional)})`,
                 mapping: 'anchor-boundaries',
               });
             }
@@ -794,8 +799,14 @@ export function createMetroDependencyPlugin(
           const registered = registerCommonJsDependency(state, name, call.getLocation(), optional);
           if (!collectOnly && input.config.unstable_disableModuleWrapping !== true) {
             const replacement = /^@babel\/runtime\/helpers\/[^/]+$/.test(name)
-              ? nativeRequireCall(state, registered.index, name, optional, state.importDefaultName)
-              : nativeRequireCall(state, registered.index, name, optional);
+              ? nativeRequireCall(
+                  state,
+                  registered.index,
+                  name,
+                  registered.data.isOptional,
+                  state.importDefaultName
+                )
+              : nativeRequireCall(state, registered.index, name, registered.data.isOptional);
             call.replaceWith({
               code: replacement,
               mapping: 'anchor-boundaries',
