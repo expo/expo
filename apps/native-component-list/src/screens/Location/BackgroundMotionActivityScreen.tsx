@@ -12,6 +12,7 @@ import usePermissions from '../../utilities/usePermissions';
 
 const STORAGE_KEY = 'expo-motion-activity-log';
 const MOTION_ACTIVITY_TASK = 'motion-activity-updates';
+const KEEP_ALIVE_TASK = 'motion-activity-keep-alive';
 const MAX_LOG_ENTRIES = 50;
 
 const activityEventsEmitter = new EventEmitter();
@@ -38,6 +39,7 @@ export default function BackgroundMotionActivityScreen() {
 
 function BackgroundMotionActivityView() {
   const [isTracking, setIsTracking] = React.useState(false);
+  const [isKeepAliveEnabled, setIsKeepAliveEnabled] = React.useState(false);
   const [log, setLog] = React.useState<LogEntry[]>([]);
 
   const onFocus = React.useCallback(() => {
@@ -46,6 +48,7 @@ function BackgroundMotionActivityView() {
 
     (async () => {
       const tracking = await Location.hasStartedMotionActivityUpdatesAsync(MOTION_ACTIVITY_TASK);
+      const keepAlive = await Location.hasStartedLocationUpdatesAsync(KEEP_ALIVE_TASK);
       const savedLog = await getSavedLog();
 
       if (!isMounted) return;
@@ -55,6 +58,7 @@ function BackgroundMotionActivityView() {
       });
 
       setIsTracking(tracking);
+      setIsKeepAliveEnabled(keepAlive);
       setLog(savedLog);
     })();
 
@@ -89,12 +93,38 @@ function BackgroundMotionActivityView() {
     );
   }, [isTracking]);
 
+  const toggleKeepAlive = React.useCallback(async () => {
+    if (isKeepAliveEnabled) {
+      await Location.stopLocationUpdatesAsync(KEEP_ALIVE_TASK);
+      setIsKeepAliveEnabled(false);
+      return;
+    }
+
+    const { granted } = await Location.requestForegroundPermissionsAsync();
+    if (!granted) return;
+    await Location.requestBackgroundPermissionsAsync();
+    await Location.startLocationUpdatesAsync(KEEP_ALIVE_TASK, {
+      accuracy: Location.Accuracy.Lowest,
+      distanceInterval: 3000,
+      pausesUpdatesAutomatically: false,
+      showsBackgroundLocationIndicator: true,
+    });
+    setIsKeepAliveEnabled(true);
+  }, [isKeepAliveEnabled]);
+
   return (
     <View style={styles.screen}>
       <Button
         title={isTracking ? 'Stop tracking' : 'Start tracking'}
         style={styles.button}
         onPress={toggleTracking}
+      />
+      <Button
+        title={
+          isKeepAliveEnabled ? 'Disable keep-alive by location' : 'Enable keep-alive by location'
+        }
+        style={styles.button}
+        onPress={toggleKeepAlive}
       />
       <ScrollView style={styles.log}>
         {log.length === 0 && <Text style={styles.text}>No motion activity received yet.</Text>}
@@ -158,6 +188,9 @@ TaskManager.defineTask(MOTION_ACTIVITY_TASK, async ({ data, error }: any) => {
     activities: data.activity.activities,
   });
 });
+
+// Location updates are only used to keep the iOS app running in the background.
+TaskManager.defineTask(KEEP_ALIVE_TASK, async () => {});
 
 const styles = StyleSheet.create({
   screen: {
