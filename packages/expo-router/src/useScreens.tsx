@@ -46,8 +46,7 @@ import type { UnknownOutputParams } from './types';
 import { useIsFocused } from './useIsFocused';
 import { getSingularId } from './utils/getSingularId';
 import { EmptyRoute } from './views/EmptyRoute';
-import { useActivityThreshold } from './views/NavigationActivityContext';
-import { NavigationAwareActivity } from './views/NavigationAwareActivity';
+import { RouteActivity } from './views/NavigationAwareActivity';
 import {
   SuspenseFallback as DefaultSuspenseFallback,
   type SuspenseFallbackProps,
@@ -334,7 +333,6 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const routeInfo = useCurrentRouteInfo();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
     const ScreenErrorBoundary = use(ScreenErrorBoundaryContext);
-    const activityThreshold = useActivityThreshold();
     const redirectHref = useGuardRedirect(value.route);
     const isGuarded = redirectHref !== undefined;
     const isRouteType = value.type === 'route';
@@ -423,13 +421,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
                   params={(route?.params ?? {}) as SuspenseFallbackProps['params']}
                 />
               }>
-              {isRouteType && typeof activityThreshold === 'number' ? (
-                <NavigationAwareActivity hideWhenNestedAtLevel={activityThreshold}>
-                  {screenContent}
-                </NavigationAwareActivity>
-              ) : (
-                screenContent
-              )}
+              <RouteActivity type={value.type}>{screenContent}</RouteActivity>
             </React.Suspense>
           </ZoomTransitionTargetContextProvider>
         </SuspenseFallbackContext>
