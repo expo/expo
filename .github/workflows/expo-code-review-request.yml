@@ -54,5 +54,9 @@ jobs:
           # Re-adding the label starts the review workflow again on a re-request.
           if [ "$HAS_LABEL" = true ]; then
             gh pr edit "$PR" --repo "$REPO" --remove-label ai-review
+            # The unlabeled run shares the review's concurrency group and cancels the run
+            # before it. Wait, so the labeled run starts last and is not the one cancelled.
+            # This token cannot read Actions runs, so it cannot poll for that run instead.
+            sleep 20
           fi
           gh pr edit "$PR" --repo "$REPO" --add-label ai-review
