@@ -1,14 +1,14 @@
 ---
-title: Records and unions
-description: Learn how to convert JavaScript objects to native types with records, and how to accept more than one type with unions in Expo Modules API 2.0.
+title: Records
+description: Learn how to convert JavaScript objects to native types with records in Expo Modules API 2.0.
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { LanguageSupport } from '~/components/plugins/modules-v2-support';
 
-A record is a native type that converts to and from a JavaScript object. A union is a native type that converts from one of a few JavaScript types, the same as a union type in TypeScript.
+A record is a native type that converts to and from a JavaScript object. Use a record for an argument, a result, or an event payload that is an object with known fields. To accept one of a few types, use a [union](/modules/v2/reference/unions/).
 
-## Records
+## Declare a record
 
 <LanguageSupport feature="records" />
 
@@ -52,7 +52,7 @@ public final class MyModule: Module {
 
 A field with a default value is optional: JavaScript can leave it out, and the field gets the default value. With the previous record, JavaScript can call `setStringAsync('text', {})`.
 
-### Required, optional, and nullable fields in Swift
+## Required, optional, and nullable fields in Swift
 
 In Swift, the type and the default value of a property set what JavaScript must pass:
 
@@ -66,6 +66,8 @@ struct Options {
 ```
 
 When JavaScript leaves out a required field, the conversion throws `RecordPropertyRequiredException`.
+
+## Rules for Swift records
 
 A Swift record has the following rules:
 
@@ -82,39 +84,3 @@ If your module builds with a default isolation, for example `-default-isolation 
   // ...
 }
 ```
-
-## Unions
-
-<LanguageSupport feature="unions" />
-
-Add `@Union` to an enum whose cases each have one associated value. The enum converts from any of the payload types:
-
-```swift
-@Union
-enum BinaryInput {
-  case bytes(Data)
-  case string(String)
-}
-
-@JS
-func digest(_ input: BinaryInput) -> String {
-  switch input {
-  case .bytes(let bytes):
-    // ...
-  case .string(let string):
-    // ...
-  }
-}
-```
-
-In TypeScript, `BinaryInput` is `Uint8Array | string`. A union can also be a result, an event payload, a record field, or an element of an optional, an array, or a dictionary.
-
-The conversion tries the cases in the order of the declaration and uses the first case whose payload converts. So, put the most specific case first. For example, a `Double` case before an `Int` case also matches every integer, and the `Int` case is never used. The macro shows a warning for some of these cases, for example a case after a `JavaScriptValue` case. When no case matches, the conversion throws `Exceptions.UnionCaseMismatch`.
-
-To get the payload without a `switch`, use `as(_:)`. It throws `Exceptions.UnionCaseMismatch` when the union holds another case:
-
-```swift
-let text = try input.as(String.self)
-```
-
-Each case has one associated value, and each payload type is used once. A generic enum, a case without a payload, a case with more than one associated value, and a default value for an associated value are build errors.
