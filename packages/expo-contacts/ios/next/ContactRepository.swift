@@ -35,7 +35,8 @@ class ContactRepository {
   }
 
   func getMutableById(id: String, keysToFetch: [CNKeyDescriptor]) throws -> CNMutableContact {
-    let contact = getById(id: id, keysToFetch: getSafeKeys(keysToFetch: keysToFetch))
+    try keysToFetch.forEach(ensureAccessible)
+    let contact = getById(id: id, keysToFetch: keysToFetch)
     guard let mutableContact = contact?.mutableCopy() as? CNMutableContact else {
       throw FailedToGetMutableContact()
     }
@@ -112,6 +113,12 @@ class ContactRepository {
         return canAccessNotesField()
       }
       return true
+    }
+  }
+
+  private func ensureAccessible(_ key: CNKeyDescriptor) throws {
+    if let keyString = key as? String, keyString == CNContactNoteKey, !canAccessNotesField() {
+      throw ContactNotesNotAccessibleException()
     }
   }
 

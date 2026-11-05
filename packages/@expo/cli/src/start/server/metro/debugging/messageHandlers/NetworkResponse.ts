@@ -1,5 +1,6 @@
 import type { Protocol } from 'devtools-protocol';
 
+import { env } from '../../../../../utils/env';
 import { MessageHandler } from '../MessageHandler';
 import type {
   CdpMessage,
@@ -39,6 +40,11 @@ export function recordNetworkResponse(
 export class NetworkResponseHandler extends MessageHandler {
   /** All known responses, mapped by request id */
   storage = NETWORK_RESPONSE_STORAGE;
+
+  isEnabled() {
+    // Response bodies are served by React Native's core `Network.getResponseBody` instead
+    return !env.EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR;
+  }
 
   handleDeviceMessage(message: DeviceRequest<NetworkReceivedResponseBody>) {
     if (message.method === 'Expo(Network.receivedResponseBody)') {

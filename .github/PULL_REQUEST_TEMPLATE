@@ -1,4 +1,4 @@
-# Why
+## Why
 
 <!--
 State the problem in one or two short sentences.
@@ -7,7 +7,7 @@ Write short sentences. Use active voice. Use one word for one thing.
 Delete this comment when you fill the section.
 -->
 
-# How
+## How
 
 <!--
 How did you build this feature or fix this bug and why?
@@ -19,7 +19,7 @@ If this pull request is part of a stack, list the stack in order and say which o
 Delete this comment when you fill the section.
 -->
 
-# Test Plan
+## Test Plan
 
 <!--
 Say what you ran, on which device or simulator, and the result.
@@ -28,7 +28,7 @@ If you did not run a test, say that and mark the pull request as a draft.
 Delete this comment when you fill the section.
 -->
 
-# Screenshots
+## Screenshots
 
 <!--
 If this change affects what a person sees, copy the shape below out of this comment.
@@ -60,7 +60,7 @@ Android emulator, API 34.
 Repeat the platform heading for iOS, for web, or for both when the change runs there.
 -->
 
-# Checklist
+## Checklist
 
 <!--
 Please check the appropriate items below if they apply to your diff.

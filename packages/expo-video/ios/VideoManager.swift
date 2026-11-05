@@ -107,10 +107,15 @@ class VideoManager {
 
   private func setAudioSession() {
     let audioSession = AVAudioSession.sharedInstance()
+    // Compare the policy with these values, not with a new read. Another module can change the session
+    // in the meantime, and writing these values back would undo its change.
+    let category = audioSession.category
+    let mode = audioSession.mode
+    let options = audioSession.categoryOptions
     let policy = AudioSessionPolicy.evaluate(
-      category: audioSession.category,
-      mode: audioSession.mode,
-      options: audioSession.categoryOptions,
+      category: category,
+      mode: mode,
+      options: options,
       players: videoPlayers.allObjects.map { player in
         AudioSessionPolicy.PlayerState(
           isPlaying: player.isPlaying,
@@ -121,7 +126,7 @@ class VideoManager {
       }
     )
 
-    if audioSession.categoryOptions != policy.options || audioSession.category != policy.category || audioSession.mode != policy.mode {
+    if options != policy.options || category != policy.category || mode != policy.mode {
       do {
         try audioSession.setCategory(policy.category, mode: policy.mode, options: policy.options)
       } catch {

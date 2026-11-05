@@ -38,4 +38,4 @@ link. The author is still added automatically. Invalid or additional `See:` line
 
 ## Check the changeset
 
-Run `pnpm changeset status` to check the package names and version bumps. Documentation, tests, apps, CI, and private tooling do not need a changeset.
+Run `pnpm changeset status` to check the package names and version bumps. Documentation, tests, CI, and private packages (`"private": true`, such as apps and internal tooling) do not need a changeset. Do not list them in one: `changeset version` fails when a changeset lists both private and published packages.
