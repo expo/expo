@@ -29,7 +29,7 @@ export function createPlatformSelectPlugin(
               children: {
                 properties: {
                   route: 'ObjectProperty',
-                  fields: ['key', 'computed'],
+                  fields: ['key', 'computed', 'method', 'kind'],
                   children: { value: { route: 'Expression' } },
                 },
               },
@@ -49,7 +49,10 @@ export function createPlatformSelectPlugin(
           if (
             properties.some(
               (property) =>
-                property.node.type !== 'ObjectProperty' || property.node.computed === true
+                property.node.type !== 'ObjectProperty' ||
+                property.node.computed === true ||
+                property.node.method === true ||
+                property.node.kind !== 'init'
             )
           ) {
             return;
