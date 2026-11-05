@@ -6,14 +6,14 @@ import {
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
 } from '../../../navigationParams';
 import { useIsPreview } from '../../preview/PreviewRouteContext';
-import { isZoomTransitionEnabled } from '../ZoomTransitionEnabler';
 import { useZoomHref } from '../useZoomHref';
 import {
   ZoomTransitionSourceContext,
   type ZoomTransitionSourceContextValueType,
 } from '../zoom-transition-context';
+import { isZoomTransitionEnabled } from '../zoom-transition-enabled';
 
-jest.mock('../ZoomTransitionEnabler');
+jest.mock('../zoom-transition-enabled');
 jest.mock('../../preview/PreviewRouteContext');
 
 const BAE_CONTEXT_VALUE: ZoomTransitionSourceContextValueType = {

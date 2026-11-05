@@ -71,10 +71,10 @@ jest.mock('../../hooks/useRouter', () => {
   return { ...actual, useRouter: jest.fn(actual.useRouter) };
 });
 
-jest.mock('../zoom/ZoomTransitionEnabler', () => {
+jest.mock('../zoom/zoom-transition-enabled', () => {
   const originalModule = jest.requireActual(
-    '../zoom/ZoomTransitionEnabler'
-  ) as typeof import('../zoom/ZoomTransitionEnabler');
+    '../zoom/zoom-transition-enabled'
+  ) as typeof import('../zoom/zoom-transition-enabled');
   return {
     ...originalModule,
     isZoomTransitionEnabled: () => true,

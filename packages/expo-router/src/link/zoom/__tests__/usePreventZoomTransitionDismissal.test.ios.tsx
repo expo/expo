@@ -1,12 +1,8 @@
 import { renderHook } from '@testing-library/react-native';
-import type { ReactNode } from 'react';
+import type { ContextType, ReactNode } from 'react';
 
-import type {
-  NativeStackDescriptor,
-  NativeStackDescriptorMap,
-} from '../../../fork/native-stack/descriptors-context';
-import { DescriptorsContext } from '../../../fork/native-stack/descriptors-context';
 import { INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME } from '../../../navigationParams';
+import { ScreenPresentationContext } from '../../../react-navigation/native-stack/utils/ScreenPresentationContext';
 import { usePreventZoomTransitionDismissal } from '../usePreventZoomTransitionDismissal.ios';
 import {
   ZoomTransitionTargetContext,
@@ -32,43 +28,30 @@ jest.mock('../../../useNavigation', () => ({
   })),
 }));
 
-function makeDescriptors(
-  routeKey: string,
-  options: Record<string, unknown> = {}
-): NativeStackDescriptorMap {
-  return {
-    [routeKey]: { options } as NativeStackDescriptor,
-  };
-}
-
 function makeTargetContext(
   overrides: Partial<ZoomTransitionTargetContextValueType> = {}
 ): ZoomTransitionTargetContextValueType {
   return {
     identifier: 'source-123',
-    dismissalBoundsRect: null,
     setDismissalBoundsRect: jest.fn(),
-    addEnabler: jest.fn(),
-    removeEnabler: jest.fn(),
-    hasEnabler: true,
     ...overrides,
   };
 }
 
 function renderPreventDismissal({
-  descriptors = makeDescriptors('route-1'),
+  presentation = 'card',
   targetContext = makeTargetContext(),
   options,
 }: {
-  descriptors?: NativeStackDescriptorMap;
+  presentation?: ContextType<typeof ScreenPresentationContext>;
   targetContext?: ZoomTransitionTargetContextValueType;
   options?: Parameters<typeof usePreventZoomTransitionDismissal>[0];
 } = {}) {
   return renderHook(() => usePreventZoomTransitionDismissal(options), {
     wrapper: ({ children }: { children: ReactNode }) => (
-      <DescriptorsContext value={descriptors}>
+      <ScreenPresentationContext value={presentation}>
         <ZoomTransitionTargetContext value={targetContext}>{children}</ZoomTransitionTargetContext>
-      </DescriptorsContext>
+      </ScreenPresentationContext>
     ),
   });
 }
@@ -90,7 +73,7 @@ describe('usePreventZoomTransitionDismissal', () => {
   it('warns when used on a modal screen', async () => {
     const setDismissalBoundsRect = jest.fn();
     await renderPreventDismissal({
-      descriptors: makeDescriptors('route-1', { presentation: 'modal' }),
+      presentation: 'modal',
       targetContext: makeTargetContext({ setDismissalBoundsRect }),
     });
 
@@ -101,9 +84,7 @@ describe('usePreventZoomTransitionDismissal', () => {
   });
 
   it('does not warn on non-modal screen', async () => {
-    await renderPreventDismissal({
-      descriptors: makeDescriptors('route-1'),
-    });
+    await renderPreventDismissal();
 
     expect(consoleWarnSpy).not.toHaveBeenCalled();
   });
@@ -162,10 +143,10 @@ describe('usePreventZoomTransitionDismissal', () => {
     });
   });
 
-  it('does not call setDismissalBoundsRect and setOptions when hasEnabler is false', async () => {
+  it('does not call setDismissalBoundsRect and setOptions without a zoom target', async () => {
     const setDismissalBoundsRect = jest.fn();
     await renderPreventDismissal({
-      targetContext: makeTargetContext({ hasEnabler: false, setDismissalBoundsRect }),
+      targetContext: makeTargetContext({ identifier: null, setDismissalBoundsRect }),
       options: {
         unstable_dismissalBoundsRect: { minX: 10, maxX: 200, minY: 10, maxY: 400 },
       },
@@ -208,8 +189,7 @@ describe('usePreventZoomTransitionDismissal', () => {
   it('calls setDismissalBoundsRect with { maxX: 0, maxY: 0 } when gestureEnabled is false without explicit rect', async () => {
     const setDismissalBoundsRect = jest.fn();
     await renderPreventDismissal({
-      descriptors: makeDescriptors('route-1', { gestureEnabled: false }),
-      targetContext: makeTargetContext({ setDismissalBoundsRect }),
+      targetContext: makeTargetContext({ gestureEnabled: false, setDismissalBoundsRect }),
     });
 
     expect(setDismissalBoundsRect).toHaveBeenCalledWith({ maxX: 0, maxY: 0 });

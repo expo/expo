@@ -40,18 +40,11 @@ export interface DismissalBoundsRect {
 
 export interface ZoomTransitionTargetContextValueType {
   identifier: string | null;
-  dismissalBoundsRect: DismissalBoundsRect | undefined | null;
+  gestureEnabled?: boolean;
   setDismissalBoundsRect: (rect: DismissalBoundsRect | null) => void;
-  addEnabler: () => void;
-  removeEnabler: () => void;
-  hasEnabler: boolean;
 }
 
 export const ZoomTransitionTargetContext = createContext<ZoomTransitionTargetContextValueType>({
   identifier: null,
-  dismissalBoundsRect: null,
   setDismissalBoundsRect: () => {},
-  addEnabler: () => {},
-  removeEnabler: () => {},
-  hasEnabler: false,
 });

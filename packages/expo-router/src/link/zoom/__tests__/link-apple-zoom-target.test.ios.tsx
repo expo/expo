@@ -17,11 +17,7 @@ const MockedDetector = LinkZoomTransitionAlignmentRectDetector as jest.Mock;
 function makeContextValue(identifier: string | null = 'source-123') {
   return {
     identifier,
-    dismissalBoundsRect: null,
     setDismissalBoundsRect: jest.fn(),
-    addEnabler: jest.fn(),
-    removeEnabler: jest.fn(),
-    hasEnabler: false,
   };
 }
 

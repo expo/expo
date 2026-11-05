@@ -2,9 +2,9 @@
 
 import { use } from 'react';
 
-import { DescriptorsContext } from '../../fork/native-stack/descriptors-context';
 import { INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME } from '../../navigationParams';
 import { useRoute } from '../../react-navigation/native';
+import { ScreenPresentationContext } from '../../react-navigation/native-stack/utils/ScreenPresentationContext';
 import { useIsFocused } from '../../useIsFocused';
 import { useNavigation } from '../../useNavigation';
 import { isModalPresentation } from '../../utils/stackPresentation';
@@ -23,10 +23,9 @@ export function usePreventZoomTransitionDismissal(
   const isFocused = useIsFocused();
   const isPreloaded = !isPreview && route.isPreloaded === true;
 
-  const descriptorsMap = use(DescriptorsContext);
-  const currentDescriptor = descriptorsMap[route.key];
-  const gestureEnabled = currentDescriptor?.options?.gestureEnabled;
-  const isModal = isModalPresentation(currentDescriptor?.options);
+  const presentation = use(ScreenPresentationContext);
+  const isModal = isModalPresentation({ presentation });
+  const gestureEnabled = context.gestureEnabled;
 
   useSafeLayoutEffect(() => {
     if (isPreview) return;
@@ -36,7 +35,7 @@ export function usePreventZoomTransitionDismissal(
       );
       return;
     }
-    if (!context.hasEnabler) {
+    if (!context.identifier) {
       return;
     }
     const rect = options?.unstable_dismissalBoundsRect;
@@ -63,7 +62,7 @@ export function usePreventZoomTransitionDismissal(
     // 3. Otherwise, allow normal dismissal (null rect)
     const computedRect = rect ?? (gestureEnabled === false ? { maxX: 0, maxY: 0 } : null);
 
-    context.setDismissalBoundsRect?.(computedRect);
+    context.setDismissalBoundsRect(computedRect);
 
     if (!isPreloaded || (isPreloaded && isFocused)) {
       // Disable React Navigation's gesture handler when we have custom bounds to prevent conflicts.
@@ -76,7 +75,7 @@ export function usePreventZoomTransitionDismissal(
 
     // Cleanup on unmount
     return () => {
-      context.setDismissalBoundsRect?.(null);
+      context.setDismissalBoundsRect(null);
     };
   }, [
     options?.unstable_dismissalBoundsRect?.minX,
@@ -84,6 +83,7 @@ export function usePreventZoomTransitionDismissal(
     options?.unstable_dismissalBoundsRect?.minY,
     options?.unstable_dismissalBoundsRect?.maxY,
     context.setDismissalBoundsRect,
+    context.identifier,
     gestureEnabled,
     navigation,
     isFocused,
