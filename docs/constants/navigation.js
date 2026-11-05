@@ -376,10 +376,11 @@ export const general = [
       makePage('modules/v2/feature-support.mdx'),
       makeSection('Reference', [
         makePage('modules/v2/reference/modules.mdx'),
-        makePage('modules/v2/reference/events.mdx'),
         makePage('modules/v2/reference/shared-objects.mdx'),
         makePage('modules/v2/reference/records.mdx'),
         makePage('modules/v2/reference/unions.mdx'),
+        makePage('modules/v2/reference/binary-data.mdx'),
+        makePage('modules/v2/reference/events.mdx'),
         makePage('modules/v2/reference/type-conversions.mdx'),
         makePage('modules/v2/reference/concurrency.mdx'),
       ]),
