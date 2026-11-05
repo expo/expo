@@ -2978,3 +2978,83 @@ it.each([
     !!collected.dependencies[0].data.isOptional
   );
 });
+
+it.each([false, true])(
+  'matches Babel source-based loads without a wrapper (dev=%s)',
+  async (dev) => {
+    const source = `import value from 'pkg';
+import 'side';
+export { value };
+export { other } from 'reexport';
+export * from 'star';
+export * as ns from 'namespace';`;
+    const expected = babel.transformSync(source, {
+      babelrc: false,
+      configFile: false,
+      plugins: [[importExportLiveBindingsPlugin, { performConstantFolding: !dev, resolve: false }]],
+    })!.code!;
+    const native = await transformFileFullyWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source,
+      options: options({ dev }),
+      isDefaultExpoTransformer: true,
+      config: { ...fullConfig(), unstable_disableModuleWrapping: true },
+    });
+    if (native.status !== 'complete') throw new Error(native.reason);
+    function run(code: string) {
+      const loads: unknown[][] = [];
+      const exports = {};
+      new Function('require', 'exports', code)((...args: unknown[]) => {
+        loads.push(args);
+        return { __esModule: true, default: 'value', other: 'other' };
+      }, exports);
+      return { loads, exports: JSON.parse(JSON.stringify(exports)) };
+    }
+    expect(run(native.result.code)).toEqual(run(expected));
+    expect(native.result.code).not.toContain(native.dependencyMapName);
+  }
+);
+
+it.each(["require.unstable_importMaybeSync('pkg');", "__prefetchImport('pkg');"])(
+  'preserves Babel async calls without wrapping: %s',
+  async (source) => {
+    const native = await transformFileFullyWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source,
+      options: options(),
+      isDefaultExpoTransformer: true,
+      config: { ...fullConfig(), unstable_disableModuleWrapping: true },
+    });
+    if (native.status !== 'complete') throw new Error(native.reason);
+    expect(canonicalModuleBody(native.result.code)).toBe(canonicalModuleBody(source));
+    expect(native.result.code).not.toContain(native.dependencyMapName);
+  }
+);
+
+it('preserves unwrapped require.context arguments natively', async () => {
+  const source =
+    "module.exports = require /* comment */ .context('./routes', false, /route/i, 'lazy');";
+  const native = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+    config: {
+      ...fullConfig(),
+      unstable_disableModuleWrapping: true,
+      unstable_allowRequireContext: true,
+    },
+  });
+  if (native.status !== 'complete') throw new Error(native.reason);
+  expect(canonicalModuleBody(native.result.code)).toBe(
+    canonicalModuleBody("module.exports = require('./routes', false, /route/i, 'lazy');")
+  );
+  expect(native.dependencies[0]!.data.contextParams).toEqual({
+    recursive: false,
+    filter: { pattern: 'route', flags: 'i' },
+    mode: 'lazy',
+  });
+});

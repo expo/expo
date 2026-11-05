@@ -15,6 +15,7 @@ export interface MetroDependencyState {
     Dependency & { index: number; imports: number; exportNameSet?: Set<string> }
   >;
   keepRequireNames: boolean;
+  disableModuleWrapping: boolean;
   requireName: string;
   importDefaultName: string;
   importAllName: string;
@@ -36,6 +37,7 @@ export function nativeRequireCall(
   optional = false,
   callee = state.requireName
 ): string {
+  if (state.disableModuleWrapping) return `${callee}(${JSON.stringify(name)})`;
   return `${callee}(${state.dependencyMapName}[${index}]${nativeModuleNameArgument(state, name, optional)})`;
 }
 
@@ -291,6 +293,7 @@ export function createMetroDependencyPlugin(
       return (shared.state = {
         dependencies: new Map(),
         keepRequireNames: input.options.dev,
+        disableModuleWrapping: input.config.unstable_disableModuleWrapping === true,
         requireName: 'require',
         importDefaultName: '$$_IMPORT_DEFAULT',
         importAllName: '$$_IMPORT_ALL',
@@ -602,7 +605,18 @@ export function createMetroDependencyPlugin(
             }
             dependency.imports++;
             (dependency.data.locs as any[]).push(call.getLocation());
-            if (!collectOnly) {
+            if (!collectOnly && state.disableModuleWrapping) {
+              call.replaceWith({
+                kind: 'composite',
+                parts: [
+                  'require(',
+                  ...args.flatMap((argument, index) =>
+                    index === 0 ? [argument.getSource()] : [', ', argument.getSource()]
+                  ),
+                  ')',
+                ],
+              });
+            } else if (!collectOnly) {
               call.replaceWith({
                 code: nativeRequireCall(
                   state,
@@ -774,7 +788,7 @@ export function createMetroDependencyPlugin(
                 : asyncType === 'maybeSync'
                   ? '.unstable_importMaybeSync'
                   : '';
-            if (!collectOnly) {
+            if (!collectOnly && !state.disableModuleWrapping) {
               call.replaceWith({
                 code: `${runtimeRequire}${method}(${state.dependencyMapName}[${target.index}], ${state.dependencyMapName}.paths${nativeModuleNameArgument(state, name, target.data.isOptional)})`,
                 mapping: 'anchor-boundaries',
