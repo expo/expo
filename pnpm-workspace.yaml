@@ -39,7 +39,7 @@ minimumReleaseAgeExclude:
   - react-native-safe-area-context@5.11.1
   - 2g
   - expo-atlas@0.5.0
-  - react-native-svg@15.16.0
+  - react-native-svg@15.16.1
 
 patchedDependencies:
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
