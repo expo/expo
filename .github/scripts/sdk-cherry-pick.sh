@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 # Backports a pull request that merged into main to an sdk-NN release branch.
 #
-#   sdk-cherry-pick.sh prepare             Cherry-pick, convert changesets, and record what to publish.
-#   sdk-cherry-pick.sh publish             Push the branch, open the pull request, and comment.
-#   sdk-cherry-pick.sh run                 prepare, then publish. For local use.
-#   sdk-cherry-pick.sh mark-cherry-picked  Label the original pull request after its backport merges.
+#   sdk-cherry-pick.sh check-target  Tell whether prepare can need the model and expotools.
+#   sdk-cherry-pick.sh prepare       Cherry-pick, convert changesets, and record what to publish.
+#   sdk-cherry-pick.sh publish       Push the branch, open the pull request, and comment.
+#   sdk-cherry-pick.sh run           prepare, then publish. For local use.
 #
 # prepare and publish are separate commands so that the token that can push is only in the
 # environment of publish. prepare runs the model, and the model reads text that a pull request
@@ -25,7 +25,8 @@
 #   STATE_DIR               Where prepare records the result for publish.
 #                           Default: $RUNNER_TEMP or $TMPDIR, then /sdk-cherry-pick-<PR>-<SDK>.
 #
-# mark-cherry-picked reads BASE_REF, HEAD_REF, HEAD_REPO, GH_TOKEN, DRY_RUN, and REPO.
+# check-target reads the same variables as prepare and writes `convert=true|false` to
+# $GITHUB_OUTPUT when it is set.
 
 # shellcheck disable=SC2016 # Backticks in single quotes are Markdown code spans, not commands.
 set -euo pipefail
@@ -45,6 +46,8 @@ bot_email='expo-bot@users.noreply.github.com'
 author_pattern='^[A-Za-z0-9-]+$'
 changeset_pattern='^\.changeset/[A-Za-z0-9._-]+\.md$'
 package_name_pattern='^[@A-Za-z0-9._/-]+$'
+# The same rule as `et check-sdk-prs`: the first match in a commit subject is the pull request.
+pr_reference_pattern='\(#([0-9]+)\)'
 
 die() {
   echo "error: $*" >&2
@@ -113,14 +116,11 @@ EOF
   case "$uses_changesets" in
     no)
       echo "\`$target_branch\` does not use changesets. For each \`.changeset/*.md\` file that this pull request adds, add its summary as an entry under \`## Unpublished\` in the \`CHANGELOG.md\` of each package that it names. Then delete the changeset file."
-      echo
       ;;
     unknown)
       echo "If \`$target_branch\` has no \`.changeset/config.json\`, it does not use changesets. Then, for each \`.changeset/*.md\` file that this pull request adds, add its summary as an entry under \`## Unpublished\` in the \`CHANGELOG.md\` of each package that it names, and delete the changeset file."
-      echo
       ;;
   esac
-  echo "With this branch name, the \`SDK $SDK_VERSION cherry-picked\` label is added to this pull request when the backport merges."
 }
 
 finish_with_comment() {
@@ -318,41 +318,60 @@ convert_changesets() {
   conversion=converted
 }
 
+# Prints "<sha> <subject>" for each commit on the target branch that main does not have, that is,
+# each commit since the branch cut. The checkout has only the tip of main, and a shallow git fetch
+# of that range fails on GitHub when the range is empty, so the compare API lists the commits.
+# Bash clears `set -e` in a command substitution, so the gh call must stay the last command.
+commits_since_cut() {
+  gh api --paginate "repos/$REPO/compare/main...$target_branch?per_page=100" \
+    --jq '.commits[] | "\(.sha) \(.commit.message | split("\n")[0])"'
+}
+
 prepare() {
   load_common
   rm -rf "$state_dir"
   mkdir -p "$state_dir"
   load_pull_request
-  printf '%s\n' "[$target_branch] Backport #$PR_NUMBER: $PR_TITLE" >"$state_dir/title"
+  # The squash merge appends ` (#<backport>)`, so the first `(#N)` of the subject names this pull
+  # request. `et check-sdk-prs` reads that number, so a `(#N)` in the title loses its parentheses.
+  # The loop repeats until none is left: `((#N))` becomes `(#N)` after one pass.
+  local title
+  title=$(sed -E -e ':a' -e 's/\(#([0-9]+)\)/#\1/' -e 'ta' <<<"$PR_TITLE")
+  printf '%s\n' "[$target_branch] $title (#$PR_NUMBER)" >"$state_dir/title"
 
-  if [ -z "$(git -C "$REPO_DIR" ls-remote --heads origin "refs/heads/$target_branch")" ]; then
-    finish_with_comment "This pull request has the \`SDK $SDK_VERSION\` label, but the \`$target_branch\` branch does not exist, so no backport was made."
+  # A failed `ls-remote` inside `[ ]` would read as a missing branch. An assignment stops on it.
+  local target_heads
+  target_heads=$(git -C "$REPO_DIR" ls-remote --heads origin "refs/heads/$target_branch")
+  if [ -z "$target_heads" ]; then
+    finish_with_comment "This pull request has the \`$target_branch\` label, but the \`$target_branch\` branch does not exist, so no backport was made."
     return
   fi
 
-  # The labels of the event are a snapshot from when the workflow started.
-  local label="SDK $SDK_VERSION cherry-picked" labels
-  labels=$(gh pr view "$PR_NUMBER" --repo "$REPO" --json labels --jq '.labels[].name')
-  if grep -Fxq "$label" <<<"$labels"; then
-    finish_without_comment "#$PR_NUMBER already has the \"$label\" label."
-    return
-  fi
+  local since_cut sha subject
+  since_cut=$(commits_since_cut)
+  while read -r sha subject; do
+    if [[ "$subject" =~ $pr_reference_pattern ]] && [ "${BASH_REMATCH[1]}" = "$PR_NUMBER" ]; then
+      finish_without_comment "#$PR_NUMBER is already on $target_branch: the subject of $sha names it first."
+      return
+    fi
+  done <<<"$since_cut"
 
   # The changelog trailer links the author, and the check accepts only the login of a GitHub user.
   if ! [[ "$PR_AUTHOR" =~ $author_pattern ]]; then
-    finish_with_comment "This pull request has the \`SDK $SDK_VERSION\` label, but a bot or an app authored it, so no backport was made. Backport it to \`$target_branch\` by hand."
+    finish_with_comment "This pull request has the \`$target_branch\` label, but a bot or an app authored it, so no backport was made. Backport it to \`$target_branch\` by hand."
     return
   fi
 
   # `gh pr list --head` matches the branch name in any repository, so a fork can use the same name.
-  local backports merged_pr open_pr closed_pr branch_exists=false
+  local backports merged_pr open_pr closed_pr work_heads branch_exists=false
   backports=$(gh pr list --repo "$REPO" --head "$work_branch" --base "$target_branch" --state all \
     --json url,state,headRepository,headRepositoryOwner |
     jq -c --arg repo "$REPO" '[.[] | select("\(.headRepositoryOwner.login)/\(.headRepository.name)" == $repo)]')
   merged_pr=$(jq -r 'map(select(.state == "MERGED"))[0].url // empty' <<<"$backports")
   open_pr=$(jq -r 'map(select(.state == "OPEN"))[0].url // empty' <<<"$backports")
   closed_pr=$(jq -r 'map(select(.state == "CLOSED"))[0].url // empty' <<<"$backports")
-  if [ -n "$(git -C "$REPO_DIR" ls-remote --heads origin "refs/heads/$work_branch")" ]; then
+  work_heads=$(git -C "$REPO_DIR" ls-remote --heads origin "refs/heads/$work_branch")
+  if [ -n "$work_heads" ]; then
     branch_exists=true
   fi
   if [ -n "$merged_pr" ]; then
@@ -454,7 +473,9 @@ EOF
   echo open-pr >"$state_dir/outcome"
 }
 
+# Each run comments at most once. A failed `gh pr comment` can still have posted.
 comment_on_original() {
+  commented=true
   if is_dry_run; then
     echo "Comment on #$PR_NUMBER:"
     printf '%s\n' "$1" | print_untrusted
@@ -499,56 +520,81 @@ open_backport() {
       -c credential.helper='!f() { echo username=x-access-token; echo "password=$GH_TOKEN"; }; f' \
       push --quiet "https://github.com/$REPO.git" "$commit:refs/heads/$work_branch"
   fi
+  branch_on_remote=true
   local url
   url=$(gh pr create --repo "$REPO" --base "$target_branch" --head "$work_branch" \
     --title "$title" --body-file "$state_dir/body.md")
   comment_on_original "The backport to \`$target_branch\` is open: $url"
 }
 
+# Under `set -e`, a failed push or `gh pr create` ends publish. This trap still tells the author.
+on_publish_exit() {
+  local status=$1
+  if [ "$status" -ne 0 ] && [ "$commented" = false ]; then
+    if [ "$branch_on_remote" = true ]; then
+      comment_on_original "$(printf 'The `%s` branch is on GitHub, but the bot could not open the backport pull request into `%s`.%s Re-run the failed jobs of the workflow run. The new run opens the pull request from that branch.' "$work_branch" "$target_branch" "$(run_log_link)")" || true
+    else
+      comment_on_original "$(printf 'The backport to `%s` failed before it could finish, so no backport pull request was opened.%s\n\n%s' "$target_branch" "$(run_log_link)" "$(manual_steps unknown)")" || true
+    fi
+  fi
+  cleanup
+}
+
 publish() {
   load_common
+  commented=false
+  branch_on_remote=false
+  trap 'on_publish_exit $?' EXIT
   if is_dry_run; then
     echo "Dry run: nothing is pushed, opened, or commented."
   fi
   case "$(cat "$state_dir/outcome" 2>/dev/null || true)" in
     open-pr) open_backport push ;;
-    open-pr-from-branch) open_backport ;;
+    open-pr-from-branch)
+      branch_on_remote=true
+      open_backport
+      ;;
     comment) comment_on_original "$(cat "$state_dir/comment.md")" ;;
     skip) echo "Nothing to publish. The prepare step says why." ;;
     *)
-      comment_on_original "$(printf 'The backport to `%s` failed before it could finish, so no backport pull request was opened.%s\n\n%s' "$target_branch" "$(run_log_link)" "$(manual_steps unknown)")"
+      echo "error: prepare did not record an outcome." >&2
       exit 1
       ;;
   esac
 }
 
-mark_cherry_picked() {
-  [[ "$DRY_RUN" =~ ^(true|false)$ ]] || die "DRY_RUN must be true or false."
-  [ "${HEAD_REPO:-}" = "$REPO" ] || die "The head branch is in \"${HEAD_REPO:-}\", not in $REPO."
-  [[ "${BASE_REF:-}" =~ ^sdk-([1-9][0-9]*)$ ]] || die "BASE_REF \"${BASE_REF:-}\" is not an sdk-NN branch."
-  local sdk=${BASH_REMATCH[1]}
-  if ! [[ "${HEAD_REF:-}" =~ ^bot/sdk-([1-9][0-9]*)-cherry-pick-([1-9][0-9]*)$ ]] || [ "${BASH_REMATCH[1]}" != "$sdk" ]; then
-    echo "${HEAD_REF:-} is not a backport branch for $BASE_REF. Nothing to label."
-    return
+# Tells the workflow whether to install the model and expotools. prepare needs them only when the
+# target branch exists and has no .changeset/config.json. prepare checks the branch again. If it
+# then needs a tool that is not installed, it fails, and publish comments on the pull request.
+check_target() {
+  load_common
+  local heads convert=true
+  heads=$(git -C "$REPO_DIR" ls-remote --heads origin "refs/heads/$target_branch")
+  if [ -z "$heads" ]; then
+    echo "$target_branch does not exist."
+    convert=false
+  elif gh api "repos/$REPO/contents/.changeset/config.json?ref=refs/heads/$target_branch" --silent 2>/dev/null; then
+    echo "$target_branch uses changesets."
+    convert=false
+  else
+    echo "$target_branch has no .changeset/config.json, or the API did not answer."
   fi
-  local pr=${BASH_REMATCH[2]} label="SDK $sdk cherry-picked"
-  if is_dry_run; then
-    echo "Dry run: add the label \"$label\" to #$pr."
-    return
+  echo "convert=$convert"
+  if [ -n "${GITHUB_OUTPUT:-}" ]; then
+    echo "convert=$convert" >>"$GITHUB_OUTPUT"
   fi
-  gh api --method POST "repos/$REPO/issues/$pr/labels" -f "labels[]=$label" --silent
 }
 
 case "${1:-}" in
+  check-target) check_target ;;
   prepare) prepare ;;
   publish) publish ;;
   run)
     prepare
     publish
     ;;
-  mark-cherry-picked) mark_cherry_picked ;;
   *)
-    echo "Usage: $0 prepare | publish | run | mark-cherry-picked" >&2
+    echo "Usage: $0 check-target | prepare | publish | run" >&2
     exit 2
     ;;
 esac

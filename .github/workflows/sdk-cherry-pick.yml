@@ -8,7 +8,7 @@ name: SDK cherry-pick
 on:
   pull_request_target:
     types: [closed, labeled]
-    branches: [main, 'sdk-*']
+    branches: [main]
   workflow_dispatch:
     inputs:
       pr:
@@ -44,25 +44,22 @@ jobs:
     outputs:
       sdks: ${{ steps.select.outputs.sdks }}
     steps:
-      # On `closed`, every `SDK NN` label. On `labeled`, only the label that was added. A version
-      # whose `SDK NN cherry-picked` label is already set is skipped. A label with a leading zero,
-      # such as `SDK 058`, is ignored with a warning.
+      # On `closed`, every `sdk-NN` label. On `labeled`, only the label that was added. A label with
+      # a leading zero, such as `sdk-058`, is ignored with a warning.
       - name: Select SDK versions
         id: select
         run: |
           jq -r '
             if .action == "labeled" then .label.name else .pull_request.labels[]?.name end
-            | select(test("^SDK 0[0-9]*$"))
-            | "::warning::The label \"\(.)\" is ignored because its version starts with 0. Use a label such as \"SDK 58\"."
+            | select(test("^sdk-0[0-9]*$"))
+            | "::warning::The label \"\(.)\" is ignored because its version starts with 0. Use a label such as \"sdk-58\"."
           ' "$GITHUB_EVENT_PATH"
           sdks=$(jq -c --arg event "$GITHUB_EVENT_NAME" '
-            def sdk: capture("^SDK (?<version>[1-9][0-9]*)$").version;
-            [.pull_request.labels[]?.name] as $labels
-            | if $event == "workflow_dispatch" then [.inputs.sdk | tostring | select(test("^[1-9][0-9]*$"))]
-              elif .action == "labeled" then [.label.name | sdk]
-              else [$labels[] | sdk]
-              end
-            | map(select(. as $version | $labels | index("SDK \($version) cherry-picked") | not))
+            def sdk: capture("^sdk-(?<version>[1-9][0-9]*)$").version;
+            if $event == "workflow_dispatch" then [.inputs.sdk | tostring | select(test("^[1-9][0-9]*$"))]
+            elif .action == "labeled" then [.label.name | sdk]
+            else [.pull_request.labels[]?.name | sdk]
+            end
             | unique
           ' "$GITHUB_EVENT_PATH")
           echo "Selected SDK versions: $sdks"
@@ -103,31 +100,45 @@ jobs:
           ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 1
           persist-credentials: false
+      # Only a release branch without changesets needs the model and expotools. The next steps
+      # take minutes, so they run only for such a branch.
+      - name: 🔍 Check the target branch
+        id: target
+        run: .github/scripts/sdk-cherry-pick.sh check-target
+        env:
+          GH_TOKEN: ${{ github.token }}
       - name: 🔨 Install pnpm
+        if: steps.target.outputs.convert == 'true'
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           install: false
       - name: 🔨 Setup Node
+        if: steps.target.outputs.convert == 'true'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: 'pnpm'
       - name: 📦 Install dependencies
+        if: steps.target.outputs.convert == 'true'
         run: pnpm install --ignore-scripts --frozen-lockfile
       - name: ♻️ Restore caches
+        if: steps.target.outputs.convert == 'true'
         uses: ./.github/actions/expo-caches
       - name: 🛠 Build expotools
+        if: steps.target.outputs.convert == 'true'
         run: pnpm turbo build --filter expotools...
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
       # Pinned exactly, as in expo-code-review.yml. Bump it deliberately.
       - name: Install Claude Code CLI
+        if: steps.target.outputs.convert == 'true'
         run: npm install -g @anthropic-ai/claude-code@2.1.280
-      # Only a release branch without changesets needs the model, so a missing credential must not
-      # stop the other backports. The script fails with a comment when it needs the model and
-      # has no credential.
+      # A pull request that adds no changesets needs no model, so a missing credential must not
+      # stop its backport. The script fails with a comment when it needs the model and has no
+      # credential.
       - name: Prepare model env
+        if: steps.target.outputs.convert == 'true'
         id: model-env
         continue-on-error: true
         uses: ./.github/actions/prepare-model-env
@@ -148,34 +159,4 @@ jobs:
         if: ${{ !cancelled() }}
         run: .github/scripts/sdk-cherry-pick.sh publish
         env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
-
-  mark-cherry-picked:
-    name: Label the original pull request
-    if: >-
-      github.repository == 'expo/expo'
-      && github.event_name == 'pull_request_target'
-      && github.event.action == 'closed'
-      && github.event.pull_request.merged
-      && startsWith(github.event.pull_request.base.ref, 'sdk-')
-      && startsWith(github.event.pull_request.head.ref, 'bot/sdk-')
-      && github.event.pull_request.head.repo.full_name == github.repository
-    runs-on: ubuntu-24.04
-    permissions:
-      contents: read
-    steps:
-      - name: 👀 Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.repository.default_branch }}
-          fetch-depth: 1
-          persist-credentials: false
-          sparse-checkout: .github/scripts
-      - name: 🏷️ Add the cherry-picked label
-        run: .github/scripts/sdk-cherry-pick.sh mark-cherry-picked
-        env:
-          BASE_REF: ${{ github.event.pull_request.base.ref }}
-          HEAD_REF: ${{ github.event.pull_request.head.ref }}
-          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
-          DRY_RUN: 'false'
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
