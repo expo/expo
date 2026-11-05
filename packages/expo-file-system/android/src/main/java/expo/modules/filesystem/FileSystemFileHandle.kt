@@ -63,16 +63,9 @@ class FileSystemFileHandle private constructor(
     fun forJavaFile(file: File, mode: FileMode): FileSystemFileHandle {
       val channel = RandomAccessFile(file, mode.rafMode).channel
 
-      when (mode) {
-        FileMode.APPEND -> {
-          // RandomAccessFile does not handle append mode; move cursor manually
-          channel.position(channel.size())
-        }
-        FileMode.TRUNCATE -> {
-          // RandomAccessFile does not handle truncate mode; wipe content manually
-          channel.truncate(0)
-        }
-        else -> {}
+      if (mode == FileMode.TRUNCATE) {
+        // RandomAccessFile does not handle truncate mode; wipe content manually
+        channel.truncate(0)
       }
       return FileSystemFileHandle(channel, mode)
     }
@@ -96,7 +89,6 @@ class FileSystemFileHandle private constructor(
   }
 
   private val fileChannel: FileChannel = ref
-  private val lock = Any()
 
   private fun ensureIsOpen() {
     if (!fileChannel.isOpen) {
@@ -109,60 +101,10 @@ class FileSystemFileHandle private constructor(
   }
 
   override fun close() {
-    synchronized(lock) {
-      try {
-        fileChannel.close()
-      } finally {
-        parcelFileDescriptor?.close()
-      }
-    }
-  }
-
-  fun read(length: Long): ByteArray {
-    synchronized(lock) {
-      ensureIsOpen()
-      mode.ensureCanRead()
-
-      try {
-        val currentPosition = fileChannel.position()
-        val totalSize = fileChannel.size()
-        val available = totalSize - currentPosition
-        val readAmount = min(length, available).coerceAtMost(Int.MAX_VALUE.toLong()).toInt()
-
-        if (readAmount <= 0) {
-          return ByteArray(0)
-        }
-
-        val buffer = ByteBuffer.allocate(readAmount)
-        var bytesRead = 0
-        while (bytesRead < readAmount) {
-          val result = fileChannel.read(buffer)
-          if (result == -1) {
-            break
-          }
-          bytesRead += result
-        }
-
-        return buffer.array()
-      } catch (e: Exception) {
-        throw UnableToReadHandleException(e.message ?: "unknown error")
-      }
-    }
-  }
-
-  fun write(data: ByteArray) {
-    synchronized(lock) {
-      ensureIsOpen()
-      mode.ensureCanWrite()
-
-      try {
-        val buffer = ByteBuffer.wrap(data)
-        while (buffer.hasRemaining()) {
-          fileChannel.write(buffer)
-        }
-      } catch (e: Exception) {
-        throw UnableToWriteHandleException(e.message ?: "unknown error")
-      }
+    try {
+      fileChannel.close()
+    } finally {
+      parcelFileDescriptor?.close()
     }
   }
 
@@ -217,33 +159,10 @@ class FileSystemFileHandle private constructor(
     }
   }
 
-  var offset: Long?
-    get() {
-      synchronized(lock) {
-        return try {
-          fileChannel.position()
-        } catch (e: Exception) {
-          null
-        }
-      }
-    }
-    set(value) {
-      if (value == null) {
-        return
-      }
-      synchronized(lock) {
-        fileChannel.position(value)
-      }
-    }
-
   val size: Long?
-    get() {
-      synchronized(lock) {
-        return try {
-          fileChannel.size()
-        } catch (e: Exception) {
-          null
-        }
-      }
+    get() = try {
+      fileChannel.size()
+    } catch (e: Exception) {
+      null
     }
 }

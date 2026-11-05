@@ -457,22 +457,6 @@ public final class FileSystemModule: Module {
     }
 
     Class(FileSystemFileHandle.self) {
-      AsyncFunction("readBytes") { (fileHandle, bytes: Int) in
-        try fileHandle.read(bytes)
-      }
-
-      Function("readBytesSync") { (fileHandle, bytes: Int) in
-        try fileHandle.read(bytes)
-      }
-
-      AsyncFunction("writeBytes") { (fileHandle, bytes: Data) in
-        try fileHandle.write(bytes)
-      }
-
-      Function("writeBytesSync") { (fileHandle, bytes: Data) in
-        try fileHandle.write(bytes)
-      }
-
       AsyncFunction("readAt") { (fileHandle, position: UInt64, length: Int) in
         try fileHandle.readAt(position, length)
       }
@@ -491,12 +475,6 @@ public final class FileSystemModule: Module {
 
       Function("close") { fileHandle in
         try fileHandle.close()
-      }
-
-      Property("offset") { fileHandle in
-        fileHandle.offset
-      }.set { (fileHandle, volume: UInt64) in
-        fileHandle.offset = volume
       }
 
       Property("size") { fileHandle in

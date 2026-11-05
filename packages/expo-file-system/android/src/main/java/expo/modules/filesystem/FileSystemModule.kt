@@ -348,22 +348,6 @@ class FileSystemModule : Module() {
       Constructor { file: FileSystemFile, mode: FileMode? ->
         file.openHandle(mode)
       }
-      AsyncFunction("readBytes") Coroutine { fileHandle: FileSystemFileHandle, bytes: Long ->
-        withContext(Dispatchers.IO) {
-          fileHandle.read(bytes)
-        }
-      }
-      Function("readBytesSync") { fileHandle: FileSystemFileHandle, bytes: Long ->
-        fileHandle.read(bytes)
-      }
-      AsyncFunction("writeBytes") Coroutine { fileHandle: FileSystemFileHandle, data: ByteArray ->
-        withContext(Dispatchers.IO) {
-          fileHandle.write(data)
-        }
-      }
-      Function("writeBytesSync") { fileHandle: FileSystemFileHandle, data: ByteArray ->
-        fileHandle.write(data)
-      }
       AsyncFunction("readAt") Coroutine { fileHandle: FileSystemFileHandle, position: Long, length: Long ->
         withContext(Dispatchers.IO) {
           ArrayBuffer.wrap(fileHandle.readAt(position, length))
@@ -385,11 +369,6 @@ class FileSystemModule : Module() {
       }
       Function("close") { fileHandle: FileSystemFileHandle ->
         fileHandle.close()
-      }
-      Property("offset") { fileHandle: FileSystemFileHandle ->
-        fileHandle.offset
-      }.set { fileHandle: FileSystemFileHandle, offset: Long ->
-        fileHandle.offset = offset
       }
       Property("size") { fileHandle: FileSystemFileHandle ->
         fileHandle.size

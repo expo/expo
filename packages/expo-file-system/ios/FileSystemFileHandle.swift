@@ -41,7 +41,6 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   let handle: FileHandle
   private let didAccessSecurityScope: Bool
   private var isClosed = false
-  private let lock = NSLock()  // non-reentrant. Don't use it in recursive calls
 
   init(file: FileSystemFile, mode: FileMode?) throws {
     // Callers that ask for a specific mode get exactly that mode checked. When no mode is given we
@@ -69,9 +68,7 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
         handle = try FileHandle(forUpdating: file.url)
       }
 
-      if self.mode == FileMode.append {
-        _ = try handle.seekToEnd()
-      } else if self.mode == FileMode.truncate {
+      if self.mode == FileMode.truncate {
         try handle.truncate(atOffset: 0)
       }
     } catch {
@@ -84,47 +81,11 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
     super.init(handle)
   }
 
-  func read(_ length: Int) throws -> Data {
-    lock.lock()
-    defer {
-      lock.unlock()
-    }
-
-    if self.mode.writeOnly {
-      throw UnableToReadHandleException("File opened write-only")
-    }
-
-    do {
-      let data = try handle.read(upToCount: length)
-      return data ?? Data()
-    } catch {
-      throw UnableToReadHandleException(error.localizedDescription)
-    }
-  }
-
-  func write(_ bytes: Data) throws {
-    lock.lock()
-    defer {
-      lock.unlock()
-    }
-
-    if self.mode.readOnly {
-      throw UnableToWriteHandleException("File opened read-only")
-    }
-
-    try handle.write(contentsOf: bytes)
-  }
-
   override func sharedObjectDidRelease() {
     try? close()
   }
 
   func close() throws {
-    lock.lock()
-    defer {
-      lock.unlock()
-    }
-
     guard !isClosed else { return }
     isClosed = true
     defer {
@@ -133,29 +94,6 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
       }
     }
     try handle.close()
-  }
-
-  var offset: UInt64? {
-    get {
-      lock.lock()
-      defer {
-        lock.unlock()
-      }
-
-      return try? handle.offset()
-    }
-    set(newOffset) {
-      guard let newOffset else {
-        return
-      }
-
-      lock.lock()
-      defer {
-        lock.unlock()
-      }
-
-      handle.seek(toFileOffset: newOffset)
-    }
   }
 
   /// Size of the file via `fstat(2)`, or `nil` when the handle is closed or the call fails.
