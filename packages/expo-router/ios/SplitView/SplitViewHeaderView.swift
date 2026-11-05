@@ -37,13 +37,6 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     apply()
   }
 
-  override func willMove(toSuperview newSuperview: UIView?) {
-    super.willMove(toSuperview: newSuperview)
-    if newSuperview == nil, navigationBarHidden {
-      navigationController?.setNavigationBarHidden(false, animated: false)
-    }
-  }
-
   override func didMoveToSuperview() {
     super.didMoveToSuperview()
     if superview == nil, let navigationItem {

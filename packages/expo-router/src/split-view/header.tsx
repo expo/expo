@@ -1,7 +1,7 @@
 import type { SplitViewHeader, SplitViewToolbarItem } from './elements';
 import { SplitViewNativeHeader } from './native';
 
-export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
+export function SplitViewColumnHeader({ header = {} }: { header?: SplitViewHeader }) {
   const {
     title,
     subtitle,
