@@ -2834,3 +2834,66 @@ it('preserves native script function maps and compact output behavior', async ()
   new Function('globalThis', compact.result.code)(runtimeGlobal);
   expect(runtimeGlobal.value).toBe(1);
 });
+
+it.each([false, true])('applies module-name retention consistently (dev=%s)', async (dev) => {
+  const source = `import value from 'name-default';
+import 'name-side';
+export { value } from 'name-export';
+export * from 'name-star';
+export * as namespace from 'name-namespace';
+const helper = require('@babel/runtime/helpers/construct');
+import('name-async');
+require.unstable_importMaybeSync('name-maybe');
+__prefetchImport('name-prefetch');
+try {
+  require('name-optional');
+  require('@babel/runtime/helpers/typeof');
+  import('name-optional-async');
+  require.unstable_importMaybeSync('name-optional-maybe');
+  __prefetchImport('name-optional-prefetch');
+} catch {}
+module.exports = [value, helper];`;
+  const result = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options({ dev }),
+    isDefaultExpoTransformer: true,
+    config: { ...fullConfig(), allowOptionalDependencies: true },
+  });
+  if (result.status !== 'complete') throw new Error(result.reason);
+  const calls: unknown[][] = [];
+  const load = (...args: unknown[]) => {
+    calls.push(args);
+    return Object.assign(
+      (...args: unknown[]) => {
+        calls.push(args);
+      },
+      {
+        prefetch: (...args: unknown[]) => {
+          calls.push(args);
+        },
+        unstable_importMaybeSync: (...args: unknown[]) => {
+          calls.push(args);
+        },
+      }
+    );
+  };
+  let factory: Function | undefined;
+  new Function('__d', result.result.code)((value: Function) => {
+    factory = value;
+  });
+  const dependencyMap = Object.assign(
+    result.dependencies.map((_, index) => index),
+    { paths: {} }
+  );
+  factory!(globalThis, load, load, load, {}, {}, dependencyMap);
+  for (const [index, dependency] of result.dependencies.entries()) {
+    const call = calls.find(([id]) => id === index);
+    expect(call).toBeDefined();
+    const keepName = dev || dependency.data.isOptional;
+    expect(call).toHaveLength(dependency.data.asyncType ? (keepName ? 3 : 2) : keepName ? 2 : 1);
+    if (keepName) expect(call!.at(-1)).toBe(dependency.name);
+    if (dependency.data.asyncType) expect(call![1]).toBe(dependencyMap.paths);
+  }
+});
