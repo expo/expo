@@ -594,6 +594,15 @@ export const hidden = (hidden: boolean = true) => createModifier('hidden', { hid
 export const disabled = (disabled: boolean = true) => createModifier('disabled', { disabled });
 
 /**
+ * Sets whether a view takes part in hit-test operations. A view that does not, such as a
+ * decorative overlay, lets taps through to the views behind it.
+ * @param enabled - Whether the view takes part in hit-test operations.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/allowshittesting(_:)).
+ */
+export const allowsHitTesting = (enabled: boolean) =>
+  createModifier('allowsHitTesting', { enabled });
+
+/**
  * Adds a redaction reason to this view hierarchy, replacing rendered content
  * with placeholders. Useful for skeleton loading states. Maps to SwiftUI's
  * `redacted(reason:)`.
@@ -1857,6 +1866,7 @@ export type BuiltInModifier =
   | ReturnType<typeof tint>
   | ReturnType<typeof hidden>
   | ReturnType<typeof disabled>
+  | ReturnType<typeof allowsHitTesting>
   | ReturnType<typeof redacted>
   | ReturnType<typeof unredacted>
   | ReturnType<typeof privacySensitive>

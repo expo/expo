@@ -268,6 +268,14 @@ internal struct DisabledModifier: ViewModifier, Record {
   }
 }
 
+internal struct AllowsHitTestingModifier: ViewModifier, Record {
+  @Field var enabled: Bool = true
+
+  func body(content: Content) -> some View {
+    content.allowsHitTesting(enabled)
+  }
+}
+
 internal enum RedactionReason: String, Enumerable {
   case placeholder
   case privacy
@@ -2009,6 +2017,10 @@ extension ViewModifierRegistry {
 
     register("disabled") { params, appContext, _ in
       return try DisabledModifier(from: params, appContext: appContext)
+    }
+
+    register("allowsHitTesting") { params, appContext, _ in
+      return try AllowsHitTestingModifier(from: params, appContext: appContext)
     }
 
     register("redacted") { params, appContext, _ in
