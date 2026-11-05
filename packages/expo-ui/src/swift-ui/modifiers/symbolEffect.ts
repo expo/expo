@@ -102,7 +102,7 @@ export type SymbolEffect =
   | WiggleSymbolEffect;
 
 /**
- * The symbol effect that the system selects for the content transition.
+ * A type that applies the default animation to a symbol-based image in a context-sensitive manner.
  *
  * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/automaticsymboleffect).
  */
@@ -111,44 +111,56 @@ export type AutomaticSymbolEffect = {
 };
 
 /**
- * A symbol effect that replaces one symbol with another symbol.
+ * A type that replaces the layers of one symbol-based image with those of another.
  *
  * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/replacesymboleffect).
  */
 export type ReplaceSymbolEffect = {
   effect: 'replace';
   /**
-   * How the effect scales the outgoing and incoming symbols.
-   * - `'downUp'` - scales the outgoing symbol down and the incoming symbol up.
-   * - `'upUp'` - scales both symbols up.
-   * - `'offUp'` - removes the outgoing symbol and scales the incoming symbol up.
+   * The variant of the Replace animation.
+   * - `'downUp'` - replaces a symbol by scaling it down, and scaling a different symbol up.
+   * - `'upUp'` - replaces a symbol by scaling it up, and scaling a different symbol up.
+   * - `'offUp'` - replaces a symbol by removing it, and scaling a different symbol up.
    */
   direction?: 'downUp' | 'upUp' | 'offUp';
-  /** Whether the effect animates each layer of the symbol or the symbol as a whole. */
+  /**
+   * How the effect replaces the symbol layers.
+   * - `'byLayer'` - replaces each layer separately.
+   * - `'wholeSymbol'` - replaces all layers simultaneously.
+   */
   scope?: 'byLayer' | 'wholeSymbol';
 };
 
 /**
- * A symbol effect for the `symbolEffect` content transition.
+ * An effect that animates between symbols or different configurations of the same symbol.
  *
  * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/contenttransitionsymboleffect).
  */
 export type ContentTransitionSymbolEffect = AutomaticSymbolEffect | ReplaceSymbolEffect;
 
 /**
- * Animation options for a symbol effect.
+ * Options that configure how effects apply to symbol-based images.
  *
  * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/symboleffectoptions).
  */
 export type SymbolEffectOptions = {
   /**
-   * How the effect repeats. Omit for the effect's natural cadence.
-   * - `'nonRepeating'` — play exactly once.
-   * - `'continuous'` — smooth, indefinite repetition (iOS 18+).
-   * - `{ count?, delay? }` — periodic repetition with optional count and delay in seconds (iOS 18+).
+   * The preferred repeat behavior. Omit it to use the default set of effect options.
+   * - `'nonRepeating'` - prefers to not repeat.
+   * - `'continuous'` - prefers to repeat indefinitely, using continuous animations if available.
+   * - `{ count?, delay? }` - repeats with a preferred play count and delay, using periodic animations.
+   *   `count` is the preferred number of times to play the effect. Omit it to play indefinitely.
+   *   `delay` is the preferred delay between repetitions, in seconds. Omit it for the default delay.
+   *
+   * The `'continuous'` and `{ count?, delay? }` values require iOS 18.0+ and tvOS 18.0+.
+   * On earlier versions, the effect uses the default repeat behavior.
    */
   repeat?: 'continuous' | 'nonRepeating' | { count?: number; delay?: number };
-  /** Animation speed multiplier (1.0 = default). */
+  /**
+   * The preferred speed multiplier to play the effect with. The default multiplier is `1.0`.
+   * The system may clamp very large or small values.
+   */
   speed?: number;
 };
 

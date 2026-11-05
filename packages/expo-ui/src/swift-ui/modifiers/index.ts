@@ -1717,11 +1717,11 @@ export const textContentType = (
  * Useful for animating changes in text content, especially numeric text.
  * Use with the [`animation`](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
  *
- * @param transitionType - The type of content transition. The `'symbolEffect'` type animates an SF Symbol that changes to another symbol. It requires iOS 17.0+, tvOS 17.0+, and macOS 14.0+. On earlier versions, the view does not change.
+ * @param transitionType - The type of content transition. The `'symbolEffect'` type applies a symbol effect transition to symbol images. Other views are unaffected by this transition. It requires iOS 17.0+, tvOS 17.0+, and macOS 14.0+. On earlier versions, the view does not change.
  * @param params - Optional parameters.
  * @param params.countsDown - Whether the numeric text counts down.
  * @param params.symbolEffect - The symbol effect to use with the `'symbolEffect'` type. Defaults to `{ effect: 'automatic' }`.
- * @param params.options - The animation options to use with the `'symbolEffect'` type.
+ * @param params.options - A set of options that configure how effects apply to symbol-based images. Use it with the `'symbolEffect'` type.
  *
  * @example
  * ```tsx
