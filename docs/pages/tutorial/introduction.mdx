@@ -1,78 +1,682 @@
----
-title: 'Tutorial: Using React Native and Expo'
-sidebar_title: Introduction
-description: An introduction to a React Native tutorial on how to build a universal app with Expo, Expo Router, and Expo UI that runs on Android, iOS, and web.
----
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
-import { HandWaveIcon } from '~/ui/components/CustomIcons/HandWaveIcon';
+import React, { useEffect, useState } from "react";
+import {
+  View, Text, TextInput, TouchableOpacity,
+  ScrollView, Image, StyleSheet, Alert,
+  SafeAreaView, StatusBar
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as ImagePicker from "expo-image-picker";
 
-We're about to embark on a journey of building universal apps. In this tutorial, we'll create an Expo app that runs on Android, iOS, and web, all with a single codebase. Let's get started!
+const COLORS = {
+  bg: "#F3F6FC",
+  primary: "#2563EB",
+  dark: "#172554",
+  white: "#FFFFFF",
+  text: "#172033",
+  muted: "#64748B",
+  border: "#E2E8F0"
+};
 
-> **info** **New to programming?** You can build this same app by prompting an AI coding agent instead of writing the code yourself. Follow the [Build with AI tutorial](/tutorial/build-with-ai/introduction/). It covers setup from scratch.
+const subject = (name, symbol, color) => ({
+  name, symbol, color
+});
 
-## About React Native and Expo tutorial
+// المواد الشائعة حسب البرامج الدراسية
+const CURRICULUM = {
+  "متوسط": {
+    "جميع المواد": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("العلوم الطبيعية", "🧬", "#16A34A"),
+      subject("الفيزياء والتكنولوجيا", "⚛", "#7C3AED"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("اللغة الفرنسية", "FR", "#4F46E5"),
+      subject("اللغة الإنجليزية", "EN", "#0891B2"),
+      subject("التاريخ والجغرافيا", "🌍", "#0D9488"),
+      subject("التربية الإسلامية", "☪", "#059669"),
+      subject("التربية المدنية", "⚖", "#B45309"),
+      subject("الإعلام الآلي", "</>", "#475569"),
+      subject("التربية التشكيلية", "🎨", "#DB2777"),
+      subject("التربية البدنية", "🏃", "#EA580C")
+    ]
+  },
 
-The objective of this tutorial is to get started with Expo and become familiar with the Expo SDK. It'll cover the following topics:
+  "ثانوي": {
+    "جذع مشترك علوم وتكنولوجيا": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("علوم الطبيعة والحياة", "🧬", "#16A34A"),
+      subject("التكنولوجيا", "⚙", "#D97706"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2"),
+      subject("التاريخ والجغرافيا", "🌍", "#0D9488")
+    ],
 
-- Create an app using the default template with TypeScript enabled
-- Implement a two-screen layout with native tabs from Expo Router
-- Break down the app layout and implement it with flexbox
-- Build native buttons with Expo UI, and use platform-specific files for Android, iOS, and web
-- Use each platform's system UI to select an image from the media library
-- Create an emoji picker with the bottom sheet from Expo UI and the `<FlatList>` component from React Native
-- Add touch gestures to interact with a sticker
-- Use third-party libraries to capture a screenshot, save it to the media library on Android and iOS, and download it on the web
-- Finally, go through the process of configuring a status bar, a splash screen, and an icon to complete the app
+    "تقني رياضي - هندسة كهربائية": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("الهندسة الكهربائية", "⚡", "#D97706"),
+      subject("التكنولوجيا", "⚙", "#475569"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2"),
+      subject("التاريخ والجغرافيا", "🌍", "#0D9488")
+    ],
 
-These topics provide a foundation to learn the fundamentals of building an Expo app. The tutorial is self-paced and can take up to two hours to complete.
+    "تقني رياضي - هندسة ميكانيكية": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("الهندسة الميكانيكية", "⚙", "#D97706"),
+      subject("التكنولوجيا", "🔩", "#475569"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2")
+    ],
 
-The app uses native UI from each platform. [Expo UI](/versions/latest/sdk/ui/) brings Jetpack Compose and SwiftUI components to React Native, and it works in Expo Go. On Android, the tab bar, the buttons, and the bottom sheet use Material 3. On iOS 26 and later, the tab bar uses Liquid Glass. On web, the app uses React Native components.
+    "تقني رياضي - هندسة مدنية": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("الهندسة المدنية", "🏗", "#D97706"),
+      subject("التكنولوجيا", "⚙", "#475569"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2")
+    ],
 
-To keep it beginner friendly, we divided the tutorial into eight chapters so that you can follow along or put it down and come back to it later. Each chapter contains the necessary code snippets to complete the steps, so you can follow along by creating an app from scratch or copy and paste it.
+    "تقني رياضي - هندسة الطرائق": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("هندسة الطرائق", "⚗", "#059669"),
+      subject("الكيمياء", "🧪", "#0891B2"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5")
+    ],
 
-Before we get started, take a look at what we'll build. It's an app named **StickerSmash** that runs on Android, iOS, and web:
+    "علوم تجريبية": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("علوم الطبيعة والحياة", "🧬", "#16A34A"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2")
+    ],
 
-<ContentSpotlight file="tutorial/final.mp4" />
+    "رياضيات": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("علوم الطبيعة والحياة", "🧬", "#16A34A"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2")
+    ],
 
-> **info** The complete source code for this tutorial is available on [GitHub](https://github.com/expo/examples/tree/master/stickersmash).
+    "تسيير واقتصاد": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("التسيير المحاسبي والمالي", "∑", "#059669"),
+      subject("الاقتصاد", "📈", "#0891B2"),
+      subject("القانون", "⚖", "#B45309"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2")
+    ],
 
-## How to use this tutorial
+    "آداب وفلسفة": [
+      subject("الفلسفة", "💭", "#7C3AED"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("التاريخ والجغرافيا", "🌍", "#0D9488"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2")
+    ],
 
-We believe in [learning by doing](https://en.wikipedia.org/wiki/Learning-by-doing), so this tutorial emphasizes doing over explaining. You can follow along the journey of building an app by creating the app from scratch.
+    "لغات أجنبية": [
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2"),
+      subject("لغة أجنبية ثالثة", "文", "#7C3AED"),
+      subject("التاريخ والجغرافيا", "🌍", "#0D9488")
+    ]
+  },
 
-Throughout the tutorial, any important code or code that has changed between examples will be <span className="tutorial-code-annotation">highlighted in green</span>. You can hover over the highlights (on desktop) or tap them (on mobile) to learn more about the change. For example, the code highlighted in the snippet below explains what it does:
+  "جامعي": {
+    "هندسة كهربائية": [
+      subject("Analyse", "∫", "#2563EB"),
+      subject("Algèbre", "Σ", "#7C3AED"),
+      subject("Physique", "⚛", "#0891B2"),
+      subject("Électricité", "⚡", "#D97706"),
+      subject("Électronique", "⌁", "#059669"),
+      subject("Informatique", "</>", "#475569"),
+      subject("Mécanique", "⚙", "#EA580C"),
+      subject("Histoire des sciences", "📚", "#BE123C")
+    ],
+    "إعلام آلي": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الخوارزميات", "</>", "#0891B2"),
+      subject("البرمجة", "💻", "#7C3AED"),
+      subject("قواعد البيانات", "🗄", "#059669"),
+      subject("هياكل البيانات", "🔗", "#D97706")
+    ],
+    "رياضيات": [
+      subject("Analyse", "∫", "#2563EB"),
+      subject("Algèbre", "Σ", "#7C3AED"),
+      subject("Probabilités", "P", "#0891B2"),
+      subject("Géométrie", "△", "#059669")
+    ],
+    "فيزياء": [
+      subject("الميكانيك", "⚙", "#D97706"),
+      subject("الكهرباء", "⚡", "#2563EB"),
+      subject("الرياضيات", "π", "#7C3AED"),
+      subject("الفيزياء العامة", "⚛", "#0891B2")
+    ],
+    "علوم طبيعية": [
+      subject("علم الأحياء", "🧬", "#16A34A"),
+      subject("الكيمياء", "⚗", "#0891B2"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("الإحصاء", "Σ", "#D97706")
+    ],
+    "تخصص آخر": []
+  }
+};
 
-{/* prettier-ignore */}
-```tsx Hello World|collapseHeight=300
-import { StyleSheet, Text, View } from 'react-native';
+const streams = {
+  "متوسط": ["جميع المواد"],
+  "ثانوي": Object.keys(CURRICULUM["ثانوي"]),
+  "جامعي": Object.keys(CURRICULUM["جامعي"])
+};
 
-export default function Index() {
-  return (
-    <View style={styles.container}>
-      /* @tutinfo This used to say "Edit src/app/index.tsx to edit this screen." Now it says "Hello world!" */<Text>Hello world!</Text>/* @end */
+const YEARS = {
+  "متوسط": ["الأولى متوسط", "الثانية متوسط", "الثالثة متوسط", "الرابعة متوسط"],
+  "ثانوي": ["الأولى ثانوي", "الثانية ثانوي", "الثالثة ثانوي"],
+  "جامعي": [
+    "السنة الأولى ليسانس",
+    "السنة الثانية ليسانس",
+    "السنة الثالثة ليسانس",
+    "السنة الأولى ماستر",
+    "السنة الثانية ماستر",
+    "أخرى"
+  ]
+};
+
+export default function App() {
+  const [stage, setStage] = useState("");
+  const [year, setYear] = useState("");
+  const [stream, setStream] = useState("");
+  const [page, setPage] = useState("setup");
+  const [lessons, setLessons] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [customSubjects, setCustomSubjects] = useState({});
+  const [newSubject, setNewSubject] = useState("");
+  const [search, setSearch] = useState("");
+  const [premium, setPremium] = useState(false);
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  async function loadData() {
+    try {
+      const saved = await AsyncStorage.getItem("study_lessons");
+      const profile = await AsyncStorage.getItem("study_profile");
+      const custom = await AsyncStorage.getItem("study_custom");
+
+      if (saved) setLessons(JSON.parse(saved));
+      if (custom) setCustomSubjects(JSON.parse(custom));
+
+      if (profile) {
+        const p = JSON.parse(profile);
+        setStage(p.stage);
+        setYear(p.year);
+        setStream(p.stream);
+        setPage("home");
+      }
+    } catch (e) {
+      console.log("Load error", e);
+    }
+  }
+
+  async function saveProfile() {
+    if (!stage || !year || !stream) {
+      Alert.alert("تنبيه", "يرجى اختيار الطور والسنة والتخصص");
+      return;
+    }
+
+    await AsyncStorage.setItem(
+      "study_profile",
+      JSON.stringify({ stage, year, stream })
+    );
+    setPage("home");
+  }
+
+  function getSubjects() {
+    const base = CURRICULUM[stage]?.[stream] || [];
+    const custom = customSubjects[stage + stream] || [];
+    return [...base, ...custom].filter(s =>
+      s.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }
+
+  async function addSubject() {
+    if (!newSubject.trim()) return;
+
+    const key = stage + stream;
+    const list = customSubjects[key] || [];
+
+    const updated = {
+      ...customSubjects,
+      [key]: [
+        ...list,
+        subject(newSubject.trim(), "📘", "#2563EB")
+      ]
+    };
+
+    setCustomSubjects(updated);
+    await AsyncStorage.setItem(
+      "study_custom",
+      JSON.stringify(updated)
+    );
+    setNewSubject("");
+  }
+
+  async function takePhoto() {
+    const permission =
+      await ImagePicker.requestCameraPermissionsAsync();
+
+    if (!permission.granted) {
+      Alert.alert("إذن الكاميرا مطلوب");
+      return;
+    }
+
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ["images"],
+      allowsEditing: false,
+      quality: 1,
+      exif: false
+    });
+
+    if (!result.canceled) {
+      const photo = result.assets[0].uri;
+      saveLesson(photo);
+    }
+  }
+
+  async function choosePhoto() {
+    const permission =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permission.granted) {
+      Alert.alert("إذن الصور مطلوب");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      quality: 1
+    });
+
+    if (!result.canceled) {
+      saveLesson(result.assets[0].uri);
+    }
+  }
+
+  async function saveLesson(uri) {
+    const item = {
+      id: Date.now().toString(),
+      uri,
+      subject: selected.name,
+      title: "درس جديد",
+      date: new Date().toLocaleDateString()
+    };
+
+    const updated = [item, ...lessons];
+    setLessons(updated);
+
+    await AsyncStorage.setItem(
+      "study_lessons",
+      JSON.stringify(updated)
+    );
+
+    Alert.alert("نجاح", "تم حفظ الدرس");
+  }
+
+  async function deleteLesson(id) {
+    Alert.alert("حذف الدرس", "هل تريد حذف هذا الدرس؟", [
+      { text: "إلغاء" },
+      {
+        text: "حذف",
+        onPress: async () => {
+          const updated = lessons.filter(x => x.id !== id);
+          setLessons(updated);
+          await AsyncStorage.setItem(
+            "study_lessons",
+            JSON.stringify(updated)
+          );
+        }
+      }
+    ]);
+  }
+
+  const Button = ({ title, onPress, color = COLORS.primary }) => (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.button, { backgroundColor: color }]}
+    >
+      <Text style={styles.buttonText}>{title}</Text>
+    </TouchableOpacity>
+  );
+
+  const Option = ({ value, onPress, active }) => (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[
+        styles.option,
+        active && styles.activeOption
+      ]}
+    >
+      <Text style={[
+        styles.optionText,
+        active && { color: COLORS.primary }
+      ]}>{value}</Text>
+    </TouchableOpacity>
+  );
+
+  const Header = ({ title }) => (
+    <View style={styles.header}>
+      <Text style={styles.headerTitle}>{title}</Text>
+      <Text style={styles.brand}>Study Organizer</Text>
     </View>
   );
+
+  if (page === "setup") {
+    return (
+      <SafeAreaView style={styles.screen}>
+        <StatusBar barStyle="dark-content" />
+        <ScrollView contentContainerStyle={styles.center}>
+          <Text style={styles.logo}>📚</Text>
+          <Text style={styles.appTitle}>Study Organizer</Text>
+          <Text style={styles.designer}>Designed by Seddik Younes</Text>
+          <Text style={styles.heading}>أنشئ ملفك الدراسي</Text>
+
+          <Text style={styles.label}>اختر الطور الدراسي</Text>
+          <View style={styles.wrap}>
+            {["متوسط", "ثانوي", "جامعي"].map(x => (
+              <Option key={x} value={x}
+                active={stage === x}
+                onPress={() => {
+                  setStage(x);
+                  setYear("");
+                  setStream("");
+                }}
+              />
+            ))}
+          </View>
+
+          {!!stage && <>
+            <Text style={styles.label}>اختر السنة</Text>
+            <View style={styles.wrap}>
+              {(YEARS[stage] || []).map(x => (
+                <Option key={x} value={x}
+                  active={year === x}
+                  onPress={() => setYear(x)}
+                />
+              ))}
+            </View>
+          </>}
+
+          {!!year && <>
+            <Text style={styles.label}>
+              {stage === "جامعي" ? "اختر التخصص الجامعي" : "اختر الشعبة"}
+            </Text>
+            <View style={styles.wrap}>
+              {(streams[stage] || []).map(x => (
+                <Option key={x} value={x}
+                  active={stream === x}
+                  onPress={() => setStream(x)}
+                />
+              ))}
+            </View>
+          </>}
+
+          <Button title="دخول إلى التطبيق" onPress={saveProfile} />
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  if (page === "home") {
+    return (
+      <SafeAreaView style={styles.screen}>
+        <Header title="موادي الدراسية" />
+        <ScrollView contentContainerStyle={styles.content}>
+          <View style={styles.profile}>
+            <Text style={styles.profileTitle}>
+              {stage} • {year}
+            </Text>
+            <Text style={styles.profileSub}>{stream}</Text>
+            <TouchableOpacity onPress={() => setPage("setup")}>
+              <Text style={styles.link}>تغيير الملف الدراسي</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TextInput
+            style={styles.input}
+            placeholder="ابحث عن مادة..."
+            value={search}
+            onChangeText={setSearch}
+          />
+
+          <View style={styles.grid}>
+            {getSubjects().map((s, i) => (
+              <TouchableOpacity
+                key={i}
+                style={styles.subjectCard}
+                onPress={() => {
+                  setSelected(s);
+                  setPage("subject");
+                }}
+              >
+                <View style={[
+                  styles.subjectIcon,
+                  { backgroundColor: s.color }
+                ]}>
+                  <Text style={styles.symbol}>{s.symbol}</Text>
+                </View>
+                <Text style={styles.subjectName}>{s.name}</Text>
+                <Text style={styles.small}>
+                  {lessons.filter(l => l.subject === s.name).length} درس
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <Text style={styles.label}>إضافة مادة مخصصة</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="اسم المادة الجديدة"
+            value={newSubject}
+            onChangeText={setNewSubject}
+          />
+          <Button title="إضافة المادة" onPress={addSubject} />
+
+          <Button title="إعدادات التطبيق" color="#475569"
+            onPress={() => setPage("settings")} />
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  if (page === "subject") {
+    const subjectLessons = lessons.filter(
+      x => x.subject === selected?.name
+    );
+
+    return (
+      <SafeAreaView style={styles.screen}>
+        <Header title={selected?.name || "المادة"} />
+        <ScrollView contentContainerStyle={styles.content}>
+          <Button title="التقاط صورة للدرس 📷" onPress={takePhoto} />
+          <Button title="اختيار صورة من المعرض" color="#059669"
+            onPress={choosePhoto} />
+
+          <Text style={styles.heading}>دروسي</Text>
+
+          {subjectLessons.map(item => (
+            <View key={item.id} style={styles.lesson}>
+              <Image source={{ uri: item.uri }}
+                style={styles.lessonImage} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.subjectName}>{item.title}</Text>
+                <Text style={styles.small}>{item.date}</Text>
+                <TouchableOpacity onPress={() => deleteLesson(item.id)}>
+                  <Text style={{ color: "#DC2626", marginTop: 8 }}>
+                    حذف الدرس
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+
+          {subjectLessons.length === 0 &&
+            <Text style={styles.empty}>لا توجد دروس بعد</Text>}
+
+          <Button title="العودة للمواد" color="#475569"
+            onPress={() => setPage("home")} />
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  if (page === "settings") {
+    return (
+      <SafeAreaView style={styles.screen}>
+        <Header title="الإعدادات" />
+        <View style={styles.content}>
+          <Text style={styles.heading}>Study Organizer</Text>
+          <Text style={styles.profileSub}>
+            المصمم: Seddik Younes
+          </Text>
+
+          <Text style={styles.label}>تحسين وضوح الصور</Text>
+          <Text style={styles.small}>
+            ميزة اختيارية مدفوعة. تفعيلها يتطلب دمج خدمة
+            تحسين الصور ونظام دفع حقيقي.
+          </Text>
+
+          <Button title="معاينة ميزة Premium"
+            onPress={() => {
+              Alert.alert(
+                "Premium",
+                "ميزة تحسين الصور اختيارية وستكون متاحة بعد ربط نظام الدفع."
+              );
+            }}
+            color="#7C3AED"
+          />
+
+          <Button title="العودة للرئيسية" color="#475569"
+            onPress={() => setPage("home")} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  return null;
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+  screen: { flex: 1, backgroundColor: COLORS.bg },
+  center: { padding: 20, paddingTop: 40 },
+  content: { padding: 16, paddingBottom: 40 },
+  logo: { fontSize: 55, textAlign: "center" },
+  appTitle: {
+    fontSize: 28, fontWeight: "bold",
+    textAlign: "center", color: COLORS.dark
   },
+  designer: {
+    color: COLORS.primary, textAlign: "center",
+    marginTop: 8, marginBottom: 35
+  },
+  heading: {
+    fontSize: 20, fontWeight: "bold",
+    color: COLORS.dark, marginVertical: 16
+  },
+  label: {
+    fontSize: 16, fontWeight: "bold",
+    color: COLORS.text, marginTop: 20, marginBottom: 10
+  },
+  wrap: {
+    flexDirection: "row", flexWrap: "wrap", gap: 8
+  },
+  option: {
+    backgroundColor: COLORS.white,
+    padding: 12, borderRadius: 12,
+    borderWidth: 1, borderColor: COLORS.border,
+    marginBottom: 8
+  },
+  activeOption: {
+    borderColor: COLORS.primary,
+    backgroundColor: "#DBEAFE"
+  },
+  optionText: { color: COLORS.text, fontWeight: "600" },
+  button: {
+    padding: 15, borderRadius: 12,
+    alignItems: "center", marginTop: 14
+  },
+  buttonText: {
+    color: "white", fontWeight: "bold", fontSize: 15
+  },
+  header: {
+    backgroundColor: COLORS.white,
+    padding: 18, borderBottomWidth: 1,
+    borderColor: COLORS.border
+  },
+  headerTitle: {
+    fontSize: 21, color: COLORS.dark,
+    fontWeight: "bold", textAlign: "right"
+  },
+  brand: { color: COLORS.primary, textAlign: "right", marginTop: 4 },
+  profile: {
+    backgroundColor: COLORS.white,
+    padding: 18, borderRadius: 16, marginBottom: 18
+  },
+  profileTitle: {
+    color: COLORS.dark, fontWeight: "bold", fontSize: 18
+  },
+  profileSub: { color: COLORS.muted, marginTop: 8 },
+  link: { color: COLORS.primary, marginTop: 12 },
+  input: {
+    backgroundColor: COLORS.white, padding: 14,
+    borderRadius: 12, borderWidth: 1,
+    borderColor: COLORS.border, marginVertical: 8,
+    textAlign: "right", color: COLORS.text
+  },
+  grid: {
+    flexDirection: "row", flexWrap: "wrap",
+    justifyContent: "space-between", marginTop: 12
+  },
+  subjectCard: {
+    width: "48%", backgroundColor: COLORS.white,
+    borderRadius: 16, padding: 16,
+    alignItems: "center", marginBottom: 12,
+    elevation: 2
+  },
+  subjectIcon: {
+    width: 58, height: 58, borderRadius: 17,
+    alignItems: "center", justifyContent: "center"
+  },
+  symbol: { fontSize: 27, color: "white", fontWeight: "bold" },
+  subjectName: {
+    color: COLORS.text, fontWeight: "bold",
+    marginTop: 10, textAlign: "center"
+  },
+  small: { color: COLORS.muted, fontSize: 12, marginTop: 5 },
+  lesson: {
+    backgroundColor: COLORS.white, padding: 12,
+    borderRadius: 14, marginBottom: 12,
+    flexDirection: "row", gap: 12
+  },
+  lessonImage: { width: 95, height: 110, borderRadius: 8 },
+  empty: {
+    color: COLORS.muted, textAlign: "center",
+    margin: 25
+  }
 });
-```
 
-## Next step
-
-We're ready to start building our app.
-
-<BoxLink
-  title="Start"
-  Icon={HandWaveIcon}
-  description="Let's start by creating a new Expo app."
-  href="/tutorial/create-your-first-app"
-/>
