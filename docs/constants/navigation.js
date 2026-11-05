@@ -373,6 +373,7 @@ export const general = [
     'Expo Modules API 2.0',
     [
       makePage('modules/v2/overview.mdx'),
+      makePage('modules/v2/get-started.mdx'),
       makePage('modules/v2/feature-support.mdx'),
       makeSection('Reference', [
         makePage('modules/v2/reference/modules.mdx'),
