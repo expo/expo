@@ -15,7 +15,7 @@ import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-[e2e](https://e2e.tester.army/docs) is TesterArmy's open source end-to-end (E2E) testing framework. It runs tests on an Android Emulator or iOS Simulator through [agent-device](/agents/agent-device/). A test can combine two kinds of steps:
+[e2e](https://e2e.com/docs) is TesterArmy's open source end-to-end (E2E) testing framework. It runs tests on an Android Emulator or iOS Simulator through [agent-device](/agents/agent-device/). A test can combine two kinds of steps:
 
 - **Exact steps** to find an element with a locator, act on it, and assert the result, like other E2E frameworks.
 - **Agent steps** to describe a goal in plain language and an AI model decides what to tap. e2e records the actions and replays them on later runs without a model call.
@@ -186,7 +186,7 @@ An agent step needs a model, such as one from the subscriptions and providers li
 
 <Terminal cmd={['$ npx e2e login']} />
 
-To use an API key, set the environment variable that your provider needs. If you selected **None** during setup, add a model to **e2e.config.ts** by following [e2e's model setup](https://e2e.tester.army/docs/models). To see the model IDs that your subscriptions can use, run `npx e2e models`.
+To use an API key, set the environment variable that your provider needs. If you selected **None** during setup, add a model to **e2e.config.ts** by following [e2e's model setup](https://e2e.com/docs/models). To see the model IDs that your subscriptions can use, run `npx e2e models`.
 
 Then, create **tests/agent.e2e.ts** with one goal per `agent.act()` call, followed by an exact assertion:
 
@@ -219,7 +219,7 @@ To record a video of each test, add `--video`:
 
 <Terminal cmd={['$ npx e2e run --target ios --video']} />
 
-For more options, see [e2e's debugging guide](https://e2e.tester.army/docs/debugging).
+For more options, see [e2e's debugging guide](https://e2e.com/docs/debugging).
 
 </Step>
 
@@ -275,7 +275,7 @@ test(
 
 <Collapsible summary="Use e2e with a coding agent">
 
-The e2e skill in **.agents/skills/e2e/** tells coding agents such as Claude Code, Codex, and Cursor how to write and run e2e tests. The `e2e mcp` server lets an agent open the app and check a locator before it adds the locator to a test. For more information, see [e2e's coding agents guide](https://e2e.tester.army/docs/coding-agents).
+The e2e skill in **.agents/skills/e2e/** tells coding agents such as Claude Code, Codex, and Cursor how to write and run e2e tests. The `e2e mcp` server lets an agent open the app and check a locator before it adds the locator to a test. For more information, see [e2e's coding agents guide](https://e2e.com/docs/coding-agents).
 
 </Collapsible>
 
@@ -405,16 +405,16 @@ Tests with only exact steps need no model.
 
 For agent steps:
 
-- It is recommended to use an API key from your provider instead of a subscription login because the login expires on the worker. e2e can read a subscription login from the `E2E_OAUTH_CREDENTIALS` environment variable, which holds the contents of your local **~/.config/e2e/oauth.json** file. However, e2e does not save refreshed tokens back to the variable. Add an agent for the API key to **e2e.ci.config.ts** by following [e2e's model setup](https://e2e.tester.army/docs/models).
+- It is recommended to use an API key from your provider instead of a subscription login because the login expires on the worker. e2e can read a subscription login from the `E2E_OAUTH_CREDENTIALS` environment variable, which holds the contents of your local **~/.config/e2e/oauth.json** file. However, e2e does not save refreshed tokens back to the variable. Add an agent for the API key to **e2e.ci.config.ts** by following [e2e's model setup](https://e2e.com/docs/models).
 - The `e2e_ios` job sets `environment: preview`, so it reads variables from the `preview` environment. Store the API key there as an [Expo Services environment variable](/eas/environment-variables/manage/#create-environment-variables) with the visibility set to [Secret](/eas/environment-variables/#visibility-settings-for-environment-variables).
-- `npx e2e init` adds `.e2e/cache/` to **.gitignore**, so the workflow starts without recorded agent steps. To replay them on the worker, remove that line and commit the **.e2e/cache** directory. See [Commit your traces](https://e2e.tester.army/docs/cache#commit-your-traces).
+- `npx e2e init` adds `.e2e/cache/` to **.gitignore**, so the workflow starts without recorded agent steps. To replay them on the worker, remove that line and commit the **.e2e/cache** directory. See [Commit your traces](https://e2e.com/docs/cache#commit-your-traces).
 - A replay needs the recorded elements on the screen. The simulator on the worker can report a different accessibility tree than your own simulator, and then the agent calls the model.
 
 </Step>
 
 ## Run e2e on Expo Simulators
 
-Expo Simulators runs Android Emulators and iOS Simulators on Expo infrastructure. The [`@e2e-dev/eas`](https://e2e.tester.army/docs/integrations/eas) integration starts an Expo Simulators session for each e2e worker when a run starts. It stops the sessions when the run ends. e2e runs on your computer and drives each remote device through agent-device. The following example runs the tests on a remote iOS Simulator.
+Expo Simulators runs Android Emulators and iOS Simulators on Expo infrastructure. The [`@e2e-dev/eas`](https://e2e.com/docs/integrations/eas) integration starts an Expo Simulators session for each e2e worker when a run starts. It stops the sessions when the run ends. e2e runs on your computer and drives each remote device through agent-device. The following example runs the tests on a remote iOS Simulator.
 
 > **important** Expo Simulators is a limited-access preview. For more information, see the [Expo Simulators documentation](/preview/simulators/introduction/).
 
@@ -524,6 +524,6 @@ Agent steps that you recorded on your own simulator can replay on the remote iOS
 <BoxLink
   title="e2e documentation"
   description="Learn about e2e's test API, models, trace cache, and migration guides from Maestro and Detox."
-  href="https://e2e.tester.army/docs"
+  href="https://e2e.com/docs"
   Icon={Globe01Icon}
 />
