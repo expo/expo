@@ -8,6 +8,7 @@ import ExpoModulesCore
 internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSessionDataDelegate, @unchecked Sendable {
   private let delegate: ExpoURLSessionTaskDelegate
   private var task: URLSessionDataTask?
+  private var networkReporter: ExpoNetworkReporter?
 
   init(delegate: ExpoURLSessionTaskDelegate) {
     self.delegate = delegate
@@ -38,9 +39,16 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
     }
     request.httpBody = requestBody
 
+    if url.scheme == "http" || url.scheme == "https" {
+      let networkReporter = ExpoNetworkReporter(devToolsRequestId: requestInit.devToolsRequestId)
+      networkReporter.mark(request)
+      self.networkReporter = networkReporter
+    }
+
     let task = urlSession.dataTask(with: request as URLRequest)
     urlSessionDelegate.addDelegate(task: task, delegate: self)
     self.task = task
+    networkReporter?.requestWillBeSent(request as URLRequest)
     task.resume()
     self.delegate.urlSessionDidStart(self)
   }
@@ -49,6 +57,7 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
     if let task {
       urlSessionDelegate.removeDelegate(task: task)
       task.cancel()
+      networkReporter?.loadingFailed(cancelled: true)
     }
   }
 
@@ -75,15 +84,22 @@ internal final class ExpoURLSessionTask: NSObject, URLSessionTaskDelegate, URLSe
     didReceive response: URLResponse,
     completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
   ) {
+    networkReporter?.responseReceived(response)
     self.delegate.urlSession(self, didReceive: response)
     completionHandler(.allow)
   }
 
   func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
+    networkReporter?.dataReceived(data)
     self.delegate.urlSession(self, didReceive: data)
   }
 
   func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+    if let error {
+      networkReporter?.loadingFailed(cancelled: (error as? URLError)?.code == .cancelled)
+    } else {
+      networkReporter?.loadingFinished(encodedDataLength: Int(task.countOfBytesReceived))
+    }
     self.delegate.urlSession(self, task: task, didCompleteWithError: error)
   }
 }
