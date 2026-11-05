@@ -241,15 +241,13 @@ export function useDescriptors<
 
     const screenActivityEnabled = screen.activityEnabled ?? activityEnabled;
     const activityThreshold = getActivityThreshold(screenActivityEnabled, activityDefaultThreshold);
-    // `false` or an invalid number also opts this subtree out of hiding by ancestor navigators.
-    const activityExplicitlyDisabled =
-      screenActivityEnabled !== undefined && activityThreshold === undefined;
 
     return (
       <NavigationActivityProvider
         key={route.key}
         activityThreshold={activityThreshold}
-        activityDisabled={activityExplicitlyDisabled}>
+        // `false` also stops ancestor navigators from hiding this subtree.
+        activityDisabled={screenActivityEnabled === false}>
         <NavigationBuilderContext.Provider value={context}>
           <NavigationProvider route={route} navigation={navigation}>
             {element}

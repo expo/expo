@@ -69,7 +69,6 @@ export type TabsProps = ViewProps & {
   options?: UseTabsOptions;
   /**
    * Enables React Activity for tab screens. Inactive tabs are hidden while preserving their state.
-   * This includes the screens of a navigator nested in the tab, such as a `Stack`.
    * @default false
    */
   activityEnabled?: boolean;

@@ -316,7 +316,6 @@ export interface NativeTabsProps extends PropsWithChildren {
   unstable_screenErrorBoundary?: React.ComponentType<ErrorBoundaryProps>;
   /**
    * Enables React Activity for tab screens. Inactive tabs are hidden while preserving their state.
-   * This includes the screens of a navigator nested in the tab, such as a `Stack`.
    * @default false
    */
   activityEnabled?: boolean;
@@ -627,7 +626,7 @@ export interface NativeTabTriggerProps {
   name?: string;
   /**
    * Overrides React Activity behavior inherited from `NativeTabs` for this route when declared in
-   * a layout. `false` also keeps the screens of a navigator nested in this tab active.
+   * a layout.
    */
   activityEnabled?: boolean;
   /**

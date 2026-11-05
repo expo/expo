@@ -680,7 +680,6 @@ export type RouteConfigProps<
   /**
    * Overrides React Activity behavior inherited from the navigator for this Expo Router screen.
    * Stack screens also accept the number of screens that must be above the route before it hides.
-   * `false` also keeps the screens of a nested navigator in this route active.
    */
   activityEnabled?: State extends { type?: 'stack' } ? boolean | number : boolean;
 };

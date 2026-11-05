@@ -40,7 +40,7 @@ export type TabTriggerProps = PressablePropsWithoutFunctionChildren & {
   resetOnFocus?: boolean;
   /**
    * Overrides React Activity behavior inherited from `Tabs` for this route when used in a
-   * `TabList`. `false` also keeps the screens of a navigator nested in this tab active.
+   * `TabList`.
    */
   activityEnabled?: boolean;
 };
