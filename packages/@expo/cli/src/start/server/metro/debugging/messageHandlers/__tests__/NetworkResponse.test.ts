@@ -3,6 +3,15 @@ import { NetworkResponseHandler, NETWORK_RESPONSE_STORAGE } from '../NetworkResp
 
 afterEach(() => {
   NETWORK_RESPONSE_STORAGE.clear();
+  delete process.env.EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR;
+});
+
+it('is disabled when EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR is set', () => {
+  const connection = mockConnection();
+  expect(new NetworkResponseHandler(connection).isEnabled()).toBe(true);
+
+  process.env.EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR = '1';
+  expect(new NetworkResponseHandler(connection).isEnabled()).toBe(false);
 });
 
 it('responds to response body from device and debugger', () => {
