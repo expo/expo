@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Restore React Native Image support for photo-library asset URLs by linking the image loader as a separate React Native pod ([#52744](https://github.com/expo/expo/pull/52744) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 57.0.5 — 2026-09-11
