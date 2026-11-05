@@ -366,12 +366,13 @@ export const general = [
         makePage('modules/mocking.mdx'),
         makePage('modules/design.mdx'),
       ]),
-      makeSection('Expo Modules API 2.0', [
-        makePage('modules/v2/overview.mdx'),
-        makePage('modules/v2/feature-support.mdx'),
-      ]),
     ],
     { expanded: false }
+  ),
+  makeSection(
+    'Expo Modules API 2.0',
+    [makePage('modules/v2/overview.mdx'), makePage('modules/v2/feature-support.mdx')],
+    { expanded: false, isBeta: true }
   ),
   makeSection('Push notifications', [
     makePage('push-notifications/overview.mdx'),
