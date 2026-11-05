@@ -30,7 +30,7 @@ Pod::Spec.new do |s|
 
   s.source_files = "**/*.{h,m,swift}"
 
-  s.exclude_files = 'Tests/'
+  s.exclude_files = ['Tests/', 'MediaLibraryImageLoader.{h,m}']
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
 
