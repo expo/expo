@@ -26,7 +26,6 @@ import type MetroServer from '@expo/metro/metro/Server';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import getGraphId from '@expo/metro/metro/lib/getGraphId';
 import type { GetStreamingContentOptions } from '@expo/router-server/build/server/renderStreamingContent';
-import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import assert from 'assert';
 import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
@@ -111,7 +110,7 @@ import { serialAssetsToStaticContentAssets } from './serializeHtml';
 import { observeAnyFileChanges, observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
 export type ExpoRouterRuntimeManifest = Awaited<
-  ReturnType<typeof import('@expo/router-server/build/static/renderStaticContent').getManifest>
+  ReturnType<typeof import('@expo/router-server/build/server/render').getManifest>
 >;
 
 type SSRLoadModuleFunc = <T extends Record<string, any>>(
@@ -121,10 +120,10 @@ type SSRLoadModuleFunc = <T extends Record<string, any>>(
 ) => Promise<T>;
 
 type ResolveMetadataFunction =
-  typeof import('@expo/router-server/build/static/renderStaticContent').resolveMetadata;
+  typeof import('@expo/router-server/build/server/render').resolveMetadata;
 
 /** `renderAsync` resolves the matched route and params itself. */
-type StaticRenderOptions = Omit<GetStaticContentOptions, 'route' | 'params'>;
+type StaticRenderOptions = Omit<GetStreamingContentOptions, 'route' | 'params'>;
 
 type DevServerRenderOptions = {
   loader?: GetStreamingContentOptions['loader'];
@@ -481,7 +480,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     htmlManifest: ExpoRouterRuntimeManifest;
   }> {
     const { exp } = getConfig(this.projectRoot);
-    // NOTE: This could probably be folded back into `renderStaticContent` when expo-asset and font support RSC.
+    // NOTE: This could probably be folded back into `render` when expo-asset and font support RSC.
     const { getBuildTimeServerManifestAsync, getManifest } = await this.ssrLoadModule<
       typeof import('@expo/router-server/build/static/getServerManifest')
     >(require.resolve('@expo/router-server/build/static/getServerManifest.js'), {
@@ -514,11 +513,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const url = this.getDevServerUrlOrAssert();
 
     const { getStreamingContent, resolveMetadata, getManifest, getBuildTimeServerManifestAsync } =
-      await this.ssrLoadModule<
-        typeof import('@expo/router-server/build/static/renderStaticContent')
-      >(require.resolve('@expo/router-server/node/render.js'), {
-        environment: 'node',
-      });
+      await this.ssrLoadModule<typeof import('@expo/router-server/build/server/render')>(
+        require.resolve('@expo/router-server/node/render.js'),
+        {
+          environment: 'node',
+        }
+      );
 
     const { exp } = getConfig(this.projectRoot);
     const isExportingWithSSR = exp.web?.output === 'server' && !this.isReactServerComponentsEnabled;
@@ -743,7 +743,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       }
 
       const { getStreamingContent, resolveMetadata } = await this.ssrLoadModule<
-        typeof import('@expo/router-server/build/static/renderStaticContent')
+        typeof import('@expo/router-server/build/server/render')
       >(require.resolve('@expo/router-server/node/render.js'), {
         // Development streaming SSR intentionally stays on the non-RSC server renderer.
         environment: 'node',
@@ -785,7 +785,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const [{ artifacts: resources }, { getStreamingContent, resolveMetadata }] = await Promise.all([
       this.getStaticResourcesAsync({ clientBoundaries: [] }),
-      this.ssrLoadModule<typeof import('@expo/router-server/build/static/renderStaticContent')>(
+      this.ssrLoadModule<typeof import('@expo/router-server/build/server/render')>(
         require.resolve('@expo/router-server/node/render.js'),
         {
           environment: 'node',
