@@ -3943,7 +3943,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNSVG (15.16.0):
+  - RNSVG (15.16.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -3970,10 +3970,10 @@ PODS:
     - React-utils
     - ReactCodegen
     - ReactCommon/turbomodule/core
-    - RNSVG/common (= 15.16.0)
+    - RNSVG/common (= 15.16.1)
     - SocketRocket
     - Yoga
-  - RNSVG/common (15.16.0):
+  - RNSVG/common (15.16.1):
     - boost
     - DoubleConversion
     - fast_float
@@ -4439,7 +4439,7 @@ DEPENDENCIES:
   - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@3.3.0_react-native@0.88.1_@babel+core@7.29.7_@react-native_844a86fda77232be986326d8510f62f1/node_modules/react-native-gesture-handler`)"
   - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.7.1_patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f1_257704949e83788085962a6575a46fe2/node_modules/react-native-reanimated`)"
   - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.30.1_react-native@0.88.1_@babel+core@7.29.7_@react-native+metro-_8bbaa73fbf3a54b8f1611664ed144b57/node_modules/react-native-screens`)"
-  - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.16.0_react-native@0.88.1_@babel+core@7.29.7_@react-native+metro-con_30fb198152765dc22ab23e74cf3c3406/node_modules/react-native-svg`)"
+  - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.16.1_react-native@0.88.1_@babel+core@7.29.7_@react-native+metro-con_9afd57656593f5b90341587b31f42e44/node_modules/react-native-svg`)"
   - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.13.0_patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec88_f55dfaffe4379ac4e595464479689d93/node_modules/react-native-worklets`)"
   - SocketRocket (~> 0.7.1)
   - "stripe-react-native (from `../../../node_modules/.pnpm/@stripe+stripe-react-native@0.81.0_expo@packages+expo_react-native-webview@14.0.1_react_d71294be82f1eb16ce4761fa686cfd8e/node_modules/@stripe/stripe-react-native`)"
@@ -4844,7 +4844,7 @@ EXTERNAL SOURCES:
   RNScreens:
     :path: "../../../node_modules/.pnpm/react-native-screens@4.30.1_react-native@0.88.1_@babel+core@7.29.7_@react-native+metro-_8bbaa73fbf3a54b8f1611664ed144b57/node_modules/react-native-screens"
   RNSVG:
-    :path: "../../../node_modules/.pnpm/react-native-svg@15.16.0_react-native@0.88.1_@babel+core@7.29.7_@react-native+metro-con_30fb198152765dc22ab23e74cf3c3406/node_modules/react-native-svg"
+    :path: "../../../node_modules/.pnpm/react-native-svg@15.16.1_react-native@0.88.1_@babel+core@7.29.7_@react-native+metro-con_9afd57656593f5b90341587b31f42e44/node_modules/react-native-svg"
   RNWorklets:
     :path: "../../../node_modules/.pnpm/react-native-worklets@0.13.0_patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec88_f55dfaffe4379ac4e595464479689d93/node_modules/react-native-worklets"
   stripe-react-native:
@@ -5053,7 +5053,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 9eb2437cb5a73b75be84b6bf6876d450fa3a2371
   RNReanimated: c85de7177656b27e373540ed63468153ca286888
   RNScreens: c64651f2a1b1c91c4a43291fdf1c1a63fb90d915
-  RNSVG: db4855056cc926a48181cd50256704276cadd72c
+  RNSVG: e13b5764ebfc4a89416b1a35f4f6fee6c5de8e46
   RNWorklets: 37230acef2118340ad233e0ebdfbdf69cc3f6d0c
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57
