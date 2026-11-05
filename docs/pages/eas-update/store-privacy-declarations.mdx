@@ -31,7 +31,7 @@ The library does not add personal information such as a name, email address, or 
 
 ## What Expo stores
 
-Expo Update stores the client ID and the IP address with each request record, including the failed update IDs when the request carries them. It uses the records to count installations and failed installs per update for the deployments dashboard and to measure usage. It also uses the client ID to decide which installations get an update during a rollout. Expo does not derive a location from the request. It does not combine this data with data from other apps, use it for advertising, or share it with data brokers. Expo processes it on your behalf, as your service provider, under Expo's data processing agreement. See [privacy explained](https://expo.dev/privacy-explained) for what Expo collects across its services.
+Expo Update stores the client ID and the IP address with each request record, including the failed update IDs when the request carries them. It uses the records to count installations and failed installs per update for the deployments dashboard and to measure usage. It also uses the client ID to decide which installations get an update during a rollout. The launch error text is kept only in raw request logs, which Expo deletes after three days. Expo does not derive a location from the request. It does not combine this data with data from other apps, use it for advertising, or share it with data brokers. Expo processes it on your behalf, as your service provider, under Expo's data processing agreement. See [privacy explained](https://expo.dev/privacy-explained) for what Expo collects across its services.
 
 The answers below assume you use Expo Update as your update server. If you [host updates yourself](/eas-update/standalone-service/), the same headers go to your server, and you declare what your server stores instead.
 
@@ -43,7 +43,7 @@ The form has three parts that your Expo Update usage affects.
 
 | Question                                                              | Answer                                                                                                                                            |
 | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Does your app collect or share any of the required user data types?   | **Yes**. The client ID is a device identifier, and the failed update IDs are crash information.                                                   |
+| Does your app collect or share any of the required user data types?   | **Yes**. The client ID is a device identifier, and the failed update IDs and the launch error text are crash information.                         |
 | Is all of the user data collected by your app encrypted in transit?   | **Yes** for Expo Update. The library sends every request over HTTPS. Answer for your whole app.                                                   |
 | Do you provide a way for users to request that their data is deleted? | Google allows **Yes** when you give users a way to request deletion. The answer covers your whole app, so base it on your own deletion practices. |
 
@@ -52,7 +52,7 @@ The form has three parts that your Expo Update usage affects.
 Select these data types for Expo Update:
 
 - **Device or other IDs**: the client ID. Google lists installation identifiers in this category.
-- **App info and performance > Crash logs**: the failed update IDs. Google's definition covers any information directly related to a crash.
+- **App info and performance > Crash logs**: the failed update IDs and the launch error text. Google's definition covers any information directly related to a crash.
 
 ### Data usage and handling
 
@@ -73,14 +73,14 @@ The data is **required** because `expo-updates` sends the client ID on every upd
 
 In App Store Connect, the **App Privacy** section asks whether you or your third-party partners collect data from the app. It then asks which data types you collect. For each type, it asks for the purposes, whether the data is linked to the user's identity, and whether it is used for tracking.
 
-Apple's definition of "collect" covers data that leaves the device and is stored for longer than it takes to serve the request. Expo Update stores the client ID and the failed update IDs with each request record, so both count as collected.
+Apple's definition of "collect" covers data that leaves the device and is stored for longer than it takes to serve the request. Expo Update stores the client ID and the failed update IDs with each request record, and keeps the launch error text in raw request logs for three days, so all three count as collected.
 
 ### Data types
 
 Answer **Yes, we collect data from this app**, then select these data types for Expo Update:
 
 - **Identifiers > Device ID**: the client ID. Apple lists other device-level IDs in this category.
-- **Diagnostics > Crash Data**: the failed update IDs.
+- **Diagnostics > Crash Data**: the failed update IDs and the launch error text.
 
 ### Data usage
 
