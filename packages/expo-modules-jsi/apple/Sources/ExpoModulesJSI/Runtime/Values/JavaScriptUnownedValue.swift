@@ -186,6 +186,14 @@ public struct JavaScriptUnownedValue: ~Copyable {
     return pointer.pointee.isObject() && pointer.pointee.getObject(runtime).isFunction(runtime)
   }
 
+  /// Returns the value as a ``JavaScriptFunction``, or asserts if it is not a function. The zero-copy
+  /// counterpart of ``JavaScriptValue/getFunction()``, with the same runtime contract as ``getObject(in:)``.
+  public func getFunction(in runtime: JavaScriptRuntime) -> JavaScriptFunction {
+    assert(isFunction(), "Value is not a function")
+    assert(isOwned(by: runtime), "`getFunction(in:)` must be passed the runtime that owns the borrowed value")
+    return JavaScriptFunction(runtime, expo.functionFromValue(self.runtime, pointer.pointee))
+  }
+
   /// Whether the value is a typed array. The zero-copy counterpart of ``JavaScriptValue/isTypedArray()``.
   public func isTypedArray() -> Bool {
     return pointer.pointee.isObject() && expo.isTypedArray(runtime, pointer.pointee.getObject(runtime))
@@ -310,5 +318,14 @@ public struct JavaScriptUnownedValue: ~Copyable {
       throw JavaScriptValue.TypeError(type: JavaScriptArray.self)
     }
     return getArray(in: runtime)
+  }
+
+  /// Returns the value as a ``JavaScriptFunction``, or throws `TypeError` if it is not a function. The
+  /// zero-copy counterpart of ``JavaScriptValue/asFunction()``; see ``getFunction(in:)``.
+  public func asFunction(in runtime: JavaScriptRuntime) throws(JavaScriptValue.TypeError) -> JavaScriptFunction {
+    guard isFunction() else {
+      throw JavaScriptValue.TypeError(type: JavaScriptFunction.self)
+    }
+    return getFunction(in: runtime)
   }
 }

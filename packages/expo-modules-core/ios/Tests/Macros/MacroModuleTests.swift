@@ -133,6 +133,20 @@ private final class MacroCallbacks: Module {
   }
 }
 
+// JSI function arguments and results: the binding passes the function through, checked for its kind.
+@ExpoModule
+private final class MacroFunctions: Module {
+  @JS
+  func apply(function: borrowing JavaScriptFunction, value: Int) throws -> Int {
+    return try function.call(arguments: value).asInt()
+  }
+
+  @JS
+  func identity(function: consuming JavaScriptFunction) -> JavaScriptFunction {
+    return function
+  }
+}
+
 @Suite("Macro module")
 @JavaScriptActor
 private struct MacroModuleTests {
@@ -353,5 +367,34 @@ private struct MacroModuleTests {
     register(MacroCallbacks(appContext: appContext))
     let result = try await runtime.evalAsync("expo.modules.MacroCallbacks.awaitCallback(async (x) => x * 2)")
     #expect(try await result.asInt() == 41)
+  }
+
+  // MARK: - JSI function arguments
+
+  @Test
+  func `a JavaScriptFunction argument is called from native code`() throws {
+    register(MacroFunctions(appContext: appContext))
+    #expect(try runtime.eval("expo.modules.MacroFunctions.apply((x) => x * 2, 21)").asInt() == 42)
+  }
+
+  @Test
+  func `a returned JavaScriptFunction is the same function`() throws {
+    register(MacroFunctions(appContext: appContext))
+    let result = try runtime.eval(
+      """
+      const fn = () => {}
+      expo.modules.MacroFunctions.identity(fn) === fn
+      """)
+    #expect(try result.asBool() == true)
+  }
+
+  @Test
+  func `a value that is not a function for a JavaScriptFunction argument throws a TypeError`() throws {
+    register(MacroFunctions(appContext: appContext))
+    for value in ["{}", "42", "null"] {
+      let message = try runtime.eval(
+        "try { expo.modules.MacroFunctions.apply(\(value), 1); '' } catch (error) { error.message }")
+      #expect(try message.asString().contains("TypeError"))
+    }
   }
 }
