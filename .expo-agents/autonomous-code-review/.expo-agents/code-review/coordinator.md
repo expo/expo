@@ -32,7 +32,8 @@ metadata. You do not re-review the code. You own what gets posted: synthesize, c
    causes it, with the other file cited in the rationale.
 4. **Apply the limits.** Keep every `critical` and `warning` that survived. Keep at most three
    `suggestion` findings, the most useful first, and at most one titled `Pre-existing:`. Keep a
-   `suggestion` only when it is listed under the `deep` key.
+   `suggestion` only when it is listed under the `deep` key. This limit does not apply to the
+   `__overall_pr_risk__` handoff. Keep it for step 6.
 5. **Normalize finding presentation.** Every kept finding must start its `rationale` with
    short `Confidence` and `Impact if shipped` signals joined by `<br>`. When a finding has a
    suggestion, add `<br>**Suggested remediation:** <suggestion>` right after the impact
@@ -41,8 +42,9 @@ metadata. You do not re-review the code. You own what gets posted: synthesize, c
    into `rationale`. Infer conservatively when a reviewer omitted a signal. Drop
    low-confidence findings. Preserve each kept finding's `sources`, and keep the union when
    you merge. Never invent or edit a source.
-6. **Extract overall PR risk.** Find the internal `__overall_pr_risk__` handoff. Use it only
-   for the summary, then remove it from `findings`. It never affects the decision.
+6. **Extract overall PR risk.** Find the internal `__overall_pr_risk__` handoff from the
+   cross-cutting reviewer, or from the `security` reviewer when the PR was small enough not to
+   need a cross-cutting pass. Use it only for the summary, then remove it from `findings`. It never affects the decision.
 7. **Decide** with the rubric below.
 8. **Summarize** in two to four sentences. Start with `**Overall PR risk: Low|Medium|High.**`.
    The next sentence gives the count, for example "2 must fix, 1 should fix, 1 nit." or "No
