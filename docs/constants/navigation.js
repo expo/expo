@@ -629,6 +629,7 @@ export const eas = [
       makePage('eas-update/trace-update-id-expo-dashboard.mdx'),
       makePage('eas-update/estimate-bandwidth.mdx'),
       makePage('eas-update/integration-in-existing-native-apps.mdx'),
+      makePage('eas-update/store-privacy-declarations.mdx'),
     ]),
   ]),
   makeSection('Expo Observe', [
@@ -651,6 +652,7 @@ export const eas = [
     makeGroup('Reference', [
       makePage('eas/observe/reference/metrics.mdx'),
       makePage('eas/observe/reference/client-id.mdx'),
+      makePage('eas/observe/reference/store-privacy-declarations.mdx'),
       makePage('eas/observe/reference/troubleshooting.mdx'),
     ]),
   ]),
