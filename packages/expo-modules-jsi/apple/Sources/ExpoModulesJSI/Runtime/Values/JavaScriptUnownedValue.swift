@@ -328,4 +328,41 @@ public struct JavaScriptUnownedValue: ~Copyable {
     }
     return getFunction(in: runtime)
   }
+
+  /// Returns the value as a ``JavaScriptTypedArray``, or throws `TypeError` if it is not a typed array. The
+  /// zero-copy counterpart of ``JavaScriptValue/asTypedArray()``; see ``getTypedArray(in:)``.
+  @JavaScriptActor
+  public func asTypedArray(in runtime: JavaScriptRuntime) throws(JavaScriptValue.TypeError) -> JavaScriptTypedArray {
+    guard isTypedArray() else {
+      throw JavaScriptValue.TypeError(type: JavaScriptTypedArray.self)
+    }
+    return getTypedArray(in: runtime)
+  }
+
+  /// Returns the value as a ``JavaScriptArrayBuffer``, or throws `TypeError` if it is not an `ArrayBuffer`.
+  /// The zero-copy counterpart of ``JavaScriptValue/asArrayBuffer()``; see ``getArrayBuffer(in:)``.
+  public func asArrayBuffer(in runtime: JavaScriptRuntime) throws(JavaScriptValue.TypeError) -> JavaScriptArrayBuffer {
+    guard isArrayBuffer() else {
+      throw JavaScriptValue.TypeError(type: JavaScriptArrayBuffer.self)
+    }
+    return getArrayBuffer(in: runtime)
+  }
+
+  /// Returns the value as a ``JavaScriptBigInt``, or throws `TypeError` if it is not a BigInt. The
+  /// zero-copy counterpart of ``JavaScriptValue/asBigInt()``; see ``getBigInt(in:)``.
+  public func asBigInt(in runtime: JavaScriptRuntime) throws(JavaScriptValue.TypeError) -> JavaScriptBigInt {
+    guard isBigInt() else {
+      throw JavaScriptValue.TypeError(type: JavaScriptBigInt.self)
+    }
+    return getBigInt(in: runtime)
+  }
+
+  /// Returns the value as a ``JavaScriptSymbol``, or throws `TypeError` if it is not a symbol. The
+  /// zero-copy counterpart of ``JavaScriptValue/asSymbol()``; see ``getSymbol(in:)``.
+  public func asSymbol(in runtime: JavaScriptRuntime) throws(JavaScriptValue.TypeError) -> JavaScriptSymbol {
+    guard isSymbol() else {
+      throw JavaScriptValue.TypeError(type: JavaScriptSymbol.self)
+    }
+    return getSymbol(in: runtime)
+  }
 }
