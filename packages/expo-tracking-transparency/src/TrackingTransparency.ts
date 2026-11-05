@@ -49,6 +49,9 @@ import ExpoTrackingTransparency from './ExpoTrackingTransparency';
  * ExpoTrackingTransparency.getAdvertisingId();
  * // "E9228286-4C4E-4789-9D95-15827DCB291B"
  * ```
+ *
+ * @deprecated Use [`getAdvertisingIdAsync()`](#getadvertisingidasync) instead. On Android, this
+ * function makes a blocking IPC call to Google Play Services on the JavaScript thread.
  */
 export function getAdvertisingId(): string | null {
   const advertisingId = ExpoTrackingTransparency.getAdvertisingId();
