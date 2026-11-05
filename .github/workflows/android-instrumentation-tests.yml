@@ -22,6 +22,8 @@ on:
       - '!packages/@expo/cli/**'
       - '!packages/**/ios/**'
       - '!packages/**/apple/**'
+      - '!packages/**/android/src/test/**'
+      - '!packages/**/android/src/testDebug/**'
       - '!**.md'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'

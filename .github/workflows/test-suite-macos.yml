@@ -37,7 +37,10 @@ on:
       - packages/expo-web-browser/**
       - '!packages/**/android/**'
       - '!packages/**/ios/Tests/**'
+      - '!packages/**/ios/WorkletsTests/**'
+      - '!packages/**/ios/Benchmarks/**'
       - '!packages/**/apple/Tests/**'
+      - '!packages/**/apple/Benchmarks/**'
       # Common ignores from detect-platform-change action
       - '!**/*.md'
       - '!**/LICENSE*'
