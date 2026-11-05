@@ -2,11 +2,9 @@ import {
   createFaviconAsString,
   createInjectedCssAsString,
   createInjectedScriptsAsString,
-  createLoaderDataScriptAsString,
   escapeUnsafeCharacters,
   getHydrationFlagScriptAsString,
   injectAssetsIntoHtml,
-  serializeHelmetToHtml,
 } from '../html';
 
 describe(escapeUnsafeCharacters, () => {
@@ -103,30 +101,6 @@ describe(getHydrationFlagScriptAsString, () => {
   it('returns the exact hydration flag script tag', () => {
     expect(getHydrationFlagScriptAsString()).toBe(
       '<script type="module">globalThis.__EXPO_ROUTER_HYDRATE__=true;</script>'
-    );
-  });
-});
-
-describe(createLoaderDataScriptAsString, () => {
-  it('returns the expected inline script markup', () => {
-    const data = { '/': { foo: 'bar' } };
-
-    expect(createLoaderDataScriptAsString(data)).toBe(
-      '<script id="expo-router-data">' +
-        'globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse("{\\"/\\":{\\"foo\\":\\"bar\\"}}");' +
-        '</script>'
-    );
-  });
-
-  it('uses an escaped payload for unsafe HTML input', () => {
-    const data = { '/route': '<script>alert("xss")</script>' };
-    const result = createLoaderDataScriptAsString(data);
-
-    expect(result).toContain('<script id="expo-router-data">');
-    expect(result).toContain('globalThis.__EXPO_ROUTER_LOADER_DATA__');
-    expect(result).toContain('JSON.parse(');
-    expect(result).toContain(
-      '\\\\u003cscript\\\\u003ealert(\\\\\\"xss\\\\\\")\\\\u003c/script\\\\u003e'
     );
   });
 });
@@ -284,54 +258,6 @@ describe(injectAssetsIntoHtml, () => {
     expect(result).toContain(
       expectedBody(['<script src="/a.js" defer></script>', '<script src="/b.js" defer></script>'])
     );
-  });
-});
-
-describe(serializeHelmetToHtml, () => {
-  it.each([null, undefined])('returns empty strings for %j helmet', () => {
-    expect(serializeHelmetToHtml(null)).toEqual({
-      headTags: '',
-      htmlAttributes: '',
-      bodyAttributes: '',
-    });
-  });
-
-  it('serializes helmet head keys in correct order', () => {
-    const helmet = {
-      title: { toString: () => '<title>Test</title>' },
-      meta: { toString: () => '<meta name="desc" content="test">' },
-      link: { toString: () => '<link rel="icon" href="/icon.png">' },
-      script: { toString: () => '<script src="/analytics.js"></script>' },
-      style: { toString: () => '<style>body{}</style>' },
-      priority: { toString: () => '' },
-      htmlAttributes: { toString: () => 'lang="en"' },
-      bodyAttributes: { toString: () => 'class="dark"' },
-    };
-
-    const result = serializeHelmetToHtml(helmet);
-
-    expect(result.headTags).toBe(
-      '<title>Test</title>' +
-        '<meta name="desc" content="test">' +
-        '<link rel="icon" href="/icon.png">' +
-        '<script src="/analytics.js"></script>' +
-        '<style>body{}</style>'
-    );
-    expect(result.htmlAttributes).toBe('lang="en"');
-    expect(result.bodyAttributes).toBe('class="dark"');
-  });
-
-  it('handles helmet with missing keys', () => {
-    const helmet = {
-      title: { toString: () => '<title>Hello</title>' },
-      htmlAttributes: { toString: () => '' },
-      bodyAttributes: { toString: () => '' },
-    };
-
-    const result = serializeHelmetToHtml(helmet);
-    expect(result.headTags).toBe('<title>Hello</title>');
-    expect(result.htmlAttributes).toBe('');
-    expect(result.bodyAttributes).toBe('');
   });
 });
 
