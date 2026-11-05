@@ -23,6 +23,12 @@ export function Rectangle(props: RectangleProps) {
 
 export interface RoundedRectangleProps extends CommonViewModifierProps {
   cornerRadius?: number;
+  /**
+   * The style of the corners. `continuous` corners curve smoothly into the edges. `circular`
+   * corners are quarter circles.
+   * @default 'continuous'
+   */
+  cornerStyle?: 'continuous' | 'circular';
 }
 
 const RoundedRectangleNativeView: React.ComponentType<RoundedRectangleProps> = requireNativeView(
