@@ -2922,3 +2922,59 @@ module.exports = [value, helper];`;
     if (dependency.data.asyncType) expect(call![1]).toBe(dependencyMap.paths);
   }
 });
+
+it.each([
+  "require('pkg')",
+  "require('@babel/runtime/helpers/construct')",
+  "import('pkg')",
+  "require.unstable_importMaybeSync('pkg')",
+  "__prefetchImport('pkg')",
+])('matches Babel name retention after a mandatory use: %s', async (expression) => {
+  const source = `${expression}; try { ${expression}; } catch {}`;
+  const collectDependencies = require('../../collect-dependencies').default;
+  const collected = collectDependencies(babel.parseSync(source), {
+    asyncRequireModulePath: 'metro-runtime',
+    dynamicRequires: 'reject',
+    inlineableCalls: [],
+    keepRequireNames: false,
+    allowOptionalDependencies: true,
+    unstable_allowRequireContext: false,
+  });
+  const babelCode = babel.transformFromAstSync(collected.ast, undefined, {
+    babelrc: false,
+    configFile: false,
+  })!.code!;
+  const native = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+    config: { ...fullConfig(), allowOptionalDependencies: true },
+  });
+  if (native.status !== 'complete') throw new Error(native.reason);
+
+  function calls(code: string, wrapped: boolean) {
+    const result: unknown[][] = [];
+    const load = (...args: unknown[]) => {
+      result.push(args);
+      return Object.assign(load, { prefetch: load, unstable_importMaybeSync: load });
+    };
+    const map = Object.assign(
+      collected.dependencies.map(({ name }: { name: string }) => name),
+      { paths: {} }
+    );
+    if (wrapped) {
+      new Function('__d', code)((factory: Function) =>
+        factory(globalThis, load, load, load, {}, {}, map)
+      );
+    } else {
+      new Function('require', collected.dependencyMapName, code)(load, map);
+    }
+    return result;
+  }
+  expect(calls(native.result.code, true)).toEqual(calls(babelCode, false));
+  expect(!!native.dependencies[0]!.data.isOptional).toBe(
+    !!collected.dependencies[0].data.isOptional
+  );
+});
