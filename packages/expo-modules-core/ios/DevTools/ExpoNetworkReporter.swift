@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import ExpoModulesJSI
 import Foundation
 internal import React
 
@@ -145,4 +146,83 @@ public final class ExpoNetworkReporter: @unchecked Sendable {
   }
 
   private static let requestIdPropertyKey = "ExpoNetworkReporter.requestId"
+}
+
+/**
+ Records a React Native DevTools network initiator from a synchronous host function.
+
+ Hermes drops host frames when it serializes a stack, so the initiator is the JavaScript
+ caller of that host function. A JavaScript wrapper around `createDevToolsRequestId()` is the
+ initiator instead.
+ */
+public enum ExpoDevToolsInitiator {
+  /// The id from `__NETWORK_REPORTER__.createDevToolsRequestId()`, or nil when DevTools is not attached.
+  @JavaScriptActor
+  public static func requestId(in runtime: JavaScriptRuntime) throws -> String? {
+    let reporter = runtime.global().getProperty("__NETWORK_REPORTER__")
+    guard reporter.isObject() else {
+      return nil
+    }
+    let create = try reporter.asObject().getPropertyAsFunction("createDevToolsRequestId")
+    let id = try create.call()
+    guard !id.isUndefined(), !id.isNull() else {
+      return nil
+    }
+    return try id.asString()
+  }
+
+  /// A host function that records the initiator, then calls `implementation` with the request id ahead of
+  /// the caller's arguments, so its position does not depend on how many the caller passed. That slot is
+  /// `undefined` when DevTools is not attached or the id cannot be read: it only serves DevTools, so it
+  /// never stops the call.
+  @JavaScriptActor
+  public static func hostFunction(
+    named name: String,
+    calling implementation: borrowing JavaScriptValue,
+    in runtime: JavaScriptRuntime
+  ) throws -> JavaScriptFunction {
+    guard implementation.isFunction() else {
+      throw DevToolsInitiatorImplementationException()
+    }
+    // The closure escapes, so it holds the implementation through a reference.
+    let implementation = implementation.copy().ref()
+    return runtime.createFunction(name) { _, arguments in
+      let requestId = try? Self.requestId(in: runtime)
+      return try Self.call(
+        implementation,
+        arguments: arguments,
+        devToolsRequestId: requestId,
+        in: runtime
+      )
+    }
+  }
+
+  @JavaScriptActor
+  private static func call(
+    _ implementation: JavaScriptValue.Ref,
+    arguments: borrowing JavaScriptValuesBuffer,
+    devToolsRequestId: String?,
+    in runtime: JavaScriptRuntime
+  ) throws -> JavaScriptValue {
+    // Slot 0 stays `undefined` without an id.
+    let forwarded = JavaScriptValuesBuffer.allocate(in: runtime, capacity: arguments.count + 1)
+    if let devToolsRequestId {
+      forwarded.emplace(JavaScriptValue(runtime, devToolsRequestId), at: 0)
+    }
+    for index in 0..<arguments.count {
+      forwarded.emplace(arguments[index], at: index + 1)
+    }
+    guard let function = try implementation.withUnwrappedValue({ (value: borrowing JavaScriptValue) in
+      try value.asFunction()
+    }) else {
+      throw DevToolsInitiatorImplementationException()
+    }
+    return try function.call(arguments: forwarded)
+  }
+}
+
+internal final class DevToolsInitiatorImplementationException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "The implementation behind a DevTools initiator host function must be a JavaScript function"
+  }
 }
