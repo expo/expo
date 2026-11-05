@@ -183,6 +183,7 @@ function SplitViewHost({
     ownsHeader: false,
     isCollapsed: false,
     showsSidebarButton: false,
+    mirroredHeaderHeight: 0,
   });
   const removeContentInsets = ownership.ownsHeader && ownership.isCollapsed;
   const columnNames = COLUMN_NAMES[columnChildren.length]!;

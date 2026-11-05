@@ -59,6 +59,9 @@ public class SplitViewModule: Module {
     View(SplitViewStackScreenView.self) {
       Prop("columnId") { (view: SplitViewStackScreenView, value: String) in view.columnId = value }
       Prop("active") { (view: SplitViewStackScreenView, value: Bool) in view.active = value }
+      Prop("focused") { (view: SplitViewStackScreenView, value: Bool) in view.screenFocused = value }
+      Prop("headerShown") { (view: SplitViewStackScreenView, value: Bool) in view.headerShown = value }
+      Prop("gestureEnabled") { (view: SplitViewStackScreenView, value: Bool) in view.gestureEnabled = value }
       OnViewDidUpdateProps { (view: SplitViewStackScreenView) in view.attach() }
     }
 

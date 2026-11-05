@@ -250,10 +250,32 @@ const SceneView = ({
   }
 
   const rawAnimatedHeaderHeight = useAnimatedValue(defaultHeaderHeight);
-  const animatedHeaderHeight = React.useMemo(
-    () => Animated.add<number>(rawAnimatedHeaderHeight, headerHeightCorrectionOffset),
-    [headerHeightCorrectionOffset, rawAnimatedHeaderHeight]
-  );
+  // In a split view column, the shared bar height replaces the reported height while it is set, in the same node.
+  const animatedSharedBarHeight = useAnimatedValue(0);
+  const isSplitColumn = splitColumn != null;
+  const animatedHeaderHeight = React.useMemo(() => {
+    const reportedHeight = Animated.add<number>(
+      rawAnimatedHeaderHeight,
+      headerHeightCorrectionOffset
+    );
+    if (!isSplitColumn) {
+      return reportedHeight;
+    }
+    const sharedBarShown = animatedSharedBarHeight.interpolate({
+      inputRange: [0, 1],
+      outputRange: [0, 1],
+      extrapolate: 'clamp',
+    });
+    return Animated.add<number>(
+      Animated.multiply(reportedHeight, Animated.subtract(1, sharedBarShown)),
+      Animated.multiply(animatedSharedBarHeight, sharedBarShown)
+    );
+  }, [
+    headerHeightCorrectionOffset,
+    rawAnimatedHeaderHeight,
+    animatedSharedBarHeight,
+    isSplitColumn,
+  ]);
 
   // During the very first render topInset is > 0 when running
   // in non edge-to-edge mode on Android, while on every consecutive render
@@ -282,6 +304,24 @@ const SceneView = ({
 
   const isSplitStackScreen =
     splitColumn && !isPreloaded && (index === 0 || !isPresentationModal) && !hasModalBelow;
+  // The shared split bar shows the header of a resting Stack root, so its height replaces the hidden Stack header.
+  const mirroredHeaderHeight =
+    isSplitStackScreen && index === 0 ? splitColumn.mirroredHeaderHeight : 0;
+  // Screens reports 0 while the shared bar shows the header; keep the bar height until Screens reports again.
+  const [lastMirroredHeaderHeight, setLastMirroredHeaderHeight] = React.useState(0);
+  if (mirroredHeaderHeight > 0 && mirroredHeaderHeight !== lastMirroredHeaderHeight) {
+    setLastMirroredHeaderHeight(mirroredHeaderHeight);
+  }
+  const sharedBarHeight =
+    mirroredHeaderHeight > 0
+      ? mirroredHeaderHeight
+      : headerHeight > 0 || headerShown === false
+        ? 0
+        : lastMirroredHeaderHeight;
+  const resolvedHeaderHeight = sharedBarHeight || headerHeight;
+  React.useLayoutEffect(() => {
+    animatedSharedBarHeight.setValue(sharedBarHeight);
+  }, [animatedSharedBarHeight, sharedBarHeight]);
   const headerConfig = useHeaderConfigProps({
     ...options,
     splitViewColumn: isSplitStackScreen ? splitColumn : null,
@@ -431,7 +471,7 @@ const SceneView = ({
         <ScreenPresentationContext.Provider value={presentation}>
           <AnimatedHeaderHeightContext.Provider value={animatedHeaderHeight}>
             <HeaderHeightContext.Provider
-              value={headerShown !== false ? headerHeight : (parentHeaderHeight ?? 0)}>
+              value={headerShown !== false ? resolvedHeaderHeight : (parentHeaderHeight ?? 0)}>
               {headerBackground != null ? (
                 /**
                  * To show a custom header background, we render it at the top of the screen below the header
@@ -441,7 +481,7 @@ const SceneView = ({
                   style={[
                     styles.background,
                     isHeaderTransparent ? styles.translucent : null,
-                    { height: headerHeight },
+                    { height: resolvedHeaderHeight },
                   ]}>
                   {headerBackground()}
                 </View>
@@ -470,6 +510,9 @@ const SceneView = ({
                     <SplitViewNativeStackScreen
                       columnId={splitColumn.columnId}
                       active={splitStackActive}
+                      focused={focused}
+                      headerShown={header === undefined && headerShown !== false}
+                      gestureEnabled={gestureEnabled !== false}
                     />
                   )}
                 </HeaderBackContext.Provider>

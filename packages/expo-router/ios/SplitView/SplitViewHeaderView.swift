@@ -28,6 +28,7 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
   let onSearchBarSearchButtonPress = EventDispatcher()
 
   private weak var navigationItem: UINavigationItem?
+  private weak var removedCoordinator: SplitViewColumnView?
   private var searchController: UISearchController?
   // The item of the previous column, which holds the back button options of this column.
   private weak var backButtonNavigationItem: UINavigationItem?
@@ -40,6 +41,7 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
   override func willMove(toSuperview newSuperview: UIView?) {
     super.willMove(toSuperview: newSuperview)
     if newSuperview == nil {
+      removedCoordinator = columnCoordinator
       if let columnCoordinator {
         columnCoordinator.configuredHidden = false
       } else if navigationBarHidden {
@@ -67,6 +69,10 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
       searchController = nil
       self.navigationItem = nil
       applyBackButton()
+      removedCoordinator?.columnHeaderDidApply()
+    }
+    if superview == nil {
+      removedCoordinator = nil
     }
   }
 
@@ -103,6 +109,7 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     applyTitleColors(to: navigationItem)
     navigationItem.hidesBackButton = !backVisible
     applyBackButton()
+    columnCoordinator?.columnHeaderDidApply()
   }
 
   func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {

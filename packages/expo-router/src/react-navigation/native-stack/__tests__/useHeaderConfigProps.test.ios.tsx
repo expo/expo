@@ -1377,6 +1377,7 @@ it('does not add the split sidebar when another column is beside the content col
           ownsHeader: true,
           isCollapsed: false,
           showsSidebarButton: false,
+          mirroredHeaderHeight: 0,
         },
       })
     )
@@ -1394,6 +1395,7 @@ it('composes the split sidebar with a custom leading view using its full props o
           ownsHeader: true,
           isCollapsed: false,
           showsSidebarButton: true,
+          mirroredHeaderHeight: 0,
         },
         headerLeft,
         headerBack: { title: 'Previous screen', href: undefined },
@@ -1427,6 +1429,7 @@ it('keeps explicit hidden Stack and Back options while composing split controls'
           ownsHeader: true,
           isCollapsed: false,
           showsSidebarButton: true,
+          mirroredHeaderHeight: 0,
         },
         headerShown: false,
         headerBackVisible: false,
@@ -1456,6 +1459,7 @@ it('keeps sidebar and app items when the header title updates', async () => {
             ownsHeader: true,
             isCollapsed: false,
             showsSidebarButton: true,
+            mirroredHeaderHeight: 0,
           },
           unstable_headerLeftItems: () => [{ type: 'button', label: 'Edit', onPress }],
         })

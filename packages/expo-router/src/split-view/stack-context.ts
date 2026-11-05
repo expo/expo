@@ -5,6 +5,8 @@ export interface SplitViewStackColumn {
   ownsHeader: boolean;
   isCollapsed: boolean;
   showsSidebarButton: boolean;
+  // Height of the shared split bar while it shows the Stack root, or 0.
+  mirroredHeaderHeight: number;
 }
 
 // Cleared at the first Stack so a Stack inside one of its screens cannot claim the column.

@@ -1,6 +1,6 @@
 import { act, fireEvent, screen, within } from '@testing-library/react-native';
 import { Children, isValidElement, useState, type ReactNode } from 'react';
-import { Button, Text, type NativeSyntheticEvent } from 'react-native';
+import { Animated, Button, Text, View, type NativeSyntheticEvent } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { IsWithinNativeNavigator } from '../../exports';
@@ -8,6 +8,8 @@ import { router } from '../../imperative-api';
 import JSStack from '../../layouts/JSStack';
 import Stack from '../../layouts/StackClient';
 import { SafeAreaView, Split } from '../../optional-libraries/react-native-screens';
+import { useHeaderHeight } from '../../react-navigation';
+import { useAnimatedHeaderHeight } from '../../react-navigation/native-stack';
 import { renderRouter } from '../../testing-library';
 import { Slot } from '../../views/Navigator';
 import { SplitViewColumnHeader } from '../header';
@@ -1210,6 +1212,225 @@ it('automatically registers the outermost Stack even with its header explicitly 
   const marker = screen.getByTestId('SplitViewNativeStackScreen');
   expect(marker.props.columnId).toBe(screen.getByTestId('SplitViewNativeColumn').props.columnId);
   expect(marker.props.active).toBe(true);
+});
+
+it('tells the native Stack screens whether they are focused', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      'stack/_layout': () => <Stack />,
+      'stack/index': () => <Text>Stack root</Text>,
+      'stack/pushed': () => <Text>Pushed</Text>,
+    },
+    { initialUrl: '/stack' }
+  );
+  expect(screen.getByTestId('SplitViewNativeStackScreen')).toHaveProp('focused', true);
+  await act(() => router.push('/stack/pushed'));
+  const markers = screen.getAllByTestId('SplitViewNativeStackScreen', {
+    includeHiddenElements: true,
+  });
+  expect(markers[0]).toHaveProp('focused', false);
+  expect(markers[1]).toHaveProp('focused', true);
+});
+
+it('tells the native Stack screens whether they show their header', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      'stack/_layout': () => (
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="custom" options={{ header: () => <Text>Custom header</Text> }} />
+        </Stack>
+      ),
+      'stack/index': () => <Text>Stack root</Text>,
+      'stack/pushed': () => <Text>Pushed</Text>,
+      'stack/custom': () => <Text>Custom</Text>,
+    },
+    { initialUrl: '/stack' }
+  );
+  expect(screen.getByTestId('SplitViewNativeStackScreen')).toHaveProp('headerShown', false);
+  await act(() => router.push('/stack/pushed'));
+  await act(() => router.push('/stack/custom'));
+  const markers = screen.getAllByTestId('SplitViewNativeStackScreen', {
+    includeHiddenElements: true,
+  });
+  expect(markers[1]).toHaveProp('headerShown', true);
+  expect(markers[2]).toHaveProp('headerShown', false);
+});
+
+it('tells the native Stack screens whether they allow gestures', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      'stack/_layout': () => (
+        <Stack>
+          <Stack.Screen name="index" options={{ gestureEnabled: false }} />
+        </Stack>
+      ),
+      'stack/index': () => <Text>Stack root</Text>,
+      'stack/pushed': () => <Text>Pushed</Text>,
+    },
+    { initialUrl: '/stack' }
+  );
+  expect(screen.getByTestId('SplitViewNativeStackScreen')).toHaveProp('gestureEnabled', false);
+  await act(() => router.push('/stack/pushed'));
+  const markers = screen.getAllByTestId('SplitViewNativeStackScreen', {
+    includeHiddenElements: true,
+  });
+  expect(markers[1]).toHaveProp('gestureEnabled', true);
+});
+
+const renderedAnimatedHeights = jest.fn();
+
+function HeaderHeight({ testID }: { testID: string }) {
+  const [renders, rerender] = useState(0);
+  renderedAnimatedHeights(testID, useAnimatedHeaderHeight());
+  return (
+    <>
+      <Text testID={testID}>{useHeaderHeight()}</Text>
+      {/* The test renderer shows a new animated value only when the view renders again. */}
+      <Button
+        testID={`${testID}-rerender`}
+        title={`${renders}`}
+        onPress={() => rerender(renders + 1)}
+      />
+      <Animated.View
+        testID={`${testID}-animated`}
+        style={{ transform: [{ translateY: useAnimatedHeaderHeight() }] }}
+      />
+    </>
+  );
+}
+
+it('gives the resting Stack root the height of the shared bar that shows its header', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      'stack/_layout': () => (
+        <Stack>
+          <Stack.Screen
+            name="index"
+            options={{ headerBackground: () => <View testID="root-background" /> }}
+          />
+        </Stack>
+      ),
+      'stack/index': () => <HeaderHeight testID="root-height" />,
+      'stack/pushed': () => <HeaderHeight testID="pushed-height" />,
+    },
+    { initialUrl: '/stack' }
+  );
+  const animatedNodeBefore = renderedAnimatedHeights.mock.lastCall?.[1];
+  const animatedRootHeight = screen.getByTestId('root-height-animated');
+  await fireEvent(screen.getByTestId('SplitViewNativeColumn'), 'ownershipChange', {
+    nativeEvent: {
+      ownsHeader: true,
+      isCollapsed: true,
+      showsSidebarButton: false,
+      mirroredHeaderHeight: 116,
+    },
+  });
+  expect(screen.getByTestId('root-height')).toHaveTextContent('116');
+  await fireEvent.press(screen.getByTestId('root-height-rerender'));
+  expect(screen.getByTestId('root-height-animated')).toBe(animatedRootHeight);
+  expect(renderedAnimatedHeights.mock.lastCall?.[1]).toBe(animatedNodeBefore);
+  expect(animatedRootHeight).toHaveStyle({ transform: [{ translateY: 116 }] });
+  expect(screen.getByTestId('root-background').parent).toHaveStyle({ height: 116 });
+  await fireEvent(screen.getByTestId('SplitViewNativeColumn'), 'ownershipChange', {
+    nativeEvent: {
+      ownsHeader: true,
+      isCollapsed: true,
+      showsSidebarButton: false,
+      mirroredHeaderHeight: 0,
+    },
+  });
+  // Without the shared bar, the root shows the height Screens reports, like a pushed screen.
+  await fireEvent.press(screen.getByTestId('root-height-rerender'));
+  expect(screen.getByTestId('root-height')).toHaveTextContent('44');
+  expect(screen.getByTestId('root-height-animated')).toHaveStyle({
+    transform: [{ translateY: 44 }],
+  });
+  await act(() => router.push('/stack/pushed'));
+  expect(screen.getByTestId('pushed-height')).toHaveTextContent('44');
+});
+
+it('keeps the shared bar height until Screens reports the returned Stack header', async () => {
+  jest.useFakeTimers();
+  try {
+    await renderRouter(
+      {
+        _layout: () => (
+          <SplitView>
+            <SplitView.Column />
+            <SplitView.Content />
+          </SplitView>
+        ),
+        'stack/_layout': () => (
+          <Stack>
+            <Stack.Screen name="index" options={{ headerSearchBarOptions: {} }} />
+          </Stack>
+        ),
+        'stack/index': () => <HeaderHeight testID="root-height" />,
+      },
+      { initialUrl: '/stack' }
+    );
+    await fireEvent(screen.getByTestId('SplitViewNativeColumn'), 'ownershipChange', {
+      nativeEvent: {
+        ownsHeader: true,
+        isCollapsed: true,
+        showsSidebarButton: false,
+        mirroredHeaderHeight: 116,
+      },
+    });
+    // Screens reports no header while the shared bar shows it, after its debounce.
+    await fireEvent(screen.getByTestId('root-height'), 'headerHeightChange', {
+      nativeEvent: { headerHeight: 0 },
+    });
+    await act(() => jest.advanceTimersByTime(100));
+    expect(screen.getByTestId('root-height')).toHaveTextContent('116');
+
+    await fireEvent(screen.getByTestId('SplitViewNativeColumn'), 'ownershipChange', {
+      nativeEvent: {
+        ownsHeader: true,
+        isCollapsed: true,
+        showsSidebarButton: false,
+        mirroredHeaderHeight: 0,
+      },
+    });
+    await act(() => jest.advanceTimersByTime(50));
+    expect(screen.getByTestId('root-height')).toHaveTextContent('116');
+    await fireEvent.press(screen.getByTestId('root-height-rerender'));
+    expect(screen.getByTestId('root-height-animated')).toHaveStyle({
+      transform: [{ translateY: 116 }],
+    });
+    await fireEvent(screen.getByTestId('root-height'), 'headerHeightChange', {
+      nativeEvent: { headerHeight: 120 },
+    });
+    await act(() => jest.advanceTimersByTime(100));
+    expect(screen.getByTestId('root-height')).toHaveTextContent('120');
+  } finally {
+    jest.useRealTimers();
+  }
 });
 
 it('does not register a second Stack inside the owning Stack', async () => {

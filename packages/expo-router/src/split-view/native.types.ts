@@ -48,11 +48,19 @@ export interface SplitViewNativeColumnProps {
   columnId: string;
   previousColumn: string;
   onOwnershipChange: (event: {
-    nativeEvent: { ownsHeader: boolean; isCollapsed: boolean; showsSidebarButton: boolean };
+    nativeEvent: {
+      ownsHeader: boolean;
+      isCollapsed: boolean;
+      showsSidebarButton: boolean;
+      mirroredHeaderHeight: number;
+    };
   }) => void;
 }
 
 export interface SplitViewNativeStackScreenProps {
   columnId: string;
   active: boolean;
+  focused: boolean;
+  headerShown: boolean;
+  gestureEnabled: boolean;
 }

@@ -87,446 +87,9 @@ struct SplitViewOwnershipTests {
   }
 }
 
-@Suite("SplitView root edge gesture")
-@MainActor
-struct SplitViewRootGestureTests {
-  @Test(.enabled(if: NSClassFromString("RNSSplitHostController") != nil), arguments: [false, true])
-  @available(iOS 26.0, *)
-  func `Screens columns install both root delegates`(contentPop: Bool) async throws {
-    // These Fabric classes are NSObject stubs when Screens Gamma is disabled.
-    let host = try #require(RNSSplitHostComponentView() as? UIView)
-    let sidebar = try #require(RNSSplitScreenComponentView() as? UIView)
-    let column = try #require(RNSSplitScreenComponentView() as? UIView)
-    let columns = try #require(
-      host.perform(NSSelectorFromString("reactSubviews"))?.takeUnretainedValue() as? NSMutableArray
-    )
-    columns.addObjects(from: [sidebar, column])
-    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 393, height: 852))
-    let container = UIViewController()
-    window.rootViewController = container
-    host.frame = window.bounds
-    container.view.addSubview(host)
-    window.makeKeyAndVisible()
-    defer { window.isHidden = true }
-    let split = try #require(
-      host.perform(NSSelectorFromString("splitHostController"))?.takeUnretainedValue()
-        as? UISplitViewController
-    )
-    split.traitOverrides.horizontalSizeClass = .compact
-    split.perform(NSSelectorFromString("setNeedsUpdateOfChildViewControllers"))
-    split.perform(NSSelectorFromString("updateChildViewControllersIfNeeded"))
-    try await Task.sleep(for: .milliseconds(500))
-    split.show(.secondary)
-    try await Task.sleep(for: .milliseconds(500))
-    let primary = try #require(split.viewController(for: .primary) as? UINavigationController)
-    #expect(String(describing: type(of: primary)) == "RNSSplitNavigationController")
-    #expect(primary.viewControllers.count == 2)
-    let gesture = try #require(
-      contentPop ? primary.interactiveContentPopGestureRecognizer : primary.interactivePopGestureRecognizer
-    )
-    let original = try #require(gesture.delegate)
-    let coordinator = SplitViewColumnView(appContext: nil)
-    coordinator.columnId = UUID().uuidString
-    column.addSubview(coordinator)
-    coordinator.attach()
-    let stackView = RNSScreenStackView(frame: column.bounds)
-    stackView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    let root = RNSScreenView(frame: .zero)
-    root.activityState = 2
-    stackView.insertReactSubview(root, at: 0)
-    column.addSubview(stackView)
-    stackView.setNeedsLayout()
-    stackView.layoutIfNeeded()
-    let marker = SplitViewStackScreenView(appContext: nil)
-    marker.columnId = coordinator.columnId
-    root.addSubview(marker)
-    marker.attach()
-    coordinator.reconcile()
-    try await Task.sleep(for: .milliseconds(500))
-    coordinator.reconcile()
-    #expect(
-      marker.screenController?.navigationController?.parent?.navigationController?
-        .isNavigationBarHidden == true
-    )
-    #expect(gesture.delegate !== original)
-    #expect(gesture.delegate?.gestureRecognizerShouldBegin?(gesture) == true)
-    marker.removeFromSuperview()
-    #expect(gesture.delegate === original)
-    root.invalidateImpl()
-  }
-
-  @Test(arguments: [false, true])
-  @available(iOS 26.0, *)
-  func `the root restores gesture delegates through navigation`(contentPop: Bool) async throws {
-    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 393, height: 852))
-    let split = UISplitViewController(style: .tripleColumn)
-    split.traitOverrides.horizontalSizeClass = .compact
-    let primary = UINavigationController(rootViewController: UIViewController())
-    let middle = UINavigationController(rootViewController: UIViewController())
-    let column = UIViewController()
-    let content = UINavigationController(rootViewController: column)
-    split.setViewController(primary, for: .primary)
-    split.setViewController(middle, for: .supplementary)
-    split.setViewController(content, for: .secondary)
-    window.rootViewController = split
-    window.makeKeyAndVisible()
-    defer { window.isHidden = true }
-    try await Task.sleep(for: .milliseconds(500))
-    split.show(.supplementary)
-    try await Task.sleep(for: .milliseconds(500))
-    split.show(.secondary)
-    try await Task.sleep(for: .milliseconds(500))
-    #expect(primary.viewControllers.count == 3)
-    let gesture = try #require(
-      contentPop ? primary.interactiveContentPopGestureRecognizer : primary.interactivePopGestureRecognizer
-    )
-    let originalDelegate = try #require(gesture.delegate)
-    let originalGestureView = gesture.view
-
-    let coordinator = SplitViewColumnView(appContext: nil)
-    coordinator.columnId = UUID().uuidString
-    column.view.addSubview(coordinator)
-    coordinator.attach()
-    let stackView = RNSScreenStackView(frame: column.view.bounds)
-    stackView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    let root = RNSScreenView(frame: .zero)
-    root.activityState = 2
-    stackView.insertReactSubview(root, at: 0)
-    column.view.addSubview(stackView)
-    stackView.setNeedsLayout()
-    stackView.layoutIfNeeded()
-    let navigation = try #require(stackView.reactViewController() as? UINavigationController)
-    let innerGesture = try #require(navigation.interactivePopGestureRecognizer)
-    let innerDelegate = innerGesture.delegate
-    let marker = SplitViewStackScreenView(appContext: nil)
-    marker.columnId = coordinator.columnId
-    root.addSubview(marker)
-    marker.attach()
-    coordinator.reconcile()
-    #expect(marker.screenController === root.controller)
-    #expect(content.isNavigationBarHidden)
-    #expect(gesture.delegate !== originalDelegate)
-    #expect(gesture.delegate?.gestureRecognizerShouldBegin?(gesture) == true)
-    #expect(gesture.view === originalGestureView)
-    #expect(innerGesture.delegate === innerDelegate)
-
-    let pushed = RNSScreenView(frame: .zero)
-    root.activityState = 1
-    pushed.activityState = 2
-    stackView.insertReactSubview(pushed, at: 1)
-    stackView.markChildUpdated()
-    try await Task.sleep(for: .milliseconds(500))
-    coordinator.reconcile()
-    #expect(navigation.viewControllers.count == 2)
-    #expect(gesture.delegate === originalDelegate)
-    stackView.removeReactSubview(pushed)
-    root.activityState = 2
-    stackView.markChildUpdated()
-    try await Task.sleep(for: .milliseconds(500))
-    coordinator.reconcile()
-    #expect(navigation.viewControllers.count == 1)
-    #expect(gesture.delegate !== originalDelegate)
-
-    split.traitOverrides.horizontalSizeClass = .regular
-    try await Task.sleep(for: .milliseconds(500))
-    coordinator.reconcile()
-    #expect(!split.isCollapsed)
-    #expect(gesture.delegate === originalDelegate)
-    split.traitOverrides.horizontalSizeClass = .compact
-    try await Task.sleep(for: .milliseconds(500))
-    split.show(.supplementary)
-    try await Task.sleep(for: .milliseconds(500))
-    split.show(.secondary)
-    try await Task.sleep(for: .milliseconds(500))
-    coordinator.reconcile()
-    #expect(primary.topViewController === content)
-    #expect(gesture.delegate !== originalDelegate)
-    split.show(.supplementary)
-    try await Task.sleep(for: .milliseconds(500))
-    coordinator.reconcile()
-    #expect(primary.topViewController === middle)
-    #expect(gesture.delegate === originalDelegate)
-    split.show(.secondary)
-    try await Task.sleep(for: .milliseconds(500))
-    coordinator.reconcile()
-    #expect(gesture.delegate !== originalDelegate)
-    marker.removeFromSuperview()
-    #expect(gesture.delegate === originalDelegate)
-    #expect(gesture.view === originalGestureView)
-    #expect(innerGesture.delegate === innerDelegate)
-  }
-
-  @Test(arguments: [false, true])
-  @available(iOS 26.0, *)
-  func `new ownership survives late cleanup`(contentPop: Bool) async throws {
-    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 393, height: 852))
-    let split = UISplitViewController(style: .doubleColumn)
-    split.traitOverrides.horizontalSizeClass = .compact
-    let primary = UINavigationController(rootViewController: UIViewController())
-    let column = UIViewController()
-    let content = UINavigationController(rootViewController: column)
-    split.setViewController(primary, for: .primary)
-    split.setViewController(content, for: .secondary)
-    window.rootViewController = split
-    window.makeKeyAndVisible()
-    defer { window.isHidden = true }
-    try await Task.sleep(for: .milliseconds(500))
-    split.show(.secondary)
-    try await Task.sleep(for: .milliseconds(500))
-    let gesture = try #require(
-      contentPop ? primary.interactiveContentPopGestureRecognizer : primary.interactivePopGestureRecognizer
-    )
-    let original = SplitViewGesturePolicy()
-    gesture.delegate = original
-    let coordinator = SplitViewColumnView(appContext: nil)
-    coordinator.columnId = UUID().uuidString
-    column.view.addSubview(coordinator)
-    coordinator.attach()
-    let stackView = RNSScreenStackView(frame: column.view.bounds)
-    stackView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    let root = RNSScreenView(frame: .zero)
-    root.activityState = 2
-    stackView.insertReactSubview(root, at: 0)
-    column.view.addSubview(stackView)
-    stackView.setNeedsLayout()
-    stackView.layoutIfNeeded()
-    let oldOwner = SplitViewStackScreenView(appContext: nil)
-    oldOwner.columnId = coordinator.columnId
-    root.addSubview(oldOwner)
-    oldOwner.attach()
-    coordinator.reconcile()
-    weak var oldProxy = gesture.delegate
-    #expect(oldProxy !== original)
-
-    let newOwner = SplitViewStackScreenView(appContext: nil)
-    newOwner.active = false
-    newOwner.columnId = coordinator.columnId
-    root.addSubview(newOwner)
-    newOwner.attach()
-    oldOwner.active = false
-    newOwner.active = true
-    // Reconciliation across owners can install the new delegate before restoring the old one.
-    newOwner.installControls(split: split, previousColumn: "primary")
-    let newProxy = try #require(gesture.delegate)
-    #expect(newProxy !== oldProxy)
-    #expect(newProxy.gestureRecognizerShouldBegin?(gesture) == true)
-    oldOwner.restoreControls()
-    #expect(gesture.delegate === newProxy)
-    #expect(oldProxy == nil)
-
-    original.allowsBegin = false
-    #expect(newProxy.gestureRecognizerShouldBegin?(gesture) == false)
-    original.allowsBegin = true
-    #expect(newProxy.gestureRecognizerShouldBegin?(gesture) == true)
-    let otherGesture = UIPanGestureRecognizer()
-    #expect(newProxy.gestureRecognizer?(gesture, shouldRequireFailureOf: otherGesture) == true)
-    #expect(original.receivedGesture === gesture)
-    #expect(original.receivedOtherGesture === otherGesture)
-    #expect(
-      !newProxy.responds(
-        to:
-          #selector(UIGestureRecognizerDelegate.gestureRecognizer(_:shouldRecognizeSimultaneouslyWith:))
-      )
-    )
-    #expect(original.responds(to: NSSelectorFromString("_gestureRecognizer:shouldReceiveEvent:")))
-    #expect(!newProxy.responds(to: NSSelectorFromString("_gestureRecognizer:shouldReceiveEvent:")))
-
-    newOwner.restoreControls()
-    #expect(gesture.delegate === original)
-    newOwner.installControls(split: split, previousColumn: "primary")
-    #expect(gesture.delegate?.gestureRecognizerShouldBegin?(gesture) == true)
-    newOwner.restoreControls()
-    #expect(gesture.delegate === original)
-  }
-
-  @Test
-  @available(iOS 17.0, *)
-  func `removing the window releases an owned split hierarchy`() async throws {
-    weak var releasedMarker: SplitViewStackScreenView?
-    weak var releasedScreen: UIViewController?
-    weak var releasedStack: UINavigationController?
-    weak var releasedPrimary: UINavigationController?
-    weak var releasedSplit: UISplitViewController?
-    weak var releasedDelegate: UIGestureRecognizerDelegate?
-    do {
-      let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 393, height: 852))
-      let split = UISplitViewController(style: .doubleColumn)
-      split.traitOverrides.horizontalSizeClass = .compact
-      let primary = UINavigationController(rootViewController: UIViewController())
-      let column = UIViewController()
-      let content = UINavigationController(rootViewController: column)
-      split.setViewController(primary, for: .primary)
-      split.setViewController(content, for: .secondary)
-      window.rootViewController = split
-      window.makeKeyAndVisible()
-      try await Task.sleep(for: .milliseconds(500))
-      split.show(.secondary)
-      try await Task.sleep(for: .milliseconds(500))
-      let gesture = try #require(primary.interactivePopGestureRecognizer)
-      releasedDelegate = gesture.delegate
-      let coordinator = SplitViewColumnView(appContext: nil)
-      coordinator.columnId = UUID().uuidString
-      column.view.addSubview(coordinator)
-      coordinator.attach()
-      let stackView = RNSScreenStackView(frame: column.view.bounds)
-      stackView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-      let root = RNSScreenView(frame: .zero)
-      root.activityState = 2
-      stackView.insertReactSubview(root, at: 0)
-      column.view.addSubview(stackView)
-      stackView.setNeedsLayout()
-      stackView.layoutIfNeeded()
-      let marker = SplitViewStackScreenView(appContext: nil)
-      marker.columnId = coordinator.columnId
-      root.addSubview(marker)
-      marker.attach()
-      coordinator.reconcile()
-      #expect(releasedDelegate != nil)
-      #expect(gesture.delegate !== releasedDelegate)
-      marker.removeFromSuperview()
-      #expect(gesture.delegate === releasedDelegate)
-      root.addSubview(marker)
-      marker.attach()
-      coordinator.reconcile()
-      #expect(gesture.delegate !== releasedDelegate)
-      marker.removeFromSuperview()
-      #expect(gesture.delegate === releasedDelegate)
-      root.addSubview(marker)
-      marker.attach()
-      coordinator.reconcile()
-      #expect(gesture.delegate !== releasedDelegate)
-      releasedMarker = marker
-      releasedScreen = root.controller
-      releasedStack = root.controller.navigationController
-      releasedPrimary = primary
-      releasedSplit = split
-      window.isHidden = true
-      window.rootViewController = nil
-      // Fabric invalidates screens on unmount to release their view-controller cycle.
-      root.invalidateImpl()
-    }
-    try await Task.sleep(for: .milliseconds(500))
-    #expect(releasedMarker == nil)
-    #expect(releasedScreen == nil)
-    #expect(releasedStack == nil)
-    #expect(releasedPrimary == nil)
-    #expect(releasedSplit == nil)
-    #expect(releasedDelegate == nil)
-  }
-}
-
-@Suite("SplitView root pop header")
-@MainActor
-struct SplitViewRootPopHeaderTests {
-  @Test
-  @available(iOS 17.0, *)
-  func `popping the owned column keeps the shared bar invisible until the pop completes`() async throws {
-    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 393, height: 852))
-    let split = UISplitViewController(style: .doubleColumn)
-    split.traitOverrides.horizontalSizeClass = .compact
-    let primary = UINavigationController(rootViewController: UIViewController())
-    let column = UIViewController()
-    let content = UINavigationController(rootViewController: column)
-    split.setViewController(primary, for: .primary)
-    split.setViewController(content, for: .secondary)
-    window.rootViewController = split
-    window.makeKeyAndVisible()
-    defer { window.isHidden = true }
-    try await Task.sleep(for: .milliseconds(500))
-    split.show(.secondary)
-    try await Task.sleep(for: .milliseconds(500))
-    let coordinator = SplitViewColumnView(appContext: nil)
-    coordinator.columnId = UUID().uuidString
-    column.view.addSubview(coordinator)
-    coordinator.attach()
-    let stackView = RNSScreenStackView(frame: column.view.bounds)
-    stackView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    let root = RNSScreenView(frame: .zero)
-    root.activityState = 2
-    stackView.insertReactSubview(root, at: 0)
-    column.view.addSubview(stackView)
-    stackView.setNeedsLayout()
-    stackView.layoutIfNeeded()
-    let marker = SplitViewStackScreenView(appContext: nil)
-    marker.columnId = coordinator.columnId
-    root.addSubview(marker)
-    marker.attach()
-    coordinator.reconcile()
-    #expect(primary.topViewController === content)
-    #expect(primary.isNavigationBarHidden)
-
-    primary.popViewController(animated: true)
-    try await Task.sleep(for: .milliseconds(50))
-
-    #expect(primary.transitionCoordinator != nil)
-    #expect(primary.navigationBar.layer.mask != nil)
-    try await Task.sleep(for: .milliseconds(1000))
-    #expect(primary.transitionCoordinator == nil)
-    #expect(primary.navigationBar.layer.mask == nil)
-    root.invalidateImpl()
-  }
-
-  @Test
-  @available(iOS 17.0, *)
-  func `a cancelled pop of the owned column restores the hidden shared bar and root Back`() async throws {
-    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 393, height: 852))
-    let split = UISplitViewController(style: .doubleColumn)
-    split.traitOverrides.horizontalSizeClass = .compact
-    let primary = UINavigationController(rootViewController: UIViewController())
-    let column = UIViewController()
-    let content = UINavigationController(rootViewController: column)
-    split.setViewController(primary, for: .primary)
-    split.setViewController(content, for: .secondary)
-    window.rootViewController = split
-    window.makeKeyAndVisible()
-    defer { window.isHidden = true }
-    try await Task.sleep(for: .milliseconds(500))
-    split.show(.secondary)
-    try await Task.sleep(for: .milliseconds(500))
-    let coordinator = SplitViewColumnView(appContext: nil)
-    coordinator.columnId = UUID().uuidString
-    column.view.addSubview(coordinator)
-    coordinator.attach()
-    let stackView = RNSScreenStackView(frame: column.view.bounds)
-    stackView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    let root = RNSScreenView(frame: .zero)
-    root.activityState = 2
-    stackView.insertReactSubview(root, at: 0)
-    column.view.addSubview(stackView)
-    stackView.setNeedsLayout()
-    stackView.layoutIfNeeded()
-    let marker = SplitViewStackScreenView(appContext: nil)
-    marker.columnId = coordinator.columnId
-    root.addSubview(marker)
-    marker.attach()
-    coordinator.reconcile()
-    let backAction = try #require(root.controller.navigationItem.backAction)
-    #expect(primary.isNavigationBarHidden)
-    // A custom interactive transition stands in for the edge swipe, which tests cannot cancel.
-    let driver = SplitViewPopDriver()
-    primary.delegate = driver
-
-    primary.popViewController(animated: true)
-    try await Task.sleep(for: .milliseconds(50))
-    driver.interaction.update(0.4)
-    try await Task.sleep(for: .milliseconds(50))
-
-    #expect(primary.transitionCoordinator?.isInteractive == true)
-    #expect(primary.navigationBar.layer.mask != nil)
-    driver.interaction.cancel()
-    try await Task.sleep(for: .milliseconds(1000))
-    #expect(primary.topViewController === content)
-    #expect(primary.navigationBar.layer.mask == nil)
-    #expect(primary.isNavigationBarHidden)
-    #expect(root.controller.navigationItem.backAction === backAction)
-    primary.delegate = nil
-    root.invalidateImpl()
-  }
-}
-
 @MainActor
 @available(iOS 17.0, *)
-private final class SplitViewRootPopFixture {
+private final class SplitViewRestingRootFixture {
   let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 393, height: 852))
   let split = UISplitViewController(style: .doubleColumn)
   let primary = UINavigationController(rootViewController: UIViewController())
@@ -535,11 +98,8 @@ private final class SplitViewRootPopFixture {
   let coordinator = SplitViewColumnView(appContext: nil)
   let root = RNSScreenView(frame: .zero)
   let marker = SplitViewStackScreenView(appContext: nil)
-  // UIKit's own policy rejects the synthetic gesture check, so a permissive policy stands in for it.
-  let policy = SplitViewGesturePolicy()
 
   var stack: UINavigationController? { root.controller.navigationController }
-  var gesture: UIGestureRecognizer? { primary.interactivePopGestureRecognizer }
 
   init() async throws {
     content = UINavigationController(rootViewController: column)
@@ -550,10 +110,8 @@ private final class SplitViewRootPopFixture {
     window.makeKeyAndVisible()
     try await Task.sleep(for: .milliseconds(500))
     split.show(.secondary)
-    try await Task.sleep(for: .milliseconds(500))
     try await waitForTransition(of: primary)
     column.navigationItem.title = "Entry"
-    primary.interactivePopGestureRecognizer?.delegate = policy
     coordinator.columnId = UUID().uuidString
     column.view.addSubview(coordinator)
     coordinator.attach()
@@ -580,142 +138,473 @@ private final class SplitViewRootPopFixture {
 
 @MainActor
 private func waitForTransition(of navigation: UINavigationController) async throws {
+  try await Task.sleep(for: .milliseconds(50))
   for _ in 0..<40 where navigation.transitionCoordinator != nil {
     try await Task.sleep(for: .milliseconds(50))
   }
   #expect(navigation.transitionCoordinator == nil)
 }
 
-@Suite("SplitView root pop")
+@Suite("SplitView resting Stack root")
 @MainActor
-struct SplitViewRootPopTests {
+struct SplitViewRestingRootTests {
   @Test
   @available(iOS 17.0, *)
-  func `the root gesture pops one shared bar from the Stack root item`() async throws {
-    let fixture = try await SplitViewRootPopFixture()
+  func `a resting Stack root shows its item in the shared bar`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
     defer { fixture.tearDown() }
-    let gesture = try #require(fixture.gesture)
     let stack = try #require(fixture.stack)
-    #expect(fixture.primary.isNavigationBarHidden)
 
-    #expect(gesture.delegate?.gestureRecognizerShouldBegin?(gesture) == true)
+    #expect(!fixture.content.isNavigationBarHidden)
+    #expect(fixture.column.navigationItem.title == "Settings")
+    #expect(stack.isNavigationBarHidden)
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `the root items move to the shared bar and back`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let source = fixture.root.controller.navigationItem
+    let plain = UIBarButtonItem(title: "Add", primaryAction: nil, menu: nil)
+    let custom = UIBarButtonItem(customView: UILabel())
+    source.rightBarButtonItems = [plain, custom]
+    try await Task.sleep(for: .milliseconds(50))
+
+    // An item shows in one bar at a time.
+    #expect(fixture.column.navigationItem.rightBarButtonItems?.count == 2)
+    #expect(fixture.column.navigationItem.rightBarButtonItems?.first === plain)
+    #expect(source.rightBarButtonItems == nil)
+    fixture.marker.screenFocused = false
+    fixture.coordinator.reconcile()
+    #expect(source.rightBarButtonItems?.count == 2)
+    #expect(source.rightBarButtonItems?.last === custom)
+    #expect(fixture.column.navigationItem.rightBarButtonItems == nil)
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `a Screens header update keeps the moved views of the root`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let stack = try #require(fixture.stack)
+    let source = fixture.root.controller.navigationItem
+    let custom = UIBarButtonItem(customView: UILabel())
+    source.rightBarButtonItems = [custom]
+    try await Task.sleep(for: .milliseconds(50))
+    #expect(fixture.column.navigationItem.rightBarButtonItems?.first === custom)
+
+    // Screens rebuilds the item from its subviews in this order, then shows its header.
+    source.title = "Updated"
+    source.titleView = nil
+    source.leftBarButtonItems = nil
+    source.rightBarButtonItems = nil
+    source.rightBarButtonItems = (source.rightBarButtonItems ?? []) + [custom]
+    source.leftBarButtonItems = source.leftBarButtonItems
+    source.rightBarButtonItems = source.rightBarButtonItems
+    stack.setNavigationBarHidden(false, animated: false)
+    try await Task.sleep(for: .milliseconds(50))
+
+    #expect(fixture.column.navigationItem.title == "Updated")
+    #expect(fixture.column.navigationItem.rightBarButtonItems?.first === custom)
+    #expect(source.rightBarButtonItems == nil)
+    fixture.marker.screenFocused = false
+    fixture.coordinator.reconcile()
+    #expect(source.rightBarButtonItems?.first === custom)
+    #expect(fixture.column.navigationItem.rightBarButtonItems == nil)
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `column header updates while the root is shown are kept for later`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let header = SplitViewHeaderView(appContext: nil)
+    fixture.column.view.addSubview(header)
+    header.headerTitle = "Entry 2"
+    header.configureNavigationItem(fixture.column.navigationItem)
+
+    #expect(fixture.column.navigationItem.title == "Settings")
+    fixture.marker.screenFocused = false
+    fixture.coordinator.reconcile()
+    #expect(fixture.column.navigationItem.title == "Entry 2")
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `a replaced root returns the views of the previous root`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let stack = try #require(fixture.stack)
+    let custom = UIBarButtonItem(customView: UILabel())
+    let oldItem = fixture.root.controller.navigationItem
+    oldItem.rightBarButtonItems = [custom]
+    try await Task.sleep(for: .milliseconds(50))
+    #expect(oldItem.rightBarButtonItems == nil)
+
+    let replacement = UIViewController()
+    replacement.navigationItem.title = "Replacement"
+    stack.setViewControllers([replacement], animated: false)
+    stack.view.layoutIfNeeded()
+    let marker = SplitViewStackScreenView(appContext: nil)
+    marker.columnId = fixture.coordinator.columnId
+    replacement.view.addSubview(marker)
+    marker.attach()
+    fixture.marker.active = false
+    fixture.coordinator.reconcile()
+
+    #expect(oldItem.rightBarButtonItems?.first === custom)
+    #expect(fixture.column.navigationItem.title == "Replacement")
+    marker.removeFromSuperview()
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `options of the resting root update the shared bar`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let stack = try #require(fixture.stack)
+
+    // Screens shows its header again whenever it applies the screen options.
+    fixture.root.controller.navigationItem.title = "Updated"
+    stack.setNavigationBarHidden(false, animated: false)
+
+    #expect(stack.navigationBar.isHidden)
+    try await Task.sleep(for: .milliseconds(50))
+    #expect(stack.isNavigationBarHidden)
+    #expect(fixture.column.navigationItem.title == "Updated")
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `a push from the root returns the header to the Stack`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let stack = try #require(fixture.stack)
+
+    // A push makes the root lose focus in the same mounting transaction.
+    fixture.marker.screenFocused = false
+    fixture.coordinator.reconcile()
+
+    #expect(fixture.content.isNavigationBarHidden)
+    #expect(!stack.isNavigationBarHidden)
+    #expect(fixture.column.navigationItem.title == "Entry")
+    fixture.marker.screenFocused = true
+    fixture.coordinator.reconcile()
+    #expect(!fixture.content.isNavigationBarHidden)
+    #expect(fixture.column.navigationItem.title == "Settings")
+    #expect(stack.isNavigationBarHidden)
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `a hidden Stack root header hides the shared bar`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let stack = try #require(fixture.stack)
+
+    fixture.marker.headerShown = false
+    stack.setNavigationBarHidden(true, animated: false)
+    fixture.coordinator.reconcile()
+
+    #expect(fixture.content.isNavigationBarHidden)
+    #expect(stack.isNavigationBarHidden)
+    #expect(fixture.column.navigationItem.title == "Entry")
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `popping the column animates the shared bar from the Stack root item`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let stack = try #require(fixture.stack)
+
     fixture.primary.popViewController(animated: true)
     try await Task.sleep(for: .milliseconds(50))
 
     #expect(fixture.primary.transitionCoordinator != nil)
-    #expect(!fixture.primary.isNavigationBarHidden)
-    #expect(fixture.primary.navigationBar.layer.mask == nil)
     #expect(fixture.column.navigationItem.title == "Settings")
-    #expect(stack.navigationBar.layer.mask != nil)
+    #expect(stack.isNavigationBarHidden)
     try await waitForTransition(of: fixture.primary)
-    #expect(fixture.primary.transitionCoordinator == nil)
-    #expect(fixture.column.navigationItem.title == "Entry")
-    #expect(stack.navigationBar.layer.mask == nil)
   }
 
   @Test
   @available(iOS 17.0, *)
-  func `the root Back pops one shared bar from the Stack root item`() async throws {
-    let fixture = try await SplitViewRootPopFixture()
-    defer { fixture.tearDown() }
-    let backAction = try #require(fixture.root.controller.navigationItem.backAction)
-
-    UIButton(primaryAction: backAction).sendActions(for: .primaryActionTriggered)
-    try await Task.sleep(for: .milliseconds(50))
-
-    #expect(fixture.primary.transitionCoordinator != nil)
-    #expect(!fixture.primary.isNavigationBarHidden)
-    #expect(fixture.column.navigationItem.title == "Settings")
-    try await waitForTransition(of: fixture.primary)
-    #expect(fixture.primary.topViewController !== fixture.content)
-    #expect(fixture.column.navigationItem.title == "Entry")
-  }
-
-  @Test
-  @available(iOS 17.0, *)
-  func `the root Back does not take the shared bar during another transition`() async throws {
-    let fixture = try await SplitViewRootPopFixture()
+  func `a cancelled column pop keeps the Stack root item in the shared bar`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
     defer { fixture.tearDown() }
     let stack = try #require(fixture.stack)
-    let backAction = try #require(fixture.root.controller.navigationItem.backAction)
-
-    fixture.primary.pushViewController(UIViewController(), animated: true)
-    #expect(fixture.primary.transitionCoordinator != nil)
-    UIButton(primaryAction: backAction).sendActions(for: .primaryActionTriggered)
-
-    #expect(fixture.column.navigationItem.title == "Entry")
-    #expect(stack.navigationBar.layer.mask == nil)
-    try await waitForTransition(of: fixture.primary)
-  }
-
-  @Test
-  @available(iOS 17.0, *)
-  func `a cancelled root gesture restores the Stack header and the hidden shared bar`() async throws {
-    let fixture = try await SplitViewRootPopFixture()
-    defer { fixture.tearDown() }
-    let gesture = try #require(fixture.gesture)
-    let stack = try #require(fixture.stack)
-    let backAction = try #require(fixture.root.controller.navigationItem.backAction)
-    let safeArea = fixture.column.additionalSafeAreaInsets
     // A custom interactive transition stands in for the edge swipe, which tests cannot cancel.
     let driver = SplitViewPopDriver()
     fixture.primary.delegate = driver
 
-    #expect(gesture.delegate?.gestureRecognizerShouldBegin?(gesture) == true)
     fixture.primary.popViewController(animated: true)
     try await Task.sleep(for: .milliseconds(50))
     driver.interaction.update(0.4)
     try await Task.sleep(for: .milliseconds(50))
-
     #expect(fixture.primary.transitionCoordinator?.isInteractive == true)
-    #expect(!fixture.primary.isNavigationBarHidden)
-    #expect(fixture.column.navigationItem.title == "Settings")
     driver.interaction.cancel()
     try await waitForTransition(of: fixture.primary)
-    try await Task.sleep(for: .milliseconds(100))
+
     #expect(fixture.primary.topViewController === fixture.content)
-    #expect(fixture.primary.isNavigationBarHidden)
-    #expect(fixture.column.navigationItem.title == "Entry")
-    #expect(fixture.column.additionalSafeAreaInsets == safeArea)
-    #expect(stack.navigationBar.layer.mask == nil)
-    #expect(fixture.root.controller.navigationItem.backAction === backAction)
+    #expect(!fixture.content.isNavigationBarHidden)
+    // Without a header config, Screens clears the root title when the root appears again.
+    #expect(fixture.column.navigationItem.title == fixture.root.controller.navigationItem.title)
+    #expect(stack.isNavigationBarHidden)
+  }
+
+  @Test(arguments: [false, true])
+  @available(iOS 26.0, *)
+  func `a Stack root with disabled gestures blocks the swipe back to the previous column`(contentPop: Bool) async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let gesture = try #require(
+      contentPop
+        ? fixture.primary.interactiveContentPopGestureRecognizer
+        : fixture.primary.interactivePopGestureRecognizer
+    )
+    let original = gesture.delegate
+
+    fixture.marker.gestureEnabled = false
+    fixture.coordinator.reconcile()
+    #expect(gesture.delegate?.gestureRecognizerShouldBegin?(gesture) == false)
+
+    fixture.marker.gestureEnabled = true
+    fixture.coordinator.reconcile()
+    #expect(gesture.delegate === original)
   }
 
   @Test
   @available(iOS 17.0, *)
-  func `a root gesture that starts no transition restores the column`() async throws {
-    let fixture = try await SplitViewRootPopFixture()
-    defer { fixture.tearDown() }
-    let gesture = try #require(fixture.gesture)
-    let stack = try #require(fixture.stack)
-    let safeArea = fixture.column.additionalSafeAreaInsets
+  func `the gesture block ends when another column is on top`() async throws {
+    let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 393, height: 852))
+    let split = UISplitViewController(style: .tripleColumn)
+    split.traitOverrides.horizontalSizeClass = .compact
+    let primary = UINavigationController(rootViewController: UIViewController())
+    let middle = UINavigationController(rootViewController: UIViewController())
+    let column = UIViewController()
+    split.setViewController(primary, for: .primary)
+    split.setViewController(middle, for: .supplementary)
+    split.setViewController(UINavigationController(rootViewController: column), for: .secondary)
+    window.rootViewController = split
+    window.makeKeyAndVisible()
+    defer { window.isHidden = true }
+    try await Task.sleep(for: .milliseconds(500))
+    split.show(.supplementary)
+    try await waitForTransition(of: primary)
+    split.show(.secondary)
+    try await waitForTransition(of: primary)
+    let gesture = try #require(primary.interactivePopGestureRecognizer)
+    let original = gesture.delegate
+    let coordinator = SplitViewColumnView(appContext: nil)
+    coordinator.columnId = UUID().uuidString
+    column.view.addSubview(coordinator)
+    coordinator.attach()
+    let stackView = RNSScreenStackView(frame: column.view.bounds)
+    let root = RNSScreenView(frame: .zero)
+    root.activityState = 2
+    stackView.insertReactSubview(root, at: 0)
+    column.view.addSubview(stackView)
+    stackView.layoutIfNeeded()
+    let marker = SplitViewStackScreenView(appContext: nil)
+    marker.columnId = coordinator.columnId
+    marker.gestureEnabled = false
+    root.addSubview(marker)
+    marker.attach()
+    coordinator.reconcile()
+    #expect(gesture.delegate !== original)
 
-    #expect(gesture.delegate?.gestureRecognizerShouldBegin?(gesture) == true)
-    #expect(fixture.column.navigationItem.title == "Settings")
+    split.show(.supplementary)
+    try await waitForTransition(of: primary)
+    coordinator.reconcile()
+
+    #expect(primary.topViewController === middle)
+    #expect(gesture.delegate === original)
+    root.invalidateImpl()
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `the shared bar shows a custom view again after a cancelled column pop removed it`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let view = UILabel()
+    fixture.root.controller.navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: view)]
     try await Task.sleep(for: .milliseconds(100))
+    #expect(view.isDescendant(of: fixture.primary.navigationBar))
+    let driver = SplitViewPopDriver()
+    fixture.primary.delegate = driver
 
-    #expect(fixture.primary.isNavigationBarHidden)
-    #expect(fixture.column.navigationItem.title == "Entry")
-    #expect(fixture.column.additionalSafeAreaInsets == safeArea)
-    #expect(stack.navigationBar.layer.mask == nil)
-  }
-
-  @Test
-  @available(iOS 17.0, *)
-  func `removing the column during a root pop restores the previous column Back`() async throws {
-    let fixture = try await SplitViewRootPopFixture()
-    defer { fixture.tearDown() }
-    let gesture = try #require(fixture.gesture)
-    let previousItem = try #require(fixture.primary.viewControllers.first?.navigationItem)
-
-    #expect(gesture.delegate?.gestureRecognizerShouldBegin?(gesture) == true)
     fixture.primary.popViewController(animated: true)
     try await Task.sleep(for: .milliseconds(50))
-    #expect(previousItem.backButtonTitle == "Back")
-    fixture.coordinator.removeFromSuperview()
+    driver.interaction.update(0.4)
+    try await Task.sleep(for: .milliseconds(50))
+    driver.interaction.cancel()
+    try await waitForTransition(of: fixture.primary)
+    // The bar removes the views it showed for the cancelled pop, after the transition ends.
+    view.removeFromSuperview()
+    // The repair checks after the removal run within this wait.
+    try await Task.sleep(for: .milliseconds(200))
 
-    #expect(previousItem.backButtonTitle == nil)
+    #expect(view.isDescendant(of: fixture.primary.navigationBar))
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `the shared bar shows a custom view again after the column is shown again`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let view = UILabel()
+    fixture.root.controller.navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: view)]
+    try await Task.sleep(for: .milliseconds(100))
+    fixture.primary.popViewController(animated: true)
+    try await waitForTransition(of: fixture.primary)
+
+    fixture.split.show(.secondary)
+    try await waitForTransition(of: fixture.primary)
+    // The bar that animated the earlier pop removes the view in a later layout.
+    view.removeFromSuperview()
+    // The repair checks after the removal run within this wait.
+    try await Task.sleep(for: .milliseconds(200))
+
+    #expect(fixture.primary.topViewController === fixture.content)
+    #expect(view.isDescendant(of: fixture.primary.navigationBar))
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `the shared bar shows a custom view again after Screens wraps it in a new item`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let view = UILabel()
+    fixture.root.controller.navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: view)]
+    try await Task.sleep(for: .milliseconds(100))
+
+    // Screens creates a new item for the same view when it applies the options again. The hidden Stack bar then
+    // removes that view from the shared bar.
+    fixture.root.controller.navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: view)]
+    try await Task.sleep(for: .milliseconds(50))
+    view.removeFromSuperview()
+    // The repair checks after the removal run within this wait.
+    try await Task.sleep(for: .milliseconds(200))
+
+    #expect(view.isDescendant(of: fixture.primary.navigationBar))
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `the shared bar does not clear custom views that it still shows`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let view = UILabel()
+    fixture.root.controller.navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: view)]
+    try await Task.sleep(for: .milliseconds(100))
+    var cleared = false
+    let observation = fixture.column.navigationItem.observe(\.rightBarButtonItems) { item, _ in
+      if item.rightBarButtonItems == nil { cleared = true }
+    }
+    defer { observation.invalidate() }
+
+    // An options update wraps the view again. A pressed button or an open menu keeps its state when the view stays.
+    fixture.root.controller.navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: view)]
+    try await Task.sleep(for: .milliseconds(1500))
+
+    #expect(view.isDescendant(of: fixture.primary.navigationBar))
+    #expect(!cleared)
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `the shared bar leaves a custom view outside the bar after the checks end`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let view = UILabel()
+    fixture.root.controller.navigationItem.rightBarButtonItems = [UIBarButtonItem(customView: view)]
+    // The checks after the views moved end after about one second.
+    try await Task.sleep(for: .milliseconds(1500))
+
+    // UIKit moves a custom view out of the bar on purpose, for example into the overflow menu.
+    view.removeFromSuperview()
+    fixture.coordinator.reconcile()
+    try await Task.sleep(for: .milliseconds(200))
+
+    #expect(view.superview == nil)
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `the column reports the shared bar height while it shows the root`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    var heights: [Double] = []
+    fixture.coordinator.onOwnershipChange.onEventSent = { heights.append($0["mirroredHeaderHeight"] as? Double ?? -1) }
+
+    fixture.marker.screenFocused = false
+    fixture.coordinator.reconcile()
+    #expect(heights.last == 0)
+    fixture.marker.screenFocused = true
+    fixture.coordinator.reconcile()
+    try await Task.sleep(for: .milliseconds(50))
+
+    let bar = fixture.primary.navigationBar
+    #expect(bar.frame.maxY > 0)
+    #expect(heights.last == Double(bar.frame.maxY))
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `the expanded layout keeps the Stack header`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let stack = try #require(fixture.stack)
+
+    fixture.split.traitOverrides.horizontalSizeClass = .regular
+    try await Task.sleep(for: .milliseconds(500))
+
+    #expect(!fixture.split.isCollapsed)
+    #expect(!stack.isNavigationBarHidden)
     #expect(fixture.column.navigationItem.title == "Entry")
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `removing the Stack or the column restores both headers`() async throws {
+    let fixture = try await SplitViewRestingRootFixture()
+    defer { fixture.tearDown() }
+    let stack = try #require(fixture.stack)
+
+    fixture.marker.removeFromSuperview()
+    #expect(!stack.isNavigationBarHidden)
+    #expect(fixture.column.navigationItem.title == "Entry")
+    fixture.root.addSubview(fixture.marker)
+    fixture.marker.attach()
+    fixture.coordinator.reconcile()
+    #expect(stack.isNavigationBarHidden)
+    fixture.coordinator.removeFromSuperview()
+    #expect(!stack.isNavigationBarHidden)
+    #expect(fixture.column.navigationItem.title == "Entry")
+  }
+
+  @Test
+  @available(iOS 17.0, *)
+  func `removing the window releases the split hierarchy`() async throws {
+    weak var releasedMarker: SplitViewStackScreenView?
+    weak var releasedStack: UINavigationController?
+    weak var releasedSplit: UISplitViewController?
+    do {
+      let fixture = try await SplitViewRestingRootFixture()
+      #expect(fixture.stack?.isNavigationBarHidden == true)
+      releasedMarker = fixture.marker
+      releasedStack = fixture.stack
+      releasedSplit = fixture.split
+      fixture.window.rootViewController = nil
+      // Fabric invalidates screens on unmount to release their view-controller cycle.
+      fixture.tearDown()
+    }
+    try await Task.sleep(for: .milliseconds(500))
+    #expect(releasedMarker == nil)
+    #expect(releasedStack == nil)
+    #expect(releasedSplit == nil)
   }
 }
 
@@ -791,29 +680,5 @@ private final class SplitViewPopDriver: NSObject, UINavigationControllerDelegate
       from.transform = .identity
       transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
     }
-  }
-}
-
-private final class SplitViewGesturePolicy: NSObject, UIGestureRecognizerDelegate {
-  var allowsBegin = true
-  weak var receivedGesture: UIGestureRecognizer?
-  weak var receivedOtherGesture: UIGestureRecognizer?
-
-  func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-    allowsBegin
-  }
-
-  func gestureRecognizer(
-    _ gestureRecognizer: UIGestureRecognizer,
-    shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer
-  ) -> Bool {
-    receivedGesture = gestureRecognizer
-    receivedOtherGesture = otherGestureRecognizer
-    return true
-  }
-
-  @objc(_gestureRecognizer:shouldReceiveEvent:)
-  func privateAdmission(_ gestureRecognizer: UIGestureRecognizer, event: UIEvent) -> Bool {
-    false
   }
 }
