@@ -47,7 +47,11 @@ function fullConfig() {
 
 const filename = '/app/node_modules/example/index.js';
 const workspaceFilename = '/app/packages/expo/build/value.js';
-function canonicalModuleBody(code: string, unwrapMetroFactory = false): string {
+function canonicalModuleBody(
+  code: string,
+  unwrapMetroFactory = false,
+  names: string[] = []
+): string {
   const file = babel.parseSync(code, { sourceType: 'script' });
   if (!file) throw new Error('Failed to parse transformed module');
   if (unwrapMetroFactory) {
@@ -64,6 +68,15 @@ function canonicalModuleBody(code: string, unwrapMetroFactory = false): string {
     file.program.directives = factoryBody.directives;
     babel.traverse(file, {
       CallExpression(path) {
+        const argument = path.node.arguments[0];
+        if (
+          babel.types.isIdentifier(path.node.callee, { name: 'require' }) &&
+          babel.types.isMemberExpression(argument) &&
+          babel.types.isNumericLiteral(argument.property) &&
+          names[argument.property.value] != null
+        ) {
+          path.node.arguments = [babel.types.stringLiteral(names[argument.property.value]!)];
+        }
         if (
           babel.types.isIdentifier(path.node.callee, { name: 'require' }) &&
           babel.types.isStringLiteral(path.node.arguments[1])
@@ -2192,7 +2205,13 @@ it.each([
   });
   if (!expected?.code) throw new Error('Babel live-bindings transform produced no output');
 
-  expect(canonicalModuleBody(native.result.code, true)).toBe(canonicalModuleBody(expected.code));
+  expect(
+    canonicalModuleBody(
+      native.result.code,
+      true,
+      native.dependencies.map(({ name }) => name)
+    )
+  ).toBe(canonicalModuleBody(expected.code));
 });
 
 it.each([
@@ -2219,7 +2238,13 @@ it.each([
     plugins: [[importExportLiveBindingsPlugin, { performConstantFolding: true, resolve: false }]],
   });
   if (!expected?.code) throw new Error('Babel live-bindings transform produced no output');
-  expect(canonicalModuleBody(native.result.code, true)).toBe(canonicalModuleBody(expected.code));
+  expect(
+    canonicalModuleBody(
+      native.result.code,
+      true,
+      native.dependencies.map(({ name }) => name)
+    )
+  ).toBe(canonicalModuleBody(expected.code));
 });
 
 it('uses static import and export values when live bindings are disabled', async () => {
