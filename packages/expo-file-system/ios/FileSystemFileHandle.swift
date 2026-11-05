@@ -123,6 +123,8 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
       throw UnableToReadHandleException("File opened write-only")
     }
 
+    // Read the descriptor once: `FileHandle.fileDescriptor` raises an ObjC exception after close.
+    let descriptor = handle.fileDescriptor
     let fileSize = size ?? 0
     let available = position < fileSize ? Int(clamping: fileSize - position) : 0
     let toRead = max(0, min(length, available))
@@ -137,7 +139,7 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
         return
       }
       while total < toRead {
-        let count = pread(handle.fileDescriptor, base + total, toRead - total, off_t(position) + off_t(total))
+        let count = pread(descriptor, base + total, toRead - total, off_t(position) + off_t(total))
         if count < 0 {
           throw UnableToReadHandleException(String(cString: strerror(errno)))
         }
@@ -168,6 +170,7 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
       throw UnableToWriteHandleException("File opened read-only")
     }
 
+    let descriptor = handle.fileDescriptor
     let start = mode == .append ? (size ?? 0) : position
     let length = data.byteLength
     var total = 0
@@ -176,7 +179,7 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
         return
       }
       while total < length {
-        let count = pwrite(handle.fileDescriptor, base + total, length - total, off_t(start) + off_t(total))
+        let count = pwrite(descriptor, base + total, length - total, off_t(start) + off_t(total))
         if count < 0 {
           throw UnableToWriteHandleException(String(cString: strerror(errno)))
         }

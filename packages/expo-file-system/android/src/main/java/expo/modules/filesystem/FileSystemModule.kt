@@ -357,11 +357,10 @@ class FileSystemModule : Module() {
         ArrayBuffer.wrap(fileHandle.readAt(position, length))
       }
       AsyncFunction("writeAt") Coroutine { fileHandle: FileSystemFileHandle, position: Long, data: ArrayBuffer ->
-        // Zero-copy for native-backed buffers, one copy through the JS queue for JS-heap-backed ones.
-        // Done before the hop so the file write itself never runs on the JS thread.
-        val buffer = data.toDirectBuffer()
         withContext(Dispatchers.IO) {
-          fileHandle.writeAt(position, buffer)
+          // `toDirectBuffer()` copies the bytes once; for a JS-heap-backed buffer that copy waits
+          // for the JS queue, so it runs here on the IO pool and never blocks the shared module queue.
+          fileHandle.writeAt(position, data.toDirectBuffer())
         }
       }
       Function("writeAtSync") { fileHandle: FileSystemFileHandle, position: Long, data: ArrayBuffer ->

@@ -129,7 +129,9 @@ class FileSystemFileHandle private constructor(
         readPosition += result
       }
       buffer.flip()
-      return buffer
+      // `slice()` is zero-copy and bounds the capacity to the bytes read, so a file that shrank
+      // between the size check and the read never hands JS a stale tail.
+      return buffer.slice()
     } catch (e: Exception) {
       throw UnableToReadHandleException(e.message ?: "unknown error")
     }

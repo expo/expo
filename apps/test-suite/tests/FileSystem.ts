@@ -2245,6 +2245,38 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
       handle.close();
     });
 
+    it('Lets a pending async read finish when close() is called before it settles', async () => {
+      const src = new File(testDirectory, 'close-race.txt');
+      src.writeSync('abcdef');
+      const handle = src.open();
+      const pending = handle.readBytes(3);
+      handle.close();
+      expect(handle.offset).toBe(null);
+      expect(await pending).toEqual(new Uint8Array([97, 98, 99])); // abc
+      expect(handle.size).toBe(null);
+      expect(() => handle.readBytesSync(1)).toThrow();
+    });
+
+    it('Lets a pending async write finish when close() is called before it settles', async () => {
+      const src = new File(testDirectory, 'close-race-write.txt');
+      src.create();
+      const handle = src.open();
+      const pending = handle.writeBytes(new Uint8Array(256 * 1024).fill(121)); // 'y'
+      handle.close();
+      await pending;
+      expect(src.size).toBe(256 * 1024);
+    });
+
+    it('Cancels a ReadableStream while a read is pending', async () => {
+      const src = new File(testDirectory, 'cancel-stream.txt');
+      src.writeSync('abcdefghij'.repeat(1000));
+      const reader = src.readableStream().getReader();
+      const pending = reader.read();
+      await reader.cancel();
+      const result = await pending;
+      expect(result.done === true || result.value?.length === 1024).toBe(true);
+    });
+
     it('Reads a file in chunks', () => {
       const src = new File(testDirectory, 'abcs.txt');
       const alphabet = 'abcdefghijklmnopqrstuvwxyz';

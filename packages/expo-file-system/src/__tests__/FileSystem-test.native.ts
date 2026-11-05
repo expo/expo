@@ -636,6 +636,18 @@ describe('expo-file-system behavioral mock', () => {
         handle.close();
       });
 
+      it('lets a pending async read finish when close() is called before it settles', async () => {
+        const file = makeFile('close-race.txt', 'abcdef');
+        const handle = file.open();
+        const pending = handle.readBytes(3);
+        handle.close();
+        expect(handle.offset).toBeNull();
+        expect(await pending).toEqual(encode('abc'));
+        expect(handle.size).toBeNull();
+        expect(() => handle.readBytesSync(1)).toThrow();
+        await expect(handle.readBytes(1)).rejects.toThrow();
+      });
+
       it('ignores a null offset assignment', () => {
         const file = makeFile('null-offset.txt', 'abc');
         const handle = file.open();

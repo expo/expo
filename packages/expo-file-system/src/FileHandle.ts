@@ -38,6 +38,8 @@ export class FileHandle {
   // Async operations on one handle run one after another, so concurrent calls read consecutive
   // chunks instead of starting from the same offset.
   private queue: Promise<unknown> = Promise.resolve();
+  // Async operations that have been queued and have not settled yet.
+  private pending = 0;
 
   /**
    * @hidden
@@ -110,6 +112,7 @@ export class FileHandle {
    * @return A `Uint8Array` containing the bytes read.
    */
   readBytesSync(length: number): Uint8Array<ArrayBuffer> {
+    this.ensureOpen();
     const buffer = this.native.readAtSync(this.cursor, length);
     this.cursor += buffer.byteLength;
     return new Uint8Array(buffer);
@@ -134,6 +137,7 @@ export class FileHandle {
    * @param bytes A `Uint8Array` containing the bytes to write.
    */
   writeBytesSync(bytes: Uint8Array): void {
+    this.ensureOpen();
     this.cursor = this.native.writeAtSync(this.cursor, bytes);
   }
 
@@ -149,11 +153,30 @@ export class FileHandle {
       return;
     }
     this.closed = true;
-    this.native.close();
+    if (this.pending === 0) {
+      this.native.close();
+      return;
+    }
+    // An async operation is still running on a native thread. Closing the descriptor under it is
+    // unsafe, so the native close waits until the queued operations have settled.
+    const closeNative = () => this.native.close();
+    this.queue = this.queue.then(closeNative, closeNative).catch(() => {});
+  }
+
+  private ensureOpen(): void {
+    if (this.closed) {
+      throw new Error('The file handle is closed');
+    }
   }
 
   private enqueue<T>(operation: () => Promise<T>): Promise<T> {
-    const result = this.queue.then(operation, operation);
+    if (this.closed) {
+      return Promise.reject(new Error('The file handle is closed'));
+    }
+    this.pending += 1;
+    const result = this.queue.then(operation, operation).finally(() => {
+      this.pending -= 1;
+    });
     this.queue = result.catch(() => {});
     return result;
   }
