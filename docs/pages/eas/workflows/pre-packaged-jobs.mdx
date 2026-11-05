@@ -2202,9 +2202,9 @@ The `preview` profile must set [`distribution: internal`](/eas/json/#distributio
 
 Require approval from a user before continuing with the workflow. A user can approve or reject which translates to success or failure of the job.
 
-> **info** Approve the job within 30 days after EAS creates the workflow run. If the job is approved later, the run can fail after the approval with "Failed to process workflow run". To continue, [re-run the workflow from its failed jobs](/eas/workflows/manage-workflow-runs/#re-run-from-failed-jobs). The new run reuses the approval, so you don't need to approve again. If the dashboard doesn't show the re-run options, [start a new run](/eas/workflows/manage-workflow-runs/#re-run-availability).
+> **info** Approve the job within 30 days after EAS creates the workflow run. If the job is approved later, the run fails after approval, before its next job starts. To continue, [re-run the workflow from its failed jobs](/eas/workflows/manage-workflow-runs/#re-run-from-failed-jobs). The new run reuses the approval, so you don't need to approve again. If the dashboard doesn't show the re-run options, [start a new run](/eas/workflows/manage-workflow-runs/#re-run-availability).
 
-Revoking the access token that started the run doesn't stop jobs from starting within 30 days after EAS creates the run. Access changes don't cancel running jobs. [Cancel the run](/eas/workflows/manage-workflow-runs/#cancel-a-workflow-run) with **Cancel workflow** or `eas workflow:cancel`.
+Jobs after approval use the access of the user or robot that started the run, not the approver's. If they're removed from the account or their role no longer allows running workflows, the run fails the same way. This includes a role change to Viewer. Revoking the access token that started the run doesn't stop jobs from starting within 30 days after EAS creates the run. Access changes don't cancel running jobs. [Cancel the run](/eas/workflows/manage-workflow-runs/#cancel-a-workflow-run) with **Cancel workflow** or `eas workflow:cancel`.
 
 ### Syntax
 
