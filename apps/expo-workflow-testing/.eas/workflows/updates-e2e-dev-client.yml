@@ -18,6 +18,7 @@ on:
       - packages/expo-dev-launcher/**
       - templates/expo-template-bare-minimum/**
       - '!**/ios/Tests/**'
+      - '!**/apple/Tests/**'
       - '!**/android/src/test/**'
       - '!**/android/src/androidTest/**'
   pull_request:
@@ -33,6 +34,7 @@ on:
       - packages/expo-dev-launcher/**
       - templates/expo-template-bare-minimum/**
       - '!**/ios/Tests/**'
+      - '!**/apple/Tests/**'
       - '!**/android/src/test/**'
       - '!**/android/src/androidTest/**'
   schedule:

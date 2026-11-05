@@ -19,6 +19,7 @@ on:
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
       - '!**/ios/Tests/**'
+      - '!**/apple/Tests/**'
       - '!**/android/src/test/**'
       - '!**/android/src/androidTest/**'
 
