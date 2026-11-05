@@ -1,5 +1,7 @@
 ---
 '@expo/cli': patch
+'create-expo': patch
+'expo-doctor': patch
 ---
 
-Stop failing on invalid `CI` values, and only treat `1` and `true` as CI.
+Treat non-boolean `CI` values, like `CI=yes`, as false instead of failing.
