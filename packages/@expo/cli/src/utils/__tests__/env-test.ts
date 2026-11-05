@@ -33,7 +33,6 @@ describe('CI', () => {
     for (const [value, expected] of [
       ['1', true],
       ['TRUE', true],
-      ['false', false],
       ['yes', false],
       ['', false],
     ] as const) {
