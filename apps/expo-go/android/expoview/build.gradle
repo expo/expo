@@ -240,6 +240,7 @@ dependencies {
 
   // In-app review prompt (HomeAppViewModel)
   implementation "com.google.android.play:review:2.0.1"
+  implementation "com.google.android.play:review-ktx:2.0.0"
 
   // room (replaced DBFlow, whose kapt-only processor is incompatible with AGP 9's built-in Kotlin)
   // 2.7+ is required for KSP2, which ksp 2.x uses.
