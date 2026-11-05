@@ -1,7 +1,10 @@
 import { createContext, useContext, type Dispatch, type SetStateAction } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
+export const ROOT_TITLE = 'Split root';
+
 export type DemoState = {
+  collapsed: boolean;
   rootHidden: boolean;
   setRootHidden: Dispatch<SetStateAction<boolean>>;
   largeTitle: boolean;

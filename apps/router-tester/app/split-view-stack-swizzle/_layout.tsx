@@ -3,10 +3,11 @@ import { useRef, useState } from 'react';
 import { ScrollView, Text } from 'react-native';
 import type { SplitHostCommands } from 'react-native-screens/experimental';
 
-import { Control, DemoContext } from '@/components/split-view-stack-swizzle';
+import { Control, DemoContext, ROOT_TITLE } from '@/components/split-view-stack-swizzle';
 
 export default function Layout() {
   const splitRef = useRef<SplitHostCommands>(null);
+  const [collapsed, setCollapsed] = useState(false);
   const [rootHidden, setRootHidden] = useState(false);
   const [largeTitle, setLargeTitle] = useState(false);
   const [gestureEnabled, setGestureEnabled] = useState(true);
@@ -15,6 +16,7 @@ export default function Layout() {
   return (
     <DemoContext.Provider
       value={{
+        collapsed,
         rootHidden,
         setRootHidden,
         largeTitle,
@@ -30,6 +32,8 @@ export default function Layout() {
         ref={splitRef}
         preferredDisplayMode="twoBesideSecondary"
         showSecondaryToggleButton
+        onCollapse={() => setCollapsed(true)}
+        onExpand={() => setCollapsed(false)}
         disableHorizontalSafeAreaInsets>
         <SplitView.Column header={{ title: 'Sidebar' }}>
           <ScrollView
@@ -47,7 +51,7 @@ export default function Layout() {
             <Control label="Show content" onPress={() => splitRef.current?.show('secondary')} />
           </ScrollView>
         </SplitView.Column>
-        <SplitView.Content header={{ title: 'Split root', hidden: rootHidden, largeTitle }} />
+        <SplitView.Content header={{ title: ROOT_TITLE, hidden: rootHidden, largeTitle }} />
       </SplitView>
     </DemoContext.Provider>
   );
