@@ -12,8 +12,11 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.PersistableBundle
+import android.os.PowerManager
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -37,6 +40,8 @@ import expo.modules.location.services.LocationTaskService.ServiceBinder
 import kotlin.math.abs
 
 class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsInterface?) : TaskConsumer(context, taskManagerUtils), TaskConsumerInterface, LifecycleEventListener {
+  private val mDeliveryHandler = Handler(Looper.getMainLooper())
+  private val mPendingDeliveries = mutableMapOf<PowerManager.WakeLock, Runnable>()
   private var mTask: TaskInterface? = null
   private var mPendingIntent: PendingIntent? = null
   private var mService: LocationTaskService? = null
@@ -66,6 +71,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
   override fun didUnregister() {
     stopLocationUpdates()
     stopForegroundService()
+    releasePendingDeliveries()
     mTask = null
     mPendingIntent = null
     mLocationRequest = null
@@ -294,7 +300,6 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
     if (locations.isEmpty()) {
       return
     }
-    val context = context.applicationContext
     val data: MutableList<PersistableBundle> = ArrayList()
     var lastReported: Location? = null
     for (location in locations) {
@@ -310,7 +315,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
     }
     if (data.isNotEmpty()) {
       mLastReportedLocation = lastReported
-      taskManagerUtils.scheduleJob(context, mTask, data)
+      deliverLocations(data)
     }
   }
 
@@ -334,7 +339,6 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
     if (!shouldReportDeferredLocations()) {
       return
     }
-    val context = context.applicationContext
     val data: MutableList<PersistableBundle> = ArrayList()
     for (location in mDeferredLocations) {
       val timestamp = location.time
@@ -353,8 +357,75 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       mDeferredDistance = 0.0
       mDeferredLocations.clear()
 
-      // Schedule new job.
-      taskManagerUtils.scheduleJob(context, mTask, data)
+      deliverLocations(data)
+    }
+  }
+
+  private fun deliverLocations(locations: List<PersistableBundle>) {
+    val task = mTask ?: return
+    // Light Doze defers ordinary jobs even while a location foreground service runs.
+    if (mService?.isPromoted == true && shouldUseForegroundService(task.options)) {
+      val bundles = ArrayList<Bundle>()
+      for (location in locations) {
+        val bundle = Bundle()
+        val coords = Bundle()
+        coords.putAll(location.getPersistableBundle("coords"))
+        bundle.putAll(location)
+        bundle.putBundle("coords", coords)
+        bundles.add(bundle)
+      }
+      if (executeForegroundLocations(bundles)) {
+        return
+      }
+    }
+    taskManagerUtils.scheduleJob(context.applicationContext, task, locations)
+  }
+
+  private fun executeForegroundLocations(locations: ArrayList<Bundle>): Boolean {
+    val powerManager = context.getSystemService(Context.POWER_SERVICE) as PowerManager
+    val wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "ExpoLocation:delivery")
+    wakeLock.setReferenceCounted(false)
+    try {
+      // The broadcast wakes the receiver, but JavaScript persistence is asynchronous.
+      wakeLock.acquire(FOREGROUND_DELIVERY_TIMEOUT_MS)
+    } catch (error: SecurityException) {
+      Log.e(TAG, "Cannot protect foreground location delivery; using JobScheduler", error)
+      return false
+    }
+    val timeout = Runnable { finishForegroundDelivery(wakeLock) }
+    synchronized(mPendingDeliveries) {
+      mPendingDeliveries[wakeLock] = timeout
+    }
+    mDeliveryHandler.postDelayed(timeout, FOREGROUND_DELIVERY_TIMEOUT_MS)
+    try {
+      executeTaskWithLocationBundles(locations) { finishForegroundDelivery(wakeLock) }
+    } catch (error: Exception) {
+      // Dispatch may already have reached JavaScript; do not enqueue the batch twice.
+      finishForegroundDelivery(wakeLock)
+      Log.e(TAG, "Foreground location task dispatch failed", error)
+    }
+    return true
+  }
+
+  private fun finishForegroundDelivery(wakeLock: PowerManager.WakeLock) {
+    synchronized(mPendingDeliveries) {
+      val timeout = mPendingDeliveries.remove(wakeLock) ?: return
+      mDeliveryHandler.removeCallbacks(timeout)
+      if (wakeLock.isHeld) {
+        wakeLock.release()
+      }
+    }
+  }
+
+  private fun releasePendingDeliveries() {
+    synchronized(mPendingDeliveries) {
+      for ((wakeLock, timeout) in mPendingDeliveries) {
+        mDeliveryHandler.removeCallbacks(timeout)
+        if (wakeLock.isHeld) {
+          wakeLock.release()
+        }
+      }
+      mPendingDeliveries.clear()
     }
   }
 
@@ -406,6 +477,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
 
   companion object {
     private const val TAG = "LocationTaskConsumer"
+    private const val FOREGROUND_DELIVERY_TIMEOUT_MS = 15_000L
     private const val FOREGROUND_SERVICE_KEY = "foregroundService"
     private var sLastTimestamp: Long = 0
     fun shouldUseForegroundService(options: Map<String?, Any?>): Boolean {
