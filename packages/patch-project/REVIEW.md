@@ -1,36 +1,49 @@
-# Review guidance for patch-project
+# Reviewing patch-project
 
-The autonomous reviewer reads this file with the repository's acceptance criteria. It adds
-what is specific to this package. It never lowers the criteria. Paths are relative to this
-directory.
+What to check when you change or review this package. Paths are relative to this directory.
 
-## Model
+## What the package does
 
-A patch is a diff against the prebuild template, applied at `withFinalizedMod` time. A fix
-that works around that model fails right solution.
+patch-project keeps a user's manual edits to `android/` and `ios/` across prebuilds. It has
+two parts:
 
-## Layers
+- **The CLI** (`npx patch-project`, `src/cli/`) prebuilds a clean native project from the
+  template, diffs the user's native project against it, and writes
+  `cng-patches/<platform>+<templateChecksum>.patch`.
+- **The config plugin** (`src/withPatchPlugin.ts`) applies that patch during
+  `npx expo prebuild`, in a `withFinalizedMod`, after every other plugin.
 
-- CLI flow lives in `src/cli/`.
-- Plugin behavior lives in `src/withPatchPlugin.ts`.
-- Git calls live in `src/gitPatch.ts` and go through `@expo/spawn-async` argv arrays. A shell
-  string fails clean solution.
+The patch files are user data. Users commit them to their own repositories.
 
-## What failure looks like here
+## Rules
 
-- The patch applies on the first `prebuild` and fails on the second with `--no-clean`. Walk
-  the second run before you report, and name the write that breaks idempotency.
-- Paths resolve against the wrong root in a monorepo. `getPatchPathArgsAsync` in
-  `src/gitPatch.ts` exists for this.
-- The user's `android/` or `ios/` directory is moved aside and not restored when a step
-  throws. Every move in `src/cli/patchProjectAsync.ts` needs a restore path.
-- A warning replaces an error the user needed, or the reverse. `WarningAggregator` is the
-  documented channel for a project shape the plugin skips.
-
-## Always needs a human
-
-- The apply and reverse logic in `src/gitPatch.ts`.
+- **Prebuild runs more than once.** With `--no-clean`, the patch can already be in the native
+  project. `isPatchAppliedAsync` checks this with a reverse `git apply --check`. A change to
+  the apply path must keep a second prebuild working.
+- **Monorepos.** `git apply` resolves paths from the root of the enclosing repository. Every
+  `git apply` call passes the `--directory` argument from `getPatchPathArgsAsync`, or the
+  patch is skipped with no error when the project is in a subdirectory.
+- **Git calls.** All git calls go through `runGitAsync` in `src/gitPatch.ts`, with an argv
+  array. Never build a shell string. A missing `git` binary (`ENOENT`) must reach the user. It
+  must not read as "patch not applied".
+- **The user's native project.** The CLI moves the user's `android/` or `ios/` into
+  `.patch-project-tmp/<platform>/` and deletes that directory in a `finally`. A change to this
+  flow must keep the user's project recoverable when any step throws. The iOS project file is
+  normalized before the diff, and `revertNormalizeNativeProjectsAsync` restores it.
+- **Patch file names and format.** The name ties a patch to a template checksum. A change to
+  the name, the location (`patchRoot`) or the diff options can break patches that users
+  already committed. It needs a migration path or a clear error.
+- **Messages.** A project shape the plugin can handle, such as a patch for another template
+  checksum or a large patch, is a warning through `WarningAggregator`. A patch that cannot
+  apply is an error. Each message names the patch file and what the user can do next.
+- **@expo/cli internals.** The CLI loads modules from `@expo/cli/build/src/prebuild/` through
+  `resolveFromExpoCli`. A change on either side can break the other. Check both packages.
 
 ## Tests
 
-- A change to the prebuild flow needs an e2e case in `e2e/__tests__/`.
+- Unit tests are in `src/__tests__/` and `src/cli/__tests__/`. `gitPatchIntegration-test.ts`
+  runs real git.
+- `pnpm test:e2e` builds the package, creates an app from the template, and runs the CLI and
+  prebuild in `e2e/__tests__/`. A change to how patches are made or applied needs a case
+  there.
+- A test that only checks a mock of git or of the file system does not prove a patch applies.

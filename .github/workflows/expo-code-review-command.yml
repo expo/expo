@@ -284,7 +284,7 @@ jobs:
           PR: ${{ github.event.issue.number || inputs.pr }}
         run: |
           gh pr view "$PR" --repo "${{ github.repository }}" --json title,body \
-            --jq '"Pull request title: \(.title)\n\nPull request body:\n\(.body)"' > "$RUNNER_TEMP/pr-description.md"
+            --jq '"Pull request title: \(.title // "")\n\nPull request body:\n\(.body // "")"' > "$RUNNER_TEMP/pr-description.md"
 
       - name: Run AI review
         if: steps.cmd.outputs.run == 'true'
