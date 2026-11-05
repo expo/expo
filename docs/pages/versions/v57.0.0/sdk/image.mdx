@@ -155,7 +155,7 @@ With the default [`cachePolicy`](#cachepolicy) of `'disk'`, `Image` stores each 
 
 The memory cache, which the `'memory'` and `'memory-disk'` cache policies use, lasts only while the app runs. Android and iOS can also delete files in the app's cache directory when the device needs storage space.
 
-To remove cached images, call [`Image.clearDiskCache()`](#cleardiskcache) or [`Image.clearMemoryCache()`](#clearmemorycache). To load an updated image from the same URL, add a version query parameter to the URL, or set `cachePolicy` to `'none'`.
+To remove cached images on Android and iOS, call [`Image.clearDiskCache()`](#cleardiskcache) or [`Image.clearMemoryCache()`](#clearmemorycache). To load an updated image from the same URL, add a version query parameter to the URL. On Android and iOS, you can also set `cachePolicy` to `'none'`.
 
 ## API
 
