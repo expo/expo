@@ -250,11 +250,7 @@ export function getSplitColumnChildren(
       <SafeAreaProvider>{otherChildren}</SafeAreaProvider>
     </SafeAreaView>
   );
-  return [
-    ...nativeChildren,
-    content,
-    <SplitViewColumnHeader key="header" header={header} />,
-  ];
+  return [...nativeChildren, content, <SplitViewColumnHeader key="header" header={header} />];
 }
 
 /**
