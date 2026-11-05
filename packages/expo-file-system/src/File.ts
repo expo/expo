@@ -14,6 +14,7 @@ import {
   type PickSingleFileOptions,
   type PickSingleFileResult,
 } from './File.types';
+import { FileHandle } from './FileHandle';
 import {
   type WatchEvent,
   type WatchOptions,
@@ -245,6 +246,21 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
   }
 
   /**
+   * Returns a `FileHandle` object that can be used to read and write data to the file.
+   *
+   * @param mode - The {@link FileMode} to use.
+   * - On **Android**, SAF `content://` URIs do not support `ReadWrite` mode.
+   * - **Defaults**:
+   *   - For SAF `content://` URIs, the default is `FileMode.ReadOnly`.
+   *   - For standard `file://` URIs, the default is `FileMode.ReadWrite`.
+   *
+   * @throws Error if the file does not exist or cannot be opened.
+   */
+  open(mode?: FileMode): FileHandle {
+    return new FileHandle(super.openHandle(mode), mode);
+  }
+
+  /**
    * Creates a `ReadableStream` that reads from this file using a `FileHandle` internally.
    *
    * The stream reads in 1024-byte chunks by default. The underlying file handle is
@@ -253,7 +269,7 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
    * @return A byte-oriented `ReadableStream` backed by this file.
    */
   readableStream() {
-    return new ReadableStream(new FileSystemReadableStreamSource(super.open(FileMode.ReadOnly)));
+    return new ReadableStream(new FileSystemReadableStreamSource(this.open(FileMode.ReadOnly)));
   }
 
   /**
@@ -265,7 +281,7 @@ export class File extends ExpoFileSystem.FileSystemFile implements Blob {
    */
   writableStream() {
     return new WritableStream<Uint8Array>(
-      new FileSystemWritableSink(super.open(FileMode.WriteOnly))
+      new FileSystemWritableSink(this.open(FileMode.WriteOnly))
     );
   }
 

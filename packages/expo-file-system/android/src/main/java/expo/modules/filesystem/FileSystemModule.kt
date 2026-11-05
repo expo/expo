@@ -304,7 +304,7 @@ class FileSystemModule : Module() {
         file.type
       }
 
-      Function("open") { file: FileSystemFile, mode: FileMode? ->
+      Function("openHandle") { file: FileSystemFile, mode: FileMode? ->
         file.openHandle(mode)
       }
 

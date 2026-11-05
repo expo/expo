@@ -615,6 +615,36 @@ describe('expo-file-system behavioral mock', () => {
       handle.close();
       expect(file.textSync()).toBe('aZcd!');
     });
+
+    describe('FileHandle cursor', () => {
+      it('runs concurrent async reads in call order', async () => {
+        const file = makeFile('ordered.txt', 'abcdef');
+        const handle = file.open();
+        const [first, second] = await Promise.all([handle.readBytes(2), handle.readBytes(2)]);
+        expect(first).toEqual(encode('ab'));
+        expect(second).toEqual(encode('cd'));
+        expect(handle.offset).toBe(4);
+        handle.close();
+      });
+
+      it('uses the offset assigned before an awaited async read', async () => {
+        const file = makeFile('seek-async.txt', 'abcdef');
+        const handle = file.open();
+        handle.offset = 4;
+        expect(await handle.readBytes(2)).toEqual(encode('ef'));
+        expect(handle.offset).toBe(6);
+        handle.close();
+      });
+
+      it('ignores a null offset assignment', () => {
+        const file = makeFile('null-offset.txt', 'abc');
+        const handle = file.open();
+        handle.readBytesSync(1);
+        handle.offset = null;
+        expect(handle.offset).toBe(1);
+        handle.close();
+      });
+    });
   });
 });
 

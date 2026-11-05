@@ -353,7 +353,7 @@ public final class FileSystemModule: Module {
         return try file.bytes()
       }
 
-      Function("open") { (file: FileSystemFile, mode: FileMode?) in
+      Function("openHandle") { (file: FileSystemFile, mode: FileMode?) in
         return try FileSystemFileHandle(file: file, mode: mode)
       }
 
