@@ -1,5 +1,6 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
+internal import ExpoModulesJSI_Cxx
 internal import jsi
 
 /// A Swift representation of a JavaScript symbol. A symbol is a unique primitive value, mostly used as a
@@ -30,6 +31,7 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
   internal var jsiRuntime: facebook.jsi.IRuntime? {
     return runtimeHandle.pointee
   }
+  /// Mutable so that ``takeValue()`` can move the engine value out of a consumed symbol.
   internal var pointee: facebook.jsi.Symbol
 
   /// Creates a symbol from an existing JSI symbol.
@@ -95,6 +97,11 @@ public struct JavaScriptSymbol: JavaScriptType, Sendable, ~Copyable {
     return JavaScriptValue(runtimeHandle, facebook.jsi.Value(jsiRuntime, pointee))
   }
 
+  /// Moves the symbol into a `JavaScriptValue`, without the clone that ``asValue()`` makes.
+  public consuming func takeValue() -> JavaScriptValue {
+    return JavaScriptValue(runtimeHandle, expo.takeValueFromSymbol(&pointee))
+  }
+
   /// Returns the symbol as a `facebook.jsi.Value` instance.
   internal func asJSIValue() -> facebook.jsi.Value {
     guard let jsiRuntime else {
@@ -155,6 +162,41 @@ extension JavaScriptSymbol: JSIRepresentable {
 
   func toJSIValue(in runtime: facebook.jsi.IRuntime) -> facebook.jsi.Value {
     return asJSIValue()
+  }
+}
+
+// MARK: - JavaScriptCodable
+
+// A `JavaScriptSymbol` argument receives the JS symbol unconverted, so native code can use it as a
+// property key or compare it with another symbol. Decoding anything else throws a `TypeError`.
+extension JavaScriptSymbol: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .symbol
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptSymbol
+  {
+    return try value.asSymbol()
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptSymbol
+  {
+    return try value.asSymbol(in: runtime)
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(_ value: consuming JavaScriptSymbol, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptValue
+  {
+    return value.takeValue()
   }
 }
 
