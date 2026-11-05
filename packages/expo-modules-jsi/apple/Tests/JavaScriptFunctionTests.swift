@@ -426,4 +426,12 @@ struct JavaScriptFunctionTests {
     let inner = try fn.call(argumentCount: 0, returning: JavaScriptFunction.self) { _, _ in }
     #expect(try inner.call().getString() == "inner")
   }
+
+  @Test
+  func `decoding rejects a runtime-free value`() throws {
+    let runtime = JavaScriptRuntime()
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptFunction.decode(JavaScriptValue.number(42), in: runtime)
+    }
+  }
 }

@@ -242,4 +242,11 @@ struct JavaScriptArrayBufferTests {
   func `decodable kinds are objects`() {
     #expect(JavaScriptArrayBuffer.decodableKinds == .object)
   }
+
+  @Test
+  func `decoding rejects a runtime-free value`() throws {
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptArrayBuffer.decode(JavaScriptValue.number(42), in: runtime)
+    }
+  }
 }

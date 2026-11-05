@@ -346,4 +346,11 @@ struct JavaScriptTypedArrayTests {
   func `decodable kinds are objects`() {
     #expect(JavaScriptTypedArray.decodableKinds == .object)
   }
+
+  @Test
+  func `decoding rejects a runtime-free value`() throws {
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptTypedArray.decode(JavaScriptValue.number(42), in: runtime)
+    }
+  }
 }
