@@ -12,6 +12,18 @@ name: SplitView header after cancelled back gesture
           visible: 'Current Path: /'
           timeout: 60000
       - openLink: router-tester://split-view-mail
+      - assertVisible: 'No Message Selected'
+      - assertVisible: 'Mail'
+      - assertVisible: 'Unread'
+      - swipe:
+          start: 3%, 50%
+          end: 28%, 50%
+          duration: 1800
+      - assertVisible: 'No Message Selected'
+      - assertVisible: 'Mail'
+      - assertVisible: 'Unread'
+      - tapOn: 'Unread'
+      - assertVisible: 'Last toolbar press: Unread \(1\)'
       - tapOn:
           id: BackButton
       - assertNotVisible: 'Filter'
@@ -25,4 +37,4 @@ name: SplitView header after cancelled back gesture
       - assertVisible: 'Welcome to Google Photos'
       - assertVisible: 'Unread'
       - tapOn: 'Unread'
-      - assertVisible: 'Last toolbar press: Unread \(1\)'
+      - assertVisible: 'Last toolbar press: Unread \(2\)'
