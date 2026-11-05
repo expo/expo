@@ -3,10 +3,9 @@ package expo.modules.agerange
 import android.app.Activity
 import android.os.Looper
 import com.google.android.play.agesignals.AgeSignalsAccessRequest
-import com.google.android.play.agesignals.AgeSignalsAccessRequest.builder
 import com.google.android.play.agesignals.AgeSignalsAccessResult
 import com.google.android.play.agesignals.AgeSignalsException
-import com.google.android.play.agesignals.AgeSignalsRequest.builder
+import com.google.android.play.agesignals.AgeSignalsRequest
 import com.google.android.play.agesignals.AgeSignalsResult
 import com.google.android.play.agesignals.model.AgeRangeSource
 import com.google.android.play.agesignals.model.AgeSignalsErrorCode
@@ -64,7 +63,7 @@ class AgeSignalsManagerTest {
     var errorResult: CodedException? = null
 
     fakeManager
-      .checkAgeSignals(builder().build())
+      .checkAgeSignals(AgeSignalsRequest.builder().build())
       .addOnCanceledListener {
       }
       .addOnFailureListener { exception ->
@@ -171,7 +170,7 @@ class AgeSignalsManagerTest {
 
     var ageRangeResult: AgeRangeResult? = null
     fakeManager
-      .checkAgeSignals(builder().build())
+      .checkAgeSignals(AgeSignalsRequest.builder().build())
       .addOnCanceledListener {
         throw AssertionError("Unexpected cancellation")
       }

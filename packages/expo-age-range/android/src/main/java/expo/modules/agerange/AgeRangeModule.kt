@@ -91,7 +91,7 @@ class AgeRangeModule : Module() {
   }
 }
 
-private fun processAgeSignalsError(exception: Exception): CodedException {
+internal fun processAgeSignalsError(exception: Exception): CodedException {
   if (exception is AgeSignalsException) {
     // for codes explanation see https://developer.android.com/google/play/age-signals/handle-errors
     val errorCode = exception.status.statusCode

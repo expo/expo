@@ -1,7 +1,7 @@
 package expo.modules.agerange
 
 import android.os.Looper
-import com.google.android.play.agesignals.AgeSignalsRequest.builder
+import com.google.android.play.agesignals.AgeSignalsRequest
 import com.google.android.play.agesignals.model.AgeSignalsErrorCode
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -27,7 +27,7 @@ class FakeAgeSignalsTest {
 
     var result: AgeRangeResult? = null
     fake.manager
-      .checkAgeSignals(builder().build())
+      .checkAgeSignals(AgeSignalsRequest.builder().build())
       .addOnCanceledListener {
         throw AssertionError("Unexpected cancellation")
       }
