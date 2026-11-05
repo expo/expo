@@ -110,13 +110,26 @@ func getInstallationTimeAsync() async throws -> Double {
 
 </CodeBlocksTable>
 
-In Kotlin, a function that isn't `suspend` can also return a `Promise`:
+A synchronous function can also return a promise: a `Promise` in Kotlin, or a `Task` in Swift. The function returns at once, and JavaScript gets a promise that settles with the result. In Swift, a `Task` can also be inside another result, for example in an array.
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
 
 ```kotlin
 @JS
 fun getUptimeAsync(): Promise<Double> =
   Promise.resolve(SystemClock.uptimeMillis().toDouble())
 ```
+
+```swift
+@JS
+func readTextAsync(path: String) -> Task<String, any Error> {
+  Task {
+    try String(contentsOfFile: path, encoding: .utf8)
+  }
+}
+```
+
+</CodeBlocksTable>
 
 An asynchronous function starts on the JavaScript thread, the same as a synchronous function. To learn how to move work off the JavaScript thread, see [Concurrency](/modules/v2/reference/concurrency/).
 
