@@ -116,6 +116,11 @@ function createNetworkWebsocket(debuggerWebsocket: WebSocketServer) {
   });
 
   wss.on('connection', (networkSocket) => {
+    // An 'error' event with no listener throws and exits the dev server.
+    networkSocket.on('error', (error) => {
+      event('network_socket_error', { error: event.error(error) });
+    });
+
     networkSocket.on('message', (data) => {
       try {
         // Parse the network message, to determine how the message should be handled
