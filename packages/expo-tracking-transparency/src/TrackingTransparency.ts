@@ -59,15 +59,38 @@ export function getAdvertisingId(): string | null {
 }
 
 /**
- * Asynchronously gets the advertising ID. This is the recommended way to read the advertising ID:
- * see [`getAdvertisingId()`](#getadvertisingid) for details on the returned value.
+ * Gets the advertising ID, a UUID string intended only for advertising. Use this string for
+ * frequency capping, attribution, conversion events, estimating the number of unique users,
+ * advertising fraud detection, and debugging.
  *
- * On Android, reading the advertising ID requires a IPC call to Google Play Services.
- * The synchronous [`getAdvertisingId()`](#getadvertisingid) can block the JavaScript thread for hundreds of milliseconds.
- * This function offloads the lookup from the JavaScript thread
+ * As a best practice, don't store the advertising ID. Instead, call this function each time your
+ * app needs to use the advertising ID. Users can change whether they allow app tracking and can
+ * reset their advertising ID at any time in their system settings. Check your app's authorization
+ * using [`getTrackingPermissionsAsync()`](#gettrackingpermissionsasync) to determine the user's
+ * intent.
  *
- * @return A promise that resolves to either a UUID `string` or `null`. It resolves to `null` in the
- * same cases described for [`getAdvertisingId()`](#getadvertisingid).
+ * On Android, this function returns the "Android Advertising ID"
+ * ([AAID](https://developers.google.com/android/reference/com/google/android/gms/ads/identifier/AdvertisingIdClient.Info#public-string-getid)).
+ * On Android devices that support multiple users, including guest users, it's possible for your app
+ * to obtain different advertising IDs on the same device. These different IDs correspond to
+ * different users who could be signed in on that device. See Google's documentation for more
+ * information: [Get a user-resettable advertising
+ * ID](https://developer.android.com/training/articles/ad-id).
+ *
+ * On iOS, this function returns the "Identifier for Advertisers"
+ * ([IDFA](https://developer.apple.com/documentation/adsupport/asidentifiermanager/advertisingidentifier)),
+ * a string that's unique to each device. Your app must request tracking authorization using
+ * [`requestTrackingPermissionsAsync()`](#requesttrackingpermissionsasync) before it can get the
+ * advertising identifier.
+ *
+ * @return A promise that resolves to either a UUID `string` or `null`. It resolves to `null` in the following cases:
+ * - On Android, when the system's [Limit Ad Tracking setting](https://support.google.com/googleplay/android-developer/answer/6048248)
+ * is enabled (the app user has opted out of ad personalization)
+ * - In the iOS simulator, regardless of any settings
+ * - On iOS if you haven't received permission using [`requestTrackingPermissionsAsync()`](#requesttrackingpermissionsasync)
+ * - On iOS, if you've requested permission and the user declines
+ * - On iOS, when a profile or configuration restricts access to the advertising identifier, such as
+ *   when the user has turned off the system-wide "Allow Apps to Request to Track" setting
  *
  * @example
  * ```ts
