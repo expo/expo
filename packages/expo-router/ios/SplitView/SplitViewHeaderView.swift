@@ -34,37 +34,15 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
 
   func configureNavigationItem(_ navigationItem: UINavigationItem) {
     self.navigationItem = navigationItem
+    _ = Self.installAppearanceHook
     apply()
   }
 
-  override func didMoveToSuperview() {
-    super.didMoveToSuperview()
-    if superview == nil, let navigationItem {
-      navigationItem.title = nil
-      if #available(iOS 26.0, *) {
-        navigationItem.subtitle = nil
-      }
-      navigationItem.largeTitleDisplayMode = .never
-      navigationItem.leftItemsSupplementBackButton = false
-      navigationItem.leftBarButtonItems = nil
-      navigationItem.rightBarButtonItems = nil
-      navigationItem.searchController = nil
-      navigationItem.hidesBackButton = false
-      navigationItem.standardAppearance = nil
-      navigationItem.compactAppearance = nil
-      navigationItem.scrollEdgeAppearance = nil
-      searchController = nil
-      self.navigationItem = nil
-      applyBackButton()
-    }
-  }
-
-  // The previous column and the navigation controller are known only after this column is in a window.
+  // The previous column is known only after this column is in a window.
   override func didMoveToWindow() {
     super.didMoveToWindow()
     if window != nil {
       applyBackButton()
-      applyNavigationBarHidden()
     }
   }
 
@@ -83,7 +61,6 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
       // A visible bar does not grow by itself when its item starts to show a large title.
       navigationController?.navigationBar.sizeToFit()
     }
-    applyNavigationBarHidden()
     // Keeps the back button next to the left items when the split view is collapsed.
     navigationItem.leftItemsSupplementBackButton = true
     navigationItem.leftBarButtonItems = barButtonItems(leftToolbarItems)
@@ -112,22 +89,35 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     (superview?.next as? UIViewController)?.navigationController
   }
 
-  private func applyNavigationBarHidden() {
-    guard window != nil, let navigationController,
-      navigationController.isNavigationBarHidden != navigationBarHidden
+  private func onWillAppear(_ controller: UIViewController, animated: Bool) {
+    controller.navigationController?.setNavigationBarHidden(navigationBarHidden, animated: animated)
+  }
+
+  // UIKit must receive visibility changes during controller appearance, before it prepares the transition.
+  private static let installAppearanceHook: Void = {
+    let selector = #selector(UIViewController.viewWillAppear(_:))
+    guard let controllerClass = NSClassFromString("RNSSplitScreenController"),
+      controllerClass is UIViewController.Type,
+      let method = class_getInstanceMethod(controllerClass, selector)
     else {
       return
     }
-    let wasHidden = navigationController.isNavigationBarHidden
-    let coordinator = navigationController.transitionCoordinator
-    navigationController.setNavigationBarHidden(navigationBarHidden, animated: coordinator != nil)
-    // Collapsed columns share bar visibility. A cancelled pop must restore the outgoing column's value.
-    coordinator?.animate(alongsideTransition: nil) { [weak navigationController] context in
-      if context.isCancelled {
-        navigationController?.setNavigationBarHidden(wasHidden, animated: false)
+    typealias ViewWillAppear = @convention(c) (UIViewController, Selector, Bool) -> Void
+    let original = unsafeBitCast(method_getImplementation(method), to: ViewWillAppear.self)
+    let implementation: @convention(block) (UIViewController, Bool) -> Void = { controller, animated in
+      original(controller, selector, animated)
+      if let header = controller.viewIfLoaded?.subviews.first(where: { $0 is SplitViewHeaderView })
+        as? SplitViewHeaderView
+      {
+        header.onWillAppear(controller, animated: animated)
       }
     }
-  }
+    let replacement = imp_implementationWithBlock(implementation)
+    // Add an override if a screens version inherits this method; never replace UIViewController's implementation.
+    if !class_addMethod(controllerClass, selector, replacement, method_getTypeEncoding(method)) {
+      method_setImplementation(method, replacement)
+    }
+  }()
 
   // UIKit reads the title and the display mode of a back button from the item below it in the navigation stack.
   // When the split view is collapsed, that is the item of the previous column.

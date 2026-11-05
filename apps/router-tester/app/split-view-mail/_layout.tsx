@@ -42,6 +42,7 @@ export default function Layout() {
 
   const [showHeaders, setShowHeaders] = useState(true);
   const [hideMiddleHeader, setHideMiddleHeader] = useState(true);
+  const [showDetailToolbar, setShowDetailToolbar] = useState(true);
   const [alternateTitles, setAlternateTitles] = useState(false);
   const [largeTitle, setLargeTitle] = useState(true);
   const [showSubtitle, setShowSubtitle] = useState(false);
@@ -124,6 +125,12 @@ export default function Layout() {
                 testID="split-view-mail-hide-middle-header"
                 value={hideMiddleHeader}
                 onValueChange={setHideMiddleHeader}
+              />
+              <ToggleRow
+                label="Detail toolbar"
+                testID="split-view-mail-detail-toolbar"
+                value={showDetailToolbar}
+                onValueChange={setShowDetailToolbar}
               />
               <ToggleRow
                 label="Alternate titles"
@@ -254,34 +261,40 @@ export default function Layout() {
               ? {
                   ...backButton.options,
                   title: alternateTitles ? 'Message' : (message?.sender ?? 'Mail'),
-                  leftToolbar: [
-                    {
-                      ...button('Unread', 'envelope.badge'),
-                      selected: buttonStates,
-                      badge: styledButtons ? { value: 3 } : undefined,
-                    },
-                  ],
-                  rightToolbar: [
-                    {
-                      ...button('Search', 'magnifyingglass'),
-                      tintColor: styledButtons ? 'orange' : undefined,
-                      separateBackground: styledButtons,
-                      accessibilityLabel: styledButtons ? 'Search messages' : undefined,
-                    },
-                    {
-                      ...button('Move', 'folder'),
-                      badge: styledButtons ? { style: { backgroundColor: 'green' } } : undefined,
-                    },
-                    { ...button('Archive', 'archivebox'), disabled: buttonStates },
-                    {
-                      ...button('Forward', 'arrowshape.turn.up.right'),
-                      hidesSharedBackground: styledButtons,
-                    },
-                    {
-                      ...button('Reply All', 'arrowshape.turn.up.left.2'),
-                      variant: styledButtons ? 'prominent' : undefined,
-                    },
-                  ],
+                  leftToolbar: showDetailToolbar
+                    ? [
+                        {
+                          ...button('Unread', 'envelope.badge'),
+                          selected: buttonStates,
+                          badge: styledButtons ? { value: 3 } : undefined,
+                        },
+                      ]
+                    : [],
+                  rightToolbar: showDetailToolbar
+                    ? [
+                        {
+                          ...button('Search', 'magnifyingglass'),
+                          tintColor: styledButtons ? 'orange' : undefined,
+                          separateBackground: styledButtons,
+                          accessibilityLabel: styledButtons ? 'Search messages' : undefined,
+                        },
+                        {
+                          ...button('Move', 'folder'),
+                          badge: styledButtons
+                            ? { style: { backgroundColor: 'green' } }
+                            : undefined,
+                        },
+                        { ...button('Archive', 'archivebox'), disabled: buttonStates },
+                        {
+                          ...button('Forward', 'arrowshape.turn.up.right'),
+                          hidesSharedBackground: styledButtons,
+                        },
+                        {
+                          ...button('Reply All', 'arrowshape.turn.up.left.2'),
+                          variant: styledButtons ? 'prominent' : undefined,
+                        },
+                      ]
+                    : [],
                 }
               : undefined
           }

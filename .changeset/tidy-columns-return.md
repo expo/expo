@@ -2,4 +2,4 @@
 'expo-router': patch
 ---
 
-Keep SplitView headers visible after cancelling a back gesture to a column with a hidden header.
+Restore SplitView headers and toolbar buttons after cancelled back gestures to a column with a hidden header.
