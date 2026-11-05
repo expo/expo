@@ -2834,3 +2834,38 @@ it('preserves native script function maps and compact output behavior', async ()
   new Function('globalThis', compact.result.code)(runtimeGlobal);
   expect(runtimeGlobal.value).toBe(1);
 });
+
+it.each(['ios', 'android', 'web'])('folds imported Platform branches for %s', async (platform) => {
+  const input = {
+    filename: workspaceFilename,
+    projectRoot: '/app',
+    source: `import { Platform } from 'react-native';
+      module.exports = [
+        Platform.OS === '${platform}' ? require('winner') : require('loser'),
+        Platform.select({ ${platform}: require('selected'), native: require('native'), default: require('fallback') })
+      ];
+      module.exports.shadow = function(Platform) { return [Platform.OS, Platform.select({ ios: require('shadowed') })]; };
+      module.exports.fallback = Platform.select({ native: require('native-fallback'), default: require('default-fallback') });`,
+    options: options({ platform, minify: true }),
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  };
+  const result = await transformFileFullyWithNoxcturnal(input);
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toContain('Platform.OS');
+  expect(result.dependencies.map(({ name }) => name)).toEqual([
+    platform === 'web' ? 'react-native-web/dist/exports/Platform' : 'react-native',
+    'winner',
+    'selected',
+    'shadowed',
+    platform === 'web' ? 'default-fallback' : 'native-fallback',
+  ]);
+  const dev = await transformFileFullyWithNoxcturnal({
+    ...input,
+    options: options({ platform, dev: true }),
+  });
+  expect(dev.status).toBe('complete');
+  if (dev.status !== 'complete') return;
+  expect(dev.dependencies.map(({ name }) => name)).toContain('loser');
+});
