@@ -14,7 +14,6 @@ import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.utils.ScopedContext
 import versioned.host.exp.exponent.core.modules.ExpoGoModule
 import versioned.host.exp.exponent.core.modules.ExpoGoUpdatesModule
-import versioned.host.exp.exponent.modules.api.notifications.ScopedNotificationsCategoriesSerializer
 import versioned.host.exp.exponent.modules.api.notifications.channels.ScopedNotificationsChannelsProvider
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationCategoriesModule
 import versioned.host.exp.exponent.modules.universal.notifications.ScopedExpoNotificationPresentationModule
@@ -45,7 +44,6 @@ open class ExpoModuleRegistryAdapter(
         experienceKey
       )
     )
-    moduleRegistry.registerInternalModule(ScopedNotificationsCategoriesSerializer())
 
     // ReactAdapterPackage requires ReactContext
     val reactContext = scopedContext.context as ReactApplicationContext
