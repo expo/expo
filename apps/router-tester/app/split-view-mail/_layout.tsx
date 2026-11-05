@@ -41,6 +41,7 @@ export default function Layout() {
   const message = MESSAGES.find((m) => m.id === id);
 
   const [showHeaders, setShowHeaders] = useState(true);
+  const [hideMiddleHeader, setHideMiddleHeader] = useState(true);
   const [alternateTitles, setAlternateTitles] = useState(false);
   const [largeTitle, setLargeTitle] = useState(true);
   const [showSubtitle, setShowSubtitle] = useState(false);
@@ -119,6 +120,12 @@ export default function Layout() {
                 }}
               />
               <ToggleRow
+                label="Hide middle header"
+                testID="split-view-mail-hide-middle-header"
+                value={hideMiddleHeader}
+                onValueChange={setHideMiddleHeader}
+              />
+              <ToggleRow
                 label="Alternate titles"
                 testID="split-view-mail-titles"
                 value={alternateTitles}
@@ -186,6 +193,7 @@ export default function Layout() {
               showHeaders
                 ? {
                     ...backButton.options,
+                    hidden: hideMiddleHeader,
                     title: alternateTitles ? 'Gmail' : 'Inbox Gmail',
                     rightToolbar: [
                       {
