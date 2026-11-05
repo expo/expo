@@ -1,7 +1,7 @@
 ---
-title: Using e2e by TesterArmy
+title: Using e2e
 sidebar_title: Using e2e
-description: Learn how to test your Expo app with e2e, TesterArmy's open source end-to-end testing framework, on an Android Emulator or iOS Simulator.
+description: Learn how to test your Expo app with e2e, an open source end-to-end testing framework, on an Android Emulator or iOS Simulator.
 hasVideoLink: true
 ---
 
@@ -15,12 +15,12 @@ import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-[e2e](https://e2e.com/docs) is TesterArmy's open source end-to-end (E2E) testing framework. It runs tests on an Android Emulator or iOS Simulator through [agent-device](/agents/agent-device/). A test can combine two kinds of steps:
+[e2e](https://e2e.com/docs) is an open source end-to-end (E2E) testing framework. It runs tests on an Android Emulator or iOS Simulator through [agent-device](/agents/agent-device/). A test can combine two kinds of steps:
 
 - **Exact steps** to find an element with a locator, act on it, and assert the result, like other E2E frameworks.
 - **Agent steps** to describe a goal in plain language and an AI model decides what to tap. e2e records the actions and replays them on later runs without a model call.
 
-This guide shows how to set up e2e in an Expo project and run it on your computer. e2e does not need a TesterArmy account. To run tests on TesterArmy's hosted platform instead, see [Using TesterArmy](/guides/using-testerarmy/).
+This guide shows how to set up e2e in an Expo project and run it on your computer.
 
 <VideoBoxLink
   videoId="2OFB4B7Vy10"
@@ -56,10 +56,10 @@ Set `android.package` and `ios.bundleIdentifier` in your [app config](/workflow/
 {
   "expo": {
     "ios": {
-      "bundleIdentifier": "com.example.testerarmye2e"
+      "bundleIdentifier": "com.example.e2e"
     },
     "android": {
-      "package": "com.example.testerarmye2e"
+      "package": "com.example.e2e"
     }
   }
 }
@@ -123,7 +123,7 @@ export default {
         platform: 'ios',
         device: 'iPhone 17 Pro',
       }),
-      app: { bundleId: 'com.example.testerarmye2e' },
+      app: { bundleId: 'com.example.e2e' },
     },
     {
       name: 'android',
@@ -132,7 +132,7 @@ export default {
         device: 'Medium Phone',
       }),
       app: {
-        bundleId: 'com.example.testerarmye2e',
+        bundleId: 'com.example.e2e',
         appPath: 'android/app/build/outputs/apk/release/app-release.apk',
       },
     },
@@ -238,7 +238,7 @@ test(
   'deep link opens the explore screen on Android',
   { platforms: ['android'] },
   async ({ device, screen }) => {
-    await device.openLink('testerarmye2eexample://explore');
+    await device.openLink('e2eexample://explore');
     await expect(
       screen.getByText('This starter app includes example', { exact: false })
     ).toBeVisible();
@@ -256,7 +256,7 @@ test(
   async ({ device, screen }) => {
     const openInApp = screen.getByRole('button', { name: 'Open' });
     const exploreIntro = screen.getByText('This starter app includes example', { exact: false });
-    await device.openLink('testerarmye2eexample://explore');
+    await device.openLink('e2eexample://explore');
     await expect
       .poll(async () => (await openInApp.count()) + (await exploreIntro.count()))
       .toBeGreaterThan(0);
@@ -318,7 +318,7 @@ export default {
     {
       name: 'ios',
       engine: mobile({ platform: 'ios' }),
-      app: { bundleId: 'com.example.testerarmye2e' },
+      app: { bundleId: 'com.example.e2e' },
     },
   ],
   workers: 1,
@@ -485,7 +485,7 @@ export default {
         }),
         videoTouches: false,
       }),
-      app: { bundleId: 'com.example.testerarmye2e' },
+      app: { bundleId: 'com.example.e2e' },
     },
   ],
 } satisfies E2EConfig;
