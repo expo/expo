@@ -375,6 +375,7 @@ export const general = [
       makePage('modules/v2/overview.mdx'),
       makePage('modules/v2/get-started.mdx'),
       makePage('modules/v2/feature-support.mdx'),
+      makeSection('Tutorials', [makePage('modules/v2/tutorials/native-module.mdx')]),
       makeSection('Reference', [
         makePage('modules/v2/reference/modules.mdx'),
         makePage('modules/v2/reference/types.mdx'),
