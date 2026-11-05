@@ -59,5 +59,4 @@ describe('env key case normalization', () => {
       expect(constants.isLocalEnvKey(key)).toBe(false);
     });
   });
-
 });

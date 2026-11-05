@@ -56,6 +56,13 @@ function _semver() {
   };
   return data;
 }
+function _env() {
+  const data = require("./env");
+  _env = function () {
+    return data;
+  };
+  return data;
+}
 function AndroidVersion() {
   const data = _interopRequireWildcard(require("../android/Version"));
   AndroidVersion = function () {
@@ -66,13 +73,6 @@ function AndroidVersion() {
 function IOSVersion() {
   const data = _interopRequireWildcard(require("../ios/Version"));
   IOSVersion = function () {
-    return data;
-  };
-  return data;
-}
-function _env() {
-  const data = require("./env");
-  _env = function () {
     return data;
   };
   return data;
