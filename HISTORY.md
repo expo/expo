@@ -1,3 +1,7 @@
+## 2026-11-05 01:45 PST — Verify after storage recovery
+**Asked:** Run tests after more storage becomes available.
+**Did / why:** Installed dependencies and passed all 40 focused SplitView tests plus the full router suite (476 suites; 6,149 passed, 9 skipped). Package build, typecheck, dependency checks, and lint passed, with one existing lint warning. Fixed the formatter-only failure in the changed return expression and reran the package formatting check successfully. Native simulator verification is tracked separately.
+
 ## 2026-11-05 01:40 PST — Push before verification
 **Asked:** Push the reviewed, untested version, then run tests once storage is available.
 **Did / why:** Proceed with the reviewed lifecycle simplification under explicit authorization to push before verification. Storage recovered to 13 GiB free; dependency installation and tests will follow the push.
