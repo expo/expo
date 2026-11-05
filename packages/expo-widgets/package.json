@@ -1,6 +1,6 @@
 {
   "name": "expo-widgets",
-  "version": "57.0.27",
+  "version": "57.0.28",
   "description": "Widgets.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -31,7 +31,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/widgets/",
   "dependencies": {
-    "@expo/plist": "workspace:^0.8.1",
+    "@expo/plist": "workspace:^0.8.2",
     "@expo/ui": "workspace:~57.0.26"
   },
   "devDependencies": {

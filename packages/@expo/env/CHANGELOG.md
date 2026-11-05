@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Compare protected and local-only dotenv keys case-insensitively so mixed-case entries cannot bypass denylist checks on Windows. Match original-environment backups and loaded-key markers case-insensitively on Windows so alternate key casing cannot expose dotenv values to protected lookups or subprocesses. ([#52688](https://github.com/expo/expo/pull/52688) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 2.4.4 — 2026-11-05
+
+### 🐛 Bug fixes
+
+- Compare protected and local-only dotenv keys case-insensitively so mixed-case entries cannot bypass denylist checks on Windows. Match original-environment backups and loaded-key markers case-insensitively on Windows so alternate key casing cannot expose dotenv values to protected lookups or subprocesses. ([#52688](https://github.com/expo/expo/pull/52688) by [@kitten](https://github.com/kitten))
 
 ## 2.4.3 — 2026-08-28
 

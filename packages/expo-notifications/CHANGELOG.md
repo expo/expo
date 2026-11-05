@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix importing `expo-notifications` throwing `Cannot find native module 'ExpoTopicSubscriptionModule'` in Expo Go. ([#52182](https://github.com/expo/expo/pull/52182) by [@fixfon](https://github.com/fixfon))
-
 ### 💡 Others
+
+## 57.0.25 — 2026-11-05
+
+### 🐛 Bug fixes
+
+- [Android] Fix importing `expo-notifications` throwing `Cannot find native module 'ExpoTopicSubscriptionModule'` in Expo Go. ([#52182](https://github.com/expo/expo/pull/52182) by [@fixfon](https://github.com/fixfon))
 
 ## 57.0.24 — 2026-10-22
 

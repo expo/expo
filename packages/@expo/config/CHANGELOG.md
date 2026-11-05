@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 57.0.11 — 2026-11-05
+
+### 🐛 Bug fixes
+
 - Avoid duplicate entries in `updates` arrays, such as `updates.assetPatternsToBeBundled`, when `modifyConfigAsync` merges modifications. ([#50575](https://github.com/expo/expo/pull/50575) by [@douglowder](https://github.com/douglowder))
 - Prevent prototype pollution for config modifications ([#52602](https://github.com/expo/expo/pull/52602) by [@kitten](https://gthub.com/kitten))
 

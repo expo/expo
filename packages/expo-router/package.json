@@ -1,6 +1,6 @@
 {
   "name": "expo-router",
-  "version": "57.0.29",
+  "version": "57.0.30",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "author": "650 Industries, Inc.",
   "license": "MIT",
@@ -90,11 +90,11 @@
     "expo"
   ],
   "peerDependencies": {
-    "@expo/log-box": "workspace:^57.0.4",
-    "@expo/metro-runtime": "workspace:^57.0.17",
+    "@expo/log-box": "workspace:^57.0.5",
+    "@expo/metro-runtime": "workspace:^57.0.18",
     "@testing-library/react-native": ">= 13.2.0",
     "expo": "*",
-    "expo-constants": "workspace:^57.0.22",
+    "expo-constants": "workspace:^57.0.23",
     "expo-linking": "workspace:^57.0.13",
     "react": "*",
     "react-dom": "*",
@@ -153,9 +153,9 @@
     "tsd": "^0.33.0"
   },
   "dependencies": {
-    "@expo/log-box": "workspace:^57.0.4",
-    "@expo/metro-runtime": "workspace:^57.0.17",
-    "@expo/schema-utils": "workspace:^57.0.2",
+    "@expo/log-box": "workspace:^57.0.5",
+    "@expo/metro-runtime": "workspace:^57.0.18",
+    "@expo/schema-utils": "workspace:^57.0.3",
     "@expo/ui": "workspace:^57.0.26",
     "@radix-ui/react-slot": "^1.2.0",
     "@radix-ui/react-tabs": "^1.1.12",
@@ -164,7 +164,7 @@
     "color": "^4.2.3",
     "debug": "^4.3.4",
     "escape-string-regexp": "^4.0.0",
-    "expo-glass-effect": "workspace:^57.0.4",
+    "expo-glass-effect": "workspace:^57.0.5",
     "expo-server": "workspace:^57.0.3",
     "expo-symbols": "workspace:^57.0.3",
     "fast-deep-equal": "^3.1.3",
