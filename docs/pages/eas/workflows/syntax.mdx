@@ -1093,6 +1093,8 @@ type GitHubContext = {
 
 If a workflow run is started from `eas workflow:run`, its `event_name` will be `workflow_dispatch` and all the rest of the properties will be empty.
 
+If you pass `--git-branch` and `--git-commit-hash`, `event_name` is `push` instead. The `sha` and `commit_message` properties come from the commit, and `ref`, `ref_name`, and `ref_type` come from the branch. The `repository`, `repository_owner`, and `event` properties stay empty.
+
 Example:
 
 ```yaml
