@@ -187,9 +187,8 @@ export type NativeConstants = {
    */
   manifest2: ExpoUpdatesManifest | null;
   /**
-   * The public [app config](/workflow/configuration/#reading-configuration-values-in-your-app):
-   * the `expo` object from your app config file, without fields such as `ios.config` and
-   * `android.config` that the public config filters out.
+   * The resolved [app config](/workflow/configuration/#reading-configuration-values-in-your-app),
+   * without fields such as `ios.config` and `android.config` that the public config filters out.
    *
    * In a build, this is the config embedded at build time. When the app runs an update, this is
    * the config that comes with that update. During development, this is the config that the
