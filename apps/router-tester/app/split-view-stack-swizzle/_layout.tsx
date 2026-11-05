@@ -26,7 +26,11 @@ export default function Layout() {
         showSidebar: () => splitRef.current?.show('supplementary'),
         showMiddle: () => splitRef.current?.show('primary'),
       }}>
-      <SplitView ref={splitRef} preferredDisplayMode="twoBesideSecondary" showSecondaryToggleButton>
+      <SplitView
+        ref={splitRef}
+        preferredDisplayMode="twoBesideSecondary"
+        showSecondaryToggleButton
+        disableHorizontalSafeAreaInsets>
         <SplitView.Column header={{ title: 'Sidebar' }}>
           <ScrollView
             contentInsetAdjustmentBehavior="automatic"

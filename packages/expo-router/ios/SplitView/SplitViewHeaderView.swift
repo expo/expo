@@ -194,10 +194,18 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
       if let root = stack.topViewController, root === stack.viewControllers.first,
         let next = screens.lastObject as? UIViewController, next !== root {
         header.preparingStack = true
-        if let config = (root.view as? RNSScreenView)?.findHeaderConfig() {
-          RNSScreenStackHeaderConfig.willShow(root, animated: false, with: config)
+        UIView.performWithoutAnimation {
+          header.applyStackVisibility(stack, screen: root, transitioning: true)
+          // Settle the column's safe area before showing the nested navigation bar.
+          let columnNavigationView = stack.parent?.navigationController?.view
+          columnNavigationView?.setNeedsLayout()
+          columnNavigationView?.layoutIfNeeded()
+          if let config = (root.view as? RNSScreenView)?.findHeaderConfig() {
+            RNSScreenStackHeaderConfig.willShow(root, animated: false, with: config)
+          }
+          stack.view.setNeedsLayout()
+          stack.view.layoutIfNeeded()
         }
-        header.applyStackVisibility(stack, screen: root, transitioning: true)
       }
       setScreens(view, pushSelector, screens)
       header.preparingStack = false
@@ -215,7 +223,18 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     ) -> Void = { view, stack, screen, animated in
       didShow(view, finishSelector, stack, screen, animated)
       if let header = SplitViewHeaderView.header(for: stack), !header.preparingStack {
-        header.applyStackVisibility(stack, screen: screen, transitioning: false)
+        if screen === stack.viewControllers.first {
+          UIView.performWithoutAnimation {
+            header.applyStackVisibility(stack, screen: screen, transitioning: false)
+            let columnNavigationView = stack.parent?.navigationController?.view
+            columnNavigationView?.setNeedsLayout()
+            columnNavigationView?.layoutIfNeeded()
+            stack.view.setNeedsLayout()
+            stack.view.layoutIfNeeded()
+          }
+        } else {
+          header.applyStackVisibility(stack, screen: screen, transitioning: false)
+        }
       }
     }
     method_setImplementation(finishMethod, imp_implementationWithBlock(finishHook))
