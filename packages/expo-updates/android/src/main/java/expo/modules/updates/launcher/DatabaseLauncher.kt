@@ -191,7 +191,6 @@ class DatabaseLauncher(
           if (filename != null) {
             asset.relativePath = filename
             this[asset] = filename
-            logger.info("embeddedAssetFileMap: ${asset.key},${asset.type} => ${this[asset]}")
           } else {
             val cause = Exception("Missing embedded asset")
             logger.error("embeddedAssetFileMap: no file for ${asset.key},${asset.type}", cause, UpdatesErrorCode.AssetsFailedToLoad)
@@ -207,7 +206,6 @@ class DatabaseLauncher(
         }
         if (assetFile.exists()) {
           this[asset] = Uri.fromFile(assetFile).toString()
-          logger.info("embeddedAssetFileMap: ${asset.key},${asset.type} => ${this[asset]}")
         } else {
           val cause = Exception("Missing embedded asset")
           logger.error("embeddedAssetFileMap: no file for ${asset.key},${asset.type}", cause, UpdatesErrorCode.AssetsFailedToLoad)
