@@ -1,4 +1,4 @@
-import type { EventSubscription } from 'expo';
+import { type EventSubscription, UnavailabilityError } from 'expo';
 import { Platform } from 'react-native';
 
 import ExpoWidgetsModule from './ExpoWidgets';
@@ -77,6 +77,9 @@ export class Widget<
    * @platform ios
    */
   async getTimeline(): Promise<WidgetTimelineEntry<PropsType>[]> {
+    if (Platform.OS === 'android') {
+      return [];
+    }
     return (await this.nativeWidgetObject.getTimeline()).map((entry) => ({
       date: new Date(entry.timestamp),
       props: entry.props as PropsType,
@@ -92,6 +95,9 @@ export class Widget<
     parameterName: keyof ConfigurationType & string,
     options?: WidgetConfigurationEnum[]
   ) {
+    if (Platform.OS === 'android') {
+      return;
+    }
     this.nativeWidgetObject.setConfigurationParameterEnum(parameterName, options);
   }
 }
@@ -182,12 +188,12 @@ export class LiveActivity<T extends object = object> {
  */
 export class LiveActivityFactory<T extends object = object> {
   /** @hidden */
-  private nativeLiveActivityFactory: NativeLiveActivityFactory;
+  private nativeLiveActivityFactory: NativeLiveActivityFactory | null;
   constructor(name: string, layout: LiveActivityComponent<T>) {
-    this.nativeLiveActivityFactory = new ExpoWidgetsModule.LiveActivityFactory(
-      name,
-      layout as unknown as string
-    );
+    this.nativeLiveActivityFactory =
+      Platform.OS === 'android'
+        ? null
+        : new ExpoWidgetsModule.LiveActivityFactory(name, layout as unknown as string);
   }
 
   /**
@@ -200,7 +206,7 @@ export class LiveActivityFactory<T extends object = object> {
    */
   start(props: T, url?: string, staleDate?: Date) {
     return new LiveActivity<T>(
-      this.nativeLiveActivityFactory.start(JSON.stringify(props), url, staleDate?.getTime())
+      this.requireNativeFactory('start').start(JSON.stringify(props), url, staleDate?.getTime())
     );
   }
 
@@ -209,9 +215,16 @@ export class LiveActivityFactory<T extends object = object> {
    * @platform ios
    */
   getInstances() {
-    return this.nativeLiveActivityFactory
+    return this.requireNativeFactory('getInstances')
       .getInstances()
       .map((instance) => new LiveActivity<T>(instance));
+  }
+
+  private requireNativeFactory(methodName: string): NativeLiveActivityFactory {
+    if (!this.nativeLiveActivityFactory) {
+      throw new UnavailabilityError('ExpoWidgets', `LiveActivityFactory.${methodName}`);
+    }
+    return this.nativeLiveActivityFactory;
   }
 }
 
