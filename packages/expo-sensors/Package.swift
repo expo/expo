@@ -22,15 +22,7 @@ let package = Package(
         .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders"),
       ],
       path: "ios",
-      exclude: ["ExpoSensors.podspec", "Tests"],
-      swiftSettings: [
-        // SwiftPM rejects `$(BUILD_DIR)` in unsafeFlags; Xcode still expands `${BUILD_DIR}`.
-        // Autolinking symlinks the macro plugin there before each build.
-        .unsafeFlags([
-          "-Xfrontend", "-load-plugin-executable",
-          "-Xfrontend", "${BUILD_DIR}/ExpoModulesMacros#ExpoModulesMacros",
-        ])
-      ]
+      exclude: ["ExpoSensors.podspec", "Tests"]
     ),
   ],
   swiftLanguageModes: [.v5]

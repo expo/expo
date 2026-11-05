@@ -45,6 +45,12 @@ it.each([
     const outDir = path.join(tmp, 'out');
     const coreHeadersXCFramework = path.join(tmp, 'headers', 'ExpoModulesCoreHeaders.xcframework');
     fs.mkdirSync(coreHeadersXCFramework, { recursive: true });
+    const macrosPackageRoot = path.join(tmp, 'app', 'node_modules', 'expo-modules-macros');
+    fs.mkdirSync(macrosPackageRoot, { recursive: true });
+    fs.writeFileSync(
+      path.join(macrosPackageRoot, 'Package.swift'),
+      '// swift-tools-version: 6.2\n'
+    );
 
     const { ok } = emitDirectPackage({
       moduleRoot,
@@ -52,7 +58,7 @@ it.each([
       outDir,
       coreHeadersXCFramework,
       jsiHeadersPkgPath: path.join(outDir, 'ExpoModulesJSIHeaders'),
-      macroTool: path.join(tmp, 'ExpoModulesMacros'),
+      macrosPackageRoot,
       manifest,
     });
 
@@ -60,6 +66,19 @@ it.each([
     expect(ok.packageDep).toEqual({ name: packageName, path: link });
     expect(ok.productDeps).toEqual([{ name: productName, package: packageName }]);
     expect(fs.realpathSync(link)).toBe(fs.realpathSync(moduleRoot));
+  },
+  60_000
+);
+
+it.each(['expo-haptics', 'expo-sensors'])(
+  'loads the macros of the real %s with no unsafe flags',
+  (packageName) => {
+    const moduleRoot = installLikeNpm(packageName, makeTempDir('spm-real-manifest-'));
+    const { manifest } = dumpModuleManifest(moduleRoot, packageName);
+    const unsafeSettings = manifest.targets
+      .flatMap((target) => target.settings ?? [])
+      .filter((setting) => setting.kind?.unsafeFlags != null);
+    expect(unsafeSettings).toEqual([]);
   },
   60_000
 );
