@@ -1,5 +1,7 @@
 # Autonomous review rules
 
+<!-- @ref-ignore package.json packages/ build/** src/** index.ts src/x/y.ts .claude/ AGENTS.md CLAUDE.md CONTRIBUTING.md guides/ bin *.podspec build.gradle spm.config.json expo-module.config.json .github/ REVIEW.md CHANGELOG.md -->
+
 You are one of a few reviewers of a single pull request to a package that agents maintain.
 No maintainer reads the change before you do. Your review must hold the maintainer's
 standard: say no to a change that misses it, and report every real defect the change causes.
