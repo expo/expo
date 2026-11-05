@@ -26,7 +26,7 @@ const ESCAPED_CHARACTERS: { [match: string]: string } = {
  * Replaces unsafe characters in a string with their escaped equivalents. This is to safely
  * embed data in an HTML context to prevent XSS.
  */
-export function escapeUnsafeCharacters(str: string): string {
+function escapeUnsafeCharacters(str: string): string {
   return str.replace(UNSAFE_CHARACTERS_REGEX, (match) => ESCAPED_CHARACTERS[match] ?? match);
 }
 
@@ -38,7 +38,7 @@ function escapeHtmlAttribute(value: string): string {
  * Returns a newline-separated `<link rel="preload">` and `<link rel="stylesheet">` pair for each
  * CSS href.
  */
-export function createInjectedCssAsString(hrefs: string[]): string {
+function createInjectedCssAsString(hrefs: string[]): string {
   return hrefs
     .flatMap((href) => {
       const safeHref = escapeHtmlAttribute(href);
@@ -53,7 +53,7 @@ export function createInjectedCssAsString(hrefs: string[]): string {
 /**
  * Returns newline-separated `<script defer>` HTML strings for each JavaScript source URL.
  */
-export function createInjectedScriptsAsString(srcs: string[]): string {
+function createInjectedScriptsAsString(srcs: string[]): string {
   return srcs.map((src) => `<script src="${escapeHtmlAttribute(src)}" defer></script>`).join('\n');
 }
 
@@ -81,7 +81,7 @@ export function getHydrationFlagScriptContents(): string {
  *
  * @see packages/expo/src/launch/registerRootComponent.tsx
  */
-export function getHydrationFlagScriptAsString(): string {
+function getHydrationFlagScriptAsString(): string {
   return `<script type="module">${getHydrationFlagScriptContents()}</script>`;
 }
 
@@ -97,13 +97,7 @@ export function getLoaderDataScriptContents(data: Record<string, unknown>): stri
   return `globalThis.__EXPO_ROUTER_LOADER_DATA__ = JSON.parse(${JSON.stringify(safeJson)});`;
 }
 
-export function createExternalCssLinkAsString({
-  href,
-  media,
-}: {
-  href: string;
-  media?: string;
-}): string {
+function createExternalCssLinkAsString({ href, media }: { href: string; media?: string }): string {
   let link = `<link rel="stylesheet" href="${escapeHtmlAttribute(href)}"`;
   if (media) {
     link += ` media="${escapeHtmlAttribute(media)}"`;
