@@ -160,17 +160,25 @@ class Position(
   @Field val speedAccuracy: Double? = null,
   @Field val headingAccuracy: Double? = null
 ) : Record {
+  private fun BaseBundle.putNullableDouble(key: String, value: Double?) {
+    if (value != null) {
+      putDouble(key, value)
+    } else if (this is Bundle) {
+      putString(key, null)
+    }
+  }
+
   private fun BaseBundle.putPositionFields() {
     putDouble("timestamp", timestamp)
     putBoolean("mocked", mocked)
-    mslAltitude?.let { putDouble("mslAltitude", it) }
-    altitude?.let { putDouble("altitude", it) }
-    speed?.let { putDouble("speed", it) }
-    heading?.let { putDouble("heading", it) }
-    horizontalAccuracy?.let { putDouble("horizontalAccuracy", it) }
-    verticalAccuracy?.let { putDouble("verticalAccuracy", it) }
-    speedAccuracy?.let { putDouble("speedAccuracy", it) }
-    headingAccuracy?.let { putDouble("headingAccuracy", it) }
+    putNullableDouble("mslAltitude", mslAltitude)
+    putNullableDouble("altitude", altitude)
+    putNullableDouble("speed", speed)
+    putNullableDouble("heading", heading)
+    putNullableDouble("horizontalAccuracy", horizontalAccuracy)
+    putNullableDouble("verticalAccuracy", verticalAccuracy)
+    putNullableDouble("speedAccuracy", speedAccuracy)
+    putNullableDouble("headingAccuracy", headingAccuracy)
   }
 
   fun toPersistableBundle() = PersistableBundle().apply {
