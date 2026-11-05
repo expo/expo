@@ -1708,13 +1708,32 @@ export const textContentType = (
 ) => createModifier('textContentType', { textContentType });
 
 /**
+ * The SF Symbol replace effect used by the `symbolEffect` content transition.
+ *
+ * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/replacesymboleffect).
+ */
+export type ContentTransitionSymbolEffect = {
+  effect: 'replace';
+  /**
+   * How the outgoing and incoming symbols move.
+   * - `'downUp'` - the outgoing symbol moves down and the incoming symbol moves up.
+   * - `'upUp'` - both symbols move up.
+   * - `'offUp'` - the outgoing symbol fades out in place and the incoming symbol moves up.
+   */
+  direction?: 'downUp' | 'upUp' | 'offUp';
+  /** Whether the effect animates each layer of the symbol or the symbol as a whole. */
+  scope?: 'byLayer' | 'wholeSymbol';
+};
+
+/**
  * Sets the content transition type for a view.
  * Useful for animating changes in text content, especially numeric text.
  * Use with the [`animation`](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
  *
- * @param transitionType - The type of content transition.
+ * @param transitionType - The type of content transition. The `'symbolEffect'` type animates an SF Symbol that changes to another symbol, and requires iOS 17.0 and later.
  * @param params - Optional parameters.
  * @param params.countsDown - Whether the numeric text counts down.
+ * @param params.symbolEffect - The symbol effect to use with the `'symbolEffect'` type. Omit it for the automatic symbol effect.
  *
  * @example
  * ```tsx
@@ -1723,17 +1742,29 @@ export const textContentType = (
  * </Text>
  * ```
  *
+ * @example
+ * ```tsx
+ * <Image
+ *   systemName={isOn ? 'speaker.wave.2.fill' : 'speaker.slash.fill'}
+ *   modifiers={[
+ *     contentTransition('symbolEffect', { symbolEffect: { effect: 'replace', direction: 'downUp' } }),
+ *     animation(Animation.default, isOn),
+ *   ]}
+ * />
+ * ```
+ *
  * @platform ios 16.0+
  * @platform tvos 16.0+
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/contenttransition(_:)).
  */
 export const contentTransition = (
-  transitionType: 'numericText' | 'identity' | 'opacity' | 'interpolate',
-  params?: { countsDown?: boolean }
+  transitionType: 'numericText' | 'identity' | 'opacity' | 'interpolate' | 'symbolEffect',
+  params?: { countsDown?: boolean; symbolEffect?: ContentTransitionSymbolEffect }
 ) =>
   createModifier('contentTransition', {
     transitionType,
     countsDown: params?.countsDown,
+    symbolEffect: params?.symbolEffect,
   });
 
 export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';
