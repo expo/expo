@@ -1715,10 +1715,10 @@ export const textContentType = (
 export type ContentTransitionSymbolEffect = {
   effect: 'replace';
   /**
-   * How the outgoing and incoming symbols move.
-   * - `'downUp'` - the outgoing symbol moves down and the incoming symbol moves up.
-   * - `'upUp'` - both symbols move up.
-   * - `'offUp'` - the outgoing symbol fades out in place and the incoming symbol moves up.
+   * How the effect scales the outgoing and incoming symbols.
+   * - `'downUp'` - scales the outgoing symbol down and the incoming symbol up.
+   * - `'upUp'` - scales both symbols up.
+   * - `'offUp'` - removes the outgoing symbol and scales the incoming symbol up.
    */
   direction?: 'downUp' | 'upUp' | 'offUp';
   /** Whether the effect animates each layer of the symbol or the symbol as a whole. */
@@ -1730,7 +1730,7 @@ export type ContentTransitionSymbolEffect = {
  * Useful for animating changes in text content, especially numeric text.
  * Use with the [`animation`](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
  *
- * @param transitionType - The type of content transition. The `'symbolEffect'` type animates an SF Symbol that changes to another symbol, and requires iOS 17.0 and later.
+ * @param transitionType - The type of content transition. The `'symbolEffect'` type animates an SF Symbol that changes to another symbol. It requires iOS 17.0+, tvOS 17.0+, and macOS 14.0+. On earlier versions, the view does not change.
  * @param params - Optional parameters.
  * @param params.countsDown - Whether the numeric text counts down.
  * @param params.symbolEffect - The symbol effect to use with the `'symbolEffect'` type. Omit it for the automatic symbol effect.
