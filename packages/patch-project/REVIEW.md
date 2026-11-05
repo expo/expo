@@ -23,8 +23,10 @@ The patch files are user data. Users commit them to their own repositories.
 - **Monorepos.** `git apply` resolves paths from the root of the enclosing repository. Every
   `git apply` call passes the `--directory` argument from `getPatchPathArgsAsync`, or the
   patch is skipped with no error when the project is in a subdirectory.
-- **Git calls.** All git calls go through `runGitAsync` in `src/gitPatch.ts`, with an argv
-  array. Never build a shell string. A missing `git` binary (`ENOENT`) must reach the user. It
+- **Git calls.** Git commands that read or write the project go through `runGitAsync` in
+  `src/gitPatch.ts`, with an argv array. Never build a shell string. The one exception is the
+  `git --version` check in `platformSanityCheckAsync` (`src/cli/generateNativeProjects.ts`),
+  which runs before any other step. A missing `git` binary (`ENOENT`) must reach the user. It
   must not read as "patch not applied".
 - **The user's native project.** The CLI moves the user's `android/` or `ios/` into
   `.patch-project-tmp/<platform>/` and deletes that directory in a `finally`. A change to this
