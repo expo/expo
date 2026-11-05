@@ -29,7 +29,15 @@ final class ExpoGoNotificationsCategoriesModule: CategoriesModule {
   }
 
   public override func setNotificationCategoriesAsync(categories: [CategoryRecord]) async throws {
-    throw Exception(name: "Unavailable", description: "Replacing all notification categories is not supported in Expo Go because categories are shared between projects. Use a development build or setNotificationCategoryAsync instead.")
+    let scopeKey = self.scopeKey
+    let scopedCategories = categories.map { category in
+      var scopedCategory = category
+      scopedCategory.identifier = EXScopedNotificationsUtils.scopedIdentifier(fromId: category.identifier, forExperience: scopeKey)
+      return scopedCategory
+    }
+    try await replaceNotificationCategories(scopedCategories) {
+      EXScopedNotificationsUtils.isId($0, scopedByExperience: scopeKey)
+    }
   }
 
   public override func setNotificationCategoryAsync(

@@ -32,13 +32,16 @@ class SharedPreferencesNotificationCategoriesStore(context: Context) {
     category
   }
 
-  fun setNotificationCategories(categories: Collection<NotificationCategoryRecord>) = synchronized(lock) {
+  fun setNotificationCategories(
+    categories: Collection<NotificationCategoryRecord>,
+    replaces: (identifier: String) -> Boolean = { true }
+  ) = synchronized(lock) {
     val encoded = categories.associate { it.identifier to encode(it) }
     if (encoded.size != categories.size) {
       throw InvalidArgumentException("Could not replace notification categories because identifiers are duplicated. Use a unique identifier for each category.")
     }
     val editor = sharedPreferences.edit()
-    sharedPreferences.all.keys.filter { categoryIdentifier(it) != null }.forEach(editor::remove)
+    sharedPreferences.all.keys.filter { key -> categoryIdentifier(key)?.let(replaces) == true }.forEach(editor::remove)
     encoded.forEach { (identifier, value) -> editor.putString(RECORD_PREFIX + identifier, value) }
     commit(editor)
   }

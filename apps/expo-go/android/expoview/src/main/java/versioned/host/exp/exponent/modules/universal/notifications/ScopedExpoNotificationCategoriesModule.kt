@@ -31,11 +31,13 @@ class ScopedExpoNotificationCategoriesModule(
   }
 
   override fun setNotificationCategoriesAsync(categories: List<NotificationCategoryRecord>, promise: Promise) {
-    promise.reject("ERR_UNAVAILABLE", "Replacing all notification categories is not supported in Expo Go because categories are shared between projects. Use a development build or setNotificationCategoryAsync instead.", null)
+    val scopedCategories = categories.map {
+      it.copy(identifier = ScopedNotificationsIdUtils.getScopedCategoryId(experienceKey, it.identifier))
+    }
+    super.setNotificationCategoriesAsync(scopedCategories, promise)
   }
 
-  override fun filterCategories(categories: Collection<NotificationCategoryRecord>): Collection<NotificationCategoryRecord> {
-    val prefix = ScopedNotificationsIdUtils.getScopedCategoryId(experienceKey, "")
-    return categories.filter { it.identifier.startsWith(prefix) }
+  override fun ownsCategory(identifier: String): Boolean {
+    return identifier.startsWith(ScopedNotificationsIdUtils.getScopedCategoryId(experienceKey, ""))
   }
 }

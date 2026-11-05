@@ -37,4 +37,20 @@ struct NotificationCategoriesTests {
 
     #expect(try result.asString() == "added")
   }
+
+  @Test
+  func scopedReplacementKeepsCategoriesOutsideTheScope() async throws {
+    let center = UNUserNotificationCenter.current()
+    let originalCategories = await center.notificationCategories()
+    defer { center.setNotificationCategories(originalCategories) }
+
+    let manager = CategoryManager()
+    try await manager.setCategories(
+      [CategoryRecord("other", actions: [], options: nil), CategoryRecord("mine/old", actions: [], options: nil)]
+    ) { _ in true }
+    try await manager.setCategories([CategoryRecord("mine/new", actions: [], options: nil)]) { $0.hasPrefix("mine/") }
+
+    let identifiers = Set(await center.notificationCategories().map { $0.identifier })
+    #expect(identifiers == ["other", "mine/new"])
+  }
 }
