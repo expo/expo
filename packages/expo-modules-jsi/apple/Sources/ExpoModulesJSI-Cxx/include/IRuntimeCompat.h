@@ -8,7 +8,9 @@
 // methods now take `IRuntime&` instead of `Runtime&`. Older React Native
 // versions (e.g. react-native-tvos 0.85) only have `jsi::Runtime`. Alias
 // `IRuntime` to `Runtime` there so the same source compiles against both.
-#if __has_include(<cxxreact/ReactNativeVersion.h>)
+#if __has_include(<React/Utils.h>)
+#include <React/Utils.h>
+#elif __has_include(<cxxreact/ReactNativeVersion.h>)
 #include <cxxreact/ReactNativeVersion.h>
 #endif
 
