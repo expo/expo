@@ -250,12 +250,11 @@ add_entries_with_model() {
   done
 }
 
-convert_changesets() {
-  local changesets=() changelogs=() path mode name changelog list_status=0
-  local list_json="$run_dir/changesets.json"
-
-  # The check reads the changesets and the packages with the same code, so the files that the model
-  # edits are the files that the check expects.
+# Writes the report of `et list-backport-changesets` to $list_json. When the report is missing or
+# malformed, it comments and returns 1. $1 is "no" or "yes": whether the target uses changesets.
+list_changesets() {
+  local list_status=0
+  list_json="$run_dir/changesets.json"
   node "$expotools" list-backport-changesets --repo "$target_dir" --base "$base" \
     --json "$list_json" 2>&1 | print_untrusted || list_status=$?
   # Exit code 1 with a complete report means that the report has errors. Any other failure can
@@ -272,9 +271,29 @@ convert_changesets() {
       and (.packages | type == "array" and all(
         type == "object" and (.name | plain) and (.changelog == null or (.changelog | plain)))))
   ' "$list_json" >/dev/null 2>&1; then
-    finish_with_comment "$(printf 'The bot could not list the changesets of this pull request with `et list-backport-changesets`, so no backport pull request was opened.%s\n\n%s' "$(run_log_link)" "$(manual_steps no)")"
-    return
+    finish_with_comment "$(printf 'The bot could not list the changesets of this pull request with `et list-backport-changesets`, so no backport pull request was opened.%s\n\n%s' "$(run_log_link)" "$(manual_steps "$1")")"
+    return 1
   fi
+}
+
+# A branch with changesets keeps them, but a changeset that names a package the branch does not
+# have breaks its release.
+check_kept_changesets() {
+  list_changesets yes || return 0
+  if [ "$(jq '.changesets | length' "$list_json")" -eq 0 ]; then
+    conversion=none
+  fi
+  if [ "$(jq '.errors | length' "$list_json")" -ne 0 ]; then
+    finish_with_comment "$(printf 'The changesets of this pull request do not fit `%s`, so no backport pull request was opened:\n\n%s\n\nIn the backport, fix each changeset. For example, remove a package that `%s` does not have.\n\n%s' "$target_branch" "$(error_list "$list_json")" "$target_branch" "$(manual_steps yes)")"
+  fi
+}
+
+convert_changesets() {
+  local changesets=() changelogs=() path mode name changelog
+
+  # The check reads the changesets and the packages with the same code, so the files that the model
+  # edits are the files that the check expects.
+  list_changesets no || return 0
 
   while IFS= read -r -d '' path; do
     mode=''
@@ -523,15 +542,17 @@ EOF
   conversion=kept
   if [ "$uses_changesets" = no ]; then
     convert_changesets
-    if [ -f "$state_dir/outcome" ]; then
-      return
-    fi
+  else
+    check_kept_changesets
+  fi
+  if [ -f "$state_dir/outcome" ]; then
+    return
   fi
 
   local conversion_note
   case "$conversion" in
-    kept) conversion_note="\`$target_branch\` uses changesets, so the changesets of #$PR_NUMBER are kept as they are." ;;
-    none) conversion_note="#$PR_NUMBER adds no changesets, so there was nothing to convert." ;;
+    kept) conversion_note="\`$target_branch\` uses changesets, so the changesets of #$PR_NUMBER are kept as they are. \`et list-backport-changesets\` found each package that they name on \`$target_branch\`." ;;
+    none) conversion_note="#$PR_NUMBER adds no changesets." ;;
     converted) conversion_note="\`$target_branch\` does not use changesets. Claude moved the changesets of #$PR_NUMBER into \`CHANGELOG.md\` entries, and \`et check-backport-changelog\` checked the result. That change is in its own commit. Review the entries before you merge." ;;
     deleted) conversion_note="\`$target_branch\` does not use changesets. The changesets of #$PR_NUMBER name no packages, so the bot deleted them, and \`et check-backport-changelog\` checked the result. That change is in its own commit." ;;
   esac
@@ -636,25 +657,27 @@ publish() {
   esac
 }
 
-# Tells the workflow whether to install the model and expotools. prepare needs them only when the
-# target branch exists and has no .changeset/config.json. prepare checks the branch again. If it
-# then needs a tool that is not installed, it fails, and publish comments on the pull request.
+# Tells the workflow whether to install expotools and the model. prepare needs expotools when the
+# target branch exists, and the model only when it also has no .changeset/config.json.
+# prepare checks the branch again. If it then needs a tool that is not installed, it fails, and
+# publish comments on the pull request.
 check_target() {
   load_common
-  local heads convert=true
+  local heads convert=true tools=true
   heads=$(git -C "$REPO_DIR" ls-remote --heads origin "refs/heads/$target_branch")
   if [ -z "$heads" ]; then
     echo "$target_branch does not exist."
     convert=false
+    tools=false
   elif gh api "repos/$REPO/contents/.changeset/config.json?ref=refs/heads/$target_branch" --silent 2>/dev/null; then
     echo "$target_branch uses changesets."
     convert=false
   else
     echo "$target_branch has no .changeset/config.json, or the API did not answer."
   fi
-  echo "convert=$convert"
+  printf 'tools=%s\nconvert=%s\n' "$tools" "$convert"
   if [ -n "${GITHUB_OUTPUT:-}" ]; then
-    echo "convert=$convert" >>"$GITHUB_OUTPUT"
+    printf 'tools=%s\nconvert=%s\n' "$tools" "$convert" >>"$GITHUB_OUTPUT"
   fi
 }
 

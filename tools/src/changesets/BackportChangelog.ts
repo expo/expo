@@ -152,7 +152,7 @@ export function resolveBackportPackages(
     } catch (error) {
       const reason = error instanceof Error ? error.message.split('\n')[0] : String(error);
       errors.push(
-        `${changeset.path} cannot be parsed (${reason}), so the packages it names are unknown. Convert this backport by hand.`
+        `${changeset.path} cannot be parsed (${reason}), so the packages it names are unknown.`
       );
     }
   }
@@ -164,7 +164,7 @@ export function resolveBackportPackages(
     );
     if (shownName !== name) {
       errors.push(
-        `${changesetPaths.join(', ')} names the package "${shownName}", which has a control character, so it is not a valid package name. Correct the changeset, or convert this backport by hand.`
+        `${changesetPaths.join(', ')} names the package "${shownName}", which has a control character, so it is not a valid package name. Correct the changeset.`
       );
       // The name cannot go into the list: a reader that splits on control characters would read it wrong.
       return [];
@@ -173,7 +173,7 @@ export function resolveBackportPackages(
     const duplicateDirs = input.duplicatePackageDirs?.get(name);
     if (duplicateDirs) {
       errors.push(
-        `More than one package is named "${name}" on this branch (${[...duplicateDirs].sort().join(', ')}), so the check cannot tell which CHANGELOG.md belongs to it. Convert this backport by hand.`
+        `More than one package is named "${name}" on this branch (${[...duplicateDirs].sort().join(', ')}), so the check cannot tell which CHANGELOG.md belongs to it.`
       );
     } else if (packageDir === undefined) {
       errors.push(
@@ -195,14 +195,14 @@ function missingPackageError(
 ): string {
   const missing = `The package "${name}", named by ${changesetPaths.join(', ')}, does not exist on this branch.`;
   if (unreadablePaths.length === 0) {
-    return `${missing} Convert this backport by hand.`;
+    return missing;
   }
   const shown = [...unreadablePaths].sort().slice(0, MAX_LISTED_PATHS);
   const more =
     unreadablePaths.length > shown.length
       ? `, and ${unreadablePaths.length - shown.length} more`
       : '';
-  return `${missing} These package.json files do not parse or have no name, so one of them can be "${name}": ${shown.join(', ')}${more}. Correct that package.json, or convert this backport by hand.`;
+  return `${missing} These package.json files do not parse or have no name, so one of them can be "${name}": ${shown.join(', ')}${more}. Correct that package.json.`;
 }
 
 function checkChangelog(

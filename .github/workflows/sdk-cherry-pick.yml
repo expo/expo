@@ -114,32 +114,32 @@ jobs:
           ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 1
           persist-credentials: false
-      # Only a release branch without changesets needs the model and expotools. The next steps
-      # take minutes, so they run only for such a branch.
+      # Every existing release branch needs expotools to check the changesets. Only a branch
+      # without changesets needs the model.
       - name: 🔍 Check the target branch
         id: target
         run: .github/scripts/sdk-cherry-pick.sh check-target
         env:
           GH_TOKEN: ${{ github.token }}
       - name: 🔨 Install pnpm
-        if: steps.target.outputs.convert == 'true'
+        if: steps.target.outputs.tools == 'true'
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           install: false
       - name: 🔨 Setup Node
-        if: steps.target.outputs.convert == 'true'
+        if: steps.target.outputs.tools == 'true'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: 'pnpm'
       - name: 📦 Install dependencies
-        if: steps.target.outputs.convert == 'true'
+        if: steps.target.outputs.tools == 'true'
         run: pnpm install --ignore-scripts --frozen-lockfile
       - name: ♻️ Restore caches
-        if: steps.target.outputs.convert == 'true'
+        if: steps.target.outputs.tools == 'true'
         uses: ./.github/actions/expo-caches
       - name: 🛠 Build expotools
-        if: steps.target.outputs.convert == 'true'
+        if: steps.target.outputs.tools == 'true'
         run: pnpm turbo build --filter expotools...
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
