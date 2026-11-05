@@ -4,6 +4,7 @@ import { use, useCallback } from 'react';
 import type { View, PressableProps } from 'react-native';
 import { StyleSheet, Pressable } from 'react-native';
 
+import { useContextKey } from '../Route';
 import { appendBaseUrl } from '../fork/getPathFromState';
 import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
 import { findStateByKey } from '../global-state/stateUtils';
@@ -12,8 +13,12 @@ import { shouldHandleMouseEvent } from '../link/useLinkToPathProps';
 import { stripGroupSegmentsFromPath } from '../matchers';
 import type { TabNavigationState } from '../react-navigation/native';
 import type { Href } from '../types';
-import { useNavigatorContext } from '../views/Navigator';
-import { TabNavigatorStatesContext, TabTriggerMapContext } from './TabContext';
+import { NavigatorContext } from '../views/Navigator';
+import {
+  TabNavigatorStatesContext,
+  TabTriggerMapContext,
+  TabTriggerNavigatorContext,
+} from './TabContext';
 import { buildTabAction, type TriggerMap } from './common';
 
 type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & {
@@ -152,7 +157,14 @@ export type TriggerProps = {
  * Utility hook creating custom `TabTrigger`.
  */
 export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
-  const { state, navigation, contextKey, descriptors } = useNavigatorContext();
+  const tabNavigator = use(TabTriggerNavigatorContext);
+  // Triggers in a nested navigator use that navigator, not the parent tab's stable context.
+  const navigatorContext =
+    tabNavigator?.contextKey === useContextKey() ? tabNavigator : use(NavigatorContext);
+  if (!navigatorContext) {
+    throw new Error('useNavigatorContext must be used within a <Navigator />');
+  }
+  const { state, navigation, contextKey } = navigatorContext;
   const { name, resetOnFocus, onPress, onLongPress } = options;
   const triggerMap = use(TabTriggerMapContext);
   const navigatorStates = use(TabNavigatorStatesContext);
@@ -170,12 +182,15 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         config.type === 'internal'
           ? state.routes.find((route) => route.name === config.routeNode.route)
           : undefined;
+      const routeKey = config.type === 'internal' ? (route?.key ?? config.routeNode.route) : '';
       const routeOptions =
-        config.type === 'internal'
-          ? descriptors[route?.key ?? config.routeNode.route]?.options
+        config.type === 'internal' && 'descriptors' in navigatorContext
+          ? navigatorContext.descriptors[routeKey]?.options
           : undefined;
       const hidden =
-        routeOptions != null && 'hidden' in routeOptions && routeOptions.hidden === true;
+        config.type === 'internal' && 'hiddenRoutes' in navigatorContext
+          ? navigatorContext.hiddenRoutes[routeKey] === true
+          : routeOptions != null && 'hidden' in routeOptions && routeOptions.hidden === true;
 
       // Parent triggers are inherited, so read the state of the navigator that registered them.
       const owningState =
@@ -193,7 +208,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         ...config,
       };
     },
-    [descriptors, navigatorStates, state, triggerMap]
+    [navigatorContext, navigatorStates, state, triggerMap]
   );
 
   const trigger = name !== undefined ? getTrigger(name) : undefined;

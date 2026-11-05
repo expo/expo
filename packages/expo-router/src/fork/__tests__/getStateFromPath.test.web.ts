@@ -24,6 +24,53 @@ test('allows Expo Router route metadata', () => {
   ).not.toThrow();
 });
 
+test('keeps ancestor and child values separate when they reuse a dynamic param name', () => {
+  const state = getStateFromPath('/alpha/details/beta', {
+    screens: {
+      Root: {
+        path: '',
+        screens: {
+          '[team]': {
+            path: ':team',
+            screens: {
+              details: {
+                path: 'details',
+                screens: {
+                  '[team]': ':team',
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  expect(state).toMatchObject({
+    routes: [
+      {
+        name: 'Root',
+        state: {
+          routes: [
+            {
+              name: '[team]',
+              params: { team: 'alpha' },
+              state: {
+                routes: [
+                  {
+                    name: 'details',
+                    state: { routes: [{ name: '[team]', params: { team: 'beta' } }] },
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+    ],
+  });
+});
+
 describe(stripBaseUrl, () => {
   (
     [
