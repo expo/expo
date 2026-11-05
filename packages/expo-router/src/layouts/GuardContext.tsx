@@ -11,8 +11,10 @@ import type { Href } from '../types';
 export type GuardedRedirects = Map<string, Href | undefined>;
 // `Href` = guarded with a redirect, `null` = guarded with no available destination.
 export type GuardRedirect = Href | null;
+type FallbackRoute = { name: string; params?: object };
+export type ResolvedGuard = { redirect: GuardRedirect; fallbackRoute?: FallbackRoute };
 // Per route name; a missing entry means the route is unguarded.
-export type ResolvedGuards = Map<string, GuardRedirect>;
+export type ResolvedGuards = Map<string, ResolvedGuard>;
 
 export const GuardContext = createContext<ResolvedGuards | null>(null);
 const GuardRedirectFallbackContext = createContext<GuardRedirectFallback[]>([]);
@@ -55,22 +57,21 @@ function computeGuardState(
 
   return {
     fallbacks,
-    resolvedGuards: resolveGuardRedirects(guardedRedirects, fallbacks[0]?.href),
+    resolvedGuards: resolveGuardRedirects(
+      guardedRedirects,
+      fallbacks[0]?.href,
+      navigatorFallback?.fallbackRoute
+    ),
   };
 }
 
-export function useGuardRedirect(routeName: string): GuardRedirect | undefined {
+export function useResolvedGuard(routeName: string): ResolvedGuard | undefined {
   const guards = use(GuardContext);
-  if (!guards) {
-    return undefined;
-  }
+  return guards?.get(routeName) ?? guards?.get(normalizeRouteName(routeName));
+}
 
-  if (guards.has(routeName)) {
-    return guards.get(routeName) ?? null;
-  }
-
-  const normalizedRouteName = normalizeRouteName(routeName);
-  return guards.has(normalizedRouteName) ? (guards.get(normalizedRouteName) ?? null) : undefined;
+export function useGuardRedirect(routeName: string): GuardRedirect | undefined {
+  return useResolvedGuard(routeName)?.redirect;
 }
 
 export function normalizeRouteName(routeName: string): string {
@@ -80,6 +81,7 @@ export function normalizeRouteName(routeName: string): string {
 type GuardRedirectFallback = {
   href: Href;
   targetRouteContextKey: string | null;
+  fallbackRoute?: FallbackRoute;
 };
 
 function getNavigatorFallback(
@@ -100,6 +102,10 @@ function getNavigatorFallback(
   return {
     href: Object.keys(params ?? {}).length ? ({ pathname, params } as Href) : (pathname as Href),
     targetRouteContextKey: route.contextKey,
+    fallbackRoute: {
+      name: route.route,
+      params: Object.keys(params ?? {}).length ? params : undefined,
+    },
   };
 }
 
@@ -131,12 +137,20 @@ export function isRouteGuarded(routeName: string, guards: ReadonlyMap<string, un
 
 function resolveGuardRedirects(
   guardedRedirects: GuardedRedirects,
-  fallbackHref: Href | undefined
+  fallbackHref: Href | undefined,
+  fallbackRoute: FallbackRoute | undefined
 ): ResolvedGuards {
-  return new Map<string, GuardRedirect>(
+  return new Map<string, ResolvedGuard>(
     Array.from(
       guardedRedirects,
-      ([name, redirectTo]) => [name, redirectTo ?? fallbackHref ?? null] as const
+      ([name, redirectTo]) =>
+        [
+          name,
+          {
+            redirect: redirectTo ?? fallbackHref ?? null,
+            fallbackRoute: redirectTo === undefined ? fallbackRoute : undefined,
+          },
+        ] as const
     )
   );
 }
