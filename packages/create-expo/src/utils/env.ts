@@ -11,7 +11,8 @@ class Env {
   }
   /** Is running in non-interactive CI mode */
   get CI() {
-    return boolish('CI', false);
+    const ci = process.env.CI;
+    return ci === '1' || ci?.toLowerCase() === 'true';
   }
   /** Disable all API caches. Does not disable bundler caches. */
   get EXPO_NO_CACHE() {
