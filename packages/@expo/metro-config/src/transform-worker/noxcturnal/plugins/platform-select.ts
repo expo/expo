@@ -70,7 +70,14 @@ export function createPlatformSelectPlugin(
             find('default');
           const value = selected?.getChild('value');
           call.replaceWith(
-            value ? value.getSource() : call.context.code.parseExpression('undefined')
+            value
+              ? value.is('Identifier') ||
+                value.is('StringLiteral') ||
+                value.is('BooleanLiteral') ||
+                value.is('NullLiteral')
+                ? value.getSource()
+                : call.context.code.template`(${value.getSource()})`
+              : call.context.code.parseExpression('undefined')
           );
         }
       ),
