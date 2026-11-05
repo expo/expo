@@ -1,171 +1,681 @@
----
-title: Expo Build
-sidebar_title: Introduction
-description: Expo Build is a hosted service for building app binaries for your Expo and React Native projects.
----
 
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+import React, { useEffect, useState } from "react";
+import {
+  View, Text, TextInput, TouchableOpacity,
+  ScrollView, Image, StyleSheet, Alert,
+  SafeAreaView, StatusBar
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as ImagePicker from "expo-image-picker";
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
-import { FAQ } from '~/ui/components/FAQ';
-import { RelatedSkills } from '~/ui/components/RelatedSkills';
-import { SimulatorsLaunchCallout } from '~/ui/components/SimulatorsLaunchCallout';
-import { Terminal } from '~/ui/components/Snippet';
+const COLORS = {
+  bg: "#F3F6FC",
+  primary: "#2563EB",
+  dark: "#172554",
+  white: "#FFFFFF",
+  text: "#172033",
+  muted: "#64748B",
+  border: "#E2E8F0"
+};
 
-**Expo Build** is a hosted service that builds app binaries (also called [standalone apps](/more/glossary-of-terms/#standalone-app)) for your Expo and React Native projects.
+const subject = (name, symbol, color) => ({
+  name, symbol, color
+});
 
-Expo Build makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using [ad hoc](/build/internal-distribution/) and/or enterprise "universal" provisioning), deeply integrates with Expo Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+// المواد الشائعة حسب البرامج الدراسية
+const CURRICULUM = {
+  "متوسط": {
+    "جميع المواد": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("العلوم الطبيعية", "🧬", "#16A34A"),
+      subject("الفيزياء والتكنولوجيا", "⚛", "#7C3AED"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("اللغة الفرنسية", "FR", "#4F46E5"),
+      subject("اللغة الإنجليزية", "EN", "#0891B2"),
+      subject("التاريخ والجغرافيا", "🌍", "#0D9488"),
+      subject("التربية الإسلامية", "☪", "#059669"),
+      subject("التربية المدنية", "⚖", "#B45309"),
+      subject("الإعلام الآلي", "</>", "#475569"),
+      subject("التربية التشكيلية", "🎨", "#DB2777"),
+      subject("التربية البدنية", "🏃", "#EA580C")
+    ]
+  },
 
-Expo Build is also designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
+  "ثانوي": {
+    "جذع مشترك علوم وتكنولوجيا": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("علوم الطبيعة والحياة", "🧬", "#16A34A"),
+      subject("التكنولوجيا", "⚙", "#D97706"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2"),
+      subject("التاريخ والجغرافيا", "🌍", "#0D9488")
+    ],
 
-<SimulatorsLaunchCallout />
+    "تقني رياضي - هندسة كهربائية": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("الهندسة الكهربائية", "⚡", "#D97706"),
+      subject("التكنولوجيا", "⚙", "#475569"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2"),
+      subject("التاريخ والجغرافيا", "🌍", "#0D9488")
+    ],
 
-## Quick start
+    "تقني رياضي - هندسة ميكانيكية": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("الهندسة الميكانيكية", "⚙", "#D97706"),
+      subject("التكنولوجيا", "🔩", "#475569"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2")
+    ],
 
-> **info** The commands for Expo Build start with `eas` and require EAS CLI. See [How to install EAS CLI](/eas/cli/#installation) for more information.
+    "تقني رياضي - هندسة مدنية": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("الهندسة المدنية", "🏗", "#D97706"),
+      subject("التكنولوجيا", "⚙", "#475569"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2")
+    ],
 
-To build your app, run the following command:
+    "تقني رياضي - هندسة الطرائق": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("هندسة الطرائق", "⚗", "#059669"),
+      subject("الكيمياء", "🧪", "#0891B2"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5")
+    ],
 
-<Terminal cmd={['$ eas build --platform all']} />
+    "علوم تجريبية": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("علوم الطبيعة والحياة", "🧬", "#16A34A"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2")
+    ],
 
-This command sends your project to Expo Build and produces installable binaries for Android and iOS. You can also build for one platform at a time by passing in `--platform android` or `--platform ios` as desired. For complete setup instructions, see [Create your first build](/build/setup/).
+    "رياضيات": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("علوم الطبيعة والحياة", "🧬", "#16A34A"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2")
+    ],
 
-### Expo Skills for AI agents
+    "تسيير واقتصاد": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("التسيير المحاسبي والمالي", "∑", "#059669"),
+      subject("الاقتصاد", "📈", "#0891B2"),
+      subject("القانون", "⚖", "#B45309"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2")
+    ],
 
-If you use an AI agent, install [Expo Skills](/skills/) to teach it how to create production builds and ship them to the app stores:
+    "آداب وفلسفة": [
+      subject("الفلسفة", "💭", "#7C3AED"),
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("التاريخ والجغرافيا", "🌍", "#0D9488"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2")
+    ],
 
-<RelatedSkills names={['eas-app-stores']} />
+    "لغات أجنبية": [
+      subject("اللغة العربية", "أ", "#BE123C"),
+      subject("الفرنسية", "FR", "#4F46E5"),
+      subject("الإنجليزية", "EN", "#0891B2"),
+      subject("لغة أجنبية ثالثة", "文", "#7C3AED"),
+      subject("التاريخ والجغرافيا", "🌍", "#0D9488")
+    ]
+  },
 
-## Key features
+  "جامعي": {
+    "هندسة كهربائية": [
+      subject("Analyse", "∫", "#2563EB"),
+      subject("Algèbre", "Σ", "#7C3AED"),
+      subject("Physique", "⚛", "#0891B2"),
+      subject("Électricité", "⚡", "#D97706"),
+      subject("Électronique", "⌁", "#059669"),
+      subject("Informatique", "</>", "#475569"),
+      subject("Mécanique", "⚙", "#EA580C"),
+      subject("Histoire des sciences", "📚", "#BE123C")
+    ],
+    "إعلام آلي": [
+      subject("الرياضيات", "π", "#2563EB"),
+      subject("الخوارزميات", "</>", "#0891B2"),
+      subject("البرمجة", "💻", "#7C3AED"),
+      subject("قواعد البيانات", "🗄", "#059669"),
+      subject("هياكل البيانات", "🔗", "#D97706")
+    ],
+    "رياضيات": [
+      subject("Analyse", "∫", "#2563EB"),
+      subject("Algèbre", "Σ", "#7C3AED"),
+      subject("Probabilités", "P", "#0891B2"),
+      subject("Géométrie", "△", "#059669")
+    ],
+    "فيزياء": [
+      subject("الميكانيك", "⚙", "#D97706"),
+      subject("الكهرباء", "⚡", "#2563EB"),
+      subject("الرياضيات", "π", "#7C3AED"),
+      subject("الفيزياء العامة", "⚛", "#0891B2")
+    ],
+    "علوم طبيعية": [
+      subject("علم الأحياء", "🧬", "#16A34A"),
+      subject("الكيمياء", "⚗", "#0891B2"),
+      subject("الفيزياء", "⚛", "#7C3AED"),
+      subject("الإحصاء", "Σ", "#D97706")
+    ],
+    "تخصص آخر": []
+  }
+};
 
-- Cloud builds for Android and iOS with consistent environments
-- Automatically provision and manage app signing credentials or use your own
-- Share [internal distribution](/build/internal-distribution/) builds with a URL
-- Automate builds with [build profiles](/build/eas-json/#build-profiles) in **eas.json** (named sets of build settings) and integrations with [Expo Workflows](/eas/workflows/get-started/) or [CI pipelines](/build/building-on-ci/)
-- Auto-submit successful builds to app stores via [`--auto-submit`](/build/automate-submissions/) and Expo Submit
-- First-class [`expo-updates` integration](/build/updates/) with per-profile channels and [runtime version](/eas-update/runtime-versions/) guidance
-- Reuse [development builds](/develop/development-builds/introduction/) across your team. When two team members run `eas build:dev` and the project fingerprint matches, the existing build is downloaded from Expo Build instead of creating a new one
-- Faster builds via [dependency caching and custom cache paths](/build-reference/caching/)
-- Install builds and updates on devices with [Expo Orbit](https://expo.dev/orbit)
+const streams = {
+  "متوسط": ["جميع المواد"],
+  "ثانوي": Object.keys(CURRICULUM["ثانوي"]),
+  "جامعي": Object.keys(CURRICULUM["جامعي"])
+};
 
-## When to use Expo Build
+const YEARS = {
+  "متوسط": ["الأولى متوسط", "الثانية متوسط", "الثالثة متوسط", "الرابعة متوسط"],
+  "ثانوي": ["الأولى ثانوي", "الثانية ثانوي", "الثالثة ثانوي"],
+  "جامعي": [
+    "السنة الأولى ليسانس",
+    "السنة الثانية ليسانس",
+    "السنة الثالثة ليسانس",
+    "السنة الأولى ماستر",
+    "السنة الثانية ماستر",
+    "أخرى"
+  ]
+};
 
-| Scenario                                                                             | Recommendation |
-| ------------------------------------------------------------------------------------ | -------------- |
-| Build production-ready binaries for app stores                                       | <YesIcon />    |
-| Share builds with testers via [internal distribution](/build/internal-distribution/) | <YesIcon />    |
-| Consistent builds across team members without local environment setup                | <YesIcon />    |
-| Automate builds from CI or [Expo Workflows](/eas/workflows/get-started/)             | <YesIcon />    |
-| Managed app signing credentials                                                      | <YesIcon />    |
-| Debugging native code locally                                                        | <NoIcon />     |
+export default function App() {
+  const [stage, setStage] = useState("");
+  const [year, setYear] = useState("");
+  const [stream, setStream] = useState("");
+  const [page, setPage] = useState("setup");
+  const [lessons, setLessons] = useState([]);
+  const [selected, setSelected] = useState(null);
+  const [customSubjects, setCustomSubjects] = useState({});
+  const [newSubject, setNewSubject] = useState("");
+  const [search, setSearch] = useState("");
+  const [premium, setPremium] = useState(false);
 
-## Frequently asked questions
+  useEffect(() => {
+    loadData();
+  }, []);
 
-<FAQ>
+  async function loadData() {
+    try {
+      const saved = await AsyncStorage.getItem("study_lessons");
+      const profile = await AsyncStorage.getItem("study_profile");
+      const custom = await AsyncStorage.getItem("study_custom");
 
-<Collapsible summary="How do I share builds with my team before submitting to app stores?">
+      if (saved) setLessons(JSON.parse(saved));
+      if (custom) setCustomSubjects(JSON.parse(custom));
 
-Use [internal distribution](/build/internal-distribution/) to share builds with a URL. Set `"distribution": "internal"` in your [build profile](/build/eas-json/#build-profiles) in **eas.json** to generate installable Android Package (APK) files for Android or [ad hoc builds](/build/internal-distribution/) for iOS.
+      if (profile) {
+        const p = JSON.parse(profile);
+        setStage(p.stage);
+        setYear(p.year);
+        setStream(p.stream);
+        setPage("home");
+      }
+    } catch (e) {
+      console.log("Load error", e);
+    }
+  }
 
-</Collapsible>
+  async function saveProfile() {
+    if (!stage || !year || !stream) {
+      Alert.alert("تنبيه", "يرجى اختيار الطور والسنة والتخصص");
+      return;
+    }
 
-<Collapsible summary="Can I use Expo Build with existing React Native projects?">
+    await AsyncStorage.setItem(
+      "study_profile",
+      JSON.stringify({ stage, year, stream })
+    );
+    setPage("home");
+  }
 
-Yes. Expo Build works with existing React Native projects created with `npx react-native init` or similar tools. See [Overview of using Expo with existing React Native apps](/bare/overview/) for more information.
+  function getSubjects() {
+    const base = CURRICULUM[stage]?.[stream] || [];
+    const custom = customSubjects[stage + stream] || [];
+    return [...base, ...custom].filter(s =>
+      s.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }
 
-</Collapsible>
+  async function addSubject() {
+    if (!newSubject.trim()) return;
 
-<Collapsible summary="Does Expo Build handle app signing credentials?">
+    const key = stage + stream;
+    const list = customSubjects[key] || [];
 
-Yes. Expo Build can generate and manage Android [keystores](/app-signing/app-credentials/#android), iOS [provisioning profiles](/app-signing/app-credentials/#ios) and [distribution certificates](/app-signing/app-credentials/#ios), or use credentials you provide. See [App signing credentials](/app-signing/app-credentials/) for more information.
+    const updated = {
+      ...customSubjects,
+      [key]: [
+        ...list,
+        subject(newSubject.trim(), "📘", "#2563EB")
+      ]
+    };
 
-</Collapsible>
+    setCustomSubjects(updated);
+    await AsyncStorage.setItem(
+      "study_custom",
+      JSON.stringify(updated)
+    );
+    setNewSubject("");
+  }
 
-<Collapsible summary="Can I run builds locally instead of in the cloud?">
+  async function takePhoto() {
+    const permission =
+      await ImagePicker.requestCameraPermissionsAsync();
 
-Yes. Use [local builds](/build-reference/local-builds/) with `eas build --local` to run builds on your machine. This is useful for debugging or for security policies that require local builds.
+    if (!permission.granted) {
+      Alert.alert("إذن الكاميرا مطلوب");
+      return;
+    }
 
-</Collapsible>
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ["images"],
+      allowsEditing: false,
+      quality: 1,
+      exif: false
+    });
 
-<Collapsible summary="Can I use Expo Build with Expo Workflows or CI pipelines?">
+    if (!result.canceled) {
+      const photo = result.assets[0].uri;
+      saveLesson(photo);
+    }
+  }
 
-Yes. Expo Build integrates with [Expo Workflows](/eas/workflows/get-started/) using the `build` job type. Add a build job to your workflow configuration, for example:
+  async function choosePhoto() {
+    const permission =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-```yaml
-jobs:
-  build_ios:
-    type: build
-    params:
-      platform: ios
-```
+    if (!permission.granted) {
+      Alert.alert("إذن الصور مطلوب");
+      return;
+    }
 
-The build job supports builds for both platforms or conditional builds based on the branch:
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ["images"],
+      quality: 1
+    });
 
-```yaml
-jobs:
-  build:
-    type: build
-    params:
-      platform: all
-      profile: ${{ github.ref_name == 'main' && 'production' || 'preview' }}
-```
+    if (!result.canceled) {
+      saveLesson(result.assets[0].uri);
+    }
+  }
 
-For more information and other usage examples, see the [Expo Workflows build job](/eas/workflows/pre-packaged-jobs#build).
+  async function saveLesson(uri) {
+    const item = {
+      id: Date.now().toString(),
+      uri,
+      subject: selected.name,
+      title: "درس جديد",
+      date: new Date().toLocaleDateString()
+    };
 
-Expo Build supports [builds from GitHub](/build/building-from-github/) and [building on CI](/build/building-on-ci/) with any provider.
+    const updated = [item, ...lessons];
+    setLessons(updated);
 
-</Collapsible>
+    await AsyncStorage.setItem(
+      "study_lessons",
+      JSON.stringify(updated)
+    );
 
-<Collapsible summary="What build server infrastructure does Expo Build use?">
+    Alert.alert("نجاح", "تم حفظ الدرس");
+  }
 
-Android builds run on Linux runners hosted in Google Cloud Platform, and iOS builds run on macOS runners hosted in Expo's macOS cloud. See [Build server infrastructure](/build-reference/infrastructure/).
+  async function deleteLesson(id) {
+    Alert.alert("حذف الدرس", "هل تريد حذف هذا الدرس؟", [
+      { text: "إلغاء" },
+      {
+        text: "حذف",
+        onPress: async () => {
+          const updated = lessons.filter(x => x.id !== id);
+          setLessons(updated);
+          await AsyncStorage.setItem(
+            "study_lessons",
+            JSON.stringify(updated)
+          );
+        }
+      }
+    ]);
+  }
 
-</Collapsible>
+  const Button = ({ title, onPress, color = COLORS.primary }) => (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[styles.button, { backgroundColor: color }]}
+    >
+      <Text style={styles.buttonText}>{title}</Text>
+    </TouchableOpacity>
+  );
 
-</FAQ>
+  const Option = ({ value, onPress, active }) => (
+    <TouchableOpacity
+      onPress={onPress}
+      style={[
+        styles.option,
+        active && styles.activeOption
+      ]}
+    >
+      <Text style={[
+        styles.optionText,
+        active && { color: COLORS.primary }
+      ]}>{value}</Text>
+    </TouchableOpacity>
+  );
 
-## Get started
+  const Header = ({ title }) => (
+    <View style={styles.header}>
+      <Text style={styles.headerTitle}>{title}</Text>
+      <Text style={styles.brand}>Study Organizer</Text>
+    </View>
+  );
 
-<BoxLink
-  title="Create your first build"
-  description="It should only take a few minutes in total to get up and running for iOS and/or Android."
-  href="/build/setup"
-  Icon={Cube01Icon}
-/>
+  if (page === "setup") {
+    return (
+      <SafeAreaView style={styles.screen}>
+        <StatusBar barStyle="dark-content" />
+        <ScrollView contentContainerStyle={styles.center}>
+          <Text style={styles.logo}>📚</Text>
+          <Text style={styles.appTitle}>Study Organizer</Text>
+          <Text style={styles.designer}>Designed by Seddik Younes</Text>
+          <Text style={styles.heading}>أنشئ ملفك الدراسي</Text>
 
-<BoxLink
-  title="Share your apps with internal testers"
-  description="Expo Build can help share preview builds of your app with a single URL."
-  href="/build/internal-distribution"
-  Icon={Cube01Icon}
-/>
+          <Text style={styles.label}>اختر الطور الدراسي</Text>
+          <View style={styles.wrap}>
+            {["متوسط", "ثانوي", "جامعي"].map(x => (
+              <Option key={x} value={x}
+                active={stage === x}
+                onPress={() => {
+                  setStage(x);
+                  setYear("");
+                  setStream("");
+                }}
+              />
+            ))}
+          </View>
 
-<BoxLink
-  title="Automate submissions"
-  description="Learn how Expo Build can take your successful builds and handle uploading them to app stores automatically."
-  href="/build/automate-submissions"
-  Icon={Cube01Icon}
-/>
+          {!!stage && <>
+            <Text style={styles.label}>اختر السنة</Text>
+            <View style={styles.wrap}>
+              {(YEARS[stage] || []).map(x => (
+                <Option key={x} value={x}
+                  active={year === x}
+                  onPress={() => setYear(x)}
+                />
+              ))}
+            </View>
+          </>}
 
-<BoxLink
-  title="App version management"
-  description="Automate version bumps so you never have to think about them again."
-  href="/build-reference/app-versions"
-  Icon={Cube01Icon}
-/>
+          {!!year && <>
+            <Text style={styles.label}>
+              {stage === "جامعي" ? "اختر التخصص الجامعي" : "اختر الشعبة"}
+            </Text>
+            <View style={styles.wrap}>
+              {(streams[stage] || []).map(x => (
+                <Option key={x} value={x}
+                  active={stream === x}
+                  onPress={() => setStream(x)}
+                />
+              ))}
+            </View>
+          </>}
 
-<BoxLink
-  title="Run builds locally or on your own infrastructure"
-  description="Expo Build is a hosted service, and it can also run on your own machine, for example, to debug or to comply with company security policies."
-  href="/build-reference/local-builds"
-  Icon={Cube01Icon}
-/>
+          <Button title="دخول إلى التطبيق" onPress={saveProfile} />
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
 
-<BoxLink
-  title="Limitations"
-  description="Expo Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
-  href="/build-reference/limitations"
-  Icon={Cube01Icon}
-/>
+  if (page === "home") {
+    return (
+      <SafeAreaView style={styles.screen}>
+        <Header title="موادي الدراسية" />
+        <ScrollView contentContainerStyle={styles.content}>
+          <View style={styles.profile}>
+            <Text style={styles.profileTitle}>
+              {stage} • {year}
+            </Text>
+            <Text style={styles.profileSub}>{stream}</Text>
+            <TouchableOpacity onPress={() => setPage("setup")}>
+              <Text style={styles.link}>تغيير الملف الدراسي</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TextInput
+            style={styles.input}
+            placeholder="ابحث عن مادة..."
+            value={search}
+            onChangeText={setSearch}
+          />
+
+          <View style={styles.grid}>
+            {getSubjects().map((s, i) => (
+              <TouchableOpacity
+                key={i}
+                style={styles.subjectCard}
+                onPress={() => {
+                  setSelected(s);
+                  setPage("subject");
+                }}
+              >
+                <View style={[
+                  styles.subjectIcon,
+                  { backgroundColor: s.color }
+                ]}>
+                  <Text style={styles.symbol}>{s.symbol}</Text>
+                </View>
+                <Text style={styles.subjectName}>{s.name}</Text>
+                <Text style={styles.small}>
+                  {lessons.filter(l => l.subject === s.name).length} درس
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          <Text style={styles.label}>إضافة مادة مخصصة</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="اسم المادة الجديدة"
+            value={newSubject}
+            onChangeText={setNewSubject}
+          />
+          <Button title="إضافة المادة" onPress={addSubject} />
+
+          <Button title="إعدادات التطبيق" color="#475569"
+            onPress={() => setPage("settings")} />
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  if (page === "subject") {
+    const subjectLessons = lessons.filter(
+      x => x.subject === selected?.name
+    );
+
+    return (
+      <SafeAreaView style={styles.screen}>
+        <Header title={selected?.name || "المادة"} />
+        <ScrollView contentContainerStyle={styles.content}>
+          <Button title="التقاط صورة للدرس 📷" onPress={takePhoto} />
+          <Button title="اختيار صورة من المعرض" color="#059669"
+            onPress={choosePhoto} />
+
+          <Text style={styles.heading}>دروسي</Text>
+
+          {subjectLessons.map(item => (
+            <View key={item.id} style={styles.lesson}>
+              <Image source={{ uri: item.uri }}
+                style={styles.lessonImage} />
+              <View style={{ flex: 1 }}>
+                <Text style={styles.subjectName}>{item.title}</Text>
+                <Text style={styles.small}>{item.date}</Text>
+                <TouchableOpacity onPress={() => deleteLesson(item.id)}>
+                  <Text style={{ color: "#DC2626", marginTop: 8 }}>
+                    حذف الدرس
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))}
+
+          {subjectLessons.length === 0 &&
+            <Text style={styles.empty}>لا توجد دروس بعد</Text>}
+
+          <Button title="العودة للمواد" color="#475569"
+            onPress={() => setPage("home")} />
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  if (page === "settings") {
+    return (
+      <SafeAreaView style={styles.screen}>
+        <Header title="الإعدادات" />
+        <View style={styles.content}>
+          <Text style={styles.heading}>Study Organizer</Text>
+          <Text style={styles.profileSub}>
+            المصمم: Seddik Younes
+          </Text>
+
+          <Text style={styles.label}>تحسين وضوح الصور</Text>
+          <Text style={styles.small}>
+            ميزة اختيارية مدفوعة. تفعيلها يتطلب دمج خدمة
+            تحسين الصور ونظام دفع حقيقي.
+          </Text>
+
+          <Button title="معاينة ميزة Premium"
+            onPress={() => {
+              Alert.alert(
+                "Premium",
+                "ميزة تحسين الصور اختيارية وستكون متاحة بعد ربط نظام الدفع."
+              );
+            }}
+            color="#7C3AED"
+          />
+
+          <Button title="العودة للرئيسية" color="#475569"
+            onPress={() => setPage("home")} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  return null;
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: COLORS.bg },
+  center: { padding: 20, paddingTop: 40 },
+  content: { padding: 16, paddingBottom: 40 },
+  logo: { fontSize: 55, textAlign: "center" },
+  appTitle: {
+    fontSize: 28, fontWeight: "bold",
+    textAlign: "center", color: COLORS.dark
+  },
+  designer: {
+    color: COLORS.primary, textAlign: "center",
+    marginTop: 8, marginBottom: 35
+  },
+  heading: {
+    fontSize: 20, fontWeight: "bold",
+    color: COLORS.dark, marginVertical: 16
+  },
+  label: {
+    fontSize: 16, fontWeight: "bold",
+    color: COLORS.text, marginTop: 20, marginBottom: 10
+  },
+  wrap: {
+    flexDirection: "row", flexWrap: "wrap", gap: 8
+  },
+  option: {
+    backgroundColor: COLORS.white,
+    padding: 12, borderRadius: 12,
+    borderWidth: 1, borderColor: COLORS.border,
+    marginBottom: 8
+  },
+  activeOption: {
+    borderColor: COLORS.primary,
+    backgroundColor: "#DBEAFE"
+  },
+  optionText: { color: COLORS.text, fontWeight: "600" },
+  button: {
+    padding: 15, borderRadius: 12,
+    alignItems: "center", marginTop: 14
+  },
+  buttonText: {
+    color: "white", fontWeight: "bold", fontSize: 15
+  },
+  header: {
+    backgroundColor: COLORS.white,
+    padding: 18, borderBottomWidth: 1,
+    borderColor: COLORS.border
+  },
+  headerTitle: {
+    fontSize: 21, color: COLORS.dark,
+    fontWeight: "bold", textAlign: "right"
+  },
+  brand: { color: COLORS.primary, textAlign: "right", marginTop: 4 },
+  profile: {
+    backgroundColor: COLORS.white,
+    padding: 18, borderRadius: 16, marginBottom: 18
+  },
+  profileTitle: {
+    color: COLORS.dark, fontWeight: "bold", fontSize: 18
+  },
+  profileSub: { color: COLORS.muted, marginTop: 8 },
+  link: { color: COLORS.primary, marginTop: 12 },
+  input: {
+    backgroundColor: COLORS.white, padding: 14,
+    borderRadius: 12, borderWidth: 1,
+    borderColor: COLORS.border, marginVertical: 8,
+    textAlign: "right", color: COLORS.text
+  },
+  grid: {
+    flexDirection: "row", flexWrap: "wrap",
+    justifyContent: "space-between", marginTop: 12
+  },
+  subjectCard: {
+    width: "48%", backgroundColor: COLORS.white,
+    borderRadius: 16, padding: 16,
+    alignItems: "center", marginBottom: 12,
+    elevation: 2
+  },
+  subjectIcon: {
+    width: 58, height: 58, borderRadius: 17,
+    alignItems: "center", justifyContent: "center"
+  },
+  symbol: { fontSize: 27, color: "white", fontWeight: "bold" },
+  subjectName: {
+    color: COLORS.text, fontWeight: "bold",
+    marginTop: 10, textAlign: "center"
+  },
+  small: { color: COLORS.muted, fontSize: 12, marginTop: 5 },
+  lesson: {
+    backgroundColor: COLORS.white, padding: 12,
+    borderRadius: 14, marginBottom: 12,
+    flexDirection: "row", gap: 12
+  },
+  lessonImage: { width: 95, height: 110, borderRadius: 8 },
+  empty: {
+    color: COLORS.muted, textAlign: "center",
+    margin: 25
+  }
+});
