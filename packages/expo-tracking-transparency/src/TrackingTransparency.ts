@@ -11,6 +11,19 @@ import { Platform } from 'react-native';
 import ExpoTrackingTransparency from './ExpoTrackingTransparency';
 
 /**
+ * Gets the advertising ID.
+ *
+ * @deprecated Use [`getAdvertisingIdAsync()`](#getadvertisingidasync) instead.
+ */
+export function getAdvertisingId(): string | null {
+  const advertisingId = ExpoTrackingTransparency.getAdvertisingId();
+  if (advertisingId === '00000000-0000-0000-0000-000000000000') {
+    return null;
+  }
+  return advertisingId;
+}
+
+/**
  * Gets the advertising ID, a UUID string intended only for advertising. Use this string for
  * frequency capping, attribution, conversion events, estimating the number of unique users,
  * advertising fraud detection, and debugging.
@@ -35,7 +48,7 @@ import ExpoTrackingTransparency from './ExpoTrackingTransparency';
  * [`requestTrackingPermissionsAsync()`](#requesttrackingpermissionsasync) before it can get the
  * advertising identifier.
  *
- * @return Returns either a UUID `string` or `null`. It returns null in the following cases:
+ * @return A promise that resolves to either a UUID `string` or `null`. It resolves to `null` in the following cases:
  * - On Android, when the system's [Limit Ad Tracking setting](https://support.google.com/googleplay/android-developer/answer/6048248)
  * is enabled (the app user has opted out of ad personalization)
  * - In the iOS simulator, regardless of any settings
@@ -43,29 +56,6 @@ import ExpoTrackingTransparency from './ExpoTrackingTransparency';
  * - On iOS, if you've requested permission and the user declines
  * - On iOS, when a profile or configuration restricts access to the advertising identifier, such as
  *   when the user has turned off the system-wide "Allow Apps to Request to Track" setting
- *
- * @example
- * ```ts
- * ExpoTrackingTransparency.getAdvertisingId();
- * // "E9228286-4C4E-4789-9D95-15827DCB291B"
- * ```
- *
- * @deprecated Use [`getAdvertisingIdAsync()`](#getadvertisingidasync) instead.
- */
-export function getAdvertisingId(): string | null {
-  const advertisingId = ExpoTrackingTransparency.getAdvertisingId();
-  if (advertisingId === '00000000-0000-0000-0000-000000000000') {
-    return null;
-  }
-  return advertisingId;
-}
-
-/**
- * Asynchronously gets the advertising ID. This is the recommended way to read the advertising ID:
- * see [`getAdvertisingId()`](#getadvertisingid) for details on the returned value.
- *
- * @return A promise that resolves to either a UUID `string` or `null`. It resolves to `null` in the
- * same cases described for [`getAdvertisingId()`](#getadvertisingid).
  *
  * @example
  * ```ts
