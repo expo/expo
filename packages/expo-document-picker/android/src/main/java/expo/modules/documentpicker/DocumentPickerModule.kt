@@ -12,7 +12,6 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import org.apache.commons.io.FilenameUtils
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
@@ -83,7 +82,7 @@ class DocumentPickerModule : Module() {
     val outputFilePath = FileUtilities.generateOutputPath(
       context.cacheDir,
       "DocumentPicker",
-      FilenameUtils.getExtension(name)
+      File(name).extension
     )
     val outputFile = File(outputFilePath)
     context.contentResolver.openInputStream(documentUri).use { inputStream ->

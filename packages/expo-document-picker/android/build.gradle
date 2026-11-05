@@ -16,5 +16,4 @@ android {
 
 dependencies {
   api "androidx.annotation:annotation:1.0.0"
-  api 'commons-io:commons-io:2.6'
 }
