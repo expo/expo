@@ -254,19 +254,20 @@ struct ClassDefinitionTests {
     @Test
     func `initializes the shared object from static async function`() async throws {
       let initialValue = Int.random(in: 1..<100)
-      let object = try await runtime.evalAsync("expo.modules.TestModule.Counter.createAsync(\(initialValue))")
+      let object = try await runtime.evalAsync("expo.modules.TestModule.Counter.createAsync(\(initialValue))").ref()
+      // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+      let currentValue = try await runtime.execute { try object.take().asObject().getProperty("currentValue").getInt() }
 
-      #expect(object.kind == .object)
-      #expect(object.getObject().getProperty("currentValue").getInt() == initialValue)
+      #expect(currentValue == initialValue)
     }
 
     @Test
     func `initializes the shared object from static concurrent function`() async throws {
       let initialValue = Int.random(in: 1..<100)
-      let object = try await runtime.evalAsync("expo.modules.TestModule.Counter.createConcurrently(\(initialValue))")
+      let object = try await runtime.evalAsync("expo.modules.TestModule.Counter.createConcurrently(\(initialValue))").ref()
+      let currentValue = try await runtime.execute { try object.take().asObject().getProperty("currentValue").getInt() }
 
-      #expect(object.kind == .object)
-      #expect(object.getObject().getProperty("currentValue").getInt() == initialValue)
+      #expect(currentValue == initialValue)
     }
   }
 
