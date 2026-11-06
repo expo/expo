@@ -233,8 +233,9 @@ public class AudioModule: Module {
         }
         let rate = player.currentRate > 0 ? player.currentRate : 1.0
         player.play(at: rate)
-        self.activateSession(for: player) { [weak player] message in
-          player?.updateStatus(with: ["error": message])
+        self.activateSession(for: player) { [weak self, weak player] message in
+          player?.pause()
+          self?.appContext?.jsLogger.warn("[expo-audio] Playback was paused because the audio session could not be activated: \(message). Another app may hold a higher-priority session (for example, a phone call), or the app tried to activate a non-mixable session in the background. Call `play()` again later.")
         }
       }
 
@@ -691,8 +692,8 @@ public class AudioModule: Module {
       guard let self else {
         return
       }
-      self.interruptedPlayers = interrupted
-      self.playerVolumes = volumes
+      self.interruptedPlayers.formUnion(interrupted)
+      self.playerVolumes.merge(volumes) { original, _ in original }
       self.sessionIsActive = false
     }
   }
@@ -950,7 +951,7 @@ public class AudioModule: Module {
         if didRegisterActivityKeeper {
           self.audioSessionActivityKeepers.remove(playerId)
         }
-        onError?("Audio session activation failed: \(error.localizedDescription)")
+        onError?(error.localizedDescription)
       }
     }
   }

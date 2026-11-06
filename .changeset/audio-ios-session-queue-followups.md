@@ -6,4 +6,4 @@
 
 [iOS] `setIsAudioActiveAsync` settles its promise from the session queue instead of blocking the shared AsyncFunction queue via `sessionQueue.sync`.
 
-[iOS] Surface audio-session activation failures during `AudioPlayer.play()` through the `playbackStatusUpdate` event's existing `error` field (activation is async, so `play()` cannot throw for them).
+[iOS] Pause the player and log a warning when the audio session cannot be activated during `AudioPlayer.play()`, instead of leaving playback started on an inactive session (activation is async, so `play()` cannot throw for it).
