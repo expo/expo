@@ -8,7 +8,7 @@ import { styleComment, styleFileName, styleKind, styleTypeName, styleWarning } f
 
 const DEFAULT_OUTPUT_PATH = path.join('src', 'native.types.ts');
 
-const HELP = `Usage: expo-modules generate-types [options] [packageDir]
+const HELP = `Usage: expo-modules typegen [options] [packageDir]
 
 Generates TypeScript types for the native API an Expo module exports to
 JavaScript: its @ExpoModule, @SharedObject, @Record, and @Union types and
@@ -26,7 +26,7 @@ Options:
                     with code 1 when it is not.
   -h, --help        Display this message.`;
 
-export async function generateTypesCommand(argv: string[]) {
+export async function typegenCommand(argv: string[]) {
   const args = parseArgs(
     {
       '--out': String,
@@ -37,7 +37,7 @@ export async function generateTypesCommand(argv: string[]) {
       '-h': '--help',
     },
     argv,
-    'expo-modules generate-types'
+    'expo-modules typegen'
   );
   if (args['--help']) {
     console.log(HELP);
@@ -45,8 +45,8 @@ export async function generateTypesCommand(argv: string[]) {
   }
   if (args._.length > 1) {
     throw new Error(
-      `\`expo-modules generate-types\` takes at most one package directory, but got ${args._.length}: ` +
-        `${args._.join(', ')}. Run \`expo-modules generate-types --help\` to see the usage.`
+      `\`expo-modules typegen\` takes at most one package directory, but got ${args._.length}: ` +
+        `${args._.join(', ')}. Run \`expo-modules typegen --help\` to see the usage.`
     );
   }
 
@@ -86,9 +86,9 @@ export async function generateTypesCommand(argv: string[]) {
       const file = styleFileName(displayPath(outcome.outputPath), process.stderr);
       console.error(
         outcome.expected === 'written'
-          ? `${file} is out of date. Run \`expo-modules generate-types\` to update it.`
+          ? `${file} is out of date. Run \`expo-modules typegen\` to update it.`
           : `${file} is no longer needed: the package exports no native types. ` +
-              `Run \`expo-modules generate-types\` to remove it.`
+              `Run \`expo-modules typegen\` to remove it.`
       );
       process.exitCode = 1;
       break;

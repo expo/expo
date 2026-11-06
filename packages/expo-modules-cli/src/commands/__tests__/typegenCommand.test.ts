@@ -1,4 +1,4 @@
-import { describeCounts, describeEmptyScan, describeWarnings } from '../generateTypesCommand';
+import { describeCounts, describeEmptyScan, describeWarnings } from '../typegenCommand';
 
 const FILE = '/pkg/ios/Demo.swift';
 
