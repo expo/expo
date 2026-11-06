@@ -215,7 +215,7 @@ describe('publishAsync', () => {
     assert.match(run.output, /^ {2}Title: \[sdk-90\] Change a \(#5\)$/m);
     assert.match(run.output, /^ {4}Backport of #5\.$/m);
     assert.ok(
-      run.output.endsWith('Comment on #5:\nBackport PR: #<pull request number>\n'),
+      run.output.endsWith('Comment on #5:\nBackport PR sdk-90: #<pull request number>\n'),
       run.output
     );
   });
@@ -232,7 +232,7 @@ describe('publishAsync', () => {
         bodyFile: path.join(run.stateDir, 'body.md'),
       },
     ]);
-    assert.deepEqual(run.comments, ['Backport PR: #200']);
+    assert.deepEqual(run.comments, ['Backport PR sdk-90: #200']);
     git(remote, 'update-ref', '-d', `refs/heads/${WORK_BRANCH}`);
   });
 
