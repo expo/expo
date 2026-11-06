@@ -1,4 +1,5 @@
 import type { Manifest } from '../../manifest';
+import { createEnvironment } from '../environment/common';
 import { createRequestHandler, type RequestHandlerInput } from '../abstract';
 
 describe(createRequestHandler, () => {
@@ -45,6 +46,23 @@ describe(createRequestHandler, () => {
 
     const crossSite = new Request(request, { headers: { 'sec-fetch-site': 'cross-site' } });
     expect((await createRequestHandler({ ...input, checkOrigin: 'sec-only' })(crossSite)).status).toBe(403);
+  });
+
+  it('uses Fetch Metadata only in development environments', async () => {
+    const environment = createEnvironment({
+      isDevelopment: true,
+      readText: jest.fn(),
+      readJson: async () => ({ htmlRoutes: [], apiRoutes: [], notFoundRoutes: [] }),
+      loadModule: jest.fn(),
+    });
+    const request = new Request('http://localhost/login', {
+      method: 'POST', headers: { origin: 'https://proxy.example', 'content-type': 'text/plain' },
+    });
+    const handler = createRequestHandler(environment);
+    expect((await handler(request)).status).toBe(404);
+    const crossSite = new Request(request, { headers: { 'sec-fetch-site': 'cross-site' } });
+    expect((await handler(crossSite)).status).toBe(403);
+    expect((await createRequestHandler({ ...environment, checkOrigin: false })(crossSite)).status).toBe(404);
   });
 
   it('returns streamed HTML responses for matched routes', async () => {
