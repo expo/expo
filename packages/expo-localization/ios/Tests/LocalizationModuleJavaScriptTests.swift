@@ -37,17 +37,21 @@ struct LocalizationModuleJavaScriptTests {
         "measurementSystem","regionCode","temperatureUnit","textDirection"]
         """
     )
-    let hasUndefined = try eval("""
+    let hasUndefined = try eval(
+      """
       String(expo.modules.ExpoLocalization.getLocales().some(locale => Object.values(locale).includes(undefined)))
-      """)
+      """
+    )
     #expect(hasUndefined == "false")
   }
 
   @Test
   func `getCalendars returns the calendar fields with their JavaScript types`() throws {
-    let types = try eval("""
+    let types = try eval(
+      """
       JSON.stringify(Object.entries(expo.modules.ExpoLocalization.getCalendars()[0]).map(([key, value]) => key + ':' + typeof value))
-      """)
+      """
+    )
     #expect(types == #"["calendar:string","timeZone:string","uses24hourClock:boolean","firstWeekday:number"]"#)
   }
 
@@ -55,25 +59,27 @@ struct LocalizationModuleJavaScriptTests {
   func `sends both events once for each notification until the last listener is removed`() throws {
     let runtime = runtime
     try runtime.execute {
-      try runtime.eval("""
+      try runtime.eval(
+        """
         globalThis.received = []
         globalThis.localeSubscription = expo.modules.ExpoLocalization.addListener('onLocaleSettingsChanged', payload => {
-          received.push('locale:' + JSON.stringify(payload))
+          received.push('locale:' + typeof payload)
         })
         globalThis.calendarSubscription = expo.modules.ExpoLocalization.addListener('onCalendarSettingsChanged', payload => {
-          received.push('calendar:' + JSON.stringify(payload))
+          received.push('calendar:' + typeof payload)
         })
-        """)
+        """
+      )
     }
 
     NotificationCenter.default.post(name: UIApplication.significantTimeChangeNotification, object: nil)
-    #expect(try eval("JSON.stringify(received.splice(0))") == #"["locale:{}","calendar:{}"]"#)
+    #expect(try eval("JSON.stringify(received.splice(0))") == #"["locale:undefined","calendar:undefined"]"#)
 
     try runtime.execute {
       try runtime.eval("localeSubscription.remove()")
     }
     NotificationCenter.default.post(name: UIApplication.significantTimeChangeNotification, object: nil)
-    #expect(try eval("JSON.stringify(received.splice(0))") == #"["calendar:{}"]"#)
+    #expect(try eval("JSON.stringify(received.splice(0))") == #"["calendar:undefined"]"#)
 
     try runtime.execute {
       try runtime.eval("calendarSubscription.remove()")

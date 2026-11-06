@@ -1,13 +1,13 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-import Foundation
 import ExpoModulesCore
+import Foundation
 import React
 
 let OBSERVED_EVENTS: Set<Notification.Name> = [
   // swiftlint:disable legacy_objc_type
   UIApplication.significantTimeChangeNotification,
-  NSLocale.currentLocaleDidChangeNotification
+  NSLocale.currentLocaleDidChangeNotification,
   // swiftlint:enable legacy_objc_type
 ]
 
@@ -17,10 +17,10 @@ public class LocalizationModule: Module {
   private var listenedEventsCount = 0
 
   @Event("onLocaleSettingsChanged")
-  var onLocaleSettingsChanged: ([String: String]) -> Void
+  var onLocaleSettingsChanged: () -> Void
 
   @Event("onCalendarSettingsChanged")
-  var onCalendarSettingsChanged: ([String: String]) -> Void
+  var onCalendarSettingsChanged: () -> Void
 
   public override func didCreate() {
     setRTLPreferences()
@@ -131,7 +131,9 @@ public class LocalizationModule: Module {
     case .iso8601:
       return "iso8601"
     @unknown default:
-      log.error("Unhandled `Calendar.Identifier` value: \(calendar.identifier), returning `iso8601` as fallback. Add the missing case as soon as possible.")
+      log.error(
+        "Unhandled `Calendar.Identifier` value: \(calendar.identifier), returning `iso8601` as fallback. Add the missing case as soon as possible."
+      )
       return "iso8601"
     }
   }
@@ -141,7 +143,7 @@ public class LocalizationModule: Module {
       let measurementSystems = [
         Locale.MeasurementSystem.us: "us",
         Locale.MeasurementSystem.uk: "uk",
-        Locale.MeasurementSystem.metric: "metric"
+        Locale.MeasurementSystem.metric: "metric",
       ]
       return measurementSystems[locale.measurementSystem] ?? "metric"
     }
@@ -196,8 +198,8 @@ public class LocalizationModule: Module {
   @objc
   private func localeChanged() {
     // we send both events since on iOS it means both calendar and locale needs an update
-    onLocaleSettingsChanged([:])
-    onCalendarSettingsChanged([:])
+    onLocaleSettingsChanged()
+    onCalendarSettingsChanged()
   }
 
   static func getTemperatureUnit() -> String? {
