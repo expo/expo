@@ -2206,6 +2206,11 @@ Require approval from a user before continuing with the workflow. A user can app
 
 Jobs after approval use the access of the user or robot that started the run, not the approver's. If they're removed from the account or their role no longer allows running workflows, the run fails the same way. This includes a role change to Viewer. Revoking the access token that started the run doesn't stop jobs from starting within 30 days after EAS creates the run. Access changes don't cancel running jobs. [Cancel the run](/eas/workflows/manage-workflow-runs/#cancel-a-workflow-run) with **Cancel workflow** or `eas workflow:cancel`.
 
+If a run fails after approval, it shows one of these errors:
+
+- "Workflow run could not continue" means EAS couldn't use the access it stored for the user or robot that started the run. The error asks you to retry the run.
+- "Failed to process workflow run" means the stored access expired because the job was approved more than 30 days after EAS created the run, or the user or robot that started the run no longer has access to the account or a role that can run workflows.
+
 ### Syntax
 
 ```yaml
