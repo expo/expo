@@ -2,8 +2,8 @@ import ExpoModulesCore
 
 @ExpoModule("ExpoSpeech")
 public final class SpeechModule: Module, SpeechResultHadler {
-  private let synthesizer = AVSpeechSynthesizer()
-  private var delegate: SpeechDelegate?
+  // Created on first use from a JavaScript function, so only the JavaScript thread reads it.
+  private lazy var speech = SpeechActor(resultHandler: self)
 
   @Event("Exponent.speakingStarted")
   var onSpeakingStarted: (SpeechEvent) -> Void
@@ -20,44 +20,9 @@ public final class SpeechModule: Module, SpeechResultHadler {
   @Event("Exponent.speakingError")
   var onSpeakingError: (SpeechEvent) -> Void
 
-  public override func didCreate() {
-    delegate = SpeechDelegate(resultHandler: self)
-    synthesizer.delegate = delegate
-  }
-
   @JS
   func speak(utteranceId: String, text: String, options: SpeechOptions) async throws {
-    let utterance = ExpoSpeechUtterance(id: utteranceId, text: text)
-
-    if let language = options.language {
-      utterance.voice = AVSpeechSynthesisVoice(language: language)
-    }
-
-    if let voice = options.voice {
-      utterance.voice = AVSpeechSynthesisVoice(identifier: voice)
-
-      guard utterance.voice != nil else {
-        throw InvalidVoiceException(voice)
-      }
-    }
-
-    if let pitch = options.pitch {
-      utterance.pitchMultiplier = Float(pitch)
-    }
-
-    if let rate = options.rate {
-      utterance.rate = Float(rate) * AVSpeechUtteranceDefaultSpeechRate
-    }
-
-    if let volume = options.volume {
-      utterance.volume = min(max(volume, 0.0), 1.0);
-    }
-
-    if let useApplicationAudioSession = options.useApplicationAudioSession {
-      synthesizer.usesApplicationAudioSession = useApplicationAudioSession
-    }
-
-    synthesizer.speak(utterance)
+    try await speech.speak(id: utteranceId, text: text, options: options)
   }
 
   @JS(.concurrent)
@@ -78,22 +43,22 @@ public final class SpeechModule: Module, SpeechResultHadler {
 
   @JS
   func stop() async {
-    synthesizer.stopSpeaking(at: .immediate)
+    await speech.stop()
   }
 
   @JS
   func pause() async {
-    synthesizer.pauseSpeaking(at: .immediate)
+    await speech.pause()
   }
 
   @JS
   func resume() async {
-    synthesizer.continueSpeaking()
+    await speech.resume()
   }
 
   @JS
   func isSpeaking() async -> Bool {
-    return synthesizer.isSpeaking
+    return await speech.isSpeaking()
   }
 
   func didStart(utterance: AVSpeechUtterance) {
@@ -107,11 +72,13 @@ public final class SpeechModule: Module, SpeechResultHadler {
     guard let utterance = utterance as? ExpoSpeechUtterance else {
       return
     }
-    onSpeakingWillSayNextString(SpeechWillSayNextStringEvent(
-      id: utterance.id,
-      charIndex: characterRange.location,
-      charLength: characterRange.length
-    ))
+    onSpeakingWillSayNextString(
+      SpeechWillSayNextStringEvent(
+        id: utterance.id,
+        charIndex: characterRange.location,
+        charLength: characterRange.length
+      )
+    )
   }
 
   func didCancel(utterance: AVSpeechUtterance) {
