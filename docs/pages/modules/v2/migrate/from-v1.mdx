@@ -6,7 +6,7 @@ description: Learn how to migrate a module from the module definition DSL to Exp
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 
-This guide shows how to migrate a module from the [module definition DSL](/modules/module-api/) to Expo Modules API 2.0.
+This guide shows how to migrate a module from the [module definition DSL](/modules/module-api/) (domain-specific language) to Expo Modules API 2.0.
 
 You don't have to migrate all modules at the same time. An app can use modules of both kinds. You can also migrate one platform of a module before the other. The JavaScript code of the module doesn't change, as long as the module and its functions keep their names.
 
@@ -106,7 +106,7 @@ public class HapticsModule: Module {
 | `AsyncFunction`                                              | `@JS suspend fun`                                            | `@JS func` with `async`                                    |
 | `.runOnQueue` with the main queue                            | `withContext(Dispatchers.Main)`                              | `@MainActor`                                               |
 | `Constant`                                                   | `@JS @Constant val`                                          | `@JS lazy var`                                             |
-| `Property`                                                   | Not documented yet                                           | `@JS var`                                                  |
+| `Property`                                                   | `@JS val` or `@JS var`                                       | `@JS var`                                                  |
 | `Events` and `sendEvent`                                     | `@Event` on a property created with `event<T>()`             | `@Event` on a function-typed `var`                         |
 | `OnStartObserving` and `OnStopObserving`                     | The `onStartObserving` and `onStopObserving` of `event<T>()` | `didStartListening(event:)` and `didStopListening(event:)` |
 | `OnCreate`                                                   | Not available, use `by lazy` properties                      | `didCreate()`                                              |
