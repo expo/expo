@@ -23,6 +23,7 @@ const CORE_HEADERS = 'ExpoModulesCoreHeaders';
 const JSI_HEADERS = 'ExpoModulesJSIHeaders';
 const MACROS_PACKAGE = 'expo-modules-macros';
 const MACROS_PRODUCT = 'ExpoModulesMacrosPlugin';
+const MACROS_MIN_VERSION = '0.33.0';
 // A binary target cannot have dependencies, so this source target carries them.
 const CORE_HEADERS_DEPENDENCIES = 'ExpoModulesCoreHeadersDependencies';
 // Written into the package by an earlier generator; nothing reads it now.
@@ -143,11 +144,13 @@ function emitDirectPackage({
       how: `expo-modules-core depends on expo-modules-jsi, so reinstall your JavaScript dependencies, and remove expo-modules-jsi from \`"expo": { "autolinking": { "exclude": [...] } }\` in your package.json if it is listed there. ${rerunSpmUpdate()}`,
     });
   }
-  if (!fs.existsSync(path.join(macrosPackageRoot, 'Package.swift'))) {
+  const macrosVersion = readPackageVersion(macrosPackageRoot);
+  if (!isAtLeast(macrosVersion, MACROS_MIN_VERSION)) {
+    const found = macrosVersion == null ? 'has no readable version' : `is ${macrosVersion}`;
     throw pluginError({
-      what: `${packageName} is built from its own Package.swift and needs the Expo Swift macros as a Swift package, but ${MACROS_PACKAGE} at ${macrosPackageRoot} has no Package.swift.`,
-      why: `SwiftPM builds the macro plugin from that package, and versions of ${MACROS_PACKAGE} before 0.29.0 ship it only as a prebuilt binary.`,
-      how: `expo-modules-core must depend on ${MACROS_PACKAGE} 0.29.0 or later. Run \`npx expo install --fix\` to align the Expo package versions. ${rerunSpmUpdate()}`,
+      what: `${packageName} is built from its own Package.swift and needs ${MACROS_PACKAGE} ${MACROS_MIN_VERSION} or later, but ${MACROS_PACKAGE} at ${macrosPackageRoot} ${found}.`,
+      why: `SwiftPM builds the macro plugin from that package. Versions before 0.29.0 ship it only as a prebuilt binary, and versions 0.29.0 to 0.32.x make the iOS build fail with \`ExpoModulesMacrosCore.modulemap not found\`.`,
+      how: `expo-modules-core must depend on ${MACROS_PACKAGE} ${MACROS_MIN_VERSION} or later. Run \`npx expo install --fix\` to align the Expo package versions. ${rerunSpmUpdate()}`,
     });
   }
   const directDir = path.join(outDir, 'direct');
@@ -166,6 +169,26 @@ function emitDirectPackage({
       partlyProvidedPackages: [],
     },
   };
+}
+
+function readPackageVersion(packageRoot) {
+  try {
+    return JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf8')).version;
+  } catch {
+    return undefined;
+  }
+}
+
+/** Whether `version` is `X.Y.Z` (any prerelease suffix ignored) and not below `minimum`. */
+function isAtLeast(version, minimum) {
+  const parse = (v) => /^(\d+)\.(\d+)\.(\d+)(?:-|$)/.exec(v ?? '')?.slice(1).map(Number);
+  const parts = parse(version);
+  if (parts == null) {
+    return false;
+  }
+  const min = parse(minimum);
+  const differing = parts.findIndex((part, i) => part !== min[i]);
+  return differing === -1 || parts[differing] > min[differing];
 }
 
 /**

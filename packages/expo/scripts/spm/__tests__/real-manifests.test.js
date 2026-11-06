@@ -51,6 +51,10 @@ it.each([
       path.join(macrosPackageRoot, 'Package.swift'),
       '// swift-tools-version: 6.2\n'
     );
+    fs.writeFileSync(
+      path.join(macrosPackageRoot, 'package.json'),
+      JSON.stringify({ name: 'expo-modules-macros', version: '0.33.0' })
+    );
 
     const { ok } = emitDirectPackage({
       moduleRoot,

@@ -145,6 +145,11 @@ describe('emitDirectPackage', () => {
       manifest: hapticsManifest,
     });
   const manifest = () => fs.readFileSync(path.join(pkgDir, 'Package.swift'), 'utf8');
+  const setMacrosVersion = (version) =>
+    fs.writeFileSync(
+      path.join(macrosPackageRoot, 'package.json'),
+      JSON.stringify({ name: 'expo-modules-macros', version })
+    );
 
   beforeEach(() => {
     root = fs.mkdtempSync(path.join(os.tmpdir(), 'direct-emit-'));
@@ -157,6 +162,7 @@ describe('emitDirectPackage', () => {
       path.join(macrosPackageRoot, 'Package.swift'),
       '// swift-tools-version: 6.2\n'
     );
+    setMacrosVersion('0.33.0');
     fs.mkdirSync(path.join(root, 'expo-haptics'));
     coreHeadersXCFramework = path.join(
       root,
@@ -229,15 +235,34 @@ describe('emitDirectPackage', () => {
     expect(fs.existsSync(path.join(root, 'Build'))).toBe(false);
   });
 
-  it('fails, writing no package, when expo-modules-macros is too old to be a Swift package', () => {
-    fs.rmSync(path.join(macrosPackageRoot, 'Package.swift'));
+  it('fails, writing no package, when expo-modules-macros fails the iOS build on its module map', () => {
+    setMacrosVersion('0.32.1');
     expect(emit).toThrow(
-      `expo-haptics is built from its own Package.swift and needs the Expo Swift macros as a Swift package, but expo-modules-macros at ${macrosPackageRoot} has no Package.swift.`
+      `expo-haptics is built from its own Package.swift and needs expo-modules-macros 0.33.0 or later, but expo-modules-macros at ${macrosPackageRoot} is 0.32.1.`
     );
-    expect(emit).toThrow('expo-modules-macros 0.29.0 or later');
+    expect(emit).toThrow('ExpoModulesMacrosCore.modulemap');
     expect(emit).toThrow('npx expo install --fix');
     expect(emit).toThrow(rerunSpmUpdate);
     expect(fs.existsSync(path.join(outDir, 'direct'))).toBe(false);
+  });
+
+  it('fails when expo-modules-macros ships the macro plugin only as a prebuilt binary', () => {
+    setMacrosVersion('0.28.0');
+    expect(emit).toThrow('expo-modules-macros 0.33.0 or later');
+    expect(emit).toThrow('is 0.28.0.');
+    expect(fs.existsSync(path.join(outDir, 'direct'))).toBe(false);
+  });
+
+  it('fails when the expo-modules-macros version cannot be read', () => {
+    fs.rmSync(path.join(macrosPackageRoot, 'package.json'));
+    expect(emit).toThrow('expo-modules-macros 0.33.0 or later');
+    expect(emit).toThrow(`expo-modules-macros at ${macrosPackageRoot} has no readable version.`);
+    expect(fs.existsSync(path.join(outDir, 'direct'))).toBe(false);
+  });
+
+  it.each(['0.33.0', '1.0.0'])('accepts expo-modules-macros %s', (version) => {
+    setMacrosVersion(version);
+    expect(emit).not.toThrow();
   });
 
   it('places the ExpoModulesCore headers xcframework in the package by link', () => {
