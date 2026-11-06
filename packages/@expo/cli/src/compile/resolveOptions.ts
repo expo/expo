@@ -47,7 +47,7 @@ export function resolveOptions(platform: Platform, options: Options): ResolvedOp
   if (outputType !== installable) {
     throw new CommandError(
       'BAD_ARGS',
-      `Building an ${outputType} is not supported yet. Omit --output-type to build an ${installable}.`
+      `Building an ${outputType} is not supported yet. Pass --output-type ${installable} to build an ${installable}.`
     );
   }
   return { mode, outputDir: options['output-dir'], outputType };
