@@ -1,8 +1,12 @@
 package expo.modules.filesystem
 
 import android.os.Build
+import android.os.ParcelFileDescriptor
 import expo.modules.kotlin.exception.Exceptions
 import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.IOException
 import java.nio.ByteBuffer
 import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
@@ -109,6 +113,63 @@ class FileSystemFileHandleTest {
     assertThrows(Exceptions.IllegalStateException::class.java) {
       handle.writeAt(0, bytes("x"))
     }
+  }
+
+  /**
+   * A FIFO is a real pipe to the kernel, so `lseek(2)` fails on it with ESPIPE. Robolectric backs
+   * `ParcelFileDescriptor.createPipe()` with a regular file, which would not catch the bug.
+   * Returns the write end, opened read-write so that it does not block, and the read end.
+   */
+  private fun pipe(): Pair<ParcelFileDescriptor, ParcelFileDescriptor> {
+    val fifo = File(temporaryFolder.root, "fifo")
+    assertEquals(0, ProcessBuilder("mkfifo", fifo.path).inheritIO().start().waitFor())
+    val writeEnd = ParcelFileDescriptor.open(fifo, ParcelFileDescriptor.MODE_READ_WRITE)
+    // Proves the fixture: `lseek` fails on the descriptor, as it does on a provider's pipe.
+    assertThrows(IOException::class.java) {
+      FileOutputStream(writeEnd.fileDescriptor).channel.position()
+    }
+    val readEnd = ParcelFileDescriptor.open(fifo, ParcelFileDescriptor.MODE_READ_ONLY)
+    return writeEnd to readEnd
+  }
+
+  // A document provider may back an exclusive "r" or "w" descriptor with a pipe. Positional I/O
+  // fails on it with ESPIPE, so the handle has to fall back to sequential reads and writes there.
+  @Test
+  fun writeAtOnAPipeWritesSequentially() {
+    val (writeEnd, readEnd) = pipe()
+    val handle = FileSystemFileHandle.forParcelFileDescriptor(writeEnd, FileMode.WRITE)
+
+    assertEquals(5L, handle.writeAt(0, bytes("hello")))
+    assertEquals(6L, handle.writeAt(5, bytes("!")))
+    handle.close()
+
+    val received = ParcelFileDescriptor.AutoCloseInputStream(readEnd).use { it.readBytes() }
+    assertEquals("hello!", String(received))
+  }
+
+  @Test
+  fun appendModeOnAPipeWritesSequentially() {
+    val (writeEnd, readEnd) = pipe()
+    val handle = FileSystemFileHandle.forParcelFileDescriptor(writeEnd, FileMode.APPEND)
+
+    assertEquals(2L, handle.writeAt(0, bytes("ab")))
+    assertEquals(4L, handle.writeAt(2, bytes("cd")))
+    handle.close()
+
+    val received = ParcelFileDescriptor.AutoCloseInputStream(readEnd).use { it.readBytes() }
+    assertEquals("abcd", String(received))
+  }
+
+  @Test
+  fun readAtOnAPipeReadsSequentially() {
+    val (writeEnd, readEnd) = pipe()
+    ParcelFileDescriptor.AutoCloseOutputStream(writeEnd).use { it.write("hello".toByteArray()) }
+    val handle = FileSystemFileHandle.forParcelFileDescriptor(readEnd, FileMode.READ)
+
+    assertEquals("hel", handle.readAt(0, 3).asString())
+    // The position is ignored: the stream continues where the last read stopped, then hits EOF.
+    assertEquals("lo", handle.readAt(0, 10).asString())
+    assertEquals(0, handle.readAt(0, 10).remaining())
   }
 
   @Test

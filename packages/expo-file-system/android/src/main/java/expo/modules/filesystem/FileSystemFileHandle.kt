@@ -9,6 +9,7 @@ import expo.modules.kotlin.types.Enumerable
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.io.IOException
 import java.io.RandomAccessFile
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
@@ -57,7 +58,13 @@ enum class FileMode(val descriptor: String) : Enumerable {
 class FileSystemFileHandle private constructor(
   channel: FileChannel,
   private val mode: FileMode,
-  private val parcelFileDescriptor: ParcelFileDescriptor? = null
+  private val parcelFileDescriptor: ParcelFileDescriptor? = null,
+  /**
+   * `false` when the descriptor is a pipe or a socket, which a document provider may hand out for
+   * an exclusive "r" or "w" mode. Positional I/O fails on those with `ESPIPE`, so reads and writes
+   * fall back to sequential ones, and [size] is whatever `fstat` reports, usually 0.
+   */
+  private val seekable: Boolean = true
 ) : SharedRef<FileChannel>(channel), AutoCloseable {
   companion object {
     fun forJavaFile(file: File, mode: FileMode): FileSystemFileHandle {
@@ -78,13 +85,27 @@ class FileSystemFileHandle private constructor(
       val pfd = contentResolver.openFileDescriptor(uri, mode.descriptor)
         ?: throw Exceptions.IllegalStateException("Could not open file descriptor for uri: $uri")
 
+      return forParcelFileDescriptor(pfd, mode)
+    }
+
+    internal fun forParcelFileDescriptor(pfd: ParcelFileDescriptor, mode: FileMode): FileSystemFileHandle {
       val channel = when (mode) {
         FileMode.READ -> FileInputStream(pfd.fileDescriptor).channel
         FileMode.WRITE, FileMode.APPEND, FileMode.TRUNCATE -> FileOutputStream(pfd.fileDescriptor).channel
         else -> throw Exceptions.IllegalArgument("Unsupported file mode: '$mode'")
       }
 
-      return FileSystemFileHandle(channel, mode, pfd)
+      return FileSystemFileHandle(channel, mode, pfd, seekable = isSeekable(channel))
+    }
+
+    private fun isSeekable(channel: FileChannel): Boolean {
+      return try {
+        channel.position()
+        true
+      } catch (e: IOException) {
+        // `lseek(2)` fails with ESPIPE on a pipe or a socket.
+        false
+      }
     }
   }
 
@@ -112,17 +133,24 @@ class FileSystemFileHandle private constructor(
    * Reads up to [length] bytes starting at [position] without touching the channel's own position.
    * Returns a direct buffer sized to the bytes actually read: shorter at the end of the file, empty
    * at or past it. Safe to call from any thread.
+   *
+   * On a non-seekable descriptor the position is ignored and the next bytes of the stream are
+   * returned, up to [length] of them.
    */
   fun readAt(position: Long, length: Long): ByteBuffer {
     ensureIsOpen()
     mode.ensureCanRead()
 
     try {
-      val toRead = min(length, fileChannel.size() - position).coerceIn(0L, Int.MAX_VALUE.toLong()).toInt()
+      val toRead = if (seekable) {
+        min(length, fileChannel.size() - position)
+      } else {
+        length
+      }.coerceIn(0L, Int.MAX_VALUE.toLong()).toInt()
       val buffer = ByteBuffer.allocateDirect(toRead)
       var readPosition = position
       while (buffer.hasRemaining()) {
-        val result = fileChannel.read(buffer, readPosition)
+        val result = if (seekable) fileChannel.read(buffer, readPosition) else fileChannel.read(buffer)
         if (result == -1) {
           break
         }
@@ -141,12 +169,23 @@ class FileSystemFileHandle private constructor(
    * Writes [data] (from its position to its limit) at [position] and returns the offset right after
    * the written bytes. In [FileMode.APPEND] the position is ignored and the data goes to the end of
    * the file. Safe to call from any thread.
+   *
+   * On a non-seekable descriptor the position is ignored too: the bytes go out in call order, as
+   * they did before positional writes, and the returned offset still advances by the bytes written.
    */
   fun writeAt(position: Long, data: ByteBuffer): Long {
     ensureIsOpen()
     mode.ensureCanWrite()
 
     try {
+      if (!seekable) {
+        var written = 0L
+        while (data.hasRemaining()) {
+          written += fileChannel.write(data)
+        }
+        return position + written
+      }
+
       var writePosition = if (mode == FileMode.APPEND) {
         fileChannel.size()
       } else {
