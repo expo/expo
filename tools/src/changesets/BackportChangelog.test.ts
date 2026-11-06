@@ -5,6 +5,7 @@ import {
   BackportChangedFile,
   BackportChangelogInput,
   checkBackportChangelog,
+  majorReleaseErrors,
   resolveBackportPackages,
 } from './BackportChangelog';
 
@@ -667,5 +668,23 @@ describe('resolveBackportPackages', () => {
     assert.match(result.errors[0], /\.changeset\/nul\.md/);
     assert.match(result.errors[0], /control character/);
     assert.doesNotMatch(result.errors[0], /[\u0000-\u001f\u007f]/);
+  });
+});
+
+describe('majorReleaseErrors', () => {
+  it('names a package with a control character without the control character', () => {
+    const content = '---\n"foo\\0bar": major\n---\n\nBreak foo.\n';
+    const errors = majorReleaseErrors([{ path: '.changeset/nul.md', content }]);
+    assert.equal(errors.length, 1);
+    assert.match(errors[0], /\.changeset\/nul\.md makes a major release of "foo\\u0000bar"/);
+    assert.doesNotMatch(errors[0], /[\u0000-\u001f\u007f]/);
+  });
+
+  it('ignores a changeset that cannot be parsed and one without a major release', () => {
+    const errors = majorReleaseErrors([
+      { path: '.changeset/broken.md', content: 'No front matter.\n' },
+      { path: '.changeset/minor.md', content: "---\n'expo-foo': minor\n---\n\nAdd foo.\n" },
+    ]);
+    assert.deepEqual(errors, []);
   });
 });

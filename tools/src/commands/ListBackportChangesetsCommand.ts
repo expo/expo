@@ -3,7 +3,7 @@ import fs from 'node:fs';
 
 import { GitDirectory } from '../Git';
 import logger from '../Logger';
-import { resolveBackportPackages } from '../changesets/BackportChangelog';
+import { majorReleaseErrors, resolveBackportPackages } from '../changesets/BackportChangelog';
 import {
   readAddedChangesetsAsync,
   readPackageDirsAsync,
@@ -50,12 +50,13 @@ export async function listBackportChangesetsAsync(
     readAddedChangesetsAsync(git, base),
     readPackageDirsAsync(git, base),
   ]);
-  const { packages, errors } = resolveBackportPackages({ changesets, ...packageDirs });
+  const resolved = resolveBackportPackages({ changesets, ...packageDirs });
+  const errors = [...resolved.errors, ...majorReleaseErrors(changesets)];
   return {
     ok: errors.length === 0,
     errors,
     changesets: changesets.map((changeset) => changeset.path),
-    packages: packages.map(({ name, changelog }) => ({ name, changelog })),
+    packages: resolved.packages.map(({ name, changelog }) => ({ name, changelog })),
   };
 }
 
@@ -91,8 +92,9 @@ export default (program: Command) => {
 
   With --json <file>, also writes {"ok": boolean, "errors": string[], "changesets": string[],
   "packages": {"name": string, "changelog": string | null}[]} to that file. When a changeset cannot be
-  parsed, or a package that it names is missing or not unique, "ok" is false and the command exits with
-  code 1. If the file is missing, the command could not run: treat that as a failure.`
+  parsed, makes a major release, which SDK branches do not allow, or names a package that is missing or
+  not unique, "ok" is false and the command exits with code 1. If the file is missing, the command
+  could not run: treat that as a failure.`
     )
     .option('--repo <dir>', 'A worktree of the repository')
     .option('--base <ref>', 'The cherry-pick commit')

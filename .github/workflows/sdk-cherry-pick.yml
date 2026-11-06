@@ -147,10 +147,10 @@ jobs:
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
-      # Pinned exactly, as in expo-code-review.yml. Bump it deliberately.
+      # Pinned exactly. Bump it deliberately.
       - name: Install Claude Code CLI
         if: steps.target.outputs.convert == 'true'
-        run: npm install -g @anthropic-ai/claude-code@2.1.280
+        run: npm install -g @anthropic-ai/claude-code@2.1.318
       # A pull request that adds no changesets needs no model, so a missing credential must not
       # stop its backport. The script fails with a comment when it needs the model and has no
       # credential.

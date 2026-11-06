@@ -316,7 +316,7 @@ convert_changesets() {
   done < <(jq -j '.packages[] | .name, "\u0000", (.changelog // ""), "\u0000"' "$list_json")
 
   if [ "$(jq '.errors | length' "$list_json")" -ne 0 ]; then
-    finish_with_comment "$(printf 'The bot could not find the `CHANGELOG.md` files for the changesets of this pull request, so no backport pull request was opened.\n\n%s\n\n%s' "$(error_list "$list_json")" "$(manual_steps no)")"
+    finish_with_comment "$(printf 'The changesets of this pull request do not fit `%s`, so no backport pull request was opened:\n\n%s\n\n%s' "$target_branch" "$(error_list "$list_json")" "$(manual_steps no)")"
     return
   fi
 
@@ -411,6 +411,7 @@ prepare() {
   rm -rf "$state_dir"
   mkdir -p "$state_dir"
   load_pull_request
+  : >"$state_dir/pull-request-loaded"
   # The squash merge appends ` (#<backport>)`, so the first `(#N)` of the subject names this pull
   # request. `et check-sdk-prs` reads that number, so a `(#N)` in the title loses its parentheses.
   # The loop repeats until none is left: `((#N))` becomes `(#N)` after one pass.
@@ -476,6 +477,16 @@ prepare() {
   # Someone closed the backport on purpose. Without the branch, the bot makes a new backport.
   if [ -n "$closed_pr" ] && [ "$branch_exists" = true ]; then
     finish_with_comment "The backport $closed_pr was closed without merging, so no new backport was made. Reopen it, or delete the \`$work_branch\` branch so that the bot can make a new backport."
+    return
+  fi
+
+  # A person can open a backport from any branch. Its title names this pull request as `(#N)`.
+  local manual_pr
+  manual_pr=$(gh pr list --repo "$REPO" --base "$target_branch" --state open \
+    --search "$PR_NUMBER in:title" --limit 100 --json number,title |
+    jq -r --arg reference "(#$PR_NUMBER)" 'map(select(.title | contains($reference)))[0].number // empty')
+  if [ -n "$manual_pr" ]; then
+    finish_with_comment "A backport into \`$target_branch\` is already open in #$manual_pr, so no second backport was made."
     return
   fi
 
@@ -622,9 +633,12 @@ open_backport() {
 }
 
 # Under `set -e`, a failed push or `gh pr create` ends publish. This trap still tells the author.
+# A manual run can name any pull request, so the trap comments only when prepare read it as merged
+# into main, or when MERGE_SHA came from the event of a pull request that merged into main.
 on_publish_exit() {
   local status=$1
-  if [ "$status" -ne 0 ] && [ "$commented" = false ]; then
+  if [ "$status" -ne 0 ] && [ "$commented" = false ] &&
+    { [ -f "$state_dir/pull-request-loaded" ] || [ -n "${MERGE_SHA:-}" ]; }; then
     if [ "$branch_on_remote" = true ]; then
       comment_on_original "$(printf 'The `%s` branch is on GitHub, but the bot could not open the backport pull request into `%s`.%s Re-run the failed jobs of the workflow run. The new run opens the pull request from that branch.' "$work_branch" "$target_branch" "$(run_log_link)")" || true
     else

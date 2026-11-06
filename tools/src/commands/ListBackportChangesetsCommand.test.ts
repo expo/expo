@@ -115,6 +115,36 @@ describe('listBackportChangesetsAsync', () => {
     assert.match(list.errors.join('\n'), /More than one package is named "expo-foo"/);
   });
 
+  it('reports a changeset that makes a major release, because an SDK branch must not ship one', async () => {
+    const { repo, base } = createRepo({
+      '.changeset/breaking.md': "---\n'expo-foo': major\n'@expo/bar': patch\n---\n\nBreak foo.\n",
+    });
+    const list = await listBackportChangesetsAsync({ repo, base });
+    assert.equal(list.ok, false);
+    assert.deepEqual(list.changesets, ['.changeset/breaking.md']);
+    assert.deepEqual(list.packages, [
+      { name: 'expo-foo', changelog: 'packages/expo-foo/CHANGELOG.md' },
+      { name: '@expo/bar', changelog: 'packages/@expo/bar/CHANGELOG.md' },
+    ]);
+    assert.equal(list.errors.length, 1);
+    assert.match(list.errors[0], /\.changeset\/breaking\.md makes a major release of "expo-foo"/);
+    assert.match(list.errors[0], /an SDK branch must not ship a breaking change\./);
+    assert.match(list.errors[0], /backport it by hand as a minor or patch change\.$/);
+  });
+
+  it('reports each major release of each changeset', async () => {
+    const { repo, base } = createRepo({
+      '.changeset/a.md': "---\n'expo-foo': major\n'@expo/bar': major\n---\n\nBreak both.\n",
+      '.changeset/b.md': "---\n'expo-foo': major\n---\n\nBreak foo again.\n",
+    });
+    const list = await listBackportChangesetsAsync({ repo, base });
+    assert.equal(list.ok, false);
+    assert.equal(list.errors.length, 3);
+    assert.match(list.errors[0], /\.changeset\/a\.md makes a major release of "expo-foo"/);
+    assert.match(list.errors[1], /\.changeset\/a\.md makes a major release of "@expo\/bar"/);
+    assert.match(list.errors[2], /\.changeset\/b\.md makes a major release of "expo-foo"/);
+  });
+
   it('reports a changeset that cannot be parsed', async () => {
     const { repo, base } = createRepo({ '.changeset/broken.md': 'No front matter.\n' });
     const list = await listBackportChangesetsAsync({ repo, base });

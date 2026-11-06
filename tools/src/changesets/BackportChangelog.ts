@@ -158,10 +158,7 @@ export function resolveBackportPackages(
   }
 
   const packages = [...changesetsByPackage].flatMap(([name, changesetPaths]): BackportPackage[] => {
-    const shownName = name.replace(
-      CONTROL_CHARACTERS,
-      (character) => `\\u${character.charCodeAt(0).toString(16).padStart(4, '0')}`
-    );
+    const shownName = escapeControlCharacters(name);
     if (shownName !== name) {
       errors.push(
         `${changesetPaths.join(', ')} names the package "${shownName}", which has a control character, so it is not a valid package name. Correct the changeset.`
@@ -185,6 +182,37 @@ export function resolveBackportPackages(
     return [{ name, changelog: null, changesetPaths }];
   });
   return { packages, errors };
+}
+
+/**
+ * Reports each package that a changeset releases as `major`. The `.changeset/expo.json` of an SDK
+ * branch does not allow a major release. A changeset that cannot be parsed is skipped:
+ * `resolveBackportPackages` reports it.
+ */
+export function majorReleaseErrors(changesets: readonly BackportChangeset[]): string[] {
+  return changesets.flatMap((changeset) =>
+    parseReleasesOrNone(changeset.content)
+      .filter((release) => release.type === 'major')
+      .map(
+        (release) =>
+          `${changeset.path} makes a major release of "${escapeControlCharacters(release.name)}", but an SDK branch must not ship a breaking change. Do not backport this pull request, or, if the change is not breaking, backport it by hand as a minor or patch change.`
+      )
+  );
+}
+
+function parseReleasesOrNone(content: string) {
+  try {
+    return parseChangesetFile(content).releases;
+  } catch {
+    return [];
+  }
+}
+
+function escapeControlCharacters(text: string): string {
+  return text.replace(
+    CONTROL_CHARACTERS,
+    (character) => `\\u${character.charCodeAt(0).toString(16).padStart(4, '0')}`
+  );
 }
 
 /** A `package.json` without a readable name can belong to the missing package, so the error names those files. */
