@@ -95,13 +95,7 @@ describe(useSQLiteContext, () => {
     const importSpy = jest.fn(async () => {});
     require('../ExpoSQLite').default.importAssetDatabaseAsync = importSpy;
 
-    function App({
-      assetId,
-      forceOverwrite,
-    }: {
-      assetId: number;
-      forceOverwrite?: boolean;
-    }) {
+    function App({ assetId, forceOverwrite }: { assetId: number; forceOverwrite?: boolean }) {
       return (
         <SQLiteProvider
           databaseName=":memory:"
