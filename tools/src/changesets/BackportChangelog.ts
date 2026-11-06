@@ -44,6 +44,28 @@ export type BackportChangelogResult = {
   errors: string[];
 };
 
+export type BackportChangesetConversionInput = {
+  /** The changesets that the cherry-picked commit added. */
+  changesets: readonly BackportChangeset[];
+  /** The packages that `resolveBackportPackages` found for these changesets. */
+  packages: readonly BackportPackage[];
+  /** The content of the `CHANGELOG.md` of each package, by repo-relative path. */
+  changelogs: ReadonlyMap<string, string>;
+  /** The number of the original pull request on `main`. */
+  prNumber: number;
+  /** The GitHub login of the original pull request's author. */
+  author: string;
+};
+
+export type BackportChangesetConversion = {
+  ok: boolean;
+  errors: string[];
+  /** The new content of each `CHANGELOG.md` that gets an entry, by repo-relative path. Empty when `ok` is false. */
+  changelogs: Map<string, string>;
+};
+
+type ReleaseType = ReturnType<typeof parseChangesetFile>['releases'][number]['type'];
+
 const REGULAR_FILE_MODE = '100644';
 
 /** Byte for byte as the `CHANGELOG.md` files on `sdk-*` branches write them. */
@@ -53,6 +75,13 @@ const SUBSECTION_HEADINGS = [
   '### 🐛 Bug fixes',
   '### 💡 Others',
 ];
+
+/** A `major` release has no section: an SDK branch must not ship a breaking change. */
+const SECTION_BY_RELEASE_TYPE: Partial<Record<ReleaseType, string>> = {
+  minor: '### 🎉 New features',
+  patch: '### 💡 Others',
+  none: '### 💡 Others',
+};
 
 const MAX_LISTED_PATHS = 10;
 const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/g;
@@ -113,7 +142,7 @@ export function checkBackportChangelog(input: BackportChangelogInput): BackportC
     }
   }
 
-  const trailer = `([#${input.prNumber}](https://github.com/expo/expo/pull/${input.prNumber}) by [@${input.author}](https://github.com/${input.author}))`;
+  const trailer = backportTrailer(input.prNumber, input.author);
   for (const changelog of changelogs) {
     const file = changedFiles.get(changelog.path);
     if (!file) {
@@ -150,10 +179,7 @@ export function resolveBackportPackages(
         changesetsByPackage.set(release.name, [...paths, changeset.path]);
       }
     } catch (error) {
-      const reason = error instanceof Error ? error.message.split('\n')[0] : String(error);
-      errors.push(
-        `${changeset.path} cannot be parsed (${reason}), so the packages it names are unknown.`
-      );
+      errors.push(unparsableChangesetError(changeset.path, error));
     }
   }
 
@@ -193,11 +219,154 @@ export function majorReleaseErrors(changesets: readonly BackportChangeset[]): st
   return changesets.flatMap((changeset) =>
     parseReleasesOrNone(changeset.content)
       .filter((release) => release.type === 'major')
-      .map(
-        (release) =>
-          `${changeset.path} makes a major release of "${escapeControlCharacters(release.name)}", but an SDK branch must not ship a breaking change. Do not backport this pull request, or, if the change is not breaking, backport it by hand as a minor or patch change.`
-      )
+      .map((release) => majorReleaseError(changeset.path, release.name))
   );
+}
+
+/**
+ * Adds one entry under `## Unpublished` to the `CHANGELOG.md` of each package that each changeset
+ * releases, in the subsection for its release type. With the changesets deleted, the result passes
+ * `checkBackportChangelog`. When any entry cannot be added, no `CHANGELOG.md` changes.
+ */
+export function convertBackportChangesets(
+  input: BackportChangesetConversionInput
+): BackportChangesetConversion {
+  const trailer = backportTrailer(input.prNumber, input.author);
+  const changelogPaths = new Map(input.packages.map((pkg) => [pkg.name, pkg.changelog]));
+  const changelogs = new Map<string, string>();
+  const errors = new Set<string>();
+
+  for (const changeset of input.changesets) {
+    let parsed: ReturnType<typeof parseChangesetFile>;
+    try {
+      parsed = parseChangesetFile(changeset.content);
+    } catch (error) {
+      errors.add(unparsableChangesetError(changeset.path, error));
+      continue;
+    }
+    if (parsed.releases.length === 0) {
+      continue;
+    }
+    const entry = formatEntry(parsed.summary, trailer);
+    if (typeof entry === 'string') {
+      errors.add(`${changeset.path} ${entry}`);
+      continue;
+    }
+
+    for (const release of parsed.releases) {
+      const section = SECTION_BY_RELEASE_TYPE[release.type];
+      const changelogPath = changelogPaths.get(release.name) ?? null;
+      const changelog =
+        changelogPath === null
+          ? undefined
+          : (changelogs.get(changelogPath) ?? input.changelogs.get(changelogPath));
+      if (!section) {
+        errors.add(majorReleaseError(changeset.path, release.name));
+      } else if (changelogPath === null || changelog === undefined) {
+        errors.add(
+          `The CHANGELOG.md of "${escapeControlCharacters(release.name)}", named by ${changeset.path}, was not found, so its entry cannot be added. Add the entry by hand.`
+        );
+      } else {
+        const updated = addEntry(changelog, section, entry);
+        if (updated === null) {
+          errors.add(
+            `${changelogPath} has no "## Unpublished" section, so its entries cannot be added. Add the entries by hand under a new "## Unpublished" section at the top of the file.`
+          );
+        } else {
+          changelogs.set(changelogPath, updated);
+        }
+      }
+    }
+  }
+
+  return errors.size > 0
+    ? { ok: false, errors: [...errors], changelogs: new Map() }
+    : { ok: true, errors: [], changelogs };
+}
+
+function backportTrailer(prNumber: number, author: string): string {
+  return `([#${prNumber}](https://github.com/expo/expo/pull/${prNumber}) by [@${author}](https://github.com/${author}))`;
+}
+
+function unparsableChangesetError(changesetPath: string, error: unknown): string {
+  const reason = error instanceof Error ? error.message.split('\n')[0] : String(error);
+  return `${changesetPath} cannot be parsed (${reason}), so the packages it names are unknown.`;
+}
+
+function majorReleaseError(changesetPath: string, packageName: string): string {
+  return `${changesetPath} makes a major release of "${escapeControlCharacters(packageName)}", but an SDK branch must not ship a breaking change. Do not backport this pull request, or, if the change is not breaking, backport it by hand as a minor or patch change.`;
+}
+
+/**
+ * Returns the lines of the entry for `summary`, or, when it cannot be an entry, the reason. The
+ * trailer goes on the last line, or on its own line after a closing fence, which it must not follow.
+ */
+function formatEntry(summary: string, trailer: string): string[] | string {
+  if (summary.trim() === '') {
+    return 'has no summary, so there is no text for its CHANGELOG.md entries. Add the entries by hand.';
+  }
+  const lines = summary
+    .trim()
+    .split(/\r\n?|\n/)
+    .map((line, index) => (index === 0 ? `- ${line}` : line.trim() === '' ? '' : `  ${line}`));
+  const fenceBeforeLast = openFenceInEntry(lines.slice(0, -1));
+  const last = lines.length - 1;
+  if (openFenceInEntry(lines) !== null) {
+    return 'has a code block that does not close, so its summary cannot be a CHANGELOG.md entry. Add the entries by hand, and close the code block.';
+  }
+  if (fenceBeforeLast !== null) {
+    return [...lines, '', `  ${trailer}`];
+  }
+  lines[last] += ` ${trailer}`;
+  return lines;
+}
+
+/** Adds `entry` after the last entry of `section` in `## Unpublished`, or returns null when there is no `## Unpublished`. */
+function addEntry(changelog: string, section: string, entry: string[]): string | null {
+  const lines = splitLines(changelog);
+  const unpublished = findUnpublishedSection(lines);
+  if (!unpublished) {
+    return null;
+  }
+  const findInUnpublished = (predicate: (line: string) => boolean) =>
+    lines.findIndex(
+      (line, index) => index > unpublished.heading && index < unpublished.end && predicate(line)
+    );
+
+  const heading = findInUnpublished((line) => line === section);
+  if (heading !== -1) {
+    let sectionEnd = heading + 1;
+    while (sectionEnd < unpublished.end && !/^#{1,6}\s/.test(lines[sectionEnd])) {
+      sectionEnd++;
+    }
+    const last = lastNonBlankLine(lines, heading, sectionEnd);
+    insertLines(lines, last + 1, entry, last === heading);
+  } else {
+    const rank = SUBSECTION_HEADINGS.indexOf(section);
+    const nextHeading = findInUnpublished((line) => SUBSECTION_HEADINGS.indexOf(line) > rank);
+    const index =
+      nextHeading !== -1
+        ? nextHeading
+        : lastNonBlankLine(lines, unpublished.heading, unpublished.end) + 1;
+    insertLines(lines, index, [section, '', ...entry], true);
+  }
+  return lines.join('\n');
+}
+
+/** The index of the last non-blank line after `start` and before `end`, or `start` when there is none. */
+function lastNonBlankLine(lines: string[], start: number, end: number): number {
+  let index = end - 1;
+  while (index > start && lines[index].trim() === '') {
+    index--;
+  }
+  return index;
+}
+
+/** Inserts `block` at `index` with a blank line below it, and with a blank line above it if `separate`. */
+function insertLines(lines: string[], index: number, block: string[], separate: boolean): void {
+  const above = separate && index > 0 && lines[index - 1].trim() !== '' ? [''] : [];
+  const below = index >= lines.length || lines[index].trim() !== '' ? [''] : [];
+  lines.splice(index, 0, ...above, ...block, ...below);
 }
 
 function parseReleasesOrNone(content: string) {
@@ -447,7 +616,7 @@ function checkEntries(
           `${filePath} entry at line ${entry.lineNumber} has no text before the trailer. Describe the change before the trailer, as the changeset summary does.`
         );
       }
-      if (entry.text.reduce(openFenceAfter, null) !== null) {
+      if (openFenceInEntry(entry.text) !== null) {
         errors.push(
           `${filePath} entry at line ${entry.lineNumber} has a code block that does not close. Keep the closing fence of the summary unchanged, and put the trailer on its own line after the code block.`
         );
@@ -488,6 +657,13 @@ function checkEntries(
   finishEntry();
 
   return { entryCount, errors };
+}
+
+/** A code block can start on the first line of an entry, after its `- ` list marker. */
+function openFenceInEntry(lines: readonly string[]): string | null {
+  return lines
+    .map((line, index) => (index === 0 ? line.trim().replace(/^- /, '') : line.trim()))
+    .reduce(openFenceAfter, null);
 }
 
 /**

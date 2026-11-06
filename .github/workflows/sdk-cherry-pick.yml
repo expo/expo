@@ -3,8 +3,9 @@ name: SDK cherry-pick
 # SECURITY: `pull_request_target` runs this workflow from the default branch with secrets, also
 # for pull requests from forks. No job checks out or runs code from a pull request. Every script,
 # action, and `et` command comes from a checkout of the default branch. The merge commit and the
-# release branch are read only as git data. The changesets that a pull request author wrote reach
-# only the model, which runs without a GitHub token.
+# release branch are read only as git data. The changesets that a pull request author wrote are
+# read only as text: `et convert-backport-changesets` copies their summaries into CHANGELOG.md
+# entries, and runs nothing from them.
 on:
   pull_request_target:
     types: [closed, labeled]
@@ -105,25 +106,21 @@ jobs:
       PR_AUTHOR: ${{ github.event.pull_request.user.login }}
       DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
       REPO_DIR: ${{ github.workspace }}
-      MODEL: ${{ vars.SDK_CHERRY_PICK_MODEL || 'claude-opus-5-5' }}
       # JS-only job, so skip the ~685 MB @shopify/react-native-skia prebuilt-binary download.
       SKIP_SKIA_DOWNLOAD: '1'
     steps:
       # SECURITY: the default branch, never the pull request head or its base branch.
-      # persist-credentials is off, so no token is in .git/config when the model runs.
+      # persist-credentials is off, so no token is in .git/config while prepare runs.
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 1
           persist-credentials: false
-      # Every existing release branch needs expotools to check the changesets. Only a branch
-      # without changesets needs the model.
+      # Every existing release branch needs expotools to check the changesets.
       - name: 🔍 Check the target branch
         id: target
         run: .github/scripts/sdk-cherry-pick.sh check-target
-        env:
-          GH_TOKEN: ${{ github.token }}
       - name: 🔨 Install pnpm
         if: steps.target.outputs.tools == 'true'
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
@@ -147,26 +144,6 @@ jobs:
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
-      # Pinned exactly. Bump it deliberately.
-      - name: Install Claude Code CLI
-        if: steps.target.outputs.convert == 'true'
-        run: npm install -g @anthropic-ai/claude-code@2.1.318
-      # A pull request that adds no changesets needs no model, so a missing credential must not
-      # stop its backport. The script fails with a comment when it needs the model and has no
-      # credential.
-      - name: Prepare model env
-        if: steps.target.outputs.convert == 'true'
-        id: model-env
-        continue-on-error: true
-        uses: ./.github/actions/prepare-model-env
-        with:
-          c1: ${{ secrets.ECR_1 }}
-          c2: ${{ secrets.ECR_2 }}
-          c3: ${{ secrets.ECR_3 }}
-          c4: ${{ secrets.ECR_4 }}
-          c5: ${{ secrets.ECR_5 }}
-          fallback: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
-          model: ${{ env.MODEL }}
       - name: 🍒 Cherry-pick and convert changesets
         id: prepare
         run: .github/scripts/sdk-cherry-pick.sh prepare

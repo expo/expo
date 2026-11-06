@@ -4,7 +4,9 @@ import { describe, it } from 'node:test';
 import {
   BackportChangedFile,
   BackportChangelogInput,
+  BackportChangeset,
   checkBackportChangelog,
+  convertBackportChangesets,
   majorReleaseErrors,
   resolveBackportPackages,
 } from './BackportChangelog';
@@ -499,6 +501,36 @@ describe('checkBackportChangelog', () => {
     );
   });
 
+  it('accepts an entry that starts with a code block on its first line', () => {
+    const after = replaceLine(CORE_BEFORE, '### 💡 Others', [
+      '- ```js',
+      '  foo();',
+      '  ```',
+      '',
+      `  ${TRAILER}`,
+      '',
+      '### 💡 Others',
+    ]);
+    assert.deepEqual(checkBackportChangelog(withCoreAfter(validInput(), after)), {
+      ok: true,
+      errors: [],
+    });
+  });
+
+  it('rejects an entry that starts with a code block that never closes', () => {
+    const after = replaceLine(CORE_BEFORE, '### 💡 Others', [
+      '- ```js',
+      `  foo(); ${TRAILER}`,
+      '',
+      '### 💡 Others',
+    ]);
+    assertSingleError(
+      withCoreAfter(validInput(), after),
+      /packages\/expo-modules-core\/CHANGELOG\.md/,
+      /entry at line \d+ has a code block that does not close/
+    );
+  });
+
   it('rejects an entry whose code block never closes', () => {
     const after = replaceLine(CORE_BEFORE, '### 💡 Others', [
       '- Call it like this:',
@@ -686,5 +718,383 @@ describe('majorReleaseErrors', () => {
       { path: '.changeset/minor.md', content: "---\n'expo-foo': minor\n---\n\nAdd foo.\n" },
     ]);
     assert.deepEqual(errors, []);
+  });
+});
+
+describe('convertBackportChangesets', () => {
+  const packageDirs = new Map([
+    ['expo-modules-core', 'packages/expo-modules-core'],
+    ['expo-modules-jsi', 'packages/expo-modules-jsi'],
+  ]);
+  const OTHERS = '### 💡 Others';
+  const NEW_FEATURES = '### 🎉 New features';
+
+  function changeset(
+    name: string,
+    releases: Record<string, string>,
+    summary: string
+  ): BackportChangeset {
+    const frontMatter = Object.entries(releases).map(([pkg, type]) => `'${pkg}': ${type}`);
+    return {
+      path: `.changeset/${name}.md`,
+      content: ['---', ...frontMatter, '---', '', summary, ''].join('\n'),
+    };
+  }
+
+  function convert(changesets: BackportChangeset[], changelogs: Record<string, string>) {
+    const { packages } = resolveBackportPackages({ changesets, packageDirs });
+    return convertBackportChangesets({
+      changesets,
+      packages,
+      changelogs: new Map(Object.entries(changelogs)),
+      prNumber: PR,
+      author: AUTHOR,
+    });
+  }
+
+  function assertConverted(
+    changesets: BackportChangeset[],
+    before: Record<string, string>,
+    after: Record<string, string>
+  ): void {
+    assert.deepEqual(convert(changesets, before), {
+      ok: true,
+      errors: [],
+      changelogs: new Map(Object.entries(after)),
+    });
+  }
+
+  function assertNotConverted(
+    changesets: BackportChangeset[],
+    before: Record<string, string>,
+    ...patterns: RegExp[]
+  ): void {
+    const result = convert(changesets, before);
+    assert.equal(result.ok, false);
+    assert.deepEqual(result.changelogs, new Map());
+    assert.ok(
+      result.errors.some((error) => patterns.every((pattern) => pattern.test(error))),
+      `no error matches ${patterns.join(' and ')}, got:\n${result.errors.join('\n')}`
+    );
+  }
+
+  it('adds a patch release under "Others", after the heading and its blank line', () => {
+    const fix = changeset('fix', { 'expo-modules-core': 'patch' }, SUMMARY);
+    assertConverted(
+      [fix],
+      { [CORE_CHANGELOG]: CORE_BEFORE },
+      { [CORE_CHANGELOG]: replaceLine(CORE_BEFORE, OTHERS, [OTHERS, '', ENTRY]) }
+    );
+  });
+
+  it('adds a minor release under "New features"', () => {
+    const feature = changeset('feature', { 'expo-modules-core': 'minor' }, 'Add a feature.');
+    assertConverted(
+      [feature],
+      { [CORE_CHANGELOG]: CORE_BEFORE },
+      {
+        [CORE_CHANGELOG]: replaceLine(CORE_BEFORE, NEW_FEATURES, [
+          NEW_FEATURES,
+          '',
+          `- Add a feature. ${TRAILER}`,
+        ]),
+      }
+    );
+  });
+
+  it('adds a release of type none under "Others"', () => {
+    const chore = changeset('chore', { 'expo-modules-core': 'none' }, 'Update a comment.');
+    assertConverted(
+      [chore],
+      { [CORE_CHANGELOG]: CORE_BEFORE },
+      {
+        [CORE_CHANGELOG]: replaceLine(CORE_BEFORE, OTHERS, [
+          OTHERS,
+          '',
+          `- Update a comment. ${TRAILER}`,
+        ]),
+      }
+    );
+  });
+
+  it('indents each line after the first by two spaces and keeps blank lines empty', () => {
+    const fix = changeset(
+      'fix',
+      { 'expo-modules-core': 'patch' },
+      'First paragraph.\n\nSecond paragraph,\nwrapped.'
+    );
+    assertConverted(
+      [fix],
+      { [CORE_CHANGELOG]: CORE_BEFORE },
+      {
+        [CORE_CHANGELOG]: replaceLine(CORE_BEFORE, OTHERS, [
+          OTHERS,
+          '',
+          '- First paragraph.',
+          '',
+          '  Second paragraph,',
+          `  wrapped. ${TRAILER}`,
+        ]),
+      }
+    );
+  });
+
+  it('puts the trailer on its own line after a summary that ends with a code block', () => {
+    const fix = changeset(
+      'fix',
+      { 'expo-modules-core': 'patch' },
+      'Call it like this:\n\n```js\nfoo();\n```'
+    );
+    assertConverted(
+      [fix],
+      { [CORE_CHANGELOG]: CORE_BEFORE },
+      {
+        [CORE_CHANGELOG]: replaceLine(CORE_BEFORE, OTHERS, [
+          OTHERS,
+          '',
+          '- Call it like this:',
+          '',
+          '  ```js',
+          '  foo();',
+          '  ```',
+          '',
+          `  ${TRAILER}`,
+        ]),
+      }
+    );
+  });
+
+  it('puts the trailer on its own line after a summary that is only a code block', () => {
+    const fix = changeset('fix', { 'expo-modules-core': 'patch' }, '```js\nfoo();\n```');
+    assertConverted(
+      [fix],
+      { [CORE_CHANGELOG]: CORE_BEFORE },
+      {
+        [CORE_CHANGELOG]: replaceLine(CORE_BEFORE, OTHERS, [
+          OTHERS,
+          '',
+          '- ```js',
+          '  foo();',
+          '  ```',
+          '',
+          `  ${TRAILER}`,
+        ]),
+      }
+    );
+  });
+
+  it('appends the trailer to the last line of a summary that starts with a code block', () => {
+    const fix = changeset(
+      'fix',
+      { 'expo-modules-core': 'patch' },
+      '```js\nfoo();\n```\n\nCall it once.'
+    );
+    assertConverted(
+      [fix],
+      { [CORE_CHANGELOG]: CORE_BEFORE },
+      {
+        [CORE_CHANGELOG]: replaceLine(CORE_BEFORE, OTHERS, [
+          OTHERS,
+          '',
+          '- ```js',
+          '  foo();',
+          '  ```',
+          '',
+          `  Call it once. ${TRAILER}`,
+        ]),
+      }
+    );
+  });
+
+  it('adds the entry after the last existing entry of the section', () => {
+    const before = replaceLine(CORE_BEFORE, OTHERS, [OTHERS, '', EXISTING_JSI_ENTRY]);
+    const fix = changeset('fix', { 'expo-modules-core': 'patch' }, SUMMARY);
+    assertConverted(
+      [fix],
+      { [CORE_CHANGELOG]: before },
+      { [CORE_CHANGELOG]: replaceLine(before, EXISTING_JSI_ENTRY, [EXISTING_JSI_ENTRY, ENTRY]) }
+    );
+  });
+
+  it('adds a missing section heading in the order of the subsections', () => {
+    const existing = '- Fix an existing bug.';
+    const before = [
+      '# Changelog',
+      '',
+      '## Unpublished',
+      '',
+      '### 🐛 Bug fixes',
+      '',
+      existing,
+      '',
+      '## 1.0.0',
+      '',
+    ].join('\n');
+    const feature = changeset('feature', { 'expo-modules-core': 'minor' }, 'Add a feature.');
+    const fix = changeset('fix', { 'expo-modules-core': 'patch' }, SUMMARY);
+    assertConverted(
+      [feature, fix],
+      { [CORE_CHANGELOG]: before },
+      {
+        [CORE_CHANGELOG]: [
+          '# Changelog',
+          '',
+          '## Unpublished',
+          '',
+          NEW_FEATURES,
+          '',
+          `- Add a feature. ${TRAILER}`,
+          '',
+          '### 🐛 Bug fixes',
+          '',
+          existing,
+          '',
+          OTHERS,
+          '',
+          ENTRY,
+          '',
+          '## 1.0.0',
+          '',
+        ].join('\n'),
+      }
+    );
+  });
+
+  it('adds one entry to each package that a changeset names', () => {
+    const fix = { path: CHANGESET_PATH, content: CHANGESET_CONTENT };
+    assertConverted(
+      [fix],
+      { [CORE_CHANGELOG]: CORE_BEFORE, [JSI_CHANGELOG]: JSI_BEFORE },
+      {
+        [JSI_CHANGELOG]: replaceLine(JSI_BEFORE, OTHERS, [OTHERS, '', ENTRY]),
+        [CORE_CHANGELOG]: replaceLine(CORE_BEFORE, OTHERS, [OTHERS, '', ENTRY]),
+      }
+    );
+  });
+
+  it('adds the entries of two changesets that name the same package in changeset order', () => {
+    const first = changeset('a', { 'expo-modules-core': 'patch' }, 'Fix one.');
+    const second = changeset('b', { 'expo-modules-core': 'patch' }, 'Fix two.');
+    assertConverted(
+      [first, second],
+      { [CORE_CHANGELOG]: CORE_BEFORE },
+      {
+        [CORE_CHANGELOG]: replaceLine(CORE_BEFORE, OTHERS, [
+          OTHERS,
+          '',
+          `- Fix one. ${TRAILER}`,
+          `- Fix two. ${TRAILER}`,
+        ]),
+      }
+    );
+  });
+
+  it('writes no changelog when one of them has no "## Unpublished" section', () => {
+    const fix = { path: CHANGESET_PATH, content: CHANGESET_CONTENT };
+    const released = CORE_BEFORE.replace('## Unpublished', '## 57.0.24');
+    assertNotConverted(
+      [fix],
+      { [CORE_CHANGELOG]: released, [JSI_CHANGELOG]: JSI_BEFORE },
+      /packages\/expo-modules-core\/CHANGELOG\.md has no "## Unpublished" section/
+    );
+  });
+
+  it('writes no changelog for a changeset with an empty summary', () => {
+    const empty = changeset('empty', { 'expo-modules-core': 'patch' }, '');
+    assertNotConverted(
+      [empty],
+      { [CORE_CHANGELOG]: CORE_BEFORE },
+      /\.changeset\/empty\.md has no summary/
+    );
+  });
+
+  it('writes no changelog for a major release', () => {
+    const fix = changeset('fix', { 'expo-modules-core': 'patch' }, 'Fix one.');
+    const breaking = changeset('breaking', { 'expo-modules-jsi': 'major' }, 'Break it.');
+    assertNotConverted(
+      [fix, breaking],
+      { [CORE_CHANGELOG]: CORE_BEFORE, [JSI_CHANGELOG]: JSI_BEFORE },
+      /\.changeset\/breaking\.md makes a major release of "expo-modules-jsi"/
+    );
+  });
+
+  it('writes no changelog for a summary whose code block does not close', () => {
+    const open = changeset('open', { 'expo-modules-core': 'patch' }, 'Call it:\n\n```js\nfoo();');
+    assertNotConverted(
+      [open],
+      { [CORE_CHANGELOG]: CORE_BEFORE },
+      /\.changeset\/open\.md/,
+      /code block that does not close/
+    );
+  });
+
+  it('writes LF line endings for a changeset with CRLF line endings', () => {
+    const fix = {
+      path: '.changeset/crlf.md',
+      content: "---\r\n'expo-modules-core': patch\r\n---\r\n\r\nFirst.\r\nSecond.\r\n",
+    };
+    assertConverted(
+      [fix],
+      { [CORE_CHANGELOG]: CORE_BEFORE },
+      {
+        [CORE_CHANGELOG]: replaceLine(CORE_BEFORE, OTHERS, [
+          OTHERS,
+          '',
+          '- First.',
+          `  Second. ${TRAILER}`,
+        ]),
+      }
+    );
+  });
+
+  it('writes changelogs that checkBackportChangelog accepts', () => {
+    const before = [
+      '# Changelog',
+      '',
+      '## Unpublished',
+      '',
+      '### 🐛 Bug fixes',
+      '',
+      EXISTING_JSI_ENTRY,
+      '',
+      '## 1.0.0',
+      '',
+    ].join('\n');
+    const changesets = [
+      { path: CHANGESET_PATH, content: CHANGESET_CONTENT },
+      changeset('feature', { 'expo-modules-core': 'minor' }, 'Add it:\n\n```js\nfoo();\n```'),
+      changeset('chore', { 'expo-modules-jsi': 'none' }, 'First.\n\nSecond.'),
+    ];
+    const changelogs: Record<string, string> = {
+      [CORE_CHANGELOG]: before,
+      [JSI_CHANGELOG]: JSI_BEFORE,
+    };
+    const result = convert(changesets, changelogs);
+    assert.deepEqual(result.errors, []);
+
+    const changedFiles: BackportChangedFile[] = [
+      ...changesets.map(
+        ({ path, content }): BackportChangedFile => ({ status: 'deleted', path, before: content })
+      ),
+      ...[...result.changelogs].map(
+        ([path, after]): BackportChangedFile => ({
+          status: 'modified',
+          mode: '100644',
+          path,
+          before: changelogs[path],
+          after,
+        })
+      ),
+    ];
+    assert.deepEqual(
+      checkBackportChangelog({
+        changesets,
+        changedFiles,
+        prNumber: PR,
+        author: AUTHOR,
+        packageDirs,
+      }),
+      { ok: true, errors: [] }
+    );
   });
 });

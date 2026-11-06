@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 # Backports a pull request that merged into main to an sdk-NN release branch.
 #
-#   sdk-cherry-pick.sh check-target  Tell whether prepare can need the model and expotools.
+#   sdk-cherry-pick.sh check-target  Tell whether prepare can need expotools.
 #   sdk-cherry-pick.sh prepare       Cherry-pick, convert changesets, and record what to publish.
 #   sdk-cherry-pick.sh publish       Push the branch, open the pull request, and comment.
 #   sdk-cherry-pick.sh run           prepare, then publish. For local use.
 #
 # prepare and publish are separate commands so that the token that can push is only in the
-# environment of publish. prepare runs the model, and the model reads text that a pull request
-# author wrote.
+# environment of publish. prepare reads changesets and other text that a pull request author wrote.
 #
 # prepare and publish read:
 #   PR_NUMBER, SDK_VERSION  Required. The pull request on main, and the NN of sdk-NN.
@@ -20,12 +19,11 @@
 #                           request, or comment.
 #   GH_TOKEN                prepare: a read-only token. publish: a token that can push, open pull
 #                           requests, and comment.
-#   MODEL                   The model that converts changesets. Default: claude-opus-5-5.
 #   REPO                    Default: $GITHUB_REPOSITORY, or expo/expo.
 #   STATE_DIR               Where prepare records the result for publish.
 #                           Default: $RUNNER_TEMP or $TMPDIR, then /sdk-cherry-pick-<PR>-<SDK>.
 #
-# check-target reads the same variables as prepare and writes `convert=true|false` to
+# check-target reads the same variables as prepare and writes `tools=true|false` to
 # $GITHUB_OUTPUT when it is set.
 
 # shellcheck disable=SC2016 # Backticks in single quotes are Markdown code spans, not commands.
@@ -33,11 +31,9 @@ set -euo pipefail
 
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 expotools="$script_dir/../../tools/bin/expotools.js"
-prompt_file="$script_dir/sdk-cherry-pick-changelog-prompt.md"
 
 REPO=${REPO:-${GITHUB_REPOSITORY:-expo/expo}}
 DRY_RUN=${DRY_RUN:-true}
-MODEL=${MODEL:-claude-opus-5-5}
 temp_root=${RUNNER_TEMP:-${TMPDIR:-/tmp}}
 temp_root=${temp_root%/}
 
@@ -136,7 +132,7 @@ finish_without_comment() {
   echo skip >"$state_dir/outcome"
 }
 
-# Text that a model or a pull request author controls reaches a comment only through this. Without
+# Text that a pull request author controls reaches a comment only through this. Without
 # backticks it cannot end a code span, and without `@` it cannot mention anyone.
 comment_text() {
   local text=${1//[\`@]/}
@@ -165,89 +161,6 @@ error_list() {
     (.errors[:10][] | "- `" + (gsub("`"; "") | gsub("[\r\n]"; " ") | .[:300]) + "`"),
     (.errors | length - 10 | select(. > 0) | "- \(.) more. The run log lists every error.")
   ' "$1"
-}
-
-run_model() {
-  local claude_bin model=$MODEL home="$run_dir/home"
-  claude_bin=$(command -v claude) || die "The claude CLI is not on PATH."
-  mkdir -p "$home"
-  (
-    cd "$model_dir" || exit 1
-    # The model reads text that a pull request author wrote. Its environment keeps only PATH,
-    # TMPDIR, and its own credential, so it never gets a GitHub token or another secret.
-    for name in $(compgen -e); do
-      case "$name" in
-        PATH | TMPDIR | ANTHROPIC_API_KEY | ANTHROPIC_AUTH_TOKEN | CLAUDE_CODE_OAUTH_TOKEN) ;;
-        *) unset "$name" 2>/dev/null || true ;;
-      esac
-    done
-    export HOME="$home" CLAUDE_CONFIG_DIR="$home/.claude"
-    if command -v timeout >/dev/null; then
-      set -- timeout 900
-    fi
-    # --restricted keeps Read and Edit inside this directory. --permission-prompts none denies
-    # anything that would ask for permission.
-    "$@" "$claude_bin" -p \
-      --model "$model" \
-      --safe-mode \
-      --restricted \
-      --strict-mcp-config \
-      --tools Read,Edit \
-      --permission-mode acceptEdits \
-      --permission-prompts none \
-      --disable-slash-commands \
-      --no-session-persistence \
-      <"$run_dir/prompt.md"
-  )
-}
-
-# Lets the model add the entries for `changesets` to the files in `changelogs`, then copies the
-# files back to the target worktree.
-add_entries_with_model() {
-  local path changelog
-  model_dir="$run_dir/model"
-  mkdir -p "$model_dir/.changeset"
-  for path in "${changesets[@]}"; do
-    tgit cat-file blob "$base:$path" >"$model_dir/$path"
-  done
-  for changelog in "${changelogs[@]}"; do
-    path=${changelog#*$'\t'}
-    mkdir -p "$model_dir/$(dirname "$path")"
-    tgit cat-file blob "$base:$path" >"$model_dir/$path"
-  done
-
-  {
-    cat "$prompt_file"
-    printf '\n## This run\n\n'
-    printf -- '- Pull request: %s\n' "$PR_NUMBER"
-    printf -- '- Author: %s\n' "$PR_AUTHOR"
-    printf -- '- Trailer: `([#%s](https://github.com/expo/expo/pull/%s) by [@%s](https://github.com/%s))`\n' \
-      "$PR_NUMBER" "$PR_NUMBER" "$PR_AUTHOR" "$PR_AUTHOR"
-    printf '\nChangesets:\n\n'
-    printf -- '- `%s`\n' "${changesets[@]}"
-    printf '\n`CHANGELOG.md` files, by package:\n\n'
-    for changelog in "${changelogs[@]}"; do
-      printf -- '- `%s`: `%s`\n' "${changelog%%$'\t'*}" "${changelog#*$'\t'}"
-    done
-  } >"$run_dir/prompt.md"
-
-  echo "Converting ${#changesets[@]} changeset(s) with $MODEL."
-  local model_status=0
-  run_model >"$run_dir/model.log" 2>&1 || model_status=$?
-  print_untrusted <"$run_dir/model.log"
-  if [ "$model_status" -ne 0 ]; then
-    finish_with_comment "$(printf 'The model that converts changesets into `CHANGELOG.md` entries failed (exit code %s), so no backport pull request was opened.\n\n%s' "$model_status" "$(manual_steps no)")"
-    return
-  fi
-
-  for changelog in "${changelogs[@]}"; do
-    path=${changelog#*$'\t'}
-    if [ ! -f "$model_dir/$path" ] || [ -L "$model_dir/$path" ]; then
-      finish_with_comment "$(printf 'The model did not leave `%s` as a regular file, so no backport pull request was opened.\n\n%s' "$path" "$(manual_steps no)")"
-      return
-    fi
-    cat "$model_dir/$path" >"$target_dir/$path"
-  done
 }
 
 # Writes the report of `et list-backport-changesets` to $list_json. When the report is missing or
@@ -288,11 +201,30 @@ check_kept_changesets() {
   fi
 }
 
+# Adds the entries for `changesets` to the CHANGELOG.md files in the target worktree. When the
+# conversion fails, it comments and returns 1.
+add_entries() {
+  local convert_json="$run_dir/convert.json"
+  echo "Converting ${#changesets[@]} changeset(s) with et convert-backport-changesets."
+  node "$expotools" convert-backport-changesets --repo "$target_dir" --base "$base" \
+    --pr "$PR_NUMBER" --author "$PR_AUTHOR" --json "$convert_json" 2>&1 | print_untrusted || true
+  if [ "$(jq -r .ok "$convert_json" 2>/dev/null)" = true ]; then
+    return 0
+  fi
+  if jq -e '.errors | type == "array" and length > 0 and all(type == "string")' \
+    "$convert_json" >/dev/null 2>&1; then
+    finish_with_comment "$(printf 'The changesets of this pull request do not fit `%s`, so no backport pull request was opened:\n\n%s\n\n%s' "$target_branch" "$(error_list "$convert_json")" "$(manual_steps no)")"
+  else
+    finish_with_comment "$(printf 'The bot could not convert the changesets of this pull request with `et convert-backport-changesets`, so no backport pull request was opened.%s\n\n%s' "$(run_log_link)" "$(manual_steps no)")"
+  fi
+  return 1
+}
+
 convert_changesets() {
   local changesets=() changelogs=() path mode name changelog
 
-  # The check reads the changesets and the packages with the same code, so the files that the model
-  # edits are the files that the check expects.
+  # The conversion and the check read the changesets and the packages with the same code, so the
+  # files that the conversion edits are the files that the check expects.
   list_changesets no || return 0
 
   while IFS= read -r -d '' path; do
@@ -312,7 +244,7 @@ convert_changesets() {
       finish_with_comment "$(printf 'A changeset names the package `%s`, which is not a valid package name, so the bot did not convert the changesets.\n\n%s' "$(comment_text "$name")" "$(manual_steps no)")"
       return
     fi
-    changelogs+=("$name"$'\t'"$changelog")
+    changelogs+=("$changelog")
   done < <(jq -j '.packages[] | .name, "\u0000", (.changelog // ""), "\u0000"' "$list_json")
 
   if [ "$(jq '.errors | length' "$list_json")" -ne 0 ]; then
@@ -325,8 +257,7 @@ convert_changesets() {
     return
   fi
 
-  for changelog in ${changelogs[@]+"${changelogs[@]}"}; do
-    path=${changelog#*$'\t'}
+  for path in ${changelogs[@]+"${changelogs[@]}"}; do
     if ! [[ "$path" =~ $changelog_pattern ]] || [ "$(tgit ls-tree "$base" -- "$path" | cut -d' ' -f1)" != 100644 ]; then
       finish_with_comment "$(printf '`%s` is missing or is not a regular file on `%s`, so the bot did not convert the changesets.\n\n%s' "$(comment_text "$path")" "$target_branch" "$(manual_steps no)")"
       return
@@ -334,12 +265,9 @@ convert_changesets() {
   done
 
   if [ ${#changelogs[@]} -gt 0 ]; then
-    add_entries_with_model
-    if [ -f "$state_dir/outcome" ]; then
-      return
-    fi
+    add_entries || return 0
   else
-    echo "The changesets name no packages, so there are no CHANGELOG.md entries to add. The bot deletes them without the model."
+    echo "The changesets name no packages, so there are no CHANGELOG.md entries to add. The bot only deletes them."
   fi
   tgit rm --quiet -- "${changesets[@]}"
   tgit add -A
@@ -564,7 +492,7 @@ EOF
   case "$conversion" in
     kept) conversion_note="\`$target_branch\` uses changesets, so the changesets of #$PR_NUMBER are kept as they are. \`et list-backport-changesets\` found each package that they name on \`$target_branch\`." ;;
     none) conversion_note="#$PR_NUMBER adds no changesets." ;;
-    converted) conversion_note="\`$target_branch\` does not use changesets. Claude moved the changesets of #$PR_NUMBER into \`CHANGELOG.md\` entries, and \`et check-backport-changelog\` checked the result. That change is in its own commit. Review the entries before you merge." ;;
+    converted) conversion_note="\`$target_branch\` does not use changesets. The bot moved the changesets of #$PR_NUMBER into \`CHANGELOG.md\` entries. It put each entry in a section by the bump type: \`patch\` and \`none\` under \`### 💡 Others\`, and \`minor\` under \`### 🎉 New features\`. \`et check-backport-changelog\` checked the result. That change is in its own commit. Before you merge, check that each entry is in the right section." ;;
     deleted) conversion_note="\`$target_branch\` does not use changesets. The changesets of #$PR_NUMBER name no packages, so the bot deleted them, and \`et check-backport-changelog\` checked the result. That change is in its own commit." ;;
   esac
   cat >"$state_dir/body.md" <<EOF
@@ -671,27 +599,20 @@ publish() {
   esac
 }
 
-# Tells the workflow whether to install expotools and the model. prepare needs expotools when the
-# target branch exists, and the model only when it also has no .changeset/config.json.
-# prepare checks the branch again. If it then needs a tool that is not installed, it fails, and
-# publish comments on the pull request.
+# Tells the workflow whether to install expotools. prepare needs expotools when the target branch
+# exists. prepare checks the branch again. If it then needs expotools and they are not installed, it
+# fails, and publish comments on the pull request.
 check_target() {
   load_common
-  local heads convert=true tools=true
+  local heads tools=true
   heads=$(git -C "$REPO_DIR" ls-remote --heads origin "refs/heads/$target_branch")
   if [ -z "$heads" ]; then
     echo "$target_branch does not exist."
-    convert=false
     tools=false
-  elif gh api "repos/$REPO/contents/.changeset/config.json?ref=refs/heads/$target_branch" --silent 2>/dev/null; then
-    echo "$target_branch uses changesets."
-    convert=false
-  else
-    echo "$target_branch has no .changeset/config.json, or the API did not answer."
   fi
-  printf 'tools=%s\nconvert=%s\n' "$tools" "$convert"
+  printf 'tools=%s\n' "$tools"
   if [ -n "${GITHUB_OUTPUT:-}" ]; then
-    printf 'tools=%s\nconvert=%s\n' "$tools" "$convert" >>"$GITHUB_OUTPUT"
+    printf 'tools=%s\n' "$tools" >>"$GITHUB_OUTPUT"
   fi
 }
 
