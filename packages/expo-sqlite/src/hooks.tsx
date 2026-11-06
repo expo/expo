@@ -155,7 +155,7 @@ export function useSQLiteContext(): SQLiteDatabase {
 
 type DatabaseInstanceType = Pick<
   SQLiteProviderProps,
-  'databaseName' | 'directory' | 'options' | 'onInit'
+  'databaseName' | 'directory' | 'options' | 'assetSource' | 'onInit'
 > & {
   promise: Promise<SQLiteDatabase> | null;
 };
@@ -171,11 +171,12 @@ function SQLiteProviderSuspense({
   onInit,
 }: Omit<SQLiteProviderProps, 'onError' | 'useSuspense'>) {
   const stableOptions = useDeepStableValue(options);
+  const stableAssetSource = useDeepStableValue(assetSource);
   const databasePromise = getDatabaseAsync({
     databaseName,
     directory,
     options: stableOptions,
-    assetSource,
+    assetSource: stableAssetSource,
     onInit,
   });
   const database = use(databasePromise);
@@ -196,6 +197,7 @@ function SQLiteProviderNonSuspense({
   const [error, setError] = useState<Error | null>(null);
 
   const stableOptions = useDeepStableValue(options);
+  const stableAssetSource = useDeepStableValue(assetSource);
 
   useEffect(() => {
     async function setup() {
@@ -204,7 +206,7 @@ function SQLiteProviderNonSuspense({
           databaseName,
           directory,
           options: stableOptions,
-          assetSource,
+          assetSource: stableAssetSource,
           onInit,
         });
         databaseRef.current = db;
@@ -230,7 +232,7 @@ function SQLiteProviderNonSuspense({
       databaseRef.current = null;
       setLoading(true);
     };
-  }, [databaseName, directory, stableOptions, onInit]);
+  }, [databaseName, directory, stableOptions, stableAssetSource, onInit]);
 
   if (error != null) {
     const handler =
@@ -261,6 +263,7 @@ function getDatabaseAsync({
     databaseInstance?.databaseName === databaseName &&
     databaseInstance?.directory === directory &&
     databaseInstance?.options === options &&
+    databaseInstance?.assetSource === assetSource &&
     databaseInstance?.onInit === onInit
   ) {
     return databaseInstance.promise;
@@ -288,6 +291,7 @@ function getDatabaseAsync({
     databaseName,
     directory,
     options,
+    assetSource,
     onInit,
     promise,
   };
