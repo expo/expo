@@ -241,14 +241,16 @@ describe('NativeToolbarMenu', () => {
         expect(screen.getByTestId('DropdownMenuGroup').props.containerColor).toBe('context-bg');
       });
 
-      it('leaves the menu group container color to Compose when no context backgroundColor', async () => {
+      it('falls back to default surfaceContainer for the menu group container', async () => {
         await renderWithColors(
           defaultProps,
           {},
           <NativeToolbarMenuAction onPress={() => {}}>Action</NativeToolbarMenuAction>
         );
 
-        expect(screen.getByTestId('DropdownMenuGroup').props.containerColor).toBeUndefined();
+        expect(screen.getByTestId('DropdownMenuGroup').props.containerColor).toBe(
+          'dynamic:surfaceContainer'
+        );
       });
 
       it('uses context buttonContainerColor for the IconButton container', async () => {
@@ -518,6 +520,48 @@ describe('NativeToolbarMenu', () => {
 
       expect(screen.getByTestId('DropdownMenuItem').props.shape).toEqual({ index: 0, count: 1 });
     });
+
+    // If the group remounted, the submenu would lose its `expanded` state and close.
+    it.each([
+      ['the first group', false],
+      ['a group after an inline submenu', true],
+    ])(
+      'keeps a submenu open when an action before it in %s hides',
+      async (_, withSection: boolean) => {
+        const tree = (hideFirst: boolean) => (
+          <NativeToolbarMenu source={{ uri: 'root-icon' }}>
+            {withSection && (
+              <NativeToolbarMenu inline label="Section">
+                <NativeToolbarMenuAction onPress={() => {}}>Inside</NativeToolbarMenuAction>
+              </NativeToolbarMenu>
+            )}
+            <NativeToolbarMenuAction onPress={() => {}} hidden={hideFirst}>
+              First
+            </NativeToolbarMenuAction>
+            <NativeToolbarMenu label="Submenu">
+              <NativeToolbarMenuAction onPress={() => {}}>Sub Action</NativeToolbarMenuAction>
+            </NativeToolbarMenu>
+          </NativeToolbarMenu>
+        );
+        const getSubmenuPopup = () => {
+          const popups = screen.getAllByTestId('DropdownMenuPopup');
+          return popups[popups.length - 1]!;
+        };
+
+        const { rerender } = await render(tree(false));
+        const boxes = screen.getAllByTestId('Box');
+        const trigger = within(boxes[boxes.length - 1]!).getAllByTestId('DropdownMenuItem')[0]!;
+        await act(() => {
+          trigger.props.onClick();
+        });
+        expect(getSubmenuPopup().props.expanded).toBe(true);
+
+        await rerender(tree(true));
+
+        expect(screen.queryByText('First')).toBeNull();
+        expect(getSubmenuPopup().props.expanded).toBe(true);
+      }
+    );
   });
 
   describe('nested menu (non-inline)', () => {
@@ -818,7 +862,7 @@ describe('NativeToolbarMenuAction', () => {
       });
     });
 
-    it('leaves the container of a selectable action to Compose when no context backgroundColor', async () => {
+    it('falls back to default surfaceContainer for the containers of a selectable action', async () => {
       await renderActionWithColors(
         { onPress: jest.fn(), children: 'Action', isOn: false },
         { tintColor: 'context-tint' }
@@ -827,6 +871,8 @@ describe('NativeToolbarMenuAction', () => {
       expect(screen.getByTestId('SelectableDropdownMenuItem').props.colors).toEqual({
         textColor: 'context-tint',
         leadingIconColor: 'context-tint',
+        containerColor: 'dynamic:surfaceContainer',
+        disabledContainerColor: 'dynamic:surfaceContainer',
       });
     });
 
@@ -870,6 +916,8 @@ describe('NativeToolbarMenuAction', () => {
       leadingIconColor: 'material:error',
       selectedTextColor: 'material:error',
       selectedLeadingIconColor: 'material:error',
+      containerColor: 'dynamic:surfaceContainer',
+      disabledContainerColor: 'dynamic:surfaceContainer',
     });
   });
 

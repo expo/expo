@@ -116,7 +116,7 @@ function MenuGroups({
   containerColor,
 }: {
   children: ReactNode;
-  containerColor: ColorValue | undefined;
+  containerColor: ColorValue;
 }) {
   const {
     expoUI: { DropdownMenuGroup, Spacer },
@@ -156,6 +156,8 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
   // Only the user-provided source respects `imageRenderingMode`; the submenu
   // arrow is always tinted.
   const sourceTint = props.imageRenderingMode === 'original' ? null : tintColor;
+  const backgroundColor = (toolbarColors.backgroundColor ??
+    DEFAULT_TOOLBAR_BACKGROUND_COLOR()) as string;
 
   const closeMenu = useCallback(() => {
     setExpanded(false);
@@ -175,7 +177,7 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
 
   const menuContent = (
     <ToolbarMenuCloseContext value={closeMenu}>
-      <MenuGroups containerColor={toolbarColors.backgroundColor}>{props.children}</MenuGroups>
+      <MenuGroups containerColor={backgroundColor}>{props.children}</MenuGroups>
     </ToolbarMenuCloseContext>
   );
 
@@ -227,9 +229,6 @@ export const NativeToolbarMenu: React.FC<NativeToolbarMenuProps> = (props) => {
     return null;
   }
 
-  const backgroundColor = (toolbarColors.backgroundColor ??
-    DEFAULT_TOOLBAR_BACKGROUND_COLOR()) as string;
-
   const iconButton = (
     <IconButton
       onClick={() => setExpanded(true)}
@@ -278,6 +277,7 @@ export const NativeToolbarMenuAction: React.FC<NativeToolbarMenuActionProps> = (
   const tintColor = props.destructive
     ? DEFAULT_DESTRUCTIVE_COLOR()
     : (toolbarColors.tintColor ?? DEFAULT_TOOLBAR_TINT_COLOR());
+  const backgroundColor = toolbarColors.backgroundColor ?? DEFAULT_TOOLBAR_BACKGROUND_COLOR();
 
   const handleClick = useCallback(() => {
     props.onPress?.();
@@ -314,12 +314,8 @@ export const NativeToolbarMenuAction: React.FC<NativeToolbarMenuActionProps> = (
             : {}),
           // Compose gives an unselected or disabled item the default group color. Match the group
           // color instead.
-          ...(toolbarColors.backgroundColor
-            ? {
-                containerColor: toolbarColors.backgroundColor,
-                disabledContainerColor: toolbarColors.backgroundColor,
-              }
-            : {}),
+          containerColor: backgroundColor,
+          disabledContainerColor: backgroundColor,
         }}>
         <SelectableDropdownMenuItem.Text>{text}</SelectableDropdownMenuItem.Text>
         {leadingIcon && (
