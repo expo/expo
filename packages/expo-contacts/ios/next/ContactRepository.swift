@@ -29,14 +29,13 @@ class ContactRepository {
     try store.execute(saveRequest)
   }
 
-  func getById(id: String, keysToFetch: [CNKeyDescriptor]) -> CNContact? {
-    let safeKeys = getSafeKeys(keysToFetch: keysToFetch)
-    return try? store.unifiedContact(withIdentifier: id, keysToFetch: safeKeys)
+  func getById(id: String, keysToFetch: [CNKeyDescriptor]) throws -> CNContact? {
+    try keysToFetch.forEach(ensureAccessible)
+    return try? store.unifiedContact(withIdentifier: id, keysToFetch: keysToFetch)
   }
 
   func getMutableById(id: String, keysToFetch: [CNKeyDescriptor]) throws -> CNMutableContact {
-    try keysToFetch.forEach(ensureAccessible)
-    let contact = getById(id: id, keysToFetch: keysToFetch)
+    let contact = try getById(id: id, keysToFetch: keysToFetch)
     guard let mutableContact = contact?.mutableCopy() as? CNMutableContact else {
       throw FailedToGetMutableContact()
     }
@@ -52,7 +51,8 @@ class ContactRepository {
     sortOrder: CNContactSortOrder? = CNContactSortOrder.userDefault,
     unifyResults: Bool
   ) throws -> [CNContact] {
-    let request = CNContactFetchRequest(keysToFetch: getSafeKeys(keysToFetch: keysToFetch))
+    try keysToFetch.forEach(ensureAccessible)
+    let request = CNContactFetchRequest(keysToFetch: keysToFetch)
     request.unifyResults = unifyResults
     request.predicate = predicate
     request.sortOrder = sortOrder ?? CNContactSortOrder.userDefault
@@ -107,7 +107,7 @@ class ContactRepository {
     return result
   }
 
-  private func getSafeKeys(keysToFetch: [CNKeyDescriptor]) -> [CNKeyDescriptor] {
+  func getSafeKeys(keysToFetch: [CNKeyDescriptor]) -> [CNKeyDescriptor] {
     return keysToFetch.filter { key in
       if let keyString = key as? String, keyString == CNContactNoteKey {
         return canAccessNotesField()
@@ -116,7 +116,7 @@ class ContactRepository {
     }
   }
 
-  func ensureAccessible(_ key: CNKeyDescriptor) throws {
+  private func ensureAccessible(_ key: CNKeyDescriptor) throws {
     if let keyString = key as? String, keyString == CNContactNoteKey, !canAccessNotesField() {
       throw ContactNotesNotAccessibleException()
     }

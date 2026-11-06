@@ -62,7 +62,7 @@ class ContactNext: SharedObject {
 
   func getFullName() throws -> String {
     let keys = CNContactFormatter.descriptorForRequiredKeys(for: .fullName)
-    guard let contact = contactRepository.getById(id: id, keysToFetch: [keys] as [CNKeyDescriptor]) else {
+    guard let contact = try contactRepository.getById(id: id, keysToFetch: [keys] as [CNKeyDescriptor]) else {
       throw ContactNotFoundException(id)
     }
     return FullNameExtractor.extract(from: contact)
@@ -74,12 +74,10 @@ class ContactNext: SharedObject {
   }
 
   func getDetails(fields: [ContactField]?) throws -> GetContactDetailsRecord {
-    let keys = CNKeyDescriptorMapper.map(from: fields ?? ContactField.allCases)
     // Without fields, the caller asks for all available fields, so a field that the app cannot access is left out.
-    if fields != nil {
-      try keys.forEach(contactRepository.ensureAccessible)
-    }
-    guard let contact = contactRepository.getById(id: id, keysToFetch: keys) else {
+    let keys = fields.map { CNKeyDescriptorMapper.map(from: $0) }
+      ?? contactRepository.getSafeKeys(keysToFetch: CNKeyDescriptorMapper.map(from: ContactField.allCases))
+    guard let contact = try contactRepository.getById(id: id, keysToFetch: keys) else {
       throw ContactNotFoundException(id)
     }
     return try GetContactDetailsMapper(imageService: imageService)
@@ -131,10 +129,8 @@ class ContactNext: SharedObject {
     contactRepository: ContactRepository,
     getContactDetailsMapper: GetContactDetailsMapper
   ) throws -> [GetContactDetailsRecord] {
-    let keys = CNKeyDescriptorMapper.map(from: fields ?? ContactField.allCases)
-    if fields != nil {
-      try keys.forEach(contactRepository.ensureAccessible)
-    }
+    let keys = fields.map { CNKeyDescriptorMapper.map(from: $0) }
+      ?? contactRepository.getSafeKeys(keysToFetch: CNKeyDescriptorMapper.map(from: ContactField.allCases))
     return try contactRepository.getPaginated(
       keysToFetch: keys,
       predicate: queryOptions?.name.flatMap {
