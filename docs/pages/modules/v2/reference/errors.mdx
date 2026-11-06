@@ -1,0 +1,101 @@
+---
+title: 'Expo Modules API 2.0: Errors'
+sidebar_title: Errors
+description: Learn how errors that native code throws reach JavaScript in Expo Modules API 2.0.
+---
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+
+A `@JS` function reports an error by throwing it. JavaScript gets an `Error` object with the `message` of the native error, and a `code` property that identifies the error.
+
+## Throw an error
+
+Throw a subclass of `CodedException` in Kotlin, or a subclass of `Exception` in Swift:
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+import expo.modules.kotlin.exception.CodedException
+
+class InvalidPathException(path: String) :
+  CodedException("ERR_INVALID_PATH", "Invalid path: $path", null)
+
+@ExpoModule("MyModule")
+class MyModule : Module() {
+  @JS
+  fun open(path: String) {
+    if (path.isEmpty()) {
+      throw InvalidPathException(path)
+    }
+    // ...
+  }
+}
+```
+
+```swift
+final class InvalidPathException: GenericException<String> {
+  override var code: String {
+    "ERR_INVALID_PATH"
+  }
+
+  override var reason: String {
+    "Invalid path: \(param)"
+  }
+}
+
+@ExpoModule("MyModule")
+public final class MyModule: Module {
+  @JS
+  func open(path: String) throws {
+    if path.isEmpty {
+      throw InvalidPathException(path)
+    }
+    // ...
+  }
+}
+```
+
+</CodeBlocksTable>
+
+In JavaScript, check the `code` property to handle the error:
+
+```ts
+try {
+  MyModule.open('');
+} catch (error) {
+  if (error.code === 'ERR_INVALID_PATH') {
+    // ...
+  }
+}
+```
+
+## Synchronous and asynchronous functions
+
+- A synchronous function throws the error in JavaScript.
+- An asynchronous function rejects its promise with the error. This includes a `suspend` function and a function that returns a `Promise` in Kotlin, and an `async` function and a function with `.withAsync` in Swift.
+
+In Swift, an asynchronous function also rejects its promise when the arguments are wrong, for example when an argument has the wrong type. In Kotlin, some argument errors of an asynchronous function, such as the wrong number of arguments, throw in JavaScript instead.
+
+In Kotlin, when the coroutine of a `suspend` function is canceled, the promise is rejected with the `ERR_CANCELED` code.
+
+## Error codes
+
+When you don't set a code, the code comes from the name of the class:
+
+- In Kotlin, a `CodedException` without a code gets `ERR_` and the class name in upper snake case, without a trailing `Exception`. For example, `InvalidPathException` gets `ERR_INVALID_PATH`. Another `Throwable`, such as `IllegalStateException`, gets the full name of its class as the code, for example `java.lang.IllegalStateException`.
+- In Swift, an `Exception` without a code gets `ERR_` and the class name in upper snake case, without a trailing `Exception` or `Error`. Another Swift error, which isn't an `Exception` and doesn't conform to `JavaScriptThrowable`, gives an `Error` without a `code`.
+
+To set a code for every error of a class, pass it to the `CodedException` constructor in Kotlin, or override the `code` property in Swift.
+
+## Messages and causes
+
+The `message` of the JavaScript error is the message of the native error:
+
+- In Kotlin, it's the `message` of the exception.
+- In Swift, it's the `reason` of the `Exception`. When the exception has a cause, the message also contains the causes, each on a line that starts with `→ Caused by:`. To add a cause, call `causedBy(_:)` on the exception.
+
+In Kotlin, the JavaScript error also has a `nativeStack` property with the stack trace of the exception.
+
+## Custom error types
+
+You don't have to subclass `CodedException` or `Exception`. In Kotlin, a subclass of `JavaScriptThrowable` from `io.github.expo.modules.v2` can override `code`. In Swift, any type that conforms to the `JavaScriptThrowable` protocol can provide `message` and `code`, for example a `struct`.
