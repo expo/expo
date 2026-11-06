@@ -54,12 +54,14 @@ struct ExpoLinkingModuleTests {
   func `emits onURLReceived with the URL to JS listeners`() async throws {
     let runtime = runtime
     try await runtime.execute {
-      _ = try runtime.eval("""
+      _ = try runtime.eval(
+        """
         globalThis.result = null
         globalThis.subscription = expo.modules.ExpoLinking.addListener('onURLReceived', payload => {
           globalThis.result = JSON.stringify(payload)
         })
-        """)
+        """
+      )
     }
 
     NotificationCenter.default.post(
