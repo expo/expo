@@ -39,8 +39,9 @@ struct ClipboardModuleTests {
     let expectedString = "hello"
     UIPasteboard.general.string = expectedString
 
-    let result = try await runtime.evalAsync("expo.modules.ExpoClipboard.getStringAsync({ preferredFormat: 'plainText' })")
-    #expect(try result.asString() == expectedString)
+    let result = try await runtime.evalAsync("expo.modules.ExpoClipboard.getStringAsync({ preferredFormat: 'plainText' })").ref()
+    // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+    #expect(try await runtime.execute { try result.take().asString() } == expectedString)
   }
 
   @Test
@@ -50,16 +51,16 @@ struct ClipboardModuleTests {
       kUTTypeHTML as String: expectedHtml
     ]]
 
-    let result = try await runtime.evalAsync("expo.modules.ExpoClipboard.getStringAsync({ preferredFormat: 'html' })")
-    #expect(try result.asString() == expectedHtml)
+    let result = try await runtime.evalAsync("expo.modules.ExpoClipboard.getStringAsync({ preferredFormat: 'html' })").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == expectedHtml)
   }
 
   @Test
   func `getStringAsync returns empty string if no text in clipboard`() async throws {
     UIPasteboard.general.items = []
 
-    let result = try await runtime.evalAsync("expo.modules.ExpoClipboard.getStringAsync({ preferredFormat: 'plainText' })")
-    #expect(try result.asString() == "")
+    let result = try await runtime.evalAsync("expo.modules.ExpoClipboard.getStringAsync({ preferredFormat: 'plainText' })").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "")
   }
 
   @Test
@@ -132,8 +133,9 @@ struct ClipboardModuleTests {
   func `setImageAsync throws when given invalid base64`() async throws {
     let error = try await runtime
       .evalAsync("expo.modules.ExpoClipboard.setImageAsync('invalid', {}).then(() => null, (e) => e)")
-      .asObject()
-    #expect(error.getProperty("message").getString().contains("Invalid base64 image"))
+      .ref()
+    let message = try await runtime.execute { try error.take().asObject().getProperty("message").getString() }
+    #expect(message.contains("Invalid base64 image"))
   }
 
   @Test
@@ -141,11 +143,18 @@ struct ClipboardModuleTests {
     let expectedImgData = Self.testImage.pngData()!.base64EncodedString()
     UIPasteboard.general.image = Self.testImage
 
-    let result = try await runtime.evalAsync("expo.modules.ExpoClipboard.getImageAsync({ format: 'png' })").asObject()
-    let imgData = try result.getProperty("data").asString()
-    let size = try result.getProperty("size").asObject()
-    #expect(try size.getProperty("width").asDouble() == 1)
-    #expect(try size.getProperty("height").asDouble() == 1)
+    let result = try await runtime.evalAsync("expo.modules.ExpoClipboard.getImageAsync({ format: 'png' })").ref()
+    let (imgData, width, height) = try await runtime.execute {
+      let result = try result.take().asObject()
+      let size = try result.getProperty("size").asObject()
+      return (
+        try result.getProperty("data").asString(),
+        try size.getProperty("width").asDouble(),
+        try size.getProperty("height").asDouble()
+      )
+    }
+    #expect(width == 1)
+    #expect(height == 1)
     #expect(imgData.hasPrefix("data:image/png;base64,\(expectedImgData)") == true)
   }
 
@@ -154,11 +163,18 @@ struct ClipboardModuleTests {
     let expectedImgData = Self.testImage.jpegData(compressionQuality: 1.0)!.base64EncodedString()
     UIPasteboard.general.image = Self.testImage
 
-    let result = try await runtime.evalAsync("expo.modules.ExpoClipboard.getImageAsync({ format: 'jpeg' })").asObject()
-    let imgData = try result.getProperty("data").asString()
-    let size = try result.getProperty("size").asObject()
-    #expect(try size.getProperty("width").asDouble() == 1)
-    #expect(try size.getProperty("height").asDouble() == 1)
+    let result = try await runtime.evalAsync("expo.modules.ExpoClipboard.getImageAsync({ format: 'jpeg' })").ref()
+    let (imgData, width, height) = try await runtime.execute {
+      let result = try result.take().asObject()
+      let size = try result.getProperty("size").asObject()
+      return (
+        try result.getProperty("data").asString(),
+        try size.getProperty("width").asDouble(),
+        try size.getProperty("height").asDouble()
+      )
+    }
+    #expect(width == 1)
+    #expect(height == 1)
     #expect(imgData.hasPrefix("data:image/jpeg;base64,\(expectedImgData)") == true)
   }
 
@@ -211,8 +227,8 @@ struct ClipboardModuleTests {
     let expectedUrl = URL(string: "http://expo.dev")
     UIPasteboard.general.url = expectedUrl
 
-    let result = try await runtime.evalAsync("expo.modules.ExpoClipboard.getUrlAsync()")
-    #expect(try result.asString() == expectedUrl?.absoluteString)
+    let result = try await runtime.evalAsync("expo.modules.ExpoClipboard.getUrlAsync()").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == expectedUrl?.absoluteString)
   }
 
   @Test
