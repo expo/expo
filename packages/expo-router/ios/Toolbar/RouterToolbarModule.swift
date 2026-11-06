@@ -41,6 +41,9 @@ public class RouterToolbarModule: Module {
       Prop("sharesBackground") { (view: RouterToolbarItemView, sharesBackground: Bool) in
         view.sharesBackground = sharesBackground
       }
+      Prop("axisBehavior") { (view: RouterToolbarItemView, axisBehavior: AxisBehavior?) in
+        view.axisBehavior = axisBehavior
+      }
       Prop("disableForceFlatten") { (_: RouterToolbarItemView, _: Bool) in
         // This prop is used in ExpoShadowNode in order to disable force flattening, when display: contents is used
       }
@@ -82,6 +85,27 @@ public class RouterToolbarModule: Module {
 
       Events("onSelected")
     }
+  }
+}
+
+enum AxisBehavior: String, Enumerable {
+  case automatic
+  case horizontalOnly
+  case verticalPreferred
+
+  func apply(to item: UIBarButtonItem) {
+    #if canImport(UIKit, _version: 9127.0.85) // iOS 27.1 SDK
+    if #available(iOS 27.1, *) {
+      switch self {
+      case .automatic:
+        item.axisBehavior = UIBarButtonItem.AxisBehavior.automatic
+      case .horizontalOnly:
+        item.axisBehavior = UIBarButtonItem.AxisBehavior.horizontalOnly
+      case .verticalPreferred:
+        item.axisBehavior = UIBarButtonItem.AxisBehavior.verticalPreferred
+      }
+    }
+    #endif
   }
 }
 
