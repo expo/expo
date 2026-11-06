@@ -15,6 +15,7 @@ public final class TestAppContext: AppContext {
 
   public init() {
     super.init(config: nil)
+    ownsRuntime = true
 
     // A runtime treats the thread it is created on as its JavaScript thread.
     scheduler.thread.runAndWait {
@@ -47,11 +48,6 @@ public final class TestAppContext: AppContext {
     scheduler.thread.runAndWait {
       destroy()
       owningRuntime = nil
-    }
-    // Keep the scheduler alive until the thread runs out of work.
-    let scheduler = self.scheduler
-    scheduler.thread.schedule {
-      _ = scheduler
     }
     scheduler.thread.stopWhenIdle()
   }

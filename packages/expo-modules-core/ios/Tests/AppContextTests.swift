@@ -28,6 +28,16 @@ struct AppContextTests {
     #expect(AppContext.from(runtime: bareRuntime) == nil)
   }
 
+  @Test
+  func `an app context with its own runtime is deallocated once released`() {
+    weak var weakAppContext: AppContext?
+    do {
+      let appContext = AppContext.create()
+      weakAppContext = appContext
+    }
+    #expect(weakAppContext == nil)
+  }
+
   // MARK: - moduleProviderClassNames
 
   @Test
