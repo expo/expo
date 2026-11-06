@@ -5,6 +5,7 @@ final class LiveActivity: SharedObject {
   let id: String
   let name: String
   private var pushTokenObserverTask: Task<Void, Never>?
+  private var stateObserverTask: Task<Void, Never>?
 
   init(id: String, name: String) {
     self.id = id
@@ -50,6 +51,53 @@ final class LiveActivity: SharedObject {
     return tokenData.reduce("") { $0 + String(format: "%02x", $1) }
   }
 
+  func getState() throws -> String {
+    guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
+      throw LiveActivityNotFoundException(id)
+    }
+
+    return Self.stateName(activity.activityState)
+  }
+
+  func getProps() throws -> String? {
+    guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
+      throw LiveActivityNotFoundException(id)
+    }
+
+    return activity.attributes.mergedProps(activity.content.state.props)
+  }
+
+  private static func stateName(_ state: ActivityState) -> String {
+    #if compiler(>=6.2)
+    if #available(iOS 26.0, *), state == .pending {
+      return "pending"
+    }
+    #endif
+
+    switch state {
+    case .active: return "active"
+    case .stale: return "stale"
+    case .ended: return "ended"
+    case .dismissed: return "dismissed"
+    @unknown default: return "ended"
+    }
+  }
+
+  func observeStateUpdates(for activity: Activity<LiveActivityAttributes>) {
+    guard stateObserverTask == nil else {
+      return
+    }
+
+    stateObserverTask = Task {
+      for await state in activity.activityStateUpdates {
+        emit(event: onActivityStateChanged, payload: [
+          "activityId": activity.id,
+          "state": Self.stateName(state)
+        ])
+      }
+    }
+  }
+
   func observePushTokenUpdates(for activity: Activity<LiveActivityAttributes>, pushNotificationsEnabled: Bool) {
     guard pushNotificationsEnabled else {
       return
@@ -73,5 +121,7 @@ final class LiveActivity: SharedObject {
   override func sharedObjectWillRelease() {
     pushTokenObserverTask?.cancel()
     pushTokenObserverTask = nil
+    stateObserverTask?.cancel()
+    stateObserverTask = nil
   }
 }

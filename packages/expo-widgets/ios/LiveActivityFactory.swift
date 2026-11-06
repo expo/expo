@@ -29,6 +29,7 @@ final class LiveActivityFactory: SharedObject {
 
       let instance = LiveActivity(id: activity.id, name: name)
       instance.observePushTokenUpdates(for: activity, pushNotificationsEnabled: LiveActivityFactory.pushNotificationsEnabled)
+      instance.observeStateUpdates(for: activity)
       instances[activity.id] = instance
       return instance
     } catch {
@@ -36,24 +37,33 @@ final class LiveActivityFactory: SharedObject {
     }
   }
 
-  func getInstances() throws -> [LiveActivity] {
+  func getInstances(includeEnded: Bool = false) throws -> [LiveActivity] {
     let activities = Activity<LiveActivityAttributes>.activities
       // Filter LiveActivity instances for activities that don't match the factory's name.
       .filter { $0.content.state.name == name }
-      // A stale activity is still visible and updatable; only ended/dismissed ones are gone.
-      .filter { $0.activityState == .active || $0.activityState == .stale }
-      
+      // A stale activity is still visible and updatable. An ended one stays visible until its
+      // dismissal but cannot be updated, so it is returned only with `includeEnded`.
+      .filter { activity in
+        switch activity.activityState {
+        case .active, .stale: return true
+        case .ended: return includeEnded
+        default: return false
+        }
+      }
+
     let activeIDs = Set(activities.map(\.id))
     instances = instances.filter { activeIDs.contains($0.key) }
 
     return activities.map { activity in
       if let instance = instances[activity.id] {
         instance.observePushTokenUpdates(for: activity, pushNotificationsEnabled: Self.pushNotificationsEnabled)
+        instance.observeStateUpdates(for: activity)
         return instance
       }
 
       let instance = LiveActivity(id: activity.id, name: name)
       instance.observePushTokenUpdates(for: activity, pushNotificationsEnabled: Self.pushNotificationsEnabled)
+      instance.observeStateUpdates(for: activity)
       instances[activity.id] = instance
       return instance
     }
