@@ -681,6 +681,27 @@ export default function DocumentScreen() {
 
 </Tabs>
 
+## Keeping an item in the horizontal bar on iPhone Duo
+
+> **info** `axisBehavior` is not available in a published `expo-router` release yet.
+
+On iPhone Duo, iOS 27.1 can move a header or toolbar item into the vertical bar when the item has an icon. A titled item with no icon stays in the horizontal bar. Set `axisBehavior="horizontalOnly"` on `Stack.Toolbar.Button` or `Stack.Toolbar.Menu` to keep an item with an icon in that bar. `verticalPreferred` prefers the vertical bar. `automatic`, the default, leaves the choice to the system. `axisBehavior` requires iOS 27.1 or later and an app built against the iOS 27.1 SDK or later, included with Xcode 27.1 or later.
+
+```tsx
+<Stack.Toolbar placement="bottom">
+  <Stack.Toolbar.Button icon="questionmark.circle" axisBehavior="horizontalOnly" onPress={showHelp}>
+    Help
+  </Stack.Toolbar.Button>
+  <Stack.Toolbar.Button icon="square.grid.2x2" onPress={toggleLayout}>
+    Grid
+  </Stack.Toolbar.Button>
+</Stack.Toolbar>
+```
+
+`horizontalOnly` on one item in a bottom toolbar keeps the whole toolbar horizontal. iOS hides a `horizontalOnly` item when no horizontal bar is present. Android ignores `axisBehavior`.
+
+For header items (`placement="left"` or `placement="right"`), Expo Router passes `axisBehavior` to `react-native-screens`. Until a release of that library reads `axisBehavior`, header items stay on `automatic`. The bottom toolbar applies `axisBehavior` without that release.
+
 ## Common problems
 
 <Collapsible summary="Liquid glass toolbar buttons flicker in dark mode on iOS 26">
