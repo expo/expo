@@ -140,7 +140,10 @@ it('keeps extra params as query params', () => {
           routes: [
             {
               name: 'bar',
-              path: '/bar',
+              params: {
+                extra: 'param',
+              },
+              path: '/bar?extra=param',
             },
           ],
         },

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix redirects so dynamic segments match the URL and query strings are preserved. ([#52711](https://github.com/expo/expo/pull/52711) by [@itisrmk](https://github.com/itisrmk))
+
 ### 💡 Others
 
 ## 57.0.30 — 2026-11-05

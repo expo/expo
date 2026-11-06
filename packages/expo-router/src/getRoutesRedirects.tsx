@@ -40,7 +40,7 @@ export function applyRedirects(
 export function getRedirectModule(redirectConfig: RedirectConfig) {
   return {
     default: function RedirectComponent() {
-      const pathname = require('./hooks').usePathname();
+      const path = require('./hooks').useRouteInfo().pathnameWithParams;
 
       const isExternal = shouldLinkExternally(redirectConfig.destination);
 
@@ -59,7 +59,7 @@ export function getRedirectModule(redirectConfig: RedirectConfig) {
         return null;
       }
 
-      const href = convertRedirect(pathname, redirectConfig);
+      const href = convertRedirect(path, redirectConfig);
 
       return createElement(require('./link/Link').Redirect, {
         href,
@@ -71,8 +71,11 @@ export function getRedirectModule(redirectConfig: RedirectConfig) {
 export function convertRedirect(path: string, config: RedirectConfig) {
   const params: Record<string, string | string[]> = {};
 
-  const parts = path.split('/');
-  const sourceParts = config.source.split('/');
+  const suffixIndex = path.search(/[?#]/);
+  const pathname = suffixIndex === -1 ? path : path.slice(0, suffixIndex);
+  const suffix = suffixIndex === -1 ? '' : path.slice(suffixIndex);
+  const parts = pathname.split('/').filter(Boolean);
+  const sourceParts = config.source.split('/').filter(Boolean);
 
   for (const [index, sourcePart] of sourceParts.entries()) {
     const dynamicName = matchDynamicName(sourcePart);
@@ -87,7 +90,7 @@ export function convertRedirect(path: string, config: RedirectConfig) {
     }
   }
 
-  return mergeVariablesWithPath(config.destination, params);
+  return `/${mergeVariablesWithPath(config.destination, params)}${suffix}`;
 }
 
 export function mergeVariablesWithPath(path: string, params: Record<string, string | string[]>) {
