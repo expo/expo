@@ -50,6 +50,13 @@ extension SharedObject: JavaScriptDecodable, JavaScriptEncodable {
     guard let appContext = AppContext.from(runtime: runtime) else {
       throw Exceptions.AppContextNotFound()
     }
+    // A runtime other than the main runtime, such as the worklet UI runtime, gets a JS object of its own. So does
+    // the main runtime when the native state of the object belongs to another runtime.
+    if let mainRuntime = try? appContext.runtime,
+      runtime.id != mainRuntime.id || value.unreleasedNativeState?.isOwned(by: runtime) == false
+    {
+      return try appContext.javaScriptObject(for: value, in: copy runtime).takeValue()
+    }
     return try DynamicSharedObjectType(innerType: Self.self).castToJS(value, appContext: appContext)
   }
 }

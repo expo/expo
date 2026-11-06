@@ -99,7 +99,8 @@ public final class SharedObjectRegistry: Sendable {
   internal func add(
     native nativeObject: SharedObject,
     javaScript jsObject: borrowing JavaScriptObject,
-    inheritsBaseClass: Bool = false
+    inheritsBaseClass: Bool = false,
+    in runtime: JavaScriptRuntime? = nil
   ) -> SharedObjectId {
     // Reuse the native state, and with it the ID, only while a live JS object in this runtime holds it.
     // That JS object keeps the C++ native state alive until `setNativeState` attaches it to `jsObject`.
@@ -107,7 +108,7 @@ public final class SharedObjectRegistry: Sendable {
     // apply to `jsObject`, so the native object gets a new native state and ID.
     // Loaded once: each read of the weak reference to the app context costs an atomic operation.
     let appContext = self.appContext
-    let runtime = try? appContext?.runtime
+    let runtime = runtime ?? (try? appContext?.runtime)
     let pairedObject = pairedObjectHoldingNativeState(of: nativeObject, in: runtime)
     let existingNativeState = pairedObject != nil ? nativeObject.nativeState : nil
     let id = existingNativeState != nil ? nativeObject.sharedObjectId : pullNextId()
@@ -136,8 +137,9 @@ public final class SharedObjectRegistry: Sendable {
     // inherits from `expo::EventEmitter::NativeState`, later `addListener` calls see an
     // existing native state (via the inheritance check) and don't overwrite it.
     let nativeState = existingNativeState ?? {
+      // Runs when the JS object in the owner runtime is collected.
       let releaser: ObjectReleaser = { [weak self] id in
-        self?.delete(id)
+        self?.ownerObjectWasCollected(id)
       }
       let state = SharedObjectNativeState(native: nativeObject, ownerRuntimeId: runtime?.id) { context, deallocator in
         return SharedObjectUtils.makeSharedObjectNativeStatePtr(
@@ -174,6 +176,18 @@ public final class SharedObjectRegistry: Sendable {
     }
 
     return id
+  }
+
+  /// Deletes the pair with the given ID when its JS object in the owner runtime is collected, unless the native
+  /// object still has JS objects in other runtimes. The last of them deletes the pair then.
+  private func ownerObjectWasCollected(_ id: SharedObjectId) {
+    let nativeState = state.withLock { state in
+      return state.pairs[id]
+    }
+    if let nativeState, !nativeState.ownerObjectWasCollected() {
+      return
+    }
+    delete(id)
   }
 
   /**

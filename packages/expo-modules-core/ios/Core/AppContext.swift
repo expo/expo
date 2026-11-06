@@ -590,11 +590,6 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   private func installModuleClasses(in runtime: JavaScriptRuntime) throws {
     let coreObject = try runtime.global().getPropertyAsObject(globalCoreObjectPropertyName)
     let sharedObjectClass = try coreObject.getPropertyAsObject("SharedObject")
-    let sharedObjectBaseProto = sharedObjectClass.getProperty("prototype")
-
-    // Prototypes are cached behind `JavaScriptRef` because `JavaScriptObject` is ~Copyable and
-    // cannot be a Dictionary value.
-    let prototypeCache = WorkletPrototypeCache()
 
     // Called by the worklet serializer's `unpack` to get the JS object of a shared object in this runtime.
     // Takes just the objectId — looks up the native type, lazily builds the prototype on first use.
@@ -617,27 +612,55 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
         throw SharedObjectNotFoundException(String(objectId))
       }
       let nativeType = type(of: nativeState.native)
-      let typeId = ObjectIdentifier(nativeType)
-
       let instance = try nativeState.javaScriptObject(in: runtime, objectId: objectId) {
-        if let cachedInstance = prototypeCache.store[typeId]?.withUnwrappedValue({ (prototype: borrowing JavaScriptObject) in
-          runtime.createObject(prototype: prototype)
-        }) {
-          return cachedInstance
-        }
-        let built = try self.buildWorkletPrototype(
-          for: nativeType,
-          in: runtime,
-          basePrototype: sharedObjectBaseProto.getObject()
-        )
-        let instance = runtime.createObject(prototype: built)
-        prototypeCache.store[typeId] = built.ref()
-        return instance
+        return try self.newSharedObjectInstance(of: nativeType, in: runtime)
       }
       result.emplace(instance.asValue())
     }
 
     sharedObjectClass.setProperty("__resolveInWorklet", value: resolveInWorklet.asObject())
+  }
+
+  /// Returns the JS object of the shared object in the given runtime, and creates one when there is none. A native
+  /// object that has no native state yet gets one with the given runtime as its owner runtime.
+  @JavaScriptActor
+  internal func javaScriptObject(for sharedObject: SharedObject, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+    if let jsObject = sharedObject.object(in: runtime) {
+      return jsObject
+    }
+    if let nativeState = sharedObject.unreleasedNativeState, !nativeState.isOwned(by: runtime) {
+      return try nativeState.javaScriptObject(in: runtime, objectId: sharedObject.sharedObjectId) {
+        return try newSharedObjectInstance(of: type(of: sharedObject), in: runtime)
+      }
+    }
+    let jsObject = try newSharedObjectInstance(of: type(of: sharedObject), in: runtime)
+    sharedObjectRegistry.add(native: sharedObject, javaScript: jsObject, inheritsBaseClass: true, in: runtime)
+    return jsObject
+  }
+
+  /// Creates a JS object with the prototype of the shared object class in the given runtime. Not paired yet.
+  @JavaScriptActor
+  private func newSharedObjectInstance(of nativeType: SharedObject.Type, in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+    if let mainRuntime = _runtime, runtime === mainRuntime {
+      let isSharedRef = nativeType is AnySharedRef.Type
+      return try newObject(nativeClassId: ObjectIdentifier(nativeType)) ?? mainRuntime.createBaseSharedObject(isSharedRef: isSharedRef)
+    }
+    let prototypes = runtime.cached(sharedObjectPrototypesCacheKey, SharedObjectPrototypes.init)
+    let typeId = ObjectIdentifier(nativeType)
+
+    if let instance = prototypes.store[typeId]?.withUnwrappedValue({ (prototype: borrowing JavaScriptObject) in
+      runtime.createObject(prototype: prototype)
+    }) {
+      return instance
+    }
+    let basePrototype = try runtime.global()
+      .getPropertyAsObject(globalCoreObjectPropertyName)
+      .getPropertyAsObject("SharedObject")
+      .getPropertyAsObject("prototype")
+    let prototype = try buildWorkletPrototype(for: nativeType, in: runtime, basePrototype: basePrototype)
+    let instance = runtime.createObject(prototype: prototype)
+    prototypes.store[typeId] = prototype.ref()
+    return instance
   }
 
   /// Builds the worklet prototype for a native shared object class, from the `ClassDefinition` of a module
@@ -935,9 +958,13 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
  `JavaScriptValue.Ref` and rehydrate a JavaScriptObject on use.
  */
 @JavaScriptActor
-private final class WorkletPrototypeCache {
+/// The prototypes of shared object classes in a runtime other than the main runtime, by native class. Prototypes
+/// are kept behind `JavaScriptRef` because `JavaScriptObject` is ~Copyable and cannot be a Dictionary value.
+private final class SharedObjectPrototypes {
   var store: [ObjectIdentifier: JavaScriptObject.Ref] = [:]
 }
+
+private let sharedObjectPrototypesCacheKey = JavaScriptRuntime.Cache.Key<SharedObjectPrototypes>()
 
 // MARK: - Public exceptions
 

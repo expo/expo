@@ -476,4 +476,56 @@ private struct MacroSharedObjectTests {
     try attachedRuntime.eval("expo.SharedObject.__resolveInWorklet(\(id)).release()")
     #expect(nativeObject.sharedObjectId == 0)
   }
+
+  @Test
+  func `keeps the native object while an attached runtime has its JS object`() throws {
+    let id = try createCounter()
+    let nativeObject = try SharedObject.native(from: try runtime.eval("counter").asObject())
+    let nativeState = try #require(nativeObject.nativeState)
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.eval("attachedCounter = expo.SharedObject.__resolveInWorklet(\(id))")
+
+    // Collect the JS object in the main runtime.
+    let mainRuntime = try runtime
+    try mainRuntime.eval("counter = undefined")
+    try mainRuntime.execute {
+      mainRuntime.collectGarbage { nativeState.javaScriptObject(in: mainRuntime) == nil }
+    }
+    #expect(nativeObject.sharedObjectId == id)
+    #expect(try attachedRuntime.eval("attachedCounter.increment(1)").asInt() == 2)
+  }
+
+  @Test
+  func `releases the native object when the JS objects of all runtimes are collected`() throws {
+    let id = try createCounter()
+    let nativeObject = try SharedObject.native(from: try runtime.eval("counter").asObject())
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.eval("attachedCounter = expo.SharedObject.__resolveInWorklet(\(id))")
+
+    let mainRuntime = try runtime
+    try mainRuntime.eval("counter = undefined")
+    try mainRuntime.execute {
+      mainRuntime.collectGarbage()
+    }
+    try attachedRuntime.eval("attachedCounter = undefined")
+    try attachedRuntime.execute {
+      attachedRuntime.collectGarbage { nativeObject.sharedObjectId == 0 }
+    }
+    #expect(nativeObject.sharedObjectId == 0)
+  }
+
+  @Test
+  func `returns a new shared object to an attached runtime`() throws {
+    let id = try createCounter()
+    let attachedRuntime = try appContext.addRuntime()
+    let result = try attachedRuntime.eval(
+      """
+      attachedCounter = expo.SharedObject.__resolveInWorklet(\(id))
+      added = attachedCounter.added(attachedCounter)
+      added.increment(1)
+      """)
+    #expect(try result.asInt() == 3)
+    let addedObject = try attachedRuntime.eval("added").asObject()
+    #expect(try SharedObject.native(from: addedObject) is MacroCounter)
+  }
 }

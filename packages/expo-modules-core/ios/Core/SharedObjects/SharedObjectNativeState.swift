@@ -12,8 +12,8 @@ import ExpoModulesJSI
 /// a JS object, including its event listeners, never holds values of another runtime. These runtime native
 /// states point to the owner's native state, which tracks the release of the native object.
 ///
-/// `@unchecked Sendable`: the native object and the owner are immutable. The JS objects are read and written
-/// only on the thread of the runtime they belong to. The release flag can be read on any thread, but it only
+/// `@unchecked Sendable`: the native object and the owner are immutable, and the lifetime is behind a lock. The
+/// JS objects are read and written only on the thread of the runtime they belong to. The release flag can be read on any thread, but it only
 /// changes from `false` to `true` and nothing is freed when it changes.
 internal final class SharedObjectNativeState: JavaScriptNativeState, @unchecked Sendable {
   internal let native: SharedObject
@@ -30,6 +30,18 @@ internal final class SharedObjectNativeState: JavaScriptNativeState, @unchecked 
   private var ownerPairedObject: JavaScriptWeakObject?
 
   private var isReleasedFlag = false
+
+  /// Tracks the JS objects of the native object in all runtimes, so the native object is released only
+  /// when the last of them is collected. Used only by the owner's native state.
+  private let lifetime = Mutex(Lifetime())
+
+  private struct Lifetime {
+    /// The number of JS objects in runtimes other than the owner runtime that are alive.
+    var otherRuntimeObjects = 0
+
+    /// Whether the JS object in the owner runtime was collected.
+    var isOwnerObjectCollected = false
+  }
 
   /// Whether the native object was released. A JS object can keep its native state after the release
   /// (for example a frozen one, whose native state can't be reset), so lookups check this flag.
@@ -59,10 +71,35 @@ internal final class SharedObjectNativeState: JavaScriptNativeState, @unchecked 
         contextDeallocator: deallocator
       )
     }
+    owner.lifetime.withLock { lifetime in
+      lifetime.otherRuntimeObjects += 1
+    }
+    // Runs when the JS object of this runtime is collected or released, on the thread that frees it.
+    setDeallocator { nativeState in
+      guard let owner = (nativeState as? SharedObjectNativeState)?.owner else {
+        return
+      }
+      let isLast = owner.lifetime.withLock { lifetime in
+        lifetime.otherRuntimeObjects -= 1
+        return lifetime.otherRuntimeObjects == 0 && lifetime.isOwnerObjectCollected
+      }
+      if isLast {
+        owner.native.appContext?.sharedObjectRegistry.delete(objectId)
+      }
+    }
   }
 
   internal func markReleased() {
     isReleasedFlag = true
+  }
+
+  /// Records that the JS object in the owner runtime was collected. Returns whether the native object can be
+  /// released, which is when no other runtime has a JS object of it. Otherwise, the last of them releases it.
+  internal func ownerObjectWasCollected() -> Bool {
+    return lifetime.withLock { lifetime in
+      lifetime.isOwnerObjectCollected = true
+      return lifetime.otherRuntimeObjects == 0
+    }
   }
 
   /// Records `jsObject` as the native object's JS counterpart in `runtime`. The caller is responsible
@@ -111,6 +148,11 @@ internal final class SharedObjectNativeState: JavaScriptNativeState, @unchecked 
     jsObject.setNativeState(runtimeNativeState)
     runtime.cached(pairedObjectsCacheKey, PairedObjects.init).set(jsObject, for: self)
     return jsObject
+  }
+
+  /// Whether this is the owner's native state and the given runtime is its owner runtime.
+  internal func isOwned(by runtime: borrowing JavaScriptRuntime) -> Bool {
+    return owner == nil && runtime.id == ownerRuntimeId
   }
 
   /// Whether `nativeState` is this native state, or a native state of another runtime that points to it.
