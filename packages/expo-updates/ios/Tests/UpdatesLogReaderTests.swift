@@ -160,6 +160,58 @@ struct UpdatesLogReaderTests {
 
   @Test
   @MainActor
+  func `a keyed warning has its key, values and filled template`() async throws {
+    let epoch = Date()
+
+    logger.warn(
+      .reaperAssetDeleteFailed,
+      cause: UpdatesError.remoteAppLoaderAssetMissingUrl,
+      values: ["path": "/tmp/a.png"],
+      updateId: "myUpdateId"
+    )
+    try await Task.sleep(for: .seconds(0.1))
+
+    let entry = try #require(
+      logReader.getLogEntries(newerThan: epoch).compactMap { UpdatesLogEntry.create(from: $0) }.last
+    )
+    let cause = UpdatesError.remoteAppLoaderAssetMissingUrl.localizedDescription
+    #expect(entry.key == "reaper.assetDeleteFailed")
+    #expect(entry.values == ["path": "/tmp/a.png", "cause": cause])
+    #expect(entry.message == "Error deleting asset at /tmp/a.png: \(cause)")
+    #expect(entry.code == "None")
+    #expect(entry.level == "warn")
+    #expect(entry.updateId == "myUpdateId")
+
+    let dict = entry.asDict()
+    #expect(dict["key"] as? String == "reaper.assetDeleteFailed")
+    #expect(dict["values"] as? [String: String] == ["path": "/tmp/a.png", "cause": cause])
+  }
+
+  @Test
+  func `an entry written before log message keys has no key or values`() throws {
+    let line = #"{"timestamp":1700000000000,"message":"Old message","code":"None","level":"warn"}"#
+
+    let entry = try #require(UpdatesLogEntry.create(from: line))
+
+    #expect(entry.message == "Old message")
+    #expect(entry.key == nil)
+    #expect(entry.values == nil)
+    #expect(entry.asDict()["key"] == nil)
+    #expect(entry.asDict()["values"] == nil)
+  }
+
+  @Test
+  func `fill leaves a placeholder with no value and does not fill values`() {
+    let filled = UpdatesLogger.fill(
+      "Asset {assetKey} failed: {cause} ({reason})",
+      with: ["assetKey": "{cause}", "cause": "timeout"]
+    )
+
+    #expect(filled == "Asset {cause} failed: timeout ({reason})")
+  }
+
+  @Test
+  @MainActor
   func `TimerWorks`() async throws {
     // Mark the date
     let epoch = Date()

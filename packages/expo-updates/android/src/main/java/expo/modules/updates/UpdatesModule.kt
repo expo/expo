@@ -216,6 +216,17 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
               if (entry.stacktrace != null) {
                 putStringArray("stacktrace", entry.stacktrace.toTypedArray())
               }
+              if (entry.key != null) {
+                putString("key", entry.key)
+              }
+              if (entry.values != null) {
+                putBundle(
+                  "values",
+                  Bundle().apply {
+                    entry.values.forEach { (name, value) -> putString(name, value) }
+                  }
+                )
+              }
             }
           }
       }
