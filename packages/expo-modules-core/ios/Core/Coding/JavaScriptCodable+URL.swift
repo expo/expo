@@ -47,8 +47,9 @@ internal func urlFromString(_ value: String) throws -> URL {
   throw UrlContainsInvalidCharactersException()
 }
 
-internal class UrlContainsInvalidCharactersException: Exception {
+internal class UrlContainsInvalidCharactersException: Exception, @unchecked Sendable {
   override var reason: String {
-    return "Unable to create a URL object from the given string, make sure to percent-encode these characters: \(urlAllowedCharacters)"
+    return
+      "Unable to create a URL object from the given string, make sure to percent-encode these characters: \(urlAllowedCharacters)"
   }
 }

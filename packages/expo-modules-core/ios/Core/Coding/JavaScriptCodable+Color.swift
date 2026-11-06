@@ -306,8 +306,8 @@ private func colorToString(_ color: UIColor) -> String {
       Int((a * 255).rounded())
     )
   }
-  #endif
   return "#00000000"
+  #endif
 }
 
 // MARK: - Platform Color Helpers
