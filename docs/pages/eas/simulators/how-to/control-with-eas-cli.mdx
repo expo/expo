@@ -96,13 +96,18 @@ Hinge actions return an error on a device that does not fold.
 
 ## Install an app
 
-`app.install` uploads a file from your computer and installs it on the simulator. Pass an **.ipa** file that contains an iOS Simulator build, not a device build:
+`app.install` uploads a file from your computer and installs it on the simulator. Pass a **.tar.gz** or **.tgz** file that contains an iOS Simulator **.app**.
 
-<Terminal cmd={['$ eas simulator:control app.install ./MyApp.ipa --id <session-id>']} />
+The upload accepts a file, not a folder. To install a **.app** folder, compress it first:
 
-The upload accepts a file, not a folder. To install a **.app** folder, put it in a **Payload** folder and compress that folder into an **.ipa** file:
+<Terminal
+  cmd={[
+    '$ tar -czf MyApp.app.tar.gz -C ./build/Debug-iphonesimulator MyApp.app',
+    '$ eas simulator:control app.install ./MyApp.app.tar.gz --id <session-id>',
+  ]}
+/>
 
-<Terminal cmd={['$ mkdir Payload && cp -R MyApp.app Payload/', '$ zip -qry MyApp.ipa Payload']} />
+The simulator does not install an **.ipa** or a **.zip** file, even one that contains an iOS Simulator build.
 
 A controller can also install a **.app** folder. See [Install a local build](/eas/simulators/how-to/install-your-app/#install-a-local-build).
 
