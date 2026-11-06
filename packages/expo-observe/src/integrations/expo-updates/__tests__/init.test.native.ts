@@ -41,6 +41,15 @@ function entry(overrides: Partial<UpdatesLogEntry> = {}): UpdatesLogEntry {
   };
 }
 
+function errorRecoveryEntry(error: string): UpdatesLogEntry {
+  return entry({
+    message: `ErrorRecovery: a JS exception was encountered: ${error}`,
+    code: 'JSRuntimeError',
+    key: 'errorRecovery.jsException',
+    values: { error },
+  });
+}
+
 async function runIntegration(
   entries: UpdatesLogEntry[],
   config: Parameters<ReturnType<typeof loadInit>['initExpoUpdatesIntegration']>[0] = true
@@ -100,42 +109,39 @@ describe('initExpoUpdatesIntegration', () => {
   });
 
   it('reports error recovery entries with their own type', async () => {
-    await runIntegration([
-      entry({
-        message: 'ErrorRecovery fatal exception: Fatal error: TypeError',
-        code: 'JSRuntimeError',
-      }),
-      entry({ message: 'ErrorRecovery: exception encountered: boom', code: 'JSRuntimeError' }),
-    ]);
+    await runIntegration([errorRecoveryEntry('TypeError'), errorRecoveryEntry('boom')]);
 
     expect(reportedErrorTypes()).toEqual(['updates.error_recovery', 'updates.error_recovery']);
     expect(reportedErrorMessages()).toEqual([
-      'ErrorRecovery fatal exception: Fatal error: TypeError',
-      'ErrorRecovery: exception encountered: boom',
+      'ErrorRecovery: a JS exception was encountered: TypeError',
+      'ErrorRecovery: a JS exception was encountered: boom',
     ]);
   });
 
   it('does not report the entry that error recovery logs before it crashes the app', async () => {
     await runIntegration([
+      errorRecoveryEntry('boom'),
       entry({
-        message: 'ErrorRecovery fatal exception: Fatal error: boom',
-        code: 'JSRuntimeError',
-      }),
-      entry({ message: 'ErrorRecovery: could not recover from error, crashing' }),
-      entry({
-        message: 'UpdatesErrorRecovery: could not recover from error, crashing: boom',
-        code: 'Unknown',
+        message: 'ErrorRecovery: could not recover from error, crashing',
+        key: 'errorRecovery.crash',
       }),
     ]);
 
     expect(reportedErrorTypes()).toEqual(['updates.error_recovery']);
   });
 
-  it('reports a JSRuntimeError entry without the error recovery prefix as an error', async () => {
-    await runIntegration([entry({ message: 'Other runtime error', code: 'JSRuntimeError' })]);
+  it('reports a JSRuntimeError entry without the error recovery key as an error', async () => {
+    await runIntegration([
+      entry({
+        message: 'ErrorRecovery: a JS exception was encountered: boom',
+        code: 'JSRuntimeError',
+      }),
+    ]);
 
     expect(reportedErrorTypes()).toEqual(['updates.error']);
-    expect(reportedErrorMessages()).toEqual(['JSRuntimeError: Other runtime error']);
+    expect(reportedErrorMessages()).toEqual([
+      'JSRuntimeError: ErrorRecovery: a JS exception was encountered: boom',
+    ]);
   });
 
   it('ignores warnings by default and entries below the warning level', async () => {
@@ -347,10 +353,10 @@ describe('initExpoUpdatesIntegration', () => {
     });
 
     it('always reports error recovery entries', async () => {
-      await runIntegration(
-        [entry({ message: 'ErrorRecovery: exception encountered: boom', code: 'JSRuntimeError' })],
-        { ignoredCodes: ['JSRuntimeError'], shouldReport: () => false }
-      );
+      await runIntegration([errorRecoveryEntry('boom')], {
+        ignoredCodes: ['JSRuntimeError'],
+        shouldReport: () => false,
+      });
 
       expect(reportedErrorTypes()).toEqual(['updates.error_recovery']);
     });
@@ -408,10 +414,7 @@ describe('initExpoUpdatesIntegration', () => {
       const errors = Array.from({ length: 20 }, (_, i) =>
         entry({ timestamp: NOW - 30_000 + i, message: `e${i}` })
       );
-      await runIntegration([
-        ...errors,
-        entry({ message: 'ErrorRecovery: exception encountered: boom', code: 'JSRuntimeError' }),
-      ]);
+      await runIntegration([...errors, errorRecoveryEntry('boom')]);
 
       expect(mockAppMetrics.reportError).toHaveBeenCalledTimes(21);
       expect(reportedErrorTypes().at(-1)).toBe('updates.error_recovery');

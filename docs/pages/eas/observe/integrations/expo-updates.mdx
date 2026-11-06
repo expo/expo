@@ -14,11 +14,9 @@ import { Terminal } from '~/ui/components/Snippet';
 <Prerequisites>
   <Requirement title="Expo SDK 58 or later">
     The integration is available in `expo-observe` version 58.0.17 and later. Use `expo-updates`
-    version 58.0.19 or later on Android and iOS. With an earlier version on Android, the integration
-    reports a JS error that error recovery handled as `updates.error` with the `Unknown` code, not
-    as `updates.error_recovery`. With an earlier version on iOS, the integration reports emergency
-    launch and initialization errors as `updates.error_recovery`, and `ignoredCodes` and
-    `shouldReport` cannot skip them.
+    version 58.1.0 or later. An earlier version logs entries without a key, so the integration
+    reports a JS error that error recovery handled as `updates.error`, not as
+    `updates.error_recovery`.
   </Requirement>
   <Requirement title="An app already using EAS Observe">
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
@@ -79,9 +77,8 @@ Observe.configure({
   integrations: {
     'expo-updates': {
       reportWarnings: true,
-      ignoredCodes: ['NoUpdatesAvailable'],
-      shouldReport: entry =>
-        !entry.message.includes('The Internet connection appears to be offline'),
+      ignoredCodes: ['UpdateServerUnreachable'],
+      shouldReport: entry => entry.key !== 'reaper.assetDeleteFailed',
     },
   },
 });
@@ -89,11 +86,11 @@ Observe.configure({
 
 - `reportWarnings`: Whether the integration also reports warnings as `updates.warning` events. The default is `false`.
 - `ignoredCodes`: Log entry codes that the integration does not report. The default is an empty list.
-- `shouldReport`: A function that gets each log entry and returns `false` to skip it. It runs after `ignoredCodes`. If the function throws, the integration reports the entry.
+- `shouldReport`: A function that gets each log entry and returns `false` to skip it. It runs after `ignoredCodes`. If the function throws, the integration reports the entry. Each warning and error entry has a `key`, such as `remote.assetDownloadFailed`, that names what failed and stays the same when the message text changes, and `values` with the parts of the message that change, such as `cause`.
 
 `ignoredCodes` and `shouldReport` do not apply to JS errors that error recovery handled.
 
-Some errors are common and expected, for example a failed update check when the device is offline. `expo-updates` logs network errors with codes that it also uses for other errors, such as `UpdateFailedToLoad` on Android and `Unknown` on iOS. On iOS, the message includes the network error, so a `shouldReport` function can check the message to skip only the network errors. On Android, the message does not include the network error.
+Some errors are common and expected, for example a failed update check when the device is offline. `expo-updates` logs an error when it cannot reach the update server with the `UpdateServerUnreachable` code, so add that code to `ignoredCodes` to skip these errors.
 
 ## View errors and events
 

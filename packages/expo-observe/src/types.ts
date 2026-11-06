@@ -306,6 +306,16 @@ export type ObserveExpoUpdatesLogEntry = {
    * A native Android or iOS stack trace.
    */
   stacktrace?: string[];
+  /**
+   * The key of the event that a warning or error entry logs, such as `remote.assetDownloadFailed`.
+   * The key stays the same when the text of the message changes, so `shouldReport` can match on
+   * it. The same values as `UpdatesLogMessageKey` in `expo-updates`.
+   */
+  key?: string;
+  /**
+   * The values that fill the message template of the key, such as `cause` or `assetKey`.
+   */
+  values?: Record<string, string>;
 };
 
 export type ObserveExpoUpdatesIntegrationConfig = {
@@ -318,15 +328,15 @@ export type ObserveExpoUpdatesIntegrationConfig = {
   reportWarnings?: boolean;
   /**
    * Log entry codes that the integration does not report. For example, `expo-updates` logs a
-   * network error during an update check with the `Unknown` code on iOS. This option does not
-   * apply to JS errors that error recovery handled.
+   * network error with the `UpdateServerUnreachable` code. This option does not apply to JS errors
+   * that error recovery handled.
    *
    * @default []
    */
   ignoredCodes?: ObserveExpoUpdatesLogEntryCode[];
   /**
    * A function that decides whether the integration reports a log entry. Return `false` to skip
-   * the entry, for example by its message. It runs after `ignoredCodes`, and it does not run for JS
+   * the entry, for example by its `key`. It runs after `ignoredCodes`, and it does not run for JS
    * errors that error recovery handled. If the function throws, the integration reports the entry.
    * The function runs only in JS, so `getIntegrations()`, `registerIntegration` and the
    * `configure` event do not include it.
