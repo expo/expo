@@ -8,6 +8,7 @@ import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { learnMore } from '../utils/link';
+import { withProgramStatus } from '../utils/programStatus';
 import { joinWithCommasAnd } from '../utils/strings';
 import { applyPluginsAsync } from './applyPlugins';
 import { checkPackagesAsync } from './checkPackages';
@@ -194,11 +195,13 @@ export async function installPackagesAsync(
   }
 
   const done = event.span();
-  if (dev) {
-    await packageManager.addDevAsync([...packageManagerArguments, ...versioning.packages]);
-  } else {
-    await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
-  }
+  await withProgramStatus({ state: 'working', msg: 'Installing packages' }, async () => {
+    if (dev) {
+      await packageManager.addDevAsync([...packageManagerArguments, ...versioning.packages]);
+    } else {
+      await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
+    }
+  });
   done('done', {
     packages: versioning.packages,
     dev: !!dev,
