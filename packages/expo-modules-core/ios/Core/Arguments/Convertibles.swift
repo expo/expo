@@ -18,27 +18,7 @@ extension URL: Convertible {
       }
       throw Conversions.ConvertingException<URL>(value)
     }
-    return try convert(fromString: value)
-  }
-
-  internal static func convert(fromString value: String) throws -> URL {
-    // First we try to create a URL without extra encoding, as it came.
-    if let url = convertToUrl(string: value) {
-      return url
-    }
-
-    // File path doesn't need to be percent-encoded.
-    if isFileUrlPath(value) {
-      return URL(fileURLWithPath: value)
-    }
-
-    // If we get here, the string is not the file url and may require percent-encoding characters that are not URL-safe according to RFC 3986.
-    if let encodedValue = percentEncodeUrlString(value), let url = convertToUrl(string: encodedValue) {
-      return url
-    }
-
-    // If it still fails to create the URL object, the string possibly contains characters that must be explicitly percent-encoded beforehand.
-    throw UrlContainsInvalidCharactersException()
+    return try url(fromString: value)
   }
 
   public static func convertResult(_ result: Any, appContext: AppContext) throws -> Any {
@@ -46,12 +26,6 @@ extension URL: Convertible {
       return url.absoluteString
     }
     return result
-  }
-}
-
-internal class UrlContainsInvalidCharactersException: Exception {
-  override var reason: String {
-    return "Unable to create a URL object from the given string, make sure to percent-encode these characters: \(urlAllowedCharacters)"
   }
 }
 
