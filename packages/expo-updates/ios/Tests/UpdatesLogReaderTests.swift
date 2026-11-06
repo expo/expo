@@ -64,7 +64,7 @@ struct UpdatesLogReaderTests {
   @MainActor
   func `timestamps have millisecond precision`() async throws {
     let before = UInt(Date().timeIntervalSince1970 * 1000)
-    logger.warn(message: "Precision message", code: .none)
+    logger.info(message: "Precision message")
     try await Task.sleep(for: .seconds(0.1))
     let after = UInt(Date().timeIntervalSince1970 * 1000)
 
@@ -120,10 +120,15 @@ struct UpdatesLogReaderTests {
     let epoch = Date()
 
     // Write a log message
-    logger.error(cause: UpdatesError.fileDownloaderRemoteUpdateMissingBody, code: .noUpdatesAvailable)
+    logger.error(.remoteFetchFailed, cause: UpdatesError.fileDownloaderRemoteUpdateMissingBody)
 
     // Write another log message
-    logger.warn(message: "Warning message", code: .assetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
+    logger.warn(
+      .remoteAssetDownloadFailed,
+      values: ["assetKey": "myAssetId", "cause": "Warning message"],
+      updateId: "myUpdateId",
+      assetId: "myAssetId"
+    )
 
     try await Task.sleep(for: .seconds(0.1))
 
@@ -139,8 +144,8 @@ struct UpdatesLogReaderTests {
     let logEntry = UpdatesLogEntry.create(from: logEntryText)
     let timestamp = Double(logEntry!.timestamp / 1_000)
     #expect(abs(timestamp - epoch.timeIntervalSince1970) < 120)
-    #expect(logEntry?.message == "Missing body in remote update")
-    #expect(logEntry?.code == "NoUpdatesAvailable")
+    #expect(logEntry?.message == "Failed to download new update: Missing body in remote update")
+    #expect(logEntry?.code == "UpdateFailedToLoad")
     #expect(logEntry?.level == "error")
     #expect(logEntry?.updateId == nil)
     #expect(logEntry?.assetId == nil)
@@ -150,7 +155,7 @@ struct UpdatesLogReaderTests {
     let logEntry2 = UpdatesLogEntry.create(from: logEntryText2)
     let timestamp2 = Double(logEntry2!.timestamp / 1_000)
     #expect(abs(timestamp2 - epoch.timeIntervalSince1970) < 120)
-    #expect(logEntry2?.message == "Warning message")
+    #expect(logEntry2?.message == "Failed to download asset myAssetId: Warning message")
     #expect(logEntry2?.code == "AssetsFailedToLoad")
     #expect(logEntry2?.level == "warn")
     #expect(logEntry2?.updateId == "myUpdateId")

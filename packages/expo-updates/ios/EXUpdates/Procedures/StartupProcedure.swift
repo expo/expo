@@ -113,7 +113,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
 
     delegate?.startupProcedureDidLaunch(self)
 
-    ErrorRecovery.writeErrorOrExceptionToLog(error, logger, code: .initializationError)
+    ErrorRecovery.writeErrorOrExceptionToLog(error, logger, message: .errorRecoveryStartupFailed)
   }
 
   // MARK: - AppLoaderTaskDelegate
@@ -222,9 +222,9 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
         self.procedureContext.processStateEvent(.download)
         self.procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
       case .restarting:
-        // The machine accepts no events while restarting, so there is nowhere to report this. The
-        // error is already recorded in the log above.
-        logger.warn(message: "Background update failed while restarting: \(error.localizedDescription)")
+        // The machine accepts no events while restarting. errorForLoadFailure above logged the
+        // failure.
+        break
       }
     case .updateAvailable:
       remoteLoadStatus = .NewUpdateLoaded
@@ -335,15 +335,14 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       }
 
       self.logger.warn(
-        message: "AppController markFailedLaunchForUpdate",
-        code: .unknown,
-        updateId: launchedUpdate.loggingId(),
-        assetId: nil
+        .startupMarkFailedLaunch,
+        values: ["updateId": launchedUpdate.loggingId()],
+        updateId: launchedUpdate.loggingId()
       )
       do {
         try self.database.incrementFailedLaunchCountForUpdate(launchedUpdate)
       } catch {
-        self.logger.warn(message: "Unable to mark update as failed in the local DB: \(error.localizedDescription)")
+        self.logger.warn(.startupLaunchCountUpdateFailed, cause: error, values: ["count": "failed"])
       }
     }
   }
@@ -361,7 +360,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       do {
         try self.database.incrementSuccessfulLaunchCountForUpdate(launchedUpdate)
       } catch {
-        self.logger.warn(message: "Failed to increment successful launch count for update: \(error.localizedDescription)")
+        self.logger.warn(.startupLaunchCountUpdateFailed, cause: error, values: ["count": "successful"])
       }
     }
   }

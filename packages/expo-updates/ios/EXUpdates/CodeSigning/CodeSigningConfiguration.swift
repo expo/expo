@@ -102,7 +102,7 @@ public final class CodeSigningConfiguration: NSObject {
       // note that a mismatched algorithm doesn't fail early. it still tries to verify the signature with the
       // algorithm specified in the configuration
       if signatureHeaderInfo.algorithm != self.algorithmFromMetadata {
-        logger.warn(message: "Key with alg=\(signatureHeaderInfo.algorithm) from signature does not match client configuration algorithm, continuing")
+        logger.warn(.systemCodeSigningAlgorithmMismatch, values: ["alg": "\(signatureHeaderInfo.algorithm)"])
       }
 
       certificateChain = try CertificateChain(certificateStrings: [embeddedCertificateString])
