@@ -2,6 +2,14 @@
 
 import CoreGraphics
 import ExpoModulesCore
+import UIKit
+
+/// The source image: a URL or a reference to an already loaded image.
+@Union
+internal enum ImageSource {
+  case url(URL)
+  case image(SharedRef<UIImage>)
+}
 
 /// Options for loading the source image.
 @Record
