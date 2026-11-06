@@ -4,7 +4,6 @@ import android.os.Build
 import android.os.ParcelFileDescriptor
 import expo.modules.kotlin.exception.Exceptions
 import java.io.File
-import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
 import java.nio.ByteBuffer

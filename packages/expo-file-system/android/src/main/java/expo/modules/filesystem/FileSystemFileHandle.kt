@@ -150,7 +150,11 @@ class FileSystemFileHandle private constructor(
       val buffer = ByteBuffer.allocateDirect(toRead)
       var readPosition = position
       while (buffer.hasRemaining()) {
-        val result = if (seekable) fileChannel.read(buffer, readPosition) else fileChannel.read(buffer)
+        val result = if (seekable) {
+          fileChannel.read(buffer, readPosition)
+        } else {
+          fileChannel.read(buffer)
+        }
         if (result == -1) {
           break
         }
