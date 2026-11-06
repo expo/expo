@@ -65,4 +65,28 @@ describe(isForbiddenOrigin, () => {
     expect(isForbiddenOrigin(request({ 'sec-fetch-site': 'cross-site' }), false)).toBe(false);
     expect(isForbiddenOrigin(request({ origin: 'https://evil.example' }), 'sec-only')).toBe(false);
   });
+  it('uses the configured public origin behind a TLS-terminating proxy', () => {
+    const input = new Request('http://app.example/login', {
+      method: 'POST',
+      headers: { origin: 'https://app.example', 'content-type': 'text/plain' },
+    });
+    expect(isForbiddenOrigin(input, true, 'https://app.example')).toBe(false);
+    expect(isForbiddenOrigin(input)).toBe(true);
+    expect(
+      isForbiddenOrigin(
+        new Request(input, { headers: { origin: 'https://evil.example' } }),
+        true,
+        'https://app.example'
+      )
+    ).toBe(true);
+    expect(isForbiddenOrigin(input, 'sec-only', 'https://other.example')).toBe(false);
+  });
+  it('allows the request target when the configured origin is malformed', () => {
+    expect(isForbiddenOrigin(request({ origin: 'https://app.example' }), true, 'not-a-url')).toBe(
+      false
+    );
+    expect(isForbiddenOrigin(request({ origin: 'https://evil.example' }), true, 'not-a-url')).toBe(
+      true
+    );
+  });
 });

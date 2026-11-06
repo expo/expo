@@ -65,6 +65,21 @@ describe(createRequestHandler, () => {
     expect((await createRequestHandler({ ...environment, checkOrigin: false })(crossSite)).status).toBe(404);
   });
 
+  it('uses the manifest origin for requests behind a proxy', async () => {
+    const handler = createRequestHandler({
+      getRoutesManifest: async () => ({
+        origin: 'https://app.example',
+        htmlRoutes: [], apiRoutes: [], notFoundRoutes: [], redirects: [], rewrites: [],
+      }),
+      getHtml: jest.fn(), getApiRoute: jest.fn(), getMiddleware: jest.fn(), getLoaderData: jest.fn(),
+    });
+    const response = await handler(new Request('http://app.example/login', {
+      method: 'POST',
+      headers: { origin: 'https://app.example', 'content-type': 'text/plain' },
+    }));
+    expect(response.status).toBe(404);
+  });
+
   it('returns streamed HTML responses for matched routes', async () => {
     const manifest: Manifest = {
       htmlRoutes: [
