@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix config-plugin ignore patterns on Windows in monorepos with hoisted dependencies by normalizing module paths before matching. ([#53095](https://github.com/expo/expo/pull/53095) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 - Drop the `glob` dependency and update `minimatch` to `^10.2.6`. ([#53091](https://github.com/expo/expo/pull/53091) by [@kitten](https://github.com/kitten))

@@ -28,7 +28,7 @@ async function runAsync(programName, args = []) {
     const config = await getConfig(projectRoot, { skipSDKVersionRequirement: true });
     const loadedModules = Object.keys(module_1.default._cache)
         .filter((modulePath) => !loadedModulesBefore.has(modulePath))
-        .map((modulePath) => path_1.default.relative(projectRoot, modulePath));
+        .map((modulePath) => (0, Path_1.toPosixPath)(path_1.default.relative(projectRoot, modulePath)));
     const ignoredPaths = [
         ...DEFAULT_CONFIG_LOADING_IGNORE_PATHS,
         ...(await loadIgnoredPathsAsync(ignoredFile)),

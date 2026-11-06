@@ -9,7 +9,7 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { DEFAULT_IGNORE_PATHS } from './Options';
-import { isIgnoredPath } from './utils/Path';
+import { isIgnoredPath, toPosixPath } from './utils/Path';
 
 async function runAsync(programName: string, args: string[] = []) {
   if (args.length < 1) {
@@ -30,7 +30,7 @@ async function runAsync(programName: string, args: string[] = []) {
 
   const loadedModules = Object.keys(module._cache)
     .filter((modulePath) => !loadedModulesBefore.has(modulePath))
-    .map((modulePath) => path.relative(projectRoot, modulePath));
+    .map((modulePath) => toPosixPath(path.relative(projectRoot, modulePath)));
 
   const ignoredPaths = [
     ...DEFAULT_CONFIG_LOADING_IGNORE_PATHS,
