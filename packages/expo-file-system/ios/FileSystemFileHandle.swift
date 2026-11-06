@@ -1,5 +1,6 @@
 import Foundation
 import ExpoModulesCore
+import System
 
 enum FileMode: String, Enumerable {
   /// Read-only
@@ -124,7 +125,7 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
     }
 
     // Read the descriptor once: `FileHandle.fileDescriptor` raises an ObjC exception after close.
-    let descriptor = handle.fileDescriptor
+    let descriptor = FileDescriptor(rawValue: handle.fileDescriptor)
     let fileSize = size ?? 0
     let available = position < fileSize ? Int(clamping: fileSize - position) : 0
     let toRead = max(0, min(length, available))
@@ -135,13 +136,15 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
 
     var total = 0
     try buffer.withUnsafeMutableBytes { raw in
-      guard let base = raw.baseAddress else {
-        return
-      }
       while total < toRead {
-        let count = pread(descriptor, base + total, toRead - total, off_t(position) + off_t(total))
-        if count < 0 {
-          throw UnableToReadHandleException(String(cString: strerror(errno)))
+        let count: Int
+        do {
+          count = try descriptor.read(
+            fromAbsoluteOffset: Int64(position) + Int64(total),
+            into: UnsafeMutableRawBufferPointer(rebasing: raw[total...])
+          )
+        } catch {
+          throw UnableToReadHandleException(String(describing: error))
         }
         if count == 0 {
           break
@@ -170,20 +173,20 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
       throw UnableToWriteHandleException("File opened read-only")
     }
 
-    let descriptor = handle.fileDescriptor
+    let descriptor = FileDescriptor(rawValue: handle.fileDescriptor)
     let start = mode == .append ? (size ?? 0) : position
     let length = data.byteLength
     var total = 0
     try data.withUnsafeBytes { raw in
-      guard let base = raw.baseAddress else {
-        return
-      }
       while total < length {
-        let count = pwrite(descriptor, base + total, length - total, off_t(start) + off_t(total))
-        if count < 0 {
-          throw UnableToWriteHandleException(String(cString: strerror(errno)))
+        do {
+          total += try descriptor.write(
+            toAbsoluteOffset: Int64(start) + Int64(total),
+            UnsafeRawBufferPointer(rebasing: raw[total...])
+          )
+        } catch {
+          throw UnableToWriteHandleException(String(describing: error))
         }
-        total += count
       }
     }
     return start + UInt64(length)
