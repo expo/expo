@@ -54,7 +54,9 @@ export class FileHandle {
    *
    * Reading or writing advances the offset by the number of bytes processed. Set this
    * property to seek to an arbitrary position before the next read or write. If set to
-   * a value greater than the file size, the next write appends data at the end of the file.
+   * a value greater than the file size, the next write grows the file and fills the gap
+   * with zero bytes. In `FileMode.Append` the offset is ignored and every write goes to
+   * the end of the file.
    * Setting `offset` while an async operation is still pending has no defined result.
    * Await the operation first.
    *

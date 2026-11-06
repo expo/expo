@@ -2258,16 +2258,13 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
       expect(src.size).toBe(payload.length);
     });
 
-    it('Returns consecutive chunks from concurrent async reads', async () => {
+    it('Runs concurrent async reads in call order', async () => {
       const src = new File(testDirectory, 'read-race.txt');
       src.writeSync('abcdef');
       const handle = src.open();
-      const chunks = await Promise.all([handle.readBytes(2), handle.readBytes(2)]);
-      // Only the set of chunks is pinned: the order the two calls run in is not part of the contract.
-      expect(chunks.map((chunk) => Array.from(chunk).join(',')).sort()).toEqual([
-        '97,98',
-        '99,100',
-      ]);
+      const [first, second] = await Promise.all([handle.readBytes(2), handle.readBytes(2)]);
+      expect(first).toEqual(new Uint8Array([97, 98])); // ab
+      expect(second).toEqual(new Uint8Array([99, 100])); // cd
       expect(handle.offset).toBe(4);
       handle.close();
     });

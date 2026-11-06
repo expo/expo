@@ -579,7 +579,7 @@ describe('expo-file-system behavioral mock', () => {
       handle.close();
     });
 
-    it('keeps a pending async write intact while size is read', async () => {
+    it('reports the new offset and size after an async write', async () => {
       const file = makeFile('write-race.txt', '');
       const handle = file.open();
       const payload = new Uint8Array(64 * 1024).fill(120);
@@ -592,19 +592,7 @@ describe('expo-file-system behavioral mock', () => {
       expect(file.size).toBe(payload.length);
     });
 
-    it('returns consecutive chunks from concurrent async reads', async () => {
-      const file = makeFile('read-race.txt', 'abcdef');
-      const handle = file.open();
-      const chunks = await Promise.all([handle.readBytes(2), handle.readBytes(2)]);
-      expect(chunks.map((chunk) => Array.from(chunk).join(',')).sort()).toEqual([
-        '97,98',
-        '99,100',
-      ]);
-      expect(handle.offset).toBe(4);
-      handle.close();
-    });
-
-    it('honors offset writes and appends when offset is past the file size', () => {
+    it('writes at the offset and zero-fills the gap when the offset is past the file size', () => {
       const file = makeFile('offset-writes.txt', 'abcd');
       const handle = file.open(FileMode.ReadWrite);
       handle.offset = 1;
@@ -612,8 +600,13 @@ describe('expo-file-system behavioral mock', () => {
       expect(handle.offset).toBe(2);
       handle.offset = 99;
       handle.writeBytesSync(encode('!'));
+      expect(handle.offset).toBe(100);
       handle.close();
-      expect(file.textSync()).toBe('aZcd!');
+      const bytes = file.bytesSync();
+      expect(bytes.length).toBe(100);
+      expect(bytes.slice(0, 4)).toEqual(encode('aZcd'));
+      expect(bytes.slice(4, 99)).toEqual(new Uint8Array(95));
+      expect(bytes[99]).toBe(33); // '!'
     });
 
     describe('FileHandle cursor', () => {

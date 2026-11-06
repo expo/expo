@@ -545,7 +545,8 @@ export class FileSystemFileHandle {
       exists: true,
     };
     const prior = entry.bytes ?? new Uint8Array(0);
-    const writeOffset = this.appendMode ? prior.length : Math.min(position, prior.length);
+    // A write past the end grows the file and leaves a zero-filled gap, like `pwrite` does.
+    const writeOffset = this.appendMode ? prior.length : position;
     const newLength = Math.max(prior.length, writeOffset + buffer.length);
     const merged = new Uint8Array(newLength);
     merged.set(prior, 0);
