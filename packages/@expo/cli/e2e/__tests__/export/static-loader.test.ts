@@ -341,12 +341,20 @@ describe.each(
         { namedRegex: '^/_expo/loaders/loaders/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
         // Loader-declared headers: appended last so they win, applied to page and loader file.
         {
+          namedRegex: '^/headers/blog(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=86400' },
+        },
+        {
           namedRegex: '^/loaders/response(?:/)?$',
           headers: { 'Cache-Control': 'public, max-age=604800' },
         },
         {
           namedRegex: '^/loaders/second(?:/)?$',
           headers: { 'Cache-Control': 'private, no-store' },
+        },
+        {
+          namedRegex: '^/_expo/loaders/headers/blog(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=86400' },
         },
         {
           namedRegex: '^/_expo/loaders/loaders/response(?:/)?$',

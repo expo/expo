@@ -16,32 +16,37 @@ const GLOBAL_HEADERS = {
 };
 
 const PAGE_HEADERS = [
-  { source: '/', headers: { 'X-Page-Rule': 'index', 'X-Powered-By': 'page-override' } },
-  { source: '/blog', headers: { 'X-Page-Rule': 'blog', 'Cache-Control': 'public, max-age=3600' } },
-  { source: '/_expo/loaders/blog', headers: { 'Cache-Control': 'public, max-age=604800' } },
+  { source: '/headers', headers: { 'X-Page-Rule': 'index', 'X-Powered-By': 'page-override' } },
+  {
+    source: '/headers/blog',
+    headers: { 'X-Page-Rule': 'blog', 'Cache-Control': 'public, max-age=3600' },
+  },
+  { source: '/_expo/loaders/headers/blog', headers: { 'Cache-Control': 'public, max-age=604800' } },
 ];
 
-const EXPECTED_PAGE_HEADERS = [
+const EXPECTED_CONFIG_PAGE_HEADERS = [
   {
-    namedRegex: '^/(?:/)?$',
+    namedRegex: '^/headers(?:/)?$',
     headers: { 'X-Page-Rule': 'index', 'X-Powered-By': 'page-override' },
   },
   {
-    namedRegex: '^/blog(?:/)?$',
+    namedRegex: '^/headers/blog(?:/)?$',
     headers: { 'X-Page-Rule': 'blog', 'Cache-Control': 'public, max-age=3600' },
   },
   {
-    namedRegex: '^/_expo/loaders/blog(?:/)?$',
+    namedRegex: '^/_expo/loaders/headers/blog(?:/)?$',
     headers: { 'Cache-Control': 'public, max-age=604800' },
   },
-  // Added from `/blog`'s loader `Response` at export time and appended after
-  // the config option rules.
+];
+
+// Added from the `/headers/blog` loader `Response` at export time.
+const EXPECTED_LOADER_PAGE_HEADERS = [
   {
-    namedRegex: '^/blog(?:/)?$',
+    namedRegex: '^/headers/blog(?:/)?$',
     headers: { 'Cache-Control': 'public, max-age=86400' },
   },
   {
-    namedRegex: '^/_expo/loaders/blog(?:/)?$',
+    namedRegex: '^/_expo/loaders/headers/blog(?:/)?$',
     headers: { 'Cache-Control': 'public, max-age=86400' },
   },
 ];
@@ -49,11 +54,11 @@ const EXPECTED_PAGE_HEADERS = [
 describe('export static with headers', () => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE], {
-      fixtureName: 'server-headers',
-      uniqueOutputKey: 'static',
+      app: 'server-tester',
+      uniqueOutputKey: 'static-headers',
       export: {
         env: {
-          EXPO_USE_STATIC: 'static',
+          E2E_ROUTER_WEB_OUTPUT: 'static',
           E2E_ROUTER_HEADERS: JSON.stringify(GLOBAL_HEADERS),
           E2E_ROUTER_PAGE_HEADERS: JSON.stringify(PAGE_HEADERS),
         },
@@ -67,12 +72,23 @@ describe('export static with headers', () => {
         fs.readFileSync(path.resolve(server.outputDir, '_expo/.routes.json'), 'utf8')
       );
       expect(routesJson.headers).toEqual(GLOBAL_HEADERS);
-      expect(routesJson.pageHeaders).toEqual(EXPECTED_PAGE_HEADERS);
+
+      // The export lists the config option rules together, after the default cache rules of the
+      // other loader routes and before the rules collected from loader responses.
+      const rules: { namedRegex: string }[] = routesJson.pageHeaders;
+      const configStart = rules.findIndex(
+        (rule) => rule.namedRegex === EXPECTED_CONFIG_PAGE_HEADERS[0].namedRegex
+      );
+      const configEnd = configStart + EXPECTED_CONFIG_PAGE_HEADERS.length;
+      expect(rules.slice(configStart, configEnd)).toEqual(EXPECTED_CONFIG_PAGE_HEADERS);
+      for (const rule of EXPECTED_LOADER_PAGE_HEADERS) {
+        expect(rules.slice(configEnd)).toContainEqual(rule);
+      }
     });
 
     it.each([
       {
-        path: '/',
+        path: '/headers',
         status: 200,
         contentType: 'text/html; charset=UTF-8',
         poweredBy: 'page-override',
@@ -82,8 +98,8 @@ describe('export static with headers', () => {
       },
       {
         // The loader-declared `Cache-Control` wins over the config option's
-        // `/blog` rule
-        path: '/blog',
+        // `/headers/blog` rule
+        path: '/headers/blog',
         status: 200,
         contentType: 'text/html; charset=UTF-8',
         poweredBy: 'expo-server',
@@ -94,7 +110,7 @@ describe('export static with headers', () => {
       {
         // Loader data files apply global headers and matching rules, with the
         // loader-declared `Cache-Control` winning over the config option's rule
-        path: '/_expo/loaders/blog',
+        path: '/_expo/loaders/headers/blog',
         status: 200,
         contentType: 'application/octet-stream',
         poweredBy: 'expo-server',
