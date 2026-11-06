@@ -91,7 +91,7 @@ function getExpoDependencyNamesForDependencyChunks(expoDependencyChunks: string[
 }
 
 const expoResolutions: { [key: string]: string } = {};
-const reactNativeTvosVersion = '0.88.1-0';
+const reactNativeTvosVersion = '0.88.101-tv.0';
 
 function linkExpoDependency(repoRoot: string, projectRoot: string, dependencyName: string) {
   // Pack up the named Expo package into the destination folder
@@ -361,21 +361,12 @@ async function preparePackageJson(
         ...packageJson.dependencies,
         glob: '^11.0.0',
         'react-native-tvos': reactNativeTvosVersion,
-        // '@react-native-tvos/config-tv': '^0.1.6',
       },
     };
   }
 
   const packageJsonString = JSON.stringify(packageJson, null, 2);
   await fs.writeFile(path.join(projectRoot, 'package.json'), packageJsonString, 'utf-8');
-  let patchedDependencies = '';
-  if (isTV) {
-    const patchFile = path.join(repoRoot, 'patches', 'react-native-tvos.patch');
-    const patchFileName = path.basename(patchFile);
-    await fs.mkdir(path.join(projectRoot, 'patches'));
-    await fs.copyFile(patchFile, path.join(projectRoot, 'patches', patchFileName));
-    patchedDependencies = `patchedDependencies:\n  "react-native-tvos": "patches/${patchFileName}"\n`;
-  }
   const overrides = {
     ...expoResolutions,
     typescript: '~5.9.3',
@@ -384,7 +375,7 @@ async function preparePackageJson(
     path.join(projectRoot, 'pnpm-workspace.yaml'),
     `overrides:\n${Object.entries(overrides)
       .map(([name, version]) => `  ${JSON.stringify(name)}: ${JSON.stringify(version)}`)
-      .join('\n')}\n${patchedDependencies}`
+      .join('\n')}\n`
   );
 }
 
@@ -476,17 +467,6 @@ function transformAppJsonForE2E(
       },
     ],
   ];
-  /*
-  if (isTV) {
-    plugins.push([
-      '@react-native-tvos/config-tv',
-      {
-        isTV: true,
-        showVerboseWarnings: true,
-      },
-    ]);
-  }
-    */
   return {
     ...appJson,
     expo: {
