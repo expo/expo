@@ -65,7 +65,7 @@ function applyRedirects(url, redirects) {
 function getRedirectModule(redirectConfig) {
     return {
         default: function RedirectComponent() {
-            const pathname = require('./hooks').usePathname();
+            const path = require('./hooks').useRouteInfo().pathnameWithParams;
             const isExternal = (0, url_1.shouldLinkExternally)(redirectConfig.destination);
             (0, react_1.useEffect)(() => {
                 if (isExternal) {
@@ -79,7 +79,7 @@ function getRedirectModule(redirectConfig) {
             if (isExternal) {
                 return null;
             }
-            const href = convertRedirect(pathname, redirectConfig);
+            const href = convertRedirect(path, redirectConfig);
             return (0, react_1.createElement)(require('./link/Link').Redirect, {
                 href,
             });
@@ -88,8 +88,11 @@ function getRedirectModule(redirectConfig) {
 }
 function convertRedirect(path, config) {
     const params = {};
-    const parts = path.split('/');
-    const sourceParts = config.source.split('/');
+    const suffixIndex = path.search(/[?#]/);
+    const pathname = suffixIndex === -1 ? path : path.slice(0, suffixIndex);
+    const suffix = suffixIndex === -1 ? '' : path.slice(suffixIndex);
+    const parts = pathname.split('/').filter(Boolean);
+    const sourceParts = config.source.split('/').filter(Boolean);
     for (const [index, sourcePart] of sourceParts.entries()) {
         const dynamicName = (0, matchers_1.matchDynamicName)(sourcePart);
         if (!dynamicName) {
@@ -104,7 +107,7 @@ function convertRedirect(path, config) {
             break;
         }
     }
-    return mergeVariablesWithPath(config.destination, params);
+    return `/${mergeVariablesWithPath(config.destination, params)}${suffix}`;
 }
 function mergeVariablesWithPath(path, params) {
     return path
