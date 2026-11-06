@@ -388,10 +388,15 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
       guard let self, let player, let owner else {
         return
       }
+      // `currentDate()` is a synchronous call to the media server and can block the main thread
+      // for seconds while the server is busy, for example when entering fullscreen. The live values
+      // only apply to live streams, so read the date once per tick and only when the item is live.
+      let liveDate = player.currentItem?.duration.isIndefinite == true ? player.currentItem?.currentDate() : nil
+      let liveTimestamp = liveDate.map { $0.timeIntervalSince1970 }
       let update = TimeUpdate(
         currentTime: player.currentTime().seconds,
-        currentLiveTimestamp: owner.currentLiveTimestamp,
-        currentOffsetFromLive: owner.currentOffsetFromLive,
+        currentLiveTimestamp: liveTimestamp.map { $0 * 1000 },
+        currentOffsetFromLive: liveTimestamp.map { Date().timeIntervalSince1970 - $0 },
         bufferedPosition: owner.bufferedPosition
       )
 
