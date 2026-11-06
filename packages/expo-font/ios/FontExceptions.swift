@@ -62,3 +62,9 @@ internal final class SaveImageException: GenericException<String> {
     "Could not save image to '\(param)'"
   }
 }
+
+internal final class RenderToImageUnavailableException: Exception {
+  override var reason: String {
+    "Rendering glyphs to an image is not available on macOS"
+  }
+}
