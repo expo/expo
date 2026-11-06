@@ -66,40 +66,6 @@ class UpdatesLogger(filesDirectory: File) : IUpdatesLogger {
     logger.info(logEntryString(message, code, LogType.Info, null, updateId, assetId))
   }
 
-  fun warn(
-    message: String,
-    code: UpdatesErrorCode = UpdatesErrorCode.None
-  ) {
-    warn(message, code, null, null)
-  }
-
-  fun warn(
-    message: String,
-    code: UpdatesErrorCode = UpdatesErrorCode.None,
-    updateId: String?,
-    assetId: String?
-  ) {
-    logger.warn(logEntryString(message, code, LogType.Warn, null, updateId, assetId))
-  }
-
-  fun error(
-    message: String,
-    cause: Exception,
-    code: UpdatesErrorCode = UpdatesErrorCode.None
-  ) {
-    error(message, cause, code, null, null)
-  }
-
-  fun error(
-    message: String,
-    cause: Exception,
-    code: UpdatesErrorCode = UpdatesErrorCode.None,
-    updateId: String?,
-    assetId: String?
-  ) {
-    logger.error(logEntryWithCauseExceptionString(message, cause, code, LogType.Error, null, updateId, assetId))
-  }
-
   /**
    * Logs a warning with the key and template of [message]. The template is filled from [values],
    * and from [cause] for its `{cause}` placeholder when [values] has no `cause`.
@@ -133,7 +99,8 @@ class UpdatesLogger(filesDirectory: File) : IUpdatesLogger {
    * with [failed] for any other failure. When assets of the update failed to load, [assetFailureGroups]
    * has their groups, and this logs one error for each group instead, so that one kind of failure
    * does not hide another. Those errors always have the `remote.assetsFailed` or
-   * `remote.assetsUnreachable` key, whatever [failed] and [unreachable] are.
+   * `remote.assetsUnreachable` key, whatever [failed] and [unreachable] are. A failure with a
+   * [LoggedException] in its cause chain is not logged again.
    */
   fun errorForLoadFailure(
     failed: UpdatesLogMessage,
@@ -142,6 +109,9 @@ class UpdatesLogger(filesDirectory: File) : IUpdatesLogger {
     assetFailureGroups: List<AssetFailureGroup>?,
     updateId: String? = null
   ) {
+    if (generateSequence<Throwable>(cause) { it.cause }.any { it is LoggedException }) {
+      return
+    }
     if (assetFailureGroups == null) {
       error(LoadFailures.message(cause, failed, unreachable), cause, updateId = updateId)
       return
@@ -157,24 +127,6 @@ class UpdatesLogger(filesDirectory: File) : IUpdatesLogger {
       val message = LoadFailures.message(group.error, UpdatesLogMessage.RemoteAssetsFailed, UpdatesLogMessage.RemoteAssetsUnreachable)
       error(message, group.error, values, updateId)
     }
-  }
-
-  fun fatal(
-    message: String,
-    cause: Exception,
-    code: UpdatesErrorCode = UpdatesErrorCode.None
-  ) {
-    fatal(message, cause, code, null, null)
-  }
-
-  fun fatal(
-    message: String,
-    exception: Exception,
-    code: UpdatesErrorCode = UpdatesErrorCode.None,
-    updateId: String?,
-    assetId: String?
-  ) {
-    logger.fatal(logEntryWithCauseExceptionString(message, exception, code, LogType.Fatal, null, updateId, assetId))
   }
 
   override fun startTimer(label: String): LoggerTimer {
@@ -222,30 +174,6 @@ class UpdatesLogger(filesDirectory: File) : IUpdatesLogger {
       message.key,
       filledValues.ifEmpty { null }
     ).asString()
-  }
-
-  private fun logEntryWithCauseExceptionString(
-    message: String,
-    exception: Exception,
-    code: UpdatesErrorCode,
-    level: LogType,
-    duration: Long?,
-    updateId: String?,
-    assetId: String?
-  ): String {
-    val timestamp = Date().time
-    val logEntry = UpdatesLogEntry(
-      timestamp,
-      message,
-      code.code,
-      level.type,
-      duration,
-      updateId,
-      assetId,
-      stacktrace = exception.stackTrace.take(MAX_FRAMES_IN_STACKTRACE).map { f -> f.toString() }
-    )
-
-    return logEntry.asString()
   }
 
   private fun logEntryString(
