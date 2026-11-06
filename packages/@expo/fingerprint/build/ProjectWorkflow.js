@@ -7,7 +7,6 @@ exports.resolveProjectWorkflowAsync = resolveProjectWorkflowAsync;
 exports.resolveProjectWorkflowPerPlatformAsync = resolveProjectWorkflowPerPlatformAsync;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const promises_1 = __importDefault(require("fs/promises"));
-const glob_1 = require("glob");
 const ignore_1 = __importDefault(require("ignore"));
 const path_1 = __importDefault(require("path"));
 const ExpoResolver_1 = require("./ExpoResolver");
@@ -135,13 +134,9 @@ class Ignore {
         this.rootDir = rootDir;
     }
     async initIgnoreAsync() {
-        const ignoreFilePaths = (await (0, glob_1.glob)(`**/${GITIGNORE_FILENAME}`, {
-            cwd: this.rootDir,
-            ignore: ['node_modules'],
-            follow: false,
-        }))
-            // ensure that parent dir is before child directories
-            .sort((a, b) => a.length - b.length && a.localeCompare(b));
+        const ignoreFilePaths = await findIgnoreFilesAsync(this.rootDir);
+        // ensure that parent dir is before child directories
+        ignoreFilePaths.sort((a, b) => a.length - b.length || a.localeCompare(b));
         const ignoreMapping = await Promise.all(ignoreFilePaths.map(async (filePath) => {
             return [
                 filePath.slice(0, filePath.length - GITIGNORE_FILENAME.length),
@@ -160,4 +155,25 @@ class Ignore {
     }
 }
 //#endregion - a copy of vcs client and ignore handler from expo-updates
+async function findIgnoreFilesAsync(root) {
+    const files = [];
+    const directories = [''];
+    for (const directory of directories) {
+        const entries = await promises_1.default
+            .readdir(path_1.default.join(root, directory), { withFileTypes: true })
+            .catch(() => []);
+        for (const entry of entries) {
+            const file = path_1.default.join(directory, entry.name);
+            if (entry.isDirectory()) {
+                if (entry.name !== 'node_modules' && !entry.name.startsWith('.')) {
+                    directories.push(file);
+                }
+            }
+            else if (entry.name === GITIGNORE_FILENAME) {
+                files.push(file);
+            }
+        }
+    }
+    return files;
+}
 //# sourceMappingURL=ProjectWorkflow.js.map

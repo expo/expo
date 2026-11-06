@@ -49,9 +49,8 @@
     "chalk": "^4.1.2",
     "debug": "^4.3.4",
     "getenv": "^2.0.0",
-    "glob": "^13.0.0",
     "ignore": "^5.3.1",
-    "minimatch": "^10.2.2",
+    "minimatch": "^10.2.6",
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0"
   },
