@@ -148,10 +148,14 @@ extension CGColor: JavaScriptDecodable, JavaScriptEncodable {
 
   @JavaScriptActor
   public static func encode(_ value: CGColor, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
-    // `NSColor(cgColor:)` is failable on macOS.
-    guard let color = Optional(UIColor(cgColor: value)) else {
+    #if os(macOS)
+    // `NSColor(cgColor:)` is failable.
+    guard let color = UIColor(cgColor: value) else {
       return .null()
     }
+    #else
+    let color = UIColor(cgColor: value)
+    #endif
     return try UIColor.encode(color, in: runtime)
   }
 
@@ -269,13 +273,21 @@ extension UIColor {
     #if os(macOS)
     getRed(&r, green: &g, blue: &b, alpha: &a)
     return String(
-      format: "#%02x%02x%02x%02x", Int((r * 255).rounded()), Int((g * 255).rounded()),
-      Int((b * 255).rounded()), Int((a * 255).rounded()))
+      format: "#%02x%02x%02x%02x",
+      Int((r * 255).rounded()),
+      Int((g * 255).rounded()),
+      Int((b * 255).rounded()),
+      Int((a * 255).rounded())
+    )
     #else
     if getRed(&r, green: &g, blue: &b, alpha: &a) {
       return String(
-        format: "#%02x%02x%02x%02x", Int((r * 255).rounded()), Int((g * 255).rounded()),
-        Int((b * 255).rounded()), Int((a * 255).rounded()))
+        format: "#%02x%02x%02x%02x",
+        Int((r * 255).rounded()),
+        Int((g * 255).rounded()),
+        Int((b * 255).rounded()),
+        Int((a * 255).rounded())
+      )
     }
     #endif
     return "#00000000"
