@@ -59,6 +59,7 @@ export interface RequestHandlerParams {
 }
 
 export interface RequestHandlerInput {
+  isDevelopment?: boolean;
   getHtml(request: Request, route: Route): Promise<string | ReadableStream | Response | null>;
   getRoutesManifest(): Promise<Manifest | null>;
   getApiRoute(route: Route): Promise<any>;
@@ -72,12 +73,17 @@ export function createRequestHandler({
   getApiRoute,
   getMiddleware,
   getLoaderData,
+  isDevelopment = false,
   checkOrigin = true,
   beforeErrorResponse = noopBeforeResponse,
   beforeResponse = noopBeforeResponse,
   beforeHTMLResponse = noopBeforeResponse,
   beforeAPIResponse = noopBeforeResponse,
 }: RequestHandlerParams & RequestHandlerInput) {
+  if (isDevelopment && checkOrigin) {
+    checkOrigin = 'sec-only';
+  }
+
   let manifest: Manifest | null = null;
 
   return async function handler(request: Request): Promise<Response> {
