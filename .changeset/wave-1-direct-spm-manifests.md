@@ -4,11 +4,9 @@
 'expo-asset': patch
 'expo-background-fetch': patch
 'expo-battery': patch
-'expo-blob': patch
 'expo-blur': patch
 'expo-brightness': patch
 'expo-cellular': patch
-'expo-crypto': patch
 'expo-dev-menu-interface': patch
 'expo-document-picker': patch
 'expo-font': patch

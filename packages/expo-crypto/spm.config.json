@@ -11,11 +11,12 @@
         "Hermes",
         "expo-modules-core/ExpoModulesCore"
       ],
-      "swiftLanguageVersions": ["5"],
       "targets": [
         {
           "type": "swift",
           "name": "ExpoCrypto",
+          "path": "ios",
+          "pattern": "**/*.swift",
           "exclude": ["Tests/**", "Benchmarks/**"],
           "dependencies": [
             "Hermes",

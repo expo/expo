@@ -11,11 +11,12 @@
         "Hermes",
         "expo-modules-core/ExpoModulesCore"
       ],
-      "swiftLanguageVersions": ["6.0"],
       "targets": [
         {
           "type": "swift",
           "name": "ExpoBlob",
+          "path": "ios",
+          "pattern": "*.swift",
           "dependencies": [
             "Hermes",
             "React",
