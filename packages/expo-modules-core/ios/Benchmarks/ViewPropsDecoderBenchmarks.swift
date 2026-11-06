@@ -62,6 +62,31 @@ extension Benchmarks {
       }
     }
   }
+
+  @Test
+  func `view props decoder: reset 1 of 20 props with expensive defaults`() async throws {
+    try await viewPropsDecoderBenchmarkCase("{ tags3: null }", of: ExpensiveDefaultsBenchmarkProps.self) { decode in
+      try benchmark("view props decoder: reset 1 of 20 props with expensive defaults", runtime: nil) { iterations in
+        for _ in 0..<iterations {
+          _ = decode()
+        }
+      }
+    }
+  }
+
+  @Test
+  func `view props decoder: reset 7 of 20 props with expensive defaults`() async throws {
+    try await viewPropsDecoderBenchmarkCase(
+      "{ text0: null, tags0: null, weights0: null, labels0: null, insets0: null, text1: null, tags1: null }",
+      of: ExpensiveDefaultsBenchmarkProps.self
+    ) { decode in
+      try benchmark("view props decoder: reset 7 of 20 props with expensive defaults", runtime: nil) { iterations in
+        for _ in 0..<iterations {
+          _ = decode()
+        }
+      }
+    }
+  }
 }
 
 private func viewPropsDecoderBenchmarkCase<Props: AnyViewProps>(
@@ -119,4 +144,29 @@ private struct WideBenchmarkProps {
   var prop17 = ""
   var prop18 = ""
   var prop19 = ""
+}
+
+/// Props whose defaults allocate: each array and dictionary default makes a new buffer.
+@ViewProps
+private struct ExpensiveDefaultsBenchmarkProps {
+  var text0 = "Default text number 0"
+  var tags0: [String] = ["first", "second", "third"]
+  var weights0: [Double] = [0.25, 0.5, 0.75, 1.0]
+  var labels0: [String: String] = ["start": "Start", "end": "End"]
+  var insets0: [Double] = [8, 8, 8, 8]
+  var text1 = "Default text number 1"
+  var tags1: [String] = ["first", "second", "third"]
+  var weights1: [Double] = [0.25, 0.5, 0.75, 1.0]
+  var labels1: [String: String] = ["start": "Start", "end": "End"]
+  var insets1: [Double] = [8, 8, 8, 8]
+  var text2 = "Default text number 2"
+  var tags2: [String] = ["first", "second", "third"]
+  var weights2: [Double] = [0.25, 0.5, 0.75, 1.0]
+  var labels2: [String: String] = ["start": "Start", "end": "End"]
+  var insets2: [Double] = [8, 8, 8, 8]
+  var text3 = "Default text number 3"
+  var tags3: [String] = ["first", "second", "third"]
+  var weights3: [Double] = [0.25, 0.5, 0.75, 1.0]
+  var labels3: [String: String] = ["start": "Start", "end": "End"]
+  var insets3: [Double] = [8, 8, 8, 8]
 }
