@@ -4,9 +4,6 @@ import Foundation
 import ExpoModulesCore
 import React
 
-let LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
-let CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
-
 let OBSERVED_EVENTS: Set<Notification.Name> = [
   // swiftlint:disable legacy_objc_type
   UIApplication.significantTimeChangeNotification,
@@ -14,38 +11,49 @@ let OBSERVED_EVENTS: Set<Notification.Name> = [
   // swiftlint:enable legacy_objc_type
 ]
 
+@ExpoModule("ExpoLocalization")
 public class LocalizationModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoLocalization")
+  // The number of events that have listeners. The listening hooks change it on the JavaScript thread only.
+  private var listenedEventsCount = 0
 
-    Function("getLocales", Self.getLocales)
-    Function("getCalendars", Self.getCalendars)
+  @Event("onLocaleSettingsChanged")
+  var onLocaleSettingsChanged: ([String: String]) -> Void
 
-    OnCreate {
-      setRTLPreferences()
+  @Event("onCalendarSettingsChanged")
+  var onCalendarSettingsChanged: ([String: String]) -> Void
+
+  public override func didCreate() {
+    setRTLPreferences()
+  }
+
+  // Both events share the notification observers, so they are added when the first event gets a listener
+  // and removed when no event has listeners.
+  public override func didStartListening(event: String) {
+    listenedEventsCount += 1
+    guard listenedEventsCount == 1 else {
+      return
     }
-
-    Events(LOCALE_SETTINGS_CHANGED, CALENDAR_SETTINGS_CHANGED)
-
-    OnStartObserving {
-      OBSERVED_EVENTS.forEach {
-        NotificationCenter.default.addObserver(
-          self,
-          selector: #selector(LocalizationModule.localeChanged),
-          name: $0,
-          object: nil
-        )
-      }
+    OBSERVED_EVENTS.forEach {
+      NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(LocalizationModule.localeChanged),
+        name: $0,
+        object: nil
+      )
     }
+  }
 
-    OnStopObserving {
-      OBSERVED_EVENTS.forEach {
-        NotificationCenter.default.removeObserver(
-          self,
-          name: $0,
-          object: nil
-        )
-      }
+  public override func didStopListening(event: String) {
+    listenedEventsCount -= 1
+    guard listenedEventsCount == 0 else {
+      return
+    }
+    OBSERVED_EVENTS.forEach {
+      NotificationCenter.default.removeObserver(
+        self,
+        name: $0,
+        object: nil
+      )
     }
   }
 
@@ -140,55 +148,56 @@ public class LocalizationModule: Module {
     return locale.usesMetricSystem ? "metric" : "us"
   }
 
-  static func getLocales() -> [[String: Any?]] {
+  @JS
+  func getLocales() -> [LocaleInfo] {
     let userSettingsLocale = Locale.current
 
     return (Locale.preferredLanguages.isEmpty ? [Locale.current.identifier] : Locale.preferredLanguages)
-      .map { languageTag -> [String: Any?] in
+      .map { languageTag -> LocaleInfo in
         let languageLocale = Locale.init(identifier: languageTag)
 
         if #available(iOS 16, tvOS 16, *) {
-          return [
-            "languageTag": languageTag,
-            "languageCode": languageLocale.language.languageCode?.identifier,
-            "languageScriptCode": languageLocale.language.script?.identifier,
-            "languageRegionCode": languageLocale.region?.identifier,
-            "regionCode": userSettingsLocale.region?.identifier,
-            "textDirection": languageLocale.language.characterDirection == .rightToLeft ? "rtl" : "ltr",
-            "decimalSeparator": userSettingsLocale.decimalSeparator,
-            "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
-            "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
-            "currencyCode": userSettingsLocale.currencyCode,
-            "currencySymbol": userSettingsLocale.currencySymbol,
-            "languageCurrencyCode": languageLocale.currencyCode,
-            "languageCurrencySymbol": languageLocale.currencySymbol,
-            "temperatureUnit": getTemperatureUnit()
-          ]
+          return LocaleInfo(
+            languageTag: languageTag,
+            languageCode: languageLocale.language.languageCode?.identifier,
+            languageScriptCode: languageLocale.language.script?.identifier,
+            languageRegionCode: languageLocale.region?.identifier,
+            regionCode: userSettingsLocale.region?.identifier,
+            textDirection: languageLocale.language.characterDirection == .rightToLeft ? "rtl" : "ltr",
+            decimalSeparator: userSettingsLocale.decimalSeparator,
+            digitGroupingSeparator: userSettingsLocale.groupingSeparator,
+            measurementSystem: Self.getMeasurementSystemForLocale(userSettingsLocale),
+            currencyCode: userSettingsLocale.currencyCode,
+            currencySymbol: userSettingsLocale.currencySymbol,
+            languageCurrencyCode: languageLocale.currencyCode,
+            languageCurrencySymbol: languageLocale.currencySymbol,
+            temperatureUnit: Self.getTemperatureUnit()
+          )
         }
-        return [
-          "languageTag": languageTag,
-          "languageCode": languageLocale.languageCode,
-          "languageScriptCode": languageLocale.scriptCode,
-          "languageRegionCode": languageLocale.regionCode,
-          "regionCode": userSettingsLocale.regionCode,
-          "textDirection": Locale.characterDirection(forLanguage: languageTag) == .rightToLeft ? "rtl" : "ltr",
-          "decimalSeparator": userSettingsLocale.decimalSeparator,
-          "digitGroupingSeparator": userSettingsLocale.groupingSeparator,
-          "measurementSystem": getMeasurementSystemForLocale(userSettingsLocale),
-          "currencyCode": userSettingsLocale.currencyCode,
-          "currencySymbol": userSettingsLocale.currencySymbol,
-          "languageCurrencyCode": languageLocale.currencyCode,
-          "languageCurrencySymbol": languageLocale.currencySymbol,
-          "temperatureUnit": getTemperatureUnit()
-        ]
+        return LocaleInfo(
+          languageTag: languageTag,
+          languageCode: languageLocale.languageCode,
+          languageScriptCode: languageLocale.scriptCode,
+          languageRegionCode: languageLocale.regionCode,
+          regionCode: userSettingsLocale.regionCode,
+          textDirection: Locale.characterDirection(forLanguage: languageTag) == .rightToLeft ? "rtl" : "ltr",
+          decimalSeparator: userSettingsLocale.decimalSeparator,
+          digitGroupingSeparator: userSettingsLocale.groupingSeparator,
+          measurementSystem: Self.getMeasurementSystemForLocale(userSettingsLocale),
+          currencyCode: userSettingsLocale.currencyCode,
+          currencySymbol: userSettingsLocale.currencySymbol,
+          languageCurrencyCode: languageLocale.currencyCode,
+          languageCurrencySymbol: languageLocale.currencySymbol,
+          temperatureUnit: Self.getTemperatureUnit()
+        )
       }
   }
 
   @objc
   private func localeChanged() {
     // we send both events since on iOS it means both calendar and locale needs an update
-    sendEvent(LOCALE_SETTINGS_CHANGED)
-    sendEvent(CALENDAR_SETTINGS_CHANGED)
+    onLocaleSettingsChanged([:])
+    onCalendarSettingsChanged([:])
   }
 
   static func getTemperatureUnit() -> String? {
@@ -201,15 +210,16 @@ public class LocalizationModule: Module {
     return hourCycle == .zeroToTwentyThree || hourCycle == .oneToTwentyFour
   }
 
-  static func getCalendars() -> [[String: Any?]] {
+  @JS
+  func getCalendars() -> [CalendarInfo] {
     let calendar = Locale.current.calendar
     return [
-      [
-        "calendar": getUnicodeCalendarIdentifier(calendar: calendar),
-        "timeZone": "\(calendar.timeZone.identifier)",
-        "uses24hourClock": uses24HourClock(),
-        "firstWeekday": calendar.firstWeekday
-      ]
+      CalendarInfo(
+        calendar: Self.getUnicodeCalendarIdentifier(calendar: calendar),
+        timeZone: "\(calendar.timeZone.identifier)",
+        uses24hourClock: Self.uses24HourClock(),
+        firstWeekday: calendar.firstWeekday
+      )
     ]
   }
 }
