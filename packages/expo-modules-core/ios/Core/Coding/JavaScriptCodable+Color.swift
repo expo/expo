@@ -7,10 +7,10 @@ import SwiftUI
 // The color types decode from a string, a number, an array of components, or a `PlatformColor` or
 // `DynamicColorIOS` object, and encode as the `#rrggbbaa` string that `UIColor.string` returns. A string or a
 // number is read straight from the JavaScript value. Any other value is read through `getAny()` and decoded by
-// `colorFromAny(_:)`, which the `Convertible` conformances also call, so both paths accept the same values and
+// `uiColorFromAny(_:)`, which the `Convertible` conformances also call, so both paths accept the same values and
 // throw the same exceptions.
 
-extension UIColor: JavaScriptDecodable, JavaScriptEncodable {
+extension UIColor: @retroactive JavaScriptDecodable, @retroactive JavaScriptEncodable {
   public static var decodableKinds: JavaScriptValueKinds {
     return [.string, .number, .object]
   }
@@ -30,7 +30,7 @@ extension UIColor: JavaScriptDecodable, JavaScriptEncodable {
   }
 }
 
-extension CGColor: JavaScriptDecodable, JavaScriptEncodable {
+extension CGColor: @retroactive JavaScriptDecodable, @retroactive JavaScriptEncodable {
   public static var decodableKinds: JavaScriptValueKinds {
     return UIColor.decodableKinds
   }
@@ -61,7 +61,7 @@ extension CGColor: JavaScriptDecodable, JavaScriptEncodable {
   }
 }
 
-extension Color: JavaScriptDecodable, JavaScriptEncodable {
+extension Color: @retroactive JavaScriptDecodable, @retroactive JavaScriptEncodable {
   public static var decodableKinds: JavaScriptValueKinds {
     return UIColor.decodableKinds
   }
@@ -80,6 +80,8 @@ extension Color: JavaScriptDecodable, JavaScriptEncodable {
     throw Conversions.ConvertingException<Color>(value.copied(in: runtime).getAny())
   }
 
+  /// Encodes the color as a `#rrggbbaa` string. A dynamic or semantic color, such as `.primary`, is resolved to
+  /// a fixed value for the current appearance.
   @JavaScriptActor
   public static func encode(_ value: Color, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return try UIColor.encode(UIColor(value), in: runtime)
@@ -105,11 +107,11 @@ private func colorFromJavaScriptValue(
   if value.isNumber() {
     return try colorFromNumber(value.getDouble())
   }
-  return try colorFromAny(value.copied(in: runtime).getAny())
+  return try uiColorFromAny(value.copied(in: runtime).getAny())
 }
 
 // Internal for the `Convertible` conformance, can become private when the Convertibles are removed.
-internal func colorFromAny(_ value: Any?) throws -> UIColor {
+internal func uiColorFromAny(_ value: Any?) throws -> UIColor {
   if let value = value as? String {
     return try colorFromNameOrString(value)
   }
@@ -138,11 +140,11 @@ internal func colorFromAny(_ value: Any?) throws -> UIColor {
       }
     }
     if let appearances = opaqueValue["dynamic"] as? [String: Any],
-      let lightColor = try appearances["light"].map({ try colorFromAny($0) }),
-      let darkColor = try appearances["dark"].map({ try colorFromAny($0) })
+      let lightColor = try appearances["light"].map({ try uiColorFromAny($0) }),
+      let darkColor = try appearances["dark"].map({ try uiColorFromAny($0) })
     {
-      let highContrastLightColor = try appearances["highContrastLight"].map({ try colorFromAny($0) })
-      let highContrastDarkColor = try appearances["highContrastDark"].map({ try colorFromAny($0) })
+      let highContrastLightColor = try appearances["highContrastLight"].map({ try uiColorFromAny($0) })
+      let highContrastDarkColor = try appearances["highContrastDark"].map({ try uiColorFromAny($0) })
 
       #if os(iOS) || os(tvOS)
       return UIColor { (traitCollection: UITraitCollection) -> UIColor in
@@ -187,7 +189,7 @@ internal func colorFromAny(_ value: Any?) throws -> UIColor {
 // Internal for the `Convertible` conformance, can become private when the Convertibles are removed.
 internal func cgColorFromAny(_ value: Any?) throws -> CGColor {
   do {
-    return try colorFromAny(value).cgColor
+    return try uiColorFromAny(value).cgColor
   } catch _ as Conversions.ConvertingException<UIColor> {
     // Rethrow `ConvertingError` with proper type
     throw Conversions.ConvertingException<CGColor>(value)
@@ -196,7 +198,7 @@ internal func cgColorFromAny(_ value: Any?) throws -> CGColor {
 
 // Internal for the `Convertible` conformance, can become private when the Convertibles are removed.
 internal func swiftUIColorFromAny(_ value: Any?) throws -> Color {
-  if let uiColor = try? colorFromAny(value) {
+  if let uiColor = try? uiColorFromAny(value) {
     return Color(uiColor)
   }
   // Context-dependent colors
@@ -282,7 +284,11 @@ private func colorToString(_ color: UIColor) -> String {
   var a: CGFloat = 0
 
   #if os(macOS)
-  color.getRed(&r, green: &g, blue: &b, alpha: &a)
+  // `getRed` raises for a color that isn't in an RGB color space, such as a catalog or dynamic color.
+  guard let rgbColor = color.usingColorSpace(.sRGB) else {
+    return "#00000000"
+  }
+  rgbColor.getRed(&r, green: &g, blue: &b, alpha: &a)
   return String(
     format: "#%02x%02x%02x%02x",
     Int((r * 255).rounded()),

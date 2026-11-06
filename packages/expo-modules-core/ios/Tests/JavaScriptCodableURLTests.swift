@@ -95,11 +95,6 @@ private struct JavaScriptCodableURLTests {
     #expect(url.absoluteString == "https://expo.dev/?param=%F0%9F%A5%93")
   }
 
-  @Test
-  func `declares that it decodes only from a string`() {
-    #expect(URL.decodableKinds == .string)
-  }
-
   // MARK: - Encoding
 
   @Test

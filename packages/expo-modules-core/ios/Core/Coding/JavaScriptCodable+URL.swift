@@ -5,7 +5,7 @@ import ExpoModulesJSI
 // `URL` decodes from a string and encodes as its absolute string. The `Convertible` conformance decodes a
 // string through `urlFromString(_:)` too.
 
-extension URL: JavaScriptDecodable, JavaScriptEncodable {
+extension URL: @retroactive JavaScriptDecodable, @retroactive JavaScriptEncodable {
   public static var decodableKinds: JavaScriptValueKinds {
     return .string
   }

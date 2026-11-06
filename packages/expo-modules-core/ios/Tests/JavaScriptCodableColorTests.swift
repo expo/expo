@@ -31,6 +31,11 @@ private final class CodableColorModule: Module {
   }
 
   @JS
+  func primarySwiftUIColor() -> Color {
+    return .primary
+  }
+
+  @JS
   func passthrough(record: CodableColorsRecord) -> CodableColorsRecord {
     return record
   }
@@ -127,6 +132,13 @@ private struct JavaScriptCodableColorTests {
 
     #expect(try runtime.eval("expo.modules.CodableColorModule.echoSwiftUIColor('#2A4B5D')").asString() == "#2a4b5dff")
     #expect(try Color.encode(Color(red: 0, green: 0, blue: 1), in: runtime).asString() == "#0000ffff")
+  }
+
+  @Test
+  func `encodes a dynamic SwiftUI Color as a hex string`() throws {
+    let encoded = try runtime.eval("expo.modules.CodableColorModule.primarySwiftUIColor()").asString()
+
+    #expect(encoded.wholeMatch(of: /#[0-9a-f]{8}/) != nil)
   }
 
   // MARK: - Records
