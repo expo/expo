@@ -31,7 +31,8 @@ metadata. You do not re-review the code. You own what gets posted: synthesize, c
    finding about a problem that shows in another file belongs at the changed line that
    causes it, with the other file cited in the rationale.
 4. **Apply the limits.** Keep every `critical` and `warning` that survived. Keep at most three
-   `suggestion` findings, the most useful first, and at most one titled `Pre-existing:`. Keep a
+   `suggestion` findings, the most useful first, and at most one titled `Pre-existing:`. Keep
+   at most one more titled `Refactor:`, outside the three; it never changes the decision. Keep a
    `suggestion` only when it is listed under the `deep` key. This limit does not apply to the
    `__overall_pr_risk__` handoff. Keep it for step 6.
 5. **Normalize finding presentation.** Every kept finding must start its `rationale` with
