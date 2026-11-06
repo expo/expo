@@ -27,14 +27,16 @@ struct NetworkModuleTests {
 
   @Test
   func `getNetworkStateAsync resolves to a network state object`() async throws {
-    let result = try await runtime.evalAsync("""
+    let result = try await runtime.evalAsync(
+      """
       expo.modules.ExpoNetwork.getNetworkStateAsync().then(state => JSON.stringify({
         keys: Object.keys(state).sort(),
         type: state.type,
         isConnected: state.isConnected,
         isInternetReachable: state.isInternetReachable,
       }))
-      """)
+      """
+    )
     let state = try decodeState(result.asString())
 
     #expect(state.keys == ["isConnected", "isInternetReachable", "type"])
@@ -53,7 +55,8 @@ struct NetworkModuleTests {
 
   @Test
   func `adding an onNetworkStateChanged listener emits the current network state`() async throws {
-    try runtime.eval("""
+    try runtime.eval(
+      """
       globalThis.events = []
       globalThis.subscription = expo.modules.ExpoNetwork.addListener('onNetworkStateChanged', state => {
         globalThis.events.push(JSON.stringify({
@@ -63,7 +66,8 @@ struct NetworkModuleTests {
           isInternetReachable: state.isInternetReachable,
         }))
       })
-      """)
+      """
+    )
     defer {
       _ = try? runtime.eval("globalThis.subscription.remove()")
     }
