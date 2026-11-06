@@ -7,6 +7,9 @@ import ExpoModulesJSI
 /// queue after each task like React Native does. Use it in place of `AppContext.create()` in tests
 /// that call async functions or await promises: nothing drains the queue of that runtime, so an await
 /// never completes, and its promises may settle concurrently with the test's JavaScript.
+///
+/// The app context owns its runtime and tears it down when it is deallocated, so keep it alive for as
+/// long as the runtime is used, for example as a property of the test suite.
 public final class TestAppContext: AppContext {
   private let scheduler = TestRuntimeScheduler()
 
@@ -15,6 +18,7 @@ public final class TestAppContext: AppContext {
 
   public init() {
     super.init(config: nil)
+    ownsRuntime = true
 
     // A runtime treats the thread it is created on as its JavaScript thread.
     scheduler.thread.runAndWait {
@@ -47,11 +51,6 @@ public final class TestAppContext: AppContext {
     scheduler.thread.runAndWait {
       destroy()
       owningRuntime = nil
-    }
-    // Keep the scheduler alive until the thread runs out of work.
-    let scheduler = self.scheduler
-    scheduler.thread.schedule {
-      _ = scheduler
     }
     scheduler.thread.stopWhenIdle()
   }
