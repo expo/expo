@@ -10,6 +10,8 @@ Expo Modules API 2.0 is a new way to write the native side of an Expo module. Yo
 
 > **warning** Expo Modules API 2.0 is in beta, and its API can still change.
 
+> **info** Expo Modules API 2.0 is available in **SDK 58 and later**.
+
 ## How it works
 
 The following module exports a function, an asynchronous function, and an event:
@@ -68,7 +70,7 @@ public final class MyModule: Module {
 
 </CodeBlocksTable>
 
-JavaScript loads the module by its name, the same as a module that uses the [module definition DSL](/modules/module-api/):
+JavaScript loads the module by its name, the same as a module that uses the [module definition DSL](/modules/module-api/) (domain-specific language):
 
 ```ts
 import { requireNativeModule } from 'expo';
@@ -90,10 +92,10 @@ The annotations in Kotlin and the macros in Swift have the same names:
 The [module definition DSL](/modules/module-api/) describes a module at runtime, in the `definition()` function. Expo Modules API 2.0 reads your declarations at compile time instead. This has the following effects:
 
 - **No definition function.** The declarations of the class are the module. You don't repeat the name and the types of each function in a DSL component, such as `Function` or `AsyncFunction`.
-- **Errors at build time.** In Swift, the macros check that every type that crosses the boundary with JavaScript can convert to and from a JavaScript value. A type that can't convert is a build error, not a runtime error.
+- **Errors at build time.** In Swift, the macros check that each argument type can convert from a JavaScript value and each return type can convert to one. A type that can't convert is a build error, not a runtime error. Types that use `Any` convert at runtime instead.
 - **Less overhead per call.** In Swift, the generated code decodes the arguments, calls the function, and encodes the result directly, without a dynamic path for each call.
-- **Records without field wrappers.** Every stored property of a record is a field. You don't mark each field with `@Field`.
+- **Records without field wrappers.** In Kotlin, each `val` or `var` parameter of the primary constructor is a field. In Swift, each stored property is a field, except `static`, `private`, `fileprivate`, and `lazy` properties. You don't mark each field with `@Field`.
 
 ## Language support
 
-Expo Modules API 2.0 is available in Kotlin and Swift. Kotlin doesn't support all the features of Swift yet. Each section of these docs shows the languages that support its feature. For the full list, see [Feature support](/modules/v2/feature-support/).
+Expo Modules API 2.0 is available in Kotlin and Swift. Kotlin doesn't support all the features of Swift yet. For the full list, see [Feature support](/modules/v2/feature-support/).
