@@ -97,5 +97,21 @@ public interface ReactNativeHostHandler {
    */
   default void onReactInstanceException(boolean useDeveloperSupport, @NonNull Exception exception) {}
 
+  /**
+   * Callback when receiving unhandled React Native exceptions, for a handler that takes ownership
+   * of some of them. Every handler receives each exception. The React host rethrows an exception
+   * that no handler takes, as React Native's default host delegate does, so the process ends.
+   *
+   * The default calls {@link #onReactInstanceException} and does not take the exception.
+   *
+   * NOTE: This callback is only available on bridgeless mode
+   *
+   * @return true when this handler takes the exception, for example to recover from it
+   */
+  default boolean handleReactInstanceException(boolean useDeveloperSupport, @NonNull Exception exception) {
+    onReactInstanceException(useDeveloperSupport, exception);
+    return false;
+  }
+
   //endregion
 }
