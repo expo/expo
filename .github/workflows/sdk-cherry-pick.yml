@@ -4,8 +4,8 @@ name: SDK cherry-pick
 # for pull requests from forks. No job checks out or runs code from a pull request. Every script,
 # action, and `et` command comes from a checkout of the default branch. The merge commit and the
 # release branch are read only as git data. The changesets that a pull request author wrote are
-# read only as text: `et convert-backport-changesets` copies their summaries into CHANGELOG.md
-# entries, and runs nothing from them.
+# read only as text: `et sdk-cherry-pick` copies their summaries into CHANGELOG.md entries with the
+# code of `et convert-backport-changesets`, and runs nothing from them.
 on:
   pull_request_target:
     types: [closed, labeled]
@@ -117,10 +117,20 @@ jobs:
           ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 1
           persist-credentials: false
-      # Every existing release branch needs expotools to check the changesets.
+      # Every existing release branch needs expotools. A missing branch needs nothing: an `sdk-NN`
+      # label can name an SDK that a change affects, or a release that has no branch yet, so the job
+      # ends without a backport and without a comment.
       - name: 🔍 Check the target branch
         id: target
-        run: .github/scripts/sdk-cherry-pick.sh check-target
+        run: |
+          tools=true
+          heads=$(git -C "$REPO_DIR" ls-remote --heads origin "refs/heads/sdk-$SDK_VERSION")
+          if [ -z "$heads" ]; then
+            echo "sdk-$SDK_VERSION does not exist."
+            tools=false
+          fi
+          echo "tools=$tools"
+          echo "tools=$tools" >> "$GITHUB_OUTPUT"
       - name: 🔨 Install pnpm
         if: steps.target.outputs.tools == 'true'
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
@@ -139,18 +149,47 @@ jobs:
         if: steps.target.outputs.tools == 'true'
         uses: ./.github/actions/expo-caches
       - name: 🛠 Build expotools
+        id: build
         if: steps.target.outputs.tools == 'true'
         run: pnpm turbo build --filter expotools...
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
+      # prepare and publish are separate steps so that the token that can push is only in the
+      # environment of publish. prepare reads changesets and other text that a pull request author
+      # wrote.
       - name: 🍒 Cherry-pick and convert changesets
         id: prepare
-        run: .github/scripts/sdk-cherry-pick.sh prepare
+        if: steps.target.outputs.tools == 'true'
+        run: node tools/bin/expotools.js sdk-cherry-pick prepare
         env:
           GH_TOKEN: ${{ github.token }}
+      # Also after a failed prepare, so that it can tell the author that the backport failed.
       - name: 📝 Open the backport pull request
-        if: ${{ !cancelled() }}
-        run: .github/scripts/sdk-cherry-pick.sh publish
+        id: publish
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node tools/bin/expotools.js sdk-cherry-pick publish
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+      # When the checkout, the target check, the install, or the build fails, or publish fails before
+      # it starts, nothing has told the author. This step does, with the text of the publish fallback
+      # comment. publish writes publish-started first, and comments itself after that. This step
+      # reads no text from the pull request, and it does not run for a manual run.
+      - name: 💬 Comment that the backport failed
+        if: failure() && github.event_name == 'pull_request_target' && (steps.publish.outcome == 'failure' || (steps.build.outcome != 'success' && (steps.target.outputs.tools == 'true' || steps.target.outcome == 'failure' || steps.target.outcome == 'skipped')))
+        run: |
+          state_dir="${STATE_DIR:-${RUNNER_TEMP%/}/sdk-cherry-pick-$PR_NUMBER-$SDK_VERSION}"
+          if [ -e "$state_dir/publish-started" ]; then
+            echo "publish started, so it reports its own failure."
+            exit 0
+          fi
+          target_branch="sdk-$SDK_VERSION"
+          work_branch="bot/sdk-$SDK_VERSION-cherry-pick-$PR_NUMBER"
+          run_log="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          # shellcheck disable=SC2016 # Backticks in single quotes are Markdown code spans.
+          printf -v body 'The backport to `%s` failed before it could finish, so no backport pull request was opened. [Run log](%s)\n\nTo backport it by hand:\n\n```sh\ngit fetch origin main %s\ngit checkout -b %s origin/%s\ngit cherry-pick -x %s\n```\n\nIf `%s` has no `.changeset/config.json`, it does not use changesets. Then, for each `.changeset/*.md` file that this pull request adds, add its summary as an entry under `## Unpublished` in the `CHANGELOG.md` of each package that it names, and delete the changeset file.' \
+            "$target_branch" "$run_log" "$target_branch" "$work_branch" "$target_branch" \
+            "${MERGE_SHA:-<merge commit of #$PR_NUMBER>}" "$target_branch"
+          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "$body"
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
