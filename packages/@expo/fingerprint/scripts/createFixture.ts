@@ -4,47 +4,39 @@
  * Usage: npx ts-node scripts/createFixture /path/to/app /path/to/output.json
  */
 import realFS from 'fs';
-import { glob as globAsync } from 'glob';
 import { fs, vol } from 'memfs';
 import path from 'path';
 
 async function createFixtureAsync(targetDir: string, outputFile: string) {
-  const files = await globAsync('**/*', {
-    cwd: targetDir,
-    ignore: [
-      // binary files
-      '**/*.{jpg,png,ttf}',
-
-      // lock files
-      '**/*.lock',
-      '**/bun.lockb',
-
-      // node files
-      '**/node_modules/**',
-
-      // generated files
-      '**/build/**',
-
-      // ios files
-      'ios/Pods/**',
-      'vendor/**',
-      '**/xcuserdata/**',
-      '**/*.xcassets/**',
-      '**/IDEWorkspaceChecks.plist',
-
-      // android files
-      '**/*.jar',
-      '**/*.keystore',
-      '**/gradlew',
-      '**/gradlew.bat',
-      '**/gradle/wrapper/**',
-    ],
-    nodir: true,
-  });
-  for (const file of files) {
-    const content = realFS.readFileSync(path.join(targetDir, file), 'utf8');
-    fs.mkdirSync(path.join('/', path.dirname(file)), { recursive: true });
-    fs.writeFileSync(path.join('/', file), content);
+  const directories = [''];
+  for (const directory of directories) {
+    const entries = await realFS.promises.readdir(path.join(targetDir, directory), {
+      withFileTypes: true,
+    });
+    for (const entry of entries) {
+      if (entry.name.startsWith('.')) continue;
+      const file = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        if (
+          !['node_modules', 'build', 'xcuserdata'].includes(entry.name) &&
+          !entry.name.endsWith('.xcassets') &&
+          !['ios/Pods', 'vendor', 'gradle/wrapper'].includes(file) &&
+          !file.endsWith('/gradle/wrapper')
+        ) {
+          directories.push(file);
+        }
+      } else if (
+        !/\.(jpg|png|ttf|lock|jar|keystore)$/.test(entry.name) &&
+        !['bun.lockb', 'IDEWorkspaceChecks.plist', 'gradlew', 'gradlew.bat'].includes(entry.name) &&
+        (entry.isFile() ||
+          (entry.isSymbolicLink() &&
+            realFS.statSync(path.join(targetDir, file), { throwIfNoEntry: false })?.isFile()))
+      ) {
+        const content = realFS.readFileSync(path.join(targetDir, file), 'utf8');
+        fs.mkdirSync(path.join('/', path.dirname(file)), { recursive: true });
+        fs.writeFileSync(path.join('/', file), content);
+      }
+    }
   }
   const resultJSON: Record<string, string | null> = {};
   for (const [key, value] of Object.entries(vol.toJSON())) {
