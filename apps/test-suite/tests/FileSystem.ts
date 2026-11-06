@@ -123,7 +123,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
           const file = safDirectory.createFile('handle.txt', 'text/plain');
           file.writeSync('hello world');
 
-          const reader = file.open(FileMode.Read);
+          const reader = file.open(FileMode.ReadOnly);
           expect(reader.size).toBe(11);
           expect(await reader.readBytes(5)).toEqual(new Uint8Array([104, 101, 108, 108, 111])); // hello
           expect(reader.offset).toBe(5);
