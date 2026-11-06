@@ -2,6 +2,7 @@
 
 // swiftlint:disable function_parameter_count
 
+import EXUpdatesInterface
 import ExpoModulesCore
 import Foundation
 import os.log

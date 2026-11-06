@@ -1,5 +1,6 @@
 //  Copyright (c) 2026 650 Industries, Inc. All rights reserved.
 
+import EXUpdatesInterface
 import Foundation
 import Testing
 

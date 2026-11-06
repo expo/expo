@@ -10,6 +10,7 @@ import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.loader.UpdateResponse
+import expo.modules.updates.logging.LoadFailureCodes
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
@@ -50,7 +51,7 @@ class CheckForUpdateProcedure(
       updatesLogger.error(
         "Failed to check for update: ${e.localizedMessageWithCauseLocalizedMessage()}",
         e,
-        UpdatesErrorCode.forLoadFailure(e, otherwise = UpdatesErrorCode.UpdateFailedToLoad)
+        LoadFailureCodes.forLoadFailure(e, otherwise = UpdatesErrorCode.UpdateFailedToLoad)
       )
       procedureContext.processStateEvent(UpdatesStateEvent.CheckError(e.localizedMessageWithCauseLocalizedMessage()))
       callback(IUpdatesController.CheckForUpdateResult.ErrorResult(e))

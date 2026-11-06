@@ -1,5 +1,6 @@
 //  Copyright (c) 2022 650 Industries, Inc. All rights reserved.
 
+import EXUpdatesInterface
 import ExpoModulesCore
 import Testing
 

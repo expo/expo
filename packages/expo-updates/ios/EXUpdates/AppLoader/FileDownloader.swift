@@ -11,6 +11,7 @@
 // swiftlint:disable force_unwrapping
 // swiftlint:disable no_grouping_extension
 
+import EXUpdatesInterface
 import Foundation
 import EASClient
 

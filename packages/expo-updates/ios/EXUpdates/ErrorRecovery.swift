@@ -3,6 +3,7 @@
 // swiftlint:disable legacy_objc_type
 // swiftlint:disable force_unwrapping
 
+import EXUpdatesInterface
 import Foundation
 import React
 

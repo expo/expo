@@ -16,6 +16,7 @@ import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.NoDatabaseLauncher
+import expo.modules.updates.logging.LoadFailureCodes
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
@@ -835,7 +836,7 @@ class FileDownloader(
     val error = IOException("Failed to download asset ${asset.key}", cause)
     logger.warn(
       error.localizedMessageWithCauseLocalizedMessage(),
-      UpdatesErrorCode.forLoadFailure(cause, otherwise = UpdatesErrorCode.AssetsFailedToLoad),
+      LoadFailureCodes.forLoadFailure(cause, otherwise = UpdatesErrorCode.AssetsFailedToLoad),
       requestedUpdate?.loggingId,
       asset.key
     )

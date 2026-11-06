@@ -8,6 +8,7 @@
 // this class uses a lot of implicit non-null stuff across function calls. not worth refactoring to just satisfy lint
 // swiftlint:disable force_unwrapping
 
+import EXUpdatesInterface
 import Foundation
 
 public typealias AppLoaderUpdateResponseBlock = (_ updateResponse: UpdateResponse) -> Bool
