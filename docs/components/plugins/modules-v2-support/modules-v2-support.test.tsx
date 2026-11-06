@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 
 import { axe } from '~/common/test-utilities';
 
-import { LanguageSupport } from './LanguageSupport';
+import { getLanguageStatusLabel, LanguageSupport } from './LanguageSupport';
 import { ModulesV2SupportTable } from './ModulesV2SupportTable';
 import { getModulesV2Feature, modulesV2Features } from './data';
 
@@ -24,9 +24,8 @@ describe(LanguageSupport, () => {
     expect(screen.getByText('Swift: supported')).toBeInTheDocument();
   });
 
-  it('shows a missing status as not documented', () => {
-    render(<LanguageSupport feature="tuples" />);
-    expect(screen.getByText('Kotlin: not documented yet')).toBeInTheDocument();
+  it('labels a missing status as not documented', () => {
+    expect(getLanguageStatusLabel(undefined)).toBe('Not documented yet');
   });
 });
 

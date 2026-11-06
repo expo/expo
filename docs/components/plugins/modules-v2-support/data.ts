@@ -15,9 +15,8 @@ export type ModulesV2Feature = {
   note?: string;
 };
 
-// The Swift statuses describe `expo-modules-macros` 0.32.0 and the Kotlin statuses describe
+// The Swift statuses describe `expo-modules-macros` 0.33.0 and the Kotlin statuses describe
 // `io.github.expo:expo-modules-v2-react` 0.2.7.
-// TODO(@tsapeta): Confirm the Kotlin statuses that are `undefined`.
 export const modulesV2Features: ModulesV2Feature[] = [
   { id: 'modules', name: 'Modules', swift: 'supported', kotlin: 'supported' },
   { id: 'functions', name: 'Synchronous functions', swift: 'supported', kotlin: 'supported' },
@@ -27,7 +26,7 @@ export const modulesV2Features: ModulesV2Feature[] = [
     swift: 'supported',
     kotlin: 'supported',
   },
-  { id: 'properties', name: 'Properties', swift: 'supported' },
+  { id: 'properties', name: 'Properties', swift: 'supported', kotlin: 'supported' },
   { id: 'constants', name: 'Constants', swift: 'supported', kotlin: 'supported' },
   {
     id: 'concurrent-functions',
@@ -58,14 +57,19 @@ export const modulesV2Features: ModulesV2Feature[] = [
   { id: 'records', name: 'Records', swift: 'supported', kotlin: 'supported' },
   { id: 'enums', name: 'Enums', swift: 'supported', kotlin: 'supported' },
   { id: 'unions', name: 'Unions', swift: 'supported', kotlin: 'not-supported' },
-  { id: 'tuples', name: 'Tuples', swift: 'supported' },
+  { id: 'tuples', name: 'Tuples', swift: 'supported', kotlin: 'not-supported' },
   {
     id: 'closure-arguments',
     name: 'Closure arguments',
     swift: 'supported',
     kotlin: 'not-supported',
   },
-  { id: 'javascript-values', name: 'JavaScript values as arguments', swift: 'supported' },
+  {
+    id: 'javascript-values',
+    name: 'JavaScript values as arguments',
+    swift: 'supported',
+    kotlin: 'supported',
+  },
 ];
 
 export function getModulesV2Feature(id: string): ModulesV2Feature {
