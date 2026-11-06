@@ -48,17 +48,23 @@ export const modulesV2Features: ModulesV2Feature[] = [
     swift: 'supported',
     kotlin: 'not-supported',
   },
-  { id: 'shared-objects', name: 'Shared objects', swift: 'supported' },
+  { id: 'shared-objects', name: 'Shared objects', swift: 'supported', kotlin: 'supported' },
   {
     id: 'shared-object-static-members',
     name: 'Static members of shared objects',
     swift: 'supported',
+    kotlin: 'not-supported',
   },
   { id: 'records', name: 'Records', swift: 'supported', kotlin: 'supported' },
   { id: 'enums', name: 'Enums', swift: 'supported', kotlin: 'supported' },
   { id: 'unions', name: 'Unions', swift: 'supported', kotlin: 'not-supported' },
   { id: 'tuples', name: 'Tuples', swift: 'supported' },
-  { id: 'closure-arguments', name: 'Closure arguments', swift: 'supported' },
+  {
+    id: 'closure-arguments',
+    name: 'Closure arguments',
+    swift: 'supported',
+    kotlin: 'not-supported',
+  },
   { id: 'javascript-values', name: 'JavaScript values as arguments', swift: 'supported' },
 ];
 
