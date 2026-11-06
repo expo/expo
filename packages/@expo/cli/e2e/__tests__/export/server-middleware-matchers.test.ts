@@ -12,7 +12,6 @@ runExportSideEffects();
 describe('middleware matchers', () => {
   const configs = prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START], {
     app: 'server-tester',
-    uniqueOutputKey: 'middleware-matchers',
   });
 
   describe('pattern matching', () => {

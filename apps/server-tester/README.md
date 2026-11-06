@@ -16,4 +16,4 @@ This app does not cover React Server Components. Use `apps/router-e2e` for those
 - Web, production: `pnpm export`, then `pnpm serve dist` or `pnpm serve:express`.
 - iOS: `pnpm prebuild`, then `pnpm ios`.
 - Android: `pnpm prebuild`, then `pnpm android`.
-- E2E tests: from `packages/@expo/cli`, run `pnpm test:e2e <test name>`.
+- E2E tests: from `packages/@expo/cli`, run `pnpm test:e2e <test name>`. The Jest global setup exports this app once into `dist` with the default options. A suite that passes `export` options to `prepareServers()` exports into its own `dist-<key>` directory instead.

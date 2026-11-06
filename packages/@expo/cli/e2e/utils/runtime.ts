@@ -5,6 +5,7 @@ import { getRouterE2ERoot, getServerTesterRoot } from '../__tests__/utils';
 import { createExpoServe, createExpoStart, executeExpoAsync } from './expo';
 import { executeAsync, processFindPrefixedValue } from './process';
 import { BackgroundServer, createBackgroundServer } from './server';
+import { SHARED_DIST_NAME, assertSharedDistExported } from './shared-dist';
 
 export const RUNTIME_EXPO_SERVE = 'expo serve';
 export const RUNTIME_EXPO_START = 'expo start';
@@ -31,9 +32,9 @@ export type ServerTestOptions = {
   app?: E2EApp;
   /** The `__e2e__` scenario directory inside `router-e2e` (e.g., 'server-root-group'). Required for that app, unused for `server-tester`. */
   fixtureName?: string;
-  /** A unique value to ensure the output directory is not overwritten by another test running in parallel. Useful for tests that share the same `fixtureName` */
+  /** A unique value to ensure the output directory is not overwritten by another test running in parallel. Useful for tests that share the same `fixtureName`. Required for a `server-tester` suite that passes `export`, ignored when it serves the shared `dist`. */
   uniqueOutputKey?: string;
-  /** Options for the export command */
+  /** Options for the export command. A `server-tester` suite that omits this serves the shared `dist` export from the Jest global setup. */
   export?: {
     /** Environment variables to pass to the export command */
     env?: Record<string, string>;
@@ -72,7 +73,6 @@ export function prepareServers(
   runtimes: RuntimeType[],
   options: ServerTestOptions
 ): ServerTestConfiguration[] {
-  const { uniqueOutputKey } = options;
   const app = resolveApp(options);
   const { projectRoot } = app;
 
@@ -87,26 +87,20 @@ export function prepareServers(
     ...exportEnv,
   } as const;
 
-  let sharedProductionExport: Promise<string> | undefined;
-
-  async function prepareProductionDist(runtimeName: string) {
-    const sharedOutputName = generateOutputDir('shared', app.outputPrefix, uniqueOutputKey);
-    const sharedOutputDir = path.join(projectRoot, sharedOutputName);
-
-    sharedProductionExport ??= executeExpoAsync(
+  const exportAsync = (outputName: string) =>
+    executeExpoAsync(
       projectRoot,
-      ['export', '-p', 'web', '--output-dir', sharedOutputName, ...exportCliFlags],
+      ['export', '-p', 'web', '--output-dir', outputName, ...exportCliFlags],
       { env: defaultExportEnv }
-    ).then(() => sharedOutputDir);
+    );
+  const dist = planDist(app, options, exportAsync);
 
-    const sourceDir = await sharedProductionExport;
-    const outputName = generateOutputDir(runtimeName, app.outputPrefix, uniqueOutputKey);
-    const outputDir = path.join(projectRoot, outputName);
-
-    await fs.promises.rm(outputDir, { force: true, recursive: true });
-    await fs.promises.cp(sourceDir, outputDir, { recursive: true });
-
-    return [outputDir, outputName] as const;
+  async function prepareProductionDist(
+    runtimeName: string
+  ): Promise<[outputDir: string, outputName: string]> {
+    await dist.prepare(runtimeName);
+    const outputName = dist.outputName(runtimeName);
+    return [path.join(projectRoot, outputName), outputName];
   }
 
   const knownRuntimeConfigs: Record<RuntimeType, Omit<ServerTestConfiguration, 'name'>> = {
@@ -179,11 +173,7 @@ export function prepareServers(
           command: [
             'node_modules/.bin/workerd',
             'serve',
-            path.join(
-              projectRoot,
-              generateOutputDir('workerd', app.outputPrefix, uniqueOutputKey),
-              'server/config.capnp'
-            ),
+            path.join(projectRoot, dist.outputName('workerd'), 'server/config.capnp'),
           ],
           host: (chunk: any) => processFindPrefixedValue(chunk, 'Workerd server listening'),
           port: 8787,
@@ -274,6 +264,7 @@ export function setupServer(
 }
 
 type ResolvedApp = {
+  name: E2EApp;
   projectRoot: string;
   /** Environment variables that select the routes inside the app. */
   env: Record<string, string>;
@@ -294,6 +285,7 @@ function resolveApp({ app = 'router-e2e', fixtureName }: ServerTestOptions): Res
       const projectRoot = getRouterE2ERoot();
       const fixtureRoot = path.join(projectRoot, '__e2e__', fixtureName);
       return {
+        name: app,
         projectRoot,
         env: { E2E_ROUTER_SRC: fixtureName },
         expressScript: path.join(fixtureRoot, 'express.js'),
@@ -304,6 +296,7 @@ function resolveApp({ app = 'router-e2e', fixtureName }: ServerTestOptions): Res
     case 'server-tester': {
       const projectRoot = getServerTesterRoot();
       return {
+        name: app,
         projectRoot,
         env: {},
         expressScript: path.join(projectRoot, 'servers/express.js'),
@@ -312,6 +305,60 @@ function resolveApp({ app = 'router-e2e', fixtureName }: ServerTestOptions): Res
       };
     }
   }
+}
+
+type DistPlan = {
+  /** Directory name, relative to the project root, that the runtime serves. */
+  outputName: (runtimeName: string) => string;
+  /** Makes the export available under `outputName(runtimeName)`. */
+  prepare: (runtimeName: string) => Promise<void>;
+};
+
+function planDist(
+  app: ResolvedApp,
+  { export: exportOptions, uniqueOutputKey }: ServerTestOptions,
+  exportAsync: (outputName: string) => Promise<unknown>
+): DistPlan {
+  if (app.name === 'server-tester') {
+    if (!exportOptions) {
+      return {
+        outputName: () => SHARED_DIST_NAME,
+        prepare: async () => assertSharedDistExported(),
+      };
+    }
+    if (!uniqueOutputKey) {
+      throw new Error(
+        '`uniqueOutputKey` is required when a "server-tester" suite passes `export` options, so its export does not overwrite the shared `dist`.'
+      );
+    }
+    const outputName = `dist-${uniqueOutputKey}`;
+    let exported: Promise<unknown> | undefined;
+    return {
+      outputName: () => outputName,
+      prepare: async () => {
+        await (exported ??= exportAsync(outputName));
+      },
+    };
+  }
+
+  // `router-e2e` fixtures export once per suite and copy the result per runtime, because
+  // the workerd bundle is written into the served directory.
+  const sharedOutputName = generateOutputDir('shared', app.outputPrefix, uniqueOutputKey);
+  let sharedExport: Promise<unknown> | undefined;
+  return {
+    outputName: (runtimeName) => generateOutputDir(runtimeName, app.outputPrefix, uniqueOutputKey),
+    prepare: async (runtimeName) => {
+      await (sharedExport ??= exportAsync(sharedOutputName));
+      const outputDir = path.join(
+        app.projectRoot,
+        generateOutputDir(runtimeName, app.outputPrefix, uniqueOutputKey)
+      );
+      await fs.promises.rm(outputDir, { force: true, recursive: true });
+      await fs.promises.cp(path.join(app.projectRoot, sharedOutputName), outputDir, {
+        recursive: true,
+      });
+    },
+  };
 }
 
 function generateOutputDir(runtimeName: string, outputPrefix: string, uniqueOutputKey?: string) {

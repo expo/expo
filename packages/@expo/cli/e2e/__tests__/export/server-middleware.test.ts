@@ -16,18 +16,6 @@ describe('exports middleware', () => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_WORKERD], {
       app: 'server-tester',
-      uniqueOutputKey: 'middleware',
-      export: {
-        env: {
-          E2E_ROUTER_REDIRECTS: JSON.stringify([
-            { source: '/middleware/redirect', destination: 'https://expo.dev' },
-          ]),
-          E2E_ROUTER_REWRITES: JSON.stringify([
-            { source: '/middleware/rewrite', destination: '/middleware/redirect-target' },
-          ]),
-        },
-        cliFlags: ['--source-maps'],
-      },
       serve: {
         env: { TEST_SECRET_KEY: 'test-secret-key' },
       },

@@ -16,13 +16,6 @@ runExportSideEffects();
 describe.each(
   prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START, RUNTIME_WORKERD], {
     app: 'server-tester',
-    uniqueOutputKey: 'loaders-server',
-    export: {
-      env: {
-        E2E_ROUTER_WEB_OUTPUT: 'server',
-        TEST_SECRET_KEY: 'test-secret-key',
-      },
-    },
     serve: {
       env: {
         E2E_ROUTER_WEB_OUTPUT: 'server',
