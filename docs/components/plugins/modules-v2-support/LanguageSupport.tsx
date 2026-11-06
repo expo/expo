@@ -1,7 +1,5 @@
 import { mergeClasses } from '@expo/styleguide';
 
-import { getTagClasses } from '~/ui/components/Tag/helpers';
-
 import { getModulesV2Feature, LanguageStatus } from './data';
 
 const STATUS_LABELS: Record<LanguageStatus, string> = {
@@ -33,7 +31,7 @@ function LanguageTag({ language, status }: { language: string; status?: Language
     <span
       className={mergeClasses(
         'inline-flex min-h-5.25 items-center rounded-full border border-default bg-element px-1.75 py-0.5 text-xs leading-none whitespace-nowrap',
-        status && status !== 'supported' && getTagClasses('deprecated')
+        status !== 'supported' && 'border-dashed text-secondary'
       )}>
       {language}: {status ? STATUS_LABELS[status] : 'not documented yet'}
     </span>
