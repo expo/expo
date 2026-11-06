@@ -60,6 +60,10 @@ export function addPushToStartTokenListener() {
   return { remove() {} };
 }
 
+export function addLiveActivityStartListener() {
+  return { remove() {} };
+}
+
 export function after(date: Date) {
   return { after: date };
 }

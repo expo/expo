@@ -38,21 +38,21 @@ final class LiveActivityFactory: SharedObject {
   }
 
   func getInstances(includeEnded: Bool = false) throws -> [LiveActivity] {
-    let activities = Activity<LiveActivityAttributes>.activities
-      // Filter LiveActivity instances for activities that don't match the factory's name.
-      .filter { $0.content.state.name == name }
-      // A stale activity is still visible and updatable. An ended one stays visible until its
-      // dismissal but cannot be updated, so it is returned only with `includeEnded`.
-      .filter { activity in
-        switch activity.activityState {
-        case .active, .stale: return true
-        case .ended: return includeEnded
-        default: return false
-        }
-      }
+    // Filter LiveActivity instances for activities that don't match the factory's name.
+    let known = Activity<LiveActivityAttributes>.activities.filter { $0.content.state.name == name }
+    // Prune by every known activity, not the filtered view, so an ended instance keeps its identity.
+    let knownIDs = Set(known.map(\.id))
+    instances = instances.filter { knownIDs.contains($0.key) }
 
-    let activeIDs = Set(activities.map(\.id))
-    instances = instances.filter { activeIDs.contains($0.key) }
+    // A stale activity is still visible and updatable. An ended one stays visible until its
+    // dismissal but cannot be updated, so it is returned only with `includeEnded`.
+    let activities = known.filter { activity in
+      switch activity.activityState {
+      case .active, .stale: return true
+      case .ended: return includeEnded
+      default: return false
+      }
+    }
 
     return activities.map { activity in
       if let instance = instances[activity.id] {

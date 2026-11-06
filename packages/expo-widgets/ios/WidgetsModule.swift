@@ -7,7 +7,7 @@ let pushNotificationsEnabledKey: String = "ExpoWidgets_EnablePushNotifications"
 let onUserInteraction = "onExpoWidgetsUserInteraction"
 let onPushToStartTokenReceived = "onExpoWidgetsPushToStartTokenReceived"
 let onTokenReceived = "onExpoWidgetsTokenReceived"
-let onActivityStateChanged = "onExpoWidgetsActivityStateChanged"
+let onActivityStateChanged = "onExpoWidgetsLiveActivityStateChanged"
 let onLiveActivityStarted = "onExpoWidgetsLiveActivityStarted"
 let onUserInteractionNotification = Notification.Name(onUserInteraction)
 
@@ -46,6 +46,11 @@ public final class WidgetsModule: Module {
     OnStopObserving(onPushToStartTokenReceived) {
       pushToStartTokenObserverTask?.cancel()
       pushToStartTokenObserverTask = nil
+    }
+
+    OnDestroy {
+      pushToStartTokenObserverTask?.cancel()
+      liveActivityStartObserverTask?.cancel()
     }
 
     OnStartObserving(onLiveActivityStarted) {

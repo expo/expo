@@ -49,7 +49,7 @@ class LiveActivityStub {
   getState(): LiveActivityState {
     return 'dismissed';
   }
-  getProps(): string | null {
+  getProps(): Record<string, any> | null {
     return null;
   }
   addListener(_eventName: string, _listener: (...args: unknown[]) => void): EventSubscription {

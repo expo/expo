@@ -7,8 +7,7 @@ struct LiveActivityAttributes: ActivityAttributes {
   // The deep link URL passed to start(). Stored in the static attributes so it is
   // scoped to this activity and survives content updates, unlike ContentState.
   var url: String?
-  // Props a push-to-start sets once. Content-state props override them key by key, so one
-  // broadcast update or end can serve many activities that show different content.
+  // A JSON string set only by push-to-start `attributes`. Content-state props override it key by key.
   var props: String?
 
   public struct ContentState: Codable, Hashable {
@@ -27,7 +26,7 @@ struct LiveActivityAttributes: ActivityAttributes {
     return String(decoding: data, as: UTF8.self)
   }
 
-  private static func jsonObject(_ json: String) -> [String: Any]? {
+  static func jsonObject(_ json: String) -> [String: Any]? {
     (try? JSONSerialization.jsonObject(with: Data(json.utf8))) as? [String: Any]
   }
 }

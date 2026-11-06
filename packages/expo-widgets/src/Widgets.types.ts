@@ -284,9 +284,10 @@ export type PushTokenEvent = {
  * - `'ended'` - The Live Activity ended and stays visible until its dismissal.
  * - `'dismissed'` - The Live Activity was removed by the user or the system.
  * - `'pending'` - The Live Activity was requested but is not shown yet. Only on iOS 26 and later.
+ * - `'unknown'` - A state that this version of the library does not know yet.
  * @platform ios
  */
-export type LiveActivityState = 'active' | 'stale' | 'ended' | 'dismissed' | 'pending';
+export type LiveActivityState = 'active' | 'stale' | 'ended' | 'dismissed' | 'pending' | 'unknown';
 
 /**
  * Event emitted when the state of a live activity changes. Delivered only while the app process runs.
@@ -373,7 +374,7 @@ export type LiveActivityEvents = {
    * Function that is invoked when the state of a live activity changes.
    * @param event State event details.
    */
-  onExpoWidgetsActivityStateChanged: (event: LiveActivityStateEvent) => void;
+  onExpoWidgetsLiveActivityStateChanged: (event: LiveActivityStateEvent) => void;
 };
 
 export declare class NativeWidgetObject extends SharedObject {
@@ -402,5 +403,5 @@ export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents>
   ): Promise<void>;
   getPushToken(): Promise<string | null>;
   getState(): LiveActivityState;
-  getProps(): string | null;
+  getProps(): Record<string, any> | null;
 }

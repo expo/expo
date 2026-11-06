@@ -59,27 +59,25 @@ final class LiveActivity: SharedObject {
     return Self.stateName(activity.activityState)
   }
 
-  func getProps() throws -> String? {
+  func getProps() throws -> [String: Any]? {
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
       throw LiveActivityNotFoundException(id)
     }
 
-    return activity.attributes.mergedProps(activity.content.state.props)
+    return activity.attributes.mergedProps(activity.content.state.props).flatMap(LiveActivityAttributes.jsonObject)
   }
 
   private static func stateName(_ state: ActivityState) -> String {
-    #if compiler(>=6.2)
     if #available(iOS 26.0, *), state == .pending {
       return "pending"
     }
-    #endif
 
     switch state {
     case .active: return "active"
     case .stale: return "stale"
     case .ended: return "ended"
     case .dismissed: return "dismissed"
-    @unknown default: return "ended"
+    @unknown default: return "unknown"
     }
   }
 

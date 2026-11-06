@@ -179,7 +179,8 @@ export class LiveActivity<T extends object = object> {
 
   /**
    * Returns the current state of this Live Activity.
-   * @throws If the activity no longer exists. ActivityKit drops dismissed activities.
+   * ActivityKit drops dismissed activities, so `'dismissed'` is only seen through `addStateListener`.
+   * @throws If the activity no longer exists.
    * @platform ios
    */
   getState(): LiveActivityState {
@@ -187,18 +188,13 @@ export class LiveActivity<T extends object = object> {
   }
 
   /**
-   * Returns the Live Activity's start props merged with its current content's props, or `null` if there are none or they are malformed.
-   * @throws If the activity no longer exists. ActivityKit drops dismissed activities.
+   * Returns the props set by a push-to-start `attributes`, merged with the current content-state props (content-state keys win),
+   * or `null` if there are none or they are malformed.
+   * @throws If the activity no longer exists.
    * @platform ios
    */
   getProps(): T | null {
-    const props = this.nativeLiveActivity.getProps();
-    if (!props) return null;
-    try {
-      return JSON.parse(props) as T;
-    } catch {
-      return null;
-    }
+    return this.nativeLiveActivity.getProps() as T | null;
   }
 
   /**
@@ -209,7 +205,7 @@ export class LiveActivity<T extends object = object> {
    * @platform ios
    */
   addStateListener(listener: (event: LiveActivityStateEvent) => void): EventSubscription {
-    return this.nativeLiveActivity.addListener('onExpoWidgetsActivityStateChanged', listener);
+    return this.nativeLiveActivity.addListener('onExpoWidgetsLiveActivityStateChanged', listener);
   }
 }
 
@@ -243,7 +239,8 @@ export class LiveActivityFactory<T extends object = object> {
 
   /**
    * Returns all active and stale instances of this Live Activity type, and ended ones too with `includeEnded`.
-   * @param options Pass `includeEnded: true` to also return ended instances that are still visible.
+   * @param options Pass `includeEnded: true` to also return ended instances that are still visible. An ended instance
+   * can no longer be updated, only ended again, for example with `'immediate'` to remove it.
    * @platform ios
    */
   getInstances(options?: { includeEnded?: boolean }) {
@@ -317,7 +314,9 @@ export function addPushToStartTokenListener(
 }
 
 /**
- * Adds a listener for Live Activity start events, including starts by push-to-start.
+ * Adds a listener for Live Activity start events of every type, including starts by push-to-start.
+ * Use `name` to find the factory, then `getInstances()` to get the instance.
+ * Events are delivered only while the app process is running, so also call `getInstances()` on launch.
  * @param listener Callback function to handle start events.
  * @return An event subscription that can be used to remove the listener.
  * @platform ios
