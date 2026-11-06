@@ -1,5 +1,6 @@
 ---
-title: Types
+title: 'Expo Modules API 2.0: Types'
+sidebar_title: Types
 description: Learn which native types convert to and from JavaScript values in Expo Modules API 2.0.
 ---
 
@@ -10,19 +11,19 @@ The arguments, results, properties, and event payloads of a module convert betwe
 
 ## Primitive types
 
-| JavaScript            | Kotlin                             | Swift                                                                       |
-| --------------------- | ---------------------------------- | --------------------------------------------------------------------------- |
-| `boolean`             | `Boolean`                          | `Bool`                                                                      |
-| `string`              | `String`                           | `String`                                                                    |
-| `number`              | `Int`, `Long`, `Float`, `Double`   | `Int`, `Int8` to `Int32`, `UInt8` to `UInt32`, `Double`, `Float`, `CGFloat` |
-| `bigint`              | Not supported                      | `Int64`, `UInt64`                                                           |
-| `null` or `undefined` | A nullable type, such as `String?` | An optional type, such as `String?`                                         |
-| `undefined` (result)  | `Unit`                             | `Void`, `JavaScriptUndefined`                                               |
+| JavaScript            | Kotlin                             | Swift                                                                               |
+| --------------------- | ---------------------------------- | ----------------------------------------------------------------------------------- |
+| `boolean`             | `Boolean`                          | `Bool`                                                                              |
+| `string`              | `String`                           | `String`                                                                            |
+| `number`              | `Int`, `Long`, `Float`, `Double`   | `Int`, `UInt`, `Int8` to `Int32`, `UInt8` to `UInt32`, `Double`, `Float`, `CGFloat` |
+| `bigint`              | Not supported                      | `Int64`, `UInt64`                                                                   |
+| `null` or `undefined` | A nullable type, such as `String?` | An optional type, such as `String?`                                                 |
+| `undefined` (result)  | `Unit`                             | `Void`, `JavaScriptUndefined`                                                       |
 
 The two languages convert large integers differently:
 
 - In Kotlin, a `Long` converts to a JavaScript `number`. A value larger than `Number.MAX_SAFE_INTEGER` loses precision.
-- In Swift, an `Int` converts to a `number` and throws for a value outside the safe integer range of JavaScript. `Int64` and `UInt64` convert to a `bigint`, which keeps every value. All 64-bit integer types accept a `number` or a `bigint` from JavaScript.
+- In Swift, `Int` and `UInt` convert to a `number` and throw for a value outside the safe integer range of JavaScript. `Int64` and `UInt64` convert to a `bigint`, which keeps every value. All 64-bit integer types accept a `number` or a `bigint` from JavaScript.
 - In Swift, the integer types up to 32 bits round a `number` to the nearest integer, and throw for a value that doesn't fit.
 
 Both languages accept `null` and `undefined` for a nullable or optional argument. In Swift, an optional that is `nil` converts to `null`.
@@ -47,8 +48,8 @@ In Kotlin, a `Set` converts to and from a JavaScript `Array`. In Swift, a `Set` 
 | `number` of seconds               | `Duration`                               | Not supported, use `Double`                                                                 |
 | `Promise` (result)                | `Promise`                                | `Task`                                                                                      |
 | `Object` with known properties    | [Record](/modules/v2/reference/records/) | [Record](/modules/v2/reference/records/)                                                    |
-| One of a few types                | Not supported                            | [Union](/modules/v2/reference/unions/)                                                      |
-| `Array` or `Object` of fixed size | Not supported                            | [Tuple](#tuples)                                                                            |
+| One of a few types                | Not supported yet                        | [Union](/modules/v2/reference/unions/)                                                      |
+| `Array` or `Object` of fixed size | Not documented yet                       | [Tuple](#tuples)                                                                            |
 | `function`                        | Not documented yet                       | [Closure](#closure-arguments)                                                               |
 | Instance of a shared object class | Not documented yet                       | [`SharedObject`](/modules/v2/reference/shared-objects/)                                     |
 | `ArrayBuffer`, typed arrays       | `ByteArray`, `TypedArray`                | `Data`, `ArrayBuffer`, `TypedArray` (see [Binary data](/modules/v2/reference/binary-data/)) |
@@ -139,4 +140,4 @@ func describe(_ value: borrowing JavaScriptValue) -> String {
 }
 ```
 
-A JavaScript value is valid only on the JavaScript thread. So, a `.concurrent` function and a function with `.withAsync` can't take it, and the macro reports such an argument.
+A JavaScript value is valid only on the JavaScript thread. For what this means for functions that run on other threads, see [JavaScript values on other threads](/modules/v2/reference/concurrency/#javascript-values-on-other-threads).

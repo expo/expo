@@ -1,5 +1,6 @@
 ---
-title: Shared objects
+title: 'Expo Modules API 2.0: Shared objects'
+sidebar_title: Shared objects
 description: Learn how to share native objects with JavaScript as class instances with Expo Modules API 2.0.
 ---
 
@@ -11,11 +12,11 @@ A shared object is a native object that JavaScript uses as an instance of a Java
 
 <LanguageSupport feature="shared-objects" />
 
-Add `@SharedObject` to a subclass of `SharedObject`, and `@JS` to the members that JavaScript can use. A module exports the class in the `classes` argument of `@ExpoModule`:
+Add `@SharedObject` to a subclass of `SharedObject`, and `@JS` to the members that JavaScript can use. Make the class `public`, the same as a [module class](/modules/v2/reference/modules/#declare-a-module). A module exports the class in the `classes` argument of `@ExpoModule`:
 
 ```swift
 @SharedObject
-final class Cache: SharedObject {
+public final class Cache: SharedObject {
   private var values: [String: String] = [:]
 
   @JS
@@ -66,7 +67,7 @@ A subclass of another `@SharedObject` class gets the `@JS` members of its superc
 
 ```swift
 @SharedObject
-final class EncryptionKey: SharedObject {
+public final class EncryptionKey: SharedObject {
   @JS
   static func generate(size: KeySize?) async -> EncryptionKey {
     // ...
@@ -82,4 +83,4 @@ Static members and instance members bind to different JavaScript objects, so the
 
 ## Thread safety
 
-Native code can use a shared object from more than one thread, for example in `.concurrent` functions. So, `@SharedObject` adds an `@unchecked Sendable` conformance when the class isn't `Sendable`. The compiler then doesn't check the mutable state of the class. Keep state that more than one thread uses behind a lock or an actor. For more information, see [Concurrency](/modules/v2/reference/concurrency/).
+Native code can use a shared object from more than one thread, so keep state that more than one thread uses behind a lock or an actor. In Swift, `@SharedObject` adds an `@unchecked Sendable` conformance, the same as `@ExpoModule`. For the details, see [Thread safety of modules and shared objects in Swift](/modules/v2/reference/concurrency/#thread-safety-of-modules-and-shared-objects-in-swift).
