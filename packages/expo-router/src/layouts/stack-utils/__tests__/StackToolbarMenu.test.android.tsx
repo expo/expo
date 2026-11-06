@@ -981,4 +981,49 @@ describe('StackToolbarMenu', () => {
     await rerender(tree(false));
     expect(screen.getByTestId('AnimatedItemContainer').props.visible).toBe(true);
   });
+
+  describe('inline submenu children validation', () => {
+    const originalEnv = process.env.NODE_ENV;
+    const tree = (
+      <ToolbarPlacementContext.Provider value="right">
+        <StackToolbarMenu icon={{ uri: 'test-icon' }}>
+          <StackToolbarMenu inline>
+            <NativeToolbarMenuAction onPress={() => {}}>Valid</NativeToolbarMenuAction>
+            <>
+              <NativeToolbarMenuAction onPress={() => {}}>In fragment</NativeToolbarMenuAction>
+            </>
+          </StackToolbarMenu>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    beforeEach(() => {
+      jest.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      process.env.NODE_ENV = originalEnv;
+      jest.restoreAllMocks();
+    });
+
+    it('throws in development for an invalid child of an inline submenu', async () => {
+      process.env.NODE_ENV = 'development';
+
+      await expect(async () => {
+        await render(tree);
+      }).rejects.toThrow(
+        'Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu, Stack.Toolbar.MenuAction, Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.'
+      );
+    });
+
+    it('drops an invalid child of an inline submenu in production', async () => {
+      process.env.NODE_ENV = 'production';
+
+      await render(tree);
+
+      expect(screen.queryByText('In fragment')).toBeNull();
+      const items = screen.getAllByTestId('DropdownMenuItem');
+      expect(items.map((item) => item.props.shape)).toEqual([{ index: 0, count: 1 }]);
+    });
+  });
 });
