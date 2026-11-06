@@ -1,5 +1,6 @@
 import './ts-declarations/global';
 import './sweet/setUpJsLogger.fx';
+import './setUpNativeViewComponentFactory.fx';
 import './polyfill';
 
 export type * from './ts-declarations/global';
