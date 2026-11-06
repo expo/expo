@@ -1,7 +1,7 @@
 ---
 title: Maestro insights
 sidebar_title: Maestro
-description: Track flow health, flaky flows, and failure patterns for your Maestro end-to-end tests in the Maestro tab of EAS Insights.
+description: Track flow health, flaky flows, and failure patterns for your Maestro end-to-end tests in the Maestro tab of Expo Insights.
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
@@ -11,12 +11,12 @@ import { TerminalBrowserIcon } from '@expo/styleguide-icons/outline/TerminalBrow
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-> **info** Maestro insights is available on the Production and Enterprise plans. Time ranges can start up to 30 days back on the Production plan, and up to 365 days back on the Enterprise plan. Learn more at [EAS pricing](https://expo.dev/pricing).
+> **info** Maestro insights is available on the Production and Enterprise plans. Time ranges can start up to 30 days back on the Production plan, and up to 365 days back on the Enterprise plan. Learn more at [Expo pricing](https://expo.dev/pricing).
 
-The **Maestro** tab in the dashboard surfaces results from the [Maestro](https://maestro.dev/) end-to-end (E2E) tests you run in EAS Workflows with the [`maestro` job](/eas/workflows/pre-packaged-jobs/#maestro). It helps you spot which flows fail or flake the most so you can keep your test suite healthy.
+The **Maestro** tab in the dashboard surfaces results from the [Maestro](https://maestro.dev/) end-to-end (E2E) tests you run in Expo Workflows with the [`maestro` job](/eas/workflows/pre-packaged-jobs/#maestro). It helps you spot which flows fail or flake the most so you can keep your test suite healthy.
 
-- To view insights, open your project in the EAS dashboard, select **Insights** from the navigation menu, and then select the **Maestro** tab.
-- To start sending data, set up E2E tests by following [Run E2E tests on EAS Workflows with Maestro](/eas/workflows/examples/e2e-tests/). Results appear automatically as your tests run.
+- To view insights, open your project in the Expo dashboard, select **Insights** from the navigation menu, and then select the **Maestro** tab.
+- To start sending data, set up E2E tests by following [Run E2E tests on Expo Workflows with Maestro](/eas/workflows/examples/e2e-tests/). Results appear automatically as your tests run.
 
 You can also [query the same data from the terminal with EAS CLI](/eas-insights/eas-cli/).
 
@@ -29,7 +29,7 @@ Each flow run falls into one of three states:
 - **Failed**: Did not pass.
 
 <ContentSpotlight
-  alt="The Maestro tab in EAS Insights showing run metrics, a runs-over-time chart, and a table of Maestro flows."
+  alt="The Maestro tab in Expo Insights showing run metrics, a runs-over-time chart, and a table of Maestro flows."
   src="/static/images/eas-insights/insights-maestro-light.webp"
   darkSrc="/static/images/eas-insights/insights-maestro-dark.webp"
 />
@@ -63,7 +63,7 @@ Select a flow to drill into its history, including its Maestro runs, pass rate, 
 - **Recent runs**: Individual runs with their status, duration, whether they flaked, and the workflow run, branch, and commit they came from.
 
 <ContentSpotlight
-  alt="A Maestro flow detail view in EAS Insights showing the flow's metrics, runs-over-time chart, and top error patterns."
+  alt="A Maestro flow detail view in Expo Insights showing the flow's metrics, runs-over-time chart, and top error patterns."
   src="/static/images/eas-insights/insights-maestro-flow-light.webp"
   darkSrc="/static/images/eas-insights/insights-maestro-flow-dark.webp"
 />
@@ -73,15 +73,15 @@ Select a flow to drill into its history, including its Maestro runs, pass rate, 
 ## More
 
 <BoxLink
-  title="Query EAS Insights with EAS CLI"
+  title="Query Expo Insights with EAS CLI"
   description="Query the same pass rates, flaky flows, and error patterns from the terminal or a CI job."
   href="/eas-insights/eas-cli/"
   Icon={TerminalBrowserIcon}
 />
 
 <BoxLink
-  title="Run E2E tests on EAS Workflows with Maestro"
-  description="Set up and run Maestro end-to-end tests in EAS Workflows."
+  title="Run E2E tests on Expo Workflows with Maestro"
+  description="Set up and run Maestro end-to-end tests in Expo Workflows."
   href="/eas/workflows/examples/e2e-tests/"
   Icon={Dataflow03Icon}
 />

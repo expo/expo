@@ -51,13 +51,20 @@ Expo MCP Server teaches your AI-assisted tools about the Expo SDK and lets them 
 - "Install `expo-camera` and show me how to take photos"
 - "Add `expo-notifications` for push notifications"
 
-**Manage builds and workflows.** Expo MCP Server can trigger and monitor EAS builds, run workflows, and pull crash data from TestFlight:
+**Manage builds and workflows.** Expo MCP Server can trigger and monitor builds on Expo Build, run workflows, and pull crash data from TestFlight:
 
-- "Investigate why my most recent iOS build on EAS failed"
+- "Investigate why my most recent iOS build on Expo Build failed"
 - "Identify any patterns in recent failing workflows"
 - "Create a workflow that runs Maestro tests"
 - "Show me recent TestFlight crashes"
 - "Show TestFlight feedback for my app"
+
+**Investigate production performance.** Expo MCP Server can [query Expo Observe](/eas/observe/ai-agents/) for startup and navigation metrics, slow sessions, and user-defined events from your production app:
+
+- "Did startup get slower in the latest release?"
+- "Find the slowest cold launches this week"
+- "Which routes have the worst time to interactive on Android?"
+- "Show me the timeline for the session behind that slow launch"
 
 **Automate visual verification and testing.** Multimodal AI-assisted tools can screenshot and interact with your running app in a simulator. Expo MCP Server includes local capabilities enabled by adding the `expo-mcp` package to your project's dependencies.
 

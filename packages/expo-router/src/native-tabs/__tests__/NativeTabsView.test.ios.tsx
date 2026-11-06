@@ -103,6 +103,163 @@ it('uses shadowColor when it is passed to NativeTabs in both standardAppearance 
   expect(TabsScreen.mock.calls[0]![0].ios?.scrollEdgeAppearance!.tabBarShadowColor).toBe('red');
 });
 
+it('sets tabBarHiddenAnimationEnabled to false when disableHiddenAnimation is true', async () => {
+  await renderRouter({
+    _layout: () => (
+      <NativeTabs disableHiddenAnimation>
+        <NativeTabs.Trigger name="index" />
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(TabsHost).toHaveBeenCalledTimes(1);
+  expect(TabsHost.mock.calls[0]![0].ios?.tabBarHiddenAnimationEnabled).toBe(false);
+});
+
+describe('preferredPlacement', () => {
+  it('forwards the placement with tabSidebar mode when sidebarAdaptable is true', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs sidebarAdaptable preferredPlacement="sidebar">
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0]![0].ios?.tabBarControllerMode).toBe('tabSidebar');
+    expect(TabsHost.mock.calls[0]![0].ios?.tabBarSidebarPreferredPlacement).toBe('sidebar');
+  });
+
+  it('uses tabSidebar mode when sidebarAdaptable is not set', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs preferredPlacement="tabBar">
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0]![0].ios?.tabBarControllerMode).toBe('tabSidebar');
+    expect(TabsHost.mock.calls[0]![0].ios?.tabBarSidebarPreferredPlacement).toBe('tabBar');
+  });
+
+  it('warns in dev and keeps tabBar mode when sidebarAdaptable is false', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs sidebarAdaptable={false} preferredPlacement="sidebar">
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsHost).toHaveBeenCalledTimes(1);
+      expect(TabsHost.mock.calls[0]![0].ios?.tabBarControllerMode).toBe('tabBar');
+      expect(warnSpy).toHaveBeenCalledWith(
+        'NativeTabs ignores `preferredPlacement` because `sidebarAdaptable` is `false`. ' +
+          'The placement has an effect only when the tab bar can turn into a sidebar. ' +
+          'Remove `sidebarAdaptable={false}` to use the placement, or remove `preferredPlacement`.'
+      );
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+});
+
+describe('prominent', () => {
+  it('passes the route name of the prominent trigger as ios.prominentScreenKey', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+            <NativeTabs.Trigger name="search" prominent />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+        search: () => <View testID="search" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsHost.mock.calls.at(-1)![0].ios?.prominentScreenKey).toBe('search');
+      expect(warnSpy).not.toHaveBeenCalled();
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it('uses the first visible prominent trigger and warns in dev about the others', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+            <NativeTabs.Trigger name="hiddenTab" prominent hidden />
+            <NativeTabs.Trigger name="first" prominent />
+            <NativeTabs.Trigger name="second" prominent />
+            <NativeTabs.Trigger name="third" prominent />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+        hiddenTab: () => <View testID="hiddenTab" />,
+        first: () => <View testID="first" />,
+        second: () => <View testID="second" />,
+        third: () => <View testID="third" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsHost.mock.calls.at(-1)![0].ios?.prominentScreenKey).toBe('first');
+      expect(warnSpy).toHaveBeenCalledWith(
+        'NativeTabs supports only one prominent tab, so only the "first" tab is prominent. ' +
+          'Remove `prominent` from these tabs: "second", "third".'
+      );
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+
+  it('ignores prominent on the screen trigger and warns in dev', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => (
+          <View testID="index">
+            <NativeTabs.Trigger prominent />
+          </View>
+        ),
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsHost.mock.calls.at(-1)![0].ios?.prominentScreenKey).toBeUndefined();
+      expect(warnSpy).toHaveBeenCalledWith(
+        'NativeTabs ignores `prominent` on the `NativeTabs.Trigger` inside the "index" screen. ' +
+          'The prominent tab can be set only in the layout. ' +
+          'Set `prominent` on `<NativeTabs.Trigger name="index">` in the layout file.'
+      );
+    } finally {
+      warnSpy.mockRestore();
+    }
+  });
+});
+
 describe('unstable_nativeProps', () => {
   it('forwards top-level raw props to Tabs.Host', async () => {
     await renderRouter({

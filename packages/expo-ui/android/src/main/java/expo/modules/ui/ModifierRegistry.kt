@@ -903,5 +903,9 @@ object ModifierRegistry {
     register("horizontalScroll") { _, _, _, _ ->
       Modifier.horizontalScroll(rememberScrollState())
     }
+
+    register("scrollDismissesKeyboard") { _, _, _, _ ->
+      Modifier.scrollDismissesKeyboard()
+    }
   }
 }

@@ -37,6 +37,8 @@ struct SnackActionPanel: View {
   let snappedEdge: SnappedEdge
   let gearPosition: CGPoint  // Top-left of gear frame
   let screenWidth: CGFloat
+  let safeAreaLeading: CGFloat
+  let safeAreaTrailing: CGFloat
   let isLesson: Bool
   let isLessonCompleted: Bool
   let hasBeenEdited: Bool
@@ -72,12 +74,20 @@ struct SnackActionPanel: View {
 
   // Panel width - extends slightly under the gear on both sides
   private var panelWidth: CGFloat {
-    screenWidth - (screenEdgeMargin * 2) + (horizontalOverlap * 2)
+    screenWidth - leadingMargin - trailingMargin + (horizontalOverlap * 2)
   }
 
   // Panel X position - shifted inward to tuck under gear
   private var panelX: CGFloat {
-    screenEdgeMargin - horizontalOverlap
+    leadingMargin - horizontalOverlap
+  }
+
+  private var leadingMargin: CGFloat {
+    max(safeAreaLeading, screenEdgeMargin)
+  }
+
+  private var trailingMargin: CGFloat {
+    max(safeAreaTrailing, screenEdgeMargin)
   }
 
   // Panel Y position - shifted down so gear appears higher

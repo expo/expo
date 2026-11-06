@@ -1,7 +1,7 @@
 {
   "platforms": ["apple", "android", "web"],
   "apple": {
-    "modules": ["ExpoBlob"]
+    "modules": ["BlobModule"]
   },
   "android": {
     "modules": ["expo.modules.blob.BlobModule"],

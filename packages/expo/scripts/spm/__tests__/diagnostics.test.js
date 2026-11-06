@@ -18,6 +18,7 @@ const {
   renderRootConflictWarning,
   renderPartlyProvidedPackageWarning,
   renderExtraPodsWarning,
+  renderBuildFromSourceFallbackWarning,
 } = require('../diagnostics');
 const { spmUpdateCommand } = require('../commands');
 const { resolvePodIdentities, uncoveredPod } = require('../plugin');
@@ -165,6 +166,198 @@ describe('diagnostic priority order', () => {
   });
 });
 
+describe('a pod buildFromSource names that cannot be built from source', () => {
+  const subject = { podName: 'ExpoBad', packageName: 'expo-bad', moduleRoot: '/m/expo-bad' };
+  const forced = (refusal, hasSources = true) => ({
+    ...pendingPod({
+      ...subject,
+      hasSources,
+      prebuildProduct: { name: 'ExpoBad', sourceOnly: false },
+      refusal,
+    }),
+    buildFromSourceEntry: 'expo-b.*',
+  });
+  const classify = (pod) => classifyUnsupported({ pending: [pod], coreAvailable: true });
+  const podspecLinkage = {
+    reason: 'needs-manifest-for-linkage',
+    file: '/m/expo-bad/ios/ExpoBad.podspec',
+    line: 19,
+    snippet: "s.frameworks = 'Photos'",
+  };
+
+  it('is refused for buildFromSource, with what blocks the source build as the cause', () => {
+    expect(classify(forced(null))).toEqual([
+      {
+        ...subject,
+        reason: 'build-from-source-unsupported',
+        buildFromSourceEntry: 'expo-b.*',
+        cause: { reason: 'mixed-no-manifest', productName: 'ExpoBad' },
+      },
+    ]);
+  });
+
+  it('takes the most specific cause', () => {
+    expect(classify(forced(podspecLinkage))[0].cause).toEqual(podspecLinkage);
+  });
+
+  const report = (refusal, hasSources) =>
+    renderUnsupportedReport(classify(forced(refusal, hasSources)));
+
+  it('says what failed, and how to use the precompiled XCFramework instead', () => {
+    const text = report(null);
+    expect(text).toContain(
+      'error: Expo module "expo-bad" (pod ExpoBad) is listed in buildFromSource, but Swift Package Manager cannot build it from source.'
+    );
+    expect(text).toContain(
+      `Remove "expo-b.*" from \`"expo": { "autolinking": { "buildFromSource": [...] } }\` (or its \`"ios"\` section) in your package.json, or narrow it so it no longer matches ExpoBad or expo-bad. The module's precompiled XCFramework is then used. Then run \`${spmUpdateCommand()}\` from your app directory again.`
+    );
+    expect(text).toContain('Module path: /m/expo-bad');
+    expect(text).not.toContain('prebuild');
+  });
+
+  it.each([
+    [
+      'mixed sources and no manifest',
+      null,
+      true,
+      'It mixes Swift and Objective-C/C++ sources and ships no Package.swift, and Swift Package Manager can build such a module only from a manifest that splits the two languages into separate targets.',
+    ],
+    [
+      'no sources',
+      null,
+      false,
+      'It has no `ios` or `apple` source directory for Swift Package Manager to compile.',
+    ],
+    [
+      'linkage in its podspec',
+      podspecLinkage,
+      true,
+      'Its podspec declares native linkage at /m/expo-bad/ios/ExpoBad.podspec:19, and it ships no Package.swift stating that linkage, so a package built from its sources would link less than CocoaPods does.',
+    ],
+    [
+      'a manifest target dependency',
+      {
+        reason: 'unsupported-target-dependency',
+        dependencies: [{ target: 'ExpoBad', dependsOn: 'VendoredKit', kind: 'binary' }],
+      },
+      true,
+      'Its Package.swift has targets depending on "VendoredKit", which the package generated from it cannot declare.',
+    ],
+    [
+      'a manifest package dependency',
+      { reason: 'unsupported-package-dependency', dependencies: [] },
+      true,
+      'Its Package.swift declares Swift packages the package generated from it cannot declare.',
+    ],
+    [
+      'manifest targets without sources',
+      { reason: 'unresolvable-target-path', targetNames: ['Main', 'Extras'] },
+      true,
+      'Its Package.swift names targets with no sources on disk: "Main", "Extras".',
+    ],
+    [
+      'a manifest that does not export the product',
+      { reason: 'not-exported-by-manifest', productName: 'ExpoBad', exportedProducts: [] },
+      true,
+      'Its Package.swift exports no "ExpoBad" library product.',
+    ],
+    [
+      'precompiled sibling pods',
+      {
+        reason: 'partially-precompiled',
+        precompiledSiblings: ['ExpoGood'],
+        precompiledProducts: ['ExpoGood'],
+        artifactDirs: [],
+      },
+      true,
+      'Other pods of the module are linked precompiled (ExpoGood), and building the module from source would link them a second time.',
+    ],
+  ])('names the cause: %s', (_, refusal, hasSources, why) => {
+    expect(report(refusal, hasSources)).toContain(why);
+  });
+
+  it('gives a cause it has no description for a generic line, naming the reason', () => {
+    const text = renderUnsupportedReport([
+      {
+        ...subject,
+        reason: 'build-from-source-unsupported',
+        buildFromSourceEntry: 'ExpoBad',
+        cause: { reason: 'some-future-reason' },
+      },
+    ]);
+    expect(text).toContain(
+      'The plugin found no way to build it from source with Swift Package Manager (reason: some-future-reason).'
+    );
+    expect(text).toContain('Remove "ExpoBad" from');
+  });
+
+  describe('when a pattern links it precompiled and its XCFramework is incomplete', () => {
+    const incomplete = { ...forced(null), precompiledIncomplete: true };
+
+    it('is refused naming the entry, with what blocks the source build as the cause', () => {
+      expect(classify(incomplete)).toEqual([
+        {
+          ...subject,
+          reason: 'build-from-source-fallback-incomplete',
+          buildFromSourceEntry: 'expo-b.*',
+          cause: { reason: 'mixed-no-manifest', productName: 'ExpoBad' },
+        },
+      ]);
+    });
+
+    it('says what failed, why, and how to complete the XCFramework', () => {
+      expect(renderUnsupportedReport(classify(incomplete))).toBe(
+        [
+          'error: The buildFromSource entry "expo-b.*" matches Expo module "expo-bad" (pod ExpoBad), which Swift Package Manager cannot build from source, and its precompiled XCFramework is incomplete, so it cannot be linked precompiled either.',
+          '  It mixes Swift and Objective-C/C++ sources and ships no Package.swift, and Swift Package Manager can build such a module only from a manifest that splits the two languages into separate targets.',
+          '  A buildFromSource pattern links a module precompiled when Swift Package Manager cannot build it from source, and the plugin links a precompiled XCFramework only when both its Debug and Release flavors are present.',
+          `  Reinstall expo-bad so it ships both flavors, or, in the Expo repository, from its root, build both with \`node tools/bin/expotools.js prebuild expo-bad\`. Then run \`${spmUpdateCommand()}\` from your app directory again.`,
+          '  Module path: /m/expo-bad',
+        ].join('\n')
+      );
+    });
+  });
+
+  it('counts the pod once', () => {
+    expect(new UnsupportedModulesError(classify(forced(null))).message).toMatch(
+      /^1 Expo native module /
+    );
+  });
+});
+
+describe('modules a buildFromSource pattern matches that are linked precompiled instead', () => {
+  const option =
+    '`"expo": { "autolinking": { "buildFromSource": [...] } }` (or its `"ios"` section) in your package.json';
+  const core = { podName: 'ExpoModulesCore', packageName: 'expo-modules-core', entry: '.*' };
+
+  it('renders nothing when no module fell back', () => {
+    expect(renderBuildFromSourceFallbackWarning([])).toBe('');
+  });
+
+  it('names the module and the entry that matched it', () => {
+    expect(renderBuildFromSourceFallbackWarning([core])).toBe(
+      'warning: buildFromSource matches 1 Expo module that Swift Package Manager cannot build from source, so it is linked precompiled instead: ExpoModulesCore (expo-modules-core, matched by ".*"). ' +
+        'A buildFromSource pattern links a module precompiled when Swift Package Manager cannot build that module from source; an entry that names a module exactly fails the sync instead. ' +
+        `To see what blocks a module's source build, list it by its exact pod or npm package name in ${option}: the sync then fails and names the cause. ` +
+        `To keep it precompiled without this warning, narrow ".*" so that no entry matches this module. Then run \`${spmUpdateCommand()}\` from your app directory again.`
+    );
+  });
+
+  it('names every module, and each entry once', () => {
+    const text = renderBuildFromSourceFallbackWarning([
+      core,
+      { podName: 'ExpoMixed', packageName: 'expo-mixed', entry: 'expo-.*' },
+      { podName: 'ExpoOther', packageName: 'expo-other', entry: 'expo-.*' },
+    ]);
+    expect(text).toContain(
+      'buildFromSource matches 3 Expo modules that Swift Package Manager cannot build from source, so they are linked precompiled instead: ExpoModulesCore (expo-modules-core, matched by ".*"), ExpoMixed (expo-mixed, matched by "expo-.*"), ExpoOther (expo-other, matched by "expo-.*").'
+    );
+    expect(text).toContain(
+      'To keep them precompiled without this warning, narrow ".*", "expo-.*" so that no entry matches these modules.'
+    );
+  });
+});
+
 describe('linkage declared in a podspec', () => {
   const podspecLinkage = {
     file: '/m/expo-bad/ios/ExpoBad.podspec',
@@ -306,7 +499,7 @@ describe('renderUnsupportedReport', () => {
     expect(text.split('\n').filter((l) => l.startsWith('error: '))).toHaveLength(2);
   });
 
-  it('tells a prebuildable module to run et prebuild, not to write a manifest', () => {
+  it('tells a prebuildable module to run the prebuild command, not to write a manifest', () => {
     const text = renderUnsupportedReport([
       {
         reason: 'prebuild-available',
@@ -317,14 +510,15 @@ describe('renderUnsupportedReport', () => {
       },
     ]);
     expect(text).toContain('error: ');
-    // `et prebuild` builds both flavors when --flavor is omitted, and the plugin
+    // The prebuild command builds both flavors when --flavor is omitted, and the plugin
     // requires a complete pair — so the message must not suggest a single flavor.
-    expect(text).toContain('et prebuild expo-audio');
+    expect(text).toContain('node tools/bin/expotools.js prebuild expo-audio');
+    expect(text).toMatch(/in the Expo repository, from its root/i);
     expect(text).not.toContain('-f Debug');
     expect(text).not.toContain('patch-package');
   });
 
-  it('names the scoped package verbatim, which et prebuild accepts', () => {
+  it('names the scoped package verbatim, which the prebuild command accepts', () => {
     const text = renderUnsupportedReport([
       {
         reason: 'prebuild-available',
@@ -334,7 +528,7 @@ describe('renderUnsupportedReport', () => {
         productName: 'ExpoUI',
       },
     ]);
-    expect(text).toContain('et prebuild @expo/ui');
+    expect(text).toContain('node tools/bin/expotools.js prebuild @expo/ui');
   });
 
   it('offers spm.config.json as a route for a module that has none', () => {
@@ -350,7 +544,13 @@ describe('renderUnsupportedReport', () => {
     ]);
     expect(text).toContain('error: ');
     expect(text).toContain('ExpoModulesCore');
-    expect(text).toContain('et prebuild');
+    expect(text).toContain(
+      'node tools/bin/expotools.js prebuild -f Debug expo-modules-core expo-modules-jsi'
+    );
+    expect(text).toContain(
+      'node tools/bin/expotools.js prebuild -f Release expo-modules-core expo-modules-jsi'
+    );
+    expect(text).toMatch(/in the Expo repository, from its root/i);
     expect(text).not.toContain('patch-package');
   });
 
@@ -1211,7 +1411,8 @@ describe('a module with only some pods precompiled', () => {
     expect(report).toMatch(/^error: Expo module "expo-dual" \(pod ExpoDualExtras\)/);
     expect(report).toContain('ExpoDual ');
     expect(report).toContain('twice');
-    expect(report).toContain('et prebuild expo-dual');
+    expect(report).toContain('node tools/bin/expotools.js prebuild expo-dual');
+    expect(report).toMatch(/in the Expo repository, from its root/i);
     expect(report).toContain('spm.config.json');
     expect(report).toContain('"exclude": ["expo-dual"]');
     expect(report).toContain('Module path: /node_modules/expo-dual');
@@ -1250,7 +1451,7 @@ describe('a module with only some pods precompiled', () => {
       entries({ prebuildProduct: { name: 'ExpoDualExtras', sourceOnly: false } })
     );
     expect(report).toContain('already declares "ExpoDualExtras"');
-    expect(report).toContain('et prebuild expo-dual');
+    expect(report).toContain('node tools/bin/expotools.js prebuild expo-dual');
   });
 
   it('does not promise an XCFramework for a source-only product', () => {
@@ -1258,7 +1459,7 @@ describe('a module with only some pods precompiled', () => {
       entries({ prebuildProduct: { name: 'ExpoDualExtras', sourceOnly: true } })
     );
     expect(report).toContain('sourceOnly');
-    expect(report).not.toContain('et prebuild');
+    expect(report).not.toContain('expotools.js prebuild');
     expect(report).toMatch(/^ {2}1\. To build it from source instead/m);
   });
 });

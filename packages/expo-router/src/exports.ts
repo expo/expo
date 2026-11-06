@@ -11,6 +11,8 @@ export {
   useSegments,
   useRootNavigation,
   useRootNavigationState,
+  useCanGoBack,
+  useCanDismiss,
   useLoaderData,
   useCurrentRouteInfo,
 } from './hooks';
@@ -81,6 +83,7 @@ export {
   unstable_createStandardRouterNavigator,
   unstable_integrateWithRouter,
 } from './standard-navigation';
+export { useReconcileTabHistory as unstable_useReconcileTabHistory } from './standard-navigation/useReconcileTabHistory';
 export type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,

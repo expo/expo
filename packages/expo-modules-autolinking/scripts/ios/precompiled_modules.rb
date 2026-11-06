@@ -119,8 +119,27 @@ module Expo
     @target_platform = nil
     @xcframework_slice_cache = nil
     @status_cache = {}                  # Hash: pod_name -> resolve_prebuilt_status result
+    @spm_dependency_pods = Set.new
+
+    # Prepended onto React Native's SPMManager, which keeps the pods calling `spm_dependency` private.
+    module SPMDependencyRecorder
+      def dependency(pod_spec, **kwargs)
+        Expo::PrecompiledModules.spm_dependency_pods.add(pod_spec.name.split('/').first)
+        super
+      end
+    end
 
     class << self
+      # Root names of pods that resolve Swift packages through React Native's `spm_dependency`.
+      attr_reader :spm_dependency_pods
+
+      # Starts recording `spm_dependency` calls. Must run before podspecs are evaluated;
+      # `use_expo_modules!` does, after the Podfile has loaded React Native's SPMManager.
+      # Repeated calls are no-ops: Ruby prepends a module only once.
+      def record_spm_dependency_pods
+        ::SPMManager.prepend(SPMDependencyRecorder) if defined?(::SPMManager)
+      end
+
       # Returns the build flavor (debug/release) for precompiled modules.
       # Defaults to 'debug', can be overridden via EXPO_PRECOMPILED_FLAVOR env var.
       def build_flavor
@@ -232,6 +251,8 @@ module Expo
       # - Pods that vendor xcframeworks (already precompiled)
       # - Source-built pods that depend on React-Core (non-modular includes)
       # - Pods that depend, directly or transitively, on a static pod (CocoaPods rejects that for frameworks)
+      # With dynamic frameworks, pods that call React Native's `spm_dependency` keep them, and so do
+      # their dependencies, unless one of those is in `framework_modules_to_patch`.
       #
       # Also stages shared SPM dep xcframework symlinks inside their owner pod's
       # directory — must run before `generate_pods_project` reads each xcframework's
@@ -241,24 +262,15 @@ module Expo
       def perform_pre_install(installer)
         return unless enabled?
         ensure_shared_spm_deps(installer)
-        return if linkage(installer).nil?
+        linkage = linkage(installer)
+        return if linkage.nil?
 
-        pods_to_downgrade = Set.new(installer.podfile.framework_modules_to_patch)
-
-        installer.pod_targets.each do |t|
-          if has_vendored_xcframeworks?(t)
-            pods_to_downgrade.add(t.name)
-          elsif t.root_spec.dependencies.any? { |d| d.name.start_with?('React-Core') }
-            pods_to_downgrade.add(t.name)
-          end
-        end
-
-        installer.pod_targets.each do |t|
-          next unless t.should_build? && t.build_as_dynamic?
-          if t.recursive_dependent_targets.any? { |d| pods_to_downgrade.include?(d.name) || d.build_as_static? }
-            pods_to_downgrade.add(t.name)
-          end
-        end
+        pods_to_downgrade = pods_to_downgrade(
+          installer.pod_targets,
+          linkage: linkage,
+          framework_modules_to_patch: installer.podfile.framework_modules_to_patch,
+          spm_dependency_pods: spm_dependency_pods
+        )
 
         Pod::UI.puts "[Expo] ".blue + "Disabling USE_FRAMEWORKS for #{pods_to_downgrade.size} pods (#{pods_to_downgrade.to_a.join(', ')})"
 
@@ -267,8 +279,65 @@ module Expo
             def t.build_type
               Pod::BuildType.static_library
             end
+          else
+            # @react-native-firebase's `rnfirebase_restore_dynamic_linkage_after_expo_prebuilt!` calls
+            # `build_type`, which CocoaPods keeps private, on every RNFB pod, downgraded or not.
+            def t.build_type
+              super
+            end
           end
         end
+      end
+
+      # Returns the names of the pods that `perform_pre_install` builds as static libraries.
+      #
+      # @param pod_targets [Array<Pod::PodTarget>]
+      # @param linkage [Symbol] :dynamic or :static, see `linkage`
+      # @param framework_modules_to_patch [Array<String>] Pods the Podfile forces to link statically
+      # @param spm_dependency_pods [Set<String>] Root names of pods that call React Native's `spm_dependency`
+      # @return [Set<String>]
+      def pods_to_downgrade(pod_targets, linkage:, framework_modules_to_patch:, spm_dependency_pods:)
+        pods_to_downgrade = Set.new(framework_modules_to_patch)
+
+        pod_targets.each do |t|
+          if has_vendored_xcframeworks?(t)
+            pods_to_downgrade.add(t.name)
+          elsif t.root_spec.dependencies.any? { |d| d.name.start_with?('React-Core') }
+            pods_to_downgrade.add(t.name)
+          end
+        end
+
+        pod_targets.each do |t|
+          next unless t.should_build? && t.build_as_dynamic?
+          if t.recursive_dependent_targets.any? { |d| pods_to_downgrade.include?(d.name) || d.build_as_static? }
+            pods_to_downgrade.add(t.name)
+          end
+        end
+
+        return pods_to_downgrade unless linkage == :dynamic
+
+        # Packages such as @stripe/stripe-react-native fail their own post-install check unless
+        # their pod is a dynamic framework, and CocoaPods rejects a dynamic framework with any
+        # static dependency. So the pod and its whole dependency graph keep their linkage,
+        # unless that graph contains a pod the installer forces static after this step.
+        exempted_pods = []
+        pod_targets.each do |t|
+          next unless spm_dependency_pods.include?(t.pod_name)
+          graph = [t] + t.recursive_dependent_targets
+          static_pod = graph.map(&:name).find { |name| framework_modules_to_patch.include?(name) }
+          if static_pod
+            Pod::UI.puts "[Expo] ".blue + "Disabling USE_FRAMEWORKS for #{t.name}, which resolves Swift packages through spm_dependency, because #{static_pod} must link statically"
+            next
+          end
+          graph.each { |d| pods_to_downgrade.delete(d.name) }
+          exempted_pods << t.name
+        end
+
+        unless exempted_pods.empty?
+          Pod::UI.puts "[Expo] ".blue + "Keeping USE_FRAMEWORKS for pods that resolve Swift packages through spm_dependency, and their dependencies (#{exempted_pods.join(', ')})"
+        end
+
+        pods_to_downgrade
       end
 
       # Canonical JSON dump (one pod per line) of the pure derivations behind

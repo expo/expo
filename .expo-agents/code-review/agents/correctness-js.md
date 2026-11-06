@@ -95,3 +95,8 @@ really reach review here — not a generic checklist.
 - Performance speculation with no measurement and no obvious complexity change.
 
 Trace the execution path before you report. Prefer zero findings over a low-value one.
+
+<!-- Code this prompt cites, kept true by `ecr ref-check`. A path that is prose (a
+     per-package directory name, a root file the text does not mean, a submodule
+     path the review checkout lacks) is listed as ignored instead. -->
+<!-- @ref-ignore __tests__/ apps/ package.json pnpm-lock.yaml -->

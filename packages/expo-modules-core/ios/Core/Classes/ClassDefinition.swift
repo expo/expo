@@ -67,12 +67,12 @@ public final class ClassDefinition: ObjectDefinition {
       // the prototype chain `new` set up). Prefer the macro-synthesized `_constructSharedObject`,
       // falling back to the DSL `Constructor` body.
       if let sharedObject = try sharedObjectType?._constructSharedObject(this: this, arguments: arguments, in: appContext.runtime) {
-        appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: this.getObject())
+        appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: this.getObject(), inheritsBaseClass: true)
       } else if let constructor {
         let result = try constructor.runBody(appContext, in: appContext.runtime, this: this, arguments: arguments)
 
         if let sharedObject = result as? SharedObject {
-          appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: this.getObject())
+          appContext.sharedObjectRegistry.add(native: sharedObject, javaScript: this.getObject(), inheritsBaseClass: true)
         }
       } else if sharedObjectType != nil {
         // Nothing built a native instance, so the object would reach JavaScript with no backing
@@ -89,9 +89,10 @@ public final class ClassDefinition: ObjectDefinition {
 
     let prototype = klass.getProperty("prototype").getObject()
 
-    // Bind the macro's `@JS` members onto the prototype.
+    // Bind the macro's `@JS` members: instance members onto the prototype, static members onto the constructor.
     if let sharedObjectType {
       try sharedObjectType._decorateSharedObject(prototype: prototype, in: appContext.runtime)
+      try sharedObjectType._decorateSharedObject(constructor: klass, in: appContext.runtime)
     }
 
     // Register the prototype of the JS class for its associated native type.

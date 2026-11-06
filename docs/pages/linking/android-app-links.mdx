@@ -77,14 +77,14 @@ Get the value of `package_name` from your app config, under `android.package`.
 
 <Step label="3">
 
-Get the value of `sha256_cert_fingerprints` from your app's signing certificate. If you're using [EAS Build](/build/setup/) to build your Android app, after creating a build:
+Get the value of `sha256_cert_fingerprints` from your app's signing certificate. If you're using [Expo Build](/build/setup/) to build your Android app, after creating a build:
 
 - Run `eas credentials -p android` command, and select the build profile to get its fingerprint value.
 - Copy the fingerprint value listed under `SHA256 Fingerprint`.
 
 <Collapsible summary="Alternate method to obtain the SHA256 certificate fingerprint from Google Play Console">
 
-If you're not using EAS to manage code signing, you can find the **sha256_cert_fingerprints** by building and submitting your app manually to the [Google Play Console](https://play.google.com/console/):
+If you're not using Expo Build to manage code signing, you can find the **sha256_cert_fingerprints** by building and submitting your app manually to the [Google Play Console](https://play.google.com/console/):
 
 - Inside the Google Play Console's dashboard, go to **Release > Setup > App Signing**.
 - Find the correct **Digital Asset Links JSON** snippet for your app.

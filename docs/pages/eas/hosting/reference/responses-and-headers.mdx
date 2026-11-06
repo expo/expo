@@ -1,10 +1,10 @@
 ---
 sidebar_title: Responses and headers
 title: Default responses and headers
-description: Defaults that are added automatically on requests when using EAS Hosting.
+description: Defaults that are added automatically on requests when using Expo Hosting.
 ---
 
-**EAS Hosting** applies several defaults to your deployment that are supposed to help you and reduce the amount of code you have to add yourself for simple API routes.
+**Expo Hosting** applies several defaults to your deployment that are supposed to help you and reduce the amount of code you have to add yourself for simple API routes.
 
 ## Asset responses
 
@@ -14,7 +14,7 @@ A default `ETag` header is added to all asset responses to allow browsers to re-
 
 ## CORS responses
 
-By default, if an API route does not handle `OPTIONS` requests, EAS Hosting will automatically respond with a default CORS response.
+By default, if an API route does not handle `OPTIONS` requests, Expo Hosting will automatically respond with a default CORS response.
 
 This default is very permissible and generally allows all browsers to make requests to the API route. **If you don't want this**, handle `OPTIONS` requests in API routes yourself.
 
@@ -36,7 +36,7 @@ More information on [preflight `OPTIONS` requests can be found in the MDN docume
 
 ## Strict-Transport-Security header
 
-This header tells browsers to only access a URL with the HTTPS protocol in the future. EAS Hosting automatically adds this header if it's missing.
+This header tells browsers to only access a URL with the HTTPS protocol in the future. Expo Hosting automatically adds this header if it's missing.
 
 Its default value is set to `max-age=31536000; includeSubDomains; preload`.
 
@@ -44,7 +44,7 @@ For more information on why this header is a good default, improves security, an
 
 ## Common headers
 
-By default, EAS Hosting will remove and not forward any `X-Powered-By` and `X-Aspnet-Version` headers. With API routes, this header does not serve much of a purpose and we don't recommend you add alternative headers like `X-Powered-By` to your API routes as it unnecessarily exposes internal information on the code you're running.
+By default, Expo Hosting will remove and not forward any `X-Powered-By` and `X-Aspnet-Version` headers. With API routes, this header does not serve much of a purpose and we don't recommend you add alternative headers like `X-Powered-By` to your API routes as it unnecessarily exposes internal information on the code you're running.
 
 If your API routes respond with custom `X-Frame-Options` headers, these headers will automatically be converted to `Content-Security-Policy` directives in your response.
 
@@ -52,11 +52,11 @@ If your API routes respond with custom `X-Frame-Options` headers, these headers 
 
 If your API route throws an unhandled JavaScript error, this is treated as a "crash" since your API route was unable to deliver an error.
 
-EAS Hosting will respond with an error page in these cases. The error page will be rendered as an HTML response, if the `Accept: text/html` request header was sent. Otherwise, it will only respond with a plaintext response.
+Expo Hosting will respond with an error page in these cases. The error page will be rendered as an HTML response, if the `Accept: text/html` request header was sent. Otherwise, it will only respond with a plaintext response.
 
 ## Request headers
 
-**EAS Hosting** will add the following headers to every request, before they're forwarded to your API routes. These headers generally add more information about who made the request.
+**Expo Hosting** will add the following headers to every request, before they're forwarded to your API routes. These headers generally add more information about who made the request.
 
 | Request header      | Description                                                                                                                                                                                                                                |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -79,7 +79,7 @@ EAS Hosting will respond with an error page in these cases. The error page will 
 
 ### Request URL and origin
 
-EAS Hosting routes requests from several hostnames to your deployments. [Aliases](/eas/hosting/deployments-and-aliases) and [Custom domains](/eas/hosting/custom-domain) mean that there may be a difference between the **incoming** URL that clients have used to make a request, and the **target** URL that your API routes receive.
+Expo Hosting routes requests from several hostnames to your deployments. [Aliases](/eas/hosting/deployments-and-aliases) and [Custom domains](/eas/hosting/custom-domain) mean that there may be a difference between the **incoming** URL that clients have used to make a request, and the **target** URL that your API routes receive.
 
 For example, while a client may make a request to an alias URL such as `https://my-app--staging.expo.app/`, the worker deployment that will receive the request will have a URL containing its deployment ID, such as `https://my-app--or1170q9ix.expo.app/`.
 

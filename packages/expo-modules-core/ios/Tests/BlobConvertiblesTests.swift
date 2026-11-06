@@ -1,5 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -15,7 +16,7 @@ struct BlobConvertiblesTests {
   }
 
   init() {
-    appContext = AppContext.create()
+    appContext = TestAppContext()
     appContext.moduleRegistry.register(moduleType: BlobModule.self, name: nil)
   }
 
@@ -51,14 +52,11 @@ struct BlobConvertiblesTests {
 
   @Test
   func `should support async function`() async throws {
-    try runtime
-      .eval(
-        "expo.modules.BlobModule.echoAsync(new Uint8Array([0x00, 0xff])).then((result) => { globalThis.result = result; })"
+    try await runtime
+      .evalAsync(
+        "expo.modules.BlobModule.echoAsync(new Uint8Array([0x00, 0xff])).then((result) => globalThis.result = result)"
       )
-
-    try await waitUntil(timeout: 2.0) {
-      safeBoolEval("globalThis.result instanceof Uint8Array")
-    }
+    #expect(try runtime.eval("globalThis.result instanceof Uint8Array").asBool() == true)
 
     let array = try runtime.eval("Array.from(globalThis.result)").asArray()
     #expect(array[0].getInt() == 0x00)
@@ -67,50 +65,16 @@ struct BlobConvertiblesTests {
 
   @Test
   func `should support async function for dict`() async throws {
-    try runtime
-      .eval(
-        "expo.modules.BlobModule.echoMapAsync({ key: new Uint8Array([0x00, 0xff]) }).then((result) => { globalThis.result = result; })"
+    try await runtime
+      .evalAsync(
+        "expo.modules.BlobModule.echoMapAsync({ key: new Uint8Array([0x00, 0xff]) }).then((result) => globalThis.result = result)"
       )
-
-    try await waitUntil(timeout: 2.0) {
-      safeBoolEval("globalThis.result != null && globalThis.result.key instanceof Uint8Array")
-    }
+    #expect(try runtime.eval("globalThis.result.key instanceof Uint8Array").asBool() == true)
 
     let array = try runtime.eval("Array.from(globalThis.result.key)").asArray()
     #expect(array[0].getInt() == 0x00)
     #expect(array[1].getInt() == 0xff)
   }
-
-  // MARK: - Helpers
-
-  private func safeBoolEval(_ js: String) -> Bool {
-    var result = false
-    do {
-      try EXUtilities.catchException {
-        guard let jsResult = try? self.runtime.eval(js) else {
-          return
-        }
-        result = jsResult.getBool()
-      }
-    } catch {
-      return false
-    }
-    return result
-  }
-
-  private func waitUntil(timeout: TimeInterval, condition: @escaping () -> Bool) async throws {
-    let start = Date()
-    while !condition() {
-      if Date().timeIntervalSince(start) > timeout {
-        throw TestError.timeout
-      }
-      try await Task.sleep(nanoseconds: 50_000_000) // 50ms
-    }
-  }
-}
-
-private enum TestError: Error {
-  case timeout
 }
 
 private class BlobModule: Module {

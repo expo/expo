@@ -1,5 +1,7 @@
-import { Link, usePathname, type Href } from 'expo-router';
-import { useTheme } from 'expo-router/react-navigation';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { Link, router, usePathname, type Href } from 'expo-router';
+import type { StackHeaderProps } from 'expo-router/js-stack';
+import { getHeaderTitle, Header, HeaderBackground, useTheme } from 'expo-router/react-navigation';
 import type { ReactNode } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -47,6 +49,38 @@ export function JSHeaderTitle({ children }: { children: string }) {
   );
 }
 
+// A JS Stack header with extra space below the title row.
+export function JSHeader({ back, layout, options, route }: StackHeaderProps) {
+  return (
+    <View style={styles.header}>
+      <HeaderBackground style={StyleSheet.absoluteFill} />
+      <Header
+        {...options}
+        back={back}
+        layout={layout}
+        modal={options.presentation === 'modal'}
+        title={getHeaderTitle(options, route.name)}
+        headerShadowVisible={false}
+      />
+    </View>
+  );
+}
+
+export function JSHeaderBackButton({ canGoBack }: { canGoBack?: boolean }) {
+  if (!canGoBack) {
+    return null;
+  }
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel="Back"
+      onPress={() => router.back()}
+      style={styles.backButton}>
+      <Ionicons name="chevron-back" size={20} color="#3a3a3c" />
+    </Pressable>
+  );
+}
+
 type DemoButtonProps = {
   title: string;
   testID?: string;
@@ -81,6 +115,18 @@ const styles = StyleSheet.create({
   headerTitleText: {
     fontSize: 17,
     fontWeight: '600',
+  },
+  header: {
+    paddingBottom: 8,
+  },
+  backButton: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: '#e5e5ea',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginStart: 8,
   },
   badge: {
     backgroundColor: '#e5e5ea',

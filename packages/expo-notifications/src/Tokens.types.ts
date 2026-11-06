@@ -90,12 +90,14 @@ export interface ExpoPushTokenOptions {
   development?: boolean;
   /**
    * The ID of the project to which the token should be attributed.
-   * Defaults to [`Constants.expoConfig.extra.eas.projectId`](./constants/#easconfig) exposed by `expo-constants`.
+   * Defaults to [`Constants.easConfig.projectId`](./constants/#easconfig), and then to
+   * `Constants.expoConfig.extra.eas.projectId`, both exposed by `expo-constants`.
+   * If neither value is set, [`getExpoPushTokenAsync()`](#getexpopushtokenasyncoptions) rejects
+   * with the `ERR_NOTIFICATIONS_NO_EXPERIENCE_ID` error. In that case, this option is required.
    *
-   * When using EAS Build, this value is automatically set. However, it is
-   * **recommended** to set it manually. Once you have EAS Build configured, you can find
+   * When using Expo Build, this value is automatically set. However, it is
+   * **recommended** to set it manually. Once you have Expo Build configured, you can find
    * the value in **app.json** under `extra.eas.projectId`. You can copy and paste it into your code.
-   * If you are not using EAS Build, it will fallback to [`Constants.expoConfig?.extra?.eas?.projectId`](./constants/#manifest).
    */
   projectId?: string;
   /**

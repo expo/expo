@@ -220,7 +220,9 @@ const ExpoFontLoader: Required<Omit<ExpoFontLoaderModule, 'loadFontFamilyAsync'>
     }
 
     const style = getStyleElement();
-    document.head!.appendChild(style);
+    if (!style.isConnected) {
+      document.head!.appendChild(style);
+    }
 
     const alreadyLoaded = getFontFaceRulesMatchingResource(fontFamilyName, resource).some(
       ({ rule }) => _fontFaceRuleSrcMatches(rule, resource.uri)
@@ -345,6 +347,8 @@ function _createWebStyle(fontFamily: string, resource: FontResource): HTMLStyleE
     styleElementIE.styleSheet.cssText = styleElementIE.styleSheet.cssText
       ? styleElementIE.styleSheet.cssText + fontStyle
       : fontStyle;
+  } else if (styleElement.sheet) {
+    styleElement.sheet.insertRule(fontStyle, styleElement.sheet.cssRules.length);
   } else {
     const textNode = document.createTextNode(fontStyle);
     styleElement.appendChild(textNode);

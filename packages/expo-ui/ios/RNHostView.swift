@@ -11,6 +11,10 @@ internal final class RNHostViewProps: ExpoSwiftUI.ViewProps {
    */
   @Field var expoInternalSizeFromChildren: Bool = false
   /**
+   Read by `ExpoViewShadowNode` in C++ to measure the children within the space Yoga gives the `Host`.
+   */
+  @Field var expoInternalBoundedByHost: Bool = false
+  /**
    Whether this view owns its subtree's touches and is the origin its content is measured from. Set
    by the JavaScript side for content presented in its own view controller — see `RNHostView.tsx`,
    which reads it from the sheet or popover presenting the content.
@@ -38,6 +42,7 @@ struct RNHostView: ExpoSwiftUI.View {
 
   @ObservedObject var props: RNHostViewProps
   @StateObject private var touchHandler = RNHostTouchHandler()
+  @State private var lastReportedSize = ReportedSize()
 
   var body: some View {
     hostedContent
@@ -89,9 +94,23 @@ struct RNHostView: ExpoSwiftUI.View {
       // surrounding SwiftUI container - e.g. a spurious empty row in a `Form`'s `Section`.
       EmptyView()
     } else {
+      // Reports every size SwiftUI lays the content out at, including each frame of an animated
+      // resize, which `onGeometryChange` would report once at its destination. The reader sits
+      // in a background so it takes no part in the layout: as the container it would give an
+      // axis with no proposal, e.g. the height in a vertical `ScrollView`, its own 10 pt default.
       Children()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .modifier(ReportSizeToYogaNodeModifier(shadowNodeProxy: props.shadowNodeProxy))
+        .background(
+          GeometryReader { geometry in
+            Color.clear.modifier(
+              AnimatedSizeReporter(
+                size: geometry.size,
+                shadowNodeProxy: props.shadowNodeProxy,
+                lastReported: lastReportedSize
+              )
+            )
+          }
+        )
     }
   }
 
@@ -285,4 +304,43 @@ private struct ReportSizeToYogaNodeModifier: ViewModifier {
       }
     }
   }
+}
+
+// Sets Yoga node size from every size SwiftUI lays the hosted content out at
+// SwiftUI drives `animatableData` through each interpolated size of an animated resize, not only
+// its destination, so the hosted React Native tree follows the animation
+private struct AnimatedSizeReporter: ViewModifier, Animatable {
+  var size: CGSize
+  let shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
+  let lastReported: ReportedSize
+
+  var animatableData: CGSize.AnimatableData {
+    get { size.animatableData }
+    set {
+      size.animatableData = newValue
+      report(size)
+    }
+  }
+
+  // SwiftUI sets `animatableData` only while it animates a change. The first layout and a change
+  // that is not animated reach Yoga from here instead.
+  func body(content: Content) -> some View {
+    content
+      .onAppear { report(size) }
+      .onChange(of: size) { newValue in report(newValue) }
+  }
+
+  // Both paths repeat a size they already sent; Yoga only needs to hear each size once.
+  private func report(_ size: CGSize) {
+    if lastReported.value == size {
+      return
+    }
+    lastReported.value = size
+    shadowNodeProxy.setViewSize?(size)
+  }
+}
+
+// The size last sent to Yoga for an `RNHostView`, shared by every copy of its reporter.
+private final class ReportedSize {
+  var value: CGSize?
 }

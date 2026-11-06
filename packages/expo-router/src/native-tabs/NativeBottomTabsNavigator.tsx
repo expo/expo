@@ -18,7 +18,9 @@ import type {
   StandardNavigatorContentProps,
   StandardNavigatorCreatePropsFactoryDeps,
 } from '../standard-navigation/types';
+import { useNonStackAnchorWarning } from '../standard-navigation/useNonStackAnchorWarning';
 import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
+import { useReconcileTabHistory } from '../standard-navigation/useReconcileTabHistory';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
@@ -106,12 +108,14 @@ function NativeTabsContent({
   Omit<InternalNativeTabsProps, 'screenListeners'>
 > &
   NativeTabsNavigatorCreateProps) {
+  useReconcileTabHistory();
   if (use(NativeTabsContext)) {
     throw new Error(
       'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
     );
   }
 
+  useNonStackAnchorWarning(rest.backBehavior);
   const { routes } = state;
 
   const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({

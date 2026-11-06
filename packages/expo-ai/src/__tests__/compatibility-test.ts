@@ -42,6 +42,8 @@ function setup(responses: (string | (() => Promise<string> | string))[], timeout
 }
 afterEach(() => {
   for (const operation of operations.splice(0)) operation.close();
+  jest.restoreAllMocks();
+  jest.useRealTimers();
 });
 
 describe('validated generation', () => {
@@ -507,16 +509,15 @@ describe('validated tool loop', () => {
   });
 
   it('a synchronous approval exceeding the deadline cannot start a handler', async () => {
+    jest.useFakeTimers();
+    const now = jest.spyOn(performance, 'now').mockReturnValue(0);
     const { options, tool, execute, complete } = setup([action()], 5);
     await expect(
       runValidatedTools({
         ...options,
         tools: [tool],
         beforeTool: () => {
-          const until = performance.now() + 15;
-          while (performance.now() < until) {
-            /* Simulate a synchronous application callback. */
-          }
+          now.mockReturnValue(15);
           return true;
         },
       })

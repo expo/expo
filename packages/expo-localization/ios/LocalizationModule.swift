@@ -192,17 +192,8 @@ public class LocalizationModule: Module {
   }
 
   static func getTemperatureUnit() -> String? {
-    let formatter = MeasurementFormatter()
-    formatter.locale = Locale.current
-
-    let temperature = Measurement(value: 0, unit: UnitTemperature.celsius)
-    let formatted = formatter.string(from: temperature)
-
-    guard let unitCharacter = formatted.last else {
-      return nil
-    }
-
-    return unitCharacter == "F" ? "fahrenheit" : "celsius"
+    let unit = UnitTemperature(forLocale: .current, usage: .weather)
+    return unit == .fahrenheit ? "fahrenheit" : "celsius"
   }
 
   static func uses24HourClock(locale: Locale = .current) -> Bool {

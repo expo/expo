@@ -95,14 +95,14 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
     AsyncFunction("readLogEntriesAsync") { (maxAge: Int) -> [[String: Any]] in
       // maxAge is in milliseconds, convert to seconds
       do {
-        return try UpdatesLogReader().getLogEntries(newerThan: Date(timeIntervalSinceNow: TimeInterval(-1 * (maxAge / 1000))))
+        return try UpdatesLogReader().getLogEntries(newerThan: Date(timeIntervalSinceNow: -TimeInterval(maxAge) / 1000))
       } catch {
         throw ReadLogEntriesException(error)
       }
     }
 
     AsyncFunction("clearLogEntriesAsync") { (promise: Promise) in
-      UpdatesLogReader().purgeLogEntries(olderThan: Date()) { error in
+      UpdatesLogReader().clearLogEntries { error in
         guard let error = error else {
           promise.resolve(nil)
           return

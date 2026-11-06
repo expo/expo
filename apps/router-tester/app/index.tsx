@@ -41,6 +41,7 @@ const HomeIndex = () => {
         <Section title="Linking + Behavior">
           <CaseLink href="/params" text="Params" />
           <CaseLink href="/suspense" text="Suspense" />
+          <CaseLink href="/can-go-back" text="Can Go Back" />
         </Section>
         <Section title="JavaScript navigators">
           <CaseLink href="/js-stack" text="JS Stack" />
@@ -51,6 +52,7 @@ const HomeIndex = () => {
         <Section title="Stack behavior">
           <CaseLink href="/experimental-stack" text="Experimental Stack" />
           <CaseLink href="/navigation-aware-activity" text="Navigation Aware Activity" />
+          <CaseLink href="/required-screens" text="Required Screens Below" />
         </Section>
         <Section title="Drawers">
           <CaseLink href="/drawer" text="Drawer" />

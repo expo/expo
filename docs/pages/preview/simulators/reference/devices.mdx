@@ -26,7 +26,17 @@ Pass the profile ID to `--device`:
 
 Every Android profile uses a 720 x 1600 screen at density 300. The profile selects the hardware definition of the device, not its screen size.
 
-Android sessions use the `system-images;android-35;google_apis;x86_64` system image, which is Android API level 35 with Google APIs. Install an APK that includes the `x86_64` architecture.
+By default, Android sessions use the `system-images;android-35;google_apis;x86_64` system image, which is Android API level 35 with Google APIs. Install an APK that includes the architecture of the selected image.
+
+To select another Android SDK system image, pass its full package name with `--system-image`. Quote the name because it contains semicolons. This selects the Android version and image variant; `--device` selects the hardware profile.
+
+<Terminal
+  cmd={[
+    '$ eas simulator:start --platform android --device pixel_9 --system-image "system-images;android-35-ext15;google_apis_playstore;x86_64" --non-interactive',
+  ]}
+/>
+
+`--system-image` works only with `--platform android`. If the image is unavailable or incompatible with the runner, session startup fails. Omit the flag to use the runner default.
 
 <Terminal
   cmd={[
@@ -127,7 +137,7 @@ No. The iOS version comes from the session image. Only iPhone Duo uses a differe
 
 <Collapsible summary="Can I select a custom Android system image?">
 
-No. EAS CLI does not have a flag for it. Android sessions use the `system-images;android-35;google_apis;x86_64` system image.
+Yes. Pass the full Android SDK package name with `--system-image`. See [Android Emulator profiles](#android-emulator-profiles).
 
 </Collapsible>
 

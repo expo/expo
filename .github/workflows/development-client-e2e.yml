@@ -32,15 +32,11 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: 🍺 Install required tools
-        run: |
-          brew tap wix/brew
-          brew install applesimutils
       - name: 💎 Setup Ruby and install gems
-        uses: ruby/setup-ruby@95ef2b042f9d7a56d8268cba8559e2842e2ad01b # v1.321.0
+        uses: ruby/setup-ruby@26e5b7d197ebf60545ee9667bcbace0be11ccaec # v1.334.0
         with:
           bundler-cache: true
-          ruby-version: 3.2.2
+          ruby-version: 3.4.11
       - name: 💎 Install cocoapods
         run: sudo gem install cocoapods
       - name: 🔨 Install pnpm

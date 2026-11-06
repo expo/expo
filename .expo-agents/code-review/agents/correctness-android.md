@@ -247,3 +247,16 @@ recurring, expensive miss (#40515).
 
 Read the sibling methods in the same class, and the DSL definition you think is
 violated, before reporting. Prefer zero findings over a low-value one.
+
+<!-- Code this prompt cites, kept true by `ecr ref-check`. A path that is prose (a
+     per-package directory name, a root file the text does not mean, a submodule
+     path the review checkout lacks) is listed as ignored instead. -->
+<!-- @ref glob:**/AndroidManifest.xml -->
+<!-- @ref glob:**/CMakeLists.txt -->
+<!-- @ref glob:**/android/build.gradle -->
+<!-- @ref glob:**/build.gradle -->
+<!-- @ref glob:**/consumer-rules.pro -->
+<!-- @ref glob:**/proguard-rules.pro -->
+<!-- @ref glob:packages/*/android/build.gradle -->
+<!-- @ref glob:packages/*/android/src/** -->
+<!-- @ref-ignore android/ common/ package.json react-native-lab/react-native/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/ -->

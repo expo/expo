@@ -1,6 +1,6 @@
 ---
 title: Security
-description: Learn how credentials and other sensitive data are handled when using EAS.
+description: Learn how credentials and other sensitive data are handled when using Expo Services.
 ---
 
 Before you enter outside credentials or provide other sensitive data to third-party software you should ask yourself whether you trust the software to use it responsibly and protect it. Due to the nature of what goes into building an app binary for distribution on app stores, the Expo standalone app build service requires various pieces of information with varying degrees of sensitivity. This document explains what those are, how we store them, and what could go wrong if they were to be compromised.
@@ -43,7 +43,7 @@ Expo tools never ask you to provide your Google account credentials.
 
 ### Google Service Account Key
 
-Google Service Account Key is the authentication method used to submit an Android app to the Google Play Store with EAS Submit. This key is stored on Expo servers and encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) when at rest. The key will remain on Expo servers to be re-used for subsequent submissions, and it can be removed at any time by a user with the requisite permissions.
+Google Service Account Key is the authentication method used to submit an Android app to the Google Play Store with Expo Submit. This key is stored on Expo servers and encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) when at rest. The key will remain on Expo servers to be re-used for subsequent submissions, and it can be removed at any time by a user with the requisite permissions.
 
 #### Consequences if compromised
 
@@ -116,9 +116,9 @@ None. They are available through the Apple Developer console.
 
 ### Apple App Store Connect (ASC) API key
 
-Apple App Store Connect (ASC) API key is one of the authentication methods that can be used to submit an iOS app to Apple's App Store using the EAS Submit service. This key is stored on the Expo servers and encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) when at rest. The key will remain on Expo servers to be re-used for subsequent submissions, and it can be removed at any time by a user with the requisite permissions.
+Apple App Store Connect (ASC) API key is one of the authentication methods that can be used to submit an iOS app to Apple's App Store using the Expo Submit service. This key is stored on the Expo servers and encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) when at rest. The key will remain on Expo servers to be re-used for subsequent submissions, and it can be removed at any time by a user with the requisite permissions.
 
-The ASC API key is the default and **recommended** authentication method for submitting your apps to the App Store using EAS Submit.
+The ASC API key is the default and **recommended** authentication method for submitting your apps to the App Store using Expo Submit.
 
 #### Consequences if compromised
 
@@ -132,7 +132,7 @@ None. If you lose the ASC API key, you can revoke it using the App Store Connect
 
 ### Apple app-specific password
 
-Apple app-specific password is another authentication method that can be used to submit an iOS app to Apple's App Store using the EAS Submit. Unlike other credentials, the app-specific password is not stored in the Expo servers between submissions, it must be provided each time it is to be used.
+Apple app-specific password is another authentication method that can be used to submit an iOS app to Apple's App Store using the Expo Submit. Unlike other credentials, the app-specific password is not stored in the Expo servers between submissions, it must be provided each time it is to be used.
 
 The password is encrypted using [KMS](https://cloud.google.com/security/products/security-key-management) and stored only for the period required to submit the app to the App Store plus 24 hours, to allow for retries during that time. Once this period is over, the password is deleted from the Expo servers.
 

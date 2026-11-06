@@ -7,6 +7,7 @@ import resolveFrom from 'resolve-from';
 
 import { getExpoConfigLoaderPath, type LoadedModuleSource } from './ExpoConfigLoader';
 import type { NormalizedOptions } from './Fingerprint.types';
+import { createLinkedDependencyMatcher } from './utils/LinkedDependencies';
 import { spawnWithIpcAsync } from './utils/SpawnIPC';
 
 const FINGERPRINT_ENV_MODE = 'development';
@@ -44,7 +45,11 @@ export async function getExpoConfigAsync(
       spawnConfigLoaderAsync(projectRoot, ignoredFile, /* skipPlugins */ true),
     ]);
     result.config = config;
-    result.loadedModules = diffLoadedModules(modulesWithPlugins ?? [], modulesWithoutPlugins ?? []);
+    result.loadedModules = diffLoadedModules(
+      modulesWithPlugins ?? [],
+      modulesWithoutPlugins ?? [],
+      createLinkedDependencyMatcher(path.resolve(projectRoot))
+    );
   } catch (e: unknown) {
     if (e instanceof Error) {
       console.warn(`Cannot get Expo config from an Expo project - ${e.message}: `, e.stack);
@@ -83,17 +88,25 @@ async function spawnConfigLoaderAsync(
  * Keep only the config-plugin modules attributable to applying plugins.
  *
  * Anything that also loads when plugins are skipped is the config-loading framework and is dropped.
- * In-repo files are always kept regardless of the diff, so a local plugin imported at the top of
- * `app.config` (which loads during config evaluation, not plugin application) is never lost.
+ * In-repo files and files of linked dependencies are always kept regardless of the diff, so a local
+ * or workspace plugin imported at the top of `app.config` (which loads during config evaluation,
+ * not plugin application) is never lost. `isLinkedDependencyFile` runs only for a file the diff
+ * would drop.
  */
 export function diffLoadedModules(
   withPlugins: LoadedModuleSource[],
-  withoutPlugins: LoadedModuleSource[]
+  withoutPlugins: LoadedModuleSource[],
+  isLinkedDependencyFile: (relativePosixPath: string) => boolean = () => false
 ): LoadedModuleSource[] {
   const skippedKeys = new Set(withoutPlugins.map(getLoadedModuleKey));
-  return withPlugins.filter(
-    (source) => isInRepoLoadedModule(source) || !skippedKeys.has(getLoadedModuleKey(source))
-  );
+  return withPlugins.filter((source) => {
+    const key = getLoadedModuleKey(source);
+    return (
+      isInRepoLoadedModule(source) ||
+      !skippedKeys.has(key) ||
+      (source.type === 'file' && isLinkedDependencyFile(key))
+    );
+  });
 }
 
 /** Stable identity of a loaded module: its file path, or its id for a virtual module. */

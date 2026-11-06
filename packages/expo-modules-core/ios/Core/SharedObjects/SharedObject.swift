@@ -39,7 +39,26 @@ open class SharedObject: AnySharedObject {
   /// The value of `nativeRefType` on the JavaScript object, or `nil` when the object does not conform to
   /// `AnySharedRef`.
   internal var sharedRefType: String? {
+    guard Self.conformsToAnySharedRef(Swift.type(of: self)) else {
+      return nil
+    }
     return (self as? AnySharedRef)?.nativeRefType
+  }
+
+  /// Whether each `SharedObject` class conforms to `AnySharedRef`. A failing `as? AnySharedRef` walks the
+  /// whole class hierarchy on every call, so the result is looked up once per class.
+  private static let anySharedRefConformances = Mutex([ObjectIdentifier: Bool]())
+
+  private static func conformsToAnySharedRef(_ type: SharedObject.Type) -> Bool {
+    let key = ObjectIdentifier(type)
+    return anySharedRefConformances.withLock { conformances in
+      if let conforms = conformances[key] {
+        return conforms
+      }
+      let conforms = type is AnySharedRef.Type
+      conformances[key] = conforms
+      return conforms
+    }
   }
 
   /**
@@ -80,6 +99,21 @@ open class SharedObject: AnySharedObject {
     return appContext?.sharedObjectRegistry.toJavaScriptObject(self)
   }
 
+  /// The native state, or `nil` if the object was released. A released native state can outlive the
+  /// release on a JS object that couldn't drop it (for example a frozen one).
+  internal var unreleasedNativeState: SharedObjectNativeState? {
+    guard let nativeState, !nativeState.isReleased else {
+      return nil
+    }
+    return nativeState
+  }
+
+  /// The JS object paired with this object in the given runtime, read off its native state. Returns
+  /// `nil` when the object isn't paired in that runtime or was released.
+  internal func object(in runtime: borrowing JavaScriptRuntime) -> JavaScriptObject? {
+    return unreleasedNativeState?.javaScriptObject(in: runtime)
+  }
+
   /**
    Backwards-compatible overload that forwards to `emit(event:payload:)`. Existing single-argument
    call sites keep working unchanged; the parameter has been renamed to `payload` to make the
@@ -92,10 +126,21 @@ open class SharedObject: AnySharedObject {
 
   // MARK: - Macro-synthesized JSI hooks
 
+  /// The name of the class in JavaScript. Overridden by the `@SharedObject` macro with the class name
+  /// or the `@SharedObject("CustomName")` argument. A module registers the class through `_classTypes`.
+  open class var _jsName: String {
+    return unqualifiedTypeName(self)
+  }
+
   /// Binds the class's `@JS` members onto its JavaScript prototype. Overridden by the `@SharedObject`
   /// macro; a `class func` (not a protocol requirement) so dispatch resolves per subclass.
   @JavaScriptActor
   open class func _decorateSharedObject(prototype: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
+
+  /// Binds the class's `static` and `class` `@JS` members onto its JavaScript constructor. Overridden by
+  /// the `@SharedObject` macro.
+  @JavaScriptActor
+  open class func _decorateSharedObject(constructor: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {}
 
   /// Builds a native instance from the JS constructor arguments, or `nil` to use the DSL `Constructor`
   /// path. Overridden by the `@SharedObject` macro from the class's `@JS init`.
@@ -108,7 +153,9 @@ open class SharedObject: AnySharedObject {
 extension SharedObject: EventEmitter {
   @JavaScriptActor
   public func withEventTarget<R>(_ body: (borrowing JavaScriptObject) throws -> R) rethrows -> R? {
-    guard let target = getJavaScriptObject() else {
+    // The same lookup as `getJavaScriptObject()`, without going through the registry, since it runs
+    // for every emitted event.
+    guard let runtime = try? appContext?.runtime, let target = object(in: runtime) else {
       return nil
     }
     return try body(target)

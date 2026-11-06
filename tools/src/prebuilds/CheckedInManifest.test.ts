@@ -8,6 +8,7 @@ import { afterEach, it, type TestContext } from 'node:test';
 import { getExpoRepositoryRootDir } from '../Directories';
 import {
   isFirstPartyPackagePath,
+  listCheckedInTargetInputs,
   resolveCheckedInHeaderDirectoriesAsync,
   resolveCheckedInManifestAsync,
   resolveCheckedInManifestRoot,
@@ -586,6 +587,86 @@ it('product dependency: rejects .product moduleAliases instead of silently dropp
       '.target(name: "Main", dependencies: [.product(name: "Remote", package: "remote", moduleAliases: ["Remote": "RemoteAlias"])], path: "ios")'
     ),
     /: dependency "Remote" declares moduleAliases, which the generated dependency format cannot preserve\./
+  );
+});
+
+const STAND_IN_PACKAGES =
+  '.package(path: "../direct/ExpoModulesCoreHeaders"), .package(path: "../direct/xcframeworks")';
+const CORE_HEADERS = '.product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders")';
+const REACT_HEADERS = '.product(name: "ReactHeaders", package: "xcframeworks")';
+
+function withStandIns(mainDependencies: string) {
+  const input = fixture(
+    `.target(name: "Main", dependencies: [${mainDependencies}], path: "ios")`,
+    undefined,
+    { dependencies: STAND_IN_PACKAGES }
+  );
+  input.product.externalDependencies = ['expo-modules-core/ExpoModulesCore', 'React'];
+  return input;
+}
+
+it('direct stand-ins: replaces each stand-in product with its spm.config.json dependency', async () => {
+  const input = withStandIns(`${CORE_HEADERS}, ${REACT_HEADERS}`);
+  assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, [
+    'expo-modules-core/ExpoModulesCore',
+    'React',
+  ]);
+});
+
+for (const [dependency, configName, otherConfigName] of [
+  [CORE_HEADERS, 'expo-modules-core/ExpoModulesCore', 'React'],
+  [REACT_HEADERS, 'React', 'expo-modules-core/ExpoModulesCore'],
+] as const) {
+  it(`direct stand-ins: requires externalDependencies to list "${configName}"`, async () => {
+    const input = withStandIns(dependency);
+    input.product.externalDependencies = [otherConfigName];
+    await rejectsManifest(
+      input,
+      new RegExp(`: it names unknown dependency "${configName}", which the generated package`)
+    );
+  });
+}
+
+it('direct stand-ins: drops a stand-in package that no target depends on', async () => {
+  const input = withStandIns('');
+  await assert.doesNotReject(resolve(input.root, input.product));
+});
+
+const REMOTE_XCFRAMEWORKS_URL = 'https://example.com/xcframeworks.git';
+
+for (const productName of ['ReactHeaders', 'ReactNative']) {
+  it(`direct stand-ins: leaves .product "${productName}" of a remote package named like a stand-in`, async () => {
+    const input = withPackages(
+      `.package(url: "${REMOTE_XCFRAMEWORKS_URL}", exact: "1.2.3")`,
+      [remote(undefined, REMOTE_XCFRAMEWORKS_URL, productName)],
+      `.target(name: "Main", dependencies: [.product(name: "${productName}", package: "xcframeworks")], path: "ios")`
+    );
+    assert.deepEqual((await resolve(input.root, input.product))[0].dependencies, [productName]);
+  });
+}
+
+it('direct stand-ins: keeps the platform condition of a stand-in product', async () => {
+  await rejectsManifest(
+    withStandIns(
+      '.product(name: "ReactHeaders", package: "xcframeworks", condition: .when(platforms: [.iOS]))'
+    ),
+    /: dependency "React" has a platform condition, but the generated dependency format cannot preserve it\./
+  );
+});
+
+it('direct stand-ins: rejects stand-in moduleAliases like any other .product moduleAliases', async () => {
+  await rejectsManifest(
+    withStandIns(
+      '.product(name: "ReactHeaders", package: "xcframeworks", moduleAliases: ["ReactHeaders": "ReactAlias"])'
+    ),
+    /: dependency "ReactHeaders" declares moduleAliases, which the generated dependency format cannot preserve\./
+  );
+});
+
+it('direct stand-ins: rejects a product of a stand-in package that has no stand-in', async () => {
+  await rejectsManifest(
+    withStandIns('.product(name: "ReactNative", package: "xcframeworks")'),
+    /: it depends on \.product\(name: "ReactNative", package: "xcframeworks"\), but et prebuild can stand in only for \.product\(name: "ReactHeaders", package: "xcframeworks"\) from that package when it builds a direct manifest, because the local path package does not resolve from the package directory\. Use \.product\(name: "ReactHeaders", package: "xcframeworks"\) instead, or depend on "ReactNative" by name and list it in externalDependencies in spm\.config\.json\.$/
   );
 });
 
@@ -2244,5 +2325,96 @@ it('pilot resolves the real expo-haptics manifest against its real sources', asy
       .readdirSync(target.sourceRoot, { recursive: true, encoding: 'utf8' })
       .filter((entry) => /\.(swift|h|m|mm|c|cc|cpp)$/i.test(entry)),
     ['HapticsModule.swift']
+  );
+});
+
+/** Resolves `productName` from the checked-in manifest of the repository package `packageName`,
+ * with its real sources and its real spm.config.json. */
+async function resolveRealPackage(packageName: string, productName: string) {
+  const packagePath = path.join(getExpoRepositoryRootDir(), 'packages', packageName);
+  const config: SPMConfig = JSON.parse(
+    fs.readFileSync(path.join(packagePath, 'spm.config.json'), 'utf8')
+  );
+  const product = config.products.find((candidate) => candidate.name === productName);
+  assert.ok(product, `${packageName} must declare a ${productName} product`);
+  const pkg: SPMPackageSource = {
+    path: packagePath,
+    buildPath: path.join(packagePath, '.build'),
+    packageName,
+    packageVersion: '0.0.0',
+    getSwiftPMConfiguration: () => config,
+  };
+  assert.equal(
+    resolveCheckedInManifestRoot(pkg),
+    fs.realpathSync.native(packagePath),
+    `${packageName} must opt into Mode B by carrying a checked-in Package.swift`
+  );
+  return { packagePath, targets: await resolve(packagePath, product) };
+}
+
+type DumpedTargetDependency = { product?: [string, ...unknown[]]; byName?: [string, unknown] };
+
+/** Whether target `targetName` of the package's manifest depends on the ExpoModulesCoreHeaders
+ * stand-in, which is what makes the SwiftPM plugin build the manifest directly in an app. */
+function dependsOnCoreHeadersStandIn(packagePath: string, targetName: string): boolean {
+  const dumped: { targets: { name: string; dependencies: DumpedTargetDependency[] }[] } =
+    JSON.parse(
+      execFileSync(
+        'swift',
+        ['package', '--disable-sandbox', '--package-path', packagePath, 'dump-package'],
+        { encoding: 'utf8' }
+      )
+    );
+  const target = dumped.targets.find((candidate) => candidate.name === targetName);
+  assert.ok(target, `the manifest must declare a ${targetName} target`);
+  return target.dependencies.some(
+    (dependency) => (dependency.product ?? dependency.byName)?.[0] === 'ExpoModulesCoreHeaders'
+  );
+}
+
+it('expo-haptics resolves its real manifest as a direct build through the header stand-ins', async () => {
+  const { packagePath, targets } = await resolveRealPackage('expo-haptics', 'ExpoHaptics');
+  assert.ok(
+    dependsOnCoreHeadersStandIn(packagePath, 'ExpoHaptics'),
+    'ExpoHaptics must depend on the ExpoModulesCoreHeaders product to be built directly'
+  );
+  assert.deepEqual(
+    targets.map((target) => target.name),
+    ['ExpoHaptics']
+  );
+  assert.ok(targets[0].dependencies.includes('expo-modules-core/ExpoModulesCore'));
+});
+
+it('expo-sensors resolves its real direct manifest against its real sources', async () => {
+  const { packagePath, targets } = await resolveRealPackage('expo-sensors', 'ExpoSensors');
+  assert.ok(
+    dependsOnCoreHeadersStandIn(packagePath, 'ExpoSensors'),
+    'ExpoSensors must depend on the ExpoModulesCoreHeaders product to be built directly'
+  );
+  assert.deepEqual(
+    targets.map((target) => target.name),
+    ['ExpoSensors']
+  );
+  const [target] = targets;
+  assert.equal(target.type, 'swift');
+  assert.equal(target.sourceRoot, path.join(packagePath, 'ios'));
+  assert.deepEqual(target.exclude, ['src/ExpoSensors.podspec', 'src/Tests']);
+  assert.deepEqual(target.sources, ['src', 'ExpoSensors+Exports.swift']);
+  assert.ok(target.dependencies.includes('expo-modules-core/ExpoModulesCore'));
+  assert.deepEqual(
+    listCheckedInTargetInputs(target)
+      .map((file) => path.relative(target.sourceRoot, file))
+      .sort(),
+    [
+      'AccelerometerModule.swift',
+      'BarometerModule.swift',
+      'DeviceMotionModule.swift',
+      'GyroscopeModule.swift',
+      'MagnetometerModule.swift',
+      'MagnetometerUncalibratedModule.swift',
+      'MotionPermissionRequester.swift',
+      'PedometerModule.swift',
+      'SensorsUtils.swift',
+    ]
   );
 });

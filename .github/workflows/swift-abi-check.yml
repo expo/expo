@@ -19,7 +19,7 @@ jobs:
       contains(github.event.pull_request.labels.*.name, 'check: ABI') &&
       (github.event.action == 'synchronize' || github.event.action == 'reopened' ||
        (github.event.action == 'labeled' && github.event.label.name == 'check: ABI'))
-    runs-on: macos-26
+    runs-on: blacksmith-6vcpu-macos-26
     timeout-minutes: 90
     steps:
       - name: 👀 Checkout

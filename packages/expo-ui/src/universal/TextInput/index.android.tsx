@@ -70,6 +70,7 @@ export function TextInput({
   value,
   onChangeText,
   placeholder,
+  accessibilityLabel,
   autoFocus,
   editable: editableProp,
   multiline,
@@ -218,7 +219,12 @@ export function TextInput({
       onSelectionChange={onSelectionChange}>
       <BasicTextField.DecorationBox>
         <Box
-          modifiers={[fillMaxWidth()]}
+          modifiers={[
+            fillMaxWidth(),
+            ...(accessibilityLabel !== undefined
+              ? [semantics({ contentDescription: accessibilityLabel })]
+              : []),
+          ]}
           contentAlignment={
             textAlign === 'center' ? 'topCenter' : textAlign === 'right' ? 'topEnd' : undefined
           }>

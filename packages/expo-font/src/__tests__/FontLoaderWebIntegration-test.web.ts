@@ -7,8 +7,13 @@ import * as FontLoader from '../FontLoader';
 
 const STYLE_ID = 'expo-generated-fonts';
 
+// Reads the CSSOM, because rules added with `insertRule` never reach `textContent`. jsdom
+// serializes a rule as `@font-face {a: b;}`, so compact it to what `_createWebFontTemplate` writes.
 function injectedCss(): string {
-  return document.getElementById(STYLE_ID)?.textContent ?? '';
+  const sheet = (document.getElementById(STYLE_ID) as HTMLStyleElement | null)?.sheet;
+  return [...(sheet?.cssRules ?? [])]
+    .map((rule) => rule.cssText.replace(/\s*([{:;])\s*/g, '$1').replace(/;}/g, '}'))
+    .join('');
 }
 
 if (typeof window === 'undefined') {
@@ -73,6 +78,21 @@ if (typeof window === 'undefined') {
       '@font-face{font-family:"Real Family";src:url("italic.ttf");font-weight:400;font-style:italic}'
     );
     expect(css.match(/@font-face/g)).toHaveLength(3);
+  });
+
+  it('adds each face to the shared stylesheet without replacing it', async () => {
+    await FontLoader.loadFontFamilyAsync('Stable Family', [{ path: 'regular.ttf', weight: 400 }]);
+    const style = document.getElementById(STYLE_ID) as HTMLStyleElement;
+    const sheet = style.sheet;
+
+    await FontLoader.loadFontFamilyAsync('Stable Family', [
+      { path: 'bold.ttf', weight: 700 },
+      { path: 'italic.ttf', weight: 400, style: 'italic' },
+    ]);
+
+    expect(document.getElementById(STYLE_ID)).toBe(style);
+    expect(style.sheet).toBe(sheet);
+    expect(sheet?.cssRules).toHaveLength(3);
   });
 
   it('does not inject a duplicate rule when the same face loads twice', async () => {

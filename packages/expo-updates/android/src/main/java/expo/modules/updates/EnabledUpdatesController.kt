@@ -267,7 +267,8 @@ class EnabledUpdatesController(
       try {
         val result = ManifestMetadata.getExtraParams(
           database,
-          updatesConfiguration
+          updatesConfiguration,
+          logger
         )
         val resultMap = when (result) {
           null -> Bundle()

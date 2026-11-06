@@ -1,3 +1,4 @@
+import { expect as importedExpect } from '@jest/globals';
 import { act, screen } from '@testing-library/react-native';
 import { stripVTControlCharacters } from 'node:util';
 import { Text } from 'react-native';
@@ -38,6 +39,18 @@ describe('toHavePathname', () => {
     const message = getThrownMessage(() => expect(screen).not.toHavePathname('/home'));
     expect(message).toMatchSnapshot();
   });
+});
+
+it('supports matchers with expect imported from @jest/globals', async () => {
+  await renderRouter(['[slug]'], { initialUrl: '/home?test=true' });
+
+  importedExpect(screen).toHavePathname('/home');
+  importedExpect(screen).toHavePathnameWithParams('/home?test=true');
+  importedExpect(screen).toHaveSegments(['[slug]']);
+  importedExpect(screen).toHaveSearchParams({ slug: 'home', test: 'true' });
+  importedExpect(screen).not.toHaveRouterState(undefined);
+  importedExpect(screen).not.toHavePathname('/other');
+  await importedExpect(Promise.resolve(screen)).resolves.toHavePathname('/home');
 });
 
 describe('toHavePathnameWithParams', () => {

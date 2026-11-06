@@ -4,9 +4,6 @@ const fs = require('fs');
 const os = require('os');
 const path = require('path');
 
-jest.mock('../cli', () => ({ runDumpPackage: jest.fn() }));
-const { runDumpPackage } = require('../cli');
-
 const {
   parseDumpedManifest,
   renderSourceManifest,
@@ -271,18 +268,15 @@ describe('macro plugin flags', () => {
     });
 
     it('carries the flags through emitSourceManifestPackage', () => {
-      runDumpPackage.mockReturnValue(
+      emitSourceManifestPackage(
+        moduleRoot,
+        { frameworkSearchPath: '/abs/interfaces', outDir, macroFlags: MACRO_FLAGS },
         JSON.stringify({
           name: 'TestModule',
           products: [{ name: 'TestModule', type: { library: ['automatic'] }, targets: ['Main'] }],
           targets: [{ name: 'Main', type: 'regular', path: 'Main', dependencies: [] }],
         })
       );
-      emitSourceManifestPackage(moduleRoot, {
-        frameworkSearchPath: '/abs/interfaces',
-        outDir,
-        macroFlags: MACRO_FLAGS,
-      });
 
       expect(
         fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8')
@@ -350,8 +344,8 @@ describe('implicit target source paths', () => {
     fs.mkdirSync(outDir, { recursive: true });
   });
 
-  const emit = () =>
-    emitSourceManifestPackage(moduleRoot, { frameworkSearchPath: '/abs/interfaces', outDir });
+  const emit = (dump) =>
+    emitSourceManifestPackage(moduleRoot, { frameworkSearchPath: '/abs/interfaces', outDir }, dump);
   const emittedManifest = () =>
     fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8');
 
@@ -361,9 +355,8 @@ describe('implicit target source paths', () => {
 
   it('resolves a target with no explicit path to its predefined source directory', () => {
     fs.mkdirSync(path.join(moduleRoot, 'Sources', 'Example'), { recursive: true });
-    runDumpPackage.mockReturnValue(dumpWithoutPath);
 
-    expect(emit().ok.packageDep).toEqual({
+    expect(emit(dumpWithoutPath).ok.packageDep).toEqual({
       name: 'TestModule',
       path: path.join(outDir, 'expo-source', 'TestModule'),
     });
@@ -371,20 +364,18 @@ describe('implicit target source paths', () => {
   });
 
   it('leaves an explicit path untouched', () => {
-    runDumpPackage.mockReturnValue(
+    emit(
       JSON.stringify({
         name: 'TestModule',
         products: [{ name: 'TestModule', type: { library: ['automatic'] }, targets: ['Example'] }],
         targets: [{ name: 'Example', type: 'regular', path: 'ios/Example', dependencies: [] }],
       })
     );
-    emit();
     expect(emittedManifest()).toContain('path: "root/ios/Example"');
   });
 
   it('skips the module and names the unresolved targets instead of emitting root/undefined', () => {
-    runDumpPackage.mockReturnValue(dumpWithoutPath);
-    const result = emit();
+    const result = emit(dumpWithoutPath);
 
     expect(result.ok).toBeUndefined();
     expect(result.refusal).toEqual({
@@ -540,14 +531,17 @@ describe('single-target packages with sources directly in a predefined directory
     fs.mkdirSync(path.dirname(target), { recursive: true });
     fs.writeFileSync(target, content);
   };
-  const emit = () =>
-    emitSourceManifestPackage(moduleRoot, { frameworkSearchPath: '/abs/interfaces', outDir });
+  const emit = (targetNames) =>
+    emitSourceManifestPackage(
+      moduleRoot,
+      { frameworkSearchPath: '/abs/interfaces', outDir },
+      dumpTargets(targetNames)
+    );
 
   it('resolves the only target to the bare predefined directory holding its sources', () => {
     write('Sources/File.swift');
-    runDumpPackage.mockReturnValue(dumpTargets(['RootSrc']));
 
-    expect(emit().refusal).toBeUndefined();
+    expect(emit(['RootSrc']).refusal).toBeUndefined();
     expect(
       fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8')
     ).toContain('path: "root/Sources"');
@@ -556,9 +550,8 @@ describe('single-target packages with sources directly in a predefined directory
   it('prefers Sources/<target name> over the bare directory', () => {
     write('Sources/File.swift');
     write('Sources/RootSrc/File.swift');
-    runDumpPackage.mockReturnValue(dumpTargets(['RootSrc']));
 
-    emit();
+    emit(['RootSrc']);
     expect(
       fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8')
     ).toContain('path: "root/Sources/RootSrc"');
@@ -566,16 +559,17 @@ describe('single-target packages with sources directly in a predefined directory
 
   it('never resolves the targets of a multi-target package to the shared bare directory', () => {
     write('Sources/File.swift');
-    runDumpPackage.mockReturnValue(dumpTargets(['A', 'B']));
 
-    expect(emit().refusal).toEqual({ reason: 'unresolvable-target-path', targetNames: ['A', 'B'] });
+    expect(emit(['A', 'B']).refusal).toEqual({
+      reason: 'unresolvable-target-path',
+      targetNames: ['A', 'B'],
+    });
   });
 
   it('accepts a predefined directory whose sources are nested below it', () => {
     write('Sources/Nested/File.swift');
-    runDumpPackage.mockReturnValue(dumpTargets(['RootSrc']));
 
-    expect(emit().refusal).toBeUndefined();
+    expect(emit(['RootSrc']).refusal).toBeUndefined();
     expect(
       fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8')
     ).toContain('path: "root/Sources"');
@@ -583,9 +577,8 @@ describe('single-target packages with sources directly in a predefined directory
 
   it('ignores a predefined directory with no source files at any depth', () => {
     write('Sources/Nested/README.md', '# docs\n');
-    runDumpPackage.mockReturnValue(dumpTargets(['RootSrc']));
 
-    expect(emit().refusal).toEqual({
+    expect(emit(['RootSrc']).refusal).toEqual({
       reason: 'unresolvable-target-path',
       targetNames: ['RootSrc'],
     });
@@ -1090,12 +1083,11 @@ describe('the minimum floor a checked-in manifest is raised to', () => {
   });
 
   const emitted = (declared, minimum) => {
-    runDumpPackage.mockReturnValue(dumpWithIos(declared));
-    emitSourceManifestPackage(moduleRoot, {
-      frameworkSearchPath: '/abs/interfaces',
-      outDir,
-      minimumIosDeploymentTarget: minimum,
-    });
+    emitSourceManifestPackage(
+      moduleRoot,
+      { frameworkSearchPath: '/abs/interfaces', outDir, minimumIosDeploymentTarget: minimum },
+      dumpWithIos(declared)
+    );
     return fs.readFileSync(path.join(outDir, 'expo-source', 'TestModule', 'Package.swift'), 'utf8');
   };
 
@@ -1219,12 +1211,11 @@ describe('dependencies on targets the generated package cannot declare', () => {
     const moduleRoot = path.join(tmp, 'module');
     const outDir = path.join(tmp, 'out');
     fs.mkdirSync(path.join(moduleRoot, 'ios', 'Src'), { recursive: true });
-    runDumpPackage.mockReturnValue(dumpWithBinaryTarget);
-
-    const result = emitSourceManifestPackage(moduleRoot, {
-      frameworkSearchPath: '/abs/interfaces',
-      outDir,
-    });
+    const result = emitSourceManifestPackage(
+      moduleRoot,
+      { frameworkSearchPath: '/abs/interfaces', outDir },
+      dumpWithBinaryTarget
+    );
 
     expect(result.ok).toBeUndefined();
     expect(result.refusal).toEqual({
@@ -1894,15 +1885,12 @@ let package = Package(
     const emittedManifestPath = () =>
       path.join(outDir, 'expo-source', 'TestModule', 'Package.swift');
     const emittedManifest = () => fs.readFileSync(emittedManifestPath(), 'utf8');
-    const emit = (dump, react, satisfiedDependencies) => {
-      runDumpPackage.mockReturnValue(dump);
-      return emitSourceManifestPackage(moduleRoot, {
-        react,
-        frameworkSearchPath: '/abs/interfaces',
-        outDir,
-        satisfiedDependencies,
-      });
-    };
+    const emit = (dump, react, satisfiedDependencies) =>
+      emitSourceManifestPackage(
+        moduleRoot,
+        { react, frameworkSearchPath: '/abs/interfaces', outDir, satisfiedDependencies },
+        dump
+      );
 
     // A package can export several products; only the ones a precompiled framework
     // provides go, and the package stays while anything still depends on it.

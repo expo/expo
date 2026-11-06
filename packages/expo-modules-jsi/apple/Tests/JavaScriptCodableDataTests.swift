@@ -26,12 +26,23 @@ struct JavaScriptCodableDataTests {
 
   @Test
   func `round-trips empty Data`() throws {
-    // Exercises the `byteLength == 0` decode guard and the `count > 0` encode guard.
+    // Exercises the `byteLength == 0` decode guard and encoding an empty `Data`.
     let decoded = try Data.decode(runtime.eval("new Uint8Array([])"), in: runtime)
     #expect(decoded.isEmpty)
     let encoded = try Data.encode(Data(), in: runtime)
     #expect(encoded.isTypedArray() == true)
     #expect(try Data.decode(encoded, in: runtime).isEmpty)
+  }
+
+  @Test
+  func `encoding Data reports its memory to the garbage collector`() throws {
+    let size = 1 << 20
+    let externalBytes = "HermesInternal.getInstrumentedStats().js_externalBytes"
+    let bytesBefore = try runtime.eval(externalBytes).getDouble()
+    let encoded = try Data.encode(Data(count: size), in: runtime)
+    let bytesAfter = try runtime.eval(externalBytes).getDouble()
+    #expect(encoded.isTypedArray() == true)
+    #expect(bytesAfter - bytesBefore >= Double(size))
   }
 
   @Test

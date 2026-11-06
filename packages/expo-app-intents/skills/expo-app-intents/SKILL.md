@@ -25,9 +25,9 @@ Choose the smallest native surface needed:
 
 Intent, entity, query, and shortcut declarations are app-owned Swift compiled into the **app target**. Apple's metadata extraction cannot discover these declarations inside the package's static pod. Expo inline modules connect the app-owned Swift to that target; the package supplies storage and the bridge.
 
-`AppIntentDispatcher.shared.dispatch(name:params:)` records an invocation in native `UserDefaults` storage and emits a live event when JavaScript is observing. It returns the invocation ID without waiting for JavaScript. There is no JavaScript response channel to `perform()`.
+`AppIntentDispatcher.shared.dispatch(name:params:)` records an invocation in native `UserDefaults` storage and emits a live event when JavaScript is observing. It returns the invocation ID without waiting for JavaScript, so it gives `perform()` no answer from JavaScript.
 
-Return system-facing values and dialogs from Swift. When an action must finish before Siri reports success, implement the required work natively or adjust the feature's contract. Do not return a success dialog merely because a JavaScript mutation was queued. For actions that need the app's JavaScript immediately, use `openAppWhenRun = true`; dispatch alone does not start a headless JavaScript task. Without opening the app, work can remain queued until a later launch.
+Return system-facing values and dialogs from Swift. When an action must finish before Siri reports success, implement the required work natively, run it as a JavaScript background task (see [Background task handlers](references/advanced-features.md#background-task-handlers)), or adjust the feature's contract. Do not return a success dialog merely because a JavaScript mutation was queued. For actions that need the app's UI, use `openAppWhenRun = true`; dispatch alone does not start JavaScript work. Without opening the app or running a background task, work can remain queued until a later launch.
 
 ## Configure an existing app
 
@@ -197,6 +197,7 @@ Common diagnoses:
 | Action exists but launch phrase is missing | Provider entry, required application-name token, preserved scaffold warnings. |
 | Parameter cannot be found | Published catalog, matching kind/ID, all query methods, refresh wiring. Old pre-filled Shortcuts tiles may need recreation after metadata changes. |
 | Action waits until the app is opened | One-way dispatch, `openAppWhenRun`, mounted and ready consumer. |
+| Background task times out or reports "not defined" | `expo-task-manager` installed, `TaskManager.defineTask` at module scope in a module imported at startup, matching task name, project opened once in the development build. |
 | Action repeats | Dequeue failures, multiple consumers, missing durable idempotency. |
 
 On unsupported platforms, `isAvailable()` is false; the hook calls once with `[]` and `null`, queue/catalog reads return `[]`, and their writes are no-ops. `refreshShortcutsAsync()` rejects, donations return `null`, and donation deletion returns `[]`. Guard feature-specific UI appropriately; JavaScript import success does not prove the native integration is installed.

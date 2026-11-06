@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.17
+
+### Patch Changes
+
+- [Internal] The renderer no longer rebuilds the route tree to resolve the page's `pathname` and `params`. ([#51961](https://github.com/expo/expo/pull/51961) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.16
 
 No changes in this release.

@@ -1,8 +1,8 @@
-import { UnavailabilityError, createPermissionHook, type PermissionResponse } from 'expo';
+import { UnavailabilityError, createPermissionHook } from 'expo';
 import { Platform } from 'react-native';
 
 import { NativeMediaLibraryModule } from '../native';
-import type { GranularPermission, MediaTypeFilter } from '../types';
+import type { GranularPermission, MediaTypeFilter, PermissionResponse } from '../types';
 
 /**
  * Asks the user to grant permissions for accessing media in user's media library.

@@ -166,10 +166,16 @@ export function validatePublishedIosPrebuilds(packageRoot = process.cwd()) {
 }
 
 export function stageIosPrebuilds(packageRoot = process.cwd(), runTar = spawnSync) {
-  const products = readPublishedIosProducts(packageRoot);
-  if (!products) return false;
-  validateRawIosPrebuilds(packageRoot);
   const stagingRoot = path.join(packageRoot, 'prebuilds');
+  const products = readPublishedIosProducts(packageRoot);
+  if (!products) {
+    // Output staged before the package stopped publishing prebuilds would still be packed.
+    if (fs.existsSync(path.join(packageRoot, 'spm.config.json'))) {
+      fs.rmSync(stagingRoot, { recursive: true, force: true });
+    }
+    return false;
+  }
+  validateRawIosPrebuilds(packageRoot);
   fs.rmSync(stagingRoot, { recursive: true, force: true });
   for (const product of products) {
     for (const flavor of getFlavors(product)) {

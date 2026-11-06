@@ -305,8 +305,9 @@ Start by creating a widget using the `createWidget` function and pass the widget
 
 ```tsx
 import { Text, VStack } from '@expo/ui/swift-ui';
-import { font, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+import { containerBackground, font } from '@expo/ui/swift-ui/modifiers';
 import { createWidget, type WidgetEnvironment } from 'expo-widgets';
+import { PlatformColor } from 'react-native';
 
 type MyWidgetProps = {
   count: number;
@@ -315,10 +316,8 @@ type MyWidgetProps = {
 const MyWidget = (props: MyWidgetProps, environment: WidgetEnvironment) => {
   'widget';
   return (
-    <VStack>
-      <Text modifiers={[font({ weight: 'bold', size: 16 }), foregroundStyle('#000000')]}>
-        Count: {props.count}
-      </Text>
+    <VStack modifiers={[containerBackground(PlatformColor('systemBackground'), 'widget')]}>
+      <Text modifiers={[font({ weight: 'bold', size: 16 })]}>Count: {props.count}</Text>
       <Text>Family: {environment.widgetFamily}</Text>
     </VStack>
   );
@@ -329,6 +328,8 @@ export default createWidget('MyWidget', MyWidget, { count: 0 });
 
 The widget name (`'MyWidget'`) must match the `name` field in your widget configuration in the [app config](/workflow/configuration/).
 The optional third argument provides the initial props used before the widget timeline is updated.
+
+> **info** On iOS 17 and later, every widget needs the [`containerBackground`](/versions/latest/sdk/ui/swift-ui/modifiers/#containerbackgroundstyle-container) modifier with the `'widget'` placement on its root view. Without it, the widget shows the system message "Please adopt containerBackground API" instead of your layout.
 
 #### Basic widget
 
@@ -387,7 +388,9 @@ Use the `environment` argument to adapt the layout to the current widget size an
 
 ```tsx
 import { HStack, Text, VStack } from '@expo/ui/swift-ui';
+import { containerBackground } from '@expo/ui/swift-ui/modifiers';
 import { createWidget, type WidgetEnvironment } from 'expo-widgets';
+import { PlatformColor } from 'react-native';
 
 type WeatherWidgetProps = {
   temperature: number;
@@ -399,7 +402,7 @@ const WeatherWidget = (props: WeatherWidgetProps, environment: WidgetEnvironment
   // Render different layouts based on size
   if (environment.widgetFamily === 'systemSmall') {
     return (
-      <VStack>
+      <VStack modifiers={[containerBackground(PlatformColor('systemBackground'), 'widget')]}>
         <Text>{props.temperature}°</Text>
       </VStack>
     );
@@ -407,7 +410,7 @@ const WeatherWidget = (props: WeatherWidgetProps, environment: WidgetEnvironment
 
   if (environment.widgetFamily === 'systemMedium') {
     return (
-      <HStack>
+      <HStack modifiers={[containerBackground(PlatformColor('systemBackground'), 'widget')]}>
         <Text>{props.temperature}°</Text>
         <Text>{props.condition}</Text>
       </HStack>
@@ -416,7 +419,7 @@ const WeatherWidget = (props: WeatherWidgetProps, environment: WidgetEnvironment
 
   // systemLarge and others
   return (
-    <VStack>
+    <VStack modifiers={[containerBackground(PlatformColor('systemBackground'), 'widget')]}>
       <Text>Temperature: {props.temperature}°</Text>
       <Text>Condition: {props.condition}</Text>
       <Text>Updated: {environment.date.toLocaleTimeString()}</Text>
@@ -449,7 +452,9 @@ Widgets can include interactive controls such as `Button`. The value a button's 
 
 ```tsx CounterWidget.tsx
 import { Button, Text, VStack } from '@expo/ui/swift-ui';
+import { containerBackground } from '@expo/ui/swift-ui/modifiers';
 import { createWidget } from 'expo-widgets';
+import { PlatformColor } from 'react-native';
 
 type CounterProps = {
   count: number;
@@ -458,7 +463,7 @@ type CounterProps = {
 const CounterWidget = (props: CounterProps) => {
   'widget';
   return (
-    <VStack>
+    <VStack modifiers={[containerBackground(PlatformColor('systemBackground'), 'widget')]}>
       <Text>Count: {props.count}</Text>
       <Button label="Increment" target="increment" onPress={() => ({ count: props.count + 1 })} />
     </VStack>
@@ -503,7 +508,9 @@ When you add an [`ios.configuration`](#configuration-in-app-config) to a widget,
 
 ```tsx
 import { Text, VStack } from '@expo/ui/swift-ui';
+import { containerBackground } from '@expo/ui/swift-ui/modifiers';
 import { createWidget, type WidgetEnvironment } from 'expo-widgets';
+import { PlatformColor } from 'react-native';
 
 type WeatherProps = {
   temperature: number;
@@ -519,7 +526,7 @@ const WeatherWidget = (
 ) => {
   'widget';
   return (
-    <VStack>
+    <VStack modifiers={[containerBackground(PlatformColor('systemBackground'), 'widget')]}>
       <Text>{environment.configuration.city}</Text>
       <Text>{props.temperature}°</Text>
     </VStack>

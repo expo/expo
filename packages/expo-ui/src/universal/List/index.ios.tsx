@@ -1,6 +1,7 @@
 import { List as SwiftUIList } from '@expo/ui/swift-ui';
 import { refreshable, type ModifierConfig } from '@expo/ui/swift-ui/modifiers';
 
+import { ListForEach } from './ListForEach';
 import type { ListProps } from './types';
 
 /**
@@ -15,5 +16,9 @@ export function List({ children, onRefresh, testID }: ListProps) {
     </SwiftUIList>
   );
 }
+
+List.ForEach = ListForEach;
+
+export { ListForEach } from './ListForEach';
 
 export * from './types';

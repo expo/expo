@@ -66,6 +66,7 @@ Accept only these Expo reviewer agents:
 - `correctness-ios`
 - `correctness-js`
 - `docs`
+- `general`
 - `native-abi`
 - `public-api`
 - `security`
@@ -177,7 +178,7 @@ If `couldNotComplete` is true, lead with **Review could not complete** and do no
 present the nominal `decision` as approval. Otherwise, lead with the JSON `decision`
 and `summary`, clearly labeled advisory. Then show:
 
-1. Findings grouped by `critical`, `warning`, then `suggestion`.
+1. Findings grouped by `critical`, `warning`, `design`, `suggestion`, then `nit`.
 2. Every finding's title, `file:line`, rationale, and concrete suggestion when
    present. Never invent evidence or silently omit a finding.
 3. Coverage gaps from `incomplete` and all setup notes.

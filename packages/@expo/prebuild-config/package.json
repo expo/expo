@@ -1,6 +1,6 @@
 {
   "name": "@expo/prebuild-config",
-  "version": "58.0.15",
+  "version": "58.0.16",
   "description": "Get the prebuild config",
   "keywords": [
     "expo",
@@ -42,10 +42,9 @@
     "@expo/config-types": "workspace:^",
     "@expo/image-utils": "workspace:^",
     "@expo/json-file": "workspace:^",
-    "@react-native/normalize-colors": "0.88.0",
+    "@expo/require-utils": "workspace:^",
+    "@react-native/normalize-colors": "0.88.1",
     "debug": "^4.3.1",
-    "expo-modules-autolinking": "workspace:~",
-    "resolve-from": "^5.0.0",
     "semver": "^7.7.4"
   },
   "devDependencies": {
@@ -53,6 +52,15 @@
     "@expo/plist": "workspace:*",
     "@types/debug": "^4.1.5",
     "@types/semver": "^7.7.1",
+    "expo-modules-autolinking": "workspace:*",
     "memfs": "^3.6.0"
+  },
+  "peerDependencies": {
+    "expo": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
   }
 }

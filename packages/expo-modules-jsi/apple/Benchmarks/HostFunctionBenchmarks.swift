@@ -144,6 +144,164 @@ extension JSIBenchmarks {
     }
   }
 
+  // MARK: - Result slot form
+
+  // `JavaScriptRuntime.HostFunctionClosure` writes the result into the engine's result slot. Each case
+  // has an unowned-`this` counterpart that returns a `JavaScriptValue` instead.
+
+  @Test
+  func `noop result-slot host function`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("noop") {
+        (
+          this: borrowing JavaScriptUnownedValue,
+          arguments: consuming JavaScriptValuesBuffer,
+          result: borrowing JavaScriptValue.Slot,
+          runtime: borrowing JavaScriptRuntime
+        ) in
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval(
+        "(function(n) { for (var i = 0; i < n; i++) benchFn(); })"
+      ).getFunction()
+      try benchmark("host function: noop result slot", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
+  @Test
+  func `add two Ints result slot`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("add") {
+        (
+          this: borrowing JavaScriptUnownedValue,
+          arguments: consuming JavaScriptValuesBuffer,
+          result: borrowing JavaScriptValue.Slot,
+          runtime: borrowing JavaScriptRuntime
+        ) in
+        let a = try Int.decode(arguments.unownedValue(at: 0), in: runtime)
+        let b = try Int.decode(arguments.unownedValue(at: 1), in: runtime)
+        try Int.encode(a + b, into: result, in: runtime)
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval(
+        "(function(n) { for (var i = 0; i < n; i++) benchFn(3, 38); })"
+      ).getFunction()
+      try benchmark("host function: add two Ints result slot", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
+  @Test
+  func `add two Doubles unowned-this`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("add") {
+        [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
+        let a = try Double.decode(arguments.unownedValue(at: 0), in: runtime)
+        let b = try Double.decode(arguments.unownedValue(at: 1), in: runtime)
+        return try Double.encode(a + b, in: runtime)
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval(
+        "(function(n) { for (var i = 0; i < n; i++) benchFn(3.5, 38.5); })"
+      ).getFunction()
+      try benchmark("host function: add two Doubles unowned-this", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
+  @Test
+  func `add two Doubles result slot`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("add") {
+        (
+          this: borrowing JavaScriptUnownedValue,
+          arguments: consuming JavaScriptValuesBuffer,
+          result: borrowing JavaScriptValue.Slot,
+          runtime: borrowing JavaScriptRuntime
+        ) in
+        let a = try Double.decode(arguments.unownedValue(at: 0), in: runtime)
+        let b = try Double.decode(arguments.unownedValue(at: 1), in: runtime)
+        try Double.encode(a + b, into: result, in: runtime)
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval(
+        "(function(n) { for (var i = 0; i < n; i++) benchFn(3.5, 38.5); })"
+      ).getFunction()
+      try benchmark("host function: add two Doubles result slot", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
+  @Test
+  func `compare an Int unowned-this`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("isPositive") {
+        [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) in
+        let a = try Int.decode(arguments.unownedValue(at: 0), in: runtime)
+        return try Bool.encode(a > 0, in: runtime)
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval(
+        "(function(n) { for (var i = 0; i < n; i++) benchFn(42); })"
+      ).getFunction()
+      try benchmark("host function: compare an Int unowned-this", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
+  @Test
+  func `compare an Int result slot`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("isPositive") {
+        (
+          this: borrowing JavaScriptUnownedValue,
+          arguments: consuming JavaScriptValuesBuffer,
+          result: borrowing JavaScriptValue.Slot,
+          runtime: borrowing JavaScriptRuntime
+        ) in
+        let a = try Int.decode(arguments.unownedValue(at: 0), in: runtime)
+        try Bool.encode(a > 0, into: result, in: runtime)
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval(
+        "(function(n) { for (var i = 0; i < n; i++) benchFn(42); })"
+      ).getFunction()
+      try benchmark("host function: compare an Int result slot", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
+  @Test
+  func `concat two strings result slot`() async throws {
+    try await benchmarkCase { runtime in
+      let fn = runtime.createFunction("concat") {
+        (
+          this: borrowing JavaScriptUnownedValue,
+          arguments: consuming JavaScriptValuesBuffer,
+          result: borrowing JavaScriptValue.Slot,
+          runtime: borrowing JavaScriptRuntime
+        ) in
+        let a = try String.decode(arguments.unownedValue(at: 0), in: runtime)
+        let b = try String.decode(arguments.unownedValue(at: 1), in: runtime)
+        try String.encode(a + b, into: result, in: runtime)
+      }
+      runtime.global().setProperty("benchFn", value: fn)
+      let driver = try runtime.eval(
+        "(function(n) { for (var i = 0; i < n; i++) benchFn('expo ', 'modules'); })"
+      ).getFunction()
+      try benchmark("host function: concat two strings result slot", runtime: runtime) { iterations in
+        _ = try driver.call(arguments: iterations)
+      }
+    }
+  }
+
   // MARK: - Unowned-this form with string arguments
 
   @Test

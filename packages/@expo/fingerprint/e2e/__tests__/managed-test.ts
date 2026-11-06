@@ -1,7 +1,9 @@
 import spawnAsync from '@expo/spawn-async';
 import { execFileSync } from 'child_process';
 import { randomUUID } from 'crypto';
+import { realpathSync } from 'fs';
 import fs from 'fs/promises';
+import os from 'os';
 import path from 'path';
 
 import {
@@ -91,7 +93,7 @@ jest.mock('../../src/ExpoConfigLoader', () => ({
 
 describe('managed project test', () => {
   jest.setTimeout(600000);
-  const tmpDir = require('temp-dir');
+  const tmpDir = realpathSync(os.tmpdir());
   const projectName = 'fingerprint-e2e-managed';
   const projectRoot = path.join(tmpDir, projectName);
   let originalConfig: any;
@@ -346,7 +348,7 @@ describe('managed project test', () => {
     const hash = await createProjectHashAsync(projectRoot);
 
     // Simulate the EAS environment secrets file path
-    const tmpDir = require('temp-dir');
+    const tmpDir = realpathSync(os.tmpdir());
     const googleServicesPathNew = path.join(tmpDir, 'eas-environment-secrets', randomUUID());
     try {
       await fs.mkdir(path.dirname(googleServicesPathNew), { recursive: true });
@@ -390,11 +392,75 @@ describe('managed project test', () => {
     // `relaxed` ignores the app version and name, so neither change affects the fingerprint.
     expect(hash).toBe(hash2);
   });
+
+  it('should hash a config plugin that a linked workspace dependency exports', async () => {
+    const packageName = 'fingerprint-e2e-workspace-plugin';
+    const workspacePackageRoot = path.join(tmpDir, `${projectName}-workspace-plugin`);
+    const linkedPackagePath = path.join(projectRoot, 'node_modules', packageName);
+    const packageJsonPath = path.join(projectRoot, 'package.json');
+    const configPath = path.join(projectRoot, 'app.config.js');
+    const labelPath = path.join(workspacePackageRoot, 'label.js');
+    const sourcePrefix = path.relative(projectRoot, workspacePackageRoot).split(path.sep).join('/');
+    const originalPackageJson = await fs.readFile(packageJsonPath, 'utf8');
+    try {
+      await fs.mkdir(workspacePackageRoot, { recursive: true });
+      await fs.writeFile(
+        path.join(workspacePackageRoot, 'package.json'),
+        JSON.stringify({ name: packageName, version: '1.0.0', main: 'index.js' })
+      );
+      await fs.writeFile(labelPath, `module.exports = 'first';\n`);
+      await fs.writeFile(
+        path.join(workspacePackageRoot, 'index.js'),
+        [
+          `const label = require('./label');`,
+          ``,
+          `module.exports = function withLabel(config) {`,
+          `  return config;`,
+          `};`,
+          `module.exports.describeLabel = () => label;`,
+          ``,
+        ].join('\n')
+      );
+      await fs.symlink(workspacePackageRoot, linkedPackagePath, 'junction');
+      const packageJson = JSON.parse(originalPackageJson);
+      packageJson.dependencies = { ...packageJson.dependencies, [packageName]: '1.0.0' };
+      await fs.writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
+      await fs.writeFile(
+        configPath,
+        [
+          `const withLabel = require('${packageName}');`,
+          ``,
+          `module.exports = ({ config }) => ({ ...config, plugins: [...(config.plugins ?? []), withLabel] });`,
+          ``,
+        ].join('\n')
+      );
+      const sources = await getHashSourcesAsync(
+        projectRoot,
+        await normalizeOptionsAsync(projectRoot)
+      );
+      expect(sources).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ type: 'file', filePath: `${sourcePrefix}/index.js` }),
+          expect.objectContaining({ type: 'file', filePath: `${sourcePrefix}/label.js` }),
+        ])
+      );
+
+      const hash = await createProjectHashAsync(projectRoot);
+      await fs.writeFile(labelPath, `module.exports = 'second';\n`);
+      const hash2 = await createProjectHashAsync(projectRoot);
+      expect(hash).not.toBe(hash2);
+    } finally {
+      await fs.writeFile(packageJsonPath, originalPackageJson);
+      await fs.rm(configPath, { force: true });
+      await fs.rm(linkedPackagePath, { force: true });
+      await fs.rm(workspacePackageRoot, { force: true, recursive: true });
+    }
+  });
 });
 
 describe(`getHashSourcesAsync - managed project`, () => {
   jest.setTimeout(600000);
-  const tmpDir = require('temp-dir');
+  const tmpDir = realpathSync(os.tmpdir());
   const projectName = 'fingerprint-e2e-managed';
   const projectRoot = path.join(tmpDir, projectName);
 

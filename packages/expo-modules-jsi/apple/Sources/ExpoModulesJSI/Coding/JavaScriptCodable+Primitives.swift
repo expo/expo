@@ -40,6 +40,16 @@ extension Bool: JavaScriptCodable {
   public static func encode(_ value: Bool, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return value ? .true() : .false()
   }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: Bool,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    slot.emplace(bool: value)
+  }
 }
 
 // MARK: - String
@@ -72,6 +82,16 @@ extension String: JavaScriptCodable {
     -> JavaScriptValue
   {
     return JavaScriptValue(runtime, value)
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: String,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    slot.emplace(string: value, in: runtime)
   }
 }
 
@@ -112,6 +132,16 @@ extension Double: JavaScriptCodable {
   {
     return .number(value)
   }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: Double,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    slot.emplace(number: value)
+  }
 }
 
 extension Float: JavaScriptCodable {
@@ -139,6 +169,16 @@ extension Float: JavaScriptCodable {
   @inlinable
   public static func encode(_ value: Float, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return .number(Double(value))
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: Float,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    slot.emplace(number: Double(value))
   }
 }
 
@@ -170,6 +210,16 @@ extension CGFloat: JavaScriptCodable {
     -> JavaScriptValue
   {
     return .number(Double(value))
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: CGFloat,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    slot.emplace(number: Double(value))
   }
 }
 
@@ -219,6 +269,16 @@ extension Int: JavaScriptCodable {
   public static func encode(_ value: Int, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return try encodeSafeInteger(value)
   }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: Int,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    slot.emplace(number: try safeIntegerNumber(value))
+  }
 }
 
 extension Int8: JavaScriptCodable {
@@ -246,6 +306,16 @@ extension Int8: JavaScriptCodable {
   @inlinable
   public static func encode(_ value: Int8, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return .number(Double(value))
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: Int8,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    slot.emplace(number: Double(value))
   }
 }
 
@@ -275,6 +345,16 @@ extension Int16: JavaScriptCodable {
   public static func encode(_ value: Int16, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return .number(Double(value))
   }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: Int16,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    slot.emplace(number: Double(value))
+  }
 }
 
 extension Int32: JavaScriptCodable {
@@ -302,6 +382,16 @@ extension Int32: JavaScriptCodable {
   @inlinable
   public static func encode(_ value: Int32, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return .number(Double(value))
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: Int32,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    slot.emplace(number: Double(value))
   }
 }
 
@@ -359,6 +449,16 @@ extension UInt: JavaScriptCodable {
   public static func encode(_ value: UInt, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return try encodeSafeInteger(value)
   }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: UInt,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    slot.emplace(number: try safeIntegerNumber(value))
+  }
 }
 
 extension UInt8: JavaScriptCodable {
@@ -386,6 +486,16 @@ extension UInt8: JavaScriptCodable {
   @inlinable
   public static func encode(_ value: UInt8, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return .number(Double(value))
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: UInt8,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    slot.emplace(number: Double(value))
   }
 }
 
@@ -418,6 +528,16 @@ extension UInt16: JavaScriptCodable {
   {
     return .number(Double(value))
   }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: UInt16,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    slot.emplace(number: Double(value))
+  }
 }
 
 extension UInt32: JavaScriptCodable {
@@ -448,6 +568,16 @@ extension UInt32: JavaScriptCodable {
     -> JavaScriptValue
   {
     return .number(Double(value))
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(
+    _ value: UInt32,
+    into slot: borrowing JavaScriptValue.Slot,
+    in runtime: borrowing JavaScriptRuntime
+  ) throws {
+    slot.emplace(number: Double(value))
   }
 }
 
@@ -602,6 +732,18 @@ func encodeSafeInteger(_ value: UInt) throws -> JavaScriptValue {
   return try genericEncodeSafeInteger(value)
 }
 
+@usableFromInline
+@JavaScriptActor
+func safeIntegerNumber(_ value: Int) throws -> Double {
+  return try genericSafeIntegerNumber(value)
+}
+
+@usableFromInline
+@JavaScriptActor
+func safeIntegerNumber(_ value: UInt) throws -> Double {
+  return try genericSafeIntegerNumber(value)
+}
+
 // MARK: - Generic integer conversions
 
 /// Rounds a JavaScript number to the nearest integer and narrows it to `T`, throwing instead of
@@ -671,6 +813,12 @@ func genericDecodeBigInt<T: FixedWidthInteger>(_ bigInt: borrowing JavaScriptBig
 /// whose JS mapping stays a `number`; the explicitly-sized 64-bit types encode as a `bigint` instead.
 @JavaScriptActor
 func genericEncodeSafeInteger<T: FixedWidthInteger>(_ value: T) throws -> JavaScriptValue {
+  return .number(try genericSafeIntegerNumber(value))
+}
+
+/// Converts a 64-bit-wide integer to the `Double` of a JS `number`, throwing like `genericEncodeSafeInteger`.
+@JavaScriptActor
+func genericSafeIntegerNumber<T: FixedWidthInteger>(_ value: T) throws -> Double {
   // `Number.MAX_SAFE_INTEGER` (2^53 - 1): the largest magnitude where every integer up to it, and the
   // next one, is representable as a JS number. 2^53 itself is representable but unsafe (it collides with
   // 2^53 + 1), so the bound is exclusive above this. Used by `Int`/`UInt`, both 64-bit, so 2^53 fits.
@@ -678,7 +826,7 @@ func genericEncodeSafeInteger<T: FixedWidthInteger>(_ value: T) throws -> JavaSc
   guard value.magnitude <= maxSafeInteger else {
     throw UnsafeIntegerException(value: "\(value)")
   }
-  return .number(Double(value))
+  return Double(value)
 }
 
 /// Thrown when a JavaScript number cannot be represented as the target integer type because it is

@@ -40,6 +40,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.facebook.react.uimanager.events.NativeGestureUtil
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -136,16 +137,41 @@ internal class HostView(context: Context, appContext: AppContext) :
   internal var isDispatchingCancelFromParent = false
     private set
 
+  // Set by a hosted `RNHostView` under the down. That content handles its touches in JS.
+  internal var reactNativeContentHit = false
+  private var ownsNativeGesture = false
+
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-    if (ev.actionMasked != MotionEvent.ACTION_CANCEL) {
-      return super.dispatchTouchEvent(ev)
+    if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+      reactNativeContentHit = false
+      ownsNativeGesture = false
     }
-    isDispatchingCancelFromParent = true
-    try {
-      return super.dispatchTouchEvent(ev)
-    } finally {
-      isDispatchingCancelFromParent = false
+
+    val handled = if (ev.actionMasked != MotionEvent.ACTION_CANCEL) {
+      super.dispatchTouchEvent(ev)
+    } else {
+      isDispatchingCancelFromParent = true
+      try {
+        super.dispatchTouchEvent(ev)
+      } finally {
+        isDispatchingCancelFromParent = false
+      }
     }
+
+    when (ev.actionMasked) {
+      // Compose only handles a down that a touch handler is under, like a native view.
+      // Then cancel the JS touch, so a JS responder around this view can't take the gesture.
+      MotionEvent.ACTION_DOWN -> if (handled && !reactNativeContentHit) {
+        ownsNativeGesture = true
+        NativeGestureUtil.notifyNativeGestureStarted(this, ev)
+      }
+      // On a cancel, a native parent like a scroll view took over and ends the gesture itself.
+      MotionEvent.ACTION_UP -> if (ownsNativeGesture) {
+        ownsNativeGesture = false
+        NativeGestureUtil.notifyNativeGestureEnded(this, ev)
+      }
+    }
+    return handled
   }
 
   @Composable

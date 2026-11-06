@@ -19,6 +19,34 @@ jest.mock('../../hints', () => ({
 jest.mock('../../../log');
 
 jest.mock('../../../utils/port');
+
+const mockInstallPodsAsync = jest.fn(async () => {
+  vol.fromJSON({ '/ios/ReactNativeProject.xcworkspace/contents.xcworkspacedata': '' });
+});
+jest.mock('@expo/package-manager', () => ({
+  CocoaPodsPackageManager: jest.fn(() => ({
+    isCLIInstalledAsync: jest.fn(async () => true),
+    installAsync: mockInstallPodsAsync,
+  })),
+}));
+jest.mock('../../../prebuild/ensureConfigAsync', () => ({
+  ensureConfigAsync: jest.fn(async () => ({
+    exp: { name: 'ReactNativeProject', slug: 'app' },
+    pkg: {},
+  })),
+}));
+jest.mock('../../../prebuild/updateFromTemplate', () => ({
+  updateFromTemplateAsync: jest.fn(async () => {
+    vol.fromJSON({ ...rnFixture, 'ios/Podfile': '' }, '/');
+    return { needsPodInstall: true, changedDependencies: [], hasNewProjectFiles: true };
+  }),
+}));
+jest.mock('../../../prebuild/configureProjectAsync', () => ({
+  configureProjectAsync: jest.fn(),
+}));
+jest.mock('../../../utils/cocoapods.js', () => jest.requireActual('../../../utils/cocoapods'), {
+  virtual: true,
+});
 jest.mock('../../../utils/nodeEnv', () => ({
   loadEnvFiles: jest.fn(),
 }));
@@ -79,6 +107,51 @@ afterEach(() => {
 
 describe(runIosAsync, () => {
   afterEach(() => vol.reset());
+
+  function mockIosProject(prebuild = false) {
+    vol.fromJSON(
+      {
+        ...(prebuild ? {} : { ...rnFixture, '/ios/Podfile': '' }),
+        '/package.json': '{}',
+        '/node_modules/expo/package.json': JSON.stringify({ version: '53.0.0' }),
+      },
+      '/'
+    );
+  }
+
+  it.each([
+    { prebuild: false, scheme: undefined },
+    { prebuild: true, scheme: undefined },
+    { prebuild: false, scheme: 'CustomSharedScheme' },
+  ])('selects the device before pods (%j)', async ({ prebuild, scheme }) => {
+    mockPlatform('darwin');
+    mockIosProject(prebuild);
+
+    await runIosAsync('/', { install: true, device: true, scheme });
+
+    expect(resolveDeviceAsync).toHaveBeenCalledTimes(1);
+    expect(mockInstallPodsAsync).toHaveBeenCalledTimes(1);
+    expect(jest.mocked(resolveDeviceAsync).mock.invocationCallOrder[0]).toBeLessThan(
+      mockInstallPodsAsync.mock.invocationCallOrder[0]!
+    );
+    expect(buildAsync).toHaveBeenCalledWith(
+      expect.objectContaining({
+        scheme: scheme ?? 'ReactNativeProject',
+        xcodeProject: { isWorkspace: true, name: '/ios/ReactNativeProject.xcworkspace' },
+      })
+    );
+  });
+
+  it('does not install pods when device selection is cancelled', async () => {
+    mockPlatform('darwin');
+    mockIosProject();
+    jest.mocked(resolveDeviceAsync).mockRejectedValueOnce(new Error('cancelled'));
+
+    await expect(runIosAsync('/', { install: true, device: true })).rejects.toThrow('cancelled');
+
+    expect(mockInstallPodsAsync).not.toHaveBeenCalled();
+    expect(buildAsync).not.toHaveBeenCalled();
+  });
 
   it('uses production mode for a release configuration', async () => {
     mockPlatform('darwin');

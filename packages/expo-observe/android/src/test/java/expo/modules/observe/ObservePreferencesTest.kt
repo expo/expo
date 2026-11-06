@@ -2,6 +2,7 @@ package expo.modules.observe
 
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import kotlinx.serialization.json.Json
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
@@ -76,6 +77,29 @@ class ObservePreferencesTest {
     assertEquals(0.5, ObservePreferences.getConfig(context)?.sampleRate!!, 0.0001)
     ObservePreferences.setConfig(context, PersistedConfig(sampleRate = null))
     assertNull(ObservePreferences.getConfig(context)?.sampleRate)
+  }
+
+  @Test
+  fun `ignored names persist and omitted lists reset them`() {
+    ObservePreferences.setConfig(
+      context,
+      PersistedConfig(
+        ignoredMetrics = listOf("expo.app_startup.tti"),
+        ignoredEvents = listOf("custom.event")
+      )
+    )
+    assertEquals(listOf("expo.app_startup.tti"), ObservePreferences.getConfig(context)?.ignoredMetrics)
+    assertEquals(listOf("custom.event"), ObservePreferences.getConfig(context)?.ignoredEvents)
+    ObservePreferences.setConfig(context, PersistedConfig())
+    assertEquals(emptyList<String>(), ObservePreferences.getConfig(context)?.ignoredMetrics)
+    assertEquals(emptyList<String>(), ObservePreferences.getConfig(context)?.ignoredEvents)
+  }
+
+  @Test
+  fun `old persisted JSON decodes with empty ignored lists`() {
+    val config = Json.decodeFromString<PersistedConfig>("""{"dispatchingEnabled":true,"sampleRate":0.5}""")
+    assertEquals(emptyList<String>(), config.ignoredMetrics)
+    assertEquals(emptyList<String>(), config.ignoredEvents)
   }
 
   // region PersistedBundleDefaults

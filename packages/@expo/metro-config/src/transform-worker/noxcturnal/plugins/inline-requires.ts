@@ -30,10 +30,9 @@ export function createInlineRequiresPlugin(
     },
     visitors: [
       nox.defineVisitor(
-        'VariableDeclaration',
+        { route: 'VariableDeclaration', parent: { route: 'Program' } },
         {
           fields: ['kind'],
-          ancestry: { mode: 'parent' },
           scope: true,
           children: {
             declarations: {
@@ -55,7 +54,6 @@ export function createInlineRequiresPlugin(
           } as any,
         },
         (declaration, state) => {
-          if (declaration.parentPath?.node.type !== 'Program') return;
           const declarators = declaration.getChildList('declarations');
           const retained: (typeof declarators)[number][] = [];
           const replacements: { start: number; end: number; code: string }[] = [];

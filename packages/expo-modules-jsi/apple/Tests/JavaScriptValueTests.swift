@@ -80,6 +80,19 @@ struct JavaScriptValueTests {
     #expect((JavaScriptValue.number(48) == JavaScriptValue.number(48)) == true)
   }
 
+  @Test
+  func `object type checks of runtime-free values are false`() {
+    func expectNoObjectType(_ value: borrowing JavaScriptValue) {
+      #expect(value.isArray() == false)
+      #expect(value.isFunction() == false)
+      #expect(value.isTypedArray() == false)
+      #expect(value.isArrayBuffer() == false)
+    }
+    expectNoObjectType(.number(42))
+    expectNoObjectType(.null())
+    expectNoObjectType(.undefined())
+  }
+
   // MARK: - getString round-trip
 
   @Test
@@ -642,10 +655,12 @@ struct JavaScriptValueTests {
 
   @Test
   func `asPromise returns JavaScriptPromise for promise values`() async throws {
-    let promiseValue = try runtime.eval("Promise.resolve(42)")
-    let promise = try promiseValue.asPromise()
-    let result = try await promise.await()
-    #expect(result.getDouble() == 42.0)
+    try await TestRuntimeScheduler().makeRuntime().run { runtime in
+      let promiseValue = try runtime.eval("Promise.resolve(42)")
+      let promise = try promiseValue.asPromise()
+      let result = try await promise.await()
+      #expect(result.getDouble() == 42.0)
+    }
   }
 
   @Test

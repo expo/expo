@@ -1,9 +1,14 @@
-import React, { isValidElement, use, type ReactNode } from 'react';
+import React, { isValidElement, use, type ReactElement, type ReactNode } from 'react';
 
 import { Split, type SplitHostProps } from '../optional-libraries/react-native-screens';
 import { IsWithinNativeNavigator } from '../standard-navigation';
 import { Slot } from '../views/Navigator';
-import { SplitViewColumn, SplitViewInspector } from './elements';
+import {
+  getSplitColumnChildren,
+  SplitViewColumn,
+  SplitViewInspector,
+  type SplitViewColumnProps,
+} from './elements';
 
 /**
  * For full list of supported props, see [`SplitHostProps`](http://github.com/software-mansion/react-native-screens/blob/main/src/components/gamma/split/SplitHost.types.ts#L117)
@@ -31,7 +36,8 @@ function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }
 
   const allChildrenArray = React.Children.toArray(children);
   const columnChildren = allChildrenArray.filter(
-    (child) => isValidElement(child) && child.type === SplitViewColumn
+    (child): child is ReactElement<SplitViewColumnProps> =>
+      isValidElement(child) && child.type === SplitViewColumn
   );
   const inspectorChildren = allChildrenArray.filter(
     (child) => isValidElement(child) && child.type === SplitViewInspector
@@ -54,11 +60,16 @@ function SplitViewNavigator({ children, activityEnabled, ...splitViewHostProps }
     return <Slot activityEnabled={activityEnabled} />;
   }
 
+  // Split.Host gives a column index only to direct children whose type is Split.Column.
+  const columns = columnChildren.map((child) => (
+    <Split.Column key={child.key}>{getSplitColumnChildren(child.props.children)}</Split.Column>
+  ));
+
   // The key is needed, because number of columns cannot be changed dynamically
   return (
     <IsWithinNativeNavigator value>
       <Split.Host key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
-        {columnChildren}
+        {columns}
         <Split.Column>
           <Slot activityEnabled={activityEnabled} />
         </Split.Column>
