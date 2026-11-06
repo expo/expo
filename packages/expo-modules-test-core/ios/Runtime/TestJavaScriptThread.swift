@@ -33,8 +33,14 @@ internal final class TestJavaScriptThread: @unchecked Sendable {
     return current == threadID
   }
 
+  /// Drops the operation once the thread is stopping, like React Native's host drops work after the
+  /// React instance destroyed its scheduler.
   func schedule(_ operation: @escaping @convention(block) () -> Void) {
     condition.lock()
+    guard !isStopping else {
+      condition.unlock()
+      return
+    }
     operations.append(operation)
     condition.signal()
     condition.unlock()

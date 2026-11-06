@@ -27,4 +27,25 @@ struct TestJavaScriptThreadTests {
     }
     #expect(leaked == 0)
   }
+
+  /// The runtime may dispatch to the thread after its test app context is gone, for example when a
+  /// value is released on another thread. The thread drops that work and releases it, so that
+  /// `execute` throws instead of waiting forever.
+  @Test func `drops and releases operations scheduled after it stopped`() {
+    let thread = TestJavaScriptThread()
+    thread.stopWhenIdle()
+
+    weak var weakToken: Token?
+    var didRun = false
+    do {
+      let token = Token()
+      weakToken = token
+      thread.schedule { [token] in
+        withExtendedLifetime(token) {}
+        didRun = true
+      }
+    }
+    #expect(weakToken == nil)
+    #expect(didRun == false)
+  }
 }

@@ -42,4 +42,14 @@ struct TestAppContextTests {
     ).ref()
     #expect(try await runtime.execute { try result.take().asString() } == "done")
   }
+
+  @Test
+  func `is deallocated once the test releases it`() {
+    weak var weakAppContext: TestAppContext?
+    do {
+      let appContext = TestAppContext()
+      weakAppContext = appContext
+    }
+    #expect(weakAppContext == nil)
+  }
 }
