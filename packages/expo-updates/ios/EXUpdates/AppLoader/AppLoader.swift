@@ -391,10 +391,6 @@ open class AppLoader: NSObject {
     arrayLock.lock()
     assetsToLoad.remove(asset)
 
-    if let response = response as? HTTPURLResponse,
-      let allHeaderFields = response.allHeaderFields as? [String: Any] {
-      asset.headers = allHeaderFields
-    }
     asset.contentHash = UpdatesUtils.hexEncodedSHA256WithData(data)
     asset.downloadTime = Date()
 
