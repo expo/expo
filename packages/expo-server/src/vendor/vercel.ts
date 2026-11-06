@@ -4,7 +4,7 @@
 import * as http from 'http';
 
 import { respond } from './http';
-import { createRequestHandler as createExpoHandler } from './abstract';
+import { createRequestHandler as createExpoHandler, type RequestHandlerParams } from './abstract';
 import { createRequestScope } from '../runtime';
 import { createNodeEnv } from './environment/node';
 import { ScopeDefinition } from '../runtime/scope';
@@ -45,7 +45,10 @@ const STORE: ScopeDefinition = {
  * Returns a request handler for Vercel's Node.js runtime that serves the
  * response using Remix.
  */
-export function createRequestHandler(params: { build: string }): RequestHandler {
+export function createRequestHandler(
+  params: { build: string },
+  setup?: RequestHandlerParams
+): RequestHandler {
   const makeRequestAPISetup = (request: Request) => {
     const host = request.headers.get('host');
     const proto = request.headers.get('x-forwarded-proto') || 'https';
@@ -57,7 +60,7 @@ export function createRequestHandler(params: { build: string }): RequestHandler 
     };
   };
   const run = createRequestScope(STORE, makeRequestAPISetup);
-  const onRequest = createExpoHandler(createNodeEnv(params));
+  const onRequest = createExpoHandler({ ...createNodeEnv(params), ...setup });
   return async (req, res) => {
     return respond(res, await run(onRequest, convertRequest(req, res)));
   };
