@@ -104,16 +104,37 @@ it('copies the app to the output directory', async () => {
   expect(Log.log).toHaveBeenCalledWith(expect.stringContaining('Binary: /app/build/app-debug.apk'));
 });
 
-it('refuses production before loading env files', async () => {
+it('builds a production apk', async () => {
+  vol.fromJSON(
+    {
+      'android/app/build/outputs/apk/release/output-metadata.json': JSON.stringify({
+        elements: [{ type: 'SINGLE', outputFile: 'app-release.apk' }],
+      }),
+    },
+    '/app'
+  );
+
+  await expoCompileAndroid(['--prod', '--output-type', 'apk']);
+
+  expect(loadEnvFiles).toHaveBeenCalledWith('/app', { mode: 'production' });
+  expect(spawnAsync).toHaveBeenCalledWith(
+    '/app/android/gradlew',
+    ['app:assembleRelease', '-x', 'lint', '-x', 'test', '--configure-on-demand', '--build-cache'],
+    { cwd: '/app/android', stdio: 'inherit' }
+  );
+  expect(Log.log).toHaveBeenCalledWith(
+    expect.stringContaining('Binary: /app/android/app/build/outputs/apk/release/app-release.apk')
+  );
+});
+
+it('refuses the default production store file', async () => {
   await expect(expoCompileAndroid([])).rejects.toThrow(/EXIT_CALLED/);
 
   expect(Log.exit).toHaveBeenCalledWith(
     expect.objectContaining({
-      message: 'Production builds are not supported yet. Pass --dev to build in development mode.',
+      message: 'Building an aab is not supported yet. Pass --output-type apk to build an apk.',
     })
   );
-  expect(loadEnvFiles).not.toHaveBeenCalled();
-  expect(spawnAsync).not.toHaveBeenCalled();
 });
 
 it('refuses unsupported flags before finding the project', async () => {
@@ -125,7 +146,7 @@ it('refuses unsupported flags before finding the project', async () => {
 
   expect(Log.exit).toHaveBeenCalledWith(
     expect.objectContaining({
-      message: 'Building an aab is not supported yet. Omit --output-type to build an apk.',
+      message: 'Building an aab is not supported yet. Pass --output-type apk to build an apk.',
     })
   );
   expect(loadEnvFiles).not.toHaveBeenCalled();
