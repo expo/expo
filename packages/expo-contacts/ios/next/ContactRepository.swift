@@ -77,17 +77,6 @@ class ContactRepository {
     return contacts
   }
 
-  func getAll(keysToFetch: [CNKeyDescriptor]) throws -> [CNContact] {
-    let request = CNContactFetchRequest(keysToFetch: getSafeKeys(keysToFetch: keysToFetch))
-    var contacts: [CNContact] = []
-
-    try store.enumerateContacts(with: request) { contact, _ in
-      contacts.append(contact)
-    }
-
-    return contacts
-  }
-
   func getCount() throws -> Int {
     let request = CNContactFetchRequest(keysToFetch: [])
     var count = 0
@@ -112,10 +101,6 @@ class ContactRepository {
       return canAccessNotesField()
     }
     return true
-  }
-
-  private func getSafeKeys(keysToFetch: [CNKeyDescriptor]) -> [CNKeyDescriptor] {
-    return keysToFetch.filter(isAccessible)
   }
 
   private func ensureAccessible(_ key: CNKeyDescriptor) throws {
