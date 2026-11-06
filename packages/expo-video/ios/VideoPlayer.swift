@@ -259,8 +259,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       return
     }
 
-    if let drm = videoSource.drm {
-      try drm.type.assertIsSupported()
+    if videoSource.drm != nil {
       self.contentKeyManager.addContentKeyRequest(videoSource: videoSource, asset: playerItem.urlAsset)
     }
 
