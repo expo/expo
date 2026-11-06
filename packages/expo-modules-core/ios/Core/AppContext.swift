@@ -70,7 +70,11 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    ``NativeState``): nothing else tears that runtime down, so the pin would be a cycle that keeps
    both alive forever. Set it before the runtime.
    */
-  internal var ownsRuntime = false
+  internal var ownsRuntime = false {
+    willSet {
+      assert(_runtime == nil, "Set ownsRuntime before the runtime: the global.expo native state reads it only once")
+    }
+  }
 
   /**
    Underlying JSI runtime of the running app.
@@ -741,7 +745,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   /// never break. The native state references it weakly and the app context tears the runtime
   /// down in its own `deinit`.
   internal final class NativeState: JavaScriptNativeState {
-    internal weak var appContext: AppContext?
+    internal weak let appContext: AppContext?
 
     /// The strong reference that pins the app context, or `nil` when it isn't pinned.
     private let pinnedAppContext: AppContext?
