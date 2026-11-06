@@ -1,12 +1,12 @@
 import { SdkCherryPickConfig } from './Config';
 import { GitHubClient } from './GitHub';
 import { Cli, FatalError, Output, reportFailureAsync } from './Process';
-import { StateDir } from './State';
-import { manualSteps } from './Text';
+import { BUNDLE_REF, isStringArray, RebuildRequest, StateDir } from './State';
+import { manualSteps, rebuildFailedComment } from './Text';
 
 // The token stays in the environment. It is not in .git/config or on a command line: git expands
 // $GH_TOKEN in the shell that runs the helper.
-const CREDENTIAL_HELPER =
+export const CREDENTIAL_HELPER =
   'credential.helper=!f() { echo username=x-access-token; echo "password=$GH_TOKEN"; }; f';
 
 export type PublishDependencies = { github: GitHubClient; output: Output };
@@ -117,6 +117,9 @@ class Publisher {
         `${branch}Pull request into ${config.targetBranch}:\n  Title: ${title}\n  Body:\n${body}`
       );
       await this.commentAsync(`Backport PR ${config.targetBranch}: #<pull request number>`);
+      if (push) {
+        await this.recordRebuildRequestAsync({ commit, targetTip, pullRequest: '' });
+      }
       return;
     }
 
@@ -144,6 +147,51 @@ class Publisher {
     });
     const number = url.match(/\/pull\/(\d+)$/)?.[1];
     await this.commentAsync(`Backport PR ${config.targetBranch}: ${number ? `#${number}` : url}`);
+    // After the comment, so that a failure here cannot post the comment that no pull request was opened.
+    if (push) {
+      await this.recordRebuildRequestAsync({ commit, targetTip, pullRequest: number ?? '' }).catch(
+        async (error) => {
+          // Without a request, the rebuild jobs skip, and so does the comment of push-build.
+          if (number && config.mayCommentOnRebuild) {
+            await github
+              .commentAsync(number, rebuildFailedComment(config, 'rebuild'))
+              .catch(() => {});
+          }
+          throw error;
+        }
+      );
+    }
+  }
+
+  /**
+   * Records what the rebuild jobs of the workflow need, when prepare listed `build/` directories.
+   * The commit goes in a bundle, because a dry run pushes it nowhere.
+   */
+  private async recordRebuildRequestAsync(request: Omit<RebuildRequest, 'dirs'>): Promise<void> {
+    const dirs = JSON.parse((await this.state.readIfExistsAsync('build-dirs')) || '[]');
+    if (!isStringArray(dirs)) {
+      throw new FatalError('prepare recorded build-dirs that are not a list of directories.');
+    }
+    if (dirs.length === 0) {
+      return;
+    }
+    await this.git.runAsync(['update-ref', BUNDLE_REF, request.commit]);
+    try {
+      await this.git.runAsync([
+        'bundle',
+        'create',
+        '-q',
+        this.state.path('rebuild.bundle'),
+        BUNDLE_REF,
+        `^${request.targetTip}`,
+      ]);
+    } finally {
+      await this.git.tryAsync(['update-ref', '-d', BUNDLE_REF]);
+    }
+    await this.state.writeAsync(
+      'rebuild-request.json',
+      `${JSON.stringify({ ...request, dirs } satisfies RebuildRequest)}\n`
+    );
   }
 
   private async commentAsync(body: string): Promise<void> {

@@ -39,7 +39,7 @@ const CHANGELOG_PATH = /^(packages|templates)\/([A-Za-z0-9@_-][A-Za-z0-9@._-]*\/
 const REGULAR_FILE_MODE = '100644';
 
 // Hooks and fsmonitor are configuration that could run a program. The target tree is data only.
-const TARGET_GIT_OPTIONS = [
+export const TARGET_GIT_OPTIONS = [
   '-c',
   'core.hooksPath=/dev/null',
   '-c',
@@ -59,7 +59,7 @@ type Prepared =
   | { outcome: 'skip'; reason: string }
   | { outcome: 'comment'; comment: string }
   | { outcome: 'open-pr-from-branch'; body: string }
-  | { outcome: 'open-pr'; body: string; targetTip: string; commit: string };
+  | { outcome: 'open-pr'; body: string; targetTip: string; commit: string; buildDirs: string[] };
 
 /** The commit to open the backport from, and what it did with the changesets. */
 type Converted = { head: string; conversion: Conversion };
@@ -148,6 +148,7 @@ async function recordAsync(state: StateDir, prepared: Prepared, output: Output):
       await state.writeAsync('body.md', prepared.body);
       await state.writeAsync('target-tip', `${prepared.targetTip}\n`);
       await state.writeAsync('commit', `${prepared.commit}\n`);
+      await state.writeAsync('build-dirs', `${JSON.stringify(prepared.buildDirs)}\n`);
       break;
   }
   await state.writeAsync('outcome', `${prepared.outcome}\n`);
@@ -290,6 +291,7 @@ async function decideAsync(
     if (isPrepared(converted)) {
       return converted;
     }
+    const buildDirs = await findBuiltSourceDirsAsync(cherryPick);
     return {
       outcome: 'open-pr',
       body: backportBody({
@@ -297,10 +299,11 @@ async function decideAsync(
         prNumber,
         mergeSha,
         conversion: converted.conversion,
-        buildNote: buildNote(targetBranch, await findBuiltSourceDirsAsync(cherryPick)),
+        buildNote: buildNote(targetBranch, buildDirs),
       }),
       targetTip,
       commit: converted.head,
+      buildDirs,
     };
   } finally {
     if (fs.existsSync(targetDir)) {

@@ -89,9 +89,11 @@ export function conflictList(nameOnlyOutput: string): string {
   return `${lines.slice(0, MAX_CONFLICTS).join('\n')}\n${lines.length - MAX_CONFLICTS} more. The run log lists every file.`;
 }
 
+export const REBUILD_COMMIT_MESSAGE = 'Rebuild build/ for the backport';
+
 /**
  * Older branches track `build/` in git, and check-packages fails when it does not match the source.
- * The bot never runs code from the pull request, so it does not rebuild. It names the command instead.
+ * A separate job rebuilds these directories, and `et sdk-cherry-pick apply-build` pushes the result.
  * `dirs` are the package directories whose source changes and whose `build/` the branch tracks.
  */
 export function buildNote(targetBranch: string, dirs: readonly string[]): string {
@@ -102,7 +104,28 @@ export function buildNote(targetBranch: string, dirs: readonly string[]): string
     .sort()
     .map((dir) => `- \`${dir}/build\``)
     .join('\n');
-  return `\n\`${targetBranch}\` tracks \`build/\` directories in git. This backport changes the source next to these directories:\n\n${list}\n\ncheck-packages fails if the build output changes. In a checkout of this branch, run \`et check-packages --since origin/${targetBranch}\`, then commit and push the changed \`build/\` files.`;
+  return `\n\`${targetBranch}\` tracks \`build/\` directories in git. This backport changes the source next to these directories:\n\n${list}\n\nThe bot rebuilds them and pushes any change in a commit named \`${REBUILD_COMMIT_MESSAGE}\`. If that commit does not appear and check-packages fails, run \`et check-packages --since origin/${targetBranch}\` in a checkout of this branch, then commit and push the changed \`build/\` files.`;
+}
+
+/** Why the rebuilt `build/` directories did not reach the backport branch. */
+export type RebuildFailure = 'rebuild' | 'apply' | 'rejected' | 'moved' | 'push';
+
+const REBUILD_FAILURES: Record<RebuildFailure, string> = {
+  rebuild: 'The bot could not rebuild the `build/` directories of this backport.',
+  apply: 'The bot could not apply the rebuilt `build/` directories to this branch.',
+  rejected:
+    'The bot did not push the rebuilt `build/` directories, because the rebuild changed files that the bot does not push.',
+  moved:
+    'The bot did not push the rebuilt `build/` directories, because this branch changed after the bot opened this pull request.',
+  push: 'The bot could not push the rebuilt `build/` directories to this branch.',
+};
+
+/** The comment on the backport pull request. The workflow posts the `push` text when apply-build cannot start. */
+export function rebuildFailedComment(
+  config: Pick<SdkCherryPickConfig, 'targetBranch' | 'runLogLink'>,
+  failure: RebuildFailure
+): string {
+  return `${REBUILD_FAILURES[failure]}${config.runLogLink}\n\nTo rebuild them by hand, run \`et check-packages --since origin/${config.targetBranch}\` in a checkout of this branch. Then commit and push the changed \`build/\` files.`;
 }
 
 function conversionNote(conversion: Conversion, targetBranch: string, prNumber: string): string {

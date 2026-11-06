@@ -15,6 +15,8 @@ export type SdkCherryPickConfig = {
   tempRoot: string;
   /** ` [Run log](<url>)` to append to a sentence of a comment, or empty outside GitHub Actions. */
   runLogLink: string;
+  /** Only a run that a `pull_request_target` event started comments about the rebuild of `build/`. */
+  mayCommentOnRebuild: boolean;
   /** The pull request as the event names it. prepare reads it with `gh pr view` when a value is missing. */
   pullRequest: { mergeSha: string; title: string; author: string };
 };
@@ -56,6 +58,7 @@ export function loadConfig(env: NodeJS.ProcessEnv): SdkCherryPickConfig {
     stateDir: env.STATE_DIR || `${tempRoot}/sdk-cherry-pick-${prNumber}-${sdkVersion}`,
     tempRoot,
     runLogLink,
+    mayCommentOnRebuild: env.GITHUB_EVENT_NAME === 'pull_request_target',
     pullRequest: {
       mergeSha: env.MERGE_SHA ?? '',
       title: env.PR_TITLE ?? '',

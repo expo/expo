@@ -10,6 +10,7 @@ import { GitHubClient } from './GitHub';
 import { ExitError, Output } from './Process';
 import { publishAsync } from './Publish';
 import { StateFile } from './State';
+import { rebuildFailedComment } from './Text';
 
 const GIT_ENV_KEYS = [
   'GIT_CONFIG_GLOBAL',
@@ -86,6 +87,8 @@ type PublishRun = {
   status: number;
   output: string;
   comments: string[];
+  /** The pull request of each comment, in the order of `comments`. */
+  commentTargets: string[];
   created: Parameters<GitHubClient['createPullRequestAsync']>[0][];
   stateDir: string;
   /** Whether any output or GitHub call happened before `publish-started` existed. */
@@ -96,11 +99,13 @@ async function publish({
   state,
   env = {},
   github = {},
+  beforePublish,
 }: {
   /** The files that prepare wrote. Without it, prepare never ran. */
   state?: Partial<Record<StateFile, string>>;
   env?: NodeJS.ProcessEnv;
   github?: Partial<GitHubClient>;
+  beforePublish?: (stateDir: string) => void;
 }): Promise<PublishRun> {
   const stateDir = path.join(root, `state-${++stateDirCount}`);
   if (state) {
@@ -109,10 +114,12 @@ async function publish({
       fs.writeFileSync(path.join(stateDir, file), content);
     }
   }
+  beforePublish?.(stateDir);
   const run: PublishRun = {
     status: 0,
     output: '',
     comments: [],
+    commentTargets: [],
     created: [],
     stateDir,
     actedBeforeMarker: false,
@@ -143,9 +150,10 @@ async function publish({
       run.created.push(options);
       return PULL_REQUEST_URL;
     },
-    commentAsync: async (_prNumber, body) => {
+    commentAsync: async (prNumber, body) => {
       act();
       run.comments.push(body);
+      run.commentTargets.push(prNumber);
     },
     ...github,
   };
@@ -234,6 +242,64 @@ describe('publishAsync', () => {
     ]);
     assert.deepEqual(run.comments, ['Backport PR sdk-90: #200']);
     git(remote, 'update-ref', '-d', `refs/heads/${WORK_BRANCH}`);
+  });
+
+  describe('when prepare listed build directories to rebuild', () => {
+    const state = () => ({ ...openPullRequestState(), 'build-dirs': '["packages/expo-foo"]\n' });
+    const request = (stateDir: string) =>
+      JSON.parse(fs.readFileSync(path.join(stateDir, 'rebuild-request.json'), 'utf8'));
+    const bundleHeads = (stateDir: string) =>
+      git(repoDir, 'bundle', 'list-heads', path.join(stateDir, 'rebuild.bundle'));
+
+    it('records a rebuild request for the pull request that it opened, with the commit in a bundle', async () => {
+      const run = await publish({ state: state() });
+      assert.equal(run.status, 0);
+      assert.deepEqual(request(run.stateDir), {
+        commit: prepared,
+        targetTip,
+        pullRequest: '200',
+        dirs: ['packages/expo-foo'],
+      });
+      assert.equal(bundleHeads(run.stateDir), `${prepared} refs/sdk-cherry-pick/backport`);
+      git(remote, 'update-ref', '-d', `refs/heads/${WORK_BRANCH}`);
+    });
+
+    it('records a rebuild request without a pull request in a dry run', async () => {
+      const run = await publish({ state: state(), env: { DRY_RUN: 'true' } });
+      assert.equal(run.status, 0);
+      assert.equal(request(run.stateDir).pullRequest, '');
+      assert.equal(bundleHeads(run.stateDir), `${prepared} refs/sdk-cherry-pick/backport`);
+    });
+
+    const unwritableBundle = (stateDir: string) =>
+      fs.mkdirSync(path.join(stateDir, 'rebuild.bundle'));
+
+    it('comments on the pull request that it opened when it cannot record the rebuild request', async () => {
+      const run = await publish({
+        state: state(),
+        env: { GITHUB_EVENT_NAME: 'pull_request_target' },
+        beforePublish: unwritableBundle,
+      });
+      assert.notEqual(run.status, 0);
+      assert.deepEqual(run.commentTargets, ['5', '200']);
+      assert.deepEqual(run.comments, [
+        'Backport PR sdk-90: #200',
+        rebuildFailedComment({ targetBranch: 'sdk-90', runLogLink: RUN_LOG }, 'rebuild'),
+      ]);
+      assert.equal(fs.existsSync(path.join(run.stateDir, 'rebuild-request.json')), false);
+      git(remote, 'update-ref', '-d', `refs/heads/${WORK_BRANCH}`);
+    });
+
+    it('does not comment about the rebuild in a manual run', async () => {
+      const run = await publish({
+        state: state(),
+        env: { GITHUB_EVENT_NAME: 'workflow_dispatch' },
+        beforePublish: unwritableBundle,
+      });
+      assert.notEqual(run.status, 0);
+      assert.deepEqual(run.comments, ['Backport PR sdk-90: #200']);
+      git(remote, 'update-ref', '-d', `refs/heads/${WORK_BRANCH}`);
+    });
   });
 
   it('comments once with the manual steps when the push fails, and ends with the status of git', async () => {

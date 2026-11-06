@@ -9,7 +9,8 @@ export type Outcome = 'open-pr' | 'open-pr-from-branch' | 'comment' | 'skip';
 /**
  * The files that prepare writes and publish reads. `pull-request-loaded` is empty: prepare writes it
  * after it read the pull request as merged into main. `publish-started` is empty: publish writes it
- * first, and the workflow reads it.
+ * first, and the workflow reads it. Publish writes `rebuild-request.json` and `rebuild.bundle` for the
+ * rebuild jobs, and apply-build writes `apply-build-started` first, as publish does.
  */
 export type StateFile =
   | 'outcome'
@@ -19,7 +20,30 @@ export type StateFile =
   | 'commit'
   | 'target-tip'
   | 'pull-request-loaded'
-  | 'publish-started';
+  | 'publish-started'
+  | 'build-dirs'
+  | 'rebuild-request.json'
+  | 'rebuild.bundle'
+  | 'apply-build-started';
+
+/**
+ * The content of `rebuild-request.json`, which publish writes for the rebuild jobs of the workflow.
+ * `pullRequest` is the number of the backport pull request, or empty in a dry run. `dirs` are the
+ * package directories whose `build/` the jobs rebuild.
+ */
+export type RebuildRequest = {
+  commit: string;
+  targetTip: string;
+  pullRequest: string;
+  dirs: string[];
+};
+
+/** The only ref in `rebuild.bundle`. It names the commit of the backport. */
+export const BUNDLE_REF = 'refs/sdk-cherry-pick/backport';
+
+export function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string');
+}
 
 /** The directory where prepare records its result for publish. */
 export class StateDir {

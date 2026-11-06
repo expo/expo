@@ -9,6 +9,7 @@ import {
   conflictList,
   errorList,
   manualSteps,
+  rebuildFailedComment,
 } from './Text';
 
 const config = loadConfig({
@@ -157,12 +158,44 @@ describe('buildNote', () => {
         '- `packages/expo-foo/build`',
         '- `packages/expo-foo/plugin/build`',
         '',
-        'check-packages fails if the build output changes. In a checkout of this branch, run `et check-packages --since origin/sdk-96`, then commit and push the changed `build/` files.',
+        'The bot rebuilds them and pushes any change in a commit named `Rebuild build/ for the backport`. If that commit does not appear and check-packages fails, run `et check-packages --since origin/sdk-96` in a checkout of this branch, then commit and push the changed `build/` files.',
       ].join('\n')
     );
   });
 
   it('removes backticks and @ from the directories', () => {
     assert.match(buildNote('sdk-96', ['packages/`@x`']), /^- `packages\/x\/build`$/m);
+  });
+});
+
+describe('rebuildFailedComment', () => {
+  const runLog = loadConfig({
+    PR_NUMBER: '3',
+    SDK_VERSION: '90',
+    REPO_DIR: '/repo',
+    GITHUB_RUN_ID: '7',
+  });
+  const manualStep =
+    '\n\nTo rebuild them by hand, run `et check-packages --since origin/sdk-90` in a checkout of this branch. Then commit and push the changed `build/` files.';
+
+  it('says what failed, links the run log, and names the manual step', () => {
+    assert.equal(
+      rebuildFailedComment(runLog, 'rebuild'),
+      `The bot could not rebuild the \`build/\` directories of this backport. [Run log](https://github.com/expo/expo/actions/runs/7)${manualStep}`
+    );
+  });
+
+  it('has a fixed sentence for each failure', () => {
+    assert.deepEqual(
+      (['apply', 'rejected', 'moved', 'push'] as const).map((failure) =>
+        rebuildFailedComment(config, failure)
+      ),
+      [
+        `The bot could not apply the rebuilt \`build/\` directories to this branch.${manualStep}`,
+        `The bot did not push the rebuilt \`build/\` directories, because the rebuild changed files that the bot does not push.${manualStep}`,
+        `The bot did not push the rebuilt \`build/\` directories, because this branch changed after the bot opened this pull request.${manualStep}`,
+        `The bot could not push the rebuilt \`build/\` directories to this branch.${manualStep}`,
+      ]
+    );
   });
 });
