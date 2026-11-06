@@ -13,7 +13,7 @@ A record is a native type that converts to and from a JavaScript object. Use a r
 
 <LanguageSupport feature="records" />
 
-Add `@Record` to a data class in Kotlin, or to a struct in Swift. Each stored property is a field of the JavaScript object. You don't mark the fields one by one.
+Add `@Record` to a data class in Kotlin, or to a struct in Swift. In Kotlin, each `val` or `var` parameter of the primary constructor is a field of the JavaScript object. In Swift, each stored property is a field, except the properties in [Rules for Swift records](#rules-for-swift-records). You don't mark the fields one by one.
 
 <CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
 

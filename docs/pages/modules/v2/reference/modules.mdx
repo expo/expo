@@ -138,14 +138,32 @@ An asynchronous function starts on the JavaScript thread, the same as a synchron
 
 <LanguageSupport feature="properties" />
 
-`@JS` on a property exports it to JavaScript. JavaScript reads the property like a regular object property.
+`@JS` on a property exports it to JavaScript. JavaScript reads the property like a regular object property, and can also set a `var` property:
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+@JS
+var volume: Double = 1.0
+
+@JS
+val isMuted: Boolean
+  get() = volume == 0.0
+```
 
 ```swift
 @JS
-var applicationName: String? {
-  Bundle.main.infoDictionary?["CFBundleDisplayName"] as? String
+var volume: Double = 1.0
+
+@JS
+var isMuted: Bool {
+  volume == 0
 }
 ```
+
+</CodeBlocksTable>
+
+Each time JavaScript reads a property, the getter runs. For a value that doesn't change, use a [constant](#constants).
 
 ## Constants
 

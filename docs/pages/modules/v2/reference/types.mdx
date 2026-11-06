@@ -49,11 +49,11 @@ In Kotlin, a `Set` converts to and from a JavaScript `Array`. In Swift, a `Set` 
 | `Promise` (result)                | `Promise`                                               | `Task`                                                                                      |
 | `Object` with known properties    | [Record](/modules/v2/reference/records/)                | [Record](/modules/v2/reference/records/)                                                    |
 | One of a few types                | Not supported yet                                       | [Union](/modules/v2/reference/unions/)                                                      |
-| `Array` or `Object` of fixed size | Not documented yet                                      | [Tuple](#tuples)                                                                            |
+| `Array` or `Object` of fixed size | Not supported yet                                       | [Tuple](#tuples)                                                                            |
 | `function`                        | Not supported yet                                       | [Closure](#closure-arguments)                                                               |
 | Instance of a shared object class | [`SharedObject`](/modules/v2/reference/shared-objects/) | [`SharedObject`](/modules/v2/reference/shared-objects/)                                     |
 | `ArrayBuffer`, typed arrays       | `ByteArray`, `TypedArray`                               | `Data`, `ArrayBuffer`, `TypedArray` (see [Binary data](/modules/v2/reference/binary-data/)) |
-| Any value, without a conversion   | Not documented yet                                      | [`JavaScriptValue`](#javascript-values)                                                     |
+| Any value, without a conversion   | [`JavaScriptValue`](#javascript-values)                 | [`JavaScriptValue`](#javascript-values)                                                     |
 
 In Swift, a `Date` argument also accepts a number of milliseconds since the epoch, or a string that the JavaScript `Date` constructor can parse.
 
@@ -131,7 +131,7 @@ How the call works depends on the type of the closure:
 
 <LanguageSupport feature="javascript-values" />
 
-In Swift, a `@JS` function can take a JavaScript value without a conversion. Declare the argument as `borrowing JavaScriptValue`:
+A `@JS` function can take a JavaScript value without a conversion. In Kotlin, declare the argument as `JavaScriptValue`, or as `JavaScriptObject` for an object, from the `io.github.expo.modules.v2.jsi` package. In Swift, declare the argument as `borrowing JavaScriptValue`:
 
 ```swift
 @JS

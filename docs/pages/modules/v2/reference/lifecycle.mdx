@@ -93,4 +93,4 @@ A module and a shared object have the `appContext` property. It's a weak referen
 The lifecycle hooks of Expo Modules API 2.0 don't include app or activity events, such as the app entering the background.
 
 - In Kotlin, there are no hooks for activity results, new intents, or app foreground and background. Use the React Native listeners, for example a `LifecycleEventListener` that you add with `reactContext.addLifecycleEventListener`.
-- In Swift, a module class with `@ExpoModule` can also have a `definition()` function with the app lifecycle components of the [module definition DSL](/modules/module-api/), such as `OnAppEntersForeground` and `OnAppEntersBackground`.
+- In Swift, a module class with `@ExpoModule` can also have a `definition()` function with the app lifecycle components of the [module definition DSL](/modules/module-api/) (domain-specific language), such as `OnAppEntersForeground` and `OnAppEntersBackground`.
