@@ -33,14 +33,14 @@ defaults:
     shell: bash
 
 jobs:
-  # Merges and labels start a backport only when the repository variable SDK_CHERRY_PICK_ENABLED
-  # is `true`. A manual run works without it, so a dry run can test the bot while it is off.
+  # The repository variable SDK_CHERRY_PICK_DISABLED set to `true` stops backports from merges and
+  # labels. A manual run still works, so a dry run can test the bot while it is off.
   select:
     name: Select SDK versions
     if: >-
       github.repository == 'expo/expo'
       && (github.event_name == 'workflow_dispatch'
-      || (vars.SDK_CHERRY_PICK_ENABLED == 'true'
+      || (vars.SDK_CHERRY_PICK_DISABLED != 'true'
       && github.event.pull_request.merged && github.event.pull_request.base.ref == 'main'))
     runs-on: ubuntu-24.04
     permissions: {}
