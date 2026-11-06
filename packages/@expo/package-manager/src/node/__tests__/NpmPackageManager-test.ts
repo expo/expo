@@ -319,6 +319,24 @@ describe('NpmPackageManager', () => {
       );
     });
 
+    it('installs packages without a name with --save', async () => {
+      vol.fromJSON({ 'package.json': '{}' }, projectRoot);
+
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+      await npm.addAsync(['react-native@0.69.3', '../local-lib', 'github:expo/example']);
+
+      const packageFile = JSON.parse(
+        vol.readFileSync(path.join(projectRoot, 'package.json')).toString()
+      );
+
+      expect(packageFile.dependencies).toEqual({ 'react-native': '0.69.3' });
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'npm',
+        ['install', '--save', '../local-lib', 'github:expo/example'],
+        expect.objectContaining({ cwd: projectRoot })
+      );
+    });
+
     it('sorts dependencies alphabetically when updating package.json', async () => {
       vol.fromJSON({ 'package.json': '{}' }, projectRoot);
 
