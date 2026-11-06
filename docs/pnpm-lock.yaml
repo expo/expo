@@ -125,8 +125,8 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1(react@19.3.1)
       '@expo/styleguide-cookie-consent':
-        specifier: 4.0.0-datagrail.2
-        version: 4.0.0-datagrail.2(react@19.3.1)
+        specifier: 4.0.0-datagrail.3
+        version: 4.0.0-datagrail.3(react@19.3.1)
       '@expo/styleguide-icons':
         specifier: ^5.0.1
         version: 5.0.1(react@19.3.1)(tailwindcss@4.3.3)
@@ -870,8 +870,8 @@ packages:
     peerDependencies:
       react: '>= 19'
 
-  '@expo/styleguide-cookie-consent@4.0.0-datagrail.2':
-    resolution: {integrity: sha512-i9E9ck5AUlqk1zlZyIxCQRhyc5pd431LvRSC37rSfTdxekTtyZCKknHtJylQ9MHz/VxoSK+nBHdDcRMX54STgA==}
+  '@expo/styleguide-cookie-consent@4.0.0-datagrail.3':
+    resolution: {integrity: sha512-U7tOV3z1v3a5CaYiOuNLUeweVEayPdXuButXb8DCBez8RrXDg29BYjLTKEkLtvOgvmp7PtK1JtRifgiugEM7KA==}
     peerDependencies:
       react: '>= 19'
 
@@ -7728,7 +7728,7 @@ snapshots:
       react: 19.3.1
       tailwind-merge: 3.6.0
 
-  '@expo/styleguide-cookie-consent@4.0.0-datagrail.2(react@19.3.1)':
+  '@expo/styleguide-cookie-consent@4.0.0-datagrail.3(react@19.3.1)':
     dependencies:
       react: 19.3.1
 
