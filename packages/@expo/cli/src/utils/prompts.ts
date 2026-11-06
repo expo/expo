@@ -2,10 +2,10 @@ import assert from 'assert';
 import type { Choice, Options, PromptObject } from 'prompts';
 import prompts from 'prompts';
 
-import { stripAnsi } from './ansi';
 import { AbortCommandError, CommandError } from './errors';
 import { event } from './events';
 import { isInteractive } from './interactive';
+import { withProgramStatus } from './programStatus';
 
 export type Question<V extends string = string> = PromptObject<V> & {
   optionsPerPage?: number;
@@ -57,33 +57,20 @@ export default async function prompt(
       : questions[0]?.type === 'confirm'
         ? 'permission'
         : 'question');
-  const msg =
-    typeof questions[0]?.message === 'string'
-      ? stripAnsi(questions[0].message)
-          ?.replace(/[\s\p{Cc}]+/gu, ' ')
-          .trim()
-      : undefined;
-  writeProgramStatus(
-    `state=blocked:app=expo:kind=${kind}${msg ? `:msg=${Buffer.from(msg).toString('base64')}` : ''}`
-  );
+  const msg = typeof questions[0]?.message === 'string' ? questions[0].message : undefined;
   pauseInteractions();
   try {
-    const results = await prompts(questions, {
-      onCancel() {
-        throw new AbortCommandError();
-      },
-      ...options,
-    });
-
-    return results;
+    return await withProgramStatus({ state: 'blocked', kind, msg }, () =>
+      prompts(questions, {
+        onCancel() {
+          throw new AbortCommandError();
+        },
+        ...options,
+      })
+    );
   } finally {
     resumeInteractions();
-    writeProgramStatus('state=clear');
   }
-}
-
-function writeProgramStatus(body: string) {
-  process.stdout.write(`\x1b]7501;${body}\x1b\\`);
 }
 
 /**

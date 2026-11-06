@@ -8,5 +8,5 @@ import expo.modules.kotlin.types.OptimizedRecord
 @OptimizedRecord
 data class CiphertextOptions(
   @Field val includeTag: Boolean = false,
-  @Field val outputFormat: DataFormat = DataFormat.BYTES
+  @Field val encoding: DataFormat = DataFormat.BYTES
 ) : Record

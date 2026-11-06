@@ -30,7 +30,7 @@ extension MKMapPoint {
 /// this approximates the default balloon drawn by `Marker(_:systemImage:coordinate:)`.
 private let markerHitSize = CGSize(width: 40, height: 44)
 
-/// Screen-space size of an annotation, matching the frame its icon is rendered with.
+/// Approximate screen-space size of an annotation without an icon.
 private let annotationHitSize = CGSize(width: 50, height: 50)
 
 /// The rect a feature of `size` covers when its coordinate projects to `origin`.
@@ -54,14 +54,15 @@ func markerHitRect(at origin: CGPoint) -> CGRect {
 
 /// An annotation is drawn around its coordinate according to its own `anchor`, so the rect has to
 /// be placed with that same anchor to keep covering where the annotation actually ends up.
-func annotationHitRect(at origin: CGPoint, anchor: UnitPoint = .center) -> CGRect {
-  featureHitRect(at: origin, size: annotationHitSize, anchor: anchor)
+func annotationHitRect(at origin: CGPoint, size: CGSize? = nil, anchor: UnitPoint = .center) -> CGRect {
+  featureHitRect(at: origin, size: size ?? annotationHitSize, anchor: anchor)
 }
 
 @available(iOS 18.0, *)
 struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
   @EnvironmentObject var props: AppleMapsViewProps
   @ObservedObject private var state = AppleMapsViewiOS18State()
+  @Environment(\.displayScale) private var displayScale
 
   func setCameraPosition(config: CameraPosition?) {
     withAnimation {
@@ -171,7 +172,7 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
               if let icon = annotation.icon {
                 Image(uiImage: icon.ref)
                   .resizable()
-                  .frame(width: 50, height: 50)
+                  .frame(width: iconSize(icon.ref).width, height: iconSize(icon.ref).height)
               } else {
                 RoundedRectangle(cornerRadius: 5)
                   .fill(annotation.backgroundColor)
@@ -392,8 +393,16 @@ struct AppleMapsViewiOS18: View, AppleMapsViewProtocol {
       guard let origin = reader.convert(annotation.clLocationCoordinate2D, to: .local) else {
         return false
       }
-      return annotationHitRect(at: origin, anchor: annotation.unitPoint).contains(location)
+      let size = annotation.icon.map { iconSize($0.ref) }
+      return annotationHitRect(at: origin, size: size, anchor: annotation.unitPoint).contains(location)
     }
+  }
+
+  private func iconSize(_ icon: UIImage) -> CGSize {
+    CGSize(
+      width: icon.size.width * icon.scale / displayScale,
+      height: icon.size.height * icon.scale / displayScale
+    )
   }
 
   private func polyline(at tap: CLLocationCoordinate2D) -> ExpoAppleMapPolyline? {

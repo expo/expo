@@ -3,11 +3,13 @@ import { vol } from 'memfs';
 
 import { Log } from '../../../log';
 import rnFixture from '../../../prebuild/__tests__/fixtures/react-native-project';
+import { copyAsync, removeAsync } from '../../../utils/dir';
 import { loadEnvFiles } from '../../../utils/nodeEnv.js';
 import { event } from '../../events';
 import { expoCompileIos } from '../index';
 
 jest.mock('../../../log');
+jest.mock('../../../utils/dir');
 jest.mock('../../../utils/nodeEnv.js', () => ({ loadEnvFiles: jest.fn() }), { virtual: true });
 jest.mock('../../events', () => {
   const done = jest.fn();
@@ -19,9 +21,6 @@ jest.mock('../../events', () => {
     }),
     debugEvent: Object.assign(jest.fn(), { path: jest.fn((path) => path) }),
   };
-});
-jest.mock('../../resolveMode.js', () => jest.requireActual('../../resolveMode'), {
-  virtual: true,
 });
 jest.mock('../../resolveOptions.js', () => jest.requireActual('../../resolveOptions'), {
   virtual: true,
@@ -119,6 +118,16 @@ it('builds the app for the simulator', async () => {
   });
 });
 
+it('copies the app to the output directory', async () => {
+  await expoCompileIos(['--dev', '--output-dir', 'build']);
+
+  expect(removeAsync).toHaveBeenCalledWith('/app/build/ReactNativeProject.app');
+  expect(copyAsync).toHaveBeenCalledWith(appPath, '/app/build/ReactNativeProject.app');
+  expect(Log.log).toHaveBeenCalledWith(
+    expect.stringContaining('Binary: /app/build/ReactNativeProject.app')
+  );
+});
+
 it('refuses production before loading env files', async () => {
   await expect(expoCompileIos([])).rejects.toThrow(/EXIT_CALLED/);
 
@@ -131,10 +140,23 @@ it('refuses production before loading env files', async () => {
   expect(spawnAsync).not.toHaveBeenCalled();
 });
 
+it('refuses unsupported flags before finding the project', async () => {
+  vol.reset();
+
+  await expect(expoCompileIos(['--dev', '--output-type', 'ipa'])).rejects.toThrow(/EXIT_CALLED/);
+
+  expect(Log.exit).toHaveBeenCalledWith(
+    expect.objectContaining({
+      message: 'Building an ipa is not supported yet. Omit --output-type to build an app.',
+    })
+  );
+  expect(loadEnvFiles).not.toHaveBeenCalled();
+});
+
 it('only runs on macOS', async () => {
   mockPlatform('win32');
 
-  await expect(expoCompileIos(['--dev'])).rejects.toThrow(/EXIT_CALLED/);
+  await expect(expoCompileIos([])).rejects.toThrow(/EXIT_CALLED/);
 
   expect(Log.exit).toHaveBeenCalledWith(expect.stringMatching(/eas build -p ios/));
   expect(spawnAsync).not.toHaveBeenCalled();

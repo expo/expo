@@ -331,7 +331,7 @@ struct AesCryptoModuleTests {
       encrypt(plaintext, { nonce: nonce }).then(function (sealedData) {
         return Promise.all([
           sealedData.iv('base64'),
-          sealedData.ciphertext({ outputFormat: 'base64' }),
+          sealedData.ciphertext({ encoding: 'base64' }),
           sealedData.tag('base64'),
           sealedData.combined('base64'),
         ]);
@@ -441,6 +441,60 @@ struct AesCryptoModuleTests {
       """
     )
     #expect(try result.asString() == "ERR_INVALID_SEALED_DATA_CONFIG ERR_INVALID_SEALED_DATA_CONFIG")
+  }
+
+  @Test
+  func `fromCombined rejects content shorter than the IV and the tag for a custom config`() throws {
+    let result = try runtime.eval(
+      """
+      thrownCode(function () {
+        return AES.SealedData.fromCombined(new Uint8Array(20), { ivLength: 16, tagLength: 16 });
+      })
+      """
+    )
+    #expect(try result.asString() == "ERR_INVALID_SEALED_DATA_CONFIG")
+  }
+
+  @Test
+  func `fromCombined and fromParts reject negative lengths`() throws {
+    let result = try runtime.eval(
+      """
+      join([
+        thrownCode(function () {
+          return AES.SealedData.fromCombined(new Uint8Array(40), { ivLength: 16, tagLength: -1 });
+        }),
+        thrownCode(function () {
+          return AES.SealedData.fromCombined(new Uint8Array(40), { ivLength: -1, tagLength: 16 });
+        }),
+        thrownCode(function () {
+          return AES.SealedData.fromParts(nonce, plaintext, -1);
+        }),
+      ])
+      """
+    )
+    #expect(
+      try result.asString()
+        == "ERR_INVALID_SEALED_DATA_CONFIG ERR_INVALID_SEALED_DATA_CONFIG ERR_INVALID_SEALED_DATA_CONFIG"
+    )
+  }
+
+  @Test
+  func `fromCombined rejects lengths whose sum overflows`() throws {
+    // The sum of these lengths doesn't fit in `Int`, so a check that adds them would trap.
+    let result = try runtime.eval(
+      """
+      thrownCode(function () {
+        return AES.SealedData.fromCombined(new Uint8Array(40), { ivLength: 2 ** 62, tagLength: 2 ** 62 });
+      })
+      """
+    )
+    #expect(try result.asString() == "ERR_INVALID_SEALED_DATA_CONFIG")
+  }
+
+  @Test
+  func `encryptAsync rejects a negative nonce length`() async throws {
+    let result = try await runtime.evalAsync("rejectionCode(encrypt(plaintext, { nonce: -1 }))")
+    #expect(try result.asString() == "ERR_NONCE_GENERATION_FAILED")
   }
 }
 

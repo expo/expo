@@ -1,4 +1,4 @@
-import { boolish } from 'getenv';
+import { boolish } from '@expo/env';
 import { format } from 'node:util';
 
 /** If the verbose logging should be enabled by default, based on `EXPO_E2E_VERBOSE` or GitHub Actions running in debug mode */

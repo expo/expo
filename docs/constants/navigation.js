@@ -493,6 +493,7 @@ export const eas = [
     makePage('eas/workflows/manage-workflow-runs.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),
+    makePage('eas/workflows/reusable-workflows.mdx'),
     makePage('eas/workflows/custom-functions.mdx'),
     makePage('eas/workflows/environment.mdx'),
     makePage('eas/workflows/automating-eas-cli.mdx'),
@@ -629,6 +630,7 @@ export const eas = [
       makePage('eas-update/trace-update-id-expo-dashboard.mdx'),
       makePage('eas-update/estimate-bandwidth.mdx'),
       makePage('eas-update/integration-in-existing-native-apps.mdx'),
+      makePage('eas-update/store-privacy-declarations.mdx'),
     ]),
   ]),
   makeSection('Expo Observe', [
@@ -651,6 +653,7 @@ export const eas = [
     makeGroup('Reference', [
       makePage('eas/observe/reference/metrics.mdx'),
       makePage('eas/observe/reference/client-id.mdx'),
+      makePage('eas/observe/reference/store-privacy-declarations.mdx'),
       makePage('eas/observe/reference/troubleshooting.mdx'),
     ]),
   ]),
@@ -789,6 +792,7 @@ const preview = [
             makePage('preview/simulators/how-to/review-a-pull-request.mdx'),
             makePage('preview/simulators/how-to/run-in-ci.mdx'),
             makePage('preview/simulators/how-to/hand-off-a-session.mdx'),
+            makePage('preview/simulators/how-to/embed-a-session.mdx'),
           ],
           { expanded: false }
         ),

@@ -11,7 +11,7 @@
 #import <React/RCTUtils.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTImageURLLoader.h>
-#import <ExpoMediaLibrary/MediaLibraryImageLoader.h>
+#import "MediaLibraryImageLoader.h"
 
 @interface MediaLibraryImageLoader () <RCTImageURLLoader>
 

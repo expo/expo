@@ -73,7 +73,7 @@ class ProcedureErrorLoggingTest {
   }
 
   @Test
-  fun `a failed check for update logs one error with the HTTP status`() = runTest {
+  fun `a failed check for update logs RemoteCheckFailed`() = runTest {
     val config = createUpdatesConfiguration()
     var result: IUpdatesController.CheckForUpdateResult? = null
     val procedure = CheckForUpdateProcedure(
@@ -89,11 +89,11 @@ class ProcedureErrorLoggingTest {
     procedure.run(procedureContext)
 
     Assert.assertTrue(result is IUpdatesController.CheckForUpdateResult.ErrorResult)
-    assertOneErrorEntry("UpdateFailedToLoad", "HTTP 500: server exploded")
+    assertOneErrorEntry("remote.checkFailed", "UpdateFailedToLoad", "Failed to check for update: ", "HTTP 500: server exploded")
   }
 
   @Test
-  fun `a check that cannot reach the server logs UpdateServerUnreachable`() = runTest {
+  fun `a check that cannot reach the server logs RemoteCheckUnreachable`() = runTest {
     val config = createUpdatesConfiguration()
     val procedure = CheckForUpdateProcedure(
       context,
@@ -109,11 +109,16 @@ class ProcedureErrorLoggingTest {
 
     procedure.run(procedureContext)
 
-    assertOneErrorEntry("UpdateServerUnreachable", "Unable to resolve host")
+    assertOneErrorEntry(
+      "remote.checkUnreachable",
+      "UpdateServerUnreachable",
+      "Could not reach the update server to check for an update: ",
+      "Unable to resolve host"
+    )
   }
 
   @Test
-  fun `a failed fetch logs one error with the HTTP status`() = runTest {
+  fun `a failed fetch logs RemoteFetchFailed`() = runTest {
     val config = createUpdatesConfiguration()
     var result: IUpdatesController.FetchUpdateResult? = null
     val procedure = FetchUpdateProcedure(
@@ -131,11 +136,11 @@ class ProcedureErrorLoggingTest {
     procedure.run(procedureContext)
 
     Assert.assertTrue(result is IUpdatesController.FetchUpdateResult.ErrorResult)
-    assertOneErrorEntry("UpdateFailedToLoad", "HTTP 500: server exploded")
+    assertOneErrorEntry("remote.fetchFailed", "UpdateFailedToLoad", "Failed to download new update: ", "HTTP 500: server exploded")
   }
 
   @Test
-  fun `a fetch that times out logs UpdateServerUnreachable`() = runTest {
+  fun `a fetch that times out logs RemoteFetchUnreachable`() = runTest {
     val config = createUpdatesConfiguration()
     val procedure = FetchUpdateProcedure(
       context,
@@ -151,11 +156,16 @@ class ProcedureErrorLoggingTest {
 
     procedure.run(procedureContext)
 
-    assertOneErrorEntry("UpdateServerUnreachable", "timeout")
+    assertOneErrorEntry(
+      "remote.fetchUnreachable",
+      "UpdateServerUnreachable",
+      "Could not reach the update server to download a new update: ",
+      "timeout"
+    )
   }
 
   @Test
-  fun `a fetch with failed asset downloads logs one AssetsFailedToLoad error`() = runTest {
+  fun `a fetch with failed asset downloads logs one RemoteAssetsFailed error`() = runTest {
     val config = createUpdatesConfiguration(runtimeVersion = "1")
     val procedure = FetchUpdateProcedure(
       context,
@@ -171,12 +181,12 @@ class ProcedureErrorLoggingTest {
 
     procedure.run(procedureContext)
 
-    assertOneErrorEntry("AssetsFailedToLoad", "Failed to load 2 assets")
-    assertOneErrorEntry("AssetsFailedToLoad", "HTTP response error 404")
+    assertOneErrorEntry("remote.assetsFailed", "AssetsFailedToLoad", "Failed to load 2 asset(s) ", "HTTP response error 404")
+    Assert.assertEquals("404", readErrorEntries().single().values?.get("httpStatus"))
   }
 
   @Test
-  fun `a fetch whose asset downloads time out logs UpdateServerUnreachable`() = runTest {
+  fun `a fetch whose asset downloads time out logs RemoteAssetsUnreachable`() = runTest {
     val config = createUpdatesConfiguration(runtimeVersion = "1")
     val procedure = FetchUpdateProcedure(
       context,
@@ -192,7 +202,12 @@ class ProcedureErrorLoggingTest {
 
     procedure.run(procedureContext)
 
-    assertOneErrorEntry("UpdateServerUnreachable", "Failed to load 2 assets")
+    assertOneErrorEntry(
+      "remote.assetsUnreachable",
+      "UpdateServerUnreachable",
+      "Could not reach the update server to load 2 asset(s) ",
+      "timeout"
+    )
   }
 
   @Test
@@ -220,21 +235,25 @@ class ProcedureErrorLoggingTest {
 
     val errors = readErrorEntries()
     Assert.assertEquals("Expected two error entries, got: $errors", 2, errors.size)
-    val unreachable = errors.single { it.code == "UpdateServerUnreachable" }
-    Assert.assertTrue(unreachable.message, unreachable.message.contains("Failed to load 1 asset ") && unreachable.message.contains("timeout"))
-    val notFound = errors.single { it.code == "AssetsFailedToLoad" }
-    Assert.assertTrue(notFound.message, notFound.message.contains("Failed to load 1 asset ") && notFound.message.contains("HTTP response error 404"))
+    val unreachable = errors.single { it.key == "remote.assetsUnreachable" }
+    Assert.assertEquals("UpdateServerUnreachable", unreachable.code)
+    Assert.assertTrue(unreachable.message, unreachable.message.contains("load 1 asset(s) ") && unreachable.message.contains("timeout"))
+    val notFound = errors.single { it.key == "remote.assetsFailed" }
+    Assert.assertEquals("AssetsFailedToLoad", notFound.code)
+    Assert.assertTrue(notFound.message, notFound.message.contains("Failed to load 1 asset(s) ") && notFound.message.contains("HTTP response error 404"))
     for (error in errors) {
       val firstFrame = error.stacktrace?.firstOrNull().orEmpty()
       Assert.assertTrue("Expected the failed download's stack trace, got: $firstFrame", firstFrame.contains("ProcedureErrorLoggingTest"))
     }
   }
 
-  private fun assertOneErrorEntry(code: String, text: String) {
+  private fun assertOneErrorEntry(key: String, code: String, prefix: String, text: String) {
     val errors = readErrorEntries()
     Assert.assertEquals("Expected one error entry, got: $errors", 1, errors.size)
     val error = errors.single()
+    Assert.assertEquals(key, error.key)
     Assert.assertEquals(code, error.code)
+    Assert.assertTrue("Expected \"$prefix\" at the start of: ${error.message}", error.message.startsWith(prefix))
     Assert.assertTrue("Expected \"$text\" in: ${error.message}", error.message.contains(text))
   }
 

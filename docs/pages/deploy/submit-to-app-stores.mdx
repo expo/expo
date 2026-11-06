@@ -27,13 +27,15 @@ You have two options for getting a binary into each store: submit with **Expo Su
 
 ## How Expo Submit works
 
+A submission is one upload of a build to Google Play Console or App Store Connect. `eas submit` creates one submission for each platform that you choose. You can see your submissions on the **Submissions** page of your project in the Expo dashboard.
+
 ### Android (Google Play Store)
 
-Expo Submit uploads your **.aab** to Google Play Console and places it in the track you choose (internal, alpha, beta, or production). For a brand-new app, the default `eas submit` command creates the first release on the [internal testing track](/eas/json/#track), even before you complete the store listing. To distribute beyond internal testing, finish the setup tasks in Play Console and promote the release. To upload a build without rolling it out to its track, set [`releaseStatus`](/eas/json/#releasestatus) to `draft` in **eas.json**.
+Before the first submission, [create the app in Google Play Console](/submit/android/#prerequisites). Expo Submit uploads your **.aab** to Google Play Console and places it in the track you choose (internal, alpha, beta, or production). For a brand-new app, the default `eas submit` command creates the first release on the [internal testing track](/eas/json/#track), even before you complete the store listing. To distribute beyond internal testing, finish the setup tasks in Play Console and promote the release. To upload a build without rolling it out to its track, set [`releaseStatus`](/eas/json/#releasestatus) to `draft` in **eas.json**.
 
 ### iOS (Apple App Store)
 
-Expo Submit uploads your **.ipa** to App Store Connect, where it becomes available in [TestFlight](/submit/testflight/) after processing (usually 10-15 minutes). A TestFlight build is not automatically released to the App Store. To ship it to production, sign in to App Store Connect, complete the app metadata and screenshots, select the build, and submit it for App Review.
+If your app is not in App Store Connect yet, `eas submit` creates it after you sign in with your Apple ID. Expo Submit uploads your **.ipa** to App Store Connect, where it becomes available in [TestFlight](/submit/testflight/) after processing (usually 10-15 minutes). A TestFlight build is not automatically released to the App Store. To ship it to production, sign in to App Store Connect, complete the app metadata and screenshots, select the build, and submit it for App Review.
 
 ## When to use Expo Submit
 
@@ -85,6 +87,15 @@ If you use an AI agent, install [Expo Skills](/skills/) to teach it how to submi
 ## Frequently asked questions
 
 <FAQ>
+
+<Collapsible summary="Can I submit a new build before the previous one is released?">
+
+Yes. Create a new build. Then run `eas submit` again. Each upload needs a new `android.versionCode` or `ios.buildNumber`, because the stores reject a build that reuses one. To increment these values on every build, use the [remote version source with `autoIncrement`](/build-reference/app-versions/#remote-version-source).
+
+- On Android, Expo Submit uploads the new build to the track that you choose.
+- On iOS, the new build appears in App Store Connect after processing. Select it for your App Store version before you submit the version for App Review. If you already submitted the version, remove it from review before you select the new build.
+
+</Collapsible>
 
 <Collapsible summary="Can I submit builds that were not built with Expo Build?">
 

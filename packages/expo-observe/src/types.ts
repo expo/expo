@@ -19,6 +19,31 @@ export type ObserveAttribute = LogAttributeValue;
  */
 export type ObserveAttributes = Record<string, ObserveAttribute>;
 
+// Keep in sync with `metricNameMap` in `ios/OpenTelemetry.swift` and `android/.../OpenTelemetry.kt` (except legacy entries).
+/**
+ * Name of a metric that EAS Observe sends.
+ */
+export type ObserveMetricName =
+  | 'expo.app_startup.tti'
+  | 'expo.app_startup.ttr'
+  | 'expo.app_startup.cold_launch_time'
+  | 'expo.app_startup.warm_launch_time'
+  | 'expo.app_startup.bundle_load_time'
+  | 'expo.updates.download_time'
+  | 'expo.navigation.cold_ttr'
+  | 'expo.navigation.warm_ttr'
+  | 'expo.navigation.tti';
+
+/**
+ * Name of an event that EAS Observe sends. Custom names passed to `logEvent` are allowed.
+ */
+export type ObserveEventName =
+  | 'js.exception'
+  | 'native.exception'
+  | 'reanimated.warning'
+  | 'expo-image.oversized'
+  | (string & {});
+
 export type ObserveConfig = {
   /**
    * The environment for observability events
@@ -43,8 +68,8 @@ export type ObserveConfig = {
    *
    * Has no effect on release builds.
    *
-   * If `dispatchingEnabled` is `false` or this device is out-of-sample for `sampleRate`, nothing
-   * is dispatched regardless of `dispatchInDebug`.
+   * If `dispatchingEnabled` is `false`, nothing is dispatched regardless of `dispatchInDebug`.
+   * `sampleRate` and `errorSampleRate` also apply in debug builds.
    *
    * @default false
    */
@@ -61,11 +86,43 @@ export type ObserveConfig = {
    * - If `dispatchingEnabled` is `true` (or unset), metrics are dispatched only when this device
    *   is in-sample.
    *
+   * Errors follow `errorSampleRate` when it is set and higher.
+   *
    * > Note: Devices that end up out-of-sample drop pending metrics rather than accumulating them.
    *
    * @default undefined - metrics from all devices are sent
    */
   sampleRate?: number;
+  /**
+   * Fraction of installations that should dispatch errors, in `[0, 1]`. Values outside that range
+   * are clamped. Use it to keep more errors than other events, for example, `sampleRate: 0.03` with
+   * `errorSampleRate: 1`.
+   *
+   * Errors include unhandled JavaScript errors, errors from `reportError` and
+   * `ObserveErrorBoundary`, and native crash reports. All other events follow `sampleRate`.
+   *
+   * `errorSampleRate` is a minimum. Installations in-sample for `sampleRate` always send errors. A
+   * lower value has no effect, and `configure()` prints a warning. An unset `sampleRate` counts as
+   * `1`.
+   *
+   * `dispatchingEnabled` and `dispatchInDebug` apply to errors the same way as to other events.
+   *
+   * @default undefined - errors follow `sampleRate`
+   */
+  errorSampleRate?: number;
+  /**
+   * Metric names that are not sent. Each `configure` call replaces the list.
+   *
+   * @default []
+   */
+  ignoredMetrics?: ObserveMetricName[];
+  /**
+   * Event names that are not sent, including custom names passed to `logEvent`. Each `configure`
+   * call replaces the list.
+   *
+   * @default []
+   */
+  ignoredEvents?: ObserveEventName[];
   /**
    * Whether to record unhandled JavaScript errors as `exception` log events.
    *

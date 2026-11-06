@@ -85,7 +85,7 @@ function renderAlternates(tags: MetadataTag[], alternates: ResolvedAlternates | 
     pushLink(tags, {
       rel: 'alternate',
       href: language.href,
-      hreflang: language.hrefLang,
+      hrefLang: language.hrefLang,
     });
   }
 

@@ -5,6 +5,7 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import expo.modules.updates.logging.UpdatesLogger
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.Assert
@@ -39,7 +40,8 @@ class ReaperTest {
       database,
       updatesDirectory,
       mockk<UpdateEntity>(relaxed = true),
-      selectionPolicy
+      selectionPolicy,
+      mockk<UpdatesLogger>(relaxed = true)
     )
   }
 

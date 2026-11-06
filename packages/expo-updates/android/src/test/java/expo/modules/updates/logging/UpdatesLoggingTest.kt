@@ -5,6 +5,7 @@ import expo.modules.core.logging.PersistentFileLog
 import expo.modules.updates.UpdatesModule
 import expo.modules.updates.logging.UpdatesLogger.Companion.EXPO_UPDATES_LOGGING_TAG
 import expo.modules.updates.logging.UpdatesLogger.Companion.MAX_FRAMES_IN_STACKTRACE
+import expo.modules.updatesinterface.UpdatesLogMessage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
@@ -12,8 +13,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.rules.TemporaryFolder
+import org.json.JSONObject
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.IOException
 import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
@@ -72,8 +75,8 @@ class UpdatesLoggingTest {
     val asyncTestUtil = AsyncTestUtil()
     val logger = UpdatesLogger(filesDirectory)
     val now = Date()
-    val expectedLogEntry = UpdatesLogEntry(now.time, "Test message", UpdatesErrorCode.JSRuntimeError.code, LogType.Warn.type, null, null, null, null)
-    logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
+    val expectedLogEntry = UpdatesLogEntry(now.time, "Error reaping updates: Test message", UpdatesErrorCode.None.code, LogType.Warn.type, null, null, null, null)
+    logger.warn(UpdatesLogMessage.ReaperFailed, values = mapOf("cause" to "Test message"))
     asyncTestUtil.waitForTimeout(500)
     val sinceThen = Date(now.time - 5000)
     val logs = UpdatesLogReader(filesDirectory).getLogEntries(sinceThen)
@@ -83,6 +86,65 @@ class UpdatesLoggingTest {
     Assert.assertEquals(expectedLogEntry.message, actualLogEntry.message)
     Assert.assertEquals(expectedLogEntry.code, actualLogEntry.code)
     Assert.assertEquals(expectedLogEntry.level, actualLogEntry.level)
+  }
+
+  @Test
+  fun `a keyed warning has its key, values and filled template`() = runTest {
+    val filesDirectory = temporaryFolder.newFolder()
+    val logger = UpdatesLogger(filesDirectory)
+    val now = Date()
+    val cause = IOException("Permission denied")
+
+    logger.warn(UpdatesLogMessage.ReaperAssetDeleteFailed, cause, mapOf("path" to "/tmp/a.png"), updateId = "myUpdateId")
+    AsyncTestUtil().waitForTimeout(500)
+
+    val logs = UpdatesLogReader(filesDirectory).getLogEntries(Date(now.time - 5000))
+    val entry = UpdatesLogEntry.create(logs.last())!!
+    Assert.assertEquals("reaper.assetDeleteFailed", entry.key)
+    Assert.assertEquals(mapOf("path" to "/tmp/a.png", "cause" to "Permission denied"), entry.values)
+    Assert.assertEquals("Error deleting asset at /tmp/a.png: Permission denied", entry.message)
+    Assert.assertEquals("None", entry.code)
+    Assert.assertEquals("warn", entry.level)
+    Assert.assertEquals("myUpdateId", entry.updateId)
+
+    val bundle = UpdatesModule.readLogEntries(filesDirectory, 5000L).last()
+    Assert.assertEquals("reaper.assetDeleteFailed", bundle.getString("key"))
+    Assert.assertEquals("/tmp/a.png", bundle.getBundle("values")?.getString("path"))
+    Assert.assertEquals("Permission denied", bundle.getBundle("values")?.getString("cause"))
+  }
+
+  @Test
+  fun `an entry written before log message keys has no key or values`() {
+    val entry = UpdatesLogEntry.create("""{"timestamp":1700000000000,"message":"Old message","code":"None","level":"warn"}""")!!
+
+    Assert.assertEquals("Old message", entry.message)
+    Assert.assertNull(entry.key)
+    Assert.assertNull(entry.values)
+    Assert.assertFalse(JSONObject(entry.asString()).has("key"))
+    Assert.assertFalse(JSONObject(entry.asString()).has("values"))
+  }
+
+  @Test
+  fun `fill leaves a placeholder with no value and does not fill values`() {
+    val filled = UpdatesLogger.fill(
+      "Asset {assetKey} failed: {cause} ({reason})",
+      mapOf("assetKey" to "{cause}", "cause" to "timeout")
+    )
+
+    Assert.assertEquals("Asset {cause} failed: timeout ({reason})", filled)
+  }
+
+  @Test
+  fun `a load failure that was already logged is not logged again`() {
+    val filesDirectory = temporaryFolder.newFolder()
+    val logger = UpdatesLogger(filesDirectory)
+    val now = Date()
+    val cause = IOException("Failed to load update", LoggedException("Code signing verification failed for manifest", Exception("Incorrect signature")))
+
+    logger.errorForLoadFailure(UpdatesLogMessage.RemoteFetchFailed, UpdatesLogMessage.RemoteFetchUnreachable, cause, null)
+    AsyncTestUtil().waitForTimeout(500)
+
+    Assert.assertEquals(emptyList<String>(), UpdatesLogReader(filesDirectory).getLogEntries(Date(now.time - 5000)))
   }
 
   @Test
@@ -118,18 +180,18 @@ class UpdatesLoggingTest {
     asyncTestUtil.waitForTimeout(500)
     val secondTime = Date()
     val cause = Exception("test")
-    logger.error("Message 2", cause, UpdatesErrorCode.NoUpdatesAvailable)
+    logger.error(UpdatesLogMessage.RemoteFetchFailed, cause, mapOf("cause" to "Message 2"))
     asyncTestUtil.waitForTimeout(500)
     val thirdTime = Date()
 
     val firstLogs = reader.getLogEntries(firstTime)
     Assert.assertEquals(2, firstLogs.size)
     Assert.assertEquals("Message 1", UpdatesLogEntry.create(firstLogs[0])?.message)
-    Assert.assertEquals("Message 2", UpdatesLogEntry.create(firstLogs[1])?.message)
+    Assert.assertEquals("Failed to download new update: Message 2", UpdatesLogEntry.create(firstLogs[1])?.message)
 
     val secondLogs = reader.getLogEntries(secondTime)
     Assert.assertEquals(1, secondLogs.size)
-    Assert.assertEquals("Message 2", UpdatesLogEntry.create(secondLogs[0])?.message)
+    Assert.assertEquals("Failed to download new update: Message 2", UpdatesLogEntry.create(secondLogs[0])?.message)
 
     val stacktraceSize = UpdatesLogEntry.create(secondLogs[0])?.stacktrace?.size
     Assert.assertTrue(stacktraceSize == MAX_FRAMES_IN_STACKTRACE)
@@ -149,7 +211,7 @@ class UpdatesLoggingTest {
     Assert.assertNull(err)
     val purgedLogs = reader.getLogEntries(firstTime)
     Assert.assertEquals(1, purgedLogs.size)
-    Assert.assertEquals("Message 2", UpdatesLogEntry.create(purgedLogs[0])?.message)
+    Assert.assertEquals("Failed to download new update: Message 2", UpdatesLogEntry.create(purgedLogs[0])?.message)
   }
 
   @Test
@@ -157,7 +219,7 @@ class UpdatesLoggingTest {
     val asyncTestUtil = AsyncTestUtil()
     val filesDirectory = temporaryFolder.newFolder()
     val logger = UpdatesLogger(filesDirectory)
-    logger.warn("Test message", UpdatesErrorCode.JSRuntimeError)
+    logger.warn(UpdatesLogMessage.ReaperFailed, values = mapOf("cause" to "Test message"))
     val entries = UpdatesModule.readLogEntries(
       filesDirectory,
       1000L
@@ -165,7 +227,7 @@ class UpdatesLoggingTest {
     Assert.assertNotNull(entries)
     Assert.assertEquals(1, entries.size)
     val bundle = entries[0]
-    Assert.assertEquals("Test message", bundle.getString("message"))
+    Assert.assertEquals("Error reaping updates: Test message", bundle.getString("message"))
 
     var rejected = false
     asyncTestUtil.asyncMethodRunning = true

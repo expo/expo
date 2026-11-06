@@ -8,6 +8,10 @@ Observe.configure({
   environment: 'custom-env',
   dispatchingEnabled: true,
   dispatchInDebug: true,
+  sampleRate: 1,
+  errorSampleRate: 1,
+  // ignoredMetrics: ['expo.app_startup.tti'],
+  // ignoredEvents: ['debug.info_button_pressed'],
   integrations: {
     'expo-router': { filteredParams: ['accountId', 'firstName'] },
     'expo-image': {

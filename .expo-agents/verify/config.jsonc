@@ -18,5 +18,24 @@
     "branchPrefix": "verify",
     "labels": ["ai-review", "agent-authored"],
     "denylistAdditions": ["^\\.expo-code-review/"]
+  },
+  // Triage requests changes once per rule on an external PR that changes a
+  // matching file and has no screenshot or video in its description, and
+  // dismisses that review when one is added (verify-triage.yml).
+  "triage": {
+    "evidenceRules": [
+      {
+        "name": "router",
+        "paths": ["packages/expo-router/**"],
+        "ignore": ["**/__tests__/**", "**/*.md"],
+        "message": "Thanks for the PR! Changes to Expo Router usually change what users see. Please add a screenshot or a short video of the change to the PR description, so reviewers can check it. You can drag an image or video file into the description to upload it. This review is removed when the description has a screenshot or video."
+      },
+      {
+        "name": "ui",
+        "paths": ["packages/expo-ui/**"],
+        "ignore": ["**/__tests__/**", "**/*.md", "packages/expo-ui/e2e/**"],
+        "message": "Thanks for the PR! Changes to Expo UI usually change what users see. Please add a screenshot or a short video of the change to the PR description, so reviewers can check it. You can drag an image or video file into the description to upload it. This review is removed when the description has a screenshot or video."
+      }
+    ]
   }
 }

@@ -6,6 +6,7 @@ import ExpoFileSystem from './ExpoFileSystem';
 import { File } from './File';
 import type {
   DownloadProgress,
+  DownloadResponse,
   DownloadPauseState,
   DownloadTaskOptions,
   DownloadTaskState,
@@ -245,6 +246,17 @@ export class DownloadTask {
     this._url = url;
     this._destination = destination;
     this._options = options;
+  }
+
+  /**
+   * HTTP status and headers of the latest response, or `{ status: null, headers: {} }` before one arrives.
+   * Stays available after completion, failure, pause or cancel, until `release()`. Resuming clears it.
+   * Reading does not wait for the response, so read it after `downloadAsync()` or `resumeAsync()` settles.
+   * @platform android
+   * @platform ios
+   */
+  get response(): DownloadResponse {
+    return this._nativeTask.response;
   }
 
   /**

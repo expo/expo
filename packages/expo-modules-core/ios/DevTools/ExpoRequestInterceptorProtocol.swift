@@ -35,6 +35,9 @@ public final class ExpoRequestInterceptorProtocol: URLProtocol, URLSessionDataDe
     if !["http", "https"].contains(scheme) {
       return false
     }
+    if ExpoNetworkReporter.isMarked(request) {
+      return false
+    }
     return URLProtocol.property(
       forKey: REQUEST_ID,
       in: request

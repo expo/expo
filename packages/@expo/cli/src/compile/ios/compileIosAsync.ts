@@ -8,8 +8,6 @@ import { resolveOptionsAsync } from './resolveOptions';
 import { buildAsync, getAppPathAsync } from './xcodebuild';
 
 export async function compileIosAsync(projectRoot: string, options: ResolvedOptions) {
-  assertPlatform();
-
   const doneCompile = event.span();
 
   const props = await resolveOptionsAsync(projectRoot, options);
@@ -41,12 +39,4 @@ export async function compileIosAsync(projectRoot: string, options: ResolvedOpti
   });
   Log.log(chalk`\n{green ✓} Build complete`);
   Log.log(chalk`{bold Binary:} ${binaryPath}`);
-}
-
-function assertPlatform() {
-  if (process.platform !== 'darwin') {
-    Log.exit(
-      chalk`iOS apps can only be built on macOS devices. Use {cyan eas build -p ios} to build in the cloud.`
-    );
-  }
 }
