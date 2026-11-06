@@ -18,7 +18,10 @@ extension URL: Convertible {
       }
       throw Conversions.ConvertingException<URL>(value)
     }
+    return try convert(fromString: value)
+  }
 
+  internal static func convert(fromString value: String) throws -> URL {
     // First we try to create a URL without extra encoding, as it came.
     if let url = convertToUrl(string: value) {
       return url
