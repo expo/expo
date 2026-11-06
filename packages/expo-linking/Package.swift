@@ -22,7 +22,7 @@ let package = Package(
         .product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders")
       ],
       path: "ios",
-      exclude: ["ExpoLinking.podspec"]
+      exclude: ["ExpoLinking.podspec", "Tests"]
     )
   ],
   swiftLanguageModes: [.v5]
