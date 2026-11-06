@@ -107,17 +107,19 @@ class ContactRepository {
     return result
   }
 
-  func getSafeKeys(keysToFetch: [CNKeyDescriptor]) -> [CNKeyDescriptor] {
-    return keysToFetch.filter { key in
-      if let keyString = key as? String, keyString == CNContactNoteKey {
-        return canAccessNotesField()
-      }
-      return true
+  func isAccessible(_ key: CNKeyDescriptor) -> Bool {
+    if let keyString = key as? String, keyString == CNContactNoteKey {
+      return canAccessNotesField()
     }
+    return true
+  }
+
+  private func getSafeKeys(keysToFetch: [CNKeyDescriptor]) -> [CNKeyDescriptor] {
+    return keysToFetch.filter(isAccessible)
   }
 
   private func ensureAccessible(_ key: CNKeyDescriptor) throws {
-    if let keyString = key as? String, keyString == CNContactNoteKey, !canAccessNotesField() {
+    guard isAccessible(key) else {
       throw ContactNotesNotAccessibleException()
     }
   }

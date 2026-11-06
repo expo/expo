@@ -76,7 +76,7 @@ class ContactNext: SharedObject {
   func getDetails(fields: [ContactField]?) throws -> GetContactDetailsRecord {
     // Without fields, the caller asks for all available fields, so a field that the app cannot access is left out.
     let keys = fields.map { CNKeyDescriptorMapper.map(from: $0) }
-      ?? contactRepository.getSafeKeys(keysToFetch: CNKeyDescriptorMapper.map(from: ContactField.allCases))
+      ?? CNKeyDescriptorMapper.map(from: ContactField.allCases).filter(contactRepository.isAccessible)
     guard let contact = try contactRepository.getById(id: id, keysToFetch: keys) else {
       throw ContactNotFoundException(id)
     }
@@ -130,7 +130,7 @@ class ContactNext: SharedObject {
     getContactDetailsMapper: GetContactDetailsMapper
   ) throws -> [GetContactDetailsRecord] {
     let keys = fields.map { CNKeyDescriptorMapper.map(from: $0) }
-      ?? contactRepository.getSafeKeys(keysToFetch: CNKeyDescriptorMapper.map(from: ContactField.allCases))
+      ?? CNKeyDescriptorMapper.map(from: ContactField.allCases).filter(contactRepository.isAccessible)
     return try contactRepository.getPaginated(
       keysToFetch: keys,
       predicate: queryOptions?.name.flatMap {
