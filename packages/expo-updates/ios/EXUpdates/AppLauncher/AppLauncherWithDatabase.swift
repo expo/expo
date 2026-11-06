@@ -380,11 +380,8 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
         extraHeaders: asset.extraRequestHeaders ?? [:],
         allowPatch: false,
         launchedUpdate: self.launchedUpdate
-      ) { _, response, base64URLEncodedSHA256Hash in
+      ) { _, _, base64URLEncodedSHA256Hash in
         self.launcherQueue.async {
-          if let response = response as? HTTPURLResponse {
-            asset.headers = response.allHeaderFields as? [String: Any]
-          }
           asset.contentHash = base64URLEncodedSHA256Hash
           asset.downloadTime = Date()
           completion(nil, asset, assetLocalUrl)
