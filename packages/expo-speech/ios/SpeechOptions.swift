@@ -1,7 +1,7 @@
 import ExpoModulesCore
 
 @Record
-struct SpeechOptions {
+struct SpeechOptions: Sendable {
   var language: String?
   var pitch: Double?
   var rate: Double?
