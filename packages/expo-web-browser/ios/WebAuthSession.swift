@@ -25,11 +25,7 @@ final internal class WebAuthSession {
 
   init(authUrl: URL, redirectUrl: URL?, options: AuthSessionOptions) {
     let completionHandler: ASWebAuthenticationSession.CompletionHandler = { callbackUrl, error in
-      self.finish(with: [
-        "type": callbackUrl != nil ? "success" : "cancel",
-        "url": callbackUrl?.absoluteString,
-        "error": error?.localizedDescription
-      ])
+      self.finish(with: WebAuthSession.result(callbackUrl: callbackUrl, error: error))
     }
 
     // iOS 17.4+/macOS 14.4+ supports HTTPS callbacks with host/path matching.
@@ -74,6 +70,14 @@ final internal class WebAuthSession {
   func dismiss() {
     authSession?.cancel()
     finish(with: ["type": "dismiss"])
+  }
+
+  static func result(callbackUrl: URL?, error: Error?) -> [String: String?] {
+    return [
+      "type": callbackUrl != nil ? "success" : "cancel",
+      "url": callbackUrl?.absoluteString,
+      "error": error?.localizedDescription
+    ]
   }
 
   // MARK: - Private
