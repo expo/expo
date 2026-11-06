@@ -116,9 +116,7 @@ class Publisher {
       await output.untrusted(
         `${branch}Pull request into ${config.targetBranch}:\n  Title: ${title}\n  Body:\n${body}`
       );
-      await this.commentAsync(
-        `The backport to \`${config.targetBranch}\` is open: <pull request URL>`
-      );
+      await this.commentAsync('Backport PR: #<pull request number>');
       return;
     }
 
@@ -144,7 +142,8 @@ class Publisher {
       title,
       bodyFile: state.path('body.md'),
     });
-    await this.commentAsync(`The backport to \`${config.targetBranch}\` is open: ${url}`);
+    const number = url.match(/\/pull\/(\d+)$/)?.[1];
+    await this.commentAsync(`Backport PR: ${number ? `#${number}` : url}`);
   }
 
   private async commentAsync(body: string): Promise<void> {
