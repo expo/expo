@@ -382,6 +382,8 @@ export const general = [
         makePage('modules/v2/reference/unions.mdx'),
         makePage('modules/v2/reference/binary-data.mdx'),
         makePage('modules/v2/reference/events.mdx'),
+        makePage('modules/v2/reference/errors.mdx'),
+        makePage('modules/v2/reference/lifecycle.mdx'),
         makePage('modules/v2/reference/concurrency.mdx'),
         makePage('modules/v2/reference/cli.mdx'),
       ]),
