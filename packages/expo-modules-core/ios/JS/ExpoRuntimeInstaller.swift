@@ -55,9 +55,16 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
       // Host object already installed
       return
     }
+    // The getter reaches the runtime through its handle instead of capturing it. The runtime owns the host object,
+    // so a capture would keep a runtime that owns its engine alive, and the wrapper can be freed before the engine
+    // runtime (for example, when attaching the runtime fails).
+    let runtimeHandle = runtime.handle
     let modulesHostObject = runtime.createHostObject(
       get: { [weak appContext] moduleName in
-        return appContext?.getNativeModuleObject(moduleName) ?? .undefined()
+        guard let runtime = runtimeHandle.runtime else {
+          return .undefined()
+        }
+        return appContext?.getNativeModuleObject(moduleName, in: runtime) ?? .undefined()
       },
       set: { propertyName, _ in
         throw ReadOnlyExpoModulesPropertyException(propertyName)
