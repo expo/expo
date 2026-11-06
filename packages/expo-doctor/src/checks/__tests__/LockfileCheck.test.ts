@@ -4,8 +4,6 @@ import { resolveWorkspaceRoot } from 'resolve-workspace-root';
 import { LockfileCheck } from '../LockfileCheck';
 
 jest.mock('fs');
-jest.mock('glob');
-jest.mock('../../utils/files');
 jest.mock('resolve-workspace-root', () => ({
   resolveWorkspaceRoot: jest.fn(() => null),
 }));

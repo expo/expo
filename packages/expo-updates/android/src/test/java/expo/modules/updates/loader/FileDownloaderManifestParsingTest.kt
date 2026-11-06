@@ -4,15 +4,24 @@ import android.net.Uri
 import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_KEY_ID_KEY
+import expo.modules.updates.codesigning.CodeSigningConfiguration
+import expo.modules.updates.codesigning.ExpoProjectInformation
+import expo.modules.updates.codesigning.SignatureValidationResult
+import expo.modules.updates.codesigning.ValidationResult
 import expo.modules.updates.codesigning.CertificateFixtures
 import expo.modules.updates.codesigning.TestCertificateType
 import expo.modules.updates.codesigning.TestUtils.asJSONResponse
 import expo.modules.updates.codesigning.TestUtils.asResponse
 import expo.modules.updates.codesigning.getTestCertificate
+import expo.modules.updates.logging.LoggedException
+import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.manifest.Update
+import expo.modules.updatesinterface.UpdatesLogMessage
+import io.mockk.every
 import io.mockk.mockk
+import io.mockk.spyk
 import kotlinx.coroutines.test.runTest
 import okhttp3.Headers.Companion.toHeaders
 import okhttp3.MediaType.Companion.toMediaType
@@ -30,6 +39,7 @@ import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.junit.Before
 import org.robolectric.RobolectricTestRunner
+import java.util.Date
 
 @RunWith(RobolectricTestRunner::class)
 class FileDownloaderManifestParsingTest {
@@ -742,6 +752,36 @@ class FileDownloaderManifestParsingTest {
     )
     resultUpdate = updateResponse.manifestUpdateResponsePart?.update
     Assert.assertNotNull(resultUpdate)
+  }
+
+  @Test
+  fun testManifestParsing_MalformedSignedManifestIsNotACodeSigningFailure() = runTest {
+    val malformedManifestBody = "{\"id\":\"0754dad0-d200-d634-113c-ef1f26106028\"}"
+    val response = malformedManifestBody.asJSONResponse(mapOf("expo-protocol-version" to "1").toHeaders())
+
+    val codeSigningConfiguration = mockk<CodeSigningConfiguration>()
+    every { codeSigningConfiguration.validateSignature(any(), any(), any(), any()) } returns
+      SignatureValidationResult(ValidationResult.VALID, ExpoProjectInformation("project-id", "scope-key"))
+    val configuration = spyk(configurationWithUpdateUrl())
+    every { configuration.codeSigningConfiguration } returns codeSigningConfiguration
+
+    val loggerDirectory = temporaryFolder.newFolder()
+    val since = Date(Date().time - 5000)
+    val fileDownloader = FileDownloader(
+      temporaryFolder.newFolder(),
+      easClientID = "test-eas-client-id",
+      configuration = configuration,
+      logger = UpdatesLogger(loggerDirectory),
+      database = database
+    )
+
+    val error = runCatching { fileDownloader.parseRemoteUpdateResponse(response) }.exceptionOrNull()
+
+    Assert.assertNotNull(error)
+    Assert.assertFalse(generateSequence(error) { it.cause }.any { it is LoggedException })
+    Thread.sleep(500)
+    val logs = UpdatesLogReader(loggerDirectory).getLogEntries(since)
+    Assert.assertFalse(logs.any { it.contains(UpdatesLogMessage.SystemCodeSigningVerificationFailed.key) })
   }
 
   private fun createFileDownloader(config: UpdatesConfiguration): FileDownloader {

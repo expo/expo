@@ -72,7 +72,7 @@ export function setResourceConfigurations(
     comment: '//',
     tag: 'expo-localization-supported-locales',
     offset: 1,
-    anchor: /versionName "[\d.]+"/,
+    anchor: /versionName "[^"]+"/,
     newSrc: `        resourceConfigurations += [${list}]`,
   }).contents;
 }

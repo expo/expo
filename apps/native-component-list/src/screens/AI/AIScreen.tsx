@@ -27,6 +27,14 @@ export const AIScreens = [
     },
   },
   {
+    name: 'Images',
+    route: 'ai/images',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImagesScreen'));
+    },
+  },
+  {
     name: 'Session',
     route: 'ai/session',
     options: {},

@@ -10,6 +10,8 @@ export type {
   AppMetricsErrorBoundaryFallbackProps,
 } from './AppMetricsErrorBoundary';
 export type { Session } from './Session';
+export type { Span } from './Span';
+export { startSpan, withSpan, recordSpan } from './spans';
 export * from './types';
 export * from './useNetworkRequestObserver';
 

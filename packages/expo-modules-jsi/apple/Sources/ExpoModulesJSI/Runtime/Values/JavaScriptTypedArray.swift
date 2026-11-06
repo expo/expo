@@ -10,7 +10,8 @@ internal import jsi
 public struct JavaScriptTypedArray: ~Copyable {
   /// Handle to the runtime the typed array belongs to.
   internal let runtimeHandle: JavaScriptRuntimeHandle
-  internal let pointee: facebook.jsi.Object
+  /// Mutable so that ``takeValue()`` can move the engine value out of a consumed typed array.
+  internal var pointee: facebook.jsi.Object
 
   /// The underlying `ArrayBuffer` backing this typed array. Stored alongside `pointee`
   /// so that holding the Swift value keeps the backing store alive on the JS side —
@@ -158,6 +159,11 @@ public struct JavaScriptTypedArray: ~Copyable {
     return JavaScriptValue(runtimeHandle, facebook.jsi.Value(jsiRuntime, pointee))
   }
 
+  /// Moves the typed array into a `JavaScriptValue`, without the clone that ``asValue()`` makes.
+  public consuming func takeValue() -> JavaScriptValue {
+    return JavaScriptValue(runtimeHandle, expo.takeValueFromObject(&pointee))
+  }
+
   // MARK: - Providing JavaScriptObject API
 
   public func getProperty(_ name: String) -> JavaScriptValue {
@@ -165,5 +171,42 @@ public struct JavaScriptTypedArray: ~Copyable {
       FatalError.runtimeLost()
     }
     return JavaScriptValue(runtimeHandle, pointee.getProperty(jsiRuntime, name))
+  }
+}
+
+// MARK: - JavaScriptCodable
+
+// A `JavaScriptTypedArray` argument receives the JS typed array of any kind unconverted, so native code
+// reads and writes its bytes in place. Decoding anything else, including an `ArrayBuffer`, throws a
+// `TypeError`. A typed array is an object to `JavaScriptValueKinds`, so the kind check alone can't skip
+// the other objects.
+extension JavaScriptTypedArray: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptTypedArray
+  {
+    return try value.asTypedArray()
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptTypedArray
+  {
+    return try value.asTypedArray(in: runtime)
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(_ value: consuming JavaScriptTypedArray, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptValue
+  {
+    return value.takeValue()
   }
 }

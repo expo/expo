@@ -3,6 +3,7 @@ package expo.modules.updates.launcher
 import android.content.Context
 import expo.modules.updates.loader.EmbeddedLoader
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updatesinterface.UpdatesLogMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -35,7 +36,7 @@ class NoDatabaseLauncher @JvmOverloads constructor(
       val exceptionString = fatalException.toString()
       errorLogFile.appendText(exceptionString, Charsets.UTF_8)
     } catch (e: Exception) {
-      logger.error("Failed to write fatal error to log", e)
+      logger.error(UpdatesLogMessage.ErrorRecoveryLogWriteFailed, e)
     }
   }
 
@@ -54,7 +55,7 @@ class NoDatabaseLauncher @JvmOverloads constructor(
         errorLogFile.delete()
         logContents
       } catch (e: Exception) {
-        logger.error("Failed to read error log", e)
+        logger.warn(UpdatesLogMessage.ErrorRecoveryLogReadFailed, e)
         null
       }
     }

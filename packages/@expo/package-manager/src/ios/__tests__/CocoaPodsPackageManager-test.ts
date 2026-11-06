@@ -203,6 +203,42 @@ describe('installAsync', () => {
     expect(manager._runAsync).toHaveBeenCalledTimes(2);
   });
 
+  it(`updates every changed local pod together`, async () => {
+    const manager = new CocoaPodsPackageManager({ cwd: projectRoot, useBundler: false });
+
+    const changedPods = ['ExpoModulesCore', 'ExpoFont'];
+    manager._runAsync = jest.fn((commands: string[]): any => {
+      const missing = changedPods.find(
+        (pod) => commands[0] !== 'update' || !commands.includes(pod)
+      );
+      if (missing) {
+        const stdout =
+          `It seems like you've changed the version of the dependency \`${missing}\` and it differs from the version stored in \`Pods/Local Podspecs\`.\n` +
+          `You should run \`pod update ${missing} --no-repo-update\` to apply changes made locally.\n`;
+        // eslint-disable-next-line no-throw-literal
+        throw { output: [stdout], stdout, stderr: '' };
+      }
+      return {};
+    });
+
+    await expect(manager.installAsync()).resolves.toBeUndefined();
+
+    // `pod install` > `pod update ExpoModulesCore` > `pod update ExpoModulesCore ExpoFont`
+    expect(manager._runAsync).toHaveBeenNthCalledWith(1, ['install']);
+    expect(manager._runAsync).toHaveBeenNthCalledWith(2, [
+      'update',
+      'ExpoModulesCore',
+      '--no-repo-update',
+    ]);
+    expect(manager._runAsync).toHaveBeenNthCalledWith(3, [
+      'update',
+      'ExpoModulesCore',
+      'ExpoFont',
+      '--no-repo-update',
+    ]);
+    expect(manager._runAsync).toHaveBeenCalledTimes(3);
+  });
+
   it(`runs install as expected`, async () => {
     const manager = new CocoaPodsPackageManager({ cwd: projectRoot, useBundler: false });
 

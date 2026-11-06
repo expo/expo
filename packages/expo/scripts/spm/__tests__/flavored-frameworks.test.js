@@ -431,6 +431,41 @@ describe('artifact preparation', () => {
     expect(fs.existsSync(path.join(result.xcframework, 'Info.plist'))).toBe(true);
   });
 
+  itNotWindows('gives the extracted headers the extraction time, not the archived mtime', () => {
+    const source = path.join(root, 'source');
+    const xcframework = makeXcframework(source, 'ExpoModulesCoreHeaders', 'headers');
+    const archived = new Date('2001-01-01T00:00:00Z');
+    const header = path.join(
+      'ios-arm64',
+      'ExpoModulesCoreHeaders.framework',
+      'Headers',
+      'ExpoModulesCoreHeaders.h'
+    );
+    fs.utimesSync(path.join(xcframework, header), archived, archived);
+    const moduleRoot = path.join(root, 'module');
+    packTarball(
+      path.join(source, 'headers'),
+      path.join(
+        moduleRoot,
+        'prebuilds',
+        'output',
+        'headers',
+        'xcframeworks',
+        'ExpoModulesCoreHeaders.tar.gz'
+      ),
+      ['ExpoModulesCoreHeaders.xcframework']
+    );
+
+    const extractedAfter = Date.now() - 2000;
+    const { xcframework: extracted } = resolveHeadersXCFrameworkWithSource({
+      packageName: 'expo-spm-headers-fixture',
+      moduleRoot,
+      productName: 'ExpoModulesCore',
+      cacheDir: path.join(root, 'cache'),
+    });
+    expect(fs.statSync(path.join(extracted, header)).mtimeMs).toBeGreaterThan(extractedAfter);
+  });
+
   it('produces byte-identical compile interfaces regardless of declaration order', () => {
     const aDebug = makeXcframework(root, 'ExpoA', 'a-debug', 'a');
     const aRelease = makeXcframework(root, 'ExpoA', 'a-release', 'a');

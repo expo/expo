@@ -24,6 +24,15 @@ struct AudioSessionPolicy {
     options currentOptions: AVAudioSession.CategoryOptions,
     players: [PlayerState]
   ) -> AudioSessionPolicy {
+    if players.isEmpty {
+      return AudioSessionPolicy(
+        category: currentCategory,
+        mode: currentMode,
+        options: currentOptions,
+        shouldActivate: false
+      )
+    }
+
     let audioMixingMode = findAudioMixingMode(players: players)
     var options = currentOptions
 

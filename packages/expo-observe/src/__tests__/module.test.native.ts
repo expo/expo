@@ -23,6 +23,10 @@ const mockAppMetrics = {
   setNetworkTracesConfig: jest.fn(),
 };
 
+const mockStartSpan = jest.fn();
+const mockWithSpan = jest.fn();
+const mockRecordSpan = jest.fn();
+
 const mockSetErrorHandlerEnabled = jest.fn();
 
 jest.mock('expo', () => ({
@@ -33,6 +37,9 @@ jest.mock('expo-app-metrics', () => ({
   __esModule: true,
   default: mockAppMetrics,
   setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
+  startSpan: mockStartSpan,
+  withSpan: mockWithSpan,
+  recordSpan: mockRecordSpan,
 }));
 
 jest.mock('../integrations/expo-router/router', () => ({
@@ -74,6 +81,9 @@ beforeEach(() => {
     __esModule: true,
     default: mockAppMetrics,
     setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
+    startSpan: mockStartSpan,
+    withSpan: mockWithSpan,
+    recordSpan: mockRecordSpan,
   }));
   jest.doMock('../integrations/expo-router/router', () => ({
     isRouterInstalled: true,
@@ -217,6 +227,15 @@ describe('module Proxy', () => {
     expect(disableReanimatedIntegration).toHaveBeenCalledTimes(1);
   });
 
+  it('forwards the span wrappers instead of the raw native functions', () => {
+    // The wrappers fold `parent` into the options and implement withSpan's auto-end; reaching
+    // the native members with the same names would silently lose that behavior.
+    const Observe = loadModule();
+    expect(Observe.startSpan).toBe(mockStartSpan);
+    expect(Observe.withSpan).toBe(mockWithSpan);
+    expect(Observe.recordSpan).toBe(mockRecordSpan);
+  });
+
   it('records no network traces when configure omits networkTraces', () => {
     // Opt-in: recording is off unless asked for, so upgrading can't silently add to an app's
     // event bill. `configure` is a full replacement, so an absent `networkTraces` resets to it.
@@ -292,6 +311,29 @@ describe('module Proxy', () => {
     expect(mockSetErrorHandlerEnabled).toHaveBeenCalledTimes(1);
     expect(mockSetErrorHandlerEnabled).toHaveBeenCalledWith(enabled);
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('warns when errorSampleRate is lower than sampleRate', () => {
+    const Observe = loadModule();
+    Observe.configure({ sampleRate: 0.03, errorSampleRate: 0.01 });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[expo-observe] `errorSampleRate` (0.01) is lower than `sampleRate` (0.03) and has no effect. ' +
+        'Errors are sent from every installation in the `sampleRate` sample. ' +
+        'Set `errorSampleRate` to at least `sampleRate`.'
+    );
+  });
+
+  it('warns when errorSampleRate is set without sampleRate', () => {
+    // An unset `sampleRate` sends every installation, so errors are sent from all of them.
+    const Observe = loadModule();
+    Observe.configure({ errorSampleRate: 0.5 });
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      '[expo-observe] `errorSampleRate` (0.5) is lower than `sampleRate` (1) and has no effect. ' +
+        'Errors are sent from every installation in the `sampleRate` sample. ' +
+        'Set `errorSampleRate` to at least `sampleRate`.'
+    );
   });
 
   it('passes the config through to the native module unchanged', () => {

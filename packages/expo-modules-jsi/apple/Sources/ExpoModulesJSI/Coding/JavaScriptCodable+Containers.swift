@@ -38,8 +38,31 @@ extension Array: JavaScriptDecodable where Element: JavaScriptDecodable {
       return [try Element.decode(value, in: runtime)]
     }
     // Each element is lent out unowned, so it's decoded without a `JavaScriptValue` per element.
-    return try value.getArray(in: runtime).mapUnowned { element in
-      return try Element.decode(element, in: runtime)
+    return try decodeElements(of: value.getArray(in: runtime), in: runtime)
+  }
+
+  /// Decodes every element of `array`, with one closure call per element.
+  @inlinable
+  internal static func decodeElements(of array: borrowing JavaScriptArray, in runtime: borrowing JavaScriptRuntime)
+    throws -> [Element]
+  {
+    // Nonisolated, so the closure that the array initializer gets has no executor check. The isolation
+    // that `Element.decode` needs is entered once, without a check. Everything runs synchronously on
+    // this thread, so the buffer and the count can cross into the isolated closure unchecked.
+    let count = array.length
+    return try [Element](unsafeUninitializedCapacity: count) { buffer, initializedCount in
+      nonisolated(unsafe) let base = buffer.baseAddress
+      nonisolated(unsafe) var initialized = 0
+      // Also when `Element.decode` throws, so the elements decoded so far are deinitialized.
+      defer {
+        initializedCount = initialized
+      }
+      try JavaScriptActor.assumeIsolated {
+        try array.forEachUnowned(count: count) { element in
+          (base.unsafelyUnwrapped + initialized).initialize(to: try Element.decode(element, in: runtime))
+          initialized += 1
+        }
+      }
     }
   }
 }
@@ -75,7 +98,12 @@ extension Array: JavaScriptEncodable where Element: JavaScriptEncodable {
 
 // MARK: - Optional
 
-extension Optional: JavaScriptDecodable where Wrapped: JavaScriptDecodable {
+// The wrapped type may be non-copyable, such as `JavaScriptObject`, so that a non-copyable optional
+// decodes like any other optional, for example as an optional argument. `@_preInverseGenerics` keeps the
+// symbols the members had before `~Copyable` was allowed, so binaries built against an older version
+// still link.
+extension Optional: JavaScriptDecodable where Wrapped: JavaScriptDecodable & ~Copyable {
+  @_preInverseGenerics
   @inlinable
   public static var decodableKinds: JavaScriptValueKinds {
     return Wrapped.decodableKinds.union([.null, .undefined])
@@ -83,6 +111,7 @@ extension Optional: JavaScriptDecodable where Wrapped: JavaScriptDecodable {
 
   // Optional copies nothing itself, so it overrides the zero-copy overload too and forwards the
   // borrowed value straight through — a wrapped primitive argument stays fully zero-copy.
+  @_preInverseGenerics
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
@@ -94,6 +123,7 @@ extension Optional: JavaScriptDecodable where Wrapped: JavaScriptDecodable {
     return try Wrapped.decode(value, in: runtime)
   }
 
+  @_preInverseGenerics
   @JavaScriptActor
   @inlinable
   public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws

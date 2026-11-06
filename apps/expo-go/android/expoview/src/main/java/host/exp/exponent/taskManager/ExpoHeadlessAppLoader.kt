@@ -61,7 +61,7 @@ class ExpoHeadlessAppLoader @DoNotStrip constructor() : HeadlessAppLoader {
     return appLoader!!
   }
 
-  override fun isRunning(appScopeKey: String): Boolean {
+  override fun isRunningInHeadlessMode(appScopeKey: String): Boolean {
     return appScopeKeysToAppRecords.containsKey(appScopeKey)
   }
 

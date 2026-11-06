@@ -484,6 +484,10 @@ class FileSystemModule : Module() {
         task.resume(url, to, resumeData, options)
       }
 
+      Property("response") { task: FileSystemDownloadTask ->
+        task.getResponse()
+      }
+
       Function("cancel") { task: FileSystemDownloadTask ->
         task.cancel()
       }
