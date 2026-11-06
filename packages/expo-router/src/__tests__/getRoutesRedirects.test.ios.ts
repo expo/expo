@@ -20,9 +20,9 @@ describe(convertRedirect, () => {
   });
 
   it('keeps a query string and hash on the absolute destination', () => {
-    expect(
-      convertRedirect('/old/abc?utm_source=x#details', redirect('old/[id]', 'new/[id]'))
-    ).toBe('/new/abc?utm_source=x#details');
+    expect(convertRedirect('/old/abc?utm_source=x#details', redirect('old/[id]', 'new/[id]'))).toBe(
+      '/new/abc?utm_source=x#details'
+    );
   });
 
   it('aligns a source that still has a leading slash', () => {
