@@ -1,16 +1,14 @@
 export type LanguageStatus = 'supported' | 'not-supported';
 
 export type ModulesV2Feature = {
-  /** The ID that pages use to refer to the feature, for example in `<LanguageSupport feature="events" />`. */
+  /** The ID of the feature, for example `events`. */
   id: string;
   /** The feature name as it appears in the support table. */
   name: string;
   /** The status of the feature in Swift. */
   swift: LanguageStatus;
-  /**
-   * The status of the feature in Kotlin. `undefined` means that the docs don't have the status yet.
-   */
-  kotlin?: LanguageStatus;
+  /** The status of the feature in Kotlin. */
+  kotlin: LanguageStatus;
   /** An optional note that appears next to the statuses. */
   note?: string;
 };
@@ -71,6 +69,16 @@ export const modulesV2Features: ModulesV2Feature[] = [
     kotlin: 'supported',
   },
 ];
+
+const STATUS_LABELS: Record<LanguageStatus, string> = {
+  supported: 'Supported',
+  'not-supported': 'Not supported yet',
+};
+
+/** Returns the label of a language status, for example "Not supported yet". */
+export function getLanguageStatusLabel(status: LanguageStatus): string {
+  return STATUS_LABELS[status];
+}
 
 export function getModulesV2Feature(id: string): ModulesV2Feature {
   const feature = modulesV2Features.find(feature => feature.id === id);

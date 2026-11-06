@@ -2,9 +2,8 @@ import { render, screen } from '@testing-library/react';
 
 import { axe } from '~/common/test-utilities';
 
-import { getLanguageStatusLabel, LanguageSupport } from './LanguageSupport';
 import { ModulesV2SupportTable } from './ModulesV2SupportTable';
-import { getModulesV2Feature, modulesV2Features } from './data';
+import { getLanguageStatusLabel, getModulesV2Feature, modulesV2Features } from './data';
 
 describe('modulesV2Features', () => {
   it('has unique IDs', () => {
@@ -12,20 +11,13 @@ describe('modulesV2Features', () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
+  it('labels each status', () => {
+    expect(getLanguageStatusLabel('supported')).toBe('Supported');
+    expect(getLanguageStatusLabel('not-supported')).toBe('Not supported yet');
+  });
+
   it('throws for an unknown feature', () => {
     expect(() => getModulesV2Feature('unknown')).toThrow('Unknown Expo Modules API 2.0 feature');
-  });
-});
-
-describe(LanguageSupport, () => {
-  it('shows the status in each language', () => {
-    render(<LanguageSupport feature="unions" />);
-    expect(screen.getByText('Kotlin: not supported yet')).toBeInTheDocument();
-    expect(screen.getByText('Swift: supported')).toBeInTheDocument();
-  });
-
-  it('labels a missing status as not documented', () => {
-    expect(getLanguageStatusLabel(undefined)).toBe('Not documented yet');
   });
 });
 

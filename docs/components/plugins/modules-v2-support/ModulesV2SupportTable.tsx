@@ -1,7 +1,6 @@
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
-import { getLanguageStatusLabel } from './LanguageSupport';
-import { modulesV2Features } from './data';
+import { getLanguageStatusLabel, modulesV2Features } from './data';
 
 /**
  * Lists the Expo Modules API 2.0 features with their status in Kotlin and Swift.
