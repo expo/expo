@@ -19,19 +19,20 @@ To manage sessions without EAS CLI, use the [Expo Simulators REST API](/eas/simu
 
 ## Commands
 
-| Command                                            | Purpose                                                                  |
-| -------------------------------------------------- | ------------------------------------------------------------------------ |
-| [`simulator:availability`](#simulatoravailability) | Check whether the current project's account can use Expo Simulators      |
-| [`simulator:start`](#simulatorstart)               | Create a session and wait for its controller configuration               |
-| [`simulator`](#simulatorstart)                     | Same command as `simulator:start`                                        |
-| [`simulator:control`](#simulatorcontrol)           | Run a supported device action on a running iOS session                   |
-| [`simulator:exec`](#simulatorexec)                 | Run another command with **.env.eas-simulator** loaded                   |
-| [`simulator:events`](#simulatorevents)             | Show recorded activity or follow activity from a running session         |
-| [`simulator:logs`](#simulatorlogs)                 | Show app logs from an iOS session, or download them after it stops       |
-| [`simulator:egress`](#simulatoregress)             | Run the local egress client for a session started with `--egress local`  |
-| [`simulator:get`](#simulatorget)                   | Get status, connection details, dashboard URL, timestamps, and artifacts |
-| [`simulator:list`](#simulatorlist)                 | List and filter sessions for the current project                         |
-| [`simulator:stop`](#simulatorstop)                 | Stop a session                                                           |
+| Command                                                       | Purpose                                                                  |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| [`simulator:availability`](#simulatoravailability)            | Check whether the current project's account can use Expo Simulators      |
+| [`simulator:start`](#simulatorstart)                          | Create a session and wait for its controller configuration               |
+| [`simulator`](#simulatorstart)                                | Same command as `simulator:start`                                        |
+| [`simulator:control`](#simulatorcontrol)                      | Run a supported device action on a running iOS session                   |
+| [`simulator:control:connection`](#simulatorcontrolconnection) | Keep a control connection open between `simulator:control` commands      |
+| [`simulator:exec`](#simulatorexec)                            | Run another command with **.env.eas-simulator** loaded                   |
+| [`simulator:events`](#simulatorevents)                        | Show recorded activity or follow activity from a running session         |
+| [`simulator:logs`](#simulatorlogs)                            | Show app logs from an iOS session, or download them after it stops       |
+| [`simulator:egress`](#simulatoregress)                        | Run the local egress client for a session started with `--egress local`  |
+| [`simulator:get`](#simulatorget)                              | Get status, connection details, dashboard URL, timestamps, and artifacts |
+| [`simulator:list`](#simulatorlist)                            | List and filter sessions for the current project                         |
+| [`simulator:stop`](#simulatorstop)                            | Stop a session                                                           |
 
 ## `simulator:availability`
 
@@ -122,6 +123,7 @@ Important flags:
 | `--network-capture`         | Record HTTP(S) traffic from apps on an iOS device as an HTTP Archive (HAR). iOS only. Not compatible with `--egress local`. See [Record network traffic](/eas/simulators/how-it-works/network-inspection/#record-network-traffic)                                                                                                                         |
 | `--network-capture-field`   | What a recording also keeps: `header`, `query`, `request-body`, or `response-body`. Repeat the flag or pass a comma-separated list. Requires `--network-capture`                                                                                                                                                                                          |
 | `--max-idle-time-minutes`   | Stop after this many minutes without session activity. When omitted, the session has no idle timeout and runs until its maximum duration. Not supported for Android `web-preview-only`                                                                                                                                                                    |
+| `--import`                  | JSON file with saved start flags and iOS setup actions. Flags that you pass override saved values. See [Run saved actions from a file](/eas/simulators/how-to/control-with-eas-cli/#run-saved-actions-from-a-file)                                                                                                                                        |
 | `--out-config-type`         | `dotenv` (default) to write **.env.eas-simulator**, or `env` to print shell exports                                                                                                                                                                                                                                                                       |
 | `--[no-]force`              | Whether to create a new session when a session ID already exists in the environment. Defaults to `true`                                                                                                                                                                                                                                                   |
 | `--non-interactive`         | Return after the session is ready instead of staying attached                                                                                                                                                                                                                                                                                             |
@@ -189,6 +191,24 @@ The command uses the session's preview server and works with private links. It s
 `--id` selects the session. Without it, the command reads the ID from **.env.eas-simulator** or the shell environment. `--output` saves a returned file on your computer. `--json` returns the catalog or the action result as JSON and implies non-interactive mode.
 
 For session selection and action discovery, see [Control a remote iOS Simulator with EAS CLI](/eas/simulators/how-to/control-with-eas-cli/).
+
+`--import <file>` runs the actions in a JSON file in order and stops at the first failure. You cannot combine it with an action, `--list`, or `--output`. See [Run saved actions from a file](/eas/simulators/how-to/control-with-eas-cli/#run-saved-actions-from-a-file).
+
+`--keep-alive` keeps the connection open after the action, so later commands can reuse it. `--idle-timeout <seconds>` sets how long an unused connection stays open. It requires `--keep-alive` and defaults to 120 seconds. This option is available on macOS and Linux.
+
+## `simulator:control:connection`
+
+Open, inspect, or close a local control connection that `simulator:control` commands reuse:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control:connection open --id <session-id> --idle-timeout 300',
+    '$ eas simulator:control:connection status --id <session-id> --json',
+    '$ eas simulator:control:connection close --id <session-id>',
+  ]}
+/>
+
+`--idle-timeout` applies only to `open`. It sets the seconds of idle time before the connection closes, with a default of 120. Closing the connection does not stop the session. This command is available on macOS and Linux. See [Keep the connection open](/eas/simulators/how-to/control-with-eas-cli/#keep-the-connection-open).
 
 ## `simulator:exec`
 
