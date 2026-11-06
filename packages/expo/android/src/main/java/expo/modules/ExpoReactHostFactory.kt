@@ -83,11 +83,13 @@ object ExpoReactHostFactory {
       get() = packageList
 
     override fun handleInstanceException(error: Exception) {
-      if (hostHandlers.isEmpty()) {
+      // Every handler sees the exception. One that no handler takes is rethrown, as React Native's
+      // default host delegate does, so the process ends and crash reporters record it.
+      val handled = hostHandlers
+        .map { handler -> handler.handleReactInstanceException(hostDelegateUseDeveloperSupport, error) }
+        .any { it }
+      if (!handled) {
         throw error
-      }
-      hostHandlers.forEach { handler ->
-        handler.onReactInstanceException(hostDelegateUseDeveloperSupport, error)
       }
     }
   }
