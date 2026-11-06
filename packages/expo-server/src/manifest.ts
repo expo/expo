@@ -121,6 +121,8 @@ export interface PageHeaderInfo<TRegex = RegExp | string> {
 }
 
 export interface RoutesManifest<TRegex = RegExp | string> {
+  /** Public server origin configured in the Expo Router config plugin. */
+  origin?: string;
   /**
    * Middleware function that runs before any route matching.
    * Only allowed at the root level and requires web.output: "server".

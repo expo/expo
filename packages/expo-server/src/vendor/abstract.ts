@@ -107,7 +107,7 @@ export function createRequestHandler({
     let request = incomingRequest;
     let url = new URL(request.url);
 
-    if (isForbiddenOrigin(request, checkOrigin)) {
+    if (isForbiddenOrigin(request, checkOrigin, manifest.origin)) {
       return createResponse(
         null,
         null,

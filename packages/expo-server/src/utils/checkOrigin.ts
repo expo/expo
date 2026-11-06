@@ -7,7 +7,8 @@ const FORM_CONTENT_TYPES = new Set([
 
 export function isForbiddenOrigin(
   request: Request,
-  checkOrigin: boolean | 'sec-only' = true
+  checkOrigin: boolean | 'sec-only' = true,
+  origin?: string
 ): boolean {
   if (!checkOrigin || SAFE_METHODS.has(request.method)) {
     return false;
@@ -30,5 +31,7 @@ export function isForbiddenOrigin(
     return false;
   }
   const sourceOrigin = request.headers.get('origin');
-  return sourceOrigin !== null && sourceOrigin !== new URL(request.url).origin;
+  return (
+    sourceOrigin !== null && sourceOrigin !== new URL(request.url).origin && sourceOrigin !== origin
+  );
 }
