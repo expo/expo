@@ -692,8 +692,8 @@ public class AudioModule: Module {
       guard let self else {
         return
       }
-      self.interruptedPlayers.formUnion(interrupted)
-      self.playerVolumes.merge(volumes) { original, _ in original }
+      self.interruptedPlayers = interrupted
+      self.playerVolumes = volumes
       self.sessionIsActive = false
     }
   }
