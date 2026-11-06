@@ -386,9 +386,9 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
         extraHeaders: asset.extraRequestHeaders ?? [:],
         allowPatch: false,
         launchedUpdate: self.launchedUpdate
-      ) { _, _, base64URLEncodedSHA256Hash in
+      ) { data, _, _ in
         self.launcherQueue.async {
-          asset.contentHash = base64URLEncodedSHA256Hash
+          asset.contentHash = UpdatesUtils.hexEncodedSHA256WithData(data)
           asset.downloadTime = Date()
           completion(nil, asset, assetLocalUrl)
         }

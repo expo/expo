@@ -52,7 +52,7 @@ internal enum UpdatesDatabaseError: Error, Sendable, LocalizedError {
 }
 
 enum UpdatesDatabaseHashType: Int {
-  case Sha1 = 0
+  case Sha256 = 0
 }
 
 /**
@@ -190,7 +190,7 @@ public final class UpdatesDatabase: NSObject {
           asset.downloadTime.require("asset downloadTime should be nonnull"),
           asset.filename,
           asset.contentHash,
-          UpdatesDatabaseHashType.Sha1.rawValue,
+          UpdatesDatabaseHashType.Sha256.rawValue,
           asset.expectedHash
         ]
       )
