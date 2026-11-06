@@ -9,16 +9,12 @@ const ERROR_TYPE = 'updates.error';
 const ERROR_RECOVERY_TYPE = 'updates.error_recovery';
 const WARNING_EVENT = 'updates.warning';
 
-// expo-updates logs a JS error that error recovery handles with this code, and with a message that
-// starts with this prefix: "ErrorRecovery fatal exception: ..." on iOS and
-// "ErrorRecovery: exception encountered: ..." on Android.
-const ERROR_RECOVERY_CODE = 'JSRuntimeError';
-const ERROR_RECOVERY_MESSAGE_PREFIX = 'ErrorRecovery';
-// When error recovery cannot recover, it logs this message just before the app crashes:
-// "ErrorRecovery: could not recover ..." on iOS and "UpdatesErrorRecovery: could not recover ..." on
-// Android. Observe already reports the crash, and the error that started error recovery is
-// reported as `updates.error_recovery`, so this entry adds no error of its own.
-const ERROR_RECOVERY_CRASH_MESSAGE = 'ErrorRecovery: could not recover from error, crashing';
+// The key of the entry that expo-updates logs for a JS error that error recovery handles.
+const ERROR_RECOVERY_KEY = 'errorRecovery.jsException';
+// When error recovery cannot recover, it logs an entry with this key just before the app crashes.
+// Observe already reports the crash, and the error that started error recovery is reported as
+// `updates.error_recovery`, so this entry adds no error of its own.
+const ERROR_RECOVERY_CRASH_KEY = 'errorRecovery.crash';
 
 // expo-updates keeps log entries for one day and reads back at most one day.
 const MAX_LOOKBACK_MS = 86_400_000;
@@ -74,13 +70,11 @@ class ExpoUpdatesLogError extends Error {
 }
 
 function isErrorRecoveryEntry(entry: UpdatesLogEntry): boolean {
-  return (
-    entry.code === ERROR_RECOVERY_CODE && entry.message.startsWith(ERROR_RECOVERY_MESSAGE_PREFIX)
-  );
+  return entry.key === ERROR_RECOVERY_KEY;
 }
 
 function isErrorRecoveryCrashEntry(entry: UpdatesLogEntry): boolean {
-  return entry.message.includes(ERROR_RECOVERY_CRASH_MESSAGE);
+  return entry.key === ERROR_RECOVERY_CRASH_KEY;
 }
 
 function passesFilters(entry: UpdatesLogEntry): boolean {
