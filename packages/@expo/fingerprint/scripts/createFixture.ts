@@ -3,46 +3,74 @@
  *
  * Usage: npx ts-node scripts/createFixture /path/to/app /path/to/output.json
  */
-import realFS from 'fs';
+
 import { fs, vol } from 'memfs';
+import { Minimatch } from 'minimatch';
+import realFS from 'node:fs';
 import path from 'path';
 
 async function createFixtureAsync(targetDir: string, outputFile: string) {
-  const normalizeCase = (value: string) =>
-    process.platform === 'darwin' || process.platform === 'win32' ? value.toLowerCase() : value;
-  const directories = [''];
-  for (const directory of directories) {
-    const entries = await realFS.promises
-      .readdir(path.join(targetDir, directory), { withFileTypes: true })
-      .catch(() => []);
-    for (const entry of entries) {
-      if (entry.name.startsWith('.')) continue;
-      const file = path.join(directory, entry.name);
-      const name = normalizeCase(entry.name);
-      const relativePath = normalizeCase(file);
-      if (entry.isDirectory()) {
-        if (
-          !['node_modules', 'build', 'xcuserdata'].includes(name) &&
-          !name.endsWith('.xcassets') &&
-          !['ios/Pods', 'vendor', 'gradle/wrapper'].map(normalizeCase).includes(relativePath) &&
-          !relativePath.endsWith('/gradle/wrapper')
-        ) {
-          directories.push(file);
-        }
-      } else if (
-        !/\.(jpg|png|ttf|lock|jar|keystore)$/.test(name) &&
-        !['bun.lockb', 'IDEWorkspaceChecks.plist', 'gradlew', 'gradlew.bat']
-          .map(normalizeCase)
-          .includes(name) &&
-        (entry.isFile() ||
-          (entry.isSymbolicLink() &&
-            realFS.statSync(path.join(targetDir, file), { throwIfNoEntry: false })?.isFile()))
-      ) {
-        const content = realFS.readFileSync(path.join(targetDir, file), 'utf8');
-        fs.mkdirSync(path.join('/', path.dirname(file)), { recursive: true });
-        fs.writeFileSync(path.join('/', file), content);
-      }
+  const ignoredPatterns = [
+    // binary files
+    '**/*.{jpg,png,ttf}',
+
+    // lock files
+    '**/*.lock',
+    '**/bun.lockb',
+
+    // node files
+    '**/node_modules/**',
+
+    // generated files
+    '**/build/**',
+
+    // ios files
+    'ios/Pods/**',
+    'vendor/**',
+    '**/xcuserdata/**',
+    '**/*.xcassets/**',
+    '**/IDEWorkspaceChecks.plist',
+
+    // android files
+    '**/*.jar',
+    '**/*.keystore',
+    '**/gradlew',
+    '**/gradlew.bat',
+    '**/gradle/wrapper/**',
+  ];
+  const ignored = ignoredPatterns.map(
+    (pattern) =>
+      new Minimatch(pattern, {
+        dot: true,
+        nocase: process.platform === 'darwin' || process.platform === 'win32',
+      })
+  );
+  for await (const entry of realFS.promises.glob('**/*', {
+    cwd: targetDir,
+    withFileTypes: true,
+    exclude: (entry) => {
+      const file = path.join(entry.parentPath, entry.name);
+      const relative = path.relative(targetDir, file);
+      return (
+        ignored.some((pattern) => pattern.match(entry.isDirectory() ? `${relative}/` : relative)) ||
+        (entry.isSymbolicLink() && !realFS.statSync(file, { throwIfNoEntry: false })?.isFile())
+      );
+    },
+  })) {
+    if (entry.isDirectory()) continue;
+    const file = path.join(entry.parentPath, entry.name);
+    const relative = path.relative(targetDir, file);
+    // Older Node versions may yield files without applying exclude.
+    if (
+      ignored.some((pattern) => pattern.match(relative)) ||
+      (!entry.isFile() &&
+        (!entry.isSymbolicLink() || !realFS.statSync(file, { throwIfNoEntry: false })?.isFile()))
+    ) {
+      continue;
     }
+    const content = realFS.readFileSync(file, 'utf8');
+    fs.mkdirSync(path.join('/', path.dirname(relative)), { recursive: true });
+    fs.writeFileSync(path.join('/', relative), content);
   }
   const resultJSON: Record<string, string | null> = {};
   for (const [key, value] of Object.entries(vol.toJSON())) {
