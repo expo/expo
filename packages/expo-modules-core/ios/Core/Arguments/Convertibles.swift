@@ -18,7 +18,7 @@ extension URL: Convertible {
       }
       throw Conversions.ConvertingException<URL>(value)
     }
-    return try url(fromString: value)
+    return try urlFromString(value)
   }
 
   public static func convertResult(_ result: Any, appContext: AppContext) throws -> Any {

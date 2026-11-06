@@ -7,7 +7,7 @@ import SwiftUI
 // The color types decode from a string, a number, an array of components, or a `PlatformColor` or
 // `DynamicColorIOS` object, and encode as the `#rrggbbaa` string that `UIColor.string` returns. A string or a
 // number is read straight from the JavaScript value. Any other value is read through `getAny()` and decoded by
-// `color(fromAny:)`, which the `Convertible` conformances also call, so both paths accept the same values and
+// `colorFromAny(_:)`, which the `Convertible` conformances also call, so both paths accept the same values and
 // throw the same exceptions.
 
 extension UIColor: JavaScriptDecodable, JavaScriptEncodable {
@@ -20,112 +20,13 @@ extension UIColor: JavaScriptDecodable, JavaScriptEncodable {
     -> Self
   {
     // swiftlint:disable:next force_cast
-    return try color(from: value, in: runtime) as! Self
+    return try colorFromJavaScriptValue(value, in: runtime) as! Self
   }
 
   // The parameter is `UIColor` rather than `Self` because a non-final class can't take a covariant `Self`.
   @JavaScriptActor
   public static func encode(_ value: UIColor, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
-    return try String.encode(value.string, in: runtime)
-  }
-
-  @JavaScriptActor
-  internal static func color(from value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime)
-    throws -> UIColor
-  {
-    if value.isString() {
-      return try color(fromString: value.getString())
-    }
-    if value.isNumber() {
-      return try color(fromNumber: value.getDouble())
-    }
-    return try color(fromAny: value.copied(in: runtime).getAny())
-  }
-
-  internal static func color(fromAny value: Any?) throws -> UIColor {
-    if let value = value as? String {
-      return try color(fromString: value)
-    }
-    if let components = value as? [Double] {
-      return try uiColorWithComponents(components)
-    }
-    if let value = value as? Int {
-      return try colorFromArgb(UInt64(value))
-    }
-    if let value = value as? Double {
-      return try color(fromNumber: value)
-    }
-
-    // Handle `PlatformColor` and `DynamicColorIOS`
-    if let opaqueValue = value as? [String: Any] {
-      if let semanticName = opaqueValue["semantic"] as? String,
-        let color = resolveNamedColor(name: semanticName)
-      {
-        return color
-      }
-      if let semanticArray = opaqueValue["semantic"] as? [String] {
-        for semanticName in semanticArray {
-          if let color = resolveNamedColor(name: semanticName) {
-            return color
-          }
-        }
-      }
-      if let appearances = opaqueValue["dynamic"] as? [String: Any],
-        let lightColor = try appearances["light"].map({ try color(fromAny: $0) }),
-        let darkColor = try appearances["dark"].map({ try color(fromAny: $0) })
-      {
-        let highContrastLightColor = try appearances["highContrastLight"].map({ try color(fromAny: $0) })
-        let highContrastDarkColor = try appearances["highContrastDark"].map({ try color(fromAny: $0) })
-
-        #if os(iOS) || os(tvOS)
-        return UIColor { (traitCollection: UITraitCollection) -> UIColor in
-          if traitCollection.userInterfaceStyle == .dark {
-            if traitCollection.accessibilityContrast == .high, let highContrastDarkColor {
-              return highContrastDarkColor
-            }
-            return darkColor
-          }
-
-          if traitCollection.accessibilityContrast == .high, let highContrastLightColor {
-            return highContrastLightColor
-          }
-          return lightColor
-        }
-        #elseif os(macOS)
-        return NSColor(name: nil) { (appearance: NSAppearance) -> NSColor in
-          let isDarkMode = appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
-          let isHighContrast = NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast
-
-          if isDarkMode {
-            if isHighContrast, let highContrastDarkColor = highContrastDarkColor {
-              return highContrastDarkColor
-            }
-            return darkColor
-          }
-
-          if isHighContrast, let highContrastLightColor = highContrastLightColor {
-            return highContrastLightColor
-          }
-          return lightColor
-        }
-        #endif
-      }
-    }
-    if let color = value as? UIColor {
-      return color
-    }
-    throw Conversions.ConvertingException<UIColor>(value)
-  }
-
-  private static func color(fromString value: String) throws -> UIColor {
-    if let namedColorComponents = namedColors[value] {
-      return try uiColorWithComponents(namedColorComponents)
-    }
-    return try colorFromString(value)
-  }
-
-  private static func color(fromNumber value: Double) throws -> UIColor {
-    return try colorFromArgb(UInt64(value))
+    return try String.encode(colorToString(value), in: runtime)
   }
 }
 
@@ -140,7 +41,7 @@ extension CGColor: JavaScriptDecodable, JavaScriptEncodable {
   {
     do {
       // swiftlint:disable:next force_cast
-      return try UIColor.color(from: value, in: runtime).cgColor as! Self
+      return try colorFromJavaScriptValue(value, in: runtime).cgColor as! Self
     } catch _ as Conversions.ConvertingException<UIColor> {
       throw Conversions.ConvertingException<CGColor>(value.copied(in: runtime).getAny())
     }
@@ -158,15 +59,6 @@ extension CGColor: JavaScriptDecodable, JavaScriptEncodable {
     #endif
     return try UIColor.encode(color, in: runtime)
   }
-
-  internal static func color(fromAny value: Any?) throws -> CGColor {
-    do {
-      return try UIColor.color(fromAny: value).cgColor
-    } catch _ as Conversions.ConvertingException<UIColor> {
-      // Rethrow `ConvertingError` with proper type
-      throw Conversions.ConvertingException<CGColor>(value)
-    }
-  }
 }
 
 extension Color: JavaScriptDecodable, JavaScriptEncodable {
@@ -178,11 +70,11 @@ extension Color: JavaScriptDecodable, JavaScriptEncodable {
   public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
     -> Color
   {
-    // Like `color(fromAny:)`, any error from the `UIColor` decode falls back to the SwiftUI color names.
-    if let uiColor = try? UIColor.color(from: value, in: runtime) {
+    // Like `swiftUIColorFromAny(_:)`, any error from the `UIColor` decode falls back to the SwiftUI color names.
+    if let uiColor = try? colorFromJavaScriptValue(value, in: runtime) {
       return Color(uiColor)
     }
-    if value.isString(), let color = colorFromName(value.getString()) {
+    if value.isString(), let color = swiftUIColorFromName(value.getString()) {
       return color
     }
     throw Conversions.ConvertingException<Color>(value.copied(in: runtime).getAny())
@@ -192,86 +84,214 @@ extension Color: JavaScriptDecodable, JavaScriptEncodable {
   public static func encode(_ value: Color, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
     return try UIColor.encode(UIColor(value), in: runtime)
   }
-
-  internal static func color(fromAny value: Any?) throws -> Color {
-    if let uiColor = try? UIColor.color(fromAny: value) {
-      return Color(uiColor)
-    }
-    // Context-dependent colors
-    if let stringValue = value as? String, let color = colorFromName(stringValue) {
-      return color
-    }
-    throw Conversions.ConvertingException<Color>(value)
-  }
-
-  private static func colorFromName(_ name: String) -> Color? {
-    switch name {
-    case "primary":
-      return .primary
-    case "secondary":
-      return .secondary
-    case "red":
-      return .red
-    case "orange":
-      return .orange
-    case "yellow":
-      return .yellow
-    case "green":
-      return .green
-    case "blue":
-      return .blue
-    case "purple":
-      return .purple
-    case "pink":
-      return .pink
-    case "white":
-      return .white
-    case "gray":
-      return .gray
-    case "black":
-      return .black
-    case "clear":
-      return .clear
-    case "mint":
-      if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
-        return .mint
-      }
-      return nil
-    case "teal":
-      if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
-        return .teal
-      }
-      return nil
-    case "cyan":
-      if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
-        return .cyan
-      }
-      return nil
-    case "indigo":
-      if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
-        return .indigo
-      }
-      return nil
-    case "brown":
-      if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
-        return .brown
-      }
-      return nil
-    default:
-      return nil
-    }
-  }
 }
 
 extension UIColor {
   public var string: String {
-    var r: CGFloat = 0
-    var g: CGFloat = 0
-    var b: CGFloat = 0
-    var a: CGFloat = 0
+    return colorToString(self)
+  }
+}
 
-    #if os(macOS)
-    getRed(&r, green: &g, blue: &b, alpha: &a)
+// MARK: - Conversions
+
+@JavaScriptActor
+private func colorFromJavaScriptValue(
+  _ value: borrowing JavaScriptUnownedValue,
+  in runtime: borrowing JavaScriptRuntime
+) throws -> UIColor {
+  if value.isString() {
+    return try colorFromNameOrString(value.getString())
+  }
+  if value.isNumber() {
+    return try colorFromNumber(value.getDouble())
+  }
+  return try colorFromAny(value.copied(in: runtime).getAny())
+}
+
+// Internal for the `Convertible` conformance, can become private when the Convertibles are removed.
+internal func colorFromAny(_ value: Any?) throws -> UIColor {
+  if let value = value as? String {
+    return try colorFromNameOrString(value)
+  }
+  if let components = value as? [Double] {
+    return try uiColorWithComponents(components)
+  }
+  if let value = value as? Int {
+    return try colorFromArgb(UInt64(value))
+  }
+  if let value = value as? Double {
+    return try colorFromNumber(value)
+  }
+
+  // Handle `PlatformColor` and `DynamicColorIOS`
+  if let opaqueValue = value as? [String: Any] {
+    if let semanticName = opaqueValue["semantic"] as? String,
+      let color = resolveNamedColor(name: semanticName)
+    {
+      return color
+    }
+    if let semanticArray = opaqueValue["semantic"] as? [String] {
+      for semanticName in semanticArray {
+        if let color = resolveNamedColor(name: semanticName) {
+          return color
+        }
+      }
+    }
+    if let appearances = opaqueValue["dynamic"] as? [String: Any],
+      let lightColor = try appearances["light"].map({ try colorFromAny($0) }),
+      let darkColor = try appearances["dark"].map({ try colorFromAny($0) })
+    {
+      let highContrastLightColor = try appearances["highContrastLight"].map({ try colorFromAny($0) })
+      let highContrastDarkColor = try appearances["highContrastDark"].map({ try colorFromAny($0) })
+
+      #if os(iOS) || os(tvOS)
+      return UIColor { (traitCollection: UITraitCollection) -> UIColor in
+        if traitCollection.userInterfaceStyle == .dark {
+          if traitCollection.accessibilityContrast == .high, let highContrastDarkColor {
+            return highContrastDarkColor
+          }
+          return darkColor
+        }
+
+        if traitCollection.accessibilityContrast == .high, let highContrastLightColor {
+          return highContrastLightColor
+        }
+        return lightColor
+      }
+      #elseif os(macOS)
+      return NSColor(name: nil) { (appearance: NSAppearance) -> NSColor in
+        let isDarkMode = appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+        let isHighContrast = NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast
+
+        if isDarkMode {
+          if isHighContrast, let highContrastDarkColor = highContrastDarkColor {
+            return highContrastDarkColor
+          }
+          return darkColor
+        }
+
+        if isHighContrast, let highContrastLightColor = highContrastLightColor {
+          return highContrastLightColor
+        }
+        return lightColor
+      }
+      #endif
+    }
+  }
+  if let color = value as? UIColor {
+    return color
+  }
+  throw Conversions.ConvertingException<UIColor>(value)
+}
+
+// Internal for the `Convertible` conformance, can become private when the Convertibles are removed.
+internal func cgColorFromAny(_ value: Any?) throws -> CGColor {
+  do {
+    return try colorFromAny(value).cgColor
+  } catch _ as Conversions.ConvertingException<UIColor> {
+    // Rethrow `ConvertingError` with proper type
+    throw Conversions.ConvertingException<CGColor>(value)
+  }
+}
+
+// Internal for the `Convertible` conformance, can become private when the Convertibles are removed.
+internal func swiftUIColorFromAny(_ value: Any?) throws -> Color {
+  if let uiColor = try? colorFromAny(value) {
+    return Color(uiColor)
+  }
+  // Context-dependent colors
+  if let stringValue = value as? String, let color = swiftUIColorFromName(stringValue) {
+    return color
+  }
+  throw Conversions.ConvertingException<Color>(value)
+}
+
+private func swiftUIColorFromName(_ name: String) -> Color? {
+  switch name {
+  case "primary":
+    return .primary
+  case "secondary":
+    return .secondary
+  case "red":
+    return .red
+  case "orange":
+    return .orange
+  case "yellow":
+    return .yellow
+  case "green":
+    return .green
+  case "blue":
+    return .blue
+  case "purple":
+    return .purple
+  case "pink":
+    return .pink
+  case "white":
+    return .white
+  case "gray":
+    return .gray
+  case "black":
+    return .black
+  case "clear":
+    return .clear
+  case "mint":
+    if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
+      return .mint
+    }
+    return nil
+  case "teal":
+    if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
+      return .teal
+    }
+    return nil
+  case "cyan":
+    if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
+      return .cyan
+    }
+    return nil
+  case "indigo":
+    if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
+      return .indigo
+    }
+    return nil
+  case "brown":
+    if #available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *) {
+      return .brown
+    }
+    return nil
+  default:
+    return nil
+  }
+}
+
+private func colorFromNameOrString(_ value: String) throws -> UIColor {
+  if let namedColorComponents = namedColors[value] {
+    return try uiColorWithComponents(namedColorComponents)
+  }
+  return try colorFromString(value)
+}
+
+private func colorFromNumber(_ value: Double) throws -> UIColor {
+  return try colorFromArgb(UInt64(value))
+}
+
+private func colorToString(_ color: UIColor) -> String {
+  var r: CGFloat = 0
+  var g: CGFloat = 0
+  var b: CGFloat = 0
+  var a: CGFloat = 0
+
+  #if os(macOS)
+  color.getRed(&r, green: &g, blue: &b, alpha: &a)
+  return String(
+    format: "#%02x%02x%02x%02x",
+    Int((r * 255).rounded()),
+    Int((g * 255).rounded()),
+    Int((b * 255).rounded()),
+    Int((a * 255).rounded())
+  )
+  #else
+  if color.getRed(&r, green: &g, blue: &b, alpha: &a) {
     return String(
       format: "#%02x%02x%02x%02x",
       Int((r * 255).rounded()),
@@ -279,19 +299,9 @@ extension UIColor {
       Int((b * 255).rounded()),
       Int((a * 255).rounded())
     )
-    #else
-    if getRed(&r, green: &g, blue: &b, alpha: &a) {
-      return String(
-        format: "#%02x%02x%02x%02x",
-        Int((r * 255).rounded()),
-        Int((g * 255).rounded()),
-        Int((b * 255).rounded()),
-        Int((a * 255).rounded())
-      )
-    }
-    #endif
-    return "#00000000"
   }
+  #endif
+  return "#00000000"
 }
 
 // MARK: - Platform Color Helpers

@@ -4,7 +4,7 @@ import SwiftUI
 
 extension Color: Convertible {
   public static func convert(from value: Any?) throws -> Color {
-    return try color(fromAny: value)
+    return try swiftUIColorFromAny(value)
   }
 
   public static func convert(from value: Any?, appContext: AppContext) throws -> Color {

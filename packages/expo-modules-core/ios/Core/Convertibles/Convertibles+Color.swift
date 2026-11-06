@@ -10,7 +10,7 @@ extension UIColor: Convertible {
 
   public static func convert(from value: Any?) throws -> Self {
     // swiftlint:disable:next force_cast
-    return try color(fromAny: value) as! Self
+    return try colorFromAny(value) as! Self
   }
 
   public static func convertResult(_ result: Any, appContext: AppContext) throws -> Any {
@@ -28,7 +28,7 @@ extension CGColor: Convertible {
 
   public static func convert(from value: Any?) throws -> Self {
     // swiftlint:disable:next force_cast
-    return try color(fromAny: value) as! Self
+    return try cgColorFromAny(value) as! Self
   }
 
   public static func convertResult(_ result: Any, appContext: AppContext) throws -> Any {
