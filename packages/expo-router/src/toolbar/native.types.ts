@@ -3,6 +3,7 @@ import type { ColorValue, ImageSourcePropType } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { BasicTextStyle } from '../utils/font';
+import type { ToolbarAxisBehavior } from './axisBehavior';
 
 export interface RouterToolbarHostProps {
   children?: React.ReactNode;
@@ -22,6 +23,7 @@ export interface RouterToolbarItemProps {
   tintColor?: ColorValue;
   hidesSharedBackground?: boolean;
   sharesBackground?: boolean;
+  axisBehavior?: ToolbarAxisBehavior;
   barButtonItemStyle?: 'plain' | 'prominent';
   width?: number;
   hidden?: boolean;

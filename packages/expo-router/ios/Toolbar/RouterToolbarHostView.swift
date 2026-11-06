@@ -88,6 +88,7 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
                 item.sharesBackground = sharesBackground
               }
             }
+            (menu.axisBehavior ?? .automatic).apply(to: item)
             if let titleStyle = menu.titleStyle {
               RouterFontUtils.setTitleStyle(fromConfig: titleStyle, for: item)
             }
