@@ -198,7 +198,6 @@ class UpdatesLogger(filesDirectory: File) : IUpdatesLogger {
       assetId,
       stacktrace = null
     )
-    notifyListeners(logEntry, level)
     return logEntry.asString()
   }
 
