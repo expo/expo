@@ -59,7 +59,8 @@
     "prepack": "expo-module prepack",
     "prepublishOnly": "expo-module prepublishOnly && pnpm run build:webui",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -b tsconfig.all.json"
+    "typecheck": "tsc -b tsconfig.all.json",
+    "typegen": "expo-modules typegen"
   },
   "dependencies": {
     "await-lock": "^2.2.2"
