@@ -52,13 +52,13 @@ export interface RangeSliderProps {
    */
   endValue?: number;
   /**
-   * The bounds of the entire track. Values outside these bounds are clamped.
-   * @default { start: 0, endInclusive: 1 }
+   * The bounds of the entire track. The slider clamps values outside these bounds.
+   * @default \{ start: 0, endInclusive: 1 \}
    */
   trackRange?: RangeSliderRange;
   /**
-   * The number of selectable positions between the track endpoints.
-   * Must be a nonnegative integer. Use `0` for continuous selection.
+   * The number of selectable positions between the track bounds.
+   * Must be a nonnegative integer. `0` means continuous selection.
    * @default 0
    */
   steps?: number;
@@ -77,7 +77,7 @@ export interface RangeSliderProps {
   onValueChange?: (range: RangeSliderRange) => void;
   /**
    * Called when the user finishes changing the selection.
-   * Use `onValueChange` to update values, and this callback to commit the selection.
+   * It has no value argument. `onValueChange` reports the selection.
    */
   onValueChangeFinished?: () => void;
   /**
@@ -128,7 +128,7 @@ function Track(props: { children: React.ReactNode }) {
 
 /**
  * A Material 3 slider for selecting two values on a bounded track.
- * Render inside a `Host` component.
+ * It works only inside a `Host` component.
  * @platform android
  */
 export function RangeSlider(props: RangeSliderProps) {

@@ -59,11 +59,11 @@ export default function RangeSliderExample() {
 
 `onValueChange` receives `{ start, endInclusive }` as the user changes either endpoint. Compose keeps the endpoints within the track bounds and prevents the thumbs from crossing. Native interaction works without updating React state on every change. Changing the endpoint props updates the selection when the user is not dragging.
 
-Use `onValueChangeFinished` for work that should run after an interaction, such as saving a filter. It has no value argument. Read the selection from `onValueChange`. Keyboard interaction calls the completion callback after each step.
+Use `onValueChangeFinished` for work that should run after an interaction, such as saving a filter. It has no value argument. Read the selection from `onValueChange`. With a keyboard, the completion callback runs each time the user releases a key that moves a thumb.
 
 ### Select discrete values
 
-`steps` counts the selectable positions **between** the track endpoints. On a track from `0` to `100`, `steps={9}` allows `0`, `10`, `20`, and so on through `100`. Use `steps={0}`, the default, for continuous selection.
+`steps` counts the selectable positions **between** the track bounds. On a track from `0` to `100`, `steps={9}` allows `0`, `10`, `20`, and so on through `100`. Use `steps={0}`, the default, for continuous selection.
 
 ```tsx
 <RangeSlider
