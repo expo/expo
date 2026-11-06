@@ -1,8 +1,5 @@
 {
   "platforms": ["apple", "android"],
-  "apple": {
-    "modules": ["BrightnessModule"]
-  },
   "android": {
     "modules": ["expo.modules.brightness.BrightnessModule"],
     "publication": {
