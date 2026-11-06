@@ -92,25 +92,32 @@ struct WebBrowserModuleTests {
 
   @Test
   func `the auth session result has null for a missing url and error`() throws {
-    let result: [String: String?] = ["type": "cancel", "url": nil, "error": nil]
+    let result = WebAuthSession.result(callbackUrl: nil, error: nil)
     let object = try [String: String?].encode(result, in: runtime).asObject()
 
     #expect(try object.getProperty("type").asString() == "cancel")
     #expect(object.hasProperty("url") == true)
     #expect(object.getProperty("url").isNull() == true)
+    #expect(object.hasProperty("error") == true)
+    #expect(object.getProperty("error").isNull() == true)
+  }
+
+  @Test
+  func `the auth session result has the callback url on success`() throws {
+    let result = WebAuthSession.result(callbackUrl: URL(string: "myapp://redirect?code=1"), error: nil)
+    let object = try [String: String?].encode(result, in: runtime).asObject()
+
+    #expect(try object.getProperty("type").asString() == "success")
+    #expect(try object.getProperty("url").asString() == "myapp://redirect?code=1")
     #expect(object.getProperty("error").isNull() == true)
   }
 
   // MARK: - Stubs
 
-  @Test
-  func `the Android functions exist for the JavaScript availability checks`() throws {
-    let result = try runtime.eval(
-      """
-      ['warmUpAsync', 'coolDownAsync', 'mayInitWithUrlAsync', 'getCustomTabsSupportingBrowsers'].every(function (name) {
-        return typeof WebBrowser[name] === 'function';
-      })
-      """
+  @Test(arguments: ["warmUpAsync", "coolDownAsync", "mayInitWithUrlAsync", "getCustomTabsSupportingBrowsersAsync"])
+  func `the Android functions resolve for the JavaScript availability checks`(name: String) async throws {
+    let result = try await runtime.evalAsync(
+      "WebBrowser.\(name)().then(function (value) { return value === undefined; })"
     )
     #expect(try result.asBool() == true)
   }

@@ -103,5 +103,5 @@ final public class WebBrowserModule: Module {
   func mayInitWithUrlAsync() async {}
 
   @JS
-  func getCustomTabsSupportingBrowsers() async {}
+  func getCustomTabsSupportingBrowsersAsync() async {}
 }
