@@ -1,9 +1,13 @@
 ---
-title: Get started
+title: 'Expo Modules API 2.0: Get started'
+sidebar_title: Get started
 description: Learn how to create a module with Expo Modules API 2.0.
 ---
 
+import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
+
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -53,13 +57,15 @@ This applies the Kotlin compiler plugin that reads the `@ExpoModule` and `@JS` a
 
 ## Remove the module list from the module config
 
-Autolinking finds the modules that use Expo Modules API 2.0 in the source files of the module. So, remove the `modules` lists from **expo-module.config.json**:
+Autolinking finds the modules that use Expo Modules API 2.0 without a list. On Android, the Kotlin compiler plugin registers them. On iOS, autolinking scans the Swift source files of the module for `@ExpoModule` classes. So, remove the `modules` lists from **expo-module.config.json**:
 
 ```json expo-module.config.json
 {
   "platforms": ["apple", "android"]
 }
 ```
+
+> **warning** On iOS, a `modules` list turns off the scan, even an empty list. If the package also has a module that uses the module definition DSL, keep the `apple.modules` list, and add the `@ExpoModule` class to it.
 
 </Step>
 
@@ -115,6 +121,23 @@ Rebuild the app to see the changes, for example with `npx expo run:android` and 
 
 ## Next steps
 
-- To build a complete module step by step, follow the [native module tutorial](/modules/v2/tutorials/native-module/).
-- To learn which features each language supports, see [Feature support](/modules/v2/feature-support/).
-- To learn about functions, properties, and constants, see [Modules](/modules/v2/reference/modules/).
+<BoxLink
+  title="Tutorial: Create a native module with Expo Modules API 2.0"
+  description="Build a module that persists settings and sends events, step by step."
+  href="/modules/v2/tutorials/native-module/"
+  Icon={CpuChip01Icon}
+/>
+
+<BoxLink
+  title="Feature support"
+  description="Learn which features of Expo Modules API 2.0 Kotlin and Swift support."
+  href="/modules/v2/feature-support/"
+  Icon={CpuChip01Icon}
+/>
+
+<BoxLink
+  title="Modules reference"
+  description="Learn about functions, properties, and constants of a module."
+  href="/modules/v2/reference/modules/"
+  Icon={CpuChip01Icon}
+/>

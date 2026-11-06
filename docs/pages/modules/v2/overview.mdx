@@ -4,7 +4,10 @@ sidebar_title: Overview
 description: An overview of Expo Modules API 2.0, which binds native Kotlin and Swift declarations to JavaScript at compile time.
 ---
 
+import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
+
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { BoxLink } from '~/ui/components/BoxLink';
 
 Expo Modules API 2.0 is a new way to write the native side of an Expo module. You write plain Kotlin and Swift declarations and mark the ones that JavaScript can use. A compiler plugin generates the code that binds them to JavaScript.
 
@@ -99,3 +102,19 @@ The [module definition DSL](/modules/module-api/) describes a module at runtime,
 ## Language support
 
 Expo Modules API 2.0 is available in Kotlin and Swift. Kotlin doesn't support all the features of Swift yet. Each section of these docs shows the languages that support its feature. For the full list, see [Feature support](/modules/v2/feature-support/).
+
+## Next steps
+
+<BoxLink
+  title="Get started"
+  description="Create a module with Expo Modules API 2.0."
+  href="/modules/v2/get-started/"
+  Icon={CpuChip01Icon}
+/>
+
+<BoxLink
+  title="Tutorial: Create a native module with Expo Modules API 2.0"
+  description="Build a module that persists settings and sends events, step by step."
+  href="/modules/v2/tutorials/native-module/"
+  Icon={CpuChip01Icon}
+/>

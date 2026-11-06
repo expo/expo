@@ -1,16 +1,19 @@
 ---
-title: 'Tutorial: Create a native module'
+title: 'Tutorial: Create a native module with Expo Modules API 2.0'
 sidebar_title: Create a native module
 description: A tutorial on creating a native module that persists settings with Expo Modules API 2.0.
 ---
 
+import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
+
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-In this tutorial, you build a module that stores the preferred app theme of the user: dark, light, or system. On Android, the module uses [`SharedPreferences`](https://developer.android.com/reference/android/content/SharedPreferences), and on iOS, it uses [`UserDefaults`](https://developer.apple.com/documentation/foundation/userdefaults).
+In this tutorial, you build a module that stores the app theme that the user prefers: dark, light, or system. On Android, the module uses [`SharedPreferences`](https://developer.android.com/reference/android/content/SharedPreferences), and on iOS, it uses [`UserDefaults`](https://developer.apple.com/documentation/foundation/userdefaults).
 
-This tutorial is the [native module tutorial](/modules/native-module-tutorial/) of the module definition DSL, written with Expo Modules API 2.0. The TypeScript code is the same in both tutorials.
+The steps are the same as in the [native module tutorial for the module definition DSL](/modules/native-module-tutorial/), and so is the TypeScript code. Only the native code is different.
 
 ---
 
@@ -49,7 +52,7 @@ expoModule {
 }
 ```
 
-Autolinking finds the module in its source files, so remove the `modules` lists from **expo-module.config.json**:
+Autolinking finds modules that use Expo Modules API 2.0 without a list, so remove the `modules` lists from **expo-module.config.json**. For the details, see [Get started](/modules/v2/get-started/#remove-the-module-list-from-the-module-config).
 
 ```json expo-module.config.json
 {
@@ -571,5 +574,23 @@ You created a module for Android and iOS with Expo Modules API 2.0.
 
 ## Next steps
 
-- To learn about the other features of a module, see the [Modules](/modules/v2/reference/modules/) and [Events](/modules/v2/reference/events/) reference.
-- To learn which features each language supports, see [Feature support](/modules/v2/feature-support/).
+<BoxLink
+  title="Modules reference"
+  description="Learn about functions, properties, and constants of a module."
+  href="/modules/v2/reference/modules/"
+  Icon={CpuChip01Icon}
+/>
+
+<BoxLink
+  title="Events reference"
+  description="Learn how to send events from a module to JavaScript."
+  href="/modules/v2/reference/events/"
+  Icon={CpuChip01Icon}
+/>
+
+<BoxLink
+  title="Feature support"
+  description="Learn which features of Expo Modules API 2.0 Kotlin and Swift support."
+  href="/modules/v2/feature-support/"
+  Icon={CpuChip01Icon}
+/>
