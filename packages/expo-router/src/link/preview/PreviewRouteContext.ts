@@ -3,10 +3,11 @@
 import { createContext, use } from 'react';
 
 import type { UnknownOutputParams } from '../../types';
+import type { AbsolutePath } from '../../types/paths';
 
 export interface PreviewRouteContextType {
   params: UnknownOutputParams;
-  pathname: string;
+  pathname: AbsolutePath;
   segments: string[];
 }
 

@@ -30,7 +30,7 @@ export function getWatchHandler(
     if (!process.env.EXPO_ROUTER_APP_ROOT) return;
 
     let shouldRegenerate = false;
-    let relativePath = path.relative(process.env.EXPO_ROUTER_APP_ROOT, filePath);
+    const relativePath = path.relative(process.env.EXPO_ROUTER_APP_ROOT, filePath);
     const isInsideAppRoot =
       relativePath &&
       relativePath !== '..' &&
@@ -41,22 +41,22 @@ export function getWatchHandler(
     if (!isInsideAppRoot) return;
 
     // require.context paths always start with './' when relative to the root
-    relativePath = `./${relativePath}`;
+    const contextKey = `./${relativePath}` as const;
 
     if (type === 'delete') {
-      ctx.__delete(relativePath);
-      if (routeFiles.has(relativePath)) {
-        routeFiles.delete(relativePath);
+      ctx.__delete(contextKey);
+      if (routeFiles.has(contextKey)) {
+        routeFiles.delete(contextKey);
         shouldRegenerate = true;
       }
     } else if (type === 'add') {
-      ctx.__add(relativePath);
+      ctx.__add(contextKey);
       if (isTypedRoute(basename)) {
-        routeFiles.add(relativePath);
+        routeFiles.add(contextKey);
         shouldRegenerate = true;
       }
     } else {
-      shouldRegenerate = routeFiles.has(relativePath);
+      shouldRegenerate = routeFiles.has(contextKey);
     }
 
     if (shouldRegenerate) {

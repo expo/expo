@@ -232,9 +232,10 @@ describe('useVisibleTabsWithRedirect', () => {
   });
 
   it('does not redirect when there are no visible routes', async () => {
-    mockedUseRouteNode.mockReturnValue({ contextKey: './app/_layout.tsx' } as ReturnType<
-      typeof useRouteNode
-    >);
+    mockedUseRouteNode.mockReturnValue({
+      ...routeNode('home'),
+      contextKey: './app/_layout.tsx',
+    });
     await renderHook(() =>
       useVisibleTabsWithRedirect({
         routes: [routes[3]!],

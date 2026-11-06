@@ -3,7 +3,15 @@ import type { ComponentProps } from 'react';
 import type { MiddlewareNode, RedirectRouteNode, RouteNode, ScreenRouteNode } from '../Route';
 import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import type { Stack as JSStack } from '../layouts/JSStack';
-import type { AbsoluteHref, AbsolutePath, ContextKey, EntryPoint } from '../types/paths';
+import type { RequireContextPonyFill } from '../testing-library/require-context-ponyfill';
+import type { RequireContext } from '../types';
+import type {
+  AbsoluteHref,
+  AbsolutePath,
+  ContextKey,
+  EntryPoint,
+  FileContextKey,
+} from '../types/paths';
 import type { ScreenProps } from '../useScreens';
 import type { Navigator, Slot } from '../views/Navigator';
 
@@ -27,6 +35,18 @@ export type _JSStackLacksInitialRouteName = Expect<
 >;
 
 export type _RouteNodeContextKeyIsContextKey = Expect<Equal<RouteNode['contextKey'], ContextKey>>;
+export type _MetroContextKeysAreFileContextKeys = Expect<
+  Equal<ReturnType<__MetroModuleApi.RequireContext['keys']>, FileContextKey[]>
+>;
+export type _RouterUsesMetroRequireContext = Expect<
+  Equal<RequireContext, __MetroModuleApi.RequireContext>
+>;
+export type _RouterContextKeysAreFileContextKeys = Expect<
+  Equal<ReturnType<RequireContext['keys']>, FileContextKey[]>
+>;
+export type _PonyfillAddRequiresFileContextKey = Expect<
+  Equal<Parameters<RequireContextPonyFill['__add']>[0], FileContextKey>
+>;
 export type _RouteNodeParentContextKeyIsContextKey = Expect<
   Equal<ScreenRouteNode['parentContextKey'], ContextKey | undefined>
 >;

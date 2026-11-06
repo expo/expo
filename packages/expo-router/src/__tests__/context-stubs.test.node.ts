@@ -2,6 +2,7 @@ import path from 'path';
 
 import {
   findDuplicateKeys,
+  inMemoryContext,
   normalizeKey,
   normalizeKeys,
   requireContextWithOverrides,
@@ -11,6 +12,25 @@ import IndexFixture from './fixtures/context-stubs/index';
 import NestedRouteFixture from './fixtures/context-stubs/nested/route';
 
 const appDir = path.join(__dirname, 'fixtures', 'context-stubs');
+
+describe('inMemoryContext', () => {
+  it.each([
+    ['index', './index.js'],
+    ['./index', './index.js'],
+    ['/index', './index.js'],
+    ['nested/page.tsx', './nested/page.tsx'],
+    ['./nested/page.tsx', './nested/page.tsx'],
+    ['/nested/page.tsx', './nested/page.tsx'],
+  ])('loads the module for the emitted context key of %s', (fixtureKey, contextKey) => {
+    function MockRoute() {
+      return null;
+    }
+    const ctx = inMemoryContext({ [fixtureKey]: MockRoute });
+
+    expect(ctx.keys()).toEqual([contextKey]);
+    expect(ctx(ctx.keys()[0]!)).toEqual({ default: MockRoute });
+  });
+});
 
 function MockLayout() {
   return null;
@@ -109,13 +129,16 @@ describe('requireContextWithOverrides', () => {
     expect(ctx('nested/route').default).toBe(MockNestedRoute);
   });
 
-  it('lists normalized keys and does not duplicate an overridden file', () => {
+  it('lists context keys and does not duplicate an overridden file', () => {
     const ctx = requireContextWithOverrides(appDir, { _layout: MockLayout });
 
     const keys = ctx.keys();
-    expect(keys).not.toContain('./_layout.tsx');
-    expect(keys.filter((key) => key === '_layout')).toEqual(['_layout']);
-    expect(keys).toEqual(expect.arrayContaining(['_layout', 'index', 'nested/route']));
+    expect(keys.filter((key) => key === './_layout.tsx')).toEqual(['./_layout.tsx']);
+    expect(keys).toEqual(
+      expect.arrayContaining(['./_layout.tsx', './index.tsx', './nested/route.tsx'])
+    );
+    expect(ctx('./_layout.tsx').default).toBe(MockLayout);
+    expect(ctx('./nested/route.tsx').default).toBe(NestedRouteFixture);
   });
 
   it('keeps overrides that do not match an existing file', () => {
@@ -125,6 +148,7 @@ describe('requireContextWithOverrides', () => {
     const ctx = requireContextWithOverrides(appDir, { modal: MockModal });
 
     expect(ctx('modal').default).toBe(MockModal);
-    expect(ctx.keys()).toContain('modal');
+    expect(ctx.keys()).toContain('./modal.js');
+    expect(ctx('./modal.js').default).toBe(MockModal);
   });
 });
