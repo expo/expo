@@ -97,6 +97,7 @@ export const StackToolbarButton: React.FC<StackToolbarButtonProps> = (props) => 
   return (
     <NativeToolbarButton
       {...sharedProps}
+      axisBehavior={props.axisBehavior}
       icon={icon}
       source={source}
       xcassetName={xcassetName}
