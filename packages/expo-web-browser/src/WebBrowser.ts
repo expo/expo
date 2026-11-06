@@ -147,6 +147,8 @@ export async function coolDownAsync(browserPackage?: string): Promise<WebBrowser
  *
  * @return The promise behaves differently based on the platform.
  * On Android promise resolves with `{ type: 'opened' }` if we were able to open browser.
+ * It rejects with the `ERR_BROWSER_ACTIVITY_NOT_ALLOWED` code if Android resolved the URL to an
+ * activity that the app isn't allowed to start, for example, one that another app registered without exporting it.
  * On iOS:
  * - If the user closed the web browser, the Promise resolves with `{ type: 'cancel' }`.
  * - If the browser is closed using [`dismissBrowser`](#webbrowserdismissbrowser), the Promise resolves with `{ type: 'dismiss' }`.
