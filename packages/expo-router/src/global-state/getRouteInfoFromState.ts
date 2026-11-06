@@ -67,6 +67,7 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
       (route.name === NOT_FOUND_ROUTE_NAME ? '/' : `/${route.name}`)) as AbsolutePath;
     return {
       ...defaultRouteInfo,
+      // appendBaseUrl() preserves the leading slash.
       unstable_globalHref: appendBaseUrl(path) as AbsoluteHref,
       pathname: path,
       pathnameWithParams: path,
@@ -89,6 +90,7 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     // Navigation params can contain ordinary object values at runtime despite the public search-param type.
     // TODO: address this together with other params serialization issues
     params: params as UrlObject['params'],
+    // appendBaseUrl() preserves the leading slash.
     unstable_globalHref: appendBaseUrl(pathnameWithParams) as AbsoluteHref,
     searchParams,
     pathnameWithParams,

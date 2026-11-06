@@ -48,6 +48,7 @@ export default function requireContext(
       return require(path.join(base, file));
     },
     {
+      // Object.keys() widens the keys of the FileContextKey-indexed file map.
       keys: () => Object.keys(files) as FileContextKey[],
       resolve: (key: string) => key,
       id: '0',
