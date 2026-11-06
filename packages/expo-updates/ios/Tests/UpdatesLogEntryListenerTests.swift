@@ -35,14 +35,21 @@ struct UpdatesLogEntryListenerTests {
     defer { UpdatesLogEntryListenerRegistry.sharedInstance.remove(listener) }
     let before = UInt(Date().timeIntervalSince1970 * 1000)
 
-    logger.warn(message: "Warning \(marker)", code: .assetsFailedToLoad, updateId: "update-1", assetId: "asset-1")
+    logger.warn(
+      .remoteAssetDownloadFailed,
+      values: ["assetKey": "asset-1", "cause": "Warning \(marker)"],
+      updateId: "update-1",
+      assetId: "asset-1"
+    )
 
     let after = UInt(Date().timeIntervalSince1970 * 1000)
     let entries = listener.entries(containing: marker)
     #expect(entries.count == 1)
     let entry = entries.first ?? [:]
-    #expect(entry["message"] as? String == "Warning \(marker)")
+    #expect(entry["message"] as? String == "Failed to download asset asset-1: Warning \(marker)")
     #expect(entry["code"] as? String == "AssetsFailedToLoad")
+    #expect(entry["key"] as? String == "remote.assetDownloadFailed")
+    #expect(entry["values"] as? [String: String] == ["assetKey": "asset-1", "cause": "Warning \(marker)"])
     #expect(entry["level"] as? String == "warn")
     #expect(entry["updateId"] as? String == "update-1")
     #expect(entry["assetId"] as? String == "asset-1")
@@ -58,7 +65,7 @@ struct UpdatesLogEntryListenerTests {
 
     logger.info(message: "Info \(marker)")
     logger.debug(message: "Debug \(marker)")
-    logger.error(cause: UpdatesError.errorRecoveryFatalException(serializedError: "Error \(marker)"), code: .updateFailedToLoad)
+    logger.error(.remoteFetchFailed, values: ["cause": "Error \(marker)"])
 
     #expect(listener.entries(containing: marker).compactMap { $0["level"] as? String } == ["error"])
   }
@@ -69,7 +76,7 @@ struct UpdatesLogEntryListenerTests {
     UpdatesLogEntryListenerRegistry.sharedInstance.add(listener)
     UpdatesLogEntryListenerRegistry.sharedInstance.remove(listener)
 
-    logger.warn(message: "Warning \(marker)", code: .none)
+    logger.warn(.reaperFailed, values: ["cause": "Warning \(marker)"])
 
     #expect(listener.entries(containing: marker).isEmpty)
   }
@@ -83,7 +90,7 @@ struct UpdatesLogEntryListenerTests {
       UpdatesLogEntryListenerRegistry.sharedInstance.add(listener)
     }
 
-    logger.warn(message: "Warning \(marker)", code: .none)
+    logger.warn(.reaperFailed, values: ["cause": "Warning \(marker)"])
     #expect(weakListener?.entries(containing: marker).count == 1)
 
     if let listener = weakListener {
@@ -99,7 +106,7 @@ struct UpdatesLogEntryListenerTests {
     defer { UpdatesLogEntryListenerRegistry.sharedInstance.remove(listener) }
 
     DispatchQueue.concurrentPerform(iterations: 100) { index in
-      logger.warn(message: "Warning \(marker) \(index)", code: .none)
+      logger.warn(.reaperFailed, values: ["cause": "Warning \(marker) \(index)"])
     }
 
     #expect(listener.entries(containing: marker).count == 100)

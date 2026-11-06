@@ -38,7 +38,7 @@ data class UpdatesLogEntry(
         put("stacktrace", stacktrace)
       }
       key?.let { put("key", it) }
-      values?.let { put("values", it) }
+      this@UpdatesLogEntry.values?.let { put("values", it) }
     }
 
   companion object {

@@ -273,6 +273,7 @@ public final class UpdatesLogger: NSObject {
       key: message.rawValue,
       values: values.isEmpty ? nil : values
     )
+    notifyListeners(logEntry, level: level)
     return logEntry.asString() ?? logEntry.message
   }
 
@@ -299,10 +300,13 @@ public final class UpdatesLogger: NSObject {
       stacktrace: symbols,
       duration: duration
     )
+    return "\(logEntry.asString() ?? logEntry.message)"
+  }
+
+  private func notifyListeners(_ logEntry: UpdatesLogEntry, level: LogType) {
     if level == .warn || level == .error || level == .fatal {
       UpdatesLogEntryListenerRegistry.sharedInstance.notify(logEntry.asDict())
     }
-    return "\(logEntry.asString() ?? logEntry.message)"
   }
 }
 

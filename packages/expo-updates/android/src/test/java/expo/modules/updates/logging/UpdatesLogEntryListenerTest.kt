@@ -2,6 +2,7 @@ package expo.modules.updates.logging
 
 import expo.modules.updatesinterface.UpdatesLogEntryListener
 import expo.modules.updatesinterface.UpdatesLogEntryListenerRegistry
+import expo.modules.updatesinterface.UpdatesLogMessage
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -42,14 +43,21 @@ class UpdatesLogEntryListenerTest {
   @Test
   fun `a logged warning reaches a listener with its fields`() {
     val before = Date().time
-    logger.warn("Warning $marker", UpdatesErrorCode.AssetsFailedToLoad, "update-1", "asset-1")
+    logger.warn(
+      UpdatesLogMessage.RemoteAssetDownloadFailed,
+      values = mapOf("assetKey" to "asset-1", "cause" to "Warning $marker"),
+      updateId = "update-1",
+      assetId = "asset-1"
+    )
     val after = Date().time
 
     val entries = receivedWithMarker()
     assertEquals(1, entries.size)
     val entry = entries.first()
-    assertEquals("Warning $marker", entry["message"])
+    assertEquals("Failed to download asset asset-1: Warning $marker", entry["message"])
     assertEquals("AssetsFailedToLoad", entry["code"])
+    assertEquals("remote.assetDownloadFailed", entry["key"])
+    assertEquals(mapOf("assetKey" to "asset-1", "cause" to "Warning $marker"), entry["values"])
     assertEquals("warn", entry["level"])
     assertEquals("update-1", entry["updateId"])
     assertEquals("asset-1", entry["assetId"])
@@ -61,7 +69,7 @@ class UpdatesLogEntryListenerTest {
   fun `errors reach a listener and entries below the warning level do not`() {
     logger.info("Info $marker")
     logger.debug("Debug $marker")
-    logger.error("Error $marker", Exception("cause"), UpdatesErrorCode.UpdateFailedToLoad)
+    logger.error(UpdatesLogMessage.RemoteFetchFailed, Exception("Error $marker"))
 
     assertEquals(listOf("error"), receivedWithMarker().map { it["level"] })
   }
@@ -70,7 +78,7 @@ class UpdatesLogEntryListenerTest {
   fun `a removed listener gets no entries`() {
     UpdatesLogEntryListenerRegistry.remove(listener)
 
-    logger.warn("Warning $marker", UpdatesErrorCode.None)
+    logger.warn(UpdatesLogMessage.ReaperFailed, values = mapOf("cause" to "Warning $marker"))
 
     assertTrue(receivedWithMarker().isEmpty())
   }
@@ -82,7 +90,7 @@ class UpdatesLogEntryListenerTest {
     UpdatesLogEntryListenerRegistry.add(throwingListener)
     UpdatesLogEntryListenerRegistry.add(listener)
     try {
-      logger.warn("Warning $marker", UpdatesErrorCode.None)
+      logger.warn(UpdatesLogMessage.ReaperFailed, values = mapOf("cause" to "Warning $marker"))
     } finally {
       UpdatesLogEntryListenerRegistry.remove(throwingListener)
     }
@@ -93,7 +101,7 @@ class UpdatesLogEntryListenerTest {
   @Test
   fun `entries logged from several threads all reach a listener`() {
     val threads = (0 until 20).map { index ->
-      Thread { logger.warn("Warning $marker $index", UpdatesErrorCode.None) }
+      Thread { logger.warn(UpdatesLogMessage.ReaperFailed, values = mapOf("cause" to "Warning $marker $index")) }
     }
     threads.forEach { it.start() }
     threads.forEach { it.join() }
