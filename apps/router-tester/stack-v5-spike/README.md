@@ -76,23 +76,30 @@ Ranked by user impact, then likely engineering cost. Estimates include implement
 
 | Rank | Missing v4 capability | Why it is missing in v5 | Estimate |
 |---:|---|---|---:|
-| 1 | iOS native dismiss prevention | v5's reconciliation/native lifecycle does not yet provide the v4 interception contract | 10–20 engineer-days |
-| 2 | Root replacement / arbitrary stack reconciliation | v5 currently models a narrower stack mutation set; general reconciliation has correctness and animation edge cases | 3–20d depending on required cases |
-| 3 | Full modal presentation family | v5 split FormSheet/ContainedModal but has not recreated all v4 presentations and transitions | 20–40d |
-| 4 | iOS gestures | interactive pop/dismiss and gesture configuration need a new v5 transition contract | 10–20d |
+| 1 | iOS implementation of `preventNativeDismiss` | The boolean prop already exists. Android v5 intercepts native back/predictive back; the v5 iOS stack does not yet implement the same interception. Programmatic removal remains allowed by design. | 10–20 engineer-days |
+| 2 | Root replacement / non-prefix stack reconciliation | v5 handles ordinary push, pop, and top replacement, but its iOS operation path rejects popping the last or a non-top screen. It therefore cannot directly apply same-host changes such as `[A] → [B]` or `[A, B, C] → [A, C]`; v4 reconciled the complete controller list. | 3–20d depending on required cases |
+| 3 | Modal presentation parity | v4 stack screens support `modal`, `transparentModal`, `containedModal`, `containedTransparentModal`, `fullScreenModal`, `formSheet`, and `pageSheet`. v5 Stack only pushes screens; its new FormSheet and ContainedModal are separate controlled components and do not cover the whole route-presentation family. | 20–40d |
+| 4 | iOS interactive-pop gesture parity | v4 exposes `gestureEnabled`, full-screen swipe, swipe direction/distance, keyboard-on-swipe, gesture shadow, and gesture/animation coupling. v5 Stack has no equivalent iOS gesture configuration yet. This is screens work; Router would then map options to it. Apple Zoom is a separate Router/native-link transition, not this item. | 10–20d |
 | 5 | iOS animation parity | v5 transition presets are currently Android-focused; UIKit transition work remains | 10–20d |
-| 6 | Orientation and system-UI controls | deliberately outside the first stack core; require per-screen native coordination | 10–20d |
+| 6 | Per-screen orientation and system-UI controls | v4 screens can request `screenOrientation`, status-bar hidden/style/animation, Android navigation-bar hidden, and iOS home-indicator hidden. v5 Stack does not expose these per-screen controls. Android status/navigation-bar color and translucency are deprecated no-ops and should not be restored. | 10–20d |
 | 7 | Search bar integration | not ported to the new header architecture | 5–15d |
-| 8 | Nested Android stack inside FormSheet | modal/window and back-dispatch interaction is unresolved | 5–10d |
-| 9 | iOS header background/shadow/blur parity | the new appearance model covers typography/buttons first; custom background/effect parity remains | 5–10d |
-| 10 | Sheet parity details | detents, grabber, corner radius, expansion and gesture details need mapping to the new modal components | 5–15d |
-| 11 | Transition progress events | the new transition implementation does not expose v4 progress nodes/events | 5–10d |
-| 12 | `freezeOnBlur` | v5 has not adopted the v4 freeze lifecycle/performance contract | 3–7d |
-| 13 | Header back hiding/icon parity | smaller omission in the new header API | 1–5d |
-| 14 | iOS host direction/theme | host fields are Android-only upstream today | 3–7d plus API decision |
-| 15 | Tab reselection, web/ref passthrough, item-detail parity | lower-priority integration/parity work rather than core stack navigation | 1–5d each |
+| 8 | iOS header background/shadow/blur parity | the new appearance model covers typography/buttons first; custom background/effect parity remains | 5–10d |
+| 9 | Sheet parity details | detents, grabber, corner radius, expansion and gesture details need mapping to the new modal components | 5–15d |
+| 10 | Transition progress events | v4 emits every-frame `{ progress, closing, goingForward }`, used internally to drive transition context/Reanimated consumers. v5 only emits will/did lifecycle boundaries. Router navigation works without progress, but cannot expose transition-driven animation context or coordinate UI continuously with an interactive transition. | 5–10d |
+| 11 | `freezeOnBlur` | v5 has not adopted the v4 freeze lifecycle/performance contract | 3–7d |
+| 12 | Header back hiding/icon parity | smaller omission in the new header API | 1–5d |
+| 13 | iOS host direction/theme | host fields are Android-only upstream today | 3–7d plus API decision |
+| 14 | Tab reselection, web/ref passthrough, item-detail parity | lower-priority integration/parity work rather than core stack navigation | 1–5d each |
 
 The main risk is not raw prop plumbing: it is defining lifecycle, reconciliation, and transition semantics that remain correct under Router's declarative route tree.
+
+### Ownership and practical Router impact
+
+- **Root replacement / reconciliation:** primarily a screens v5 container limitation. Expo Router can produce non-prefix state changes through redirects, auth-group changes, deep-link restoration, or resets, so Router either needs screens to reconcile those states or must constrain/decompose them into supported operations. “Arbitrary” did not mean arbitrary user code; it meant a declarative route-array change such as `[A] → [B]` or removing `B` from `[A, B, C]`, rather than a simple top push/pop/replace.
+- **Modal presentations:** primarily missing screens v5 primitives and semantics, followed by Router API mapping. `FormSheet` and `ContainedModal` are useful new components, but they are not currently drop-in `Stack.Screen` presentation modes and do not replace transparent, full-screen, page-sheet, or nested modal-stack behavior.
+- **iOS gestures:** screens owns the native interactive-pop implementation and configuration. Router owns its public option names and state synchronization after native dismissal. This row is unrelated to Expo Router's `Link.AppleZoom` transition.
+- **Orientation/system UI:** screens v4 attached these requests to the active native screen/controller. In Router this is what makes options such as per-route orientation, status-bar style/visibility, navigation-bar visibility, and home-indicator visibility follow the focused route. Some Android color/translucency controls are obsolete under enforced edge-to-edge.
+- **Transition progress:** not required for routing correctness. It is required only if Router wants a continuous transition context for animated headers/content, Reanimated integrations, or effects that follow an interactive swipe. Start/end events are already enough for ordinary navigation lifecycle reporting.
 
 ## Verification
 
