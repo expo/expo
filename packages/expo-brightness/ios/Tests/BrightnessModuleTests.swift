@@ -29,14 +29,16 @@ struct BrightnessModuleTests {
 
   @Test(arguments: ["getPermissionsAsync", "requestPermissionsAsync"])
   func `permission functions resolve to a granted permission response`(functionName: String) async throws {
-    let result = try await runtime.evalAsync("""
+    let result = try await runtime.evalAsync(
+      """
       expo.modules.ExpoBrightness.\(functionName)().then(response => JSON.stringify([
         response.status,
         response.granted,
         response.canAskAgain,
         response.expires,
       ]))
-      """)
+      """
+    )
 
     #expect(try result.asString() == #"["granted",true,true,"never"]"#)
   }
@@ -45,12 +47,14 @@ struct BrightnessModuleTests {
 
   @Test
   func `emits the brightness change event with the screen brightness`() async throws {
-    try await runtime.evalAsync("""
+    try await runtime.evalAsync(
+      """
       globalThis.result = null
       expo.modules.ExpoBrightness.addListener('Expo.brightnessDidChange', event => {
         globalThis.result = event
       })
-      """)
+      """
+    )
 
     let brightness = await MainActor.run {
       NotificationCenter.default.post(name: UIScreen.brightnessDidChangeNotification, object: nil)
