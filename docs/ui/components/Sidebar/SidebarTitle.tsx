@@ -19,6 +19,6 @@ export const SidebarTitle = ({ children, Icon, sectionName, info }: SidebarTitle
     <LABEL weight="medium" crawlable={false}>
       {children}
     </LABEL>
-    {info && <SidebarBadges info={info} />}
+    {info && <SidebarBadges info={info} className="ml-0" />}
   </div>
 );

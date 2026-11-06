@@ -21,37 +21,53 @@ type SidebarBadgeProps = {
   label: string;
   color: keyof typeof BADGE_CLASSES;
   isSelected?: boolean;
+  className?: string;
 };
 
-function SidebarBadge({ label, color, isSelected = false }: SidebarBadgeProps) {
+function SidebarBadge({ label, color, isSelected = false, className }: SidebarBadgeProps) {
   const classes = BADGE_CLASSES[color];
   return (
-    <div
+    <span
       className={mergeClasses(
         'ml-2 inline-flex h-4.25 items-center rounded-full border px-1.25 text-[10px] leading-none font-semibold text-palette-white',
         classes.base,
-        isSelected ? classes.selected : classes.unselected
+        isSelected ? classes.selected : classes.unselected,
+        className
       )}>
       {label}
-    </div>
+    </span>
   );
 }
 
 type SidebarBadgesProps = {
   info: NavigationRoute;
   isSelected?: boolean;
+  className?: string;
 };
 
 /**
  * Renders the status badges (new, alpha, beta, preview) of a sidebar page or section.
  */
-export function SidebarBadges({ info, isSelected }: SidebarBadgesProps) {
+export function SidebarBadges({ info, isSelected, className }: SidebarBadgesProps) {
   return (
     <>
-      {info.isNew && <SidebarBadge label="NEW" color="blue" isSelected={isSelected} />}
-      {info.isAlpha && <SidebarBadge label="ALPHA" color="purple" isSelected={isSelected} />}
-      {info.isBeta && <SidebarBadge label="BETA" color="purple" isSelected={isSelected} />}
-      {info.isPreview && <SidebarBadge label="PREVIEW" color="purple" isSelected={isSelected} />}
+      {info.isNew && (
+        <SidebarBadge label="NEW" color="blue" isSelected={isSelected} className={className} />
+      )}
+      {info.isAlpha && (
+        <SidebarBadge label="ALPHA" color="purple" isSelected={isSelected} className={className} />
+      )}
+      {info.isBeta && (
+        <SidebarBadge label="BETA" color="purple" isSelected={isSelected} className={className} />
+      )}
+      {info.isPreview && (
+        <SidebarBadge
+          label="PREVIEW"
+          color="purple"
+          isSelected={isSelected}
+          className={className}
+        />
+      )}
     </>
   );
 }
