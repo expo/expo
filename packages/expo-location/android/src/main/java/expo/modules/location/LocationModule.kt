@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import java.util.concurrent.ConcurrentHashMap
 import android.content.pm.PackageManager
 import android.hardware.GeomagneticField
 import android.hardware.Sensor
@@ -70,6 +69,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -745,8 +745,8 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
 
   private fun resumeLocationUpdates() {
     for (requestId in mLocationCallbacks.keys) {
-      val locationCallback = mLocationCallbacks[requestId] ?: return
-      val locationRequest = mLocationRequests[requestId] ?: return
+      val locationCallback = mLocationCallbacks[requestId] ?: continue
+      val locationRequest = mLocationRequests[requestId] ?: continue
       try {
         mLocationProvider.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
       } catch (e: SecurityException) {
