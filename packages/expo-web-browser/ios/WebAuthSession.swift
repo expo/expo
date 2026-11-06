@@ -15,9 +15,9 @@ private class PresentationContextProvider: NSObject, ASWebAuthenticationPresenta
 
 final internal class WebAuthSession {
   var authSession: ASWebAuthenticationSession?
-  var promise: Promise?
+  var continuation: CheckedContinuation<[String: String?], Error>?
   var isOpen: Bool {
-    promise != nil
+    continuation != nil
   }
 
   // It must be initialized before hand as `ASWebAuthenticationSession` holds it as a weak property
@@ -59,13 +59,16 @@ final internal class WebAuthSession {
     self.authSession?.prefersEphemeralWebBrowserSession = options.preferEphemeralSession
   }
 
-  func open(_ promise: Promise) {
+  @MainActor
+  func open() async throws -> [String: String?] {
     authSession?.presentationContextProvider = presentationContextProvider
-    guard authSession?.start() == true else {
-      promise.reject(WebAuthSessionFailedToStartException())
-      return
+    return try await withCheckedThrowingContinuation { continuation in
+      guard authSession?.start() == true else {
+        continuation.resume(throwing: WebAuthSessionFailedToStartException())
+        return
+      }
+      self.continuation = continuation
     }
-    self.promise = promise
   }
 
   func dismiss() {
@@ -76,8 +79,8 @@ final internal class WebAuthSession {
   // MARK: - Private
 
   private func finish(with result: [String: String?]) {
-    promise?.resolve(result)
-    promise = nil
+    continuation?.resume(returning: result)
+    continuation = nil
     authSession = nil
   }
 }
