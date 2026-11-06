@@ -454,21 +454,16 @@ internal class UpdatesStateMachine {
    traps, so an invalid transition fails an E2E run instead of passing unnoticed.
    */
   private func reportDroppedEvent(_ event: UpdatesStateEvent) {
-    let message = droppedEventWarning(event)
-    logger.warn(message: message)
+    var values = ["state": "\(state)", "event": "\(event.type)"]
+    if let error = event.errorMessage {
+      values["error"] = error
+    }
+    logger.warn(.systemStateMachineEventDropped, values: values)
     #if EX_UPDATES_ASSERT_INVALID_STATE
-    preconditionFailure(message)
+    preconditionFailure(
+      UpdatesLogger.fill(UpdatesLogMessage.systemStateMachineEventDropped.template, with: values)
+    )
     #endif
-  }
-
-  /**
-   The warning written when an event is dropped. It carries the error text of an error event,
-   because some callers do not log the failure themselves before sending the event, which would
-   leave the updates log with no record of what was lost.
-   */
-  private func droppedEventWarning(_ event: UpdatesStateEvent) -> String {
-    let error = event.errorMessage.map { ", error = \($0)" } ?? ""
-    return "UpdatesState: invalid transition requested, event dropped: state = \(state), event = \(event.type)\(error)"
   }
 
   /**

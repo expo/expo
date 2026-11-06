@@ -293,8 +293,8 @@ class FileDownloaderTest {
   @Test
   fun testGetExtraHeaders() {
     mockkObject(ManifestMetadata)
-    every { ManifestMetadata.getServerDefinedHeaders(any(), any()) } returns null
-    every { ManifestMetadata.getExtraParams(any(), any()) } returns mapOf("hello" to "world", "what" to "123")
+    every { ManifestMetadata.getServerDefinedHeaders(any(), any(), any()) } returns null
+    every { ManifestMetadata.getExtraParams(any(), any(), any()) } returns mapOf("hello" to "world", "what" to "123")
 
     val launchedUpdateUUIDString = "7c1d2bd0-f88b-454d-998c-7fa92a924dbf"
     val launchedUpdate = UpdateEntity(UUID.fromString(launchedUpdateUUIDString), Date(), "1.0", "test", JSONObject("{}"), Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"), null)
@@ -310,7 +310,7 @@ class FileDownloaderTest {
       }
     }
 
-    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(mockDatabase, mockk(), launchedUpdate, embeddedUpdate)
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(mockDatabase, mockk(), launchedUpdate, embeddedUpdate, mockk(relaxed = true))
 
     Assert.assertEquals(launchedUpdateUUIDString, extraHeaders.get("Expo-Current-Update-ID"))
     Assert.assertEquals(embeddedUpdateUUIDString, extraHeaders.get("Expo-Embedded-Update-ID"))
@@ -324,7 +324,7 @@ class FileDownloaderTest {
   @Test
   fun testGetExtraHeaders_NoLaunchedOrEmbeddedUpdate() {
     mockkObject(ManifestMetadata)
-    every { ManifestMetadata.getServerDefinedHeaders(any(), any()) } returns null
+    every { ManifestMetadata.getServerDefinedHeaders(any(), any(), any()) } returns null
 
     val mockDatabase = mockk<UpdatesDatabase> {
       every { updateDao() } returns mockk {
@@ -335,7 +335,7 @@ class FileDownloaderTest {
       }
     }
 
-    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(mockDatabase, mockk(), null, null)
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(mockDatabase, mockk(), null, null, mockk(relaxed = true))
     Assert.assertFalse(extraHeaders.has("Expo-Current-Update-ID"))
     Assert.assertFalse(extraHeaders.has("Expo-Embedded-Update-ID"))
     Assert.assertFalse(extraHeaders.has("Expo-Extra-Params"))

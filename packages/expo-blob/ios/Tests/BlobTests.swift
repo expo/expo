@@ -15,7 +15,7 @@ struct BlobTests {
   init() throws {
     appContext = TestAppContext()
     runtime = try appContext.runtime
-    appContext.moduleRegistry.register(module: ExpoBlob(appContext: appContext), name: nil)
+    appContext.moduleRegistry.register(module: BlobModule(appContext: appContext), name: nil)
   }
 
   // MARK: - Native state

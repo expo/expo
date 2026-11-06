@@ -16,7 +16,9 @@ data class UpdatesLogEntry(
   val duration: Long?,
   val updateId: String?,
   val assetId: String?,
-  val stacktrace: List<String>?
+  val stacktrace: List<String>?,
+  val key: String? = null,
+  val values: Map<String, String>? = null
 ) {
   fun asString(): String {
     return JSONObject(
@@ -39,6 +41,12 @@ data class UpdatesLogEntry(
       if (!stacktrace.isNullOrEmpty()) {
         put("stacktrace", JSONArray(stacktrace))
       }
+      if (key != null) {
+        put("key", key)
+      }
+      if (values != null) {
+        put("values", JSONObject(values))
+      }
     }.toString()
   }
 
@@ -56,6 +64,10 @@ data class UpdatesLogEntry(
           jsonObject.getNullable("assetId"),
           jsonObject.getNullable<JSONArray>("stacktrace")?.let { jsonArray ->
             List(jsonArray.length()) { i -> jsonArray.getString(i) }
+          },
+          jsonObject.getNullable("key"),
+          jsonObject.getNullable<JSONObject>("values")?.let { valuesObject ->
+            valuesObject.keys().asSequence().associateWith { valuesObject.getString(it) }
           }
         )
       } catch (e: Exception) {

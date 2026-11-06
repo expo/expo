@@ -16,6 +16,9 @@
 
 -keep class * extends expo.modules.kotlin.sharedobjects.SharedObject
 
+# CodedException infers `code` from the class name.
+-keepnames class * extends expo.modules.kotlin.exception.CodedException
+
 -keep enum * implements expo.modules.kotlin.types.Enumerable {
   *;
 }
