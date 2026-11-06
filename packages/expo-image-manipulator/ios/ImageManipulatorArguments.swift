@@ -6,39 +6,29 @@ import ExpoModulesCore
 /**
  Options for loading the source image.
  */
-internal struct ImageLoadOptions: Record {
-  @Field
+@Record
+internal struct ImageLoadOptions {
   var maxWidth: Int?
-
-  @Field
   var maxHeight: Int?
 }
 
 /**
  Options provided for resize action.
  */
-internal struct ResizeOptions: Record {
-  @Field
+@Record
+internal struct ResizeOptions {
   var width: CGFloat?
-
-  @Field
   var height: CGFloat?
 }
 
 /**
  Cropping rect for crop action.
  */
-internal struct CropRect: Record {
-  @Field
+@Record
+internal struct CropRect {
   var originX: Double = 0.0
-
-  @Field
   var originY: Double = 0.0
-
-  @Field
   var width: Double = 0.0
-
-  @Field
   var height: Double = 0.0
 
   func toRect() -> CGRect {
@@ -49,15 +39,22 @@ internal struct CropRect: Record {
 /**
  Options to use when saving the resulted image.
  */
-internal struct ManipulateOptions: Record {
-  @Field
+@Record
+internal struct ManipulateOptions {
   var base64: Bool = false
-
-  @Field
   var compress: Double = 1.0
-
-  @Field
   var format: ImageFormat = .jpeg
+}
+
+/**
+ The saved image file, returned to JavaScript.
+ */
+@Record
+internal struct ImageResult {
+  var uri: String
+  var width: Int
+  var height: Int
+  var base64: String?
 }
 
 /**
