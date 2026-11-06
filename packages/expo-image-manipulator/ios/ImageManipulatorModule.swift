@@ -1,10 +1,10 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
 import CoreGraphics
-import Photos
-import UIKit
 import ExpoModulesCore
+import Photos
 internal import SDWebImageWebPCoder
+import UIKit
 
 @ExpoModule("ExpoImageManipulator", classes: [ImageManipulatorContext.self, ImageRef.self])
 public class ImageManipulatorModule: Module {
@@ -18,7 +18,11 @@ public class ImageManipulatorModule: Module {
         return try await loadImage(atUrl: url, appContext: appContext, options: options)
       }
       if let image: SharedRef<UIImage> = source.get() {
-        return downscaledIfExceedsBounds(image.ref, maxWidth: options?.maxWidth.map(Double.init), maxHeight: options?.maxHeight.map(Double.init))
+        return downscaledIfExceedsBounds(
+          image.ref,
+          maxWidth: options?.maxWidth.map(Double.init),
+          maxHeight: options?.maxHeight.map(Double.init)
+        )
       }
       throw Exceptions.RuntimeLost()
     }

@@ -3,9 +3,7 @@
 import ExpoModulesCore
 import UIKit
 
-/**
- A context of the image manipulation.
- */
+/// A context of the image manipulation.
 @SharedObject("Context")
 public final class ImageManipulatorContext: SharedObject {
   internal typealias Loader = () async throws -> UIImage
