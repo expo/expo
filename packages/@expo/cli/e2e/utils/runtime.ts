@@ -5,6 +5,7 @@ import { getServerTesterRoot } from '../__tests__/utils';
 import { createExpoServe, createExpoStart, executeExpoAsync } from './expo';
 import { executeAsync, processFindPrefixedValue } from './process';
 import { BackgroundServer, createBackgroundServer } from './server';
+import { SHARED_DIST_NAME, assertSharedDistExported } from './shared-dist';
 
 export const RUNTIME_EXPO_SERVE = 'expo serve';
 export const RUNTIME_EXPO_START = 'expo start';
@@ -24,9 +25,9 @@ export type ServerTestConfiguration = {
 };
 
 export type ServerTestOptions = {
-  /** A unique value to keep suites with different export options in separate output directories. */
+  /** Required for suites with export options. Keeps their output separate from the shared server export. Ignored when serving the shared export. */
   uniqueOutputKey?: string;
-  /** Options for the export command */
+  /** Options for a separate export. Omit this to serve the shared server export from the Jest global setup. */
   export?: {
     /** Environment variables to pass to the export command */
     env?: Record<string, string>;
@@ -77,32 +78,31 @@ export function prepareServers(
     ...exportEnv,
   } as const;
 
-  let sharedProductionExport: Promise<string> | undefined;
+  if (options.export && !uniqueOutputKey) {
+    throw new Error(
+      '`uniqueOutputKey` is required when a suite passes `export` options, so its export does not overwrite the shared `dist`.'
+    );
+  }
+  const outputName = options.export ? `dist-${uniqueOutputKey}` : SHARED_DIST_NAME;
+  let productionExport: Promise<unknown> | undefined;
 
-  async function prepareProductionDist(runtimeName: string) {
-    const sharedOutputName = generateOutputDir('shared', uniqueOutputKey);
-    const sharedOutputDir = path.join(projectRoot, sharedOutputName);
-
-    sharedProductionExport ??= executeExpoAsync(
-      projectRoot,
-      ['export', '-p', 'web', '--output-dir', sharedOutputName, ...exportCliFlags],
-      { env: defaultExportEnv }
-    ).then(() => sharedOutputDir);
-
-    const sourceDir = await sharedProductionExport;
-    const outputName = generateOutputDir(runtimeName, uniqueOutputKey);
-    const outputDir = path.join(projectRoot, outputName);
-
-    await fs.promises.rm(outputDir, { force: true, recursive: true });
-    await fs.promises.cp(sourceDir, outputDir, { recursive: true });
-
-    return [outputDir, outputName] as const;
+  async function prepareProductionDist() {
+    if (options.export) {
+      await (productionExport ??= executeExpoAsync(
+        projectRoot,
+        ['export', '-p', 'web', '--output-dir', outputName, ...exportCliFlags],
+        { env: defaultExportEnv }
+      ));
+    } else {
+      assertSharedDistExported();
+    }
+    return [path.join(projectRoot, outputName), outputName] as const;
   }
 
   const knownRuntimeConfigs: Record<RuntimeType, Omit<ServerTestConfiguration, 'name'>> = {
     [RUNTIME_EXPO_SERVE]: {
       prepareDist: async () => {
-        return await prepareProductionDist('expo-serve');
+        return await prepareProductionDist();
       },
       createServer: (overrideServe) =>
         createExpoServe({
@@ -131,7 +131,7 @@ export function prepareServers(
     },
     [RUNTIME_EXPRESS_SERVER]: {
       prepareDist: async () => {
-        return await prepareProductionDist('express');
+        return await prepareProductionDist();
       },
       createServer: (overrideServe) =>
         createBackgroundServer({
@@ -147,7 +147,7 @@ export function prepareServers(
     },
     [RUNTIME_WORKERD]: {
       prepareDist: async () => {
-        const [outputDir] = await prepareProductionDist('workerd');
+        const [outputDir] = await prepareProductionDist();
 
         await executeAsync(projectRoot, [
           'node_modules/.bin/esbuild',
@@ -169,11 +169,7 @@ export function prepareServers(
           command: [
             'node_modules/.bin/workerd',
             'serve',
-            path.join(
-              projectRoot,
-              generateOutputDir('workerd', uniqueOutputKey),
-              'server/config.capnp'
-            ),
+            path.join(projectRoot, outputName, 'server/config.capnp'),
           ],
           host: (chunk: any) => processFindPrefixedValue(chunk, 'Workerd server listening'),
           port: 8787,
@@ -261,8 +257,4 @@ export function setupServer(
       return config.name === RUNTIME_WORKERD;
     },
   };
-}
-
-function generateOutputDir(runtimeName: string, uniqueOutputKey?: string) {
-  return ['dist', runtimeName, uniqueOutputKey].filter(Boolean).join('-');
 }

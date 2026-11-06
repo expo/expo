@@ -1,3 +1,9 @@
+// Keep the sources under `/middleware/` so the other suites never hit them.
+const defaultRedirects = [{ source: '/middleware/redirect', destination: 'https://expo.dev' }];
+const defaultRewrites = [
+  { source: '/middleware/rewrite', destination: '/middleware/redirect-target' },
+];
+
 /** @type {import('expo/config').ExpoConfig} */
 module.exports = {
   name: 'Server Tester',
@@ -55,8 +61,8 @@ module.exports = {
         origin: 'http://localhost:8081/',
         sitemap:
           process.env.E2E_ROUTER_SITEMAP === 'false' ? false : process.env.E2E_ROUTER_SITEMAP,
-        redirects: parseJsonEnv(process.env.E2E_ROUTER_REDIRECTS),
-        rewrites: parseJsonEnv(process.env.E2E_ROUTER_REWRITES),
+        redirects: parseJsonEnv(process.env.E2E_ROUTER_REDIRECTS) ?? defaultRedirects,
+        rewrites: parseJsonEnv(process.env.E2E_ROUTER_REWRITES) ?? defaultRewrites,
         headers: parseJsonEnv(process.env.E2E_ROUTER_HEADERS),
         pageHeaders: parseJsonEnv(process.env.E2E_ROUTER_PAGE_HEADERS),
         apiRoutes: process.env.E2E_ROUTER_API_ROUTES

@@ -18,14 +18,9 @@ runExportSideEffects();
 describe('server-output', () => {
   describe.each(
     prepareServers([RUNTIME_EXPRESS_SERVER, RUNTIME_EXPO_START, RUNTIME_WORKERD], {
-      uniqueOutputKey: 'server',
-      export: {
-        env: {
-          E2E_ROUTER_ASYNC: 'development',
-        },
-      },
       serve: {
         env: {
+          E2E_ROUTER_ASYNC: 'development',
           TEST_SECRET_KEY: 'test-secret-key',
         },
       },
@@ -449,10 +444,9 @@ describe('server-output', () => {
           path.join(server.outputDir, 'server/_expo/routes.json')
         );
         // Asset hashes depend on the bundled source and should not affect route snapshots.
-        expect({
-          ...manifest,
-          assets: JSON.parse(JSON.stringify(manifest.assets).replace(/[a-f0-9]{32}/g, '[hash]')),
-        }).toMatchSnapshot();
+        expect(
+          JSON.parse(JSON.stringify(manifest).replace(/[a-f0-9]{32}/g, '[hash]'))
+        ).toMatchSnapshot();
       });
     });
   });

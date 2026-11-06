@@ -10,9 +10,7 @@ import { runExportSideEffects } from './export-side-effects';
 runExportSideEffects();
 
 describe('middleware matchers', () => {
-  const configs = prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START], {
-    uniqueOutputKey: 'middleware-matchers',
-  });
+  const configs = prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START], {});
 
   describe('pattern matching', () => {
     describe.each(configs)('$name', (config) => {
