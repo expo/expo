@@ -327,6 +327,47 @@ describe(withExtendedResolver, () => {
     });
   });
 
+  describe('HMR client aliases', () => {
+    function resolveHMRClient(dev: boolean) {
+      mockMinFs();
+      jest
+        .mocked(getResolveFunc())
+        .mockReturnValueOnce({
+          type: 'sourceFile',
+          filePath: '/root/node_modules/react-native/Libraries/Utilities/HMRClient.js',
+        })
+        .mockImplementationOnce((_context, moduleName) => ({
+          type: 'sourceFile',
+          filePath: `/root/node_modules/${moduleName}`,
+        }));
+
+      const modified = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: getMetroBundlerGetter(),
+      });
+
+      return modified.resolver.resolveRequest!(
+        getResolverContext({
+          dev,
+          originModulePath: '/root/node_modules/react-native/src/unstable-internals-do-not-use.js',
+        }),
+        '../Libraries/Utilities/HMRClient',
+        'ios'
+      );
+    }
+
+    it('aliases the HMR client to the Expo HMR client in development', () => {
+      expect(resolveHMRClient(true)).toEqual({
+        type: 'sourceFile',
+        filePath: '/root/node_modules/expo/src/async-require/hmr.ts',
+      });
+    });
+
+    it('replaces the HMR client with a virtual no-op shim in production', () => {
+      expectVirtual(resolveHMRClient(false), '\0shim:HMRClientProdShim.js');
+    });
+  });
+
   it(`resolves to @expo/vector-icons on any platform`, async () => {
     jest.mocked(resolveFrom).mockImplementation((_from, moduleId) => {
       return moduleId === '@expo/vector-icons/package.json'
