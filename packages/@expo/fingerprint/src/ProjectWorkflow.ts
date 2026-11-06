@@ -7,7 +7,7 @@ import path from 'path';
 
 import { resolveExpoConfigPluginsPackagePath } from './ExpoResolver';
 import { type Platform, type ProjectWorkflow } from './Fingerprint.types';
-import { isIgnoredPathWithMatchObjects, pathExistsAsync } from './utils/Path';
+import { isIgnoredPathWithMatchObjects, pathExistsAsync, toPosixPath } from './utils/Path';
 
 /**
  * Replicated project workflow detection logic from expo-updates:
@@ -42,7 +42,7 @@ export async function resolveProjectWorkflowAsync(
   const vcsClient = await getVCSClientAsync(projectRoot);
   const vcsRoot = path.normalize(await vcsClient.getRootPathAsync());
   for (const marker of platformWorkflowMarkers) {
-    const relativeMarker = path.relative(vcsRoot, marker);
+    const relativeMarker = toPosixPath(path.relative(vcsRoot, marker));
     if (
       (await pathExistsAsync(marker)) &&
       !isIgnoredPathWithMatchObjects(relativeMarker, fingerprintIgnorePaths) &&
