@@ -23,7 +23,12 @@ import { progressViewStyle } from './progressViewStyle';
 import { onScrollPhaseChange, useScrollGeometryChange } from './scrollObservation';
 import { id, scrollPosition } from './scrollPosition';
 import { resolveShapeStyle, type ShapeStyle } from './shapeStyle';
-import { symbolEffect } from './symbolEffect';
+import {
+  symbolEffect,
+  type ContentTransitionSymbolEffect,
+  type SymbolEffectOptions,
+} from './symbolEffect';
+import { flattenOptions } from './symbolEffectOptions';
 import type { Color } from './types';
 import { activityBackgroundTint, widgetAccentedRenderingMode, widgetURL } from './widgets';
 
@@ -1712,9 +1717,11 @@ export const textContentType = (
  * Useful for animating changes in text content, especially numeric text.
  * Use with the [`animation`](#animationanimationobject-animatedvalue) modifier to animate the transition when the content changes.
  *
- * @param transitionType - The type of content transition.
+ * @param transitionType - The type of content transition. The `'symbolEffect'` type applies a symbol effect transition to symbol images. Other views are unaffected by this transition. It requires iOS 17.0+, tvOS 17.0+, and macOS 14.0+. On earlier versions, the view does not change.
  * @param params - Optional parameters.
  * @param params.countsDown - Whether the numeric text counts down.
+ * @param params.symbolEffect - The symbol effect to use with the `'symbolEffect'` type. Defaults to `{ effect: 'automatic' }`.
+ * @param params.options - A set of options that configure how effects apply to symbol-based images. Use it with the `'symbolEffect'` type.
  *
  * @example
  * ```tsx
@@ -1723,17 +1730,34 @@ export const textContentType = (
  * </Text>
  * ```
  *
+ * @example
+ * ```tsx
+ * <Image
+ *   systemName={isOn ? 'speaker.wave.2.fill' : 'speaker.slash.fill'}
+ *   modifiers={[
+ *     contentTransition('symbolEffect', { symbolEffect: { effect: 'replace', direction: 'downUp' } }),
+ *     animation(Animation.default, isOn),
+ *   ]}
+ * />
+ * ```
+ *
  * @platform ios 16.0+
  * @platform tvos 16.0+
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/contenttransition(_:)).
  */
 export const contentTransition = (
-  transitionType: 'numericText' | 'identity' | 'opacity' | 'interpolate',
-  params?: { countsDown?: boolean }
+  transitionType: 'numericText' | 'identity' | 'opacity' | 'interpolate' | 'symbolEffect',
+  params?: {
+    countsDown?: boolean;
+    symbolEffect?: ContentTransitionSymbolEffect;
+    options?: SymbolEffectOptions;
+  }
 ) =>
   createModifier('contentTransition', {
     transitionType,
     countsDown: params?.countsDown,
+    symbolEffect: params?.symbolEffect,
+    options: flattenOptions(params?.options),
   });
 
 export type ListStyle = 'automatic' | 'plain' | 'inset' | 'insetGrouped' | 'grouped' | 'sidebar';

@@ -10,7 +10,7 @@ struct NotSignedInView: View {
         .scaledToFit()
         .frame(width: 44, height: 44)
         .rotationEffect(.degrees(-90))
-        .foregroundColor(.blue)
+        .foregroundStyle(Color.blue)
 
       VStack(spacing: 8) {
         Text("Log in to view updates")
@@ -30,9 +30,9 @@ struct NotSignedInView: View {
         Text("Log in")
           .padding(.horizontal, 16)
           .padding(.vertical, 8)
-          .background(Color.black)
-          .cornerRadius(16)
-          .foregroundColor(.white)
+          .background(Color.primary)
+          .clipShape(RoundedRectangle(cornerRadius: 16))
+          .foregroundStyle(Color.expoSystemBackground)
           .font(.system(size: 16, weight: .semibold))
       }
     }

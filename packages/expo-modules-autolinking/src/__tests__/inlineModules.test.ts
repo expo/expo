@@ -12,9 +12,11 @@ import {
   getMirrorStateObject,
   getKotlinInlineModuleInfo,
   hasSwiftModuleDefinition,
+  getSwiftInlineModuleInfo,
   inlineModuleFileNameInformation,
 } from '../inlineModules/inlineModules';
 import { isTargetInInlineModulesTargets } from '../inlineModules/iosInlineModules';
+import { stripSwiftCommentsAndStrings } from '../inlineModules/swiftSource';
 
 jest.mock('fs', () => require('memfs').fs);
 jest.mock('fs/promises', () => require('memfs').fs.promises);
@@ -91,6 +93,128 @@ describe('inlineModules.ts', () => {
         valid: false,
         ext: '.ts',
       });
+    });
+  });
+
+  describe('getSwiftInlineModuleInfo', () => {
+    it('reports a module declared with the @ExpoModule macro', async () => {
+      vol.fromJSON({
+        '/example-project/GreeterModule.swift':
+          'import ExpoModulesCore\n@MainActor\n@ExpoModule\npublic final class GreeterModule: Module {}',
+      });
+
+      await expect(
+        getSwiftInlineModuleInfo('/example-project/GreeterModule.swift')
+      ).resolves.toEqual({ hasModuleDefinition: true, declaredWithMacro: true });
+    });
+
+    it('does not treat an @ExpoModule mention in a comment as the macro', async () => {
+      vol.fromJSON({
+        '/example-project/AppIntentsSetup.swift':
+          'import ExpoModulesCore\n/// Not declared with `@ExpoModule` yet.\nfinal class AppIntentsSetup: Module {\n  func definition() -> ModuleDefinition { Name("AppIntentsSetup") }\n}',
+      });
+
+      await expect(
+        getSwiftInlineModuleInfo('/example-project/AppIntentsSetup.swift')
+      ).resolves.toEqual({ hasModuleDefinition: true, declaredWithMacro: false });
+    });
+
+    it('reports the macro after an attribute with parentheses in a string', async () => {
+      vol.fromJSON({
+        '/example-project/OldModule.swift':
+          'import ExpoModulesCore\n@available(*, deprecated, message: "Use NewModule() instead") @ExpoModule\npublic final class OldModule: Module {}',
+      });
+
+      await expect(getSwiftInlineModuleInfo('/example-project/OldModule.swift')).resolves.toEqual({
+        hasModuleDefinition: true,
+        declaredWithMacro: true,
+      });
+    });
+
+    it('reports the macro after a multiline attribute', async () => {
+      vol.fromJSON({
+        '/example-project/OldModule.swift':
+          'import ExpoModulesCore\n@available(\n  *,\n  deprecated\n) @ExpoModule\npublic final class OldModule: Module {}',
+      });
+
+      await expect(getSwiftInlineModuleInfo('/example-project/OldModule.swift')).resolves.toEqual({
+        hasModuleDefinition: true,
+        declaredWithMacro: true,
+      });
+    });
+
+    it('keeps a file that mentions @ExpoModule in a string or a comment as an inline module, but not as the macro', async () => {
+      vol.fromJSON({
+        '/example-project/Helpers.swift':
+          'import Foundation\n/* Move to\n   @ExpoModule */\nlet hint = "Use @ExpoModule"\nlet raw = #"@ExpoModule \\"#\nlet text = """\n@ExpoModule\n"""\n',
+      });
+
+      await expect(getSwiftInlineModuleInfo('/example-project/Helpers.swift')).resolves.toEqual({
+        hasModuleDefinition: true,
+        declaredWithMacro: false,
+      });
+    });
+
+    it('reports the macro after a regex literal with a quote', async () => {
+      vol.fromJSON({
+        '/example-project/QuoteModule.swift':
+          'import ExpoModulesCore\nlet quote = /"/\n@ExpoModule\npublic final class QuoteModule: Module {}',
+      });
+
+      await expect(getSwiftInlineModuleInfo('/example-project/QuoteModule.swift')).resolves.toEqual(
+        {
+          hasModuleDefinition: true,
+          declaredWithMacro: true,
+        }
+      );
+    });
+  });
+
+  describe('stripSwiftCommentsAndStrings', () => {
+    it('removes line, block and nested block comments', () => {
+      expect(stripSwiftCommentsAndStrings('a // b\nc /* d /* e */ f */ g')).toBe('a \nc   g');
+    });
+
+    it('empties string literals, keeping escaped quotes inside them', () => {
+      expect(stripSwiftCommentsAndStrings('a "b \\" // c" d')).toBe('a "" d');
+    });
+
+    it('empties multiline and raw strings', () => {
+      expect(stripSwiftCommentsAndStrings('a """\n"b"\n""" c ##"x"# "##d')).toBe('a "" c ""d');
+    });
+
+    it('keeps code that only looks like a raw string', () => {
+      expect(stripSwiftCommentsAndStrings('#if DEBUG\n#selector(f)\n#endif')).toBe(
+        '#if DEBUG\n#selector(f)\n#endif'
+      );
+    });
+
+    it('keeps an interpolation from ending the string early', () => {
+      expect(stripSwiftCommentsAndStrings('a "\\(String("@ExpoModule"))" b')).toBe('a "" b');
+      expect(stripSwiftCommentsAndStrings('a "\\(f("/*"), g(1))" @ExpoModule')).toBe(
+        'a "" @ExpoModule'
+      );
+    });
+
+    it('handles escapes and interpolations of raw strings', () => {
+      expect(stripSwiftCommentsAndStrings('a #"\\#"@ExpoModule"# b')).toBe('a "" b');
+      expect(stripSwiftCommentsAndStrings('a #"\\#(f(")"))"# b')).toBe('a "" b');
+    });
+
+    it('empties regex literals but keeps divisions', () => {
+      expect(stripSwiftCommentsAndStrings('let q = /"/\nlet r = #/"/#\nlet d = a / b / c')).toBe(
+        'let q = ""\nlet r = ""\nlet d = a / b / c'
+      );
+      expect(stripSwiftCommentsAndStrings('return /a"b/')).toBe('return ""');
+      expect(stripSwiftCommentsAndStrings('let d = x/y; let e = f(x)/2')).toBe(
+        'let d = x/y; let e = f(x)/2'
+      );
+    });
+
+    it('ends an unterminated single-line string at the end of its line', () => {
+      expect(stripSwiftCommentsAndStrings('let s = "abc\n@ExpoModule')).toBe(
+        'let s = ""\n@ExpoModule'
+      );
     });
   });
 
@@ -382,6 +506,7 @@ describe('androidInlineModules.ts', () => {
         files: [{ filePath: '/src/SimpleModule.kt', watchedDir: '/src' }],
         kotlinClasses: [],
         swiftModuleClassNames: [],
+        swiftExpoModuleClassNames: [],
       };
 
       vol.fromJSON({
@@ -419,6 +544,7 @@ describe('androidInlineModules.ts', () => {
           },
         ],
         swiftModuleClassNames: [],
+        swiftExpoModuleClassNames: [],
         kotlinClasses: [],
       };
 
@@ -450,6 +576,7 @@ describe('androidInlineModules.ts', () => {
       const mockMirror: InlineModulesMirror = {
         files: [],
         swiftModuleClassNames: [],
+        swiftExpoModuleClassNames: [],
         kotlinClasses: ['some.simple.package.SimpleModule', 'other.package.SimpleView'],
       };
 

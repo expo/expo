@@ -7,11 +7,16 @@ import android.util.Log
 import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.updates.codesigning.CodeSigningConfiguration
 
-enum class UpdatesConfigurationValidationResult {
-  VALID,
-  INVALID_NOT_ENABLED,
-  INVALID_MISSING_URL,
-  INVALID_MISSING_RUNTIME_VERSION
+enum class UpdatesConfigurationValidationResult(
+  /**
+   * The `reason` value of the configuration log entries, the same on iOS and Android.
+   */
+  val logReason: String
+) {
+  VALID("valid"),
+  INVALID_NOT_ENABLED("notEnabled"),
+  INVALID_MISSING_URL("missingUrl"),
+  INVALID_MISSING_RUNTIME_VERSION("missingRuntimeVersion")
 }
 
 /**

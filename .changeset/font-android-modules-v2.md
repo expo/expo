@@ -1,0 +1,5 @@
+---
+'expo-font': patch
+---
+
+[Android] Migrate to the Expo Modules API 2.0.

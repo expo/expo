@@ -48,11 +48,11 @@ android.cmakeVersion=3.31.6
 
 3. Delete **android/app/.cxx** and **android/app/build** so that CMake regenerates its build files, and then build again.
 
-In SDK 57 and later, Expo reads the `android.cmakeVersion` property, both in projects that use [prebuild](/workflow/continuous-native-generation/) and in projects that include an **android** directory. This file is on your computer and isn't part of your project. Builds on EAS Build and on other computers keep using the default CMake version.
+In SDK 57 and later, Expo reads the `android.cmakeVersion` property, both in projects that use [prebuild](/workflow/continuous-native-generation/) and in projects that include an **android** directory. This file is on your computer and isn't part of your project. Builds on Expo Build and on other computers keep using the default CMake version.
 
 #### Set the CMake version in your project
 
-You can also set the CMake version in your project, with the `android.cmakeVersion` option of [`expo-build-properties`](/versions/latest/sdk/build-properties/) in **app.json**, or with the `android.cmakeVersion` property in **android/gradle.properties**. The setting then applies to every build of the project, including builds on EAS Build. EAS Build runs Android builds on Linux, where the path limit doesn't apply. CMake 3.31.6 isn't installed there, so the build fails with `CMake '3.31.6' was not found in SDK, PATH, or by cmake.dir property`.
+You can also set the CMake version in your project, with the `android.cmakeVersion` option of [`expo-build-properties`](/versions/latest/sdk/build-properties/) in **app.json**, or with the `android.cmakeVersion` property in **android/gradle.properties**. The setting then applies to every build of the project, including builds on Expo Build. Expo Build runs Android builds on Linux, where the path limit doesn't apply. CMake 3.31.6 isn't installed there, so the build fails with `CMake '3.31.6' was not found in SDK, PATH, or by cmake.dir property`.
 
 If your project uses prebuild, you can set the CMake version only when you build on Windows. Add the `expo-build-properties` entry in **app.config.js** instead of **app.json**:
 
@@ -68,7 +68,7 @@ export default ({ config }) => ({
 });
 ```
 
-EAS Build runs `npx expo prebuild` on its Linux build server, so `cmakeVersion` isn't set there. On your computer, run `npx expo prebuild --clean` after changing the config.
+Expo Build runs `npx expo prebuild` on its Linux build server, so `cmakeVersion` isn't set there. On your computer, run `npx expo prebuild --clean` after changing the config.
 
 ### Move the project to a shorter path
 

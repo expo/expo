@@ -3,7 +3,6 @@ import isEqual from 'react-fast-compare';
 import type { RouteNode } from '../Route';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { ResultState } from '../fork/getStateFromPath';
-import { matchDynamicName } from '../matchers';
 import { appendInternalExpoRouterParams, type InternalExpoRouterParams } from '../navigationParams';
 import { createInitialState } from '../react-navigation/core/createInitialState';
 import type {
@@ -344,11 +343,9 @@ function routesMatch(
     return false;
   }
 
-  const dynamic = matchDynamicName(targetRoute.name);
   return (
-    !dynamic ||
-    (targetRoute.params as Record<string, unknown> | undefined)?.[dynamic.name] ===
-      (currentRoute.params as Record<string, unknown> | undefined)?.[dynamic.name]
+    getSingularId(targetRoute.name, { params: targetRoute.params }) ===
+    getSingularId(currentRoute.name, { params: currentRoute.params })
   );
 }
 

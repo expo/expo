@@ -36,6 +36,11 @@ internal class LocationLastKnownOptions(
 ) : Record, Serializable
 
 @OptimizedRecord
+internal class HeadingOptions(
+  @Field var headingFilter: Double? = null
+) : Record, Serializable
+
+@OptimizedRecord
 internal open class LocationOptions(
   @Field var accuracy: Int = ACCURACY_BALANCED,
   @Field var distanceInterval: Int? = null,

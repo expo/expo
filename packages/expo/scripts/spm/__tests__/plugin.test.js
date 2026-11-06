@@ -2021,6 +2021,7 @@ describe('where precompiled modules and headers come from', () => {
       expect.objectContaining({
         coreHeadersXCFramework: '/abs/ExpoModulesCoreHeaders.xcframework',
         jsiHeadersPkgPath,
+        macrosPackageRoot: expect.any(String),
       })
     );
     expect(resolveHeadersXCFrameworkWithSource).not.toHaveBeenCalledWith(

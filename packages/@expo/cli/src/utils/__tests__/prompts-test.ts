@@ -1,3 +1,5 @@
+import prompts from 'prompts';
+
 import { confirmAsync, createSelectionFilter, promptAsync } from '../prompts';
 
 jest.mock('prompts', () => jest.fn(async () => ({ value: true })));
@@ -35,6 +37,25 @@ describe(promptAsync, () => {
 
     expect(write.mock.calls[0]).toEqual([
       '\x1b]7501;state=blocked:app=expo:kind=auth:msg=T25lLXRpbWUgcGFzc3dvcmQ=\x1b\\',
+    ]);
+  });
+
+  it(`clears the status if the process exits while prompting`, async () => {
+    const listeners = process.listeners('exit');
+    let writesWhilePrompting: unknown[][] = [];
+    jest.mocked(prompts).mockImplementationOnce(async () => {
+      for (const listener of process.listeners('exit')) {
+        if (!listeners.includes(listener)) listener(0);
+      }
+      writesWhilePrompting = [...write.mock.calls];
+      return { value: true };
+    });
+
+    await confirmAsync({ message: 'Continue?' });
+
+    expect(writesWhilePrompting).toEqual([
+      ['\x1b]7501;state=blocked:app=expo:kind=permission:msg=Q29udGludWU/\x1b\\'],
+      ['\x1b]7501;state=clear\x1b\\'],
     ]);
   });
 });

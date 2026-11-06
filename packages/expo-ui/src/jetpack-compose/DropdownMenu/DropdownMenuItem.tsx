@@ -3,6 +3,7 @@ import type { ColorValue } from 'react-native';
 
 import type { ModifierConfig, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
+import type { MenuShapePosition } from './index';
 
 type SlotNativeViewProps = {
   slotName: string;
@@ -37,6 +38,12 @@ export interface DropdownMenuItemProps {
    * @default true
    */
   enabled?: boolean;
+  /**
+   * The position of the item in its `DropdownMenuGroup`, which sets its shape through Compose's
+   * `MenuDefaults.itemShape(index, count).shape`. When set, the item is a Material 3 Expressive
+   * menu item and can show `SupportingText`.
+   */
+  shape?: MenuShapePosition;
   /**
    * Color overrides for the menu item.
    */
@@ -82,6 +89,16 @@ function TrailingIcon(props: { children: React.ReactNode }) {
 }
 
 /**
+ * A supporting text slot for `DropdownMenuItem`, shown below the text.
+ * Only applies to an item with a `shape`.
+ *
+ * @platform android
+ */
+function SupportingText(props: { children: React.ReactNode }) {
+  return <SlotNativeView slotName="supportingText">{props.children}</SlotNativeView>;
+}
+
+/**
  * A text slot for `DropdownMenuItem`.
  * Wrap text content to display as the menu item label.
  *
@@ -114,5 +131,6 @@ function DropdownMenuItemComponent(props: DropdownMenuItemProps) {
 DropdownMenuItemComponent.Text = TextSlot;
 DropdownMenuItemComponent.LeadingIcon = LeadingIcon;
 DropdownMenuItemComponent.TrailingIcon = TrailingIcon;
+DropdownMenuItemComponent.SupportingText = SupportingText;
 
 export { DropdownMenuItemComponent as DropdownMenuItem };

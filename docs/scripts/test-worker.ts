@@ -472,7 +472,7 @@ async function testDeletedPageRedirectsAsync(): Promise<void> {
   if (
     easRedirect.status !== 301 ||
     !easLocation.includes(
-      '?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build'
+      '?buildenv=build-with-expo-services#how-would-you-like-to-build-your-development-build'
     )
   ) {
     throw new Error(
@@ -499,7 +499,7 @@ async function testDeletedPageRedirectsAsync(): Promise<void> {
   });
   const mdLocation = mdRedirect.headers.get('location') ?? '';
 
-  if (mdRedirect.status !== 301 || !mdLocation.includes('?buildenv=build-with-eas')) {
+  if (mdRedirect.status !== 301 || !mdLocation.includes('?buildenv=build-with-expo-services')) {
     throw new Error(
       `Expected the markdown request to pass through the page redirect, got: HTTP ${mdRedirect.status} -> ${mdLocation}`
     );

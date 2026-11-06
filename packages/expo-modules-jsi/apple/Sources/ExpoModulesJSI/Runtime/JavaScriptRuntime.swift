@@ -62,6 +62,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.scheduler = Scheduler(expo.RuntimeScheduler.create(), handle: handle)
     self.ownsRuntime = false
     handle.attach(self)
+    JavaScriptRuntimeRegistry.add(handle, runtimePointer: runtimeAddress)
     installLongLivedObjectsTeardown()
   }
 
@@ -80,6 +81,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.scheduler = Scheduler(expo.RuntimeScheduler.create(), handle: handle)
     self.ownsRuntime = true
     handle.attach(self)
+    JavaScriptRuntimeRegistry.add(handle, runtimePointer: runtimeAddress)
     installLongLivedObjectsTeardown()
   }
 
@@ -94,6 +96,7 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.scheduler = Scheduler(expo.RuntimeScheduler.create(), handle: handle)
     self.ownsRuntime = false
     handle.attach(self)
+    JavaScriptRuntimeRegistry.add(handle, runtimePointer: runtimeAddress)
     installLongLivedObjectsTeardown()
   }
 
@@ -128,11 +131,13 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     self.scheduler = Scheduler(expo.RuntimeScheduler.create(scheduler, fn), handle: handle)
     self.ownsRuntime = false
     handle.attach(self)
+    JavaScriptRuntimeRegistry.add(handle, runtimePointer: runtimeAddress)
     installLongLivedObjectsTeardown()
   }
 
   deinit {
     scheduler.markRuntimeGone()
+    JavaScriptRuntimeRegistry.remove(handle)
     handle.detach()
     // Destroy the runtime only if this wrapper created it (standalone `init()`); adopted runtimes
     // are owned elsewhere (e.g. React Native) and must not be freed here.
@@ -157,6 +162,11 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// The pointer is valid only for the duration of the closure and must not be stored or escaped.
   public func withUnsafePointee<R>(_ body: (UnsafeMutableRawPointer) throws -> R) rethrows -> R {
     return try body(Unmanaged<facebook.jsi.Runtime>.passUnretained(runtimePointee).toOpaque())
+  }
+
+  /// The address of the underlying `facebook.jsi.Runtime`, as ``withUnsafePointee(_:)`` gives it.
+  private var runtimeAddress: UnsafeRawPointer {
+    return UnsafeRawPointer(Unmanaged<facebook.jsi.Runtime>.passUnretained(runtimePointee).toOpaque())
   }
 
   /// Provides scoped access to raw pointers to the underlying `facebook.jsi.Runtime`, the
