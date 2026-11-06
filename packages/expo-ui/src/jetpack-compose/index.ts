@@ -23,6 +23,7 @@ export * from './RNHostView';
 export * from './DatePicker';
 export * from './SegmentedButton';
 export * from './Progress';
+export * from './RangeSlider';
 export * from './Slider';
 export * from './Spacer';
 export * from './SplitButtonLayout';
