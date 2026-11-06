@@ -28,5 +28,10 @@ export function test({ describe, expect, it, beforeAll }: JasmineInterface) {
       );
       expect(isSame).toBe('true');
     });
+
+    it('passes a shared object from a worklet back to the React Native runtime', async () => {
+      const counter = WorkletsTester.createCounter();
+      expect(await WorkletsTester.passThroughUIRuntime(counter)).toBe(counter);
+    });
   });
 }
