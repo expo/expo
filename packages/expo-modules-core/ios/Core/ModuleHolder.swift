@@ -24,6 +24,15 @@ public final class ModuleHolder {
   @JavaScriptActor
   private var javaScriptObject: JavaScriptObject?
 
+  /// The ID for the next created holder.
+  private static let nextHolderId = Mutex<UInt64>(0)
+
+  /// A process-wide unique ID of the holder. Module objects cached by attached runtimes are tied to it.
+  private let holderId: UInt64 = ModuleHolder.nextHolderId.withLock { id in
+    defer { id += 1 }
+    return id
+  }
+
   /**
    Caches the definition of the module type.
    */
@@ -140,6 +149,28 @@ public final class ModuleHolder {
     return javaScriptObject?.asValue()
   }
 
+  /// Returns the module object in a runtime other than the main runtime. The object has only the members that
+  /// the `@ExpoModule` macro binds. It is built in that runtime and cached by it.
+  @JavaScriptActor
+  func getJavaScriptValue(inAttachedRuntime runtime: JavaScriptRuntime) -> JavaScriptValue? {
+    let moduleObjects = runtime.cached(moduleObjectsCacheKey) {
+      return ModuleObjects()
+    }
+    // The registry can replace the module under the same name, so the cached object is only used for this holder.
+    if let entry = moduleObjects.objects[name], entry.holderId == holderId {
+      return entry.object.withUnwrappedValue { $0.asValue() }
+    }
+    do {
+      let object = try createJavaScriptModuleObject(in: runtime)
+      let value = object.asValue()
+      moduleObjects.objects[name] = ModuleObjects.Entry(holderId: holderId, object: object.ref())
+      return value
+    } catch {
+      log.error("Building the module object failed: \(error)")
+      return nil
+    }
+  }
+
   @JavaScriptActor
   func releaseJavaScriptObject() {
     javaScriptObject = nil
@@ -235,6 +266,23 @@ public final class ModuleHolder {
       descriptor.setProperty("enumerable", value: !isDefaultView)
       object.defineProperty(propertyName, descriptor: descriptor)
     }
+  }
+
+  /// Creates the module object in a runtime other than the main runtime. The members of the `definition()` DSL
+  /// are built in the main runtime only, so the object has only the `@JS` members.
+  @JavaScriptActor
+  private func createJavaScriptModuleObject(in runtime: JavaScriptRuntime) throws -> JavaScriptObject {
+    let object = try runtime.global()
+      .getPropertyAsObject(globalCoreObjectPropertyName)
+      .getPropertyAsFunction("NativeModule")
+      .callAsConstructor()
+      .asObject()
+
+    try module._decorateModule(object: object, in: runtime)
+
+    // Give the module object a name like in the main runtime. It's used for compatibility reasons, see `EventEmitter.ts`.
+    object.defineProperty("__expo_module_name__", value: name, options: [])
+    return object
   }
 
   // MARK: Listening to native events
@@ -353,3 +401,17 @@ public final class ModuleHolder {
     }
   }
 }
+
+/// The module objects that a runtime other than the main runtime caches, by module name.
+private final class ModuleObjects {
+  struct Entry {
+    /// The ID of the holder that the object was built for.
+    let holderId: UInt64
+    /// The module object.
+    let object: JavaScriptObject.Ref
+  }
+
+  var objects: [String: Entry] = [:]
+}
+
+private let moduleObjectsCacheKey = JavaScriptRuntime.Cache.Key<ModuleObjects>()

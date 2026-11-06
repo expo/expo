@@ -148,15 +148,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   */
   nonisolated(unsafe) public static var uiRuntimeFactory: UIRuntimeFactory?
 
-  public var _uiRuntime: JavaScriptRuntime? {
-    didSet {
-      if _uiRuntime != oldValue {
-        MainActor.assumeIsolated {
-          try? prepareUIRuntime()
-        }
-      }
-    }
-  }
+  public var _uiRuntime: JavaScriptRuntime?
 
   public var uiRuntime: JavaScriptRuntime {
     get throws {
@@ -485,6 +477,14 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     return try JavaScriptBindings.buildSharedObjectClass(sharedObjectType, appContext: self)
   }
 
+  /**
+   Returns a JavaScript object that represents a module with given name in a runtime attached with `attach(runtime:)`.
+   */
+  @JavaScriptActor
+  internal func getNativeModuleObject(_ moduleName: String, inAttachedRuntime runtime: JavaScriptRuntime) -> JavaScriptValue? {
+    return moduleRegistry.get(moduleHolderForName: moduleName)?.getJavaScriptValue(inAttachedRuntime: runtime)
+  }
+
   // MARK: - Modules registration
 
   /**
@@ -617,17 +617,44 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   @JavaScriptActor
   internal func prepareRuntime() throws {
-    let installer = ExpoRuntimeInstaller(appContext: self, runtime: try runtime)
+    try prepare(runtime: try runtime, isMainRuntime: true)
+  }
+
+  /**
+   Prepares another runtime to use this app context, next to the main runtime, for example the
+   worklet UI runtime or a second runtime in tests. Call it on the thread of that runtime.
+   The runtime doesn't own the app context's lifecycle: tearing it down doesn't destroy the app context.
+   Attaching a runtime that is already attached to this app context does nothing.
+   */
+  @JavaScriptActor
+  public func attach(runtime: JavaScriptRuntime) throws {
+    // `global.expo` can't be replaced, so a runtime that has it can't be prepared again. It can also belong to
+    // an app context that was released, in which case `AppContext.from(runtime:)` returns `nil`.
+    if runtime.global().hasProperty(globalCoreObjectPropertyName) {
+      guard AppContext.from(runtime: runtime) === self else {
+        throw RuntimeAttachedToAnotherAppContextException()
+      }
+      return
+    }
+    try prepare(runtime: runtime, isMainRuntime: false)
+  }
+
+  @JavaScriptActor
+  private func prepare(runtime: JavaScriptRuntime, isMainRuntime: Bool) throws {
+    let installer = ExpoRuntimeInstaller(appContext: self, runtime: runtime)
 
     // Install `global.expo`.
     let coreObject = installer.installCoreObject()
 
     // Attach the native state that ties this app context's lifetime to the runtime and lets
-    // it be recovered from the runtime via `AppContext.from(runtime:)`. This is the main
-    // runtime, so its teardown owns the app context's `destroy()`.
-    installer.installAppContextNativeState(on: coreObject, ownsLifecycle: true)
+    // it be recovered from the runtime via `AppContext.from(runtime:)`. Only the teardown of
+    // the main runtime runs the app context's `destroy()`.
+    installer.installAppContextNativeState(on: coreObject, ownsLifecycle: isMainRuntime)
 
-    try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
+    if isMainRuntime {
+      // The members of the `definition()` DSL are built in the main runtime only.
+      try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
+    }
 
     // Bind the `@JS` members of the core module, such as `installOnUIRuntime`.
     try coreModule._decorateModule(object: coreObject, in: runtime)
@@ -647,50 +674,14 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     installer.installNativeModuleClass()
 
     // Install the modules host object as the `global.expo.modules`.
-    try installer.installExpoModulesHostObject()
+    try installer.installExpoModulesHostObject(isMainRuntime: isMainRuntime)
 
     // Install the packages host object as the `global.expo.packages`.
     try installer.installExpoPackagesHostObject()
-  }
 
-  @MainActor
-  internal func prepareUIRuntime() throws {
-    // This function is @MainActor, but the installer APIs require @JavaScriptActor.
-    // Safe here because the UI runtime runs its JS on the main thread, which
-    // JavaScriptActor accepts as a valid isolated context.
-    try JavaScriptActor.assumeIsolated {
-      let installer = ExpoRuntimeInstaller(appContext: self, runtime: try uiRuntime)
-
-      // Install `global.expo`.
-      let coreObject = installer.installCoreObject()
-
-      // Attach the native state that ties this app context's lifetime to the UI runtime and
-      // lets it be recovered from the runtime via `AppContext.from(runtime:)`. The UI runtime
-      // is subordinate, so its teardown must not destroy the app context.
-      installer.installAppContextNativeState(on: coreObject, ownsLifecycle: false)
-
-      // Install `global.expo.EventEmitter`.
-      installer.installEventEmitterClass()
-
-      // Install `global.expo.SharedObject`.
-      installer.installSharedObjectClass() { [weak sharedObjectRegistry] objectId in
-        sharedObjectRegistry?.delete(objectId)
-      }
-
-      // Install `global.expo.SharedRef`.
-      installer.installSharedRefClass()
-
-      // Install `global.expo.NativeModule`.
-      installer.installNativeModuleClass()
-
-      // Install the modules host object as the `global.expo.modules`.
-      try installer.installExpoModulesHostObject()
-
-      // Install the packages host object as the `global.expo.packages`.
-      try installer.installExpoPackagesHostObject()
-
+    if !isMainRuntime {
       // Install module class prototypes so SharedObject properties are accessible in worklets.
-      try installModuleClasses(in: uiRuntime)
+      try installModuleClasses(in: runtime)
     }
   }
 
@@ -710,10 +701,19 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
     // Called by the worklet serializer's `unpack` to recreate a SharedObject proxy.
     // Takes just the objectId — looks up the native type, lazily builds the prototype on first use.
-    let resolveInWorklet = runtime.createFunction("__resolveInWorklet") { [weak self] _, arguments in
+    // The function gets the runtime as an argument, because capturing it would keep a runtime that owns its
+    // engine alive forever.
+    let resolveInWorklet = runtime.createFunction("__resolveInWorklet") {
+      [weak self] (
+        _: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
       guard let self else {
         throw Exceptions.AppContextLost()
       }
+      let runtime = copy runtime
       let objectId = try arguments[0].asInt()
 
       guard let nativeObject = self.sharedObjectRegistry.get(objectId)?.native else {
@@ -738,7 +738,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       }
 
       instance.defineProperty(sharedObjectIdPropertyName, value: objectId, options: [])
-      return instance.asValue()
+      result.emplace(instance.asValue())
     }
 
     sharedObjectClass.setProperty("__resolveInWorklet", value: resolveInWorklet.asObject())
@@ -1052,6 +1052,12 @@ public class JavaScriptClassNotFoundException: Exception, @unchecked Sendable {
 internal final class SharedObjectNotFoundException: GenericException<String>, @unchecked Sendable {
   override var reason: String {
     "SharedObject with id '\(param)' not found in the registry"
+  }
+}
+
+internal final class RuntimeAttachedToAnotherAppContextException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "The runtime already has `global.expo` of another app context"
   }
 }
 
