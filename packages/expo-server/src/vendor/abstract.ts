@@ -3,6 +3,7 @@ import type { Manifest, MiddlewareInfo, Route } from '../manifest';
 import { getRedirectRewriteLocation, isResponse, parseParams } from '../utils/matchers';
 import { MiddlewareModule, shouldRunMiddleware } from '../utils/middleware';
 import { appendHeadersRecord, mergeHeaderInputs } from '../utils/headers';
+import { verifyRequestOrigin } from '../runtime/security';
 
 const LOADER_PREFIX = '/_expo/loaders';
 
@@ -29,7 +30,7 @@ type ResponseInitLike = Omit<ResponseInit, 'headers'> & {
   webSocket?: unknown;
 };
 type ResponseOverrides = { headers: Record<string, string | string[]> };
-type CallbackRouteType = 'html' | 'api' | 'notFoundHtml' | 'notAllowedApi';
+type CallbackRouteType = 'html' | 'api' | 'notFoundHtml' | 'notAllowedApi' | 'forbiddenApi';
 type CallbackRoute = (Route & { type: CallbackRouteType }) | { type: null };
 // NOTE(@krystofwoldrich): For better general usability of the callback bodyInit could be also passed as arg.
 // But we don't have a use case for it now, same for full HeaderInit type.
@@ -346,6 +347,23 @@ export function createRequestHandler({
         'Method not allowed',
         {
           status: 405,
+          headers: new Headers({
+            'Content-Type': 'text/plain',
+          }),
+        },
+        overrides
+      );
+    }
+
+    const isCsrfDisabled = mod.csrf === false || mod.unstable_settings?.csrf === false;
+    const trustedOrigins = mod.trustedOrigins ?? mod.unstable_settings?.trustedOrigins;
+    if (!isCsrfDisabled && !verifyRequestOrigin(request, { trustedOrigins })) {
+      return createResponse(
+        'forbiddenApi',
+        route,
+        'Cross-site request forbidden',
+        {
+          status: 403,
           headers: new Headers({
             'Content-Type': 'text/plain',
           }),

@@ -741,6 +741,204 @@ describe(createRequestHandler, () => {
       expect(response.headers.get('X-Page')).toBeNull();
     });
   });
+
+  describe('API route CSRF protection', () => {
+    const apiRoute = {
+      file: 'api/action',
+      page: '/api/action',
+      namedRegex: /^\/api\/action\/?$/,
+      routeKeys: {},
+    };
+
+    const manifest: Manifest = {
+      htmlRoutes: [],
+      apiRoutes: [apiRoute],
+      notFoundRoutes: [],
+      redirects: [],
+      rewrites: [],
+    };
+
+    function createApiHandler(mod: any) {
+      return createRequestHandler({
+        getRoutesManifest: jest.fn(async () => manifest),
+        getHtml: jest.fn(),
+        getApiRoute: jest.fn(async () => mod),
+        getMiddleware: jest.fn(),
+        getLoaderData: jest.fn(),
+      });
+    }
+
+    it('allows same-origin mutation requests', async () => {
+      const handler = createApiHandler({
+        POST: async () => Response.json({ success: true }),
+      });
+
+      const response = await handler(
+        new Request('http://localhost:8104/api/action', {
+          method: 'POST',
+          headers: {
+            Origin: 'http://localhost:8104',
+            Host: 'localhost:8104',
+          },
+        })
+      );
+
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual({ success: true });
+    });
+
+    it('blocks cross-origin mutation requests with 403 Forbidden', async () => {
+      const handler = createApiHandler({
+        POST: async () => Response.json({ success: true }),
+      });
+
+      const response = await handler(
+        new Request('http://localhost:8104/api/action', {
+          method: 'POST',
+          headers: {
+            Origin: 'http://evil.com',
+            Host: 'localhost:8104',
+          },
+        })
+      );
+
+      expect(response.status).toBe(403);
+      expect(await response.text()).toBe('Cross-site request forbidden');
+    });
+
+    it('blocks opaque origins (Origin: null) with 403 Forbidden', async () => {
+      const handler = createApiHandler({
+        POST: async () => Response.json({ success: true }),
+      });
+
+      const response = await handler(
+        new Request('http://localhost:8104/api/action', {
+          method: 'POST',
+          headers: {
+            Origin: 'null',
+            Host: 'localhost:8104',
+          },
+        })
+      );
+
+      expect(response.status).toBe(403);
+    });
+
+    it('permits non-browser mutation requests lacking Origin and Referer', async () => {
+      const handler = createApiHandler({
+        POST: async () => Response.json({ success: true }),
+      });
+
+      const response = await handler(
+        new Request('http://localhost:8104/api/action', {
+          method: 'POST',
+          headers: {
+            Host: 'localhost:8104',
+          },
+        })
+      );
+
+      expect(response.status).toBe(200);
+    });
+
+    it('permits cross-origin safe methods (GET, HEAD)', async () => {
+      const handler = createApiHandler({
+        GET: async () => Response.json({ data: 123 }),
+      });
+
+      const response = await handler(
+        new Request('http://localhost:8104/api/action', {
+          method: 'GET',
+          headers: {
+            Origin: 'http://evil.com',
+            Host: 'localhost:8104',
+          },
+        })
+      );
+
+      expect(response.status).toBe(200);
+    });
+
+    it('permits cross-origin mutation when route explicitly sets csrf: false', async () => {
+      const handler = createApiHandler({
+        csrf: false,
+        POST: async () => Response.json({ public: true }),
+      });
+
+      const response = await handler(
+        new Request('http://localhost:8104/api/action', {
+          method: 'POST',
+          headers: {
+            Origin: 'http://evil.com',
+            Host: 'localhost:8104',
+          },
+        })
+      );
+
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual({ public: true });
+    });
+
+    it('permits cross-origin mutation when route sets unstable_settings.csrf: false', async () => {
+      const handler = createApiHandler({
+        unstable_settings: { csrf: false },
+        POST: async () => Response.json({ public: true }),
+      });
+
+      const response = await handler(
+        new Request('http://localhost:8104/api/action', {
+          method: 'POST',
+          headers: {
+            Origin: 'http://evil.com',
+            Host: 'localhost:8104',
+          },
+        })
+      );
+
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual({ public: true });
+    });
+
+    it('permits cross-origin mutation when origin matches route trustedOrigins', async () => {
+      const handler = createApiHandler({
+        trustedOrigins: ['http://partner.com'],
+        POST: async () => Response.json({ partner: true }),
+      });
+
+      const response = await handler(
+        new Request('http://localhost:8104/api/action', {
+          method: 'POST',
+          headers: {
+            Origin: 'http://partner.com',
+            Host: 'localhost:8104',
+          },
+        })
+      );
+
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual({ partner: true });
+    });
+
+    it('permits cross-origin mutation when origin matches unstable_settings.trustedOrigins', async () => {
+      const handler = createApiHandler({
+        unstable_settings: { trustedOrigins: ['http://partner.com'] },
+        POST: async () => Response.json({ partner: true }),
+      });
+
+      const response = await handler(
+        new Request('http://localhost:8104/api/action', {
+          method: 'POST',
+          headers: {
+            Origin: 'http://partner.com',
+            Host: 'localhost:8104',
+          },
+        })
+      );
+
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual({ partner: true });
+    });
+  });
 });
 
 function createHtmlStream(html: string): ReadableStream<Uint8Array> {
