@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Drop the `glob` dependency and update `minimatch` to `^10.2.6`. ([#53091](https://github.com/expo/expo/pull/53091) by [@kitten](https://github.com/kitten))
+
 ## 0.16.8 — 2026-07-15
 
 ### 🐛 Bug fixes

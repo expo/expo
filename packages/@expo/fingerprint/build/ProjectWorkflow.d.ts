@@ -1,4 +1,4 @@
-import { type Minimatch } from 'minimatch';
+import type { Minimatch } from 'minimatch';
 import { type Platform, type ProjectWorkflow } from './Fingerprint.types';
 /**
  * Replicated project workflow detection logic from expo-updates:
