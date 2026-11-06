@@ -17,8 +17,9 @@ const buildAndroid = async (command: Command) => {
   }
   printAndroidConfig(config);
 
+  const extraGradleArgs = config.fused ? ['-Pbrownfield.fused=true'] : [];
   for (const task of config.tasks) {
-    await runTask(task, config.verbose, config.dryRun);
+    await runTask(task, config.verbose, config.dryRun, extraGradleArgs);
   }
 };
 
