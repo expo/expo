@@ -191,7 +191,7 @@ internal fun Project.alwaysRunBundleTasks() {
   subprojects { subproject ->
     subproject.tasks.configureEach { task ->
       if (task.name.startsWith("createBundle") && task.name.endsWith("JsAndAssets")) {
-        task.outputs.upToDateWhen { false }
+        task.doNotTrackState("Metro decides what to rebuild, and its cache can't be expressed as Gradle inputs")
       }
     }
   }
