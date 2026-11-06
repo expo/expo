@@ -42,6 +42,21 @@ export interface StackHeaderItemSharedProps {
    * @default 'plain'
    */
   variant?: 'plain' | 'done' | 'prominent';
+  /**
+   * Controls whether this item can move into the vertical bar that iOS 27.1 shows on iPhone Duo.
+   * `automatic` lets the system decide from the item's content. `horizontalOnly` keeps the item in
+   * the horizontal bar and hides it when no horizontal bar is present. `verticalPreferred` prefers
+   * the vertical bar when both bars are present.
+   *
+   * Header items need a `react-native-screens` release that reads `axisBehavior`. Until then, they
+   * stay on `automatic`.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/axisbehavior-swift.property) for more information.
+   *
+   * @default 'automatic'
+   * @platform ios 27.1+
+   */
+  axisBehavior?: 'automatic' | 'horizontalOnly' | 'verticalPreferred';
 }
 
 // We need to pick these properties, as the SharedHeaderItem is not exported by React Navigation
@@ -56,6 +71,7 @@ type RNSharedHeaderItem = Pick<
   | 'width'
   | 'hidesSharedBackground'
   | 'sharesBackground'
+  | 'axisBehavior'
   | 'identifier'
   | 'badge'
   | 'accessibilityLabel'
