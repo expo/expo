@@ -40,20 +40,20 @@ In Kotlin, a `Set` converts to and from a JavaScript `Array`. In Swift, a `Set` 
 
 ## Other types
 
-| JavaScript                        | Kotlin                                   | Swift                                                                                       |
-| --------------------------------- | ---------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `string` or `number` of an enum   | An enum that implements `Enumerable`     | An enum that implements `Enumerable`                                                        |
-| `Date`                            | Not supported                            | `Date`                                                                                      |
-| `string` with a URL or a path     | `Uri`, `URL`, `File`, `Path`             | Not supported, use `String`                                                                 |
-| `number` of seconds               | `Duration`                               | Not supported, use `Double`                                                                 |
-| `Promise` (result)                | `Promise`                                | `Task`                                                                                      |
-| `Object` with known properties    | [Record](/modules/v2/reference/records/) | [Record](/modules/v2/reference/records/)                                                    |
-| One of a few types                | Not supported yet                        | [Union](/modules/v2/reference/unions/)                                                      |
-| `Array` or `Object` of fixed size | Not documented yet                       | [Tuple](#tuples)                                                                            |
-| `function`                        | Not documented yet                       | [Closure](#closure-arguments)                                                               |
-| Instance of a shared object class | Not documented yet                       | [`SharedObject`](/modules/v2/reference/shared-objects/)                                     |
-| `ArrayBuffer`, typed arrays       | `ByteArray`, `TypedArray`                | `Data`, `ArrayBuffer`, `TypedArray` (see [Binary data](/modules/v2/reference/binary-data/)) |
-| Any value, without a conversion   | Not documented yet                       | [`JavaScriptValue`](#javascript-values)                                                     |
+| JavaScript                        | Kotlin                                                  | Swift                                                                                       |
+| --------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `string` or `number` of an enum   | An enum that implements `Enumerable`                    | An enum that implements `Enumerable`                                                        |
+| `Date`                            | Not supported                                           | `Date`                                                                                      |
+| `string` with a URL or a path     | `Uri`, `URL`, `File`, `Path`                            | Not supported, use `String`                                                                 |
+| `number` of seconds               | `Duration`                                              | Not supported, use `Double`                                                                 |
+| `Promise` (result)                | `Promise`                                               | `Task`                                                                                      |
+| `Object` with known properties    | [Record](/modules/v2/reference/records/)                | [Record](/modules/v2/reference/records/)                                                    |
+| One of a few types                | Not supported yet                                       | [Union](/modules/v2/reference/unions/)                                                      |
+| `Array` or `Object` of fixed size | Not documented yet                                      | [Tuple](#tuples)                                                                            |
+| `function`                        | Not supported yet                                       | [Closure](#closure-arguments)                                                               |
+| Instance of a shared object class | [`SharedObject`](/modules/v2/reference/shared-objects/) | [`SharedObject`](/modules/v2/reference/shared-objects/)                                     |
+| `ArrayBuffer`, typed arrays       | `ByteArray`, `TypedArray`                               | `Data`, `ArrayBuffer`, `TypedArray` (see [Binary data](/modules/v2/reference/binary-data/)) |
+| Any value, without a conversion   | Not documented yet                                      | [`JavaScriptValue`](#javascript-values)                                                     |
 
 In Swift, a `Date` argument also accepts a number of milliseconds since the epoch, or a string that the JavaScript `Date` constructor can parse.
 
