@@ -527,7 +527,6 @@ export interface NativeTabsProps extends PropsWithChildren {
 
 export interface InternalNativeTabsProps extends NativeTabsProps {
   nonTriggerChildren?: React.ReactNode;
-  tabConfigurationKey: string;
 }
 export interface OnTabChangeEventPayload {
   /**
@@ -566,7 +565,6 @@ export interface NativeTabsViewProps extends Omit<
   | 'rippleColor'
   | 'disableIndicator'
   | 'labelVisibilityMode'
-  | 'tabConfigurationKey'
 > {
   focusedIndex: number;
   /**

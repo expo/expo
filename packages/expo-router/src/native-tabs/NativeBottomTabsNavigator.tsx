@@ -1,6 +1,6 @@
 'use client';
 
-import React, { use, useCallback, useMemo, useRef } from 'react';
+import React, { use, useCallback, useMemo, useRef, useState } from 'react';
 
 import { createBaseTabProps } from '../layouts/createBaseTabProps';
 import {
@@ -22,7 +22,9 @@ import { useNonStackAnchorWarning } from '../standard-navigation/useNonStackAnch
 import { usePreloadPlaceholderRoutes } from '../standard-navigation/usePreloadPlaceholderRoutes';
 import { useReconcileTabHistory } from '../standard-navigation/useReconcileTabHistory';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
-import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
+import { useWarnOnce } from '../useDeprecated';
+import { filterAllowedChildrenElements, getAllChildrenNotOfType } from '../utils/children';
+import { Protected } from '../views/Protected';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabTrigger } from './NativeTabTrigger';
 import { NativeTabsView } from './NativeTabsView';
@@ -77,6 +79,23 @@ export function createNativeTabsProps(
   };
 }
 
+// Store the previous key in state, so the warning sees the change, also in StrictMode.
+function useWarnOnTabConfigurationChange(tabConfigurationKey: string) {
+  const [tabKeys, setTabKeys] = useState({
+    previous: tabConfigurationKey,
+    current: tabConfigurationKey,
+  });
+  if (process.env.NODE_ENV !== 'production' && tabKeys.current !== tabConfigurationKey) {
+    setTabKeys({ previous: tabKeys.current, current: tabConfigurationKey });
+  }
+  const formatTabs = (key: string) => `[${key.split(';').join(', ')}]`;
+  useWarnOnce(
+    `NativeTabs remounted and reset all tab state because the visible tabs changed from ${formatTabs(tabKeys.previous)} to ${formatTabs(tabKeys.current)}. ` +
+      'To keep tab state, keep the same visible tabs, or move the condition to a parent layout, for example a `Protected` guard around the tabs layout.',
+    tabKeys.previous !== tabKeys.current
+  );
+}
+
 function NativeTabsContent({
   state,
   routeNames,
@@ -87,7 +106,6 @@ function NativeTabsContent({
   navigateSync,
   isPreloaded: _isPreloaded,
   isRemovalPrevented: _isRemovalPrevented,
-  tabConfigurationKey,
   // These per-tab style props are folded into `screenOptions` by `NativeTabsNavigatorWrapper` and
   // read back per-tab from `descriptors`. Pull them out of `rest` so they aren't forwarded to
   // `NativeTabsView` as top-level props.
@@ -136,12 +154,15 @@ function NativeTabsContent({
       ),
     [descriptors, visibleRoutes]
   );
+  const tabConfigurationKey = visibleTabs.map((tab) => tab.name).join(';');
   usePreloadPlaceholderRoutes({
     routes: visibleRoutes,
     descriptors,
     preload,
     lazyByDefault: false,
   });
+
+  useWarnOnTabConfigurationChange(tabConfigurationKey);
 
   const provenanceRef = useRef(0);
 
@@ -239,16 +260,18 @@ const NativeTabsNavigatorWithContext = createStandardRouterNavigator<
 });
 
 export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
-  const triggerChildren = useMemo(
+  // `Protected` stays wrapped. The navigator's screen filter reads `guard` and records `redirectTo`.
+  const navigatorChildren = useMemo(
     () =>
-      getAllChildrenOfType(props.children, NativeTabTrigger).filter((child) => !child.props.hidden),
+      filterAllowedChildrenElements(props.children, [NativeTabTrigger, Protected]).filter(
+        (child) => !('hidden' in child.props && child.props.hidden)
+      ),
     [props.children]
   );
   const nonTriggerChildren = useMemo(
     () => getAllChildrenNotOfType(props.children, NativeTabTrigger),
     [props.children]
   );
-  const tabConfigurationKey = triggerChildren.map((child) => child.props.name).join(';');
 
   const {
     backBehavior = defaultBackBehavior,
@@ -317,9 +340,8 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
     <IsWithinNativeNavigator value>
       <NativeTabsNavigatorWithContext
         {...props}
-        children={triggerChildren}
+        children={navigatorChildren}
         nonTriggerChildren={nonTriggerChildren}
-        tabConfigurationKey={tabConfigurationKey}
         screenOptions={screenOptions}
         // Passed to TabRouter
         backBehavior={backBehavior}
