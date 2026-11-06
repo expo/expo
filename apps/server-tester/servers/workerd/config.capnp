@@ -28,6 +28,8 @@ const server :Workerd.Worker = (
     (name = "_expo/functions/api/throws+api.js", commonJsModule = embed "_expo/functions/api/throws+api.js"),
     (name = "_expo/functions/api/with-page+api.js", commonJsModule = embed "_expo/functions/api/with-page+api.js"),
     (name = "_expo/functions/routing/(a,b)/multi-group-api+api.js", commonJsModule = embed "_expo/functions/routing/(a,b)/multi-group-api+api.js"),
+    (name = "_expo/functions/headers/api+api.js", commonJsModule = embed "_expo/functions/headers/api+api.js"),
+    (name = "_expo/loaders/headers/blog.js", commonJsModule = embed "_expo/loaders/headers/blog.js"),
     (name = "_expo/loaders/loaders/index.js", commonJsModule = embed "_expo/loaders/loaders/index.js"),
     (name = "_expo/loaders/loaders/env.js", commonJsModule = embed "_expo/loaders/loaders/env.js"),
     (name = "_expo/loaders/loaders/large-suspense.js", commonJsModule = embed "_expo/loaders/loaders/large-suspense.js"),

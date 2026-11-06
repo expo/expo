@@ -1,15 +1,14 @@
 import { createExpoStart } from '../utils/expo';
 /* eslint-env jest */
-import { getRouterE2ERoot } from './utils';
+import { getServerTesterRoot } from './utils';
 
 describe('server headers', () => {
-  const projectRoot = getRouterE2ERoot();
+  const projectRoot = getServerTesterRoot();
   const expo = createExpoStart({
     cwd: projectRoot,
     env: {
       NODE_ENV: 'development',
-      EXPO_USE_STATIC: 'server',
-      E2E_ROUTER_SRC: 'server-headers',
+      E2E_ROUTER_WEB_OUTPUT: 'server',
       E2E_ROUTER_HEADERS: JSON.stringify({
         'X-Powered-By': 'expo-server',
         'Set-Cookie': ['hello=world', 'foo=bar'],
@@ -17,8 +16,8 @@ describe('server headers', () => {
       }),
       E2E_ROUTER_REWRITES: JSON.stringify([
         {
-          source: '/rewrite/api',
-          destination: '/api',
+          source: '/headers/rewrite',
+          destination: '/headers/api',
         },
       ]),
       CI: '0',
@@ -35,17 +34,17 @@ describe('server headers', () => {
 
   it.each([
     {
-      path: '/',
+      path: '/headers',
       status: 200,
       contentType: 'text/html',
     },
     {
-      path: '/api',
+      path: '/headers/api',
       status: 200,
       contentType: 'application/json',
     },
     {
-      path: '/rewrite/api',
+      path: '/headers/rewrite',
       status: 200,
       contentType: 'application/json',
     },
