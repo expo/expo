@@ -3,27 +3,21 @@
 import CoreGraphics
 import ExpoModulesCore
 
-/**
- Options for loading the source image.
- */
+/// Options for loading the source image.
 @Record
 internal struct ImageLoadOptions {
   var maxWidth: Int?
   var maxHeight: Int?
 }
 
-/**
- Options provided for resize action.
- */
+/// Options provided for resize action.
 @Record
 internal struct ResizeOptions {
   var width: CGFloat?
   var height: CGFloat?
 }
 
-/**
- Cropping rect for crop action.
- */
+/// Cropping rect for crop action.
 @Record
 internal struct CropRect {
   var originX: Double = 0.0
@@ -36,9 +30,7 @@ internal struct CropRect {
   }
 }
 
-/**
- Options to use when saving the resulted image.
- */
+/// Options to use when saving the resulted image.
 @Record
 internal struct ManipulateOptions {
   var base64: Bool = false
@@ -46,9 +38,7 @@ internal struct ManipulateOptions {
   var format: ImageFormat = .jpeg
 }
 
-/**
- The saved image file, returned to JavaScript.
- */
+/// The saved image file, returned to JavaScript.
 @Record
 internal struct ImageResult {
   var uri: String
@@ -57,17 +47,13 @@ internal struct ImageResult {
   var base64: String?
 }
 
-/**
- Possible options for flip action.
- */
+/// Possible options for flip action.
 internal enum FlipType: String, Enumerable {
   case vertical
   case horizontal
 }
 
-/**
- Enum with supported image formats.
- */
+/// Enum with supported image formats.
 internal enum ImageFormat: String, Enumerable {
   case jpeg
   case jpg

@@ -3,9 +3,7 @@
 import ExpoModulesCore
 import UIKit
 
-/**
- Represents a shared reference to the `UIImage` instance.
- */
+/// Represents a shared reference to the `UIImage` instance.
 @SharedObject("Image")
 public final class ImageRef: SharedRef<UIImage> {
   public override var nativeRefType: String {
