@@ -17,6 +17,7 @@
           "name": "ExpoLinking",
           "path": "ios",
           "pattern": "*.swift",
+          "exclude": ["Tests/**"],
           "dependencies": [
             "Hermes",
             "React",
