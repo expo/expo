@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix redirects so dynamic segments match the URL and query strings are preserved. ([#52711](https://github.com/expo/expo/pull/52711) by [@itisrmk](https://github.com/itisrmk))
 - Prevent `<Link>` from dropping the search params, hash, or part of an external URL from its `href` when they contain parentheses. ([#52587](https://github.com/expo/expo/pull/52587) by [@hassankhan](https://github.com/hassankhan))
 - [web] Fix browser back after `setParams` or `replace` remounting the route tree and losing React state. ([#52127](https://github.com/expo/expo/pull/52127) by [@Ubax](https://github.com/Ubax))
 - Keep the outgoing tab attached until its transition finishes, so the arriving tab no longer renders blank. ([#49778](https://github.com/expo/expo/pull/49778) by [@LizunovSergey](https://github.com/LizunovSergey))
