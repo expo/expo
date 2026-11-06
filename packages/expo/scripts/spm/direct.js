@@ -181,7 +181,11 @@ function readPackageVersion(packageRoot) {
 
 /** Whether `version` is `X.Y.Z` (any prerelease suffix ignored) and not below `minimum`. */
 function isAtLeast(version, minimum) {
-  const parse = (v) => /^(\d+)\.(\d+)\.(\d+)(?:-|$)/.exec(v ?? '')?.slice(1).map(Number);
+  const parse = (v) =>
+    /^(\d+)\.(\d+)\.(\d+)(?:-|$)/
+      .exec(v ?? '')
+      ?.slice(1)
+      .map(Number);
   const parts = parse(version);
   if (parts == null) {
     return false;
