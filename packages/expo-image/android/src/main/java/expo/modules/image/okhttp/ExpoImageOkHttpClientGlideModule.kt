@@ -1,7 +1,6 @@
 package expo.modules.image.okhttp
 
 import android.content.Context
-import android.webkit.CookieManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Registry
 import com.bumptech.glide.annotation.GlideModule
@@ -10,11 +9,20 @@ import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.module.LibraryGlideModule
 import com.facebook.react.modules.network.CookieJarContainer
+import com.facebook.react.modules.network.ForwardingCookieHandler
 import com.facebook.react.modules.network.OkHttpClientProvider
+import com.facebook.react.modules.network.ReactCookieJarContainer
 import expo.modules.image.events.OkHttpProgressListener
+import okhttp3.Authenticator
+import okhttp3.Call
 import okhttp3.Cookie
 import okhttp3.CookieJar
 import okhttp3.HttpUrl
+import okhttp3.JavaNetCookieJar
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.Response
+import okhttp3.Route
 import java.io.InputStream
 
 /**
@@ -79,40 +87,71 @@ data class GlideUrlWrapper(val glideUrl: GlideUrl) {
   }
 }
 
-private object SharedCookieJar : CookieJar {
-  override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-    val cookieManager = getCookieManager() ?: return
-    val urlString = url.toString()
-    for (cookie in cookies) {
-      cookieManager.setCookie(urlString, cookie.toString())
+// CookieJarContainer does not expose its delegate. Retain its cookies and fall back to the
+// shared store when it is empty. Response cookies go to both stores; other jars opt out.
+internal fun OkHttpClient.withSharedCookies(): Call.Factory {
+  val originalCookieJar = cookieJar
+  if (originalCookieJar !is CookieJarContainer) {
+    return this
+  }
+  val sharedCookieJar = ReactCookieJarContainer().apply {
+    setCookieJar(JavaNetCookieJar(ForwardingCookieHandler()))
+  }
+  return Call.Factory { request ->
+    var hasCookieHeader = false
+
+    // OkHttp keys pooled connections by proxy authenticator, so wrappers compare their delegates.
+    data class CookieHeaderAuthenticator(val delegate: Authenticator) : Authenticator {
+      override fun authenticate(route: Route?, response: Response): Request? =
+        delegate.authenticate(route, response)?.also { followUp ->
+          // CONNECT authenticates the proxy tunnel, not the image request.
+          if (followUp.method != "CONNECT") {
+            hasCookieHeader = followUp.header("Cookie") != null
+          }
+        }
     }
-    cookieManager.flush()
-  }
+    fun recordCookieHeader(authenticator: Authenticator): Authenticator =
+      if (authenticator === Authenticator.NONE) {
+        authenticator
+      } else {
+        CookieHeaderAuthenticator(authenticator)
+      }
 
-  override fun loadForRequest(url: HttpUrl): List<Cookie> {
-    val cookieManager = getCookieManager() ?: return emptyList()
-    val cookieString = cookieManager.getCookie(url.toString()) ?: return emptyList()
-    return cookieString.split(";").mapNotNull { Cookie.parse(url, it.trim()) }
-  }
+    newBuilder()
+      .addInterceptor { chain ->
+        // Factory interceptors may add a Cookie header before OkHttp applies cookies and checks the cache.
+        hasCookieHeader = chain.request().header("Cookie") != null
+        chain.proceed(chain.request())
+      }
+      .authenticator(recordCookieHeader(authenticator))
+      .proxyAuthenticator(recordCookieHeader(proxyAuthenticator))
+      .cookieJar(object : CookieJar {
+        override fun loadForRequest(url: HttpUrl): List<Cookie> {
+          val cookies = originalCookieJar.loadForRequest(url)
+          return if (cookies.isNotEmpty() || hasCookieHeader) {
+            cookies
+          } else {
+            sharedCookieJar.loadForRequest(url)
+          }
+        }
 
-  private fun getCookieManager(): CookieManager? = runCatching {
-    CookieManager.getInstance()
-  }.getOrNull()
+        override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
+          originalCookieJar.saveFromResponse(url, cookies)
+          sharedCookieJar.saveFromResponse(url, cookies)
+        }
+      })
+      .build()
+      .newCall(request)
+  }
 }
 
 @GlideModule
 class ExpoImageOkHttpClientGlideModule : LibraryGlideModule() {
   override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
-    val client = OkHttpClientProvider.createClient().let { client ->
-      if (client.cookieJar is CookieJarContainer) {
-        client.newBuilder().cookieJar(SharedCookieJar).build()
-      } else {
-        client
-      }
-    }
+    val client = OkHttpClientProvider.createClient()
     // We don't use the `GlideUrl` directly but we want to replace the default okhttp loader anyway
     // to make sure that the app will use only one client.
-    registry.replace(GlideUrl::class.java, InputStream::class.java, OkHttpUrlLoader.Factory(client))
+    registry.replace(GlideUrl::class.java, InputStream::class.java, OkHttpUrlLoader.Factory(client.withSharedCookies()))
     registry.prepend(GlideUrlWrapper::class.java, InputStream::class.java, GlideUrlWrapperLoader.Factory(client))
     // Prepend so seeding models (those with a local file path) take precedence over the inherited
     // `GlideUrl` OkHttp loader. Regular `GlideUrlWithCustomCacheKey` loads have no path and fall through.
