@@ -2,4 +2,4 @@
 'expo-router': patch
 ---
 
-Stop `router.push()` and the other imperative `router` methods from throwing after an Android Activity relaunch.
+Keep the imperative `router`, `useRouter()` and `useNavigationContainerRef()` working after an Android Activity relaunch.
