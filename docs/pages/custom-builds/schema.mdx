@@ -1,7 +1,7 @@
 ---
 title: Custom build configuration schema
 sidebar_title: Config schema
-description: A reference of configuration options for custom builds with EAS Build.
+description: A reference of configuration options for custom builds with Expo Build.
 maxHeadingDepth: 5
 ---
 
@@ -12,7 +12,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { EASFunctionDescription } from '~/ui/components/EASFunctionDescription';
 
-Creating custom builds for EAS Build helps customize the build process for your project.
+Creating custom builds for Expo Build helps customize the build process for your project.
 
 ## YAML syntax for custom builds
 
@@ -24,7 +24,7 @@ Defined to describe a custom build configuration. All config options to create a
 
 ### `name`
 
-The name of your custom build that is used to identify it in the build logs. EAS Build uses this property to display the name of your build in the dashboard.
+The name of your custom build that is used to identify it in the build logs. Expo Build uses this property to display the name of your build in the dashboard.
 
 For example, the build name is `Run tests`:
 
@@ -42,7 +42,7 @@ build:
 
 ### `steps`
 
-Steps are used to describe a list of actions, either in the form of commands or function calls. These actions are executed when a custom build runs on EAS Build. You can define single or multiple steps in a build config. However, it is **required** to define at least one step per build.
+Steps are used to describe a list of actions, either in the form of commands or function calls. These actions are executed when a custom build runs on Expo Build. You can define single or multiple steps in a build config. However, it is **required** to define at least one step per build.
 
 Each step is configured with the following properties:
 
@@ -627,15 +627,15 @@ functions:
 
 ## Functions
 
-### Built-in EAS functions
+### Built-in `eas/` functions
 
-EAS provides a set of built-in reusable functions that you can use in a build config without defining the function definition.
+Expo Build provides a set of built-in reusable functions that you can use in a build config without defining the function definition.
 
-> **info** **Tip:** Any function that is built-in and provided by EAS must start with the `eas/` prefix.
+> **info** **Tip:** Any function that is built-in and provided by Expo Build must start with the `eas/` prefix.
 
 #### `eas/build`
 
-The all-in-one function that encapsulates the entire EAS Build build process. It resolves the best build configuration based on your build profile's settings from [**eas.json**](/eas/json/).
+The all-in-one function that encapsulates the entire Expo Build build process. It resolves the best build configuration based on your build profile's settings from [**eas.json**](/eas/json/).
 
 It's ideal for people who want to have the build done without worrying about altering and configuring the build process manually. It can be a great starting point for your custom build configuration if you are interested in using other custom steps before or after the build process and you don't want to change the build process itself.
 
@@ -1154,13 +1154,13 @@ build:
 
 #### `eas/configure_eas_update`
 
-> **Warning** To use this function you need to have EAS Update configured for your project.
+> **Warning** To use this function you need to have Expo Update configured for your project.
 
 Configures runtime version and release channel for your build.
 
 ```yaml example.yml
 build:
-  name: Configure EAS Update
+  name: Configure Expo Update
   steps:
     - eas/checkout
     - eas/install_node_modules
@@ -1172,7 +1172,7 @@ build:
 
 ```yaml example.yml
 build:
-  name: Configure EAS Update
+  name: Configure Expo Update
   steps:
     - eas/checkout
     - eas/install_node_modules
@@ -1482,7 +1482,7 @@ disable_xcpretty(true)
 buildlog_path("<%- LOGS_DIRECTORY %>")
 ```
 
-`CLEAN`, `SCHEME`, `BUILD_CONFIGURATION`, `EXPORT_METHOD`, `PROFILES`, `ICLOUD_CONTAINER_ENVIRONMENT`, `KEYCHAIN_PATH`, `LOGS_DIRECTORY`, `OUTPUT_DIRECTORY`, `DERIVED_DATA_PATH` and `SCHEME_SIMULATOR_DESTINATION` values are provided to the template based on the inputs and default internal configuration of EAS Build.
+`CLEAN`, `SCHEME`, `BUILD_CONFIGURATION`, `EXPORT_METHOD`, `PROFILES`, `ICLOUD_CONTAINER_ENVIRONMENT`, `KEYCHAIN_PATH`, `LOGS_DIRECTORY`, `OUTPUT_DIRECTORY`, `DERIVED_DATA_PATH` and `SCHEME_SIMULATOR_DESTINATION` values are provided to the template based on the inputs and default internal configuration of Expo Build.
 
 ```yaml example.yml
 build:
@@ -1638,7 +1638,7 @@ build:
 
 > **Warning** **You can currently upload each artifact type only once per build job.**<br />If you use [`eas/find_and_upload_build_artifacts`](#easfind_and_upload_build_artifacts) while having [`buildArtifactPaths`](/eas/json/#buildartifactpaths) configured in your build profile and the step finds and uploads some build artifacts, any following `eas/upload_artifact` step will fail.<br />To solve this, for now, we recommend removing `buildArtifactPaths` from custom build's profiles and uploading artifacts manually with `eas/upload_artifact` in the YAML if you need to call it there.
 
-Automatically finds and uploads application archive, additional build artifacts, and Xcode logs from the default locations and using the [`buildArtifactPaths`](/eas/json#buildartifactpaths) configuration. Uploads found artifacts to the EAS servers.
+Automatically finds and uploads application archive, additional build artifacts, and Xcode logs from the default locations and using the [`buildArtifactPaths`](/eas/json#buildartifactpaths) configuration. Uploads found artifacts to the Expo servers.
 
 ```yaml example.yml|collapseHeight=440
 build:
@@ -1700,7 +1700,7 @@ build:
 
 #### `eas/upload_embedded_bundle`
 
-Uploads the embedded bundle from the app that the build produced. EAS Update can then serve updates that you publish later to the same channel as [patches against it](/eas-update/bundle-diffing/#patches-from-the-embedded-bundle).
+Uploads the embedded bundle from the app that the build produced. Expo Update can then serve updates that you publish later to the same channel as [patches against it](/eas-update/bundle-diffing/#patches-from-the-embedded-bundle).
 
 `eas/build` runs this step for you when the upload is enabled. Add it yourself when your config builds the app with separate steps instead of `eas/build`. Run it after the step that builds the app, such as `eas/run_gradle` or `eas/run_fastlane`.
 
@@ -1722,7 +1722,7 @@ build:
 
 Unlike `eas/build`, the step does not check the SDK version or the `EAS_UPDATE_UPLOAD_EMBEDDED_BUNDLE` and `EAS_UPDATE_EXPERIMENTAL_UPLOAD_EMBEDDED_BUNDLE` environment variables. It skips the upload in these cases:
 
-- EAS Update is not configured in your project.
+- Expo Update is not configured in your project.
 - The build is a development build.
 - The build is an iOS Simulator build.
 
@@ -1987,7 +1987,7 @@ build:
 
 <EASFunctionDescription name="send_slack_message" />
 
-The following functions connect your build to [PostHog](/guides/using-posthog/). Run `eas integrations:posthog:connect` to link a PostHog project and set the environment variables these functions read. `eas/posthog_capture_event` uses your public project API key, while the other functions use a PostHog personal API key with the scopes noted for each one. For setup, see [Using PostHog](/guides/using-posthog/), and for complete workflows, see [PostHog recipes for EAS Workflows](/guides/using-posthog/recipes).
+The following functions connect your build to [PostHog](/guides/using-posthog/). Run `eas integrations:posthog:connect` to link a PostHog project and set the environment variables these functions read. `eas/posthog_capture_event` uses your public project API key, while the other functions use a PostHog personal API key with the scopes noted for each one. For setup, see [Using PostHog](/guides/using-posthog/), and for complete workflows, see [PostHog recipes for Expo Workflows](/guides/using-posthog/recipes).
 
 #### `eas/posthog_capture_event`
 
@@ -2105,9 +2105,9 @@ build:
 
 <EASFunctionDescription name="posthog_upload_sourcemaps" />
 
-### Using built-in EAS functions to build an app
+### Using built-in `eas/` functions to build an app
 
-Using the built-in EAS functions you can recreate the default EAS Build process for different build types.
+Using the built-in `eas/` functions you can recreate the default Expo Build process for different build types.
 
 For example, to trigger a build that creates internal distribution build for Android and a simulator build for iOS you can use the following configuration:
 
@@ -2244,7 +2244,7 @@ Check out the **example repository** for more detailed examples:
 
 <BoxLink
   title="Custom build example repository"
-  description="A custom EAS Build example that includes examples for custom builds such as setting up functions, using environment variables, uploading artifacts, and more."
+  description="A custom Expo Build example that includes examples for custom builds such as setting up functions, using environment variables, uploading artifacts, and more."
   Icon={GithubIcon}
   href="https://github.com/expo/eas-custom-builds-example/tree/main"
 />

@@ -1,8 +1,8 @@
 import type { ExpoConfig } from '@expo/config-types';
 import Debug from 'debug';
 import fs from 'fs';
-import { globSync } from 'glob';
 import path from 'path';
+import { glob, globSync } from 'tinyglobby';
 
 import type { ConfigPlugin } from '../Plugin.types';
 import { withAppBuildGradle } from '../plugins/android-plugins';
@@ -61,7 +61,9 @@ function getCurrentPackageForProjectFile(
 ) {
   const filePath = globSync(
     path.join(projectRoot, `android/app/src/${type}/java/**/${fileName}.@(java|kt)`)
-  )[0];
+  )
+    .sort()
+    .reverse()[0];
 
   if (!filePath) {
     return null;
@@ -101,6 +103,15 @@ export async function renamePackageOnDisk(
   }
 }
 
+// NOTE(@kitten): Collect paths before moving files so directory iteration is not affected.
+async function listFilesRecursively(parentPath: string): Promise<string[]> {
+  return glob('**/*', {
+    cwd: parentPath,
+    absolute: true,
+    followSymbolicLinks: false,
+  });
+}
+
 export async function renameJniOnDiskForType({
   projectRoot,
   type,
@@ -120,7 +131,7 @@ export async function renameJniOnDiskForType({
   }
 
   const jniRoot = path.join(projectRoot, 'android', 'app', 'src', type, 'jni');
-  const filesToUpdate = [...globSync('**/*', { cwd: jniRoot, absolute: true })];
+  const filesToUpdate = await listFilesRecursively(jniRoot);
   // Replace all occurrences of the path in the project
   filesToUpdate.forEach((filepath: string) => {
     try {
@@ -171,14 +182,9 @@ export async function renamePackageOnDiskForType({
   fs.mkdirSync(newPackagePath, { recursive: true });
 
   // Move everything from the old directory over
-  globSync('**/*', { cwd: currentPackagePath }).forEach((relativePath) => {
-    const filepath = path.join(currentPackagePath, relativePath);
-    if (fs.lstatSync(filepath).isFile()) {
-      moveFileSync(filepath, path.join(newPackagePath, relativePath));
-    } else {
-      fs.mkdirSync(filepath, { recursive: true });
-    }
-  });
+  for (const filepath of await listFilesRecursively(currentPackagePath)) {
+    moveFileSync(filepath, path.join(newPackagePath, path.relative(currentPackagePath, filepath)));
+  }
 
   // Remove the old directory recursively from com/old/package to com/old and com,
   // as long as the directories are empty
@@ -195,7 +201,7 @@ export async function renamePackageOnDiskForType({
     }
   }
 
-  const filesToUpdate = [...globSync('**/*', { cwd: newPackagePath, absolute: true })];
+  const filesToUpdate = await listFilesRecursively(newPackagePath);
   // Only update the BUCK file to match the main package name
   if (type === 'main') {
     // NOTE(EvanBacon): We dropped this file in SDK 48 but other templates may still use it.

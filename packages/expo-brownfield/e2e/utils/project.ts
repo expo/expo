@@ -1,5 +1,4 @@
 import spawnAsync from '@expo/spawn-async';
-import { glob } from 'glob';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -112,7 +111,9 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
     throw new Error(`Template directory not found at: ${templatePath}`);
   }
 
-  const tarballs = await glob('*.tgz', { cwd: templatePath });
+  const tarballs = (await Array.fromAsync(fs.promises.glob('*.tgz', { cwd: templatePath })))
+    .sort()
+    .reverse();
   if (tarballs.length === 0) {
     throw new Error(`No template tarball found in ${templatePath}.`);
   }

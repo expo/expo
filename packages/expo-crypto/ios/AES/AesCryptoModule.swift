@@ -18,7 +18,7 @@ enum DataFormat: String, Enumerable {
 @Record
 internal struct CiphertextOptions {
   var includeTag: Bool = false
-  var outputFormat: DataFormat = .bytes
+  var encoding: DataFormat = .bytes
 }
 
 @Record

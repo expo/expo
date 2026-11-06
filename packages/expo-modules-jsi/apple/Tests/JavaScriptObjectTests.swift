@@ -38,6 +38,42 @@ struct JavaScriptObjectTests {
     #expect(object.getPropertyNames() == ["café", "日本語", "🎉", ""])
   }
 
+  @Test
+  func `forEachProperty visits the properties in order`() throws {
+    let object = try runtime.eval("({ a: 1, 'café': 'two', c: true })").getObject()
+    var names: [String] = []
+    var numbers: [Double] = []
+    object.forEachProperty { name, value in
+      names.append(name)
+      if value.isNumber() {
+        numbers.append(value.getDouble())
+      }
+    }
+    #expect(names == ["a", "café", "c"])
+    #expect(numbers == [1])
+  }
+
+  @Test
+  func `forEachProperty visits inherited but not non-enumerable properties`() throws {
+    let object = try runtime.eval(
+      "Object.create({ inherited: 1 }, { hidden: { value: 2, enumerable: false }, shown: { value: 3, enumerable: true } })"
+    ).getObject()
+    var names: [String] = []
+    object.forEachProperty { name, _ in
+      names.append(name)
+    }
+    #expect(names == ["shown", "inherited"])
+  }
+
+  @Test
+  func `forEachProperty doesn't call the body for an empty object`() {
+    var calls = 0
+    runtime.createObject().forEachProperty { _, _ in
+      calls += 1
+    }
+    #expect(calls == 0)
+  }
+
   // MARK: - Non-ASCII property names
 
   @Test

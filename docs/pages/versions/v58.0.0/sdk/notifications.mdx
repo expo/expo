@@ -177,7 +177,7 @@ async function registerForPushNotificationsAsync() {
   }
   // Learn more about projectId:
   // https://docs.expo.dev/push-notifications/push-notifications-setup/#configure-projectid
-  // EAS projectId is used here.
+  // Expo Services projectId is used here.
   try {
     const projectId =
       Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
@@ -354,7 +354,7 @@ Follow the [setup guide](/push-notifications/push-notifications-setup/#get-crede
 
 ### App config
 
-To configure `expo-notifications`, use the built-in [config plugin](/config-plugins/introduction/) in the app config (**app.json** or **app.config.js**) for [EAS Build](/build/introduction) or with `npx expo run:[android|ios]`. The plugin allows you to configure the following properties that cannot be set at runtime and require building a new app binary to take effect:
+To configure `expo-notifications`, use the built-in [config plugin](/config-plugins/introduction/) in the app config (**app.json** or **app.config.js**) for [Expo Build](/build/introduction) or with `npx expo run:[android|ios]`. The plugin allows you to configure the following properties that cannot be set at runtime and require building a new app binary to take effect:
 
 <ConfigPluginProperties
   properties={[

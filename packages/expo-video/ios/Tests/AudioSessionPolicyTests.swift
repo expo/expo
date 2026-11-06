@@ -20,6 +20,21 @@ struct AudioSessionPolicyTests {
   }
 
   @Test
+  func `no players keep the playback session of the app`() {
+    let policy = AudioSessionPolicy.evaluate(
+      category: .playback,
+      mode: .default,
+      options: [],
+      players: []
+    )
+
+    #expect(policy.category == .playback)
+    #expect(policy.mode == .default)
+    #expect(policy.options.isEmpty)
+    #expect(policy.shouldActivate == false)
+  }
+
+  @Test
   func `muted player switches the default session to mixing playback`() {
     let policy = AudioSessionPolicy.evaluate(
       category: .soloAmbient,

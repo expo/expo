@@ -213,6 +213,7 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   contentStyle?: Pick<
     ViewStyle,
     | 'backgroundColor'
+    | 'backgroundImage'
     | 'experimental_backgroundImage'
     | 'padding'
     | 'paddingTop'
@@ -526,7 +527,6 @@ export interface NativeTabsProps extends PropsWithChildren {
 
 export interface InternalNativeTabsProps extends NativeTabsProps {
   nonTriggerChildren?: React.ReactNode;
-  tabConfigurationKey: string;
 }
 export interface OnTabChangeEventPayload {
   /**
@@ -565,7 +565,6 @@ export interface NativeTabsViewProps extends Omit<
   | 'rippleColor'
   | 'disableIndicator'
   | 'labelVisibilityMode'
-  | 'tabConfigurationKey'
 > {
   focusedIndex: number;
   /**
@@ -716,7 +715,7 @@ export interface NativeTabTriggerProps {
    *
    * The `"search"` role makes this tab the system search tab
    * ([`UISearchTab`](https://developer.apple.com/documentation/uikit/uisearchtab)) on iOS 26.1 and later.
-   * Do not change `role` after the tab renders.
+   * Changing `role` to or from `"search"` remounts the tab and resets its state.
    *
    * @see The supported values correspond to the official [Apple documentation](https://developer.apple.com/documentation/uikit/uitabbaritem/systemitem).
    * @platform ios

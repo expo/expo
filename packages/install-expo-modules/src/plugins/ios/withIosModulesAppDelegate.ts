@@ -7,7 +7,7 @@ import {
   insertContentsInsideSwiftFunctionBlock,
 } from '@expo/config-plugins/build/ios/codeMod';
 import fs from 'fs';
-import { globSync } from 'glob';
+import path from 'node:path';
 import semver from 'semver';
 
 import {
@@ -48,14 +48,12 @@ export const withIosModulesSwiftBridgingHeader: ConfigPlugin = (config) => {
       return config;
     }
 
-    const [bridgingHeaderFilePath] = globSync(
-      `ios/${bridgingHeaderFileName.replace(/['"]/g, '')}`,
-      {
-        absolute: true,
-        cwd: config.modRequest.projectRoot,
-      }
+    const bridgingHeaderFilePath = path.resolve(
+      config.modRequest.projectRoot,
+      'ios',
+      bridgingHeaderFileName.replace(/['"]/g, '')
     );
-    if (!bridgingHeaderFilePath) {
+    if (!fs.existsSync(bridgingHeaderFilePath)) {
       return config;
     }
     let contents = await fs.promises.readFile(bridgingHeaderFilePath, 'utf8');
@@ -131,6 +129,26 @@ export function updateModulesAppDelegateObjcHeader(
   return contents;
 }
 
+export function assertNoLegacySourceUrl(
+  contents: string,
+  sdkVersion: string | undefined,
+  fileName = 'AppDelegate.swift'
+): void {
+  if (!sdkVersion || semver.lt(sdkVersion, '59.0.0')) {
+    return;
+  }
+
+  const legacySourceUrl = contents.match(
+    /^(?:(?!\/\/)[^\n])*\bfunc\s+sourceURL\s*\(\s*for\s+\w+\s*:\s*(?:React\.)?RCTBridge\b/m
+  );
+  if (legacySourceUrl) {
+    const line = contents.slice(0, legacySourceUrl.index).split('\n').length;
+    throw new Error(
+      `Cannot install Expo modules because ${fileName} contains the legacy sourceURL(for:) method at line ${line}. SDK 59 and later require bundleURL() instead. Remove sourceURL(for:), including any attached annotations such as @objc. If it contains custom bundle selection, move that logic to bundleURL() first. Then run install-expo-modules again.`
+    );
+  }
+}
+
 export function updateModulesAppDelegateSwift(
   contents: string,
   sdkVersion: string | undefined
@@ -171,13 +189,14 @@ export function updateModulesAppDelegateSwift(
     /\bRCTDefaultReactNativeFactoryDelegate\b/,
     'ExpoReactNativeFactoryDelegate'
   );
-  contents = contents.replace(
-    /(\boverride.*\ssourceURL\(.*\{[\s\S]+?)(\s+self\.bundleURL\(\))/m,
-    `$1\
-    // needed to return the correct URL for expo-dev-client.
-    bridge.bundleURL ?? bundleURL()`
-  );
-
+  // SDK 59 and later keep no sourceURL(for:) method. `runAsync` rejects a legacy one with
+  // `assertNoLegacySourceUrl` before any mod runs, so this transform does not check again.
+  if (!sdkVersion || semver.lt(sdkVersion, '59.0.0')) {
+    contents = contents.replace(
+      /(\boverride.*\ssourceURL\(.*\{[\s\S]+?)(\s+)self\.bundleURL\(\)/m,
+      '$1$2bridge.bundleURL ?? bundleURL()'
+    );
+  }
   if (sdkVersion && semver.gte(sdkVersion, '58.0.0')) {
     contents = updateModulesAppDelegateSwiftSceneLifecycle(contents);
   }

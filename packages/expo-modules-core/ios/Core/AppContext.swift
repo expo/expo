@@ -10,6 +10,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 
+    appContext.ownsRuntime = true
     appContext._runtime = ExpoRuntime()
     return appContext
   }
@@ -59,6 +60,21 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    RCTHost wrapper. This is set by ``ExpoReactNativeFactory`` in `didInitializeRuntime`.
    */
   private var hostWrapper: ExpoHostWrapper?
+
+  /// Observes the surface presenter of the host to know when the views of this app context are created.
+  private var surfacePresenterObserver: SurfacePresenterObserver?
+
+  /**
+   Whether the app context owns its runtime, as the one from `create()` and `TestAppContext` do,
+   rather than React Native. The `global.expo` native state then doesn't pin the app context (see
+   ``NativeState``): nothing else tears that runtime down, so the pin would be a cycle that keeps
+   both alive forever. Set it before the runtime.
+   */
+  internal var ownsRuntime = false {
+    willSet {
+      assert(_runtime == nil, "Set ownsRuntime before the runtime: the global.expo native state reads it only once")
+    }
+  }
 
   /**
    Underlying JSI runtime of the running app.
@@ -134,7 +150,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   /// The application identifier that distinguishes app contexts that are alive at the same time,
   /// for example during a reload or when more than one `RCTHost` is running. It's `nil` for the first
-  /// app context, so its view names have no suffix.
+  /// app context.
   @objc
   public var appIdentifier: String? {
     return AppContext.appIdentifier(forIndex: appIndex)
@@ -427,10 +443,42 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   @MainActor
   private func registerNativeViews() {
     for holder in moduleRegistry {
-      for (key, viewDefinition) in holder.definition.views {
-        let viewModule = ViewModuleWrapper(holder, viewDefinition, isDefaultModuleView: key == DEFAULT_MODULE_VIEW)
-        ExpoFabricView.registerComponent(viewModule, appContext: self)
+      for viewName in holder.definition.views.keys {
+        ExpoFabricView.registerComponent(moduleName: holder.name, viewName: viewName)
       }
+    }
+    AppContext.viewsRegisteringAppContext = self
+  }
+
+  // MARK: - Mounting views
+
+  /// The app context whose host is mounting views right now. It's set by `SurfacePresenterObserver`.
+  @MainActor
+  internal static weak var mountingAppContext: AppContext?
+
+  /// The app context that registered native views most recently. Views are created for this context
+  /// when no host is mounting, for example when the host isn't wrapped by `ExpoHostWrapper`.
+  @MainActor
+  internal static weak var viewsRegisteringAppContext: AppContext?
+
+  /// The app context that the views being created belong to. Component view classes are shared by all app contexts,
+  /// so this is how the views get their app context.
+  @MainActor
+  internal static var appContextForNewViews: AppContext? {
+    return mountingAppContext ?? viewsRegisteringAppContext
+  }
+
+  /// Starts observing the surface presenter of the host, so the views created while the host is mounting
+  /// get this app context.
+  @MainActor
+  private func observeMounting(with hostWrapper: ExpoHostWrapper) {
+    guard let surfacePresenter = hostWrapper.surfacePresenter() else {
+      log.warn("The host has no surface presenter, so its views are created for the app context that registered views last")
+      return
+    }
+    let observer = SurfacePresenterObserver(appContext: self)
+    if observer.observe(surfacePresenter) {
+      surfacePresenterObserver = observer
     }
   }
 
@@ -482,10 +530,6 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     // it be recovered from the runtime via `AppContext.from(runtime:)`. This is the main
     // runtime, so its teardown owns the app context's `destroy()`.
     installer.installAppContextNativeState(on: coreObject, ownsLifecycle: true)
-
-    if let appIdentifier {
-      coreObject.defineProperty("__expo_app_identifier__", value: appIdentifier)
-    }
 
     try coreModuleHolder.definition.decorate(object: coreObject, appContext: self)
 
@@ -696,8 +740,15 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   /// intentional: the cycle is broken only when the runtime is torn down (which frees the
   /// native state and fires its deallocator), which is exactly what defers the app context's
   /// release until the runtime is gone. The app context never holds the native state directly.
+  ///
+  /// An app context that owns its runtime (see ``ownsRuntime``) isn't pinned, as the cycle would
+  /// never break. The native state references it weakly and the app context tears the runtime
+  /// down in its own `deinit`.
   internal final class NativeState: JavaScriptNativeState {
-    internal let appContext: AppContext
+    internal weak let appContext: AppContext?
+
+    /// The strong reference that pins the app context, or `nil` when it isn't pinned.
+    private let pinnedAppContext: AppContext?
 
     /// Whether releasing this native state should tear the app context down. Set only for the
     /// main runtime; subordinate runtimes pin the app context and enable recovery without
@@ -706,6 +757,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
     internal init(appContext: AppContext, ownsLifecycle: Bool) {
       self.appContext = appContext
+      self.pinnedAppContext = appContext.ownsRuntime ? nil : appContext
       self.ownsLifecycle = ownsLifecycle
       super.init()
       setDeallocator { nativeState in
@@ -718,7 +770,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
         // values. A future cross-runtime sharing path that could drop this state's last JSI slot
         // while the runtime still runs JavaScript (see `JavaScriptNativeState.acquireShared`)
         // would need to hop to the JS thread here first.
-        nativeState.appContext.destroy()
+        nativeState.appContext?.destroy()
       }
     }
   }
@@ -742,6 +794,12 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   deinit {
     NotificationCenter.default.removeObserver(self)
 
+    // Nothing pins an app context that owns its runtime, so the runtime outlives it only until its
+    // stored properties are released. Release the JavaScript objects before that.
+    if ownsRuntime && _runtime != nil {
+      destroy()
+    }
+
     // Post an event to the registry only if it was already created.
     // If we let it to lazy-load here, that would crash since the module registry
     // has a weak reference to the app context which is being deallocated.
@@ -753,6 +811,16 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   @objc
   public func setHostWrapper(_ wrapper: ExpoHostWrapper) {
     self.hostWrapper = wrapper
+
+    // This is called on the JS thread, possibly before `RCTHost` stores the instance that owns this runtime,
+    // so its surface presenter can't be read yet. The host stores the instance on the main thread
+    // in the same call that starts the runtime, so the presenter is available on the next main queue turn.
+    DispatchQueue.main.async { [weak self] in
+      guard let self, let hostWrapper = self.hostWrapper else {
+        return
+      }
+      self.observeMounting(with: hostWrapper)
+    }
   }
 
   // MARK: - Statics

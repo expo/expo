@@ -50,6 +50,8 @@ const nextConfig: NextConfig = {
   outputFileTracingRoot: join(__dirname),
   transpilePackages: [
     '@expo/styleguide',
+    '@expo/styleguide-icons',
+    '@expo/styleguide-search-ui',
     '@radix-ui/react-dropdown-menu',
     '@radix-ui/react-select',
     'framer-motion',
@@ -118,6 +120,12 @@ const nextConfig: NextConfig = {
           },
         },
       ],
+    });
+
+    config.module.rules.push({
+      test: /[/\\]@expo[/\\]styleguide-icons[/\\].+\.m?js$/,
+      enforce: 'pre',
+      use: [join(__dirname, 'scripts', 'optimize-icon-paths-loader.cjs')],
     });
 
     // Fix inline or browser MDX usage

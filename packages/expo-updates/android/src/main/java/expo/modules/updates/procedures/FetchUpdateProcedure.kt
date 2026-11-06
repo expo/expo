@@ -6,12 +6,13 @@ import expo.modules.updates.IUpdatesController
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.loader.AssetsFailedToLoadException
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updatesinterface.UpdatesLogMessage
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
 import kotlinx.coroutines.CancellationException
@@ -42,7 +43,12 @@ class FetchUpdateProcedure(
       throw e
     } catch (e: Exception) {
       val message = "Failed to download new update: ${e.localizedMessageWithCauseLocalizedMessage()}"
-      logger.errorForLoadFailure("Failed to download new update", e, UpdatesErrorCode.UpdateFailedToLoad)
+      logger.errorForLoadFailure(
+        UpdatesLogMessage.RemoteFetchFailed,
+        UpdatesLogMessage.RemoteFetchUnreachable,
+        e,
+        AssetsFailedToLoadException.failureGroups(e)
+      )
       procedureContext.processStateEvent(UpdatesStateEvent.DownloadError(message))
       callback(IUpdatesController.FetchUpdateResult.ErrorResult(e))
     } finally {

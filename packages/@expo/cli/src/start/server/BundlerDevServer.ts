@@ -476,7 +476,7 @@ export abstract class BundlerDevServer {
 
     // If we have an active WS tunnel instance, we always need to return the tunnel location.
     if (this.tunnel && this.tunnel instanceof AsyncWsTunnel) {
-      return this.getUrlCreator().constructUrl();
+      return this.getUrlCreator().constructUrl({ scheme: 'http' });
     }
 
     const { location } = instance;

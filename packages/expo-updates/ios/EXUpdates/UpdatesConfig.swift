@@ -52,6 +52,26 @@ public enum UpdatesConfigurationValidationResult {
   case InvalidMissingURL
   case InvalidMissingRuntimeVersion
   case InvalidMaxUpdatesToKeep
+
+  /**
+   The `reason` value of the configuration log entries, the same on iOS and Android.
+   */
+  var logReason: String {
+    switch self {
+    case .Valid:
+      return "valid"
+    case .InvalidNotEnabled:
+      return "notEnabled"
+    case .InvalidPlistError:
+      return "invalidPlist"
+    case .InvalidMissingURL:
+      return "missingUrl"
+    case .InvalidMissingRuntimeVersion:
+      return "missingRuntimeVersion"
+    case .InvalidMaxUpdatesToKeep:
+      return "invalidMaxUpdatesToKeep"
+    }
+  }
 }
 
 /**

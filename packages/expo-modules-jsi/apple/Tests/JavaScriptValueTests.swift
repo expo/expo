@@ -80,6 +80,19 @@ struct JavaScriptValueTests {
     #expect((JavaScriptValue.number(48) == JavaScriptValue.number(48)) == true)
   }
 
+  @Test
+  func `object type checks of runtime-free values are false`() {
+    func expectNoObjectType(_ value: borrowing JavaScriptValue) {
+      #expect(value.isArray() == false)
+      #expect(value.isFunction() == false)
+      #expect(value.isTypedArray() == false)
+      #expect(value.isArrayBuffer() == false)
+    }
+    expectNoObjectType(.number(42))
+    expectNoObjectType(.null())
+    expectNoObjectType(.undefined())
+  }
+
   // MARK: - getString round-trip
 
   @Test

@@ -20,6 +20,7 @@ export {
   type DirectoryInfo,
   type DownloadOptions,
   type DownloadProgress,
+  type DownloadResponse,
   FileMode,
   EncodingType,
   UploadType,

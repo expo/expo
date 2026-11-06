@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { glob } from 'glob';
+import { glob } from 'node:fs/promises';
 import ora from 'ora';
 import path from 'path';
 
@@ -251,19 +251,16 @@ export const validatePodNamesAsync = async (
     }
 
     // Look for matching podspec
-    const foundPodspecs = await glob(podspecPattern, {
-      cwd: searchPath,
-      absolute: false,
-    });
+    const foundPodspecs = await Array.fromAsync(
+      glob(podspecPattern, { cwd: searchPath })
+    );
 
     if (foundPodspecs.length === 0) {
       // Find all podspecs in the package to help debug
-      const allPodspecs = await glob(
-        isExternalPackage(pkg) ? '*.podspec' : '{*.podspec,ios/*.podspec,apple/*.podspec}',
-        {
+      const allPodspecs = await Array.fromAsync(
+        glob(isExternalPackage(pkg) ? '*.podspec' : '{*.podspec,ios/*.podspec,apple/*.podspec}', {
           cwd: searchPath,
-          absolute: false,
-        }
+        })
       );
 
       errors.push({

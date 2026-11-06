@@ -6,3 +6,6 @@
 /*
   Link: </llms.txt>; rel="llms-txt"
   X-Llms-Txt: /llms.txt
+
+/.well-known/ai-catalog.json
+  Content-Type: application/ai-catalog+json

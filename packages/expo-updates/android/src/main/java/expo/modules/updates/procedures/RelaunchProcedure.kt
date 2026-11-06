@@ -8,11 +8,11 @@ import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.loader.FileDownloader
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.reloadscreen.ReloadScreenManager
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
+import expo.modules.updatesinterface.UpdatesLogMessage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -61,7 +61,7 @@ class RelaunchProcedure(
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
-      logger.error("Error launching new launcher", e, UpdatesErrorCode.Unknown)
+      logger.error(UpdatesLogMessage.LaunchFailed, e, mapOf("launch" to "relaunch"))
       callback.onFailure(e)
       procedureContext.onComplete()
       return
@@ -92,12 +92,13 @@ class RelaunchProcedure(
           database,
           updatesDirectory,
           getCurrentLauncher().launchedUpdate,
-          selectionPolicy
+          selectionPolicy,
+          logger
         )
       } catch (e: CancellationException) {
         throw e
       } catch (e: Exception) {
-        logger.error("Could not run Reaper.", e, UpdatesErrorCode.Unknown)
+        logger.warn(UpdatesLogMessage.ReaperFailed, e)
       }
     }
   }

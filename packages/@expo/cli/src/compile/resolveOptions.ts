@@ -1,43 +1,78 @@
 import path from 'path';
 
+import { maybeRealpathSync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import type { EnvironmentMode } from '../utils/nodeEnv';
+import { resolveMode } from './resolveMode';
 
 export type Platform = 'ios' | 'android';
 
 export type OutputType = 'app' | 'ipa' | 'apk' | 'aab';
 
-const outputTypes: Record<Platform, { installable: OutputType; store: OutputType }> = {
-  ios: { installable: 'app', store: 'ipa' },
-  android: { installable: 'apk', store: 'aab' },
-};
+const platforms: Record<Platform, { installable: OutputType; store: OutputType; target: string }> =
+  {
+    ios: { installable: 'app', store: 'ipa', target: 'the simulator' },
+    android: { installable: 'apk', store: 'aab', target: 'all architectures' },
+  };
 
 export type Options = {
-  platform: Platform;
-  mode: EnvironmentMode;
+  dev?: boolean;
+  prod?: boolean;
   device?: string;
-  outputDir?: string;
-  outputType?: string;
+  'output-dir'?: string;
+  'output-type'?: string;
 };
 
 export type ResolvedOptions = {
   mode: EnvironmentMode;
-  device?: string;
   outputDir?: string;
   outputType: OutputType;
 };
 
-export function resolveOptions(projectRoot: string, options: Options): ResolvedOptions {
-  return {
-    mode: options.mode,
+export function resolveOptions(platform: Platform, options: Options): ResolvedOptions {
+  const mode = resolveMode(options);
+  const outputType = resolveOutputType({
+    platform,
+    mode,
     device: options.device,
-    outputDir: options.outputDir ? path.resolve(projectRoot, options.outputDir) : undefined,
-    outputType: resolveOutputType(options),
-  };
+    outputType: options['output-type'],
+  });
+  const { installable, target } = platforms[platform];
+  if (options.device) {
+    throw new CommandError(
+      'BAD_ARGS',
+      `Device builds are not supported yet. Omit --device to build for ${target}.`
+    );
+  }
+  if (outputType !== installable) {
+    throw new CommandError(
+      'BAD_ARGS',
+      `Building an ${outputType} is not supported yet. Omit --output-type to build an ${installable}.`
+    );
+  }
+  return { mode, outputDir: options['output-dir'], outputType };
 }
 
-function resolveOutputType({ platform, mode, device, outputType }: Options): OutputType {
-  const { installable, store } = outputTypes[platform];
+export function resolveOutputDir(projectRoot: string, outputDir?: string): string | undefined {
+  if (!outputDir) {
+    return undefined;
+  }
+  const resolvedOutputDir = path.resolve(projectRoot, outputDir);
+  return maybeRealpathSync(resolvedOutputDir) ?? resolvedOutputDir;
+}
+
+function resolveOutputType({
+  platform,
+  mode,
+  device,
+  outputType,
+}: {
+  platform: Platform;
+  mode: EnvironmentMode;
+  device?: string;
+  outputType?: string;
+}): OutputType {
+  const { installable, store } = platforms[platform];
   if (!outputType) {
     return mode === 'production' && !device ? store : installable;
   }

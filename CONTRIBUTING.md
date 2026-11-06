@@ -166,8 +166,10 @@ public package, and choose `patch` for a fix, `minor` for a compatible feature, 
 breaking change. Do not use `major` on an `sdk-*` release branch.
 
 Write a short summary for package users and edit the generated `.changeset/*.md` file instead of a
-package's `CHANGELOG.md`. Changes that only affect documentation, tests, apps, CI, or private tooling
-do not need a changeset.
+package's `CHANGELOG.md`. Changes that only affect documentation, tests, CI, or private packages
+(`"private": true`, such as apps and internal tooling) do not need a changeset. Do not list private
+packages in a changeset: `changeset version` fails when a changeset lists both private and published
+packages.
 
 See [Updating Changelogs](guides/contributing/Updating%20Changelogs.md) for examples and formatting
 options.

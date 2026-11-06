@@ -8,7 +8,7 @@ export function DevelopmentBuildInstructions() {
   const router = useRouter();
   const { query } = router;
 
-  if (query.buildenv === 'build-with-eas') {
+  if (query.buildenv === 'build-with-expo-services') {
     return <Eas />;
   }
 

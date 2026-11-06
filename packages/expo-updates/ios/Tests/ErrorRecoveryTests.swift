@@ -582,7 +582,7 @@ struct ErrorRecoveryTests {
   }
 
   @Test
-  func `error log entry uses the given code`() async throws {
+  func `error log entry uses the given key`() async throws {
     let category = "expo-updates-tests-\(UUID().uuidString)"
     let logger = UpdatesLogger(category: category)
     let logReader = UpdatesLogReader(category: category)
@@ -591,14 +591,16 @@ struct ErrorRecoveryTests {
 
     let error = NSError(domain: "TestDomain", code: 47, userInfo: [NSLocalizedDescriptionKey: "TestLocalizedDescription"])
     ErrorRecovery.writeErrorOrExceptionToLog(error, logger, dispatchQueue: testQueue)
-    ErrorRecovery.writeErrorOrExceptionToLog(error, logger, code: .initializationError, dispatchQueue: testQueue)
+    ErrorRecovery.writeErrorOrExceptionToLog(error, logger, message: .errorRecoveryStartupFailed, dispatchQueue: testQueue)
     testQueue.flush()
     try await Task.sleep(for: .seconds(0.2))
     _ = ErrorRecovery.consumeErrorLog(logger: logger)
 
-    let codes = logReader.getLogEntries(newerThan: Date(timeIntervalSinceNow: -60))
-      .compactMap { UpdatesLogEntry.create(from: $0)?.code }
-    #expect(codes == ["JSRuntimeError", "InitializationError"])
+    let entries = logReader.getLogEntries(newerThan: Date(timeIntervalSinceNow: -60))
+      .compactMap { UpdatesLogEntry.create(from: $0) }
+    #expect(entries.map { $0.key } == ["errorRecovery.jsException", "errorRecovery.startupFailed"])
+    #expect(entries.map { $0.code } == ["JSRuntimeError", "InitializationError"])
+    #expect(entries.first?.message.hasPrefix("ErrorRecovery: a JS exception was encountered: Fatal error: ") == true)
   }
 
   @Test

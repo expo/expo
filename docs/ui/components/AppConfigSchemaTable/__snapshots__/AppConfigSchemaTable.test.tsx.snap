@@ -97,7 +97,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 <path
                   d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
                   fill="currentColor"
-                  id="Vector 250"
+                  id="Icon"
                 />
               </g>
             </svg>
@@ -251,7 +251,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 <path
                   d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
                   fill="currentColor"
-                  id="Vector 250"
+                  id="Icon"
                 />
               </g>
             </svg>
@@ -693,7 +693,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 <path
                   d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
                   fill="currentColor"
-                  id="Vector 250"
+                  id="Icon"
                 />
               </g>
             </svg>

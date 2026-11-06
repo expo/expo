@@ -177,29 +177,65 @@ public final class ModuleHolder {
 
   // MARK: - Privates
 
-  /// Installs host functions that the JavaScript `EventEmitter` implementation calls when
-  /// the number of listeners for an event switches between zero and non-zero. They notify
-  /// the module through the `didStartListening` and `didStopListening` lifecycle hooks.
+  /// Sets the native hook that the event emitter calls when the number of listeners for an event
+  /// switches between zero and non-zero. The hook notifies the module through the `didStartListening`
+  /// and `didStopListening` lifecycle hooks, and calls the `OnStartObserving` and `OnStopObserving` definitions.
   @JavaScriptActor
   private func installListeningHooks(on object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) {
-    let startListening = runtime.createFunction("__expo_onStartListeningToEvent") {
-      [weak module = self.module] _, arguments in
-      guard let module, arguments.count > 0 else {
-        return .undefined()
+    let eventObservers =
+      definition.eventObservers.isEmpty
+      ? nil
+      : EventObservers(definitions: definition.eventObservers)
+    let hookContext = ListeningHookContext(module: module, appContext: appContext, eventObservers: eventObservers)
+
+    // The emitter owns this retained reference and releases it together with the object's native state.
+    let context = Unmanaged.passRetained(hookContext).toOpaque()
+
+    object.withUnsafePointee { objectPointer in
+      runtime.withUnsafePointee { runtimePointer in
+        setJSListeningHook(
+          runtimePointer: runtimePointer,
+          objectPointer: objectPointer,
+          context: context,
+          hook: { context, eventName, isListening in
+            Unmanaged<ListeningHookContext>.fromOpaque(context)
+              .takeUnretainedValue()
+              .call(event: String(cString: eventName), isListening: isListening)
+          },
+          releaseContext: { context in
+            Unmanaged<ListeningHookContext>.fromOpaque(context).release()
+          }
+        )
       }
-      module.didStartListening(event: try arguments[0].asString())
-      return .undefined()
     }
-    let stopListening = runtime.createFunction("__expo_onStopListeningToEvent") {
-      [weak module = self.module] _, arguments in
-      guard let module, arguments.count > 0 else {
-        return .undefined()
+  }
+
+  private final class ListeningHookContext {
+    weak var module: AnyModule?
+    weak var appContext: AppContext?
+    let eventObservers: EventObservers?
+
+    init(module: AnyModule, appContext: AppContext?, eventObservers: EventObservers?) {
+      self.module = module
+      self.appContext = appContext
+      self.eventObservers = eventObservers
+    }
+
+    func call(event: String, isListening: Bool) {
+      if isListening {
+        module?.didStartListening(event: event)
+      } else {
+        module?.didStopListening(event: event)
       }
-      module.didStopListening(event: try arguments[0].asString())
-      return .undefined()
+      guard let eventObservers, let appContext else {
+        return
+      }
+      if isListening {
+        eventObservers.didStartListening(event: event, appContext: appContext)
+      } else {
+        eventObservers.didStopListening(event: event, appContext: appContext)
+      }
     }
-    object.defineProperty("__expo_onStartListeningToEvent", value: startListening.asValue(), options: [])
-    object.defineProperty("__expo_onStopListeningToEvent", value: stopListening.asValue(), options: [])
   }
 
   // MARK: - Exceptions

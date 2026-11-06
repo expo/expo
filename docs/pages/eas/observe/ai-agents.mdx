@@ -1,7 +1,7 @@
 ---
-title: Analyze EAS Observe data with AI
+title: Analyze Expo Observe data with AI
 sidebar_title: AI agents
-description: Let an AI agent query and interpret EAS Observe metrics, events, errors, and sessions through the Expo MCP Server or the EAS CLI.
+description: Let an AI agent query and interpret Expo Observe metrics, events, errors, and sessions through the Expo MCP Server or the EAS CLI.
 ---
 
 import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
@@ -12,7 +12,7 @@ import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-The [EAS Observe dashboard](/eas/observe/dashboard/) and the [`eas observe` commands](/eas/observe/eas-cli/) show the metrics, events, errors, and sessions your app sends. An AI agent can read the same data and do the analysis for you: compare releases, find the slowest sessions, and explain what the slow ones have in common.
+The [Expo Observe dashboard](/eas/observe/dashboard/) and the [`eas observe` commands](/eas/observe/eas-cli/) show the metrics, events, errors, and sessions your app sends. An AI agent can read the same data and do the analysis for you: compare releases, find the slowest sessions, and explain what the slow ones have in common.
 
 There are two ways to give an agent access to your data:
 
@@ -64,7 +64,7 @@ Add the server at `https://mcp.expo.dev/mcp` and sign in with OAuth. See [Instal
 To verify the setup, open the agent in your project directory and ask:
 
 ```text Example prompt
-Which versions of my app has EAS Observe seen in the last 7 days?
+Which versions of my app has Expo Observe seen in the last 7 days?
 ```
 
 The agent replies with the app versions and their event counts. When the agent does not run inside the project directory, name the project in the prompt, such as `@owner/my-app`.
