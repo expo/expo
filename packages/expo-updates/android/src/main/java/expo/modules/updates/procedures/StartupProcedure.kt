@@ -242,9 +242,8 @@ class StartupProcedure(
     errorRecovery.startMonitoring(devSupportManager)
   }
 
-  fun onReactInstanceException(exception: Exception) {
+  fun onReactInstanceException(exception: Exception): Boolean =
     errorRecovery.onReactInstanceException(exception)
-  }
 
   private fun setRemoteLoadStatus(status: ErrorRecoveryDelegate.RemoteLoadStatus) {
     remoteLoadStatus = status

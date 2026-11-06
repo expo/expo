@@ -168,9 +168,8 @@ class EnabledUpdatesController(
     weakActivity = WeakReference(reactContext.currentActivity)
   }
 
-  override fun onReactInstanceException(exception: Exception) {
+  override fun onReactInstanceException(exception: Exception): Boolean =
     startupProcedure.onReactInstanceException(exception)
-  }
 
   override val isActiveController = true
 

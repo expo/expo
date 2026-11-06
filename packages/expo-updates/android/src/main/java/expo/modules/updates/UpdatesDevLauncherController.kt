@@ -116,7 +116,7 @@ class UpdatesDevLauncherController(
 
   override fun onDidCreateReactInstance(reactContext: ReactContext) {}
 
-  override fun onReactInstanceException(exception: java.lang.Exception) {}
+  override fun onReactInstanceException(exception: java.lang.Exception): Boolean = false
 
   override val isActiveController = false
 
