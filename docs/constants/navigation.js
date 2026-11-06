@@ -383,6 +383,7 @@ export const general = [
         makePage('modules/v2/reference/binary-data.mdx'),
         makePage('modules/v2/reference/events.mdx'),
         makePage('modules/v2/reference/concurrency.mdx'),
+        makePage('modules/v2/reference/cli.mdx'),
       ]),
     ],
     { expanded: false, isBeta: true }
