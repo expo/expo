@@ -8,26 +8,32 @@ import { fs, vol } from 'memfs';
 import path from 'path';
 
 async function createFixtureAsync(targetDir: string, outputFile: string) {
+  const normalizeCase = (value: string) =>
+    process.platform === 'darwin' || process.platform === 'win32' ? value.toLowerCase() : value;
   const directories = [''];
   for (const directory of directories) {
-    const entries = await realFS.promises.readdir(path.join(targetDir, directory), {
-      withFileTypes: true,
-    });
+    const entries = await realFS.promises
+      .readdir(path.join(targetDir, directory), { withFileTypes: true })
+      .catch(() => []);
     for (const entry of entries) {
       if (entry.name.startsWith('.')) continue;
       const file = path.join(directory, entry.name);
+      const name = normalizeCase(entry.name);
+      const relativePath = normalizeCase(file);
       if (entry.isDirectory()) {
         if (
-          !['node_modules', 'build', 'xcuserdata'].includes(entry.name) &&
-          !entry.name.endsWith('.xcassets') &&
-          !['ios/Pods', 'vendor', 'gradle/wrapper'].includes(file) &&
-          !file.endsWith('/gradle/wrapper')
+          !['node_modules', 'build', 'xcuserdata'].includes(name) &&
+          !name.endsWith('.xcassets') &&
+          !['ios/Pods', 'vendor', 'gradle/wrapper'].map(normalizeCase).includes(relativePath) &&
+          !relativePath.endsWith('/gradle/wrapper')
         ) {
           directories.push(file);
         }
       } else if (
-        !/\.(jpg|png|ttf|lock|jar|keystore)$/.test(entry.name) &&
-        !['bun.lockb', 'IDEWorkspaceChecks.plist', 'gradlew', 'gradlew.bat'].includes(entry.name) &&
+        !/\.(jpg|png|ttf|lock|jar|keystore)$/.test(name) &&
+        !['bun.lockb', 'IDEWorkspaceChecks.plist', 'gradlew', 'gradlew.bat']
+          .map(normalizeCase)
+          .includes(name) &&
         (entry.isFile() ||
           (entry.isSymbolicLink() &&
             realFS.statSync(path.join(targetDir, file), { throwIfNoEntry: false })?.isFile()))
