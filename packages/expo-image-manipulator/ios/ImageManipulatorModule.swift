@@ -9,22 +9,21 @@ import UIKit
 @ExpoModule("ExpoImageManipulator", classes: [ImageManipulatorContext.self, ImageRef.self])
 public class ImageManipulatorModule: Module {
   @JS
-  func manipulate(source: Either<URL, SharedRef<UIImage>>, options: ImageLoadOptions?) -> ImageManipulatorContext {
+  func manipulate(source: ImageSource, options: ImageLoadOptions?) -> ImageManipulatorContext {
     let context = ImageManipulatorContext { [weak appContext] in
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
-      if let url: URL = source.get() {
+      switch source {
+      case .url(let url):
         return try await loadImage(atUrl: url, appContext: appContext, options: options)
-      }
-      if let image: SharedRef<UIImage> = source.get() {
+      case .image(let image):
         return downscaledIfExceedsBounds(
           image.ref,
           maxWidth: options?.maxWidth.map(Double.init),
           maxHeight: options?.maxHeight.map(Double.init)
         )
       }
-      throw Exceptions.RuntimeLost()
     }
 
     // Immediately try to fix the orientation once the image is loaded
