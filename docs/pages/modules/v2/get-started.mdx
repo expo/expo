@@ -17,7 +17,7 @@ A module that uses Expo Modules API 2.0 starts from the same template as any Exp
 
 ## Requirements
 
-Expo Modules API 2.0 requires Expo SDK 58 or later. The `expo-modules-core` package of the SDK includes the Swift macros and the Kotlin library.
+Expo Modules API 2.0 is available in **SDK 58 and later**. The `expo-modules-core` package of the SDK includes the Swift macros and the Kotlin library.
 
 <Step label="1">
 
@@ -71,7 +71,7 @@ Autolinking finds the modules that use Expo Modules API 2.0 without a list. On A
 }
 ```
 
-> **warning** On iOS, a `modules` list turns off the scan, even an empty list. If the package also has a module that uses the module definition DSL, keep the `apple.modules` list, and add the `@ExpoModule` class to it.
+> **warning** On iOS, a `modules` list turns off the scan, even an empty list. If the package also has a module that uses the [module definition DSL](/modules/module-api/) (domain-specific language), keep the `apple.modules` list, and add the `@ExpoModule` class to it.
 
 </Step>
 
