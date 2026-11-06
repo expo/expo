@@ -1,5 +1,6 @@
 package expo.modules.updates.logging
 
+import android.os.Bundle
 import expo.modules.core.logging.LogType
 import expo.modules.core.logging.PersistentFileLog
 import expo.modules.updates.UpdatesModule
@@ -16,7 +17,10 @@ import org.junit.rules.TemporaryFolder
 import org.json.JSONObject
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import java.io.File
 import java.io.IOException
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import java.util.*
 
 @RunWith(RobolectricTestRunner::class)
@@ -220,11 +224,7 @@ class UpdatesLoggingTest {
     val filesDirectory = temporaryFolder.newFolder()
     val logger = UpdatesLogger(filesDirectory)
     logger.warn(UpdatesLogMessage.ReaperFailed, values = mapOf("cause" to "Test message"))
-    val entries = UpdatesModule.readLogEntries(
-      filesDirectory,
-      1000L
-    )
-    Assert.assertNotNull(entries)
+    val entries = readLogEntriesWhenWritten(filesDirectory)
     Assert.assertEquals(1, entries.size)
     val bundle = entries[0]
     Assert.assertEquals("Error reaping updates: Test message", bundle.getString("message"))
@@ -245,9 +245,42 @@ class UpdatesLoggingTest {
       filesDirectory,
       1000L
     )
-    asyncTestUtil.waitForAsyncMethodToFinish("readLogEntriesAsync timed out", 1000000)
-    Assert.assertNotNull(entries2)
     Assert.assertEquals(0, entries2.size)
+  }
+
+  @Test
+  fun `clearing the log removes entries with any timestamp`() = runTest {
+    val filesDirectory = temporaryFolder.newFolder()
+    val futureEntry = UpdatesLogEntry(Date().time + 60_000, "Test message", "None", "error", null, null, null, null)
+    val appended = CountDownLatch(1)
+    PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, filesDirectory).appendEntry(futureEntry.asString()) { appended.countDown() }
+    Assert.assertTrue(appended.await(1, TimeUnit.SECONDS))
+
+    val cleared = CountDownLatch(1)
+    var clearError: Exception? = null
+    UpdatesModule.clearLogEntries(filesDirectory) { error ->
+      clearError = error
+      cleared.countDown()
+    }
+    Assert.assertTrue(cleared.await(1, TimeUnit.SECONDS))
+
+    Assert.assertNull(clearError)
+    Assert.assertEquals(emptyList<String>(), PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, filesDirectory).readEntries())
+  }
+
+  /**
+   * The logger writes to the log file on a background queue, so a read right after a log call can
+   * run before the write.
+   */
+  private suspend fun readLogEntriesWhenWritten(filesDirectory: File): List<Bundle> {
+    val end = System.currentTimeMillis() + 1000
+    while (true) {
+      val entries = UpdatesModule.readLogEntries(filesDirectory, 1000L)
+      if (entries.isNotEmpty() || System.currentTimeMillis() > end) {
+        return entries
+      }
+      Thread.sleep(16)
+    }
   }
 
   internal class AsyncTestUtil {

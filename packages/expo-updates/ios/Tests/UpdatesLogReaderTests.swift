@@ -279,6 +279,23 @@ struct UpdatesLogReaderTests {
     #expect(!remaining.contains(truncatedEntry))
   }
 
+  @Test
+  func `clearing the log removes entries with any timestamp`() async throws {
+    let futureTimestamp = UInt(Date().timeIntervalSince1970 * 1000) + 60_000
+    let futureEntry =
+      "xx{\"timestamp\":\(futureTimestamp),\"message\":\"Test message\",\"code\":\"None\",\"level\":\"error\"}"
+    await appendRawEntryAsync(entry: futureEntry)
+
+    let error: Error? = await withCheckedContinuation { continuation in
+      logReader.clearLogEntries { error in
+        continuation.resume(returning: error)
+      }
+    }
+
+    #expect(error == nil)
+    #expect(PersistentFileLog(category: category).readEntries().isEmpty)
+  }
+
   // MARK: - Private methods
 
   func sleepUntilStartOfNextSecond() async throws {
