@@ -130,6 +130,18 @@ export default function PickerWheelExample() {
 
 </ComponentExample>
 
+### Accessibility
+
+Use [`accessibilityLabel`](#accessibilitylabel) to give the picker a name for screen readers. A `Text` beside the picker does not name it, so set the label to the same words.
+
+```tsx
+<Picker accessibilityLabel="Flavour" selectedValue={value} onValueChange={setValue}>
+  {FLAVOURS.map(f => (
+    <Picker.Item key={f.value} label={f.label} value={f.value} />
+  ))}
+</Picker>
+```
+
 ## API
 
 ```tsx
