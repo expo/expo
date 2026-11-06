@@ -33,6 +33,7 @@ export const NativeToolbarButton: React.FC<NativeToolbarButtonProps> = (props) =
       possibleTitles={props.possibleTitles}
       selected={props.selected}
       sharesBackground={!props.separateBackground}
+      axisBehavior={props.axisBehavior}
       systemImageName={props.icon}
       xcassetName={props.xcassetName}
       title={props.label}
