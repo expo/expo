@@ -55,7 +55,21 @@ A failed criterion is a `critical` finding, titled with the criterion.
 ## 3. Check the other dimensions
 
 - Complexity: is this the simplest change that works? An abstraction with one caller and one
-  implementation is a cost.
+  implementation is a cost. Write out the simpler version you see, with fewer branches,
+  concepts or layers. Report it only when it is concrete and smaller. A refactor that moves
+  complexity to another place without removing any is not simpler.
+- Branches: a new conditional in a flow that is not about this change, or the same check in
+  several places, shows a missing model or helper. Name the flow and where the logic belongs.
+- Type boundaries: a new `as` cast, `any`, `unknown` or optional parameter that hides a rule
+  the code relies on. Name the rule and the type that would state it.
+- Restructure: when a refactor would make this change much simpler, report it, even when it
+  reaches beyond the diff or beyond what one PR should change. Use a `suggestion` titled
+  `Refactor:`. Name the files, what disappears and the new shape. It never affects the
+  decision. A PR that takes a file from under 1000 lines to over 1000 lines is a reason to
+  look for a split.
+
+  Complexity, branch and type findings are a `warning` when you can name the concrete cost,
+  otherwise a `suggestion`.
 - Correctness: edge cases, error paths, resource cleanup, ordering, concurrency. Walk each
   failure path to its end, through the code it calls.
 - User-facing output: for each message, log and error on the surface you listed, check that
@@ -98,7 +112,8 @@ Before you return, read each finding again. This pass removes noise, never a rea
   its fix.
 
 Then apply the limits on the lowest level only: at most three suggestions and nits, the most
-useful first, and at most one `Pre-existing:` finding.
+useful first, at most one `Pre-existing:` finding, and at most one `Refactor:` finding outside
+the three.
 
 ## 5. A re-review
 
@@ -109,7 +124,8 @@ earlier findings the new commits fix.
 ## What not to report
 
 - Anything in "Do not report what the toolchain already checks".
-- A refactor of code the change does not affect.
+- A refactor of code the change does not affect, except a `Refactor:` finding that makes this
+  change simpler.
 - A future need: "this might need to support X later".
 - A trade-off the PR body explains, unless the cost you name is not in that explanation.
 - The bounded purpose of the change itself, when the code shows it. A PR that removes an
