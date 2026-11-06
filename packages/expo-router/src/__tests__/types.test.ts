@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react';
 
-import type { MiddlewareNode, RedirectRouteNode, RouteNode, ScreenRouteNode } from '../Route';
+import type { MiddlewareNode, PageRouteNode, RedirectRouteNode, RouteNode } from '../Route';
 import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import type { Stack as JSStack } from '../layouts/JSStack';
 import type { RequireContextPonyFill } from '../testing-library/require-context-ponyfill';
@@ -48,7 +48,7 @@ export type _PonyfillAddRequiresFileContextKey = Expect<
   Equal<Parameters<RequireContextPonyFill['__add']>[0], FileContextKey>
 >;
 export type _RouteNodeParentContextKeyIsContextKey = Expect<
-  Equal<ScreenRouteNode['parentContextKey'], ContextKey | undefined>
+  Equal<PageRouteNode['parentContextKey'], ContextKey | undefined>
 >;
 export type _MiddlewareContextKeyIsContextKey = Expect<
   Equal<MiddlewareNode['contextKey'], ContextKey>
