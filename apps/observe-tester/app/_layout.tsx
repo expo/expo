@@ -28,8 +28,7 @@ Observe.configure({
     'expo-updates': {
       reportWarnings: true,
       ignoredCodes: ['NoUpdatesAvailable'],
-      shouldReport: (entry) =>
-        !entry.message.includes('The Internet connection appears to be offline'),
+      shouldReport: (entry) => entry.key !== 'reaper.assetDeleteFailed',
     },
   },
   networkTraces: true,

@@ -241,7 +241,7 @@ export interface ObserveIntegrationsConfig {
    * recovery handled skip `ignoredCodes` and `shouldReport`, and have their own limit of 20
    * distinct messages. The limits reset when the app restarts.
    *
-   * Requires `expo-updates` 58.0.19 or later to be installed.
+   * Requires `expo-updates` 58.1.0 or later to be installed.
    *
    * @default false
    */
