@@ -120,7 +120,7 @@ private final class MacroSharedObjectModule: Module {}
 @Suite("Macro shared object")
 @JavaScriptActor
 private struct MacroSharedObjectTests {
-  let appContext: AppContext
+  let appContext: TestAppContext
   var runtime: ExpoRuntime {
     get throws {
       try appContext.runtime
@@ -435,5 +435,45 @@ private struct MacroSharedObjectTests {
     let hasProperty = prototype.hasProperty("current")
     #expect(hasMethod)
     #expect(hasProperty)
+  }
+
+  // MARK: - Attached runtimes
+
+  /// Creates a counter in the main runtime as the `counter` global and returns its ID.
+  private func createCounter() throws -> Int {
+    register(MacroSharedObjectModule(appContext: appContext))
+    return try runtime.eval(
+      """
+      counter = new expo.modules.MacroSharedObjectModule.MacroCounter(1)
+      counter.__expo_shared_object_id__
+      """).asInt()
+  }
+
+  @Test
+  func `resolves a shared object to the same JS object in an attached runtime`() throws {
+    let id = try createCounter()
+    let attachedRuntime = try appContext.addRuntime()
+    let isSame = try attachedRuntime.eval(
+      "expo.SharedObject.__resolveInWorklet(\(id)) === expo.SharedObject.__resolveInWorklet(\(id))"
+    ).getBool()
+    #expect(isSame)
+  }
+
+  @Test
+  func `a shared object resolved in an attached runtime holds the native object`() throws {
+    let id = try createCounter()
+    let nativeObject = try SharedObject.native(from: try runtime.eval("counter").asObject())
+    let attachedRuntime = try appContext.addRuntime()
+    let resolvedObject = try attachedRuntime.eval("expo.SharedObject.__resolveInWorklet(\(id))").asObject()
+    #expect(try SharedObject.native(from: resolvedObject) === nativeObject)
+  }
+
+  @Test
+  func `release() in an attached runtime releases the native object`() throws {
+    let id = try createCounter()
+    let nativeObject = try SharedObject.native(from: try runtime.eval("counter").asObject())
+    let attachedRuntime = try appContext.addRuntime()
+    try attachedRuntime.eval("expo.SharedObject.__resolveInWorklet(\(id)).release()")
+    #expect(nativeObject.sharedObjectId == 0)
   }
 }

@@ -139,7 +139,7 @@ public final class SharedObjectRegistry: Sendable {
       let releaser: ObjectReleaser = { [weak self] id in
         self?.delete(id)
       }
-      let state = SharedObjectNativeState(native: nativeObject) { context, deallocator in
+      let state = SharedObjectNativeState(native: nativeObject, ownerRuntimeId: runtime?.id) { context, deallocator in
         return SharedObjectUtils.makeSharedObjectNativeStatePtr(
           objectId: id,
           releaser: releaser,
@@ -218,18 +218,7 @@ public final class SharedObjectRegistry: Sendable {
    */
   @JavaScriptActor
   internal func toNativeObject(_ jsObject: borrowing JavaScriptObject) -> SharedObject? {
-    if let native = try? SharedObject.native(from: jsObject) {
-      return native
-    }
-    // Fallback to the id-based lookup for cases where the JS object was registered
-    // through a path that doesn't attach a `SharedObjectNativeState` (e.g. worklet
-    // proxies that currently rely on the `__expo_shared_object_id__` property).
-    if let objectId = try? jsObject.getProperty(sharedObjectIdPropertyName).asInt() {
-      return state.withLock { state in
-        return state.pairs[objectId]?.native
-      }
-    }
-    return nil
+    return try? SharedObject.native(from: jsObject)
   }
 
   /**

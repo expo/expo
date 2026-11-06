@@ -596,7 +596,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
     // cannot be a Dictionary value.
     let prototypeCache = WorkletPrototypeCache()
 
-    // Called by the worklet serializer's `unpack` to recreate a SharedObject proxy.
+    // Called by the worklet serializer's `unpack` to get the JS object of a shared object in this runtime.
     // Takes just the objectId — looks up the native type, lazily builds the prototype on first use.
     // The function gets the runtime as an argument, because capturing it would keep a runtime that owns its
     // engine alive forever.
@@ -613,28 +613,27 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       let runtime = copy runtime
       let objectId = try arguments[0].asInt()
 
-      guard let nativeObject = self.sharedObjectRegistry.get(objectId)?.native else {
+      guard let nativeState = self.sharedObjectRegistry.get(objectId), !nativeState.isReleased else {
         throw SharedObjectNotFoundException(String(objectId))
       }
+      let nativeType = type(of: nativeState.native)
+      let typeId = ObjectIdentifier(nativeType)
 
-      let typeId = ObjectIdentifier(type(of: nativeObject))
-      let instance: JavaScriptObject
-
-      if let cachedInstance = prototypeCache.store[typeId]?.withUnwrappedValue({ (prototype: borrowing JavaScriptObject) in
-        runtime.createObject(prototype: prototype)
-      }) {
-        instance = cachedInstance
-      } else {
+      let instance = try nativeState.javaScriptObject(in: runtime, objectId: objectId) {
+        if let cachedInstance = prototypeCache.store[typeId]?.withUnwrappedValue({ (prototype: borrowing JavaScriptObject) in
+          runtime.createObject(prototype: prototype)
+        }) {
+          return cachedInstance
+        }
         let built = try self.buildWorkletPrototype(
-          for: type(of: nativeObject),
+          for: nativeType,
           in: runtime,
           basePrototype: sharedObjectBaseProto.getObject()
         )
-        instance = runtime.createObject(prototype: built)
+        let instance = runtime.createObject(prototype: built)
         prototypeCache.store[typeId] = built.ref()
+        return instance
       }
-
-      instance.defineProperty(sharedObjectIdPropertyName, value: objectId, options: [])
       result.emplace(instance.asValue())
     }
 
