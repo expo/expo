@@ -122,7 +122,8 @@ func getLiveActivityEnvironment(for environment: EnvironmentValues, in context: 
     "colorScheme": "\(environment.colorScheme)",
     "isLuminanceReduced": environment.isLuminanceReduced,
     "isActivityFullscreen": environment.isActivityFullscreen,
-    "isStale": context.isStale
+    "isStale": context.isStale,
+    "widgetRenderingMode": environment.widgetRenderingMode.description
   ]
 
   if #available(iOS 18.0, *) {
