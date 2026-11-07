@@ -613,6 +613,31 @@ describe(modifyConfigAsync, () => {
     );
   });
 
+  it('warns and rolls back when modifying a nested key that a function-like dynamic config does not return', async () => {
+    createProject('/static-dynamic-function-nested', {
+      'app.json': JSON.stringify(appFile),
+      'app.config.js': `module.exports = () => JSON.parse(\`${JSON.stringify({ ...appFile, version: '9.9.9' })}\`);`,
+    });
+
+    await expect(
+      modifyConfigAsync('/static-dynamic-function-nested', {
+        ios: { bundleIdentifier: 'com.example.app' },
+      })
+    ).resolves.toMatchObject({
+      type: 'warn',
+      config: null,
+      message: expect.stringMatching(/dynamic config/),
+    });
+
+    expect(
+      JSON.parse(
+        vol.readFileSync('/static-dynamic-function-nested/app.json', {
+          encoding: 'utf-8',
+        }) as string
+      )
+    ).toEqual(appFile);
+  });
+
   it('succeeds when modifying static with function-like dynamic config, with extending config', async () => {
     createProject('/static-dynamic-function', {
       'app.json': JSON.stringify(appFile),
