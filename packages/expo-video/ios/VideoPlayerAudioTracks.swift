@@ -43,7 +43,15 @@ class VideoPlayerAudioTracks {
     }
 
     if let group = currentItem.asset.mediaSelectionGroup(forMediaCharacteristic: .audible) {
-      let option = group.options.first {
+      // Two renditions in one language (a main mix and a commentary or audio description track) share
+      // displayName and locale, so a track that carries a name (the option's title, which is where
+      // AudioTrack.name comes from) is matched by that first.
+      let byName = audioTrack?.name.flatMap { name in
+        group.options.first {
+          $0.commonMetadata.first(where: { $0.commonKey == .commonKeyTitle })?.stringValue == name
+        }
+      }
+      let option = byName ?? group.options.first {
         $0.displayName == audioTrack?.label && $0.locale?.identifier == audioTrack?.language
       }
       currentItem.select(option, in: group)
