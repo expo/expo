@@ -8,6 +8,7 @@ public typealias URLSessionConfigurationProvider = @convention(block) () -> URLS
 private let fetchRequestQueue = DispatchQueue(label: "expo.modules.fetch.RequestQueue")
 nonisolated(unsafe) internal var urlSessionConfigurationProvider: URLSessionConfigurationProvider?
 
+@ExpoModule
 public final class ExpoFetchModule: Module {
   private lazy var urlSession = createURLSession()
   private let urlSessionDelegate: URLSessionSessionDelegateProxy
@@ -15,6 +16,18 @@ public final class ExpoFetchModule: Module {
   public required init(appContext: AppContext) {
     urlSessionDelegate = URLSessionSessionDelegateProxy(dispatchQueue: fetchRequestQueue)
     super.init(appContext: appContext)
+  }
+
+  // The JS `fetch` export. Recording the initiator here, instead of in fetch.js, makes the
+  // caller's frame the one DevTools shows.
+  @JS
+  func createFetch(_ implementation: borrowing JavaScriptValue) throws -> JavaScriptValue {
+    guard let appContext else {
+      throw Exceptions.AppContextLost()
+    }
+    return try ExpoDevToolsInitiator
+      .hostFunction(named: "fetch", calling: implementation, in: appContext.runtime)
+      .asValue()
   }
 
   public func definition() -> ModuleDefinition {
