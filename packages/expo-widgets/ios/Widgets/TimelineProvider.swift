@@ -16,7 +16,9 @@ public struct WidgetsTimelineProvider: TimelineProvider {
     }
 
     let entries = parseTimeline(identifier: groupIdentifier, name: name, family: context.family)
-    completion(entries.first ?? WidgetsTimelineEntry(date: Date(), name: name, props: WidgetsLayoutRegistry.initialProps(for: name), entryIndex: nil))
+    let snapshotDate = Date()
+    let currentEntry = entries.filter { $0.date <= snapshotDate }.max { $0.date < $1.date }
+    completion(currentEntry ?? entries.first ?? WidgetsTimelineEntry(date: snapshotDate, name: name, props: WidgetsLayoutRegistry.initialProps(for: name), entryIndex: nil))
   }
 
   public func getTimeline(

@@ -409,7 +409,9 @@ struct ${widget.name}TimelineProvider: AppIntentTimelineProvider {
 
   func snapshot(for configuration: ${widget.name}ConfigurationAppIntent, in context: Context) async -> ${widget.name}TimelineEntry {
     let entries = parseTimeline(configuration: configuration)
-    return entries.first ?? ${widget.name}TimelineEntry(date: Date(), name: "${widget.name}", props: WidgetsLayoutRegistry.initialProps(for: "${widget.name}"), entryIndex: nil, configuration: configuration)
+    let snapshotDate = Date()
+    let currentEntry = entries.filter { $0.date <= snapshotDate }.max { $0.date < $1.date }
+    return currentEntry ?? entries.first ?? ${widget.name}TimelineEntry(date: snapshotDate, name: "${widget.name}", props: WidgetsLayoutRegistry.initialProps(for: "${widget.name}"), entryIndex: nil, configuration: configuration)
   }
 
   func timeline(for configuration: ${widget.name}ConfigurationAppIntent, in context: Context) async -> Timeline<${widget.name}TimelineEntry> {
