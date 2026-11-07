@@ -281,3 +281,24 @@ public macro Record() =
 @attached(extension, conformances: JavaScriptDecodable, JavaScriptEncodable)
 public macro Union() =
   #externalMacro(module: "ExpoModulesMacros", type: "UnionMacro")
+
+/// Member + extension macro applied to a struct with the props of a view of Expo Modules v2. Every stored property
+/// is a prop: a function-typed property is an event, and every other property is a value prop that
+/// core decodes from the props that React sends. A prop's default is its value in `Self()`, which it has
+/// until React sets it and after React removes it. So each value prop needs an initial value or an
+/// optional type, unless the struct declares its own `init()`. When needed, the macro generates
+/// `init()`, which sets each event prop without an initial value to an empty closure.
+///
+/// Usage:
+///
+///     @ViewProps
+///     struct CardProps {
+///       var title = "Untitled"
+///       var radius: Double = 0
+///     }
+@attached(
+  member,
+  names: named(PropName), named(PropSet), named(_eventNames), named(Diff), named(init), named(_resetViewProp))
+@attached(extension, conformances: AnyViewProps, names: named(allProps), named(propSet), named(_decode))
+public macro ViewProps() =
+  #externalMacro(module: "ExpoModulesMacros", type: "ViewPropsMacro")
