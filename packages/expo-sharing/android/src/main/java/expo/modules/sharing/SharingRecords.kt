@@ -51,7 +51,8 @@ enum class ContentType(val value: String) : Enumerable {
 internal data class SharePayload(
   @Field var value: String = "",
   @Field var shareType: ShareType = ShareType.Text,
-  @Field var mimeType: String = "text/plain"
+  @Field var mimeType: String = "text/plain",
+  @Field var originalName: String? = null
 ) : Record
 
 @OptimizedRecord
