@@ -240,6 +240,9 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
       return
     }
 
+    // URLSession describes a canceled task in the device language. Report it with the same message as a cancel from JS.
+    let error: (any Error)? = (error as? URLError)?.code == .cancelled ? FetchRequestCanceledException() : error
+
     if state == .bodyStreamingStarted {
       if let error {
         emit(event: "didFailWithError", payload: error.localizedDescription)
