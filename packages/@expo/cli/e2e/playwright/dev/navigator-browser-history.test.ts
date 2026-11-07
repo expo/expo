@@ -320,6 +320,24 @@ test.describe(`${inputDir} with server output`, () => {
     await expoStart.stopAsync();
   });
 
+  // The dev error overlay renders in a shadow root, so a failing click only reports that
+  // `#error-overlay` intercepts pointer events. Print the error it shows.
+  test.afterEach(async ({ page }, testInfo) => {
+    if (testInfo.status === testInfo.expectedStatus) return;
+    const overlayText = await page
+      .evaluate(() => {
+        const root = document.getElementById('error-overlay')?.shadowRoot;
+        if (!root) return null;
+        return Array.from(root.children, (element) =>
+          element instanceof HTMLElement && element.tagName !== 'STYLE' ? element.innerText : ''
+        ).join('\n');
+      })
+      .catch(() => null);
+    if (overlayText) {
+      console.log(`Error overlay after "${testInfo.title}":\n${overlayText}`);
+    }
+  });
+
   test('keeps the anchor below the screen after a reload', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
 
