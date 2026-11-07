@@ -1,133 +1,98 @@
 import ExpoModulesCore
 
-let SPEAKING_STARTED = "Exponent.speakingStarted"
-let SPEAKING_WILL_SAY_NEXT_STRING = "Exponent.speakingWillSayNextString"
-let SPEAKING_DONE = "Exponent.speakingDone"
-let SPEAKING_STOPPED = "Exponent.speakingStopped"
-let SPEAKING_ERROR = "Exponent.speakingError"
-
+@ExpoModule("ExpoSpeech")
 public final class SpeechModule: Module, SpeechResultHadler {
-  private var synthesizer = AVSpeechSynthesizer()
-  private var delegate: SpeechDelegate?
+  // Created on first use from a JavaScript function, so only the JavaScript thread reads it.
+  private lazy var speech = SpeechActor(resultHandler: self)
 
-  public func definition() -> ModuleDefinition {
-    Name("ExpoSpeech")
+  @Event("Exponent.speakingStarted")
+  var onSpeakingStarted: (SpeechEvent) -> Void
 
-    OnCreate {
-      delegate = SpeechDelegate(resultHandler: self)
-      synthesizer.delegate = delegate
+  @Event("Exponent.speakingWillSayNextString")
+  var onSpeakingWillSayNextString: (SpeechWillSayNextStringEvent) -> Void
+
+  @Event("Exponent.speakingDone")
+  var onSpeakingDone: (SpeechEvent) -> Void
+
+  @Event("Exponent.speakingStopped")
+  var onSpeakingStopped: (SpeechEvent) -> Void
+
+  @Event("Exponent.speakingError")
+  var onSpeakingError: (SpeechEvent) -> Void
+
+  @JS
+  func speak(utteranceId: String, text: String, options: SpeechOptions) async throws {
+    try await speech.speak(id: utteranceId, text: text, options: options)
+  }
+
+  @JS(.concurrent)
+  func getVoices() async -> [VoiceInfo] {
+    let voices = AVSpeechSynthesisVoice.speechVoices()
+
+    let availableVoicesResult = voices.map { voice in
+      VoiceInfo(
+        identifier: voice.identifier,
+        name: voice.name,
+        quality: voice.quality == .enhanced ? "Enhanced" : "Default",
+        language: voice.language
+      )
     }
 
-    Events([
-      SPEAKING_STARTED,
-      SPEAKING_WILL_SAY_NEXT_STRING,
-      SPEAKING_DONE,
-      SPEAKING_STOPPED,
-      SPEAKING_ERROR
-    ])
+    return availableVoicesResult
+  }
 
-    AsyncFunction("speak") { (utteranceId: String, text: String, options: SpeechOptions) in
-      let utterance = ExpoSpeechUtterance(id: utteranceId, text: text)
+  @JS
+  func stop() async {
+    await speech.stop()
+  }
 
-      if let language = options.language {
-        utterance.voice = AVSpeechSynthesisVoice(language: language)
-      }
+  @JS
+  func pause() async {
+    await speech.pause()
+  }
 
-      if let voice = options.voice {
-        utterance.voice = AVSpeechSynthesisVoice(identifier: voice)
+  @JS
+  func resume() async {
+    await speech.resume()
+  }
 
-        guard utterance.voice != nil else {
-          throw InvalidVoiceException(voice)
-        }
-      }
-
-      if let pitch = options.pitch {
-        utterance.pitchMultiplier = Float(pitch)
-      }
-
-      if let rate = options.rate {
-        utterance.rate = Float(rate) * AVSpeechUtteranceDefaultSpeechRate
-      }
-
-      if let volume = options.volume {
-        utterance.volume = min(max(volume, 0.0), 1.0);
-      }
-
-      if let useApplicationAudioSession = options.useApplicationAudioSession {
-        synthesizer.usesApplicationAudioSession = useApplicationAudioSession
-      }
-
-      synthesizer.speak(utterance)
-    }
-
-    AsyncFunction("getVoices") { () -> [VoiceInfo] in
-      let voices = AVSpeechSynthesisVoice.speechVoices()
-
-      let availableVoicesResult = voices.map { voice in
-        VoiceInfo(
-          identifier: voice.identifier,
-          name: voice.name,
-          quality: voice.quality == .enhanced ? "Enhanced" : "Default",
-          language: voice.language
-        )
-      }
-
-      return availableVoicesResult
-    }
-
-    AsyncFunction("stop") {
-      synthesizer.stopSpeaking(at: .immediate)
-    }
-
-    AsyncFunction("pause") {
-      synthesizer.pauseSpeaking(at: .immediate)
-    }
-
-    AsyncFunction("resume") {
-      synthesizer.continueSpeaking()
-    }
-
-    AsyncFunction("isSpeaking") {
-      return synthesizer.isSpeaking
-    }
+  @JS
+  func isSpeaking() async -> Bool {
+    return await speech.isSpeaking()
   }
 
   func didStart(utterance: AVSpeechUtterance) {
     guard let utterance = utterance as? ExpoSpeechUtterance else {
       return
     }
-    sendEvent(SPEAKING_STARTED, [
-      "id": utterance.id
-    ])
+    onSpeakingStarted(SpeechEvent(id: utterance.id))
   }
 
   func willSpeak(characterRange: NSRange, utterance: AVSpeechUtterance) {
     guard let utterance = utterance as? ExpoSpeechUtterance else {
       return
     }
-    sendEvent(SPEAKING_WILL_SAY_NEXT_STRING, [
-      "id": utterance.id,
-      "charIndex": characterRange.location,
-      "charLength": characterRange.length
-    ])
+    onSpeakingWillSayNextString(
+      SpeechWillSayNextStringEvent(
+        id: utterance.id,
+        charIndex: characterRange.location,
+        charLength: characterRange.length
+      )
+    )
   }
 
   func didCancel(utterance: AVSpeechUtterance) {
     guard let utterance = utterance as? ExpoSpeechUtterance else {
       return
     }
-    sendEvent(SPEAKING_STOPPED, [
-      "id": utterance.id
-    ])
+    onSpeakingStopped(SpeechEvent(id: utterance.id))
   }
 
   func didFinish(utterance: AVSpeechUtterance) {
     guard let utterance = utterance as? ExpoSpeechUtterance else {
       return
     }
-    sendEvent(SPEAKING_DONE, [
-      "id": utterance.id
-    ])
+    onSpeakingDone(SpeechEvent(id: utterance.id))
   }
 }
 
