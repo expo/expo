@@ -14,6 +14,8 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
   var headerTitle: String?
   var headerSubtitle: String?
   var largeTitle = false
+  var titleColor: UIColor?
+  var largeTitleColor: UIColor?
   var leftToolbarItems: [SplitViewToolbarItemRecord] = []
   var rightToolbarItems: [SplitViewToolbarItemRecord] = []
   var searchBar: SplitViewSearchBarRecord?
@@ -47,6 +49,9 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
       navigationItem.rightBarButtonItems = nil
       navigationItem.searchController = nil
       navigationItem.hidesBackButton = false
+      navigationItem.standardAppearance = nil
+      navigationItem.compactAppearance = nil
+      navigationItem.scrollEdgeAppearance = nil
       searchController = nil
       self.navigationItem = nil
       applyBackButton()
@@ -82,6 +87,7 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     navigationItem.leftBarButtonItems = barButtonItems(leftToolbarItems)
     navigationItem.rightBarButtonItems = barButtonItems(rightToolbarItems)
     applySearchBar(to: navigationItem)
+    applyTitleColors(to: navigationItem)
     navigationItem.hidesBackButton = !backVisible
     applyBackButton()
   }
@@ -130,6 +136,32 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
       controller = navigationController
     }
     return nil
+  }
+
+  // An item appearance replaces the whole appearance of the bar, so it is set only when a color is set.
+  private func applyTitleColors(to navigationItem: UINavigationItem) {
+    guard titleColor != nil || largeTitleColor != nil else {
+      navigationItem.standardAppearance = nil
+      navigationItem.compactAppearance = nil
+      navigationItem.scrollEdgeAppearance = nil
+      return
+    }
+    let standardAppearance = UINavigationBarAppearance()
+    // Matches the default scroll edge appearance, which the bar shows with the large title.
+    let scrollEdgeAppearance = UINavigationBarAppearance()
+    scrollEdgeAppearance.configureWithTransparentBackground()
+    for appearance in [standardAppearance, scrollEdgeAppearance] {
+      if let titleColor {
+        appearance.titleTextAttributes = [.foregroundColor: titleColor]
+      }
+      // Same fallback as `headerLargeTitleStyle` of Stack.
+      if let largeTitleColor = largeTitleColor ?? titleColor {
+        appearance.largeTitleTextAttributes = [.foregroundColor: largeTitleColor]
+      }
+    }
+    navigationItem.standardAppearance = standardAppearance
+    navigationItem.compactAppearance = standardAppearance
+    navigationItem.scrollEdgeAppearance = scrollEdgeAppearance
   }
 
   private func applySearchBar(to navigationItem: UINavigationItem) {
