@@ -41,6 +41,7 @@ const bigBuckBunnySource: VideoSource = {
   metadata: {
     title: 'Big Buck Bunny',
     artist: 'The Open Movie Project',
+    album: 'Blender Open Movies',
     artwork: 'https://expo-test-media.com/big_buck_bunny/artwork.jpg',
   },
 };
@@ -51,6 +52,7 @@ const elephantsDreamSource: VideoSource = {
   metadata: {
     title: 'Elephants Dream',
     artist: 'Blender Foundation',
+    album: 'Blender Open Movies',
     artwork: 'https://expo-test-media.com/elephants_dream/artwork.jpg',
   },
 };
