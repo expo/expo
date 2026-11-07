@@ -1,13 +1,25 @@
 import { stripAnsi } from './ansi';
 import { isInteractive } from './interactive';
 
-export type ProgramStatus = {
-  state: 'blocked';
-  kind: 'permission' | 'question' | 'auth';
+export type ProgramStatus =
+  | {
+      state: 'blocked';
+      kind: 'permission' | 'question' | 'auth';
+      msg?: string;
+    }
+  | {
+      state: 'working';
+      msg?: string;
+    };
+
+export type ProgramResult = {
+  state: 'done' | 'error';
   msg?: string;
 };
 
-function writeProgramStatus(status: ProgramStatus | 'clear') {
+let hasReportedWorking = false;
+
+function writeProgramStatus(status: ProgramStatus | ProgramResult | 'clear') {
   try {
     if (isInteractive()) {
       const body = status === 'clear' ? 'state=clear' : formatProgramStatus(status);
@@ -16,13 +28,14 @@ function writeProgramStatus(status: ProgramStatus | 'clear') {
   } catch {}
 }
 
-function formatProgramStatus({ state, kind, msg }: ProgramStatus): string {
-  const text = msg
-    ? stripAnsi(msg)
+function formatProgramStatus(status: ProgramStatus | ProgramResult): string {
+  const text = status.msg
+    ? stripAnsi(status.msg)
         ?.replace(/[\s\p{Cc}]+/gu, ' ')
         .trim()
     : undefined;
-  return `state=${state}:app=expo:kind=${kind}${text ? `:msg=${Buffer.from(text).toString('base64')}` : ''}`;
+  const kind = status.state === 'blocked' ? `:kind=${status.kind}` : '';
+  return `state=${status.state}:app=expo${kind}${text ? `:msg=${Buffer.from(text).toString('base64')}` : ''}`;
 }
 
 export async function withProgramStatus<T>(
@@ -30,6 +43,9 @@ export async function withProgramStatus<T>(
   action: () => Promise<T>
 ): Promise<T> {
   const clear = () => writeProgramStatus('clear');
+  if (status.state === 'working') {
+    hasReportedWorking = true;
+  }
   writeProgramStatus(status);
   process.on('exit', clear);
   try {
@@ -37,5 +53,11 @@ export async function withProgramStatus<T>(
   } finally {
     process.off('exit', clear);
     clear();
+  }
+}
+
+export function reportProgramResult(result: ProgramResult) {
+  if (hasReportedWorking) {
+    writeProgramStatus(result);
   }
 }
