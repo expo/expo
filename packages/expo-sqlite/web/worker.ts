@@ -772,7 +772,18 @@ async function maybeFinalizeAllStatements(sqlite3: SQLiteAPI, dbEntity: Database
   }
 }
 
-async function maybeInitAsync(): Promise<{
+let _initPromise: ReturnType<typeof initAsync> | null = null;
+
+// The worker handles messages concurrently. Concurrent callers must share one init.
+function maybeInitAsync(): ReturnType<typeof initAsync> {
+  _initPromise ??= initAsync().catch((error) => {
+    _initPromise = null;
+    throw error;
+  });
+  return _initPromise;
+}
+
+async function initAsync(): Promise<{
   sqlite3: SQLiteAPI;
   vfs: AccessHandlePoolVFS;
   vfsMemory: MemoryVFS;
