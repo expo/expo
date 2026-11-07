@@ -9,7 +9,6 @@ import android.os.SystemClock
 import android.provider.Settings
 import android.util.DisplayMetrics
 import android.view.WindowManager
-import com.facebook.device.yearclass.YearClass
 import expo.modules.core.utilities.EmulatorUtilities
 import io.github.expo.modules.v2.Constant
 import io.github.expo.modules.v2.ExpoModule
@@ -58,7 +57,7 @@ class DeviceModule : Module() {
   @JS
   @Constant
   val deviceYearClass: Int
-    get() = YearClass.get(androidContext)
+    get() = DeviceYearClass.get(totalMemory)
 
   @JS
   @Constant

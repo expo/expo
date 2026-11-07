@@ -97,7 +97,14 @@ export const productName: string | null = ExpoDevice ? ExpoDevice.productName ||
 export const deviceType: DeviceType | null = ExpoDevice ? ExpoDevice.deviceType : null;
 
 /**
- * The [device year class](https://github.com/facebook/device-year-class) of this device. On web, this value is always `null`.
+ * The year in which this device was a high-end device, or would have been one. On web, this value is always `null`.
+ *
+ * On iOS, the value is the year in which Apple released the device model. A model that is newer than the library reports the current year.
+ *
+ * On Android 12 and newer, a known high-end chip gives the year of the devices that it was made for.
+ * The known chips are the high-end Snapdragon 8, Exynos, Google Tensor, and MediaTek Dimensity 9000 series chips from 2018 on.
+ * Other devices get the memory tiers of the [device year class](https://github.com/facebook/device-year-class) library.
+ * These tiers stop at 2016.
  */
 export const deviceYearClass: number | null = ExpoDevice ? ExpoDevice.deviceYearClass : null;
 
