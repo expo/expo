@@ -13,29 +13,36 @@ import {
   getAppBinaryPath,
 } from '../XcodeBuild';
 import { ensureDeviceIsCodeSignedForDeploymentAsync } from '../codeSigning/configureCodeSigning';
+import { simulatorBuildRequiresCodeSigning } from '../codeSigning/simulatorCodeSigning';
 
 jest.mock('../codeSigning/configureCodeSigning');
+jest.mock('../codeSigning/simulatorCodeSigning', () => ({
+  simulatorBuildRequiresCodeSigning: jest.fn(() => false),
+}));
 
 const fs = jest.requireActual('fs') as typeof import('fs');
 
+const deviceBuildProps = {
+  projectRoot: '/path/to/project',
+  buildCache: false,
+  configuration: 'Debug',
+  isSimulator: false,
+  scheme: 'project-with-build-configurations',
+  device: { udid: 'demo-udid', name: 'foobar', osType: 'iOS' },
+  osType: 'iOS',
+  xcodeProject: {
+    isWorkspace: true,
+    name: 'demo-project',
+  },
+} as const;
+
 describe(getXcodeBuildArgsAsync, () => {
   it(`returns fully qualified arguments for a build`, async () => {
-    jest.mocked(ensureDeviceIsCodeSignedForDeploymentAsync).mockResolvedValueOnce('my-dev-team');
-    await expect(
-      getXcodeBuildArgsAsync({
-        projectRoot: '/path/to/project',
-        buildCache: false,
-        configuration: 'Debug',
-        isSimulator: false,
-        scheme: 'project-with-build-configurations',
-        device: { udid: 'demo-udid', name: 'foobar', osType: 'iOS' },
-        osType: 'iOS',
-        xcodeProject: {
-          isWorkspace: true,
-          name: 'demo-project',
-        },
-      })
-    ).resolves.toEqual([
+    jest.mocked(ensureDeviceIsCodeSignedForDeploymentAsync).mockResolvedValueOnce({
+      developmentTeamId: 'my-dev-team',
+      allowProvisioningUpdates: true,
+    });
+    await expect(getXcodeBuildArgsAsync(deviceBuildProps)).resolves.toEqual([
       '-workspace',
       'demo-project',
       '-configuration',
@@ -52,6 +59,41 @@ describe(getXcodeBuildArgsAsync, () => {
       'clean',
       'build',
     ]);
+  });
+  it(`allows provisioning updates for a project that already uses automatic signing`, async () => {
+    jest.mocked(ensureDeviceIsCodeSignedForDeploymentAsync).mockResolvedValueOnce({
+      developmentTeamId: null,
+      allowProvisioningUpdates: true,
+    });
+    const args = await getXcodeBuildArgsAsync(deviceBuildProps);
+    expect(args).toEqual(
+      expect.arrayContaining(['-allowProvisioningUpdates', '-allowProvisioningDeviceRegistration'])
+    );
+    expect(args).not.toContainEqual(expect.stringMatching(/^DEVELOPMENT_TEAM=/));
+    expect(ensureDeviceIsCodeSignedForDeploymentAsync).toHaveBeenLastCalledWith(
+      '/path/to/project',
+      'Debug'
+    );
+  });
+  it(`does not allow provisioning updates for a signed simulator build of an already signed project`, async () => {
+    jest.mocked(simulatorBuildRequiresCodeSigning).mockReturnValueOnce(true);
+    jest.mocked(ensureDeviceIsCodeSignedForDeploymentAsync).mockResolvedValueOnce({
+      developmentTeamId: null,
+      allowProvisioningUpdates: true,
+    });
+    const args = await getXcodeBuildArgsAsync({ ...deviceBuildProps, isSimulator: true });
+    expect(args).not.toContain('-allowProvisioningUpdates');
+    expect(args).not.toContain('-allowProvisioningDeviceRegistration');
+  });
+  it(`does not allow provisioning updates for a project that uses manual signing`, async () => {
+    jest.mocked(ensureDeviceIsCodeSignedForDeploymentAsync).mockResolvedValueOnce({
+      developmentTeamId: null,
+      allowProvisioningUpdates: false,
+    });
+    const args = await getXcodeBuildArgsAsync(deviceBuildProps);
+    expect(args).not.toContain('-allowProvisioningUpdates');
+    expect(args).not.toContain('-allowProvisioningDeviceRegistration');
+    expect(args).not.toContainEqual(expect.stringMatching(/^DEVELOPMENT_TEAM=/));
   });
   it(`returns standard simulator arguments`, async () => {
     await expect(
