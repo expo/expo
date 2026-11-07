@@ -117,6 +117,11 @@ function getExportsThatAreNotUsedInModule(ast: types.File) {
     ReferencedIdentifier(path) {
       usedIdentifiers.add(path.node.name);
     },
+    AssignmentExpression(path) {
+      for (const name of Object.keys(path.getBindingIdentifiers())) {
+        usedIdentifiers.add(name);
+      }
+    },
   });
 
   // Determine which exports are unused

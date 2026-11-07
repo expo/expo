@@ -913,6 +913,31 @@ it(`barrel multiple`, async () => {
   expect(artifacts[0].source).not.toMatch('subtract');
 });
 
+describe('exports that the module assigns', () => {
+  it.each([
+    ['an assignment', 'assigned = 1;'],
+    ['a destructuring assignment', '[assigned] = [1];'],
+  ])(
+    `keeps the declaration of an unused export that is the target of %s`,
+    async (_, assignment) => {
+      const [, artifacts] = await serializeShakingAsync({
+        'index.js': `import { init } from './lib'; console.log(init());`,
+        'lib.js': `
+        export let assigned;
+        export let removed;
+        export function init() {
+          ${assignment}
+          return 1;
+        }
+      `,
+      });
+
+      expect(artifacts[0].source).toMatch(/\b(var|let) assigned\b/);
+      expect(artifacts[0].source).not.toMatch('removed');
+    }
+  );
+});
+
 describe('Possible optimizations', () => {
   // TODO: Broken
   it(`require module`, async () => {
