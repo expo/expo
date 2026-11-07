@@ -12,6 +12,7 @@ import androidx.biometric.BiometricPrompt
 import androidx.biometric.BiometricPrompt.PromptInfo
 import androidx.fragment.app.FragmentActivity
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.functions.Queues
@@ -34,6 +35,8 @@ private const val DEFAULT_FALLBACK_LABEL = "Use screen lock"
 class LocalAuthenticationModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoLocalAuthentication")
+
+    RequiresHostActivity<FragmentActivity>(feature = "authentication prompts")
 
     AsyncFunction<Set<Int>>("supportedAuthenticationTypesAsync") {
       val results = mutableSetOf<Int>()
@@ -76,9 +79,10 @@ class LocalAuthenticationModule : Module() {
     }
 
     AsyncFunction("authenticateAsync") { options: AuthOptions, promise: Promise ->
-      val fragmentActivity = appContext.throwingActivity as? FragmentActivity
-      if (fragmentActivity == null) {
-        promise.reject(Exceptions.MissingActivity())
+      val fragmentActivity = try {
+        requireHostActivity<FragmentActivity>()
+      } catch (e: CodedException) {
+        promise.reject(e)
         return@AsyncFunction
       }
       if (!keyguardManager.isDeviceSecure) {
@@ -239,7 +243,7 @@ class LocalAuthenticationModule : Module() {
   }
 
   private fun promptDeviceCredentialsFallback(options: AuthOptions, promise: Promise) {
-    val fragmentActivity = appContext.throwingActivity as FragmentActivity?
+    val fragmentActivity = appContext.throwingActivity as? FragmentActivity
     if (fragmentActivity == null) {
       finishCall(promise) {
         promise.resolve(
