@@ -89,7 +89,7 @@ When you use the Expo Push Service, and specify only `data` and `contentAvailabl
 
 The rule of thumb is to prefer a regular Notification Message if you don't require running JavaScript in the background.
 
-\* The exception is when you specify `title` or `message` inside of [`data`](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidConfig). In that case, `expo-notifications` package automatically presents the headless notification on Android, but not on iOS. We plan to make this behavior more consistent across platforms in a future release.
+\* The exception is when you send directly through FCM (not the Expo Push Service) and specify `title` or `message` inside [`data`](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidConfig). In that case, `expo-notifications` presents the notification on Android when the app is not in the foreground. JS listeners do not receive it. We plan to make this behavior more consistent across platforms in a future release.
 
 ### Data-only notifications
 
