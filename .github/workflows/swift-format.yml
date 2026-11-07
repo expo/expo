@@ -26,6 +26,7 @@ on:
       - packages/expo-keep-awake/**/*.swift
       - packages/expo-linking/**/*.swift
       - packages/expo-live-photo/**/*.swift
+      - packages/expo-media-session/**/*.swift
       - packages/expo-modules-jsi/**/*.swift
       - packages/expo-network/**/*.swift
       - packages/expo-observe/**/*.swift
@@ -113,6 +114,7 @@ jobs:
             packages/expo-keep-awake
             packages/expo-linking
             packages/expo-live-photo
+            packages/expo-media-session
             packages/expo-modules-jsi
             packages/expo-network
             packages/expo-observe

@@ -507,6 +507,8 @@ PODS:
   - ExpoMediaLibraryImageLoader (58.0.12):
     - React-Core
     - React-RCTImage
+  - ExpoMediaSession (58.0.0):
+    - ExpoModulesCore
   - ExpoMeshGradient (58.0.3):
     - ExpoModulesCore
   - ExpoModulesCore (58.0.26):
@@ -3727,6 +3729,7 @@ DEPENDENCIES:
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
   - ExpoMediaLibraryImageLoader (from `../../../packages/expo-media-library`)
+  - ExpoMediaSession (from `../../../packages/expo-media-session/ios`)
   - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Benchmarks (from `../../../packages/expo-modules-core`)
@@ -4083,6 +4086,9 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-media-library/ios"
   ExpoMediaLibraryImageLoader:
     :path: "../../../packages/expo-media-library"
+  ExpoMediaSession:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-media-session/ios"
   ExpoMeshGradient:
     inhibit_warnings: false
     :path: "../../../packages/expo-mesh-gradient/ios"
@@ -4464,6 +4470,7 @@ SPEC CHECKSUMS:
   ExpoMaps: 56acbfda3c93f738b9c7d4c54af4b4058cdd7ecf
   ExpoMediaLibrary: 7e70cbd590acc2b1a21f486ade3134890197b184
   ExpoMediaLibraryImageLoader: 6131955b7bbc3f9ce4c4c97cec9b1b6455a7828d
+  ExpoMediaSession: 12a818e0841291755b0429e1d66ff165c6358e08
   ExpoMeshGradient: 778fd9893abcff50f3861e13c8768c8442e6cb78
   ExpoModulesCore: db285f1afd687fdd0a6979b38d8bc6c606248c31
   ExpoModulesJSI: d9f7f7a1625c1a29cb116a6c264f1752230d4783
