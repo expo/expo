@@ -1,5 +1,40 @@
 # test-suite
 
+## 1.0.18
+
+### Patch Changes
+
+- Updated dependencies. ([#52560](https://github.com/expo/expo/pull/52560), [#52885](https://github.com/expo/expo/pull/52885), [#53135](https://github.com/expo/expo/pull/53135), [#53027](https://github.com/expo/expo/pull/53027), [#52884](https://github.com/expo/expo/pull/52884), [#52844](https://github.com/expo/expo/pull/52844), [#52993](https://github.com/expo/expo/pull/52993), [#53088](https://github.com/expo/expo/pull/53088), [#52616](https://github.com/expo/expo/pull/52616), [#52402](https://github.com/expo/expo/pull/52402), [#53122](https://github.com/expo/expo/pull/53122), [#50207](https://github.com/expo/expo/pull/50207), [#52711](https://github.com/expo/expo/pull/52711), [#52839](https://github.com/expo/expo/pull/52839), [#45099](https://github.com/expo/expo/pull/45099), [#52910](https://github.com/expo/expo/pull/52910), [#53102](https://github.com/expo/expo/pull/53102), [#52744](https://github.com/expo/expo/pull/52744), [#53136](https://github.com/expo/expo/pull/53136), [#53099](https://github.com/expo/expo/pull/53099))
+  - expo-crypto@58.0.8
+  - expo-router@58.0.31
+  - expo@58.0.24
+  - expo-store-review@58.0.3
+  - @expo/ui@58.0.28
+  - expo-haptics@58.0.8
+  - expo-modules-core@58.0.31
+  - expo-sqlite@58.0.16
+  - expo-task-manager@58.0.14
+  - expo-media-library@58.0.14
+  - expo-asset@58.0.21
+  - expo-background-fetch@58.0.13
+  - expo-battery@58.0.4
+  - expo-blur@58.0.6
+  - expo-brightness@58.0.3
+  - expo-cellular@58.0.4
+  - expo-font@58.0.12
+  - expo-keep-awake@58.0.4
+  - expo-linear-gradient@58.0.4
+  - expo-linking@58.0.17
+  - expo-network@58.0.5
+  - expo-secure-store@58.0.3
+  - expo-sms@58.0.3
+  - expo-speech@58.0.4
+  - expo-web-browser@58.0.8
+  - expo-auth-session@58.0.18
+  - expo-constants@58.0.16
+  - expo-location@58.0.21
+  - expo-notifications@58.1.9
+
 ## 1.0.17
 
 ### Patch Changes

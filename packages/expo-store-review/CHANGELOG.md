@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.3
+
+### Patch Changes
+
+- [Android] Fix `requestReview` crashing the app with `MissingActivity` when the activity is destroyed before the review flow is ready. The promise now rejects instead. ([#53027](https://github.com/expo/expo/pull/53027) by [@vonovak](https://github.com/vonovak))
+- [iOS] Build from a checked-in Package.swift that the Expo SwiftPM plugin uses when the module is built from source. ([#53136](https://github.com/expo/expo/pull/53136) by [@chrfalch](https://github.com/chrfalch))
+
 ## 58.0.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.21.7
+
+### Patch Changes
+
+- Use @expo/env instead of getenv to read environment variables. ([#52934](https://github.com/expo/expo/pull/52934) by [@kitten](https://github.com/kitten))
+
 ## 1.21.6
 
 ### Patch Changes

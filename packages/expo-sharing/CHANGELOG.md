@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.23
+
+### Patch Changes
+
+- Store files shared into the app in a unique directory for each file, with a safe file name. Files with the same name no longer replace each other. `clearSharedPayloads()` now deletes these files, and files older than 24 hours are deleted when new shared files are processed. On iOS, the files are now in the app group's `Library/Caches/expo-sharing` directory. `useIncomingShare()` now also clears its returned payloads when you call `clearSharedPayloads()`. ([#51839](https://github.com/expo/expo/pull/51839) by [@behenate](https://github.com/behenate))
+- Updated dependencies. ([#52929](https://github.com/expo/expo/pull/52929), [#52932](https://github.com/expo/expo/pull/52932))
+  - @expo/plist@0.10.2
+  - @expo/config-plugins@58.0.13
+
 ## 58.0.22
 
 ### Patch Changes

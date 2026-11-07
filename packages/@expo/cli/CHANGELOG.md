@@ -1,5 +1,32 @@
 # Changelog
 
+## 58.1.20
+
+### Patch Changes
+
+- Fix `expo start` skipping all manifest assets (icons, splash images) when a config section on an asset path, such as `splash`, is `null` or `undefined`. ([#52975](https://github.com/expo/expo/pull/52975) by [@Shaurya55555](https://github.com/Shaurya55555))
+- Replace glob with Node glob, tinyglobby, and filesystem directory listings. ([#52796](https://github.com/expo/expo/pull/52796) by [@kitten](https://github.com/kitten))
+- Fix opening browser URLs with query parameters and special characters on Windows and WSL. ([#52747](https://github.com/expo/expo/pull/52747) by [@kitten](https://github.com/kitten))
+- Select the iOS device before installing CocoaPods when running `expo run:ios`. ([#52745](https://github.com/expo/expo/pull/52745) by [@kitten](https://github.com/kitten))
+- Use @expo/env instead of getenv to read environment variables. ([#52934](https://github.com/expo/expo/pull/52934) by [@kitten](https://github.com/kitten))
+- Preserve HTTPS tunnel URLs when opening Expo Go, development builds, and the runtime selection page.
+
+  Keep development-build app schemes out of web and server URLs when using a WS tunnel.
+
+  ([#52750](https://github.com/expo/expo/pull/52750) by [@kitten](https://github.com/kitten))
+
+- Updated dependencies. ([#52929](https://github.com/expo/expo/pull/52929), [#52831](https://github.com/expo/expo/pull/52831), [#52932](https://github.com/expo/expo/pull/52932), [#52934](https://github.com/expo/expo/pull/52934))
+  - @expo/plist@0.10.2
+  - @expo/require-utils@58.0.6
+  - @expo/config@58.0.12
+  - @expo/config-plugins@58.0.13
+  - @expo/image-utils@0.12.7
+  - @expo/metro-config@58.0.22
+  - @expo/env@2.6.0
+  - @expo/prebuild-config@58.0.20
+  - @expo/inline-modules@0.2.10
+  - @expo/router-server@58.0.22
+
 ## 58.1.19
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.6.0
+
+### Minor Changes
+
+- Add environment variable readers for booleans, integers, and strings, replacing getenv. Errors identify the environment variable and explain how to correct missing or invalid values. Null and undefined values are treated as unset. ([#52934](https://github.com/expo/expo/pull/52934) by [@kitten](https://github.com/kitten))
+
 ## 2.5.4
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.12.7
+
+### Patch Changes
+
+- Drop the getenv dependency. ([#52932](https://github.com/expo/expo/pull/52932) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#52831](https://github.com/expo/expo/pull/52831))
+  - @expo/require-utils@58.0.6
+
 ## 0.12.6
 
 ### Patch Changes

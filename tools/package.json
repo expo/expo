@@ -1,6 +1,6 @@
 {
   "name": "expotools",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "A set of commands and libraries for working within the Expo repository",
   "license": "MIT",

@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.21
+
+### Patch Changes
+
+- Use @expo/env instead of getenv to read environment variables. ([#52934](https://github.com/expo/expo/pull/52934) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#52932](https://github.com/expo/expo/pull/52932), [#52934](https://github.com/expo/expo/pull/52934))
+  - @expo/config@58.0.12
+  - @expo/config-plugins@58.0.13
+  - @expo/env@2.6.0
+
 ## 58.0.20
 
 ### Patch Changes

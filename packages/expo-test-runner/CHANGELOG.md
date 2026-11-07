@@ -1,5 +1,11 @@
 # expo-test-runner
 
+## 0.6.2
+
+### Patch Changes
+
+- Drop `temp-dir` and `unique-string` ([#52931](https://github.com/expo/expo/pull/52931) by [@kitten](https://github.com/kitten))
+
 ## 0.6.1
 
 ### Patch Changes
