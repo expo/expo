@@ -49,6 +49,9 @@ export const META_DATA_LOCAL_NOTIFICATION_ICON_COLOR =
 export const META_DATA_LOCAL_NOTIFICATION_LARGE_ICON =
   'expo.modules.notifications.large_notification_icon';
 
+export const META_DATA_PRESENT_DATA_ONLY_NOTIFICATIONS_WITH_TITLE =
+  'expo.modules.notifications.present_data_only_notifications_with_title';
+
 export const NOTIFICATION_ICON = 'notification_icon';
 export const NOTIFICATION_ICON_RESOURCE = `@drawable/${NOTIFICATION_ICON}`;
 export const NOTIFICATION_LARGE_ICON = 'notification_large_icon';
@@ -86,10 +89,14 @@ export const withNotificationManifest: ConfigPlugin<{
   largeIcon: string | null;
   color: string | null;
   defaultChannel: string | null;
-}> = (config, { icon, largeIcon, color, defaultChannel }) => {
+  presentDataOnlyNotificationsWithTitle?: boolean;
+}> = (
+  config,
+  { icon, largeIcon, color, defaultChannel, presentDataOnlyNotificationsWithTitle }
+) => {
   return withAndroidManifest(config, (config) => {
     config.modResults = setNotificationConfig(
-      { icon, largeIcon, color, defaultChannel },
+      { icon, largeIcon, color, defaultChannel, presentDataOnlyNotificationsWithTitle },
       config.modResults
     );
     return config;
@@ -148,12 +155,13 @@ async function setDrawableIconAsync(
   }
 }
 
-function setNotificationConfig(
+export function setNotificationConfig(
   props: {
     icon: string | null;
     largeIcon?: string | null;
     color: string | null;
     defaultChannel?: string | null;
+    presentDataOnlyNotificationsWithTitle?: boolean;
   },
   manifest: AndroidConfig.Manifest.AndroidManifest
 ) {
@@ -214,6 +222,20 @@ function setNotificationConfig(
     removeMetaDataItemFromMainApplication(
       mainApplication,
       META_DATA_FCM_NOTIFICATION_DEFAULT_CHANNEL_ID
+    );
+  }
+
+  if (typeof props.presentDataOnlyNotificationsWithTitle === 'boolean') {
+    addMetaDataItemToMainApplication(
+      mainApplication,
+      META_DATA_PRESENT_DATA_ONLY_NOTIFICATIONS_WITH_TITLE,
+      String(props.presentDataOnlyNotificationsWithTitle),
+      'value'
+    );
+  } else {
+    removeMetaDataItemFromMainApplication(
+      mainApplication,
+      META_DATA_PRESENT_DATA_ONLY_NOTIFICATIONS_WITH_TITLE
     );
   }
   return manifest;
@@ -312,11 +334,24 @@ function writeNotificationSoundFile(soundFileRelativePath: string, projectRoot: 
 
 export const withNotificationsAndroid: ConfigPlugin<NotificationsPluginProps> = (
   config,
-  { icon = null, largeIcon = null, color = null, sounds = [], defaultChannel = null }
+  {
+    icon = null,
+    largeIcon = null,
+    color = null,
+    sounds = [],
+    defaultChannel = null,
+    presentDataOnlyNotificationsWithTitle,
+  }
 ) => {
   config = withNotificationIconColor(config, { color });
   config = withNotificationIcons(config, { icon, largeIcon });
-  config = withNotificationManifest(config, { icon, largeIcon, color, defaultChannel });
+  config = withNotificationManifest(config, {
+    icon,
+    largeIcon,
+    color,
+    defaultChannel,
+    presentDataOnlyNotificationsWithTitle,
+  });
   config = withNotificationSounds(config, { sounds });
   return config;
 };
