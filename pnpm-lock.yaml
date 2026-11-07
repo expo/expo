@@ -2155,9 +2155,6 @@ importers:
       multitars:
         specifier: ^1.0.2
         version: 1.0.2
-      node-forge:
-        specifier: ^1.4.0
-        version: 1.4.0
       npm-package-arg:
         specifier: ^11.0.0
         version: 11.0.3
