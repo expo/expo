@@ -45,6 +45,10 @@ object FileUtils {
     callback.onWriteFinished(arrayOf(PageRange.ALL_PAGES))
   }
 
+  fun isBase64DataUri(uri: String): Boolean {
+    return uri.startsWith("data:") && uri.contains(";base64,")
+  }
+
   fun decodeDataURI(uri: String): InputStream {
     val base64Index = uri.indexOf(";base64,")
     val plainBase64 = uri.substring(base64Index + 8)
