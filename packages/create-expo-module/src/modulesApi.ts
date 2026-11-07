@@ -25,7 +25,8 @@ export function getModulesApiV2Dir(templatePath: string): string {
 export function resolveModulesApi(
   requested: ModulesApi | undefined,
   templatePath: string,
-  sdkVersion: number | null
+  sdkVersion: number | null,
+  v2NextStep = 'Re-run the command with --modules-api v1 to use the Expo Modules API 1.0.'
 ): ModulesApi {
   if (requested === 'v1') {
     return 'v1';
@@ -36,8 +37,7 @@ export function resolveModulesApi(
   }
   if (requested === 'v2') {
     throw new UserError(
-      `Cannot generate Expo Modules API 2.0 code, because ${reason}.\n\n` +
-        'Re-run the command with --modules-api v1 to use the Expo Modules API 1.0.'
+      `Cannot generate Expo Modules API 2.0 code, because ${reason}.\n\n${v2NextStep}`
     );
   }
   console.log(chalk.yellow(`⚠️  Using the Expo Modules API 1.0, because ${reason}.`));
