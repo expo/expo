@@ -2,15 +2,22 @@
   "name": "expo-embedding",
   "version": "0.0.0-dev",
   "private": true,
-  "description": "Native dependency metadata for the Expo embedding prototype",
+  "description": "Expo embedding prototype for existing SwiftUI apps",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-embedding"
   },
+  "bin": {
+    "expo-embedding": "bin/expo-embedding.js"
+  },
   "files": [
-    "build"
+    "bin",
+    "build",
+    "scripts/codegen.cjs",
+    "templates",
+    "scripts/embed-frameworks.sh"
   ],
   "type": "module",
   "scripts": {
@@ -23,6 +30,7 @@
     "depscheck": "expo-module depscheck"
   },
   "dependencies": {
+    "@bacons/xcode": "1.0.0-alpha.33",
     "minimatch": "^9.0.9"
   },
   "devDependencies": {
