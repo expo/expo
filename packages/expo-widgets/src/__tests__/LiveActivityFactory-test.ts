@@ -33,6 +33,34 @@ it('starts with a relevance score without requiring a URL or stale date', () => 
   expect(mockStart.mock.calls).toEqual([[JSON.stringify(props), { relevanceScore: 5 }]]);
 });
 
+it('passes the scheduled start, alert, and initial relevance score to the native factory', () => {
+  const startDate = new Date('2027-01-01T12:00:00Z');
+  const alertConfiguration = {
+    title: 'Delivery',
+    body: 'Your driver is nearby',
+    sound: 'delivery.caf',
+  };
+
+  factory.start(props, {
+    url,
+    staleDate,
+    relevanceScore: 0,
+    schedule: { startDate, alertConfiguration },
+  });
+
+  expect(mockStart.mock.calls).toEqual([
+    [
+      JSON.stringify(props),
+      {
+        url,
+        staleDate: staleDate.getTime(),
+        relevanceScore: 0,
+        schedule: { startDate: startDate.getTime(), alertConfiguration },
+      },
+    ],
+  ]);
+});
+
 it.each([
   [undefined, {}],
   [{ relevanceScore: 0 }, { relevanceScore: 0 }],
