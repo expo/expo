@@ -32,6 +32,12 @@ export interface ButtonProps {
    */
   onClick?: () => void;
   /**
+   * A URL to open when the button is pressed, such as a deep link into the app. Only used by
+   * widgets and custom notifications from `expo-widgets`, where it replaces `onClick`.
+   * @platform android
+   */
+  url?: string;
+  /**
    * Whether the button is enabled for user interaction.
    * @default true
    */
