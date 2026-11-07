@@ -379,6 +379,21 @@ describe('FetchResponse', () => {
       await expect(response.arrayBuffer()).rejects.toThrow(TypeError);
     });
 
+    it('flips bodyUsed and rejects text() after the body is cancelled before any read', async () => {
+      const response = makeResponse();
+      await response.body!.cancel('not needed');
+      expect(response.bodyUsed).toBe(true);
+      await expect(response.text()).rejects.toThrow(TypeError);
+    });
+
+    it('rejects arrayBuffer() after a reader cancels the body and releases its lock', async () => {
+      const response = makeResponse();
+      const reader = response.body!.getReader();
+      await reader.cancel('not needed');
+      reader.releaseLock();
+      await expect(response.arrayBuffer()).rejects.toThrow(TypeError);
+    });
+
     it('rejects body methods on a clone after its body has been read', async () => {
       const response = makeResponse();
       const cloned = response.clone();
