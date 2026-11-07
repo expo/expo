@@ -76,6 +76,15 @@ class RouterToolbarItemView: RouterViewWithLogger {
       return
     }
 
+    // On iOS 26, a custom view's item can keep its old background when its tint or style changes
+    // in place, so it gets a new item.
+    if customView != nil,
+      item.tintColor != customTintColor || item.style != (barButtonItemStyle ?? .plain)
+    {
+      rebuildBarButtonItem()
+      return
+    }
+
     // Update content properties (title, image, etc.) for normal buttons
     applyContentProperties(to: item)
 
@@ -150,7 +159,6 @@ class RouterToolbarItemView: RouterViewWithLogger {
       } else {
         item.image = nil
       }
-      item.tintColor = customTintColor
       if let titleStyle {
         RouterFontUtils.setTitleStyle(fromConfig: titleStyle, for: item)
       } else {
@@ -160,6 +168,10 @@ class RouterToolbarItemView: RouterViewWithLogger {
   }
 
   private func applyCommonProperties(to item: UIBarButtonItem) {
+    // A custom view's item takes the tint too, so a prominent one's background is the tint.
+    if type != .searchBar {
+      item.tintColor = customTintColor
+    }
     if #available(iOS 26.0, *) {
       item.hidesSharedBackground = hidesSharedBackground
       item.sharesBackground = sharesBackground
