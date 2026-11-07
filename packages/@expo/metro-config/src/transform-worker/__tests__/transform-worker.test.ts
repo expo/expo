@@ -1,5 +1,6 @@
 import * as upstreamTransformer from '../metro-transform-worker';
 import type { JsTransformOptions } from '../metro-transform-worker';
+import * as postcssMod from '../postcss';
 import { transform } from '../transform-worker';
 import * as transformShimMod from '../transformShim';
 
@@ -110,6 +111,23 @@ it(`transforms a global CSS file in dev for native`, async () => {
 });
 
 describe('Global CSS', () => {
+  it(`names the files PostCSS read on the CSS metadata`, async () => {
+    jest.spyOn(postcssMod, 'transformPostCssModule').mockResolvedValueOnce({
+      src: '.imported { color: red; }',
+      hasPostcss: true,
+      fileDependencies: ['/imported.css'],
+    });
+
+    const { output } = await doTransformForOutput('acme.css', '@import "./imported.css";', {
+      dev: true,
+      minify: false,
+      platform: 'web',
+    });
+
+    expect(output.output[0].data.css.fileDependencies).toEqual(['/imported.css']);
+    expect(output.output[0].data.css.skipCache).toBe(true);
+  });
+
   it(`automatically strips redundant vendor prefixes`, async () => {
     const fixture = `
       .button {
@@ -151,6 +169,23 @@ describe('Global CSS', () => {
 });
 
 describe('CSS Modules', () => {
+  it(`names the files PostCSS read on the CSS metadata`, async () => {
+    jest.spyOn(postcssMod, 'transformPostCssModule').mockResolvedValueOnce({
+      src: '.container { background: red; }',
+      hasPostcss: true,
+      fileDependencies: ['/shared.css'],
+    });
+
+    const { output } = await doTransformForOutput('acme.module.css', '.container {}', {
+      dev: false,
+      minify: false,
+      platform: 'web',
+    });
+
+    expect(output.output[0].data.css.fileDependencies).toEqual(['/shared.css']);
+    expect(output.output[0].data.css.skipCache).toBe(true);
+  });
+
   describe('ios', () => {
     it(`transforms for dev, minified`, async () => {
       expect(
@@ -258,6 +293,7 @@ describe('CSS Modules', () => {
               css: {
                 code: '._R_BGG_container{background:red}',
                 externalImports: [],
+                fileDependencies: [],
                 functionMap: null,
                 lineCount: 1,
                 map: [],
@@ -296,6 +332,7 @@ describe('CSS Modules', () => {
                 // Not minified, formatted actually.
                 code: ['._R_BGG_container {', '  background: red;', '}', ''].join('\n'),
                 externalImports: [],
+                fileDependencies: [],
                 functionMap: null,
                 lineCount: 4,
                 map: [],

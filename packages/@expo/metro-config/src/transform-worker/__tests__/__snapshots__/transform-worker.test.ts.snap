@@ -33,6 +33,7 @@ if (module.hot) module.hot.accept();
           "css": {
             "code": "._R_BGG_container{background:red}",
             "externalImports": [],
+            "fileDependencies": [],
             "functionMap": null,
             "lineCount": 1,
             "map": [],
@@ -83,6 +84,7 @@ if (module.hot) module.hot.accept();
 }
 ",
             "externalImports": [],
+            "fileDependencies": [],
             "functionMap": null,
             "lineCount": 4,
             "map": [],
@@ -136,6 +138,7 @@ if (module.hot) module.hot.accept();
 }
 ",
             "externalImports": [],
+            "fileDependencies": [],
             "functionMap": null,
             "lineCount": 4,
             "map": [],
