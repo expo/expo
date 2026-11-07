@@ -22,12 +22,14 @@ Create a new module by running the following command and name the example module
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-module expo-web-view'],
-    yarn: ['$ yarn create expo-module expo-web-view'],
-    pnpm: ['$ pnpm create expo-module expo-web-view'],
-    bun: ['$ bun create expo-module expo-web-view'],
+    npm: ['$ npx create-expo-module expo-web-view --features View'],
+    yarn: ['$ yarn create expo-module expo-web-view --features View'],
+    pnpm: ['$ pnpm create expo-module expo-web-view --features View'],
+    bun: ['$ bun create expo-module expo-web-view --features View'],
   }}
 />
+
+The `--features View` option adds an example native view. The Expo Modules API 2.0 doesn't support views yet, so the module defines its view with the Module DSL in a separate views module, `ExpoWebViewViewsModule`, with the JavaScript name `ExpoWebViewViews`. The main module, `ExpoWebViewModule`, uses the Expo Modules API 2.0 and stays empty in this tutorial.
 
 > **info** Since this is an example library and won't be published, press <kbd>Return</kbd> for all prompts to accept the default values.
 
@@ -50,27 +52,27 @@ Clean up the default module to start with a clean slate by deleting the followin
 
 Locate the following files and replace them with the provided minimal boilerplate:
 
-```kotlin android/src/main/java/expo/modules/webview/ExpoWebViewModule.kt
+```kotlin android/src/main/java/expo/modules/webview/ExpoWebViewViewsModule.kt
 package expo.modules.webview
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
-class ExpoWebViewModule : Module() {
+class ExpoWebViewViewsModule : Module() {
   override fun definition() = ModuleDefinition {
-    Name("ExpoWebView")
+    Name("ExpoWebViewViews")
 
     View(ExpoWebView::class) {}
   }
 }
 ```
 
-```swift ios/ExpoWebViewModule.swift
+```swift ios/ExpoWebViewViewsModule.swift
 import ExpoModulesCore
 
-public class ExpoWebViewModule: Module {
+public class ExpoWebViewViewsModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("ExpoWebView")
+    Name("ExpoWebViewViews")
 
     View(ExpoWebView.self) {}
   }
@@ -84,7 +86,7 @@ import * as React from 'react';
 
 export type Props = ViewProps;
 
-const NativeView: React.ComponentType<Props> = requireNativeViewManager('ExpoWebView');
+const NativeView: React.ComponentType<Props> = requireNativeViewManager('ExpoWebViewViews');
 
 export default function ExpoWebView(props: Props) {
   return <NativeView {...props} />;
@@ -281,22 +283,22 @@ After that, you'll see the [Expo Modules API overview page](/modules/overview) r
 
 ## Add a prop to set the URL
 
-To set a prop on the view, define the prop name and setter inside `ExpoWebViewModule`. In this case, you can access the `webView` property directly for convenience. However, in real-world scenarios, keep the logic inside the `ExpoWebView` class to minimize how much `ExpoWebViewModule` knows about its internals.
+To set a prop on the view, define the prop name and setter inside `ExpoWebViewViewsModule`. In this case, you can access the `webView` property directly for convenience. However, in real-world scenarios, keep the logic inside the `ExpoWebView` class to minimize how much `ExpoWebViewViewsModule` knows about its internals.
 
 Use the [Prop definition component](/modules/module-api/#prop) to define the prop. In the prop setter block, you can access both the view and the prop. Specify that the URL is of type `URL` — the Expo modules API will convert strings to the native `URL` type.
 
 ### Android module
 
-```kotlin android/src/main/java/expo/modules/webview/ExpoWebViewModule.kt
+```kotlin android/src/main/java/expo/modules/webview/ExpoWebViewViewsModule.kt
 package expo.modules.webview
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.net.URL
 
-class ExpoWebViewModule : Module() {
+class ExpoWebViewViewsModule : Module() {
   override fun definition() = ModuleDefinition {
-    Name("ExpoWebView")
+    Name("ExpoWebViewViews")
 
     View(ExpoWebView::class) {
       Prop("url") { view: ExpoWebView, url: URL? ->
@@ -309,12 +311,12 @@ class ExpoWebViewModule : Module() {
 
 ### iOS module
 
-```swift ios/ExpoWebViewModule.swift
+```swift ios/ExpoWebViewViewsModule.swift
 import ExpoModulesCore
 
-public class ExpoWebViewModule: Module {
+public class ExpoWebViewViewsModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("ExpoWebView")
+    Name("ExpoWebViewViews")
 
     View(ExpoWebView.self) {
       Prop("url") { (view, url: URL) in
@@ -341,7 +343,7 @@ export type Props = {
   url?: string;
 } & ViewProps;
 
-const NativeView: React.ComponentType<Props> = requireNativeViewManager('ExpoWebView');
+const NativeView: React.ComponentType<Props> = requireNativeViewManager('ExpoWebViewViews');
 
 export default function ExpoWebView(props: Props) {
   return <NativeView {...props} />;
@@ -439,18 +441,18 @@ class ExpoWebView(context: Context, appContext: AppContext) : ExpoView(context, 
 }
 ```
 
-Indicate in `ExpoWebViewModule` that the `View` has an `onLoad` event.
+Indicate in `ExpoWebViewViewsModule` that the `View` has an `onLoad` event.
 
-```kotlin android/src/main/java/expo/modules/webview/ExpoWebViewModule.kt
+```kotlin android/src/main/java/expo/modules/webview/ExpoWebViewViewsModule.kt
 package expo.modules.webview
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.net.URL
 
-class ExpoWebViewModule : Module() {
+class ExpoWebViewViewsModule : Module() {
   override fun definition() = ModuleDefinition {
-    Name("ExpoWebView")
+    Name("ExpoWebViewViews")
 
     View(ExpoWebView::class) {
       Events("onLoad")
@@ -496,14 +498,14 @@ class ExpoWebView: ExpoView, WKNavigationDelegate {
 }
 ```
 
-Indicate in `ExpoWebViewModule` that the `View` has an `onLoad` event.
+Indicate in `ExpoWebViewViewsModule` that the `View` has an `onLoad` event.
 
-```swift ios/ExpoWebViewModule.swift
+```swift ios/ExpoWebViewViewsModule.swift
 import ExpoModulesCore
 
-public class ExpoWebViewModule: Module {
+public class ExpoWebViewViewsModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("ExpoWebView")
+    Name("ExpoWebViewViews")
 
     View(ExpoWebView.self) {
       Events("onLoad")
@@ -537,7 +539,7 @@ export type Props = {
   onLoad?: (event: { nativeEvent: OnLoadEvent }) => void;
 } & ViewProps;
 
-const NativeView: React.ComponentType<Props> = requireNativeViewManager('ExpoWebView');
+const NativeView: React.ComponentType<Props> = requireNativeViewManager('ExpoWebViewViews');
 
 export default function ExpoWebView(props: Props) {
   return <NativeView {...props} />;

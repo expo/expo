@@ -45,34 +45,27 @@ First, create a new module. For this tutorial, the module is named `expo-setting
 
 ## Set up workspace
 
-Clean up the default module to start with a clean slate. Delete the view module since this guide does not use it.
+Clean up the default module to start with a clean slate. Delete the web module since this guide does not implement web support.
 
 <Terminal
-  cmdCopy="cd expo-settings && rm ios/ExpoSettingsView.swift && rm android/src/main/java/expo/modules/settings/ExpoSettingsView.kt && rm src/ExpoSettingsView.tsx src/ExpoSettingsView.web.tsx src/ExpoSettingsModule.web.ts"
-  cmd={[
-    '$ cd expo-settings',
-    '$ rm ios/ExpoSettingsView.swift',
-    '$ rm android/src/main/java/expo/modules/settings/ExpoSettingsView.kt',
-    '$ rm src/ExpoSettingsView.tsx',
-    '$ rm src/ExpoSettingsView.web.tsx src/ExpoSettingsModule.web.ts',
-  ]}
+  cmdCopy="cd expo-settings && rm src/ExpoSettingsModule.web.ts"
+  cmd={['$ cd expo-settings', '$ rm src/ExpoSettingsModule.web.ts']}
 />
 
-Locate the following files and replace their contents with the provided minimal boilerplate:
+Locate the following files and replace their contents with the provided minimal boilerplate. The native module uses the Expo Modules API 2.0: the `@ExpoModule` attribute registers the class as a module, and the `@JS` attribute exposes a function to JavaScript.
 
 ```kotlin android/src/main/java/expo/modules/settings/ExpoSettingsModule.kt
 package expo.modules.settings
 
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
 
+@ExpoModule("ExpoSettings")
 class ExpoSettingsModule : Module() {
-  override fun definition() = ModuleDefinition {
-    Name("ExpoSettings")
-
-    Function("getTheme") {
-      return@Function "system"
-    }
+  @JS
+  fun getTheme(): String {
+    return "system"
   }
 }
 ```
@@ -80,13 +73,11 @@ class ExpoSettingsModule : Module() {
 ```swift ios/ExpoSettingsModule.swift
 import ExpoModulesCore
 
+@ExpoModule("ExpoSettings")
 public class ExpoSettingsModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoSettings")
-
-    Function("getTheme") { () -> String in
-      "system"
-    }
+  @JS
+  func getTheme() -> String {
+    return "system"
   }
 }
 ```
@@ -203,7 +194,7 @@ You should see the text "Theme: system" in the center of the screen when you lau
 
 ### Android native module
 
-To read the value, look for a `SharedPreferences` string under the key `"theme"`. If the key does not exist, default to `"system"`. Use the `reactContext` (a React Native [ContextWrapper](https://developer.android.com/reference/android/content/ContextWrapper)) to access the `SharedPreferences` instance with `getSharedPreferences()`.
+To read the value, look for a `SharedPreferences` string under the key `"theme"`. If the key does not exist, default to `"system"`. Use `androidContext` (the Android [`Context`](https://developer.android.com/reference/android/content/Context) of the app) to access the `SharedPreferences` instance with `getSharedPreferences()`.
 
 To set the value, use the `edit()` method of `SharedPreferences` to get an `Editor` instance. Then, use `putString()` to set the value. Ensure the `setTheme` function accepts a value of type `String`.
 
@@ -212,27 +203,25 @@ package expo.modules.settings
 
 import android.content.Context
 import android.content.SharedPreferences
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
 
+@ExpoModule("ExpoSettings")
 class ExpoSettingsModule : Module() {
-  override fun definition() = ModuleDefinition {
-    Name("ExpoSettings")
-
-    Function("setTheme") { theme: String ->
-      getPreferences().edit().putString("theme", theme).commit()
-    }
-
-    Function("getTheme") {
-      return@Function getPreferences().getString("theme", "system")
-    }
+  @JS
+  fun setTheme(theme: String) {
+    getPreferences().edit().putString("theme", theme).commit()
   }
 
-  private val context
-  get() = requireNotNull(appContext.reactContext)
+  @JS
+  fun getTheme(): String? {
+    return getPreferences().getString("theme", "system")
+  }
 
   private fun getPreferences(): SharedPreferences {
-    return context.getSharedPreferences(context.packageName + ".settings", Context.MODE_PRIVATE)
+    return androidContext.getSharedPreferences(androidContext.packageName + ".settings", Context.MODE_PRIVATE)
   }
 }
 ```
@@ -246,17 +235,16 @@ To set the value, use the `set(_:forKey:)` method of `UserDefaults`. Ensure the 
 ```swift ios/ExpoSettingsModule.swift
 import ExpoModulesCore
 
+@ExpoModule("ExpoSettings")
 public class ExpoSettingsModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoSettings")
+  @JS
+  func setTheme(theme: String) {
+    UserDefaults.standard.set(theme, forKey: "theme")
+  }
 
-    Function("setTheme") { (theme: String) -> Void in
-      UserDefaults.standard.set(theme, forKey:"theme")
-    }
-
-    Function("getTheme") { () -> String in
-      UserDefaults.standard.string(forKey: "theme") ?? "system"
-    }
+  @JS
+  func getTheme() -> String {
+    return UserDefaults.standard.string(forKey: "theme") ?? "system"
   }
 }
 ```
@@ -323,43 +311,44 @@ When you rebuild and run the app, the "system" theme is still set. Pressing the 
 
 ## Emit change events for the theme value
 
-Ensure developers using your API can react to theme value changes by emitting a change event whenever the value updates. Use the [Events](/modules/module-api/#events) definition component to describe the events your module emits, `sendEvent` to emit the event from native code, and the [EventEmitter](/modules/module-api/#sending-events) API to subscribe to events in JavaScript. The event payload is `{ theme: string }`.
+Ensure developers using your API can react to theme value changes by emitting a change event whenever the value updates. Use the `@Event` attribute to declare the event that your module emits, call the event property to emit the event from native code, and use the [EventEmitter](/modules/module-api/#sending-events) API to subscribe to events in JavaScript. The event payload is `{ theme: string }`. In native code, the payload is a type with the `@Record` attribute.
 
 ### Android native module
-
-Events payloads are represented as [`Bundle`](https://developer.android.com/reference/android/os/Bundle.html) instances on Android, which you can create using the [`bundleOf`](<https://developer.android.com/reference/kotlin/androidx/core/os/package-summary#bundleOf(kotlin.Array)>) function.
 
 ```kotlin android/src/main/java/expo/modules/settings/ExpoSettingsModule.kt
 package expo.modules.settings
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.core.os.bundleOf
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.Record
+import io.github.expo.modules.v2.react.androidContext
 
+@ExpoModule("ExpoSettings")
 class ExpoSettingsModule : Module() {
-  override fun definition() = ModuleDefinition {
-    Name("ExpoSettings")
+  @Event(name = "onChangeTheme")
+  private val onChangeTheme = event<ThemeChangeEvent>()
 
-    Events("onChangeTheme")
-
-    Function("setTheme") { theme: String ->
-      getPreferences().edit().putString("theme", theme).commit()
-      this@ExpoSettingsModule.sendEvent("onChangeTheme", bundleOf("theme" to theme))
-    }
-
-    Function("getTheme") {
-      return@Function getPreferences().getString("theme", "system")
-    }
+  @JS
+  fun setTheme(theme: String) {
+    getPreferences().edit().putString("theme", theme).commit()
+    onChangeTheme(ThemeChangeEvent(theme))
   }
 
-  private val context
-  get() = requireNotNull(appContext.reactContext)
+  @JS
+  fun getTheme(): String? {
+    return getPreferences().getString("theme", "system")
+  }
 
   private fun getPreferences(): SharedPreferences {
-    return context.getSharedPreferences(context.packageName + ".settings", Context.MODE_PRIVATE)
+    return androidContext.getSharedPreferences(androidContext.packageName + ".settings", Context.MODE_PRIVATE)
   }
+
+  @Record
+  data class ThemeChangeEvent(val theme: String)
 }
 ```
 
@@ -368,22 +357,25 @@ class ExpoSettingsModule : Module() {
 ```swift ios/ExpoSettingsModule.swift
 import ExpoModulesCore
 
+@ExpoModule("ExpoSettings")
 public class ExpoSettingsModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoSettings")
+  @Event("onChangeTheme")
+  var onChangeTheme: (ThemeChangeEvent) -> Void
 
-    Events("onChangeTheme")
+  @JS
+  func setTheme(theme: String) {
+    UserDefaults.standard.set(theme, forKey: "theme")
+    onChangeTheme(ThemeChangeEvent(theme: theme))
+  }
 
-    Function("setTheme") { (theme: String) -> Void in
-      UserDefaults.standard.set(theme, forKey:"theme")
-      sendEvent("onChangeTheme", [
-        "theme": theme
-      ])
-    }
+  @JS
+  func getTheme() -> String {
+    return UserDefaults.standard.string(forKey: "theme") ?? "system"
+  }
 
-    Function("getTheme") { () -> String in
-      UserDefaults.standard.string(forKey: "theme") ?? "system"
-    }
+  @Record
+  struct ThemeChangeEvent {
+    var theme: String
   }
 }
 ```
@@ -463,33 +455,36 @@ package expo.modules.settings
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.core.os.bundleOf
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.types.Enumerable
+import io.github.expo.modules.v2.Enumerable
+import io.github.expo.modules.v2.Event
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.Record
+import io.github.expo.modules.v2.react.androidContext
 
+@ExpoModule("ExpoSettings")
 class ExpoSettingsModule : Module() {
-  override fun definition() = ModuleDefinition {
-    Name("ExpoSettings")
+  @Event(name = "onChangeTheme")
+  private val onChangeTheme = event<ThemeChangeEvent>()
 
-    Events("onChangeTheme")
-
-    Function("setTheme") { theme: Theme ->
-      getPreferences().edit().putString("theme", theme.value).commit()
-      this@ExpoSettingsModule.sendEvent("onChangeTheme", bundleOf("theme" to theme.value))
-    }
-
-    Function("getTheme") {
-      return@Function getPreferences().getString("theme", Theme.SYSTEM.value)
-    }
+  @JS
+  fun setTheme(theme: Theme) {
+    getPreferences().edit().putString("theme", theme.value).commit()
+    onChangeTheme(ThemeChangeEvent(theme.value))
   }
 
-  private val context
-  get() = requireNotNull(appContext.reactContext)
+  @JS
+  fun getTheme(): String? {
+    return getPreferences().getString("theme", Theme.SYSTEM.value)
+  }
 
   private fun getPreferences(): SharedPreferences {
-    return context.getSharedPreferences(context.packageName + ".settings", Context.MODE_PRIVATE)
+    return androidContext.getSharedPreferences(androidContext.packageName + ".settings", Context.MODE_PRIVATE)
   }
+
+  @Record
+  data class ThemeChangeEvent(val theme: String)
 }
 
 enum class Theme(val value: String) : Enumerable {
@@ -504,22 +499,25 @@ enum class Theme(val value: String) : Enumerable {
 ```swift ios/ExpoSettingsModule.swift
 import ExpoModulesCore
 
+@ExpoModule("ExpoSettings")
 public class ExpoSettingsModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoSettings")
+  @Event("onChangeTheme")
+  var onChangeTheme: (ThemeChangeEvent) -> Void
 
-    Events("onChangeTheme")
+  @JS
+  func setTheme(theme: Theme) {
+    UserDefaults.standard.set(theme.rawValue, forKey: "theme")
+    onChangeTheme(ThemeChangeEvent(theme: theme.rawValue))
+  }
 
-    Function("setTheme") { (theme: Theme) -> Void in
-      UserDefaults.standard.set(theme.rawValue, forKey:"theme")
-      sendEvent("onChangeTheme", [
-        "theme": theme.rawValue
-      ])
-    }
+  @JS
+  func getTheme() -> String {
+    return UserDefaults.standard.string(forKey: "theme") ?? Theme.system.rawValue
+  }
 
-    Function("getTheme") { () -> String in
-      UserDefaults.standard.string(forKey: "theme") ?? Theme.system.rawValue
-    }
+  @Record
+  struct ThemeChangeEvent {
+    var theme: String
   }
 
   enum Theme: String, Enumerable {
@@ -580,15 +578,13 @@ export function setTheme(theme: Theme): void {
 
 ### Example app
 
-If you change `Settings.setTheme(nextTheme)` to `Settings.setTheme("not-a-real-theme")`, TypeScript will raise an error. If you ignore the error and press the button, you will see the following runtime error:
+If you change `Settings.setTheme(nextTheme)` to `Settings.setTheme("not-a-real-theme")`, TypeScript will raise an error. If you ignore the error and press the button, you will see the following runtime error on iOS:
 
 ```text
- ERROR  Error: FunctionCallException: Calling the 'setTheme' function has failed (at ExpoModulesCore/SyncFunctionComponent.swift:76)
-→ Caused by: ArgumentCastException: Argument at index '0' couldn't be cast to type Enum<Theme> (at ExpoModulesCore/JavaScriptUtils.swift:41)
-→ Caused by: EnumNoSuchValueException: 'not-a-real-theme' is not present in Theme enum, it must be one of: 'light', 'dark', 'system' (at ExpoModulesCore/Enumerable.swift:37)
+ ERROR  [Error: 'not-a-real-theme' is not present in Theme enum, it must be one of: 'light', 'dark', 'system']
 ```
 
-The last line of the error message shows that `not-a-real-theme` is not a valid value for the `Theme` enum. The only valid values are `light`, `dark`, and `system`.
+On Android, the error message is `'not-a-real-theme' is not a valid Theme. Pass one of: 'light', 'dark', 'system'`. Both messages show that `not-a-real-theme` is not a valid value for the `Theme` enum. The only valid values are `light`, `dark`, and `system`.
 
 </Step>
 

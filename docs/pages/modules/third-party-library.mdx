@@ -37,7 +37,7 @@ The iOS library is inspired by the Android library, so they both have similar AP
 
 ## Create a new module
 
-The following steps assume that the new module is created inside a new Expo project. However, you can create a new module inside an existing project by following the alternative instructions.
+The following steps assume that the new module is created inside a new Expo project. However, you can create a new module inside an existing project by following the alternative instructions. The `--features View` option adds an example native view. The Expo Modules API 2.0 doesn't support views yet, so the module defines its view with the Module DSL in a separate views module, `ExpoRadialChartViewsModule`, with the JavaScript name `ExpoRadialChartViews`.
 
 <Tabs>
 
@@ -47,10 +47,10 @@ Alternatively, you can use the new module as a view inside the existing Expo pro
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-module --local expo-radial-chart'],
-    yarn: ['$ yarn create expo-module --local expo-radial-chart'],
-    pnpm: ['$ pnpm create expo-module --local expo-radial-chart'],
-    bun: ['$ bun create expo-module --local expo-radial-chart'],
+    npm: ['$ npx create-expo-module --local expo-radial-chart --features View'],
+    yarn: ['$ yarn create expo-module --local expo-radial-chart --features View'],
+    pnpm: ['$ pnpm create expo-module --local expo-radial-chart --features View'],
+    bun: ['$ bun create expo-module --local expo-radial-chart --features View'],
   }}
 />
 
@@ -64,10 +64,10 @@ Create a new empty Expo module that can be published on npm and utilized in any 
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-module expo-radial-chart'],
-    yarn: ['$ yarn create expo-module expo-radial-chart'],
-    pnpm: ['$ pnpm create expo-module expo-radial-chart'],
-    bun: ['$ bun create expo-module expo-radial-chart'],
+    npm: ['$ npx create-expo-module expo-radial-chart --features View'],
+    yarn: ['$ yarn create expo-module expo-radial-chart --features View'],
+    pnpm: ['$ pnpm create expo-module expo-radial-chart --features View'],
+    bun: ['$ bun create expo-module expo-radial-chart --features View'],
   }}
 />
 
@@ -251,7 +251,7 @@ On iOS, you can also use dependencies bundled as a framework by using the `vendo
 > and doesn't support traversing the parent directory (`..`), meaning you need to place the framework inside the **ios** directory
 > (or a subdirectory of **ios**).
 
-Once the framework is added, make sure that the `source_files` option file pattern doesn't match any files inside the framework. One way to achieve this is to move your iOS source Swift files (that is `ExpoRadialChartView.swift` and `ExpoRadialChartModule.swift`) into a **src** directory separate from where you placed your framework(s) and update the `source_files` option to only match the **src** directory:
+Once the framework is added, make sure that the `source_files` option file pattern doesn't match any files inside the framework. One way to achieve this is to move your iOS source Swift files (that is **ExpoRadialChartView.swift**, **ExpoRadialChartModule.swift**, and **ExpoRadialChartViewsModule.swift**) into a **src** directory separate from where you placed your framework(s) and update the `source_files` option to only match the **src** directory:
 
 <DiffBlock source="/static/diffs/third-party-library/ios-podspec-source-files-src.diff" />
 
@@ -262,6 +262,7 @@ Your **ios** directory should end up with a file structure similar to this:
     'Frameworks/MyFramework.framework',
     'src/ExpoRadialChartView.swift',
     'src/ExpoRadialChartModule.swift',
+    'src/ExpoRadialChartViewsModule.swift',
     'ExpoRadialChart.podspec',
   ]}
 />
@@ -364,15 +365,15 @@ class ExpoRadialChartView(context: Context, appContext: AppContext) : ExpoView(c
 
 You also need to use the [`Prop`](/modules/module-api/#prop) function to define the `data` prop and call the native `setChartData` function when the prop changes:
 
-```kotlin android/src/main/java/expo/modules/radialchart/ExpoRadialChartModule.kt
+```kotlin android/src/main/java/expo/modules/radialchart/ExpoRadialChartViewsModule.kt
 package expo.modules.radialchart
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
-class ExpoRadialChartModule : Module() {
+class ExpoRadialChartViewsModule : Module() {
   override fun definition() = ModuleDefinition {
-    Name("ExpoRadialChart")
+    Name("ExpoRadialChartViews")
 
     View(ExpoRadialChartView::class) {
       Prop("data") { view: ExpoRadialChartView, prop: ArrayList<Series> ->
@@ -435,12 +436,12 @@ class ExpoRadialChartView: ExpoView {
 
 You also need to use the [`Prop`](/modules/module-api/#prop) function to define the `data` prop and call the native `setChartData` function when the prop changes:
 
-```swift ios/ExpoRadialChartModule.swift
+```swift ios/ExpoRadialChartViewsModule.swift
 import ExpoModulesCore
 
-public class ExpoRadialChartModule: Module {
+public class ExpoRadialChartViewsModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("ExpoRadialChart")
+    Name("ExpoRadialChartViews")
 
     View(ExpoRadialChartView.self) {
       Prop("data") { (view: ExpoRadialChartView, prop: [Series]) in

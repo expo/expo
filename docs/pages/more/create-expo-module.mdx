@@ -166,6 +166,21 @@ If you do not select any feature examples, the command creates a minimal module.
 
 Includes all available feature examples. This is equivalent to passing `--features all`.
 
+### `--modules-api`
+
+Selects the version of the Expo Modules API that the generated native code uses. Available values are `v2` and `v1`. The default is `v2`.
+
+- `v2` uses the Expo Modules API 2.0. The native module is a class with the `@ExpoModule` attribute, and its functions, properties and events have attributes such as `@JS` and `@Event`.
+- `v1` uses the Module DSL. The native module returns a `ModuleDefinition` that declares its functions, properties and events.
+
+The Expo Modules API 2.0 does not support views yet. When you select the `View`, `ViewEvent`, `SwiftUIView`, `SwiftUIModifier`, `ComposeView` or `ComposeModifier` feature example, a `v2` module also gets a views module that defines them with the Module DSL, on each platform with these features. The JavaScript name of the views module is the module name with the `Views` suffix, for example `MyModuleViews`.
+
+The Expo Modules API 2.0 requires Expo SDK 58 or later. On Android, the module also requires `expo-modules-autolinking` 58.0.2 or later. For a local module in a project with an older Expo SDK, or with a template that does not include the Expo Modules API 2.0, the command uses `v1` and prints a warning. If you pass `--modules-api v2` in these cases, the command fails.
+
+For example, to create a module with the Module DSL:
+
+<Terminal cmd={['$ npx create-expo-module@latest my-module --modules-api v1']} />
+
 ### `--package-manager`
 
 Selects the package manager used for standalone modules. Available values are `npm`, `pnpm`, `yarn`, and `bun`.
@@ -264,7 +279,7 @@ The `add-platform-support` command adds new platform files to an existing Expo m
 
 > **Note:** The command scans the existing native module definition and tries to detect feature examples such as `Function`, `AsyncFunction`, `View`, and `SharedObject`. Feature detection is best effort. It works well for modules that follow the usual Expo Modules API patterns, but it may not detect features correctly in unusual modules, modules with generated code, or large modules with definitions spread across multiple files. Use `--features` to override the detected feature examples.
 
-For native modules, the existing implementation needs to use the Expo Modules API DSL so the command can find the module definition file. Older module formats are not supported.
+For native modules, the existing implementation needs to use the Expo Modules API so the command can find the module definition file: a class with the `@ExpoModule` attribute, or a `ModuleDefinition`. Older module formats are not supported.
 
 Run the command from the module root:
 
@@ -301,6 +316,20 @@ If the generated files do not match your module, pass `--features` explicitly:
 />
 
 If no features are detected or provided, the command generates a minimal scaffold for the new platform.
+
+### `add-platform-support --modules-api`
+
+Selects the version of the Expo Modules API that the new native code uses. Available values are `v2` and `v1`.
+
+By default, the command uses the version of the existing native code. It uses `v2` when the module has a class with the `@ExpoModule` attribute, and `v1` when the module has only a `ModuleDefinition`. When the module has no native code, the command uses `v2`, which falls back to `v1` when the template or the Expo SDK of the project does not support it. A version that comes from the existing native code does not fall back, and the command fails instead.
+
+An Expo Modules API 2.0 module defines views in its views module, and an Expo Modules API 1.0 module defines them in the module itself. When the new native code has view features and the module's view components load the views from one of these modules, the new code must use the matching version. Otherwise, the command fails. For a module without native code, pass the view features with `--features`.
+
+For example, to add Android code that uses the Expo Modules API 2.0 to a module whose iOS code uses the Module DSL:
+
+<Terminal
+  cmd={['$ npx create-expo-module@latest add-platform-support --platform android --modules-api v2']}
+/>
 
 ### `add-platform-support --source`
 
