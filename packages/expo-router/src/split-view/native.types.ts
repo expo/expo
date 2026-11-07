@@ -1,3 +1,5 @@
+import type { SFSymbol } from 'sf-symbols-typescript';
+
 import type {
   SplitViewMenu,
   SplitViewMenuAction,
@@ -7,8 +9,17 @@ import type {
 
 type SplitViewNativeMenuAction = Omit<SplitViewMenuAction, 'onPress'> & { id: string };
 
-type SplitViewNativeToolbarItem = Omit<SplitViewToolbarItem, 'onPress' | 'menu'> & {
+type SplitViewNativeToolbarItem = Omit<
+  SplitViewToolbarItem,
+  'onPress' | 'menu' | 'icon' | 'iconRenderingMode' | 'badge' | 'variant' | 'separateBackground'
+> & {
   id: string;
+  icon?: SFSymbol;
+  xcassetName?: string;
+  imageRenderingMode?: 'template' | 'original';
+  badgeConfiguration?: { value?: string } & NonNullable<SplitViewToolbarItem['badge']>['style'];
+  barButtonItemStyle?: 'plain' | 'prominent';
+  sharesBackground?: boolean;
   menu?: Omit<SplitViewMenu, 'items'> & { items: SplitViewNativeMenuAction[] };
 };
 

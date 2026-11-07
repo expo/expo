@@ -39,6 +39,7 @@ export default function Layout() {
   const [search, setSearch] = useState('');
   const [unreadOnly, setUnreadOnly] = useState(false);
   const [buttonStates, setButtonStates] = useState(false);
+  const [styledButtons, setStyledButtons] = useState(false);
 
   const button = (title: string, icon?: SFSymbol): SplitViewToolbarItem => ({
     title,
@@ -131,6 +132,12 @@ export default function Layout() {
                 onValueChange={setButtonStates}
               />
               <ToggleRow
+                label="Styled buttons"
+                testID="split-view-mail-styled-buttons"
+                value={styledButtons}
+                onValueChange={setStyledButtons}
+              />
+              <ToggleRow
                 label="Three columns"
                 testID="split-view-mail-three-columns"
                 value={threeColumns}
@@ -209,13 +216,33 @@ export default function Layout() {
             showHeaders
               ? {
                   title: alternateTitles ? 'Message' : (message?.sender ?? 'Mail'),
-                  leftToolbar: [{ ...button('Unread', 'envelope.badge'), selected: buttonStates }],
+                  leftToolbar: [
+                    {
+                      ...button('Unread', 'envelope.badge'),
+                      selected: buttonStates,
+                      badge: styledButtons ? { value: 3 } : undefined,
+                    },
+                  ],
                   rightToolbar: [
-                    button('Search', 'magnifyingglass'),
-                    button('Move', 'folder'),
+                    {
+                      ...button('Search', 'magnifyingglass'),
+                      tintColor: styledButtons ? 'orange' : undefined,
+                      separateBackground: styledButtons,
+                      accessibilityLabel: styledButtons ? 'Search messages' : undefined,
+                    },
+                    {
+                      ...button('Move', 'folder'),
+                      badge: styledButtons ? { style: { backgroundColor: 'green' } } : undefined,
+                    },
                     { ...button('Archive', 'archivebox'), disabled: buttonStates },
-                    button('Forward', 'arrowshape.turn.up.right'),
-                    button('Reply All', 'arrowshape.turn.up.left.2'),
+                    {
+                      ...button('Forward', 'arrowshape.turn.up.right'),
+                      hidesSharedBackground: styledButtons,
+                    },
+                    {
+                      ...button('Reply All', 'arrowshape.turn.up.left.2'),
+                      variant: styledButtons ? 'prominent' : undefined,
+                    },
                   ],
                 }
               : undefined
