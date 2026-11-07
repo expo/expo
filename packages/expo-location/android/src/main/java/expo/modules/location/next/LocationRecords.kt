@@ -160,27 +160,27 @@ class Position(
   @Field val speedAccuracy: Double? = null,
   @Field val headingAccuracy: Double? = null
 ) : Record {
-  private fun BaseBundle.putPositionFields() {
+  private fun BaseBundle.putPositionFields(putOptionalDouble: (String, Double?) -> Unit) {
     putDouble("timestamp", timestamp)
     putBoolean("mocked", mocked)
-    mslAltitude?.let { putDouble("mslAltitude", it) }
-    altitude?.let { putDouble("altitude", it) }
-    speed?.let { putDouble("speed", it) }
-    heading?.let { putDouble("heading", it) }
-    horizontalAccuracy?.let { putDouble("horizontalAccuracy", it) }
-    verticalAccuracy?.let { putDouble("verticalAccuracy", it) }
-    speedAccuracy?.let { putDouble("speedAccuracy", it) }
-    headingAccuracy?.let { putDouble("headingAccuracy", it) }
+    putOptionalDouble("mslAltitude", mslAltitude)
+    putOptionalDouble("altitude", altitude)
+    putOptionalDouble("speed", speed)
+    putOptionalDouble("heading", heading)
+    putOptionalDouble("horizontalAccuracy", horizontalAccuracy)
+    putOptionalDouble("verticalAccuracy", verticalAccuracy)
+    putOptionalDouble("speedAccuracy", speedAccuracy)
+    putOptionalDouble("headingAccuracy", headingAccuracy)
   }
 
   fun toPersistableBundle() = PersistableBundle().apply {
     putPersistableBundle("coordinates", coordinates.toPersistableBundle())
-    putPositionFields()
+    putPositionFields { key, value -> value?.let { putDouble(key, it) } }
   }
 
   fun toBundle() = Bundle().apply {
     putBundle("coordinates", coordinates.toBundle())
-    putPositionFields()
+    putPositionFields { key, value -> putSerializable(key, value) }
   }
 }
 
