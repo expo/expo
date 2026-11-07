@@ -83,6 +83,13 @@ abstract class AssetDao {
       // A row with this key may have appeared since the caller classified the asset as new.
       // Adopt it: replacing it would cascade-delete every update that references it.
       if (addExistingAssetToUpdate(update, asset, asset.isLaunchAsset)) {
+        // Embedded asset file names change between binaries.
+        val existingAsset = loadAssetWithKey(asset.key)
+        val relativePath = asset.relativePath
+        if (existingAsset != null && relativePath != null && existingAsset.relativePath != relativePath) {
+          existingAsset.relativePath = relativePath
+          updateAsset(existingAsset)
+        }
         continue
       }
       val assetId = insertAssetInternal(asset)
