@@ -343,8 +343,15 @@ const SceneView = ({
         }
       );
 
+  // `route` is the raw state entry, which is rebuilt whenever a navigator nested under it changes.
+  // The descriptor's route keeps its identity until the route itself changes. A new value here
+  // re-renders every screen below that reads its route, even memoized ones.
+  // The cast is sound: this descriptor belongs to a route in state, so its key is set. Only the
+  // placeholder descriptors from `describe` have no key.
+  const cachedRoute = descriptor.route as Route<string>;
+
   return (
-    <NavigationProvider route={route} navigation={navigation}>
+    <NavigationProvider route={cachedRoute} navigation={navigation}>
       <ScreenStackItem
         screenId={route.key}
         activityState={isPreloaded ? 0 : 2}
