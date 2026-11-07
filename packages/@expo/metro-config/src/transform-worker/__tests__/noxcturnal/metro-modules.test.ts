@@ -47,7 +47,11 @@ function fullConfig() {
 
 const filename = '/app/node_modules/example/index.js';
 const workspaceFilename = '/app/packages/expo/build/value.js';
-function canonicalModuleBody(code: string, unwrapMetroFactory = false): string {
+function canonicalModuleBody(
+  code: string,
+  unwrapMetroFactory = false,
+  names: string[] = []
+): string {
   const file = babel.parseSync(code, { sourceType: 'script' });
   if (!file) throw new Error('Failed to parse transformed module');
   if (unwrapMetroFactory) {
@@ -64,6 +68,15 @@ function canonicalModuleBody(code: string, unwrapMetroFactory = false): string {
     file.program.directives = factoryBody.directives;
     babel.traverse(file, {
       CallExpression(path) {
+        const argument = path.node.arguments[0];
+        if (
+          babel.types.isIdentifier(path.node.callee, { name: 'require' }) &&
+          babel.types.isMemberExpression(argument) &&
+          babel.types.isNumericLiteral(argument.property) &&
+          names[argument.property.value] != null
+        ) {
+          path.node.arguments = [babel.types.stringLiteral(names[argument.property.value]!)];
+        }
         if (
           babel.types.isIdentifier(path.node.callee, { name: 'require' }) &&
           babel.types.isStringLiteral(path.node.arguments[1])
@@ -2192,7 +2205,13 @@ it.each([
   });
   if (!expected?.code) throw new Error('Babel live-bindings transform produced no output');
 
-  expect(canonicalModuleBody(native.result.code, true)).toBe(canonicalModuleBody(expected.code));
+  expect(
+    canonicalModuleBody(
+      native.result.code,
+      true,
+      native.dependencies.map(({ name }) => name)
+    )
+  ).toBe(canonicalModuleBody(expected.code));
 });
 
 it.each([
@@ -2219,7 +2238,13 @@ it.each([
     plugins: [[importExportLiveBindingsPlugin, { performConstantFolding: true, resolve: false }]],
   });
   if (!expected?.code) throw new Error('Babel live-bindings transform produced no output');
-  expect(canonicalModuleBody(native.result.code, true)).toBe(canonicalModuleBody(expected.code));
+  expect(
+    canonicalModuleBody(
+      native.result.code,
+      true,
+      native.dependencies.map(({ name }) => name)
+    )
+  ).toBe(canonicalModuleBody(expected.code));
 });
 
 it('uses static import and export values when live bindings are disabled', async () => {
@@ -2833,4 +2858,284 @@ it('preserves native script function maps and compact output behavior', async ()
   const runtimeGlobal: { value?: number } = {};
   new Function('globalThis', compact.result.code)(runtimeGlobal);
   expect(runtimeGlobal.value).toBe(1);
+});
+
+it.each([false, true])('applies module-name retention consistently (dev=%s)', async (dev) => {
+  const source = `import value from 'name-default';
+import 'name-side';
+export { value } from 'name-export';
+export * from 'name-star';
+export * as namespace from 'name-namespace';
+const helper = require('@babel/runtime/helpers/construct');
+import('name-async');
+require.unstable_importMaybeSync('name-maybe');
+__prefetchImport('name-prefetch');
+try {
+  require('name-optional');
+  require('@babel/runtime/helpers/typeof');
+  import('name-optional-async');
+  require.unstable_importMaybeSync('name-optional-maybe');
+  __prefetchImport('name-optional-prefetch');
+} catch {}
+module.exports = [value, helper];`;
+  const result = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options({ dev }),
+    isDefaultExpoTransformer: true,
+    config: { ...fullConfig(), allowOptionalDependencies: true },
+  });
+  if (result.status !== 'complete') throw new Error(result.reason);
+  const calls: unknown[][] = [];
+  const load = (...args: unknown[]) => {
+    calls.push(args);
+    return Object.assign(
+      (...args: unknown[]) => {
+        calls.push(args);
+      },
+      {
+        prefetch: (...args: unknown[]) => {
+          calls.push(args);
+        },
+        unstable_importMaybeSync: (...args: unknown[]) => {
+          calls.push(args);
+        },
+      }
+    );
+  };
+  let factory: Function | undefined;
+  new Function('__d', result.result.code)((value: Function) => {
+    factory = value;
+  });
+  const dependencyMap = Object.assign(
+    result.dependencies.map((_, index) => index),
+    { paths: {} }
+  );
+  factory!(globalThis, load, load, load, {}, {}, dependencyMap);
+  for (const [index, dependency] of result.dependencies.entries()) {
+    const call = calls.find(([id]) => id === index);
+    expect(call).toBeDefined();
+    const keepName = dev || dependency.data.isOptional;
+    expect(call).toHaveLength(dependency.data.asyncType ? (keepName ? 3 : 2) : keepName ? 2 : 1);
+    if (keepName) expect(call!.at(-1)).toBe(dependency.name);
+    if (dependency.data.asyncType) expect(call![1]).toBe(dependencyMap.paths);
+  }
+});
+
+it.each([
+  "require('pkg')",
+  "require('@babel/runtime/helpers/construct')",
+  "import('pkg')",
+  "require.unstable_importMaybeSync('pkg')",
+  "__prefetchImport('pkg')",
+])('matches Babel name retention after a mandatory use: %s', async (expression) => {
+  const source = `${expression}; try { ${expression}; } catch {}`;
+  const collectDependencies = require('../../collect-dependencies').default;
+  const collected = collectDependencies(babel.parseSync(source), {
+    asyncRequireModulePath: 'metro-runtime',
+    dynamicRequires: 'reject',
+    inlineableCalls: [],
+    keepRequireNames: false,
+    allowOptionalDependencies: true,
+    unstable_allowRequireContext: false,
+  });
+  const babelCode = babel.transformFromAstSync(collected.ast, undefined, {
+    babelrc: false,
+    configFile: false,
+  })!.code!;
+  const native = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+    config: { ...fullConfig(), allowOptionalDependencies: true },
+  });
+  if (native.status !== 'complete') throw new Error(native.reason);
+
+  function calls(code: string, wrapped: boolean) {
+    const result: unknown[][] = [];
+    const load = (...args: unknown[]) => {
+      result.push(args);
+      return Object.assign(load, { prefetch: load, unstable_importMaybeSync: load });
+    };
+    const map = Object.assign(
+      collected.dependencies.map(({ name }: { name: string }) => name),
+      { paths: {} }
+    );
+    if (wrapped) {
+      new Function('__d', code)((factory: Function) =>
+        factory(globalThis, load, load, load, {}, {}, map)
+      );
+    } else {
+      new Function('require', collected.dependencyMapName, code)(load, map);
+    }
+    return result;
+  }
+  expect(calls(native.result.code, true)).toEqual(calls(babelCode, false));
+  expect(!!native.dependencies[0]!.data.isOptional).toBe(
+    !!collected.dependencies[0].data.isOptional
+  );
+});
+
+it.each([false, true])(
+  'matches Babel source-based loads without a wrapper (dev=%s)',
+  async (dev) => {
+    const source = `import value from 'pkg';
+import 'side';
+export { value };
+export { other } from 'reexport';
+export * from 'star';
+export * as ns from 'namespace';`;
+    const expected = babel.transformSync(source, {
+      babelrc: false,
+      configFile: false,
+      plugins: [[importExportLiveBindingsPlugin, { performConstantFolding: !dev, resolve: false }]],
+    })!.code!;
+    const native = await transformFileFullyWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source,
+      options: options({ dev }),
+      isDefaultExpoTransformer: true,
+      config: { ...fullConfig(), unstable_disableModuleWrapping: true },
+    });
+    if (native.status !== 'complete') throw new Error(native.reason);
+    function run(code: string) {
+      const loads: unknown[][] = [];
+      const exports = {};
+      new Function('require', 'exports', code)((...args: unknown[]) => {
+        loads.push(args);
+        return { __esModule: true, default: 'value', other: 'other' };
+      }, exports);
+      return { loads, exports: JSON.parse(JSON.stringify(exports)) };
+    }
+    expect(run(native.result.code)).toEqual(run(expected));
+    expect(native.result.code).not.toContain(native.dependencyMapName);
+  }
+);
+
+it.each(["require.unstable_importMaybeSync('pkg');", "__prefetchImport('pkg');"])(
+  'preserves Babel async calls without wrapping: %s',
+  async (source) => {
+    const native = await transformFileFullyWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source,
+      options: options(),
+      isDefaultExpoTransformer: true,
+      config: { ...fullConfig(), unstable_disableModuleWrapping: true },
+    });
+    if (native.status !== 'complete') throw new Error(native.reason);
+    expect(canonicalModuleBody(native.result.code)).toBe(canonicalModuleBody(source));
+    expect(native.result.code).not.toContain(native.dependencyMapName);
+  }
+);
+
+it('preserves unwrapped require.context arguments natively', async () => {
+  const source =
+    "module.exports = require /* comment */ .context('./routes', false, /route/i, 'lazy');";
+  const native = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+    config: {
+      ...fullConfig(),
+      unstable_disableModuleWrapping: true,
+      unstable_allowRequireContext: true,
+    },
+  });
+  if (native.status !== 'complete') throw new Error(native.reason);
+  expect(canonicalModuleBody(native.result.code)).toBe(
+    canonicalModuleBody("module.exports = require('./routes', false, /route/i, 'lazy');")
+  );
+  expect(native.dependencies[0]!.data.contextParams).toEqual({
+    recursive: false,
+    filter: { pattern: 'route', flags: 'i' },
+    mode: 'lazy',
+  });
+});
+
+it.each([
+  "module.exports = import('pkg');",
+  "module.exports = () => import('pkg');",
+  "module.exports = function (value = import('pkg')) { return value; };",
+  "class Value { value = import('pkg'); } module.exports = () => new Value().value;",
+  "module.exports = async () => await import('pkg');",
+  "import('first'); module.exports = import('second');",
+  "module.exports = () => { if (false) return import('first'); return import('second'); };",
+])('matches Babel unwrapped import values and shim timing natively: %s', async (source) => {
+  const collectDependencies = require('../../collect-dependencies').default;
+  let shimAdded = false;
+  const collected = collectDependencies(babel.parseSync(source), {
+    asyncRequireModulePath: 'metro-runtime',
+    dynamicRequires: 'reject',
+    inlineableCalls: [],
+    keepRequireNames: false,
+    allowOptionalDependencies: false,
+    unstable_allowRequireContext: false,
+    dependencyTransformer: {
+      transformSyncRequire() {},
+      transformImportMaybeSyncCall() {},
+      transformPrefetch() {},
+      transformIllegalDynamicRequire() {},
+      transformImportCall(call: babel.NodePath) {
+        if (shimAdded) return;
+        call.insertAfter(
+          babel.types.callExpression(babel.types.identifier('require'), [
+            babel.types.stringLiteral('metro-runtime'),
+          ])
+        );
+        shimAdded = true;
+      },
+    },
+  });
+  const expected = babel.transformFromAstSync(collected.ast, undefined, {
+    babelrc: false,
+    configFile: false,
+  })!.code!;
+  const native = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options({ dev: true }),
+    isDefaultExpoTransformer: true,
+    config: { ...fullConfig(), unstable_disableModuleWrapping: true },
+  });
+  if (native.status !== 'complete') throw new Error(native.reason);
+  async function run(code: string) {
+    const events: string[] = [];
+    const token = {};
+    const ast = babel.parseSync(code)!;
+    babel.traverse(ast, {
+      CallExpression(call) {
+        if (call.node.callee.type === 'Import') call.node.callee = babel.types.identifier('__load');
+      },
+    });
+    const executable = babel.transformFromAstSync(ast, undefined, {
+      babelrc: false,
+      configFile: false,
+    })!.code!;
+    const module: { exports: unknown } = { exports: null };
+    new Function('require', 'module', '__load', executable)(
+      (name: string) => {
+        events.push('require:' + name);
+      },
+      module,
+      (name: string) => {
+        events.push('import:' + name);
+        return token;
+      }
+    );
+    const value = await (typeof module.exports === 'function' ? module.exports() : module.exports);
+    return { events, preserved: value === token };
+  }
+  expect(await run(native.result.code)).toEqual(await run(expected));
+  expect(native.result.code).not.toContain(native.dependencyMapName);
+  expect(native.dependencies.map(({ name }) => name).sort()).toEqual(
+    collected.dependencies.map(({ name }: { name: string }) => name).sort()
+  );
 });

@@ -5,7 +5,7 @@ import {
   type MetroLiveBindingsState,
   type Noxcturnal,
 } from '../noxcturnal-transformer';
-import { registerNativeEsmDependency } from './metro-dependency';
+import { nativeRequireCall, registerNativeEsmDependency } from './metro-dependency';
 
 export function createMetroLiveBindingsPlugin(
   nox: Noxcturnal,
@@ -224,12 +224,11 @@ export function createMetroLiveBindingsPlugin(
               source,
               importPath.getLocation()
             );
-            const dependencyArgument = `${dependencyState!.dependencyMapName}[${dependency.index}]`;
             const requiredLocal = generateUid(importPath.scope.getProgramParent(), source);
             module = {
               source,
               requiredLocal,
-              requireCall: `${dependencyState!.requireName}(${dependencyArgument}, ${JSON.stringify(source)})`,
+              requireCall: nativeRequireCall(dependencyState!, dependency.index, source),
               afterImport: [],
               exportAll: false,
               referenced: false,
@@ -410,12 +409,11 @@ export function createMetroLiveBindingsPlugin(
                 source,
                 exportPath.getLocation()
               );
-              const dependencyArgument = `${dependencyState!.dependencyMapName}[${dependency.index}]`;
               const requiredLocal = generateUid(exportPath.scope.getProgramParent(), source);
               module = {
                 source,
                 requiredLocal,
-                requireCall: `${dependencyState!.requireName}(${dependencyArgument}, ${JSON.stringify(source)})`,
+                requireCall: nativeRequireCall(dependencyState!, dependency.index, source),
                 afterImport: [],
                 exportAll: false,
                 referenced: valueExportSpecifiers.length > 0,
@@ -576,12 +574,11 @@ export function createMetroLiveBindingsPlugin(
               source,
               exportPath.getLocation()
             );
-            const dependencyArgument = `${dependencyState!.dependencyMapName}[${dependency.index}]`;
             const requiredLocal = generateUid(exportPath.scope.getProgramParent(), source);
             module = {
               source,
               requiredLocal,
-              requireCall: `${dependencyState!.requireName}(${dependencyArgument}, ${JSON.stringify(source)})`,
+              requireCall: nativeRequireCall(dependencyState!, dependency.index, source),
               afterImport: [],
               exportAll: false,
               referenced: true,
