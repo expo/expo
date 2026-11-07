@@ -247,3 +247,64 @@ Uploads do not update data the app has already loaded into memory. If the app re
 App data transfers accept regular files up to 10 MiB. The upload reads a local file and refuses folders. It does not replace an existing app file unless you pass `overwrite=true`. `app.file.read` requires `--output` with a local filename. Keep the paths inside the app's data container. Do not use `..` or absolute paths.
 
 Run commands that change the device one at a time. If a command times out, inspect the device before retrying: the action might already have run.
+
+## Run saved actions from a file
+
+With EAS CLI 27.5.0 or later, you can save actions in a JSON file and run them with `--import`. Use a file to set up the same location, appearance, or accessibility settings in each session:
+
+```json simulator-control.json
+{
+  "version": 1,
+  "actions": [
+    { "action": "location.set", "params": { "lat": 49.2827, "lng": -123.1207 } },
+    { "action": "appearance.set", "params": { "value": "dark" } },
+    { "action": "screenshot.capture", "output": "./setup.png" }
+  ]
+}
+```
+
+<Terminal cmd={['$ eas simulator:control --import ./simulator-control.json --id <session-id>']} />
+
+EAS CLI checks every action against the session's catalog before it runs them. The actions run in order. The import stops at the first failure.
+
+- `params` uses the property names from the action catalog.
+- `file` names a file on your computer to upload. `output` names a file to save on your computer. These paths are relative to the JSON file, and the folder for `output` must exist.
+- Paths in `params` refer to the simulator host.
+
+To start a session and run the actions when it is ready, pass the file to `eas simulator:start --import`. Add a `start` object with start flag names and values:
+
+```json simulator.json
+{
+  "version": 1,
+  "start": {
+    "platform": "ios",
+    "type": "web-preview-only",
+    "name": "Dark mode review",
+    "max-duration-minutes": 20
+  },
+  "actions": [{ "action": "appearance.set", "params": { "value": "dark" } }]
+}
+```
+
+<Terminal cmd={['$ eas simulator:start --import ./simulator.json --non-interactive']} />
+
+Flags that you pass on the command line override the saved values. A flag that you repeat, such as `--tag`, replaces the saved list. The `start` object cannot contain `import`, `json`, or `non-interactive`.
+
+If an action fails, EAS CLI tries to stop the new session. Android sessions accept the `start` object, but not `actions`. With `--egress local` and `--non-interactive`, start the session without actions, connect with `eas simulator:egress`, and then run `eas simulator:control --import`.
+
+## Keep the connection open
+
+Without an open connection, each `eas simulator:control` command connects to the session again. To reuse one connection across commands, open it first. Later commands for the same session use it:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:control:connection open --id <session-id> --idle-timeout 300',
+    '$ eas simulator:control appearance.set dark --id <session-id>',
+    '$ eas simulator:control:connection status --id <session-id>',
+    '$ eas simulator:control:connection close --id <session-id>',
+  ]}
+/>
+
+You can also pass `--keep-alive` to an action to keep its connection open. `--idle-timeout` is in seconds. An unused connection closes after 120 seconds by default. Closing the connection does not stop the session.
+
+The connection runs as a helper process on your computer, on macOS and Linux. Other processes that run as your user account can use it, so close it when you finish.
