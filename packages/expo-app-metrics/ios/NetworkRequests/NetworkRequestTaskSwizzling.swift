@@ -57,6 +57,8 @@ import ObjectiveC
 ///
 /// - **WebSocket tasks.** `URLSessionWebSocketTask` extends `URLSessionTask` so the swizzles fire,
 ///   but websockets don't produce meaningful HTTP metrics. We skip them inside the `resume` hook.
+/// - **Tasks whose `originalRequest` raises.** `AVAssetDownloadTask` is a `URLSessionTask` too, but
+///   asking it for its request throws an Objective-C exception. We skip it inside the `resume` hook.
 ///
 /// ## Dev-launcher interop
 ///
@@ -207,10 +209,13 @@ enum NetworkRequestTaskSwizzling {
   ///
   /// 3. **Regular task** (no property, no dev-launcher): create context, attach, emit started.
   ///
-  /// Plus the early-exit cases: websockets, internal opt-out header, non-HTTP schemes, and the
-  /// idempotency check against double-attaching on a re-resumed task.
+  /// Plus the early-exit cases: websockets and tasks whose `originalRequest` raises, internal
+  /// opt-out header, non-HTTP schemes, and the idempotency check against double-attaching on a
+  /// re-resumed task.
   private static func observeStart(_ task: URLSessionTask) {
-    if task is URLSessionWebSocketTask {
+    // Upload tasks are data tasks. This skips websocket tasks and `AVAssetDownloadTask`, whose
+    // `originalRequest` raises.
+    guard task is URLSessionDataTask || task is URLSessionDownloadTask || task is URLSessionStreamTask else {
       return
     }
     // `originalRequest` is the request as the caller submitted it. `URLProtocol`-style
