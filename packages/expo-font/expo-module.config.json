@@ -1,8 +1,5 @@
 {
   "platforms": ["apple", "android", "web"],
-  "apple": {
-    "modules": ["FontLoaderModule", "FontUtilsModule"]
-  },
   "android": {
     "publication": {
       "groupId": "host.exp.exponent",

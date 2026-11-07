@@ -391,6 +391,9 @@ PODS:
     - ExpoModulesTestCore
   - ExpoFont (58.0.10):
     - ExpoModulesCore
+  - ExpoFont/Tests (58.0.10):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoGL (58.0.3):
     - ExpoModulesCore
     - ExpoModulesJSI
@@ -3418,6 +3421,7 @@ DEPENDENCIES:
   - ExpoFileSystem (from `../../../packages/expo-file-system/ios`)
   - ExpoFileSystem/Tests (from `../../../packages/expo-file-system/ios`)
   - ExpoFont (from `../../../packages/expo-font/ios`)
+  - ExpoFont/Tests (from `../../../packages/expo-font/ios`)
   - ExpoGL (from `../../../packages/expo-gl`)
   - ExpoGlassEffect (from `../../../packages/expo-glass-effect/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
@@ -4153,7 +4157,7 @@ SPEC CHECKSUMS:
   ExpoDocumentPicker: af0917aa6f1b54ab3a0f47977935a1e20ffb1537
   ExpoDomWebView: b2a6d681b9d34c23b1f584321386ca8da1d36afb
   ExpoFileSystem: b35d87e5219408a4052ee5adde99962d014efb09
-  ExpoFont: b215bc738b2e3fba7ffed79903a6fccf66959dd0
+  ExpoFont: c87981a4e0ac58c7bb32b7331861de4a56c21d21
   ExpoGL: 79eb0ca61f7e13317fac3beec5bd6ce94587ac8c
   ExpoGlassEffect: 6594e055df1e0b88d34cc189ba0b21589adec6bf
   ExpoHaptics: c95d1e2162895e710b68dd912eec619900ebdf33
