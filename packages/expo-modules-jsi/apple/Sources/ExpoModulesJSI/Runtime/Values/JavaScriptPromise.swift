@@ -47,6 +47,12 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     /// before the runtime goes away; the actor's refs are the same references.
     var settledValue: DeferredPromise.SettledValue?
 
+    // Construction touches no actor-isolated state (every stored property
+    // is its own independent default value) — only later use needs
+    // JavaScriptActor, so make init nonisolated to allow constructing this
+    // from JavaScriptPromise's own synchronous initializer.
+    nonisolated init() {}
+
     func allowRelease() {
       object = nil
       resolveFunction = nil
