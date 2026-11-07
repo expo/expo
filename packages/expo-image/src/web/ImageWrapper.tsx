@@ -1,5 +1,5 @@
 import type { Ref } from 'react';
-import React, { useEffect, useId } from 'react';
+import React, { useCallback, useEffect, useId, useRef, useSyncExternalStore } from 'react';
 
 import type { ImageNativeProps, ImageSource } from '../Image.types';
 import ColorTintFilter, { getTintColorStyle } from './ColorTintFilter';
@@ -8,6 +8,10 @@ import { getImageWrapperEventHandler } from './getImageWrapperEventHandler';
 import { useHeaders, useImageHashes } from './hooks';
 import { absoluteFilledPosition, getObjectPositionFromContentPositionObject } from './positioning';
 import type { SrcSetSource } from './useSourceSelection';
+
+const subscribeToNothing = () => () => {};
+const getFalse = () => false;
+const getTrue = () => true;
 
 function getFetchPriorityFromImagePriority(priority: ImageNativeProps['priority'] = 'normal') {
   return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
@@ -47,6 +51,23 @@ const ImageWrapper = React.forwardRef(
       events?.onMount?.forEach((e) => e?.());
     }, []);
 
+    // An image rendered on the server can load or fail before the page hydrates. React then gets
+    // no `load` or `error` event for it, so they are called once hydrated, from the image's state.
+    const isHydrating = useSyncExternalStore(subscribeToNothing, getFalse, getTrue);
+    const wasHydrated = useRef(isHydrating).current;
+    const imgRef = useRef<HTMLImageElement | null>(null);
+    const setRef = useCallback(
+      (img: HTMLImageElement | null) => {
+        imgRef.current = img;
+        if (typeof ref === 'function') {
+          ref(img);
+        } else if (ref) {
+          (ref as React.RefObject<HTMLImageElement | null>).current = img;
+        }
+      },
+      [ref]
+    );
+
     // Use a unique ID for the SVG filter so that multiple <Image> can be used
     // on the same page with different tint colors without conflicts.
     const tintId = useId()
@@ -63,6 +84,35 @@ const ImageWrapper = React.forwardRef(
     );
 
     const sourceWithHeaders = useHeaders(resolvedSource, cachePolicy, events?.onError);
+    const handlers = sourceWithHeaders && getImageWrapperEventHandler(events, sourceWithHeaders);
+    const settled = useRef(false);
+    const eventHandlers = handlers && {
+      ...handlers,
+      onLoad: (event: React.SyntheticEvent<HTMLImageElement>) => {
+        settled.current = true;
+        handlers.onLoad(event);
+      },
+      onError: () => {
+        settled.current = true;
+        handlers.onError();
+      },
+    };
+
+    useEffect(() => {
+      const img = imgRef.current;
+      if (!wasHydrated || settled.current || !img?.complete || !img.getAttribute('src')) {
+        return;
+      }
+      if (img.naturalWidth > 0) {
+        eventHandlers?.onLoad({
+          target: img,
+          currentTarget: img,
+        } as unknown as React.SyntheticEvent<HTMLImageElement>);
+      } else {
+        eventHandlers?.onError();
+      }
+    }, []);
+
     if (!sourceWithHeaders) {
       return null;
     }
@@ -70,7 +120,7 @@ const ImageWrapper = React.forwardRef(
       <>
         <ColorTintFilter id={tintId} tintColor={tintColor} />
         <img
-          ref={ref}
+          ref={setRef}
           alt={accessibilityLabel}
           className={className}
           src={sourceWithHeaders?.uri || undefined}
@@ -87,7 +137,7 @@ const ImageWrapper = React.forwardRef(
           fetchPriority={getFetchPriorityFromImagePriority(priority || 'normal')}
           loading={loading || undefined}
           draggable={draggable}
-          {...getImageWrapperEventHandler(events, sourceWithHeaders)}
+          {...eventHandlers}
           {...getImgPropsFromSource(source)}
           {...props}
         />
