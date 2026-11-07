@@ -1,5 +1,6 @@
 package expo.modules.audio
 
+import android.graphics.Color
 import android.media.AudioManager
 import android.media.MediaRecorder
 import android.os.Build
@@ -51,6 +52,22 @@ enum class RecordingDirectory(val value: String) : Enumerable {
   CACHE("cache"),
   DOCUMENT("document")
 }
+
+@OptimizedRecord
+class RecordingNotificationOptions(
+  @Field val title: String = "Recording audio",
+  @Field val recordingBody: String = "Tap to return to app",
+  @Field val pausedBody: String? = null,
+  @Field val pauseButtonTitle: String = "Pause",
+  @Field val resumeButtonTitle: String = "Resume",
+  @Field val stopButtonTitle: String = "Stop",
+  @Field val channelName: String = "Audio Recording",
+  @Field val channelDescription: String = "Shows when audio is being recorded in the background",
+  @Field val smallIcon: String? = null,
+  @Field val color: Color? = null,
+  @Field val showPauseResume: Boolean = false,
+  @Field val showOnLockScreen: Boolean = false
+) : Record
 
 @OptimizedRecord
 class Metadata(

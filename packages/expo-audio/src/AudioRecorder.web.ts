@@ -6,7 +6,11 @@ import type {
   RecordingStartOptions,
 } from './Audio.types';
 import { RECORDING_STATUS_UPDATE } from './AudioEventKeys';
-import type { AudioRecorder, RecordingEvents } from './AudioModule.types';
+import type {
+  AudioRecorder,
+  RecordingEvents,
+  RecordingNotificationOptions,
+} from './AudioModule.types';
 import { getAudioContext, getUserMedia, nextId } from './AudioUtils.web';
 import { RecordingPresets } from './RecordingConstants';
 
@@ -28,6 +32,8 @@ export class AudioRecorderWeb
   id = nextId();
   currentTime = 0;
   uri: string | null = null;
+
+  setNotificationOptions(_options: RecordingNotificationOptions): void {}
 
   private options: Partial<RecordingOptions>;
   private mediaRecorder: MediaRecorder | null = null;

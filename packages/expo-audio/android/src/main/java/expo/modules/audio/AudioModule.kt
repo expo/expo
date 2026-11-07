@@ -821,6 +821,11 @@ class AudioModule : Module() {
         recorder.getAudioRecorderStatus()
       }
 
+      Function("setNotificationOptions") { recorder: AudioRecorder, options: RecordingNotificationOptions ->
+        recorder.notificationOptions = options
+        recorder.serviceConnection.recordingServiceBinder?.service?.updateNotification()
+      }
+
       AsyncFunction("getCurrentInput") { recorder: AudioRecorder ->
         recorder.getCurrentInput(audioManager)
       }
