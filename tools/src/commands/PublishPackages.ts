@@ -1,6 +1,7 @@
 import { Command } from '@expo/commander';
 
 import { runTurboTasksAsync } from '../Turbo';
+import { spawnAsync } from '../Utils';
 import {
   assertCleanWorkingTreeAsync,
   assertChangesetPrerequisiteAsync,
@@ -8,9 +9,11 @@ import {
   assertVersionCommitAsync,
   getReleaseBranchAsync,
   getPublishPlanAsync,
+  getSkipScriptsEnv,
   getStablePublishArgsAsync,
   packChangesetsAsync,
   runChangesetsAsync,
+  runPublishLifecycleScriptsAsync,
 } from '../changesets/Changesets';
 
 type CommandOptions = { dryRun: boolean; force: boolean };
@@ -45,7 +48,14 @@ export default (program: Command) => {
         return;
       }
       if (publishPlan.length) {
-        await runChangesetsAsync(await getStablePublishArgsAsync(branchName));
+        await runPublishLifecycleScriptsAsync(
+          publishPlan.filter((entry) => entry.kind === 'publish').map((entry) => entry.name)
+        );
+        await runChangesetsAsync(
+          await getStablePublishArgsAsync(branchName),
+          spawnAsync,
+          getSkipScriptsEnv()
+        );
       }
     });
 };

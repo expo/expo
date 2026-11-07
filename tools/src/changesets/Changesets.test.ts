@@ -11,8 +11,10 @@ import {
   assertNoMajorChangesetsAsync,
   getPendingChangesetsAsync,
   getReleaseTagAsync,
+  getSkipScriptsEnv,
   getStablePublishArgsAsync,
   runChangesetsAsync,
+  runPublishLifecycleScriptsAsync,
 } from './Changesets';
 
 const config = JSON.parse(fs.readFileSync(path.join(EXPO_DIR, '.changeset/expo.json'), 'utf8')) as {
@@ -142,6 +144,43 @@ describe('Changesets release prerequisites', () => {
     assert.deepEqual(invocation?.args, ['exec', 'changeset', 'publish', '--tag', 'latest']);
     assert.equal(invocation?.options.stdio, 'inherit');
     assert.equal(invocation?.options.env, undefined);
+  });
+
+  it('runs publish lifecycle scripts one package at a time and lets publish skip them', async () => {
+    const invocations: { command: string; args: readonly string[] }[] = [];
+    await runPublishLifecycleScriptsAsync(['expo-doctor', '@expo/metro-config'], ((
+      command,
+      args
+    ) => {
+      invocations.push({ command, args });
+      return Promise.resolve({ status: 0, signal: null, stdout: '', stderr: '', output: [] });
+    }) as any);
+
+    assert.deepEqual(invocations, [
+      {
+        command: 'pnpm',
+        args: [
+          '--filter=expo-doctor',
+          '--filter=@expo/metro-config',
+          '--workspace-concurrency=1',
+          '--if-present',
+          'run',
+          'prepublishOnly',
+        ],
+      },
+      {
+        command: 'pnpm',
+        args: [
+          '--filter=expo-doctor',
+          '--filter=@expo/metro-config',
+          '--workspace-concurrency=1',
+          '--if-present',
+          'run',
+          'prepack',
+        ],
+      },
+    ]);
+    assert.equal(getSkipScriptsEnv().pnpm_config_ignore_scripts, 'true');
   });
 
   it('derives release tags and respects disabled routes', async () => {
