@@ -1,5 +1,6 @@
 import Foundation
 import ExpoModulesCore
+import System
 
 enum FileMode: String, Enumerable {
   /// Read-only
@@ -41,7 +42,6 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   let handle: FileHandle
   private let didAccessSecurityScope: Bool
   private var isClosed = false
-  private let lock = NSLock()  // non-reentrant. Don't use it in recursive calls
 
   init(file: FileSystemFile, mode: FileMode?) throws {
     // Callers that ask for a specific mode get exactly that mode checked. When no mode is given we
@@ -69,9 +69,7 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
         handle = try FileHandle(forUpdating: file.url)
       }
 
-      if self.mode == FileMode.append {
-        _ = try handle.seekToEnd()
-      } else if self.mode == FileMode.truncate {
+      if self.mode == FileMode.truncate {
         try handle.truncate(atOffset: 0)
       }
     } catch {
@@ -84,47 +82,11 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
     super.init(handle)
   }
 
-  func read(_ length: Int) throws -> Data {
-    lock.lock()
-    defer {
-      lock.unlock()
-    }
-
-    if self.mode.writeOnly {
-      throw UnableToReadHandleException("File opened write-only")
-    }
-
-    do {
-      let data = try handle.read(upToCount: length)
-      return data ?? Data()
-    } catch {
-      throw UnableToReadHandleException(error.localizedDescription)
-    }
-  }
-
-  func write(_ bytes: Data) throws {
-    lock.lock()
-    defer {
-      lock.unlock()
-    }
-
-    if self.mode.readOnly {
-      throw UnableToWriteHandleException("File opened read-only")
-    }
-
-    try handle.write(contentsOf: bytes)
-  }
-
   override func sharedObjectDidRelease() {
     try? close()
   }
 
   func close() throws {
-    lock.lock()
-    defer {
-      lock.unlock()
-    }
-
     guard !isClosed else { return }
     isClosed = true
     defer {
@@ -135,42 +97,98 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
     try handle.close()
   }
 
-  var offset: UInt64? {
-    get {
-      lock.lock()
-      defer {
-        lock.unlock()
-      }
-
-      return try? handle.offset()
+  /// Size of the file via `fstat(2)`, or `nil` when the handle is closed or the call fails.
+  var size: UInt64? {
+    if isClosed {
+      return nil
     }
-    set(newOffset) {
-      guard let newOffset else {
-        return
-      }
+    var status = stat()
+    guard fstat(handle.fileDescriptor, &status) == 0 else {
+      return nil
+    }
+    return UInt64(status.st_size)
+  }
 
-      lock.lock()
-      defer {
-        lock.unlock()
-      }
-
-      handle.seek(toFileOffset: newOffset)
+  private func ensureIsOpen() throws {
+    if isClosed {
+      throw UnableToReadHandleException("file handle is closed")
     }
   }
 
-  var size: UInt64? {
-    lock.lock()
-    defer {
-      lock.unlock()
+  /// Reads up to `length` bytes starting at `position` with `pread(2)`, which never touches the
+  /// descriptor's own offset. The result is sized to the bytes actually read: shorter at the end of
+  /// the file, empty at or past it. Safe to call from any thread.
+  func readAt(_ position: UInt64, _ length: Int) throws -> ArrayBuffer {
+    try ensureIsOpen()
+    if mode.writeOnly {
+      throw UnableToReadHandleException("File opened write-only")
     }
 
-    do {
-      let offset = try handle.offset()
-      let size = try handle.seekToEnd()
-      handle.seek(toFileOffset: offset)
-      return size
-    } catch {
-      return nil
+    // Read the descriptor once: `FileHandle.fileDescriptor` raises an ObjC exception after close.
+    let descriptor = FileDescriptor(rawValue: handle.fileDescriptor)
+    let fileSize = size ?? 0
+    let available = position < fileSize ? Int(clamping: fileSize - position) : 0
+    let toRead = max(0, min(length, available))
+    let buffer = ArrayBuffer(size: toRead, initializeToZero: false)
+    if toRead == 0 {
+      return buffer
     }
+
+    var total = 0
+    try buffer.withUnsafeMutableBytes { raw in
+      while total < toRead {
+        let count: Int
+        do {
+          count = try descriptor.read(
+            fromAbsoluteOffset: Int64(position) + Int64(total),
+            into: UnsafeMutableRawBufferPointer(rebasing: raw[total...])
+          )
+        } catch {
+          throw UnableToReadHandleException(String(describing: error))
+        }
+        if count == 0 {
+          break
+        }
+        total += count
+      }
+    }
+    if total == toRead {
+      return buffer
+    }
+    // The file shrank between the size check and the read; hand back only what was read.
+    return buffer.withUnsafeBytes { raw in
+      guard let base = raw.baseAddress else {
+        return ArrayBuffer(size: 0)
+      }
+      return ArrayBuffer.copy(of: base, count: total)
+    }
+  }
+
+  /// Writes all of `data` at `position` with `pwrite(2)` and returns the offset right after the
+  /// written bytes. In append mode the position is ignored and the data goes to the end of the file.
+  /// Safe to call from any thread.
+  func writeAt(_ position: UInt64, _ data: ArrayBuffer) throws -> UInt64 {
+    try ensureIsOpen()
+    if mode.readOnly {
+      throw UnableToWriteHandleException("File opened read-only")
+    }
+
+    let descriptor = FileDescriptor(rawValue: handle.fileDescriptor)
+    let start = mode == .append ? (size ?? 0) : position
+    let length = data.byteLength
+    var total = 0
+    try data.withUnsafeBytes { raw in
+      while total < length {
+        do {
+          total += try descriptor.write(
+            toAbsoluteOffset: Int64(start) + Int64(total),
+            UnsafeRawBufferPointer(rebasing: raw[total...])
+          )
+        } catch {
+          throw UnableToWriteHandleException(String(describing: error))
+        }
+      }
+    }
+    return start + UInt64(length)
   }
 }

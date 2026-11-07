@@ -353,7 +353,7 @@ public final class FileSystemModule: Module {
         return try file.bytes()
       }
 
-      Function("open") { (file: FileSystemFile, mode: FileMode?) in
+      Function("openHandle") { (file: FileSystemFile, mode: FileMode?) in
         return try FileSystemFileHandle(file: file, mode: mode)
       }
 
@@ -457,30 +457,24 @@ public final class FileSystemModule: Module {
     }
 
     Class(FileSystemFileHandle.self) {
-      AsyncFunction("readBytes") { (fileHandle, bytes: Int) in
-        try fileHandle.read(bytes)
+      AsyncFunction("readAt") { (fileHandle, position: UInt64, length: Int) in
+        try fileHandle.readAt(position, length)
       }
 
-      Function("readBytesSync") { (fileHandle, bytes: Int) in
-        try fileHandle.read(bytes)
+      Function("readAtSync") { (fileHandle, position: UInt64, length: Int) in
+        try fileHandle.readAt(position, length)
       }
 
-      AsyncFunction("writeBytes") { (fileHandle, bytes: Data) in
-        try fileHandle.write(bytes)
+      AsyncFunction("writeAt") { (fileHandle, position: UInt64, data: ArrayBuffer) in
+        try fileHandle.writeAt(position, data)
       }
 
-      Function("writeBytesSync") { (fileHandle, bytes: Data) in
-        try fileHandle.write(bytes)
+      Function("writeAtSync") { (fileHandle, position: UInt64, data: ArrayBuffer) in
+        try fileHandle.writeAt(position, data)
       }
 
       Function("close") { fileHandle in
         try fileHandle.close()
-      }
-
-      Property("offset") { fileHandle in
-        fileHandle.offset
-      }.set { (fileHandle, volume: UInt64) in
-        fileHandle.offset = volume
       }
 
       Property("size") { fileHandle in

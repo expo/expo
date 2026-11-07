@@ -1,4 +1,4 @@
-import type { FileHandle } from '../../File.types';
+import type { FileHandle } from '../../FileHandle';
 import { FileSystemReadableStreamSource } from '../streams';
 
 const CONTENTS = new Uint8Array(64).map((_, index) => index + 1);
