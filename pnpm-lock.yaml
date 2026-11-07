@@ -119,6 +119,8 @@ packageExtensionsChecksum: sha256-eD4yymvxCeqwks3aaDOCcechfJIjdW9wKz4McqQyjJc=
 
 patchedDependencies:
   '@react-native-community/netinfo': ced0cb79848978ecc3e780a4d812d948684346cce85aa5d06f6b91a11e10ad5b
+  lottie-react-native: c573205561bc30560581ae4e627193e6d0262af6e34fdf831e9bab6dabcb6c34
+  react-native-maps: 5e16f03715866ceb6d474a5d95d767ff6508f6ae0de4d70f8c02586fe536e879
   react-native-reanimated: 0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f158848cdd086d73d5e4
   react-native-worklets: 0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28
   react-server-dom-webpack: ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a
@@ -315,7 +317,7 @@ importers:
         version: link:../../packages/expo-web-browser
       lottie-react-native:
         specifier: ^7.5.0
-        version: 7.5.0(@lottiefiles/dotlottie-react@0.13.5(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 7.5.0(patch_hash=c573205561bc30560581ae4e627193e6d0262af6e34fdf831e9bab6dabcb6c34)(@lottiefiles/dotlottie-react@0.13.5(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       native-component-list:
         specifier: workspace:*
         version: link:../native-component-list
@@ -775,7 +777,7 @@ importers:
         version: link:../../packages/expo-web-browser
       lottie-react-native:
         specifier: ^7.5.0
-        version: 7.5.0(@lottiefiles/dotlottie-react@0.13.5(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 7.5.0(patch_hash=c573205561bc30560581ae4e627193e6d0262af6e34fdf831e9bab6dabcb6c34)(@lottiefiles/dotlottie-react@0.13.5(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react:
         specifier: 19.3.0
         version: 19.3.0
@@ -790,7 +792,7 @@ importers:
         version: 1.22.7(react-native-reanimated@4.7.1(patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f158848cdd086d73d5e4)(react-native-worklets@0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-maps:
         specifier: 1.29.11
-        version: 1.29.11(react-native-web@0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 1.29.11(patch_hash=5e16f03715866ceb6d474a5d95d767ff6508f6ae0de4d70f8c02586fe536e879)(react-native-web@0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-pager-view:
         specifier: 9.0.7
         version: 9.0.7(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -1219,7 +1221,7 @@ importers:
         version: 3.9.2
       lottie-react-native:
         specifier: ^7.5.0
-        version: 7.5.0(@lottiefiles/dotlottie-react@0.13.5(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 7.5.0(patch_hash=c573205561bc30560581ae4e627193e6d0262af6e34fdf831e9bab6dabcb6c34)(@lottiefiles/dotlottie-react@0.13.5(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       moment:
         specifier: ^2.29.4
         version: 2.30.1
@@ -1249,7 +1251,7 @@ importers:
         version: 1.22.7(react-native-reanimated@4.7.1(patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f158848cdd086d73d5e4)(react-native-worklets@0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-maps:
         specifier: 1.29.11
-        version: 1.29.11(react-native-web@0.21.4(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 1.29.11(patch_hash=5e16f03715866ceb6d474a5d95d767ff6508f6ae0de4d70f8c02586fe536e879)(react-native-web@0.21.4(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-pager-view:
         specifier: 9.0.7
         version: 9.0.7(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -23147,7 +23149,7 @@ snapshots:
     dependencies:
       js-tokens: 4.0.0
 
-  lottie-react-native@7.5.0(@lottiefiles/dotlottie-react@0.13.5(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0):
+  lottie-react-native@7.5.0(patch_hash=c573205561bc30560581ae4e627193e6d0262af6e34fdf831e9bab6dabcb6c34)(@lottiefiles/dotlottie-react@0.13.5(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0):
     dependencies:
       react: 19.3.0
       react-native: 0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
@@ -24338,7 +24340,7 @@ snapshots:
       react-native-is-edge-to-edge: 1.3.1(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react-native-reanimated: 4.7.1(patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f158848cdd086d73d5e4)(react-native-worklets@0.13.0(patch_hash=0e7ca08ddb565252ea4479e4bb493c5c09756297ba0ec8845126edcfcc981b28)(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
 
-  react-native-maps@1.29.11(react-native-web@0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0):
+  react-native-maps@1.29.11(patch_hash=5e16f03715866ceb6d474a5d95d767ff6508f6ae0de4d70f8c02586fe536e879)(react-native-web@0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0):
     dependencies:
       '@types/geojson': 7946.0.16
       react: 19.3.0
@@ -24346,7 +24348,7 @@ snapshots:
     optionalDependencies:
       react-native-web: 0.21.2(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
 
-  react-native-maps@1.29.11(react-native-web@0.21.4(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0):
+  react-native-maps@1.29.11(patch_hash=5e16f03715866ceb6d474a5d95d767ff6508f6ae0de4d70f8c02586fe536e879)(react-native-web@0.21.4(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0))(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0):
     dependencies:
       '@types/geojson': 7946.0.16
       react: 19.3.0

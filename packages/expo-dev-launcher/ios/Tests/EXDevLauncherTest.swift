@@ -8,7 +8,7 @@ struct EXDevLauncherTest {
   func `exported constants should contain correct fields`() {
     let module = EXDevLauncher()
 
-    let exportedConstants = module.constantsToExport()!
+    let exportedConstants = module.constantsToExport()
 
     #expect(exportedConstants["manifestString"] != nil)
     #expect(exportedConstants["manifestURL"] != nil)

@@ -16,7 +16,7 @@ buildscript {
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
-    ndkVersion = "27.1.12297006"
+    ndkVersion = "28.2.13676358"
   }
   repositories {
     google()

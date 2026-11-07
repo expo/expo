@@ -21,7 +21,7 @@ internal data class MockAsset(
   val duration: Int?,
   val albumId: String?
 ) {
-  fun toColumnArray() = arrayOf(
+  fun toColumnArray() = arrayOf<Any?>(
     id, name, path, mediaType,
     width, height,
     createdDate, modifiedDate,

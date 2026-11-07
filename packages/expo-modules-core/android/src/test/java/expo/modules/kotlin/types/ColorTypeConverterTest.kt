@@ -3,6 +3,7 @@ package expo.modules.kotlin.types
 import android.app.Application
 import android.graphics.Color
 import android.util.TypedValue
+import androidx.core.content.res.ResourcesCompat
 import androidx.test.core.app.ApplicationProvider
 import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.bridge.JavaOnlyArray
@@ -126,8 +127,10 @@ internal class ColorTypeConverterTest {
 
     val color = convert<Color>(platformColor, converterContext)
     val expectedColor = TypedValue().let {
-      converterContext.applicationContext.theme.resolveAttribute(android.R.attr.textColorPrimary, it, true)
-      it.data
+      val context = converterContext.applicationContext
+      context.theme.resolveAttribute(android.R.attr.textColorPrimary, it, true)
+      // textColorPrimary resolves to a ColorStateList, so the converter returns its default color.
+      ResourcesCompat.getColor(context.resources, it.resourceId, context.theme)
     }
 
     Truth.assertThat(ColorCompat.toArgb(color)).isEqualTo(expectedColor)

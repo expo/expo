@@ -29,7 +29,6 @@ final class VersionManager: EXVersionManagerObjC {
     self.manifest = manifest
 
     configureReact(
-      enableTurboModules: true,
       fatalHandler: fatalHandler,
       logFunction: logFunction,
       logThreshold: logThreshold
@@ -162,12 +161,10 @@ final class VersionManager: EXVersionManagerObjC {
  Configures some React Native global options.
  */
 private func configureReact(
-  enableTurboModules: Bool,
   fatalHandler: @escaping (Error?) -> Void,
   logFunction: @escaping RCTLogFunction,
   logThreshold: RCTLogLevel
 ) {
-  RCTEnableTurboModule(enableTurboModules)
   RCTSetFatalHandler(fatalHandler)
   RCTSetLogThreshold(logThreshold)
   RCTSetLogFunction(logFunction)
