@@ -191,11 +191,21 @@ jobs:
           esac
           gh pr comment "$PR" --repo "${{ github.repository }}" --body "$body"
 
+      # Reviewers judge the change against what the PR says it does. ecr gives the title
+      # and body only to the coordinator, so pass them as untrusted context. ecr sanitizes
+      # the file like the title and body. The text comes through env, never the script.
+      - name: Write the PR title and body for reviewers
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          printf 'Pull request title: %s\n\nPull request body:\n%s\n' "$PR_TITLE" "$PR_BODY" > "$RUNNER_TEMP/pr-description.md"
+
       - name: Run AI review
         # The launcher selects the SAME checked-in package version the guard cleared.
         # `--force` only on the automatic fork path (see the job `if`), never from PR input.
         # `--expect-head`: review only the commit this event is for.
-        run: ./scripts/expo-code-review ecr ci --expect-head "$HEAD_SHA" ${FORCE:+"$FORCE"}
+        run: ./scripts/expo-code-review ecr ci --expect-head "$HEAD_SHA" --context-file "$RUNNER_TEMP/pr-description.md" ${FORCE:+"$FORCE"}
         continue-on-error: true
         env:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}

@@ -274,6 +274,18 @@ jobs:
           esac
           gh pr comment "$PR" --repo "${{ github.repository }}" --body "$body"
 
+      # The same untrusted context as expo-code-review.yml, so a /review judges the
+      # same evidence as the automatic review. A dispatch has no PR in its payload,
+      # so read the title and body from the API for both paths.
+      - name: Write the PR title and body for reviewers
+        if: steps.cmd.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_REVIEW_TOKEN }}
+          PR: ${{ github.event.issue.number || inputs.pr }}
+        run: |
+          gh pr view "$PR" --repo "${{ github.repository }}" --json title,body \
+            --jq '"Pull request title: \(.title // "")\n\nPull request body:\n\(.body // "")"' > "$RUNNER_TEMP/pr-description.md"
+
       - name: Run AI review
         if: steps.cmd.outputs.run == 'true'
         continue-on-error: true
@@ -328,7 +340,7 @@ jobs:
               ARGS+=(--config-dir "$GITHUB_WORKSPACE/.expo-agents/code-review")
             fi
           fi
-          ./scripts/expo-code-review ecr ci "${ARGS[@]}"
+          ./scripts/expo-code-review ecr ci --context-file "$RUNNER_TEMP/pr-description.md" "${ARGS[@]}"
 
       # Same ephemeral per-run log as expo-code-review.yml — a review command
       # runs the full `ecr ci`, whose .expo-agents/code-review/.runs/ log is gone when the

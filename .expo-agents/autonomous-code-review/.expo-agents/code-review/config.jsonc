@@ -1,0 +1,52 @@
+// Autonomous code review trial: the routing scope for packages that agents maintain.
+// Loaded through ../../../code-review/routing.jsonc. Auth stays in the root config.
+{
+  "model": "anthropic/claude-opus-5-5",
+  "policy": { "minSeverity": "suggestion" },
+  // A scope does not inherit the root noise list. Keep this copy in sync with
+  // ../../../code-review/config.jsonc.
+  "noise": {
+    "additionalIgnores": [
+      // Build output + caches
+      "**/build/**",
+      "**/dist/**",
+      "**/out/**",
+      "**/.expo/**",
+      "**/.next/**",
+      "**/.turbo/**",
+      "**/__generated__/**",
+      // Generated API surface + data
+      "packages/@expo/config-types/src/ExpoConfig.ts",
+      "packages/expo/bundledNativeModules.json",
+      "changelogVersions.json",
+      "docs/public/static/data/**",
+      "docs/public/static/diffs/**",
+      "template-files/android-paths.json",
+      "template-files/ios-paths.json",
+      // Versioned docs snapshots (unversioned/ is the live copy and IS reviewed)
+      "docs/pages/versions/latest/**",
+      "docs/pages/versions/v*/**",
+      // Vendored + versioned native code
+      "react-native-lab/react-native/**",
+      "packages/expo-modules-autolinking/external/**",
+      "apps/expo-go/android/versioned-react-native/**",
+      "apps/expo-go/ios/versioned/**",
+      "**/ios/versioned/**",
+      "**/ios/versioned-react-native/**",
+      "**/ios/vendored/**",
+      "**/vendored/**",
+      "**/vendor/**",
+      // Native project files nobody reviews by hand
+      "**/ios/Pods/**",
+      "**/*.xcodeproj/**",
+      "**/*.pbxproj",
+      "**/gradle/wrapper/gradle-wrapper.jar",
+      "**/android/versioned-abis/**",
+      // Lockfiles the built-in filter does not name, plus git-crypt'd secrets
+      "Gemfile.lock",
+      "**/Podfile.lock",
+      "THIRD-PARTY-LICENSES",
+      "secrets/**"
+    ]
+  }
+}
