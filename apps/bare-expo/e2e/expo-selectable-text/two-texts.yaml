@@ -1,0 +1,15 @@
+appId: dev.expo.Payments
+---
+# Start from a fresh screen, so the status shows no earlier action.
+- openLink: bareexpo://components/selectable-text
+- openLink: bareexpo://components/selectable-text/edge-cases
+- scrollUntilVisible:
+    element: 'Second paragraph in the wrapper.'
+    direction: DOWN
+
+# A selection in one `Text` moves to another `Text` in the same wrapper.
+- longPressOn: 'First paragraph in the wrapper.'
+- assertVisible: 'Add to chat'
+- longPressOn: 'Second paragraph in the wrapper.'
+- tapOn: 'Add to chat'
+- assertVisible: 'two: ".+" \[\d+, \d+\) slice-match=YES'
