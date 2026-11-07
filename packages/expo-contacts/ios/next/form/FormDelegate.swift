@@ -32,7 +32,7 @@ class FormDelegate: OnContactPickingResultHandler {
     if contactManipulationPromise != nil {
       throw ContactManipulationInProgressException()
     }
-    guard let foundContact = contactRepository.getById(
+    guard let foundContact = try contactRepository.getById(
       id: contact.id,
       keysToFetch: [CNContactViewController.descriptorForRequiredKeys()]
     ) else {
