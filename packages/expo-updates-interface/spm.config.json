@@ -13,12 +13,11 @@
         "Hermes",
         "expo-modules-core/ExpoModulesCore"
       ],
+      "swiftLanguageVersions": ["5"],
       "targets": [
         {
           "type": "swift",
           "name": "EXUpdatesInterface",
-          "path": "ios/EXUpdatesInterface",
-          "pattern": "*.swift",
           "dependencies": [
             "Hermes",
             "React",
