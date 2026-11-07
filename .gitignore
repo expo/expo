@@ -158,3 +158,6 @@ docs/pages/versions/*/react-native/*.diff
 # Secrets - contains real secrets fetched from GCP
 /secrets/keys.json
 /secrets/expotools.env
+
+# Written when apps/bare-expo/scripts/prod-bundle-packages.mts --check fails
+/apps/bare-expo/*.generated.txt
