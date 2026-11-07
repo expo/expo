@@ -17,8 +17,8 @@ import android.view.OrientationEventListener
 import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.ComponentActivity
 import androidx.annotation.OptIn
-import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.camera2.interop.Camera2CameraInfo
 import androidx.camera.camera2.interop.ExperimentalCamera2Interop
 import androidx.camera.core.Camera
@@ -100,7 +100,7 @@ class ExpoCameraView(
 ) : ExpoView(context, appContext),
   CameraViewInterface {
   private val currentActivity
-    get() = appContext.throwingActivity as AppCompatActivity
+    get() = appContext.requireHostActivity<ComponentActivity>()
 
   private val orientationEventListener by lazy {
     object : OrientationEventListener(appContext.throwingActivity) {
