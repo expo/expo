@@ -45,7 +45,7 @@ const withStripLocalNetworkKeysForRelease: ConfigPlugin = (config) => {
       return config;
     }
 
-    project.addBuildPhase(
+    const { buildPhase } = project.addBuildPhase(
       [],
       'PBXShellScriptBuildPhase',
       buildPhaseName,
@@ -97,6 +97,15 @@ fi
       },
       undefined
     );
+
+    // The script rewrites the built Info.plist in place, so it has to run on every build: a
+    // Release build that reuses an unstripped plist from a previous incremental build would ship
+    // the dev-launcher keys. It therefore cannot declare outputs, and declaring the plist as an
+    // input is what caused the dependency cycle fixed in #46224. Marking the phase as always out
+    // of date ("Based on dependency analysis" unchecked) states that intent to Xcode without
+    // adding any edge to the dependency graph, and silences the "will be run during every build
+    // because it does not specify any outputs" warning.
+    (buildPhase as { alwaysOutOfDate?: number }).alwaysOutOfDate = 1;
 
     const targetPhases: { value: string; comment?: string }[] =
       project.pbxNativeTargetSection()[nativeTargetId]?.buildPhases ?? [];
