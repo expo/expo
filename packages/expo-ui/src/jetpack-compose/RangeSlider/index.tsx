@@ -1,8 +1,10 @@
 import { requireNativeView } from 'expo';
-import type { ColorValue } from 'react-native';
 
 import type { ModifierConfig, ViewEvent } from '../../types';
+import type { SliderColors } from '../Slider';
 import { createViewModifierEventListener } from '../modifiers/utils';
+
+export type { SliderColors };
 
 /**
  * An inclusive numeric range for `RangeSlider`.
@@ -12,32 +14,6 @@ export type RangeSliderRange = {
   start: number;
   /** The end of the range, included in the selection. */
   endInclusive: number;
-};
-
-/**
- * Color overrides for Material 3's `SliderDefaults.colors()`.
- */
-export type RangeSliderColors = {
-  /** The color of both thumbs when enabled. */
-  thumbColor?: ColorValue;
-  /** The track color between the thumbs when enabled. */
-  activeTrackColor?: ColorValue;
-  /** The track color outside the thumbs when enabled. */
-  inactiveTrackColor?: ColorValue;
-  /** The tick color between the thumbs when enabled. */
-  activeTickColor?: ColorValue;
-  /** The tick color outside the thumbs when enabled. */
-  inactiveTickColor?: ColorValue;
-  /** The color of both thumbs when disabled. */
-  disabledThumbColor?: ColorValue;
-  /** The track color between the thumbs when disabled. */
-  disabledActiveTrackColor?: ColorValue;
-  /** The track color outside the thumbs when disabled. */
-  disabledInactiveTrackColor?: ColorValue;
-  /** The tick color between the thumbs when disabled. */
-  disabledActiveTickColor?: ColorValue;
-  /** The tick color outside the thumbs when disabled. */
-  disabledInactiveTickColor?: ColorValue;
 };
 
 export interface RangeSliderProps {
@@ -70,7 +46,7 @@ export interface RangeSliderProps {
   /**
    * Colors for the thumbs, track, and tick marks. Omitted colors use the Material theme.
    */
-  colors?: RangeSliderColors;
+  colors?: SliderColors;
   /**
    * Called with both endpoints when the user changes the selection.
    */

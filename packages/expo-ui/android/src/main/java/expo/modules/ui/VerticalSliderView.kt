@@ -3,7 +3,6 @@ package expo.modules.ui
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SliderState
 import androidx.compose.material3.VerticalSlider
 import androidx.compose.runtime.Composable
@@ -64,13 +63,7 @@ fun FunctionalComposableScope.VerticalSliderContent(
   val thumbSlotView = findChildSlotView(view, "thumb")
   val trackSlotView = findChildSlotView(view, "track")
 
-  val sliderColors = SliderDefaults.colors(
-    thumbColor = props.colors.thumbColor.compose,
-    activeTrackColor = props.colors.activeTrackColor.compose,
-    inactiveTrackColor = props.colors.inactiveTrackColor.compose,
-    activeTickColor = props.colors.activeTickColor.compose,
-    inactiveTickColor = props.colors.inactiveTickColor.compose
-  )
+  val sliderColors = props.colors.toComposeColors()
   val modifier = ModifierRegistry.applyModifiers(
     props.modifiers,
     appContext,

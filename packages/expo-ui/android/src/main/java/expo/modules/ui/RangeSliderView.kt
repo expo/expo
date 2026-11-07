@@ -1,6 +1,5 @@
 package expo.modules.ui
 
-import android.graphics.Color
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,20 +24,6 @@ data class RangeSliderRange(
   @Field val endInclusive: Float = 1f
 ) : Record
 
-@OptimizedRecord
-data class RangeSliderColors(
-  @Field val thumbColor: Color? = null,
-  @Field val activeTrackColor: Color? = null,
-  @Field val inactiveTrackColor: Color? = null,
-  @Field val activeTickColor: Color? = null,
-  @Field val inactiveTickColor: Color? = null,
-  @Field val disabledThumbColor: Color? = null,
-  @Field val disabledActiveTrackColor: Color? = null,
-  @Field val disabledInactiveTrackColor: Color? = null,
-  @Field val disabledActiveTickColor: Color? = null,
-  @Field val disabledInactiveTickColor: Color? = null
-) : Record
-
 @OptimizedComposeProps
 data class RangeSliderProps(
   val startValue: Float = 0f,
@@ -46,7 +31,7 @@ data class RangeSliderProps(
   val trackRange: RangeSliderRange = RangeSliderRange(),
   val steps: Int = 0,
   val enabled: Boolean = true,
-  val colors: RangeSliderColors = RangeSliderColors(),
+  val colors: SliderColors = SliderColors(),
   val modifiers: ModifierList = emptyList()
 ) : ComposeProps
 
@@ -93,18 +78,7 @@ fun FunctionalComposableScope.RangeSliderContent(
   val startThumb = findChildSlotView(view, "startThumb")
   val endThumb = findChildSlotView(view, "endThumb")
   val track = findChildSlotView(view, "track")
-  val colors = SliderDefaults.colors(
-    thumbColor = props.colors.thumbColor.compose,
-    activeTrackColor = props.colors.activeTrackColor.compose,
-    inactiveTrackColor = props.colors.inactiveTrackColor.compose,
-    activeTickColor = props.colors.activeTickColor.compose,
-    inactiveTickColor = props.colors.inactiveTickColor.compose,
-    disabledThumbColor = props.colors.disabledThumbColor.compose,
-    disabledActiveTrackColor = props.colors.disabledActiveTrackColor.compose,
-    disabledInactiveTrackColor = props.colors.disabledInactiveTrackColor.compose,
-    disabledActiveTickColor = props.colors.disabledActiveTickColor.compose,
-    disabledInactiveTickColor = props.colors.disabledInactiveTickColor.compose
-  )
+  val colors = props.colors.toComposeColors()
 
   RangeSlider(
     state = state,
