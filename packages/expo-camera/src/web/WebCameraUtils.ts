@@ -8,7 +8,12 @@ import type {
 } from '../Camera.types';
 /* eslint-env browser */
 import * as CapabilityUtils from './WebCapabilityUtils';
-import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './WebConstants';
+import {
+  CameraTypeLabels,
+  CameraTypeToFacingMode,
+  ImageTypeFormat,
+  MinimumConstraints,
+} from './WebConstants';
 import { requestUserMediaAsync } from './WebUserMediaManager';
 
 interface ConstrainLongRange {
@@ -195,6 +200,46 @@ export async function getStreamDevice(
 ): Promise<MediaStream> {
   const constraints = getIdealConstraints(preferredCameraType, preferredWidth, preferredHeight);
   return requestUserMediaAsync(constraints);
+}
+
+/**
+ * Whether the label of a camera identifies it as the given camera type, e.g. "Microsoft Camera Rear".
+ */
+export function labelMatchesCameraType(label: string, cameraType: CameraType): boolean {
+  const lowerCaseLabel = label.toLowerCase();
+  return CameraTypeLabels[cameraType].some((part) => lowerCaseLabel.includes(part));
+}
+
+/**
+ * Request a stream from a camera other than the active one, for when the browser can't select a camera
+ * by `facingMode` (e.g. on Windows, where camera drivers often don't report it).
+ * Prefers a camera whose label matches the preferred camera type, otherwise the next camera in order,
+ * so that every camera can be reached by toggling. Resolves to `null` if there is no other camera.
+ *
+ * @param preferredCameraType
+ * @param activeDeviceId
+ */
+export async function getOtherStreamDevice(
+  preferredCameraType: CameraType,
+  activeDeviceId: string
+): Promise<MediaStream | null> {
+  if (!navigator.mediaDevices?.enumerateDevices) {
+    return null;
+  }
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  const cameras = devices.filter((device) => device.kind === 'videoinput' && device.deviceId);
+  const activeIndex = cameras.findIndex((camera) => camera.deviceId === activeDeviceId);
+  const otherCameras = [
+    ...cameras.slice(activeIndex + 1),
+    ...cameras.slice(0, Math.max(activeIndex, 0)),
+  ];
+  const camera =
+    otherCameras.find((camera) => labelMatchesCameraType(camera.label, preferredCameraType)) ??
+    otherCameras[0];
+  if (!camera) {
+    return null;
+  }
+  return await requestUserMediaAsync({ video: { deviceId: { exact: camera.deviceId } } });
 }
 
 export function isWebKit(): boolean {
