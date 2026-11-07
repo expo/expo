@@ -20,16 +20,12 @@ permissions:
 
 jobs:
   verify:
-    # Job-level, not workflow-level: a workflow-level group is claimed at run
-    # creation, before the gate below runs, so every comment on the thread —
-    # including the bot's own triage and findings replies — counted as an
-    # arrival. With cancel-in-progress:false a group holds one waiting run and
-    # a third arrival evicts it, which cancelled waiting verifications (the
-    # 2026-08-20 incident, repeated on 2026-09-09 against the legacy job). A
-    # job-level group is only entered when the gate passes.
+    # Claim the shared target queue only after the gate: ordinary comments
+    # and the bot's findings must not consume pending slots.
     concurrency:
       group: verify-target-${{ github.event.issue.number }}
       cancel-in-progress: false
+      queue: max
     # The LOOSE shape gate: command-shaped, from a maintainer-association
     # author, not the bot itself. Exact shapes, the authoritative
     # write-access check, and thread replies are the engine's comment
