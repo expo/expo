@@ -132,6 +132,12 @@ export type LiveActivityEnvironment = {
    */
   isStale?: boolean;
   /**
+   * The ActivityKit identifier of the Live Activity being drawn. It is the same value that
+   * `LiveActivity.getId()` returns, so a layout can tell its activities apart.
+   * @platform iOS 16.1+
+   */
+  activityId?: string;
+  /**
    * A Boolean value that indicates whether the Live Activity update synchronization rate is reduced.
    * @platform iOS 18+
    */
