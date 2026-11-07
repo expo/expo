@@ -535,7 +535,9 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   private fun createDownsampleStrategy(target: ImageViewWrapperTarget): DownsampleStrategy {
     return if (!allowDownscaling) {
-      DownsampleStrategy.NONE
+      // Still cap the bitmap at the hardware limit, otherwise drawing it crashes with
+      // "Canvas: trying to draw too large bitmap". Smaller images are decoded at full size.
+      SafeDownsampleStrategy(decodeFormat)
     } else if (
       contentFit != ContentFit.Fill &&
       contentFit != ContentFit.None
