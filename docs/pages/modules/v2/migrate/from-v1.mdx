@@ -1,0 +1,133 @@
+---
+title: 'Expo Modules API 2.0: Migrate from the module definition DSL'
+sidebar_title: Migrate from the DSL
+description: Learn how to migrate a module from the module definition DSL to Expo Modules API 2.0.
+---
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+
+This guide shows how to migrate a module from the [module definition DSL](/modules/module-api/) (domain-specific language) to Expo Modules API 2.0.
+
+You don't have to migrate all modules at the same time. An app can use modules of both kinds. You can also migrate one platform of a module before the other. The JavaScript code of the module doesn't change, as long as the module and its functions keep their names.
+
+## Set up the module
+
+1. For Android, turn on Expo Modules API 2.0 in **android/build.gradle** of the module, as [Get started](/modules/v2/get-started/#turn-on-expo-modules-api-20-for-android) describes.
+2. Update the `modules` lists in **expo-module.config.json**:
+   - For Android, remove the module that you migrate from the `android.modules` list. The Kotlin compiler plugin registers it.
+   - For iOS, autolinking scans the Swift source files for `@ExpoModule` classes only when the config has no `apple.modules` list. When every module of the package uses Expo Modules API 2.0 on iOS, remove the list. Otherwise, keep the list, including the module that you migrate.
+
+## Replace the module definition
+
+Delete the `definition()` function and add `@ExpoModule` to the class, with the name from the `Name` component. Then replace each definition component with a declaration. In Kotlin, the annotations and `Module` come from the `io.github.expo.modules.v2` package instead of `expo.modules.kotlin`.
+
+The following example is the `expo-haptics` module before and after the migration.
+
+### Before
+
+<CodeBlocksTable tabs={['HapticsModule.kt', 'HapticsModule.swift']}>
+
+```kotlin
+class HapticsModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("ExpoHaptics")
+
+    AsyncFunction("impactAsync") { style: String ->
+      vibrate(HapticsImpactType.fromString(style))
+    }
+
+    AsyncFunction("performHapticsAsync") { type: HapticType ->
+      val view = appContext.currentActivity?.findViewById<View>(android.R.id.content)
+      view?.performHapticFeedback(type.toHapticFeedbackType())
+    }.runOnQueue(Queues.MAIN)
+  }
+}
+```
+
+```swift
+public class HapticsModule: Module {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoHaptics")
+
+    AsyncFunction("impactAsync") { (style: ImpactStyle) in
+      let generator = UIImpactFeedbackGenerator(style: style.toFeedbackStyle())
+      generator.prepare()
+      generator.impactOccurred()
+    }
+    .runOnQueue(.main)
+  }
+}
+```
+
+</CodeBlocksTable>
+
+### After
+
+The migrated Kotlin module also takes the `ImpactStyle` enum instead of a `String`. An enum argument checks the value for you, so the module no longer converts the string itself.
+
+<CodeBlocksTable tabs={['HapticsModule.kt', 'HapticsModule.swift']}>
+
+```kotlin
+@ExpoModule("ExpoHaptics")
+class HapticsModule : Module() {
+  @JS
+  suspend fun impactAsync(style: ImpactStyle): Unit = vibrate(style.vibration)
+
+  @JS
+  suspend fun performHapticsAsync(type: HapticType): Unit = withContext(Dispatchers.Main) {
+    currentActivity
+      ?.findViewById<View>(android.R.id.content)
+      ?.performHapticFeedback(type.toHapticFeedbackType())
+  }
+}
+```
+
+```swift
+@ExpoModule("ExpoHaptics")
+public class HapticsModule: Module {
+  @JS
+  @MainActor
+  func impactAsync(style: ImpactStyle) async {
+    let generator = UIImpactFeedbackGenerator(style: style.toFeedbackStyle())
+    generator.prepare()
+    generator.impactOccurred()
+  }
+}
+```
+
+</CodeBlocksTable>
+
+## Definition components and their replacements
+
+| Module definition DSL                                        | Kotlin                                                       | Swift                                                      |
+| ------------------------------------------------------------ | ------------------------------------------------------------ | ---------------------------------------------------------- |
+| `Name("MyModule")`                                           | `@ExpoModule("MyModule")`                                    | `@ExpoModule("MyModule")`                                  |
+| `Function`                                                   | `@JS fun`                                                    | `@JS func`                                                 |
+| `AsyncFunction`                                              | `@JS suspend fun`                                            | `@JS func` with `async`                                    |
+| `.runOnQueue` with the main queue                            | `withContext(Dispatchers.Main)`                              | `@MainActor`                                               |
+| `Constant`                                                   | `@JS @Constant val`                                          | `@JS lazy var`                                             |
+| `Property`                                                   | `@JS val` or `@JS var`                                       | `@JS var`                                                  |
+| `Events` and `sendEvent`                                     | `@Event` on a property created with `event<T>()`             | `@Event` on a function-typed `var`                         |
+| `OnStartObserving` and `OnStopObserving`                     | The `onStartObserving` and `onStopObserving` of `event<T>()` | `didStartListening(event:)` and `didStopListening(event:)` |
+| `OnCreate`                                                   | Not available, use `by lazy` properties                      | `didCreate()`                                              |
+| `OnDestroy`                                                  | `override fun onDestroy()`                                   | `willDestroy()`                                            |
+| `Class` and `Constructor`                                    | `@ExpoSharedObject` and `@JS constructor`                    | `@SharedObject` and `@JS init`                             |
+| A `Record` with `@Field` properties                          | `@Record` on a data class                                    | `@Record` on a struct                                      |
+| `Either`                                                     | Not supported yet                                            | `@Union` on an enum                                        |
+| `appContext.reactContext`                                    | `androidContext` or `reactContext`                           | Not applicable                                             |
+| `appContext.currentActivity`                                 | `currentActivity`                                            | Not applicable                                             |
+| `appContext` in Swift                                        | Not applicable                                               | `appContext`                                               |
+| `OnActivityResult`, `OnNewIntent`, and other activity events | Not available, use React Native listeners                    | Not applicable                                             |
+| `OnAppEntersForeground` and other app events                 | Not applicable                                               | Keep them in a `definition()` function                     |
+
+For the details of each declaration, see the reference pages, starting with [Modules](/modules/v2/reference/modules/). For the lifecycle and the app context, see [Lifecycle and app context](/modules/v2/reference/lifecycle/).
+
+## Threads
+
+The functions of the module definition DSL can run on a queue that you choose with `.runOnQueue`. With Expo Modules API 2.0, functions start on the JavaScript thread, including asynchronous functions. Move long work off the JavaScript thread with `withContext` in Kotlin or the `.concurrent` option in Swift. For more information, see [Concurrency](/modules/v2/reference/concurrency/).
+
+## Enums
+
+Enums that implement `Enumerable` keep working. In Kotlin, import `Enumerable` from `io.github.expo.modules.v2` instead of `expo.modules.kotlin.types`.
+
+In Kotlin, make every enum that JavaScript passes or gets implement `Enumerable`. An enum without it still converts, but it logs a warning, and code shrinking with R8 can remove the entries that the conversion needs in a release build.
