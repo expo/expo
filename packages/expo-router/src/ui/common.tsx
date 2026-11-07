@@ -1,9 +1,14 @@
+import { use, useMemo } from 'react';
+
 import { sortRoutesWithInitial, type RouteNode } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
-import type { UrlObject } from '../global-state/getRouteInfoFromState';
+import { getRouteInfoFromState, type UrlObject } from '../global-state/getRouteInfoFromState';
 import { resolveNavigationDestination } from '../global-state/resolveNavigationDestination';
 import type { RouterRegistry } from '../global-state/routerRegistry';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
+import type { FocusedRouteState } from '../react-navigation/core/NavigationFocusedRouteStateContext';
+import { NavigationStateContext } from '../react-navigation/core/NavigationStateContext';
+import { useStateForPath } from '../react-navigation/native';
 import type {
   LinkingOptions,
   NavigationAction,
@@ -50,6 +55,39 @@ type TriggerConfig =
 
 export type TriggerMap = Record<string, TriggerConfig>;
 
+export function useTabsRouteInfo(): UrlObject {
+  const parentState = useStateForPath();
+  const { state } = use(NavigationStateContext);
+
+  return useMemo(() => {
+    // Include focused descendants, even while another stack covers this navigator.
+    const appendState = (
+      parent: FocusedRouteState | undefined,
+      child: NavigationState | PartialState<NavigationState> | undefined
+    ): FocusedRouteState | undefined => {
+      const parentRoute = parent?.routes[0];
+      const childRoute = child?.routes[child.index ?? 0];
+      const route = parentRoute ?? childRoute;
+      return route
+        ? {
+            routes: [
+              {
+                key: route.key,
+                name: route.name,
+                params: route.params,
+                path: route.path,
+                state: parentRoute
+                  ? appendState(parentRoute.state, child)
+                  : appendState(undefined, childRoute?.state),
+              },
+            ],
+          }
+        : undefined;
+    };
+    return getRouteInfoFromState(appendState(parentState, state));
+  }, [parentState, state]);
+}
+
 export function getTabRoute(state: NavigationState, name: string) {
   const route = state.routes.find((route) => route.name === name);
   return { route, isSwitching: state.routes[state.index]?.key !== route?.key };
@@ -95,6 +133,30 @@ export function buildTabAction(
 }
 
 export function useTriggersToScreens(
+  triggers: ScreenTrigger[],
+  layoutRouteNode: RouteNode,
+  linking: LinkingOptions<ParamListBase>,
+  parentTriggerMap: TriggerMap,
+  routeInfo: UrlObject,
+  contextKey: string
+) {
+  const { screenProps, triggerMap } = useMemo(
+    () =>
+      triggersToScreens(
+        triggers,
+        layoutRouteNode,
+        linking,
+        parentTriggerMap,
+        routeInfo,
+        contextKey
+      ),
+    [triggers, layoutRouteNode, linking, parentTriggerMap, routeInfo, contextKey]
+  );
+  const children = useSortedScreens(screenProps);
+  return { children, triggerMap };
+}
+
+function triggersToScreens(
   triggers: ScreenTrigger[],
   layoutRouteNode: RouteNode,
   linking: LinkingOptions<ParamListBase>,
@@ -243,10 +305,8 @@ export function useTriggersToScreens(
     }
   }
 
-  const children = useSortedScreens(screenProps);
-
   return {
-    children,
+    screenProps,
     triggerMap,
   };
 }

@@ -12,8 +12,8 @@ import { shouldHandleMouseEvent } from '../link/useLinkToPathProps';
 import { stripGroupSegmentsFromPath } from '../matchers';
 import type { TabNavigationState } from '../react-navigation/native';
 import type { Href } from '../types';
-import { useNavigatorContext } from '../views/Navigator';
-import { TabNavigatorStatesContext, TabTriggerMapContext } from './TabContext';
+import { NavigatorContext } from '../views/Navigator';
+import { TabNavigatorStatesContext, TabTriggerContext, TabTriggerMapContext } from './TabContext';
 import { buildTabAction, type TriggerMap } from './common';
 
 type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & {
@@ -152,7 +152,11 @@ export type TriggerProps = {
  * Utility hook creating custom `TabTrigger`.
  */
 export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
-  const { state, navigation, contextKey, descriptors } = useNavigatorContext();
+  const context = use(TabTriggerContext) ?? use(NavigatorContext);
+  if (!context) {
+    throw new Error('useNavigatorContext must be used within a <Navigator />');
+  }
+  const { state, navigation, contextKey } = context;
   const { name, resetOnFocus, onPress, onLongPress } = options;
   const triggerMap = use(TabTriggerMapContext);
   const navigatorStates = use(TabNavigatorStatesContext);
@@ -170,12 +174,16 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         config.type === 'internal'
           ? state.routes.find((route) => route.name === config.routeNode.route)
           : undefined;
+      const routeKey =
+        config.type === 'internal' ? (route?.key ?? config.routeNode.route) : undefined;
       const routeOptions =
-        config.type === 'internal'
-          ? descriptors[route?.key ?? config.routeNode.route]?.options
+        routeKey !== undefined && 'descriptors' in context
+          ? context.descriptors[routeKey]?.options
           : undefined;
       const hidden =
-        routeOptions != null && 'hidden' in routeOptions && routeOptions.hidden === true;
+        'hiddenRoutes' in context
+          ? routeKey !== undefined && context.hiddenRoutes.includes(routeKey)
+          : routeOptions != null && 'hidden' in routeOptions && routeOptions.hidden === true;
 
       // Parent triggers are inherited, so read the state of the navigator that registered them.
       const owningState =
@@ -193,7 +201,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         ...config,
       };
     },
-    [descriptors, navigatorStates, state, triggerMap]
+    [context, navigatorStates, state, triggerMap]
   );
 
   const trigger = name !== undefined ? getTrigger(name) : undefined;
