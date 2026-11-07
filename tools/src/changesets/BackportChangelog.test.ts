@@ -1097,4 +1097,63 @@ describe('convertBackportChangesets', () => {
       { ok: true, errors: [] }
     );
   });
+
+  for (const [kind, summary] of [
+    ['a multi-paragraph entry', 'One.\n\nTwo.\n\nThree.'],
+    ['an entry that ends in a code block', 'Call it:\n\n```js\nfoo();\n```'],
+    ['an entry whose second paragraph is indented', 'One.\n\n  - Two.'],
+  ]) {
+    it(`accepts ${kind} added below an existing entry of the same subsection`, () => {
+      const before = replaceLine(CORE_BEFORE, OTHERS, [OTHERS, '', '- An existing entry.']);
+      const changesets = [changeset('multi', { 'expo-modules-core': 'patch' }, summary)];
+      const result = convert(changesets, { [CORE_CHANGELOG]: before });
+      assert.deepEqual(result.errors, []);
+      assert.deepEqual(
+        checkBackportChangelog({
+          changesets,
+          changedFiles: [
+            { status: 'deleted', path: changesets[0].path, before: changesets[0].content },
+            {
+              status: 'modified',
+              mode: '100644',
+              path: CORE_CHANGELOG,
+              before,
+              after: result.changelogs.get(CORE_CHANGELOG)!,
+            },
+          ],
+          prNumber: PR,
+          author: AUTHOR,
+          packageDirs,
+        }),
+        { ok: true, errors: [] }
+      );
+    });
+  }
+
+  it('rejects an indented line after a blank line that follows a complete new entry', () => {
+    const changesets = [changeset('fix', { 'expo-modules-core': 'patch' }, 'New.')];
+    const lines = (...entries: string[]) =>
+      ['# Changelog', '', '## Unpublished', '', OTHERS, '', ...entries, '', '## 1.0.0', ''].join(
+        '\n'
+      );
+    const before = lines('- Old entry.');
+    const result = checkBackportChangelog({
+      changesets,
+      changedFiles: [
+        { status: 'deleted', path: changesets[0].path, before: changesets[0].content },
+        {
+          status: 'modified',
+          mode: '100644',
+          path: CORE_CHANGELOG,
+          before,
+          after: lines('- Old entry.', `- New. ${TRAILER}`, '', '  Sneaky.'),
+        },
+      ],
+      prNumber: PR,
+      author: AUTHOR,
+      packageDirs,
+    });
+    assert.equal(result.ok, false);
+    assert.match(result.errors.join('\n'), /does not end with/);
+  });
 });

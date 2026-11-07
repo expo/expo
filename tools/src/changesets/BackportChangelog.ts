@@ -708,7 +708,28 @@ function diffLines(
       afterIndex += change.value.length;
     }
   }
-  return { removedLines, addedBlocks };
+  return { removedLines, addedBlocks: joinSplitEntries(addedBlocks, after) };
+}
+
+/**
+ * The diff can match a blank line inside a new entry to an existing blank line, which splits the
+ * entry into two blocks. Joins a block that starts with an indented continuation line to the block
+ * before it when only blank lines are between them.
+ */
+function joinSplitEntries(blocks: AddedBlock[], after: string[]): AddedBlock[] {
+  const joined: AddedBlock[] = [];
+  for (const block of blocks) {
+    const previous = joined.at(-1);
+    if (previous && /^ {2,}\S/.test(block.lines[0])) {
+      const gap = after.slice(previous.start + previous.lines.length, block.start);
+      if (gap.every((line) => line === '')) {
+        previous.lines.push(...gap, ...block.lines);
+        continue;
+      }
+    }
+    joined.push(block);
+  }
+  return joined;
 }
 
 /** Splits on `\n` only, so that a rewrite to CRLF line endings counts as removed lines. */
