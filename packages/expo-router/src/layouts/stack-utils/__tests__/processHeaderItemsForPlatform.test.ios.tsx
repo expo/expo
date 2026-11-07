@@ -110,6 +110,19 @@ describe('processHeaderItemsForPlatform (iOS)', () => {
     expect(items[0]).toMatchObject({ type: 'menu' });
   });
 
+  it('warns when a header button uses an unsupported image', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    // Only the presence of the native image reference matters to this conversion.
+    const image = {} as never;
+
+    processHeaderItemsForPlatform(<StackToolbarButton image={image} icon="star" />, 'right');
+
+    expect(warn).toHaveBeenCalledWith(
+      'Stack.Toolbar.Button does not support the image prop with placement="right" on iOS. Use an SF Symbol name or an image source with icon. Use placement="bottom" to display an ImageRef with image.'
+    );
+    warn.mockRestore();
+  });
+
   describe('invalid children warning', () => {
     let consoleSpy: jest.SpyInstance;
 

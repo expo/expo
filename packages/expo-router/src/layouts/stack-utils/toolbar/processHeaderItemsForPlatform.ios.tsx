@@ -46,6 +46,20 @@ function convertToolbarChildrenToUnstableItems(
       `Stack.Toolbar with placement="${side}" only accepts <Stack.Toolbar.Button>, <Stack.Toolbar.Menu>, <Stack.Toolbar.View>, and <Stack.Toolbar.Spacer> as children. Found invalid children: ${otherElements.join(', ')}`
     );
   }
+  if (process.env.NODE_ENV !== 'production') {
+    for (const action of actions) {
+      if (
+        isChildOfType(action, StackToolbarButton) &&
+        action.props.image != null &&
+        !action.props.hidden
+      ) {
+        console.warn(
+          `Stack.Toolbar.Button does not support the image prop with placement="${side}" on iOS. Use an SF Symbol name or an image source with icon. Use placement="bottom" to display an ImageRef with image.`
+        );
+      }
+    }
+  }
+
   return () =>
     actions
       .map((action) => {
