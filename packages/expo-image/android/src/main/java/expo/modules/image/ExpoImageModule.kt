@@ -93,6 +93,7 @@ class ExpoImageModule : Module() {
           // We added `quality` and `downsample` to create the same cache key as in final image load.
           .encodeQuality(100)
           .downsample(NoopDownsampleStrategy)
+          .disableUnboundedAnimationChecks()
           .customize(`when` = cachePolicy == CachePolicy.MEMORY) {
             diskCacheStrategy(DiskCacheStrategy.NONE)
           }
