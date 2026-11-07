@@ -279,6 +279,19 @@ export function addPushToStartTokenListener(
 }
 
 /**
+ * Returns whether the user allows this app to start Live Activities (Settings > Live Activities).
+ * Read it again before each `start()`, because the user can change it while the app is running.
+ * Always `false` on Android and web.
+ * @platform ios
+ */
+export function areActivitiesEnabled(): boolean {
+  if (Platform.OS !== 'ios') {
+    return false;
+  }
+  return ExpoWidgetsModule.areActivitiesEnabled();
+}
+
+/**
  * A directory that can be used to store shared images for widgets.
  * The contents of this directory are accessible by both the main app and widgets.
  */
