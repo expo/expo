@@ -24,6 +24,7 @@ class ExpoRootProjectPlugin : Plugin<Project> {
       setDefaultCmakeObjectPathMax()
       maybeOverrideNdkVersion(defaultProperties.ndkVersion)
       disableLinkedModulesLintWhenRequested()
+      alwaysRunBundleTasks()
     }
   }
 }
@@ -182,6 +183,16 @@ private fun Project.disableLintVitalAnalysis() {
   tasks.configureEach { task ->
     if (task.name.startsWith("lintVitalAnalyze")) {
       task.enabled = false
+    }
+  }
+}
+
+internal fun Project.alwaysRunBundleTasks() {
+  subprojects { subproject ->
+    subproject.tasks.configureEach { task ->
+      if (task.name.startsWith("createBundle") && task.name.endsWith("JsAndAssets")) {
+        task.doNotTrackState("Gradle can't replicate Metro's cache invalidation")
+      }
     }
   }
 }
