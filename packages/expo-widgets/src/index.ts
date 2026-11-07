@@ -8,6 +8,7 @@ export type {
 } from './CustomNotifications.types';
 export * from './Widgets';
 export type {
+  ActivityTokenEvent,
   ExpoWidgetsEvents,
   LevelOfDetail,
   LiveActivityComponent,

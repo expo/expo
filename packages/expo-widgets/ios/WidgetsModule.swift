@@ -7,15 +7,17 @@ let pushNotificationsEnabledKey: String = "ExpoWidgets_EnablePushNotifications"
 let onUserInteraction = "onExpoWidgetsUserInteraction"
 let onPushToStartTokenReceived = "onExpoWidgetsPushToStartTokenReceived"
 let onTokenReceived = "onExpoWidgetsTokenReceived"
+let onActivityToken = "onExpoWidgetsActivityToken"
 let onUserInteractionNotification = Notification.Name(onUserInteraction)
 
 public final class WidgetsModule: Module {
   var pushToStartTokenObserverTask: Task<Void, Never>?
+  var activityObserverTask: Task<Void, Never>?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoWidgets")
 
-    Events(onPushToStartTokenReceived, onTokenReceived, onUserInteraction)
+    Events(onPushToStartTokenReceived, onTokenReceived, onActivityToken, onUserInteraction)
 
     OnStartObserving(onUserInteraction) {
       NotificationCenter.default.addObserver(
@@ -43,6 +45,17 @@ public final class WidgetsModule: Module {
     OnStopObserving(onPushToStartTokenReceived) {
       pushToStartTokenObserverTask?.cancel()
       pushToStartTokenObserverTask = nil
+    }
+
+    OnStartObserving(onActivityToken) {
+      if pushNotificationsEnabled {
+        observeActivities()
+      }
+    }
+
+    OnStopObserving(onActivityToken) {
+      activityObserverTask?.cancel()
+      activityObserverTask = nil
     }
 
     Constant("widgetsDirectory") { () -> String? in
@@ -146,6 +159,43 @@ public final class WidgetsModule: Module {
         let token = data.reduce("") { $0 + String(format: "%02x", $1) }
         if token != initialToken {
           sendPushToStartToken(activityPushToStartToken: token)
+        }
+      }
+    }
+  }
+
+  // Reports every activity of this app, including ones the system started from a push while the app was not
+  // running, together with its url (static attributes) and each push token it is issued.
+  @available(iOS 16.2, *)
+  private func emitActivity(_ activity: Activity<LiveActivityAttributes>, token: Data?) {
+    sendEvent(onActivityToken, [
+      "activityId": activity.id,
+      "name": activity.content.state.name,
+      "url": activity.attributes.url ?? "",
+      "pushToken": token?.reduce("") { $0 + String(format: "%02x", $1) } as Any
+    ])
+  }
+
+  private func observeActivities() {
+    guard #available(iOS 16.2, *), ActivityAuthorizationInfo().areActivitiesEnabled else { return }
+    activityObserverTask = Task { [weak self] in
+      await withTaskGroup(of: Void.self) { group in
+        var watched = Set<String>()
+        let existing = Activity<LiveActivityAttributes>.activities
+
+        func follow(_ activity: Activity<LiveActivityAttributes>) {
+          guard watched.insert(activity.id).inserted else { return }
+          group.addTask {
+            self?.emitActivity(activity, token: activity.pushToken)
+            for await token in activity.pushTokenUpdates {
+              self?.emitActivity(activity, token: token)
+            }
+          }
+        }
+
+        existing.forEach(follow)
+        for await activity in Activity<LiveActivityAttributes>.activityUpdates {
+          follow(activity)
         }
       }
     }
