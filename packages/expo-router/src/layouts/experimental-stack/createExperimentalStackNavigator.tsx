@@ -54,7 +54,7 @@ function ExperimentalStackNavigatorContent({
     [descriptors, registry, state]
   );
 
-  useClearGuardedRoutes(removeRoutes);
+  useClearGuardedRoutes(state, removeRoutes);
   React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
 
   return (
