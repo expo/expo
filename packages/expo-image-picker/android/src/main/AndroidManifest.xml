@@ -25,13 +25,10 @@
          The library declares this activity with exported="true". -->
     <activity
       android:name="com.canhub.cropper.CropImageActivity"
-      android:exported="false"
-      tools:replace="android:exported" />
+      tools:node="remove" />
     <activity
       android:name="expo.modules.imagepicker.ExpoCropImageActivity"
-      android:theme="@style/Theme.AppCompat.DayNight"
-      android:exported="false"
-      tools:replace="android:exported" />
+      android:theme="@style/Theme.AppCompat.DayNight" />
     <!-- https://developer.android.com/guide/topics/manifest/provider-element.html -->
     <provider
       android:name=".fileprovider.ImagePickerFileProvider"
