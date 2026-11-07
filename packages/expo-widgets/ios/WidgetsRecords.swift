@@ -26,10 +26,12 @@ struct WidgetConfigurationOptionRecord: Record {
 struct LiveActivityStartOptions: Record {
   @Field var url: URL?
   @Field var staleDate: Date?
+  @Field var relevanceScore: Double = 0
 }
 
 struct LiveActivityUpdateOptions: Record {
   @Field var staleDate: Date?
+  @Field var relevanceScore: Double = 0
 }
 
 internal enum LiveActivityDismissalPolicy: String, Enumerable {
