@@ -151,21 +151,29 @@ export function getStateFromPath<ParamList extends object>(
 }
 
 /**
- * Reference to the most recently computed config resources.
+ * Config resources for the last used options. The config order depends on the groups in the
+ * previous segments, so each group combination has its own entry.
  */
-let cachedConfigResources: [Options<object> | undefined, ConfigResources] = [
-  undefined,
-  prepareConfigResources(),
-];
+let cachedOptions: Options<object> | undefined;
+const cachedConfigResources = new Map<string, ConfigResources>();
 
 function getConfigResources<ParamList extends object>(
   options: Options<ParamList> | undefined,
   previousSegments?: string[]
 ) {
-  // Recompute every time because config resources depend on the current state.
-  cachedConfigResources = [options, prepareConfigResources(options, previousSegments)];
+  if (cachedOptions !== options) {
+    cachedOptions = options;
+    cachedConfigResources.clear();
+  }
 
-  return cachedConfigResources[1];
+  const key = expo.getRouteConfigSorterKey(previousSegments);
+  let resources = cachedConfigResources.get(key);
+  if (!resources) {
+    resources = prepareConfigResources(options, previousSegments);
+    cachedConfigResources.set(key, resources);
+  }
+
+  return resources;
 }
 
 function prepareConfigResources(options?: Options<object>, previousSegments?: string[]) {
