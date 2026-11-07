@@ -5,6 +5,8 @@ import UIKit
 class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
   // Cached reference to the view controller to avoid responder chain traversal
   private weak var cachedController: RNSScreen?
+  // A popped screen has no navigationController by the time it leaves the window
+  private weak var cachedNavigationController: UINavigationController?
 
   // Mutable map of toolbar items
   var toolbarItemsArray: [String] = []
@@ -113,6 +115,7 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
         }
 
         controller.setToolbarItems(items, animated: true)
+        cachedNavigationController = controller.navigationController
         controller.navigationController?.setToolbarHidden(
           false,
           animated: true
@@ -175,11 +178,23 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
       if let controller = cachedController {
         controller.setToolbarItems(nil, animated: true)
       }
+      hideToolbarIfTopScreenHasNoItems()
       cachedController = nil // Clear cache when removed from window
+      cachedNavigationController = nil
     } else {
       // View was added to window - update toolbar items
       updateToolbarItems()
     }
+  }
+
+  // The toolbar is shared by the stack, so the leaving host hides it for the next screen
+  private func hideToolbarIfTopScreenHasNoItems() {
+    guard let navigationController = cachedNavigationController,
+      navigationController.topViewController?.toolbarItems?.isEmpty ?? true
+    else {
+      return
+    }
+    navigationController.setToolbarHidden(true, animated: true)
   }
 
   func updateMenu() {
