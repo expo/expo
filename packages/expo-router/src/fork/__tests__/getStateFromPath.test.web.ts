@@ -2,6 +2,7 @@ import { getMockConfig } from '../../testing-library';
 import { getPathFromState } from '../getPathFromState';
 import { getStateFromPath } from '../getStateFromPath';
 import { getUrlWithReactNavigationConcessions, stripBaseUrl } from '../getStateFromPath-forks';
+import * as validatePathConfigModule from '../validatePathConfig';
 
 beforeEach(() => {
   delete process.env.EXPO_BASE_URL;
@@ -497,4 +498,24 @@ it(`prioritizes hoisted index routes over dynamic groups`, () => {
       },
     ],
   });
+});
+
+test('prepares the config resources once for each options object', () => {
+  const validatePathConfig = jest.spyOn(validatePathConfigModule, 'validatePathConfig');
+  try {
+    const config = getMockConfig(['(a,b)/_layout.tsx', '(a,b)/profile.tsx', '(a,b)/index.tsx']);
+
+    getStateFromPath('/profile', config, ['(a)']);
+    getStateFromPath('/profile', config, ['(b)']);
+    getStateFromPath('/', config);
+    expect(validatePathConfig).toHaveBeenCalledTimes(1);
+
+    getStateFromPath(
+      '/profile',
+      getMockConfig(['(a,b)/_layout.tsx', '(a,b)/profile.tsx', '(a,b)/index.tsx'])
+    );
+    expect(validatePathConfig).toHaveBeenCalledTimes(2);
+  } finally {
+    validatePathConfig.mockRestore();
+  }
 });
