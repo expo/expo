@@ -501,6 +501,30 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
    * Expo SDK 58 and newer include scene lifecycle support, so this property is no longer required and can be removed.
    */
   enableSceneSupport?: boolean;
+
+  /**
+   * The development region of the Xcode project, as a language ID such as `en`, `pl`, or `zh-Hans`.
+   * This is the language that the app falls back to when it has no localization for the
+   * user's preferred languages. Xcode derives the `DEVELOPMENT_LANGUAGE` build setting from it,
+   * and the `CFBundleDevelopmentRegion` key in **Info.plist** uses that build setting.
+   *
+   * Setting this option also adds the development region to `knownRegions`.
+   *
+   * @default "en"
+   */
+  developmentRegion?: string;
+
+  /**
+   * The list of localizations (`knownRegions`) in the Xcode project, as language IDs such as
+   * `en`, `pl`, or `zh-Hans`. This list replaces the existing list in the Xcode project.
+   * The list always includes `Base` and the development region.
+   *
+   * @example
+   * ```json
+   * ["en", "pl", "zh-Hans"]
+   * ```
+   */
+  knownRegions?: string[];
 }
 
 /**
@@ -877,6 +901,12 @@ const schema: JSONSchema<PluginConfigType> = {
         useHermesV1: { type: 'boolean', nullable: true },
         usePrecompiledModules: { type: 'boolean', nullable: true },
         enableSceneSupport: { type: 'boolean', nullable: true },
+        developmentRegion: { type: 'string', pattern: '^[A-Za-z0-9_-]+$', nullable: true },
+        knownRegions: {
+          type: 'array',
+          items: { type: 'string', pattern: '^[A-Za-z0-9_-]+$' },
+          nullable: true,
+        },
       },
       nullable: true,
     },
