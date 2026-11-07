@@ -72,6 +72,52 @@ describe('BottomSheet', () => {
     );
     expect(hostedViewStyle()).toEqual(expect.objectContaining({ flexGrow: 1, height: 0 }));
   });
+
+  itAndroid('opens and closes when the index prop changes', async () => {
+    const view = await render(
+      <BottomSheet index={1} snapPoints={['40%', '80%']}>
+        <View />
+      </BottomSheet>
+    );
+    expect(latestNativeViewProps('ModalBottomSheetView')?.initialFullyExpanded).toBe(true);
+
+    await view.rerender(
+      <BottomSheet index={-1} snapPoints={['40%', '80%']}>
+        <View />
+      </BottomSheet>
+    );
+    expect(view.toJSON()).toBeNull();
+
+    await view.rerender(
+      <BottomSheet index={1} snapPoints={['40%', '80%']}>
+        <View />
+      </BottomSheet>
+    );
+    expect(view.toJSON()).not.toBeNull();
+    expect(latestNativeViewProps('ModalBottomSheetView')?.initialFullyExpanded).toBe(true);
+  });
+
+  itAndroid(
+    'stays closed when the snap points change after the user dismisses the sheet',
+    async () => {
+      const view = await render(
+        <BottomSheet index={0} snapPoints={['40%']}>
+          <View />
+        </BottomSheet>
+      );
+      expect(view.toJSON()).not.toBeNull();
+
+      await act(() => latestNativeViewProps('ModalBottomSheetView')?.onDismissRequest());
+      expect(view.toJSON()).toBeNull();
+
+      await view.rerender(
+        <BottomSheet index={0} snapPoints={['40%', '80%']}>
+          <View />
+        </BottomSheet>
+      );
+      expect(view.toJSON()).toBeNull();
+    }
+  );
 });
 
 describe('BottomSheetModal', () => {
@@ -131,4 +177,39 @@ describe('BottomSheetModal', () => {
       );
     }
   );
+
+  itAndroid.each([
+    { change: 'added', initial: ['40%'], next: ['40%', '80%'] },
+    { change: 'removed', initial: ['40%', '80%'], next: ['40%'] },
+  ])('keeps an open modal open when snap points are $change', async ({ initial, next }) => {
+    const ref = createRef<BottomSheetModal>();
+    const onChange = jest.fn();
+    const onClose = jest.fn();
+    const onDismiss = jest.fn();
+    const renderModal = (snapPoints: string[]) => (
+      <BottomSheetModal
+        ref={ref}
+        snapPoints={snapPoints}
+        onChange={onChange}
+        onClose={onClose}
+        onDismiss={onDismiss}>
+        <View />
+      </BottomSheetModal>
+    );
+
+    const view = await render(renderModal(initial));
+    await act(() => ref.current?.present());
+    expect(view.toJSON()).not.toBeNull();
+
+    onChange.mockClear();
+    onClose.mockClear();
+    onDismiss.mockClear();
+
+    await view.rerender(renderModal(next));
+
+    expect(view.toJSON()).not.toBeNull();
+    expect(onChange).not.toHaveBeenCalledWith(-1);
+    expect(onClose).not.toHaveBeenCalled();
+    expect(onDismiss).not.toHaveBeenCalled();
+  });
 });
