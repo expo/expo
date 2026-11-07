@@ -42,10 +42,8 @@ void FabricComponentsRegistry::registerComponentsRegistry(
   auto frontendConverterProvider = FrontendConverterProvider::instance();
 
   for (size_t i = 0; i < size; ++i) {
-    auto flavor = std::make_shared<std::string const>(componentNames->getElement(i)->toStdString());
-    auto componentName = react::ComponentName{flavor->c_str()};
-
-    std::unordered_map<std::string, std::shared_ptr<FrontendConverter>> propMap;
+    auto name = componentNames->getElement(i)->toStdString();
+    ExpoViewStateProps propMap;
 
     auto propNames = statePropNames->getElement(i);
     auto propTypes = statePropTypes->getElement(i);
@@ -58,15 +56,13 @@ void FabricComponentsRegistry::registerComponentsRegistry(
       propMap.emplace(propName, converter);
     }
 
-    {
-      // Released before `add` below, which constructs descriptors that take the shared lock.
-      std::unique_lock lock(statePropMapMutex);
-      statePropMap.insert_or_assign(
-        flavor,
-        propMap
-      );
-    }
+    auto registration = getExpoViewComponentRegistry().registerComponent(
+      std::move(name), std::move(propMap)
+    );
+    auto flavor = registration->flavor;
+    auto componentName = react::ComponentName{flavor->c_str()};
 
+    // add() can synchronously call our descriptor factory; hold no Expo registry lock here.
     providerRegistry->add(react::ComponentDescriptorProvider{
       reinterpret_cast<react::ComponentHandle>(componentName),
       componentName,

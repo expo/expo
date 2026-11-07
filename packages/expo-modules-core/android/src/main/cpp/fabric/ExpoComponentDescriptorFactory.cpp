@@ -7,8 +7,10 @@ namespace react = facebook::react;
 
 namespace expo {
 
-StatePropMapType statePropMap = {};
-std::shared_mutex statePropMapMutex;
+ExpoViewComponentRegistry &getExpoViewComponentRegistry() {
+  static ExpoViewComponentRegistry registry;
+  return registry;
+}
 
 react::ComponentDescriptor::Unique concreteExpoComponentDescriptorConstructor(
   const react::ComponentDescriptorParameters &parameters
@@ -18,13 +20,9 @@ react::ComponentDescriptor::Unique concreteExpoComponentDescriptorConstructor(
     react::RawPropsParser(/*useRawPropsJsiValue=*/true)
   );
 
-  std::shared_lock lock(statePropMapMutex);
-  if (statePropMap.contains(std::static_pointer_cast<std::string const>(parameters.flavor))) {
-    descriptor->setStateProps(
-      statePropMap.at(
-        std::static_pointer_cast<std::string const>(parameters.flavor)
-      )
-    );
+  auto flavor = std::static_pointer_cast<std::string const>(parameters.flavor);
+  if (auto registration = getExpoViewComponentRegistry().find(*flavor)) {
+    descriptor->setComponentRegistration(std::move(registration));
   }
 
   return descriptor;
