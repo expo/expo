@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathParser
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toDrawable
@@ -94,7 +95,7 @@ class ImageLoader(
 
   private suspend fun loadUncached(uri: Uri): ImageResult {
     return try {
-      // For resource URIs, use Android's XmlResourceParser which handles compiled binary XML.
+      // Resource URIs point at compiled drawables, which Android can inflate itself.
       if (uri.scheme == "res") {
         loadFromResourceId(uri)
       } else {
@@ -142,7 +143,8 @@ class ImageLoader(
 
   /**
    * Load an image from an Android resource ID extracted from a `res:/` URI.
-   * Uses [XmlResourceParser] which handles compiled (binary) XML in release builds.
+   * Vector drawables are inflated by Compose, which supports the full format
+   * (groups, clip paths, gradients); other resources are decoded as bitmaps.
    */
   private fun loadFromResourceId(uri: Uri): ImageResult {
     val resourceId = uri.lastPathSegment?.toIntOrNull()
@@ -152,17 +154,11 @@ class ImageLoader(
       return ImageResult(error = "Invalid image resource ID: $uri")
     }
 
-    // Try parsing as XML (handles both text and compiled binary XML)
     try {
-      val xmlParser: XmlResourceParser = context.resources.getXml(resourceId)
-      xmlParser.use { parser ->
-        val imageVector = parseXmlToImageVector(parser)
-        if (imageVector != null) {
-          return ImageResult(imageVector = imageVector)
-        }
-      }
+      val imageVector = ImageVector.vectorResource(context.theme, context.resources, resourceId)
+      return ImageResult(imageVector = imageVector)
     } catch (e: Exception) {
-      Log.d(TAG, "Resource $resourceId is not XML, trying as raw resource", e)
+      Log.d(TAG, "Resource $resourceId is not a vector drawable, trying as bitmap", e)
     }
 
     // Fall back to bitmap resource decoding.
