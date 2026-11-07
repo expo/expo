@@ -25,6 +25,7 @@ export function BottomSheet({
   onDismiss,
   showDragIndicator = true,
   snapPoints,
+  onSnapPointChange,
   testID,
   modifiers,
   contentPadding,
@@ -43,7 +44,19 @@ export function BottomSheet({
     presentationDragIndicator(showDragIndicator ? 'visible' : 'hidden'),
   ];
   if (snapPoints && snapPoints.length > 0) {
-    presentationModifiers.push(presentationDetents(snapPoints.map(snapPointToDetent)));
+    presentationModifiers.push(
+      presentationDetents(snapPoints.map(snapPointToDetent), {
+        onSelectionChange: onSnapPointChange
+          ? (detent) => {
+              if (isPresented) {
+                onSnapPointChange(
+                  detent === 'medium' ? 'half' : detent === 'large' ? 'full' : detent
+                );
+              }
+            }
+          : undefined,
+      })
+    );
   }
   if (containerColor) {
     presentationModifiers.push(presentationBackground(containerColor));

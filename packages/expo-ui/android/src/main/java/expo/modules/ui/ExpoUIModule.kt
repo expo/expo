@@ -241,9 +241,14 @@ class ExpoUIModule : Module() {
       val expand by AsyncFunction()
       val partialExpand by AsyncFunction()
       val onDismissRequest by Event<Unit>()
+      val onCurrentValueChange by Event<GenericEventPayload1<String>>()
 
       Content { props ->
-        ModalBottomSheetContent(props, hide, expand, partialExpand) { onDismissRequest(Unit) }
+        ModalBottomSheetContent(
+          props, hide, expand, partialExpand,
+          onDismissRequest = { onDismissRequest(Unit) },
+          onCurrentValueChange = { onCurrentValueChange(GenericEventPayload1(it)) }
+        )
       }
     }
 

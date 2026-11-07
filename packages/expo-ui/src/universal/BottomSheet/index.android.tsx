@@ -1,4 +1,10 @@
-import { Column, Host, ModalBottomSheet, type ModalBottomSheetRef } from '@expo/ui/jetpack-compose';
+import {
+  Column,
+  Host,
+  ModalBottomSheet,
+  type ModalBottomSheetRef,
+  type SheetValue,
+} from '@expo/ui/jetpack-compose';
 import {
   fillMaxHeight,
   padding,
@@ -39,6 +45,7 @@ export function BottomSheet({
   onDismiss,
   showDragIndicator = true,
   snapPoints,
+  onSnapPointChange,
   testID,
   modifiers,
   shouldDismissOnBackPress = true,
@@ -51,12 +58,14 @@ export function BottomSheet({
   const isInsideHost = useIsInsideNativeTree();
   const sheetRef = useRef<ModalBottomSheetRef>(null);
   const [mount, setMount] = useState(isPresented);
+  const previousValue = useRef<SheetValue>('hidden');
 
   useEffect(() => {
     if (isPresented) {
       setMount(true);
       return;
     }
+    previousValue.current = 'hidden';
     let cancelled = false;
     sheetRef.current?.hide().then(() => {
       if (!cancelled) setMount(false);
@@ -86,6 +95,19 @@ export function BottomSheet({
     <ModalBottomSheet
       ref={sheetRef}
       onDismissRequest={onDismiss}
+      onCurrentValueChange={(value) => {
+        if (!isPresented) return;
+        const previous = previousValue.current;
+        previousValue.current = value;
+        if (
+          snapPoints?.length &&
+          previous !== 'hidden' &&
+          value !== 'hidden' &&
+          value !== previous
+        ) {
+          onSnapPointChange?.(value === 'partiallyExpanded' ? 'half' : 'full');
+        }
+      }}
       showDragHandle={showDragIndicator}
       skipPartiallyExpanded={shouldSkipPartiallyExpanded(snapPoints)}
       properties={{ shouldDismissOnBackPress, shouldDismissOnClickOutside }}
