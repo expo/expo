@@ -428,6 +428,37 @@ it('passes the toolbar item menu to the native header with an id for each action
   ]);
 });
 
+it('passes disabled and selected of toolbar items to the native header', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column
+            header={{
+              leftToolbar: [{ title: 'Edit', disabled: true, onPress: () => {} }],
+              rightToolbar: [
+                { title: 'Unread', selected: true, onPress: () => {} },
+                { title: 'Filter', disabled: false, selected: false, menu: { items: [] } },
+              ],
+            }}
+          />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  const { leftToolbarItems, rightToolbarItems } =
+    jest.mocked(SplitViewNativeHeader).mock.lastCall![0];
+  expect(leftToolbarItems).toEqual([{ id: 'left.0', title: 'Edit', disabled: true }]);
+  expect(rightToolbarItems).toEqual([
+    { id: 'right.0', title: 'Unread', selected: true },
+    { id: 'right.1', title: 'Filter', disabled: false, selected: false, menu: { items: [] } },
+  ]);
+});
+
 it('renders the SplitView.Column header as the last child of its Split.Column', async () => {
   await renderRouter(
     {
