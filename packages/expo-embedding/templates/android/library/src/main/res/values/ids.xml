@@ -1,0 +1,3 @@
+<resources>
+  <item name="expo_embedding_activity_delegate" type="id" />
+</resources>

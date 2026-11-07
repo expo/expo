@@ -1,0 +1,12 @@
+expoAutolinking.projectRoot = new File(@@EXPO@@)
+
+def expoRoot = new File(@@EXPO@@)
+def command = [@@NODE@@, @@AUTOLINK@@, 'react-native-config', '--platform', 'android', '--project-root', expoRoot.absolutePath, '--source-dir', settingsDir.absolutePath, '--json']
+extensions.getByName('reactSettings').autolinkLibrariesFromCommand(
+  command, expoRoot, files(new File(expoRoot, 'package.json'), new File(settingsDir, 'package-lock.json'), new File(expoRoot, 'react-native.config.js'))
+)
+expoAutolinking.useExpoModules()
+expoAutolinking.useExpoVersionCatalog()
+include(':expoEmbedding')
+project(':expoEmbedding').projectDir = new File(settingsDir, '.expo-source/android/library')
+includeBuild(@@RN_GRADLE@@)
