@@ -63,6 +63,26 @@ it('renders a Link with a slot', () => {
   `);
 });
 
+it('does not pass onPress to a DOM element child of a slot', () => {
+  const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  const { getByTestId } = render(
+    <Link asChild href="/foo">
+      <a data-testid="link">Foo</a>
+    </Link>
+  );
+
+  fireEvent.click(getByTestId('link'), { button: 0 });
+
+  expect(errorSpy).not.toHaveBeenCalled();
+  expect(mockLinkTo).toHaveBeenCalledWith('/foo', {
+    dangerouslySingular: undefined,
+    event: undefined,
+    relativeToDirectory: undefined,
+    withAnchor: undefined,
+  });
+  errorSpy.mockRestore();
+});
+
 it('renders a Link with a slot and array style', () => {
   expect(() =>
     render(
