@@ -33,6 +33,28 @@ describe(readLoaderData, () => {
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
 
+  it('returns the tracked promise after React fulfills it', async () => {
+    const ctx = createLoaderContext();
+    const fetcher = jest.fn(async () => 'v1');
+
+    const pending = read(ctx, '/p', fetcher) as Promise<string>;
+    await pending;
+
+    // React writes `status` and `value` onto the thenable a component suspended on.
+    Object.assign(pending, { status: 'fulfilled', value: 'v1' });
+
+    expect(read(ctx, '/p', fetcher)).toBe(pending);
+  });
+
+  it('returns settled data for a promise React never tracked', async () => {
+    const ctx = createLoaderContext();
+    const fetcher = jest.fn(async () => 'v1');
+
+    await read(ctx, '/p', fetcher);
+
+    expect(read(ctx, '/p', fetcher)).toBe('v1');
+  });
+
   it('shares one promise and one fetch between concurrent readers', () => {
     const ctx = createLoaderContext();
     const fetcher = jest.fn(async () => 'v1');
