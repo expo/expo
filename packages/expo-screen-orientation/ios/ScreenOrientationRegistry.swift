@@ -60,6 +60,21 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
     self.currentScreenOrientation = SceneGeometry.interfaceOrientation(for: rootViewController?.view)
   }
 
+  /**
+   Reads the interface orientation again when it is still unknown and notifies the controllers about it.
+   The app delegate reads the orientation before any scene is connected, which gives `.unknown`.
+   Must be called on the main thread.
+   */
+  func updateCurrentScreenOrientationIfUnknown() {
+    guard currentScreenOrientation == .unknown else {
+      return
+    }
+    let orientation = SceneGeometry.interfaceOrientation(for: rootViewController?.view)
+    if orientation != .unknown {
+      screenOrientationDidChange(orientation)
+    }
+  }
+
   deinit {
     EXUtilities.performSynchronously {
       UIDevice.current.endGeneratingDeviceOrientationNotifications()
