@@ -319,6 +319,7 @@ async function applyBuild({
     listBotBackportsAsync: unexpected,
     searchOpenBackportsAsync: unexpected,
     createPullRequestAsync: unexpected,
+    addLabelAsync: unexpected,
     commentAsync: async (prNumber, body) => {
       run.comments.push([prNumber, body]);
     },

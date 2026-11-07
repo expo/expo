@@ -9,6 +9,9 @@ import { manualSteps, rebuildFailedComment } from './Text';
 export const CREDENTIAL_HELPER =
   'credential.helper=!f() { echo username=x-access-token; echo "password=$GH_TOKEN"; }; f';
 
+/** Finds every backport the bot opened: `is:pr label:"bot: backport" base:sdk-NN`. */
+export const BACKPORT_LABEL = 'bot: backport';
+
 export type PublishDependencies = { github: GitHubClient; output: Output };
 
 function indent(text: string): string {
@@ -114,7 +117,7 @@ class Publisher {
       }
       const body = indent(await state.readRawAsync('body.md'));
       await output.untrusted(
-        `${branch}Pull request into ${config.targetBranch}:\n  Title: ${title}\n  Body:\n${body}`
+        `${branch}Pull request into ${config.targetBranch}:\n  Title: ${title}\n  Label: ${BACKPORT_LABEL}\n  Body:\n${body}`
       );
       await this.commentAsync(`Backport PR ${config.targetBranch}: #<pull request number>`);
       if (push) {
@@ -146,7 +149,16 @@ class Publisher {
       bodyFile: state.path('body.md'),
     });
     const number = url.match(/\/pull\/(\d+)$/)?.[1];
-    await this.commentAsync(`Backport PR ${config.targetBranch}: ${number ? `#${number}` : url}`);
+    const reference = number ? `#${number}` : url;
+    // The label only helps people find backports. Without it, the pull request is still complete.
+    await github
+      .addLabelAsync(number ?? url, BACKPORT_LABEL)
+      .catch(() =>
+        output.log(
+          `The bot could not add the \`${BACKPORT_LABEL}\` label to ${reference}. Add it by hand.`
+        )
+      );
+    await this.commentAsync(`Backport PR ${config.targetBranch}: ${reference}`);
     // After the comment, so that a failure here cannot post the comment that no pull request was opened.
     if (push) {
       await this.recordRebuildRequestAsync({ commit, targetTip, pullRequest: number ?? '' }).catch(

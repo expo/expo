@@ -90,6 +90,8 @@ type PublishRun = {
   /** The pull request of each comment, in the order of `comments`. */
   commentTargets: string[];
   created: Parameters<GitHubClient['createPullRequestAsync']>[0][];
+  /** Each `[pull request, label]` that publish added. */
+  labels: [string, string][];
   stateDir: string;
   /** Whether any output or GitHub call happened before `publish-started` existed. */
   actedBeforeMarker: boolean;
@@ -121,6 +123,7 @@ async function publish({
     comments: [],
     commentTargets: [],
     created: [],
+    labels: [],
     stateDir,
     actedBeforeMarker: false,
   };
@@ -149,6 +152,10 @@ async function publish({
       act();
       run.created.push(options);
       return PULL_REQUEST_URL;
+    },
+    addLabelAsync: async (prNumber, label) => {
+      act();
+      run.labels.push([prNumber, label]);
     },
     commentAsync: async (prNumber, body) => {
       act();
@@ -221,6 +228,8 @@ describe('publishAsync', () => {
       run.output
     );
     assert.match(run.output, /^ {2}Title: \[sdk-90\] Change a \(#5\)$/m);
+    assert.match(run.output, /^ {2}Label: bot: backport$/m);
+    assert.deepEqual(run.labels, []);
     assert.match(run.output, /^ {4}Backport of #5\.$/m);
     assert.ok(
       run.output.endsWith('Comment on #5:\nBackport PR sdk-90: #<pull request number>\n'),
@@ -240,7 +249,23 @@ describe('publishAsync', () => {
         bodyFile: path.join(run.stateDir, 'body.md'),
       },
     ]);
+    assert.deepEqual(run.labels, [['200', 'bot: backport']]);
     assert.deepEqual(run.comments, ['Backport PR sdk-90: #200']);
+    git(remote, 'update-ref', '-d', `refs/heads/${WORK_BRANCH}`);
+  });
+
+  it('still comments, and succeeds, when it cannot add the label', async () => {
+    const run = await publish({
+      state: openPullRequestState(),
+      github: {
+        addLabelAsync: async () => {
+          throw new ExitError(1);
+        },
+      },
+    });
+    assert.equal(run.status, 0);
+    assert.deepEqual(run.comments, ['Backport PR sdk-90: #200']);
+    assert.match(run.output, /could not add the `bot: backport` label to #200/);
     git(remote, 'update-ref', '-d', `refs/heads/${WORK_BRANCH}`);
   });
 
@@ -326,6 +351,33 @@ describe('publishAsync', () => {
     assert.equal(remoteBranch(), prepared);
     assert.deepEqual(run.comments, [branchOnGitHub]);
     git(remote, 'update-ref', '-d', `refs/heads/${WORK_BRANCH}`);
+  });
+
+  it('labels the pull request by its URL when the URL has no pull request number', async () => {
+    const url = 'https://github.com/expo/expo/compare/sdk-90';
+    const run = await publish({
+      state: openPullRequestState(),
+      github: { createPullRequestAsync: async () => url },
+    });
+    assert.equal(run.status, 0);
+    assert.deepEqual(run.labels, [[url, 'bot: backport']]);
+    assert.deepEqual(run.comments, [`Backport PR sdk-90: ${url}`]);
+    git(remote, 'update-ref', '-d', `refs/heads/${WORK_BRANCH}`);
+  });
+
+  it('labels the pull request that it opens from a branch already on GitHub', async () => {
+    const run = await publish({
+      state: {
+        outcome: 'open-pr-from-branch\n',
+        title: '[sdk-90] Change a (#5)\n',
+        'body.md': 'Backport of #5.\n',
+        'pull-request-loaded': '',
+      },
+    });
+    assert.equal(run.status, 0);
+    assert.equal(remoteBranch(), '');
+    assert.deepEqual(run.labels, [['200', 'bot: backport']]);
+    assert.deepEqual(run.comments, ['Backport PR sdk-90: #200']);
   });
 
   it('opens the pull request from a branch that is already on GitHub without a push', async () => {

@@ -26,6 +26,8 @@ export type GitHubClient = {
     title: string;
     bodyFile: string;
   }): Promise<string>;
+  /** `pullRequest` is a number or a URL. */
+  addLabelAsync(pullRequest: string, label: string): Promise<void>;
   commentAsync(prNumber: string, body: string): Promise<void>;
 };
 
@@ -179,6 +181,12 @@ export class GhCli implements GitHubClient {
       '--body-file',
       options.bodyFile,
     ]);
+  }
+
+  async addLabelAsync(pullRequest: string, label: string): Promise<void> {
+    await this.gh.runAsync(['pr', 'edit', pullRequest, '--repo', this.repo, '--add-label', label], {
+      stdout: 'inherit',
+    });
   }
 
   async commentAsync(prNumber: string, body: string): Promise<void> {

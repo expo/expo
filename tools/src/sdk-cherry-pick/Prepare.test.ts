@@ -120,6 +120,7 @@ function fakeGitHub(overrides: Partial<GitHubClient> = {}): GitHubClient {
     listBotBackportsAsync: async () => [],
     searchOpenBackportsAsync: async () => [],
     createPullRequestAsync: unexpected,
+    addLabelAsync: unexpected,
     commentAsync: unexpected,
     ...overrides,
   };
