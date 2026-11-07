@@ -1,8 +1,3 @@
-import { EventEmitter } from './EventEmitter';
-import { NativeModule } from './NativeModule';
-import { SharedObject } from './SharedObject';
-import { SharedRef } from './SharedRef';
-
 type ViewConfig = {
   validAttributes: Record<string, any>;
   directEventTypes: Record<string, { registrationName: string }>;
@@ -42,10 +37,10 @@ declare namespace ExpoGlobal {
   export let modules: Record<string, any>;
 
   // Natively defined JS classes
-  export { EventEmitter };
-  export { SharedObject };
-  export { SharedRef };
-  export { NativeModule };
+  export const EventEmitter: typeof import('./EventEmitter').EventEmitter;
+  export const SharedObject: typeof import('./SharedObject').SharedObject;
+  export const SharedRef: typeof import('./SharedRef').SharedRef;
+  export const NativeModule: typeof import('./NativeModule').NativeModule;
 
   // Properties
 
