@@ -37,7 +37,6 @@ class DocumentPickerModule : Module() {
         throw DocumentPickerOptionsEmptyListException()
       }
 
-      pendingPromise = promise
       copyToCacheDirectory = options.copyToCacheDirectory
       val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
         addCategory(Intent.CATEGORY_OPENABLE)
@@ -50,6 +49,9 @@ class DocumentPickerModule : Module() {
         }
       }
       appContext.throwingActivity.startActivityForResult(intent, OPEN_DOCUMENT_CODE)
+      // A failed launch also delivers RESULT_CANCELED to OnActivityResult,
+      // so record the pick only after the launch succeeds.
+      pendingPromise = promise
     }
 
     OnActivityResult { _, (requestCode, resultCode, intent) ->
