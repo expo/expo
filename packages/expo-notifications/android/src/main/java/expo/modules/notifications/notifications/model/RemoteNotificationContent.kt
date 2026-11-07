@@ -63,7 +63,7 @@ class RemoteNotificationContent(private val remoteMessage: RemoteMessage) : INot
   // They are not supported by FCM but were previously implemented by JSONNotificationContentBuilder.java.
   override val isAutoDismiss = notificationData.autoDismiss
 
-  val isDataOnly = remoteMessage.notification == null
+  val isDataOnly = title == null && text == null
 
   override val categoryId = notificationData.categoryId
 
