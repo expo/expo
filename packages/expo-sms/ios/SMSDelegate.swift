@@ -5,7 +5,7 @@ protocol SMSResultHandler {
   func onFailure(_ error: String)
 }
 
-class SMSDelegate: NSObject, MFMessageComposeViewControllerDelegate {
+class SMSDelegate: NSObject, MFMessageComposeViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
   private let handler: SMSResultHandler
 
   init(handler: SMSResultHandler) {
@@ -33,5 +33,9 @@ class SMSDelegate: NSObject, MFMessageComposeViewControllerDelegate {
         self.handler.onFailure("SMS message sending failed with unknown error")
       }
     }
+  }
+
+  func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
+    handler.onSuccess(["result": "cancelled"])
   }
 }
