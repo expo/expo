@@ -122,6 +122,8 @@ To use `expo-router/unstable-split-view` in your project, you need to install `e
 
 `SplitView.Column` defines additional columns in your split view layout. You can add up to two columns before the main content area.
 
+`SplitView` applies the left and right safe area insets to the content of each column, the main content area, and the inspector. To apply them yourself, set `disableHorizontalSafeAreaInsets` on `SplitView`.
+
 ### Two-column layout
 
 A simple sidebar with main content:
@@ -142,7 +144,7 @@ export default function Layout() {
   return (
     <SplitView>
       <SplitView.Column>
-        <SafeAreaView edges={{ left: true, top: true }} style={{ flex: 1 }}>
+        <SafeAreaView edges={{ top: true }} style={{ flex: 1 }}>
           <Link href="/inbox">
             <Pressable style={{ padding: 16 }}>
               <Text>Inbox</Text>
@@ -182,7 +184,7 @@ export default function Layout() {
     <SplitView>
       <SplitView.Column>
         <SafeAreaView
-          edges={{ left: true, top: true }}
+          edges={{ top: true }}
           style={{
             flex: 1,
             gap: 16,
@@ -201,7 +203,7 @@ export default function Layout() {
       </SplitView.Column>
       <SplitView.Column>
         <SafeAreaView
-          edges={{ left: true, top: true }}
+          edges={{ top: true }}
           style={{
             flex: 1,
             gap: 16,
@@ -240,7 +242,7 @@ export default function Layout() {
 
 ## Complete example
 
-Here's a password manager-style app with three columns:
+Here's a password manager-style app with three columns. Each row background extends to the column edges, and only the row text is inset. For this reason, the example sets `disableHorizontalSafeAreaInsets` and applies the insets itself:
 
 <FileTree
   files={['app/_layout.tsx', 'app/index.tsx', 'app/[type]/[id].tsx', 'app/[type]/index.tsx']}
@@ -254,7 +256,7 @@ import { SafeAreaView } from 'react-native-screens/experimental';
 
 export default function Layout() {
   return (
-    <SplitView showInspector>
+    <SplitView showInspector disableHorizontalSafeAreaInsets>
       <SplitView.Column>
         <PasscodeList />
       </SplitView.Column>
