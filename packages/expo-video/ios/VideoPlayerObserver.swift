@@ -46,6 +46,7 @@ private actor ObserverTaskManager {
 protocol VideoPlayerObserverDelegate: AnyObject {
   func onStatusChanged(player: AVPlayer, oldStatus: PlayerStatus?, newStatus: PlayerStatus, error: Exception?)
   func onIsPlayingChanged(player: AVPlayer, oldIsPlaying: Bool?, newIsPlaying: Bool)
+  func onPlaybackRequestedChanged(player: AVPlayer, isPlaybackRequested: Bool)
   func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float)
   func onVolumeChanged(player: AVPlayer, oldVolume: Float?, newVolume: Float)
   func onPlayedToEnd(player: AVPlayer)
@@ -66,6 +67,7 @@ protocol VideoPlayerObserverDelegate: AnyObject {
 extension VideoPlayerObserverDelegate {
   func onStatusChanged(player: AVPlayer, oldStatus: PlayerStatus?, newStatus: PlayerStatus, error: Exception?) {}
   func onIsPlayingChanged(player: AVPlayer, oldIsPlaying: Bool?, newIsPlaying: Bool) {}
+  func onPlaybackRequestedChanged(player: AVPlayer, isPlaybackRequested: Bool) {}
   func onRateChanged(player: AVPlayer, oldRate: Float?, newRate: Float) {}
   func onVolumeChanged(player: AVPlayer, oldVolume: Float?, newVolume: Float) {}
   func onPlayedToEnd(player: AVPlayer) {}
@@ -132,6 +134,15 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
       if let player, oldValue != isPlaying {
         delegates.forEach { delegate in
           delegate.value?.onIsPlayingChanged(player: player, oldIsPlaying: oldValue, newIsPlaying: isPlaying)
+        }
+      }
+    }
+  }
+  private var isPlaybackRequested: Bool = false {
+    didSet {
+      if let player, oldValue != isPlaybackRequested {
+        delegates.forEach { delegate in
+          delegate.value?.onPlaybackRequestedChanged(player: player, isPlaybackRequested: isPlaybackRequested)
         }
       }
     }
@@ -497,6 +508,9 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
   }
 
   private func onTimeControlStatusChanged(_ player: AVPlayer, _ change: NSKeyValueObservedChange<AVPlayer.TimeControlStatus>) {
+    // `.waitingToPlayAtSpecifiedRate` (buffering, seeking, evaluating the buffering rate) keeps the play request.
+    isPlaybackRequested = player.timeControlStatus != .paused && player.status != .failed && player.currentItem?.status != .failed
+
     // iOS changes timeControlStatus after an error, so we need to check for errors.
     if player.status == .failed || player.currentItem?.status == .failed {
       isPlaying = false
