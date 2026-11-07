@@ -52,7 +52,8 @@ internal class MediaHandler(
     } else {
       CompressionImageExporter(appContextProvider, options.quality)
     }
-    val mimeType = requireNotNull(getType(context.contentResolver, sourceUri)) // this won't be null due to previous checks
+    val sourceMimeType = requireNotNull(getType(context.contentResolver, sourceUri)) // this won't be null due to previous checks
+    val mimeType = exporter.outputMimeType(sourceMimeType)
     val outputFile = createOutputFile(cacheDirectory, mimeType.toImageFileExtension())
 
     val exportedImage = exporter.exportAsync(sourceUri, outputFile, context.contentResolver)
@@ -63,13 +64,20 @@ internal class MediaHandler(
       ?.let { exportedImage.exif(context.contentResolver) }
 
     val fileData = getAdditionalFileData(sourceUri)
+    val fileName = fileData?.fileName?.let { name ->
+      if (mimeType == sourceMimeType) {
+        name
+      } else {
+        name.withImageFileExtension(mimeType)
+      }
+    }
 
     return ImagePickerAsset(
       type = MediaType.IMAGE,
       uri = Uri.fromFile(outputFile).toString(),
       width = exportedImage.width,
       height = exportedImage.height,
-      fileName = fileData?.fileName ?: outputFile.name,
+      fileName = fileName ?: outputFile.name,
       fileSize = fileData?.fileSize ?: outputFile.length(),
       mimeType = mimeType,
       base64 = base64,
