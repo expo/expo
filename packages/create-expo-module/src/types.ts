@@ -1,8 +1,9 @@
 import type { PromptObject } from 'prompts';
 
 import type { Feature } from './features';
+import type { ModulesApi } from './modulesApi';
 import type { PackageManagerName } from './packageManager';
-import type { Platform } from './prompts';
+import type { NativePlatform, Platform } from './prompts';
 
 export type { Feature };
 
@@ -30,6 +31,7 @@ export type CommandOptions = {
   features?: Feature[];
   fullExample?: boolean;
   packageManager?: PackageManagerName;
+  modulesApi?: ModulesApi;
   ignoreCompatibilityCheck?: boolean;
 };
 
@@ -46,12 +48,33 @@ export type GeneratedNames = {
   sharedObjectName: string;
 };
 
+/**
+ * The module that defines the views of an Expo Modules API 2.0 module with the Module DSL.
+ */
+export type ViewsModule = {
+  /** The JavaScript name. */
+  name: string;
+  /** The native class name. */
+  moduleName: string;
+  /** The native platforms whose view features the module defines. */
+  platforms: NativePlatform[];
+};
+
 export type ProjectData = GeneratedNames & {
   slug: string;
   name: string;
   package: string;
   platforms: Platform[];
   features: Feature[];
+};
+
+/**
+ * Project data of the rendered template, with the values that depend on the Expo Modules API
+ * version.
+ */
+export type TemplateProjectData = ProjectData & {
+  modulesApi: ModulesApi;
+  viewsModule: ViewsModule | null;
 };
 
 /**

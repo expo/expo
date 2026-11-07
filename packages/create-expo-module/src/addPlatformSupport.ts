@@ -13,6 +13,7 @@ import {
   buildAugmentedData,
   copyTemplateFiles,
   createSubstitutionData,
+  type AugmentedData,
   slugToAndroidPackage,
   updateWebStub,
   withTemplateAsync,
@@ -439,13 +440,17 @@ async function updatePublicModuleNameFromSources(
   }
 }
 
+function withPlatforms(data: AugmentedData, platforms: Platform[]): AugmentedData {
+  return { ...data, project: { ...data.project, platforms } };
+}
+
 async function addNativePlatformFiles(
   templatePath: string,
   moduleRoot: string,
   moduleInfo: ExistingModuleInfo,
   platformsToAdd: Platform[],
   detectedFeatures: Feature[],
-  data: SubstitutionData | LocalSubstitutionData,
+  augmentedData: AugmentedData,
   writeFile: WriteFile
 ): Promise<void> {
   const nativePlatforms = platformsToAdd.filter(
@@ -456,7 +461,6 @@ async function addNativePlatformFiles(
   }
 
   const snippetsDir = path.join(templatePath, 'snippets');
-  const augmentedData = await buildAugmentedData(snippetsDir, data);
   await newStep('Adding platform files', async (step) => {
     await copyTemplateFiles(
       templatePath,
@@ -469,10 +473,7 @@ async function addNativePlatformFiles(
       },
       writeFile
     );
-    const dataForNewPlatforms = {
-      ...data,
-      project: { ...data.project, platforms: nativePlatforms },
-    } as SubstitutionData | LocalSubstitutionData;
+    const dataForNewPlatforms = withPlatforms(augmentedData, nativePlatforms);
     await copyNativeFileSnippets(
       snippetsDir,
       detectedFeatures,
@@ -489,7 +490,7 @@ async function addWebPlatformFiles(
   moduleRoot: string,
   platformsToAdd: Platform[],
   detectedFeatures: Feature[],
-  data: SubstitutionData | LocalSubstitutionData,
+  augmentedData: AugmentedData,
   writeFile: WriteFile
 ): Promise<void> {
   if (!platformsToAdd.includes('web')) {
@@ -498,11 +499,8 @@ async function addWebPlatformFiles(
 
   const snippetsDir = path.join(templatePath, 'snippets');
   await newStep('Updating web implementation', async (step) => {
-    await updateWebStub(templatePath, moduleRoot, data, writeFile);
-    const dataWithWeb = {
-      ...data,
-      project: { ...data.project, platforms: ['web'] as Platform[] },
-    } as SubstitutionData | LocalSubstitutionData;
+    await updateWebStub(templatePath, moduleRoot, augmentedData, writeFile);
+    const dataWithWeb = withPlatforms(augmentedData, ['web']);
     await copyWebFileSnippets(snippetsDir, detectedFeatures, dataWithWeb, moduleRoot, writeFile);
     step.succeed('Updated web implementation');
   });
@@ -564,6 +562,12 @@ export async function addPlatformSupport(
       sdkVersion,
     },
     async (templatePath) => {
+      // This command doesn't generate Expo Modules API 2.0 code yet.
+      const augmentedData = await buildAugmentedData(
+        path.join(templatePath, 'snippets'),
+        data,
+        'v1'
+      );
       await withFileRollback(async (writeFile) => {
         await addNativePlatformFiles(
           templatePath,
@@ -571,7 +575,7 @@ export async function addPlatformSupport(
           moduleInfo,
           platformsToAdd,
           detectedFeatures,
-          data,
+          augmentedData,
           writeFile
         );
         await addWebPlatformFiles(
@@ -579,7 +583,7 @@ export async function addPlatformSupport(
           moduleRoot,
           platformsToAdd,
           detectedFeatures,
-          data,
+          augmentedData,
           writeFile
         );
 
