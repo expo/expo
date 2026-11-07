@@ -30,6 +30,7 @@ afterEach(removeTempDirs);
 // These run the real `swift package dump-package`, so they read the checked-in manifests as
 // SwiftPM does rather than a recorded dump of them.
 it.each([
+  ['expo-ai', 'ExpoAI'],
   ['expo-haptics', 'ExpoHaptics'],
   ['expo-sensors', 'ExpoSensors'],
 ])(
@@ -70,7 +71,7 @@ it.each([
   60_000
 );
 
-it.each(['expo-haptics', 'expo-sensors'])(
+it.each(['expo-ai', 'expo-haptics', 'expo-sensors'])(
   'loads the macros of the real %s with no unsafe flags',
   (packageName) => {
     const moduleRoot = installLikeNpm(packageName, makeTempDir('spm-real-manifest-'));

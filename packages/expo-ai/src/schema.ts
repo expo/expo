@@ -2,7 +2,7 @@ import { LanguageModelError } from './LanguageModelError';
 import type { ModelSchema } from './LanguageModels.types';
 
 const MAX_SCHEMA_DEPTH = 32;
-// Matches the Apple provider's own ceiling in ios/LanguageModelSchema.swift. Keeping the limit
+// Matches the Apple provider's own ceiling in ios/Sources/LanguageModelSchema.swift. Keeping the limit
 // here makes it a property of the supported dialect rather than a failure that only reaches iOS.
 const MAX_SCHEMA_NODES = 1024;
 const hasOwn = (value: object, key: PropertyKey) =>
