@@ -53,7 +53,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@expo-google-fonts/material-symbols": "^0.4.1",
+    "@expo-google-fonts/material-symbols": "^0.4.49",
     "sf-symbols-typescript": "^2.0.0"
   },
   "devDependencies": {
