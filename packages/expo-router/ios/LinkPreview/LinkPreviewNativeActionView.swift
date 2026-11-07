@@ -134,6 +134,11 @@ class LinkPreviewNativeActionView: RouterViewWithLogger, LinkPreviewMenuUpdatabl
 
     baseUiAction.title = title
     baseUiAction.image = image
+    // UIKit dims a disabled item's template icon, but not an `.alwaysOriginal` one.
+    if destructive != true, !disabled, let customTintColor, let symbol = image, symbol.renderingMode != .alwaysOriginal
+    {
+      baseUiAction.image = symbol.withTintColor(customTintColor, renderingMode: .alwaysOriginal)
+    }
     baseUiAction.attributes = attributes
     baseUiAction.state = isOn == true ? .on : .off
 
