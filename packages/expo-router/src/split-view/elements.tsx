@@ -1,4 +1,5 @@
 import { Children, isValidElement, type ReactNode } from 'react';
+import type { NativeSyntheticEvent } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
@@ -20,6 +21,21 @@ export interface SplitViewToolbarItem {
   onPress: () => void;
 }
 
+export interface SplitViewSearchBar {
+  /**
+   * Text shown in the search field when it is empty.
+   */
+  placeholder?: string;
+  /**
+   * Called when the text in the search field changes.
+   */
+  onChangeText?: (event: NativeSyntheticEvent<{ text: string }>) => void;
+  /**
+   * Called when the search button on the keyboard is pressed.
+   */
+  onSearchButtonPress?: (event: NativeSyntheticEvent<{ text: string }>) => void;
+}
+
 export interface SplitViewHeader {
   /**
    * Title shown in the navigation bar of the column.
@@ -38,6 +54,10 @@ export interface SplitViewHeader {
    * Buttons shown on the trailing side of the navigation bar.
    */
   rightToolbar?: SplitViewToolbarItem[];
+  /**
+   * Search bar shown in the navigation bar.
+   */
+  searchBar?: SplitViewSearchBar;
 }
 
 export interface SplitViewColumnProps {

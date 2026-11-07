@@ -1,4 +1,4 @@
-import type { SplitViewToolbarItem } from './elements';
+import type { SplitViewSearchBar, SplitViewToolbarItem } from './elements';
 
 type SplitViewNativeToolbarItem = Omit<SplitViewToolbarItem, 'onPress'>;
 
@@ -9,4 +9,7 @@ export interface SplitViewNativeHeaderProps {
   leftToolbarItems?: SplitViewNativeToolbarItem[];
   rightToolbarItems?: SplitViewNativeToolbarItem[];
   onToolbarItemPress: (event: { nativeEvent: { side: 'left' | 'right'; index: number } }) => void;
+  searchBar?: Pick<SplitViewSearchBar, 'placeholder'>;
+  onSearchBarChangeText?: SplitViewSearchBar['onChangeText'];
+  onSearchBarSearchButtonPress?: SplitViewSearchBar['onSearchButtonPress'];
 }
