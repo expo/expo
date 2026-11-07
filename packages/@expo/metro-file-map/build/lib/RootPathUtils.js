@@ -308,16 +308,21 @@ function getAncestorOfRootIdx(normalPath) {
     }
     return pos / UP_FRAGMENT_SEP_LENGTH;
 }
+function isAncestorPath(normalPath) {
+    return normalPath.split(path_1.default.sep).every((segment) => segment === '..' || segment === '');
+}
 function pathsToPattern(paths, pathUtils) {
     if (paths.length === 0) {
         return null;
     }
+    // A normal path may not escape the matched root via further '..' indirections.
+    const noFurtherEscape = `(?!\\.\\.(?:\\${path_1.default.sep}|$))`;
     const pathsPatterns = paths.map((input) => {
         let pattern = pathUtils.absoluteToNormal(input);
         // When pattern is '' (root === rootDir), match any normal path that
         // doesn't escape the root via '..' indirections.
         if (pattern === '') {
-            return `(?!\\.\\.(?:\\${path_1.default.sep}|$))`;
+            return noFurtherEscape;
         }
         // Append separator so that 'src' matches 'src/foo' but not 'src2'.
         if (!pattern.endsWith(path_1.default.sep)) {
@@ -325,7 +330,10 @@ function pathsToPattern(paths, pathUtils) {
         }
         // Escape all regex-special characters.
         // eslint-disable-next-line no-useless-escape
-        return pattern.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|\/]/g, '\\$&');
+        const escaped = pattern.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|\/]/g, '\\$&');
+        // When the root is an ancestor of rootDir ('..', '../..'), its pattern is a
+        // prefix of every deeper escape ('../../x'); match only paths inside it.
+        return isAncestorPath(pattern) ? escaped + noFurtherEscape : escaped;
     });
     return new RegExp(`^(?:${pathsPatterns.join('|')})`);
 }
