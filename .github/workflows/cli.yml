@@ -302,12 +302,12 @@ jobs:
         working-directory: packages/@expo/cli
         run: pnpm test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
-      - name: 🗄️ Upload playwright report
+      - name: 🗄️ Upload Playwright test results
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
-          name: playwright-report-ubuntu-${{ matrix.shard }}
-          path: packages/@expo/cli/playwright-report/
+          name: playwright-test-results-ubuntu-${{ matrix.shard }}
+          path: packages/@expo/cli/test-results/
           retention-days: 30
 
   playwright-windows:
@@ -391,10 +391,10 @@ jobs:
         working-directory: packages/@expo/cli
         run: pnpm test:playwright --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
-      - name: 🗄️ Upload playwright report
+      - name: 🗄️ Upload Playwright test results
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:
-          name: playwright-report-windows-${{ matrix.shard }}
-          path: packages/@expo/cli/playwright-report/
+          name: playwright-test-results-windows-${{ matrix.shard }}
+          path: packages/@expo/cli/test-results/
           retention-days: 30
