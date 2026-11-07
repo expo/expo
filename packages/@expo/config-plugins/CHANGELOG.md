@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `appendScheme` and `removeScheme` throwing when an `Info.plist` URL type has no `CFBundleURLSchemes`. ([#52088](https://github.com/expo/expo/pull/52088) by [@batuhansalkim](https://github.com/batuhansalkim))
+
 ### 💡 Others
 
 ## 57.0.12 — 2026-11-05
