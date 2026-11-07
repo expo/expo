@@ -1,0 +1,52 @@
+{
+  "name": "expo-location-huawei",
+  "version": "0.1.0",
+  "description": "HMS Location Kit provider for expo-location@next.",
+  "keywords": [
+    "expo",
+    "geolocation",
+    "hms",
+    "huawei",
+    "location",
+    "react-native"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-location-huawei",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-location-huawei"
+  },
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "precompile-android": "et prebuild-android-package-for-publish",
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepack": "expo-module prepack",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "expo-location": "workspace:~"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "@types/react": "~19.3.0",
+    "expo": "workspace:*",
+    "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}
