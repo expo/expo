@@ -14,7 +14,8 @@ import { Terminal } from '~/ui/components/Snippet';
 <Prerequisites>
   <Requirement title="Expo SDK 58 or later">
     The integration is available in `expo-observe` version 58.0.17 and later. Use `expo-updates`
-    version 58.1.0 or later. An earlier version logs entries without a key, so the integration
+    version 58.1.0 or later. With an earlier version, the integration reports new log entries only
+    on the next launch. An earlier version also logs entries without a key, so the integration
     reports a JS error that error recovery handled as `updates.error`, not as
     `updates.error_recovery`.
   </Requirement>
@@ -42,7 +43,7 @@ Observe.configure({
 
 ## How it works
 
-When `Observe.configure()` runs, the integration reads the `expo-updates` log entries written since its last report. `expo-updates` keeps log entries for one day, so on the first run, the integration reads up to one day back. Because the integration reads the log at the next launch, it also reports errors from an earlier launch. For example, it reports a crash that error recovery handled before the app could start again.
+When `Observe.configure()` runs, the integration reads the `expo-updates` log entries written since its last report. `expo-updates` keeps log entries for one day, so on the first run, the integration reads up to one day back. Because the integration reads the log at the next launch, it also reports errors from an earlier launch. For example, it reports a crash that error recovery handled before the app could start again. After that, the integration reports each new entry when `expo-updates` logs it.
 
 The integration reports the entries as follows:
 

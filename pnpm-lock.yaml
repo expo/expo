@@ -5568,6 +5568,9 @@ importers:
       expo-router:
         specifier: '*'
         version: link:../expo-router
+      expo-updates-interface:
+        specifier: workspace:~
+        version: link:../expo-updates-interface
       react:
         specifier: '*'
         version: 19.3.0
