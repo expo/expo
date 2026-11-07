@@ -135,6 +135,22 @@ export function collectPackageRoots(searchResults: SearchResults): Record<string
   return packageRoots;
 }
 
+const DEFAULT_SCAN_TIMEOUT_MS = 5000;
+
+function getScanTimeout(): number {
+  const value = process.env.EXPO_MODULES_SCAN_TIMEOUT_MS;
+  if (value === undefined || value === '') {
+    return DEFAULT_SCAN_TIMEOUT_MS;
+  }
+  if (!/^\d+$/.test(value) || Number(value) <= 0) {
+    console.warn(
+      `warning: EXPO_MODULES_SCAN_TIMEOUT_MS is set to "${value}", which isn't a positive whole number of milliseconds, so the scan for Expo modules uses the default timeout of ${DEFAULT_SCAN_TIMEOUT_MS} ms. Set it to a value such as 20000, or unset it.`
+    );
+    return DEFAULT_SCAN_TIMEOUT_MS;
+  }
+  return Number(value);
+}
+
 /**
  * Scans all package roots in one run and prints the scanner's warnings. Returns null, with a
  * warning, when the scan fails.
@@ -150,7 +166,7 @@ export async function scanExpoModulesAsync(
 
   let output: ScanModulesOutput;
   try {
-    output = await scanner.scanModules(roots, { timeout: 5000 });
+    output = await scanner.scanModules(roots, { timeout: getScanTimeout() });
   } catch (error: any) {
     console.warn(
       `warning: Scanning for Expo modules failed, only modules declared in expo-module.config.json will be linked: ${error.message ?? error}`
