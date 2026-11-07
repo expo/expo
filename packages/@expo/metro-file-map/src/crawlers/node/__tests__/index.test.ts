@@ -12,12 +12,13 @@ import TreeFS from '../../../lib/TreeFS';
 import type { CrawlerOptions, FileData, FileMetadata, PerfLogger } from '../../../types';
 import nodeCrawl from '../index';
 
+jest.mock('node:fs', () => require('memfs').fs);
+
 // memfs is POSIX-only; pin to POSIX path semantics
-// TODO(@kitten): Fork the test for posix v windows
-jest.mock('path', () => jest.requireActual<typeof import('path')>('path').posix);
+jest.mock('node:path', () => jest.requireActual<typeof import('path')>('path').posix);
 
 const rootDir = '/project';
-const processFile = async () => null;
+const processFile = () => null;
 
 function makeTreeFS(files?: FileData): TreeFS {
   return new TreeFS({ rootDir, files, processFile });
@@ -125,12 +126,12 @@ describe('node crawler', () => {
       // strawberry has a different mtime → will be reported as changed
       [
         'fruits/strawberry.js',
-        [strawberryStat.mtime.getTime() - 1000, 0, 1, null, 0, null] as FileMetadata,
+        [strawberryStat.mtime.getTime() - 1000, 0, 1, null, 0] as FileMetadata,
       ],
       // tomato has matching mtime → unchanged, excluded from changedFiles
       [
         'fruits/tomato.js',
-        [tomatoStat.mtime.getTime(), tomatoStat.size, 1, null, 0, null] as FileMetadata,
+        [tomatoStat.mtime.getTime(), tomatoStat.size, 1, null, 0] as FileMetadata,
       ],
     ]);
 
@@ -152,9 +153,9 @@ describe('node crawler', () => {
     });
 
     const previousFiles: FileData = new Map([
-      ['fruits/previouslyExisted.js', [0, 0, 1, null, 0, null] as FileMetadata],
-      ['fruits/strawberry.js', [0, 0, 1, null, 0, null] as FileMetadata],
-      ['fruits/tomato.js', [0, 0, 1, null, 0, null] as FileMetadata],
+      ['fruits/previouslyExisted.js', [0, 0, 1, null, 0] as FileMetadata],
+      ['fruits/strawberry.js', [0, 0, 1, null, 0] as FileMetadata],
+      ['fruits/tomato.js', [0, 0, 1, null, 0] as FileMetadata],
     ]);
 
     const { removedFiles } = await crawl({
@@ -216,11 +217,7 @@ describe('node crawler', () => {
 
     expect(meta).toBeDefined();
     // On cold start (empty previous FS), stat is deferred
-    expect(meta[H.MTIME]).toBeNull();
-    expect(meta[H.SIZE]).toBe(0);
-    expect(meta[H.VISITED]).toBe(0);
-    expect(meta[H.SHA1]).toBeNull();
-    expect(meta[H.SYMLINK]).toBe(0);
+    expect(meta).toEqual([null, 0, 0, null, 0]);
   });
 
   test('skips lstat for files with no prior mtime', async () => {
@@ -230,8 +227,8 @@ describe('node crawler', () => {
     });
 
     const previousFiles: FileData = new Map([
-      ['fruits/apple.js', [null, 0, 0, null, 0, null] as FileMetadata],
-      ['fruits/banana.js', [null, 0, 0, null, 0, null] as FileMetadata],
+      ['fruits/apple.js', [null, 0, 0, null, 0] as FileMetadata],
+      ['fruits/banana.js', [null, 0, 0, null, 0] as FileMetadata],
     ]);
 
     const { changedFiles, removedFiles } = await crawl({
@@ -256,9 +253,9 @@ describe('node crawler', () => {
 
     const previousFiles: FileData = new Map([
       // apple has a real mtime → will be lstat'd, mtime differs → changed
-      ['fruits/apple.js', [appleStat.mtime.getTime() - 1000, 0, 1, null, 0, null] as FileMetadata],
+      ['fruits/apple.js', [appleStat.mtime.getTime() - 1000, 0, 1, null, 0] as FileMetadata],
       // banana has null mtime → stat is deferred
-      ['fruits/banana.js', [null, 0, 0, null, 0, null] as FileMetadata],
+      ['fruits/banana.js', [null, 0, 0, null, 0] as FileMetadata],
     ]);
 
     const { changedFiles, removedFiles } = await crawl({
@@ -273,7 +270,7 @@ describe('node crawler', () => {
       new Map([
         [
           'fruits/apple.js',
-          [appleStat.mtime.getTime(), appleStat.size, 0, null, 0, null] as FileMetadata,
+          [appleStat.mtime.getTime(), appleStat.size, 0, null, 0] as FileMetadata,
         ],
       ])
     );
@@ -290,13 +287,10 @@ describe('node crawler', () => {
     const bananaStat = vol.statSync('/project/fruits/banana.js');
 
     const previousFiles: FileData = new Map([
-      [
-        'fruits/apple.js',
-        [appleStat.mtime.getTime(), appleStat.size, 1, null, 0, null] as FileMetadata,
-      ],
+      ['fruits/apple.js', [appleStat.mtime.getTime(), appleStat.size, 1, null, 0] as FileMetadata],
       [
         'fruits/banana.js',
-        [bananaStat.mtime.getTime(), bananaStat.size, 1, null, 0, null] as FileMetadata,
+        [bananaStat.mtime.getTime(), bananaStat.size, 1, null, 0] as FileMetadata,
       ],
     ]);
 
@@ -321,13 +315,8 @@ describe('node crawler', () => {
 
     const { changedFiles } = await crawl({ includeSymlinks: true });
 
-    const linkMeta = changedFiles.get('fruits/link.js')!;
-    expect(linkMeta).toBeDefined();
-    // On cold start, mtime is deferred
-    expect(linkMeta[H.MTIME]).toBeNull();
-    expect(linkMeta[H.SIZE]).toBe(0);
-    // But symlink flag is still correctly set
-    expect(linkMeta[H.SYMLINK]).toBe(1);
+    // On cold start, mtime is deferred, but the symlink flag is still set
+    expect(changedFiles.get('fruits/link.js')).toEqual([null, 0, 0, null, 1]);
   });
 
   test('applies ignore filter to normal paths for directories', async () => {
@@ -362,39 +351,25 @@ describe('node crawler', () => {
     expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js', 'fruits/tropical.js']);
   });
 
-  describe('VCS directories', () => {
-    test('skips .git and .hg directories without consulting ignore', async () => {
+  describe('excluded directories', () => {
+    test('skips .git, .hg and .cxx directories without consulting ignore', async () => {
       const ignore = jest.fn((_p: string) => false);
 
       vol.fromJSON({
         '/project/fruits/apple.js': 'a',
         '/project/fruits/.git/HEAD': 'ref',
-        '/project/fruits/.git/objects/abc': 'binary',
-        '/project/fruits/.hg/store/data': 'binary',
+        '/project/fruits/.git/objects/abc.js': 'binary',
+        '/project/fruits/.hg/store/data.js': 'binary',
+        '/project/fruits/android/app/.cxx/Debug/x86/build.js': 'generated',
       });
 
       const { changedFiles } = await crawl({ ignore });
 
       expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js']);
-      // The early-skip happens before any `ignore()` call for the .git/.hg
+      // The early-skip happens before any `ignore()` call for the excluded
       // directory entries, so the matcher is never asked about those paths.
       const seenPaths = ignore.mock.calls.map((args) => args[0]);
-      expect(seenPaths.some((p) => p.includes('.git'))).toBe(false);
-      expect(seenPaths.some((p) => p.includes('.hg'))).toBe(false);
-    });
-
-    test('skips .git directory even when ignore would otherwise allow it', async () => {
-      vol.fromJSON({
-        '/project/fruits/apple.js': 'a',
-        '/project/fruits/.git/HEAD': 'ref',
-      });
-
-      const { changedFiles } = await crawl({
-        // ignore returns false for everything, including .git contents
-        ignore: () => false,
-      });
-
-      expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js']);
+      expect(seenPaths.some((p) => /\.(?:git|hg|cxx)/.test(p))).toBe(false);
     });
 
     test('does not skip files merely named .git or .hg', async () => {
@@ -405,12 +380,14 @@ describe('node crawler', () => {
         '/project/fruits/apple.js': 'a',
         '/project/fruits/.git': 'gitdir: ../.git/modules/fruits',
       });
+      const ignore = jest.fn((_p: string) => false);
 
-      const { changedFiles } = await crawl({ extensions: ['js'] });
+      const { changedFiles } = await crawl({ extensions: ['js'], ignore });
 
       // The `.git` file has no matching extension, so it isn't included; but
       // the directory traversal didn't bail out either.
       expect(sorted(changedFiles.keys())).toEqual(['fruits/apple.js']);
+      expect(ignore).toHaveBeenCalledWith('/project/fruits/.git');
     });
   });
 

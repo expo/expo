@@ -1,13 +1,19 @@
-import fs from 'fs';
+/**
+ * Copyright (c) 650 Industries, Inc. (Expo).
+ */
+
+import fs from 'node:fs';
 import path from 'path';
 
 import { RootPathUtils } from '../../lib/RootPathUtils';
+import { isWatcherExcludedDirName } from '../../lib/isWatcherExcluded';
 import normalizePathSeparatorsToPosix from '../../lib/normalizePathSeparatorsToPosix';
-import type { FallbackFilesystem, FileMetadata, IgnoreMatcher } from '../../types';
-
-type DirectoryNode = Map<string, MixedNode | null>;
-type FileNode = FileMetadata;
-type MixedNode = FileNode | DirectoryNode;
+import type {
+  FallbackDirectoryNode,
+  FallbackFilesystem,
+  FallbackNode,
+  IgnoreMatcher,
+} from '../../types';
 
 type FallbackFilesystemOptions = {
   rootPathUtils: RootPathUtils;
@@ -23,12 +29,14 @@ const enum FallbackFlag {
   CRAWLED = 1,
 }
 
-function markDir(dirNode: any, flag: FallbackFlag) {
-  dirNode[FALLBACK_DIR] = flag;
+type FlaggedDirectoryNode = FallbackDirectoryNode & { [FALLBACK_DIR]?: FallbackFlag };
+
+function markDir(dirNode: FallbackDirectoryNode, flag: FallbackFlag) {
+  (dirNode as FlaggedDirectoryNode)[FALLBACK_DIR] = flag;
 }
 
-function getDirFlag(dirNode: any): FallbackFlag | undefined {
-  return dirNode[FALLBACK_DIR];
+function getDirFlag(dirNode: FallbackDirectoryNode): FallbackFlag | undefined {
+  return (dirNode as FlaggedDirectoryNode)[FALLBACK_DIR];
 }
 
 /**
@@ -37,11 +45,11 @@ function getDirFlag(dirNode: any): FallbackFlag | undefined {
  * reached legitimately (e.g., via symlink traversal) and should allow further
  * fallback lookups.
  */
-export function isFallbackDir(dirNode: any): boolean {
-  return dirNode[FALLBACK_DIR] != null;
+export function isFallbackDir(dirNode: FallbackNode | null | undefined): boolean {
+  return isDirectory(dirNode) && getDirFlag(dirNode) != null;
 }
 
-function isDirectory(node: MixedNode | null | undefined): node is DirectoryNode {
+function isDirectory(node: FallbackNode | null | undefined): node is FallbackDirectoryNode {
   return node instanceof Map;
 }
 
@@ -59,19 +67,13 @@ export default function createFallbackFilesystem(
 ): FallbackFilesystem {
   const { rootPathUtils, extensions, ignore, includeSymlinks } = opts;
 
-  const exts = extensions.reduce(
-    (acc, ext) => {
-      acc[ext] = true;
-      return acc;
-    },
-    {} as Record<string, true | undefined>
-  );
+  const exts = new Set(extensions);
 
   function readdir(
     _normalPath: string,
     absolutePath: string,
-    dirNode: DirectoryNode | null | undefined
-  ): DirectoryNode | null {
+    dirNode: FallbackDirectoryNode | null | undefined
+  ): FallbackDirectoryNode | null {
     if (dirNode != null && getDirFlag(dirNode) === FallbackFlag.CRAWLED) {
       return dirNode;
     }
@@ -81,7 +83,7 @@ export default function createFallbackFilesystem(
     } catch {
       return null;
     }
-    const result = dirNode ?? new Map();
+    const result: FallbackDirectoryNode = dirNode ?? new Map();
     for (const entry of dirEntries) {
       const name = entry.name.toString();
       const childAbsolutePath = absolutePath + path.sep + name;
@@ -93,20 +95,20 @@ export default function createFallbackFilesystem(
       if (entry.isDirectory()) {
         // NOTE(@kitten): ".git" and ".hg" check replace the VCS_DIRECTORIES ignore pattern
         // NOTE(@kitten): `.cxx` is ephemeral and should always be safe to ignore
-        if (!result.has(name) && name !== '.git' && name !== '.hg' && name !== '.cxx') {
-          const childDir = new Map();
+        if (!result.has(name) && !isWatcherExcludedDirName(name)) {
+          const childDir: FallbackDirectoryNode = new Map();
           markDir(childDir, FallbackFlag.VISITED);
           result.set(name, childDir);
         }
       } else if (entry.isSymbolicLink()) {
         // We can skip reading the symlink target here, since it'll be read lazily
         if (includeSymlinks && !result.has(name)) {
-          result.set(name, [null, 0, 0, null, 1, null]);
+          result.set(name, [null, 0, 0, null, 1]);
         }
       } else if (entry.isFile()) {
         const ext = path.extname(name).slice(1);
-        if (exts[ext] && !result.has(name)) {
-          result.set(name, [null, 0, 0, null, 0, null]);
+        if (exts.has(ext) && !result.has(name)) {
+          result.set(name, [null, 0, 0, null, 0]);
         }
       }
     }
@@ -120,8 +122,8 @@ export default function createFallbackFilesystem(
     lookup(
       normalPath: string,
       absolutePath: string,
-      prevNode: MixedNode | null | undefined
-    ): MixedNode | null {
+      prevNode: FallbackNode | null | undefined
+    ): FallbackNode | null {
       if (ignore(absolutePath)) {
         return null;
       }
@@ -141,7 +143,7 @@ export default function createFallbackFilesystem(
         if (dirNode != null) {
           return dirNode;
         }
-        const newDir = new Map();
+        const newDir: FallbackDirectoryNode = new Map();
         markDir(newDir, FallbackFlag.VISITED);
         return newDir;
       } else if (stat.isSymbolicLink()) {
@@ -155,17 +157,17 @@ export default function createFallbackFilesystem(
           const target = normalizePathSeparatorsToPosix(
             rootPathUtils.resolveSymlinkToNormal(normalPath, symlinkTarget)
           );
-          return [stat.mtime.getTime(), stat.size, 0, null, target, null];
+          return [stat.mtime.getTime(), stat.size, 0, null, target];
         } catch {
           return null;
         }
       } else if (stat.isFile()) {
         // Check extension — symlinks bypass this check (same as node crawler)
         const ext = path.extname(absolutePath).slice(1);
-        if (!exts[ext]) {
+        if (!exts.has(ext)) {
           return null;
         } else {
-          return [stat.mtime.getTime(), stat.size, 0, null, 0, null];
+          return [stat.mtime.getTime(), stat.size, 0, null, 0];
         }
       } else {
         return null;

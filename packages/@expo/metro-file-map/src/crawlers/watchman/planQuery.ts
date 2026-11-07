@@ -5,19 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-// NOTE(@kitten): Local type aliases for Watchman query planning types.
-type WatchmanExpression = readonly [string, ...any[]];
-type WatchmanDirnameExpression = readonly ['dirname', string];
-type WatchmanQuerySince = string | Readonly<{ scm: Readonly<{ 'mergebase-with': string }> }>;
-
-interface WatchmanQuery {
-  fields?: string[];
-  expression?: WatchmanExpression;
-  since?: WatchmanQuerySince;
-  glob?: string[];
-  glob_includedotfiles?: boolean;
-  suffix?: readonly string[];
-}
+import type {
+  WatchmanDirnameExpression,
+  WatchmanExpression,
+  WatchmanQuery,
+  WatchmanQuerySince,
+} from 'fb-watchman';
 
 export function planQuery({
   since,
@@ -25,13 +18,13 @@ export function planQuery({
   extensions,
   includeSha1,
   includeSymlinks,
-}: {
-  readonly since: WatchmanQuerySince | null | undefined;
-  readonly directoryFilters: readonly string[];
-  readonly extensions: readonly string[];
-  readonly includeSha1: boolean;
-  readonly includeSymlinks: boolean;
-}): {
+}: Readonly<{
+  since: WatchmanQuerySince | null | undefined;
+  directoryFilters: readonly string[];
+  extensions: readonly string[];
+  includeSha1: boolean;
+  includeSymlinks: boolean;
+}>): {
   query: WatchmanQuery;
   queryGenerator: string;
 } {
@@ -97,7 +90,7 @@ export function planQuery({
     if (directoryFilters.length > 0) {
       allOfTerms.push([
         'anyof',
-        ...directoryFilters.map((dir): WatchmanDirnameExpression => ['dirname', dir]),
+        ...directoryFilters.map((dir) => ['dirname', dir] as WatchmanDirnameExpression),
       ]);
     }
   } else if (directoryFilters.length > 0) {

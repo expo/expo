@@ -1,0 +1,39 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`FileMap file system changes processing recovery from duplicate module IDs recovers when the most recent duplicate is fixed 1`] = `
+"The name \`Pear\` was looked up in the Haste module map. It cannot be resolved, because there exists several different files, or packages, that provide a module for that particular name and platform. The platform is generic (no extension). You must delete or exclude files until there remains only one of these:
+
+  * \`/project/fruits/Pear.js\` (module)
+  * \`/project/fruits/another/Pear.js\` (module)
+"
+`;
+
+exports[`FileMap file system changes processing recovery from duplicate module IDs recovers when the oldest version of the duplicates is fixed 1`] = `
+"The name \`Pear\` was looked up in the Haste module map. It cannot be resolved, because there exists several different files, or packages, that provide a module for that particular name and platform. The platform is generic (no extension). You must delete or exclude files until there remains only one of these:
+
+  * \`/project/fruits/Pear.js\` (module)
+  * \`/project/fruits/another/Pear.js\` (module)
+"
+`;
+
+exports[`FileMap throws on duplicate module ids if "failValidationOnConflicts" is set to true 1`] = `
+"Advice: Resolve conflicts of type "duplicate" by renaming one or both of the conflicting modules, or by excluding conflicting paths from Haste.
+
+1. Strawberry (duplicate)
+     /project/fruits/Strawberry.js
+     /project/fruits/another/Strawberry.js"
+`;
+
+exports[`FileMap tries to crawl using node as a fallback 1`] = `
+"metro-file-map: Watchman crawl failed. Retrying once with node crawler.
+  Usually this happens when watchman isn't running. Create an empty \`.watchmanconfig\` file in your project's root folder or initialize a git or hg repository in your project.
+  Error: watchman error"
+`;
+
+exports[`FileMap warns on duplicate module ids 1`] = `
+"metro-file-map: Haste module naming collision: Strawberry
+  The following files share their name; please adjust your hasteImpl:
+    * <rootDir>/fruits/Strawberry.js
+    * <rootDir>/fruits/other/Strawberry.js
+"
+`;

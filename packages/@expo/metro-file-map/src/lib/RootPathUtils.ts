@@ -8,8 +8,6 @@
 import invariant from 'invariant';
 import path from 'path';
 
-import normalizePathSeparatorsToSystem from './normalizePathSeparatorsToSystem';
-
 /**
  * This module provides path utility functions - similar to `node:path` -
  * optimised for Metro's use case (many paths, few roots) under assumptions
@@ -48,14 +46,6 @@ const CURRENT_FRAGMENT = '.' + path.sep;
 const IS_WIN32 = path.sep === '\\';
 const ROOT_BASE_IDX = IS_WIN32 ? 0 : 1;
 
-function startsWithDriveLetter(str: string): boolean {
-  if (!IS_WIN32 || str.charCodeAt(1) !== 58 /* ':' */) {
-    return false;
-  }
-  const c = str.charCodeAt(0);
-  return (c >= 65 && c <= 90) /* A-Z */ || (c >= 97 && c <= 122) /* a-z */;
-}
-
 export class RootPathUtils {
   #rootDir: string;
   #rootDirnames: readonly string[];
@@ -74,16 +64,15 @@ export class RootPathUtils {
     }
     this.#rootDirnames = rootDirnames;
 
+    const rootParts = rootDir.split(path.sep);
+    this.#rootParts = rootParts;
     this.#rootDepth = rootDirnames.length - 1;
 
-    const rootParts = rootDir.split(path.sep);
     // If rootDir is a filesystem root (C:\ or /), it will end in a separator and
     // give a spurious empty entry at the end of rootParts.
     if (this.#rootDepth === 0) {
       rootParts.pop();
     }
-
-    this.#rootParts = rootParts;
   }
 
   getBasenameOfNthAncestor(n: number): string {
@@ -111,7 +100,9 @@ export class RootPathUtils {
       // Move our matching pointer forward and load the next part.
       endOfMatchingPrefix += nextLength + 1;
       nextPart = this.#rootParts[++lastMatchingPartIdx];
-      nextLength = nextPart?.length ?? 0;
+      // When nextPart is undefined, so is nextLength, and the loop exits on
+      // the next condition check before nextLength is read.
+      nextLength = nextPart?.length!;
     }
 
     // If our root is /project/root and we're given /project/bar/foo.js, we
@@ -178,43 +169,21 @@ export class RootPathUtils {
   }
 
   resolveSymlinkToNormal(symlinkNormalPath: string, readlinkResult: string): string {
-    let target = normalizePathSeparatorsToSystem(readlinkResult);
-    // WARN: This only applies to Windows + Node 20 case, where the value is completely
-    // unnormalized and a trailing slash may be returned. Skip the strip when the target
-    // is a filesystem root: POSIX '/' or Windows 'X:\'
-    const len = target.length;
-    const isFsRoot = len === 1 || (len === 3 && startsWithDriveLetter(target));
-    if (!isFsRoot && target[len - 1] === path.sep) {
-      target = target.slice(0, -1);
-    }
-    if (path.isAbsolute(target)) {
-      return this.absoluteToNormal(target);
-    }
-    // Resolve relative to the symlink's containing directory, expressed as
-    // a root-relative (possibly non-normal) path, then normalize
-    const sepIdx = symlinkNormalPath.lastIndexOf(path.sep);
-    const rootRelativeTarget =
-      sepIdx === -1 ? target : symlinkNormalPath.slice(0, sepIdx) + path.sep + target;
-    return this.relativeToNormal(rootRelativeTarget);
-  }
-
-  // If a path is a direct ancestor of the project root (or the root itself),
-  // return a number with the degrees of separation, e.g. root=0, parent=1,..
-  // or null otherwise.
-  getAncestorOfRootIdx(normalPath: string): number | null {
-    if (normalPath === '') {
-      return 0;
-    }
-    if (normalPath === '..') {
-      return 1;
-    }
-    // Otherwise a *normal* path is only a root ancestor if it is a sequence of
-    // '../' segments followed by '..', so the length tells us the number of
-    // up fragments.
-    if (normalPath.endsWith(SEP_UP_FRAGMENT)) {
-      return (normalPath.length + 1) / 3;
-    }
-    return null;
+    // Lexically resolves the target against the symlink's directory. This is
+    // string manipulation only: symlinks within the target are not followed,
+    // and the target need not exist, so the result is not a real path.
+    //
+    // readlink returns whatever the link was created with, which need not be
+    // well-formed (e.g. '..', 'a/./b', 'a//b', or '/' separators on Windows),
+    // so resolve with node:path. This runs once per symlink, when its node is
+    // populated, not on traversal.
+    const normal = this.absoluteToNormal(
+      path.resolve(this.#rootDir, symlinkNormalPath, '..', readlinkResult)
+    );
+    // Normalization keeps a trailing separator when the result is the root or
+    // an ancestor of it (e.g. a link to '/'), and readlink itself may return
+    // one. A stored symlink target never has one.
+    return normal.endsWith(path.sep) ? normal.slice(0, -1) : normal;
   }
 
   // Takes a normal and relative path, and joins them efficiently into a normal
@@ -256,7 +225,7 @@ export class RootPathUtils {
     fullPath: string, // A string ending with the relative path to process
     startOfRelativePart: number, // Index of the start of part to process
     implicitUpIndirections: number // 0=root-relative, 1=dirname(root)-relative...
-  ): { collapsedPath: string; collapsedSegments: number } | null {
+  ): { collapsedPath: string; collapsedSegments: number } | null | undefined {
     let totalUpIndirections = implicitUpIndirections;
     let collapsedSegments = 0;
     // Allow any sequence of indirection fragments at the start of the
@@ -307,7 +276,7 @@ export class RootPathUtils {
         const right = pos > 0 ? fullPath.slice(pos) : fullPath;
         if (right === '..' && totalUpIndirections >= this.#rootParts.length - 1) {
           // If we have no right side (or an indirection that would take us
-          // below the root), just ensure we don't include a trailing separtor.
+          // below the root), just ensure we don't include a trailing separator.
           return {
             collapsedPath: UP_FRAGMENT_SEP.repeat(totalUpIndirections).slice(0, -1),
             collapsedSegments,
@@ -325,7 +294,7 @@ export class RootPathUtils {
 
       // Cap the number of indirections at the total number of root parts.
       // File systems treat '..' at the root as '.'. For Windows, cross-device
-      // paths need to survive this
+      // paths need to survive this.
       if (totalUpIndirections < this.#rootParts.length - ROOT_BASE_IDX) {
         totalUpIndirections++;
       }
@@ -340,6 +309,10 @@ export class RootPathUtils {
   }
 }
 
+/**
+ * The number of leading '..' segments of a normal path, i.e. how many levels
+ * above the root dir it starts.
+ */
 export function getAncestorOfRootIdx(normalPath: string): number {
   let pos = 0;
   while (normalPath.startsWith(UP_FRAGMENT_SEP, pos)) {
@@ -355,24 +328,45 @@ export function getAncestorOfRootIdx(normalPath: string): number {
   return pos / UP_FRAGMENT_SEP_LENGTH;
 }
 
+/**
+ * Whether a normal path is the root dir ('') or one of its ancestors ('..',
+ * '../..', with or without a trailing separator).
+ */
+export function isRootDirOrAncestor(normalPath: string): boolean {
+  if (normalPath === '') {
+    return true;
+  }
+  const ancestorOfRootIdx = getAncestorOfRootIdx(normalPath);
+  return (
+    ancestorOfRootIdx > 0 &&
+    normalPath.length <= ancestorOfRootIdx * UP_FRAGMENT_SEP_LENGTH &&
+    normalPath.length >= ancestorOfRootIdx * UP_FRAGMENT_SEP_LENGTH - 1
+  );
+}
+
+/**
+ * A pattern matching the normal path, with a trailing separator, of anything
+ * within one of the given absolute paths.
+ */
 export function pathsToPattern(paths: readonly string[], pathUtils: RootPathUtils): RegExp | null {
   if (paths.length === 0) {
     return null;
   }
   const pathsPatterns = paths.map((input) => {
     let pattern = pathUtils.absoluteToNormal(input);
-    // When pattern is '' (root === rootDir), match any normal path that
-    // doesn't escape the root via '..' indirections.
-    if (pattern === '') {
-      return `(?!\\.\\.(?:\\${path.sep}|$))`;
+    // NOTE(@robhogan): A path that is the root dir ('') or one of its ancestors ('..',
+    // '../..') contains every normal path that doesn't escape it via a further '..'
+    if (isRootDirOrAncestor(pattern)) {
+      const ancestorOfRootIdx = getAncestorOfRootIdx(pattern);
+      const sep = '\\' + path.sep;
+      return `(?!(?:\\.\\.${sep}){${ancestorOfRootIdx}}\\.\\.(?:${sep}|$))`;
     }
     // Append separator so that 'src' matches 'src/foo' but not 'src2'.
     if (!pattern.endsWith(path.sep)) {
       pattern += path.sep;
     }
     // Escape all regex-special characters.
-    // eslint-disable-next-line no-useless-escape
-    return pattern.replace(/[\-\[\]\{\}\(\)\*\+\?\.\\\^\$\|\/]/g, '\\$&');
+    return pattern.replace(/[-[\]{}()*+?.\\^$|/]/g, '\\$&');
   });
   return new RegExp(`^(?:${pathsPatterns.join('|')})`);
 }

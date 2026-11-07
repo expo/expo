@@ -5,9 +5,11 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import path from 'path';
+import path from 'node:path';
 
 import H from '../../constants';
+import DependencyPlugin from '../../plugins/DependencyPlugin';
+import HastePlugin from '../../plugins/HastePlugin';
 import type { FileMapPluginWorker, FileMetadata, WorkerMessage, WorkerMetadata } from '../../types';
 
 const MockJestWorker = jest.fn().mockImplementation(() => ({
@@ -41,7 +43,7 @@ describe('processBatch', () => {
       setup: () => {},
       processFile: mockWorkerFn,
       Worker: class {
-        processFile: (msg: WorkerMessage) => Promise<WorkerMetadata> = mockWorkerFn;
+        processFile: (message: WorkerMessage) => WorkerMetadata = mockWorkerFn;
       },
     }));
     FileProcessor = require('../FileProcessor').FileProcessor;
@@ -91,9 +93,9 @@ describe('processBatch', () => {
     });
 
     // Create 100 files, but some already have SHA1 hashes (no-op jobs)
-    const filesWithSomeAlreadyHashed: [string, FileMetadata][] = new Array(100)
+    const filesWithSomeAlreadyHashed = new Array<[string, FileMetadata] | null>(100)
       .fill(null)
-      .map((_, i) => {
+      .map((_, i): [string, FileMetadata] => {
         const metadata: FileMetadata =
           i < 50
             ? // First 50 files already have SHA1 hashes
@@ -172,15 +174,24 @@ describe('processBatch', () => {
       ...defaultOptions,
       pluginWorkers: [
         {
-          worker: { modulePath: 'mock-plugin-1', setupArgs: {} },
+          worker: {
+            modulePath: 'mock-plugin-1',
+            setupArgs: {},
+          },
           filter: mockFilter1,
         },
         {
-          worker: { modulePath: 'mock-plugin-2', setupArgs: {} },
+          worker: {
+            modulePath: 'mock-plugin-2',
+            setupArgs: {},
+          },
           filter: mockFilter2,
         },
         {
-          worker: { modulePath: 'mock-plugin-3', setupArgs: {} },
+          worker: {
+            modulePath: 'mock-plugin-3',
+            setupArgs: {},
+          },
           filter: mockFilter3,
         },
       ],
@@ -192,6 +203,7 @@ describe('processBatch', () => {
     });
 
     // Worker should be called with pluginsToRun containing indices 0 and 2
+    // (plugins 1 and 3 passed filter, plugin 2 did not)
     expect(mockWorkerFn).toHaveBeenCalledWith(
       expect.objectContaining({
         pluginsToRun: [0, 2],
@@ -199,11 +211,199 @@ describe('processBatch', () => {
     );
   });
 
+  test('lazy plugins are not run on a batch, and their filter is not consulted', async () => {
+    const eagerFilter = jest.fn().mockReturnValue(true);
+    const lazyFilter = jest.fn().mockReturnValue(true);
+
+    const processor = new FileProcessor({
+      ...defaultOptions,
+      pluginWorkers: [
+        {
+          worker: { modulePath: 'mock-lazy-plugin', setupArgs: {} },
+          filter: lazyFilter,
+          lazy: true,
+        },
+        {
+          worker: { modulePath: 'mock-eager-plugin', setupArgs: {} },
+          filter: eagerFilter,
+        },
+      ],
+    });
+
+    await processor.processBatch([[p('src/package.json'), [123, 234, 0, null, 0, null]]], {
+      computeSha1: false,
+      maybeReturnContent: false,
+    });
+
+    expect(mockWorkerFn).toHaveBeenCalledTimes(1);
+    expect(mockWorkerFn).toHaveBeenCalledWith(expect.objectContaining({ pluginsToRun: [1] }));
+    expect(lazyFilter).not.toHaveBeenCalled();
+  });
+
+  test('a file matched only by a lazy plugin is not processed', async () => {
+    const processor = new FileProcessor({
+      ...defaultOptions,
+      pluginWorkers: [
+        {
+          worker: { modulePath: 'mock-lazy-plugin', setupArgs: {} },
+          filter: () => true,
+          lazy: true,
+        },
+      ],
+    });
+
+    await processor.processBatch([[p('src/package.json'), [123, 234, 0, null, 0, null]]], {
+      computeSha1: false,
+      maybeReturnContent: false,
+    });
+
+    expect(mockWorkerFn).not.toHaveBeenCalled();
+  });
+
+  describe('node_modules files', () => {
+    const nodeModulesFiles = (): [string, FileMetadata][] => [
+      [p('node_modules/pkg/index.js'), [123, 234, 0, null, 0, null]],
+      [p('node_modules/pkg/package.json'), [123, 234, 0, null, 0, null]],
+    ];
+
+    test.each([[false], [true]])(
+      'a plugin whose filter accepts them runs on them (computeSha1: %s)',
+      async (computeSha1) => {
+        const processor = new FileProcessor({
+          ...defaultOptions,
+          pluginWorkers: [
+            {
+              worker: { modulePath: 'mock-plugin', setupArgs: {} },
+              filter: ({ isNodeModules }) => isNodeModules,
+            },
+          ],
+        });
+
+        await processor.processBatch(nodeModulesFiles(), {
+          computeSha1,
+          maybeReturnContent: false,
+        });
+
+        expect(mockWorkerFn).toHaveBeenCalledTimes(2);
+        expect(mockWorkerFn).toHaveBeenCalledWith({
+          computeSha1,
+          filePath: p('/root/node_modules/pkg/index.js'),
+          maybeReturnContent: false,
+          pluginsToRun: [0],
+        });
+      }
+    );
+
+    test('a plugin whose filter accepts them runs in band too', () => {
+      const processor = new FileProcessor({
+        ...defaultOptions,
+        pluginWorkers: [
+          {
+            worker: { modulePath: 'mock-plugin', setupArgs: {} },
+            filter: () => true,
+          },
+        ],
+      });
+      const metadata: FileMetadata = [123, 234, 0, 'existing-sha1', 0];
+      mockWorkerFn.mockReturnValueOnce({ pluginData: ['data'] });
+
+      expect(
+        processor.processRegularFile(p('node_modules/pkg/index.js'), metadata, {
+          computeSha1: false,
+          maybeReturnContent: false,
+        })
+      ).toEqual({ content: undefined });
+      expect(metadata[H.PLUGINDATA]).toBe('data');
+    });
+
+    test('built-in plugins only run on them when a SHA-1 is needed', async () => {
+      const pluginWorkers = [
+        new HastePlugin({
+          enableHastePackages: true,
+          failValidationOnConflicts: false,
+          hasteImplModulePath: require.resolve('../../__tests__/haste_impl'),
+          platforms: new Set(),
+          rootDir: defaultOptions.rootDir,
+        }).getWorker(),
+        new DependencyPlugin({
+          computeDependencies: true,
+          dependencyExtractor: null,
+        }).getWorker(),
+      ];
+      const processor = new FileProcessor({ ...defaultOptions, pluginWorkers });
+
+      await processor.processBatch(nodeModulesFiles(), {
+        computeSha1: false,
+        maybeReturnContent: false,
+      });
+      expect(mockWorkerFn).not.toHaveBeenCalled();
+
+      await processor.processBatch(nodeModulesFiles(), {
+        computeSha1: true,
+        maybeReturnContent: false,
+      });
+      expect(mockWorkerFn).toHaveBeenCalledTimes(2);
+      expect(mockWorkerFn).toHaveBeenCalledWith({
+        computeSha1: true,
+        filePath: p('/root/node_modules/pkg/package.json'),
+        maybeReturnContent: false,
+        pluginsToRun: [],
+      });
+    });
+  });
+
+  describe('processFileForPlugin', () => {
+    const pluginWorkers = [
+      {
+        worker: { modulePath: 'mock-eager-plugin', setupArgs: {} },
+        filter: () => true,
+      },
+      {
+        worker: { modulePath: 'mock-lazy-plugin', setupArgs: {} },
+        // On-demand processing does not consult the filter
+        filter: () => false,
+        lazy: true,
+      },
+    ];
+
+    test('runs only that plugin, in band, and stores its data', () => {
+      const processor = new FileProcessor({ ...defaultOptions, pluginWorkers });
+      const metadata: FileMetadata = [123, 234, 0, null, 0, 'eager data'];
+      mockWorkerFn.mockReturnValueOnce({ pluginData: [{ name: 'pkg' }] });
+
+      // A file in node_modules, which batch processing never runs plugins on
+      const absolutePath = p('/root/node_modules/pkg/package.json');
+      expect(processor.processFileForPlugin(absolutePath, metadata, 1)).toEqual({ name: 'pkg' });
+
+      expect(mockWorkerFn).toHaveBeenCalledTimes(1);
+      expect(mockWorkerFn).toHaveBeenCalledWith({
+        computeSha1: false,
+        filePath: absolutePath,
+        maybeReturnContent: false,
+        pluginsToRun: [1],
+      });
+      expect(MockJestWorker).not.toHaveBeenCalled();
+      // Only this plugin's slot is written. In particular the file is not
+      // marked visited, since the other workers have not seen it.
+      expect(metadata).toEqual([123, 234, 0, null, 0, 'eager data', { name: 'pkg' }]);
+    });
+
+    test('stores null when the worker returns nothing', () => {
+      const processor = new FileProcessor({ ...defaultOptions, pluginWorkers });
+      const metadata: FileMetadata = [123, 234, 0, null, 0, null];
+      mockWorkerFn.mockReturnValueOnce({ pluginData: [undefined] });
+
+      expect(processor.processFileForPlugin(p('/root/package.json'), metadata, 1)).toBe(null);
+      expect(metadata[H.PLUGINDATA + 1]).toBe(null);
+    });
+  });
+
   test('worker reply plugin data is mapped to correct fileMetadata indices', async () => {
     const mockFilter1 = jest.fn().mockReturnValue(true);
     const mockFilter2 = jest.fn().mockReturnValue(false);
     const mockFilter3 = jest.fn().mockReturnValue(true);
 
+    // Mock worker returns plugin data
     mockWorkerFn.mockReturnValue({
       dependencies: null,
       sha1: 'abc123',
@@ -214,15 +414,24 @@ describe('processBatch', () => {
       ...defaultOptions,
       pluginWorkers: [
         {
-          worker: { modulePath: 'mock-plugin-1', setupArgs: {} },
+          worker: {
+            modulePath: 'mock-plugin-1',
+            setupArgs: {},
+          },
           filter: mockFilter1,
         },
         {
-          worker: { modulePath: 'mock-plugin-2', setupArgs: {} },
+          worker: {
+            modulePath: 'mock-plugin-2',
+            setupArgs: {},
+          },
           filter: mockFilter2,
         },
         {
-          worker: { modulePath: 'mock-plugin-3', setupArgs: {} },
+          worker: {
+            modulePath: 'mock-plugin-3',
+            setupArgs: {},
+          },
           filter: mockFilter3,
         },
       ],
@@ -235,6 +444,7 @@ describe('processBatch', () => {
       maybeReturnContent: false,
     });
 
+    // Verify pluginData is stored at correct indices
     // Plugin 0 data at H.PLUGINDATA + 0
     expect(fileMetadata[H.PLUGINDATA + 0]).toBe('plugin0-data');
     // Plugin 2 data at H.PLUGINDATA + 2 (not at +1, because it's plugin index 2)
@@ -242,6 +452,7 @@ describe('processBatch', () => {
     // Plugin 1 should not have data (filter returned false)
     expect(fileMetadata[H.PLUGINDATA + 1]).toBeUndefined();
 
+    // Verify other metadata fields
     expect(fileMetadata[H.SHA1]).toBe('abc123');
     expect(fileMetadata[H.VISITED]).toBe(1);
   });
@@ -253,7 +464,10 @@ describe('processBatch', () => {
       ...defaultOptions,
       pluginWorkers: [
         {
-          worker: { modulePath: 'mock-plugin', setupArgs: {} },
+          worker: {
+            modulePath: 'mock-plugin',
+            setupArgs: {},
+          },
           filter: mockFilter,
         },
       ],
@@ -266,6 +480,10 @@ describe('processBatch', () => {
       maybeReturnContent: false,
     });
 
+    // Worker should not be called because:
+    // - No SHA1 needed (already exists)
+    // - No dependencies requested
+    // - No plugins matched
     expect(mockWorkerFn).not.toHaveBeenCalled();
   });
 
@@ -276,7 +494,10 @@ describe('processBatch', () => {
       ...defaultOptions,
       pluginWorkers: [
         {
-          worker: { modulePath: 'mock-plugin', setupArgs: {} },
+          worker: {
+            modulePath: 'mock-plugin',
+            setupArgs: {},
+          },
           filter: mockFilter,
         },
       ],
@@ -289,6 +510,7 @@ describe('processBatch', () => {
       maybeReturnContent: false,
     });
 
+    // Worker should be called because at least one plugin matched
     expect(mockWorkerFn).toHaveBeenCalledWith(
       expect.objectContaining({
         pluginsToRun: [0],
@@ -299,34 +521,35 @@ describe('processBatch', () => {
 
 describe('processRegularFile', () => {
   let FileProcessor: typeof import('../FileProcessor').FileProcessor;
-  const mockReadFile = jest.fn();
+  const mockReadFileSync = jest.fn();
 
   beforeEach(() => {
     jest.resetModules();
     jest.clearAllMocks();
     jest.unmock('../../worker');
-    jest.mock('fs', () => ({
-      promises: {
-        readFile: mockReadFile,
-      },
+    jest.mock('node:fs', () => ({
+      readFileSync: mockReadFileSync,
     }));
     FileProcessor = require('../FileProcessor').FileProcessor;
   });
 
-  test('asynchronously populates metadata', async () => {
+  test('synchronously populates metadata', () => {
     const processor = new FileProcessor(defaultOptions);
     const [normalFilePath, metadata] = getNMockFiles(1)[0]!;
     expect(metadata[H.SHA1]).toBeFalsy();
 
     const fileContent = Buffer.from('hello world');
-    mockReadFile.mockResolvedValue(fileContent);
+    mockReadFileSync.mockReturnValue(fileContent);
 
-    const result = await processor.processRegularFile(normalFilePath, metadata, {
+    const result = processor.processRegularFile(normalFilePath, metadata, {
       computeSha1: true,
+
       maybeReturnContent: true,
     });
 
-    expect(mockReadFile).toHaveBeenCalledWith(path.resolve(defaultOptions.rootDir, normalFilePath));
+    expect(mockReadFileSync).toHaveBeenCalledWith(
+      path.resolve(defaultOptions.rootDir, normalFilePath)
+    );
 
     expect(result).toEqual({
       content: fileContent,
@@ -337,7 +560,10 @@ describe('processRegularFile', () => {
 });
 
 function getNMockFiles(numFiles: number): [string, FileMetadata][] {
-  return new Array(numFiles)
+  return new Array<[string, FileMetadata] | null>(numFiles)
     .fill(null)
-    .map((_, i) => [`file${i}.js`, [123, 234, 0, null, 0, null] as FileMetadata]);
+    .map((_, i): [string, FileMetadata] => [
+      `file${i}.js`,
+      [123, 234, 0, null, 0, null] as FileMetadata,
+    ]);
 }

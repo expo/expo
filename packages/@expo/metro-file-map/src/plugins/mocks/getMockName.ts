@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import path from 'path';
+import * as path from 'node:path';
 
 const MOCKS_PATTERN = path.sep + '__mocks__' + path.sep;
 

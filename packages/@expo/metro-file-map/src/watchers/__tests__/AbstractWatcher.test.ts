@@ -5,7 +5,7 @@
 import { AbstractWatcher } from '../AbstractWatcher';
 
 describe('AbstractWatcher.doIgnore', () => {
-  test('rejects .git and .hg path segments without a user pattern', () => {
+  test('rejects .git, .hg and .cxx path segments without a user pattern', () => {
     const watcher = new AbstractWatcher('/project', {
       included: null,
       ignored: null,
@@ -15,6 +15,7 @@ describe('AbstractWatcher.doIgnore', () => {
     expect(watcher.doIgnore('foo/.git/HEAD')).toBe(true);
     expect(watcher.doIgnore('.hg/store/data')).toBe(true);
     expect(watcher.doIgnore('foo/.hg/data')).toBe(true);
+    expect(watcher.doIgnore('android/app/.cxx/Debug/x86/build.ninja')).toBe(true);
   });
 
   test('passes non-VCS paths through when no user pattern is set', () => {

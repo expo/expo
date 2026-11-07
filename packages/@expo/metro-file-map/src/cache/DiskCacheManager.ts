@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import debugModule from 'debug';
 import { promises as fsPromises } from 'fs';
 import { tmpdir } from 'os';
 import path from 'path';
@@ -20,7 +21,7 @@ import type {
   CacheManagerWriteOptions,
 } from '../types';
 
-const debug = require('debug')('Metro:FileMapCache');
+const debug = debugModule('Metro:FileMapCache');
 
 declare global {
   namespace NodeJS {
@@ -30,15 +31,15 @@ declare global {
   }
 }
 
-interface AutoSaveOptions {
-  readonly debounceMs: number;
-}
+type AutoSaveOptions = Readonly<{
+  debounceMs: number;
+}>;
 
-interface DiskCacheConfig {
-  readonly autoSave?: Partial<AutoSaveOptions> | boolean | undefined;
-  readonly cacheFilePrefix?: string | undefined | null;
-  readonly cacheDirectory?: string | undefined | null;
-}
+type DiskCacheConfig = Readonly<{
+  autoSave?: Partial<AutoSaveOptions> | boolean;
+  cacheFilePrefix?: string | null | undefined;
+  cacheDirectory?: string | null | undefined;
+}>;
 
 let DEFAULT_PREFIX = 'metro-file-map';
 if (process.isBun) {
@@ -54,18 +55,17 @@ const DEFAULT_AUTO_SAVE_DEBOUNCE_MS = 5000;
 const FIXED_PREFIX = 'expo';
 
 export class DiskCacheManager implements CacheManager {
-  readonly #autoSaveOpts: AutoSaveOptions | undefined | null;
+  readonly #autoSaveOpts: AutoSaveOptions | null | undefined;
   readonly #cachePath: string;
   #debounceTimeout: ReturnType<typeof setTimeout> | null = null;
   #writePromise: Promise<void> = Promise.resolve();
   #hasUnwrittenChanges: boolean = false;
-  #tryWrite: (() => Promise<void>) | undefined | null;
-  #stopListening: (() => void) | undefined | null;
+  #tryWrite: (() => Promise<void>) | null | undefined;
+  #stopListening: (() => void) | null | undefined;
 
-  constructor(
-    { buildParameters }: CacheManagerFactoryOptions,
-    { autoSave = {}, cacheDirectory, cacheFilePrefix }: DiskCacheConfig
-  ) {
+  constructor(opts: CacheManagerFactoryOptions, config: DiskCacheConfig) {
+    const { buildParameters } = opts;
+    const { autoSave = {}, cacheDirectory, cacheFilePrefix } = config;
     this.#cachePath = DiskCacheManager.getCacheFilePath(
       buildParameters,
       cacheFilePrefix,
@@ -96,11 +96,11 @@ export class DiskCacheManager implements CacheManager {
     return this.#cachePath;
   }
 
-  async read(): Promise<CacheData | undefined | null> {
+  async read(): Promise<CacheData | null | undefined> {
     try {
       return deserialize(await fsPromises.readFile(this.#cachePath));
-    } catch (e: any) {
-      if (e?.code === 'ENOENT') {
+    } catch (e) {
+      if ((e as NodeJS.ErrnoException | null)?.code === 'ENOENT') {
         // Cache file not found - not considered an error.
         return null;
       }
@@ -109,10 +109,8 @@ export class DiskCacheManager implements CacheManager {
     }
   }
 
-  async write(
-    getSnapshot: () => CacheData,
-    { changedSinceCacheRead, eventSource, onWriteError }: CacheManagerWriteOptions
-  ): Promise<void> {
+  async write(getSnapshot: () => CacheData, opts: CacheManagerWriteOptions): Promise<void> {
+    const { changedSinceCacheRead, eventSource, onWriteError } = opts;
     // Initialise a writer function using a promise queue to ensure writes are
     // sequenced.
     // eslint-disable-next-line no-multi-assign
@@ -124,7 +122,19 @@ export class DiskCacheManager implements CacheManager {
           }
           const data = getSnapshot();
           this.#hasUnwrittenChanges = false;
-          await fsPromises.writeFile(this.#cachePath, serialize(data));
+          const serialized = serialize(data);
+          try {
+            await fsPromises.writeFile(this.#cachePath, serialized);
+          } catch (e) {
+            if ((e as NodeJS.ErrnoException | null)?.code !== 'ENOENT') {
+              throw e;
+            }
+            // The cache directory doesn't exist yet - create it and retry.
+            await fsPromises.mkdir(path.dirname(this.#cachePath), {
+              recursive: true,
+            });
+            await fsPromises.writeFile(this.#cachePath, serialized);
+          }
           debug('Written cache to %s', this.#cachePath);
         })
         .catch(onWriteError);

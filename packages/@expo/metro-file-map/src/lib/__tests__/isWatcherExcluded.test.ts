@@ -2,7 +2,7 @@
  * Copyright (c) 650 Industries, Inc. (Expo).
  */
 
-import isWatcherExcluded from '../isWatcherExcluded';
+import isWatcherExcluded, { isWatcherExcludedDirName } from '../isWatcherExcluded';
 
 describe('isWatcherExcluded', () => {
   test('matches segments at the start of a relative path', () => {
@@ -56,4 +56,17 @@ describe('isWatcherExcluded', () => {
     expect(isWatcherExcluded('/repo/src/index.ts')).toBe(false);
     expect(isWatcherExcluded('node_modules/foo/index.js')).toBe(false);
   });
+});
+
+describe('isWatcherExcludedDirName', () => {
+  test.each([['.git'], ['.hg'], ['.cxx']])('matches %s', (name) => {
+    expect(isWatcherExcludedDirName(name)).toBe(true);
+  });
+
+  test.each([['.github'], ['.gitignore'], ['git'], ['.cxxtest'], ['src']])(
+    'does not match %s',
+    (name) => {
+      expect(isWatcherExcludedDirName(name)).toBe(false);
+    }
+  );
 });

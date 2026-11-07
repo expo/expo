@@ -8,23 +8,31 @@
  * https://github.com/amasad/sane/blob/64ff3a870c42e84f744086884bf55a4f9c22d376/src/common.js
  */
 
-import type { Stats } from 'fs';
-import path from 'path';
+import type { Stats } from 'node:fs';
+import path from 'node:path';
 
-import type { ChangeEventMetadata, WatcherIncludedFiles } from '../types';
+import type { ChangeEventMetadata, WatcherIncludedFiles, WatchmanClockSpec } from '../types';
 
+/**
+ * Constants
+ */
 export const DELETE_EVENT = 'delete';
 export const TOUCH_EVENT = 'touch';
 export const RECRAWL_EVENT = 'recrawl';
 export const ALL_EVENT = 'all';
 
-export interface WatcherOptions {
-  readonly included: WatcherIncludedFiles | null | undefined;
-  readonly ignored: RegExp | null | undefined;
-  readonly watchmanDeferStates: readonly string[];
-  readonly watchman?: unknown;
-  readonly watchmanPath?: string;
-}
+export type WatcherOptions = Readonly<{
+  // Clocks captured by the crawl, keyed by absolute Watchman watch root.
+  // Only consumed by WatchmanWatcher, which subscribes `since` the clock for
+  // its root rather than a fresh one, so that changes made while the crawl
+  // result is applied and persisted are not missed.
+  clocks?: Map<string, WatchmanClockSpec> | null | undefined;
+  included: WatcherIncludedFiles | null | undefined;
+  ignored: RegExp | null | undefined;
+  watchmanDeferStates: readonly string[];
+  watchman?: unknown;
+  watchmanPath?: string;
+}>;
 
 /**
  * Whether a watcher should report a change at the given relative path. Only
@@ -74,7 +82,7 @@ export const posixPathMatchesPattern: (pattern: RegExp, filePath: string) => boo
     ? (pattern, filePath) => pattern.test(filePath)
     : (pattern, filePath) => pattern.test(filePath.replaceAll(path.sep, '/'));
 
-export function typeFromStat(stat: Stats): ChangeEventMetadata['type'] | null {
+export function typeFromStat(stat: Stats): ChangeEventMetadata['type'] | null | undefined {
   // Note: These tests are not mutually exclusive - a symlink passes isFile
   if (stat.isSymbolicLink()) {
     return 'l';

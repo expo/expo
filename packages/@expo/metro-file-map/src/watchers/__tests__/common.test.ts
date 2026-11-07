@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import { join } from 'path';
+import { join } from 'node:path';
 
 import type { WatcherIncludedFiles } from '../../types';
 import { isIncluded } from '../common';
@@ -39,7 +39,7 @@ describe('isIncluded', () => {
     expect(isIncluded('f', included, relativePath)).toBe(expected);
   });
 
-  test.each([['d' as const], ['l' as const], [null]])(
+  test.each<['d' | 'l' | null]>([['d'], ['l'], [null]])(
     'type %s is not checked against included files',
     (type) => {
       expect(isIncluded(type, included, 'foo.ts')).toBe(true);

@@ -7,101 +7,96 @@
  * @format
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
+import fs from 'node:fs';
+import * as path from 'node:path';
 
 import { RootPathUtils } from '../../lib/RootPathUtils';
-import type {
-  Console,
-  CrawlerOptions,
-  CrawlResult,
-  FileData,
-  FileSystem,
-  IgnoreMatcher,
-} from '../../types';
+import { isWatcherExcludedDirName } from '../../lib/isWatcherExcluded';
+import type { CrawlerOptions, CrawlResult, FileData } from '../../types';
 
-type Callback = (result: FileData) => void;
-
-function find(
-  roots: readonly string[],
-  extensions: readonly string[],
-  ignore: IgnoreMatcher,
-  includeSymlinks: boolean,
-  rootDir: string,
-  console: Console,
-  previousFileSystem: FileSystem | null,
-  callback: Callback
-): void {
+function find(options: CrawlerOptions): Promise<FileData> {
+  const { console, extensions, ignore, includeSymlinks, previousState, rootDir, roots } = options;
   const result: FileData = new Map();
-  let activeCalls = 0;
   const pathUtils = new RootPathUtils(rootDir);
+  const exts = new Set(extensions);
 
-  const exts = extensions.reduce(
-    (acc, ext) => {
-      acc[ext] = true;
-      return acc;
-    },
-    {} as Record<string, boolean | undefined>
-  );
+  return new Promise((resolve) => {
+    let activeCalls = 0;
+    const resolveIfDone = () => {
+      if (activeCalls === 0) {
+        resolve(result);
+      }
+    };
 
-  function search(directory: string, dirNormal: string, isWithinRoot: boolean): void {
-    activeCalls++;
-    fs.readdir(directory, { withFileTypes: true }, (err, entries) => {
-      activeCalls--;
-      if (err) {
-        // NOTE(@kitten): This isn't necessarily a problem and we can ignore this
-        /*
-        console.warn(
-          `Error "${(err as any).code ?? err.message}" reading contents of "${directory}", skipping. Add this directory to your ignore list to exclude it.`
-        );
-        */
-      } else {
-        for (let idx = 0; idx < entries.length; idx++) {
-          const entry = entries[idx]!;
-          const name = entry.name;
-
-          // NOTE(@kitten): This replaces the VCS_DIRECTORIES ignore pattern
-          // NOTE(@kitten): `.cxx` is ephemeral and should always be safe to ignore
-          const isDirectory = entry.isDirectory();
-          if (isDirectory && (name === '.git' || name === '.hg' || name === '.cxx')) {
-            continue;
+    // `dirPrefix` is `directory` with a trailing separator, which only a root
+    // may already have (a filesystem root, '/' or 'C:\\').
+    function search(
+      directory: string,
+      dirPrefix: string,
+      dirNormal: string,
+      isWithinRoot: boolean
+    ): void {
+      activeCalls++;
+      fs.readdir(directory, { withFileTypes: true }, (err, entries) => {
+        activeCalls--;
+        if (err) {
+          // NOTE(@robhogan): A directory that disappeared between being listed and being read
+          // (e.g. ephemeral Android build output) isn't worth a warning. See expo/expo#45722
+          if (err.code !== 'ENOENT') {
+            console.warn(
+              `Error "${err.code ?? err.message}" reading contents of "${directory}", skipping. Add this directory to your ignore list to exclude it.`
+            );
           }
+        } else {
+          for (const entry of entries) {
+            const name = entry.name.toString();
 
-          const file = directory + path.sep + name;
-          const isSymbolicLink = entry.isSymbolicLink();
-          if (ignore(file) || (!includeSymlinks && isSymbolicLink)) {
-            continue;
-          }
-
-          // Deriving a normal path above the root dir requires slicing off an up-fragment
-          // then checking if the target matches the next segment of the root dir. It's therefore
-          // easier to fall back to `pathUtils.absoluteToNormal`
-          const childNormal = !isWithinRoot
-            ? pathUtils.absoluteToNormal(file)
-            : dirNormal === ''
-              ? name
-              : dirNormal + path.sep + name;
-
-          if (isDirectory) {
-            // NOTE(@kitten): We'd like to be able to apply excludes to directories selectively based
-            // on their normal paths, so we can exclude using `^...`
-            if (!ignore(childNormal)) {
-              search(file, childNormal, isWithinRoot || childNormal === '');
+            // NOTE(@kitten): This replaces the VCS_DIRECTORIES ignore pattern
+            // NOTE(@kitten): `.cxx` is ephemeral and should always be safe to ignore
+            const isDirectory = entry.isDirectory();
+            if (isDirectory && isWatcherExcludedDirName(name)) {
+              continue;
             }
-            continue;
-          }
 
-          const ext = path.extname(file).substr(1);
-          if (!isSymbolicLink && !exts[ext]) {
-            continue;
-          }
+            const file = dirPrefix + name;
+            const isSymbolicLink = entry.isSymbolicLink();
+            if (ignore(file) || (!includeSymlinks && isSymbolicLink)) {
+              continue;
+            }
 
-          const mtime = previousFileSystem?.getMtimeByNormalPath(childNormal);
-          if (mtime == null || mtime === 0) {
-            // When we're in a cold start or a previous file doesn't exist, we can skip
-            // the mtime/size lstat now and treat the file as new
-            result.set(childNormal, [null, 0, 0, null, isSymbolicLink ? 1 : 0, null]);
-          } else {
+            // Within rootDir, a child's normal path is its parent's plus its
+            // name. Outside rootDir, normal paths begin with '..' and can
+            // collapse into rootDir, so derive them with absoluteToNormal
+            // until the walk enters rootDir itself.
+            const childNormal = !isWithinRoot
+              ? pathUtils.absoluteToNormal(file)
+              : dirNormal === ''
+                ? name
+                : dirNormal + path.sep + name;
+
+            if (isDirectory) {
+              // NOTE(@kitten): We'd like to be able to apply excludes to directories selectively
+              // based on their normal paths, so we can exclude using `^...`
+              if (!ignore(childNormal)) {
+                search(file, file + path.sep, childNormal, isWithinRoot || childNormal === '');
+              }
+              continue;
+            }
+
+            const ext = path.extname(name).substr(1);
+            if (!isSymbolicLink && !exts.has(ext)) {
+              continue;
+            }
+
+            const mtime = previousState.fileSystem.getMtimeByNormalPath(childNormal);
+            if (mtime == null || mtime === 0) {
+              // A file that's new, or never accessed since it was crawled, is
+              // recorded without an lstat - its mtime and size are populated
+              // when it's first accessed.
+              result.set(childNormal, [null, 0, 0, null, isSymbolicLink ? 1 : 0]);
+              continue;
+            }
+
             activeCalls++;
             fs.lstat(file, (err, stat) => {
               activeCalls--;
@@ -113,79 +108,43 @@ function find(
                   0,
                   null,
                   isSymbolicLink ? 1 : 0,
-                  null,
                 ]);
               }
-
-              if (activeCalls === 0) {
-                callback(result);
-              }
+              resolveIfDone();
             });
           }
         }
-      }
-
-      if (activeCalls === 0) {
-        callback(result);
-      }
-    });
-  }
-
-  if (roots.length > 0) {
-    for (const root of roots) {
-      const rootNormal = pathUtils.absoluteToNormal(root);
-      const isWithinRoot = !rootNormal.startsWith('..' + path.sep);
-      search(root, rootNormal, isWithinRoot);
+        resolveIfDone();
+      });
     }
-  } else {
-    callback(result);
-  }
+
+    for (const givenRoot of roots) {
+      // Paths are built by concatenation, so the root must be normalised.
+      const root = path.resolve(givenRoot);
+      const rootNormal = pathUtils.absoluteToNormal(root);
+      const isWithinRoot = rootNormal !== '..' && !rootNormal.startsWith('..' + path.sep);
+      search(root, root.endsWith(path.sep) ? root : root + path.sep, rootNormal, isWithinRoot);
+    }
+    // Resolve now if there were no roots to search.
+    resolveIfDone();
+  });
 }
 
 export default async function nodeCrawl(options: CrawlerOptions): Promise<CrawlResult> {
-  const {
-    console,
-    previousState,
-    extensions,
-    ignore,
-    rootDir,
-    includeSymlinks,
-    perfLogger,
-    roots,
-    abortSignal,
-    subpath,
-  } = options;
+  const { abortSignal, perfLogger, previousState, subpath } = options;
 
   abortSignal?.throwIfAborted();
 
   perfLogger?.point('nodeCrawl_start');
 
-  return new Promise((resolve, reject) => {
-    const callback: Callback = (fileData) => {
-      const difference = previousState.fileSystem.getDifference(fileData, {
-        subpath,
-      });
+  const fileData = await find(options);
 
-      perfLogger?.point('nodeCrawl_end');
+  abortSignal?.throwIfAborted();
 
-      try {
-        // TODO: Use AbortSignal.reason directly when Flow supports it
-        abortSignal?.throwIfAborted();
-      } catch (e) {
-        reject(e);
-      }
-      resolve(difference);
-    };
-
-    find(
-      roots,
-      extensions,
-      ignore,
-      includeSymlinks,
-      rootDir,
-      console,
-      previousState.fileSystem,
-      callback
-    );
+  const difference = previousState.fileSystem.getDifference(fileData, {
+    subpath,
   });
+
+  perfLogger?.point('nodeCrawl_end');
+  return difference;
 }

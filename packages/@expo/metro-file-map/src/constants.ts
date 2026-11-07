@@ -14,24 +14,9 @@
  * a custom serialization library.
  */
 
-export interface HType {
-  readonly MTIME: 0;
-  readonly SIZE: 1;
-  readonly VISITED: 2;
-  readonly SHA1: 3;
-  readonly SYMLINK: 4;
-  readonly PLUGINDATA: 5;
-  readonly PATH: 0;
-  readonly TYPE: 1;
-  readonly MODULE: 0;
-  readonly PACKAGE: 1;
-  readonly GENERIC_PLATFORM: 'g';
-  readonly NATIVE_PLATFORM: 'native';
-}
+import type { HType } from './types';
 
-export type HTypeValue = 0 | 1 | 2 | 3 | 4 | 5 | 'g' | 'native';
-
-const H: HType = {
+export default {
   /* file map attributes */
   MTIME: 0,
   SIZE: 1,
@@ -51,6 +36,4 @@ const H: HType = {
   /* platforms */
   GENERIC_PLATFORM: 'g',
   NATIVE_PLATFORM: 'native',
-};
-
-export default H;
+} as HType;

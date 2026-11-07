@@ -5,24 +5,26 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import path from 'path';
+import path from 'node:path';
 
 import H from '../../constants';
 import { chainComparators, compareStrings } from '../../lib/sorting';
 import type { HasteMapItem } from '../../types';
 
-interface Conflict {
+type Conflict = {
   id: string;
   platform: string | null;
   absolutePaths: string[];
   type: 'duplicate' | 'shadowing';
-}
+};
 
-export function computeHasteConflicts(options: {
-  readonly duplicates: ReadonlyMap<string, ReadonlyMap<string, ReadonlyMap<string, number>>>;
-  readonly map: ReadonlyMap<string, HasteMapItem>;
-  readonly rootDir: string;
-}): Conflict[] {
+export function computeHasteConflicts(
+  options: Readonly<{
+    duplicates: ReadonlyMap<string, ReadonlyMap<string, ReadonlyMap<string, number>>>;
+    map: ReadonlyMap<string, HasteMapItem>;
+    rootDir: string;
+  }>
+): Conflict[] {
   const { duplicates, map, rootDir } = options;
   const conflicts: Conflict[] = [];
 

@@ -4,6 +4,8 @@ import { RootPathUtils } from '../../../lib/RootPathUtils';
 import type { FallbackFilesystem, FileMetadata } from '../../../types';
 import createFallbackFilesystem, { isFallbackDir } from '../fallback';
 
+jest.mock('node:fs', () => require('memfs').fs);
+
 // memfs is POSIX-only; pin to POSIX path semantics
 // TODO(@kitten): Fork the test for posix v windows
 jest.mock('path', () => jest.requireActual<typeof import('path')>('path').posix);
@@ -41,6 +43,8 @@ describe('createFallbackFilesystem', () => {
       const meta = node as any[];
       expect(meta[0]).toBeGreaterThan(0); // mtime
       expect(meta[4]).toBe(0); // SYMLINK = 0 for regular files
+      // No plugin data, so that lazy plugins compute it on demand
+      expect(meta).toHaveLength(5);
     });
 
     test('returns null for a file with non-matching extension', () => {
@@ -114,7 +118,7 @@ describe('createFallbackFilesystem', () => {
         '/project/dir/existing.js': 'existing',
       });
       const fallback = createFallback();
-      const existing = new Map([['existing.js', [999, 5, 0, null, 0, null] as any]]);
+      const existing = new Map([['existing.js', [999, 5, 0, null, 0] as any]]);
       const node = fallback.lookup('dir', '/project/dir', existing);
 
       expect(node).toBeInstanceOf(Map);
@@ -215,17 +219,18 @@ describe('createFallbackFilesystem', () => {
         '/project/src/file.js': 'new',
       });
       const fallback = createFallback();
-      const existing = new Map([['file.js', [999, 5, 0, null, 0, null] as FileMetadata]]);
+      const existing = new Map([['file.js', [999, 5, 0, null, 0] as FileMetadata]]);
       const result = fallback.readdir('src', '/project/src', existing);
 
       expect((result!.get('file.js') as FileMetadata)?.[0]).toBe(999); // preserved
     });
 
-    test('skips .git and .hg directories', () => {
+    test('skips .git, .hg and .cxx directories', () => {
       vol.fromJSON({
         '/project/src/keep.js': 'a',
         '/project/src/.git/HEAD': 'ref',
         '/project/src/.hg/store/data': 'binary',
+        '/project/src/.cxx/Debug/x86/gen.js': 'generated',
       });
       const fallback = createFallback();
       const result = fallback.readdir('src', '/project/src', undefined);
@@ -234,6 +239,34 @@ describe('createFallbackFilesystem', () => {
       expect(result!.has('keep.js')).toBe(true);
       expect(result!.has('.git')).toBe(false);
       expect(result!.has('.hg')).toBe(false);
+      expect(result!.has('.cxx')).toBe(false);
+    });
+
+    // A plugin-data slot holding `undefined` means the plugin hasn't run yet,
+    // so lazy plugins compute it on demand.
+    test('records files and symlinks without plugin data', () => {
+      vol.fromJSON({ '/project/src/target.js': 'target' });
+      vol.symlinkSync('/project/src/target.js', '/project/src/link.js');
+      const fallback = createFallback({ includeSymlinks: true });
+      const result = fallback.readdir('src', '/project/src', undefined);
+
+      expect(result!.get('target.js')).toEqual([null, 0, 0, null, 0]);
+      expect(result!.get('link.js')).toEqual([null, 0, 0, null, 1]);
+    });
+
+    test('does not match extensions against Object.prototype names', () => {
+      vol.fromJSON({
+        '/project/src/a.js': 'a',
+        '/project/src/b.constructor': 'b',
+        '/project/src/c.toString': 'c',
+        '/project/src/d.__proto__': 'd',
+      });
+      const fallback = createFallback({ extensions: ['js'] });
+
+      expect([...fallback.readdir('src', '/project/src', undefined)!.keys()]).toEqual(['a.js']);
+      expect(fallback.lookup('src/b.constructor', '/project/src/b.constructor', undefined)).toBe(
+        null
+      );
     });
 
     test('skips .git and .hg even when ignore would not match them', () => {

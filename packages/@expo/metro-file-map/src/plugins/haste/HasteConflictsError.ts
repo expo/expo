@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import path from 'path';
+import path from 'node:path';
 
 import type { HasteConflict } from '../../types';
 
@@ -19,7 +19,7 @@ export class HasteConflictsError extends Error {
     this.#conflicts = conflicts;
   }
 
-  getDetailedMessage(pathsRelativeToRoot: string | null): string {
+  getDetailedMessage(pathsRelativeToRoot?: string | null): string {
     const messages: string[] = [];
     const conflicts = this.#conflicts;
     if (conflicts.some((conflict) => conflict.type === 'duplicate')) {

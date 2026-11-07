@@ -68,6 +68,8 @@ describe('dependencyExtractor', () => {
     expect(extract(code)).toEqual(new Set(['dep1', 'dep2', 'dep3', 'dep4']));
   });
 
+  // https://github.com/facebook/jest/issues/8547
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/import#Import_a_module_for_its_side_effects_only
   test('should extract dependencies from side-effect only `import` statements', () => {
     const code = `
         // Good
@@ -91,6 +93,27 @@ describe('dependencyExtractor', () => {
   });
 
   test('should extract dependencies from `export` statements', () => {
+    const code = `
+      // Good
+      export * as depNS from 'dep1';
+      export {
+        a as aliased_a,
+        b,
+      } from 'dep2';
+      export depDefault from 'dep3';
+      export * as depNS, {
+        a as aliased_a,
+        b,
+      }, depDefault from 'dep4';
+
+      // Bad
+      foo . export ('inv1');
+      foo . export ('inv2');
+    `;
+    expect(extract(code)).toEqual(new Set(['dep1', 'dep2', 'dep3', 'dep4']));
+  });
+
+  test('should extract dependencies from `export-from` statements', () => {
     const code = `
       // Good
       export * as depNS from 'dep1';

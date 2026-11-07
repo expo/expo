@@ -5,42 +5,31 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import type { FileChange, WatchProjectResponse } from 'fb-watchman';
+import type { WatchmanQueryResponse, WatchmanWatchResponse } from 'fb-watchman';
 import watchman from 'fb-watchman';
 import invariant from 'invariant';
-import * as path from 'path';
-import { performance } from 'perf_hooks';
+import * as path from 'node:path';
+import { performance } from 'node:perf_hooks';
 
 import { RootPathUtils } from '../../lib/RootPathUtils';
 import isWatcherExcluded from '../../lib/isWatcherExcluded';
 import normalizePathSeparatorsToPosix from '../../lib/normalizePathSeparatorsToPosix';
 import normalizePathSeparatorsToSystem from '../../lib/normalizePathSeparatorsToSystem';
 import type {
-  WatchmanClockSpec,
   CanonicalPath,
   CrawlerOptions,
   CrawlResult,
   FileData,
   FileMetadata,
   Path,
+  WatchmanClockSpec,
 } from '../../types';
 import { planQuery } from './planQuery';
 
-// NOTE(@kitten): Not exported by @types/fb-watchman
-interface WatchmanWatchResponse extends WatchProjectResponse {
-  watcher: string;
-}
-
-// NOTE(@kitten): Not exported by @types/fb-watchman
-interface WatchmanQueryResponse {
-  clock: string | { clock: string };
-  is_fresh_instance: boolean;
-  files: FileChange[];
-  warning?: string;
-}
-
-/** Posix-separated absolute path as key */
-type WatchmanRoots = Map<string, { readonly directoryFilters: string[]; readonly watcher: string }>;
+type WatchmanRoots = Map<
+  string, // Posix-separated absolute path
+  Readonly<{ directoryFilters: string[]; watcher: string }>
+>;
 
 const WATCHMAN_WARNING_INITIAL_DELAY_MILLISECONDS = 10000;
 const WATCHMAN_WARNING_INTERVAL_MILLISECONDS = 20000;
@@ -77,12 +66,15 @@ export default async function watchmanCrawl({
   const newClocks = new Map<Path, WatchmanClockSpec>();
 
   let clientError: Error | undefined;
-  client.on('error', (error: Error) => {
+  client.on('error', (error) => {
     clientError = makeWatchmanError(error);
   });
 
-  // TODO: Fix to use fb-watchman types
-  const cmd = async <T>(command: 'watch-project' | 'query', ...args: any[]): Promise<T> => {
+  const cmd = async <T>(
+    command: 'watch-project' | 'query',
+    // TODO: Fix to use fb-watchman types
+    ...args: any[]
+  ): Promise<T> => {
     let didLogWatchmanWaitMessage = false;
     const startTime = performance.now();
     const logWatchmanWaitMessage = () => {
@@ -102,14 +94,15 @@ export default async function watchmanCrawl({
         );
       }, WATCHMAN_WARNING_INITIAL_DELAY_MILLISECONDS);
     try {
-      const response = await new Promise<WatchmanQueryResponse>((resolve, reject) => {
-        // NOTE: dynamic call of command
-        return (client.command as Function)(
+      const response = await new Promise<WatchmanQueryResponse>((resolve, reject) =>
+        // The command is dynamic, so it can't be matched to one of the
+        // overloads of `command`.
+        (client.command as Function)(
           [command, ...args],
-          (error: Error | null, result: WatchmanQueryResponse) =>
+          (error: Error | null | undefined, result: WatchmanQueryResponse) =>
             error ? reject(makeWatchmanError(error)) : resolve(result)
-        );
-      });
+        )
+      );
       if ('warning' in response) {
         onStatus({
           type: 'watchman_warning',
@@ -117,9 +110,9 @@ export default async function watchmanCrawl({
           command,
         });
       }
-      return response as unknown as T;
+      return response as T;
     } finally {
-      // NOTE: clearInterval / clearTimeout are interchangeable
+      // clearInterval / clearTimeout are interchangeable
       clearInterval(intervalOrTimeoutId);
       if (didLogWatchmanWaitMessage) {
         onStatus({
@@ -239,14 +232,14 @@ export default async function watchmanCrawl({
   let changedFiles: FileData = new Map();
   let results: Map<string, WatchmanQueryResponse> | undefined;
   let isFresh = false;
-  let queryError: Error | undefined;
+  let queryError: Error | null | undefined;
   try {
     const watchmanRoots = await getWatchmanRoots(roots);
     const watchmanFileResults = await queryWatchmanForDirs(watchmanRoots);
     results = watchmanFileResults.results;
     isFresh = watchmanFileResults.isFresh;
-  } catch (e: any) {
-    queryError = e;
+  } catch (e) {
+    queryError = e as Error;
   }
   client.end();
 
@@ -298,7 +291,7 @@ export default async function watchmanCrawl({
         invariant(mtime_ms != null && size != null, 'missing file data in watchman response');
         const mtime = typeof mtime_ms === 'number' ? mtime_ms : mtime_ms.toNumber();
 
-        let sha1hex: string | undefined = fileData['content.sha1hex'];
+        let sha1hex = fileData['content.sha1hex'];
         if (typeof sha1hex !== 'string' || sha1hex.length !== 40) {
           sha1hex = undefined;
         }
@@ -313,7 +306,7 @@ export default async function watchmanCrawl({
           );
         }
 
-        const nextData: FileMetadata = [mtime, size, 0, sha1hex ?? null, symlinkInfo, null];
+        const nextData: FileMetadata = [mtime, size, 0, sha1hex ?? null, symlinkInfo];
 
         // If watchman is fresh, the removed files map starts with all files
         // and we remove them as we verify they still exist.
