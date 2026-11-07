@@ -24,6 +24,7 @@ import type { AudioStream } from './AudioStream.types';
  */
 export declare class NativeAudioModule extends NativeModule {
   setIsAudioActiveAsync(active: boolean): Promise<void>;
+  setAudioSessionOwner?(owned: boolean): void;
   setAudioModeAsync(category: Partial<AudioMode>): Promise<void>;
   requestRecordingPermissionsAsync(): Promise<PermissionResponse>;
   requestNotificationPermissionsAsync(): Promise<PermissionResponse>;
@@ -175,8 +176,13 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
 
   /**
    * Pauses the player.
+   *
+   * @param deactivateSession On iOS, whether to deactivate the audio session after pausing. Pass
+   * `false` when another player is about to take over the session, so the pause doesn't interrupt
+   * it. Ignored on other platforms and when the player was created with `keepAudioSessionActive`.
+   * Defaults to `true`.
    */
-  pause(): void;
+  pause(deactivateSession?: boolean): void;
 
   /**
    * Replaces the current audio source with a new one.

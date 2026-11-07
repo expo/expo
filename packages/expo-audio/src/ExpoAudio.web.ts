@@ -140,6 +140,8 @@ export async function setIsAudioActiveAsync(active: boolean): Promise<void> {
   return await AudioModule.setIsAudioActiveAsync(active);
 }
 
+export function setAudioSessionOwner(_owned: boolean): void {}
+
 export async function setAudioModeAsync(mode: AudioMode): Promise<void> {
   return await AudioModule.setAudioModeAsync(mode);
 }
