@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Patch Changes
+
+- Fix published declarations that import the optional `expo-symbols` peer and name React Native types removed in 0.88. (by [@itisrmk](https://github.com/itisrmk))
+
 ## 58.0.26
 
 ### Patch Changes

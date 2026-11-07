@@ -3,7 +3,7 @@ import * as React from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 
 import { useClearGuardedRoutes } from '../../../layouts/useClearGuardedRoutes';
-import type { NavigatorContentProps } from '../../../standard-navigation';
+import type { NavigatorContentProps, StandardNavigator } from '../../../standard-navigation/types';
 import { type Route, useLocale } from '../../native';
 import type {
   StackNavigationEventMap,
@@ -72,7 +72,13 @@ function StackNavigatorContent({
 /**
  * Creates a JavaScript stack navigator compatible with `standard-navigation`.
  */
-export const unstable_createStandardStackNavigator = createStandardNavigator<
+// An explicit `StandardNavigator` annotation keeps its type parameters in scope in the published
+// declarations. The inferred return type prints `NavigatorOptions` and `NavigatorEventMap` unbound.
+export const unstable_createStandardStackNavigator: StandardNavigator<
+  StackNavigationOptions,
+  StandardStackNavigationEventMap,
+  StackNavigatorCreateProps
+> = createStandardNavigator<
   StackNavigationOptions,
   StandardStackNavigationEventMap,
   StackNavigatorCreateProps

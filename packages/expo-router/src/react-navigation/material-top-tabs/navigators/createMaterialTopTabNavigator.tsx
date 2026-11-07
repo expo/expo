@@ -2,7 +2,7 @@
 // TODO: Rename this file to `createStandardMaterialTopTabNavigator.tsx` in a follow-up.
 import { createStandardNavigator } from 'standard-navigation';
 
-import type { NavigatorContentProps } from '../../../standard-navigation/types';
+import type { NavigatorContentProps, StandardNavigator } from '../../../standard-navigation/types';
 import { useNonStackAnchorWarning } from '../../../standard-navigation/useNonStackAnchorWarning';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
 import { useReconcileTabHistory } from '../../../standard-navigation/useReconcileTabHistory';
@@ -107,7 +107,13 @@ function MaterialTopTabNavigatorContent({
   );
 }
 
-export const createStandardMaterialTopTabNavigator = createStandardNavigator<
+// An explicit `StandardNavigator` annotation keeps its type parameters in scope in the published
+// declarations. The inferred return type prints `NavigatorOptions` and `NavigatorEventMap` unbound.
+export const createStandardMaterialTopTabNavigator: StandardNavigator<
+  MaterialTopTabNavigationOptions,
+  MaterialTopTabNavigationEventMap,
+  MaterialTopTabNavigatorContentProps
+> = createStandardNavigator<
   MaterialTopTabNavigationOptions,
   MaterialTopTabNavigationEventMap,
   MaterialTopTabNavigatorContentProps

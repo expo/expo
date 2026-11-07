@@ -2,7 +2,10 @@
 // TODO: Rename this file to `createStandardDrawerNavigator.tsx` in a follow-up.
 import { createStandardNavigator } from 'standard-navigation';
 
-import type { StandardNavigatorContentProps } from '../../../standard-navigation/types';
+import type {
+  StandardNavigator,
+  StandardNavigatorContentProps,
+} from '../../../standard-navigation/types';
 import { useNonStackAnchorWarning } from '../../../standard-navigation/useNonStackAnchorWarning';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
 import { useReconcileTabHistory } from '../../../standard-navigation/useReconcileTabHistory';
@@ -99,7 +102,13 @@ function DrawerNavigatorContent({
   );
 }
 
-export const createStandardDrawerNavigator = createStandardNavigator<
+// An explicit `StandardNavigator` annotation keeps its type parameters in scope in the published
+// declarations. The inferred return type prints `NavigatorOptions` and `NavigatorEventMap` unbound.
+export const createStandardDrawerNavigator: StandardNavigator<
+  DrawerNavigationOptions,
+  StandardDrawerNavigationEventMap,
+  DrawerNavigatorContentProps
+> = createStandardNavigator<
   DrawerNavigationOptions,
   StandardDrawerNavigationEventMap,
   DrawerNavigatorContentProps

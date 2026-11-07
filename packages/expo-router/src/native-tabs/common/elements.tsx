@@ -1,9 +1,11 @@
-import type { AndroidSymbol } from 'expo-symbols';
 import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { Label, Icon, Badge, VectorIcon } from '../../primitives';
 import type { IconRenderingMode, NativeTabsLabelStyle } from '../types';
+
+// Material glyph names. `string` keeps the optional `expo-symbols` peer out of published types.
+type AndroidSymbol = string;
 
 export interface NativeTabsTriggerLabelProps {
   /**

@@ -8,7 +8,7 @@ import {
   mergeOptions,
   useCompositionRegistry,
 } from '../../fork/native-stack/composition-options';
-import type { NavigatorContentProps } from '../../standard-navigation';
+import type { NavigatorContentProps, StandardNavigator } from '../../standard-navigation/types';
 import { useClearGuardedRoutes } from '../useClearGuardedRoutes';
 import { ExperimentalStackView } from './ExperimentalStackView';
 import type {
@@ -71,7 +71,13 @@ function ExperimentalStackNavigatorContent({
   );
 }
 
-export const createStandardExperimentalStackNavigator = createStandardNavigator<
+// An explicit `StandardNavigator` annotation keeps its type parameters in scope in the published
+// declarations. The inferred return type prints `NavigatorOptions` and `NavigatorEventMap` unbound.
+export const createStandardExperimentalStackNavigator: StandardNavigator<
+  ExperimentalStackNavigationOptions,
+  StandardExperimentalStackNavigationEventMap,
+  ExperimentalStackNavigatorCreateProps
+> = createStandardNavigator<
   ExperimentalStackNavigationOptions,
   StandardExperimentalStackNavigationEventMap,
   ExperimentalStackNavigatorCreateProps
