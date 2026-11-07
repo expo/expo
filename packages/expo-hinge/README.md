@@ -29,6 +29,35 @@ Run `npx pod-install` after installing the npm package. Hinge updates need iOS 2
 
 No additional set up necessary. Hinge updates need Android 11 (API level 30) or later and a device with a hinge angle sensor; other devices report `null`.
 
+### Reading the hinge from native code
+
+Native code in another module can read the hinge without a round trip through JavaScript. `Hinge.hinge` returns the current `HingeState` (or `nil`), and `Hinge.addListener` calls back on the main thread with each change. UIKit asks `supportedInterfaceOrientationsFor` synchronously, so an app delegate subscriber that keeps a foldable upright by its hinge needs this:
+
+```swift
+import ExpoHinge
+import ExpoModulesCore
+
+public final class HingeOrientationAppDelegate: ExpoAppDelegateSubscriber {
+  public required init() {
+    super.init()
+    Hinge.addListener { _ in
+      // Tell UIKit to ask again: setNeedsUpdateOfSupportedInterfaceOrientations()
+    }
+  }
+
+  public func application(
+    _ application: UIApplication,
+    supportedInterfaceOrientationsFor window: UIWindow?
+  ) -> UIInterfaceOrientationMask {
+    switch Hinge.hinge?.status {
+    case .closed: return .portrait
+    case .partiallyOpen, .fullyOpen: return .landscapeLeft
+    case .unknown, nil: return .all
+    }
+  }
+}
+```
+
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
