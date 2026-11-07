@@ -25,6 +25,14 @@ fun getMapFromDeviceInfo(deviceInfo: AudioDeviceInfo): Bundle {
     AudioDeviceInfo.TYPE_BLUETOOTH_A2DP -> "BluetoothA2DP"
     AudioDeviceInfo.TYPE_TELEPHONY -> "Telephony"
     AudioDeviceInfo.TYPE_WIRED_HEADSET -> "MicrophoneWired"
+    AudioDeviceInfo.TYPE_USB_DEVICE,
+    AudioDeviceInfo.TYPE_USB_ACCESSORY,
+    AudioDeviceInfo.TYPE_USB_HEADSET -> "USBAudio"
+    AudioDeviceInfo.TYPE_BLE_HEADSET -> "BluetoothLE"
+    AudioDeviceInfo.TYPE_LINE_ANALOG,
+    AudioDeviceInfo.TYPE_LINE_DIGITAL -> "LineIn"
+    AudioDeviceInfo.TYPE_HDMI -> "HDMI"
+    AudioDeviceInfo.TYPE_BUS -> "CarAudio"
     else -> "Unknown device type"
   }
   map.putString("name", deviceInfo.productName.toString())
