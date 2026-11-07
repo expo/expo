@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `appendScheme` and `removeScheme` throwing when an `Info.plist` URL type has no `CFBundleURLSchemes`. ([#52088](https://github.com/expo/expo/pull/52088) by [@batuhansalkim](https://github.com/batuhansalkim))
+
 ### 💡 Others
 
 - Update `glob` to 14.0.3. ([#52819](https://github.com/expo/expo/pull/52819) by [@kitten](https://github.com/kitten))
