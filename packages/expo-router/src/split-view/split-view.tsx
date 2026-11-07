@@ -6,8 +6,10 @@ import { Slot } from '../views/Navigator';
 import {
   getSplitColumnChildren,
   SplitViewColumn,
+  SplitViewContent,
   SplitViewInspector,
   type SplitViewColumnProps,
+  type SplitViewContentProps,
 } from './elements';
 
 /**
@@ -26,6 +28,8 @@ export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
    */
   disableHorizontalSafeAreaInsets?: boolean;
 }
+
+let didWarnMissingContent = false;
 
 function SplitViewNavigator({
   children,
@@ -53,12 +57,19 @@ function SplitViewNavigator({
     (child): child is ReactElement<SplitViewColumnProps> =>
       isValidElement(child) && child.type === SplitViewInspector
   );
+  const contentChildren = allChildrenArray.filter(
+    (child): child is ReactElement<SplitViewContentProps> =>
+      isValidElement(child) && child.type === SplitViewContent
+  );
   const numberOfSidebars = columnChildren.length;
   const numberOfInspectors = inspectorChildren.length;
 
-  if (allChildrenArray.length !== columnChildren.length + inspectorChildren.length) {
+  if (
+    allChildrenArray.length !==
+    columnChildren.length + inspectorChildren.length + contentChildren.length
+  ) {
     console.warn(
-      'Only SplitView.Column and SplitView.Inspector components are allowed as direct children of SplitView.'
+      'Only SplitView.Column, SplitView.Content and SplitView.Inspector components are allowed as direct children of SplitView.'
     );
   }
 
@@ -66,22 +77,38 @@ function SplitViewNavigator({
     throw new Error('There can only be two SplitView.Column in the SplitView.');
   }
 
+  if (contentChildren.length > 1) {
+    throw new Error('There can only be one SplitView.Content in the SplitView.');
+  }
+
   if (numberOfSidebars + numberOfInspectors === 0) {
     console.warn('No SplitView.Column and SplitView.Inspector found in SplitView.');
     return <Slot activityEnabled={activityEnabled} />;
   }
 
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    contentChildren.length === 0 &&
+    !didWarnMissingContent
+  ) {
+    didWarnMissingContent = true;
+    console.warn(
+      'SplitView.Content is missing. Add <SplitView.Content /> to SplitView to configure the content column.'
+    );
+  }
+
   // Split.Host gives a column index only to direct children whose type is Split.Column.
   const columns = columnChildren.map((child) => (
     <Split.Column key={child.key}>
-      {getSplitColumnChildren(child.props.children, disableHorizontalSafeAreaInsets)}
+      {getSplitColumnChildren(child.props, disableHorizontalSafeAreaInsets)}
     </Split.Column>
   ));
   const inspectors = inspectorChildren.map((child) => (
     <Split.Inspector key={child.key}>
-      {getSplitColumnChildren(child.props.children, disableHorizontalSafeAreaInsets)}
+      {getSplitColumnChildren(child.props, disableHorizontalSafeAreaInsets)}
     </Split.Inspector>
   ));
+  const contentHeader = contentChildren[0]?.props.header;
 
   // The key is needed, because number of columns cannot be changed dynamically
   return (
@@ -89,8 +116,9 @@ function SplitViewNavigator({
       <Split.Host key={numberOfSidebars + numberOfInspectors} {...splitViewHostProps}>
         {columns}
         <Split.Column>
+          {/* TODO(@ubax): Replace Slot with NativeStack (ENG-28658) */}
           {getSplitColumnChildren(
-            <Slot activityEnabled={activityEnabled} />,
+            { children: <Slot activityEnabled={activityEnabled} />, header: contentHeader },
             disableHorizontalSafeAreaInsets
           )}
         </Split.Column>
@@ -102,5 +130,6 @@ function SplitViewNavigator({
 
 export const SplitView = Object.assign(SplitViewNavigator, {
   Column: SplitViewColumn,
+  Content: SplitViewContent,
   Inspector: SplitViewInspector,
 });
