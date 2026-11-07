@@ -8,26 +8,6 @@
 
 namespace expo {
 
-JavaCallback::CallbackContext::CallbackContext(
-  jsi::Runtime &rt,
-  std::weak_ptr<react::CallInvoker> jsCallInvokerHolder,
-  std::optional<jsi::Function> resolveHolder,
-  std::optional<jsi::Function> rejectHolder,
-  std::vector<jsi::Value> retainedValues
-) : react::LongLivedObject(rt),
-    rt(rt),
-    jsCallInvokerHolder(std::move(jsCallInvokerHolder)),
-    resolveHolder(std::move(resolveHolder)),
-    rejectHolder(std::move(rejectHolder)),
-    retainedValues(std::move(retainedValues)) {}
-
-void JavaCallback::CallbackContext::invalidate() {
-  resolveHolder.reset();
-  rejectHolder.reset();
-  retainedValues.clear();
-  allowRelease();
-}
-
 JavaCallback::JavaCallback(std::shared_ptr<CallbackContext> callbackContext)
   : callbackContext(std::move(callbackContext)) {}
 
@@ -67,40 +47,17 @@ jni::local_ref<JavaCallback::javaobject> JavaCallback::newInstance(
 void JavaCallback::invokeWithResolver(
   std::function<void(jsi::Runtime &rt, jsi::Function &jsFunction)> resolver
 ) {
-  const auto strongCallbackContext = this->callbackContext.lock();
-  // The context were deallocated before the callback was invoked.
-  if (strongCallbackContext == nullptr) {
-    return;
-  }
-
-  const auto jsInvoker = strongCallbackContext->jsCallInvokerHolder.lock();
-  // Call invoker is already released, so we cannot invoke the callback.
-  if (jsInvoker == nullptr) {
-    return;
-  }
-
-  jsInvoker->invokeAsync(
-    [
-      context = callbackContext,
-      resolver = std::move(resolver)
-    ]() -> void {
-      auto strongContext = context.lock();
-      // The context were deallocated before the callback was invoked.
-      if (strongContext == nullptr) {
-        return;
-      }
-
-      if (!strongContext->resolveHolder.has_value()) {
+  CallbackContext::schedule(
+    callbackContext,
+    [resolver = std::move(resolver)](CallbackContext &context) {
+      if (!context.resolveHolder.has_value()) {
         throw std::runtime_error(
           "JavaCallback was already settled. Cannot invoke it again"
         );
       }
 
-      jsi::Function &jsFunction = strongContext->resolveHolder.value();
-      jsi::Runtime &rt = strongContext->rt;
-
-      resolver(rt, jsFunction);
-      strongContext->invalidate();
+      resolver(context.rt, context.resolveHolder.value());
+      context.invalidate();
     });
 }
 
@@ -259,52 +216,32 @@ void JavaCallback::invokeFloatArray(jni::alias_ref<jni::JArrayFloat> result) {
 }
 
 void JavaCallback::invokeError(jni::alias_ref<jstring> code, jni::alias_ref<jstring> errorMessage) {
-  const auto strongCallbackContext = this->callbackContext.lock();
-  // The context were deallocated before the callback was invoked.
-  if (strongCallbackContext == nullptr) {
-    return;
-  }
-
-  const auto jsInvoker = strongCallbackContext->jsCallInvokerHolder.lock();
-  // Call invoker is already released, so we cannot invoke the callback.
-  if (jsInvoker == nullptr) {
-    return;
-  }
-
-  jsInvoker->invokeAsync(
+  CallbackContext::schedule(
+    callbackContext,
     [
-      context = callbackContext,
       code = code->toStdString(),
       errorMessage = errorMessage->toStdString()
-    ]() -> void {
-      auto strongContext = context.lock();
-      // The context were deallocated before the callback was invoked.
-      if (strongContext == nullptr) {
-        return;
-      }
-
-      if (!strongContext->rejectHolder.has_value()) {
+    ](CallbackContext &context) {
+      if (!context.rejectHolder.has_value()) {
         throw std::runtime_error(
           "JavaCallback was already settled. Cannot invoke it again"
         );
       }
 
-      jsi::Function &jsFunction = strongContext->rejectHolder.value();
-      jsi::Runtime &rt = strongContext->rt;
-
+      jsi::Runtime &rt = context.rt;
       auto codedError = makeCodedError(
         rt,
         jsi::String::createFromUtf8(rt, code),
         jsi::String::createFromUtf8(rt, errorMessage)
       );
 
-      jsFunction.call(
+      context.rejectHolder->call(
         rt,
         (const jsi::Value *) &codedError,
         (size_t) 1
       );
 
-      strongContext->invalidate();
+      context.invalidate();
     });
 }
 } // namespace expo
