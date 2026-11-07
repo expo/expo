@@ -5,6 +5,7 @@ import android.media.AudioAttributes
 import android.media.AudioFocusRequest
 import android.media.AudioManager
 import android.os.Build
+import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import expo.modules.kotlin.AppContext
 import expo.modules.video.FailedToGetAudioFocusManagerException
@@ -24,6 +25,7 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
 
   private var players: MutableList<WeakReference<VideoPlayer>> = mutableListOf()
   private var currentFocusRequest: AudioFocusRequest? = null
+  private var legacyAudioFocusAcquired = false
   private var currentMixingMode: AudioMixingMode = AudioMixingMode.MIX_WITH_OTHERS
   private val anyPlayerRequiresFocus: Boolean
     get() = players.toList().any {
@@ -41,7 +43,9 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
     }
     val audioFocusType = when (audioMixingMode) {
       AudioMixingMode.DUCK_OTHERS -> AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
-      AudioMixingMode.AUTO -> AudioManager.AUDIOFOCUS_GAIN
+      // An in-app video is a temporary interruption of the current audio, so we request transient
+      // focus. When it's abandoned, other apps (e.g. music players) resume playback on their own.
+      AudioMixingMode.AUTO -> AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
       AudioMixingMode.DO_NOT_MIX -> AudioManager.AUDIOFOCUS_GAIN
       else -> AudioManager.AUDIOFOCUS_GAIN
     }
@@ -68,25 +72,26 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
       audioManager.requestAudioFocus(newFocusRequest)
     } else {
       @Suppress("DEPRECATION")
-      audioManager.requestAudioFocus(
+      legacyAudioFocusAcquired = audioManager.requestAudioFocus(
         this,
         AudioManager.STREAM_MUSIC,
         audioFocusType
-      )
+      ) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED
     }
     currentMixingMode = audioMixingMode
   }
 
   private fun abandonAudioFocus() {
-    currentFocusRequest?.let {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      currentFocusRequest?.let {
         audioManager.abandonAudioFocusRequest(it)
-      } else {
-        @Suppress("DEPRECATION")
-        audioManager.abandonAudioFocus(this)
       }
+    } else if (legacyAudioFocusAcquired) {
+      @Suppress("DEPRECATION")
+      audioManager.abandonAudioFocus(this)
     }
     currentFocusRequest = null
+    legacyAudioFocusAcquired = false
   }
 
   fun registerPlayer(player: VideoPlayer) {
@@ -113,7 +118,8 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
   override fun onIsPlayingChanged(player: VideoPlayer, isPlaying: Boolean, oldIsPlaying: Boolean?) {
     // we can't use `updateAudioFocus`, because when losing focus the videos are paused sequentially,
     // which can lead to unexpected results.
-    if (!isPlaying && !anyPlayerRequiresFocus) {
+    val isWaitingToResume = player.player.playWhenReady && player.player.playbackState == Player.STATE_BUFFERING
+    if (!isPlaying && !isWaitingToResume && !anyPlayerRequiresFocus) {
       abandonAudioFocus()
     } else if (isPlaying && anyPlayerRequiresFocus) {
       requestAudioFocus()
