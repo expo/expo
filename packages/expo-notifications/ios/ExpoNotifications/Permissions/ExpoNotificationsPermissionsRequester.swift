@@ -34,6 +34,12 @@ public class ExpoNotificationsPermissionsRequester: NSObject, EXPermissionsReque
     return makePermissionsResult(from: settings)
   }
 
+  public func getPermissions(resolver resolve: @escaping EXPromiseResolveBlock) {
+    Task {
+      resolve(await getPermissionsAsync())
+    }
+  }
+
   private func makePermissionsResult(from settings: UNNotificationSettings) -> [AnyHashable: Any] {
     let generalStatus: EXPermissionStatus = switch settings.authorizationStatus {
     case .authorized:
