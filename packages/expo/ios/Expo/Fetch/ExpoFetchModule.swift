@@ -26,7 +26,7 @@ public final class ExpoFetchModule: Module {
       throw Exceptions.AppContextLost()
     }
     return try ExpoDevToolsInitiator
-      .hostFunction(named: "fetch", calling: implementation, in: appContext.runtime)
+      .hostFunction(named: "fetch", calling: implementation, argumentCount: 2, in: appContext.runtime)
       .asValue()
   }
 

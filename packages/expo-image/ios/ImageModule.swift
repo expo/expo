@@ -5,6 +5,7 @@ internal import SDWebImage
 internal import SDWebImageAVIFCoder
 internal import SDWebImageSVGCoder
 
+@ExpoModule("ExpoImage")
 public final class ImageModule: Module {
   lazy var prefetcher = SDWebImagePrefetcher.shared
 
@@ -12,8 +13,30 @@ public final class ImageModule: Module {
   // listening
   private var hasImageLoadedListener = false
 
+  // `Image.loadAsync` on iOS. The initiator is the JS caller, because this host function records it.
+  @JS
+  func createLoadAsync(_ implementation: borrowing JavaScriptValue) throws -> JavaScriptValue {
+    guard let appContext else {
+      throw Exceptions.AppContextLost()
+    }
+    return try ExpoDevToolsInitiator
+      .hostFunction(named: "loadAsync", calling: implementation, argumentCount: 2, in: appContext.runtime)
+      .asValue()
+  }
+
   public func definition() -> ModuleDefinition {
     Name("ExpoImage")
+
+    // Called from `<Image>` render. The parent component has already returned, so the initiator is
+    // this render rather than the component that created the element.
+    Function("captureDevToolsRequestId") { () -> String? in
+      guard let appContext = self.appContext else {
+        return nil
+      }
+      return try JavaScriptActor.assumeIsolated {
+        return try ExpoDevToolsInitiator.requestId(in: appContext.runtime)
+      }
+    }
 
     Events("imageLoaded")
 

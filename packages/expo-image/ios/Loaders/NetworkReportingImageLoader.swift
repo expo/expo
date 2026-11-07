@@ -32,7 +32,8 @@ final class NetworkReportingImageLoader: NSObject, SDImageLoader {
     progress progressBlock: SDImageLoaderProgressBlock?,
     completed completedBlock: ImageLoaderCompletedBlock? = nil
   ) -> SDWebImageOperation? {
-    let reporter = ExpoNetworkReporter()
+    let source = context?[ImageView.contextSourceKey] as? ImageSource
+    let reporter = ExpoNetworkReporter(devToolsRequestId: source?.devToolsRequestId)
     var context = context ?? [:]
 
     // Called once the download is created, but not when it's shared with an in-flight download of the

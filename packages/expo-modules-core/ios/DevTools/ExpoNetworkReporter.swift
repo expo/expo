@@ -4,11 +4,6 @@ import ExpoModulesJSI
 import Foundation
 internal import React
 
-// WebSocket stays with React Native. `new WebSocket()` is `RCTWebSocketModule`, which already
-// calls `RCTInspectorWebSocketReporter`. Those calls no-op unless `fuseboxWebSocketEventsEnabled`
-// is on (default false, canary). Do not report them here. The request id is created inside
-// `WebSocket.js`, so the initiator is that file until React Native records the caller's stack.
-
 /**
  Reports the lifecycle of one network request to React Native's core network reporter
  (`RCTInspectorNetworkReporter`), which backs the React Native DevTools Network panel and the
@@ -178,12 +173,14 @@ public enum ExpoDevToolsInitiator {
   }
 
   /// A host function that records the initiator, then calls `implementation` with the request id appended.
-  /// An id already set on the first argument (`devToolsRequestId`) is reused, so an earlier host call can
-  /// own the stack.
+  /// `argumentCount` is the number of parameters before that id. Omitted arguments are passed as
+  /// `undefined` so the id does not shift into one of them. An id already set on the first argument
+  /// (`devToolsRequestId`) is reused, so an earlier host call can own the stack.
   @JavaScriptActor
   public static func hostFunction(
     named name: String,
     calling implementation: borrowing JavaScriptValue,
+    argumentCount: Int,
     in runtime: JavaScriptRuntime
   ) throws -> JavaScriptFunction {
     guard implementation.isFunction() else {
@@ -197,6 +194,7 @@ public enum ExpoDevToolsInitiator {
         implementation,
         arguments: arguments,
         devToolsRequestId: requestId,
+        paddingTo: argumentCount,
         in: runtime
       )
     }
@@ -222,15 +220,17 @@ public enum ExpoDevToolsInitiator {
     _ implementation: JavaScriptValue.Ref,
     arguments: borrowing JavaScriptValuesBuffer,
     devToolsRequestId: String?,
+    paddingTo argumentCount: Int,
     in runtime: JavaScriptRuntime
   ) throws -> JavaScriptValue {
-    // The id's slot stays `undefined` when DevTools is not attached.
-    let forwarded = JavaScriptValuesBuffer.allocate(in: runtime, capacity: arguments.count + 1)
-    for index in 0..<arguments.count {
+    // Every slot starts as `undefined`, so an omitted argument stays `undefined` and the id lands
+    // after the last parameter.
+    let forwarded = JavaScriptValuesBuffer.allocate(in: runtime, capacity: argumentCount + 1)
+    for index in 0..<min(arguments.count, argumentCount) {
       forwarded.emplace(arguments[index], at: index)
     }
     if let devToolsRequestId {
-      forwarded.emplace(JavaScriptValue(runtime, devToolsRequestId), at: arguments.count)
+      forwarded.emplace(JavaScriptValue(runtime, devToolsRequestId), at: argumentCount)
     }
     guard let function = try implementation.withUnwrappedValue({ (value: borrowing JavaScriptValue) in
       try value.asFunction()
