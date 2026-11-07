@@ -99,12 +99,35 @@ export async function getOptionalDevClientSchemeAsync(
     return { scheme: await getManagedDevClientSchemeAsync(projectRoot), resolution: 'config' };
   }
 
-  // Allow for only one native project to exist.
-  if (!hasIos) {
-    return { scheme: android[0]!, resolution: 'android' };
-  } else if (!hasAndroid) {
-    return { scheme: ios[0]!, resolution: 'ios' };
-  } else {
-    return { scheme: intersecting(ios, android)[0]!, resolution: 'shared' };
+  const resolution = !hasIos ? 'android' : !hasAndroid ? 'ios' : 'shared';
+  const schemes = !hasIos ? android : !hasAndroid ? ios : intersecting(ios, android);
+  const scheme = schemes.find(isValidScheme);
+  if (scheme) {
+    return { scheme, resolution };
   }
+
+  const nativeSchemes = [...(hasIos ? [ios] : []), ...(hasAndroid ? [android] : [])];
+  if (nativeSchemes.some((schemes) => schemes.some(isBuildSettingScheme))) {
+    const { exp } = getConfig(projectRoot);
+    const scheme = IOSConfig.Scheme.getScheme(exp).find(
+      (scheme) =>
+        isValidScheme(scheme) &&
+        nativeSchemes.every(
+          (schemes) => schemes.includes(scheme) || schemes.some(isBuildSettingScheme)
+        )
+    );
+    if (scheme) {
+      return { scheme, resolution: 'config' };
+    }
+  }
+
+  return { scheme: null, resolution };
+}
+
+function isValidScheme(scheme: string): boolean {
+  return /^[a-z][a-z\d+.-]*$/i.test(scheme);
+}
+
+function isBuildSettingScheme(scheme: string): boolean {
+  return /\$\([^)]+\)|\$\{[^}]+\}/.test(scheme);
 }
