@@ -16,7 +16,7 @@ declare namespace __MetroModuleApi {
 
   export interface RequireContext {
     /** Return the keys that can be resolved. */
-    keys(): string[];
+    keys(): `./${string}`[];
     (id: string): any;
     <T>(id: string): T;
     /** **Unimplemented:** Return the module identifier for a user request. */

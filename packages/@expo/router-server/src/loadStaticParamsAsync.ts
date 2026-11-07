@@ -80,8 +80,8 @@ async function loadStaticParamsRecursive(
     return [route];
   }
 
-  const createParsedRouteName = (input: string, params: any) => {
-    let parsedRouteName = input;
+  const createParsedRouteName = <T extends string>(input: T, params: any): T => {
+    let parsedRouteName: string = input;
     route.dynamic?.map((query) => {
       const param = params[query.name];
       const formattedParameter = Array.isArray(param) ? param.join('/') : param;
@@ -92,7 +92,8 @@ async function loadStaticParamsRecursive(
       }
     });
 
-    return parsedRouteName;
+    // Only dynamic segments are substituted, so the input's prefix survives.
+    return parsedRouteName as T;
   };
 
   const generatedRoutes = await Promise.all(

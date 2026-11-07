@@ -6,16 +6,17 @@ import { warnIfNestedParams } from '../navigationParams';
 import { isArrayEqual } from '../react-navigation/core/isArrayEqual';
 import type { NavigationState, PartialState } from '../react-navigation/native';
 import type { UnknownOutputParams } from '../types';
+import type { AbsoluteHref, AbsolutePath } from '../types/paths';
 import { safeDecodeURIComponent } from '../utils/url';
 import type { FocusedRouteState } from './types';
 
 export type UrlObject = {
-  unstable_globalHref: string;
-  pathname: string;
+  unstable_globalHref: AbsoluteHref;
+  pathname: AbsolutePath;
   readonly params: UnknownOutputParams;
   searchParams: URLSearchParams;
   segments: string[];
-  pathnameWithParams: string;
+  pathnameWithParams: AbsoluteHref;
   isIndex: boolean;
 };
 
@@ -61,10 +62,13 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   warnIfNestedParams(route.params);
 
   if (route.name === NOT_FOUND_ROUTE_NAME || route.name === SITEMAP_ROUTE_NAME) {
-    const path = route.path || (route.name === NOT_FOUND_ROUTE_NAME ? '/' : `/${route.name}`);
+    // Matched URL paths start with `/`.
+    const path = (route.path ||
+      (route.name === NOT_FOUND_ROUTE_NAME ? '/' : `/${route.name}`)) as AbsolutePath;
     return {
       ...defaultRouteInfo,
-      unstable_globalHref: appendBaseUrl(path),
+      // appendBaseUrl() preserves the leading slash.
+      unstable_globalHref: appendBaseUrl(path) as AbsoluteHref,
       pathname: path,
       pathnameWithParams: path,
       segments: [route.name],
@@ -86,7 +90,8 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     // Navigation params can contain ordinary object values at runtime despite the public search-param type.
     // TODO: address this together with other params serialization issues
     params: params as UrlObject['params'],
-    unstable_globalHref: appendBaseUrl(pathnameWithParams),
+    // appendBaseUrl() preserves the leading slash.
+    unstable_globalHref: appendBaseUrl(pathnameWithParams) as AbsoluteHref,
     searchParams,
     pathnameWithParams,
     // TODO: Remove this, it is not used anywhere
@@ -212,7 +217,7 @@ function resolvePathname(segments: readonly string[], params: Record<string, unk
       }
     });
 
-  const pathname = '/' + resolvedSegments.flatMap(({ parts }) => parts).join('/');
+  const pathname: AbsolutePath = `/${resolvedSegments.flatMap(({ parts }) => parts).join('/')}`;
   const pathParams = new Set(
     resolvedSegments
       .map(({ paramName }) => paramName)
@@ -223,7 +228,7 @@ function resolvePathname(segments: readonly string[], params: Record<string, unk
 }
 
 function serializeQueryAndHash(
-  pathname: string,
+  pathname: AbsolutePath,
   params: Record<string, unknown>,
   pathParams: Set<string>
 ) {
@@ -249,8 +254,10 @@ function serializeQueryAndHash(
 
   // We cannot use searchParams.size because it is not included in the React Native polyfill
   const searchParamString = searchParams.toString();
-  let pathnameWithParams = searchParamString ? pathname + '?' + searchParamString : pathname;
-  pathnameWithParams = hash ? pathnameWithParams + '#' + hash : pathnameWithParams;
+  let pathnameWithParams: AbsoluteHref = searchParamString
+    ? `${pathname}?${searchParamString}`
+    : pathname;
+  pathnameWithParams = hash ? `${pathnameWithParams}#${hash}` : pathnameWithParams;
 
   return { searchParams, pathnameWithParams };
 }

@@ -7,6 +7,7 @@ import type { RouteNode } from '../../Route';
 import { INTERNAL_SLOT_NAME } from '../../constants';
 import type { ResultState } from '../../exports';
 import { CompositionContext } from '../../fork/native-stack/composition-options';
+import { getRouteInfoFromState } from '../../global-state/getRouteInfoFromState';
 import { RouterConfigContext } from '../../global-state/routerConfigContext';
 import type { ReactNavigationState } from '../../global-state/types';
 import { useRouteInfo } from '../../global-state/useRouteInfo';
@@ -57,13 +58,11 @@ export function HrefPreview({ href }: { href: Href }) {
       rnState = rnState.routes[rnIndex]?.state;
     }
     if (!isProtected) {
-      return (
-        <PreviewForRootHrefState hrefState={hrefState} href={href} rootRouteNode={routeNode} />
-      );
+      return <PreviewForRootHrefState hrefState={hrefState} rootRouteNode={routeNode} />;
     }
   }
 
-  const pathname = href.toString();
+  const { pathname } = getRouteInfoFromState(hrefState);
   const segments = pathname.split('/').filter(Boolean);
 
   return (
@@ -80,26 +79,21 @@ export function HrefPreview({ href }: { href: Href }) {
 
 function PreviewForRootHrefState({
   hrefState,
-  href,
   rootRouteNode,
 }: {
   hrefState: ResultState;
-  href: Href;
   rootRouteNode: RouteNode | null | undefined;
 }) {
   const navigation = useNavigation();
-  const { routeNode, params, state } = getParamsAndNodeFromHref(hrefState, rootRouteNode);
-
-  const path = state ? getPathFromState(state) : undefined;
-
-  const value = useMemo(
-    () => ({
-      params,
-      pathname: href.toString(),
-      segments: path?.split('/').filter(Boolean) || [],
-    }),
-    [params, href]
-  );
+  const { routeNode, value } = useMemo(() => {
+    const { routeNode, params, state } = getParamsAndNodeFromHref(hrefState, rootRouteNode);
+    const { pathname } = getRouteInfoFromState(hrefState);
+    const path = state ? getPathFromState(state) : undefined;
+    return {
+      routeNode,
+      value: { params, pathname, segments: path?.split('/').filter(Boolean) || [] },
+    };
+  }, [hrefState, rootRouteNode]);
 
   // This can happen in a theoretical case where the state is not yet initialized or is incorrectly initialized.
   // This check ensures TypeScript type safety as well.
