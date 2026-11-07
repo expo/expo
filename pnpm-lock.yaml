@@ -3930,7 +3930,7 @@ importers:
   packages/expo-app-intents:
     dependencies:
       '@expo/ui':
-        specifier: workspace:^58.0.27
+        specifier: workspace:^58.0.28
         version: link:../expo-ui
       commander:
         specifier: ^12.1.0
@@ -10271,9 +10271,6 @@ packages:
   '@types/geojson@7946.0.16':
     resolution: {integrity: sha512-6C8nqWur3j98U6+lXDfTUWIfgvZU+EumvpHKcYjujKH7woYyLj2sUmff0tRhrqM7BohUw7Pz3ZB1jj2gW9Fvmg==}
 
-  '@types/getenv@1.0.3':
-    resolution: {integrity: sha512-aCe60hc2U/xtdnGYbcZBFm6Xkm/MFuWqKMbhupcGt7DJ1QojADIXFKthtlgTwyXkEi6vr8lMXtOI218Ua9qx6w==}
-
   '@types/graceful-fs@4.1.9':
     resolution: {integrity: sha512-olP3sd1qOEe5dXTSaFvQG+02VdRXcdytWLAZsAq1PecU8uqQAhkrnbli7DagjtXKW/Bl7YJbUsa8MPcuc8LHEQ==}
 
@@ -12438,10 +12435,6 @@ packages:
 
   get-tsconfig@4.13.6:
     resolution: {integrity: sha512-shZT/QMiSHc/YBLxxOkMtgSid5HFoauqCE3/exfsEcwg1WkeqjG+V40yBbBrsD+jW2HDXcs28xOfcbm2jI8Ddw==}
-
-  getenv@2.0.0:
-    resolution: {integrity: sha512-VilgtJj/ALgGY77fiLam5iD336eSWi96Q15JSAG1zi8NRBysm3LXKdGnHb4m5cuyxvOLQQKWpBZAT6ni4FI2iQ==}
-    engines: {node: '>=6'}
 
   gl-mat4@1.2.0:
     resolution: {integrity: sha512-sT5C0pwB1/e9G9AvAoLsoaJtbMGjfd/jfxo8jMCKqYYEnjZuFvqV5rehqar0538EmssjdDeiEWnKyBSTw7quoA==}
@@ -19336,10 +19329,6 @@ snapshots:
 
   '@types/geojson@7946.0.16': {}
 
-  '@types/getenv@1.0.3':
-    dependencies:
-      '@types/node': 22.20.1
-
   '@types/graceful-fs@4.1.9':
     dependencies:
       '@types/node': 22.20.1
@@ -21758,8 +21747,6 @@ snapshots:
   get-tsconfig@4.13.6:
     dependencies:
       resolve-pkg-maps: 1.0.0
-
-  getenv@2.0.0: {}
 
   gl-mat4@1.2.0: {}
 

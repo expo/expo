@@ -1,5 +1,11 @@
 # create-expo-module
 
+## 58.0.4
+
+### Patch Changes
+
+- Use @expo/env instead of getenv to read environment variables. ([#52934](https://github.com/expo/expo/pull/52934) by [@kitten](https://github.com/kitten))
+
 ## 58.0.3
 
 ### Patch Changes

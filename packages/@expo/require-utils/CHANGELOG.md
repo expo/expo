@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.6
+
+### Patch Changes
+
+- Support the TypeScript 7.1 `typescript/sync` entrypoint alongside the previous `typescript/unstable/sync` ([#52831](https://github.com/expo/expo/pull/52831) by [@kitten](https://github.com/kitten))
+
 ## 58.0.5
 
 ### Patch Changes

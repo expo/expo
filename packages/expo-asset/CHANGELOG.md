@@ -1,5 +1,14 @@
 # Changelog
 
+## 58.0.21
+
+### Patch Changes
+
+- [iOS] Build from a checked-in Package.swift that the Expo SwiftPM plugin uses when the module is built from source. ([#53136](https://github.com/expo/expo/pull/53136) by [@chrfalch](https://github.com/chrfalch))
+- Updated dependencies. ([#52932](https://github.com/expo/expo/pull/52932))
+  - @expo/image-utils@0.12.7
+  - expo-constants@58.0.16
+
 ## 58.0.20
 
 ### Patch Changes

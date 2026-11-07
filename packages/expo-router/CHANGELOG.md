@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.31
+
+### Patch Changes
+
+- [Android] `Stack.Toolbar.Menu` now uses the Material 3 Expressive menu. Each inline submenu is a group, and each action with `isOn` is a selectable item. The `cornerRadius` prop is deprecated and has no effect. ([#52885](https://github.com/expo/expo/pull/52885) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Fix redirects so dynamic segments match the URL and query strings are preserved. ([#52711](https://github.com/expo/expo/pull/52711) by [@itisrmk](https://github.com/itisrmk))
+- Use `inert` instead of `aria-hidden` for unfocused screens on web. ([#52839](https://github.com/expo/expo/pull/52839) by [@hassankhan](https://github.com/hassankhan))
+- Updated dependencies. ([#53136](https://github.com/expo/expo/pull/53136))
+  - expo-status-bar@58.0.5
+
 ## 58.0.30
 
 ### Patch Changes

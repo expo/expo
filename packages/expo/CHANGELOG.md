@@ -1,5 +1,25 @@
 # Changelog
 
+## 58.0.24
+
+### Patch Changes
+
+- [iOS] A module built from its checked-in Package.swift gets the Expo Swift macros through the `ExpoModulesCoreHeaders` package, which depends on the `expo-modules-macros` Swift package. The SwiftPM plugin no longer links the macro plugin into the build folder, and the manifest needs no unsafe flags. ([#53135](https://github.com/expo/expo/pull/53135) by [@chrfalch](https://github.com/chrfalch))
+- Updated dependencies. ([#52975](https://github.com/expo/expo/pull/52975), [#52796](https://github.com/expo/expo/pull/52796), [#53091](https://github.com/expo/expo/pull/53091), [#52747](https://github.com/expo/expo/pull/52747), [#50207](https://github.com/expo/expo/pull/50207), [#52745](https://github.com/expo/expo/pull/52745), [#52932](https://github.com/expo/expo/pull/52932), [#52934](https://github.com/expo/expo/pull/52934), [#52750](https://github.com/expo/expo/pull/52750), [#52910](https://github.com/expo/expo/pull/52910), [#53136](https://github.com/expo/expo/pull/53136))
+  - @expo/cli@58.1.20
+  - @expo/fingerprint@0.21.10
+  - expo-modules-autolinking@58.0.18
+  - expo-modules-core@58.0.31
+  - @expo/config@58.0.12
+  - @expo/config-plugins@58.0.13
+  - @expo/metro-config@58.0.22
+  - expo-asset@58.0.21
+  - expo-font@58.0.12
+  - expo-keep-awake@58.0.4
+  - expo-constants@58.0.16
+  - @expo/local-build-cache-provider@58.0.12
+  - babel-preset-expo@58.0.25
+
 ## 58.0.23
 
 ### Patch Changes
