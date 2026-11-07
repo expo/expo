@@ -19,11 +19,26 @@ const SlotNativeView: React.ComponentType<SlotNativeViewProps> = requireNativeVi
  * @platform android
  */
 export type SliderColors = {
+  /** The thumb color when enabled. */
   thumbColor?: ColorValue;
+  /** The active track color when enabled. */
   activeTrackColor?: ColorValue;
+  /** The inactive track color when enabled. */
   inactiveTrackColor?: ColorValue;
+  /** The active tick color when enabled. */
   activeTickColor?: ColorValue;
+  /** The inactive tick color when enabled. */
   inactiveTickColor?: ColorValue;
+  /** The thumb color when disabled. */
+  disabledThumbColor?: ColorValue;
+  /** The active track color when disabled. */
+  disabledActiveTrackColor?: ColorValue;
+  /** The inactive track color when disabled. */
+  disabledInactiveTrackColor?: ColorValue;
+  /** The active tick color when disabled. */
+  disabledActiveTickColor?: ColorValue;
+  /** The inactive tick color when disabled. */
+  disabledInactiveTickColor?: ColorValue;
 };
 
 export interface SliderProps {
