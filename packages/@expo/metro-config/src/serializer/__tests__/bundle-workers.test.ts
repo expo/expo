@@ -93,7 +93,7 @@ function runWorkerChunkInIsolatedContext(workerChunk: SerialAsset): unknown {
     __d(factory: ModuleRecord['factory'], moduleId: unknown, dependencies: unknown[]) {
       modules.set(moduleId, { dependencies, exports: {}, factory, initialized: false });
     },
-    TEST_RUN_MODULE: metroRequire,
+    __r: metroRequire,
   });
   context.global = context;
   context.globalThis = context;
@@ -144,10 +144,10 @@ it(`supports worker bundle`, async () => {
     }),
   ]);
   expect(artifacts[0].source).toMatch('runtime');
-  expect(artifacts[0].source).toMatch('TEST_RUN_MODULE');
+  expect(artifacts[0].source).toMatch('__r');
   expect(artifacts[0].source).toMatch('"paths":{"/app/math.js":"/_expo/');
   expect(artifacts[1].source).toMatch('runtime');
-  expect(artifacts[1].source).toMatch('TEST_RUN_MODULE');
+  expect(artifacts[1].source).toMatch('__r');
 });
 
 it('emits workers as standalone bundles when ordinary chunk splitting is disabled', async () => {
@@ -178,6 +178,7 @@ it('emits workers as standalone bundles when ordinary chunk splitting is disable
   expect(ordinaryAsyncChunk).toBe(entryChunk);
   expect(workerChunk.metadata.modulePaths).toEqual(['/app/worker.js']);
   expect(workerChunk).not.toBe(entryChunk);
+  expect(entryChunk.source).toContain(workerChunk.filename);
 });
 
 describe('lazy development bundles', () => {
@@ -269,13 +270,13 @@ it(`supports worker bundle with nested async chunk`, async () => {
     }),
   ]);
   expect(artifacts[0].source).toMatch('runtime');
-  expect(artifacts[0].source).toMatch('TEST_RUN_MODULE');
+  expect(artifacts[0].source).toMatch('__r');
   expect(artifacts[1].source).not.toMatch('runtime');
-  expect(artifacts[1].source).not.toMatch('TEST_RUN_MODULE');
+  expect(artifacts[1].source).not.toMatch('__r');
   expect(artifacts[1].source).toMatch('"paths":{"/app/c.js":"/_expo/');
 
   expect(artifacts[2].source).toMatch('runtime');
-  expect(artifacts[2].source).toMatch('TEST_RUN_MODULE');
+  expect(artifacts[2].source).toMatch('__r');
 });
 
 it(`supports worker bundle with shared deps`, async () => {
@@ -329,11 +330,11 @@ it(`supports worker bundle with shared deps`, async () => {
   expect(artifacts.length).toBe(2);
 
   expect(artifacts[0].source).toMatch('runtime');
-  expect(artifacts[0].source).toMatch('TEST_RUN_MODULE');
+  expect(artifacts[0].source).toMatch('__r');
   expect(artifacts[0].source).toMatch('function add(a, b) {}');
 
   expect(artifacts[1].source).toMatch('runtime');
-  expect(artifacts[1].source).toMatch('TEST_RUN_MODULE');
+  expect(artifacts[1].source).toMatch('__r');
   expect(artifacts[1].source).toMatch('function add(a, b) {}');
 });
 
