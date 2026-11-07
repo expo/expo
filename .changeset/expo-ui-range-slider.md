@@ -1,5 +1,5 @@
 ---
-"@expo/ui": minor
+"@expo/ui": patch
 ---
 
 [Android] Add the Jetpack Compose `RangeSlider` component with custom thumbs, track, and colors.
