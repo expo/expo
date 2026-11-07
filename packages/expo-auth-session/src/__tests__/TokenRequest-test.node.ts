@@ -227,11 +227,9 @@ describe('RevokeTokenRequest', () => {
         authorization: 'attempt-to-overwrite-auth-is-ignored',
       },
     });
-    // Test the query is serialized properly.
+    // When clientSecret is provided, credentials are sent only via Basic Auth header,
+    // not in the body (RFC 6749 §2.3.1).
     expect(request.getQueryBody()).toStrictEqual({
-      // The client_id is currently being kept in the query body
-      client_id: 'my-client_id',
-      client_secret: 'my-client_secret',
       token: 'my-token',
       token_type_hint: 'access_token',
     });
