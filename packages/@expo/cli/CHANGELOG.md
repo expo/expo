@@ -15,6 +15,7 @@
 - Fix opening browser URLs with query parameters and special characters on Windows and WSL. ([#52747](https://github.com/expo/expo/pull/52747) by [@kitten](https://github.com/kitten))
 - Preserve HTTPS tunnel URLs when opening Expo Go, development builds, and the runtime selection page. ([#52750](https://github.com/expo/expo/pull/52750) by [@kitten](https://github.com/kitten))
 - Fix `expo start` skipping all manifest assets (icons, splash images) when a config section on an asset path, such as `splash`, is `null` or `undefined` ([#52975](https://github.com/expo/expo/pull/52975) by [@Shaurya55555](https://github.com/Shaurya55555))
+- Fix parsing Android device serials containing spaces. ([#53129](https://github.com/expo/expo/pull/53129) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
