@@ -11,13 +11,13 @@ public final class KeepAwakeModule: Module {
     #if os(iOS) || os(tvOS)
     NotificationCenter.default.addObserver(
       self,
-      selector: #selector(appWillEnterForeground),
+      selector: #selector(onAppWillEnterForeground),
       name: UIApplication.willEnterForegroundNotification,
       object: nil
     )
     NotificationCenter.default.addObserver(
       self,
-      selector: #selector(appDidEnterBackground),
+      selector: #selector(onAppDidEnterBackground),
       name: UIApplication.didEnterBackgroundNotification,
       object: nil
     )
@@ -61,7 +61,7 @@ public final class KeepAwakeModule: Module {
   // UIApplication posts the lifecycle notifications on the main thread.
   @objc
   @MainActor
-  private func appWillEnterForeground() {
+  private func onAppWillEnterForeground() {
     if !activeTags.isEmpty {
       setActivated(true)
     }
@@ -69,7 +69,7 @@ public final class KeepAwakeModule: Module {
 
   @objc
   @MainActor
-  private func appDidEnterBackground() {
+  private func onAppDidEnterBackground() {
     if !activeTags.isEmpty {
       setActivated(false)
     }

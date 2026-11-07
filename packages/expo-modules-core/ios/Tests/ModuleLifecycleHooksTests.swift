@@ -10,6 +10,7 @@ private final class LifecycleHooksModule: Module {
   var willDestroyCalls: Int = 0
   var startedListeningEvents: [String] = []
   var stoppedListeningEvents: [String] = []
+  var appLifecycleCalls: [String] = []
 
   /// Whether the module could find its own holder in the registry from within `didCreate`.
   /// It relies on `withEventTarget` which looks the holder up in the module registry, so it's
@@ -32,6 +33,18 @@ private final class LifecycleHooksModule: Module {
   override func didStopListening(event: String) {
     stoppedListeningEvents.append(event)
   }
+
+  override func appWillEnterForeground() {
+    appLifecycleCalls.append("appWillEnterForeground")
+  }
+
+  override func appDidBecomeActive() {
+    appLifecycleCalls.append("appDidBecomeActive")
+  }
+
+  override func appDidEnterBackground() {
+    appLifecycleCalls.append("appDidEnterBackground")
+  }
 }
 
 /// A base class that conforms to `Module` but doesn't implement any lifecycle hooks.
@@ -51,9 +64,14 @@ private final class SubclassedLifecycleModule: EmptyBaseModule {
 @ExpoModule
 private final class MacroLifecycleModule {
   var didCreateCalls: Int = 0
+  var appWillEnterForegroundCalls: Int = 0
 
   func didCreate() {
     didCreateCalls += 1
+  }
+
+  func appWillEnterForeground() {
+    appWillEnterForegroundCalls += 1
   }
 }
 
@@ -164,5 +182,30 @@ private struct ModuleLifecycleHooksTests {
       """)
     #expect(module.startedListeningEvents == ["eventA", "eventB"])
     #expect(module.stoppedListeningEvents == ["eventB"])
+  }
+}
+
+// The app lifecycle hooks run on the main actor.
+@Suite("Module app lifecycle hooks")
+@MainActor
+private struct ModuleAppLifecycleHooksTests {
+  let appContext = AppContext()
+
+  @Test
+  func `calls the app lifecycle hooks when the app lifecycle events are posted`() {
+    let module = LifecycleHooksModule(appContext: appContext)
+    appContext.moduleRegistry.register(module: module, name: nil)
+    appContext.moduleRegistry.post(event: .appEntersForeground)
+    appContext.moduleRegistry.post(event: .appBecomesActive)
+    appContext.moduleRegistry.post(event: .appEntersBackground)
+    #expect(module.appLifecycleCalls == ["appWillEnterForeground", "appDidBecomeActive", "appDidEnterBackground"])
+  }
+
+  @Test
+  func `calls the app lifecycle hooks on a macro module that doesn't inherit the Module class`() {
+    let module = MacroLifecycleModule(appContext: appContext)
+    appContext.moduleRegistry.register(module: module, name: nil)
+    appContext.moduleRegistry.post(event: .appEntersForeground)
+    #expect(module.appWillEnterForegroundCalls == 1)
   }
 }
