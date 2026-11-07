@@ -335,13 +335,18 @@ export declare class NativeWidgetObject extends SharedObject {
 
 export declare class NativeLiveActivityFactory extends SharedObject {
   constructor(name: string, layout: string);
-  start(props?: string, url?: string, staleDate?: number): NativeLiveActivity;
+  start(
+    props?: string,
+    url?: string,
+    staleDate?: number,
+    relevanceScore?: number
+  ): NativeLiveActivity;
   getInstances(): NativeLiveActivity[];
 }
 
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
   getId(): string;
-  update(props?: string, staleDate?: number): Promise<void>;
+  update(props?: string, staleDate?: number, relevanceScore?: number): Promise<void>;
   end(
     dismissalPolicy?: string,
     afterDate?: number,

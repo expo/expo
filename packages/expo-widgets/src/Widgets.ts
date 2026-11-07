@@ -119,10 +119,16 @@ export class LiveActivity<T extends object = object> {
    * Updates the Live Activity's content. The UI reflects the new properties immediately.
    * @param props The updated content properties.
    * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
+   * @param relevanceScore Ranks this Live Activity against the app's other Live Activities. The system shows the
+   * activity with the highest score in the Dynamic Island and puts it first on the Lock Screen. Defaults to `0`.
    * @platform ios
    */
-  update(props: T, staleDate?: Date): Promise<void> {
-    return this.nativeLiveActivity.update(JSON.stringify(props), staleDate?.getTime());
+  update(props: T, staleDate?: Date, relevanceScore?: number): Promise<void> {
+    return this.nativeLiveActivity.update(
+      JSON.stringify(props),
+      staleDate?.getTime(),
+      relevanceScore
+    );
   }
 
   /**
@@ -195,12 +201,19 @@ export class LiveActivityFactory<T extends object = object> {
    * @param props The initial content properties for the Live Activity.
    * @param url An optional URL to associate with the Live Activity, used for deep linking.
    * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
+   * @param relevanceScore Ranks this Live Activity against the app's other Live Activities. The system shows the
+   * activity with the highest score in the Dynamic Island and puts it first on the Lock Screen. Defaults to `0`.
    * @returns The new Live Activity instance.
    * @platform ios
    */
-  start(props: T, url?: string, staleDate?: Date) {
+  start(props: T, url?: string, staleDate?: Date, relevanceScore?: number) {
     return new LiveActivity<T>(
-      this.nativeLiveActivityFactory.start(JSON.stringify(props), url, staleDate?.getTime())
+      this.nativeLiveActivityFactory.start(
+        JSON.stringify(props),
+        url,
+        staleDate?.getTime(),
+        relevanceScore
+      )
     );
   }
 
