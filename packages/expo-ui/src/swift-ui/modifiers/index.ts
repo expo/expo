@@ -798,6 +798,14 @@ export const labelStyle = (style: 'automatic' | 'iconOnly' | 'titleAndIcon' | 't
   createModifier('labelStyle', { style });
 
 /**
+ * Set the width reserved for icons in labels. On iOS versions before 26, this modifier has no effect.
+ * @param width - The width reserved for the icon.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/labelreservediconwidth(_:)).
+ */
+export const labelReservedIconWidth = (width: number) =>
+  createModifier('labelReservedIconWidth', { width });
+
+/**
  * Hides the labels of any controls contained within this view.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/labelshidden()).
  */
@@ -1901,6 +1909,7 @@ export type BuiltInModifier =
   | ReturnType<typeof controlSize>
   | ReturnType<typeof imageScale>
   | ReturnType<typeof labelStyle>
+  | ReturnType<typeof labelReservedIconWidth>
   | ReturnType<typeof labelsHidden>
   | ReturnType<typeof textFieldStyle>
   | ReturnType<typeof menuActionDismissBehavior>
