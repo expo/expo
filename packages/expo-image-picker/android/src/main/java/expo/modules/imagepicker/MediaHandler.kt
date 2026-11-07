@@ -3,6 +3,7 @@ package expo.modules.imagepicker
 import android.content.Context
 import android.media.MediaMetadataRetriever
 import android.net.Uri
+import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Base64
 import androidx.core.net.toUri
@@ -74,12 +75,18 @@ internal class MediaHandler(
       mimeType = mimeType,
       base64 = base64,
       exif = exif,
-      assetId = sourceUri.getMediaStoreAssetId()
+      assetId = sourceUri.getMediaStoreAssetId(),
+      creationTime = fileData?.creationTime
     )
   }
 
   private fun getAdditionalFileData(uri: Uri): AdditionalFileData? {
-    val queriedFields = listOf(OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE).toTypedArray()
+    // Only media store URIs, including the photo picker's, are known to have the date taken column.
+    val queriedFields = listOfNotNull(
+      OpenableColumns.DISPLAY_NAME,
+      OpenableColumns.SIZE,
+      MediaStore.MediaColumns.DATE_TAKEN.takeIf { uri.authority == MediaStore.AUTHORITY }
+    ).toTypedArray()
     return context.contentResolver.query(uri, queriedFields, null, null, null)?.use { cursor ->
       if (!cursor.moveToFirst()) {
         return null
@@ -87,9 +94,14 @@ internal class MediaHandler(
       runCatching {
         val name = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME).takeIf { it != -1 }?.let { cursor.getString(it) }
         val size = cursor.getColumnIndex(OpenableColumns.SIZE).takeIf { it != -1 }?.let { cursor.getLong(it) }
+        val creationTime = cursor.getColumnIndex(MediaStore.MediaColumns.DATE_TAKEN)
+          .takeIf { it != -1 && !cursor.isNull(it) }
+          ?.let { cursor.getLong(it) }
+          ?.takeIf { it > 0 }
         AdditionalFileData(
           name,
-          size
+          size,
+          creationTime
         )
       }.getOrNull()
     }
@@ -134,7 +146,8 @@ internal class MediaHandler(
         mimeType = mimeType,
         duration = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_DURATION),
         rotation = rotation,
-        assetId = sourceUri.getMediaStoreAssetId()
+        assetId = sourceUri.getMediaStoreAssetId(),
+        creationTime = fileData?.creationTime
       )
     } catch (cause: FailedToExtractVideoMetadataException) {
       throw FailedToExtractVideoMetadataException(outputFile, cause)
@@ -144,5 +157,6 @@ internal class MediaHandler(
 
 data class AdditionalFileData(
   val fileName: String?,
-  val fileSize: Long?
+  val fileSize: Long?,
+  val creationTime: Long?
 )
