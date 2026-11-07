@@ -1,3 +1,4 @@
+import type { createNavigationBlockingTime } from '../shared/navigation/blockingTime';
 import type { ReactNavigationIntegrationStorage } from './storage';
 
 export interface NavigationRefActionListenerHandle {
@@ -9,16 +10,17 @@ export interface NavigationRefActionListenerHandle {
 
 export function attachActionListener(
   navigationRef: NavigationRefActionListenerHandle,
-  storage: ReactNavigationIntegrationStorage
+  storage: ReactNavigationIntegrationStorage,
+  blockingTime: ReturnType<typeof createNavigationBlockingTime>
 ): () => void {
   return navigationRef.addListener('__unsafe_action__', (e) => {
     if (e.data.noop) return;
     // PRELOAD comes from preload APIs (e.g. native-stack `unstable_preload`) —
     // a warm-up, not a user navigation — so it must not seed dispatchTime.
     if (e.data.action.type === 'PRELOAD') return;
-    storage.pendingActions.push({
-      actionType: e.data.action.type,
-      dispatchTime: performance.now(),
-    });
+    const dispatchTime = performance.now();
+    storage.pendingActions.push({ actionType: e.data.action.type, dispatchTime });
+    // Navigations before the first screen is focused are part of app launch.
+    if (storage.hasRecordedInitialTtr) blockingTime?.start(dispatchTime);
   });
 }
