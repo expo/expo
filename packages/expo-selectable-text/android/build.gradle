@@ -1,0 +1,37 @@
+apply plugin: 'com.android.library'
+
+def getExtOrDefault(name, defaultValue) {
+  return rootProject.ext.has(name) ? rootProject.ext.get(name) : defaultValue
+}
+
+def shouldEnableAgpFallback() {
+  def agpMajorVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger()
+  if (agpMajorVersion <= 8) {
+    return true
+  }
+  def propertyVal = providers.gradleProperty("android.builtInKotlin").orNull
+  def isBuiltInKotlinEnabled = propertyVal != null ? propertyVal.toBoolean() : true
+  return !isBuiltInKotlinEnabled
+}
+
+if (shouldEnableAgpFallback()) {
+  apply plugin: 'kotlin-android'
+}
+
+android {
+  namespace "expo.modules.selectabletext"
+  compileSdkVersion getExtOrDefault('compileSdkVersion', 36)
+
+  defaultConfig {
+    minSdkVersion getExtOrDefault('minSdkVersion', 24)
+    targetSdkVersion getExtOrDefault('targetSdkVersion', 36)
+  }
+
+  lintOptions {
+    abortOnError false
+  }
+}
+
+dependencies {
+  implementation 'com.facebook.react:react-android'
+}
