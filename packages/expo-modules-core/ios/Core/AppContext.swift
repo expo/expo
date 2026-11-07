@@ -446,6 +446,9 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
       for viewName in holder.definition.views.keys {
         ExpoFabricView.registerComponent(moduleName: holder.name, viewName: viewName)
       }
+      for (viewName, viewType) in holder.nativeViewTypes {
+        ExpoNativeView.registerComponent(viewType, moduleName: holder.name, viewName: viewName)
+      }
     }
     AppContext.viewsRegisteringAppContext = self
   }
