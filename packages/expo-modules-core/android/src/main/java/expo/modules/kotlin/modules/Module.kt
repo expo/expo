@@ -1,5 +1,6 @@
 package expo.modules.kotlin.modules
 
+import android.app.Activity
 import android.os.Bundle
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.runtime.Runtime
@@ -60,6 +61,18 @@ abstract class Module : AppContextProvider {
   }
 
   open fun converters(): TypeConverterProvider? = null
+
+  /**
+   * Returns the current Activity as [T], for example `FragmentActivity`.
+   * Throws an actionable [expo.modules.kotlin.exception.Exceptions.UnsupportedHostActivity] that names this module
+   * when the Activity does not extend [T].
+   * Pair it with `RequiresHostActivity<T>()` in the definition, so the host learns about the need early.
+   */
+  inline fun <reified T : Activity> requireHostActivity(): T {
+    val holder = appContext.registry.getModuleHolder(this)
+    val requirement = holder?.definition?.hostActivityRequirement?.takeIf { it.activityClass == T::class.java }
+    return appContext.requireHostActivity("The ${holder?.name ?: javaClass.simpleName} module", requirement?.feature)
+  }
 
   abstract fun definition(): ModuleDefinitionData
 }
