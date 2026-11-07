@@ -25,8 +25,7 @@ struct PowerModeEvent {
 public final class BatteryModule: Module {
   // The notification observers of the events that JavaScript listens to. `didStartListening` and
   // `didStopListening` run on the JavaScript thread, but `willDestroy` can run on any thread.
-  private let observersLock = NSLock()
-  private var observers: [String: NSObjectProtocol] = [:]
+  private let observers = Mutex<[String: NSObjectProtocol]>([:])
 
   @JS
   var isSupported: Bool {
@@ -74,11 +73,11 @@ public final class BatteryModule: Module {
   }
 
   public override func willDestroy() {
-    let observers = observersLock.withLock {
-      defer { self.observers.removeAll() }
-      return Array(self.observers.values)
+    let removedObservers = observers.withLock { observers in
+      defer { observers.removeAll() }
+      return Array(observers.values)
     }
-    for observer in observers {
+    for observer in removedObservers {
       NotificationCenter.default.removeObserver(observer)
     }
 
@@ -91,7 +90,7 @@ public final class BatteryModule: Module {
     guard let observer = addObserver(forEvent: event) else {
       return
     }
-    let previousObserver = observersLock.withLock {
+    let previousObserver = observers.withLock { observers in
       observers.updateValue(observer, forKey: event)
     }
     if let previousObserver {
@@ -100,7 +99,7 @@ public final class BatteryModule: Module {
   }
 
   public override func didStopListening(event: String) {
-    let observer = observersLock.withLock {
+    let observer = observers.withLock { observers in
       observers.removeValue(forKey: event)
     }
     if let observer {
