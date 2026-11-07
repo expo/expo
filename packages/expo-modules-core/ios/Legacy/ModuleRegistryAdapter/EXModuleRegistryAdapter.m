@@ -2,7 +2,7 @@
 
 #import <ExpoModulesCore/EXModuleRegistryAdapter.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
-#import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
+#import "EXModuleRegistryHolderReactModule+Private.h"
 
 @interface EXModuleRegistryAdapter ()
 

@@ -11,13 +11,13 @@ typedef NS_OPTIONS(unsigned int, EXFileSystemPermissionFlags) {
 // TODO: Maybe get rid of this interface in favor of EXFileSystemManager and private utilities classes
 @protocol EXFileSystemInterface
 
-@property (nonatomic, readonly) NSString *documentDirectory;
-@property (nonatomic, readonly) NSString *cachesDirectory;
-@property (nonatomic, readonly) NSString *applicationSupportDirectory;
+@property (nonatomic, readonly, null_unspecified) NSString *documentDirectory;
+@property (nonatomic, readonly, null_unspecified) NSString *cachesDirectory;
+@property (nonatomic, readonly, null_unspecified) NSString *applicationSupportDirectory;
 
 // TODO: Move permissionsForURI to EXFileSystemManagerInterface
-- (EXFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri;
-- (nonnull NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension;
-- (BOOL)ensureDirExistsWithPath:(NSString *)path;
+- (EXFileSystemPermissionFlags)permissionsForURI:(null_unspecified NSURL *)uri;
+- (nonnull NSString *)generatePathInDirectory:(null_unspecified NSString *)directory withExtension:(null_unspecified NSString *)extension;
+- (BOOL)ensureDirExistsWithPath:(null_unspecified NSString *)path;
 
 @end
