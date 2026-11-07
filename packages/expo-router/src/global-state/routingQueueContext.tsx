@@ -20,7 +20,9 @@ import {
 import type { NavigationTransitionMode } from './types';
 
 const EMPTY: QueuedRoutingIntent[] = [];
-let boundBridges = 0;
+// The routers of the mounted bridges, oldest first. Two roots can be mounted at once: an Android
+// Activity relaunch mounts the new root before it unmounts the old one.
+const boundRouters: ReturnType<typeof createImperativeRouter>[] = [];
 const throwMissingRoutingQueue = () => {
   throw new Error(
     'Attempted to navigate from a component rendered outside the Expo Router root. Render the component inside `ExpoRoot`. If this happened inside `ExpoRoot`, please report a bug at https://github.com/expo/expo/issues.'
@@ -95,7 +97,7 @@ export function ImperativeRoutingQueueBridge({
   setTransitionMode,
 }: Pick<RoutingQueueApi, 'enqueue' | 'setTransitionMode'>) {
   useClientLayoutEffect(() => {
-    if (__DEV__ && boundBridges > 0) {
+    if (__DEV__ && boundRouters.length > 0) {
       console.error(
         [
           'Looks like you have multiple navigation containers consuming the shared imperative routing queue. Only one container will receive queued actions. Make sure that:',
@@ -105,13 +107,14 @@ export function ImperativeRoutingQueueBridge({
       );
     }
 
-    boundBridges++;
+    const boundRouter = createImperativeRouter(enqueue, setTransitionMode);
+    boundRouters.push(boundRouter);
     // The exported router identity must stay stable, so the bridge mutates it in place.
-    Object.assign(router, createImperativeRouter(enqueue, setTransitionMode));
+    Object.assign(router, boundRouter);
 
     return () => {
-      boundBridges--;
-      Object.assign(router, unboundRouter);
+      boundRouters.splice(boundRouters.indexOf(boundRouter), 1);
+      Object.assign(router, boundRouters[boundRouters.length - 1] ?? unboundRouter);
     };
   }, [enqueue, setTransitionMode]);
 
