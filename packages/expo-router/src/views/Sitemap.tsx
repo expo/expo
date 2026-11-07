@@ -243,7 +243,7 @@ function SystemInfo() {
     return HERMES_VERSION;
   };
 
-  const locationOrigin = window.location.origin;
+  const locationOrigin = window.location?.origin;
   const expoSdkVersion = Constants.expoConfig?.sdkVersion || 'Unknown';
   const hermesVersion = getHermesVersion();
 

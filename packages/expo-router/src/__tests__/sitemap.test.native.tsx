@@ -13,7 +13,7 @@ jest.mock('expo-constants', () => ({
 }));
 
 // TODO(@hassankhan): Move this mock to __mocks__
-// `window.location` is set on all platforms in Expo Router
+// Set an origin for tests that display system information.
 const originalWindow = (global as any).window;
 beforeAll(() => {
   (global as any).window = {
@@ -177,6 +177,26 @@ test('renders and expands all levels of a deeply nested route on presses on head
 });
 
 describe('system information', () => {
+  it('renders system information when window.location is undefined', async () => {
+    const location = window.location;
+    Object.defineProperty(window, 'location', { value: undefined });
+
+    try {
+      await renderRouter({
+        _layout: () => <Slot />,
+        index: () => <Text />,
+      });
+      await act(() => router.replace('/_sitemap'));
+
+      expect(screen.getByTestId('expo-router-sitemap')).toBeVisible();
+      expect(screen.getByText('System Information')).toBeOnTheScreen();
+      expect(screen.queryByText('Location origin')).toBeNull();
+      expect(screen.getByText('54.0.0')).toBeOnTheScreen();
+    } finally {
+      Object.defineProperty(window, 'location', { value: location });
+    }
+  });
+
   it('shows location origin, Expo SDK version and Hermes version', async () => {
     await renderRouter({
       _layout: () => <Slot />,
