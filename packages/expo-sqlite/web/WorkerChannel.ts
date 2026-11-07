@@ -13,6 +13,8 @@ let messageId = 0;
 const deferredMap = new Map<number, Deferred>();
 const PENDING = 1;
 const RESOLVED = 2;
+/** How long a synchronous call may block the main thread waiting for the worker. */
+const SYNC_OPERATION_TIMEOUT_MS = 15_000;
 
 let hasWarnedSync = false;
 
@@ -124,24 +126,21 @@ export function invokeWorkerSync<T extends SQLiteWorkerMessageType & keyof Resul
     resultBuffer,
   });
 
-  let i = 0;
+  // NOTE(kudo): Unfortunate for the busy loop,
+  // because we don't have a way for main thread to yield its execution to other callbacks.
+  let spins = 0;
+  const deadline = performance.now() + SYNC_OPERATION_TIMEOUT_MS;
   // @ts-expect-error: Remove this when TypeScript supports Atomics.pause
   const useAtomicsPause = typeof Atomics.pause === 'function';
   while (Atomics.load(lock, 0) === PENDING) {
-    ++i;
-
+    // Calling performance.now() on every busy-loop turn is several times slower.
+    if ((spins & 0xfff) === 0 && performance.now() >= deadline) {
+      throw new Error('Sync operation timeout');
+    }
+    spins += 1;
     if (useAtomicsPause) {
-      if (i > 1_000_000) {
-        throw new Error('Sync operation timeout');
-      }
       // @ts-expect-error: Remove this when TypeScript supports Atomics.pause
       Atomics.pause();
-    } else {
-      // NOTE(kudo): Unfortunate for the busy loop,
-      // because we don't have a way for main thread to yield its execution to other callbacks.
-      if (i > 1000_000_000) {
-        throw new Error('Sync operation timeout');
-      }
     }
   }
 
