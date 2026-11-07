@@ -491,6 +491,8 @@ PODS:
     - React-Core
   - ExpoMediaSession (58.0.0):
     - ExpoModulesCore
+  - ExpoMediaSession/Tests (58.0.0):
+    - ExpoModulesCore
   - ExpoMeshGradient (58.0.3):
     - ExpoModulesCore
   - ExpoModulesCore (58.0.26):
@@ -3447,6 +3449,7 @@ DEPENDENCIES:
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
   - ExpoMediaSession (from `../../../packages/expo-media-session/ios`)
+  - ExpoMediaSession/Tests (from `../../../packages/expo-media-session/ios`)
   - ExpoMeshGradient (from `../../../packages/expo-mesh-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoModulesCore/Benchmarks (from `../../../packages/expo-modules-core`)
@@ -4179,7 +4182,7 @@ SPEC CHECKSUMS:
   ExpoMailComposer: 88b4d391482d58b4a929152f1ca227b19c9a59ef
   ExpoMaps: 56acbfda3c93f738b9c7d4c54af4b4058cdd7ecf
   ExpoMediaLibrary: 2624e0e1268d19ceb8cb1d69936535caaeccf887
-  ExpoMediaSession: 12a818e0841291755b0429e1d66ff165c6358e08
+  ExpoMediaSession: 12fe9246f2363bb513dc9564d09e8ba02ab4c77f
   ExpoMeshGradient: 778fd9893abcff50f3861e13c8768c8442e6cb78
   ExpoModulesCore: cd86371968bee2ad7204f06e4cb1693fd8a9a277
   ExpoModulesJSI: d9f7f7a1625c1a29cb116a6c264f1752230d4783
