@@ -28,6 +28,18 @@ final class ExpoGoNotificationsCategoriesModule: CategoriesModule {
       }
   }
 
+  public override func setNotificationCategoriesAsync(categories: [CategoryRecord]) async throws {
+    let scopeKey = self.scopeKey
+    let scopedCategories = categories.map { category in
+      var scopedCategory = category
+      scopedCategory.identifier = EXScopedNotificationsUtils.scopedIdentifier(fromId: category.identifier, forExperience: scopeKey)
+      return scopedCategory
+    }
+    try await replaceNotificationCategories(scopedCategories) {
+      EXScopedNotificationsUtils.isId($0, scopedByExperience: scopeKey)
+    }
+  }
+
   public override func setNotificationCategoryAsync(
     identifier: String,
     actions: [CategoryActionRecord],

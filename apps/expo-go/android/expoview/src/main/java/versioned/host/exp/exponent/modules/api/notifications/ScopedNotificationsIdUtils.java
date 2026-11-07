@@ -7,7 +7,6 @@ import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import expo.modules.notifications.notifications.model.NotificationCategory;
 import host.exp.exponent.kernel.ExperienceKey;
 
 public class ScopedNotificationsIdUtils {
@@ -69,10 +68,6 @@ public class ScopedNotificationsIdUtils {
   @RequiresApi(api = Build.VERSION_CODES.O)
   public static boolean checkIfChannelBelongsToExperience(@NonNull ExperienceKey experienceKey, @NonNull NotificationChannel channel) {
     return checkIfIdBelongsToExperience(experienceKey, channel.getId());
-  }
-
-  public static boolean checkIfCategoryBelongsToExperience(@NonNull ExperienceKey experienceKey, @NonNull NotificationCategory category) {
-    return checkIfIdBelongsToExperience(experienceKey, category.getIdentifier());
   }
 
   private static boolean checkIfIdBelongsToExperience(@NonNull ExperienceKey experienceKey, @NonNull String scopedId) {
