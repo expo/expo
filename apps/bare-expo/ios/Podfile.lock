@@ -597,6 +597,9 @@ PODS:
   - ExpoNotifications (58.1.6):
     - ExpoModulesCore
   - ExpoNotifications/Tests (58.1.6):
+  - ExpoNetwork/Tests (58.0.4):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
     - ExpoModulesCore
     - ExpoModulesTestCore
   - ExpoObserve (58.0.16):
@@ -3461,6 +3464,7 @@ DEPENDENCIES:
   - ExpoObserve (from `../../../packages/expo-observe/ios`)
   - ExpoObserve/Tests (from `../../../packages/expo-observe/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
+  - ExpoNetwork/Tests (from `../../../packages/expo-network/ios`)
   - ExpoRouter (from `../../../packages/expo-router/ios`)
   - ExpoRouter/Tests (from `../../../packages/expo-router/ios`)
   - ExpoScreenCapture (from `../../../packages/expo-screen-capture/ios`)
@@ -4179,7 +4183,7 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: ed72b7c5bffe2d5d16cf128c6322c2d1191c1734
   ExpoModulesWorklets: 208e6112a0467df1cc21530e280d650a3adf6261
   ExpoModulesWorkletsAdapter: e1ecc72bf439a1014911ae5a11197e4c2657706d
-  ExpoNetwork: a42e5fe6c3c70f517b0aad167f5a3eeec2fee7a4
+  ExpoNetwork: 1f6c118baf2856c389fbb106a89e2acab185ce33
   ExpoNotifications: d0ab853f324bacf76f0fe32d06eba2e1f8532ca5
   ExpoObserve: c3da67c549d171e15e80e00fad0e6351879d7bb0
   ExpoPrint: e6103f99d8bfdcdc9fe4513b3c37e31b5c8cb7a9
