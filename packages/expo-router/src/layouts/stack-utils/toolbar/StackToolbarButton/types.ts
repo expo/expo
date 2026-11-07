@@ -60,7 +60,7 @@ export interface StackToolbarButtonProps {
    * }
    * ```
    *
-   * > **Note**: When icon is used, the label will not be shown and will be used for accessibility purposes only. Badge is only supported in left/right placements, not in bottom (iOS toolbar limitation).
+   * > **Note**: When icon is used, the label will not be shown and will be used for accessibility purposes only. On iOS, the bottom toolbar shows the badge only on iOS 27 and later.
    */
   children?: ReactNode;
   /**
@@ -185,7 +185,8 @@ export interface NativeToolbarButtonProps {
   label?: string;
   /* @platform android */
   source?: ImageSourcePropType;
-  /** Badge overlay on the icon. Only rendered in left/right placements.
-   * @platform android */
+  /** Badge overlay on the icon. On iOS, the bottom toolbar shows the badge only on iOS 27 and later.
+   * @platform android
+   * @platform ios */
   badge?: NativeStackHeaderItemButton['badge'];
 }

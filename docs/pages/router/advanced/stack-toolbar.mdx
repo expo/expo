@@ -550,7 +550,7 @@ export default function InboxScreen() {
 }
 ```
 
-> **info** Badges only work in header placements (`left` or `right`), not in the bottom toolbar.
+> **info** In the bottom toolbar, `Stack.Toolbar.Button` shows its badge on Android and on iOS 27 and later. See [Known limitations](#known-limitations).
 
 ## Choosing button background colors on Android
 
@@ -811,9 +811,11 @@ You cannot nest `Stack.Toolbar` components inside each other.
 
 </Collapsible>
 
-<Collapsible summary="Badge only in header placements">
+<Collapsible summary="Badges in the bottom toolbar">
 
-`Stack.Toolbar.Badge` is only supported when using `placement="left"` or `placement="right"`. Badges are not displayed in the bottom toolbar.
+**Android:** `Stack.Toolbar.Button` and a root `Stack.Toolbar.Menu` show a badge in the bottom toolbar. A nested `Stack.Toolbar.Menu` does not.
+
+**iOS:** UIKit draws a badge on a bottom toolbar item only on iOS 27 and later. On iOS 26 and earlier, `Stack.Toolbar.Badge` on a `Stack.Toolbar.Button` in `placement="bottom"` does not show. `Stack.Toolbar.Menu` does not show a badge in the bottom toolbar on any iOS version.
 
 </Collapsible>
 
