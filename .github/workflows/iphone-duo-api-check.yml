@@ -1,0 +1,62 @@
+name: iPhone Duo - Real UIKit API Check
+
+# Standalone check: does the Xcode 27.1 iphonesimulator SDK actually declare
+# UIView.reservedRegions(kind:) and the .division/.occlusion ReservedRegion.Kind
+# cases that DisplayFeaturesModule.swift calls under the EXPO_IPHONE_DUO_SDK
+# flag? No CocoaPods/ExpoModulesCore dependency needed — just UIKit itself.
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    runs-on: macos-26
+    steps:
+      - name: Select Xcode (prefer 27.1, else latest installed)
+        id: xcode
+        run: |
+          echo "Installed Xcode versions on this runner:"
+          ls /Applications | grep -i '^Xcode' || true
+          if [ -d "/Applications/Xcode_27.1.app" ]; then
+            SELECTED="/Applications/Xcode_27.1.app"
+          else
+            SELECTED=$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -1)
+          fi
+          sudo xcode-select --switch "$SELECTED"
+          xcodebuild -version
+          echo "selected=$SELECTED" >> "$GITHUB_OUTPUT"
+          if [ "$SELECTED" != "/Applications/Xcode_27.1.app" ]; then
+            echo "::warning::Xcode 27.1 is not on this runner image; result below is against $SELECTED instead, not proof either way for 27.1."
+          fi
+
+      - name: Write minimal probe (mirrors exactly what DisplayFeaturesModule.swift calls)
+        run: |
+          cat > /tmp/probe.swift << 'EOF'
+          import UIKit
+
+          func probeReservedRegions(_ view: UIView) -> [[String: Any]] {
+            var features: [[String: Any]] = []
+            for region in view.reservedRegions(kind: .division) {
+              features.append(["frame": region.frame])
+            }
+            for region in view.reservedRegions(kind: .occlusion) {
+              features.append(["frame": region.frame])
+            }
+            return features
+          }
+          EOF
+
+      - name: Type-check probe against the real iphonesimulator SDK
+        run: |
+          SDK_PATH=$(xcrun --sdk iphonesimulator --show-sdk-path)
+          echo "SDK: $SDK_PATH"
+          set +e
+          xcrun swiftc -typecheck -sdk "$SDK_PATH" -target arm64-apple-ios17.0-simulator /tmp/probe.swift 2>&1 | tee /tmp/probe.log
+          RESULT=${PIPESTATUS[0]}
+          set -e
+          echo "---"
+          if [ "$RESULT" -eq 0 ]; then
+            echo "RESULT: UIView.reservedRegions(kind:) and .division/.occlusion EXIST in this SDK and type-check cleanly."
+          else
+            echo "RESULT: These symbols do NOT resolve against this SDK (see errors above) — DisplayFeaturesModule.swift's real implementation is still unverifiable, only the EXPO_IPHONE_DUO_SDK=off stub path is confirmed."
+          fi
