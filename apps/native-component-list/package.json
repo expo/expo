@@ -89,6 +89,7 @@
     "expo-mail-composer": "workspace:*",
     "expo-maps": "workspace:*",
     "expo-media-library": "workspace:*",
+    "expo-media-session": "workspace:*",
     "expo-mesh-gradient": "workspace:*",
     "expo-modules-test-core": "workspace:*",
     "expo-navigation-bar": "workspace:*",

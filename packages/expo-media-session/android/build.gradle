@@ -1,0 +1,26 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'host.exp.exponent'
+version = '58.0.0'
+
+android {
+  namespace 'expo.modules.mediasession'
+  defaultConfig {
+    versionCode 1
+    versionName '58.0.0'
+  }
+}
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  def androidxMedia3Version = "1.9.1"
+  implementation "androidx.media3:media3-session:$androidxMedia3Version"
+
+  testImplementation 'junit:junit:4.13.2'
+}
