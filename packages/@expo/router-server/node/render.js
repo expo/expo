@@ -1,1 +1,1 @@
-module.exports = require('../build/static/renderStaticContent');
+module.exports = require('../build/server/render');

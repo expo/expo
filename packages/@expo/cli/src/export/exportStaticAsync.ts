@@ -7,7 +7,7 @@
 import type { ExpoConfig } from '@expo/config';
 import { getChunkUrl } from '@expo/metro-config/build/serializer/exportPath';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
-import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
+import type { GetStreamingContentOptions } from '@expo/router-server/build/server/renderStreamingContent';
 import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
 import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
@@ -273,7 +273,7 @@ export async function exportFromServerAsync(
       const normalizedPathname =
         pathname === '' ? '/' : pathname.startsWith('/') ? pathname : `/${pathname}`;
 
-      const renderOpts: Omit<GetStaticContentOptions, 'route' | 'params'> = {};
+      const renderOpts: Omit<GetStreamingContentOptions, 'route' | 'params'> = {};
 
       const contextKey = getLoaderRouteContextKey(route);
 
