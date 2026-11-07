@@ -307,8 +307,20 @@ class ReactActivityDelegateWrapper(
 
   override fun onNewIntent(intent: Intent?): Boolean {
     if (!loadAppReady.isCompleted) {
+      // The app is still loading, for example while a `DelayLoadAppHandler` holds it. Deliver the
+      // intent once it's loaded instead of dropping it. Android hands a relaunched activity its
+      // pending intents through `onNewIntent` right after `onStart`, so dropping it here loses,
+      // for example, the payload of the notification tap that relaunched the app.
+      launchLifecycleScopeWithLock {
+        loadAppReady.await()
+        dispatchNewIntent(intent)
+      }
       return false
     }
+    return dispatchNewIntent(intent)
+  }
+
+  private fun dispatchNewIntent(intent: Intent?): Boolean {
     val listenerResult = reactActivityLifecycleListeners
       .map { it.onNewIntent(intent) }
       .fold(false) { accu, current -> accu || current }

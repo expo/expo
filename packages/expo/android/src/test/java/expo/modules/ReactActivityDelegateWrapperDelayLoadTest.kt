@@ -3,6 +3,7 @@ package expo.modules
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.content.Intent
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactApplication
@@ -150,6 +151,36 @@ internal class ReactActivityDelegateWrapperDelayLoadTest {
   }
 
   @Test
+  fun `should deliver a new intent received before delay load finished once the app is loaded`() = runTest {
+    every { ExpoModulesPackage.Companion.packageList } returns listOf(mockPackageWithDelay)
+
+    val callbackSlot = slot<Runnable>()
+    every { delayLoadAppHandler.whenReady(capture(callbackSlot)) } answers {
+      // Don't call the callback immediately to simulate delay
+    }
+
+    activityController = Robolectric.buildActivity(MockActivity::class.java)
+      .also {
+        val activity = it.get()
+        (activity.application as MockApplication).bindCurrentActivity(activity)
+      }
+      .setup()
+    val spyDelegateWrapper = activity.reactActivityDelegate as ReactActivityDelegateWrapper
+    val spyDelegate = spyDelegateWrapper.delegate
+    val listener = mockPackageWithDelay.reactActivityLifecycleListener
+
+    // Like the intent of a notification tap that relaunches the activity in an existing task.
+    val action = "expo.modules.test.NOTIFICATION_TAP"
+    activityController.newIntent(Intent(action))
+    verify(exactly = 0) { listener.onNewIntent(match { it?.action == action }) }
+    verify(exactly = 0) { spyDelegate.onNewIntent(match { it?.action == action }) }
+
+    callbackSlot.captured.run()
+    verify(exactly = 1) { listener.onNewIntent(match { it?.action == action }) }
+    verify(exactly = 1) { spyDelegate.onNewIntent(match { it?.action == action }) }
+  }
+
+  @Test
   fun `should have normal lifecycle when no delayLoadHandler`() = runTest {
     every { ExpoModulesPackage.Companion.packageList } returns listOf(mockPackageWithoutDelay)
 
@@ -202,7 +233,7 @@ internal class ReactActivityDelegateWrapperDelayLoadTest {
 }
 
 internal class MockPackageWithDelayHandler(delayHandler: DelayLoadAppHandler) : Package {
-  private val reactActivityLifecycleListener = mockk<ReactActivityLifecycleListener>(relaxed = true)
+  internal val reactActivityLifecycleListener = mockk<ReactActivityLifecycleListener>(relaxed = true)
   private val reactActivityHandler = mockk<ReactActivityHandler>(relaxed = true)
 
   init {
