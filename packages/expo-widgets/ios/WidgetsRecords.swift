@@ -23,6 +23,25 @@ struct WidgetConfigurationOptionRecord: Record {
   }
 }
 
+struct LiveActivityAlertConfigurationRecord: Record {
+  @Field var title: String = ""
+  @Field var body: String = ""
+  @Field var sound: String?
+
+  func toAlertConfiguration() -> AlertConfiguration {
+    AlertConfiguration(
+      title: LocalizedStringResource(stringLiteral: title),
+      body: LocalizedStringResource(stringLiteral: body),
+      sound: sound.map { .named($0) } ?? .default
+    )
+  }
+}
+
+struct LiveActivityScheduleRecord: Record {
+  @Field var startDate: Date = Date()
+  @Field var alertConfiguration: LiveActivityAlertConfigurationRecord = LiveActivityAlertConfigurationRecord()
+}
+
 internal enum LiveActivityDismissalPolicy: String, Enumerable {
   case `default`
   case immediate
