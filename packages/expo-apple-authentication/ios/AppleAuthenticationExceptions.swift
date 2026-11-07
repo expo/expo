@@ -61,6 +61,30 @@ final class WindowUnavailableException: Exception, @unchecked Sendable {
   }
 }
 
+final class CredentialImportException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "The credential import request failed"
+  }
+}
+
+final class CredentialExportException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "The credential export request failed"
+  }
+}
+
+final class PreferSignInWithAppleException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "The user already has an account via Sign in With Apple and wants to use that instead"
+  }
+}
+
+final class DeviceNotConfiguredForPasskeyCreationException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "The device is not configured for passkey creation"
+  }
+}
+
 func exceptionForAuthorizationError(_ error: ASAuthorizationError) -> Exception {
   switch error.code {
   case .unknown:
@@ -78,6 +102,14 @@ func exceptionForAuthorizationError(_ error: ASAuthorizationError) -> Exception 
   #if compiler(>=6)
   case .matchedExcludedCredential:
     return RequestMatchedExcludedCredentialException()
+  case .credentialImport:
+    return CredentialImportException()
+  case .credentialExport:
+    return CredentialExportException()
+  case .preferSignInWithApple:
+    return PreferSignInWithAppleException()
+  case .deviceNotConfiguredForPasskeyCreation:
+    return DeviceNotConfiguredForPasskeyCreationException()
   #endif
   @unknown default:
     return RequestUnknownException()
