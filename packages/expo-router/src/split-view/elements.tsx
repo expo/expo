@@ -99,6 +99,11 @@ export interface SplitViewHeader {
    */
   title?: string;
   /**
+   * Subtitle shown below the title.
+   * @platform ios 26+
+   */
+  subtitle?: string;
+  /**
    * Whether the navigation bar of the column shows a large title.
    * @default false
    */
