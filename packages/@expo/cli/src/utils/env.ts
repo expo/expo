@@ -84,6 +84,10 @@ class Env {
   get EXPO_NO_CACHE_VARY() {
     return boolish('EXPO_NO_CACHE_VARY', false);
   }
+  /** Resolve the runtime version on every manifest request, instead of caching a `fingerprint` runtime version until its sources change. */
+  get EXPO_NO_RUNTIME_VERSION_CACHE(): boolean {
+    return boolish('EXPO_NO_RUNTIME_VERSION_CACHE', false);
+  }
   /** Disable the app select redirect page. */
   get EXPO_NO_REDIRECT_PAGE() {
     return boolish('EXPO_NO_REDIRECT_PAGE', false);
