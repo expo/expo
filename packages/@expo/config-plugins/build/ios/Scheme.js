@@ -53,7 +53,7 @@ function appendScheme(scheme, infoPlist) {
   const existingSchemes = infoPlist.CFBundleURLTypes ?? [];
   if (existingSchemes?.some(({
     CFBundleURLSchemes
-  }) => CFBundleURLSchemes.includes(scheme))) {
+  }) => CFBundleURLSchemes?.includes(scheme))) {
     return infoPlist;
   }
   return {
@@ -73,7 +73,7 @@ function removeScheme(scheme, infoPlist) {
     return infoPlist;
   }
   infoPlist.CFBundleURLTypes = infoPlist.CFBundleURLTypes.map(bundleUrlType => {
-    const index = bundleUrlType.CFBundleURLSchemes.indexOf(scheme);
+    const index = bundleUrlType.CFBundleURLSchemes?.indexOf(scheme) ?? -1;
     if (index > -1) {
       bundleUrlType.CFBundleURLSchemes.splice(index, 1);
       if (bundleUrlType.CFBundleURLSchemes.length === 0) {
