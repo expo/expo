@@ -8,6 +8,7 @@ import { stripVersionFromPath } from '~/common/utilities';
 import { NavigationRoute } from '~/types/common';
 
 import { CALLOUT } from '../Text';
+import { SidebarBadges } from './SidebarBadges';
 
 if (typeof window !== 'undefined' && !window.hasOwnProperty('sidebarState')) {
   window.sidebarState = {};
@@ -92,6 +93,7 @@ export function SidebarCollapsible({ info, children }: Props) {
           />
         </div>
         <CALLOUT crawlable={false}>{info.name}</CALLOUT>
+        <SidebarBadges info={info} className="ml-0" />
       </ButtonBase>
       {isOpen && (
         <div aria-hidden={!isOpen ? 'true' : 'false'} className="pl-2.5">

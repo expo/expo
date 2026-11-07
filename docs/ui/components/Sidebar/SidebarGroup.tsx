@@ -112,7 +112,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
       <div className="mb-5">
         {!shouldSkipTitle(route, parentRoute) && title && (
           <div className="flex flex-row items-center justify-between py-0">
-            <SidebarTitle Icon={Icon} sectionName={title}>
+            <SidebarTitle Icon={Icon} sectionName={title} info={route}>
               {title}
             </SidebarTitle>
             <div className="flex shrink-0 flex-row items-center pb-1">
@@ -171,7 +171,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
   return (
     <div className="mb-5">
       {!shouldSkipTitle(route, parentRoute) && title && (
-        <SidebarTitle Icon={Icon} sectionName={title}>
+        <SidebarTitle Icon={Icon} sectionName={title} info={route}>
           {title}
         </SidebarTitle>
       )}
@@ -243,6 +243,7 @@ function getIconElement(iconName?: string) {
     case 'Expo Observe':
       return ActivityIcon;
     case 'Expo Modules API':
+    case 'Expo Modules API 2.0':
       return CpuChip01Icon;
     case 'Expo Router':
       return RouterLogo;
