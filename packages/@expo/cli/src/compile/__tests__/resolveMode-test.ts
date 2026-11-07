@@ -2,9 +2,11 @@ import { resolveMode } from '../resolveMode';
 
 describe(resolveMode, () => {
   it(`defaults to production`, () => {
-    expect(() => resolveMode({})).toThrow(
-      'Production builds are not supported yet. Pass --dev to build in development mode.'
-    );
+    expect(resolveMode({})).toBe('production');
+  });
+
+  it(`uses production for --prod with --device`, () => {
+    expect(resolveMode({ prod: true, device: 'iPhone 18 Pro' })).toBe('production');
   });
 
   it(`uses development for --dev`, () => {
@@ -18,12 +20,6 @@ describe(resolveMode, () => {
   it(`rejects --dev with --prod`, () => {
     expect(() => resolveMode({ dev: true, prod: true })).toThrow(
       'Specify at most one of: --dev, --prod'
-    );
-  });
-
-  it(`rejects --prod with --device`, () => {
-    expect(() => resolveMode({ prod: true, device: 'iPhone 18 Pro' })).toThrow(
-      'Production builds are not supported yet. Pass --dev to build in development mode.'
     );
   });
 });
