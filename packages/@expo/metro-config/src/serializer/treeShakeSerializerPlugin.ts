@@ -183,6 +183,10 @@ export async function treeShakeSerializer(
   }
 
   const starExportsForModules = new Map<string, ModuleStarExports>();
+  // The number of specifiers each import declaration had before any were removed. This is used to
+  // determine if the import was side-effecty, and is keyed by node since `path.opts` is shared by
+  // every path in a traversal.
+  const originalSpecifierCounts = new WeakMap<types.ImportDeclaration, number>();
 
   for (const value of graph.dependencies.values()) {
     // TODO: Move this to the transformer and combine with collect dependencies.
@@ -728,7 +732,9 @@ export async function treeShakeSerializer(
 
         // NOTE: This could be a problem if the AST is re-parsed.
         // TODO: This doesn't account for `import {} from './foo'`
-        path.opts.originalSpecifiers ??= path.node.specifiers.length;
+        if (!originalSpecifierCounts.has(path.node)) {
+          originalSpecifierCounts.set(path.node, path.node.specifiers.length);
+        }
         importDecs.push(path);
       },
     });
@@ -747,7 +753,7 @@ export async function treeShakeSerializer(
     importDecs.forEach((path) => {
       const importModuleId = path.node.source.value;
       const originalSize = path.node.specifiers.length;
-      const absoluteOriginalSize = path.opts.originalSpecifiers ?? originalSize;
+      const absoluteOriginalSize = originalSpecifierCounts.get(path.node) ?? originalSize;
 
       const isUsed = (
         specifier: // import { imported as local } from './foo'
