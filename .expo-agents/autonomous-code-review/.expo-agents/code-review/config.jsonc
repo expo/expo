@@ -3,6 +3,9 @@
 {
   "model": "anthropic/claude-opus-5-5",
   "policy": { "minSeverity": "suggestion" },
+  // shape runs first. If the verifier confirms one of its critical findings, the other
+  // reviewers do not run. Needs ecr with preCheckAgents (expo/code-review-cli#109).
+  "preCheckAgents": ["shape"],
   // A scope does not inherit the root noise list. Keep this copy in sync with
   // ../../../code-review/config.jsonc.
   "noise": {
