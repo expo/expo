@@ -231,7 +231,7 @@ export async function sourceMapStringNonBlocking(
   return debugId ? appendDebugIdToSourceMap(json, debugId) : json;
 }
 
-function repairInvalidNegativeIndices(map: ComposableSourceMap): ComposableSourceMap {
+function repairInvalidSegments(map: ComposableSourceMap): ComposableSourceMap {
   const { decode, encode } = loadSourcemapCodec();
   const decoded = decode(map.mappings);
 
@@ -240,9 +240,13 @@ function repairInvalidNegativeIndices(map: ComposableSourceMap): ComposableSourc
     for (let i = 0; i < line.length; i++) {
       const segment = line[i];
       // A `[genCol, srcIdx, srcLine, ...]` segment crashes `trace-mapping`
-      // when either the source index or the source line is negative
-      // (Hermes' no-location sentinel)
-      if (segment != null && segment.length > 1 && (segment[1]! < 0 || segment[2]! < 0)) {
+      // when the source line is negative (Hermes' no-location sentinel), and
+      // crashes `remapping` when the source index is outside `sources`
+      if (
+        segment != null &&
+        segment.length > 1 &&
+        (segment[1]! < 0 || segment[1]! >= map.sources.length || segment[2]! < 0)
+      ) {
         line[i] = [segment[0]!];
         changed = true;
       }
@@ -292,15 +296,16 @@ export function composeSourceMaps(
     composed = remap(input, () => null);
   } catch (error) {
     // `@jridgewell/trace-mapping` (through `@jridgewell/remapping`) crashes
-    // on any mapping where original line/column is negative. Hermes may emit
-    // such segments and we should gracefully recover from this on a crash.
+    // on any mapping where original line/column is negative or the source
+    // index is out of range. Hermes may emit such segments and we should
+    // gracefully recover from this on a crash.
     // See:
     // - https://github.com/jridgewell/sourcemaps/issues/54
     // - https://github.com/expo/expo/issues/46843
     let didRepair = false;
     try {
       input = input.map((map) => {
-        const fixed = repairInvalidNegativeIndices(map);
+        const fixed = repairInvalidSegments(map);
         didRepair ||= fixed !== map;
         return fixed;
       });
