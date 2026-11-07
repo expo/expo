@@ -1,12 +1,12 @@
 import semver from 'semver';
 
 import { executeExpoAsync } from '../../utils/expo';
-import { getRouterE2ERoot } from '../utils';
+import { getServerTesterRoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
-const projectRoot = getRouterE2ERoot();
+const projectRoot = getServerTesterRoot();
 
 // TODO: drop this test when the oldest supported Node version is >=23
 (semver.major(process.versions.node) >= 23 ? it.skip : it)(
@@ -17,8 +17,7 @@ const projectRoot = getRouterE2ERoot();
         verbose: false,
         env: {
           NODE_ENV: 'production',
-          EXPO_USE_STATIC: 'server',
-          E2E_ROUTER_SRC: 'server',
+          E2E_ROUTER_WEB_OUTPUT: 'server',
           E2E_ROUTER_ASYNC: 'development',
           NODE_OPTIONS: '--no-experimental-fetch',
         },

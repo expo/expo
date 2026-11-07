@@ -15,13 +15,16 @@ runExportSideEffects();
 describe('exports middleware', () => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_WORKERD], {
-      fixtureName: 'server-middleware-async',
+      app: 'server-tester',
+      uniqueOutputKey: 'middleware',
       export: {
         env: {
           E2E_ROUTER_REDIRECTS: JSON.stringify([
-            { source: '/redirect', destination: 'https://expo.dev' },
+            { source: '/middleware/redirect', destination: 'https://expo.dev' },
           ]),
-          E2E_ROUTER_REWRITES: JSON.stringify([{ source: '/rewrite', destination: '/second' }]),
+          E2E_ROUTER_REWRITES: JSON.stringify([
+            { source: '/middleware/rewrite', destination: '/middleware/redirect-target' },
+          ]),
         },
         cliFlags: ['--source-maps'],
       },
@@ -42,39 +45,42 @@ describe('exports middleware', () => {
 
     // NOTE(@krystofwoldrich): Bare workerd doesn't support process.env
     (server.isWorkerd ? it.skip : it)('can use environment variables', async () => {
-      const response = await server.fetchAsync('/?e2e=read-env').then((res) => res.json());
+      const response = await server
+        .fetchAsync('/middleware?e2e=read-env')
+        .then((res) => res.json());
       expect(response['TEST_SECRET_KEY']).toEqual('test-secret-key');
     });
 
     it('can perform dynamic redirects', async () => {
       const html = await server
-        .fetchAsync('/?e2e=redirect')
+        .fetchAsync('/middleware?e2e=redirect')
         .then((res) => res.text())
         .then(getHtml);
-      const title = html.querySelector('[data-testid="title"]')?.textContent;
-      expect(title).toEqual('Second');
+      expect(html.querySelector('[data-testid="middleware-redirect-target"]')).not.toBeNull();
     });
 
     it('can perform dynamic redirects with a status code', async () => {
-      const response = await server.fetchAsync('/?e2e=redirect-301', { redirect: 'manual' });
+      const response = await server.fetchAsync('/middleware?e2e=redirect-301', {
+        redirect: 'manual',
+      });
       expect(response.status).toBe(301);
       const url = new URL(response.headers.get('location')!);
-      expect(url.pathname).toEqual('/second');
+      expect(url.pathname).toEqual('/middleware/redirect-target');
     });
 
     it('returns HTTP status 500 when middleware throws for a HTML route', async () => {
-      const response = await server.fetchAsync('/?e2e=error');
+      const response = await server.fetchAsync('/middleware?e2e=error');
       expect(response.status).toBe(500);
     });
 
     it('returns HTTP status 500 when middleware throws for an API route', async () => {
-      const response = await server.fetchAsync('/api?e2e=error');
+      const response = await server.fetchAsync('/api/methods?e2e=error');
       expect(response.status).toBe(500);
     });
 
     it('can override responses', async () => {
       const html = await server
-        .fetchAsync('/?e2e=custom-response')
+        .fetchAsync('/middleware?e2e=custom-response')
         .then((res) => res.text())
         .then(getHtml);
       const title = html.querySelector('[data-testid="title"]')?.textContent;
@@ -82,16 +88,18 @@ describe('exports middleware', () => {
     });
 
     it('can use `setResponseHeaders()` with `Redirect.response()`', async () => {
-      const response = await server.fetchAsync('/?e2e=runtime-api', { redirect: 'manual' });
+      const response = await server.fetchAsync('/middleware?e2e=runtime-api', {
+        redirect: 'manual',
+      });
       expect(response.status).toBe(302);
       expect(response.headers.get('X-Foo')).toBe('bar');
       const url = new URL(response.headers.get('location')!);
-      expect(url.pathname).toEqual('/second');
+      expect(url.pathname).toEqual('/middleware/redirect-target');
     });
 
     it('runs the middleware before redirects', async () => {
       const html = await server
-        .fetchAsync('/redirect?e2e=custom-response')
+        .fetchAsync('/middleware/redirect?e2e=custom-response')
         .then((res) => res.text())
         .then(getHtml);
       const title = html.querySelector('[data-testid="title"]')?.textContent;
@@ -100,7 +108,7 @@ describe('exports middleware', () => {
 
     it('runs the middleware before rewrites', async () => {
       const html = await server
-        .fetchAsync('/rewrite?e2e=custom-response')
+        .fetchAsync('/middleware/rewrite?e2e=custom-response')
         .then((res) => res.text())
         .then(getHtml);
       const title = html.querySelector('[data-testid="title"]')?.textContent;
@@ -110,11 +118,13 @@ describe('exports middleware', () => {
     // NOTE(@krystofwoldrich): Importing jose in workerd crashes the server
     // Illegal invocation: function called with incorrect `this` reference.
     (server.isWorkerd ? it.skip : it)('runs third-party libraries like jose', async () => {
-      const signJwtResponse = await server.fetchAsync('/?e2e=sign-jwt').then((res) => res.json());
+      const signJwtResponse = await server
+        .fetchAsync('/middleware?e2e=sign-jwt')
+        .then((res) => res.json());
       expect(signJwtResponse).toHaveProperty('token');
 
       const verifyJwtResponse = await server
-        .fetchAsync('/?e2e=verify-jwt', {
+        .fetchAsync('/middleware?e2e=verify-jwt', {
           headers: { Authorization: signJwtResponse.token },
         })
         .then((res) => res.json());
@@ -155,7 +165,7 @@ describe('exports middleware', () => {
       const sourceMap = JSON.parse(
         fs.readFileSync(path.join(server.outputDir, middlewareMapFile), 'utf8')
       );
-      expect(sourceMap.sources).toContain('__e2e__/server-middleware-async/app/+middleware.ts');
+      expect(sourceMap.sources).toContain('app/+middleware.ts');
     });
   });
 });
