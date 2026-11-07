@@ -236,6 +236,30 @@ export type LiveActivityComponent<T extends object = object> = (
 ) => LiveActivityLayout;
 
 /**
+ * Options for starting a Live Activity.
+ * @platform ios
+ */
+export type LiveActivityStartOptions = {
+  /**
+   * The URL to open when the user taps the Live Activity.
+   */
+  url?: string;
+  /**
+   * The date when the system considers the activity's content out of date.
+   */
+  staleDate?: Date;
+};
+
+/**
+ * Options for updating a Live Activity's content.
+ * @platform ios
+ */
+export type LiveActivityUpdateOptions = {
+  /** The date when the system considers the updated content out of date. */
+  staleDate?: Date;
+};
+
+/**
  * Event emitted when a user interacts with a widget.
  */
 export type UserInteractionEvent = {
@@ -333,15 +357,23 @@ export declare class NativeWidgetObject extends SharedObject {
   setConfigurationParameterEnum(parameterName: string, options?: WidgetConfigurationEnum[]): void;
 }
 
+export type NativeLiveActivityStartOptions = Omit<LiveActivityStartOptions, 'staleDate'> & {
+  staleDate?: number;
+};
+
 export declare class NativeLiveActivityFactory extends SharedObject {
   constructor(name: string, layout: string);
-  start(props?: string, url?: string, staleDate?: number): NativeLiveActivity;
+  start(props: string, options: NativeLiveActivityStartOptions): NativeLiveActivity;
   getInstances(): NativeLiveActivity[];
 }
 
+export type NativeLiveActivityUpdateOptions = Omit<LiveActivityUpdateOptions, 'staleDate'> & {
+  staleDate?: number;
+};
+
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
   getId(): string;
-  update(props?: string, staleDate?: number): Promise<void>;
+  update(props: string, options: NativeLiveActivityUpdateOptions): Promise<void>;
   end(
     dismissalPolicy?: string,
     afterDate?: number,
