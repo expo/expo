@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
  * Listener for receiving a callback at the first moment a [AppCompatActivity] is made
  * available to the [AppCompatActivityAware] class.
  */
+@Deprecated("Use OnHostActivityAvailableListener. This listener fires only when the host Activity extends AppCompatActivity.")
 fun interface OnActivityAvailableListener {
   /**
    * This callback will be called on UI thread.

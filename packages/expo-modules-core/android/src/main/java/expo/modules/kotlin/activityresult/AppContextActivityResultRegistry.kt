@@ -17,13 +17,14 @@ import androidx.activity.result.contract.ActivityResultContracts.RequestMultiple
 import androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult
 import androidx.activity.result.contract.ActivityResultContracts.StartIntentSenderForResult
 import androidx.annotation.MainThread
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.hostactivity.HostActivity
 import expo.modules.kotlin.providers.CurrentActivityProvider
 import expo.modules.kotlin.safeGetParcelable
 import expo.modules.kotlin.safeGetParcelableExtra
@@ -87,8 +88,11 @@ class AppContextActivityResultRegistry(
 
   private val pendingResults = Bundle/*<String, ActivityResult>*/()
 
-  private val activity: AppCompatActivity
-    get() = requireNotNull(currentActivityProvider.currentActivity as? AppCompatActivity) { "Current Activity is not available at the moment" }
+  private val activity: ComponentActivity
+    get() {
+      val currentActivity = currentActivityProvider.currentActivity ?: throw Exceptions.MissingActivity()
+      return HostActivity.from(currentActivity).activity
+    }
 
   /**
    * This method body is adapted mainly from [ComponentActivity.mActivityResultRegistry]
