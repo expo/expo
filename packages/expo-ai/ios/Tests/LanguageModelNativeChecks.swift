@@ -396,6 +396,12 @@ internal enum LanguageModelNativeChecks {
           throw LanguageModelException("ERR_TEST_FAILED", "Invalid schema was accepted")
         } catch let error as LanguageModelException { try require(error.code == "ERR_SCHEMA_UNSUPPORTED", "Unexpected schema validation error") }
       }
+      let imageTool = try LanguageModelSchema.imageTool(labels: ["capture", "receipt"], name: "ImageTool")
+      let encoded = String(decoding: try JSONEncoder().encode(imageTool), as: UTF8.self)
+      try require(
+        encoded.contains("\"enum\":[\"capture\"]") && encoded.contains("\"enum\":[\"receipt\"]") && encoded.contains("\"required\":[\"image\"]"),
+        "The image tool schema did not constrain the image argument to the current labels"
+      )
     }
     #endif
   }
