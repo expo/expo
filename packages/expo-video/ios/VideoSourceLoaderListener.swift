@@ -2,19 +2,21 @@ import Foundation
 
 /**
  Callbacks are delivered asynchronously on the main queue, in the order the loader's state
- transitions happened. A terminal event (`onLoadingFinished`/`onLoadingCancelled`) may arrive
- after the corresponding `load()` call has already returned, but always before a player item
- replacement dispatched to the main queue afterwards.
+ transitions happened. A terminal event (`onLoadingFinished`/`onLoadingFailed`/`onLoadingCancelled`)
+ may arrive after the corresponding `load()` call has already returned or thrown, but always before
+ a player item replacement dispatched to the main queue afterwards.
  */
 protocol VideoSourceLoaderListener: AnyObject {
   func onLoadingStarted(loader: VideoSourceLoader, videoSource: VideoSource?)
   func onLoadingFinished(loader: VideoSourceLoader, videoSource: VideoSource?, result: VideoPlayerItem?)
+  func onLoadingFailed(loader: VideoSourceLoader, videoSource: VideoSource?, error: Error)
   func onLoadingCancelled(loader: VideoSourceLoader, videoSource: VideoSource?)
 }
 
 extension VideoSourceLoaderListener {
   func onLoadingStarted(loader: VideoSourceLoader, videoSource: VideoSource?) {}
   func onLoadingFinished(loader: VideoSourceLoader, videoSource: VideoSource?, result: VideoPlayerItem?) {}
+  func onLoadingFailed(loader: VideoSourceLoader, videoSource: VideoSource?, error: Error) {}
   func onLoadingCancelled(loader: VideoSourceLoader, videoSource: VideoSource?) {}
 }
 
