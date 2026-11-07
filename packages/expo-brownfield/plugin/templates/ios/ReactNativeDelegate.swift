@@ -2,22 +2,28 @@ internal import Expo
 internal import React
 
 class ReactNativeDelegate: ExpoReactNativeFactoryDelegate {
-  private let turboModuleClasses: [String: AnyClass]
+  private nonisolated let turboModuleClasses: [String: AnyClass]
+  private let configuredBundleURL: URL?
   init(
-    turboModuleClasses: [String: AnyClass] = [:]
+    turboModuleClasses: [String: AnyClass] = [:],
+    bundleURL: URL? = nil
   ) {
     self.turboModuleClasses = turboModuleClasses
+    self.configuredBundleURL = bundleURL
     super.init()
   }
 
   @objc(getModuleClassFromName:)
-  func getModuleClass(fromName name: UnsafePointer<CChar>!) -> AnyClass? {
+  nonisolated func getModuleClass(fromName name: UnsafePointer<CChar>!) -> AnyClass? {
     let moduleName = String(cString: name)
     return turboModuleClasses[moduleName]
   }
 
   // Extension point for config-plugins
   override func bundleURL() -> URL? {
+    if let configuredBundleURL {
+      return configuredBundleURL
+    }
     #if DEBUG
       return RCTBundleURLProvider.sharedSettings().jsBundleURL(
         forBundleRoot: ".expo/.virtual-metro-entry")
