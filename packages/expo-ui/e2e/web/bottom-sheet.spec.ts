@@ -201,6 +201,22 @@ test.describe('Community BottomSheet screen', () => {
       .toBeTruthy();
   });
 
+  test('should keep a React Native Modal opened from sheet content above the sheet and clickable', async ({
+    page,
+  }) => {
+    await gotoCommunity(page);
+    await clickFirstButtonAfter(page, 'snapPoints: 25%, 50%, 90%');
+    await clickSheetButton(page, 'Open Modal over sheet');
+    await expect(page.getByText('Modal presented')).toBeVisible();
+
+    // Fails when the sheet is a modal dialog: the Modal portals to <body>, which
+    // the top layer paints over and the spec makes inert, so the click never lands.
+    await page.getByRole('button', { name: 'Close Modal' }).click();
+
+    await expect(page.getByText('Modal presented')).toHaveCount(0);
+    await expect(openPanel(page)).toBeVisible();
+  });
+
   test('should present BottomSheetModal from Open and start closed on load', async ({ page }) => {
     await gotoCommunity(page);
     await expect(openPanel(page)).toHaveCount(0);
