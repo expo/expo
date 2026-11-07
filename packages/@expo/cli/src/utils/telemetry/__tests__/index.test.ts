@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { getTelemetry } from '..';
 
 jest.mock('../../../api/user/user');
@@ -32,6 +34,25 @@ it('returns `null` when `env.EXPO_NO_TELEMETRY` is true', () => {
 it('returns `null` when `env.EXPO_OFFLINE` is true', () => {
   setEnv('EXPO_OFFLINE', 'true');
   expect(getTelemetry()).toBeNull();
+});
+
+it('uses the stored session user ID without fetching the user', () => {
+  setEnv('EXPO_TOKEN', undefined);
+  jest.isolateModules(() => {
+    const fs = require('fs') as typeof import('fs');
+    const { getSettingsFilePath } = require('../../../api/user/UserSettings');
+    fs.mkdirSync(path.dirname(getSettingsFilePath()), { recursive: true });
+    fs.writeFileSync(
+      getSettingsFilePath(),
+      JSON.stringify({ auth: { sessionSecret: 'secret', userId: 'user-id' } })
+    );
+
+    const { getTelemetry } = require('../') as typeof import('../');
+    const { getUserAsync } = require('../../../api/user/user');
+
+    expect(getTelemetry()?.isInitialized).toBe(true);
+    expect(getUserAsync).not.toHaveBeenCalled();
+  });
 });
 
 const envOriginal: Record<string, string | undefined> = {};
