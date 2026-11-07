@@ -757,6 +757,26 @@ for (const instance of activeInstances) {
 }
 ```
 
+An activity that has ended stays on the Lock Screen until its dismissal date, but it can no longer be updated. Pass `includeEnded: true` to also get those, for example to remove one right away. Use `getState()` to read the state of an instance, and `getProps()` to read its current props.
+
+```tsx
+for (const instance of DeliveryActivity.getInstances({ includeEnded: true })) {
+  if (instance.getState() === 'ended') {
+    await instance.end('immediate');
+  }
+}
+```
+
+To know when the user or the system dismisses an activity while your app runs, use `addStateListener`:
+
+```tsx
+const subscription = instance.addStateListener(event => {
+  if (event.state === 'dismissed') {
+    console.log('Dismissed:', event.activityId);
+  }
+});
+```
+
 #### Ending a Live Activity
 
 Use `end` to finish a Live Activity. You can choose the dismissal policy, optionally provide a final content state, and pass a `contentDate` so the system can ignore stale updates.
@@ -838,6 +858,43 @@ To start a Live Activity remotely, send a `start` event to the push-to-start tok
 ```
 
 Remote start requires iOS 17.2 or later. Include `input-push-token: 1` in the `aps` payload on iOS 18 or later if you want APNs to provide a new per-activity token for future updates.
+
+To learn about a remote start while your app runs, use `addLiveActivityStartListener`. It fires for activities of every type, so use `name` to find the factory. Starts that happen while the app is not running do not fire it, so also call `getInstances()` when your app launches.
+
+```tsx
+import { addLiveActivityStartListener } from 'expo-widgets';
+import DeliveryActivity from './DeliveryActivity';
+
+const startSubscription = addLiveActivityStartListener(event => {
+  if (event.name === 'DeliveryActivity') {
+    const instance = DeliveryActivity.getInstances().find(item => item.getId() === event.activityId);
+    console.log('Started remotely:', instance?.getProps());
+  }
+});
+```
+
+A `start` event can also set `props` in `attributes`, as a JSON string like `content-state.props`. The activity then renders the `attributes` props with the `content-state` props on top, key by key. Later `update` and `end` events then only need the keys that differ from the start, and the `content-state` still needs `name`. Each event replaces the previous `content-state`, so a key that an earlier update changed must be sent again if it should keep that value.
+
+```json
+{
+  "aps": {
+    "timestamp": 1778832000,
+    "event": "start",
+    "attributes-type": "LiveActivityAttributes",
+    "attributes": {
+      "props": "{\"orderId\":\"A-1042\",\"etaMinutes\":15,\"status\":\"Your delivery is on the way\"}"
+    },
+    "content-state": {
+      "name": "DeliveryActivity",
+      "props": "{}"
+    },
+    "alert": {
+      "title": "Delivery started",
+      "body": "Your delivery is on the way"
+    }
+  }
+}
+```
 
 To update a Live Activity remotely, send an `update` event to that activity's per-activity token:
 

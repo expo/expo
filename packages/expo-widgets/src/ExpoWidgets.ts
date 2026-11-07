@@ -8,6 +8,7 @@ import type {
 import type {
   ExpoTimelineEntry,
   ExpoWidgetsEvents,
+  LiveActivityState,
   NativeLiveActivity,
   NativeLiveActivityFactory,
   NativeWidgetObject,
@@ -45,6 +46,12 @@ class LiveActivityStub {
   async getPushToken(): Promise<string | null> {
     return null;
   }
+  getState(): LiveActivityState {
+    return 'dismissed';
+  }
+  getProps(): Record<string, any> | null {
+    return null;
+  }
   addListener(_eventName: string, _listener: (...args: unknown[]) => void): EventSubscription {
     return noopSubscription;
   }
@@ -56,7 +63,7 @@ class LiveActivityFactoryStub {
   start(_props?: string, _url?: string): NativeLiveActivity {
     return new LiveActivityStub() as NativeLiveActivity;
   }
-  getInstances(): NativeLiveActivity[] {
+  getInstances(_includeEnded?: boolean): NativeLiveActivity[] {
     return [];
   }
 }

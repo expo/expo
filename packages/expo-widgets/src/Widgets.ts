@@ -6,6 +6,8 @@ import type {
   ExpoWidgetsEvents,
   LiveActivityComponent,
   LiveActivityDismissalPolicy,
+  LiveActivityState,
+  LiveActivityStateEvent,
   NativeLiveActivity,
   NativeLiveActivityFactory,
   NativeWidgetObject,
@@ -174,6 +176,37 @@ export class LiveActivity<T extends object = object> {
   addPushTokenListener(listener: (event: PushTokenEvent) => void): EventSubscription {
     return this.nativeLiveActivity.addListener('onExpoWidgetsTokenReceived', listener);
   }
+
+  /**
+   * Returns the current state of this Live Activity.
+   * ActivityKit drops dismissed activities, so `'dismissed'` is only seen through `addStateListener`.
+   * @throws If the activity no longer exists.
+   * @platform ios
+   */
+  getState(): LiveActivityState {
+    return this.nativeLiveActivity.getState();
+  }
+
+  /**
+   * Returns the props set by a push-to-start `attributes`, merged with the current content-state props (content-state keys win),
+   * or `null` if there are none or they are malformed.
+   * @throws If the activity no longer exists.
+   * @platform ios
+   */
+  getProps(): T | null {
+    return this.nativeLiveActivity.getProps() as T | null;
+  }
+
+  /**
+   * Adds a listener for state changes of this Live Activity, such as when the user dismisses it.
+   * Events are delivered only while the app process is running.
+   * @param listener Callback invoked when the state changes.
+   * @returns An event subscription that can be used to remove the listener.
+   * @platform ios
+   */
+  addStateListener(listener: (event: LiveActivityStateEvent) => void): EventSubscription {
+    return this.nativeLiveActivity.addListener('onExpoWidgetsLiveActivityStateChanged', listener);
+  }
 }
 
 /**
@@ -205,12 +238,14 @@ export class LiveActivityFactory<T extends object = object> {
   }
 
   /**
-   * Returns all currently active instances of this Live Activity type.
+   * Returns all active and stale instances of this Live Activity type, and ended ones too with `includeEnded`.
+   * @param options Pass `includeEnded: true` to also return ended instances that are still visible. An ended instance
+   * can no longer be updated, only ended again, for example with `'immediate'` to remove it.
    * @platform ios
    */
-  getInstances() {
+  getInstances(options?: { includeEnded?: boolean }) {
     return this.nativeLiveActivityFactory
-      .getInstances()
+      .getInstances(options?.includeEnded)
       .map((instance) => new LiveActivity<T>(instance));
   }
 }
@@ -276,6 +311,20 @@ export function addPushToStartTokenListener(
   listener: ExpoWidgetsEvents['onExpoWidgetsPushToStartTokenReceived']
 ): EventSubscription {
   return ExpoWidgetsModule.addListener('onExpoWidgetsPushToStartTokenReceived', listener);
+}
+
+/**
+ * Adds a listener for Live Activity start events of every type, including starts by push-to-start.
+ * Use `name` to find the factory, then `getInstances()` to get the instance.
+ * Events are delivered only while the app process is running, so also call `getInstances()` on launch.
+ * @param listener Callback function to handle start events.
+ * @return An event subscription that can be used to remove the listener.
+ * @platform ios
+ */
+export function addLiveActivityStartListener(
+  listener: ExpoWidgetsEvents['onExpoWidgetsLiveActivityStarted']
+): EventSubscription {
+  return ExpoWidgetsModule.addListener('onExpoWidgetsLiveActivityStarted', listener);
 }
 
 /**

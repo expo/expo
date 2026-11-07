@@ -278,6 +278,48 @@ export type PushTokenEvent = {
 };
 
 /**
+ * State of a Live Activity.
+ * - `'active'` - The Live Activity is visible and up to date.
+ * - `'stale'` - The Live Activity is visible, but its content is out of date.
+ * - `'ended'` - The Live Activity ended and stays visible until its dismissal.
+ * - `'dismissed'` - The Live Activity was removed by the user or the system.
+ * - `'pending'` - The Live Activity was requested but is not shown yet. Only on iOS 26 and later.
+ * - `'unknown'` - A state that this version of the library does not know yet.
+ * @platform ios
+ */
+export type LiveActivityState = 'active' | 'stale' | 'ended' | 'dismissed' | 'pending' | 'unknown';
+
+/**
+ * Event emitted when the state of a live activity changes. Delivered only while the app process runs.
+ * @platform ios
+ */
+export type LiveActivityStateEvent = {
+  /**
+   * The ID of the live activity.
+   */
+  activityId: string;
+  /**
+   * The new state of the live activity.
+   */
+  state: LiveActivityState;
+};
+
+/**
+ * Event emitted when a live activity starts, including starts by push-to-start.
+ * @platform ios
+ */
+export type LiveActivityStartedEvent = {
+  /**
+   * The ID of the live activity.
+   */
+  activityId: string;
+  /**
+   * The name of the live activity, as passed to `createLiveActivity`.
+   */
+  name: string;
+};
+
+/**
  * Event emitted when a push-to-start token is received.
  * @platform ios
  */
@@ -311,6 +353,12 @@ export type ExpoWidgetsEvents = {
    * @platform ios
    */
   onExpoWidgetsPushToStartTokenReceived: (event: PushToStartTokenEvent) => void;
+  /**
+   * Function that is invoked when a live activity starts.
+   * @param event Start event details.
+   * @platform ios
+   */
+  onExpoWidgetsLiveActivityStarted: (event: LiveActivityStartedEvent) => void;
 };
 
 /**
@@ -322,6 +370,11 @@ export type LiveActivityEvents = {
    * @param event Token event details.
    */
   onExpoWidgetsTokenReceived: (event: PushTokenEvent) => void;
+  /**
+   * Function that is invoked when the state of a live activity changes.
+   * @param event State event details.
+   */
+  onExpoWidgetsLiveActivityStateChanged: (event: LiveActivityStateEvent) => void;
 };
 
 export declare class NativeWidgetObject extends SharedObject {
@@ -336,7 +389,7 @@ export declare class NativeWidgetObject extends SharedObject {
 export declare class NativeLiveActivityFactory extends SharedObject {
   constructor(name: string, layout: string);
   start(props?: string, url?: string, staleDate?: number): NativeLiveActivity;
-  getInstances(): NativeLiveActivity[];
+  getInstances(includeEnded?: boolean): NativeLiveActivity[];
 }
 
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
@@ -349,4 +402,6 @@ export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents>
     contentDate?: number
   ): Promise<void>;
   getPushToken(): Promise<string | null>;
+  getState(): LiveActivityState;
+  getProps(): Record<string, any> | null;
 }
