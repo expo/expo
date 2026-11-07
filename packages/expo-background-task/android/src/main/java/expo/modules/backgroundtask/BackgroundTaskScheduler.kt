@@ -238,12 +238,18 @@ object BackgroundTaskScheduler {
         Log.d(TAG, "runTasks: executing tasks for consumer of type ${bgTaskConsumer.taskType()}")
         val taskCompletion = CompletableDeferred<Unit>()
         try {
-          bgTaskConsumer.executeTask {
-            Log.d(TAG, "Task successfully finished")
+          bgTaskConsumer.executeTask { response ->
+            val error = response?.get("error") as? Map<*, *>
+            if (error != null) {
+              Log.w(TAG, "Task failed with ${error["code"]}: ${error["message"]}")
+            } else {
+              Log.d(TAG, "Task successfully finished")
+            }
             taskCompletion.complete(Unit)
           }
         } catch (e: Exception) {
           Log.e(TAG, "Task failed: ${e.message}")
+          taskCompletion.complete(Unit)
         }
         taskCompletion
       }
