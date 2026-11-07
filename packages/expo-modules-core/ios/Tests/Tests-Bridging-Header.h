@@ -5,3 +5,4 @@
 // header (see `SWIFT_OBJC_BRIDGING_HEADER` in the podspec's test spec).
 
 #import "Mocks/EXTestReactScheduler.h"
+#import "Mocks/EXTestNewComponentDescriptor.h"

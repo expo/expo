@@ -7,6 +7,7 @@
 #import <ExpoModulesCore/EXAppDefines.h>
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
+#import <ExpoModulesCore/EXViewPropsDecoding.h>
 #import <ExpoModulesCore/EXAppContextProtocol.h>
 #import <ExpoModulesCore/EXReactDelegateProtocol.h>
 #import <ExpoModulesCore/EXCameraInterface.h>
