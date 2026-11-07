@@ -85,6 +85,17 @@ export function getHydrationFlagScriptContents(): string {
 }
 
 /**
+ * Returns the string content of the script that sets the `__EXPO_ROUTER_HYDRATE_DOCUMENT__`
+ * global flag. The flag tells the client to hydrate the whole document, with the same `<html>`
+ * and `<body>` shape as the streaming renderer, instead of `#root` alone.
+ *
+ * @see packages/expo-router/src/qualified-entry.tsx
+ */
+export function getDocumentHydrationFlagScriptContents(): string {
+  return `globalThis.__EXPO_ROUTER_HYDRATE_DOCUMENT__=true;`;
+}
+
+/**
  * Returns a module script that sets the `__EXPO_ROUTER_HYDRATE__` global flag, which tells the
  * client-side Expo Router entrypoint to hydrate the server-rendered markup instead of performing
  * a full client render.

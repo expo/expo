@@ -2,7 +2,11 @@ import type { ServerFontResourceDescriptor } from 'expo-font';
 import type { CssAsset } from 'expo-server/private';
 import { type ReactNode } from 'react';
 
-import { getHydrationFlagScriptContents, getLoaderDataScriptContents } from './html';
+import {
+  getDocumentHydrationFlagScriptContents,
+  getHydrationFlagScriptContents,
+  getLoaderDataScriptContents,
+} from './html';
 
 type CreateNodeResult = {
   headNodes?: ReactNode[];
@@ -60,6 +64,7 @@ export function getBootstrapContents({
 
   if (hydrate) {
     parts.push(getHydrationFlagScriptContents());
+    parts.push(getDocumentHydrationFlagScriptContents());
   }
 
   if (loadedData) {
