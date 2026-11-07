@@ -1,5 +1,6 @@
 package expo.modules.webbrowser
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import androidx.browser.customtabs.CustomTabColorSchemeParams
@@ -134,6 +135,9 @@ class WebBrowserModule : Module() {
       val packageName = options.browserPackage
       if (!TextUtils.isEmpty(packageName)) {
         intent.setPackage(packageName)
+      }
+      options.referrer?.takeIf { it.isNotEmpty() }?.let {
+        intent.putExtra(Intent.EXTRA_REFERRER, it.toUri())
       }
     }
   }
