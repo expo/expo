@@ -92,6 +92,10 @@ class NetworkModule : Module() {
     override fun onCapabilitiesChanged(network: android.net.Network, networkCapabilities: NetworkCapabilities) {
       asyncEmitNetworkState(DELAY_MS)
     }
+
+    override fun onBlockedStatusChanged(network: android.net.Network, blocked: Boolean) {
+      asyncEmitNetworkState(DELAY_MS)
+    }
   }
 
   override fun definition() = ModuleDefinition {
