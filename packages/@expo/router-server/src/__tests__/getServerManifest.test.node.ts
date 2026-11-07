@@ -324,7 +324,6 @@ it(`converts array syntax API routes`, () => {
   expect(routesFor).toEqual({
     children: [
       {
-        children: [],
         contextKey: './(a,b)/foo+api.tsx',
         dynamic: null,
         loadRoute: expect.anything(),
@@ -332,7 +331,6 @@ it(`converts array syntax API routes`, () => {
         type: 'api',
       },
       {
-        children: [],
         contextKey: './(a,b)/foo+api.tsx',
         dynamic: null,
         loadRoute: expect.anything(),
@@ -390,7 +388,6 @@ it(`converts array syntax HTML routes`, () => {
   expect(routesFor).toEqual({
     children: [
       {
-        children: [],
         contextKey: './(a,b)/foo.tsx',
         entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/foo.tsx'],
         dynamic: null,
@@ -399,7 +396,6 @@ it(`converts array syntax HTML routes`, () => {
         type: 'route',
       },
       {
-        children: [],
         contextKey: './(a,b)/foo.tsx',
         entryPoints: ['expo-router/build/views/Navigator.js', './(a,b)/foo.tsx'],
         dynamic: null,

@@ -1,7 +1,7 @@
 'use client';
 import { use, type ReactNode } from 'react';
 
-import { useRouteNode, type RouteNode } from '../Route';
+import { isPageRouteNode, useRouteNode, type RouteNode } from '../Route';
 import { useIsFocused, useNavigationState, useRoute } from '../react-navigation/native';
 import { ActivityContents } from './ActivityContents';
 import { AncestorHiddenContext, useActivityThreshold } from './NavigationActivityContext';
@@ -53,7 +53,7 @@ export function NavigationAwareActivity({
 }) {
   const routeNode = useRouteNode();
 
-  if (routeNode?.type !== 'route') {
+  if (!isPageRouteNode(routeNode)) {
     throw new Error('NavigationAwareActivity must be rendered inside a screen component.');
   }
 

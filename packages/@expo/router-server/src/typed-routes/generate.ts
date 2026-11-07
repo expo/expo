@@ -1,5 +1,11 @@
 import type { RequireContext } from 'expo-router';
-import { getRoutes, removeSupportedExtensions, type RouteNode } from 'expo-router/internal/routing';
+import {
+  getRoutes,
+  isLayoutRouteNode,
+  isPageRouteNode,
+  removeSupportedExtensions,
+  type RouteNode,
+} from 'expo-router/internal/routing';
 
 // /[...param1]/ - Match [...param1]
 const CATCH_ALL = /\[\.\.\..+?\]/g;
@@ -146,10 +152,11 @@ function groupRouteNodes(
   }
 
   // Skip non-route files
-  if (routeNode.type !== 'route') {
-    // Except the root layout
+  if (!isPageRouteNode(routeNode)) {
+    // Layout files are ignored, so every screen is hoisted under the generated root layout.
     if (routeNode.route === '') {
-      for (const child of routeNode.children) {
+      const children = isLayoutRouteNode(routeNode) ? routeNode.children : [];
+      for (const child of children) {
         groupRouteNodes(child, groupedContextKeys);
       }
       return groupedContextKeys;
@@ -193,10 +200,6 @@ function groupRouteNodes(
     );
   } else {
     groupedContextKeys.static.add(routeKey);
-  }
-
-  for (const child of routeNode.children) {
-    groupRouteNodes(child, groupedContextKeys);
   }
 
   return groupedContextKeys;
