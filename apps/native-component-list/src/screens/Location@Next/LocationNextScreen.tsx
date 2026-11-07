@@ -29,6 +29,11 @@ const POSITION_SHAPE =
   '  horizontalAccuracy, verticalAccuracy, speedAccuracy }\n' +
   'Every field except coordinates, timestamp and mocked may be null.';
 
+const ADDRESS_SHAPE =
+  '[{ coordinates: { latitude, longitude }, name, formattedAddress,\n' +
+  '   city, country, isoCountryCode }]\n' +
+  'Every field except coordinates may be null. Empty array when nothing matches.';
+
 const NOTIFICATION_PERMISSION_SHAPE = '{ status, granted, canAskAgain, expires }';
 
 const SESSION_SHAPE = '{ state, stopOnTaskRemoved, unthrottled }';
@@ -560,6 +565,47 @@ export default function LocationNextScreen() {
                 'Android provider: leaves the app for the system Settings screen; the result arrives when you navigate back.\n' +
                 'Throws if a prompt is already pending.',
               async () => Location.enableLocationServices()
+            )}
+          />
+        </Section>
+
+        <Section
+          title="Geocoding"
+          note="No permission needed, but the device must be online. Android also needs a geocoding backend (Google Play Services).">
+          <GridButton
+            label="geocode"
+            onPress={run(
+              'geocode',
+              `${ADDRESS_SHAPE}\nOne entry near 50.0617, 19.9373 with city "Kraków", isoCountryCode "PL".`,
+              () => Location.geocode('Rynek Główny 1, Kraków')
+            )}
+          />
+          <GridButton
+            label="geocode de-DE"
+            onPress={run(
+              'geocode',
+              `${ADDRESS_SHAPE}\nSame place, text fields in German: city "Krakau", country "Polen".`,
+              () => Location.geocode('Rynek Główny 1, Kraków', { locale: 'de-DE' })
+            )}
+          />
+          <GridButton
+            label="reverse"
+            onPress={run(
+              'reverseGeocode',
+              `${ADDRESS_SHAPE}\nStreet-level address on Rynek Główny, city "Kraków", country "Poland".`,
+              () => Location.reverseGeocode({ latitude: 50.0617, longitude: 19.9373 })
+            )}
+          />
+          <GridButton
+            label="reverse de-DE"
+            onPress={run(
+              'reverseGeocode',
+              `${ADDRESS_SHAPE}\nSame place, text fields in German: country "Polen".\nAndroid: only if the geocoder backend has German data.`,
+              () =>
+                Location.reverseGeocode(
+                  { latitude: 50.0617, longitude: 19.9373 },
+                  { locale: 'de-DE' }
+                )
             )}
           />
         </Section>
