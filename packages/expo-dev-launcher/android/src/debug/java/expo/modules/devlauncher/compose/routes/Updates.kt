@@ -83,6 +83,7 @@ private fun Branches(onProfileClick: () -> Unit, updatesNavController: NavHostCo
     BranchesScreen(
       branches = state.branches,
       isLoading = state.isLoading,
+      hasMore = state.hasMore,
       needToSignIn = state.needToSignIn,
       onProfileClick = onProfileClick,
       onAction = { action ->

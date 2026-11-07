@@ -19,11 +19,31 @@ struct UpdatesListView: View {
   @State private var filteredUpdates: [(update: Update, branchName: String)] = []
   @State private var filterByCompatibility = false
   @State private var sortByRecency = true
+  @State private var searchQuery = ""
   @State private var isLoading = false
   @State private var errorMessage: String?
 
   var body: some View {
     VStack(spacing: 20) {
+      HStack {
+        Image(systemName: "magnifyingglass")
+          .foregroundColor(.secondary)
+        TextField("Search branches and updates", text: $searchQuery)
+          .textInputAutocapitalization(.never)
+          .autocorrectionDisabled(true)
+        if !searchQuery.isEmpty {
+          Button {
+            searchQuery = ""
+          } label: {
+            Image(systemName: "xmark.circle.fill")
+              .foregroundColor(.secondary)
+          }
+        }
+      }
+      .padding(10)
+      .background(Color.expoSecondarySystemBackground)
+      .cornerRadius(12)
+
       HStack {
         Toggle("Compatible only", isOn: $filterByCompatibility)
         Spacer()
@@ -60,6 +80,9 @@ struct UpdatesListView: View {
       applyFilters()
     }
     .onChange(of: sortByRecency) { _ in
+      applyFilters()
+    }
+    .onChange(of: searchQuery) { _ in
       applyFilters()
     }
     .onAppear {
@@ -136,6 +159,13 @@ struct UpdatesListView: View {
       filtered = filtered.filter { viewModel.isCompatibleRuntime($0.update.runtimeVersion) }
     }
 
+    let query = searchQuery.trimmingCharacters(in: .whitespaces)
+    if !query.isEmpty {
+      filtered = filtered.filter {
+        return fuzzyMatch(query, in: $0.branchName) || fuzzyMatch(query, in: $0.update.message)
+      }
+    }
+
     filtered.sort {
       let date1 = createdAtDate($0.update.createdAt)
       let date2 = createdAtDate($1.update.createdAt)
@@ -187,7 +217,18 @@ struct UpdatesListView: View {
         .frame(width: 44, height: 44)
         .foregroundStyle(Color.gray)
 
-      if filterByCompatibility {
+      if !searchQuery.trimmingCharacters(in: .whitespaces).isEmpty {
+        VStack(spacing: 8) {
+          Text("No matching updates")
+            .font(.headline)
+            .multilineTextAlignment(.center)
+
+          Text("No branches or updates match \"\(searchQuery)\". Only loaded updates are searched.")
+            .font(.system(size: 14))
+            .multilineTextAlignment(.center)
+            .foregroundStyle(.secondary)
+        }
+      } else if filterByCompatibility {
         VStack(spacing: 8) {
           Text("No compatible updates")
             .font(.headline)
