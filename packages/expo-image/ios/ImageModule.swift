@@ -380,6 +380,7 @@ public final class ImageModule: Module {
     SDImageLoadersManager.shared.addLoader(ThumbhashLoader())
     SDImageLoadersManager.shared.addLoader(PhotoLibraryAssetLoader())
     SDImageLoadersManager.shared.addLoader(SFSymbolLoader())
+    SDImageLoadersManager.shared.addLoader(NetworkReportingImageLoader(downloader: .shared))
   }
 
   static func configureCache(config: ImageCacheConfig) {
