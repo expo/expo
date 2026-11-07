@@ -61,10 +61,9 @@
     return [super getPackagerServerHost];
   }
 
-  NSNumber *port = _bundleURL.port;
-  if (port == nil) {
-    return host;
-  } else if ([host containsString:@":"] && ![host hasPrefix:@"["]) {
+  // React Native treats a host without a port as Metro's default port 8081, whatever the scheme is.
+  NSNumber *port = _bundleURL.port ?: @([[self getPackagerServerScheme] isEqualToString:@"https"] ? 443 : 80);
+  if ([host containsString:@":"] && ![host hasPrefix:@"["]) {
     return [NSString stringWithFormat:@"[%@]:%@", host, port];
   } else {
     return [NSString stringWithFormat:@"%@:%@", host, port];
