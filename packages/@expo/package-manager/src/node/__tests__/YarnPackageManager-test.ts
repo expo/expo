@@ -149,6 +149,71 @@ describe('YarnPackageManager', () => {
     });
   });
 
+  describe('npmMinimalAgeGate', () => {
+    it('disables the age gate for yarn 4.10 and newer', async () => {
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation((_command, args) =>
+          args?.[0] === '--version'
+            ? mockSpawnPromise(Promise.resolve({ stdout: '4.17.1\n' }))
+            : mockSpawnPromise()
+        );
+
+      const yarn = new YarnPackageManager({ cwd: projectRoot });
+      await yarn.addAsync(['expo']);
+
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'yarnpkg',
+        ['add', 'expo'],
+        expect.objectContaining({
+          env: expect.objectContaining({ YARN_NPM_MINIMAL_AGE_GATE: '0' }),
+        })
+      );
+    });
+
+    it('does not set the age gate variable for yarn classic', async () => {
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation((_command, args) =>
+          args?.[0] === '--version'
+            ? mockSpawnPromise(Promise.resolve({ stdout: '1.22.22\n' }))
+            : mockSpawnPromise()
+        );
+
+      const yarn = new YarnPackageManager({ cwd: projectRoot });
+      await yarn.addAsync(['expo']);
+
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'yarnpkg',
+        ['add', 'expo'],
+        expect.objectContaining({
+          env: expect.not.objectContaining({ YARN_NPM_MINIMAL_AGE_GATE: expect.anything() }),
+        })
+      );
+    });
+
+    it('installs without the age gate variable when the version probe fails', async () => {
+      jest
+        .mocked(spawnAsync)
+        .mockImplementation((_command, args) =>
+          args?.[0] === '--version'
+            ? mockSpawnPromise(Promise.reject(new Error('yarn not found')))
+            : mockSpawnPromise()
+        );
+
+      const yarn = new YarnPackageManager({ cwd: projectRoot });
+      await yarn.addAsync(['expo']);
+
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'yarnpkg',
+        ['add', 'expo'],
+        expect.objectContaining({
+          env: expect.not.objectContaining({ YARN_NPM_MINIMAL_AGE_GATE: expect.anything() }),
+        })
+      );
+    });
+  });
+
   describe('installAsync', () => {
     it('runs normal installation', async () => {
       const yarn = new YarnPackageManager({ cwd: projectRoot });
