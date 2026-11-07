@@ -2074,9 +2074,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     this.registerSsrHmrAsync(url.toString(), onReload);
   }
 
-  // Subscribe to a loader bundle's Metro graph so we can broadcast `loader-invalidate` and
-  // drop the SSR module eval cache when the loader's dependency graph is dirtied. This avoids
-  // the full-page reload the old stub used and keeps client state across loader edits.
   private setupLoaderGraphListener(
     graphId: string,
     resolvedEntryFilePath: string,
@@ -2096,10 +2093,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
       if (!this.shouldBroadcastLoaderInvalidation(changeEvent?.changeId)) {
         return;
-      }
-
-      if (typeof globalThis.__c === 'function') {
-        globalThis.__c();
       }
 
       this.broadcastMessage('sendDevCommand', {
