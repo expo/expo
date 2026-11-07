@@ -23,3 +23,9 @@ internal class ApplicationInstallReferrerException(responseCode: Int) :
 
 internal class ApplicationInstallReferrerServiceDisconnectedException :
   CodedException("Connection to install referrer service was lost.")
+
+internal class ApplicationInstallReferrerDetailsUnavailableException(cause: NullPointerException) :
+  CodedException(
+    "The install referrer service connected, but the Play Store returned no install referrer details. This happens on some devices and Play Store versions. Treat the install referrer as unknown, or call getInstallReferrerAsync() again later.",
+    cause
+  )
