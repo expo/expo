@@ -168,7 +168,7 @@ export default function ExpoImage({
           contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
           hashPlaceholderContentPosition={contentPosition}
           hashPlaceholderStyle={imageHashStyle}
-          accessibilityLabel={accessibilityLabel}
+          accessibilityLabel={accessibilityLabel ?? alt}
           tintColor={tintColor}
           draggable={draggable}
         />
