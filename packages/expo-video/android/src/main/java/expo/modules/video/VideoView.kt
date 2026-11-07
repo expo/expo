@@ -347,6 +347,13 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
     post(mLayoutRunnable)
   }
 
+  override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+    super.onSizeChanged(w, h, oldw, oldh)
+    // React Native sets a new frame with `layout()` and does not call `requestLayout()`,
+    // so the `PlayerView` keeps its old measured size unless we re-measure it here.
+    post(mLayoutRunnable)
+  }
+
   override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
     super.onLayout(changed, l, t, r, b)
     // On every re-layout ExoPlayer resets the timeBar to be enabled.
