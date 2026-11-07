@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix parsing Android device serials containing spaces. ([#53129](https://github.com/expo/expo/pull/53129) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 57.0.33 — 2026-11-05

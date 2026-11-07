@@ -196,6 +196,105 @@ describe(isDeviceBootedAsync, () => {
 });
 
 describe(getAttachedDevicesAsync, () => {
+  it.each([
+    ['device', true, true],
+    ['offline', true, false],
+    ['unauthorized', false, true],
+    ['bootloader', true, true],
+    ['host', true, true],
+    ['recovery', true, true],
+    ['rescue', true, true],
+    ['sideload', true, true],
+    ['authorizing', true, true],
+    ['connecting', true, true],
+    ['detached', true, true],
+    ['any', true, true],
+    ['no permissions (user in plugdev group; are your udev rules wrong?)', true, true],
+    ['future-state', true, true],
+  ])('preserves existing device flags for %s', async (state, isAuthorized, isBooted) => {
+    jest
+      .mocked(getServer().runAsync)
+      .mockResolvedValueOnce(`List of devices attached\nSERIAL\t${state} usb:123 transport_id:1\n`);
+
+    expect(await getAttachedDevicesAsync()).toEqual([
+      {
+        pid: 'SERIAL',
+        name: 'Device SERIAL',
+        type: 'device',
+        connectionType: 'USB',
+        isAuthorized,
+        isBooted,
+      },
+    ]);
+  });
+
+  it('ignores empty and incomplete device lines', async () => {
+    jest
+      .mocked(getServer().runAsync)
+      .mockResolvedValueOnce('List of devices attached\n\n  \nSERIAL\n');
+
+    expect(await getAttachedDevicesAsync()).toEqual([]);
+  });
+
+  it.each(['\n', '\r\n'])('preserves spaces in mDNS serials with %j line endings', async (eol) => {
+    jest
+      .mocked(getServer().runAsync)
+      .mockResolvedValueOnce(
+        [
+          'List of devices attached',
+          'FA8251A00720           device usb:338690048X product:walleye model:Pixel_2 transport_id:4',
+          'emulator-5554         device product:sdk model:Pixel transport_id:1',
+          'adb-XXXX._adb-tls-connect._tcp (2)\tdevice product:cheetah model:Pixel_7 transport_id:7',
+          'adb-XXXX (2)._adb-tls-connect._tcp offline transport_id:8',
+          'adb-YYYY._adb-tls-connect._tcp (2) unauthorized transport_id:9',
+          '',
+        ].join(eol)
+      );
+    jest.mocked(getServer().runAsync).mockResolvedValueOnce(['Pixel_API_30', 'OK'].join(eol));
+
+    expect(await getAttachedDevicesAsync()).toEqual([
+      {
+        pid: 'FA8251A00720',
+        name: 'Pixel_2',
+        type: 'device',
+        isAuthorized: true,
+        isBooted: true,
+        connectionType: 'USB',
+      },
+      {
+        pid: 'emulator-5554',
+        name: 'Pixel_API_30',
+        type: 'emulator',
+        isAuthorized: true,
+        isBooted: true,
+      },
+      {
+        pid: 'adb-XXXX._adb-tls-connect._tcp (2)',
+        name: 'Pixel_7',
+        type: 'device',
+        isAuthorized: true,
+        isBooted: true,
+        connectionType: 'Network',
+      },
+      {
+        pid: 'adb-XXXX (2)._adb-tls-connect._tcp',
+        name: 'Device adb-XXXX (2)._adb-tls-connect._tcp',
+        type: 'device',
+        isAuthorized: false,
+        isBooted: false,
+        connectionType: 'Network',
+      },
+      {
+        pid: 'adb-YYYY._adb-tls-connect._tcp (2)',
+        name: 'Device adb-YYYY._adb-tls-connect._tcp (2)',
+        type: 'device',
+        isAuthorized: false,
+        isBooted: true,
+        connectionType: 'Network',
+      },
+    ]);
+  });
+
   it(`gets devices`, async () => {
     jest
       .mocked(getServer().runAsync)
