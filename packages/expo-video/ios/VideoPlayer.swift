@@ -32,11 +32,14 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         let payload = PlaybackRateChangedEventPayload(playbackRate: playbackRate, oldPlaybackRate: oldValue)
         safeEmit(event: "playbackRateChange", payload: payload)
       }
-      if #available(iOS 16.0, tvOS 16.0, *) {
-        ref.defaultRate = playbackRate
-      }
-      if ref.rate != 0 {
-        ref.rate = playbackRate
+      let playbackRate = playbackRate
+      applyOnMainThread { player in
+        if #available(iOS 16.0, tvOS 16.0, *) {
+          player.defaultRate = playbackRate
+        }
+        if player.rate != 0 {
+          player.rate = playbackRate
+        }
       }
     }
   }
@@ -81,7 +84,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         let payload = VolumeChangedEventPayload(volume: volume, oldVolume: oldValue)
         safeEmit(event: "volumeChange", payload: payload)
       }
-      ref.volume = volume
+      let volume = volume
+      applyOnMainThread { $0.volume = volume }
     }
   }
 
@@ -91,7 +95,8 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
         let payload = MutedChangedEventPayload(muted: isMuted, oldMuted: oldValue)
         safeEmit(event: "mutedChange", payload: payload)
       }
-      ref.isMuted = isMuted
+      let isMuted = isMuted
+      applyOnMainThread { $0.isMuted = isMuted }
       VideoManager.shared.setAppropriateAudioSessionOrWarn()
     }
   }
@@ -363,6 +368,25 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   private var hasBeenReleased: Bool {
     return didRelease.withLock { $0 }
+  }
+
+  func play() {
+    applyOnMainThread { $0.play() }
+  }
+
+  func pause() {
+    applyOnMainThread { $0.pause() }
+  }
+
+  // AVKit observes the player from the main thread. Changing the playback state from the JS thread
+  // can race with those KVO registrations, which crashes inside the pending KVO notification stack.
+  private func applyOnMainThread(_ change: @escaping (AVPlayer) -> Void) {
+    runOnMainThread { [weak self] in
+      guard let self, !self.hasBeenReleased else {
+        return
+      }
+      change(self.ref)
+    }
   }
 
   private func getBufferedPosition() -> Double {
