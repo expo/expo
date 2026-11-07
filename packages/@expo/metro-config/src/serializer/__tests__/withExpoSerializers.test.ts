@@ -1,4 +1,6 @@
 import type { Module } from '@expo/metro/metro/DeltaBundler';
+import { TraceMap, originalPositionFor } from '@jridgewell/trace-mapping';
+import { performance } from 'node:perf_hooks';
 
 import { createGranularChunkingStrategy } from '../chunking/createGranularChunkingStrategy';
 import * as workerScan from '../chunking/findUnsupportedWorkerAsyncDependency';
@@ -10,11 +12,244 @@ import {
 } from '../fork/__tests__/serializer-test-utils';
 import type { ExpoSerializerOptions } from '../fork/baseJSBundle';
 import * as chunkSerializer from '../serializeChunks';
-import type { SerialAsset } from '../withExpoSerializers';
+import { flattenSourceMap } from '../sourceMap';
+import type { SerialAsset, Serializer } from '../withExpoSerializers';
 import {
   createSerializerFromSerialProcessors,
   withSerializerPlugins,
 } from '../withExpoSerializers';
+
+it.each(['client', 'node', 'react-server'])(
+  'keeps %s map paths private without corrupting external paths',
+  async (environment) => {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs: { 'index.js': `import '../shared';`, '../shared.js': `export const value = 42;` },
+      options: {
+        isServer: environment === 'node',
+        isReactServer: environment === 'react-server',
+        dev: false,
+        output: 'static',
+        splitChunks: false,
+        sourceMaps: true,
+      },
+    });
+    const modulePaths: string[] = [];
+    const serializerOptions: ExpoSerializerOptions = {
+      ...options,
+      shouldAddToIgnoreList(module) {
+        modulePaths.push(module.path);
+        return false;
+      },
+    };
+    const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+    const { artifacts } = (await serializer(entry, premodules, graph, serializerOptions)) as any;
+    const map = JSON.parse(artifacts.find((asset: SerialAsset) => asset.type === 'map')!.source);
+    expect(flattenSourceMap(map).sources).toEqual(
+      expect.arrayContaining(['/index.js', '../shared.js'])
+    );
+    expect(JSON.stringify(map)).not.toContain('/app/');
+    expect(modulePaths).toEqual(expect.arrayContaining(['/app/index.js', '/shared.js']));
+  }
+);
+
+it.each(['node', 'react-server'])(
+  'keeps %s development maps aligned with plugin-injected premodules',
+  async (environment) => {
+    for (const inlineSourceMap of [false, true]) {
+      const args = await microBundle({
+        fs: { 'index.js': 'export const value = 42;' },
+        options: {
+          dev: true,
+          sourceMaps: true,
+          isServer: environment === 'node',
+          isReactServer: environment === 'react-server',
+        },
+      });
+      const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null, {
+        unstable_beforeAssetSerializationPlugins: [
+          ({ premodules }) => [
+            createJSVirtualModule('injected', 'globalThis.injected = true;\n\n'),
+            ...premodules,
+          ],
+        ],
+      });
+      const result = (await serializer(args[0], args[1], args[2], {
+        ...args[3],
+        inlineSourceMap,
+      })) as { code: string; map: string };
+      expect(typeof result).toBe('object');
+      const lines = result.code.split('\n');
+      const line = lines.findIndex((line) => line.includes('const value = 42'));
+      const map = new TraceMap(JSON.parse(result.map));
+      expect(
+        originalPositionFor(map, { line: line + 1, column: lines[line]!.indexOf('const') })
+      ).toMatchObject({ source: '/app/index.js', line: 1 });
+      if (inlineSourceMap) {
+        const inline = Buffer.from(result.code.match(/base64,([^\n]+)/)![1]!, 'base64').toString();
+        expect(JSON.parse(inline)).toEqual(JSON.parse(result.map));
+      }
+    }
+  }
+);
+
+it.each([
+  [undefined, false],
+  ['static', false],
+  [undefined, true],
+  ['static', true],
+] as const)(
+  'yields during slow source collection for %s server output (inline: %s)',
+  async (output, inlineSourceMaps) => {
+    const args = await microBundle({
+      fs: {
+        'index.js': "import './a'; import './b'; import './c'; export const value = 42;",
+        'a.js': 'console.log(1);',
+        'b.js': 'console.log(2);',
+        'c.js': 'console.log(3);',
+      },
+      options: { dev: true, isServer: true, sourceMaps: true, output, inlineSourceMaps },
+    });
+    for (const module of args[2].dependencies.values()) {
+      const getSource = module.getSource.bind(module);
+      Object.defineProperty(module, 'getSource', {
+        value: () => {
+          const start = performance.now();
+          while (performance.now() - start < 20) {}
+          return getSource();
+        },
+      });
+    }
+    const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+    let yielded = false;
+    const tick = setImmediate(() => {
+      yielded = true;
+    });
+    try {
+      await serializer(...args);
+      expect(yielded).toBe(true);
+    } finally {
+      clearImmediate(tick);
+    }
+  }
+);
+
+it.each(['true', '1'])(
+  'honors excludeSource=%s in Metro inline-map requests',
+  async (excludeSource) => {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs: { 'index.js': `export const value = 42;` },
+      options: { dev: true, sourceMaps: true },
+    });
+    const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+    const requestOptions: ExpoSerializerOptions = {
+      ...options,
+      inlineSourceMap: true,
+      sourceUrl: 'http://localhost/index.bundle?excludeSource=' + excludeSource,
+      serializerOptions: undefined,
+    };
+    const code = await serializer(entry, premodules, graph, requestOptions);
+    expect(typeof code).toBe('string');
+    const encoded = (code as string).match(
+      /sourceMappingURL=data:application\/json[^,]*,([^\n]+)/
+    )![1]!;
+    const map = JSON.parse(Buffer.from(encoded, 'base64').toString());
+    expect(JSON.stringify(map)).not.toContain('export const value = 42;');
+  }
+);
+
+it.each([false, true])(
+  'respects custom source URLs and source exclusion in single-bundle client maps (inline: %s)',
+  async (inlineSourceMap) => {
+    const [entry, premodules, graph, options] = await microBundle({
+      fs: { 'index.js': `export const value = 42;` },
+      options: { dev: true, sourceMaps: true },
+    });
+    const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+    const serializerOptions: ExpoSerializerOptions = {
+      ...options,
+      inlineSourceMap,
+      sourceUrl: 'http://localhost/index.map',
+      getSourceUrl: (module) => 'custom:///workspace/' + module.path.split('/').pop(),
+      serializerOptions: { excludeSource: true },
+    };
+    const result = (await serializer(entry, premodules, graph, serializerOptions)) as {
+      code: string;
+      map: string;
+    };
+    const map = inlineSourceMap
+      ? JSON.parse(
+          Buffer.from(
+            result.code.match(/sourceMappingURL=data:application\/json[^,]*,([^\n]+)/)![1]!,
+            'base64'
+          ).toString()
+        )
+      : JSON.parse(result.map);
+    expect(flattenSourceMap(map).sources).toContain('custom:///workspace/index.js');
+    expect(JSON.stringify(map)).not.toContain('export const value = 42;');
+  }
+);
+
+it.each([false, true])('normalizes legacy server maps (inline: %s)', async (inlineSourceMap) => {
+  const [entry, premodules, graph, options] = await microBundle({
+    fs: { 'index.js': `export const value = 42;` },
+    options: { isServer: true, dev: true, sourceMaps: true },
+  });
+  const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+  const serializerOptions: ExpoSerializerOptions = {
+    ...options,
+    inlineSourceMap,
+    sourceUrl: 'http://localhost/index.map',
+    serializerOptions: { excludeSource: true },
+  };
+  const result = (await serializer(entry, premodules, graph, serializerOptions)) as {
+    code: string;
+    map: string;
+  };
+  const map = inlineSourceMap
+    ? JSON.parse(
+        Buffer.from(
+          result.code.match(/sourceMappingURL=data:application\/json[^,]*,([^\n]+)/)![1]!,
+          'base64'
+        ).toString()
+      )
+    : JSON.parse(result.map);
+  expect(map.sections).toBeUndefined();
+  expect(map.sourcesContent).toBeUndefined();
+  expect(map.sources).toContain('/app/index.js');
+});
+
+it('excludes the omitted runtime from modules-only server maps', async () => {
+  const [entry, premodules, graph, options] = await microBundle({
+    fs: { 'index.js': `export const value = 42;` },
+    preModulesFs: { 'runtime.js': 'var runtime = true;' },
+    options: { isServer: true, dev: false, output: 'static', splitChunks: false, sourceMaps: true },
+  });
+  const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+  const { artifacts } = (await serializer(entry, premodules, graph, {
+    ...options,
+    modulesOnly: true,
+  })) as any;
+  const map = JSON.parse(artifacts.find((a: SerialAsset) => a.type === 'map').source);
+  expect(map.sources).not.toContain('/runtime.js');
+});
+
+it('normalizes inline server maps and excludes requested source content', async () => {
+  const [entry, premodules, graph, options] = await microBundle({
+    fs: { 'index.js': `export const value = 42;` },
+    options: { isServer: true, dev: false, output: 'static', splitChunks: false, sourceMaps: true },
+  });
+  const opts: ExpoSerializerOptions = { ...options, inlineSourceMap: true };
+  opts.serializerOptions!.excludeSource = true;
+  const serializer = createSerializerFromSerialProcessors({ projectRoot } as any, [], null);
+  const { artifacts } = (await serializer(entry, premodules, graph, opts)) as any;
+  const js = artifacts.find((a: SerialAsset) => a.type === 'js');
+  const encoded = js.source.match(/sourceMappingURL=data:application\/json[^,]*,([^\n]+)/)[1];
+  const map = JSON.parse(Buffer.from(encoded, 'base64').toString());
+  expect(map.sections).toBeUndefined();
+  expect(map.sources).toContain('/index.js');
+  expect(map.sourcesContent).toBeUndefined();
+  expect(artifacts.some((a: SerialAsset) => a.type === 'map')).toBe(false);
+});
 
 describe('Granular chunk emission', () => {
   const publicGraph = {
@@ -557,6 +792,25 @@ describe('worker compatibility', () => {
 });
 
 describe(withSerializerPlugins, () => {
+  it('composes a custom wrapper without recovering it recursively', async () => {
+    const args = await microBundle({ fs: { 'index.js': 'export const value = 42;' } });
+    const config = {
+      projectRoot,
+      serializer: { customSerializer: undefined as Serializer | undefined },
+    };
+    withSerializerPlugins(config, []);
+    const original = config.serializer.customSerializer!;
+    const expected = await original(...args);
+    const customSerializer = jest.fn((...props: Parameters<typeof original>) => {
+      if (customSerializer.mock.calls.length > 2) throw new Error('Recursive custom serializer');
+      return original(...props);
+    });
+    config.serializer.customSerializer = customSerializer;
+    const wrapped = withSerializerPlugins(config, []);
+    expect(await wrapped.serializer.customSerializer!(...args)).toEqual(expected);
+    expect(customSerializer).toHaveBeenCalledTimes(1);
+  });
+
   it(`executes in the expected order`, async () => {
     const customSerializer = jest.fn();
     const customProcessor = jest.fn((...res) => res);
