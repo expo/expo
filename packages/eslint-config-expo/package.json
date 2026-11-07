@@ -2,41 +2,38 @@
   "name": "eslint-config-expo",
   "version": "58.0.4",
   "description": "ESLint config for Expo apps",
-  "main": "default.js",
-  "scripts": {
-    "depscheck": "expo-module depscheck",
-    "lint": "eslint .",
-    "pretest": "pnpm --filter eslint-plugin-expo build",
-    "test": "jest"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/expo/expo.git",
-    "directory": "packages/eslint-config-expo"
-  },
   "keywords": [
     "eslint-config",
     "expo",
     "react-native"
   ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/eslint-config-expo",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "Expo",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expo/expo.git",
+    "directory": "packages/eslint-config-expo"
+  },
   "files": [
     "README.md",
     "default.js",
     "flat.js",
     "flat",
+    "shared",
     "utils"
   ],
-  "jest": {
-    "testMatch": [
-      "**/__tests__/*-test.js"
-    ]
+  "main": "default.js",
+  "scripts": {
+    "depscheck": "expo-module depscheck",
+    "format": "expo-module format",
+    "lint": "eslint .",
+    "pretest": "pnpm --filter eslint-plugin-expo build",
+    "test": "jest"
   },
-  "author": "Expo",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/eslint-config-expo",
   "dependencies": {
     "@typescript-eslint/eslint-plugin": "^8.59.0",
     "@typescript-eslint/parser": "^8.59.0",
@@ -49,13 +46,15 @@
   },
   "devDependencies": {
     "eslint": "^9.18.0",
-    "eslint-plugin-prettier": "^5.2.1",
     "eslint8": "npm:eslint@^8.57.1",
-    "prettier": "^3.8.3",
-    "react": "19.3.0",
-    "react-native": "0.88.1"
+    "react": "19.3.0"
   },
   "peerDependencies": {
     "eslint": ">=8.10"
+  },
+  "jest": {
+    "testMatch": [
+      "**/__tests__/*-test.js"
+    ]
   }
 }

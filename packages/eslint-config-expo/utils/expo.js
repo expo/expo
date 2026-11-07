@@ -1,3 +1,5 @@
+const { expoRules } = require('../shared/rules');
+
 module.exports = {
   plugins: ['expo'],
   ignorePatterns: [
@@ -5,9 +7,13 @@ module.exports = {
     // android/app/build/intermediates/assets/debug/EXDevMenuApp.android.js
     'android/app/build',
   ],
-  rules: {
-    'expo/use-dom-exports': ['error'],
-    'expo/no-env-var-destructuring': ['error'],
-    'expo/no-dynamic-env-var': ['error'],
-  },
+  rules: expoRules,
+  overrides: [
+    {
+      files: ['metro.config.js'],
+      env: {
+        node: true,
+      },
+    },
+  ],
 };

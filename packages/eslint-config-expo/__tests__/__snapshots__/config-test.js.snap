@@ -1,0 +1,7446 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`flat config resolves metro.config.js 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "node": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "__DEV__": "readonly",
+  },
+  "parser": null,
+  "plugins": [
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/named": [
+      "error",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-class-members": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+      {
+        "allowObjectPatternsAsParameters": false,
+      },
+    ],
+    "no-extend-native": [
+      "warn",
+      {
+        "exceptions": [],
+      },
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-redeclare": [
+      "warn",
+      {
+        "builtinGlobals": true,
+      },
+    ],
+    "no-undef": [
+      "error",
+      {
+        "typeof": false,
+      },
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+      {
+        "enforceForOrderingRelations": false,
+      },
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+        "ignoreDirectives": false,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+      {
+        "enforceForIndexOf": false,
+        "enforceForSwitchCase": true,
+      },
+    ],
+    "valid-typeof": [
+      "error",
+      {
+        "requireStringLiterals": false,
+      },
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`flat config resolves src/app.ios.ts 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "__DEV__": "readonly",
+    "clearImmediate": "readonly",
+    "exports": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "process": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "@typescript-eslint/array-type": [
+      "warn",
+      {
+        "default": "array",
+      },
+    ],
+    "@typescript-eslint/consistent-type-assertions": [
+      "warn",
+      {
+        "assertionStyle": "as",
+        "objectLiteralTypeAssertions": "allow",
+      },
+    ],
+    "@typescript-eslint/no-dupe-class-members": [
+      "error",
+    ],
+    "@typescript-eslint/no-empty-object-type": [
+      "warn",
+    ],
+    "@typescript-eslint/no-extra-non-null-assertion": [
+      "warn",
+    ],
+    "@typescript-eslint/no-redeclare": [
+      "warn",
+    ],
+    "@typescript-eslint/no-require-imports": [
+      "warn",
+      {
+        "allow": [
+          "\\.(aac|aiff|avif|bmp|caf|db|gif|heic|html|jpeg|jpg|json|m4a|m4v|mov|mp3|mp4|mpeg|mpg|otf|pdf|png|psd|svg|ttf|wav|webm|webp|xml|yaml|yml|zip)$",
+        ],
+      },
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "@typescript-eslint/no-useless-constructor": [
+      "warn",
+    ],
+    "@typescript-eslint/no-wrapper-object-types": [
+      "warn",
+    ],
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+      {
+        "allowObjectPatternsAsParameters": false,
+      },
+    ],
+    "no-extend-native": [
+      "warn",
+      {
+        "exceptions": [],
+      },
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+      {
+        "enforceForOrderingRelations": false,
+      },
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+        "ignoreDirectives": false,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+      {
+        "enforceForIndexOf": false,
+        "enforceForSwitchCase": true,
+      },
+    ],
+    "valid-typeof": [
+      "error",
+      {
+        "requireStringLiterals": false,
+      },
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/external-module-folders": [
+      "node_modules",
+      "node_modules/@types",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`flat config resolves src/app.js 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "__DEV__": "readonly",
+    "clearImmediate": "readonly",
+    "exports": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "process": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+  },
+  "parser": null,
+  "plugins": [
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/named": [
+      "error",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-class-members": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+      {
+        "allowObjectPatternsAsParameters": false,
+      },
+    ],
+    "no-extend-native": [
+      "warn",
+      {
+        "exceptions": [],
+      },
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-redeclare": [
+      "warn",
+      {
+        "builtinGlobals": true,
+      },
+    ],
+    "no-undef": [
+      "error",
+      {
+        "typeof": false,
+      },
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+      {
+        "enforceForOrderingRelations": false,
+      },
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+        "ignoreDirectives": false,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+      {
+        "enforceForIndexOf": false,
+        "enforceForSwitchCase": true,
+      },
+    ],
+    "valid-typeof": [
+      "error",
+      {
+        "requireStringLiterals": false,
+      },
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`flat config resolves src/app.jsx 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "__DEV__": "readonly",
+    "clearImmediate": "readonly",
+    "exports": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "process": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+  },
+  "parser": null,
+  "plugins": [
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/named": [
+      "error",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-class-members": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+      {
+        "allowObjectPatternsAsParameters": false,
+      },
+    ],
+    "no-extend-native": [
+      "warn",
+      {
+        "exceptions": [],
+      },
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-redeclare": [
+      "warn",
+      {
+        "builtinGlobals": true,
+      },
+    ],
+    "no-undef": [
+      "error",
+      {
+        "typeof": false,
+      },
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+      {
+        "enforceForOrderingRelations": false,
+      },
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+        "ignoreDirectives": false,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+      {
+        "enforceForIndexOf": false,
+        "enforceForSwitchCase": true,
+      },
+    ],
+    "valid-typeof": [
+      "error",
+      {
+        "requireStringLiterals": false,
+      },
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`flat config resolves src/app.ts 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "__DEV__": "readonly",
+    "clearImmediate": "readonly",
+    "exports": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "process": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "@typescript-eslint/array-type": [
+      "warn",
+      {
+        "default": "array",
+      },
+    ],
+    "@typescript-eslint/consistent-type-assertions": [
+      "warn",
+      {
+        "assertionStyle": "as",
+        "objectLiteralTypeAssertions": "allow",
+      },
+    ],
+    "@typescript-eslint/no-dupe-class-members": [
+      "error",
+    ],
+    "@typescript-eslint/no-empty-object-type": [
+      "warn",
+    ],
+    "@typescript-eslint/no-extra-non-null-assertion": [
+      "warn",
+    ],
+    "@typescript-eslint/no-redeclare": [
+      "warn",
+    ],
+    "@typescript-eslint/no-require-imports": [
+      "warn",
+      {
+        "allow": [
+          "\\.(aac|aiff|avif|bmp|caf|db|gif|heic|html|jpeg|jpg|json|m4a|m4v|mov|mp3|mp4|mpeg|mpg|otf|pdf|png|psd|svg|ttf|wav|webm|webp|xml|yaml|yml|zip)$",
+        ],
+      },
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "@typescript-eslint/no-useless-constructor": [
+      "warn",
+    ],
+    "@typescript-eslint/no-wrapper-object-types": [
+      "warn",
+    ],
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+      {
+        "allowObjectPatternsAsParameters": false,
+      },
+    ],
+    "no-extend-native": [
+      "warn",
+      {
+        "exceptions": [],
+      },
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+      {
+        "enforceForOrderingRelations": false,
+      },
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+        "ignoreDirectives": false,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+      {
+        "enforceForIndexOf": false,
+        "enforceForSwitchCase": true,
+      },
+    ],
+    "valid-typeof": [
+      "error",
+      {
+        "requireStringLiterals": false,
+      },
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/external-module-folders": [
+      "node_modules",
+      "node_modules/@types",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`flat config resolves src/app.tsx 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "__DEV__": "readonly",
+    "clearImmediate": "readonly",
+    "exports": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "process": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "@typescript-eslint/array-type": [
+      "warn",
+      {
+        "default": "array",
+      },
+    ],
+    "@typescript-eslint/consistent-type-assertions": [
+      "warn",
+      {
+        "assertionStyle": "as",
+        "objectLiteralTypeAssertions": "allow",
+      },
+    ],
+    "@typescript-eslint/no-dupe-class-members": [
+      "error",
+    ],
+    "@typescript-eslint/no-empty-object-type": [
+      "warn",
+    ],
+    "@typescript-eslint/no-extra-non-null-assertion": [
+      "warn",
+    ],
+    "@typescript-eslint/no-redeclare": [
+      "warn",
+    ],
+    "@typescript-eslint/no-require-imports": [
+      "warn",
+      {
+        "allow": [
+          "\\.(aac|aiff|avif|bmp|caf|db|gif|heic|html|jpeg|jpg|json|m4a|m4v|mov|mp3|mp4|mpeg|mpg|otf|pdf|png|psd|svg|ttf|wav|webm|webp|xml|yaml|yml|zip)$",
+        ],
+      },
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "@typescript-eslint/no-useless-constructor": [
+      "warn",
+    ],
+    "@typescript-eslint/no-wrapper-object-types": [
+      "warn",
+    ],
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+      {
+        "allowObjectPatternsAsParameters": false,
+      },
+    ],
+    "no-extend-native": [
+      "warn",
+      {
+        "exceptions": [],
+      },
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+      {
+        "enforceForOrderingRelations": false,
+      },
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+        "ignoreDirectives": false,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+      {
+        "enforceForIndexOf": false,
+        "enforceForSwitchCase": true,
+      },
+    ],
+    "valid-typeof": [
+      "error",
+      {
+        "requireStringLiterals": false,
+      },
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/external-module-folders": [
+      "node_modules",
+      "node_modules/@types",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`flat config resolves src/app.web.js 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "__DEV__": "readonly",
+    "clearImmediate": "readonly",
+    "exports": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "process": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+  },
+  "parser": null,
+  "plugins": [
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/named": [
+      "error",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-class-members": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+      {
+        "allowObjectPatternsAsParameters": false,
+      },
+    ],
+    "no-extend-native": [
+      "warn",
+      {
+        "exceptions": [],
+      },
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-redeclare": [
+      "warn",
+      {
+        "builtinGlobals": true,
+      },
+    ],
+    "no-undef": [
+      "error",
+      {
+        "typeof": false,
+      },
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+      {
+        "enforceForOrderingRelations": false,
+      },
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+        "ignoreDirectives": false,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+      {
+        "enforceForIndexOf": false,
+        "enforceForSwitchCase": true,
+      },
+    ],
+    "valid-typeof": [
+      "error",
+      {
+        "requireStringLiterals": false,
+      },
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`flat config resolves src/lib.cjs 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "__DEV__": "readonly",
+    "clearImmediate": "readonly",
+    "exports": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "process": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+  },
+  "parser": null,
+  "plugins": [
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/named": [
+      "error",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-class-members": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+      {
+        "allowObjectPatternsAsParameters": false,
+      },
+    ],
+    "no-extend-native": [
+      "warn",
+      {
+        "exceptions": [],
+      },
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-redeclare": [
+      "warn",
+      {
+        "builtinGlobals": true,
+      },
+    ],
+    "no-undef": [
+      "error",
+      {
+        "typeof": false,
+      },
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+      {
+        "enforceForOrderingRelations": false,
+      },
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+        "ignoreDirectives": false,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+      {
+        "enforceForIndexOf": false,
+        "enforceForSwitchCase": true,
+      },
+    ],
+    "valid-typeof": [
+      "error",
+      {
+        "requireStringLiterals": false,
+      },
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`flat config resolves src/lib.mjs 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "__DEV__": "readonly",
+    "clearImmediate": "readonly",
+    "exports": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "process": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+  },
+  "parser": null,
+  "plugins": [
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/named": [
+      "error",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-class-members": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+      {
+        "allowObjectPatternsAsParameters": false,
+      },
+    ],
+    "no-extend-native": [
+      "warn",
+      {
+        "exceptions": [],
+      },
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-redeclare": [
+      "warn",
+      {
+        "builtinGlobals": true,
+      },
+    ],
+    "no-undef": [
+      "error",
+      {
+        "typeof": false,
+      },
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+      {
+        "enforceForOrderingRelations": false,
+      },
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+        "ignoreDirectives": false,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+      {
+        "enforceForIndexOf": false,
+        "enforceForSwitchCase": true,
+      },
+    ],
+    "valid-typeof": [
+      "error",
+      {
+        "requireStringLiterals": false,
+      },
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`flat config resolves src/types.d.ts 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "__DEV__": "readonly",
+    "clearImmediate": "readonly",
+    "exports": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "process": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "@typescript-eslint/array-type": [
+      "warn",
+      {
+        "default": "array",
+      },
+    ],
+    "@typescript-eslint/consistent-type-assertions": [
+      "warn",
+      {
+        "assertionStyle": "as",
+        "objectLiteralTypeAssertions": "allow",
+      },
+    ],
+    "@typescript-eslint/no-dupe-class-members": [
+      "error",
+    ],
+    "@typescript-eslint/no-empty-object-type": [
+      "warn",
+    ],
+    "@typescript-eslint/no-extra-non-null-assertion": [
+      "warn",
+    ],
+    "@typescript-eslint/no-redeclare": [
+      "warn",
+    ],
+    "@typescript-eslint/no-require-imports": [
+      "warn",
+      {
+        "allow": [
+          "\\.(aac|aiff|avif|bmp|caf|db|gif|heic|html|jpeg|jpg|json|m4a|m4v|mov|mp3|mp4|mpeg|mpg|otf|pdf|png|psd|svg|ttf|wav|webm|webp|xml|yaml|yml|zip)$",
+        ],
+      },
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "@typescript-eslint/no-useless-constructor": [
+      "warn",
+    ],
+    "@typescript-eslint/no-wrapper-object-types": [
+      "warn",
+    ],
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+      {
+        "allowObjectPatternsAsParameters": false,
+      },
+    ],
+    "no-extend-native": [
+      "warn",
+      {
+        "exceptions": [],
+      },
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+      {
+        "enforceForOrderingRelations": false,
+      },
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+        "ignoreDirectives": false,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+      {
+        "enforceForIndexOf": false,
+        "enforceForSwitchCase": true,
+      },
+    ],
+    "valid-typeof": [
+      "error",
+      {
+        "requireStringLiterals": false,
+      },
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/external-module-folders": [
+      "node_modules",
+      "node_modules/@types",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`legacy config resolves metro.config.js 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "node": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "FormData": "readonly",
+    "XMLHttpRequest": "readonly",
+    "__DEV__": "readonly",
+    "alert": "readonly",
+    "cancelAnimationFrame": "readonly",
+    "cancelIdleCallback": "readonly",
+    "clearImmediate": "readonly",
+    "console": "readonly",
+    "exports": "readonly",
+    "fetch": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "navigator": "readonly",
+    "process": "readonly",
+    "requestAnimationFrame": "readonly",
+    "requestIdleCallback": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+    "window": "readonly",
+  },
+  "parser": null,
+  "plugins": [
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/named": [
+      "error",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-class-members": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+    ],
+    "no-extend-native": [
+      "warn",
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-redeclare": [
+      "warn",
+    ],
+    "no-undef": [
+      "error",
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+    ],
+    "valid-typeof": [
+      "error",
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`legacy config resolves src/app.ios.ts 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "FormData": "readonly",
+    "XMLHttpRequest": "readonly",
+    "__DEV__": "readonly",
+    "alert": "readonly",
+    "cancelAnimationFrame": "readonly",
+    "cancelIdleCallback": "readonly",
+    "clearImmediate": "readonly",
+    "console": "readonly",
+    "exports": "readonly",
+    "fetch": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "navigator": "readonly",
+    "process": "readonly",
+    "requestAnimationFrame": "readonly",
+    "requestIdleCallback": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+    "window": "readonly",
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "@typescript-eslint/array-type": [
+      "warn",
+      {
+        "default": "array",
+      },
+    ],
+    "@typescript-eslint/consistent-type-assertions": [
+      "warn",
+      {
+        "assertionStyle": "as",
+        "objectLiteralTypeAssertions": "allow",
+      },
+    ],
+    "@typescript-eslint/no-dupe-class-members": [
+      "error",
+    ],
+    "@typescript-eslint/no-empty-object-type": [
+      "warn",
+    ],
+    "@typescript-eslint/no-extra-non-null-assertion": [
+      "warn",
+    ],
+    "@typescript-eslint/no-redeclare": [
+      "warn",
+    ],
+    "@typescript-eslint/no-require-imports": [
+      "warn",
+      {
+        "allow": [
+          "\\.(aac|aiff|avif|bmp|caf|db|gif|heic|html|jpeg|jpg|json|m4a|m4v|mov|mp3|mp4|mpeg|mpg|otf|pdf|png|psd|svg|ttf|wav|webm|webp|xml|yaml|yml|zip)$",
+        ],
+      },
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "@typescript-eslint/no-useless-constructor": [
+      "warn",
+    ],
+    "@typescript-eslint/no-wrapper-object-types": [
+      "warn",
+    ],
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+    ],
+    "no-extend-native": [
+      "warn",
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+    ],
+    "valid-typeof": [
+      "error",
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/external-module-folders": [
+      "node_modules",
+      "node_modules/@types",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+        ".tsx",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`legacy config resolves src/app.js 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "FormData": "readonly",
+    "XMLHttpRequest": "readonly",
+    "__DEV__": "readonly",
+    "alert": "readonly",
+    "cancelAnimationFrame": "readonly",
+    "cancelIdleCallback": "readonly",
+    "clearImmediate": "readonly",
+    "console": "readonly",
+    "exports": "readonly",
+    "fetch": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "navigator": "readonly",
+    "process": "readonly",
+    "requestAnimationFrame": "readonly",
+    "requestIdleCallback": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+    "window": "readonly",
+  },
+  "parser": null,
+  "plugins": [
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/named": [
+      "error",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-class-members": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+    ],
+    "no-extend-native": [
+      "warn",
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-redeclare": [
+      "warn",
+    ],
+    "no-undef": [
+      "error",
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+    ],
+    "valid-typeof": [
+      "error",
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`legacy config resolves src/app.jsx 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "FormData": "readonly",
+    "XMLHttpRequest": "readonly",
+    "__DEV__": "readonly",
+    "alert": "readonly",
+    "cancelAnimationFrame": "readonly",
+    "cancelIdleCallback": "readonly",
+    "clearImmediate": "readonly",
+    "console": "readonly",
+    "exports": "readonly",
+    "fetch": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "navigator": "readonly",
+    "process": "readonly",
+    "requestAnimationFrame": "readonly",
+    "requestIdleCallback": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+    "window": "readonly",
+  },
+  "parser": null,
+  "plugins": [
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/named": [
+      "error",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-class-members": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+    ],
+    "no-extend-native": [
+      "warn",
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-redeclare": [
+      "warn",
+    ],
+    "no-undef": [
+      "error",
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+    ],
+    "valid-typeof": [
+      "error",
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`legacy config resolves src/app.ts 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "FormData": "readonly",
+    "XMLHttpRequest": "readonly",
+    "__DEV__": "readonly",
+    "alert": "readonly",
+    "cancelAnimationFrame": "readonly",
+    "cancelIdleCallback": "readonly",
+    "clearImmediate": "readonly",
+    "console": "readonly",
+    "exports": "readonly",
+    "fetch": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "navigator": "readonly",
+    "process": "readonly",
+    "requestAnimationFrame": "readonly",
+    "requestIdleCallback": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+    "window": "readonly",
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "@typescript-eslint/array-type": [
+      "warn",
+      {
+        "default": "array",
+      },
+    ],
+    "@typescript-eslint/consistent-type-assertions": [
+      "warn",
+      {
+        "assertionStyle": "as",
+        "objectLiteralTypeAssertions": "allow",
+      },
+    ],
+    "@typescript-eslint/no-dupe-class-members": [
+      "error",
+    ],
+    "@typescript-eslint/no-empty-object-type": [
+      "warn",
+    ],
+    "@typescript-eslint/no-extra-non-null-assertion": [
+      "warn",
+    ],
+    "@typescript-eslint/no-redeclare": [
+      "warn",
+    ],
+    "@typescript-eslint/no-require-imports": [
+      "warn",
+      {
+        "allow": [
+          "\\.(aac|aiff|avif|bmp|caf|db|gif|heic|html|jpeg|jpg|json|m4a|m4v|mov|mp3|mp4|mpeg|mpg|otf|pdf|png|psd|svg|ttf|wav|webm|webp|xml|yaml|yml|zip)$",
+        ],
+      },
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "@typescript-eslint/no-useless-constructor": [
+      "warn",
+    ],
+    "@typescript-eslint/no-wrapper-object-types": [
+      "warn",
+    ],
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+    ],
+    "no-extend-native": [
+      "warn",
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+    ],
+    "valid-typeof": [
+      "error",
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/external-module-folders": [
+      "node_modules",
+      "node_modules/@types",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+        ".tsx",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`legacy config resolves src/app.tsx 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "FormData": "readonly",
+    "XMLHttpRequest": "readonly",
+    "__DEV__": "readonly",
+    "alert": "readonly",
+    "cancelAnimationFrame": "readonly",
+    "cancelIdleCallback": "readonly",
+    "clearImmediate": "readonly",
+    "console": "readonly",
+    "exports": "readonly",
+    "fetch": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "navigator": "readonly",
+    "process": "readonly",
+    "requestAnimationFrame": "readonly",
+    "requestIdleCallback": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+    "window": "readonly",
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "@typescript-eslint/array-type": [
+      "warn",
+      {
+        "default": "array",
+      },
+    ],
+    "@typescript-eslint/consistent-type-assertions": [
+      "warn",
+      {
+        "assertionStyle": "as",
+        "objectLiteralTypeAssertions": "allow",
+      },
+    ],
+    "@typescript-eslint/no-dupe-class-members": [
+      "error",
+    ],
+    "@typescript-eslint/no-empty-object-type": [
+      "warn",
+    ],
+    "@typescript-eslint/no-extra-non-null-assertion": [
+      "warn",
+    ],
+    "@typescript-eslint/no-redeclare": [
+      "warn",
+    ],
+    "@typescript-eslint/no-require-imports": [
+      "warn",
+      {
+        "allow": [
+          "\\.(aac|aiff|avif|bmp|caf|db|gif|heic|html|jpeg|jpg|json|m4a|m4v|mov|mp3|mp4|mpeg|mpg|otf|pdf|png|psd|svg|ttf|wav|webm|webp|xml|yaml|yml|zip)$",
+        ],
+      },
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "@typescript-eslint/no-useless-constructor": [
+      "warn",
+    ],
+    "@typescript-eslint/no-wrapper-object-types": [
+      "warn",
+    ],
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+    ],
+    "no-extend-native": [
+      "warn",
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+    ],
+    "valid-typeof": [
+      "error",
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/external-module-folders": [
+      "node_modules",
+      "node_modules/@types",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+        ".tsx",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`legacy config resolves src/app.web.js 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "FormData": "readonly",
+    "XMLHttpRequest": "readonly",
+    "__DEV__": "readonly",
+    "alert": "readonly",
+    "cancelAnimationFrame": "readonly",
+    "cancelIdleCallback": "readonly",
+    "clearImmediate": "readonly",
+    "console": "readonly",
+    "exports": "readonly",
+    "fetch": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "navigator": "readonly",
+    "process": "readonly",
+    "requestAnimationFrame": "readonly",
+    "requestIdleCallback": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+    "window": "readonly",
+  },
+  "parser": null,
+  "plugins": [
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/named": [
+      "error",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-class-members": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+    ],
+    "no-extend-native": [
+      "warn",
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-redeclare": [
+      "warn",
+    ],
+    "no-undef": [
+      "error",
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+    ],
+    "valid-typeof": [
+      "error",
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`legacy config resolves src/lib.cjs 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "FormData": "readonly",
+    "XMLHttpRequest": "readonly",
+    "__DEV__": "readonly",
+    "alert": "readonly",
+    "cancelAnimationFrame": "readonly",
+    "cancelIdleCallback": "readonly",
+    "clearImmediate": "readonly",
+    "console": "readonly",
+    "exports": "readonly",
+    "fetch": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "navigator": "readonly",
+    "process": "readonly",
+    "requestAnimationFrame": "readonly",
+    "requestIdleCallback": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+    "window": "readonly",
+  },
+  "parser": null,
+  "plugins": [
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/named": [
+      "error",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-class-members": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+    ],
+    "no-extend-native": [
+      "warn",
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-redeclare": [
+      "warn",
+    ],
+    "no-undef": [
+      "error",
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+    ],
+    "valid-typeof": [
+      "error",
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`legacy config resolves src/lib.mjs 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "FormData": "readonly",
+    "XMLHttpRequest": "readonly",
+    "__DEV__": "readonly",
+    "alert": "readonly",
+    "cancelAnimationFrame": "readonly",
+    "cancelIdleCallback": "readonly",
+    "clearImmediate": "readonly",
+    "console": "readonly",
+    "exports": "readonly",
+    "fetch": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "navigator": "readonly",
+    "process": "readonly",
+    "requestAnimationFrame": "readonly",
+    "requestIdleCallback": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+    "window": "readonly",
+  },
+  "parser": null,
+  "plugins": [
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/named": [
+      "error",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-class-members": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+    ],
+    "no-extend-native": [
+      "warn",
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-redeclare": [
+      "warn",
+    ],
+    "no-undef": [
+      "error",
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "caughtErrorsIgnorePattern": "^_",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+    ],
+    "valid-typeof": [
+      "error",
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;
+
+exports[`legacy config resolves src/types.d.ts 1`] = `
+{
+  "ecmaFeatures": {
+    "impliedStrict": true,
+    "jsx": true,
+  },
+  "ecmaVersion": 2022,
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "shared-node-browser": true,
+  },
+  "globals": {
+    "ErrorUtils": "readonly",
+    "FormData": "readonly",
+    "XMLHttpRequest": "readonly",
+    "__DEV__": "readonly",
+    "alert": "readonly",
+    "cancelAnimationFrame": "readonly",
+    "cancelIdleCallback": "readonly",
+    "clearImmediate": "readonly",
+    "console": "readonly",
+    "exports": "readonly",
+    "fetch": "readonly",
+    "global": "readonly",
+    "module": "readonly",
+    "navigator": "readonly",
+    "process": "readonly",
+    "requestAnimationFrame": "readonly",
+    "requestIdleCallback": "readonly",
+    "require": "readonly",
+    "setImmediate": "readonly",
+    "window": "readonly",
+  },
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "expo",
+    "import",
+    "react",
+    "react-hooks",
+  ],
+  "rules": {
+    "@typescript-eslint/array-type": [
+      "warn",
+      {
+        "default": "array",
+      },
+    ],
+    "@typescript-eslint/consistent-type-assertions": [
+      "warn",
+      {
+        "assertionStyle": "as",
+        "objectLiteralTypeAssertions": "allow",
+      },
+    ],
+    "@typescript-eslint/no-dupe-class-members": [
+      "error",
+    ],
+    "@typescript-eslint/no-empty-object-type": [
+      "warn",
+    ],
+    "@typescript-eslint/no-extra-non-null-assertion": [
+      "warn",
+    ],
+    "@typescript-eslint/no-redeclare": [
+      "warn",
+    ],
+    "@typescript-eslint/no-require-imports": [
+      "warn",
+      {
+        "allow": [
+          "\\.(aac|aiff|avif|bmp|caf|db|gif|heic|html|jpeg|jpg|json|m4a|m4v|mov|mp3|mp4|mpeg|mpg|otf|pdf|png|psd|svg|ttf|wav|webm|webp|xml|yaml|yml|zip)$",
+        ],
+      },
+    ],
+    "@typescript-eslint/no-unused-vars": [
+      "warn",
+      {
+        "args": "none",
+        "caughtErrors": "all",
+        "ignoreRestSiblings": true,
+        "vars": "all",
+      },
+    ],
+    "@typescript-eslint/no-useless-constructor": [
+      "warn",
+    ],
+    "@typescript-eslint/no-wrapper-object-types": [
+      "warn",
+    ],
+    "eqeqeq": [
+      "warn",
+      "smart",
+    ],
+    "expo/no-dynamic-env-var": [
+      "error",
+    ],
+    "expo/no-env-var-destructuring": [
+      "error",
+    ],
+    "expo/use-dom-exports": [
+      "error",
+    ],
+    "import/export": [
+      "error",
+    ],
+    "import/first": [
+      "warn",
+    ],
+    "import/namespace": [
+      "error",
+    ],
+    "import/no-duplicates": [
+      "warn",
+    ],
+    "import/no-named-as-default": [
+      "warn",
+    ],
+    "import/no-named-as-default-member": [
+      "warn",
+    ],
+    "import/no-unresolved": [
+      "error",
+    ],
+    "no-dupe-args": [
+      "error",
+    ],
+    "no-dupe-keys": [
+      "error",
+    ],
+    "no-duplicate-case": [
+      "error",
+    ],
+    "no-empty-character-class": [
+      "warn",
+    ],
+    "no-empty-pattern": [
+      "warn",
+    ],
+    "no-extend-native": [
+      "warn",
+    ],
+    "no-extra-bind": [
+      "warn",
+    ],
+    "no-unreachable": [
+      "warn",
+    ],
+    "no-unsafe-negation": [
+      "warn",
+    ],
+    "no-unused-expressions": [
+      "warn",
+      {
+        "allowShortCircuit": true,
+        "allowTaggedTemplates": false,
+        "allowTernary": false,
+        "enforceForJSX": true,
+      },
+    ],
+    "no-unused-labels": [
+      "warn",
+    ],
+    "no-var": [
+      "error",
+    ],
+    "no-with": [
+      "warn",
+    ],
+    "react-hooks/config": [
+      "error",
+    ],
+    "react-hooks/error-boundaries": [
+      "error",
+    ],
+    "react-hooks/exhaustive-deps": [
+      "warn",
+    ],
+    "react-hooks/gating": [
+      "error",
+    ],
+    "react-hooks/globals": [
+      "error",
+    ],
+    "react-hooks/immutability": [
+      "error",
+    ],
+    "react-hooks/incompatible-library": [
+      "warn",
+    ],
+    "react-hooks/preserve-manual-memoization": [
+      "error",
+    ],
+    "react-hooks/purity": [
+      "error",
+    ],
+    "react-hooks/refs": [
+      "error",
+    ],
+    "react-hooks/rules-of-hooks": [
+      "error",
+    ],
+    "react-hooks/set-state-in-effect": [
+      "error",
+    ],
+    "react-hooks/set-state-in-render": [
+      "error",
+    ],
+    "react-hooks/static-components": [
+      "error",
+    ],
+    "react-hooks/unsupported-syntax": [
+      "warn",
+    ],
+    "react-hooks/use-memo": [
+      "error",
+    ],
+    "react/display-name": [
+      "error",
+    ],
+    "react/jsx-key": [
+      "error",
+    ],
+    "react/jsx-no-comment-textnodes": [
+      "error",
+    ],
+    "react/jsx-no-duplicate-props": [
+      "error",
+    ],
+    "react/jsx-no-undef": [
+      "error",
+    ],
+    "react/jsx-uses-react": [
+      "error",
+    ],
+    "react/jsx-uses-vars": [
+      "error",
+    ],
+    "react/no-children-prop": [
+      "error",
+    ],
+    "react/no-danger-with-children": [
+      "error",
+    ],
+    "react/no-deprecated": [
+      "error",
+    ],
+    "react/no-direct-mutation-state": [
+      "error",
+    ],
+    "react/no-find-dom-node": [
+      "error",
+    ],
+    "react/no-is-mounted": [
+      "error",
+    ],
+    "react/no-render-return-value": [
+      "error",
+    ],
+    "react/no-string-refs": [
+      "error",
+    ],
+    "react/no-this-in-sfc": [
+      "warn",
+    ],
+    "react/no-unescaped-entities": [
+      "error",
+    ],
+    "react/no-unknown-property": [
+      "warn",
+    ],
+    "react/require-render-return": [
+      "error",
+    ],
+    "unicode-bom": [
+      "warn",
+      "never",
+    ],
+    "use-isnan": [
+      "error",
+    ],
+    "valid-typeof": [
+      "error",
+    ],
+  },
+  "settings": {
+    "import/extensions": [
+      ".android.cjs",
+      ".android.mjs",
+      ".android.js",
+      ".android.jsx",
+      ".android.ts",
+      ".android.tsx",
+      ".android.d.ts",
+      ".ios.cjs",
+      ".ios.mjs",
+      ".ios.js",
+      ".ios.jsx",
+      ".ios.ts",
+      ".ios.tsx",
+      ".ios.d.ts",
+      ".web.cjs",
+      ".web.mjs",
+      ".web.js",
+      ".web.jsx",
+      ".web.ts",
+      ".web.tsx",
+      ".web.d.ts",
+      ".native.cjs",
+      ".native.mjs",
+      ".native.js",
+      ".native.jsx",
+      ".native.ts",
+      ".native.tsx",
+      ".native.d.ts",
+      ".cjs",
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".ts",
+      ".tsx",
+      ".d.ts",
+    ],
+    "import/external-module-folders": [
+      "node_modules",
+      "node_modules/@types",
+    ],
+    "import/ignore": [
+      "node_modules[\\\\/]+@?react-native",
+    ],
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        ".ts",
+        ".tsx",
+        ".d.ts",
+        ".tsx",
+      ],
+    },
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".android.cjs",
+          ".android.mjs",
+          ".android.js",
+          ".android.jsx",
+          ".android.ts",
+          ".android.tsx",
+          ".android.d.ts",
+          ".ios.cjs",
+          ".ios.mjs",
+          ".ios.js",
+          ".ios.jsx",
+          ".ios.ts",
+          ".ios.tsx",
+          ".ios.d.ts",
+          ".web.cjs",
+          ".web.mjs",
+          ".web.js",
+          ".web.jsx",
+          ".web.ts",
+          ".web.tsx",
+          ".web.d.ts",
+          ".native.cjs",
+          ".native.mjs",
+          ".native.js",
+          ".native.jsx",
+          ".native.ts",
+          ".native.tsx",
+          ".native.d.ts",
+          ".cjs",
+          ".mjs",
+          ".js",
+          ".jsx",
+          ".ts",
+          ".tsx",
+          ".d.ts",
+        ],
+      },
+      "typescript": true,
+    },
+    "react": {
+      "version": "detect",
+    },
+  },
+  "sourceType": "module",
+}
+`;

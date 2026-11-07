@@ -1,22 +1,10 @@
-const path = require('path');
+const configs = require('./tools/configs');
+const lintFixtures = require('./tools/lintFixtures');
 
-const lintAsync = require('./tools/lint8Async');
-const { toPosixPath } = require('./tools/testUtils');
-
-const configFile = path.resolve(__dirname, '../default.js');
-
-it('lints custom rules', async () => {
-  const results = await lintAsync(
-    {
-      overrideConfigFile: configFile,
-      ignore: false,
-      useEslintrc: false,
-    },
-    ['fixtures/rule-*']
-  );
-  for (const result of results) {
-    const relativeFilePath = toPosixPath(path.relative(__dirname, result.filePath));
-    delete result.filePath;
-    expect(result).toMatchSnapshot(relativeFilePath);
-  }
-}, 20000);
+describe.each(configs)('$name config', (config) => {
+  it('lints the rule fixtures', async () => {
+    for (const { filePath, messages } of await lintFixtures(config, 'fixtures/rule-*')) {
+      expect(messages).toMatchSnapshot(filePath);
+    }
+  });
+});

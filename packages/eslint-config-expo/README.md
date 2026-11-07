@@ -22,8 +22,8 @@ Import this config into your [configuration file](https://eslint.org/docs/latest
 
 ```js
 // eslint.config.js
-const expoConfig = require("eslint-config-expo/flat");
-const { defineConfig } = require("eslint/config");
+const expoConfig = require('eslint-config-expo/flat');
+const { defineConfig } = require('eslint/config');
 
 module.exports = defineConfig([
   expoConfig,
@@ -36,6 +36,7 @@ module.exports = defineConfig([
 Import this config into your own ESLint [configuration](https://eslint.org/docs/latest/use/configure/configuration-files) using the `extends` option. ESLint checks both `package.json` and `.eslintrc.*` files for its configuration:
 
 ### package.json
+
 ```js
 {
   "eslintConfig": {
@@ -45,8 +46,9 @@ Import this config into your own ESLint [configuration](https://eslint.org/docs/
 ```
 
 ### .eslintrc.js
+
 ```js
 module.exports = {
-  extends: ["expo"],
+  extends: ['expo'],
 };
 ```
