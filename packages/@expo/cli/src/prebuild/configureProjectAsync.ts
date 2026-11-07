@@ -1,6 +1,7 @@
 import type { ExpoConfig } from '@expo/config';
-import type { ModPlatform } from '@expo/config-plugins';
+import type { ExportedConfig, ModPlatform } from '@expo/config-plugins';
 import { compileModsAsync } from '@expo/config-plugins';
+import { isPrebuildApplePlatform } from '@expo/platforms';
 import { getPrebuildConfigAsync } from '@expo/prebuild-config';
 
 import { logConfig } from '../config/configAsync';
@@ -24,7 +25,7 @@ export async function configureProjectAsync(
   }
 ): Promise<ExpoConfig> {
   let bundleIdentifier: string | undefined;
-  if (platforms.includes('ios')) {
+  if (platforms.some(isPrebuildApplePlatform)) {
     // Check bundle ID before reading the config because it may mutate the config if the user is prompted to define it.
     bundleIdentifier = await getOrPromptForBundleIdentifierAsync(projectRoot, exp);
   }
@@ -44,6 +45,17 @@ export async function configureProjectAsync(
     // Prepare template checksum for the patch mods
     config._internal = config._internal ?? {};
     config._internal.templateChecksum = templateChecksum;
+  }
+
+  // Plugins register the Apple mods under the `ios` key. Copy them onto each other requested Apple
+  // platform, so the mod compiler runs the same chain once for each platform's native directory.
+  const mods = (config as ExportedConfig).mods;
+  if (mods?.ios) {
+    for (const platform of platforms) {
+      if (isPrebuildApplePlatform(platform) && platform !== 'ios') {
+        mods[platform] = { ...mods.ios };
+      }
+    }
   }
 
   // compile all plugins and mods

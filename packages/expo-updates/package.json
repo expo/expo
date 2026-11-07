@@ -63,6 +63,7 @@
   "dependencies": {
     "@expo/code-signing-certificates": "^0.0.7",
     "@expo/env": "workspace:^",
+    "@expo/platforms": "workspace:^",
     "@expo/plist": "workspace:^",
     "@expo/spawn-async": "^1.8.0",
     "@react-native/asset-utils": "0.88.1",

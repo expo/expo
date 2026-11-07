@@ -1,5 +1,6 @@
 import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import type { ModPlatform } from '@expo/config-plugins';
+import { isPrebuildApplePlatform } from '@expo/platforms';
 import chalk from 'chalk';
 
 import * as Log from '../log';
@@ -73,8 +74,9 @@ export async function updateFromTemplateAsync(
 
   return {
     hasNewProjectFiles: !!copiedPaths.length,
-    // If the iOS folder changes or new packages are added, we should rerun pod install.
-    needsPodInstall: copiedPaths.includes('ios') || !!depsResults.changedDependencies.length,
+    // If an Apple platform folder changes or new packages are added, we should rerun pod install.
+    needsPodInstall:
+      copiedPaths.some(isPrebuildApplePlatform) || !!depsResults.changedDependencies.length,
     templateChecksum,
     ...depsResults,
   };

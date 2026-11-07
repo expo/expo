@@ -79,6 +79,7 @@ async function extractRemoteGitHubTarballAsync(
     [
       `${subDirPrefix}/**`,
       `${subDirPrefix}/ios/.xcode.env`,
+      `${subDirPrefix}/tvos/.xcode.env`,
       // Templates ship their monorepo config as a root-level dotfile; without
       // an explicit allow-list entry, picomatch's default `dot: false` drops
       // it during extraction so downstream consumers see no config at all.
@@ -86,7 +87,7 @@ async function extractRemoteGitHubTarballAsync(
     ],
     {
       // Always ignore the `.xcworkspace` folder
-      ignore: ['**/ios/*.xcworkspace/**'],
+      ignore: ['**/ios/*.xcworkspace/**', '**/tvos/*.xcworkspace/**'],
     }
   );
 

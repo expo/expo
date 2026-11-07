@@ -2406,6 +2406,9 @@ importers:
       '@expo/json-file':
         specifier: workspace:~
         version: link:../json-file
+      '@expo/platforms':
+        specifier: workspace:^
+        version: link:../platforms
       '@expo/plist':
         specifier: workspace:^
         version: link:../plist
@@ -3126,6 +3129,9 @@ importers:
       '@expo/json-file':
         specifier: workspace:^
         version: link:../json-file
+      '@expo/platforms':
+        specifier: workspace:^
+        version: link:../platforms
       '@expo/require-utils':
         specifier: workspace:^
         version: link:../require-utils
@@ -3504,6 +3510,9 @@ importers:
       '@expo/package-manager':
         specifier: workspace:*
         version: link:../@expo/package-manager
+      '@expo/platforms':
+        specifier: workspace:*
+        version: link:../@expo/platforms
       '@expo/spawn-async':
         specifier: ^1.8.0
         version: 1.8.0
@@ -6369,6 +6378,9 @@ importers:
       '@expo/env':
         specifier: workspace:^
         version: link:../@expo/env
+      '@expo/platforms':
+        specifier: workspace:^
+        version: link:../@expo/platforms
       '@expo/plist':
         specifier: workspace:^
         version: link:../@expo/plist

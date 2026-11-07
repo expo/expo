@@ -1,3 +1,4 @@
+import type { PrebuildApplePlatformName } from '@expo/platforms';
 import plist from '@expo/plist';
 import { getConfig } from 'expo/config';
 import { XML, AndroidConfig, IOSConfig } from 'expo/config-plugins';
@@ -8,7 +9,7 @@ import { Workflow } from '../../utils/build/workflow';
 
 type SyncConfigurationToNativeOptions = {
   projectRoot: string;
-  platform: 'ios' | 'android';
+  platform: PrebuildApplePlatformName | 'android';
   workflow: Workflow;
 };
 
@@ -23,13 +24,10 @@ export async function syncConfigurationToNativeAsync(
     return;
   }
 
-  switch (options.platform) {
-    case 'android':
-      await syncConfigurationToNativeAndroidAsync(options);
-      break;
-    case 'ios':
-      await syncConfigurationToNativeIosAsync(options);
-      break;
+  if (options.platform === 'android') {
+    await syncConfigurationToNativeAndroidAsync(options);
+  } else {
+    await syncConfigurationToNativeAppleAsync(options, options.platform);
   }
 }
 
@@ -83,8 +81,9 @@ async function syncConfigurationToNativeAndroidAsync(
   await XML.writeXMLAsync({ path: stringsJSONPath, xml: updatedStringsResourceXML });
 }
 
-async function syncConfigurationToNativeIosAsync(
-  options: SyncConfigurationToNativeOptions
+async function syncConfigurationToNativeAppleAsync(
+  options: SyncConfigurationToNativeOptions,
+  platform: IOSConfig.Paths.ApplePlatform
 ): Promise<void> {
   const { exp } = getConfig(options.projectRoot, {
     isPublicConfig: false, // This must be false or it will drop codesigning config
@@ -93,26 +92,30 @@ async function syncConfigurationToNativeIosAsync(
 
   const packageVersion = require('../../package.json').version;
 
-  const expoPlist = await readExpoPlistAsync(options.projectRoot);
+  const expoPlist = await readExpoPlistAsync(options.projectRoot, platform);
   const updatedExpoPlist = await IOSConfig.Updates.setUpdatesConfigAsync(
     options.projectRoot,
     exp,
     expoPlist,
     packageVersion
   );
-  await writeExpoPlistAsync(options.projectRoot, updatedExpoPlist);
+  await writeExpoPlistAsync(options.projectRoot, platform, updatedExpoPlist);
 }
 
-async function readExpoPlistAsync(projectDir: string): Promise<IOSConfig.ExpoPlist> {
-  const expoPlistPath = IOSConfig.Paths.getExpoPlistPath(projectDir);
+async function readExpoPlistAsync(
+  projectDir: string,
+  platform: IOSConfig.Paths.ApplePlatform
+): Promise<IOSConfig.ExpoPlist> {
+  const expoPlistPath = IOSConfig.Paths.getExpoPlistPath(projectDir, platform);
   return ((await readPlistAsync(expoPlistPath)) ?? {}) as IOSConfig.ExpoPlist;
 }
 
 async function writeExpoPlistAsync(
   projectDir: string,
+  platform: IOSConfig.Paths.ApplePlatform,
   expoPlist: IOSConfig.ExpoPlist
 ): Promise<void> {
-  const expoPlistPath = IOSConfig.Paths.getExpoPlistPath(projectDir);
+  const expoPlistPath = IOSConfig.Paths.getExpoPlistPath(projectDir, platform);
   await writePlistAsync(expoPlistPath, expoPlist);
 }
 

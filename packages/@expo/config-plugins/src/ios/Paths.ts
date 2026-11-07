@@ -1,13 +1,39 @@
+import type { PrebuildApplePlatformName } from '@expo/platforms';
+import { PREBUILD_APPLE_PLATFORMS, isPrebuildApplePlatform } from '@expo/platforms';
 import { existsSync, readFileSync } from 'fs';
 import * as path from 'path';
 import { globSync } from 'tinyglobby';
 
+import type { ModPlatform } from '../Plugin.types';
 import { UnexpectedError } from '../utils/errors';
 import { withSortedGlobResult } from '../utils/glob';
 import { addWarningIOS } from '../utils/warnings';
 import * as Entitlements from './Entitlements';
 
 const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
+
+/** An Apple platform with its own native project directory and its own mod platform key. */
+export type ApplePlatform = PrebuildApplePlatformName;
+
+const ALL_PLATFORMS_GLOB = `{${PREBUILD_APPLE_PLATFORMS.join(',')}}`;
+
+/**
+ * Builds a glob rooted at one Apple platform's native directory. Every helper below accepts an
+ * optional platform: pass it to target that platform's project, and omit it to search all of them.
+ * Omitting it is ambiguous once a project has both `ios/` and `tvos/`, so callers that know which
+ * platform they are configuring — the base mods — always pass one.
+ */
+function platformGlob(pattern: string, platform?: ApplePlatform): string {
+  return `${platform ?? ALL_PLATFORMS_GLOB}/${pattern}`;
+}
+
+/**
+ * Narrows the mod compiler's platform to the Apple platform directory it writes to. The Apple mods
+ * are registered under both `ios` and `tvos`, so any mod that resolves a path needs this.
+ */
+export function toApplePlatform(platform: ModPlatform): ApplePlatform {
+  return isPrebuildApplePlatform(platform) ? platform : 'ios';
+}
 
 interface ProjectFile<L extends string = string> {
   path: string;
@@ -20,9 +46,12 @@ type AppleLanguage = 'objc' | 'objcpp' | 'swift' | 'rb';
 export type PodfileProjectFile = ProjectFile<'rb'>;
 export type AppDelegateProjectFile = ProjectFile<AppleLanguage>;
 
-export function getAppDelegateHeaderFilePath(projectRoot: string): string {
+export function getAppDelegateHeaderFilePath(
+  projectRoot: string,
+  platform?: ApplePlatform
+): string {
   const [using, ...extra] = withSortedGlobResult(
-    globSync('ios/*/AppDelegate.h', {
+    globSync(platformGlob('*/AppDelegate.h', platform), {
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
@@ -48,9 +77,9 @@ export function getAppDelegateHeaderFilePath(projectRoot: string): string {
   return using;
 }
 
-export function getAppDelegateFilePath(projectRoot: string): string {
+export function getAppDelegateFilePath(projectRoot: string, platform?: ApplePlatform): string {
   const [using, ...extra] = withSortedGlobResult(
-    globSync('ios/*/AppDelegate.@(m|mm|swift)', {
+    globSync(platformGlob('*/AppDelegate.@(m|mm|swift)', platform), {
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
@@ -74,9 +103,12 @@ export function getAppDelegateFilePath(projectRoot: string): string {
   return using;
 }
 
-export function getAppDelegateObjcHeaderFilePath(projectRoot: string): string {
+export function getAppDelegateObjcHeaderFilePath(
+  projectRoot: string,
+  platform?: ApplePlatform
+): string {
   const [using, ...extra] = withSortedGlobResult(
-    globSync('ios/*/AppDelegate.h', {
+    globSync(platformGlob('*/AppDelegate.h', platform), {
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
@@ -100,12 +132,14 @@ export function getAppDelegateObjcHeaderFilePath(projectRoot: string): string {
   return using;
 }
 
-export function getPodfilePath(projectRoot: string): string {
-  const podfilePath = path.resolve(projectRoot, 'ios', 'Podfile');
-  if (!existsSync(podfilePath)) {
-    throw new UnexpectedError(`Could not locate a valid Podfile at root: "${projectRoot}"`);
+export function getPodfilePath(projectRoot: string, platform?: ApplePlatform): string {
+  for (const candidate of platform ? [platform] : PREBUILD_APPLE_PLATFORMS) {
+    const podfilePath = path.resolve(projectRoot, candidate, 'Podfile');
+    if (existsSync(podfilePath)) {
+      return podfilePath;
+    }
   }
-  return podfilePath;
+  throw new UnexpectedError(`Could not locate a valid Podfile at root: "${projectRoot}"`);
 }
 
 function getLanguage(filePath: string): AppleLanguage {
@@ -134,19 +168,22 @@ export function getFileInfo(filePath: string) {
   };
 }
 
-export function getAppDelegate(projectRoot: string): AppDelegateProjectFile {
-  const filePath = getAppDelegateFilePath(projectRoot);
+export function getAppDelegate(
+  projectRoot: string,
+  platform?: ApplePlatform
+): AppDelegateProjectFile {
+  const filePath = getAppDelegateFilePath(projectRoot, platform);
   return getFileInfo(filePath);
 }
 
-export function getSourceRoot(projectRoot: string): string {
-  const appDelegate = getAppDelegate(projectRoot);
+export function getSourceRoot(projectRoot: string, platform?: ApplePlatform): string {
+  const appDelegate = getAppDelegate(projectRoot, platform);
   return path.dirname(appDelegate.path);
 }
 
-export function findSchemePaths(projectRoot: string): string[] {
+export function findSchemePaths(projectRoot: string, platform?: ApplePlatform): string[] {
   return withSortedGlobResult(
-    globSync('ios/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme', {
+    globSync(platformGlob('*.xcodeproj/xcshareddata/xcschemes/*.xcscheme', platform), {
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
@@ -154,15 +191,15 @@ export function findSchemePaths(projectRoot: string): string[] {
   );
 }
 
-export function findSchemeNames(projectRoot: string): string[] {
-  const schemePaths = findSchemePaths(projectRoot);
+export function findSchemeNames(projectRoot: string, platform?: ApplePlatform): string[] {
+  const schemePaths = findSchemePaths(projectRoot, platform);
   return schemePaths.map((schemePath) => path.parse(schemePath).name);
 }
 
-export function getAllXcodeProjectPaths(projectRoot: string): string[] {
-  const iosFolder = 'ios';
+export function getAllXcodeProjectPaths(projectRoot: string, platform?: ApplePlatform): string[] {
+  const platformFolders: readonly string[] = PREBUILD_APPLE_PLATFORMS;
   const pbxprojPaths = withSortedGlobResult(
-    globSync('ios/**/*.xcodeproj', {
+    globSync(platformGlob('**/*.xcodeproj', platform), {
       onlyFiles: false,
       expandDirectories: false,
       cwd: projectRoot,
@@ -170,21 +207,22 @@ export function getAllXcodeProjectPaths(projectRoot: string): string[] {
     })
       .map((filePath) => filePath.replace(/\/$/, ''))
       .filter(
-        (project) => !/test|example|sample/i.test(project) || path.dirname(project) === iosFolder
+        (project) =>
+          !/test|example|sample/i.test(project) || platformFolders.includes(path.dirname(project))
       )
   ).sort((a, b) => {
-    const isAInIos = path.dirname(a) === iosFolder;
-    const isBInIos = path.dirname(b) === iosFolder;
+    const isAInPlatform = platformFolders.includes(path.dirname(a));
+    const isBInPlatform = platformFolders.includes(path.dirname(b));
     // preserve previous sort order
-    if ((isAInIos && isBInIos) || (!isAInIos && !isBInIos)) {
+    if ((isAInPlatform && isBInPlatform) || (!isAInPlatform && !isBInPlatform)) {
       return 0;
     }
-    return isAInIos ? -1 : 1;
+    return isAInPlatform ? -1 : 1;
   });
 
   if (!pbxprojPaths.length) {
     throw new UnexpectedError(
-      `Failed to locate the ios/*.xcodeproj files relative to path "${projectRoot}".`
+      `Failed to locate the ${ALL_PLATFORMS_GLOB}/*.xcodeproj files relative to path "${projectRoot}".`
     );
   }
   return pbxprojPaths.map((value) => path.join(projectRoot, value));
@@ -193,8 +231,8 @@ export function getAllXcodeProjectPaths(projectRoot: string): string[] {
 /**
  * Get the pbxproj for the given path
  */
-export function getXcodeProjectPath(projectRoot: string): string {
-  const [using = '', ...extra] = getAllXcodeProjectPaths(projectRoot);
+export function getXcodeProjectPath(projectRoot: string, platform?: ApplePlatform): string {
+  const [using = '', ...extra] = getAllXcodeProjectPaths(projectRoot, platform);
 
   if (extra.length) {
     warnMultipleFiles({
@@ -209,22 +247,22 @@ export function getXcodeProjectPath(projectRoot: string): string {
   return using;
 }
 
-export function getAllPBXProjectPaths(projectRoot: string): string[] {
-  const projectPaths = getAllXcodeProjectPaths(projectRoot);
+export function getAllPBXProjectPaths(projectRoot: string, platform?: ApplePlatform): string[] {
+  const projectPaths = getAllXcodeProjectPaths(projectRoot, platform);
   const paths = projectPaths
     .map((value) => path.join(value, 'project.pbxproj'))
     .filter((value) => existsSync(value));
 
   if (!paths.length) {
     throw new UnexpectedError(
-      `Failed to locate the ios/*.xcodeproj/project.pbxproj files relative to path "${projectRoot}".`
+      `Failed to locate the ${ALL_PLATFORMS_GLOB}/*.xcodeproj/project.pbxproj files relative to path "${projectRoot}".`
     );
   }
   return paths;
 }
 
-export function getPBXProjectPath(projectRoot: string): string {
-  const [using = '', ...extra] = getAllPBXProjectPaths(projectRoot);
+export function getPBXProjectPath(projectRoot: string, platform?: ApplePlatform): string {
+  const [using = '', ...extra] = getAllPBXProjectPaths(projectRoot, platform);
 
   if (extra.length) {
     warnMultipleFiles({
@@ -239,9 +277,9 @@ export function getPBXProjectPath(projectRoot: string): string {
   return using;
 }
 
-export function getAllInfoPlistPaths(projectRoot: string): string[] {
+export function getAllInfoPlistPaths(projectRoot: string, platform?: ApplePlatform): string[] {
   const paths = withSortedGlobResult(
-    globSync('ios/*/Info.plist', {
+    globSync(platformGlob('*/Info.plist', platform), {
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
@@ -259,8 +297,8 @@ export function getAllInfoPlistPaths(projectRoot: string): string[] {
   return paths;
 }
 
-export function getInfoPlistPath(projectRoot: string): string {
-  const [using = '', ...extra] = getAllInfoPlistPaths(projectRoot);
+export function getInfoPlistPath(projectRoot: string, platform?: ApplePlatform): string {
+  const [using = '', ...extra] = getAllInfoPlistPaths(projectRoot, platform);
 
   if (extra.length) {
     warnMultipleFiles({
@@ -275,8 +313,8 @@ export function getInfoPlistPath(projectRoot: string): string {
   return using;
 }
 
-export function getAllEntitlementsPaths(projectRoot: string): string[] {
-  const paths = globSync('ios/*/*.entitlements', {
+export function getAllEntitlementsPaths(projectRoot: string, platform?: ApplePlatform): string[] {
+  const paths = globSync(platformGlob('*/*.entitlements', platform), {
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths,
@@ -287,16 +325,18 @@ export function getAllEntitlementsPaths(projectRoot: string): string[] {
 /**
  * @deprecated: use Entitlements.getEntitlementsPath instead
  */
-export function getEntitlementsPath(projectRoot: string): string | null {
-  return Entitlements.getEntitlementsPath(projectRoot);
+export function getEntitlementsPath(projectRoot: string, platform?: ApplePlatform): string | null {
+  return Entitlements.getEntitlementsPath(projectRoot, { platform });
 }
 
-export function getSupportingPath(projectRoot: string): string {
-  return path.resolve(projectRoot, 'ios', path.basename(getSourceRoot(projectRoot)), 'Supporting');
+export function getSupportingPath(projectRoot: string, platform?: ApplePlatform): string {
+  // Derive from the source root rather than hardcoding `ios/`, so a tvos project resolves to
+  // `<projectRoot>/tvos/<name>/Supporting`.
+  return path.resolve(getSourceRoot(projectRoot, platform), 'Supporting');
 }
 
-export function getExpoPlistPath(projectRoot: string): string {
-  const supportingPath = getSupportingPath(projectRoot);
+export function getExpoPlistPath(projectRoot: string, platform?: ApplePlatform): string {
+  const supportingPath = getSupportingPath(projectRoot, platform);
   return path.join(supportingPath, 'Expo.plist');
 }
 
