@@ -28,6 +28,8 @@ Open your project's [workflows page](https://expo.dev/accounts/[account]/project
 
 You can also use EAS CLI to view a run. Run `eas workflow:view` to select a recent run, or provide a workflow run ID to view a specific run. Use `eas workflow:logs` to inspect logs. Use `eas workflow:status WORKFLOW_RUN_ID --wait` to follow a run until it completes.
 
+To open a shell on the worker that runs a job, see [Debug a workflow run with SSH](/eas/workflows/debug-with-ssh/).
+
 ## Cancel a workflow run
 
 Open a run with a non-terminal status and select **Cancel workflow**. Jobs that already completed keep their final status. Expo Workflows stops the remaining work and marks the run as canceled.
