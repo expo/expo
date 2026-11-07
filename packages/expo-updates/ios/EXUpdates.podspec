@@ -154,8 +154,11 @@ Pod::Spec.new do |s|
     # Generate EXUpdates.bundle without existing resources
     # `create-updates-resources-ios.sh` will generate updates resources in EXUpdates.bundle
     s.resource_bundles = {
-      'EXUpdates' => []
+      'EXUpdates' => [],
+      'EXUpdates_privacy' => ['PrivacyInfo.xcprivacy']
     }
+  else
+    s.resource_bundles = {'EXUpdates_privacy' => ['PrivacyInfo.xcprivacy']}
   end
 
   s.exclude_files = 'Tests/'
