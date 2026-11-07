@@ -97,6 +97,10 @@ public final class WidgetsModule: Module {
       Function("getInstances") { (liveActivity: LiveActivityFactory) in
         try liveActivity.getInstances()
       }
+
+      Function("getEndedInstances") { (liveActivity: LiveActivityFactory) in
+        liveActivity.getEndedInstances()
+      }
     }
 
     Class("LiveActivity", LiveActivity.self) {
