@@ -229,7 +229,14 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
       // unauthorized: ['FA8251A00719', 'unauthorized', 'usb:338690048X', 'transport_id:5']
       // authorized: ['FA8251A00719', 'device', 'usb:336592896X', 'product:walleye', 'model:Pixel_2', 'device:walleye', 'transport_id:4']
       // emulator: ['emulator-5554', 'offline', 'transport_id:1']
-      const props = line.split(' ').filter(Boolean);
+      // Match the device state before splitting metadata to preserve spaces in mDNS serials.
+      const match =
+        line
+          .trim()
+          .match(
+            /^(.+?)\s+((?:offline|bootloader|device|host|recovery|rescue|sideload|unauthorized|authorizing|connecting|detached|any|no permissions)(?:\s+.*)?)$/
+          ) ?? line.trim().match(/^(\S+)\s+(.+)$/);
+      const props = match ? [match[1]!, ...match[2]!.split(/\s+/)] : [];
       const type = line.includes('emulator') ? 'emulator' : 'device';
 
       let connectionType;
