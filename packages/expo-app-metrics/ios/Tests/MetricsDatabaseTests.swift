@@ -234,6 +234,45 @@ struct MetricsDatabaseTests {
   }
 
   @Test
+  func `clearStoredEntries deletes stored data but keeps active sessions`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "active"))
+      try database.insert(session: makeSessionRow(id: "ended"))
+      try database.updateSessionActiveStatus(id: "ended", isActive: false, endTimestamp: nil)
+      for sessionId in ["active", "ended"] {
+        try database.insert(metric: makeMetricRow(sessionId: sessionId, name: "m"))
+        try database.insert(log: makeLogRow(sessionId: sessionId, name: "l"))
+        try database.insert(span: makeSpanRow(sessionId: sessionId))
+        try database.setCrashReport(sessionId: sessionId, payload: "{}")
+      }
+      try database.setCrashReport(sessionId: "orphan", payload: "{}")
+
+      try database.clearStoredEntries()
+
+      #expect(try database.getSession(id: "active") != nil)
+      #expect(try database.getSession(id: "ended") == nil)
+      for table in ["metrics", "logs", "spans", "crash_reports"] {
+        #expect(try countRows(database: database, table: table) == 0)
+      }
+    }
+  }
+
+  @Test
+  func `active sessions keep recording after clearStoredEntries`() throws {
+    try withTemporaryDatabase { database in
+      try database.insert(session: makeSessionRow(id: "active"))
+      let clearedLogId = try database.insert(log: makeLogRow(sessionId: "active", name: "before"))
+
+      try database.clearStoredEntries()
+
+      // Ids keep growing past the cleared rows, so expo-observe's dispatch cursor doesn't skip new rows.
+      let logId = try database.insert(log: makeLogRow(sessionId: "active", name: "after"))
+      #expect(logId > clearedLogId)
+      #expect(try database.getLogs(sessionId: "active").map(\.name) == ["after"])
+    }
+  }
+
+  @Test
   func `init deactivates sessions that were still active from a previous launch`() async throws {
     try await withTemporaryDirectory { directoryUrl in
       // Seed the file with a session left in `isActive = 1` (the previous process never reached
