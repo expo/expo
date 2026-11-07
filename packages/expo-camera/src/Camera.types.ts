@@ -366,7 +366,7 @@ export type BarcodeScanningResult = {
   raw?: string;
   /**
    * Corner points of the bounding box.
-   * `cornerPoints` is not always available and may be empty. On iOS, for `code39` and `pdf417`
+   * `cornerPoints` is not always available and may be empty. On iOS, for `pdf417` and `codabar`
    * you don't get this value.
    *
    * **Note:** Corner points order is currently different across platforms. On Android,
