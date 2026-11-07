@@ -17,6 +17,14 @@ describe('SymbolView', () => {
     expect(screen.queryByText(glyph, { includeHiddenElements: false })).toBeNull();
   });
 
+  it('keeps the glyph at its size regardless of the system font size', async () => {
+    await render(<SymbolView name={{ android: 'chevron_right' }} size={20} />);
+
+    const text = screen.getByText(glyph, { includeHiddenElements: true });
+    expect(text.props.allowFontScaling).toBe(false);
+    expect(text.props.style).toMatchObject({ fontSize: 20, lineHeight: 20 });
+  });
+
   it('forwards aria-hidden to the rendered view', async () => {
     await render(<SymbolView name={{ android: 'chevron_right' }} testID="symbol" aria-hidden />);
 
