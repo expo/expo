@@ -54,7 +54,7 @@ export function getBootstrapContents({
   loadedData,
 }: {
   hydrate: boolean;
-  loadedData: Record<string, unknown> | null;
+  loadedData: Record<string, unknown>;
 }): string {
   const parts = [];
 
@@ -62,7 +62,7 @@ export function getBootstrapContents({
     parts.push(getHydrationFlagScriptContents());
   }
 
-  if (loadedData) {
+  if (Object.keys(loadedData).length > 0) {
     parts.push(getLoaderDataScriptContents(loadedData));
   }
 

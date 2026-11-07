@@ -15,11 +15,16 @@ jest.mock('expo-router/_ctx', () => {
     return data?.message ?? 'MISSING';
   }
 
+  function About() {
+    return String(useLoaderData());
+  }
+
   const routes = {
     './index.tsx': { default: () => 'Index route' },
     './post.tsx': { default: () => 'Post route' },
     './suspense.tsx': { default: () => mockRenderContent() },
     './[locale]/index.tsx': { default: LocaleIndex },
+    './about.tsx': { default: About },
   };
   return {
     ctx: Object.assign((key: keyof typeof routes) => routes[key], {
@@ -130,6 +135,23 @@ describe.each(['server', 'static'] as const)('%s output with loader data', (outp
       );
     } finally {
       consoleWarn.mockRestore();
+    }
+  });
+});
+
+describe.each(['server', 'static'] as const)('%s output with no loader data', (output) => {
+  it('renders a route with no loader without emitting loader data', async () => {
+    const location = new URL('http://localhost/about');
+    const options = { route: { file: './about.tsx', page: '/about' } };
+    const content =
+      output === 'static'
+        ? await getStreamingContent(location, { ...options, output: 'static' })
+        : await new Response(await getStreamingContent(location, options)).text();
+    const html = parse(content);
+
+    expect(html.querySelector('#root')?.textContent).toContain('undefined');
+    for (const script of html.querySelectorAll('script:not([src])')) {
+      expect(script.textContent).not.toContain('__EXPO_ROUTER_LOADER_DATA__');
     }
   });
 });
