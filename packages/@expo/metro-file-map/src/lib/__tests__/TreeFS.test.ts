@@ -558,15 +558,51 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
       });
     });
 
-    test('with empty subpath behaves like no subdirectory specified', () => {
+    test('with empty subpath only considers files under rootDir', () => {
       const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
         [p('foo/another.js'), [123, 0, 0, null, 0, null]],
       ]);
 
-      const withEmpty = tfs.getDifference(newFiles, { subpath: '' });
-      const withUndefined = tfs.getDifference(newFiles);
+      expect(tfs.getDifference(newFiles, { subpath: '' })).toEqual({
+        changedFiles: new Map(),
+        removedFiles: new Set([
+          p('foo/owndir'),
+          p('foo/link-to-bar.js'),
+          p('foo/link-to-another.js'),
+          p('bar.js'),
+          p('link-to-foo'),
+          p('abs-link-out'),
+          p('root'),
+          p('link-to-nowhere'),
+          p('link-to-self'),
+          p('link-cycle-1'),
+          p('link-cycle-2'),
+          p('node_modules/pkg/a.js'),
+          p('node_modules/pkg/package.json'),
+        ]),
+      });
+    });
 
-      expect(withEmpty).toEqual(withUndefined);
+    test('with a subpath above rootDir does not consider files above that path', () => {
+      const nestedTfs = new TreeFS({
+        rootDir: p('/data/project'),
+        files: new Map<CanonicalPath, FileMetadata>([
+          [p('../sibling/kept.js'), [123, 0, 0, null, 0, null]],
+          [p('../sibling/gone.js'), [123, 0, 0, null, 0, null]],
+          [p('../../other/above.js'), [123, 0, 0, null, 0, null]],
+        ]),
+        processFile: async () => {
+          throw new Error('Not implemented');
+        },
+      });
+      const newFiles: FileData = new Map<CanonicalPath, FileMetadata>([
+        [p('../sibling/kept.js'), [123, 0, 0, null, 0, null]],
+      ]);
+
+      expect(nestedTfs.getDifference(newFiles, { subpath: '..' })).toEqual({
+        changedFiles: new Map(),
+        removedFiles: new Set([p('../sibling/gone.js')]),
+      });
     });
 
     test('treats files as unchanged when both old and new mtime are null', () => {
