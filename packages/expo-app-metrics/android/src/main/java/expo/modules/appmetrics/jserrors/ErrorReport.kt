@@ -9,6 +9,8 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
 
+const val JS_EXCEPTION_LOG_NAME = "js.exception"
+
 /**
  * An unhandled JavaScript error forwarded from the JS-side `global.ErrorUtils` handler. Recorded as
  * a `js.exception` log event following OpenTelemetry's exception conventions.
@@ -110,7 +112,7 @@ private fun makeExceptionLogRecord(
   return LogRecord(
     sessionId = sessionId,
     timestamp = timestamp,
-    name = "js.exception",
+    name = JS_EXCEPTION_LOG_NAME,
     severity = (
       if (isFatal) {
         Severity.FATAL

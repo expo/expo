@@ -7,7 +7,7 @@ import {
 } from '../../jetpack-compose/ExposedDropdownMenuBox';
 import { Text } from '../../jetpack-compose/Text';
 import { TextField, type TextFieldRef } from '../../jetpack-compose/TextField';
-import { menuAnchor, onVisibilityChanged } from '../../jetpack-compose/modifiers';
+import { menuAnchor, onVisibilityChanged, semantics } from '../../jetpack-compose/modifiers';
 import { extractPickerItems } from './PickerItem';
 import type { PickerItemValue, PickerProps } from './types';
 
@@ -20,6 +20,7 @@ export function Picker<T extends PickerItemValue>({
   selectedValue,
   onValueChange,
   enabled = true,
+  accessibilityLabel,
   children,
 }: PickerProps<T>) {
   const items = extractPickerItems<T>(children);
@@ -42,7 +43,13 @@ export function Picker<T extends PickerItemValue>({
         ref={textFieldRef}
         readOnly
         enabled={enabled}
-        modifiers={[menuAnchor(), onVisibilityChanged((visible) => setIsVisible(visible))]}
+        modifiers={[
+          menuAnchor(),
+          onVisibilityChanged((visible) => setIsVisible(visible)),
+          ...(accessibilityLabel !== undefined
+            ? [semantics({ contentDescription: accessibilityLabel })]
+            : []),
+        ]}
       />
       <ExposedDropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)}>
         {items.map((item) => (

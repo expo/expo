@@ -1,6 +1,5 @@
 import { getMetroServerRoot, getMetroWorkspaceGlobs } from '@expo/config/paths';
 import fs from 'fs';
-import { globSync } from 'glob';
 import path from 'path';
 
 function readJsonFile(filePath: string) {
@@ -30,19 +29,29 @@ export function globAllPackageJsonPaths(
   linkedPackages: string[]
 ): string[] {
   return linkedPackages
-    .map((glob) => {
-      // Globs should only contain `/` as separator, even on Windows.
-      return globSync(path.posix.join(glob, 'package.json').replace(/\\/g, '/'), {
-        cwd: workspaceProjectRoot,
-        absolute: true,
-        ignore: ['**/@(Carthage|Pods|node_modules)/**'],
-      }).map((pkgPath) => {
-        return isValidJsonFile(pkgPath) ? pkgPath : null;
-      });
+    .flatMap((pattern) => {
+      // NOTE(@kitten): Recursive directory globs also return source files; match manifests directly.
+      if (pattern.includes('**')) {
+        const { globSync }: typeof import('tinyglobby') = require('tinyglobby');
+        return globSync(path.posix.join(pattern, 'package.json'), {
+          cwd: workspaceProjectRoot,
+          absolute: true,
+          expandDirectories: false,
+          caseSensitiveMatch: process.platform !== 'darwin' && process.platform !== 'win32',
+          ignore: ['**/@(Carthage|Pods|node_modules)/**'],
+        });
+      }
+      return fs
+        .globSync(pattern, {
+          cwd: workspaceProjectRoot,
+          exclude: (entry) =>
+            entry
+              .split(path.sep)
+              .some((part) => ['Carthage', 'Pods', 'node_modules'].includes(part)),
+        })
+        .map((directory) => path.resolve(workspaceProjectRoot, directory, 'package.json'));
     })
-    .flat()
-    .filter(Boolean)
-    .map((p) => path.join(p as string));
+    .filter(isValidJsonFile);
 }
 
 /**

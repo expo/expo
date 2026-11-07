@@ -41,6 +41,22 @@ struct UpdatesStateMachineTests {
   }
 
   @Test
+  func `download times are in milliseconds in JSON`() throws {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    machine.processEventForTesting(.download)
+    machine.processEventForTesting(.downloadCompleteWithUpdate(manifest: ["id": "00000000-0000-0000-0000-000000000000"]))
+
+    let context = machine.context
+    let startTime = try #require(context.downloadStartTime)
+    let finishTime = try #require(context.downloadFinishTime)
+    let json = context.json
+    #expect(json["downloadStartTime"] as? Int == Int(floor(startTime.timeIntervalSince1970 * 1000)))
+    #expect(json["downloadFinishTime"] as? Int == Int(floor(finishTime.timeIntervalSince1970 * 1000)))
+  }
+
+  @Test
   func `restart`() {
     let testStateChangeEventManager = TestStateChangeEventManager()
     let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
@@ -221,9 +237,10 @@ struct UpdatesStateMachineTests {
     // warning is the only record of what was lost.
     machine.processEventForTesting(.downloadError(errorMessage: "Failed to download remote update: HTTP 502"))
 
-    let entry = try await droppedEventWarning(logReader: logReader, newerThan: since)
-    #expect(entry.contains("event = downloadError"))
-    #expect(entry.contains("Failed to download remote update: HTTP 502"))
+    let entry = try #require(UpdatesLogEntry.create(from: try await droppedEventWarning(logReader: logReader, newerThan: since)))
+    #expect(entry.key == "system.stateMachineEventDropped")
+    #expect(entry.message.contains("event = downloadError"))
+    #expect(entry.values?["error"] == "Failed to download remote update: HTTP 502")
   }
 
   /// The log handler writes asynchronously, so poll until the warning lands.

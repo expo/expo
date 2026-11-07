@@ -28,9 +28,13 @@ export async function autolinkingRunAsync(
   }
 }
 
-// For some reason, it can't be async, cause otherwise we will get `yarn did not print valid JSON:` error
+// Lifecycle scripts are skipped: the tests only need `node_modules`, and a failing script
+// makes `yarn install` exit with an error but prints no output that explains it.
 export function yarnSync(options?: SpawnOptions) {
-  const result = spawnSync('yarn', ['install', '--silent'], { encoding: 'utf8', ...options });
+  const result = spawnSync('yarn', ['install', '--frozen-lockfile', '--ignore-scripts'], {
+    encoding: 'utf8',
+    ...options,
+  });
   if (result.error) {
     throw result.error;
   }

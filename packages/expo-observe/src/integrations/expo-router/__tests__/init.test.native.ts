@@ -118,7 +118,12 @@ afterEach(() => {
 
 describe('initListeners', () => {
   it('records cold_ttr with isAppLaunch=true on the first focus after a non-PRELOAD action', async () => {
-    focus(events, 'a', undefined, performance.now() + 100);
+    // Pin the launch time captured by `initListeners`, so the time spent between
+    // `beforeEach` and this test doesn't leak into the measured TTR.
+    jest.spyOn(performance, 'now').mockReturnValueOnce(1000);
+    setRouterConfig(undefined);
+
+    focus(events, 'a', undefined, 1100);
     await flushAsync();
 
     expect(mockAddMetric).toHaveBeenCalledTimes(1);
@@ -127,7 +132,7 @@ describe('initListeners', () => {
       category: 'navigation',
       name: 'cold_ttr',
       routeName: '/a',
-      value: expect.closeTo(0.1, 2),
+      value: 0.1,
       params: { isAppLaunch: true, routeParams: {}, url: '/a' },
     });
   });

@@ -1,18 +1,18 @@
 import chalk from 'chalk';
 import { pathExists, readJSON, unlink, writeJSON } from 'fs-extra';
-import { glob } from 'glob';
 import ora from 'ora';
 import * as path from 'path';
+import { glob } from 'tinyglobby';
 
+import * as Directories from '../Directories';
+import logger from '../Logger';
+import { spawnAsync, SpawnResult } from '../Utils';
 import {
   AndroidProjectReport,
   GradleDependency,
   RawGradleDependency,
   RawGradleReport,
 } from './types';
-import * as Directories from '../Directories';
-import logger from '../Logger';
-import { spawnAsync, SpawnResult } from '../Utils';
 
 export const REVISIONS = ['release', 'milestone', 'integration'] as const;
 

@@ -393,6 +393,36 @@ export default function TimerIntervalExample() {
 
 > **Note:** `timerInterval`, `countsDown`, and `pauseTime` require iOS 16.0+ / tvOS 16.0+. On older versions, the timer interval will not render.
 
+### Timer width
+
+In a Live Activity, a timer fills the available width. To make it as wide as its text, put a hidden placeholder in an `Overlay` and show the timer in `Overlay.Content`. Apply `fixedSize` to the `Overlay`, not to the timer. `fixedSize` on the timer can hide it.
+
+```tsx
+import { HStack, Overlay, Text } from '@expo/ui/swift-ui';
+import {
+  fixedSize,
+  hidden,
+  monospacedDigit,
+} from '@expo/ui/swift-ui/modifiers';
+
+<HStack spacing={0}>
+  <Overlay
+    alignment="leading"
+    modifiers={[
+      monospacedDigit(),
+      fixedSize({ horizontal: true, vertical: false }),
+    ]}>
+    <Text modifiers={[hidden()]}>0:00</Text>
+    <Overlay.Content>
+      <Text timerInterval={{ lower, upper }} countsDown={false} />
+    </Overlay.Content>
+  </Overlay>
+  <Text>{' of 2:00'}</Text>
+</HStack>;
+```
+
+Set the placeholder to the longest value the timer can show, with every digit as `0`. Use `0:00` for less than 10 minutes, `00:00` for less than an hour, and `0:00:00` for less than 10 hours. `monospacedDigit` gives every digit the same width.
+
 ## API
 
 ```tsx

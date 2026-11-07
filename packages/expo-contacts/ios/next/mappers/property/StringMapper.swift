@@ -13,11 +13,17 @@ struct StringMapper: PropertyMapper {
   }
 
   func extract(from contact: CNContact) throws -> String? {
+    guard contact.isKeyAvailable(keyString) else {
+      throw ContactKeyNotFetchedException(keyString)
+    }
     let value = contact.value(forKey: keyString) as? String
     return (value?.isEmpty ?? true) ? nil : value
   }
 
   func apply(_ value: String?, to contact: CNMutableContact) throws {
+    guard contact.isKeyAvailable(keyString) else {
+      throw ContactKeyNotFetchedException(keyString)
+    }
     contact[keyPath: keyPath] = value ?? ""
   }
 }

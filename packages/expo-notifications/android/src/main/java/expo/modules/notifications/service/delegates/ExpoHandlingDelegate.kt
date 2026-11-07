@@ -155,7 +155,7 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
     // Run background tasks only for custom notification action buttons (not the default tap).
     // When the default notification tap launches the app from killed state, calling
     // runTaskManagerTasks starts a headless React instance that races with the foreground app.
-    // The foreground TaskManager gets misclassified as headless (via isStartedByHeadlessLoader),
+    // The foreground TaskManager gets misclassified as headless (via isRunningInHeadlessMode),
     // then wiped by invalidateAppRecord — breaking all subsequent background task execution.
     if (!isAppInForeground() && notificationResponse.actionIdentifier != NotificationResponse.DEFAULT_ACTION_IDENTIFIER) {
       FirebaseMessagingDelegate.runTaskManagerTasks(

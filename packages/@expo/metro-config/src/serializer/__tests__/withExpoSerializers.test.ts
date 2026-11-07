@@ -634,6 +634,38 @@ jest.mock('../exportHermes', () => {
 });
 
 describe('serializes', () => {
+  it.each([null, 'index.js', 'worker.js'])(
+    'defers only chunks with DOM references (DOM entry: %s)',
+    async (domEntry) => {
+      const [entry, premodules, graph, options] = await microBundle({
+        fs: {
+          'index.js': `console.log('main'); require.unstable_resolveWorker('./worker');`,
+          'worker.js': `console.log('worker');`,
+        },
+        options: {
+          platform: 'ios',
+          dev: false,
+          hermes: true,
+          output: 'static',
+          splitChunks: false,
+        },
+      });
+      if (domEntry) {
+        (
+          graph.dependencies.get(`${projectRoot}/${domEntry}`)!.output[0]!.data as any
+        ).expoDomComponentReference = 'file:///app/DomView.js';
+      }
+      const serializer = createSerializerFromSerialProcessors({ projectRoot }, [], null);
+      const result = (await serializer(entry, premodules, graph, options)) as any;
+      expect(result.artifacts).toHaveLength(2);
+      for (const artifact of result.artifacts) {
+        expect(artifact.filename).toMatch(
+          artifact.originFilename === domEntry ? /\.js$/ : /\.hbc$/
+        );
+      }
+    }
+  );
+
   describe('plugin callbacks', () => {
     it(`runs plugin for each chunk`, async () => {
       const unstablePlugin = ({ premodules }: { premodules: Module[] }): Module[] => {

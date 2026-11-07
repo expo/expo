@@ -2,6 +2,7 @@
 
 // swiftlint:disable closure_body_length
 
+import EXUpdatesInterface
 import ExpoModulesCore
 
 final class CheckForUpdateProcedure: StateMachineProcedure {
@@ -154,6 +155,7 @@ final class CheckForUpdateProcedure: StateMachineProcedure {
           procedureContext.onComplete()
           return
         } errorBlock: { error in
+          self.logger.errorForLoadFailure(error, failed: .remoteCheckFailed, unreachable: .remoteCheckUnreachable)
           procedureContext.processStateEvent(.checkError(errorMessage: error.localizedDescription))
           self.successBlock(CheckForUpdateResult.error(error: error))
           procedureContext.onComplete()

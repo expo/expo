@@ -300,7 +300,6 @@ android {
 }
 
 dependencies {
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${kotlinVersion}"
   implementation "org.jetbrains.kotlin:kotlin-reflect:${kotlinVersion}"
   implementation 'androidx.annotation:annotation:1.9.1'
 

@@ -58,6 +58,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   private static final String TAG = "TaskService";
   private static final String SHARED_PREFERENCES_NAME = "TaskManagerModule";
   private static final int MAX_TASK_EXECUTION_TIME_MS = 15000; // 15 seconds
+  // Upper bound for the headless task that keeps JS timers alive, in case no finish path runs.
+  // Matches the 10 minutes JobScheduler gives a job.
+  private static final long HEADLESS_TASK_TIMEOUT_MS = 10 * 60 * 1000;
 
   private WeakReference<Context> mContextRef;
   private TaskManagerUtilsInterface mTaskManagerUtils;
@@ -249,7 +252,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     // Determine in which table the task manager will be stored.
     // Having two tables for them is to prevent race condition problems,
     // when both foreground and background apps are launching at the same time.
-    boolean isHeadless = isStartedByHeadlessLoader(appScopeKey);
+    boolean isHeadless = isRunningInHeadlessMode(appScopeKey);
     Map<String, WeakReference<TaskManagerInterface>> taskManagers = isHeadless ? sHeadlessTaskManagers : sTaskManagers;
 
     // Set task manager in appropriate map.
@@ -274,10 +277,10 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   @Override
-  public boolean isStartedByHeadlessLoader(String appScopeKey) {
-    HeadlessAppLoader appLoader = getAppLoader();
-    if (appLoader != null) {
-      return appLoader.isRunning(appScopeKey);
+  public boolean isRunningInHeadlessMode(String appScopeKey) {
+    HeadlessAppLoader headlessAppLoader = getHeadlessAppLoader();
+    if (headlessAppLoader != null) {
+      return headlessAppLoader.isRunningInHeadlessMode(appScopeKey);
     }
     return false;
   }
@@ -424,13 +427,14 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     }
     mTasksAndEventsRepository.putEventForAppScopeKey(appScopeKey, body);
 
-    getAppLoader().loadApp(mContextRef.get(),
+    getHeadlessAppLoader().loadApp(mContextRef.get(),
       new HeadlessAppLoader.Params(appScopeKey, task.getAppUrl()),
       () -> {
       },
       success -> {
         if (!success) {
           sEvents.remove(appScopeKey);
+          maybeFinishHeadlessTask(appScopeKey);
           mTasksAndEventsRepository.removeEvents(appScopeKey);
 
           // Host unreachable? Unregister all tasks for that app.
@@ -443,7 +447,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   //endregion
   //region helpers
 
-  private HeadlessAppLoader getAppLoader() {
+  private HeadlessAppLoader getHeadlessAppLoader() {
     if (mContextRef.get() != null) {
       return AppLoaderProvider.getLoader("react-native-headless", mContextRef.get());
     } else {
@@ -610,9 +614,9 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   }
 
   private void invalidateAppRecord(String appScopeKey) {
-    HeadlessAppLoader appLoader = getAppLoader();
-    if (appLoader != null) {
-      appLoader.invalidateApp(appScopeKey);
+    HeadlessAppLoader headlessAppLoader = getHeadlessAppLoader();
+    if (headlessAppLoader != null) {
+      headlessAppLoader.invalidateApp(appScopeKey);
     }
   }
 
@@ -651,11 +655,20 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     HeadlessJsTaskConfig taskConfig = new HeadlessJsTaskConfig(
       "expo-task-manager",
       new WritableNativeMap(),
-      0, // no timeout, managed by the task consumer
+      HEADLESS_TASK_TIMEOUT_MS, // finished by maybeFinishHeadlessTask, the timeout is a safety net
       true // allow in foreground to avoid exceptions if app returns
     );
 
     UiThreadUtil.runOnUiThread(() -> {
+      // The events may be done already, e.g. when the cold-start listener fires late.
+      if (!sEvents.containsKey(appScopeKey)) {
+        return;
+      }
+      // Don't replace a keepalive that is still running, its ID would never be finished.
+      Integer runningTaskId = sHeadlessTaskIds.get(appScopeKey);
+      if (runningTaskId != null && headlessContext.isTaskRunning(runningTaskId)) {
+        return;
+      }
       try {
         int taskId = headlessContext.startTask(taskConfig);
         sHeadlessTaskIds.put(appScopeKey, taskId);

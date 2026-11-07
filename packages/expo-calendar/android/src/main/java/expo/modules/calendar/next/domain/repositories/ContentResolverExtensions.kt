@@ -1,9 +1,14 @@
 package expo.modules.calendar.next.domain.repositories
 
 import android.Manifest
+import android.content.ContentProviderOperation
+import android.content.ContentProviderResult
 import android.content.ContentResolver
+import android.content.OperationApplicationException
 import android.database.Cursor
 import android.net.Uri
+import android.os.RemoteException
+import android.provider.CalendarContract
 import expo.modules.calendar.next.exceptions.CouldNotExecuteQueryException
 import expo.modules.calendar.next.exceptions.PermissionException
 import kotlinx.coroutines.Dispatchers
@@ -58,5 +63,19 @@ suspend fun ContentResolver.safeInsert(
       ?: throw CouldNotExecuteQueryException("Couldn't insert content, returned URI is null")
   } catch (e: SecurityException) {
     throw PermissionException(Manifest.permission.WRITE_CALENDAR, e)
+  }
+}
+
+suspend fun ContentResolver.safeApplyBatch(
+  operations: ArrayList<ContentProviderOperation>
+): Array<ContentProviderResult> = withContext(Dispatchers.IO) {
+  try {
+    applyBatch(CalendarContract.AUTHORITY, operations)
+  } catch (e: SecurityException) {
+    throw PermissionException(Manifest.permission.WRITE_CALENDAR, e)
+  } catch (e: OperationApplicationException) {
+    throw CouldNotExecuteQueryException("Couldn't apply the batch of calendar operations", e)
+  } catch (e: RemoteException) {
+    throw CouldNotExecuteQueryException("Couldn't reach the calendar provider to apply a batch", e)
   }
 }

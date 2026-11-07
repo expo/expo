@@ -145,7 +145,7 @@ class FileSystemUploadTask : SharedObject() {
         override fun onResponse(call: Call, response: Response) {
           try {
             val body = response.body?.string() ?: ""
-            val headers = response.headers.toMultimap().mapValues { it.value.firstOrNull() ?: "" }
+            val headers = response.headers.toResponseHeaders()
 
             val result = UploadTaskResult()
             result.body = body
