@@ -1,0 +1,95 @@
+---
+title: 'Expo Modules API 2.0: Concurrency'
+sidebar_title: Concurrency
+description: Learn on which thread the functions of a module run, and how to move work off the JavaScript thread with Expo Modules API 2.0.
+---
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { LanguageSupport } from '~/components/plugins/modules-v2-support';
+
+JavaScript calls the functions of a module on the JavaScript thread. Long work on this thread blocks JavaScript, so move work such as file input/output (I/O) or hashing to another thread.
+
+## Run work off the JavaScript thread
+
+<LanguageSupport feature="concurrent-functions" />
+
+A `suspend` function in Kotlin and an `async` function in Swift start on the JavaScript thread too. In Kotlin, move the work to another thread with `withContext`. In Swift, the `.concurrent` option of `@JS` runs the body of an `async` function on the concurrent thread pool.
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+@JS
+suspend fun getInstallationTimeAsync(): Double = withContext(Dispatchers.IO) {
+  // Runs on a thread for I/O work.
+}
+```
+
+```swift
+@JS(.concurrent)
+func getInstallationTimeAsync() async throws -> Double {
+  // Runs on the concurrent thread pool.
+}
+```
+
+</CodeBlocksTable>
+
+In Swift, the arguments still convert on the JavaScript thread, before the body runs, and the result converts on the JavaScript thread after the body returns. Only the work of the body moves. `.concurrent` is valid only on an `async` function. To give a JavaScript name too, pass it first, for example `@JS("bytes", .concurrent)`.
+
+## Run work on the main thread
+
+Some platform APIs work only on the main thread. In Kotlin, use `withContext(Dispatchers.Main)`. In Swift, add `@MainActor` to an `async` function:
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+@JS
+suspend fun print(options: PrintOptions) {
+  withContext(Dispatchers.Main) {
+    // ...
+  }
+}
+```
+
+```swift
+@JS
+@MainActor
+func impactAsync(style: ImpactStyle) async {
+  let generator = UIImpactFeedbackGenerator(style: style.toFeedbackStyle())
+  generator.impactOccurred()
+}
+```
+
+</CodeBlocksTable>
+
+## Asynchronous variants of synchronous functions
+
+<LanguageSupport feature="async-variants" />
+
+In Swift, the `.withAsync` option exports a synchronous function a second time, as a function that returns a promise. The second function runs the body on the concurrent thread pool:
+
+```swift
+@JS("readTextSync", .withAsync("readText"))
+func readText(path: String) throws -> String {
+  // ...
+}
+```
+
+JavaScript can call `readTextSync(path)` to get the text, or `readText(path)` to get a promise. The body of the function must be safe to run on any thread, because the asynchronous variant isn't isolated to the JavaScript thread. The function can't be isolated to a global actor, such as `@MainActor`, and the name must be a string literal.
+
+## JavaScript values on other threads
+
+A JavaScript value, such as `JavaScriptValue` or `JavaScriptObject`, is valid only on the JavaScript thread. So, in Swift, a `.concurrent` function and a function with `.withAsync` can't take a JavaScript value as an argument. The macro reports such an argument.
+
+## Thread safety of modules and shared objects in Swift
+
+Native code calls a module or a shared object from more than one thread. For example, a `.withAsync` variant runs on the concurrent thread pool, and you can send events and call closure arguments from any thread. So, the generated code needs the class to be `Sendable`.
+
+A subclass of `Module` or `SharedObject` can't be checked as `Sendable`, because these base classes aren't `Sendable`. So, `@ExpoModule` and `@SharedObject` add an `@unchecked Sendable` conformance:
+
+```swift
+extension MyModule: @unchecked Sendable {}
+```
+
+The compiler then doesn't check the mutable state of the class. Keep state that more than one thread uses behind a lock or an actor. The macros don't add the conformance when the class already declares or inherits `Sendable` or `@unchecked Sendable`. A subclass of a module or a shared object gets a warning until it declares `@unchecked Sendable` again.
+
+When the isolation of a `@JS` function comes from another place than the function or its type, for example from a protocol, the error points into the generated code. Mark such a function `nonisolated`.

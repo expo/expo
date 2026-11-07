@@ -371,7 +371,23 @@ export const general = [
   ),
   makeSection(
     'Expo Modules API 2.0',
-    [makePage('modules/v2/overview.mdx'), makePage('modules/v2/feature-support.mdx')],
+    [
+      makePage('modules/v2/overview.mdx'),
+      makePage('modules/v2/feature-support.mdx'),
+      makeSection('Reference', [
+        makePage('modules/v2/reference/modules.mdx'),
+        makePage('modules/v2/reference/types.mdx'),
+        makePage('modules/v2/reference/shared-objects.mdx'),
+        makePage('modules/v2/reference/records.mdx'),
+        makePage('modules/v2/reference/unions.mdx'),
+        makePage('modules/v2/reference/binary-data.mdx'),
+        makePage('modules/v2/reference/events.mdx'),
+        makePage('modules/v2/reference/errors.mdx'),
+        makePage('modules/v2/reference/lifecycle.mdx'),
+        makePage('modules/v2/reference/concurrency.mdx'),
+        makePage('modules/v2/reference/cli.mdx'),
+      ]),
+    ],
     { expanded: false, isBeta: true }
   ),
   makeSection('Push notifications', [

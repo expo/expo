@@ -1,0 +1,96 @@
+---
+title: 'Expo Modules API 2.0: Lifecycle and app context'
+sidebar_title: Lifecycle and app context
+description: Learn when a module is created and destroyed, and how a module gets the app context, other modules, and platform objects in Expo Modules API 2.0.
+---
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+
+A module lives as long as the app context, which the app destroys and creates again, for example when it reloads. A module can run code when it's created and destroyed, and it can use the app context to get platform objects and other modules.
+
+## Lifecycle hooks
+
+A Swift module overrides the lifecycle hooks of `Module`. A Kotlin module overrides `onDestroy()`:
+
+<CodeBlocksTable tabs={['MyModule.kt', 'MyModule.swift']}>
+
+```kotlin
+@ExpoModule("MyModule")
+class MyModule : Module() {
+  override fun onDestroy() {
+    // Release native resources.
+  }
+}
+```
+
+```swift
+@ExpoModule("MyModule")
+public final class MyModule: Module {
+  public override func didCreate() {
+    // Set up the module.
+  }
+
+  public override func willDestroy() {
+    // Release native resources.
+  }
+}
+```
+
+</CodeBlocksTable>
+
+| Hook                              | Kotlin                          | Swift                       |
+| --------------------------------- | ------------------------------- | --------------------------- |
+| After the module is created       | Not available                   | `didCreate()`               |
+| Before the module is destroyed    | `onDestroy()`                   | `willDestroy()`             |
+| First listener of an event added  | `onStartObserving` of the event | `didStartListening(event:)` |
+| Last listener of an event removed | `onStopObserving` of the event  | `didStopListening(event:)`  |
+
+In Swift, put setup code in `didCreate()`, not in an initializer. `didCreate()` runs after the app context registers the module.
+
+In Kotlin, the module gets its context after the constructor runs. So, `androidContext` and the other context properties throw in an `init` block. Use them in a function, or in a property with `by lazy`:
+
+```kotlin
+private val preferences by lazy {
+  androidContext.getSharedPreferences("settings", Context.MODE_PRIVATE)
+}
+```
+
+In Kotlin, each event has its own observing functions. For more information, see [Start and stop observing](/modules/v2/reference/events/#start-and-stop-observing).
+
+## App context
+
+### Kotlin
+
+A module and a shared object have the following properties. The context properties come from the `io.github.expo.modules.v2.react` package.
+
+| Property               | Type                       | Description                                                                      |
+| ---------------------- | -------------------------- | -------------------------------------------------------------------------------- |
+| `androidContext`       | `Context`                  | The Android context of the app. Throws when the module isn't bound to a context. |
+| `androidContextOrNull` | `Context?`                 | The same, or `null`.                                                             |
+| `reactContext`         | `ReactApplicationContext`  | The React Native context. Throws when the module isn't bound to a context.       |
+| `reactContextOrNull`   | `ReactApplicationContext?` | The same, or `null`.                                                             |
+| `currentActivity`      | `Activity?`                | The current activity, or `null`.                                                 |
+| `context`              | `ExpoContext`              | The Expo context of the module. Throws when the module isn't bound to a context. |
+
+To get another module, call `context.module<T>()` from the `io.github.expo.modules.v2` package. It returns `null` when the app doesn't have the module. The same as the other context properties, call it after the constructor:
+
+```kotlin
+private val otherModule by lazy {
+  context.module<OtherModule>() ?: throw IllegalStateException("OtherModule isn't installed")
+}
+```
+
+### Swift
+
+A module and a shared object have the `appContext` property. It's a weak reference to the app context, so it's optional. It gives access to, for example:
+
+- other modules, with `appContext?.moduleRegistry.get(moduleWithName:)`
+- the documents and cache directories of the app, with `appContext?.config.documentDirectory` and `appContext?.config.cacheDirectory`
+- the current view controller, with `appContext?.utilities?.currentViewController()`
+
+## App and activity events
+
+The lifecycle hooks of Expo Modules API 2.0 don't include app or activity events, such as the app entering the background.
+
+- In Kotlin, there are no hooks for activity results, new intents, or app foreground and background. Use the React Native listeners, for example a `LifecycleEventListener` that you add with `reactContext.addLifecycleEventListener`.
+- In Swift, a module class with `@ExpoModule` can also have a `definition()` function with the app lifecycle components of the [module definition DSL](/modules/module-api/) (domain-specific language), such as `OnAppEntersForeground` and `OnAppEntersBackground`.
