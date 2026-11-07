@@ -277,6 +277,9 @@ importers:
       expo-media-library:
         specifier: workspace:*
         version: link:../../packages/expo-media-library
+      expo-media-session:
+        specifier: workspace:*
+        version: link:../../packages/expo-media-session
       expo-navigation-bar:
         specifier: workspace:*
         version: link:../../packages/expo-navigation-bar
@@ -1115,6 +1118,9 @@ importers:
       expo-media-library:
         specifier: workspace:*
         version: link:../../packages/expo-media-library
+      expo-media-session:
+        specifier: workspace:*
+        version: link:../../packages/expo-media-session
       expo-mesh-gradient:
         specifier: workspace:*
         version: link:../../packages/expo-mesh-gradient
@@ -5304,6 +5310,25 @@ importers:
       '@types/node':
         specifier: ^22.14.0
         version: 22.20.1
+      expo:
+        specifier: workspace:*
+        version: link:../expo
+
+  packages/expo-media-session:
+    dependencies:
+      react:
+        specifier: '*'
+        version: 19.3.0
+      react-native:
+        specifier: 0.88.1
+        version: 0.88.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
+    devDependencies:
+      '@expo/internal-scripts':
+        specifier: workspace:*
+        version: link:../@expo/internal-scripts
+      '@types/jest':
+        specifier: ^30.0.0
+        version: 30.0.0
       expo:
         specifier: workspace:*
         version: link:../expo

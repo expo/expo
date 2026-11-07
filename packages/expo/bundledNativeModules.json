@@ -67,6 +67,7 @@
   "expo-maps": "~58.0.10",
   "expo-mcp": "~0.2.1",
   "expo-media-library": "~58.0.12",
+  "expo-media-session": "~58.0.0",
   "expo-mesh-gradient": "~58.0.3",
   "expo-module-template": "~58.0.8",
   "expo-modules-core": "~58.0.26",
