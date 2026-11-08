@@ -418,6 +418,37 @@ class EventDispatcherTest {
       )
     }
 
+  @Test
+  fun `metrics, logs, and spans are sent as compact JSON`() =
+    runTest {
+      repeat(3) {
+        mockServer.enqueue(MockResponse().setResponseCode(200).setBody("{}"))
+      }
+      val log = LogEvent(
+        sessionId = "test-session",
+        timestamp = "2025-11-26T10:00:00.000Z",
+        name = "test_log",
+        severity = "info"
+      )
+      val span = OTSpan(
+        traceId = "0af7651916cd43dd8448eb211c80319c",
+        spanId = "b7ad6b7169203331",
+        name = "GET",
+        kind = 3,
+        startTimeUnixNano = 1_000_000,
+        endTimeUnixNano = 2_000_000,
+        attributes = emptyList(),
+        events = emptyList()
+      )
+      eventDispatcher.dispatch(listOf(createTestEvent()))
+      eventDispatcher.dispatchLogs(listOf(createTestEvent().copy(logs = listOf(log))))
+      eventDispatcher.dispatchSpans(listOf(SpanBatch(event = createTestEvent(), spans = listOf(span))))
+      repeat(3) {
+        val body = mockServer.takeRequest().body.readUtf8()
+        assertFalse("Request body is pretty-printed: $body", body.contains('\n'))
+      }
+    }
+
   // Helper function to create test events
   private fun createTestEvent(metricName: String = "test_metric"): Event {
     val metadata = Metadata(
