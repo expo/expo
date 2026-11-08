@@ -105,6 +105,9 @@ final class FakeSessionBackend: SessionBackend, @unchecked Sendable {
   private var recorded: [Call] = []
   private var lastGood: ResolvedSession?
   private var activateError: Error?
+  private var configureError: Error?
+  private var active = false
+  private var deactivateErrors: [Error] = []
   private var rejectedSampleRate: Double?
   private var storedLive = SessionConfiguration(category: .soloAmbient)
   private var liveSampleRate: Double?
@@ -117,6 +120,10 @@ final class FakeSessionBackend: SessionBackend, @unchecked Sendable {
 
   var configuration: ResolvedSession? {
     lock.withLock { lastGood }
+  }
+
+  var isActive: Bool {
+    lock.withLock { active }
   }
 
   var liveConfiguration: SessionConfiguration {
@@ -136,6 +143,27 @@ final class FakeSessionBackend: SessionBackend, @unchecked Sendable {
     lock.withLock { activateError = error }
   }
 
+  func failConfiguration(with error: Error?) {
+    lock.withLock { configureError = error }
+  }
+
+  func interrupt() {
+    lock.withLock { active = false }
+  }
+
+  func failNextDeactivation(with error: Error) {
+    lock.withLock { deactivateErrors.append(error) }
+  }
+
+  func resetMediaServices() {
+    lock.withLock {
+      storedLive = SessionConfiguration(category: .soloAmbient)
+      active = false
+      liveSampleRate = nil
+      liveIOBufferDuration = nil
+    }
+  }
+
   func duringDeactivation(_ body: @escaping @Sendable () -> Void) {
     lock.withLock { onDeactivate = body }
   }
@@ -144,7 +172,7 @@ final class FakeSessionBackend: SessionBackend, @unchecked Sendable {
     calls.filter { $0 == call }.count
   }
 
-  func configure(_ session: ResolvedSession) throws {
+  func configure(_ session: ResolvedSession) throws -> Bool {
     let configuration = session.configuration
     let (isCurrent, rejectedRate) = lock.withLock {
       let isCurrent =
@@ -158,7 +186,10 @@ final class FakeSessionBackend: SessionBackend, @unchecked Sendable {
     }
     guard !isCurrent else {
       lock.withLock { lastGood = session }
-      return
+      return false
+    }
+    if let error = lock.withLock({ configureError }) {
+      throw error
     }
     if configuration.options.contains(.defaultToSpeaker) && configuration.category != .playAndRecord {
       throw NSError(domain: NSOSStatusErrorDomain, code: -50)
@@ -172,6 +203,7 @@ final class FakeSessionBackend: SessionBackend, @unchecked Sendable {
       liveIOBufferDuration = session.preferredIOBufferDuration ?? liveIOBufferDuration
       lastGood = session
     }
+    return true
   }
 
   func activate() throws {
@@ -182,14 +214,22 @@ final class FakeSessionBackend: SessionBackend, @unchecked Sendable {
     if let error {
       throw error
     }
+    lock.withLock { active = true }
   }
 
   func deactivate(notifyingOthers: Bool) throws {
-    let hook = lock.withLock {
+    let (hook, error) = lock.withLock {
       recorded.append(.deactivate(notifyingOthers: notifyingOthers))
-      return onDeactivate
+      return (onDeactivate, deactivateErrors.isEmpty ? nil : deactivateErrors.removeFirst())
     }
     hook?()
+    if let error {
+      if (error as NSError).code == AVAudioSession.ErrorCode.isBusy.rawValue {
+        lock.withLock { active = false }
+      }
+      throw error
+    }
+    lock.withLock { active = false }
   }
 }
 
@@ -198,6 +238,13 @@ final class RecordingObserver: MediaSessionObserver, @unchecked Sendable {
     case failed(client: String)
     case suspended(reason: String)
     case resumed
+    case interruptionBegan(InterruptionReason)
+    case interruptionEnded(shouldResume: Bool)
+    case routeChanged(RouteChangeReason)
+    case ducked(Bool)
+    case focusLost(transient: Bool)
+    case servicesReset
+    case silentModeChanged(isSilent: Bool)
   }
 
   private let lock = NSLock()
@@ -225,6 +272,34 @@ final class RecordingObserver: MediaSessionObserver, @unchecked Sendable {
 
   func mediaSessionDidResumeWrites() {
     lock.withLock { recorded.append(.resumed) }
+  }
+
+  func mediaSessionInterruptionBegan(reason: InterruptionReason) {
+    lock.withLock { recorded.append(.interruptionBegan(reason)) }
+  }
+
+  func mediaSessionInterruptionEnded(shouldResume: Bool) {
+    lock.withLock { recorded.append(.interruptionEnded(shouldResume: shouldResume)) }
+  }
+
+  func mediaSessionRouteChanged(reason: RouteChangeReason) {
+    lock.withLock { recorded.append(.routeChanged(reason)) }
+  }
+
+  func mediaSessionDucked(_ isDucked: Bool) {
+    lock.withLock { recorded.append(.ducked(isDucked)) }
+  }
+
+  func mediaSessionFocusLost(transient: Bool) {
+    lock.withLock { recorded.append(.focusLost(transient: transient)) }
+  }
+
+  func mediaSessionServicesReset() {
+    lock.withLock { recorded.append(.servicesReset) }
+  }
+
+  func mediaSessionSilentModeChanged(isSilent: Bool) {
+    lock.withLock { recorded.append(.silentModeChanged(isSilent: isSilent)) }
   }
 }
 
