@@ -134,10 +134,20 @@ final class SessionCoordinator: @unchecked Sendable {
   private var pendingRelease: (any ScheduledWork)?
   private var releaseTicket = 0
   private var observers: [RegisteredObserver] = []
+  private var correctedAfterNotification = false
+  private var needsReactivation = false
+  private var deferredInterruptionEnd: Bool?
 
-  init(backend: any SessionBackend, scheduler: any Scheduler) {
+  private let log: @Sendable (String) -> Void
+
+  init(
+    backend: any SessionBackend,
+    scheduler: any Scheduler,
+    log: @escaping @Sendable (String) -> Void = { print($0) }
+  ) {
     self.backend = backend
     self.scheduler = scheduler
+    self.log = log
   }
 
   var policy: AudioPolicy {
@@ -227,10 +237,63 @@ final class SessionCoordinator: @unchecked Sendable {
         return
       }
       notify { $0.mediaSessionDidResumeWrites() }
+      let resumed: Bool
       if entries.isEmpty {
         scheduleRelease()
+        resumed = false
       } else {
-        isActive = false
+        needsReactivation = true
+        resumed = reconcile(client: nil, activating: true, activation: nil)
+      }
+      if let shouldResume = deferredInterruptionEnd {
+        deferredInterruptionEnd = nil
+        notify { $0.mediaSessionInterruptionEnded(shouldResume: shouldResume && resumed) }
+      }
+    }
+  }
+
+  func interruptionBegan(reason: InterruptionReason) {
+    task { [self] in
+      needsReactivation = true
+      deferredInterruptionEnd = nil
+      notify { $0.mediaSessionInterruptionBegan(reason: reason) }
+    }
+  }
+
+  func interruptionEnded(shouldResume: Bool) {
+    task { [self] in
+      guard suspendCount == 0 else {
+        deferredInterruptionEnd = shouldResume
+        return
+      }
+      let resumed = shouldResume && !entries.isEmpty && reconcile(client: nil, activating: true, activation: nil)
+      notify { $0.mediaSessionInterruptionEnded(shouldResume: resumed) }
+    }
+  }
+
+  func routeChanged(_ reason: RouteChangeReason) {
+    task { [self] in
+      if reason == .categoryChange {
+        reconcile(client: nil, activating: false, activation: nil, fromNotification: true)
+      }
+      notify { $0.mediaSessionRouteChanged(reason: reason) }
+    }
+  }
+
+  func mediaServicesWereReset() {
+    task { [self] in
+      needsReactivation = true
+      reconcile(client: nil, activating: true, activation: nil)
+      notify { $0.mediaSessionServicesReset() }
+    }
+  }
+
+  // iOS deactivates the session of a suspended app without a notification.
+  func willEnterForeground() {
+    task { [self] in
+      let awaitsReactivation = needsReactivation
+      needsReactivation = true
+      if !awaitsReactivation {
         reconcile(client: nil, activating: true, activation: nil)
       }
     }
@@ -272,20 +335,31 @@ final class SessionCoordinator: @unchecked Sendable {
     snapshot.withLock { $0 = current }
   }
 
-  private func reconcile(client: String?, activating: Bool, activation: ActivationSignal?) {
+  @discardableResult
+  private func reconcile(
+    client: String?,
+    activating: Bool,
+    activation: ActivationSignal?,
+    fromNotification: Bool = false
+  ) -> Bool {
     if let activation {
       pendingActivations.append(activation)
     }
     guard suspendCount == 0, let reportedClient = client ?? entries.last?.client else {
-      return
+      return true
+    }
+    guard !(fromNotification && correctedAfterNotification) else {
+      return true
     }
     cancelPendingRelease()
 
     let resolved = resolveDroppingInapplicableOptions()
     do {
-      try backend.configure(resolved)
+      let wrote = try backend.configure(resolved)
+      correctedAfterNotification = fromNotification && wrote
       appliedSession = resolved
     } catch {
+      correctedAfterNotification = fromNotification
       appliedSession = Self.sessionInEffect(
         live: backend.liveConfiguration,
         attempted: resolved,
@@ -298,13 +372,14 @@ final class SessionCoordinator: @unchecked Sendable {
         ).causedBy(error),
         client: reportedClient
       )
-      return
+      return false
     }
 
-    if activating && !isActive {
+    if activating && (!isActive || needsReactivation) {
       do {
         try backend.activate()
         isActive = true
+        needsReactivation = false
       } catch {
         fail(
           MediaSessionException(
@@ -312,10 +387,11 @@ final class SessionCoordinator: @unchecked Sendable {
           ).causedBy(error),
           client: reportedClient
         )
-        return
+        return false
       }
     }
     completePending(.success(()))
+    return true
   }
 
   static func sessionInEffect(
@@ -356,7 +432,7 @@ final class SessionCoordinator: @unchecked Sendable {
       let dropped = SessionResolver.unsupportedOptions(entries[index].requirements.extraOptions, in: category)
       let newlyDropped = dropped.subtracting(entries[index].droppedOptions)
       if !newlyDropped.isEmpty {
-        print(
+        log(
           "[expo-media-session] Ignoring extraOptions \(newlyDropped.rawValue) for \(entries[index].client): not valid in \(category.rawValue)"
         )
         entries[index].droppedOptions.formUnion(newlyDropped)
@@ -381,7 +457,7 @@ final class SessionCoordinator: @unchecked Sendable {
       try backend.configure(policyOnly)
       self.appliedSession = policyOnly
     } catch {
-      print("[expo-media-session] Failed to restore the audio session category: \(error.localizedDescription)")
+      log("[expo-media-session] Failed to restore the audio session category: \(error.localizedDescription)")
     }
   }
 
@@ -416,11 +492,12 @@ final class SessionCoordinator: @unchecked Sendable {
       try backend.deactivate(notifyingOthers: appliedSession?.notifiesOthersOnDeactivation ?? true)
       isActive = false
     } catch {
+      let code = (error as NSError).code
       // iOS deactivates the session before it throws isBusy.
-      if (error as NSError).code == AVAudioSession.ErrorCode.isBusy.rawValue {
+      if code == AVAudioSession.ErrorCode.isBusy.rawValue {
         isActive = false
       }
-      print("[expo-media-session] Failed to deactivate the audio session: \(error.localizedDescription)")
+      log("[expo-media-session] Failed to deactivate the audio session (\(code)): \(error.localizedDescription)")
     }
   }
 
