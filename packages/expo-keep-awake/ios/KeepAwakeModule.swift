@@ -7,27 +7,6 @@ public final class KeepAwakeModule: Module {
   // Read and changed on the main thread only.
   private var activeTags = Set<String>()
 
-  public override func didCreate() {
-    #if os(iOS) || os(tvOS)
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(onAppWillEnterForeground),
-      name: UIApplication.willEnterForegroundNotification,
-      object: nil
-    )
-    NotificationCenter.default.addObserver(
-      self,
-      selector: #selector(onAppDidEnterBackground),
-      name: UIApplication.didEnterBackgroundNotification,
-      object: nil
-    )
-    #endif
-  }
-
-  public override func willDestroy() {
-    NotificationCenter.default.removeObserver(self)
-  }
-
   @JS
   @MainActor
   func activate(tag: String) async -> Bool {
@@ -58,18 +37,13 @@ public final class KeepAwakeModule: Module {
     #endif
   }
 
-  // UIApplication posts the lifecycle notifications on the main thread.
-  @objc
-  @MainActor
-  private func onAppWillEnterForeground() {
+  public override func appWillEnterForeground() {
     if !activeTags.isEmpty {
       setActivated(true)
     }
   }
 
-  @objc
-  @MainActor
-  private func onAppDidEnterBackground() {
+  public override func appDidEnterBackground() {
     if !activeTags.isEmpty {
       setActivated(false)
     }
