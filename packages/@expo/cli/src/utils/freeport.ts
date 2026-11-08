@@ -9,8 +9,12 @@ async function testHostPortAsync(port: number, host: string | null): Promise<boo
       });
       server.close();
     });
-    server.once('error', (_error) => {
-      setTimeout(() => resolve(false), 0);
+    server.once('error', (error: NodeJS.ErrnoException) => {
+      // An address that cannot be bound on this machine at all (e.g. there is
+      // no IPv6 loopback) cannot be holding the port either, so don't treat
+      // it as busy.
+      const unavailable = error.code === 'EADDRNOTAVAIL' || error.code === 'EAFNOSUPPORT';
+      setTimeout(() => resolve(unavailable), 0);
     });
   });
 }
