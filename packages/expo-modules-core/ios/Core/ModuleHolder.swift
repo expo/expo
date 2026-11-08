@@ -1,3 +1,4 @@
+internal import React
 import ExpoModulesJSI
 
 /// Holds a reference to the module instance and caches its definition.
@@ -171,6 +172,8 @@ public final class ModuleHolder {
       // (the direct-JSI path). A no-op for modules that don't use the macro.
       try module._decorateModule(object: object, in: appContext.runtime)
 
+      try installNativeViewComponents(on: object, in: appContext.runtime)
+
       try installListeningHooks(on: object, in: appContext.runtime)
 
       return object
@@ -178,6 +181,109 @@ public final class ModuleHolder {
       log.error("Building the module object failed: \(error)")
       return nil
     }
+  }
+
+  // MARK: Native view components
+
+  /**
+   The non-enumerable property of the module object that holds the component of the module's default view.
+   It must stay in sync with `DEFAULT_VIEW_PROPERTY` in `NativeViewComponent.tsx`.
+   */
+  static let defaultViewPropertyName = "__expo_default_view__"
+
+  /**
+   Defines a lazy getter on the module object for each `@ExpoView` view. The first read creates the view's
+   React component with `expo.__createNativeViewComponent` and replaces the getter with the component,
+   so later reads don't call native. The default view is a separate component under the module's own component name.
+   */
+  @JavaScriptActor
+  private func installNativeViewComponents(on object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) {
+    for (viewName, viewType) in nativeViewTypes {
+      let isDefaultView = viewName == DEFAULT_MODULE_VIEW
+      let propertyName = isDefaultView ? ModuleHolder.defaultViewPropertyName : viewName
+
+      if !isDefaultView && object.hasProperty(viewName) {
+        log.error("The view '\(viewName)' isn't added to the module '\(name)', because the module already has a property with this name")
+        continue
+      }
+      let config = NativeViewComponentConfig(
+        name: ExpoFabricView.componentName(moduleName: name, viewName: viewName),
+        displayName: unqualifiedTypeName(viewType),
+        propNames: viewType.propNames,
+        eventNames: viewType.eventNames
+      )
+      let getter = runtime.createFunction(propertyName) {
+        (
+          this: borrowing JavaScriptUnownedValue,
+          arguments: consuming JavaScriptValuesBuffer,
+          result: borrowing JavaScriptValue.Slot,
+          runtime: borrowing JavaScriptRuntime
+        ) in
+        let component = try ModuleHolder.createNativeViewComponent(config, in: runtime)
+
+        // `this` is the module object. The getter doesn't capture it, which would keep it alive.
+        if this.isObject() {
+          this.getObject(in: runtime).defineProperty(
+            propertyName,
+            value: component,
+            options: isDefaultView ? [.configurable] : [.configurable, .enumerable]
+          )
+        }
+        result.emplace(component)
+      }
+      let descriptor = runtime.createObject()
+      descriptor.setProperty("get", value: getter.asValue())
+      descriptor.setProperty("configurable", value: true)
+      descriptor.setProperty("enumerable", value: !isDefaultView)
+      object.defineProperty(propertyName, descriptor: descriptor)
+    }
+  }
+
+  /**
+   Calls the JS factory that expo-modules-core installs as `expo.__createNativeViewComponent`.
+   */
+  @JavaScriptActor
+  private static func createNativeViewComponent(_ config: NativeViewComponentConfig, in runtime: JavaScriptRuntime) throws -> JavaScriptValue {
+    let expo = runtime.global().getProperty("expo")
+    guard expo.isObject() else {
+      throw NativeViewComponentFactoryMissingException(config.displayName)
+    }
+    let factory = expo.getObject().getProperty("__createNativeViewComponent")
+    guard factory.isFunction() else {
+      throw NativeViewComponentFactoryMissingException(config.displayName)
+    }
+    let validAttributes = runtime.createObject()
+    for propName in config.propNames {
+      validAttributes.setProperty(propName, value: true)
+    }
+    let directEventTypes = runtime.createObject()
+    for eventName in config.eventNames {
+      guard let normalizedEventName = RCTNormalizeInputEventName(eventName) else {
+        continue
+      }
+      let eventType = runtime.createObject()
+      eventType.setProperty("registrationName", value: eventName)
+      directEventTypes.setProperty(normalizedEventName, eventType)
+    }
+    let configObject = runtime.createObject()
+    configObject.setProperty("name", value: config.name)
+    configObject.setProperty("displayName", value: config.displayName)
+    configObject.setProperty("validAttributes", validAttributes)
+    configObject.setProperty("directEventTypes", directEventTypes)
+    // TODO: Pass the view functions as `functions` once `@ExpoView` views can have them.
+    let arguments = JavaScriptValuesBuffer.allocate(in: runtime, capacity: 1)
+    arguments.emplace(configObject.takeValue(), at: 0)
+    return try factory.getFunction().call(arguments: arguments)
+  }
+
+  /**
+   What the getter of a view needs to create the view's component.
+   */
+  private struct NativeViewComponentConfig: Sendable {
+    let name: String
+    let displayName: String
+    let propNames: [String]
+    let eventNames: [String]
   }
 
   // MARK: Listening to native events
@@ -287,6 +393,12 @@ public final class ModuleHolder {
   internal class ModuleNotFoundException: GenericException<String> {
     override var reason: String {
       "Module '\(param)' not found"
+    }
+  }
+
+  internal final class NativeViewComponentFactoryMissingException: GenericException<String>, @unchecked Sendable {
+    override var reason: String {
+      "Cannot create the component of the native view '\(param)', because 'expo.__createNativeViewComponent' isn't defined. Make sure that expo-modules-core is imported before the view is used"
     }
   }
 
