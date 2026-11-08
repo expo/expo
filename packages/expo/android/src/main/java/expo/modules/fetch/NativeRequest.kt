@@ -60,8 +60,9 @@ internal class NativeRequest(appContext: AppContext, internal val response: Nati
     this.requestHolder.request = request
 
     this.task = newClient.newCall(request)
-    this.task?.enqueue(this.response)
+    // OkHttp calls back on its own thread, so the response must be started before the call is enqueued.
     response.onStarted()
+    this.task?.enqueue(this.response)
   }
 
   fun cancel() {
