@@ -16,6 +16,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
@@ -440,11 +441,15 @@ class EventDispatcherTest {
         attributes = emptyList(),
         events = emptyList()
       )
-      eventDispatcher.dispatch(listOf(createTestEvent()))
-      eventDispatcher.dispatchLogs(listOf(createTestEvent().copy(logs = listOf(log))))
-      eventDispatcher.dispatchSpans(listOf(SpanBatch(event = createTestEvent(), spans = listOf(span))))
+      val results = listOf(
+        eventDispatcher.dispatch(listOf(createTestEvent())),
+        eventDispatcher.dispatchLogs(listOf(createTestEvent().copy(logs = listOf(log)))),
+        eventDispatcher.dispatchSpans(listOf(SpanBatch(event = createTestEvent(), spans = listOf(span))))
+      )
+      assertEquals(List(3) { DispatchResult.Success }, results)
       repeat(3) {
-        val body = mockServer.takeRequest().body.readUtf8()
+        val request = requireNotNull(mockServer.takeRequest(5, TimeUnit.SECONDS)) { "Expected a request" }
+        val body = request.body.readUtf8()
         assertFalse("Request body is pretty-printed: $body", body.contains('\n'))
       }
     }
