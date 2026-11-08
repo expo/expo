@@ -1,5 +1,7 @@
 package expo.modules.mediasession
 
+import android.media.AudioAttributes
+import android.media.AudioManager
 import android.util.Log
 import androidx.annotation.VisibleForTesting
 import java.lang.ref.WeakReference
@@ -35,6 +37,8 @@ internal class SessionCoordinator(
     val activation: CompletableDeferred<Unit>
   )
 
+  private enum class LossState { NONE, DUCKED, TRANSIENT, PERMANENT }
+
   var log: (String) -> Unit = { Log.w(TAG, it) }
 
   private val scope = CoroutineScope(
@@ -54,6 +58,9 @@ internal class SessionCoordinator(
   private var currentFocus: FocusSpec? = null
   private var focusDelayed = false
   private var releaseJob: Job? = null
+  private var current = LossState.NONE
+  private var reported = LossState.NONE
+  private var isSilent: Boolean? = null
 
   @Volatile
   private var snapshot = Snapshot()
@@ -76,6 +83,10 @@ internal class SessionCoordinator(
   @get:VisibleForTesting
   val pendingActivationCount: Int
     get() = snapshot.pendingActivationCount
+
+  init {
+    backend.onFocusChange = ::onFocusChange
+  }
 
   fun nextId(): Long = nextId.incrementAndGet()
 
@@ -163,40 +174,56 @@ internal class SessionCoordinator(
       notify { it.mediaSessionDidResumeWrites() }
       if (entries.isEmpty()) {
         scheduleRelease()
-      } else {
-        currentFocus = null
-        reconcile(client = null, activating = true, activation = null)
-      }
-    }
-  }
-
-  fun onFocusGranted() {
-    task {
-      if (!focusDelayed) {
         return@task
       }
+      val previousFocus = currentFocus
+      currentFocus = null
       focusDelayed = false
-      activated = true
-      completePending(Result.success(Unit))
-      reconcile(client = null, activating = false, activation = null)
+      reconcile(client = null, activating = true, activation = null)
+      if (previousFocus != null && currentFocus == null) {
+        abandon()
+      }
+      publish()
+      if (current == LossState.PERMANENT && focusDelayed) {
+        current = LossState.TRANSIENT
+        reported = LossState.TRANSIENT
+      }
     }
   }
 
-  fun onFocusLost(permanent: Boolean) {
+  fun onFocusChange(change: Int) {
     task {
-      if (permanent) {
-        currentFocus = null
-        focusDelayed = false
+      val focus = currentFocus ?: return@task
+      val pausesWhenDucked = focus.pausesWhenDucked || focus.contentType == AudioAttributes.CONTENT_TYPE_SPEECH
+      when (change) {
+        AudioManager.AUDIOFOCUS_GAIN -> onFocusGained()
+        AudioManager.AUDIOFOCUS_LOSS -> onFocusLost()
+        AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> if (!focusDelayed) {
+          current = LossState.TRANSIENT
+        }
+        AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> if (!focusDelayed && pausesWhenDucked) {
+          current = LossState.TRANSIENT
+        } else if (!focusDelayed && current == LossState.NONE) {
+          current = LossState.DUCKED
+        }
       }
-      val client = entries.lastOrNull()?.client ?: return@task
-      completePending(
-        Result.failure(
-          MediaSessionException(
-            "Audio focus for $client was lost before the system granted it. " +
-              "Another app or a call took focus. Begin the use again after the other audio stops"
-          )
-        )
-      )
+    }
+  }
+
+  fun onBecomingNoisy() {
+    task {
+      notify { it.mediaSessionRouteChanged(RouteChangeReason.OLD_DEVICE_UNAVAILABLE) }
+    }
+  }
+
+  fun onRingerModeChanged(ringerMode: Int) {
+    task {
+      val silent = ringerMode != AudioManager.RINGER_MODE_NORMAL
+      val previous = isSilent
+      isSilent = silent
+      if (previous != null && previous != silent) {
+        notify { it.mediaSessionSilentModeChanged(silent) }
+      }
     }
   }
 
@@ -241,6 +268,79 @@ internal class SessionCoordinator(
     }
   }
 
+  private fun onFocusGained() {
+    current = LossState.NONE
+    if (focusDelayed) {
+      focusDelayed = false
+      activated = true
+      if (suspendCount == 0) {
+        completePending(Result.success(Unit))
+        reconcile(client = null, activating = false, activation = null)
+      }
+    }
+  }
+
+  private fun onFocusLost() {
+    val wasDelayed = focusDelayed
+    if (suspendCount == 0) {
+      abandon()
+    } else {
+      currentFocus = null
+      focusDelayed = false
+    }
+    current = if (wasDelayed && reported == LossState.NONE) {
+      LossState.NONE
+    } else {
+      LossState.PERMANENT
+    }
+    activated = false
+    if (suspendCount == 0) {
+      val client = entries.lastOrNull()?.client ?: "the session"
+      completePending(
+        Result.failure(
+          MediaSessionException(
+            "Audio focus for $client was lost before the system granted it. " +
+              "Another app or a call took focus. Begin the use again after the other audio stops"
+          )
+        )
+      )
+    }
+  }
+
+  private fun publish() {
+    if (suspendCount > 0) {
+      return
+    }
+    if (entries.isEmpty() && current == LossState.PERMANENT) {
+      current = LossState.NONE
+    }
+    if (current == reported) {
+      return
+    }
+    when (reported) {
+      LossState.DUCKED -> notify { it.mediaSessionDucked(false) }
+      LossState.TRANSIENT -> {
+        val shouldResume = current != LossState.PERMANENT && entries.isNotEmpty() &&
+          (currentFocus != null || resolvedFocus() == null)
+        notify { it.mediaSessionInterruptionEnded(shouldResume) }
+      }
+      else -> {}
+    }
+    reported = if (entries.isEmpty()) {
+      LossState.NONE
+    } else {
+      current
+    }
+    when (reported) {
+      LossState.DUCKED -> notify { it.mediaSessionDucked(true) }
+      LossState.TRANSIENT, LossState.PERMANENT -> {
+        notify { it.mediaSessionFocusLost(transient = reported == LossState.TRANSIENT) }
+        notify { it.mediaSessionInterruptionBegan(InterruptionReason.DEFAULT) }
+      }
+      else -> {}
+    }
+  }
+
   private fun task(body: () -> Unit) = scope.launch {
     if (pruneCollectedTokens()) {
       if (entries.isEmpty()) {
@@ -250,6 +350,7 @@ internal class SessionCoordinator(
       }
     }
     body()
+    publish()
     publishSnapshot()
   }
 
@@ -280,7 +381,7 @@ internal class SessionCoordinator(
     }
     cancelRelease()
 
-    val focus = SessionResolver.resolve(policy, entries.map { it.requirements }).focus
+    val focus = resolvedFocus()
     if (focus == null) {
       if (currentFocus != null) {
         abandon()
@@ -290,10 +391,12 @@ internal class SessionCoordinator(
         val result = backend.requestFocus(focus)
         currentFocus = focus
         focusDelayed = result == FocusResult.DELAYED
+        if (!focusDelayed) {
+          current = LossState.NONE
+        }
       } catch (e: Exception) {
         if (focusDelayed) {
-          currentFocus = null
-          focusDelayed = false
+          abandon()
         }
         val error = MediaSessionException(
           "Audio focus could not be acquired for $reportedClient. Another app or a phone call may hold focus " +
@@ -315,6 +418,8 @@ internal class SessionCoordinator(
     }
     completePending(Result.success(Unit))
   }
+
+  private fun resolvedFocus() = SessionResolver.resolve(policy, entries.map { it.requirements }).focus
 
   private fun completePending(result: Result<Unit>) {
     val waiting = pendingActivations.toList()
@@ -341,6 +446,7 @@ internal class SessionCoordinator(
       if (generation == releaseGeneration.get() && entries.isEmpty() && suspendCount == 0 && currentFocus != null) {
         abandon()
         activated = false
+        publish()
       }
       publishSnapshot()
     }
@@ -355,6 +461,9 @@ internal class SessionCoordinator(
     backend.abandonFocus()
     currentFocus = null
     focusDelayed = false
+    if (current != LossState.PERMANENT) {
+      current = LossState.NONE
+    }
   }
 
   private fun notify(body: (MediaSessionObserver) -> Unit) {

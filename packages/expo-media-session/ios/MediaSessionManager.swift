@@ -1,16 +1,55 @@
 import os
 
+public struct RouteChangeReason: RawRepresentable, Hashable, Sendable {
+  public let rawValue: String
+
+  public init(rawValue: String) {
+    self.rawValue = rawValue
+  }
+
+  public static let oldDeviceUnavailable = RouteChangeReason(rawValue: "oldDeviceUnavailable")
+  public static let newDeviceAvailable = RouteChangeReason(rawValue: "newDeviceAvailable")
+  public static let categoryChange = RouteChangeReason(rawValue: "categoryChange")
+  public static let other = RouteChangeReason(rawValue: "other")
+}
+
+public struct InterruptionReason: RawRepresentable, Hashable, Sendable {
+  public let rawValue: String
+
+  public init(rawValue: String) {
+    self.rawValue = rawValue
+  }
+
+  public static let `default` = InterruptionReason(rawValue: "default")
+  public static let routeDisconnected = InterruptionReason(rawValue: "routeDisconnected")
+  public static let builtInMicMuted = InterruptionReason(rawValue: "builtInMicMuted")
+}
+
 /// Called on the coordinator queue.
 public protocol MediaSessionObserver: AnyObject {
   func mediaSession(didFail error: Error, client: String)
   func mediaSessionDidSuspendWrites(reason: String)
   func mediaSessionDidResumeWrites()
+  func mediaSessionInterruptionBegan(reason: InterruptionReason)
+  func mediaSessionInterruptionEnded(shouldResume: Bool)
+  func mediaSessionRouteChanged(reason: RouteChangeReason)
+  func mediaSessionDucked(_ isDucked: Bool)
+  func mediaSessionFocusLost(transient: Bool)
+  func mediaSessionServicesReset()
+  func mediaSessionSilentModeChanged(isSilent: Bool)
 }
 
 extension MediaSessionObserver {
   public func mediaSession(didFail error: Error, client: String) {}
   public func mediaSessionDidSuspendWrites(reason: String) {}
   public func mediaSessionDidResumeWrites() {}
+  public func mediaSessionInterruptionBegan(reason: InterruptionReason) {}
+  public func mediaSessionInterruptionEnded(shouldResume: Bool) {}
+  public func mediaSessionRouteChanged(reason: RouteChangeReason) {}
+  public func mediaSessionDucked(_ isDucked: Bool) {}
+  public func mediaSessionFocusLost(transient: Bool) {}
+  public func mediaSessionServicesReset() {}
+  public func mediaSessionSilentModeChanged(isSilent: Bool) {}
 }
 
 /// The manager keeps the observer until `remove()` is called or this registration is deallocated.
@@ -35,12 +74,23 @@ public final class ObserverRegistration: Sendable {
 }
 
 public final class MediaSessionManager: @unchecked Sendable {
-  public static let shared = MediaSessionManager(backend: AVAudioSessionBackend(), scheduler: DispatchScheduler())
+  public static let shared = MediaSessionManager(
+    backend: AVAudioSessionBackend(),
+    scheduler: DispatchScheduler(),
+    observesSystemEvents: true
+  )
 
   let coordinator: SessionCoordinator
+  private let systemEvents: SystemEventSource?
 
-  init(backend: any SessionBackend, scheduler: any Scheduler) {
-    coordinator = SessionCoordinator(backend: backend, scheduler: scheduler)
+  init(
+    backend: any SessionBackend,
+    scheduler: any Scheduler,
+    observesSystemEvents: Bool = false,
+    log: @escaping @Sendable (String) -> Void = { print($0) }
+  ) {
+    coordinator = SessionCoordinator(backend: backend, scheduler: scheduler, log: log)
+    systemEvents = observesSystemEvents ? SystemEventSource(coordinator: coordinator) : nil
   }
 
   public var policy: AudioPolicy {

@@ -1,6 +1,7 @@
 package expo.modules.mediasession
 
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 import expo.modules.kotlin.exception.CodedException
 import java.lang.ref.WeakReference
 import java.util.concurrent.atomic.AtomicBoolean
@@ -14,6 +15,25 @@ class SessionUseEndedException(client: String) : CodedException(
     "Await activation before ending the use, or begin a new use"
 )
 
+@JvmInline
+value class RouteChangeReason private constructor(val raw: String) {
+  companion object {
+    val OLD_DEVICE_UNAVAILABLE = RouteChangeReason("oldDeviceUnavailable")
+    val NEW_DEVICE_AVAILABLE = RouteChangeReason("newDeviceAvailable")
+    val CATEGORY_CHANGE = RouteChangeReason("categoryChange")
+    val OTHER = RouteChangeReason("other")
+  }
+}
+
+@JvmInline
+value class InterruptionReason private constructor(val raw: String) {
+  companion object {
+    val DEFAULT = InterruptionReason("default")
+    val ROUTE_DISCONNECTED = InterruptionReason("routeDisconnected")
+    val BUILT_IN_MIC_MUTED = InterruptionReason("builtInMicMuted")
+  }
+}
+
 /** Called on the coordinator thread. */
 interface MediaSessionObserver {
   fun mediaSessionDidFail(error: CodedException, client: String) {}
@@ -21,6 +41,20 @@ interface MediaSessionObserver {
   fun mediaSessionDidSuspendWrites(reason: String) {}
 
   fun mediaSessionDidResumeWrites() {}
+
+  fun mediaSessionInterruptionBegan(reason: InterruptionReason) {}
+
+  fun mediaSessionInterruptionEnded(shouldResume: Boolean) {}
+
+  fun mediaSessionRouteChanged(reason: RouteChangeReason) {}
+
+  fun mediaSessionDucked(isDucked: Boolean) {}
+
+  fun mediaSessionFocusLost(transient: Boolean) {}
+
+  fun mediaSessionServicesReset() {}
+
+  fun mediaSessionSilentModeChanged(isSilent: Boolean) {}
 }
 
 /** The manager keeps the observer until [remove] or [close] is called. */
@@ -38,6 +72,7 @@ class ObserverRegistration internal constructor(private val onRemove: () -> Unit
 
 class MediaSessionManager internal constructor(backend: SessionBackend, dispatcher: CoroutineDispatcher) {
   internal val coordinator = SessionCoordinator(backend, dispatcher)
+  private var systemEvents: SystemEventSource? = null
 
   val policy: AudioPolicy
     get() = coordinator.policy
@@ -70,6 +105,12 @@ class MediaSessionManager internal constructor(backend: SessionBackend, dispatch
 
   fun addObserver(observer: MediaSessionObserver): ObserverRegistration = coordinator.addObserver(observer)
 
+  @VisibleForTesting
+  internal fun close() {
+    systemEvents?.stop()
+    coordinator.close()
+  }
+
   companion object {
     @Volatile
     private var instance: MediaSessionManager? = null
@@ -81,7 +122,9 @@ class MediaSessionManager internal constructor(backend: SessionBackend, dispatch
 
     private fun create(context: Context): MediaSessionManager {
       val scheduler = HandlerScheduler()
-      return MediaSessionManager(AudioManagerBackend(context, scheduler.handler), scheduler.dispatcher)
+      return MediaSessionManager(AudioManagerBackend(context, scheduler.handler), scheduler.dispatcher).apply {
+        systemEvents = SystemEventSource(context, scheduler.handler, coordinator).also { it.start() }
+      }
     }
   }
 }
