@@ -27,6 +27,12 @@ interface DevLauncherControllerInterface :
   val manifest: Manifest?
   val manifestURL: Uri?
   val mode: DevLauncherController.Mode
+
+  /**
+   * Whether `loadApp` or `loadEmbeddedBundle` is in progress. A reload request must not run while
+   * this is `true`, because the new activity requires that no React context exists yet.
+   */
+  val isLoadingApp: Boolean
   val appHost: ReactHost
   val latestLoadedApp: Uri?
   val useDeveloperSupport: Boolean

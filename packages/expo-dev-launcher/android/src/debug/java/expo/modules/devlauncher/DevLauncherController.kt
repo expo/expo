@@ -103,6 +103,9 @@ class DevLauncherController private constructor(
 
   private var appIsLoading = false
 
+  override val isLoadingApp: Boolean
+    get() = synchronized(this) { appIsLoading }
+
   private val _isLoadingToBundler = mutableStateOf(false)
   val isLoadingToBundler: State<Boolean>
     get() = _isLoadingToBundler
@@ -160,6 +163,9 @@ class DevLauncherController private constructor(
           recentlyOpedAppsRegistry.appWasOpened(devLauncherUrl.url.toString(), devLauncherUrl.queryParams, manifest)
         }
       } else {
+        synchronized(this) {
+          appIsLoading = false
+        }
         // The app couldn't be loaded. For now, we just return to the launcher.
         mode = Mode.LAUNCHER
         manifest = null
