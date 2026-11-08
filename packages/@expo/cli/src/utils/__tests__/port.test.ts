@@ -146,7 +146,7 @@ describe(_resolvePortAsync, () => {
     async (defaultPort) => {
       const port = await _resolvePortAsync('/', { defaultPort, preferredPort: 8081 });
       expect(port).toBe(8081);
-      expect(freePortAsync).toHaveBeenCalledWith(8081, [null]);
+      expect(freePortAsync).toHaveBeenCalledWith(8081, undefined);
     }
   );
   it(`finds the first available port from the preferred port when port is 0`, async () => {
@@ -197,7 +197,7 @@ describe(_resolvePortAsync, () => {
     process.env.RCT_METRO_PORT = '9999';
     const port = await _resolvePortAsync('/', { preferredPort: 8081 });
     expect(port).toBe(8081);
-    expect(freePortAsync).toHaveBeenCalledWith(8081, [null]);
+    expect(freePortAsync).toHaveBeenCalledWith(8081, undefined);
   });
   it(`leaves RCT_METRO_PORT alone`, async () => {
     await _resolvePortAsync('/', { preferredPort: 8081 });
@@ -232,8 +232,7 @@ describe(resolveMetroPortAsync, () => {
     process.env.RCT_METRO_PORT = '65536';
     const port = await resolveMetroPortAsync('/', { fallbackPort: 8081 });
     expect(port).toBe(8081);
-    expect(freePortAsync).toHaveBeenCalledWith(8081, [null]);
-  });
+    expect(freePortAsync).toHaveBeenCalledWith(8081, undefined);
   it(`falls back to 8081 when nothing requests a port`, async () => {
     const port = await resolveMetroPortAsync('/');
     expect(port).toBe(8081);
