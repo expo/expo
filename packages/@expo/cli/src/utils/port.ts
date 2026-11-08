@@ -26,7 +26,7 @@ export async function ensurePortAvailabilityAsync(
   projectRoot: string,
   { port }: { port: number }
 ): Promise<boolean> {
-  const isFreePort = await testPortAsync(port, [null]);
+  const isFreePort = await testPortAsync(port);
   // Check if port has become busy during the build.
   if (isFreePort) {
     return true;
