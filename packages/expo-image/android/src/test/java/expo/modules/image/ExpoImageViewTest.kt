@@ -21,6 +21,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.RuntimeEnvironment
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowLog
 import java.lang.ref.WeakReference
 import java.time.Duration
 
@@ -90,6 +91,14 @@ class ExpoImageViewTest {
 
     view.setImageDrawable(SVGPictureDrawable(picture, 24, 24))
     assertEquals(View.LAYER_TYPE_NONE, view.layerType)
+  }
+
+  @Test
+  fun constructionSkipsTheAppCompatThemeCheck() {
+    // The application theme is not an AppCompat theme, so `AppCompatImageView` would log an error.
+    ExpoImageView(RuntimeEnvironment.getApplication())
+
+    assertTrue(ShadowLog.getLogsForTag("ThemeUtils").isEmpty())
   }
 
   @Test
