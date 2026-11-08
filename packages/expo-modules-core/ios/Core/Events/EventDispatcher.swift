@@ -63,12 +63,7 @@ public final class EventDispatcher {
  The provided handler can be specific to Paper or Fabric.
  */
 internal func installEventDispatcher<ViewType>(forEvent eventName: String, onView view: ViewType, handler: @escaping EventDispatcher.Handler) {
-  // Find view's property that is of type `EventDispatcher` and refers to this particular event name.
-  let child = Mirror(reflecting: view).children.first {
-    return isEventDispatcherWithName($0, eventName)
-  }
-
-  if let eventDispatcher = child?.value as? EventDispatcher {
+  if let eventDispatcher = findEventDispatcher(forEvent: eventName, onView: view) {
     eventDispatcher.handler = handler
   } else if let view = view as? UIView, view.responds(to: Selector(eventName)) {
     // This is to handle events in legacy views written in Objective-C.
@@ -77,6 +72,34 @@ internal func installEventDispatcher<ViewType>(forEvent eventName: String, onVie
   } else {
     log.warn("Couldn't find the property for event '\(eventName)' in '\(type(of: view))' class")
   }
+}
+
+/**
+ Positions of `EventDispatcher` properties among the `Mirror` children of a view, by the view type and the event name.
+ */
+internal let eventDispatcherIndices = Mutex<[ObjectIdentifier: [String: Int]]>([:])
+
+/**
+ Finds the view's property that is of type `EventDispatcher` and refers to the given event name.
+ */
+private func findEventDispatcher<ViewType>(forEvent eventName: String, onView view: ViewType) -> EventDispatcher? {
+  let children = Mirror(reflecting: view).children
+  let viewTypeId = ObjectIdentifier(type(of: view))
+
+  // The search below reads each child before the match. All views of a type have the same stored properties,
+  // so first read only the child at the position that the search found for an earlier view.
+  // That child must pass the same check, so a wrong position only costs a search.
+  if let index = eventDispatcherIndices.withLock({ $0[viewTypeId]?[eventName] }), index < children.count {
+    let child = children[children.index(children.startIndex, offsetBy: index)]
+    if isEventDispatcherWithName(child, eventName) {
+      return child.value as? EventDispatcher
+    }
+  }
+  for (index, child) in children.enumerated() where isEventDispatcherWithName(child, eventName) {
+    eventDispatcherIndices.withLock { $0[viewTypeId, default: [:]][eventName] = index }
+    return child.value as? EventDispatcher
+  }
+  return nil
 }
 
 /**
