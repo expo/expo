@@ -1,185 +1,357 @@
----
-title: Configure with app config
-description: Learn about what app.json/app.config.js/app.config.ts files are and how you can customize and use them dynamically.
----
 
-import { DocsLogo } from '@expo/styleguide';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  StatusBar
+} from 'react-native';
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
-import PossibleRedirectNotification from '~/ui/components/PossibleRedirectNotification';
-import { Terminal } from '~/ui/components/Snippet';
+export default function App() {
+  const [role, setRole] = useState('customer');
 
-<PossibleRedirectNotification newUrl="/versions/latest/config/app/" />
+  const [pickup, setPickup] = useState('');
+  const [destination, setDestination] = useState('');
+  const [details, setDetails] = useState('');
+  const [fee, setFee] = useState('');
 
-The app config (**app.json**, **app.config.js**, **app.config.ts**) is used for configuring [Expo Prebuild](/more/glossary-of-terms/#prebuild) generation, how a project loads in [Expo Go](/get-started/set-up-your-environment/), and the OTA update manifest.
+  const [orders, setOrders] = useState([]);
 
-It must be located at the root of your project, next to the **package.json**. Here is a minimal example:
+  const createOrder = () => {
+    if (!pickup || !destination || !fee) {
+      Alert.alert('تنبيه', 'يرجى ملء جميع الحقول المطلوبة');
+      return;
+    }
 
-```json app.json
-{
-  "name": "My app",
-  "slug": "my-app"
-}
-```
+    if (Number(fee) <= 0 || !Number.isFinite(Number(fee))) {
+      Alert.alert('تنبيه', 'أدخل أجرة توصيل صحيحة');
+      return;
+    }
 
-If your Expo config has a top-level `expo: {}` object, then this will be used in place of the root object and all other keys will be ignored.
+    const newOrder = {
+      id: Date.now().toString(),
+      pickup,
+      destination,
+      details,
+      fee: Number(fee),
+      status: 'pending'
+    };
 
-<BoxLink
-  title="App config schema reference"
-  description="Explore the full schema of the app config (app.json/app.config.js)."
-  href="/versions/latest/config/app/"
-  Icon={DocsLogo}
-/>
+    setOrders(prev => [newOrder, ...prev]);
 
-## Properties
+    setPickup('');
+    setDestination('');
+    setDetails('');
+    setFee('');
 
-The app config configures many things such as app name, icon, splash screen, deep linking scheme, API keys to use for some services and so on. For a complete list of available properties, see [app.json/app.config.js/app.config.ts reference](/versions/latest/config/app/).
-
-> **info** Do you use Visual Studio Code? If so, we recommend that you install the [Expo Tools](https://marketplace.visualstudio.com/items?itemName=expo.vscode-expo-tools) extension to get auto-completion of properties in **app.json** files.
-
-## Reading configuration values in your app
-
-Most configuration in the app config is accessible at runtime from your JavaScript code, using [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants). You **should not** include any sensitive information in the app config (with a few exceptions for fields that are filtered out, as outlined below).
-
-You can verify which configuration will be embedded in your builds/updates and available at runtime by running `npx expo config --type public`.
-
-<Collapsible summary="Which fields are filtered out of the public app config?">
-
-The following fields are filtered out of the public app config (and not accessible through the `Constants.expoConfig` object):
-
-- [`ios.config`](/versions/latest/config/app/#config)
-- [`android.config`](/versions/latest/config/app/#config-1)
-- [`updates.codeSigningCertificate`](/versions/latest/config/app/#codesigningcertificate)
-- [`updates.codeSigningMetadata`](/versions/latest/config/app/#codesigningmetadata)
-
-</Collapsible>
-
-> **warning** You should also avoid importing **app.json** or **app.config.js** directly in your JavaScript code, because this will import the entire file rather than a processed version of it. Instead, use [`Constants.expoConfig`](/versions/latest/sdk/constants/#nativeconstants) to access the configuration.
-
-## Extending configuration
-
-Library authors can extend the app config by using [Expo Config plugins](/config-plugins/introduction/).
-
-> **info** Config plugins are mostly used to configure the [`npx expo prebuild`](/more/glossary-of-terms/#prebuild) command.
-
-## Dynamic configuration
-
-For more customization, you can use the JavaScript (**app.config.js**) or [TypeScript](#using-typescript-for-configuration-appconfigts-instead-of-appconfigjs) (**app.config.ts**). These configs have the following properties:
-
-- Comments, variables, and single quotes.
-- ESM `import` syntax in both **app.config.js** and **app.config.ts**, including importing other JavaScript files.
-- TypeScript support (**app.config.ts**) with nullish coalescing and optional chaining. Importing other TypeScript files or customizing language features requires [`tsx`](/guides/typescript/#app-config).
-- Updated whenever Metro bundler reloads.
-- Provide environment information to your app.
-- Does not support Promises.
-
-> **info** **Note**: **app.config.mts**, **app.config.cts**, **app.config.mjs**, and **app.config.cjs** files are also discovered. By default, the config is transpiled to CommonJS and both `.js` and `.ts` files can mix ESM and CommonJS syntax. When that mix causes import or require issues, use one of the explicit extensions to lock the config to a single module format.
-
-For example, you can export an object to define your custom config:
-
-```js app.config.js
-const myValue = 'My App';
-
-module.exports = {
-  name: myValue,
-  version: process.env.MY_CUSTOM_PROJECT_VERSION || '1.0.0',
-  // All values in extra will be passed to your app.
-  extra: {
-    fact: 'kittens are cool',
-  },
-};
-```
-
-The `"extra"` key allows passing arbitrary configuration data to your app. The value of this key is accessed using [`expo-constants`](/versions/latest/sdk/constants/):
-
-```js App.js
-import Constants from 'expo-constants';
-
-Constants.expoConfig.extra.fact === 'kittens are cool';
-```
-
-You can access and modify incoming config values by exporting a function that returns an object. This is useful if your project also has an **app.json**. By default, Expo CLI will read the **app.json** first and send the normalized results to the **app.config.js**.
-
-For example, your **app.json** could look like this:
-
-```json app.json
-{
-  "name": "My App"
-}
-```
-
-And in your **app.config.js**, you are provided with that configuration in the arguments to the exported function:
-
-```js app.config.js
-module.exports = ({ config }) => {
-  console.log(config.name); // prints 'My App'
-  return {
-    ...config,
+    Alert.alert('نجاح', 'تم إنشاء طلب التوصيل');
   };
-};
-```
 
-### Switching configuration based on the environment
+  const acceptOrder = (id) => {
+    setOrders(prev =>
+      prev.map(order =>
+        order.id === id
+          ? { ...order, status: 'accepted' }
+          : order
+      )
+    );
 
-It's common to have some different configuration in development, staging, and production environments, or to swap out configuration entirely to white label an app. To accomplish this, you can use **app.config.js** along with environment variables.
+    Alert.alert('نجاح', 'تم قبول الطلب');
+  };
 
-```js app.config.js
-module.exports = () => {
-  if (process.env.MY_ENVIRONMENT === 'production') {
-    return {
-      /* your production config */
-    };
-  } else {
-    return {
-      /* your development config */
-    };
+  const completeOrder = (id) => {
+    setOrders(prev =>
+      prev.map(order =>
+        order.id === id
+          ? { ...order, status: 'completed' }
+          : order
+      )
+    );
+
+    Alert.alert('نجاح', 'تم إنهاء الطلب');
+  };
+
+  const statusText = (status) => {
+    if (status === 'pending') return 'بانتظار مندوب';
+    if (status === 'accepted') return 'تم قبول الطلب';
+    return 'تم إكمال التوصيل';
+  };
+
+  return (
+    <View style={styles.container}>
+      <StatusBar backgroundColor="#123C32" barStyle="light-content" />
+
+      <View style={styles.header}>
+        <Text style={styles.logo}>وصّلني 🇮🇶</Text>
+        <Text style={styles.subtitle}>خدمة التوصيل في العراق</Text>
+      </View>
+
+      <View style={styles.switch}>
+        <TouchableOpacity
+          style={[styles.switchButton, role === 'customer' && styles.active]}
+          onPress={() => setRole('customer')}
+        >
+          <Text style={styles.switchText}>الزبون</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.switchButton, role === 'driver' && styles.active]}
+          onPress={() => setRole('driver')}
+        >
+          <Text style={styles.switchText}>المندوب</Text>
+        </TouchableOpacity>
+      </View>
+
+      <ScrollView contentContainerStyle={styles.content}>
+
+        <Text style={styles.location}>📍 صلاح الدين - قضاء بيجي</Text>
+
+        {role === 'customer' ? (
+          <View>
+            <Text style={styles.title}>اطلب مندوباً الآن</Text>
+
+            <Text style={styles.label}>مكان الاستلام</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="أدخل عنوان الاستلام"
+              value={pickup}
+              onChangeText={setPickup}
+            />
+
+            <Text style={styles.label}>مكان التسليم</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="أدخل عنوان التسليم"
+              value={destination}
+              onChangeText={setDestination}
+            />
+
+            <Text style={styles.label}>تفاصيل الطلب</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="اكتب تفاصيل إضافية"
+              value={details}
+              onChangeText={setDetails}
+            />
+
+            <Text style={styles.label}>أجرة التوصيل بالدينار</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="مثلاً 3000"
+              keyboardType="numeric"
+              value={fee}
+              onChangeText={setFee}
+            />
+
+            <TouchableOpacity
+              style={styles.mainButton}
+              onPress={createOrder}
+            >
+              <Text style={styles.buttonText}>إنشاء طلب التوصيل</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View>
+            <Text style={styles.title}>طلبات التوصيل المتاحة</Text>
+
+            {orders.filter(o => o.status === 'pending').length === 0 && (
+              <Text style={styles.empty}>لا توجد طلبات متاحة حالياً</Text>
+            )}
+          </View>
+        )}
+
+        <Text style={styles.sectionTitle}>طلبات التوصيل</Text>
+
+        {orders.length === 0 && (
+          <Text style={styles.empty}>لم يتم إنشاء أي طلب بعد</Text>
+        )}
+
+        {orders.map(order => (
+          <View key={order.id} style={styles.card}>
+            <Text style={styles.orderTitle}>طلب توصيل #{order.id.slice(-5)}</Text>
+
+            <Text style={styles.info}>📦 الاستلام: {order.pickup}</Text>
+            <Text style={styles.info}>📍 التسليم: {order.destination}</Text>
+            <Text style={styles.info}>📝 التفاصيل: {order.details || 'لا توجد'}</Text>
+            <Text style={styles.price}>💰 {order.fee.toLocaleString('en-US')} د.ع</Text>
+            <Text style={styles.status}>{statusText(order.status)}</Text>
+
+            {role === 'driver' && order.status === 'pending' && (
+              <TouchableOpacity
+                style={styles.mainButton}
+                onPress={() => acceptOrder(order.id)}
+              >
+                <Text style={styles.buttonText}>قبول الطلب</Text>
+              </TouchableOpacity>
+            )}
+
+            {role === 'driver' && order.status === 'accepted' && (
+              <TouchableOpacity
+                style={styles.completeButton}
+                onPress={() => completeOrder(order.id)}
+              >
+                <Text style={styles.buttonText}>إنهاء التوصيل</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+        ))}
+
+        <Text style={styles.footer}>
+          وصّلني العراق - جميع الحقوق محفوظة
+        </Text>
+
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F4F7F5'
+  },
+  header: {
+    backgroundColor: '#123C32',
+    paddingTop: 48,
+    paddingBottom: 25,
+    alignItems: 'center'
+  },
+  logo: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#FFFFFF'
+  },
+  subtitle: {
+    color: '#D5E9DF',
+    marginTop: 6
+  },
+  switch: {
+    flexDirection: 'row',
+    margin: 15,
+    backgroundColor: '#E1EAE5',
+    borderRadius: 12,
+    padding: 4
+  },
+  switchButton: {
+    flex: 1,
+    padding: 13,
+    alignItems: 'center',
+    borderRadius: 10
+  },
+  active: {
+    backgroundColor: '#123C32'
+  },
+  switchText: {
+    fontWeight: 'bold',
+    color: '#123C32'
+  },
+  content: {
+    padding: 16,
+    paddingBottom: 40
+  },
+  location: {
+    textAlign: 'center',
+    color: '#176B50',
+    fontWeight: 'bold',
+    marginBottom: 20
+  },
+  title: {
+    fontSize: 23,
+    fontWeight: 'bold',
+    color: '#123C32',
+    textAlign: 'right',
+    marginBottom: 20
+  },
+  label: {
+    textAlign: 'right',
+    marginBottom: 7,
+    fontWeight: 'bold',
+    color: '#263B32'
+  },
+  input: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#DCE6DF',
+    borderRadius: 10,
+    padding: 14,
+    marginBottom: 16,
+    textAlign: 'right',
+    fontSize: 15
+  },
+  mainButton: {
+    backgroundColor: '#16865D',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 10
+  },
+  completeButton: {
+    backgroundColor: '#235AAB',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 12
+  },
+  buttonText: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+    fontSize: 16
+  },
+  sectionTitle: {
+    fontSize: 21,
+    fontWeight: 'bold',
+    color: '#123C32',
+    textAlign: 'right',
+    marginTop: 30,
+    marginBottom: 15
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    padding: 17,
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: '#E0E9E3'
+  },
+  orderTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#123C32',
+    textAlign: 'right',
+    marginBottom: 12
+  },
+  info: {
+    textAlign: 'right',
+    color: '#40564B',
+    marginBottom: 9,
+    fontSize: 14
+  },
+  price: {
+    textAlign: 'right',
+    color: '#16865D',
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 5
+  },
+  status: {
+    textAlign: 'right',
+    color: '#B07816',
+    fontWeight: 'bold',
+    marginTop: 12
+  },
+  empty: {
+    textAlign: 'center',
+    color: '#77847C',
+    marginVertical: 20
+  },
+  footer: {
+    textAlign: 'center',
+    color: '#89958D',
+    marginTop: 30,
+    fontSize: 12
   }
-};
-```
-
-To use this configuration with Expo CLI commands, set the environment variable either for specific commands or in your shell profile. To set environment variables for specific commands, prefix the command with the variables and values as shown in the example:
-
-<Terminal cmd={['$ MY_ENVIRONMENT=production eas update']} />
-
-This is not anything unique to Expo CLI. On Windows you can approximate the above command with:
-
-<Terminal
-  cmd={{
-    npm: ['$ npx cross-env MY_ENVIRONMENT=production eas update'],
-    yarn: ['$ yarn dlx cross-env MY_ENVIRONMENT=production eas update'],
-    pnpm: ['$ pnpm dlx cross-env MY_ENVIRONMENT=production eas update'],
-    bun: ['$ bunx cross-env MY_ENVIRONMENT=production eas update'],
-  }}
-/>
-
-Or you can use any other mechanism that you are comfortable with for environment variables.
-
-### Using TypeScript for configuration: app.config.ts instead of app.config.js
-
-You can use autocomplete and doc-blocks with an Expo config in TypeScript. Create an **app.config.ts** with the following contents:
-
-```ts app.config.ts
-import { ExpoConfig, ConfigContext } from 'expo/config';
-
-export default ({ config }: ConfigContext): ExpoConfig => ({
-  ...config,
-  slug: 'my-app',
-  name: 'My App',
 });
-```
-
-To import other TypeScript files into **app.config.ts** or customize the language features, we recommend using [`tsx`](/guides/typescript/#app-config). `tsx` also enables using `import` syntax in any file imported by **app.config.ts**. This means you can write local [config plugins](/config-plugins/introduction/) in TypeScript with full language features.
-
-### Configuration resolution rules
-
-There are two different types of configs: static (**app.config.json**, **app.json**), and dynamic (**app.config.js**, **app.config.ts**). Static configs can be automatically updated with CLI tools, whereas dynamic configs must be manually updated by the developer.
-
-1. The static config is read if **app.config.json** exists (falls back to **app.json**). If no static config exists, then default values are inferred from the **package.json** and your dependencies.
-2. The dynamic config is read if either **app.config.ts** or **app.config.js** exist. If both exist, then the TypeScript config is used.
-3. If the dynamic config returns a function, then the static config is passed to the function with `({ config }) => ({})`. This function can then mutate the static config values. Think of this like middleware for the static config.
-4. The return value from the dynamic config is used as the final config. It cannot have any promises.
-5. All functions in the config are evaluated and serialized before any tool in the Expo ecosystem uses it. The config must be a JSON manifest when it is hosted.
-6. If the final config object has a top-level `expo: {}` object, then this will be used in place of the root object and all other keys will be ignored.
-
-Running `npx expo config` will display the final configuration that will be used in Expo CLI after resolution has occurred.
