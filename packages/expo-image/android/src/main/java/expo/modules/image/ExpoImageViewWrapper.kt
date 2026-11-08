@@ -54,7 +54,14 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   private val progressListener = OkHttpProgressListener(WeakReference(this))
 
   private val firstView = ExpoImageView(activity)
-  private val secondView = ExpoImageView(activity)
+
+  /**
+   * Holds the next image while the current one is still displayed. Most views never show a second
+   * image, so it is created on first use by [getOrCreateSecondView].
+   */
+  private var secondView: ExpoImageView? = null
+
+  private val imageViewsLayout = FrameLayout(context)
 
   private val mainHandler = Handler(context.mainLooper)
 
@@ -62,12 +69,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
    * @returns the view which is currently active or will be used when both views are empty
    */
   private val activeView: ExpoImageView
-    get() {
-      if (secondView.drawable != null) {
-        return secondView
-      }
-      return firstView
-    }
+    get() = secondView?.takeIf { it.drawable != null } ?: firstView
 
   private var firstTarget = ImageViewWrapperTarget(WeakReference(this))
   private var secondTarget = ImageViewWrapperTarget(WeakReference(this))
@@ -294,10 +296,10 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           val (newView, previousView) = if (firstView.drawable == null) {
             firstView to secondView
           } else {
-            secondView to firstView
+            getOrCreateSecondView() to firstView
           }
 
-          val isInitialDisplay = previousView.drawable == null || previousView.isPlaceholder
+          val isInitialDisplay = previousView?.drawable == null || previousView.isPlaceholder
           val transitionDuration = transition
             ?.takeIf { it.shouldPlay(target.cacheType, isInitialDisplay) }
             ?.duration
@@ -322,9 +324,16 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           }
 
           if (transitionDuration <= 0) {
-            clearRecycledTarget(previousView.recycleView())
+            clearRecycledTarget(previousView?.recycleView())
             newView.alpha = 1f
             newView.bringToFront()
+          } else if (previousView == null) {
+            newView.bringToFront()
+            newView.alpha = 0f
+            newView.animate().apply {
+              duration = transitionDuration
+              alpha(1f)
+            }
           } else {
             newView.bringToFront()
             previousView.alpha = 1f
@@ -370,7 +379,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         } else {
           // We don't want to show the placeholder if something is currently displayed.
           // There is one exception - when we're displaying a different placeholder.
-          if ((firstView.drawable != null && !firstView.isPlaceholder) || secondView.drawable != null) {
+          if ((firstView.drawable != null && !firstView.isPlaceholder) || secondView?.drawable != null) {
             return@trace
           }
 
@@ -388,7 +397,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
           if (transitionDuration > 0) {
             firstView.bringToFront()
             firstView.alpha = 0f
-            secondView.isVisible = false
+            secondView?.isVisible = false
             firstView.animate().apply {
               duration = transitionDuration
               alpha(1f)
@@ -489,7 +498,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   fun onViewDestroys() {
     firstView.setImageDrawable(null)
-    secondView.setImageDrawable(null)
+    secondView?.setImageDrawable(null)
 
     requestManager.clear(firstTarget)
     requestManager.clear(secondTarget)
@@ -504,9 +513,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     if (firstView.currentTarget === target) {
       firstView.recycleView()
     }
-    if (secondView.currentTarget === target) {
-      secondView.recycleView()
-    }
+    secondView?.takeIf { it.currentTarget === target }?.recycleView()
   }
 
   private fun cleanIfNeeded(
@@ -517,7 +524,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     // We only clean the image when the source is set to null and we don't have a placeholder or the view is empty.
     if (width == 0 || height == 0 || (newBestSource == null || newBestSourceModel == null) && newBestPlaceholderModel == null) {
       firstView.recycleView()
-      secondView.recycleView()
+      secondView?.recycleView()
 
       requestManager.clear(firstTarget)
       requestManager.clear(secondTarget)
@@ -556,7 +563,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
 
       activeView
-        .recycleView()
+        ?.recycleView()
         ?.apply {
           clear(requestManager)
         }
@@ -663,29 +670,32 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       clearViewBeforeChangingSource = false
     }
 
+  private fun getOrCreateSecondView(): ExpoImageView {
+    secondView?.let { return it }
+    return ExpoImageView(activity).also {
+      secondView = it
+      imageViewsLayout.addView(it, LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT))
+    }
+  }
+
   init {
     val matchParent = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
 
     layoutParams = matchParent
 
     firstView.isVisible = true
-    secondView.isVisible = true
 
     // We need to add a `FrameLayout` to allow views to overflow.
     // With the `LinearLayout` is impossible to render two views on each other.
-    val layout = FrameLayout(context).apply {
+    imageViewsLayout.apply {
       layoutParams = matchParent
       addView(
         firstView,
         matchParent
       )
-      addView(
-        secondView,
-        matchParent
-      )
     }
 
-    addView(layout, matchParent)
+    addView(imageViewsLayout, matchParent)
   }
 
   companion object {
