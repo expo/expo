@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `checkForUpdateAsync()` and `fetchUpdateAsync()` queued behind `reloadAsync()` comparing with the update that was running before the reload, so a check reported the running update as available. ([#53055](https://github.com/expo/expo/pull/53055) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 57.0.28 — 2026-11-12
