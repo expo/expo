@@ -51,6 +51,11 @@ class AudioRecorder(
   private var durationLimitMillis: Long? = null
   var useForegroundService = false
 
+  // The activity lifecycle handlers run on the main thread, `stop` runs on the module queue,
+  // and `record` and `pause` run on the JS thread. MediaRecorder throws IllegalStateException
+  // when two of these calls overlap, so every state change holds this lock.
+  private val stateLock = Any()
+
   val serviceConnection = AudioRecordingServiceConnection(WeakReference(this), appContext)
 
   private val _appContext: AppContext
@@ -110,43 +115,47 @@ class AudioRecorder(
   }
 
   fun record() {
-    isPausedBySystem = false
-    if (useForegroundService) {
-      serviceConnection.recordingServiceBinder?.service?.registerRecorder(this) ?: run {
-        throw AudioRecordingServiceException("The service connection is not bound, but `allowsBackgroundRecording` is set to `true`")
+    synchronized(stateLock) {
+      isPausedBySystem = false
+      if (useForegroundService) {
+        serviceConnection.recordingServiceBinder?.service?.registerRecorder(this) ?: run {
+          throw AudioRecordingServiceException("The service connection is not bound, but `allowsBackgroundRecording` is set to `true`")
+        }
       }
-    }
 
-    if (isPaused && durationLimitMillis?.let { durationAlreadyRecorded >= it } == true) {
-      stopRecording()
-      return
-    }
+      if (isPaused && durationLimitMillis?.let { durationAlreadyRecorded >= it } == true) {
+        stopRecording()
+        return
+      }
 
-    if (isPaused) {
-      recorder?.resume()
-    } else {
-      recorder?.start()
+      if (isPaused) {
+        recorder?.resume()
+      } else {
+        recorder?.start()
+      }
+      startTime = System.currentTimeMillis()
+      isRecording = true
+      isPaused = false
+      scheduleRecordingStop()
     }
-    startTime = System.currentTimeMillis()
-    isRecording = true
-    isPaused = false
-    scheduleRecordingStop()
   }
 
   fun recordWithOptions(atTimeSeconds: Double? = null, forDurationSeconds: Double? = null) {
-    recordingTimerJob?.cancel()
-    recordingTimerJob = null
+    synchronized(stateLock) {
+      recordingTimerJob?.cancel()
+      recordingTimerJob = null
 
-    // Note: atTime is not supported on Android (no native equivalent), so we ignore it entirely
-    // Only forDuration is implemented using coroutines
-    if (forDurationSeconds != null) {
-      durationLimitMillis = (forDurationSeconds * 1000).toLong()
-    } else if (!isPaused || atTimeSeconds != null) {
-      // A bare record() resumes the current capture and keeps its limit.
-      durationLimitMillis = null
+      // Note: atTime is not supported on Android (no native equivalent), so we ignore it entirely
+      // Only forDuration is implemented using coroutines
+      if (forDurationSeconds != null) {
+        durationLimitMillis = (forDurationSeconds * 1000).toLong()
+      } else if (!isPaused || atTimeSeconds != null) {
+        // A bare record() resumes the current capture and keeps its limit.
+        durationLimitMillis = null
+      }
+
+      record()
     }
-
-    record()
   }
 
   // Keep backward compatibility methods
@@ -159,25 +168,31 @@ class AudioRecorder(
   }
 
   fun pauseRecording() {
-    isPausedBySystem = false
-    recordingTimerJob?.cancel()
-    recordingTimerJob = null
-    recorder?.pause()
-    durationAlreadyRecorded = getAudioRecorderDurationMillis()
-    isRecording = false
-    isPaused = true
+    synchronized(stateLock) {
+      isPausedBySystem = false
+      recordingTimerJob?.cancel()
+      recordingTimerJob = null
+      recorder?.pause()
+      durationAlreadyRecorded = getAudioRecorderDurationMillis()
+      isRecording = false
+      isPaused = true
+    }
   }
 
   fun pauseForSystem() {
-    if (isRecording) {
-      pauseRecording()
-      isPausedBySystem = true
+    synchronized(stateLock) {
+      if (isRecording) {
+        pauseRecording()
+        isPausedBySystem = true
+      }
     }
   }
 
   fun resumeAfterSystemPause() {
-    if (isPausedBySystem && isPaused) {
-      record()
+    synchronized(stateLock) {
+      if (isPausedBySystem && isPaused) {
+        record()
+      }
     }
   }
 
@@ -186,62 +201,66 @@ class AudioRecorder(
     recordingTimerJob = durationLimitMillis?.let { limit ->
       appContext?.mainQueue?.launch {
         delay((limit - getAudioRecorderDurationMillis()).coerceAtLeast(0))
-        if (isRecording) {
-          stopRecording()
+        synchronized(stateLock) {
+          if (isRecording) {
+            stopRecording()
+          }
         }
       }
     }
   }
 
   fun stopRecording(): Bundle {
-    val url = currentFileUrl()
-    var durationMillis: Long
-    var stopFailed = false
-    var stopError: String? = null
+    synchronized(stateLock) {
+      val url = currentFileUrl()
+      var durationMillis: Long
+      var stopFailed = false
+      var stopError: String? = null
 
-    if (useForegroundService) {
-      serviceConnection.recordingServiceBinder?.service?.unregisterRecorder(this)
-    }
-
-    try {
-      recorder?.stop()
-      durationMillis = getAudioRecorderDurationMillis()
-    } catch (e: RuntimeException) {
-      stopFailed = true
-      stopError = e.localizedMessage ?: "Failed to stop recording"
-      durationMillis = getAudioRecorderDurationMillis()
-    } finally {
-      reset()
-    }
-
-    val status = Bundle().apply {
-      putBoolean("canRecord", false)
-      putBoolean("isRecording", false)
-      putLong("durationMillis", durationMillis)
-      if (!stopFailed) {
-        url?.let { putString("url", it) }
+      if (useForegroundService) {
+        serviceConnection.recordingServiceBinder?.service?.unregisterRecorder(this)
       }
-    }
 
-    // Emit completion event on the main thread
-    appContext?.mainQueue?.launch {
-      emit(
-        RECORDING_STATUS_UPDATE,
-        mapOf(
-          "id" to id,
-          "isFinished" to true,
-          "hasError" to stopFailed,
-          "error" to stopError,
-          "url" to if (stopFailed) {
-            null
-          } else {
-            url
-          }
+      try {
+        recorder?.stop()
+        durationMillis = getAudioRecorderDurationMillis()
+      } catch (e: RuntimeException) {
+        stopFailed = true
+        stopError = e.localizedMessage ?: "Failed to stop recording"
+        durationMillis = getAudioRecorderDurationMillis()
+      } finally {
+        reset()
+      }
+
+      val status = Bundle().apply {
+        putBoolean("canRecord", false)
+        putBoolean("isRecording", false)
+        putLong("durationMillis", durationMillis)
+        if (!stopFailed) {
+          url?.let { putString("url", it) }
+        }
+      }
+
+      // Emit completion event on the main thread
+      appContext?.mainQueue?.launch {
+        emit(
+          RECORDING_STATUS_UPDATE,
+          mapOf(
+            "id" to id,
+            "isFinished" to true,
+            "hasError" to stopFailed,
+            "error" to stopError,
+            "url" to if (stopFailed) {
+              null
+            } else {
+              url
+            }
+          )
         )
-      )
-    }
+      }
 
-    return status
+      return status
+    }
   }
 
   private fun reset() {
@@ -344,7 +363,9 @@ class AudioRecorder(
       // Clean up service connection resources
       serviceConnection.cleanup()
     }
-    reset()
+    synchronized(stateLock) {
+      reset()
+    }
   }
 
   fun getAudioRecorderStatus() = if (hasRecordingPermissions()) {
@@ -399,7 +420,7 @@ class AudioRecorder(
 
   override fun onInfo(mr: MediaRecorder?, what: Int, extra: Int) {
     when (what) {
-      MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED -> {
+      MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED -> synchronized(stateLock) {
         val url = currentFileUrl()
 
         if (useForegroundService) {
