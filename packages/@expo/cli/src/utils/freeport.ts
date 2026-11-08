@@ -21,7 +21,10 @@ async function testHostPortAsync(port: number, host: string | null): Promise<boo
 
 export async function testPortAsync(port: number, hostnames?: (string | null)[]): Promise<boolean> {
   if (!hostnames?.length) {
-    hostnames = [null];
+    // Probe the loopback addresses as well as the unspecified address: on
+    // Windows, binding the unspecified address succeeds even when another
+    // process already holds the port on 127.0.0.1 or ::1.
+    hostnames = [null, '127.0.0.1', '::1'];
   }
   for (const host of hostnames) {
     if (!(await testHostPortAsync(port, host))) {
