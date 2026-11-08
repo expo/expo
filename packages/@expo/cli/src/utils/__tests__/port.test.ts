@@ -233,6 +233,7 @@ describe(resolveMetroPortAsync, () => {
     const port = await resolveMetroPortAsync('/', { fallbackPort: 8081 });
     expect(port).toBe(8081);
     expect(freePortAsync).toHaveBeenCalledWith(8081, undefined);
+  });
   it(`falls back to 8081 when nothing requests a port`, async () => {
     const port = await resolveMetroPortAsync('/');
     expect(port).toBe(8081);
