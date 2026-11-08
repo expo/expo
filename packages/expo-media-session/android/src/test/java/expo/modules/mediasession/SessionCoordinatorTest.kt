@@ -129,7 +129,7 @@ class SessionCoordinatorTest {
     runCurrent()
     assertFalse(use.activation.isCompleted)
 
-    manager.coordinator.onFocusGranted()
+    backend.emitFocusChange(AudioManager.AUDIOFOCUS_GAIN)
     runCurrent()
     assertTrue(use.activation.isCompleted)
     assertFalse(use.activation.isCancelled)
@@ -141,7 +141,7 @@ class SessionCoordinatorTest {
     backend.result = FocusResult.DELAYED
     val use = manager.beginUse("a")
     runCurrent()
-    manager.coordinator.onFocusLost(permanent = true)
+    backend.emitFocusChange(AudioManager.AUDIOFOCUS_LOSS)
     runCurrent()
 
     assertTrue(use.activation.getCompletionExceptionOrNull() is MediaSessionException)
@@ -158,7 +158,7 @@ class SessionCoordinatorTest {
     runCurrent()
 
     backend.result = FocusResult.GRANTED
-    manager.coordinator.onFocusGranted()
+    backend.emitFocusChange(AudioManager.AUDIOFOCUS_GAIN)
     runCurrent()
     assertEquals(FakeSessionBackend.Call.Request(focus(movie)), backend.calls.last())
     use.end()
