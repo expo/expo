@@ -1,4 +1,4 @@
-import { loadAsync, type FontSource } from 'expo-font';
+import { isLoaded, loadAsync, type FontSource } from 'expo-font';
 import { useState, useEffect, useMemo, type JSX } from 'react';
 import { Platform, PlatformColor, Text, View } from 'react-native';
 
@@ -27,7 +27,7 @@ export function SymbolView({
   const font = useMemo(() => getFont(weight), [weight]);
   const name =
     typeof nameProp === 'object' ? nameProp[Platform.OS === 'android' ? 'android' : 'web'] : null;
-  const [loaded, setLoaded] = useState(false);
+  const [loaded, setLoaded] = useState(() => isLoaded(font.name));
   useEffect(() => {
     loadAsync({
       [font.name]: {
