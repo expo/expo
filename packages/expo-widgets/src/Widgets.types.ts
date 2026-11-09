@@ -299,6 +299,10 @@ export type LiveActivityUpdateOptions = {
    * @default 0
    */
   relevanceScore?: number;
+  /**
+   * The time the data in the update was generated. On iOS 17.2 and later, if this is older than a previous update or push payload, the system ignores this update.
+   */
+  contentDate?: Date;
 };
 
 /**
@@ -413,8 +417,12 @@ export declare class NativeLiveActivityFactory extends SharedObject {
   getInstances(): NativeLiveActivity[];
 }
 
-export type NativeLiveActivityUpdateOptions = Omit<LiveActivityUpdateOptions, 'staleDate'> & {
+export type NativeLiveActivityUpdateOptions = Omit<
+  LiveActivityUpdateOptions,
+  'staleDate' | 'contentDate'
+> & {
   staleDate?: number;
+  contentDate?: number;
 };
 
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
