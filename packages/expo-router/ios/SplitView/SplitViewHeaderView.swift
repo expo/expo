@@ -13,9 +13,6 @@ protocol NavigationItemCustomizer: NSObjectProtocol {
 class SplitViewHeaderView: ExpoView, NavigationItemCustomizer {
   var headerTitle: String?
   var largeTitle = false
-  var leftToolbarItems: [SplitViewToolbarItemRecord] = []
-  var rightToolbarItems: [SplitViewToolbarItemRecord] = []
-  let onToolbarItemPress = EventDispatcher()
 
   private weak var navigationItem: UINavigationItem?
 
@@ -29,9 +26,6 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer {
     if superview == nil, let navigationItem {
       navigationItem.title = nil
       navigationItem.largeTitleDisplayMode = .never
-      navigationItem.leftItemsSupplementBackButton = false
-      navigationItem.leftBarButtonItems = nil
-      navigationItem.rightBarButtonItems = nil
       self.navigationItem = nil
     }
   }
@@ -49,25 +43,5 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer {
       // The column view is the view of its controller, so the controller is its next responder.
       (superview?.next as? UIViewController)?.navigationController?.navigationBar.sizeToFit()
     }
-    // Keeps the back button next to the left items when the split view is collapsed.
-    navigationItem.leftItemsSupplementBackButton = true
-    navigationItem.leftBarButtonItems = barButtonItems(leftToolbarItems, side: .left)
-    navigationItem.rightBarButtonItems = barButtonItems(rightToolbarItems, side: .right)
   }
-
-  private func barButtonItems(_ items: [SplitViewToolbarItemRecord], side: ToolbarSide) -> [UIBarButtonItem] {
-    return items.enumerated().map { index, item in
-      // With an image, the button shows only the image and uses the title as its accessibility label.
-      let image = item.icon.flatMap { UIImage(systemName: $0) }
-      let action = UIAction(title: item.title, image: image) { [weak self] _ in
-        self?.onToolbarItemPress(["side": side.rawValue, "index": index])
-      }
-      return UIBarButtonItem(primaryAction: action)
-    }
-  }
-}
-
-private enum ToolbarSide: String {
-  case left
-  case right
 }
