@@ -19,7 +19,7 @@ import type {
   HashSourcePackage,
   NormalizedOptions,
 } from '../Fingerprint.types';
-import { compareStrings } from '../Sort';
+import { stringCompareNoLocale } from '../Sort';
 import { createLimiter, type Limiter } from '../utils/Concurrency';
 import { isIgnoredPathWithMatchObjects, toPosixPath } from '../utils/Path';
 import { nonNullish } from '../utils/Predicates';
@@ -207,7 +207,7 @@ export async function createDirHashResultsAsync(
     return null;
   }
   const dirents = (await fs.readdir(path.join(projectRoot, dirPath), { withFileTypes: true })).sort(
-    (a, b) => compareStrings(a.name, b.name)
+    (a, b) => stringCompareNoLocale(a.name, b.name)
   );
 
   const results = (
