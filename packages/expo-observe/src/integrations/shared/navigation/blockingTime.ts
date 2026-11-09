@@ -5,8 +5,8 @@ import { AppState } from 'react-native';
 // in the 2 seconds after a user navigates.
 // https://www.coinbase.com/blog/performance-vitals-a-unified-scoring-system-to-guide-performance-health-and-prioritization
 const WINDOW_MS = 2000;
-// Same threshold as the Long Tasks API and web TBT. To respond to input within 100ms (the RAIL
-// model), the thread can't stay busy longer than 50ms at a time. Only the time past 50ms counts.
+// Same 50ms threshold as the Long Tasks API. Only the time past 50ms counts.
+// https://w3c.github.io/longtasks/
 const LONG_TASK_THRESHOLD_MS = 50;
 
 type NavigationMetric = Omit<MetricInput, 'value'>;
@@ -16,6 +16,8 @@ type Window = {
   timer: ReturnType<typeof setTimeout>;
   metric?: NavigationMetric;
 };
+
+export type NavigationBlockingTime = ReturnType<typeof createNavigationBlockingTime>;
 
 export function createNavigationBlockingTime(onMeasured: (metric: MetricInput) => void) {
   if (

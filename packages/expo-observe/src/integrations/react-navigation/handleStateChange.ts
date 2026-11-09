@@ -1,7 +1,7 @@
 import AppMetrics from 'expo-app-metrics';
 
 import { getNavigationRouteParams } from '../navigationConfig';
-import type { createNavigationBlockingTime } from '../shared/navigation/blockingTime';
+import type { NavigationBlockingTime } from '../shared/navigation/blockingTime';
 import { emitTTI } from './emitTTI';
 import { getPathname } from './getPathname';
 import { getReactNavigationIntegrationConfig } from './init';
@@ -12,10 +12,7 @@ import type { NavigationStateLike } from './types';
 export function createStateChangeHandler(
   storage: ReactNavigationIntegrationStorage,
   appLaunchTime: number
-): (
-  state: NavigationStateLike | undefined,
-  blockingTime: ReturnType<typeof createNavigationBlockingTime>
-) => void {
+): (state: NavigationStateLike | undefined, blockingTime: NavigationBlockingTime) => void {
   let previousFocusedKey: string | null = null;
   const focusedKeys = new Set<string>();
 

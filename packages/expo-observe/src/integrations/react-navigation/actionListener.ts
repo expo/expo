@@ -1,4 +1,4 @@
-import type { createNavigationBlockingTime } from '../shared/navigation/blockingTime';
+import type { NavigationBlockingTime } from '../shared/navigation/blockingTime';
 import type { ReactNavigationIntegrationStorage } from './storage';
 
 export interface NavigationRefActionListenerHandle {
@@ -11,7 +11,7 @@ export interface NavigationRefActionListenerHandle {
 export function attachActionListener(
   navigationRef: NavigationRefActionListenerHandle,
   storage: ReactNavigationIntegrationStorage,
-  blockingTime: ReturnType<typeof createNavigationBlockingTime>
+  blockingTime: NavigationBlockingTime
 ): () => void {
   return navigationRef.addListener('__unsafe_action__', (e) => {
     if (e.data.noop) return;

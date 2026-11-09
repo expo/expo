@@ -37,11 +37,9 @@ export function initListeners(
   PerformanceObserver: RouterPerformanceObserver
 ): () => void {
   const appLaunchTime = performance.now();
-  const cleanup = new Set<() => void>();
   const blockingTime = isTotalBlockingTimeEnabled(routerIntegrationConfig)
     ? createNavigationBlockingTime((metric) => AppMetrics.getMainSession().addMetric(metric))
     : undefined;
-  if (blockingTime) cleanup.add(blockingTime.dispose);
 
   const observer = new PerformanceObserver((list) => {
     for (const performanceEntry of list.getEntries()) {
@@ -82,7 +80,6 @@ export function initListeners(
     }
   });
   observer.observe({ type: 'mark' });
-  cleanup.add(() => observer.disconnect());
 
   async function onPageFocused(e: RouterPageMarkDetail, now: number) {
     // Stamp every metric written below with the moment of the focus mark, not
@@ -178,7 +175,7 @@ export function initListeners(
   }
 
   return () => {
-    cleanup.forEach((c) => c());
-    cleanup.clear();
+    observer.disconnect();
+    blockingTime?.dispose();
   };
 }

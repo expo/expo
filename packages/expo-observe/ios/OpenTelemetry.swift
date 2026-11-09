@@ -231,7 +231,6 @@ let metricNameMap = [
   "updates/updateDownloadTime": "expo.updates.download_time",
 
   // Navigation
-  // TODO(@ubax): Remove `cold_ttr` and `warm_ttr` from the navigation integration (ENG-28035).
   "navigation/cold_ttr": "expo.navigation.cold_ttr",
   "navigation/warm_ttr": "expo.navigation.warm_ttr",
   "navigation/tti": "expo.navigation.tti",

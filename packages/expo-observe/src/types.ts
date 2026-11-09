@@ -32,7 +32,8 @@ export type ObserveMetricName =
   | 'expo.updates.download_time'
   | 'expo.navigation.cold_ttr'
   | 'expo.navigation.warm_ttr'
-  | 'expo.navigation.tti';
+  | 'expo.navigation.tti'
+  | 'expo.navigation.tbt';
 
 /**
  * Name of an event that EAS Observe sends. Custom names passed to `logEvent` are allowed.
