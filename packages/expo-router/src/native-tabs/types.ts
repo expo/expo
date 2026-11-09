@@ -273,8 +273,11 @@ export type SymbolOrImageSource =
        */
       src?: ImageSourcePropType | Promise<ImageSourcePropType | null>;
       /**
-       * Controls how the icon is drawn. When not set, iOS draws the icon as `template` if an
-       * icon color applies to the tab state, and as `original` otherwise. Android tints it.
+       * Controls how the icon is drawn.
+       *
+       * When not set:
+       * - iOS uses `template` if the tab state has an icon color, and `original` if it does not.
+       * - Android always uses `template`.
        */
       renderingMode?: IconRenderingMode;
     };
