@@ -14,7 +14,7 @@ final class LiveActivityFactory: SharedObject {
     WidgetsStorage.set(layout, forKey: "__expo_widgets_live_activity_\(name)_layout")
   }
 
-  func start(props: String?, url: URL?, staleDate: Date?) throws -> LiveActivity {
+  func start(props: String?, options: LiveActivityStartOptions) throws -> LiveActivity {
     guard ActivityAuthorizationInfo().areActivitiesEnabled else {
       throw LiveActivitiesNotSupportedException()
     }
@@ -22,8 +22,8 @@ final class LiveActivityFactory: SharedObject {
     do {
       let initialState = LiveActivityAttributes.ContentState(name: name, props: props)
       let activity = try Activity.request(
-        attributes: LiveActivityAttributes(url: url?.absoluteString),
-        content: .init(state: initialState, staleDate: staleDate),
+        attributes: LiveActivityAttributes(url: options.url?.absoluteString),
+        content: .init(state: initialState, staleDate: options.staleDate),
         pushType: LiveActivityFactory.pushNotificationsEnabled ? .token : nil
       )
 

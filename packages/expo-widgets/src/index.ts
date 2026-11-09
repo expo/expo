@@ -15,6 +15,8 @@ export type {
   LiveActivityEnvironment,
   LiveActivityEvents,
   LiveActivityLayout,
+  LiveActivityStartOptions,
+  LiveActivityUpdateOptions,
   PushTokenEvent,
   PushToStartTokenEvent,
   UserInteractionEvent,
