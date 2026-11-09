@@ -460,6 +460,26 @@ export async function test(t: JasmineInterface) {
       t.expect(fetchedItem.label).toBe(value[0].label);
       t.expect(fetchedItem.name).toBe(value[0].name);
     });
+
+    // Depends on BareExpo not having the com.apple.developer.contacts.notes entitlement.
+    if (Platform.OS === 'ios') {
+      t.it(
+        '.getDetails(ContactField.NOTE) should reject without the notes entitlement',
+        async () => {
+          const newContact = await Contact.create({ givenName: 'Note' });
+          contacts.push(newContact);
+
+          let error: any = null;
+          try {
+            await newContact.getDetails([ContactField.NOTE]);
+          } catch (e) {
+            error = e;
+          }
+
+          t.expect(error?.code).toBe('ERR_CONTACT_NOTES_NOT_ACCESSIBLE');
+        }
+      );
+    }
   });
 
   t.describe('.getAll()', () => {
@@ -693,6 +713,23 @@ export async function test(t: JasmineInterface) {
       ]);
       t.expect(Array.isArray(result)).toBe(true);
     });
+
+    // Depends on BareExpo not having the com.apple.developer.contacts.notes entitlement.
+    if (Platform.OS === 'ios') {
+      t.it(
+        '.getAllDetails(ContactField.NOTE) should reject without the notes entitlement',
+        async () => {
+          let error: any = null;
+          try {
+            await Contact.getAllDetails([ContactField.NOTE]);
+          } catch (e) {
+            error = e;
+          }
+
+          t.expect(error?.code).toBe('ERR_CONTACT_NOTES_NOT_ACCESSIBLE');
+        }
+      );
+    }
 
     t.it('.getAllDetails({name}) should filter contacts', async () => {
       const tag = `Filter_${Date.now()}`;
