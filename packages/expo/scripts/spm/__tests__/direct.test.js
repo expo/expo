@@ -134,7 +134,7 @@ describe('emitDirectPackage', () => {
   let jsiHeadersPkgPath;
   let macrosPackageRoot;
 
-  const emit = () =>
+  const emit = (react = null, codegenPkgPath = null) =>
     emitDirectPackage({
       moduleRoot: path.join(root, 'expo-haptics'),
       packageName: 'expo-haptics',
@@ -142,6 +142,8 @@ describe('emitDirectPackage', () => {
       coreHeadersXCFramework,
       jsiHeadersPkgPath,
       macrosPackageRoot,
+      react,
+      codegenPkgPath,
       manifest: hapticsManifest,
     });
   const manifest = () => fs.readFileSync(path.join(pkgDir, 'Package.swift'), 'utf8');
@@ -221,6 +223,52 @@ describe('emitDirectPackage', () => {
     expect(manifest()).toMatch(
       /\.target\(\s*name: "ExpoModulesCoreHeadersDependencies",\s*dependencies: \[[^\]]*\.product\(name: "ExpoModulesMacrosPlugin", package: "expo-modules-macros"\)/
     );
+  });
+
+  describe("gives its dependents React Native's header products", () => {
+    const dependenciesTarget = () =>
+      manifest().match(
+        /\.target\(\s*name: "ExpoModulesCoreHeadersDependencies",\s*dependencies: \[([^\]]*)\]/
+      )[1];
+
+    it('from a local React Native package and the app codegen package', () => {
+      emit(
+        {
+          packageRef: { name: 'ReactNative', path: '/abs/react-native' },
+          products: [
+            { name: 'ReactHeaders', package: 'ReactNative' },
+            { name: 'ReactNativeHeaders', package: 'ReactNative' },
+            { name: 'ReactNativeDependenciesHeaders', package: 'ReactNative' },
+            { name: 'ReactAppHeaders', package: 'React-GeneratedCode' },
+          ],
+        },
+        '/abs/app/ios'
+      );
+      expect(manifest()).toContain('.package(name: "ReactNative", path: "/abs/react-native")');
+      expect(manifest()).toContain('.package(name: "React-GeneratedCode", path: "/abs/app/ios")');
+      for (const [name, pkg] of [
+        ['ReactHeaders', 'ReactNative'],
+        ['ReactNativeHeaders', 'ReactNative'],
+        ['ReactNativeDependenciesHeaders', 'ReactNative'],
+        ['ReactAppHeaders', 'React-GeneratedCode'],
+      ]) {
+        expect(dependenciesTarget()).toContain(`.product(name: "${name}", package: "${pkg}")`);
+      }
+    });
+
+    it('from a remote React Native package', () => {
+      emit(
+        {
+          packageRef: { name: 'ReactNative', url: 'https://example/rn.git', version: '0.87.0' },
+          products: [{ name: 'ReactHeaders', package: 'ReactNative' }],
+        },
+        '/abs/app/ios'
+      );
+      expect(manifest()).toContain('.package(url: "https://example/rn.git", exact: "0.87.0")');
+      expect(dependenciesTarget()).toContain(
+        '.product(name: "ReactHeaders", package: "ReactNative")'
+      );
+    });
   });
 
   it('links no macro plugin into the build folder', () => {
