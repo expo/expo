@@ -97,6 +97,7 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     return controller
   }
 
+  // Similar to react-native-screens: https://github.com/software-mansion/react-native-screens/blob/9d7da8f17e40143c8be83f218ab2968b4c4fd1e4/ios/RNSBarButtonItem.mm#L14-L289
   private func barButtonItems(_ items: [SplitViewToolbarItemRecord]) -> [UIBarButtonItem] {
     return items.map { item in
       // With an image, the button shows only the image and uses the title as its accessibility label.

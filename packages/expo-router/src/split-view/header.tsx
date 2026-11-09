@@ -1,5 +1,6 @@
 import type { SplitViewHeader, SplitViewToolbarItem } from './elements';
 import { SplitViewNativeHeader } from './native';
+import type { SplitViewNativeToolbarItem } from './native.types';
 
 export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
   const { title, largeTitle, leftToolbar, rightToolbar, searchBar } = header;
@@ -10,7 +11,6 @@ export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
       leftToolbarItems={toNativeToolbarItems('left', leftToolbar)}
       rightToolbarItems={toNativeToolbarItems('right', rightToolbar)}
       onToolbarItemPress={({ nativeEvent: { id } }) => {
-        // `id` is `<side>.<itemIndex>` or `<side>.<itemIndex>.<actionIndex>`.
         const [side, itemIndex, actionIndex] = id.split('.');
         const item = (side === 'left' ? leftToolbar : rightToolbar)?.[Number(itemIndex)];
         if (actionIndex === undefined) {
@@ -26,7 +26,10 @@ export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
   );
 }
 
-function toNativeToolbarItems(side: 'left' | 'right', items: SplitViewToolbarItem[] | undefined) {
+function toNativeToolbarItems(
+  side: 'left' | 'right',
+  items: SplitViewToolbarItem[] | undefined
+): SplitViewNativeToolbarItem[] | undefined {
   return items?.map(({ title, icon, menu }, index) => ({
     id: `${side}.${index}`,
     title,
