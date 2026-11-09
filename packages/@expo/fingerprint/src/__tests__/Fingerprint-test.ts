@@ -514,6 +514,24 @@ describe(diffFingerprints, () => {
       },
     ]);
   });
+
+  it('should match sources when a saved fingerprint uses a different sort order', () => {
+    const fingerprint1: Fingerprint = {
+      sources: [
+        { type: 'file', filePath: 'app.json', reasons: [''], hash: 'app' },
+        { type: 'file', filePath: 'Podfile', reasons: [''], hash: 'podfile' },
+      ],
+      hash: '111',
+    };
+    const fingerprint2: Fingerprint = {
+      sources: [
+        { type: 'file', filePath: 'Podfile', reasons: [''], hash: 'podfile' },
+        { type: 'file', filePath: 'app.json', reasons: [''], hash: 'app' },
+      ],
+      hash: '111',
+    };
+    expect(diffFingerprints(fingerprint1, fingerprint2)).toEqual([]);
+  });
 });
 
 describe('function api stability', () => {

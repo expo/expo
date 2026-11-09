@@ -25,18 +25,31 @@ export function compareSource(a: HashSource, b: HashSource): number {
     if (a.type === 'file' && b.type === 'file') {
       const aValue = a.overrideHashKey ?? a.filePath;
       const bValue = b.overrideHashKey ?? b.filePath;
-      return aValue.localeCompare(bValue);
+      return compareStrings(aValue, bValue);
     } else if (a.type === 'dir' && b.type === 'dir') {
       const aValue = a.overrideHashKey ?? a.filePath;
       const bValue = b.overrideHashKey ?? b.filePath;
-      return aValue.localeCompare(bValue);
+      return compareStrings(aValue, bValue);
     } else if (a.type === 'contents' && b.type === 'contents') {
-      return a.id.localeCompare(b.id);
+      return compareStrings(a.id, b.id);
     } else if (a.type === 'package' && b.type === 'package') {
       const aValue = a.overrideHashKey ?? `${a.name}@${a.version}`;
       const bValue = b.overrideHashKey ?? `${b.name}@${b.version}`;
-      return aValue.localeCompare(bValue);
+      return compareStrings(aValue, bValue);
     }
   }
   return typeResult;
+}
+
+/**
+ * Compares strings by UTF-16 code unit so the order does not depend on the system locale.
+ */
+export function compareStrings(a: string, b: string): number {
+  if (a < b) {
+    return -1;
+  }
+  if (a > b) {
+    return 1;
+  }
+  return 0;
 }

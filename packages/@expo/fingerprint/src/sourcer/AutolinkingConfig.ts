@@ -1,9 +1,16 @@
 import path from 'path';
 
+import { compareStrings } from '../Sort';
 import { toPosixPath } from '../utils/Path';
 
 const NAMED_ARRAY_KEYS = new Set(['modules', 'projects', 'plugins', 'pods', 'extraDependencies']);
-const STRING_ARRAY_KEYS = new Set(['coreFeatures', 'configurations', 'buildTypes']);
+const STRING_ARRAY_KEYS = new Set([
+  'coreFeatures',
+  'configurations',
+  'buildTypes',
+  'packages',
+  'componentDescriptors',
+]);
 
 const FILE_URL_REGEX = /^file:/i;
 const NETWORK_URL_REGEX = /^[a-z][a-z0-9+.-]*:\/\//i;
@@ -107,16 +114,6 @@ function namedKey(value: unknown): string {
     }
   }
   return '';
-}
-
-function compareStrings(left: string, right: string): number {
-  if (left < right) {
-    return -1;
-  }
-  if (left > right) {
-    return 1;
-  }
-  return 0;
 }
 
 /**

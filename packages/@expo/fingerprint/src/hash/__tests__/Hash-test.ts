@@ -315,6 +315,21 @@ describe(createDirHashResultsAsync, () => {
     expect(result?.id).toEqual(sortedResult?.id);
     expect(result?.hex).toEqual(sortedResult?.hex);
   });
+
+  it('should hash dir entries in code point order', async () => {
+    const limiter = createLimiter(3);
+    const options = await normalizeOptionsAsync('/app', { debug: true });
+    vol.fromJSON({
+      '/app/ios/app.json': '{}',
+      '/app/ios/Podfile': '...',
+    });
+
+    const result = await createDirHashResultsAsync('ios', limiter, '/app', options);
+    expect(result?.debugInfo?.children.map((child) => child?.path)).toEqual([
+      'ios/Podfile',
+      'ios/app.json',
+    ]);
+  });
 });
 
 describe(createSourceId, () => {
