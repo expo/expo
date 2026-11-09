@@ -1,3 +1,5 @@
+import spawnAsync from '@expo/spawn-async';
+
 import { getConnectedDevicesAsync } from '../AppleDevice';
 import { LockdowndClient } from '../client/LockdowndClient';
 import { UsbmuxdClient } from '../client/UsbmuxdClient';
@@ -76,5 +78,47 @@ describe(getConnectedDevicesAsync, () => {
     await expect(getConnectedDevicesAsync()).resolves.toEqual([
       expect.objectContaining({ connectionType: 'Network', osType: 'iOS', udid: 'fake-udid' }),
     ]);
+  });
+
+  describe('on an Apple silicon Mac', () => {
+    const originalPlatform = process.platform;
+    const originalArch = process.arch;
+
+    beforeEach(() => {
+      Object.defineProperty(process, 'platform', { value: 'darwin' });
+      Object.defineProperty(process, 'arch', { value: 'arm64' });
+      jest.mocked(UsbmuxdClient).mockImplementation(
+        () =>
+          ({
+            socket: { end: jest.fn() },
+            getDevices: jest.fn(async () => []),
+          }) as any
+      );
+    });
+
+    afterEach(() => {
+      Object.defineProperty(process, 'platform', { value: originalPlatform });
+      Object.defineProperty(process, 'arch', { value: originalArch });
+    });
+
+    it(`includes the host Mac as a macOS device`, async () => {
+      jest.mocked(spawnAsync).mockResolvedValueOnce({
+        stdout: [
+          'Hardware:',
+          '    Hardware Overview:',
+          '      Chip: Apple M3 Pro',
+          '      Provisioning UDID: 00008000-0000000000000001',
+        ].join('\n'),
+      } as any);
+
+      await expect(getConnectedDevicesAsync()).resolves.toEqual([
+        expect.objectContaining({
+          udid: '00008000-0000000000000001',
+          deviceType: 'device',
+          osType: 'macOS',
+        }),
+      ]);
+      expect(spawnAsync).toHaveBeenCalledWith('system_profiler', ['SPHardwareDataType']);
+    });
   });
 });

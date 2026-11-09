@@ -189,11 +189,28 @@ function assertDevicesJson(
   );
 }
 
-export async function launchBinaryOnMacAsync(
-  bundleId: string,
-  appBinaryPath: string
-): Promise<void> {
-  const args = ['-b', bundleId, appBinaryPath];
+/**
+ * macOS cannot open an iOS app bundle directly. Use the layout that macOS uses for installed
+ * "Designed for iPad" apps: `<name>-mac.app/Wrapper/<name>.app` and a `WrappedBundle` symlink.
+ */
+async function createMacWrapperBundleAsync(appBinaryPath: string): Promise<string> {
+  const appName = path.basename(appBinaryPath);
+  const wrapperPath = path.join(
+    path.dirname(appBinaryPath),
+    appName.replace(/\.app$/, '') + '-mac.app'
+  );
+  await fs.promises.rm(wrapperPath, { recursive: true, force: true });
+  await fs.promises.mkdir(path.join(wrapperPath, 'Wrapper'), { recursive: true });
+  // macOS reports "executable is missing" when the wrapped app is a symlink.
+  await spawnAsync('ditto', [appBinaryPath, path.join(wrapperPath, 'Wrapper', appName)]);
+  await fs.promises.symlink(path.join('Wrapper', appName), path.join(wrapperPath, 'WrappedBundle'));
+  return wrapperPath;
+}
+
+export async function launchBinaryOnMacAsync(appBinaryPath: string): Promise<void> {
+  // `open` focuses a running instance instead of launching the new build.
+  await spawnAsync('pkill', ['-f', `/Wrapper/${path.basename(appBinaryPath)}/`]).catch(() => {});
+  const args = [await createMacWrapperBundleAsync(appBinaryPath)];
   try {
     await spawnAsync('open', args);
   } catch (error: any) {

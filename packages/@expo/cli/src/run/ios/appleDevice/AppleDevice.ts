@@ -1,3 +1,4 @@
+import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
 import path from 'path';
 
@@ -86,6 +87,37 @@ function coerceUsbmuxdPlatformToOsType(platform: string): OSType {
   }
 }
 
+/**
+ * devicectl and usbmuxd do not list the host Mac. An Apple silicon Mac runs iOS apps as
+ * "Designed for iPad", and Xcode uses its provisioning UDID as the destination id.
+ */
+async function getHostMacDevicesAsync(): Promise<ConnectedDevice[]> {
+  if (process.platform !== 'darwin' || process.arch !== 'arm64') {
+    return [];
+  }
+  try {
+    const { stdout } = await spawnAsync('system_profiler', ['SPHardwareDataType']);
+    const udid = stdout.match(/Provisioning UDID:\s*(\S+)/)?.[1];
+    if (!udid) {
+      return [];
+    }
+    return [
+      {
+        name: 'My Mac (Designed for iPad)',
+        model: 'Mac',
+        osVersion: '',
+        udid,
+        deviceType: 'device',
+        connectionType: 'USB',
+        osType: 'macOS',
+      },
+    ];
+  } catch (error: any) {
+    Log.debug('Failed to resolve the host Mac as a run destination:', error);
+    return [];
+  }
+}
+
 /** @returns a list of connected Apple devices. */
 export async function getConnectedDevicesAsync(): Promise<ConnectedDevice[]> {
   const devices = await Promise.all([
@@ -93,6 +125,7 @@ export async function getConnectedDevicesAsync(): Promise<ConnectedDevice[]> {
     // NOTE: xcrun is substantially slower than custom tooling. +1.5s vs 9ms.
     profile(getConnectedDevicesUsingNativeToolsAsync)(),
     profile(getConnectedDevicesUsingCustomToolingAsync)(),
+    profile(getHostMacDevicesAsync)(),
   ]);
 
   return uniqBy(devices.flat(), (device) => device.udid);
