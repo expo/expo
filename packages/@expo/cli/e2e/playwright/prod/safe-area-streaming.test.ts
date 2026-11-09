@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
-import { getRouterE2ERoot } from '../../__tests__/utils';
+import { getServerTesterRoot } from '../../__tests__/utils';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { pageCollectErrors } from '../page';
 
@@ -11,7 +11,7 @@ declare global {
   }
 }
 
-const projectRoot = getRouterE2ERoot();
+const projectRoot = getServerTesterRoot();
 const outputDir = 'dist-safe-area-streaming';
 test.describe.configure({ mode: 'serial' });
 const expoServe = createExpoServe({ cwd: projectRoot, env: { NODE_ENV: 'production' } });
@@ -21,8 +21,7 @@ test.beforeAll(async () => {
   await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputDir], {
     env: {
       NODE_ENV: 'production',
-      EXPO_USE_STATIC: 'server',
-      E2E_ROUTER_SRC: 'static-rendering',
+      E2E_ROUTER_WEB_OUTPUT: 'server',
       E2E_ROUTER_ASYNC: 'false',
     },
   });
@@ -34,7 +33,7 @@ test.afterAll(async () => {
   restoreEnv();
 });
 
-for (const path of ['/safe-area', '/safe-area-stack']) {
+for (const path of ['/rendering/safe-area', '/rendering/safe-area-stack']) {
   test(`retains streamed nodes through hydration and resize: ${path}`, async ({ page }) => {
     const errors = pageCollectErrors(page);
     const cdp = await page.context().newCDPSession(page);

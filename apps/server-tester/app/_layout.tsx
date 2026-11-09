@@ -1,13 +1,16 @@
-import { Stack } from 'expo-router';
+import { Slot, Stack, usePathname } from 'expo-router';
 
 import { Screen } from '@/components/Screen';
 import { colors } from '@/components/theme';
 
-export const unstable_settings = {
-  anchor: 'index',
-};
-
 export default function RootLayout() {
+  const pathname = usePathname();
+
+  // The safe-area streaming test needs one route that renders without any navigator.
+  if (pathname === '/rendering/safe-area') {
+    return <Slot />;
+  }
+
   return (
     <Stack
       screenOptions={{
@@ -15,6 +18,8 @@ export default function RootLayout() {
         headerTintColor: colors.text,
         headerBackButtonDisplayMode: 'minimal',
         contentStyle: { backgroundColor: colors.background },
+        // Set at first render: an options update after hydration would remount the streamed content.
+        headerShown: pathname !== '/rendering/safe-area-stack',
       }}
       screenLayout={({ children }) => <Screen>{children}</Screen>}
     />

@@ -17,8 +17,10 @@
     "format": "expo-module format"
   },
   "dependencies": {
+    "@expo/vector-icons": "^15.0.2",
     "expo": "workspace:*",
     "expo-build-properties": "workspace:*",
+    "expo-font": "workspace:*",
     "expo-linking": "workspace:*",
     "expo-router": "workspace:*",
     "expo-server": "workspace:*",

@@ -29,6 +29,7 @@ module.exports = {
   web: {
     output: process.env.E2E_ROUTER_WEB_OUTPUT ?? 'server',
     bundler: 'metro',
+    favicon: process.env.E2E_FAVICON || undefined,
   },
   plugins: [
     [

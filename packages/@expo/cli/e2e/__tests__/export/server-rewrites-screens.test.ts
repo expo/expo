@@ -3,23 +3,22 @@ import * as htmlParser from 'node-html-parser';
 import path from 'node:path';
 
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
-import { findProjectFiles, getRouterE2ERoot } from '../utils';
+import { findProjectFiles, getServerTesterRoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
 describe('server rewrites', () => {
-  const projectRoot = getRouterE2ERoot();
+  const projectRoot = getServerTesterRoot();
   const outputName = 'dist-server-rewrites-screens';
 
   beforeAll(async () => {
     await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputName], {
       env: {
         NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'server',
-        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_WEB_OUTPUT: 'server',
         E2E_ROUTER_REWRITES: JSON.stringify([
-          { source: '/rewrite', destination: '/styled' },
+          { source: '/rewrite', destination: '/rendering/styled' },
         ] as RewriteConfig[]),
       },
     });
@@ -50,7 +49,7 @@ describe('server rewrites', () => {
         return htmlParser.parse(htmlString).querySelector('[data-testid=styled-text]')!.textContent;
       };
 
-      const indexResponse = await server.fetchAsync('/styled');
+      const indexResponse = await server.fetchAsync('/rendering/styled');
       expect(indexResponse.status).toBe(200);
 
       const path = '/rewrite';
@@ -80,16 +79,16 @@ describe('server rewrites', () => {
     expect(files).not.toContain('+not-found.html');
 
     // Regular routes render at request time
-    expect(files).not.toContain('about.html');
+    expect(files).not.toContain('rendering/about.html');
     expect(files).not.toContain('index.html');
-    expect(files).not.toContain('styled.html');
+    expect(files).not.toContain('rendering/styled.html');
 
     // Rewrite routes should not be written to disk
     expect(files).not.toContain('rewrite.html');
 
     // generateStaticParams is ignored by server rendering
-    expect(files).not.toContain('[post].html');
-    expect(files).not.toContain('welcome-to-the-universe.html');
-    expect(files).not.toContain('other.html');
+    expect(files).not.toContain('rendering/[post].html');
+    expect(files).not.toContain('rendering/welcome-to-the-universe.html');
+    expect(files).not.toContain('rendering/other.html');
   });
 });

@@ -11,11 +11,11 @@ runExportSideEffects();
 describe('server rendering with async routes', () => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE], {
-      fixtureName: 'static-rendering',
+      app: 'server-tester',
       uniqueOutputKey: 'server-rendering-async',
       export: {
         env: {
-          EXPO_USE_STATIC: 'server',
+          E2E_ROUTER_WEB_OUTPUT: 'server',
           E2E_ROUTER_ASYNC: 'true',
           E2E_ROUTER_SPLIT_STRATEGY: 'granular',
         },
@@ -38,8 +38,8 @@ describe('server rendering with async routes', () => {
 
       // HTML routes should NOT be pre-rendered in SSR mode
       expect(files).not.toContain('index.html');
-      expect(files).not.toContain('about.html');
-      expect(files).not.toContain('styled.html');
+      expect(files).not.toContain('rendering/about.html');
+      expect(files).not.toContain('rendering/styled.html');
     });
 
     it('keeps only the runtime in top-level JavaScript assets', async () => {
@@ -80,7 +80,8 @@ describe('server rendering with async routes', () => {
           expect.arrayContaining(['_layout-<HASH>.js', `${routeName}-<HASH>.js`])
         );
         expect(jsFilenames.some((filename) => filename.startsWith('__shared-'))).toBe(true);
-        expect(new Set(jsFilenames).size).toBe(jsFilenames.length);
+        // Nested layouts and index routes share a basename, so compare the full paths.
+        expect(new Set(route.assets!.js).size).toBe(route.assets!.js.length);
       }
     });
 
@@ -98,9 +99,9 @@ describe('server rendering with async routes', () => {
     });
 
     it.each([
-      ['/about', 200],
-      ['/welcome-to-the-universe', 200],
-      ['/catch-all/hello/world', 200],
+      ['/rendering/about', 200],
+      ['/rendering/welcome-to-the-universe', 200],
+      ['/rendering/catch-all/hello/world', 200],
       ['/missing/deep', 404],
     ])('serves %s with runtime first and entry last', async (pathname, status) => {
       const response = await server.fetchAsync(pathname);

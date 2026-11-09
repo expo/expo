@@ -4,7 +4,7 @@ import path from 'path';
 
 import { isHermesBytecodeBundleAsync } from '../../src/export/exportHermes';
 import { executeExpoAsync } from '../utils/expo';
-import { projectRoot, getLoadedModulesAsync, findProjectFiles } from './utils';
+import { projectRoot, getLoadedModulesAsync, findProjectFiles, getServerTesterRoot } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -72,19 +72,8 @@ it('runs `npx expo export:embed --help`', async () => {
   `);
 });
 
-function ensureTesterReady(fixtureName: string): string {
-  const root = path.join(__dirname, '../../../../../apps/router-e2e');
-  // Clear metro cache for the env var to be updated
-  // await fs.remove(path.join(root, "node_modules/.cache/metro"));
-
-  // @ts-ignore
-  process.env.E2E_ROUTER_SRC = fixtureName;
-
-  return root;
-}
-
 it('runs `npx expo export:embed`', async () => {
-  const projectRoot = ensureTesterReady('static-rendering');
+  const projectRoot = getServerTesterRoot();
   const output = 'dist-export-embed';
   await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
   await fs.promises.mkdir(path.join(projectRoot, output));
@@ -108,8 +97,7 @@ it('runs `npx expo export:embed`', async () => {
     {
       env: {
         NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_WEB_OUTPUT: 'static',
         E2E_ROUTER_ASYNC: 'development',
       },
     }
@@ -119,7 +107,6 @@ it('runs `npx expo export:embed`', async () => {
 
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
-    'assets/__e2e__/static-rendering/sweet.ttf',
     expect.stringMatching(/assets\/arrow_down\.png$/),
     expect.stringMatching(/assets\/error\.png$/),
     expect.stringMatching(/assets\/file\.png$/),
@@ -140,6 +127,7 @@ it('runs `npx expo export:embed`', async () => {
     expect.stringMatching(/assets\/react-navigation\/elements\/search-icon@3x\.png$/),
     expect.stringMatching(/assets\/sitemap\.png$/),
     expect.stringMatching(/assets\/unmatched\.png$/),
+    'assets/assets/fonts/sweet.ttf',
     'assets/assets/icon.png',
     'output.js',
   ]);
@@ -155,7 +143,7 @@ it('runs `npx expo export:embed`', async () => {
 });
 
 it('runs `npx expo export:embed --platform ios` with source maps', async () => {
-  const projectRoot = ensureTesterReady('static-rendering');
+  const projectRoot = getServerTesterRoot();
   const output = 'dist-export-embed-source-maps';
   await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
   await fs.promises.mkdir(path.join(projectRoot, output));
@@ -183,8 +171,7 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
     {
       env: {
         NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_WEB_OUTPUT: 'static',
         E2E_ROUTER_ASYNC: 'development',
       },
     }
@@ -202,7 +189,6 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
 
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(outputDir)).toEqual([
-    'assets/__e2e__/static-rendering/sweet.ttf',
     expect.stringMatching(/assets\/arrow_down\.png$/),
     expect.stringMatching(/assets\/error\.png$/),
     expect.stringMatching(/assets\/file\.png$/),
@@ -223,6 +209,7 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
     expect.stringMatching(/assets\/react-navigation\/elements\/search-icon@3x\.png$/),
     expect.stringMatching(/assets\/sitemap\.png$/),
     expect.stringMatching(/assets\/unmatched\.png$/),
+    'assets/assets/fonts/sweet.ttf',
     'assets/assets/icon.png',
     'output.js',
     'output.js.map',
@@ -230,7 +217,7 @@ it('runs `npx expo export:embed --platform ios` with source maps', async () => {
 });
 
 it('runs `npx expo export:embed --platform android` with source maps', async () => {
-  const projectRoot = ensureTesterReady('static-rendering');
+  const projectRoot = getServerTesterRoot();
   const output = 'dist-export-embed-source-maps-android';
   await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
   await fs.promises.mkdir(path.join(projectRoot, output));
@@ -260,8 +247,7 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
     {
       env: {
         NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_WEB_OUTPUT: 'static',
         E2E_ROUTER_ASYNC: 'development',
       },
     }
@@ -313,17 +299,16 @@ it('runs `npx expo export:embed --platform android` with source maps', async () 
 
     'output.js',
     'output.js.map',
-    'raw/__e2e___staticrendering_sweet.ttf',
-
     expect.stringMatching(/raw\/.*_400regular\.ttf$/),
     expect.stringMatching(/raw\/.*_evilicons\.ttf$/),
+    'raw/assets_fonts_sweet.ttf',
 
     'raw/keep.xml',
   ]);
 });
 
 it('runs `npx expo export:embed --bytecode`', async () => {
-  const projectRoot = ensureTesterReady('static-rendering');
+  const projectRoot = getServerTesterRoot();
   const output = 'dist-export-embed';
   await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
   await fs.promises.mkdir(path.join(projectRoot, output));
@@ -349,8 +334,7 @@ it('runs `npx expo export:embed --bytecode`', async () => {
     {
       env: {
         NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_WEB_OUTPUT: 'static',
         E2E_ROUTER_ASYNC: 'development',
       },
     }
