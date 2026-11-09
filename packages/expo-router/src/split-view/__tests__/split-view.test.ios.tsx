@@ -453,13 +453,7 @@ it('passes the SplitView.Column header to the native header as flat props', asyn
     {
       _layout: () => (
         <SplitView>
-          <SplitView.Column
-            header={{
-              title: 'Mailboxes',
-              largeTitle: true,
-              leftToolbar: [{ title: 'Edit', onPress: () => {} }],
-              rightToolbar: [{ title: 'Search', icon: 'magnifyingglass', onPress: () => {} }],
-            }}>
+          <SplitView.Column header={{ title: 'Mailboxes', largeTitle: true }}>
             <Text>Sidebar</Text>
           </SplitView.Column>
           <SplitView.Content />
@@ -473,9 +467,6 @@ it('passes the SplitView.Column header to the native header as flat props', asyn
   expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0]).toEqual({
     title: 'Mailboxes',
     largeTitle: true,
-    leftToolbarItems: [{ title: 'Edit' }],
-    rightToolbarItems: [{ title: 'Search', icon: 'magnifyingglass' }],
-    onToolbarItemPress: expect.any(Function),
   });
 });
 
@@ -500,39 +491,6 @@ it('renders the SplitView.Column header as the last child of its Split.Column', 
   expect(
     Children.toArray(columnProps.children).map((child) => isValidElement(child) && child.type)
   ).toEqual([SafeAreaView, SplitViewColumnHeader]);
-});
-
-it('calls onPress of the pressed native toolbar item', async () => {
-  const onEditPress = jest.fn();
-  const onSearchPress = jest.fn();
-  const onArchivePress = jest.fn();
-  await renderRouter(
-    {
-      _layout: () => (
-        <SplitView>
-          <SplitView.Column
-            header={{
-              leftToolbar: [{ title: 'Edit', onPress: onEditPress }],
-              rightToolbar: [
-                { title: 'Search', onPress: onSearchPress },
-                { title: 'Archive', onPress: onArchivePress },
-              ],
-            }}
-          />
-          <SplitView.Content />
-        </SplitView>
-      ),
-      index: () => <Text>Index</Text>,
-    },
-    { initialUrl: '/' }
-  );
-
-  const { onToolbarItemPress } = jest.mocked(SplitViewNativeHeader).mock.lastCall![0];
-  onToolbarItemPress({ nativeEvent: { side: 'right', index: 1 } });
-
-  expect(onArchivePress).toHaveBeenCalledTimes(1);
-  expect(onSearchPress).not.toHaveBeenCalled();
-  expect(onEditPress).not.toHaveBeenCalled();
 });
 
 it('renders the SplitView.Content header in the content column', async () => {

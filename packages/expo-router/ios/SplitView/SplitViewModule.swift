@@ -11,21 +11,9 @@ public class SplitViewModule: Module {
       Prop("largeTitle") { (view: SplitViewHeaderView, largeTitle: Bool?) in
         view.largeTitle = largeTitle ?? false
       }
-      Prop("leftToolbarItems") { (view: SplitViewHeaderView, items: [SplitViewToolbarItemRecord]?) in
-        view.leftToolbarItems = items ?? []
-      }
-      Prop("rightToolbarItems") { (view: SplitViewHeaderView, items: [SplitViewToolbarItemRecord]?) in
-        view.rightToolbarItems = items ?? []
-      }
-      Events("onToolbarItemPress")
       OnViewDidUpdateProps { (view: SplitViewHeaderView) in
         view.apply()
       }
     }
   }
-}
-
-struct SplitViewToolbarItemRecord: Record {
-  @Field var title: String = ""
-  @Field var icon: String?
 }
