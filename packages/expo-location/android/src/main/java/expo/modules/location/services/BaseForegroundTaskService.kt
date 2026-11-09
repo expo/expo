@@ -109,7 +109,11 @@ internal abstract class BaseForegroundTaskService : Service() {
     packageManager.getLaunchIntentForPackage(packageName)?.let {
       it.flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
       // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
-      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+      val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        PendingIntent.FLAG_MUTABLE
+      } else {
+        0
+      }
       val contentIntent = PendingIntent.getActivity(this, 0, it, PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag)
       builder.setContentIntent(contentIntent)
     }
