@@ -544,8 +544,20 @@ describe('initListeners', () => {
   });
 });
 
+describe('navigation total blocking time flag', () => {
+  it.each([undefined, true, {}, { experimental_totalBlockingTime: false }])(
+    'does not measure tbt when the experimental flag is not enabled (config: %p)',
+    (config) => {
+      mockCreateNavigationBlockingTime.mockClear();
+      setRouterConfig(config);
+      expect(mockCreateNavigationBlockingTime).not.toHaveBeenCalled();
+    }
+  );
+});
+
 describe('navigation total blocking time', () => {
   beforeEach(async () => {
+    setRouterConfig({ experimental_totalBlockingTime: true });
     focus(events, 'a');
     await flushAsync();
   });
@@ -591,7 +603,7 @@ describe('navigation total blocking time', () => {
   });
 
   it('filters route params from tbt', async () => {
-    setRouterConfig({ filteredParams: ['token'] });
+    setRouterConfig({ filteredParams: ['token'], experimental_totalBlockingTime: true });
     dispatch(events, 'NAVIGATE');
     focus(events, 'b', { pathname: '/b?token=secret', params: { token: 'secret' } });
     await flushAsync();

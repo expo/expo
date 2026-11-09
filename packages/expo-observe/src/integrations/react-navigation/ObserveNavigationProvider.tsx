@@ -2,11 +2,12 @@ import AppMetrics from 'expo-app-metrics';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 
 import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
+import { isTotalBlockingTimeEnabled } from '../navigationConfig';
 import { createNavigationBlockingTime } from '../shared/navigation/blockingTime';
 import { attachActionListener } from './actionListener';
 import { ObserveReactNavigationIntegrationContext } from './context';
 import { createStateChangeHandler } from './handleStateChange';
-import { isInitialized } from './init';
+import { getReactNavigationIntegrationConfig, isInitialized } from './init';
 import { optionalReactNavigation } from './reactNavigation';
 import { createReactNavigationIntegrationStorage } from './storage';
 import type { NavigationContainerRefLike, NavigationStateLike } from './types';
@@ -77,9 +78,9 @@ export function ObserveNavigationProvider({
   useEffect(() => {
     if (!internal) return;
 
-    const blockingTime = createNavigationBlockingTime((metric) =>
-      AppMetrics.getMainSession().addMetric(metric)
-    );
+    const blockingTime = isTotalBlockingTimeEnabled(getReactNavigationIntegrationConfig())
+      ? createNavigationBlockingTime((metric) => AppMetrics.getMainSession().addMetric(metric))
+      : undefined;
 
     // The `state` event payload can be partial on the initial commit, so
     // always read the hydrated state from the ref.
