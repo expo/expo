@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react-native';
 import {
   StackToolbarButton,
   convertStackToolbarButtonPropsToRNHeaderItem,
+  type StackToolbarButtonProps,
 } from '../toolbar/StackToolbarButton';
 import { ToolbarPlacementContext } from '../toolbar/context';
 import {
@@ -115,6 +116,39 @@ describe(convertStackToolbarButtonPropsToRNHeaderItem, () => {
       label: 'Notifications',
       icon: { type: 'sfSymbol', name: 'bell.fill' },
       badge: { value: '3' },
+    });
+  });
+
+  describe('image prop warning', () => {
+    let consoleSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleSpy.mockRestore();
+    });
+
+    it('warns when image is set', () => {
+      // The conversion only checks that `image` is set, so an empty object can stand in for an `ImageRef`.
+      const image = {} as StackToolbarButtonProps['image'];
+
+      convertStackToolbarButtonPropsToRNHeaderItem({ image });
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Stack.Toolbar.Button does not support the image prop in header toolbars (placement="left" or "right") on iOS. Use the icon prop instead.'
+      );
+      expect(consoleSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not warn when hidden is true', () => {
+      // The conversion only checks that `image` is set, so an empty object can stand in for an `ImageRef`.
+      const image = {} as StackToolbarButtonProps['image'];
+
+      convertStackToolbarButtonPropsToRNHeaderItem({ image, hidden: true });
+
+      expect(consoleSpy).not.toHaveBeenCalled();
     });
   });
 });
