@@ -1,14 +1,10 @@
-import React, { isValidElement, use, useState, type ReactElement, type ReactNode } from 'react';
+import React, { use, useState, type ReactNode } from 'react';
 
 import { Split, type SplitHostProps } from '../optional-libraries/react-native-screens';
 import { IsWithinNativeNavigator } from '../standard-navigation';
+import { isChildOfType } from '../utils/children';
 import { Slot } from '../views/Navigator';
-import {
-  getSplitColumnChildren,
-  SplitViewColumn,
-  SplitViewInspector,
-  type SplitViewColumnProps,
-} from './elements';
+import { getSplitColumnChildren, SplitViewColumn, SplitViewInspector } from './elements';
 
 /**
  * For full list of supported props, see [`SplitHostProps`](http://github.com/software-mansion/react-native-screens/blob/main/src/components/gamma/split/SplitHost.types.ts#L117)
@@ -39,6 +35,7 @@ function SplitViewNavigator({
   ...splitViewHostProps
 }: SplitViewProps) {
   // The native split view starts expanded. It sends `onCollapse` after mount when it starts in one column.
+  // TODO: Get this value from react-native-screens.
   const [isExpanded, setIsExpanded] = useState(true);
   if (use(IsWithinNativeNavigator)) {
     throw new Error('SplitView cannot be used inside another native navigator.');
@@ -52,13 +49,9 @@ function SplitViewNavigator({
   }
 
   const allChildrenArray = React.Children.toArray(children);
-  const columnChildren = allChildrenArray.filter(
-    (child): child is ReactElement<SplitViewColumnProps> =>
-      isValidElement(child) && child.type === SplitViewColumn
-  );
-  const inspectorChildren = allChildrenArray.filter(
-    (child): child is ReactElement<SplitViewColumnProps> =>
-      isValidElement(child) && child.type === SplitViewInspector
+  const columnChildren = allChildrenArray.filter((child) => isChildOfType(child, SplitViewColumn));
+  const inspectorChildren = allChildrenArray.filter((child) =>
+    isChildOfType(child, SplitViewInspector)
   );
   const numberOfSidebars = columnChildren.length;
   const numberOfInspectors = inspectorChildren.length;
