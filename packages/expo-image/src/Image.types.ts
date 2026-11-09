@@ -496,6 +496,17 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   useAppleWebpCodec?: boolean;
 
   /**
+   * Redraws a running animation on one 50 ms tick that all images with this prop share.
+   * Each animated image otherwise redraws the window on its own frame clock, so many animated images on screen redraw it on almost every frame.
+   * With this prop, they redraw it together at up to 20 frames per second.
+   * Use it for grids and lists of animated images, and leave it off where an animation must play at its own frame rate.
+   *
+   * @default false
+   * @platform android
+   */
+  sharedAnimationTick?: boolean;
+
+  /**
    * Force early resizing of the image to match the container size.
    * This option helps to reduce the memory usage of the image view, especially when the image is larger than the container.
    * It may affect the `resizeType` and `contentPosition` properties when the image view is resized dynamically.

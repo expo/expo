@@ -394,6 +394,10 @@ class ExpoImageModule : Module() {
         view.recyclingKey = recyclingKey
       }
 
+      Prop("sharedAnimationTick") { view: ExpoImageViewWrapper, sharedAnimationTick: Boolean? ->
+        view.sharedAnimationTick = sharedAnimationTick == true
+      }
+
       Prop("allowDownscaling") { view: ExpoImageViewWrapper, allowDownscaling: Boolean? ->
         view.allowDownscaling = allowDownscaling != false
       }
