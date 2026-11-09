@@ -711,15 +711,70 @@ describe('expo-file-system behavioral mock', () => {
         it('waits for an un-queued positional read before closing the native handle', async () => {
           const file = makeFile('at-close.txt', 'abcdef');
           const handle = file.open(FileMode.ReadOnly);
+          const native = (handle as any).native;
+          let resolveRead!: (bytes: ArrayBuffer) => void;
+          jest.spyOn(native, 'readAt').mockImplementationOnce(
+            () =>
+              new Promise<ArrayBuffer>((resolve) => {
+                resolveRead = resolve;
+              })
+          );
+          const closeSpy = jest.spyOn(native, 'close');
           const pending = handle.readBytes(3, { at: 3 });
           handle.close();
           expect(handle.offset).toBeNull();
+          await Promise.resolve();
+          expect(closeSpy).not.toHaveBeenCalled();
+          resolveRead(encode('def').buffer as ArrayBuffer);
           expect(await pending).toEqual(encode('def'));
+          await Promise.resolve();
+          await Promise.resolve();
+          expect(closeSpy).toHaveBeenCalledTimes(1);
           expect(() => handle.readBytesSync(1, { at: 0 })).toThrow('The file handle is closed');
           await expect(handle.readBytes(1, { at: 0 })).rejects.toThrow('The file handle is closed');
           await expect(handle.writeBytes(encode('x'), { at: 0 })).rejects.toThrow(
             'The file handle is closed'
           );
+        });
+
+        it('lets a positional read finish while a cursor read is still pending', async () => {
+          const file = makeFile('at-skips-queue.txt', 'abcdef');
+          const handle = file.open(FileMode.ReadOnly);
+          const native = (handle as any).native;
+          let resolveRead!: (bytes: ArrayBuffer) => void;
+          jest.spyOn(native, 'readAt').mockImplementationOnce(
+            () =>
+              new Promise<ArrayBuffer>((resolve) => {
+                resolveRead = resolve;
+              })
+          );
+          const stuck = handle.readBytes(2);
+          // The queued read starts on the next microtask, so let it take the stub first.
+          await Promise.resolve();
+          expect(await handle.readBytes(2, { at: 4 })).toEqual(encode('ef'));
+          resolveRead(encode('ab').buffer as ArrayBuffer);
+          expect(await stuck).toEqual(encode('ab'));
+          expect(handle.offset).toBe(2);
+          handle.close();
+        });
+
+        it('rejects a position that is negative, fractional or not a number', async () => {
+          const file = makeFile('bad-position.txt', 'abc');
+          const handle = file.open(FileMode.ReadWrite);
+          for (const at of [-1, 1.5, NaN, Infinity]) {
+            expect(() => handle.readBytesSync(1, { at })).toThrow(RangeError);
+            expect(() => handle.readIntoSync(new Uint8Array(1), { at })).toThrow(RangeError);
+            expect(() => handle.writeBytesSync(encode('x'), { at })).toThrow(RangeError);
+            await expect(handle.readBytes(1, { at })).rejects.toThrow(RangeError);
+            await expect(handle.readInto(new Uint8Array(1), { at })).rejects.toThrow(RangeError);
+            await expect(handle.writeBytes(encode('x'), { at })).rejects.toThrow(RangeError);
+          }
+          handle.offset = -1;
+          expect(() => handle.readBytesSync(1)).toThrow(RangeError);
+          await expect(handle.readBytes(1)).rejects.toThrow(RangeError);
+          handle.offset = 0;
+          expect(handle.readBytesSync(3)).toEqual(encode('abc'));
+          handle.close();
         });
 
         it('readIntoSync fills the buffer, returns the count, and stops at EOF', () => {

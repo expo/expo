@@ -58,7 +58,8 @@ export type FileHandleReadWriteOptions = {
    *
    * Async reads with `at` do not wait for earlier calls on the handle and can finish in any
    * order. Writes always run in the order they are called. In `FileMode.Append`, a write ignores
-   * `at` and goes to the end of the file.
+   * `at` and goes to the end of the file. Must be a non-negative integer, otherwise the call
+   * throws a `RangeError`.
    *
    * > **Note:** On Android, a non-seekable `content://` descriptor ignores the position and
    * > reads come sequentially. Concurrent positional reads interleave there.

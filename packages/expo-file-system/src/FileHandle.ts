@@ -13,12 +13,12 @@ function asUint8View(buffer: ArrayBuffer | ArrayBufferView): Uint8Array {
  * Obtain a `FileHandle` by calling [`File.open()`](#openmode) on a `File` instance.
  * The handle maintains an internal byte offset that advances automatically with each
  * read or write. Set the `offset` property to seek to an arbitrary position.
- * Async calls without `at` run one at a time, in the order they are called. Async reads with `at`
- * start at once and can finish in any order.
+ * Async reads with `at` start at once and can finish in any order. All other async calls,
+ * including writes with `at`, run one at a time, in call order.
  *
  * Reads and writes also take `{ at }` to use a byte position instead of the offset. A call with
  * `at` leaves `offset` unchanged. `readInto` and `readIntoSync` fill a caller-supplied buffer, so
- * repeated reads do not allocate a new `Uint8Array` each time.
+ * repeated reads do not allocate a new buffer for the data.
  *
  * Always call `close()` when finished to release the underlying file descriptor.
  * Failing to close a handle may prevent the file from being deleted, moved, or
@@ -71,6 +71,7 @@ export class FileHandle {
    * a value greater than the file size, the next write grows the file and fills the gap
    * with zero bytes. In `FileMode.Append` the offset is ignored and every write goes to
    * the end of the file.
+   * A negative or non-integer offset makes the next read or write throw a `RangeError`.
    * Setting `offset` while an async operation is still pending has no defined result.
    * Await the operation first.
    *
@@ -121,10 +122,12 @@ export class FileHandle {
   ): Promise<Uint8Array<ArrayBuffer>> {
     const at = options?.at;
     if (at != null) {
-      return this.track(async () => new Uint8Array(await this.native.readAt(at, length)));
+      return this.track(
+        async () => new Uint8Array(await this.native.readAt(this.resolvePosition(at), length))
+      );
     }
     return this.enqueue(async () => {
-      const start = this.cursor;
+      const start = this.resolvePosition(undefined);
       const buffer = await this.native.readAt(start, length);
       this.cursor = start + buffer.byteLength;
       return new Uint8Array(buffer);
@@ -144,7 +147,7 @@ export class FileHandle {
   readBytesSync(length: number, options?: FileHandleReadWriteOptions): Uint8Array<ArrayBuffer> {
     this.ensureOpen();
     const at = options?.at;
-    const buffer = this.native.readAtSync(at ?? this.cursor, length);
+    const buffer = this.native.readAtSync(this.resolvePosition(at), length);
     if (at == null) {
       this.cursor += buffer.byteLength;
     }
@@ -152,18 +155,16 @@ export class FileHandle {
   }
 
   /**
-   * Reads bytes from the file into a caller-supplied buffer, and resolves with the number of bytes read.
+   * Reads bytes from the file into a caller-supplied buffer, and resolves with the number of
+   * bytes read.
    *
    * The method fills the buffer from the start of the view and reads at most `byteLength` bytes.
    * It resolves with `0` at or past the end of the file. The rest of the buffer is not changed.
    * Without `options.at`, the read starts at the current `offset` and advances it. With `at`,
    * the call does not use or change `offset` and does not wait for earlier calls on the handle.
    *
-   * The method reads into a native buffer and copies the bytes once into yours. Use
-   * `readIntoSync` to avoid the copy.
-   *
-   * > **Note:** On a JavaScript runtime without JS heap access, for example a worklet runtime,
-   * > the buffer is not filled. Use `readBytes` there.
+   * The method reads into a native buffer and copies the bytes once into the caller's buffer.
+   * Use `readIntoSync` to avoid the copy.
    *
    * @param buffer An `ArrayBuffer`, a typed array, or a `DataView` to fill.
    * @param options Pass `at` to read from a byte position without using or moving the `offset`.
@@ -177,13 +178,13 @@ export class FileHandle {
     const at = options?.at;
     if (at != null) {
       return this.track(async () => {
-        const bytes = await this.native.readAt(at, view.byteLength);
+        const bytes = await this.native.readAt(this.resolvePosition(at), view.byteLength);
         view.set(new Uint8Array(bytes));
         return bytes.byteLength;
       });
     }
     return this.enqueue(async () => {
-      const start = this.cursor;
+      const start = this.resolvePosition(undefined);
       const bytes = await this.native.readAt(start, view.byteLength);
       view.set(new Uint8Array(bytes));
       this.cursor = start + bytes.byteLength;
@@ -192,12 +193,12 @@ export class FileHandle {
   }
 
   /**
-   * Reads bytes from the file into a caller-supplied buffer, synchronously, and returns the number of
-   * bytes read.
+   * Reads bytes from the file into a caller-supplied buffer, synchronously, and returns the number
+   * of bytes read.
    *
    * Behaves like `readInto` but blocks the JS thread. The method fills the buffer from the start of
-   * the view and writes the file data straight into it, with no copy. It returns `0` at or past the end of the file and leaves the rest of
-   * the buffer unchanged.
+   * the view and writes the file data straight into it, with no copy. It returns `0` at or past
+   * the end of the file and leaves the rest of the buffer unchanged.
    *
    * > **Note:** On a JavaScript runtime without JS heap access, for example a worklet runtime,
    * > the buffer is not filled. Use `readBytes` there.
@@ -212,7 +213,7 @@ export class FileHandle {
   ): number {
     this.ensureOpen();
     const at = options?.at;
-    const count = this.native.readIntoSync(at ?? this.cursor, asUint8View(buffer));
+    const count = this.native.readIntoSync(this.resolvePosition(at), asUint8View(buffer));
     if (at == null) {
       this.cursor += count;
     }
@@ -234,7 +235,7 @@ export class FileHandle {
   writeBytes(bytes: Uint8Array, options?: FileHandleReadWriteOptions): Promise<void> {
     const at = options?.at;
     return this.enqueue(async () => {
-      const end = await this.native.writeAt(at ?? this.cursor, bytes);
+      const end = await this.native.writeAt(this.resolvePosition(at), bytes);
       if (at == null) {
         this.cursor = end;
       }
@@ -255,7 +256,7 @@ export class FileHandle {
   writeBytesSync(bytes: Uint8Array, options?: FileHandleReadWriteOptions): void {
     this.ensureOpen();
     const at = options?.at;
-    const end = this.native.writeAtSync(at ?? this.cursor, bytes);
+    const end = this.native.writeAtSync(this.resolvePosition(at), bytes);
     if (at == null) {
       this.cursor = end;
     }
@@ -279,13 +280,25 @@ export class FileHandle {
     }
     // An async operation is still running on a native thread. Closing the descriptor under it is
     // unsafe, so the native close waits until every in-flight operation has settled.
-    Promise.allSettled([...this.inFlight]).then(() => this.native.close());
+    Promise.allSettled([...this.inFlight])
+      .then(() => this.native.close())
+      .catch(() => {});
   }
 
   private ensureOpen(): void {
     if (this.closed) {
       throw new Error('The file handle is closed');
     }
+  }
+
+  // Native code takes the position as an unsigned integer. A negative, fractional or non-finite
+  // number would crash on iOS or silently become 0 on Android, so it is rejected here.
+  private resolvePosition(at: number | undefined): number {
+    const position = at ?? this.cursor;
+    if (!Number.isSafeInteger(position) || position < 0) {
+      throw new RangeError(`The position must be a non-negative integer, got ${position}`);
+    }
+    return position;
   }
 
   private enqueue<T>(operation: () => Promise<T>): Promise<T> {

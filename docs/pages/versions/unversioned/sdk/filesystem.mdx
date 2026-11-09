@@ -375,6 +375,7 @@ function readWindow(position: number, length: number) {
     windowLength = handle.readIntoSync(buffer, { at: position });
   }
   const start = position - windowStart;
+  // The returned bytes are valid only until the next call that refills the window. Copy them with `slice()` to keep them.
   return buffer.subarray(start, Math.min(start + length, windowLength));
 }
 
