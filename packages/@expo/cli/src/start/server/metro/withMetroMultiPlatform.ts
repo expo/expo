@@ -703,6 +703,25 @@ export function withExtendedResolver(
       }
 
       const result = getStrictResolver(context, platform)(moduleName);
+      if (
+        context.customResolverOptions?.environment === 'node' &&
+        !context.customResolverOptions.exporting
+      ) {
+        const filePath =
+          result.type === 'sourceFile'
+            ? result.filePath
+            : result.type === 'assetFiles'
+              ? result.filePaths[0]
+              : null;
+        if (filePath?.endsWith('.node')) {
+          const virtualModuleId = `\0node-addon:${filePath}`;
+          getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+            virtualModuleId,
+            `module.exports=$$require_external(${JSON.stringify(filePath)});`
+          );
+          return { type: 'sourceFile', filePath: virtualModuleId };
+        }
+      }
       if (result.type !== 'sourceFile') {
         return result;
       }
