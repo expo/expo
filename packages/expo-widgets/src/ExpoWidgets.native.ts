@@ -14,10 +14,9 @@ import type {
 declare class ExpoWidgetsModule extends NativeModule<ExpoWidgetsEvents> {
   widgetsDirectory: string;
   reloadAllWidgets(): void;
-  /** iOS only. */
-  areActivitiesEnabled(): boolean;
   readonly Widget: typeof NativeWidgetObject;
   /** iOS only. */
+  areActivitiesEnabled(): boolean;
   readonly LiveActivityFactory: typeof NativeLiveActivityFactory;
   readonly LiveActivity: typeof NativeLiveActivity;
   /** Android only. */
