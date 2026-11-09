@@ -377,8 +377,15 @@ public class ContactsModule: Module, OnContactPickingResultHandler {
       contactPickingPromise = nil
     }
 
-    let serializedContact = try serializeContact(person: contact, keys: nil, directory: nil)
-    contactPickingPromise?.resolve(serializedContact)
+    let directory = appContext?.config.cacheDirectory?.appendingPathComponent("Contacts")
+    FileSystemUtilities.ensureDirExists(at: directory)
+
+    do {
+      let serializedContact = try serializeContact(person: contact, keys: nil, directory: directory)
+      contactPickingPromise?.resolve(serializedContact)
+    } catch {
+      contactPickingPromise?.reject(error)
+    }
   }
 
   func didCancelPickingContact() {
