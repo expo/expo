@@ -1,27 +1,11 @@
 import ExpoModulesCore
+import Foundation
 
-@Record
-struct InterruptionEvent {
-  var type: String
-  var reason: String?
-  var shouldResume: Bool?
-}
-
-@Record
-struct RouteChangeEvent {
-  var reason: String
-}
-
-@Record
-struct ActivationErrorEvent {
-  var message: String
-  var client: String
-}
-
-@ExpoModule("ExpoMediaSession")
+@ExpoModule("ExpoMediaSession", classes: [JSNowPlayingOwner.self])
 public final class MediaSessionModule: Module {
   private let forwarder = EventForwarder()
   private let listening = Mutex(Listening())
+  private let holds = Mutex<[String: SessionHold]>([:])
 
   @Event
   var onInterruption: (InterruptionEvent) -> Void
@@ -34,6 +18,39 @@ public final class MediaSessionModule: Module {
 
   @Event
   var onNowPlayingOwnerChange: () -> Void
+
+  @JS(.concurrent)
+  func setAudioPolicyAsync(_ policy: AudioPolicyRecord) async throws {
+    try MediaSessionManager.shared.setPolicy(policy.update)
+  }
+
+  @JS
+  func getAudioPolicy() -> AudioPolicyRecord {
+    AudioPolicyRecord(MediaSessionManager.shared.policy)
+  }
+
+  @JS
+  func holdSession(_ key: String) {
+    let hold = MediaSessionManager.shared.hold(client: key)
+    let previous = holds.withLock { $0.updateValue(hold, forKey: key) }
+    previous?.release()
+  }
+
+  @JS
+  func releaseSession(_ key: String) {
+    let hold = holds.withLock { $0.removeValue(forKey: key) }
+    hold?.release()
+  }
+
+  @JS
+  func getNowPlayingOwner() -> JSNowPlayingOwner? {
+    MediaSessionManager.shared.nowPlayingOwner as? JSNowPlayingOwner
+  }
+
+  @JS
+  func createNowPlayingOwner(_ mediaType: String) -> JSNowPlayingOwner {
+    JSNowPlayingOwner(mediaType: NowPlayingMediaType(rawValue: mediaType))
+  }
 
   public override func didCreate() {
     forwarder.module = self
@@ -66,6 +83,13 @@ public final class MediaSessionModule: Module {
       return listening.registration
     }
     removed?.remove()
+    let released = holds.withLock { holds in
+      defer { holds = [:] }
+      return holds
+    }
+    for hold in released.values {
+      hold.release()
+    }
   }
 }
 
