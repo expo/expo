@@ -1,6 +1,9 @@
 import Head from 'expo-router/head';
 import type { GenerateMetadataFunction, Metadata } from 'expo-router/server';
-import { Text } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
+
+import { Page } from '@/components/Page';
+import { colors } from '@/components/theme';
 
 export const generateMetadata: GenerateMetadataFunction = async () => {
   return {
@@ -18,14 +21,22 @@ export const generateMetadata: GenerateMetadataFunction = async () => {
   } satisfies Metadata;
 };
 
-export default function MetadataPage() {
+export default function MetadataRoute() {
   return (
-    <>
+    <Page title="Metadata" testID="rendering-metadata">
       {/* The <Head> component is here to check that the app doesn't crash when using it with `generateMetadata()` */}
       <Head>
         <meta name="expo-e2e-metadata-head" content="head" />
       </Head>
-      <Text testID="metadata-text">Metadata</Text>
-    </>
+      <Text testID="metadata-text" style={styles.text}>
+        Metadata
+      </Text>
+    </Page>
   );
 }
+
+const styles = StyleSheet.create({
+  text: {
+    color: colors.text,
+  },
+});

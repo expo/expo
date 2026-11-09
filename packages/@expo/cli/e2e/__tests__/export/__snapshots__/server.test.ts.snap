@@ -111,7 +111,20 @@ exports[`server-output express requests exported files has expected routes manif
     },
   ],
   "assets": {
-    "css": [],
+    "css": [
+      {
+        "href": "/_expo/static/css/safe-area-[hash].css",
+        "type": "css",
+      },
+      {
+        "href": "/_expo/static/css/global-[hash].css",
+        "type": "css",
+      },
+      {
+        "href": "/_expo/static/css/test.module-[hash].css",
+        "type": "css",
+      },
+    ],
     "js": [
       "/_expo/static/js/web/entry-[hash].js",
     ],
@@ -190,10 +203,40 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "./rendering/links.tsx",
+      "namedRegex": "^/rendering/links(?:/)?$",
+      "page": "/rendering/links",
+      "routeKeys": {},
+    },
+    {
+      "file": "./rendering/fonts.tsx",
+      "namedRegex": "^/rendering/fonts(?:/)?$",
+      "page": "/rendering/fonts",
+      "routeKeys": {},
+    },
+    {
+      "file": "./rendering/asset.tsx",
+      "namedRegex": "^/rendering/asset(?:/)?$",
+      "page": "/rendering/asset",
+      "routeKeys": {},
+    },
+    {
+      "file": "./rendering/about.tsx",
+      "namedRegex": "^/rendering/about(?:/)?$",
+      "page": "/rendering/about",
+      "routeKeys": {},
+    },
+    {
       "file": "./loaders/error.tsx",
       "loader": "_expo/loaders/loaders/error.js",
       "namedRegex": "^/loaders/error(?:/)?$",
       "page": "/loaders/error",
+      "routeKeys": {},
+    },
+    {
+      "file": "./rendering/styled.tsx",
+      "namedRegex": "^/rendering/styled(?:/)?$",
+      "page": "/rendering/styled",
       "routeKeys": {},
     },
     {
@@ -211,6 +254,18 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "./rendering/suspense.tsx",
+      "namedRegex": "^/rendering/suspense(?:/)?$",
+      "page": "/rendering/suspense",
+      "routeKeys": {},
+    },
+    {
+      "file": "./rendering/metadata.tsx",
+      "namedRegex": "^/rendering/metadata(?:/)?$",
+      "page": "/rendering/metadata",
+      "routeKeys": {},
+    },
+    {
       "file": "./loaders/response.tsx",
       "loader": "_expo/loaders/loaders/response.js",
       "namedRegex": "^/loaders/response(?:/)?$",
@@ -225,9 +280,21 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "./rendering/safe-area.tsx",
+      "namedRegex": "^/rendering/safe\\-area(?:/)?$",
+      "page": "/rendering/safe-area",
+      "routeKeys": {},
+    },
+    {
       "file": "./loaders/no-loader.tsx",
       "namedRegex": "^/loaders/no\\-loader(?:/)?$",
       "page": "/loaders/no-loader",
+      "routeKeys": {},
+    },
+    {
+      "file": "./rendering/env-metadata.tsx",
+      "namedRegex": "^/rendering/env\\-metadata(?:/)?$",
+      "page": "/rendering/env-metadata",
       "routeKeys": {},
     },
     {
@@ -275,6 +342,12 @@ exports[`server-output express requests exported files has expected routes manif
       "loader": "_expo/loaders/loaders/large-suspense.js",
       "namedRegex": "^/loaders/large\\-suspense(?:/)?$",
       "page": "/loaders/large-suspense",
+      "routeKeys": {},
+    },
+    {
+      "file": "./rendering/safe-area-stack.tsx",
+      "namedRegex": "^/rendering/safe\\-area\\-stack(?:/)?$",
+      "page": "/rendering/safe-area-stack",
       "routeKeys": {},
     },
     {
@@ -348,6 +421,22 @@ exports[`server-output express requests exported files has expected routes manif
       },
     },
     {
+      "file": "./rendering/metadata-async/[id].tsx",
+      "namedRegex": "^/rendering/metadata\\-async/(?<id>[^/]+?)(?:/)?$",
+      "page": "/rendering/metadata-async/[id]",
+      "routeKeys": {
+        "id": "id",
+      },
+    },
+    {
+      "file": "./rendering/[post].tsx",
+      "namedRegex": "^/rendering/(?<post>[^/]+?)(?:/)?$",
+      "page": "/rendering/[post]",
+      "routeKeys": {
+        "post": "post",
+      },
+    },
+    {
       "file": "./loaders/posts/[postId].tsx",
       "loader": "_expo/loaders/loaders/posts/[postId].js",
       "namedRegex": "^/loaders/posts/(?<postId>[^/]+?)(?:/)?$",
@@ -363,6 +452,14 @@ exports[`server-output express requests exported files has expected routes manif
       "page": "/loaders/nullish/[value]",
       "routeKeys": {
         "value": "value",
+      },
+    },
+    {
+      "file": "./rendering/catch-all/[...post].tsx",
+      "namedRegex": "^/rendering/catch\\-all(?:/(?<post>.+?))?(?:/)?$",
+      "page": "/rendering/catch-all/[...post]",
+      "routeKeys": {
+        "post": "post",
       },
     },
     {
@@ -516,7 +613,20 @@ exports[`server-output workerd requests exported files has expected routes manif
     },
   ],
   "assets": {
-    "css": [],
+    "css": [
+      {
+        "href": "/_expo/static/css/safe-area-[hash].css",
+        "type": "css",
+      },
+      {
+        "href": "/_expo/static/css/global-[hash].css",
+        "type": "css",
+      },
+      {
+        "href": "/_expo/static/css/test.module-[hash].css",
+        "type": "css",
+      },
+    ],
     "js": [
       "/_expo/static/js/web/entry-[hash].js",
     ],
@@ -595,10 +705,40 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "./rendering/links.tsx",
+      "namedRegex": "^/rendering/links(?:/)?$",
+      "page": "/rendering/links",
+      "routeKeys": {},
+    },
+    {
+      "file": "./rendering/fonts.tsx",
+      "namedRegex": "^/rendering/fonts(?:/)?$",
+      "page": "/rendering/fonts",
+      "routeKeys": {},
+    },
+    {
+      "file": "./rendering/asset.tsx",
+      "namedRegex": "^/rendering/asset(?:/)?$",
+      "page": "/rendering/asset",
+      "routeKeys": {},
+    },
+    {
+      "file": "./rendering/about.tsx",
+      "namedRegex": "^/rendering/about(?:/)?$",
+      "page": "/rendering/about",
+      "routeKeys": {},
+    },
+    {
       "file": "./loaders/error.tsx",
       "loader": "_expo/loaders/loaders/error.js",
       "namedRegex": "^/loaders/error(?:/)?$",
       "page": "/loaders/error",
+      "routeKeys": {},
+    },
+    {
+      "file": "./rendering/styled.tsx",
+      "namedRegex": "^/rendering/styled(?:/)?$",
+      "page": "/rendering/styled",
       "routeKeys": {},
     },
     {
@@ -616,6 +756,18 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "./rendering/suspense.tsx",
+      "namedRegex": "^/rendering/suspense(?:/)?$",
+      "page": "/rendering/suspense",
+      "routeKeys": {},
+    },
+    {
+      "file": "./rendering/metadata.tsx",
+      "namedRegex": "^/rendering/metadata(?:/)?$",
+      "page": "/rendering/metadata",
+      "routeKeys": {},
+    },
+    {
       "file": "./loaders/response.tsx",
       "loader": "_expo/loaders/loaders/response.js",
       "namedRegex": "^/loaders/response(?:/)?$",
@@ -630,9 +782,21 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "./rendering/safe-area.tsx",
+      "namedRegex": "^/rendering/safe\\-area(?:/)?$",
+      "page": "/rendering/safe-area",
+      "routeKeys": {},
+    },
+    {
       "file": "./loaders/no-loader.tsx",
       "namedRegex": "^/loaders/no\\-loader(?:/)?$",
       "page": "/loaders/no-loader",
+      "routeKeys": {},
+    },
+    {
+      "file": "./rendering/env-metadata.tsx",
+      "namedRegex": "^/rendering/env\\-metadata(?:/)?$",
+      "page": "/rendering/env-metadata",
       "routeKeys": {},
     },
     {
@@ -680,6 +844,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       "loader": "_expo/loaders/loaders/large-suspense.js",
       "namedRegex": "^/loaders/large\\-suspense(?:/)?$",
       "page": "/loaders/large-suspense",
+      "routeKeys": {},
+    },
+    {
+      "file": "./rendering/safe-area-stack.tsx",
+      "namedRegex": "^/rendering/safe\\-area\\-stack(?:/)?$",
+      "page": "/rendering/safe-area-stack",
       "routeKeys": {},
     },
     {
@@ -753,6 +923,22 @@ exports[`server-output workerd requests exported files has expected routes manif
       },
     },
     {
+      "file": "./rendering/metadata-async/[id].tsx",
+      "namedRegex": "^/rendering/metadata\\-async/(?<id>[^/]+?)(?:/)?$",
+      "page": "/rendering/metadata-async/[id]",
+      "routeKeys": {
+        "id": "id",
+      },
+    },
+    {
+      "file": "./rendering/[post].tsx",
+      "namedRegex": "^/rendering/(?<post>[^/]+?)(?:/)?$",
+      "page": "/rendering/[post]",
+      "routeKeys": {
+        "post": "post",
+      },
+    },
+    {
       "file": "./loaders/posts/[postId].tsx",
       "loader": "_expo/loaders/loaders/posts/[postId].js",
       "namedRegex": "^/loaders/posts/(?<postId>[^/]+?)(?:/)?$",
@@ -768,6 +954,14 @@ exports[`server-output workerd requests exported files has expected routes manif
       "page": "/loaders/nullish/[value]",
       "routeKeys": {
         "value": "value",
+      },
+    },
+    {
+      "file": "./rendering/catch-all/[...post].tsx",
+      "namedRegex": "^/rendering/catch\\-all(?:/(?<post>.+?))?(?:/)?$",
+      "page": "/rendering/catch-all/[...post]",
+      "routeKeys": {
+        "post": "post",
       },
     },
     {

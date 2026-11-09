@@ -1791,12 +1791,18 @@ importers:
 
   apps/server-tester:
     dependencies:
+      '@expo/vector-icons':
+        specifier: ^15.0.2
+        version: 15.1.1(expo-font@packages+expo-font)(react-native@0.88.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
       expo-build-properties:
         specifier: workspace:*
         version: link:../../packages/expo-build-properties
+      expo-font:
+        specifier: workspace:*
+        version: link:../../packages/expo-font
       expo-linking:
         specifier: workspace:*
         version: link:../../packages/expo-linking

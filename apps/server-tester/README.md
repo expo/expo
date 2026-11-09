@@ -21,6 +21,7 @@ This app does not cover React Server Components. Use `apps/router-e2e` for those
 | `E2E_ROUTER_SITEMAP`                                                                           | Set to `false` to disable the sitemap route.                           |
 | `E2E_ROUTER_REDIRECTS`, `E2E_ROUTER_REWRITES`, `E2E_ROUTER_HEADERS`, `E2E_ROUTER_PAGE_HEADERS` | JSON values for the matching `expo-router` plugin options.             |
 | `E2E_ROUTER_THROW_ON_LOAD`                                                                     | Set to `true` so `app/errors/throw-on-load.tsx` throws while it loads. |
+| `E2E_FAVICON`                                                                                  | Path to the `web.favicon` image, for example `./assets/icon.png`.      |
 | `EXPO_E2E_BASE_PATH`                                                                           | Sets `experiments.baseUrl`.                                            |
 
 ## Run

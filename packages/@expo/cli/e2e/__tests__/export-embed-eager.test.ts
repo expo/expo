@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { executeExpoAsync } from '../utils/expo';
-import { projectRoot, findProjectFiles } from './utils';
+import { projectRoot, findProjectFiles, getServerTesterRoot } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -20,19 +20,8 @@ afterAll(() => {
   delete process.env._EXPO_E2E_USE_PATH_ALIASES;
 });
 
-function ensureTesterReady(fixtureName: string): string {
-  const root = path.join(__dirname, '../../../../../apps/router-e2e');
-  // Clear metro cache for the env var to be updated
-  // await fs.remove(path.join(root, "node_modules/.cache/metro"));
-
-  // @ts-ignore
-  process.env.E2E_ROUTER_SRC = fixtureName;
-
-  return root;
-}
-
 it('runs `npx expo export:embed --platform ios --eager`', async () => {
-  const projectRoot = ensureTesterReady('static-rendering');
+  const projectRoot = getServerTesterRoot();
   const output = 'dist-export-embed-eager-source-maps';
   await fs.promises.rm(path.join(projectRoot, output), { force: true, recursive: true });
   await fs.promises.mkdir(path.join(projectRoot, output));
@@ -53,8 +42,7 @@ it('runs `npx expo export:embed --platform ios --eager`', async () => {
     {
       env: {
         NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_WEB_OUTPUT: 'static',
         E2E_ROUTER_ASYNC: 'development',
       },
     }
@@ -75,7 +63,7 @@ it('runs `npx expo export:embed --platform ios --eager`', async () => {
     expect.arrayContaining([
       // Other generated files are from Expo LogBox
       // NOTE: not sure why the local run and CI dom component has doesn't match
-      'assets/__e2e__/static-rendering/sweet.ttf',
+      'assets/assets/fonts/sweet.ttf',
       'assets/__packages/expo-router/assets/arrow_down.png',
       'assets/__packages/expo-router/assets/error.png',
       'assets/__packages/expo-router/assets/file.png',

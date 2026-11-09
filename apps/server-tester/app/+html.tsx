@@ -1,8 +1,13 @@
-// Test the custom HTML component is rendered during SSR.
-
 import { ScrollViewStyleReset, useServerDocumentContext } from 'expo-router/html';
+import type { ReactNode } from 'react';
 
-export default function Html({ children, pathname, params }) {
+interface HtmlProps {
+  children: ReactNode;
+  pathname: string;
+  params: Record<string, string | string[]>;
+}
+
+export default function Html({ children, pathname, params }: HtmlProps) {
   const { bodyAttributes, bodyNodes, htmlAttributes, headNodes } = useServerDocumentContext();
 
   return (

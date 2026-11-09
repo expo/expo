@@ -1,14 +1,14 @@
 import { test, expect } from '@playwright/test';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
-import { getRouterE2ERoot } from '../../__tests__/utils';
+import { getServerTesterRoot } from '../../__tests__/utils';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { pageCollectErrors } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
 
-const projectRoot = getRouterE2ERoot();
+const projectRoot = getServerTesterRoot();
 const outputDir = 'dist-server-rendering-playwright';
 
 test.describe('server rendering in production', () => {
@@ -25,8 +25,7 @@ test.describe('server rendering in production', () => {
     await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputDir], {
       env: {
         NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'server',
-        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_WEB_OUTPUT: 'server',
         E2E_ROUTER_ASYNC: 'false',
       },
     });
@@ -52,7 +51,7 @@ test.describe('server rendering in production', () => {
   test('hydrates and performs client-side navigation from the links page', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
 
-    await page.goto(new URL('/links', expoServe.url).href);
+    await page.goto(new URL('/rendering/links', expoServe.url).href);
     await page.waitForSelector('[data-testid="links-one"]');
 
     await page.evaluate(() => {
@@ -61,7 +60,7 @@ test.describe('server rendering in production', () => {
 
     await page.locator('[data-testid="links-one"]').click();
 
-    await expect(page).toHaveURL(new URL('/about', expoServe.url).href);
+    await expect(page).toHaveURL(new URL('/rendering/about', expoServe.url).href);
     await expect(page.locator('[data-testid="content"]')).toHaveText('About');
 
     expect(

@@ -51,6 +51,8 @@ const server :Workerd.Worker = (
   bindings = [
     (name = "TEST_SECRET_RUNTIME_KEY", text = "runtime-secret-value"),
     (name = "E2E_ROUTER_WEB_OUTPUT", text = "server"),
+    (name = "EXPO_PUBLIC_TEST_VALUE", text = "foobar"),
+    (name = "EXPO_NOT_PUBLIC_TEST_VALUE", text = "not-public-value"),
   ],
   compatibilityDate = "2025-05-05",
   compatibilityFlags = [
