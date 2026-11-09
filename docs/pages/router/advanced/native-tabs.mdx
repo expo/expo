@@ -491,9 +491,9 @@ export default function TabLayout() {
 
 When `renderingMode` is not set, iOS draws an image icon as `template` in a tab state that has an icon color (from `iconColor`, `tintColor`, or `selectedColor`), and as `original` in a state without one.
 
-##### SF Symbol rendering modes
+> **info** Rendering modes for SF Symbols and Android icons, and separate modes for selected icons, are available in SDK 58 and later.
 
-> **info** This feature is available in SDK 58 and later.
+**SF Symbols (iOS)**
 
 On iOS, the `renderingMode` prop also applies to SF Symbols:
 
@@ -501,9 +501,7 @@ On iOS, the `renderingMode` prop also applies to SF Symbols:
 - **`original`**: The symbol uses its multicolor rendering.
 - **Not set**: The symbol uses the system default rendering.
 
-##### Rendering modes on Android
-
-> **info** This feature is available in SDK 58 and later.
+**Android icons**
 
 On Android, the `renderingMode` prop applies to `src`, `drawable`, and `md` icons:
 
@@ -513,9 +511,7 @@ On Android, the `renderingMode` prop applies to `src`, `drawable`, and `md` icon
 
 `md` icons are white glyphs, so they render white with `original`.
 
-##### Rendering mode for the selected state
-
-> **info** This feature is available in SDK 58 and later.
+**Different modes for selected icons**
 
 To use a different mode for the selected state, pass an object with `default` and `selected` keys:
 
