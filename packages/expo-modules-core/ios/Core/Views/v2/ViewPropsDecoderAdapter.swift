@@ -10,17 +10,30 @@ public final class ViewPropsDecoderAdapter: NSObject, ViewPropsDecoding, @unchec
   internal let decodeProps: @Sendable (UnsafeRawPointer, UnsafeRawPointer, Any?) -> AnyObject?
 
   @usableFromInline
+  internal let decodeValues: @Sendable (
+    UnsafePointer<UnsafeRawPointer>, UnsafePointer<Int>, Int, UnsafeRawPointer, Any?
+  ) -> AnyObject?
+
+  @usableFromInline
   internal let skipProps: @Sendable ([String]) -> Void
+
+  public let propNames: [String]
 
   // A designated initializer of a class can't be `@inlinable` with library evolution (the precompiled
   // XCFrameworks), so the inlinable initializer below builds the closures and delegates to this one.
   @usableFromInline
   internal init(
     decodeProps: @escaping @Sendable (UnsafeRawPointer, UnsafeRawPointer, Any?) -> AnyObject?,
-    skipProps: @escaping @Sendable ([String]) -> Void
+    decodeValues: @escaping @Sendable (
+      UnsafePointer<UnsafeRawPointer>, UnsafePointer<Int>, Int, UnsafeRawPointer, Any?
+    ) -> AnyObject?,
+    skipProps: @escaping @Sendable ([String]) -> Void,
+    propNames: [String]
   ) {
     self.decodeProps = decodeProps
+    self.decodeValues = decodeValues
     self.skipProps = skipProps
+    self.propNames = propNames
     super.init()
   }
 
@@ -38,12 +51,32 @@ public final class ViewPropsDecoderAdapter: NSObject, ViewPropsDecoding, @unchec
           previous: previous.map { unsafeDowncast($0 as AnyObject, to: DecodedViewProps<Props>.self) }
         )
       },
-      skipProps: { decoder.didSkipProps($0) }
+      decodeValues: { valuePointers, indexes, count, runtimePointer, previous in
+        return decoder.decode(
+          valuePointers: valuePointers,
+          indexes: indexes,
+          count: count,
+          runtimePointer: runtimePointer,
+          previous: previous.map { unsafeDowncast($0 as AnyObject, to: DecodedViewProps<Props>.self) }
+        )
+      },
+      skipProps: { decoder.didSkipProps($0) },
+      propNames: decoder.propNameStrings
     )
   }
 
   public func decode(propsPointer: UnsafeRawPointer, runtimePointer: UnsafeRawPointer, previous: Any?) -> Any? {
     return decodeProps(propsPointer, runtimePointer, previous)
+  }
+
+  public func decode(
+    valuePointers: UnsafePointer<UnsafeRawPointer>,
+    indexes: UnsafePointer<Int>,
+    count: Int,
+    runtimePointer: UnsafeRawPointer,
+    previous: Any?
+  ) -> Any? {
+    return decodeValues(valuePointers, indexes, count, runtimePointer, previous)
   }
 
   public func didSkipProps(_ propNames: [String]) {

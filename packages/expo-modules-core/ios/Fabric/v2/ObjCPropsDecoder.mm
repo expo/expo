@@ -13,13 +13,39 @@ DecodedProps ObjCPropsDecoder::decode(
   const jsi::Value &props,
   const DecodedProps &previous
 ) const {
-  id previousObject = (__bridge id)previous.get();
-  id decoded = [decoder_ decodeProps:&props runtime:&runtime previous:previousObject];
+  id decoded = [decoder_ decodeProps:&props runtime:&runtime previous:(__bridge id)previous.get()];
+  return decodedProps(decoded, previous);
+}
 
-  if (decoded == previousObject || decoded == nil) {
-    return previous;
+std::vector<std::string> ObjCPropsDecoder::propNames() const {
+  NSArray<NSString *> *names = decoder_.propNames;
+  std::vector<std::string> propNames;
+  propNames.reserve(names.count);
+  for (NSString *name in names) {
+    propNames.emplace_back(name.UTF8String);
   }
-  return DecodedProps::adopt((__bridge_retained CFTypeRef)decoded);
+  return propNames;
+}
+
+DecodedProps ObjCPropsDecoder::decodeValues(
+  jsi::Runtime &runtime,
+  const std::vector<std::pair<size_t, jsi::Value>> &values,
+  const DecodedProps &previous
+) const {
+  std::vector<const void *> valuePointers;
+  std::vector<NSInteger> indexes;
+  valuePointers.reserve(values.size());
+  indexes.reserve(values.size());
+  for (const auto &[index, value] : values) {
+    valuePointers.push_back(&value);
+    indexes.push_back(static_cast<NSInteger>(index));
+  }
+  id decoded = [decoder_ decodeValues:valuePointers.data()
+                              indexes:indexes.data()
+                                count:static_cast<NSInteger>(values.size())
+                              runtime:&runtime
+                             previous:(__bridge id)previous.get()];
+  return decodedProps(decoded, previous);
 }
 
 void ObjCPropsDecoder::didSkipProps(const std::vector<std::string_view> &propNames) const {
@@ -34,6 +60,13 @@ void ObjCPropsDecoder::didSkipProps(const std::vector<std::string_view> &propNam
     }
   }
   [decoder_ didSkipProps:names];
+}
+
+DecodedProps ObjCPropsDecoder::decodedProps(id decoded, const DecodedProps &previous) {
+  if (decoded == (__bridge id)previous.get() || decoded == nil) {
+    return previous;
+  }
+  return DecodedProps::adopt((__bridge_retained CFTypeRef)decoded);
 }
 
 } // namespace expo::views

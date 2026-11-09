@@ -28,6 +28,19 @@ public:
     return previous;
   }
 
+  std::vector<std::string> propNames() const override
+  {
+    return {};
+  }
+
+  views::DecodedProps decodeValues(
+    jsi::Runtime &,
+    const std::vector<std::pair<size_t, jsi::Value>> &,
+    const views::DecodedProps &previous) const override
+  {
+    return previous;
+  }
+
   void didSkipProps(const std::vector<std::string_view> &) const override {}
 };
 
