@@ -3,6 +3,7 @@ package expo.modules.observe
 import android.content.Context
 import android.util.Log
 import expo.modules.easclient.EASClientID
+import expo.modules.appmetrics.logevents.FEEDBACK_LOG_NAME
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.storage.Span
 import expo.modules.appmetrics.utils.TimeUtils
@@ -221,9 +222,11 @@ class BaseObservabilityManager(
     val config = ObservePreferences.getConfig(context)
     val ignoredEvents = config?.ignoredEvents?.toSet() ?: emptySet()
     // Installations in-sample for `sampleRate` send all logs. Errors use the higher of the two rates.
+    // Feedback uses no rate, so it is sent whenever this installation can send any logs.
     val dispatchLogsAndErrors = shouldDispatch(config, config?.sampleRate)
     val dispatchErrors = shouldDispatch(config, config?.errorSampleRate ?: config?.sampleRate)
-    if (!dispatchLogsAndErrors && !dispatchErrors) {
+    val dispatchAnyLogs = shouldDispatch(config, null)
+    if (!dispatchAnyLogs) {
       val maxId = sessionManager.getMaxLogId() ?: -1
       if (ObservePreferences.getLastDispatchedLogId(context) != maxId) {
         ObservePreferences.setLastDispatchedLogId(context, maxId)
@@ -241,10 +244,10 @@ class BaseObservabilityManager(
       }
 
       val highestId = logs.last().id
-      val sampledLogs = if (dispatchLogsAndErrors) {
-        logs
-      } else {
-        logs.filter { it.name in ERROR_LOG_NAMES }
+      val sampledLogs = logs.filter {
+        dispatchLogsAndErrors ||
+          (dispatchErrors && it.name in ERROR_LOG_NAMES) ||
+          it.name == FEEDBACK_LOG_NAME
       }.filterNot { it.name in ignoredEvents }
       val logsBySessionId = sampledLogs.groupBy { it.sessionId }
       val sessions = sessionManager.getSessions(logsBySessionId.keys).associateBy { it.id }
