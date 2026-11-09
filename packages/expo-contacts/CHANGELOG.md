@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix missing `image` and `rawImage` in contacts returned by `presentContactPickerAsync`. ([#53216](https://github.com/expo/expo/pull/53216) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
 
 ## 57.0.8 — 2026-10-14
