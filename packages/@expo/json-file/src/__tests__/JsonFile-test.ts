@@ -110,6 +110,25 @@ describe('async', () => {
     expect((await fs.promises.stat(testFilename)).mode & 0o777).toBe(0o600);
   });
 
+  it(`keeps the mode of an existing file when no mode is requested`, async () => {
+    vol.fromJSON({ [testFilename]: loadFixture('test.json') });
+    fs.chmodSync(testFilename, 0o600);
+
+    await new JsonFile(testFilename).writeAsync(testObject);
+
+    expect((await fs.promises.stat(testFilename)).mode & 0o777).toBe(0o600);
+  });
+
+  it(`writes through a symlink and keeps the symlink`, async () => {
+    vol.fromJSON({ 'real/file.json': loadFixture('test.json') });
+    fs.symlinkSync('real/file.json', 'link.json');
+
+    await new JsonFile('link.json').writeAsync(testObject);
+
+    expect(fs.lstatSync('link.json').isSymbolicLink()).toBe(true);
+    expect(JSON.parse(fs.readFileSync('real/file.json', 'utf8'))).toEqual(testObject);
+  });
+
   it(`rewrite async`, async () => {
     vol.fromJSON({ [testFilename]: loadFixture('test.json') });
 
@@ -258,6 +277,25 @@ describe('sync', () => {
     file.write(testObject);
 
     expect(fs.statSync(testFilename).mode & 0o777).toBe(0o600);
+  });
+
+  it(`keeps the mode of an existing file when no mode is requested`, () => {
+    vol.fromJSON({ [testFilename]: loadFixture('test.json') });
+    fs.chmodSync(testFilename, 0o600);
+
+    new JsonFile(testFilename).write(testObject);
+
+    expect(fs.statSync(testFilename).mode & 0o777).toBe(0o600);
+  });
+
+  it(`writes through a symlink and keeps the symlink`, () => {
+    vol.fromJSON({ 'real/file.json': loadFixture('test.json') });
+    fs.symlinkSync('real/file.json', 'link.json');
+
+    new JsonFile('link.json').write(testObject);
+
+    expect(fs.lstatSync('link.json').isSymbolicLink()).toBe(true);
+    expect(JSON.parse(fs.readFileSync('real/file.json', 'utf8'))).toEqual(testObject);
   });
 
   it(`rewrite async`, () => {

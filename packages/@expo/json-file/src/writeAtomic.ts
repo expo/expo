@@ -15,13 +15,29 @@ export function writeFileAtomicSync(
   data: string | Buffer,
   options: WriteFileAtomicOptions = {}
 ): void {
-  const tmpfile = getTarget(filename, data);
-  fs.writeFileSync(tmpfile, data, options.mode !== undefined ? { mode: options.mode } : undefined);
-  fs.renameSync(tmpfile, filename);
-  // rename preserves any pre-existing destination mode; chmod after to enforce the requested mode.
-  if (options.mode !== undefined) {
-    fs.chmodSync(filename, options.mode);
+  // Write to the symlink target (if any) so the link itself is not replaced.
+  let target = filename;
+  try {
+    target = fs.realpathSync(filename);
+  } catch {
+    // The file does not exist yet.
   }
+  let mode = options.mode;
+  if (mode === undefined) {
+    try {
+      // `rename` does not carry over the mode of the file being replaced.
+      mode = fs.statSync(target).mode & 0o7777;
+    } catch {
+      // The file does not exist yet.
+    }
+  }
+  const tmpfile = getTarget(target, data);
+  fs.writeFileSync(tmpfile, data, mode !== undefined ? { mode } : undefined);
+  if (mode !== undefined) {
+    // The mode passed to `writeFileSync` is subject to the umask; chmod enforces it.
+    fs.chmodSync(tmpfile, mode);
+  }
+  fs.renameSync(tmpfile, target);
 }
 
 export async function writeFileAtomic(
@@ -29,14 +45,27 @@ export async function writeFileAtomic(
   data: string | Buffer,
   options: WriteFileAtomicOptions = {}
 ): Promise<void> {
-  const tmpfile = getTarget(filename, data);
-  await fs.promises.writeFile(
-    tmpfile,
-    data,
-    options.mode !== undefined ? { mode: options.mode } : undefined
-  );
-  await fs.promises.rename(tmpfile, filename);
-  if (options.mode !== undefined) {
-    await fs.promises.chmod(filename, options.mode);
+  // Write to the symlink target (if any) so the link itself is not replaced.
+  let target = filename;
+  try {
+    target = await fs.promises.realpath(filename);
+  } catch {
+    // The file does not exist yet.
   }
+  let mode = options.mode;
+  if (mode === undefined) {
+    try {
+      // `rename` does not carry over the mode of the file being replaced.
+      mode = (await fs.promises.stat(target)).mode & 0o7777;
+    } catch {
+      // The file does not exist yet.
+    }
+  }
+  const tmpfile = getTarget(target, data);
+  await fs.promises.writeFile(tmpfile, data, mode !== undefined ? { mode } : undefined);
+  if (mode !== undefined) {
+    // The mode passed to `writeFile` is subject to the umask; chmod enforces it.
+    await fs.promises.chmod(tmpfile, mode);
+  }
+  await fs.promises.rename(tmpfile, target);
 }
