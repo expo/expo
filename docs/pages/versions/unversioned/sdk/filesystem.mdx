@@ -351,7 +351,7 @@ handle.close();
 
 Reads and writes also take an `at` option. A call with `at` uses that byte position and leaves `offset` unchanged. Async reads with `at` do not wait for earlier calls on the handle, so they can run at the same time. Writes always run in the order they are called.
 
-`readIntoSync` and `readInto` fill a buffer you own and return the number of bytes read. The example below keeps one 64 KB buffer and serves small requests from it, so it allocates no new `Uint8Array` for each read.
+`readIntoSync` and `readInto` fill a buffer you own and return the number of bytes read. The example below keeps one 64 KB buffer and serves small requests from it, so it does not allocate a new buffer for each read.
 
 ```ts example.ts
 import { File, Paths, FileMode } from 'expo-file-system';
@@ -361,6 +361,7 @@ const handle = file.open(FileMode.ReadOnly);
 
 // Read the WAV header without moving the offset
 const header = handle.readBytesSync(44, { at: 0 });
+console.log(`Header size: ${header.length} bytes`);
 
 const buffer = new Uint8Array(64 * 1024);
 let windowStart = 0;

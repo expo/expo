@@ -13,10 +13,11 @@ function asUint8View(buffer: ArrayBuffer | ArrayBufferView): Uint8Array {
  * Obtain a `FileHandle` by calling [`File.open()`](#openmode) on a `File` instance.
  * The handle maintains an internal byte offset that advances automatically with each
  * read or write. Set the `offset` property to seek to an arbitrary position.
- * Async operations on the same handle run one at a time, in the order they are called.
+ * Async calls without `at` run one at a time, in the order they are called. Async reads with `at`
+ * start at once and can finish in any order.
  *
  * Reads and writes also take `{ at }` to use a byte position instead of the offset. A call with
- * `at` leaves `offset` unchanged. `readInto` and `readIntoSync` fill a buffer you own, so
+ * `at` leaves `offset` unchanged. `readInto` and `readIntoSync` fill a caller-supplied buffer, so
  * repeated reads do not allocate a new `Uint8Array` each time.
  *
  * Always call `close()` when finished to release the underlying file descriptor.
@@ -151,7 +152,7 @@ export class FileHandle {
   }
 
   /**
-   * Reads bytes from the file into a buffer you provide, and resolves with the number of bytes read.
+   * Reads bytes from the file into a caller-supplied buffer, and resolves with the number of bytes read.
    *
    * The method fills the buffer from the start of the view and reads at most `byteLength` bytes.
    * It resolves with `0` at or past the end of the file. The rest of the buffer is not changed.
@@ -191,11 +192,11 @@ export class FileHandle {
   }
 
   /**
-   * Reads bytes from the file into a buffer you provide, synchronously, and returns the number of
+   * Reads bytes from the file into a caller-supplied buffer, synchronously, and returns the number of
    * bytes read.
    *
-   * Behaves like `readInto` but blocks the JS thread. The file data is written straight into the
-   * buffer, with no copy. It returns `0` at or past the end of the file and leaves the rest of
+   * Behaves like `readInto` but blocks the JS thread. The method fills the buffer from the start of
+   * the view and writes the file data straight into it, with no copy. It returns `0` at or past the end of the file and leaves the rest of
    * the buffer unchanged.
    *
    * > **Note:** On a JavaScript runtime without JS heap access, for example a worklet runtime,
