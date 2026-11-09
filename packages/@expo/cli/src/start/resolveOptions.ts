@@ -164,11 +164,12 @@ export function resolveHostType(options: {
 /** Resolve the port options for all supported bundlers. */
 export async function resolvePortsAsync(
   projectRoot: string,
-  options: Partial<Pick<Options, 'port' | 'devClient'>>,
+  options: Partial<Pick<Options, 'port' | 'devClient' | 'host'>>,
   bundlers: ('metro' | 'webpack')[]
 ): Promise<{ metroPort: number; webpackPort?: number }> {
   const metroPort = await resolveMetroPortAsync(projectRoot, {
     defaultPort: options.port,
+    host: options.host === 'localhost' ? '127.0.0.1' : undefined,
     fallbackPort: 8081,
   });
   if (metroPort == null) {
