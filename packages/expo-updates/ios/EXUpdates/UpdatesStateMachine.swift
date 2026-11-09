@@ -405,6 +405,10 @@ internal class UpdatesStateMachine {
   private func processEvent(_ event: UpdatesStateEvent) {
     // Execute state transition
     if transition(event) {
+      if case let .downloadProgress(progress) = event,
+        (progress * 100).rounded(.down) == (context.downloadProgress * 100).rounded(.down) {
+        return
+      }
       // Only change context if transition succeeds
       context = reducedContext(context, event)
       if event.type != .downloadProgress {

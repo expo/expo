@@ -12,6 +12,7 @@ import expo.modules.updatesinterface.UpdatesLogMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.util.Date
+import kotlin.math.floor
 
 /**
  * The Updates state machine class. There should be only one instance of this class
@@ -94,6 +95,9 @@ class UpdatesStateMachine(
    */
   private fun processEvent(event: UpdatesStateEvent) {
     if (transition(event)) {
+      if (event is UpdatesStateEvent.DownloadProgress && floor(event.progress * 100) == floor(context.downloadProgress * 100)) {
+        return
+      }
       context = reduceContext(context, event)
       if (event !is UpdatesStateEvent.DownloadProgress) {
         logger.info("Updates state change: ${event.type}, context = ${context.json}")

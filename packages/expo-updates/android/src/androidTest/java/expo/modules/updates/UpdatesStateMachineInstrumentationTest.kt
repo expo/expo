@@ -80,9 +80,11 @@ class UpdatesStateMachineInstrumentationTest {
   // Test classes
   class TestStateChangeEventManager : IUpdatesEventManager {
     var lastContext: UpdatesStateContext? = null
+    var sendCount = 0
     override var observer: WeakReference<IUpdatesEventManagerObserver>? = null
     override fun sendStateMachineContextEvent(context: UpdatesStateContext) {
       lastContext = context
+      sendCount++
     }
   }
 
@@ -254,6 +256,23 @@ class UpdatesStateMachineInstrumentationTest {
     machine.processEventTest(UpdatesStateEvent.DownloadCompleteUnavailable())
     Assert.assertEquals(UpdatesStateValue.Idle, machine.getState())
     Assert.assertEquals(1.0, testStateChangeEventManager.lastContext!!.downloadProgress, 0.001)
+  }
+
+  @Test
+  fun test_downloadProgressIsSentOncePerOnePercentStep() {
+    val testStateChangeEventManager = TestStateChangeEventManager()
+    val machine = UpdatesStateMachine(logger, testStateChangeEventManager, UpdatesStateValue.entries.toSet())
+
+    machine.processEventTest(UpdatesStateEvent.Download())
+    val assetCount = 556
+    for (asset in 0 until assetCount) {
+      for (chunk in 1..4) {
+        machine.processEventTest(UpdatesStateEvent.DownloadProgress((asset + chunk / 4.0) / assetCount))
+      }
+    }
+
+    Assert.assertEquals(101, testStateChangeEventManager.sendCount)
+    Assert.assertEquals(1.0, testStateChangeEventManager.lastContext!!.downloadProgress, 0.0)
   }
 
   @Test
