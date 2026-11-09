@@ -1,0 +1,252 @@
+---
+title: User feedback
+sidebar_title: Feedback
+description: Collect feedback from your users with Observe.reportFeedback and view it as events in Expo Observe.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+`Observe.reportFeedback` sends feedback from your users to Expo Observe. The API has no UI. You build the feedback form, and the API sends what the user enters. Expo Observe records each report as a custom event named `expo.feedback`, next to your other [user-defined events](/eas/observe/events/).
+
+`reportFeedback` works on Android and iOS. On web, it sends nothing.
+
+## Report feedback
+
+Call `Observe.reportFeedback` with an `id` and a `message`, a `rating`, or both:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+Observe.reportFeedback({
+  id: 'checkout',
+  message: 'The pay button is hard to find.',
+  rating: 6,
+  attributes: { cartSize: 3 },
+});
+```
+
+| Field        | Description                                                                                                                    |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------ |
+| `id`         | Where your app collects the feedback, for example, `checkout`. Many reports can use the same `id`. Sent as `expo.feedback.id`. |
+| `message`    | Text that the user wrote. Sent as the event body. Text longer than 4096 characters is cut.                                     |
+| `rating`     | A whole number from 0 to 10. Sent as `expo.feedback.rating`.                                                                   |
+| `attributes` | Extra context. The same rules as [`logEvent` attributes](/eas/observe/events/#attach-attributes) apply.                        |
+
+`reportFeedback` drops the report and prints a warning in development when:
+
+- The `id` is empty.
+- The report has no `message` and no `rating`. An empty `message` counts as no message.
+- The `rating` is not a whole number from 0 to 10.
+- An argument has the wrong type.
+
+`reportFeedback` returns nothing. To tell the user that a report is not valid, check the input before you call it, as the [example](#add-a-feedback-screen-with-expo-router) below does.
+
+## Sampling and configuration
+
+Every installation sends feedback. [`sampleRate` and `errorSampleRate`](/eas/observe/configuration/#sampling) do not apply to it, so you get all feedback even when you sample other events.
+
+Other options apply to feedback the same way as to other events:
+
+- To stop sending feedback, add `expo.feedback` to [`ignoredEvents`](/eas/observe/configuration/#ignore-metrics-and-events).
+- When `dispatchingEnabled` is `false`, feedback is dropped, and no warning is printed. Pending feedback is not kept to send later.
+- In a debug build, feedback is dropped unless `dispatchInDebug` is `true`.
+
+## Add a feedback screen with Expo Router
+
+This example adds a floating button to every screen. The button opens a feedback screen as an iOS sheet. The report includes the route pattern of the screen the user came from, for example, `/(tabs)/sessions/[sessionId]`. The route pattern has no route parameter values, so the report does not carry IDs or other data from the URL.
+
+Register the feedback screen as a sheet, and render the button next to the root `Stack`:
+
+```tsx src/app/_layout.tsx
+import { Stack } from 'expo-router';
+
+import { FeedbackButton } from '@/components/FeedbackButton';
+
+export default function RootLayout() {
+  return (
+    <>
+      <Stack>
+        <Stack.Screen name="feedback" options={{ presentation: 'formSheet', title: 'Feedback' }} />
+      </Stack>
+      <FeedbackButton />
+    </>
+  );
+}
+```
+
+The button reads the route pattern with `useSegments()`. On the feedback screen, `usePathname()` and `useSegments()` return the feedback route, so the button passes the route pattern to the feedback screen as the `from` parameter:
+
+```tsx src/components/FeedbackButton.tsx
+import { useRouter, useSegments } from 'expo-router';
+import { Pressable, StyleSheet, Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+export function FeedbackButton() {
+  const router = useRouter();
+  const segments = useSegments();
+  const insets = useSafeAreaInsets();
+
+  if (segments[0] === 'feedback') {
+    return null;
+  }
+
+  const from = `/${segments.join('/')}`;
+  // For apps with a floating tab bar on iOS, 72 adds room for the bar to the 16-point margin.
+  const bottom = insets.bottom + (process.env.EXPO_OS === 'ios' ? 72 : 16);
+
+  return (
+    <Pressable
+      style={[styles.button, { bottom }]}
+      onPress={() => router.push({ pathname: '/feedback', params: { from } })}>
+      <Text style={styles.label}>Feedback</Text>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  button: {
+    position: 'absolute',
+    right: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+    backgroundColor: '#000',
+  },
+  label: { color: '#fff', fontWeight: '600' },
+});
+```
+
+The feedback screen reads `from` with `useLocalSearchParams()`, checks the input, and sends the report. `KeyboardAvoidingView` keeps the text field and the send button above the keyboard in the iOS sheet:
+
+```tsx src/app/feedback.tsx
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Observe } from 'expo-observe';
+import { useState } from 'react';
+import {
+  Button,
+  KeyboardAvoidingView,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
+
+const RATINGS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+
+export default function FeedbackScreen() {
+  const { from } = useLocalSearchParams<{ from?: string }>();
+  const router = useRouter();
+  const [message, setMessage] = useState('');
+  const [rating, setRating] = useState<number>();
+  const [error, setError] = useState<string>();
+
+  function send() {
+    const text = message.trim();
+    // `reportFeedback` drops a report without a message or a rating, so tell the user here.
+    if (!text && rating === undefined) {
+      setError('Add a message or a rating.');
+      return;
+    }
+    Observe.reportFeedback({
+      id: 'feedback-button',
+      message: text || undefined,
+      rating,
+      attributes: { route: from ?? 'unknown' },
+    });
+    router.back();
+  }
+
+  return (
+    <KeyboardAvoidingView
+      behavior={process.env.EXPO_OS === 'ios' ? 'padding' : undefined}
+      style={styles.container}>
+      <View style={styles.ratings}>
+        {RATINGS.map(value => (
+          <Pressable
+            key={value}
+            onPress={() => setRating(value)}
+            style={[styles.rating, rating === value && styles.selected]}>
+            <Text>{value}</Text>
+          </Pressable>
+        ))}
+      </View>
+      <TextInput
+        multiline
+        placeholder="Tell us what you think"
+        value={message}
+        onChangeText={setMessage}
+        style={styles.input}
+      />
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+      <Button title="Send" onPress={send} />
+    </KeyboardAvoidingView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 16, gap: 12 },
+  ratings: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
+  rating: { padding: 8, borderRadius: 6, borderWidth: 1, borderColor: '#ccc' },
+  selected: { backgroundColor: '#ddd' },
+  input: { flex: 1, borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 8 },
+  error: { color: '#c00' },
+});
+```
+
+## Add a feedback screen with React Navigation
+
+With React Navigation, use the route name of the current screen. The route name has no route parameter values. Read it from the navigation container ref when the user presses the button:
+
+```tsx App.tsx
+import { createNavigationContainerRef } from '@react-navigation/native';
+import { ObserveNavigationContainer } from 'expo-observe/integrations/react-navigation';
+import { Pressable, Text } from 'react-native';
+
+import { RootStack } from './navigation';
+
+type RootStackParamList = {
+  Home: undefined;
+  Feedback: { from?: string };
+};
+
+const navigationRef = createNavigationContainerRef<RootStackParamList>();
+
+export default function App() {
+  function openFeedback() {
+    if (!navigationRef.isReady()) return;
+    const from = navigationRef.getCurrentRoute()?.name;
+    navigationRef.navigate('Feedback', { from });
+  }
+
+  return (
+    <ObserveNavigationContainer ref={navigationRef}>
+      <RootStack />
+      <Pressable onPress={openFeedback} style={{ position: 'absolute', right: 16, bottom: 48 }}>
+        <Text>Feedback</Text>
+      </Pressable>
+    </ObserveNavigationContainer>
+  );
+}
+```
+
+Register a `Feedback` screen with `presentation: 'formSheet'` in your stack. In that screen, read `from` from `useRoute().params`, and use the same form as the [Expo Router example](#add-a-feedback-screen-with-expo-router).
+
+## View feedback
+
+Feedback is a custom event, so it appears on the [**Observe > Events**](https://expo.dev/accounts/[account]/projects/[project]/observe/events) page of the dashboard under the `expo.feedback` name.
+
+From the CLI:
+
+<Terminal cmd={['$ eas observe:events expo.feedback']} />
+
+Each event shows the message as its body, and `expo.feedback.id`, `expo.feedback.rating`, and your attributes. See [Querying with EAS CLI](/eas/observe/eas-cli/) for more `eas observe` commands.
+
+## Privacy
+
+Free text from your users can contain personal data, such as names, email addresses, or phone numbers. Expo Observe deletes feedback after 90 days, like all other records. See [data retention](/eas/observe/reference/metrics/#data-retention). Expo Observe also sends feedback to the integrations that you connect to your project, for example, Datadog.
+
+Before you collect feedback:
+
+- Tell your users what you collect and how you use it.
+- Declare the data in the App Store privacy details and in the Google Play Data safety form. See [App store privacy declarations](/eas/observe/reference/store-privacy-declarations/).

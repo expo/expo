@@ -642,6 +642,7 @@ export const eas = [
     makePage('eas/observe/eas-update.mdx'),
     makePage('eas/observe/events.mdx'),
     makePage('eas/observe/errors.mdx'),
+    makePage('eas/observe/feedback.mdx'),
     makePage('eas/observe/configuration.mdx'),
     makeGroup('Integrations', [
       makePage('eas/observe/integrations/expo-router.mdx'),

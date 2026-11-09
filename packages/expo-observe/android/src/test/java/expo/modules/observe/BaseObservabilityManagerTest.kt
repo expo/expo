@@ -298,6 +298,34 @@ class BaseObservabilityManagerTest {
   }
 
   @Test
+  fun `when only errors are in-sample, feedback logs are dispatched with exception logs`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    stubLogDispatch(logs = listOf(log(1, "info"), log(2, "js.exception"), log(3, "expo.feedback")))
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(3, logCursor)
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(
+        match { events -> events.single().logs.map { it.name } == listOf("js.exception", "expo.feedback") }
+      )
+    }
+  }
+
+  @Test
+  fun `when out of both samples, only feedback logs are dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 0.0)
+    stubLogDispatch(logs = listOf(log(1, "info"), log(2, "js.exception"), log(3, "expo.feedback")))
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(3, logCursor)
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(match { events -> events.single().logs.map { it.name } == listOf("expo.feedback") })
+    }
+  }
+
+  @Test
   fun `when in-sample for sampleRate, all logs are dispatched`() = runTest {
     every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 1.0, errorSampleRate = 0.0)
     stubLogDispatch(logs = listOf(log(1, "info"), log(2, "js.exception"), log(3, "native.exception")))

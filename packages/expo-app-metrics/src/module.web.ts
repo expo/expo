@@ -76,6 +76,7 @@ class ExpoAppMetricsModule extends NativeModule implements ExpoAppMetricsModuleT
     return [];
   }
   reportError() {}
+  reportFeedback() {}
   getMainSession(): Session {
     this.mainSession ??= new WebSession('main');
     return this.mainSession as unknown as Session;
