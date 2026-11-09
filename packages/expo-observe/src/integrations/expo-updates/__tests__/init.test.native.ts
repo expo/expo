@@ -244,6 +244,25 @@ describe('initExpoUpdatesIntegration', () => {
     ]);
   });
 
+  it('reports an entry from the second before the cursor once, and keeps the cursor', async () => {
+    // An iOS entry from before millisecond timestamps sorts before a millisecond cursor of the
+    // same second.
+    await runIntegration([entry({ timestamp: NOW - 1400, message: 'first' })]);
+
+    jest.setSystemTime(NOW + WINDOW_MS);
+    jest.resetModules();
+    await runIntegration([
+      entry({ timestamp: NOW - 2000, message: 'truncated' }),
+      entry({ timestamp: NOW - 1400, message: 'first' }),
+    ]);
+
+    expect(reportedErrorMessages()).toEqual([
+      'UpdateFailedToLoad: first',
+      'UpdateFailedToLoad: truncated',
+    ]);
+    expect(JSON.parse(storedCursor!).timestamp).toBe(NOW - 1400);
+  });
+
   it('reports entries in timestamp order and stores the newest timestamp', async () => {
     await runIntegration([
       entry({ timestamp: NOW - 1000, message: 'newer' }),

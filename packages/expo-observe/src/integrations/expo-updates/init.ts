@@ -175,16 +175,20 @@ function keyTimestamp(key: string): number {
 
 /**
  * Moves the cursor to the newest entry, and keeps the keys of the entries in the second before it,
- * including the keys from the previous cursor.
+ * including the keys from the previous cursor. The cursor never moves back, because the new
+ * entries can all be from the second before the previous cursor.
  */
 function nextCursor(previous: LogCursor | null, sortedEntries: UpdatesLogEntry[]): LogCursor {
-  const newest = sortedEntries[sortedEntries.length - 1]!;
-  const keyThreshold = newest.timestamp - CURSOR_OVERLAP_MS;
+  const newestTimestamp = Math.max(
+    sortedEntries[sortedEntries.length - 1]!.timestamp,
+    previous?.timestamp ?? -Infinity
+  );
+  const keyThreshold = newestTimestamp - CURSOR_OVERLAP_MS;
   const newKeys = sortedEntries.filter((entry) => REPORTABLE_LEVELS.has(entry.level)).map(entryKey);
   const keys = [...(previous?.keys ?? []), ...newKeys].filter(
     (key) => keyTimestamp(key) >= keyThreshold
   );
-  return { timestamp: newest.timestamp, keys: [...new Set(keys)] };
+  return { timestamp: newestTimestamp, keys: [...new Set(keys)] };
 }
 
 async function readAndReport(
@@ -206,7 +210,7 @@ async function readAndReport(
 
   const seenKeys = new Set(cursor?.keys);
   const newEntries = entries
-    .filter((entry) => !cursor || entry.timestamp >= cursor.timestamp)
+    .filter((entry) => !cursor || entry.timestamp >= cursor.timestamp - CURSOR_OVERLAP_MS)
     .filter((entry) => !seenKeys.has(entryKey(entry)))
     .sort((a, b) => a.timestamp - b.timestamp);
 
