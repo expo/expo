@@ -762,6 +762,8 @@ function updateDelivery(instance: LiveActivity<DeliveryActivityProps>) {
 
 Both `start` and `update` accept a `staleDate` option to tell iOS when the content becomes out of date. To migrate from the deprecated positional arguments, use `start(props, { url, staleDate })` and `update(props, { staleDate })`.
 
+If you also update the Live Activity with push notifications, pass the time the data was generated as the `contentDate` option of `update`. On iOS 17.2 and later, the system then ignores a local update that is older than a push payload it has already applied.
+
 #### Recovering active Live Activities
 
 A Live Activity can outlive the app process that started it. Use `getInstances` on the factory to retrieve the pending, active, and stale activities of that type. You can then update or end them after your app relaunches. To cancel a scheduled activity before it starts, call `end()` on its pending instance.

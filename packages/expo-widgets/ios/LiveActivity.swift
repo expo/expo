@@ -22,7 +22,12 @@ final class LiveActivity: SharedObject {
       staleDate: options.staleDate,
       relevanceScore: options.relevanceScore
     )
-    await activity.update(content)
+
+    guard let contentDate = options.contentDate, #available(iOS 17.2, *) else {
+      return await activity.update(content)
+    }
+
+    await activity.update(content, timestamp: contentDate)
   }
 
   func end(dismissalPolicy: LiveActivityDismissalPolicy?, afterDate: Date?, props: String?, contentDate: Date?) async throws {

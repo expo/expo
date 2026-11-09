@@ -120,7 +120,7 @@ export class LiveActivity<T extends object = object> {
   /**
    * Updates the Live Activity's content. The UI reflects the new properties immediately.
    * @param props The updated content properties.
-   * @param options Options for updating the content's stale date and relevance score.
+   * @param options Options for updating the content's stale date, relevance score, and content date.
    * @platform ios
    */
   update(props: T, options?: LiveActivityUpdateOptions): Promise<void>;
@@ -135,6 +135,7 @@ export class LiveActivity<T extends object = object> {
     return this.nativeLiveActivity.update(JSON.stringify(props), {
       ...options,
       staleDate: options?.staleDate?.getTime(),
+      contentDate: options?.contentDate?.getTime(),
     });
   }
 

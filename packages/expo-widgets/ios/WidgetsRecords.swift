@@ -33,6 +33,7 @@ struct LiveActivityStartOptions: Record {
 struct LiveActivityUpdateOptions: Record {
   @Field var staleDate: Date?
   @Field var relevanceScore: Double = 0
+  @Field var contentDate: Date?
 }
 
 struct LiveActivitySchedule: Record {

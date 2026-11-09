@@ -84,3 +84,13 @@ it('preserves the positional stale date when updating without a relevance score'
   const args = [JSON.stringify(props), { staleDate: staleDate.getTime() }];
   expect(mockUpdate.mock.calls).toEqual([args, args]);
 });
+
+it('passes the content date when updating', () => {
+  const activity = factory.start(props);
+  const contentDate = new Date(1000);
+
+  activity.update(props, { staleDate, contentDate });
+  expect(mockUpdate.mock.calls).toEqual([
+    [JSON.stringify(props), { staleDate: staleDate.getTime(), contentDate: contentDate.getTime() }],
+  ]);
+});
