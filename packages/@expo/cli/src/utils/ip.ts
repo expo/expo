@@ -15,6 +15,7 @@ export interface GatewayInfo {
   internal: boolean;
 }
 
+// NOTE(@kitten): Session caching accepts the unlikely risk of an address change during a native build.
 let cachedGateway: GatewayInfo | undefined;
 let pendingGateway: Promise<GatewayInfo> | undefined;
 
