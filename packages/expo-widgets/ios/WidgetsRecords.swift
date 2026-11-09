@@ -27,11 +27,31 @@ struct LiveActivityStartOptions: Record {
   @Field var url: URL?
   @Field var staleDate: Date?
   @Field var relevanceScore: Double = 0
+  @Field var schedule: LiveActivitySchedule?
 }
 
 struct LiveActivityUpdateOptions: Record {
   @Field var staleDate: Date?
   @Field var relevanceScore: Double = 0
+}
+
+struct LiveActivitySchedule: Record {
+  @Field(.required) var startDate: Date = .distantFuture
+  @Field(.required) var alertConfiguration: LiveActivityAlertConfiguration
+}
+
+struct LiveActivityAlertConfiguration: Record {
+  @Field(.required) var title: String
+  @Field(.required) var body: String
+  @Field var sound: String?
+
+  func toAlertConfiguration() -> AlertConfiguration {
+    AlertConfiguration(
+      title: LocalizedStringResource(stringLiteral: title),
+      body: LocalizedStringResource(stringLiteral: body),
+      sound: sound.map { .named($0) } ?? .default
+    )
+  }
 }
 
 internal enum LiveActivityDismissalPolicy: String, Enumerable {

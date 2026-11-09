@@ -728,6 +728,24 @@ export default App;
 
 Use the `url` option to associate a URL with the Live Activity. When the user taps the activity, the system opens your app with that URL, so you can route to the relevant screen using [linking](/linking/into-your-app/) (for example with Expo Router's deep linking).
 
+#### Scheduling a Live Activity
+
+On iOS 26 or later, use the `schedule` option to start a Live Activity at a future date. Supply a `startDate` and the alert that iOS presents when the activity starts. Passing `schedule` on earlier iOS versions throws an error.
+
+```tsx
+import DeliveryActivity from './DeliveryActivity';
+
+DeliveryActivity.start(
+  { etaMinutes: 15, status: 'Your delivery is on the way' },
+  {
+    schedule: {
+      startDate: new Date(Date.now() + 10 * 60 * 1000),
+      alertConfiguration: { title: 'Delivery update', body: 'Your driver is on the way.' },
+    },
+  }
+);
+```
+
 #### Updating a Live Activity
 
 The example below continues from [Starting a Live Activity](#starting-a-live-activity).
@@ -746,7 +764,7 @@ Both `start` and `update` accept a `staleDate` option to tell iOS when the conte
 
 #### Recovering active Live Activities
 
-A Live Activity can outlive the app process that started it. Use `getInstances` on the factory to retrieve the activities of that type that are currently active, for example to update or end them after your app relaunches.
+A Live Activity can outlive the app process that started it. Use `getInstances` on the factory to retrieve the pending, active, and stale activities of that type. You can then update or end them after your app relaunches. To cancel a scheduled activity before it starts, call `end()` on its pending instance.
 
 ```tsx
 import DeliveryActivity from './DeliveryActivity';

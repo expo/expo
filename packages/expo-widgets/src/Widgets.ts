@@ -190,7 +190,8 @@ export class LiveActivity<T extends object = object> {
 }
 
 /**
- * Manages Live Activity instances of a specific type. Use it to start new activities and retrieve currently active ones.
+ * Manages Live Activity instances of a specific type. It starts or schedules activities and
+ * retrieves their instances.
  * @platform ios
  */
 export class LiveActivityFactory<T extends object = object> {
@@ -225,12 +226,16 @@ export class LiveActivityFactory<T extends object = object> {
       this.nativeLiveActivityFactory.start(JSON.stringify(props), {
         ...options,
         staleDate: options.staleDate?.getTime(),
+        schedule: options.schedule && {
+          ...options.schedule,
+          startDate: options.schedule.startDate.getTime(),
+        },
       })
     );
   }
 
   /**
-   * Returns all currently active instances of this Live Activity type.
+   * Returns pending, active, and stale instances of this Live Activity type.
    * @platform ios
    */
   getInstances() {
