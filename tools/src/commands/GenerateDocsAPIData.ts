@@ -276,6 +276,7 @@ export const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-mail-composer': ['MailComposer.ts'],
   'expo-media-library': ['index.ts'],
   'expo-media-library-legacy': ['legacy/index.ts', 'expo-media-library'],
+  'expo-media-session': ['index.ts'],
   'expo-mesh-gradient': ['index.ts'],
   'expo-navigation-bar': ['index.ts'],
   'expo-network': ['Network.ts'],

@@ -63,6 +63,7 @@
       </intent-filter>
     </service>
     <service android:name="expo.modules.audio.service.AudioRecordingService" android:exported="false" android:foregroundServiceType="microphone"/>
+    <service android:name="expo.modules.mediasession.service.MediaPlaybackService" android:exported="false" android:foregroundServiceType="mediaPlayback"/>
     <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode|smallestScreenSize" android:launchMode="singleTask" android:theme="@style/Theme.App.SplashScreen" android:windowSoftInputMode="adjustResize" android:exported="true" android:supportsPictureInPicture="true">
       <intent-filter>
         <action android:name="android.intent.action.VIEW"/>
