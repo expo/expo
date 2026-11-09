@@ -23,8 +23,10 @@ Delete this comment when you fill the section.
 
 <!--
 Say what you ran, on which device or simulator, and the result.
+Say which checks you could not run, and why.
 If this pull request has no automated test, give the steps a reviewer can repeat.
 If you did not run a test, say that and mark the pull request as a draft.
+Run the test plan before you submit the pull request.
 Delete this comment when you fill the section.
 -->
 
