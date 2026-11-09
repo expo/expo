@@ -118,6 +118,11 @@ export type LiveActivityEnvironment = {
    */
   isLuminanceReduced?: boolean;
   /**
+   * The activity's rendering mode, based on where the system is displaying it.
+   * @platform iOS 16+
+   */
+  widgetRenderingMode?: WidgetRenderingMode;
+  /**
    * Whether the activity is currently displayed in fullscreen.
    * @platform iOS 16.1+
    */
