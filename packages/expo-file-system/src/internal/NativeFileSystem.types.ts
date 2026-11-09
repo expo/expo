@@ -46,6 +46,11 @@ export declare class NativeFileSystemFileHandle {
   readAt(position: number, length: number): Promise<ArrayBuffer>;
   readAtSync(position: number, length: number): ArrayBuffer;
   /**
+   * Reads up to `target.byteLength` bytes at `position` into `target` on the JS thread and returns
+   * the number of bytes read. Returns 0 at or past the end of the file.
+   */
+  readIntoSync(position: number, target: Uint8Array): number;
+  /**
    * Writes all of `bytes` at `position` on a background thread and resolves with the offset right
    * after the written bytes. In append mode the position is ignored and the data goes to the end
    * of the file.

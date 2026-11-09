@@ -532,6 +532,15 @@ export class FileSystemFileHandle {
     return bytes.slice(position, position + count).buffer;
   }
 
+  readIntoSync(position: number, target: Uint8Array): number {
+    this.ensureOpen();
+    if (this.writeOnly) throw new Error('File handle is write-only');
+    const bytes = store.get(this.key)?.bytes ?? new Uint8Array(0);
+    const chunk = bytes.subarray(position, position + target.length);
+    target.set(chunk);
+    return chunk.length;
+  }
+
   async readAt(position: number, count: number): Promise<ArrayBuffer> {
     return this.readAtSync(position, count);
   }

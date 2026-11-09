@@ -1,6 +1,12 @@
 import { FileMode, type FileHandleReadWriteOptions } from './File.types';
 import type { NativeFileSystemFileHandle } from './internal/NativeFileSystem.types';
 
+function asUint8View(buffer: ArrayBuffer | ArrayBufferView): Uint8Array {
+  return ArrayBuffer.isView(buffer)
+    ? new Uint8Array(buffer.buffer, buffer.byteOffset, buffer.byteLength)
+    : new Uint8Array(buffer);
+}
+
 /**
  * Provides low-level, random-access read and write operations on a file.
  *
@@ -128,6 +134,56 @@ export class FileHandle {
       this.cursor += buffer.byteLength;
     }
     return new Uint8Array(buffer);
+  }
+
+  /**
+   * Reads bytes from the file into the given buffer and resolves with the number of bytes read.
+   * Resolves with `0` at or past the end of the file. Bytes of the buffer past the count are not
+   * changed. Without `at`, reads at the current offset and advances it by the count.
+   *
+   * @param buffer The `ArrayBuffer` or view to fill.
+   * @param options Pass `at` to read at a byte position without using or moving the offset.
+   */
+  readInto(
+    buffer: ArrayBuffer | ArrayBufferView,
+    options?: FileHandleReadWriteOptions
+  ): Promise<number> {
+    const view = asUint8View(buffer);
+    const at = options?.at;
+    if (at != null) {
+      return this.track(async () => {
+        const bytes = await this.native.readAt(at, view.byteLength);
+        view.set(new Uint8Array(bytes));
+        return bytes.byteLength;
+      });
+    }
+    return this.enqueue(async () => {
+      const start = this.cursor;
+      const bytes = await this.native.readAt(start, view.byteLength);
+      view.set(new Uint8Array(bytes));
+      this.cursor = start + bytes.byteLength;
+      return bytes.byteLength;
+    });
+  }
+
+  /**
+   * Reads bytes from the file into the given buffer, synchronously, and returns the number of
+   * bytes read. Behaves like `readInto` but blocks the JS thread.
+   *
+   * @param buffer The `ArrayBuffer` or view to fill.
+   * @param options Pass `at` to read at a byte position without using or moving the offset.
+   */
+  readIntoSync(
+    buffer: ArrayBuffer | ArrayBufferView,
+    options?: FileHandleReadWriteOptions
+  ): number {
+    this.ensureOpen();
+    const at = options?.at;
+    const count = this.native.readIntoSync(at ?? this.cursor, asUint8View(buffer));
+    if (at == null) {
+      this.cursor += count;
+    }
+    return count;
   }
 
   /**
