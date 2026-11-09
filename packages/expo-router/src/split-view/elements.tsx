@@ -1,9 +1,25 @@
 import { Children, isValidElement, type ReactNode } from 'react';
 import type { NativeSyntheticEvent } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { SafeAreaView, Split } from '../optional-libraries/react-native-screens';
 import { SplitViewColumnHeader } from './header';
+
+export interface SplitViewToolbarItem {
+  /**
+   * Title of the button. When `icon` is set, it is used as the accessibility label.
+   */
+  title: string;
+  /**
+   * SF Symbol shown instead of the title.
+   */
+  icon?: SFSymbol;
+  /**
+   * Called when the button is pressed.
+   */
+  onPress: () => void;
+}
 
 export interface SplitViewSearchBar {
   /**
@@ -30,6 +46,14 @@ export interface SplitViewHeader {
    * @default false
    */
   largeTitle?: boolean;
+  /**
+   * Buttons shown on the leading side of the navigation bar.
+   */
+  leftToolbar?: SplitViewToolbarItem[];
+  /**
+   * Buttons shown on the trailing side of the navigation bar.
+   */
+  rightToolbar?: SplitViewToolbarItem[];
   /**
    * Search bar shown in the navigation bar.
    */

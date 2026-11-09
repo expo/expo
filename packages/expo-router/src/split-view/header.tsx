@@ -2,11 +2,17 @@ import type { SplitViewHeader } from './elements';
 import { SplitViewNativeHeader } from './native';
 
 export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
-  const { title, largeTitle, searchBar } = header;
+  const { title, largeTitle, leftToolbar, rightToolbar, searchBar } = header;
   return (
     <SplitViewNativeHeader
       title={title}
       largeTitle={largeTitle}
+      leftToolbarItems={leftToolbar?.map(({ title, icon }) => ({ title, icon }))}
+      rightToolbarItems={rightToolbar?.map(({ title, icon }) => ({ title, icon }))}
+      onToolbarItemPress={({ nativeEvent: { side, index } }) => {
+        const items = side === 'left' ? leftToolbar : rightToolbar;
+        items?.[index]?.onPress();
+      }}
       searchBar={searchBar && { placeholder: searchBar.placeholder }}
       onSearchBarChangeText={searchBar?.onChangeText}
       onSearchBarSearchButtonPress={searchBar?.onSearchButtonPress}

@@ -1,7 +1,8 @@
 import { useLocalSearchParams } from 'expo-router';
+import { use } from 'react';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 
-import { MESSAGES } from '@/components/split-view-mail';
+import { MESSAGES, ToolbarPressContext } from '@/components/split-view-mail';
 
 export default function MessageScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -15,6 +16,9 @@ export default function MessageScreen() {
       <Text style={styles.date}>{message.date}</Text>
       <Text style={styles.subject}>{message.subject}</Text>
       <Text style={styles.body}>{message.body}</Text>
+      <Text testID="split-view-mail-message-press">
+        Last toolbar press: {use(ToolbarPressContext)}
+      </Text>
     </ScrollView>
   );
 }
