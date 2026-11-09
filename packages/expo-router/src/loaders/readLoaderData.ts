@@ -13,11 +13,7 @@ export function readLoaderData<T>(
   }
   if (suspended) {
     if ('error' in suspended) {
-      queueMicrotask(() => {
-        if (store.get(resolvedPath) === suspended) {
-          store.clear(resolvedPath);
-        }
-      });
+      // Recovery renders reuse this error until the route's error fallback commits.
       throw suspended.error;
     }
     return suspended.data;

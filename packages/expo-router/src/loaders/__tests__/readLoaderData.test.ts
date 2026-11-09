@@ -1,5 +1,6 @@
 import { LoaderClient } from '../LoaderClient';
 import { createLoaderContextValue, type LoaderContextValue } from '../LoaderContext';
+import { abandonLoaderPath } from '../abandonLoaderPath';
 import { readLoaderData } from '../readLoaderData';
 
 const tick = () => Promise.resolve();
@@ -104,7 +105,41 @@ describe(readLoaderData, () => {
     expect(ctx.store.get('/p')).toEqual({ data: 'fresh' });
   });
 
-  it('throws a cached error once, then clears it so retry refetches', async () => {
+  it('keeps throwing a cached error without refetching until the error is cleared', async () => {
+    const ctx = createLoaderContext();
+    const fetcher = jest
+      .fn<Promise<string>, [string]>()
+      .mockRejectedValueOnce(new Error('boom'))
+      .mockResolvedValueOnce('recovered');
+
+    const error = await Promise.resolve(read(ctx, '/err', fetcher)).catch((e: unknown) => e);
+    expect(error).toEqual(new Error('Failed to load loader data for route: /err'));
+    let firstThrown: unknown;
+    try {
+      read(ctx, '/err', fetcher);
+    } catch (thrown) {
+      firstThrown = thrown;
+    }
+    expect(firstThrown).toBe(error);
+    await tick();
+    let recoveryThrown: unknown;
+    try {
+      read(ctx, '/err', fetcher);
+    } catch (thrown) {
+      recoveryThrown = thrown;
+    }
+    expect(recoveryThrown).toBe(error);
+    expect(ctx.store.get('/err')).toEqual({ error });
+    expect(fetcher).toHaveBeenCalledTimes(1);
+
+    ctx.store.clearError(error);
+    const retry = read(ctx, '/err', fetcher);
+    expect(retry).toBeInstanceOf(Promise);
+    await expect(retry).resolves.toBe('recovered');
+    expect(fetcher).toHaveBeenCalledTimes(2);
+  });
+
+  it('starts one new request after leaving and revisiting a failed path', async () => {
     const ctx = createLoaderContext();
     const fetcher = jest
       .fn<Promise<string>, [string]>()
@@ -114,29 +149,12 @@ describe(readLoaderData, () => {
     await expect(read(ctx, '/err', fetcher)).rejects.toThrow(
       'Failed to load loader data for route: /err'
     );
-    expect(() => read(ctx, '/err', fetcher)).toThrow('Failed to load loader data for route: /err');
-    expect(fetcher).toHaveBeenCalledTimes(1);
+    abandonLoaderPath(ctx, '/err');
 
-    await tick();
-    expect(ctx.store.get('/err')).toBeUndefined();
-
-    const retry = read(ctx, '/err', fetcher);
-    expect(retry).toBeInstanceOf(Promise);
-    await expect(retry).resolves.toBe('recovered');
+    const revisit = read(ctx, '/err', fetcher);
+    expect(read(ctx, '/err', fetcher)).toBe(revisit);
+    await expect(revisit).resolves.toBe('recovered');
     expect(fetcher).toHaveBeenCalledTimes(2);
-  });
-
-  it('does not clear an entry replaced before deferred error eviction', async () => {
-    const ctx = createLoaderContext();
-    const fetcher = jest.fn<Promise<string>, [string]>().mockRejectedValueOnce(new Error('boom'));
-
-    await expect(read(ctx, '/err', fetcher)).rejects.toThrow();
-    expect(() => read(ctx, '/err', fetcher)).toThrow();
-
-    ctx.store.set('/err', { data: 'fresh' });
-    await tick();
-
-    expect(ctx.store.get('/err')).toEqual({ data: 'fresh' });
   });
 
   it('does not overwrite an entry replaced while its loader is in flight', async () => {

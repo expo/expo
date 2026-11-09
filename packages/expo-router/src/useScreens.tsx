@@ -19,6 +19,7 @@ import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
 import { LoaderRouteLifecycle } from './loaders/LoaderRouteLifecycle';
 import { resolveLoaderPath } from './loaders/resolveLoaderPath';
+import { withLoaderErrorBoundary } from './loaders/withLoaderErrorBoundary';
 import { getContextKey } from './matchers';
 import {
   hasParam,
@@ -235,7 +236,7 @@ function fromImport(
         ref,
       });
       if (ErrorBoundary) {
-        children = <Try catch={ErrorBoundary}>{children}</Try>;
+        children = <Try catch={withLoaderErrorBoundary(ErrorBoundary)}>{children}</Try>;
       }
       if (value.type === 'layout' && screenErrorBoundary !== undefined) {
         children = (
@@ -244,7 +245,9 @@ function fromImport(
           </ScreenErrorBoundaryContext>
         );
         if (screenErrorBoundary === null && inheritedScreenErrorBoundary) {
-          children = <Try catch={inheritedScreenErrorBoundary}>{children}</Try>;
+          children = (
+            <Try catch={withLoaderErrorBoundary(inheritedScreenErrorBoundary)}>{children}</Try>
+          );
         }
       }
       return children;
@@ -376,7 +379,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     );
     const screenContent =
       ScreenErrorBoundary && isRouteType ? (
-        <Try catch={ScreenErrorBoundary}>{screenComponent}</Try>
+        <Try catch={withLoaderErrorBoundary(ScreenErrorBoundary)}>{screenComponent}</Try>
       ) : (
         screenComponent
       );

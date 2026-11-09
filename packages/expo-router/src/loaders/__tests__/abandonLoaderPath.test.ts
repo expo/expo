@@ -68,6 +68,15 @@ describe(abandonLoaderPath, () => {
     expect(ctx.store.get('/p')).toBe(entry);
   });
 
+  it('clears a failed result so a later visit fetches again', () => {
+    const ctx = createLoaderContextValue(new LoaderClient());
+    ctx.store.set('/p', { error: new Error('boom') });
+
+    abandonLoaderPath(ctx, '/p');
+
+    expect(ctx.store.get('/p')).toBeUndefined();
+  });
+
   it('does not discard settled state', () => {
     const ctx = createLoaderContextValue(new LoaderClient());
     const entry = { data: 'settled' };
