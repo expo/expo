@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Tabs, type TabsHostProps, type TabsScreenAppearanceIOS } from 'react-native-screens';
 
+import { isScreens5 } from '../optional-libraries/react-native-screens';
 import { useWarnOnce } from '../useDeprecated';
 import { getFirstChildOfType } from '../utils/children';
 import {
@@ -156,6 +157,17 @@ function Screen(props: InternalTabScreenProps) {
     standardAppearance?.stacked?.selected?.tabBarItemIconColor
   );
 
+  // TODO(ENG-28937): Pass `xcasset` icons once react-native-screens 5 supports them.
+  // react-native-screens 5 throws for any `xcasset` tab icon, even in one state, so drop both.
+  const hasUnsupportedXcassetIcon =
+    isScreens5 &&
+    [iosIcon, iosSelectedIcon].some((converted) => converted?.icon.type === 'xcasset');
+  useWarnOnce(
+    `The "${props.name}" tab uses an \`xcasset\` icon, which NativeTabs cannot show with react-native-screens 5 yet. ` +
+      'Use the `sf` or `src` prop of `NativeTabs.Trigger.Icon` instead.',
+    hasUnsupportedXcassetIcon
+  );
+
   const content = <ScreenContent options={options} contentRenderer={contentRenderer} />;
   const wrappedContent = useMemo(() => <SafeAreaProvider>{content}</SafeAreaProvider>, [content]);
 
@@ -164,8 +176,11 @@ function Screen(props: InternalTabScreenProps) {
       {...shared.options}
       pointerEvents={shared.pointerEvents}
       ios={{
-        icon: iosIcon?.platform === 'ios' ? iosIcon.icon : undefined,
-        selectedIcon: iosSelectedIcon?.platform === 'ios' ? iosSelectedIcon.icon : undefined,
+        icon: !hasUnsupportedXcassetIcon && iosIcon?.platform === 'ios' ? iosIcon.icon : undefined,
+        selectedIcon:
+          !hasUnsupportedXcassetIcon && iosSelectedIcon?.platform === 'ios'
+            ? iosSelectedIcon.icon
+            : undefined,
         standardAppearance,
         scrollEdgeAppearance,
         systemItem: options.role,

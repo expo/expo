@@ -585,6 +585,8 @@ export default function TabLayout() {
 
 > **info** Asset catalog icons don't support the `renderingMode` prop. Their rendering mode comes from the asset's **Render As** setting in the asset catalog. Set it to **Template Image** for the icon to be tinted with `iconColor` and `selectedIconColor`. Setting `renderingMode` alongside `xcasset` has no effect and logs a warning.
 
+> **warning** With `react-native-screens` 5, `NativeTabs` does not show `xcasset` icons yet and logs a warning. Use the `sf` or `src` prop instead.
+
 #### Vector icons
 
 You can render icons from an icon font, such as the ones provided by [`react-native-vector-icons`](https://github.com/oblador/react-native-vector-icons), by passing an image source to the `src` prop. Each icon set exposes a `getImageSourceSync` method that rasterizes a glyph to an image source you can pass directly to `src`.
