@@ -1,9 +1,13 @@
+import { use } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+
+import { ToolbarPressContext } from '@/components/split-view-mail';
 
 export default function NoMessage() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>No Message Selected</Text>
+      <Text>Last toolbar press: {use(ToolbarPressContext)}</Text>
     </View>
   );
 }

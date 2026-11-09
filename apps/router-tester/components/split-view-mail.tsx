@@ -1,3 +1,5 @@
+import { createContext } from 'react';
+
 export const MESSAGES = [
   {
     id: 'security-alert',
@@ -21,3 +23,6 @@ export const MESSAGES = [
     body: 'Follow the people you know to see their photos and videos.',
   },
 ];
+
+// The last pressed toolbar button and the press count, shown in the columns and in the route.
+export const ToolbarPressContext = createContext('None');

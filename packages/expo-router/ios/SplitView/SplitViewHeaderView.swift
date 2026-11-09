@@ -13,7 +13,10 @@ protocol NavigationItemCustomizer: NSObjectProtocol {
 class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelegate {
   var headerTitle: String?
   var largeTitle = false
+  var leftToolbarItems: [SplitViewToolbarItemRecord] = []
+  var rightToolbarItems: [SplitViewToolbarItemRecord] = []
   var searchBar: SplitViewSearchBarRecord?
+  let onToolbarItemPress = EventDispatcher()
   let onSearchBarChangeText = EventDispatcher()
   let onSearchBarSearchButtonPress = EventDispatcher()
 
@@ -30,6 +33,9 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     if superview == nil, let navigationItem {
       navigationItem.title = nil
       navigationItem.largeTitleDisplayMode = .never
+      navigationItem.leftItemsSupplementBackButton = false
+      navigationItem.leftBarButtonItems = nil
+      navigationItem.rightBarButtonItems = nil
       navigationItem.searchController = nil
       searchController = nil
       self.navigationItem = nil
@@ -49,6 +55,10 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
       // The column view is the view of its controller, so the controller is its next responder.
       (superview?.next as? UIViewController)?.navigationController?.navigationBar.sizeToFit()
     }
+    // Keeps the back button next to the left items when the split view is collapsed.
+    navigationItem.leftItemsSupplementBackButton = true
+    navigationItem.leftBarButtonItems = barButtonItems(leftToolbarItems, side: .left)
+    navigationItem.rightBarButtonItems = barButtonItems(rightToolbarItems, side: .right)
     applySearchBar(to: navigationItem)
   }
 
@@ -86,4 +96,20 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     controller.searchBar.delegate = self
     return controller
   }
+
+  private func barButtonItems(_ items: [SplitViewToolbarItemRecord], side: ToolbarSide) -> [UIBarButtonItem] {
+    return items.enumerated().map { index, item in
+      // With an image, the button shows only the image and uses the title as its accessibility label.
+      let image = item.icon.flatMap { UIImage(systemName: $0) }
+      let action = UIAction(title: item.title, image: image) { [weak self] _ in
+        self?.onToolbarItemPress(["side": side.rawValue, "index": index])
+      }
+      return UIBarButtonItem(primaryAction: action)
+    }
+  }
+}
+
+private enum ToolbarSide: String {
+  case left
+  case right
 }
