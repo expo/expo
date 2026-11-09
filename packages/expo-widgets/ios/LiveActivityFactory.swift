@@ -61,10 +61,9 @@ final class LiveActivityFactory: SharedObject {
     let activities = Activity<LiveActivityAttributes>.activities
       // Filter LiveActivity instances for activities that don't match the factory's name.
       .filter { $0.content.state.name == name }
-      .filter { $0.activityState != .ended && $0.activityState != .dismissed }
-      
-    let activeIDs = Set(activities.map(\.id))
-    instances = instances.filter { activeIDs.contains($0.key) }
+
+    let activityIDs = Set(activities.map(\.id))
+    instances = instances.filter { activityIDs.contains($0.key) }
 
     return activities.map { activity in
       if let instance = instances[activity.id] {

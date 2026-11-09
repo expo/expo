@@ -12,6 +12,21 @@ final class LiveActivity: SharedObject {
     super.init()
   }
 
+  func getState() throws -> String {
+    guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
+      throw LiveActivityNotFoundException(id)
+    }
+
+    return switch activity.activityState {
+    case .pending: "pending"
+    case .active: "active"
+    case .stale: "stale"
+    case .ended: "ended"
+    case .dismissed: "dismissed"
+    @unknown default: "unknown"
+    }
+  }
+
   func update(props: String?, options: LiveActivityUpdateOptions) async throws {
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
       throw LiveActivityNotFoundException(id)

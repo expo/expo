@@ -373,6 +373,19 @@ export type PushToStartTokenEvent = {
  */
 export type LiveActivityDismissalPolicy = 'default' | 'immediate' | ReturnType<typeof after>;
 
+/**
+ * The current state of a Live Activity.
+ * - `'pending'` - The Live Activity is scheduled to start at a specified date but hasn’t started yet. Available on iOS 26 and later.
+ * - `'active'` - The Live Activity is active, visible, and can receive content updates.
+ * - `'stale'` - The Live Activity content is out of date and needs an update.
+ * - `'ended'` - The Live Activity is visible, but a person, the app, or the system ended it, and it won’t update its content anymore.
+ * - `'dismissed'` - The Live Activity ended and is no longer visible because a person or the system removed it.
+ * - `'unknown'` - A state that this version of Expo does not recognize.
+ * @see [Apple's ActivityState documentation](https://developer.apple.com/documentation/activitykit/activitystate).
+ * @platform ios
+ */
+export type LiveActivityState = 'pending' | 'active' | 'stale' | 'ended' | 'dismissed' | 'unknown';
+
 /** @hidden */
 export type ExpoWidgetsEvents = {
   /**
@@ -433,6 +446,7 @@ export type NativeLiveActivityUpdateOptions = Omit<
 
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
   getId(): string;
+  getState(): LiveActivityState;
   update(props: string, options: NativeLiveActivityUpdateOptions): Promise<void>;
   end(
     dismissalPolicy?: string,

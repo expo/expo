@@ -108,6 +108,10 @@ public final class WidgetsModule: Module {
         instance.id
       }
 
+      Function("getState") { (instance: LiveActivity) in
+        try instance.getState()
+      }
+
       AsyncFunction("update") { (instance: LiveActivity, props: String?, options: LiveActivityUpdateOptions) in
         try await instance.update(props: props, options: options)
       }
