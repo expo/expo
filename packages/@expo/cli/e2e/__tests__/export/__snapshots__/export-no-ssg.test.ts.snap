@@ -70,6 +70,12 @@ exports[`export-no-ssg has expected routes manifest entries 1`] = `
       "routeKeys": {},
     },
     {
+      "file": "_expo/functions/errors/throw+api.js",
+      "namedRegex": "^/errors/throw(?:/)?$",
+      "page": "/errors/throw",
+      "routeKeys": {},
+    },
+    {
       "file": "_expo/functions/api/externals+api.js",
       "namedRegex": "^/api/externals(?:/)?$",
       "page": "/api/externals",
@@ -79,6 +85,12 @@ exports[`export-no-ssg has expected routes manifest entries 1`] = `
       "file": "_expo/functions/api/with-page+api.js",
       "namedRegex": "^/api/with\\-page(?:/)?$",
       "page": "/api/with-page",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/magic-import+api.js",
+      "namedRegex": "^/api/magic\\-import(?:/)?$",
+      "page": "/api/magic-import",
       "routeKeys": {},
     },
     {

@@ -43,6 +43,12 @@ describe('server-output', () => {
       });
     });
 
+    it('resolves a dynamic import with a magic comment', async () => {
+      expect(await server.fetchAsync('/api/magic-import').then((res) => res.json())).toEqual({
+        method: expect.pathMatching('get/method'),
+      });
+    });
+
     it(`renders dynamic routes at request time even when generateStaticParams is exported`, async () => {
       const res = await server.fetchAsync('/routing/static/posts/abc');
       expect(res.status).toEqual(200);
@@ -389,6 +395,14 @@ describe('server-output', () => {
         );
 
         expect(map.sources).toContain('app/routing/(a,b)/multi-group-api+api.ts');
+      });
+
+      it('keeps a magic import comment as a dynamic import', async () => {
+        const source = await fs.readFile(
+          path.join(server.outputDir, 'server/_expo/functions/api/magic-import+api.js'),
+          { encoding: 'utf8' }
+        );
+        expect(source).toMatch(/=await import\(["']path["']\);/);
       });
 
       it('has expected files', async () => {

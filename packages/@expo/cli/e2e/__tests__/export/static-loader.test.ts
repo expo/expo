@@ -275,6 +275,7 @@ describe.each(
 
       expect(routesJson.pageHeaders).toEqual([
         // Header-less loader routes: the SSG default, applied to each page and loader file.
+        { namedRegex: '^/errors/loader(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/loaders(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/loaders/env(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/loaders/error(?:/)?$', headers: SSG_DEFAULT },
@@ -305,6 +306,7 @@ describe.each(
         { namedRegex: '^/loaders/request(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/loaders/slow(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/loaders/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/errors/loader(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/loaders/env(?:/)?$', headers: SSG_DEFAULT },
         { namedRegex: '^/_expo/loaders/loaders/error(?:/)?$', headers: SSG_DEFAULT },
         {
