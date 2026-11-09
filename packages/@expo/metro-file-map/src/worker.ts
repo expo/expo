@@ -28,39 +28,32 @@ export class Worker {
     });
   }
 
-  async processFile(data: WorkerMessage): Promise<WorkerMetadata> {
-    let contentPromise: Promise<Buffer> | undefined;
-    let sha1Promise: Promise<WorkerMetadata['sha1']> | undefined;
+  processFile(data: WorkerMessage): WorkerMetadata {
+    let content: Buffer | undefined;
+    let sha1: WorkerMetadata['sha1'];
 
     const { computeSha1, filePath, pluginsToRun } = data;
 
-    const getContent = (): Promise<Buffer> => {
-      if (contentPromise == null) {
-        contentPromise = fs.promises.readFile(filePath);
+    const getContent = (): Buffer => {
+      if (content == null) {
+        content = fs.readFileSync(filePath);
       }
-      return contentPromise;
+      return content;
     };
 
     const workerUtils = { getContent };
-    const pluginDataPromise = Promise.all(
-      pluginsToRun.map((pluginIdx) => this.#plugins[pluginIdx]!.processFile(data, workerUtils))
+    const pluginData = pluginsToRun.map((pluginIdx) =>
+      this.#plugins[pluginIdx]!.processFile(data, workerUtils)
     );
 
     // If a SHA-1 is requested on update, compute it.
     if (computeSha1) {
-      sha1Promise = getContent().then(sha1hex);
+      sha1 = sha1hex(getContent());
     }
 
-    return contentPromise != null && data.maybeReturnContent
-      ? {
-          content: await contentPromise,
-          pluginData: await pluginDataPromise,
-          sha1: await sha1Promise,
-        }
-      : {
-          pluginData: await pluginDataPromise,
-          sha1: await sha1Promise,
-        };
+    return content != null && data.maybeReturnContent
+      ? { content, pluginData, sha1 }
+      : { pluginData, sha1 };
   }
 }
 
@@ -80,7 +73,7 @@ export function setup(args: WorkerSetupArgs): void {
 /**
  * Called by jest-worker with each workload
  */
-export async function processFile(data: WorkerMessage): Promise<WorkerMetadata> {
+export function processFile(data: WorkerMessage): WorkerMetadata {
   if (!singletonWorker) {
     throw new Error('metro-file-map: setup() must be called before processFile()');
   }

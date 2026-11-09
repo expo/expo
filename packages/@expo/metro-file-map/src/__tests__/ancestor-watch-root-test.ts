@@ -22,7 +22,7 @@ test.each(['/monorepo/packages', '/monorepo'])(
       files: new Map([
         ['node_modules/pkg', [0, 0, 0, null, rootPathUtils.absoluteToNormal('/store/pkg'), null]],
       ]),
-      processFile: async () => {
+      processFile: () => {
         throw new Error('Not implemented');
       },
       fallbackFilesystem: createFallbackFilesystem({
