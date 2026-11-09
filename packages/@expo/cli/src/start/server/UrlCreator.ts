@@ -242,7 +242,6 @@ const getDefaultHostname = (
     // to normalize to an address that's consistent
     return '127.0.0.1';
   } else {
-    // Fall back to local address
     return options.hostname || getGatewayAddress();
   }
 };

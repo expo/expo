@@ -16,8 +16,9 @@ async function getPortHostnamesAsync(host?: string): Promise<(string | null)[]> 
   if (host) {
     return [host];
   }
-  // Wildcard and specific listeners can share a port. Check the addresses used by clients too.
-  return [...new Set([null, '0.0.0.0', '127.0.0.1', await getIpAddressAsync()])];
+  const lanAddress = await getIpAddressAsync();
+  // Wildcard binds can succeed beside listeners on specific addresses.
+  return [...new Set([null, '0.0.0.0', '127.0.0.1', lanAddress])];
 }
 
 /** Get a free port or assert a CLI command error. */
@@ -36,7 +37,6 @@ export async function ensurePortAvailabilityAsync(
   { port }: { port: number }
 ): Promise<boolean> {
   const isFreePort = await testPortAsync(port, await getPortHostnamesAsync());
-  // Check if port has become busy during the build.
   if (isFreePort) {
     return true;
   }
