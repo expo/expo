@@ -26,6 +26,10 @@ final class ManualScheduler: Scheduler, @unchecked Sendable {
   private var drainingThread: Thread?
   private var nowMilliseconds = 0
 
+  var now: TimeInterval {
+    lock.withLock { TimeInterval(nowMilliseconds) / 1000 }
+  }
+
   func async(_ work: @escaping @Sendable () -> Void) {
     lock.withLock { ready.append(work) }
     drain()
@@ -245,6 +249,7 @@ final class RecordingObserver: MediaSessionObserver, @unchecked Sendable {
     case focusLost(transient: Bool)
     case servicesReset
     case silentModeChanged(isSilent: Bool)
+    case nowPlayingOwnerChanged(String?)
   }
 
   private let lock = NSLock()
@@ -301,6 +306,10 @@ final class RecordingObserver: MediaSessionObserver, @unchecked Sendable {
   func mediaSessionSilentModeChanged(isSilent: Bool) {
     lock.withLock { recorded.append(.silentModeChanged(isSilent: isSilent)) }
   }
+
+  func mediaSessionNowPlayingOwnerChanged(_ owner: (any NowPlayingOwner)?) {
+    lock.withLock { recorded.append(.nowPlayingOwnerChanged((owner as? FakeNowPlayingOwner)?.nowPlayingID)) }
+  }
 }
 
 final class Box<Value>: @unchecked Sendable where Value: Sendable {
@@ -318,5 +327,146 @@ final class Box<Value>: @unchecked Sendable where Value: Sendable {
 
   func mutate(_ body: (inout Value) -> Void) {
     lock.withLock { body(&stored) }
+  }
+}
+
+final class FakeNowPlayingCenter: NowPlayingCenterBackend, @unchecked Sendable {
+  struct Load {
+    let url: URL
+    let completion: @Sendable (NowPlayingArtwork?) -> Void
+  }
+
+  private struct Handle: ScheduledWork {
+    func cancel() {}
+  }
+
+  private let lock = NSLock()
+  private var recorded: [NowPlayingCenterState?] = []
+  private var handler: (@Sendable (RemoteCommand) -> Void)?
+  private var startedLoads: [Load] = []
+
+  var applied: [NowPlayingCenterState?] {
+    lock.withLock { recorded }
+  }
+
+  var state: NowPlayingCenterState? {
+    applied.last ?? nil
+  }
+
+  var nowPlayingInfo: [String: Any]? {
+    state?.nowPlayingInfo
+  }
+
+  var targets: Set<RemoteCommandKind> {
+    state?.commands ?? []
+  }
+
+  var loads: [Load] {
+    lock.withLock { startedLoads }
+  }
+
+  func setCommandHandler(_ handler: @escaping @Sendable (RemoteCommand) -> Void) {
+    lock.withLock { self.handler = handler }
+  }
+
+  func apply(_ state: NowPlayingCenterState?) {
+    lock.withLock { recorded.append(state) }
+  }
+
+  private(set) var resets = 0
+
+  func reset() {
+    lock.withLock { resets += 1 }
+  }
+
+  func loadArtwork(from url: URL, completion: @escaping @Sendable (NowPlayingArtwork?) -> Void) -> any ScheduledWork {
+    lock.withLock { startedLoads.append(Load(url: url, completion: completion)) }
+    return Handle()
+  }
+
+  func send(_ command: RemoteCommand) {
+    lock.withLock { handler }?(command)
+  }
+}
+
+final class FakeNowPlayingOwner: NowPlayingOwner, @unchecked Sendable {
+  enum Event: Equatable {
+    case handled(RemoteCommand)
+    case pausedForTakeover
+    case resumedAfterTakeover
+  }
+
+  let nowPlayingID: String
+  let mediaType: NowPlayingMediaType
+  private let lock = NSLock()
+  private var playing: Bool
+  private var recorded: [Event] = []
+  private var late = false
+
+  init(_ id: String, mediaType: NowPlayingMediaType = .audio, isPlaying: Bool = true) {
+    nowPlayingID = id
+    self.mediaType = mediaType
+    playing = isPlaying
+  }
+
+  var isPlaying: Bool {
+    get { lock.withLock { playing } }
+    set { lock.withLock { playing = newValue } }
+  }
+
+  var events: [Event] {
+    lock.withLock { recorded }
+  }
+
+  var handledCount: Int {
+    events.filter {
+      if case .handled = $0 {
+        return true
+      }
+      return false
+    }.count
+  }
+
+  func handle(_ command: RemoteCommand) {
+    lock.withLock {
+      recorded.append(.handled(command))
+      switch command.kind {
+      case .play:
+        playing = true
+      case .pause:
+        playing = false
+      case .togglePlayPause:
+        playing.toggle()
+      default:
+        break
+      }
+    }
+  }
+
+  var pausesLate: Bool {
+    get { lock.withLock { late } }
+    set { lock.withLock { late = newValue } }
+  }
+
+  func pauseForTakeover() {
+    lock.withLock {
+      recorded.append(.pausedForTakeover)
+      if !late {
+        playing = false
+      }
+    }
+  }
+
+  func resumeAfterTakeover() {
+    lock.withLock {
+      recorded.append(.resumedAfterTakeover)
+      playing = true
+    }
+  }
+}
+
+extension MediaSessionManager {
+  var nowPlayingOwnerID: String? {
+    (nowPlayingOwner as? FakeNowPlayingOwner)?.nowPlayingID
   }
 }

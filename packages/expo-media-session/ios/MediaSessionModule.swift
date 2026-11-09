@@ -32,6 +32,9 @@ public final class MediaSessionModule: Module {
   @Event
   var onActivationError: (ActivationErrorEvent) -> Void
 
+  @Event
+  var onNowPlayingOwnerChange: () -> Void
+
   public override func didCreate() {
     forwarder.module = self
   }
@@ -89,5 +92,9 @@ private final class EventForwarder: MediaSessionObserver {
   func mediaSession(didFail error: Error, client: String) {
     let message = (error as? Exception)?.description ?? error.localizedDescription
     module?.onActivationError(ActivationErrorEvent(message: message, client: client))
+  }
+
+  func mediaSessionNowPlayingOwnerChanged(_ owner: (any NowPlayingOwner)?) {
+    module?.onNowPlayingOwnerChange()
   }
 }
