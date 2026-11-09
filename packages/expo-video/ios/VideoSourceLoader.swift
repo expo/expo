@@ -94,7 +94,9 @@ internal class VideoSourceLoader {
     do {
       loadingResult = try await context.task.value
     } catch {
-      finishLoading(taskId: context.taskId, videoSource: videoSource)
+      guard finishLoading(taskId: context.taskId, videoSource: videoSource, error: error) else {
+        return nil
+      }
       throw error
     }
 
@@ -129,6 +131,7 @@ internal class VideoSourceLoader {
       guard let url = videoSource.uri else {
         return LoadingResult(value: nil, isCancelled: false)
       }
+      try videoSource.drm?.type.assertIsSupported()
 
       // A resolution failure (only possible for `ph://` sources) shouldn't reject the load.
       // Build the item with the raw, unplayable URL instead, so the player transitions to the
@@ -161,11 +164,11 @@ internal class VideoSourceLoader {
 
    - Returns: Whether the caller's load is still the current one and its result should be used.
    */
-  @discardableResult
   private func finishLoading(
     taskId: Int,
     videoSource: VideoSource? = nil,
-    loadingResult: LoadingResult? = nil
+    loadingResult: LoadingResult? = nil,
+    error: Error? = nil
   ) -> Bool {
     return state.withLock { state in
       guard state.currentTaskId == taskId else {
@@ -175,7 +178,11 @@ internal class VideoSourceLoader {
       state.currentSource = nil
       state.currentTask = nil
 
-      if let videoSource, let loadingResult, !loadingResult.isCancelled {
+      if let error {
+        enqueueListenerEventWhileLocked(listeners: state.listeners) { listener, loader in
+          listener.onLoadingFailed(loader: loader, videoSource: videoSource, error: error)
+        }
+      } else if let videoSource, let loadingResult, !loadingResult.isCancelled {
         enqueueListenerEventWhileLocked(listeners: state.listeners) { listener, loader in
           listener.onLoadingFinished(loader: loader, videoSource: videoSource, result: loadingResult.value)
         }
