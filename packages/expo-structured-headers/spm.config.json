@@ -13,15 +13,10 @@
           "type": "objc",
           "name": "EXStructuredHeaders",
           "path": "ios",
-          "pattern": "**/*.m",
-          "headerPattern": "**/*.h",
           "dependencies": [],
           "linkedFrameworks": [
             "Foundation",
             "UIKit"
-          ],
-          "includeDirectories": [
-            "."
           ],
           "exclude": [
             "Tests/**"
