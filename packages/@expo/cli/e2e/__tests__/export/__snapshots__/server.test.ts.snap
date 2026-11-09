@@ -70,6 +70,12 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "_expo/functions/errors/throw+api.js",
+      "namedRegex": "^/errors/throw(?:/)?$",
+      "page": "/errors/throw",
+      "routeKeys": {},
+    },
+    {
       "file": "_expo/functions/api/externals+api.js",
       "namedRegex": "^/api/externals(?:/)?$",
       "page": "/api/externals",
@@ -79,6 +85,12 @@ exports[`server-output express requests exported files has expected routes manif
       "file": "_expo/functions/api/with-page+api.js",
       "namedRegex": "^/api/with\\-page(?:/)?$",
       "page": "/api/with-page",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/magic-import+api.js",
+      "namedRegex": "^/api/magic\\-import(?:/)?$",
+      "page": "/api/magic-import",
       "routeKeys": {},
     },
     {
@@ -246,6 +258,13 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "./errors/loader.tsx",
+      "loader": "_expo/loaders/errors/loader.js",
+      "namedRegex": "^/errors/loader(?:/)?$",
+      "page": "/errors/loader",
+      "routeKeys": {},
+    },
+    {
       "file": "./api/with-page.tsx",
       "namedRegex": "^/api/with\\-page(?:/)?$",
       "page": "/api/with-page",
@@ -262,6 +281,12 @@ exports[`server-output express requests exported files has expected routes manif
       "file": "./middleware/index.tsx",
       "namedRegex": "^/middleware(?:/)?$",
       "page": "/middleware/index",
+      "routeKeys": {},
+    },
+    {
+      "file": "./errors/throw-on-load.tsx",
+      "namedRegex": "^/errors/throw\\-on\\-load(?:/)?$",
+      "page": "/errors/throw-on-load",
       "routeKeys": {},
     },
     {
@@ -450,6 +475,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "_expo/functions/errors/throw+api.js",
+      "namedRegex": "^/errors/throw(?:/)?$",
+      "page": "/errors/throw",
+      "routeKeys": {},
+    },
+    {
       "file": "_expo/functions/api/externals+api.js",
       "namedRegex": "^/api/externals(?:/)?$",
       "page": "/api/externals",
@@ -459,6 +490,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       "file": "_expo/functions/api/with-page+api.js",
       "namedRegex": "^/api/with\\-page(?:/)?$",
       "page": "/api/with-page",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/api/magic-import+api.js",
+      "namedRegex": "^/api/magic\\-import(?:/)?$",
+      "page": "/api/magic-import",
       "routeKeys": {},
     },
     {
@@ -626,6 +663,13 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "./errors/loader.tsx",
+      "loader": "_expo/loaders/errors/loader.js",
+      "namedRegex": "^/errors/loader(?:/)?$",
+      "page": "/errors/loader",
+      "routeKeys": {},
+    },
+    {
       "file": "./api/with-page.tsx",
       "namedRegex": "^/api/with\\-page(?:/)?$",
       "page": "/api/with-page",
@@ -642,6 +686,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       "file": "./middleware/index.tsx",
       "namedRegex": "^/middleware(?:/)?$",
       "page": "/middleware/index",
+      "routeKeys": {},
+    },
+    {
+      "file": "./errors/throw-on-load.tsx",
+      "namedRegex": "^/errors/throw\\-on\\-load(?:/)?$",
+      "page": "/errors/throw-on-load",
       "routeKeys": {},
     },
     {

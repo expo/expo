@@ -49,6 +49,12 @@ export default function HomeRoute() {
           <RouteLink href="/loaders/server-helper" />
         </RouteLinks>
       </Section>
+      <Section title="Errors">
+        <RouteLinks>
+          <RouteLink href="/errors/throw-on-load" />
+          <RouteLink href="/errors/loader" />
+        </RouteLinks>
+      </Section>
       <Section title="Headers">
         <RouteLinks>
           <RouteLink href="/headers" />
