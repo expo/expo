@@ -45,6 +45,7 @@ The most important note is: Please don't open a PR if you're unsure of the probl
 - For a complex bug or a bug that concerns expected or defined behaviour, we may need to confirm expected behavior first before accepting PRs.
 - Search the open pull requests. If one already fixes the issue, test or review it instead of opening another.
 - You can skip the issue for a small fix that explains itself, such as a broken docs link. Put each one in a single pull request. Do not spread the same kind of fix across many pull requests.
+- Consider whether a PR will change too much code, or change a prior decision or architecture, which needs an issue and discussion first.
 
 ### What a pull request needs
 
