@@ -7,7 +7,8 @@ import UIKit
 @testable import ExpoBrightness
 @testable import ExpoModulesCore
 
-@Suite("BrightnessModule")
+// The event tests post a notification that every module instance observes, so they must not overlap.
+@Suite("BrightnessModule", .serialized)
 @JavaScriptActor
 struct BrightnessModuleTests {
   let appContext: AppContext
@@ -61,12 +62,11 @@ struct BrightnessModuleTests {
       return Double(UIScreen.main.brightness)
     }
 
-    let deadline = Date().addingTimeInterval(2)
     var received: Double?
-    while received == nil && Date() < deadline {
-      try await Task.sleep(nanoseconds: 50_000_000)
+    try await waitUntil {
       let result = try await runtime.evalAsync("globalThis.result?.brightness ?? null")
       received = result.isNumber() ? try result.asDouble() : nil
+      return received != nil
     }
     #expect(received == brightness)
   }
@@ -83,25 +83,37 @@ struct BrightnessModuleTests {
       """
     )
 
-    try await postBrightnessChange()
-    #expect(try await eventCount() == 1)
+    await postBrightnessChange()
+    #expect(try await eventCount(reaching: 1) == 1)
 
     try await runtime.evalAsync("globalThis.otherSubscription.remove()")
 
-    try await postBrightnessChange()
-    #expect(try await eventCount() == 2)
+    await postBrightnessChange()
+    #expect(try await eventCount(reaching: 2) == 2)
   }
 
-  private func postBrightnessChange() async throws {
+  private func postBrightnessChange() async {
     await MainActor.run {
       NotificationCenter.default.post(name: UIScreen.brightnessDidChangeNotification, object: nil)
     }
-    // The event is scheduled on the JavaScript thread, so an `evalAsync` after this sleep runs after
-    // every listener call that the notification scheduled.
-    try await Task.sleep(nanoseconds: 200_000_000)
   }
 
-  private func eventCount() async throws -> Int {
+  /// Waits until the listener count reaches `expected`, then waits a little longer so that a duplicate
+  /// event also arrives before the count is returned.
+  private func eventCount(reaching expected: Int) async throws -> Int {
+    try await waitUntil {
+      try await runtime.evalAsync("globalThis.count").asInt() >= expected
+    }
+    try await Task.sleep(nanoseconds: 200_000_000)
     return try await runtime.evalAsync("globalThis.count").asInt()
+  }
+
+  /// Polls `condition` until it is true or the timeout passes. Events reach JavaScript asynchronously,
+  /// and a loaded CI machine can take much longer than a local run.
+  private func waitUntil(timeout: TimeInterval = 5, _ condition: () async throws -> Bool) async throws {
+    let deadline = Date().addingTimeInterval(timeout)
+    while try await !condition() && Date() < deadline {
+      try await Task.sleep(nanoseconds: 50_000_000)
+    }
   }
 }
