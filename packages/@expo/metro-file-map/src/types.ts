@@ -326,8 +326,7 @@ export interface FileSystem {
    *   X = dirname(X)
    * while X !== dirname(X)
    *
-   * If opts.invalidatedBy is given, collects all absolute, real paths that if
-   * added or removed may invalidate this result.
+   * If `observations` is given, records the paths this result depends upon.
    *
    * Useful for finding the closest package scope (subpath: package.json,
    * type f, breakOnSegment: node_modules) or closest potential package root
@@ -337,10 +336,10 @@ export interface FileSystem {
     mixedStartPath: string,
     subpath: string,
     opts: {
-      breakOnSegment: string | undefined | null;
-      invalidatedBy: Set<string> | undefined | null;
+      breakOnSegment?: string | undefined | null;
       subpathType: 'f' | 'd';
-    }
+    },
+    observations?: Observations | undefined | null
   ):
     | {
         absolutePath: string;
@@ -358,8 +357,12 @@ export interface FileSystem {
   /**
    * Return information about the given path, whether a directory or file.
    * Always follow symlinks, and return a real path if it exists.
+   *
+   * If `observations` is given, records the paths this result depends upon:
+   * any symlink traversed, and either the real path found or the first path
+   * segment that did not exist.
    */
-  lookup(mixedPath: Path): LookupResult;
+  lookup(mixedPath: Path, observations?: Observations | undefined | null): LookupResult;
 
   matchFiles(opts: {
     /* Filter relative paths against a pattern. */
@@ -385,16 +388,11 @@ export type LookupResult =
       // could indicate an unwatched path, or a directory containing no watched
       // files).
       exists: false;
-      // The real, normal, absolute paths of any symlinks traversed.
-      links: ReadonlySet<string>;
-      // The real, normal, absolute path of the first path segment
-      // encountered that does not exist, or cannot be navigated through.
-      missing: string;
     }
   | {
       exists: true;
-      // The real, normal, absolute paths of any symlinks traversed.
-      links: ReadonlySet<string>;
+      // The directory's path relative to the root, with symlinks resolved.
+      canonicalPath: CanonicalPath;
       // The real, normal, absolute path of the directory.
       realPath: string;
       // Currently lookup always follows symlinks, so can only return
@@ -403,8 +401,8 @@ export type LookupResult =
     }
   | {
       exists: true;
-      // The real, normal, absolute paths of any symlinks traversed.
-      links: ReadonlySet<string>;
+      // The file's path relative to the root, with symlinks resolved.
+      canonicalPath: CanonicalPath;
       // The real, normal, absolute path of the file.
       realPath: string;
       // Currently lookup always follows symlinks, so can only return
@@ -413,6 +411,35 @@ export type LookupResult =
       // The file's metadata tuple. Must only be mutated via FileProcessor.
       metadata: FileMetadata;
     };
+
+/**
+ * A mutable record of what a query observed of the file system, sufficient to
+ * decide later whether its answer may have changed.
+ *
+ * The parameter is optional and may be omitted for performance.
+ */
+export interface Observations {
+  /**
+   * Paths that were observed to exist, or not to exist. Invalidated by added or
+   * removed files or directories.
+   *
+   * Non-existence is always recorded against the *topmost* missing path, not
+   * the path asked for, so an absent directory collapses every query beneath
+   * it to one entry: a missing `node_modules` is one path invalidating every
+   * package resolution under it, rather than one per package.
+   */
+  readonly existence: Set<CanonicalPath>;
+
+  /**
+   * Files whose content was observed (including traversed symlinks, whose
+   * content is their target) and directories whose immediate entries were
+   * enumerated. Invalidated by modification, as well as by addition or
+   * removal, so a path here may also be in `existence` (eg, after a `lookup`
+   * and a content read of the same file) without changing what invalidates
+   * the result.
+   */
+  readonly content: Set<CanonicalPath>;
+}
 
 export interface MockMap {
   getMockModule(name: string): Path | undefined | null;
