@@ -1,49 +1,482 @@
----
-title: Introduction to development builds
-sidebar_title: Introduction and setup
-description: Learn how to create a development build in your Expo project and why use a development build instead of Expo Go.
-searchRank: 98
-searchPosition: 1
-hideTOC: true
-hasVideoLink: true
----
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Campus – le réseau des étudiants</title>
+<style>
+  :root{--fond:#F4F6F1;--carte:#fff;--encre:#18292E;--doux:#5D6F74;--marque:#0E5A63;--clair:#D9ECEC;--soleil:#F2B705;--trait:#DCE3DF;--danger:#C8432B}
+  @media (prefers-color-scheme: dark){:root{--fond:#0F1A1D;--carte:#172428;--encre:#EAF1EF;--doux:#9BB0B3;--marque:#4FB6BF;--clair:#1E3A3F;--trait:#2A3B40}}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Trebuchet MS","Segoe UI",system-ui,sans-serif;background:var(--fond);color:var(--encre);line-height:1.5}
+  header{background:var(--marque);color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:5}
+  header h1{margin:0;font-size:1.3rem}header h1 span{color:var(--soleil)}
+  nav{display:flex;gap:4px;margin-left:auto;flex-wrap:wrap}
+  nav button{background:transparent;border:0;color:#fff;padding:8px 12px;border-radius:20px;font:inherit;cursor:pointer}
+  nav button.actif{background:#fff;color:#0E5A63;font-weight:bold}
+  main,.ecran{max-width:760px;margin:0 auto;padding:16px}
+  section{display:none}section.visible{display:block}
+  .ecran{display:none}
+  .carte{background:var(--carte);border:1px solid var(--trait);border-radius:12px;padding:16px;margin-bottom:14px}
+  h2{margin:0 0 10px;font-size:1.2rem}
+  label{display:block;font-size:.9rem;color:var(--doux);margin:10px 0 4px}
+  input,textarea,select{width:100%;padding:10px;border:1px solid var(--trait);border-radius:8px;font:inherit;background:var(--fond);color:var(--encre)}
+  textarea{min-height:80px;resize:vertical}
+  button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--soleil);outline-offset:2px}
+  .btn{background:var(--marque);color:#fff;border:0;padding:10px 16px;border-radius:8px;font:inherit;font-weight:bold;cursor:pointer;margin-top:10px}
+  .btn.second{background:var(--clair);color:var(--marque)}.btn.rouge{background:var(--danger)}
+  .petit{background:none;border:0;color:var(--marque);cursor:pointer;font:inherit;padding:4px 8px}
+  .auteur{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+  .avatar{width:44px;height:44px;border-radius:50%;background:var(--soleil);color:#18292E;display:flex;align-items:center;justify-content:center;font-weight:bold;overflow:hidden;flex:none}
+  .avatar img{width:100%;height:100%;object-fit:cover}
+  .meta{font-size:.8rem;color:var(--doux)}
+  .tag{display:inline-block;background:var(--clair);color:var(--marque);border-radius:20px;padding:2px 10px;font-size:.78rem;margin-left:6px}
+  .actions{display:flex;gap:6px;border-top:1px solid var(--trait);margin-top:10px;padding-top:6px}
+  .comm{background:var(--fond);border-radius:8px;padding:8px 10px;margin-top:6px;font-size:.92rem}
+  .ligne{display:flex;gap:8px}.ligne input{flex:1}.ligne .btn{margin-top:0}
+  .vide{color:var(--doux);text-align:center;padding:16px}
+  .media{display:block;width:100%;max-height:420px;object-fit:contain;background:#000;border-radius:10px;margin-top:10px}
+  .grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .carte-ami{border:1px solid var(--trait);border-radius:12px;padding:12px;text-align:center;background:var(--fond)}
+  .carte-ami .avatar{margin:0 auto 8px;width:64px;height:64px;font-size:1.3rem}
+  .carte-ami .btn{width:100%;margin-top:6px;padding:8px;font-size:.85rem}
+  .ligne-liste{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--trait);padding:8px 0}
+  .ligne-liste a{color:var(--marque)}
+  iframe{width:100%;height:70vh;min-height:420px;border:0;border-radius:12px;background:#000}
+  .barre{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:10px}
+  .barre .meta{flex:1 1 100%;word-break:break-all}
+  #bandeau{display:none;background:var(--soleil);color:#18292E;padding:10px 16px;font-weight:bold;text-align:center}
+  #bandeau button{margin-left:10px;background:#18292E;color:#fff;border:0;border-radius:8px;padding:6px 12px;cursor:pointer;font:inherit}
+  .erreur{color:var(--danger);font-size:.9rem;min-height:1.2em}
+</style>
+</head>
+<body>
 
-import { BuildMethodForm } from '~/scenes/develop/development-builds/BuildMethodForm';
-import { DevelopmentBuildInstructions } from '~/scenes/develop/development-builds/DevelopmentBuildInstructions';
-import DevelopmentBuildAgentPrompt from '~/scenes/develop/development-builds/instructions/agent-prompt.mdx';
-import { RelatedSkills } from '~/ui/components/RelatedSkills';
-import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+<!-- Écran : Firebase pas encore configuré -->
+<div id="config" class="ecran"><div class="carte">
+  <h2>⚙️ Configuration nécessaire</h2>
+  <p>Ouvrez ce fichier avec un éditeur de texte et remplacez les valeurs de <b>firebaseConfig</b> (en haut du script) par celles de votre projet Firebase. Suivez les étapes données dans le chat.</p>
+</div></div>
 
-<DevelopmentBuildAgentPrompt />
+<!-- Écran : connexion / inscription -->
+<div id="auth" class="ecran"><div class="carte">
+  <h2>Camp<span style="color:var(--soleil)">us</span> – Connexion</h2>
+  <label for="email">Email</label><input id="email" type="email" autocomplete="email">
+  <label for="mdp">Mot de passe (6 caractères minimum)</label><input id="mdp" type="password" autocomplete="current-password">
+  <p class="erreur" id="err-auth"></p>
+  <div class="ligne">
+    <button class="btn" id="btn-connexion">🔑 Se connecter</button>
+    <button class="btn second" id="btn-inscription">🆕 Créer mon compte</button>
+  </div>
+  <button class="petit" id="btn-oublie">Mot de passe oublié ?</button>
+</div></div>
 
-When you create a new Expo app with [`create-expo-app`](/get-started/create-a-project/), you start with a project where you update TypeScript/JavaScript code on your local machine and view the changes in the Expo Go app. A **development build** is essentially **your own version of Expo Go** where you are free to use any native libraries and change any native configuration.
+<!-- Écran : vérification de l'email -->
+<div id="verif" class="ecran"><div class="carte">
+  <h2>📧 Vérifiez votre email</h2>
+  <p>Un email de vérification a été envoyé à <b id="email-verif"></b>. Cliquez sur le lien dans cet email (regardez aussi les spams), puis revenez ici.</p>
+  <p class="erreur" id="err-verif"></p>
+  <button class="btn" id="btn-verifie">✅ J'ai vérifié mon email</button>
+  <button class="btn second" id="btn-renvoyer">📨 Renvoyer l'email</button>
+  <button class="btn second" id="btn-sortir1">Se déconnecter</button>
+</div></div>
 
-A **development build is recommended when you want to create your own app and release to app stores**. It includes the [`expo-dev-client`](/versions/latest/sdk/dev-client/) library, which augments the built-in React Native development tooling. The tooling also includes support for inspecting network requests and a ["launcher" UI](/develop/development-builds/use-development-builds/#the-launcher-screen) that lets you switch between different development servers (such as between a server running on your machine or a teammate's machine) and deployments of your app (such as published updates with [Expo Update](/eas-update/introduction/)).
+<!-- Application -->
+<div id="app" class="ecran" style="padding:0;max-width:none">
+  <header>
+    <h1>Camp<span>us</span></h1>
+    <nav>
+      <button data-page="fil" class="actif">🏠 Fil</button>
+      <button data-page="amis">👥 Amis</button>
+      <button data-page="cours">🎓 Cours</button>
+      <button data-page="biblio">📚 Biblio</button>
+      <button data-page="profil">👤 Profil</button>
+      <button id="btn-sortir2">🚪 Sortir</button>
+    </nav>
+  </header>
+  <div id="bandeau"></div>
+  <main>
 
-<VideoBoxLink
-  videoId="FdjczjkwQKE"
-  title="Expo Go & Development Builds: which should you use?"
-  description="In this tutorial video, Beto explains what each of them is and when to choose a development build."
-/>
+    <section id="fil" class="visible">
+      <div class="carte">
+        <h2>Publier</h2>
+        <textarea id="texte-post" placeholder="Partagez une info, un devoir, une date d'examen…"></textarea>
+        <label for="media-post">📷 Photo (facultatif)</label>
+        <input type="file" id="media-post" accept="image/*">
+        <label for="type-post">Catégorie</label>
+        <select id="type-post"><option>Information</option><option>Devoir</option><option>Examen</option><option>Question</option><option>Événement</option></select>
+        <button class="btn" id="btn-publier">📝 Publier</button>
+      </div>
+      <div id="liste-posts"></div>
+    </section>
 
-## How would you like to build your development build?
+    <section id="amis">
+      <div class="carte">
+        <h2>🔍 Trouver des étudiants</h2>
+        <input id="a-recherche" placeholder="Nom, filière ou pays…" aria-label="Rechercher un étudiant">
+      </div>
+      <div class="carte"><h2>Demandes reçues</h2><div class="grille" id="liste-demandes"></div></div>
+      <div class="carte"><h2>Mes amis <span class="tag" id="nb-amis">0</span></h2><div class="grille" id="liste-amis"></div></div>
+      <div class="carte"><h2>Personnes que vous pouvez connaître</h2><div class="grille" id="liste-personnes"></div></div>
+    </section>
 
-All three methods produce the same development build. They differ in where the app compiles and what you need to have installed on your machine.
+    <section id="cours">
+      <div class="carte" id="entree-cours">
+        <h2>Rejoindre ou lancer un cours</h2>
+        <label for="salle">Code de la salle</label>
+        <div class="ligne"><input id="salle" placeholder="Ex : maths-l2-lundi"><button class="btn second" id="btn-code">Code au hasard</button></div>
+        <button class="btn" id="btn-rejoindre">📹 Entrer (vidéo + audio)</button>
+        <p class="meta">L'enseignant partage le code ; tout le monde entre avec le même code. Dans la salle : micro, caméra, partage d'écran, chat et « lever la main ».</p>
+      </div>
+      <div id="salle-video" style="display:none"><div class="carte">
+        <div class="barre">
+          <span class="meta">Lien de l'appel : <b id="lien-appel"></b></span>
+          <button class="petit" id="btn-copier">📋 Copier</button>
+          <button class="petit" id="btn-wa">💬 WhatsApp</button>
+          <button class="petit" id="btn-partager">📤 Partager</button>
+        </div>
+        <iframe id="cadre" allow="camera; microphone; fullscreen; display-capture; autoplay" title="Salle de cours"></iframe>
+        <button class="btn rouge" id="btn-quitter">📵 Quitter</button>
+      </div></div>
+    </section>
 
-<BuildMethodForm />
+    <section id="biblio">
+      <div class="carte">
+        <h2>Ajouter une ressource</h2>
+        <label for="b-titre">Titre</label><input id="b-titre">
+        <label for="b-matiere">Matière</label><input id="b-matiere">
+        <label for="b-lien">Lien (https://…, facultatif)</label><input id="b-lien">
+        <button class="btn" id="btn-ressource">➕ Ajouter</button>
+        <button class="btn second" id="btn-carte">📍 Bibliothèques près de moi</button>
+      </div>
+      <div class="carte"><input id="b-recherche" placeholder="🔍 Rechercher…" aria-label="Rechercher"><div id="liste-biblio"></div></div>
+    </section>
 
----
+    <section id="profil">
+      <div class="carte">
+        <h2>Mon identité</h2>
+        <div class="auteur"><div class="avatar" id="photo-profil" style="width:96px;height:96px;font-size:2rem">?</div><input type="file" id="fichier-photo" accept="image/*"></div>
+        <label for="p-nom">Nom complet</label><input id="p-nom">
+        <label for="p-role">Je suis</label><select id="p-role"><option>Étudiant</option><option>Enseignant</option></select>
+        <label for="p-fil">Filière / Université</label><input id="p-fil">
+        <label for="p-pays">Pays</label><input id="p-pays" list="liste-pays">
+        <datalist id="liste-pays"><option>RD Congo</option><option>Congo-Brazzaville</option><option>Cameroun</option><option>Côte d'Ivoire</option><option>Sénégal</option><option>Mali</option><option>Burkina Faso</option><option>Bénin</option><option>Togo</option><option>Gabon</option><option>Burundi</option><option>Rwanda</option><option>Maroc</option><option>France</option><option>Belgique</option><option>Canada</option></datalist>
+        <label for="p-ville">Ville / quartier</label><input id="p-ville">
+        <label for="p-bio">À propos de moi</label><textarea id="p-bio"></textarea>
+        <button class="btn" id="btn-sauver">💾 Enregistrer</button>
+        <p class="meta" id="msg-profil"></p>
+      </div>
+    </section>
 
-<DevelopmentBuildInstructions />
+  </main>
+</div>
 
----
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+         sendEmailVerification, sendPasswordResetEmail, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, doc, setDoc, getDoc, addDoc, updateDoc, deleteDoc, onSnapshot,
+         query, where, orderBy, limit, serverTimestamp, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-## After you install the development build
+/* ====== 1. COLLEZ ICI LA CONFIGURATION DE VOTRE PROJET FIREBASE ====== */
+const firebaseConfig = {
+  apiKey: "COLLE_ICI",
+  authDomain: "COLLE_ICI",
+  projectId: "COLLE_ICI",
+  appId: "COLLE_ICI"
+};
+/* ===================================================================== */
 
-Launch the development build from your device's Home screen and connect to a development server from the launcher screen to start working on your app. To learn how to use your new build, including the launcher screen, rebuilding, and debugging, see [Use a development build](/develop/development-builds/use-development-builds/). For common questions about development builds and Expo Go, including what you can't do in Expo Go and why, see the [FAQ](/develop/development-builds/faq/).
+const $ = s => document.querySelector(s);
+const el = (t, p = {}, ...k) => { const e = document.createElement(t); Object.assign(e, p); k.flat().forEach(x => e.append(x)); return e; };
+const ecrans = ["config", "auth", "verif", "app"];
+const montrer = n => ecrans.forEach(e => $("#" + e).style.display = e === n ? "block" : "none");
+const initiales = n => (n || "?").split(" ").filter(Boolean).slice(0, 2).map(m => m[0].toUpperCase()).join("") || "?";
+function pastille(box, nom, photo){ box.innerHTML = ""; if (photo) box.appendChild(el("img", { src: photo, alt: "" })); else box.textContent = initiales(nom); }
 
-### Expo Skills for AI agents
+if (firebaseConfig.apiKey.startsWith("COLLE")) { montrer("config"); throw new Error("Firebase non configuré"); }
 
-If you use an AI agent, install [Expo Skills](/skills/) to teach it the workflows on this page:
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-<RelatedSkills names={['expo-dev-client', 'eas-simulator']} />
+let user = null, profil = {}, ecoutes = [], personnes = {}, amities = [], lienAppel = "";
+
+/* ---------- Messages d'erreur en français ---------- */
+const ERREURS = {
+  "auth/email-already-in-use": "Cet email est déjà utilisé.",
+  "auth/invalid-credential": "Email ou mot de passe incorrect.",
+  "auth/invalid-email": "Email invalide.",
+  "auth/weak-password": "Mot de passe trop court (6 caractères minimum).",
+  "auth/network-request-failed": "Pas de connexion internet.",
+  "auth/too-many-requests": "Trop d'essais. Réessayez plus tard."
+};
+const texteErreur = e => ERREURS[e.code] || ("Erreur : " + (e.code || e.message));
+
+/* ---------- Connexion / inscription / vérification ---------- */
+$("#btn-connexion").onclick = async () => {
+  $("#err-auth").textContent = "";
+  try { await signInWithEmailAndPassword(auth, $("#email").value.trim(), $("#mdp").value); }
+  catch (e) { $("#err-auth").textContent = texteErreur(e); }
+};
+$("#btn-inscription").onclick = async () => {
+  $("#err-auth").textContent = "";
+  try {
+    const c = await createUserWithEmailAndPassword(auth, $("#email").value.trim(), $("#mdp").value);
+    await sendEmailVerification(c.user);
+  } catch (e) { $("#err-auth").textContent = texteErreur(e); }
+};
+$("#btn-oublie").onclick = async () => {
+  const mail = $("#email").value.trim();
+  if (!mail) { $("#err-auth").textContent = "Écrivez d'abord votre email."; return; }
+  try { await sendPasswordResetEmail(auth, mail); $("#err-auth").textContent = "Email de réinitialisation envoyé."; }
+  catch (e) { $("#err-auth").textContent = texteErreur(e); }
+};
+$("#btn-renvoyer").onclick = async () => {
+  try { await sendEmailVerification(auth.currentUser); $("#err-verif").textContent = "Email renvoyé."; }
+  catch (e) { $("#err-verif").textContent = texteErreur(e); }
+};
+$("#btn-verifie").onclick = async () => {
+  await auth.currentUser.reload();
+  if (auth.currentUser.emailVerified) entrer(auth.currentUser);
+  else $("#err-verif").textContent = "Email pas encore vérifié.";
+};
+const sortir = () => signOut(auth);
+$("#btn-sortir1").onclick = sortir;
+$("#btn-sortir2").onclick = sortir;
+
+onAuthStateChanged(auth, u => {
+  ecoutes.forEach(f => f()); ecoutes = [];
+  user = u;
+  if (!u) { montrer("auth"); return; }
+  if (!u.emailVerified) { $("#email-verif").textContent = u.email; montrer("verif"); return; }
+  entrer(u);
+});
+
+async function entrer(u){
+  user = u;
+  const d = await getDoc(doc(db, "users", u.uid));
+  profil = d.exists() ? d.data() : {};
+  afficherProfil();
+  montrer("app");
+  demarrerEcoutes();
+  if (!profil.nom) ouvrir("profil");
+}
+
+/* ---------- Navigation ---------- */
+function ouvrir(page){
+  document.querySelectorAll("nav button[data-page]").forEach(b => b.classList.toggle("actif", b.dataset.page === page));
+  document.querySelectorAll("main section").forEach(s => s.classList.toggle("visible", s.id === page));
+}
+document.querySelectorAll("nav button[data-page]").forEach(b => b.onclick = () => ouvrir(b.dataset.page));
+
+/* ---------- Images ---------- */
+function reduireImage(fichier, max){
+  return new Promise((ok, ko) => {
+    const l = new FileReader(); l.onerror = ko;
+    l.onload = () => {
+      const img = new Image(); img.onerror = ko;
+      img.onload = () => {
+        const e = Math.min(1, max / Math.max(img.width, img.height));
+        const c = document.createElement("canvas"); c.width = Math.round(img.width * e); c.height = Math.round(img.height * e);
+        c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+        ok(c.toDataURL("image/jpeg", 0.7));
+      };
+      img.src = l.result;
+    };
+    l.readAsDataURL(fichier);
+  });
+}
+function partagerTexte(t){
+  if (navigator.share) navigator.share({ text: t }).catch(() => {});
+  else window.open("https://wa.me/?text=" + encodeURIComponent(t), "_blank", "noopener");
+}
+
+/* ---------- Profil (enregistré en ligne) ---------- */
+function afficherProfil(){
+  ["nom", "fil", "pays", "ville", "bio"].forEach(c => $("#p-" + c).value = profil[c] || "");
+  $("#p-role").value = profil.role || "Étudiant";
+  pastille($("#photo-profil"), profil.nom, profil.photo);
+}
+$("#fichier-photo").onchange = async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { profil.photo = await reduireImage(f, 200); pastille($("#photo-profil"), $("#p-nom").value, profil.photo); } catch (x) {}
+};
+$("#btn-sauver").onclick = async () => {
+  ["nom", "fil", "pays", "ville", "bio"].forEach(c => profil[c] = $("#p-" + c).value.trim());
+  profil.role = $("#p-role").value;
+  try { await setDoc(doc(db, "users", user.uid), profil, { merge: true }); $("#msg-profil").textContent = "Profil enregistré en ligne."; }
+  catch (e) { $("#msg-profil").textContent = "Échec : " + (e.code || e.message); }
+};
+
+/* ---------- Écoutes en temps réel ---------- */
+function demarrerEcoutes(){
+  ecoutes.push(onSnapshot(query(collection(db, "posts"), orderBy("date", "desc"), limit(50)),
+    s => afficherPosts(s.docs.map(d => ({ id: d.id, ...d.data() })))));
+  ecoutes.push(onSnapshot(collection(db, "users"), s => {
+    personnes = {}; s.docs.forEach(d => personnes[d.id] = d.data()); afficherAmis();
+  }));
+  ecoutes.push(onSnapshot(query(collection(db, "amities"), where("membres", "array-contains", user.uid)), s => {
+    amities = s.docs.map(d => ({ id: d.id, ...d.data() })); afficherAmis(); verifierAppel();
+  }));
+  ecoutes.push(onSnapshot(query(collection(db, "biblio"), orderBy("date", "desc"), limit(100)),
+    s => { ressources = s.docs.map(d => ({ id: d.id, ...d.data() })); afficherBiblio(); }));
+}
+
+/* ---------- Fil d'actualité partagé ---------- */
+$("#btn-publier").onclick = async () => {
+  const texte = $("#texte-post").value.trim(), f = $("#media-post").files[0];
+  if (!texte && !f) return;
+  if (!profil.nom) { alert("Remplissez d'abord votre nom dans l'onglet Profil."); ouvrir("profil"); return; }
+  let image = "";
+  if (f) { try { image = await reduireImage(f, 700); } catch (e) { alert("Image impossible à lire."); return; } }
+  try {
+    await addDoc(collection(db, "posts"), {
+      uid: user.uid, auteur: profil.nom, photo: profil.photo || "", role: profil.role || "Étudiant",
+      pays: profil.pays || "", type: $("#type-post").value, texte, image,
+      date: serverTimestamp(), aimes: [], commentaires: []
+    });
+    $("#texte-post").value = ""; $("#media-post").value = "";
+  } catch (e) { alert("Publication impossible : " + (e.code || e.message)); }
+};
+
+function afficherPosts(posts){
+  const zone = $("#liste-posts"); zone.innerHTML = "";
+  if (!posts.length) { zone.appendChild(el("div", { className: "vide", textContent: "Aucune publication. Soyez le premier !" })); return; }
+  posts.forEach(p => {
+    const dejaAime = (p.aimes || []).includes(user.uid);
+    const date = p.date ? p.date.toDate().toLocaleString("fr-FR") : "à l'instant";
+    const av = el("div", { className: "avatar" }); pastille(av, p.auteur, p.photo);
+    const carte = el("div", { className: "carte" },
+      el("div", { className: "auteur" }, av, el("div", {},
+        el("b", { textContent: p.auteur }), el("span", { className: "tag", textContent: p.type }),
+        el("div", { className: "meta", textContent: (p.role === "Enseignant" ? "🧑‍🏫 " : "🎓 ") + p.role + (p.pays ? "  🌍 " + p.pays : "") + "  🕒 " + date }))),
+      el("div", { textContent: p.texte }));
+    if (p.image) carte.appendChild(el("img", { src: p.image, alt: "Image publiée", className: "media" }));
+    const actions = el("div", { className: "actions" },
+      el("button", { className: "petit", textContent: (dejaAime ? "💙" : "👍") + " J'aime (" + (p.aimes || []).length + ")",
+        onclick: () => updateDoc(doc(db, "posts", p.id), { aimes: dejaAime ? arrayRemove(user.uid) : arrayUnion(user.uid) }) }),
+      el("button", { className: "petit", textContent: "💬 Commenter", onclick: () => {
+        const t = prompt("Votre commentaire :"); if (t && t.trim())
+          updateDoc(doc(db, "posts", p.id), { commentaires: arrayUnion({ auteur: profil.nom || "Anonyme", texte: t.trim() }) });
+      } }),
+      el("button", { className: "petit", textContent: "📤 Partager", onclick: () => partagerTexte(p.auteur + " sur Campus : " + p.texte) }));
+    if (p.uid === user.uid) actions.appendChild(el("button", { className: "petit", textContent: "🗑️ Supprimer",
+      onclick: () => { if (confirm("Supprimer cette publication ?")) deleteDoc(doc(db, "posts", p.id)); } }));
+    carte.appendChild(actions);
+    (p.commentaires || []).forEach(c => carte.appendChild(el("div", { className: "comm", textContent: c.auteur + " : " + c.texte })));
+    zone.appendChild(carte);
+  });
+}
+
+/* ---------- Amis avec demandes (comme Facebook) ---------- */
+$("#a-recherche").oninput = afficherAmis;
+
+function carteAmi(uid, boutons){
+  const p = personnes[uid] || {};
+  const av = el("div", { className: "avatar" }); pastille(av, p.nom, p.photo);
+  return el("div", { className: "carte-ami" }, av, el("b", { textContent: p.nom || "Étudiant" }),
+    el("div", { className: "meta", textContent: [p.fil, p.pays].filter(Boolean).join(" · ") || " " }), boutons);
+}
+const bt = (txt, fn, classe = "") => el("button", { className: "btn " + classe, textContent: txt, onclick: fn });
+
+function afficherAmis(){
+  if (!user) return;
+  const q = $("#a-recherche").value.trim().toLowerCase();
+  const vide = (z, t) => z.appendChild(el("div", { className: "vide", textContent: t }));
+  const demandes = $("#liste-demandes"), amisZ = $("#liste-amis"), pers = $("#liste-personnes");
+  [demandes, amisZ, pers].forEach(z => z.innerHTML = "");
+
+  const autreDe = a => a.membres.find(m => m !== user.uid);
+  const recues = amities.filter(a => a.statut === "attente" && a.vers === user.uid);
+  const mesAmis = amities.filter(a => a.statut === "ami");
+
+  recues.forEach(a => demandes.appendChild(carteAmi(a.de, el("div", {},
+    bt("✅ Accepter", () => updateDoc(doc(db, "amities", a.id), { statut: "ami" })),
+    bt("Refuser", () => deleteDoc(doc(db, "amities", a.id)), "second")))));
+  if (!recues.length) vide(demandes, "Aucune demande.");
+
+  $("#nb-amis").textContent = mesAmis.length;
+  mesAmis.forEach(a => amisZ.appendChild(carteAmi(autreDe(a), el("div", {},
+    bt("📞 Appeler", () => appeler(a)),
+    bt("Retirer", () => { if (confirm("Retirer cet ami ?")) deleteDoc(doc(db, "amities", a.id)); }, "second")))));
+  if (!mesAmis.length) vide(amisZ, "Aucun ami pour le moment.");
+
+  let n = 0;
+  Object.keys(personnes).forEach(uid => {
+    const p = personnes[uid];
+    if (uid === user.uid || !p.nom) return;
+    if (q && !(p.nom + " " + (p.fil || "") + " " + (p.pays || "")).toLowerCase().includes(q)) return;
+    const rel = amities.find(a => a.membres.includes(uid));
+    if (rel && rel.statut === "ami") return;
+    let b;
+    if (!rel) b = bt("➕ Ajouter", () => setDoc(doc(db, "amities", user.uid + "_" + uid),
+      { de: user.uid, vers: uid, membres: [user.uid, uid], statut: "attente" }));
+    else if (rel.de === user.uid) b = bt("⏳ Demande envoyée (annuler)", () => deleteDoc(doc(db, "amities", rel.id)), "second");
+    else b = bt("✅ Accepter", () => updateDoc(doc(db, "amities", rel.id), { statut: "ami" }));
+    pers.appendChild(carteAmi(uid, b)); n++;
+  });
+  if (!n) vide(pers, "Personne à afficher.");
+}
+
+/* ---------- Appel vidéo ---------- */
+function entrerSalle(code){
+  code = code.toLowerCase().replace(/[^a-z0-9-]/g, "-").replace(/-+/g, "-").slice(0, 60);
+  if (!code) { alert("Entrez ou générez un code de salle."); return; }
+  lienAppel = "https://meet.jit.si/campus-" + code;
+  $("#lien-appel").textContent = lienAppel;
+  $("#cadre").src = lienAppel + "#userInfo.displayName=" + encodeURIComponent('"' + (profil.nom || "Participant") + '"') + "&config.prejoinPageEnabled=false";
+  $("#entree-cours").style.display = "none"; $("#salle-video").style.display = "block";
+  ouvrir("cours");
+}
+$("#btn-code").onclick = () => $("#salle").value = "campus-" + Math.random().toString(36).slice(2, 8);
+$("#btn-rejoindre").onclick = () => entrerSalle($("#salle").value.trim());
+$("#btn-quitter").onclick = () => { $("#cadre").src = "about:blank"; $("#salle-video").style.display = "none"; $("#entree-cours").style.display = "block"; };
+$("#btn-copier").onclick = () => navigator.clipboard.writeText(lienAppel).then(() => alert("Lien copié.")).catch(() => prompt("Copiez ce lien :", lienAppel));
+$("#btn-wa").onclick = () => window.open("https://wa.me/?text=" + encodeURIComponent("Rejoins mon appel vidéo Campus : " + lienAppel), "_blank", "noopener");
+$("#btn-partager").onclick = () => partagerTexte("Rejoins mon appel vidéo Campus : " + lienAppel);
+
+// Appeler un ami : l'ami voit une bannière « vous appelle » sur son écran
+async function appeler(a){
+  const salle = "ami-" + Math.random().toString(36).slice(2, 8);
+  try { await updateDoc(doc(db, "amities", a.id), { appel: { salle, par: user.uid, nom: profil.nom || "Un ami", ts: Date.now() } }); }
+  catch (e) { alert("Appel impossible : " + (e.code || e.message)); return; }
+  entrerSalle(salle);
+}
+function verifierAppel(){
+  const b = $("#bandeau");
+  const a = amities.find(x => x.appel && x.appel.par !== user.uid && Date.now() - x.appel.ts < 5 * 60 * 1000);
+  if (!a) { b.style.display = "none"; return; }
+  b.innerHTML = ""; b.style.display = "block";
+  b.append("📞 " + a.appel.nom + " vous appelle ", el("button", { textContent: "Rejoindre", onclick: () => { b.style.display = "none"; entrerSalle(a.appel.salle); } }));
+}
+
+/* ---------- Bibliothèque partagée ---------- */
+let ressources = [];
+$("#btn-ressource").onclick = async () => {
+  const titre = $("#b-titre").value.trim(); if (!titre) return;
+  let lien = $("#b-lien").value.trim(); if (lien && !/^https?:\/\//i.test(lien)) lien = "";
+  try {
+    await addDoc(collection(db, "biblio"), { uid: user.uid, par: profil.nom || "Anonyme", titre, matiere: $("#b-matiere").value.trim(), lien, date: serverTimestamp() });
+    $("#b-titre").value = $("#b-matiere").value = $("#b-lien").value = "";
+  } catch (e) { alert("Ajout impossible : " + (e.code || e.message)); }
+};
+$("#b-recherche").oninput = afficherBiblio;
+function afficherBiblio(){
+  const zone = $("#liste-biblio"); zone.innerHTML = "";
+  const q = $("#b-recherche").value.trim().toLowerCase();
+  const liste = ressources.filter(r => (r.titre + " " + r.matiere).toLowerCase().includes(q));
+  if (!liste.length) { zone.appendChild(el("div", { className: "vide", textContent: "Aucune ressource." })); return; }
+  liste.forEach(r => {
+    const nom = el("b", {}, r.lien ? el("a", { href: r.lien, target: "_blank", rel: "noopener", textContent: r.titre }) : r.titre);
+    if (r.matiere) nom.appendChild(el("span", { className: "tag", textContent: r.matiere }));
+    const l = el("div", { className: "ligne-liste" }, el("div", {}, nom, el("div", { className: "meta", textContent: "Ajouté par " + r.par })));
+    if (r.uid === user.uid) l.appendChild(el("button", { className: "petit", textContent: "🗑️", "aria-label": "Supprimer", onclick: () => deleteDoc(doc(db, "biblio", r.id)) }));
+    zone.appendChild(l);
+  });
+}
+$("#btn-carte").onclick = () => {
+  if (!profil.ville) { alert("Ajoutez votre ville dans l'onglet Profil."); return; }
+  window.open("https://www.google.com/maps/search/" + encodeURIComponent("bibliothèque " + profil.ville + " " + (profil.pays || "")), "_blank", "noopener");
+};
+</script>
+</body>
+</html>
