@@ -29,7 +29,7 @@ The registry delivers `expo-updates` log entries to listeners in the same proces
 - Only entries at the warning level or higher (`warn`, `error`, and `fatal`) reach listeners.
 - A listener is called on the thread that logged the entry. Keep the listener fast, or move the work to another thread.
 - The registry keeps a strong reference to each listener until you call `remove` with it.
-- An entry has the same fields as the entries that `readLogEntriesAsync` returns: `timestamp`, `message`, `code`, `level`, and optionally `updateId`, `assetId`, `stacktrace`, and `duration`.
+- An entry has the fields `timestamp`, `message`, `code`, `level`, and `key`, and optionally `values`, `updateId`, `assetId`, and `stacktrace`. Each field has the same meaning as in the entries that `readLogEntriesAsync` returns.
 
 | Platform    | Access                                                   |
 | ----------- | -------------------------------------------------------- |

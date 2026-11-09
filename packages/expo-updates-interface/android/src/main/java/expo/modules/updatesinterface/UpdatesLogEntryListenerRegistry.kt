@@ -5,8 +5,9 @@ import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  * Receives expo-updates log entries at the warning level or higher as they are logged. An entry has
- * the same fields as the entries that `readLogEntriesAsync` returns: `timestamp`, `message`, `code`,
- * `level`, and optionally `updateId`, `assetId`, `stacktrace`, and `duration`.
+ * the fields `timestamp`, `message`, `code`, `level`, and `key`, and optionally `values`,
+ * `updateId`, `assetId`, and `stacktrace`. Each field has the same meaning as in the entries that
+ * `readLogEntriesAsync` returns.
  */
 fun interface UpdatesLogEntryListener {
   /**
