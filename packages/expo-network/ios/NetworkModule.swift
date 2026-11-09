@@ -10,18 +10,22 @@ struct NetworkState {
 
 @ExpoModule("ExpoNetwork")
 public final class NetworkModule: Module {
-  private let monitor = Mutex<NWPathMonitor?>(nil)
+  let monitor = Mutex<NWPathMonitor?>(nil)
   private let monitorQueue = DispatchQueue.global(qos: .default)
 
   @Event("onNetworkStateChanged")
   var onNetworkStateChanged: (NetworkState) -> Void
 
   public override func didStartListening(event: String) {
-    setupNetworkMonitoring()
+    if event == "onNetworkStateChanged" {
+      setupNetworkMonitoring()
+    }
   }
 
   public override func didStopListening(event: String) {
-    stopNetworkMonitoring()
+    if event == "onNetworkStateChanged" {
+      stopNetworkMonitoring()
+    }
   }
 
   public override func willDestroy() {
@@ -109,7 +113,7 @@ public final class NetworkModule: Module {
     return await withCheckedContinuation { continuation in
       // The update handler and the timeout race, and a continuation must be resumed only once.
       let isResumed = Mutex(false)
-      let resume = { (path: NWPath?) -> Bool in
+      let resume: @Sendable (NWPath?) -> Bool = { path in
         let shouldResume = isResumed.withLock { isResumed in
           defer { isResumed = true }
           return !isResumed
@@ -120,18 +124,24 @@ public final class NetworkModule: Module {
         return shouldResume
       }
 
-      tempMonitor.pathUpdateHandler = { updatedPath in
-        _ = resume(updatedPath)
-      }
-      tempMonitor.start(queue: monitorQueue)
-
       // Wait max 5 seconds to avoid any locking issues if the monitor
-      // doesn't get an update in time.
-      monitorQueue.asyncAfter(deadline: .now() + 5) {
+      // doesn't get an update in time. A cancelled timer source releases its handler when the
+      // cancellation completes, while a cancelled `DispatchWorkItem` keeps it until its deadline.
+      let timeout = DispatchSource.makeTimerSource(queue: monitorQueue)
+      timeout.schedule(deadline: .now() + 5)
+      timeout.setEventHandler {
+        timeout.cancel()
         if resume(nil) {
           print("Timeout waiting for network path.")
         }
       }
+
+      tempMonitor.pathUpdateHandler = { updatedPath in
+        timeout.cancel()
+        _ = resume(updatedPath)
+      }
+      timeout.resume()
+      tempMonitor.start(queue: monitorQueue)
     }
   }
 

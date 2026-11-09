@@ -594,12 +594,12 @@ PODS:
     - RNWorklets
   - ExpoNetwork (58.0.4):
     - ExpoModulesCore
-  - ExpoNotifications (58.1.6):
-    - ExpoModulesCore
-  - ExpoNotifications/Tests (58.1.6):
   - ExpoNetwork/Tests (58.0.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
+  - ExpoNotifications (58.1.6):
+    - ExpoModulesCore
+  - ExpoNotifications/Tests (58.1.6):
     - ExpoModulesCore
     - ExpoModulesTestCore
   - ExpoObserve (58.0.16):
@@ -3459,12 +3459,12 @@ DEPENDENCIES:
   - ExpoModulesWorklets/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesWorkletsAdapter (from `../../../packages/expo-modules-core`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
+  - ExpoNetwork/Tests (from `../../../packages/expo-network/ios`)
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
   - ExpoNotifications/Tests (from `../../../packages/expo-notifications/ios`)
   - ExpoObserve (from `../../../packages/expo-observe/ios`)
   - ExpoObserve/Tests (from `../../../packages/expo-observe/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
-  - ExpoNetwork/Tests (from `../../../packages/expo-network/ios`)
   - ExpoRouter (from `../../../packages/expo-router/ios`)
   - ExpoRouter/Tests (from `../../../packages/expo-router/ios`)
   - ExpoScreenCapture (from `../../../packages/expo-screen-capture/ios`)

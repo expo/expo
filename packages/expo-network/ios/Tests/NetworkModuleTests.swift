@@ -12,14 +12,16 @@ import Testing
 struct NetworkModuleTests {
   let appContext: AppContext
   let runtime: ExpoRuntime
+  let module: NetworkModule
 
   init() throws {
     appContext = TestAppContext()
     runtime = try appContext.runtime
+    module = NetworkModule(appContext: appContext)
     appContext.moduleRegistry.register(
       holder: ModuleHolder(
         appContext: appContext,
-        module: NetworkModule(appContext: appContext),
+        module: module,
         name: "ExpoNetwork"
       )
     )
@@ -80,6 +82,21 @@ struct NetworkModuleTests {
 
     #expect(state.keys == ["isConnected", "isInternetReachable", "type"])
     #expect(state.isInternetReachable == state.isConnected)
+  }
+
+  @Test
+  func `a listener for another event does not stop the network monitoring`() throws {
+    try runtime.eval(
+      """
+      globalThis.subscription = expo.modules.ExpoNetwork.addListener('onNetworkStateChanged', () => {})
+      expo.modules.ExpoNetwork.addListener('onOtherEvent', () => {}).remove()
+      """
+    )
+    defer {
+      _ = try? runtime.eval("globalThis.subscription.remove()")
+    }
+
+    #expect(module.monitor.withLock { $0 != nil })
   }
 
   private struct DecodedState: Decodable {
