@@ -53,7 +53,15 @@ export type FileWriteOptions = {
  */
 export type FileHandleReadWriteOptions = {
   /**
-   * The byte position in the file. When set, the handle `offset` is neither used nor changed.
+   * The byte position in the file to read from or write to. When set, the handle `offset` is
+   * neither used nor changed.
+   *
+   * Async reads with `at` do not wait for earlier calls on the handle and can finish in any
+   * order. Writes always run in the order they are called. In `FileMode.Append`, a write ignores
+   * `at` and goes to the end of the file.
+   *
+   * > **Note:** On Android, a non-seekable `content://` descriptor ignores the position and
+   * > reads come sequentially. Concurrent positional reads interleave there.
    */
   at?: number;
 };

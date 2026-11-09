@@ -15,6 +15,10 @@ function asUint8View(buffer: ArrayBuffer | ArrayBufferView): Uint8Array {
  * read or write. Set the `offset` property to seek to an arbitrary position.
  * Async operations on the same handle run one at a time, in the order they are called.
  *
+ * Reads and writes also take `{ at }` to use a byte position instead of the offset. A call with
+ * `at` leaves `offset` unchanged. `readInto` and `readIntoSync` fill a buffer you own, so
+ * repeated reads do not allocate a new `Uint8Array` each time.
+ *
  * Always call `close()` when finished to release the underlying file descriptor.
  * Failing to close a handle may prevent the file from being deleted, moved, or
  * opened by another process.
@@ -32,6 +36,9 @@ function asUint8View(buffer: ArrayBuffer | ArrayBufferView): Uint8Array {
  * // Seek to byte 100 and read 50 bytes
  * handle.offset = 100;
  * const chunk = await handle.readBytes(50);
+ *
+ * // Read 16 bytes at byte 1000 without moving the offset
+ * const other = await handle.readBytes(16, { at: 1000 });
  *
  * handle.close();
  * ```
@@ -95,11 +102,16 @@ export class FileHandle {
    * file is reached. Returns an empty `Uint8Array` when the offset is already at or
    * past the end of the file. The `offset` advances by the number of bytes actually read.
    *
+   * With `options.at`, the call reads from that byte position. It does not use or change `offset`,
+   * and it does not wait for earlier calls on the handle. Several reads with `at` can run at the
+   * same time and finish in any order.
+   *
    * The maximum number of bytes that can be read in a single call is limited by the
    * platform's `ArrayBuffer` size: 2 GB (signed 32-bit max) on Android, and the 64-bit
    * limit on iOS. To read larger files, call this method in a loop.
    *
    * @param length The number of bytes to read.
+   * @param options Pass `at` to read from a byte position without using or moving the `offset`.
    * @return A promise fulfilled with a `Uint8Array` containing the bytes read.
    */
   readBytes(
@@ -122,8 +134,10 @@ export class FileHandle {
    * Reads up to `length` bytes from the file starting at the current offset, synchronously.
    *
    * Behaves identically to `readBytes` but blocks the JS thread until the data is available.
+   * With `options.at`, the call reads from that byte position and leaves `offset` unchanged.
    *
    * @param length The number of bytes to read.
+   * @param options Pass `at` to read from a byte position without using or moving the `offset`.
    * @return A `Uint8Array` containing the bytes read.
    */
   readBytesSync(length: number, options?: FileHandleReadWriteOptions): Uint8Array<ArrayBuffer> {
@@ -137,12 +151,22 @@ export class FileHandle {
   }
 
   /**
-   * Reads bytes from the file into the given buffer and resolves with the number of bytes read.
-   * Resolves with `0` at or past the end of the file. Bytes of the buffer past the count are not
-   * changed. Without `at`, reads at the current offset and advances it by the count.
+   * Reads bytes from the file into a buffer you provide, and resolves with the number of bytes read.
    *
-   * @param buffer The `ArrayBuffer` or view to fill.
-   * @param options Pass `at` to read at a byte position without using or moving the offset.
+   * The method fills the buffer from the start of the view and reads at most `byteLength` bytes.
+   * It resolves with `0` at or past the end of the file. The rest of the buffer is not changed.
+   * Without `options.at`, the read starts at the current `offset` and advances it. With `at`,
+   * the call does not use or change `offset` and does not wait for earlier calls on the handle.
+   *
+   * The method reads into a native buffer and copies the bytes once into yours. Use
+   * `readIntoSync` to avoid the copy.
+   *
+   * > **Note:** On a JavaScript runtime without JS heap access, for example a worklet runtime,
+   * > the buffer is not filled. Use `readBytes` there.
+   *
+   * @param buffer An `ArrayBuffer`, a typed array, or a `DataView` to fill.
+   * @param options Pass `at` to read from a byte position without using or moving the `offset`.
+   * @return A promise fulfilled with the number of bytes read.
    */
   readInto(
     buffer: ArrayBuffer | ArrayBufferView,
@@ -167,11 +191,19 @@ export class FileHandle {
   }
 
   /**
-   * Reads bytes from the file into the given buffer, synchronously, and returns the number of
-   * bytes read. Behaves like `readInto` but blocks the JS thread.
+   * Reads bytes from the file into a buffer you provide, synchronously, and returns the number of
+   * bytes read.
    *
-   * @param buffer The `ArrayBuffer` or view to fill.
-   * @param options Pass `at` to read at a byte position without using or moving the offset.
+   * Behaves like `readInto` but blocks the JS thread. The file data is written straight into the
+   * buffer, with no copy. It returns `0` at or past the end of the file and leaves the rest of
+   * the buffer unchanged.
+   *
+   * > **Note:** On a JavaScript runtime without JS heap access, for example a worklet runtime,
+   * > the buffer is not filled. Use `readBytes` there.
+   *
+   * @param buffer An `ArrayBuffer`, a typed array, or a `DataView` to fill.
+   * @param options Pass `at` to read from a byte position without using or moving the `offset`.
+   * @return The number of bytes read.
    */
   readIntoSync(
     buffer: ArrayBuffer | ArrayBufferView,
@@ -190,7 +222,13 @@ export class FileHandle {
    * Writes the provided bytes to the file at the current offset, then advances the
    * offset by the number of bytes written.
    *
+   * With `options.at`, the call writes at that byte position and leaves `offset` unchanged.
+   * If `at` is past the end of the file, the file grows and the gap is filled with zero bytes.
+   * In `FileMode.Append` the write ignores `at` and goes to the end of the file. Writes always
+   * run in the order they are called.
+   *
    * @param bytes A `Uint8Array` containing the bytes to write.
+   * @param options Pass `at` to write at a byte position without using or moving the `offset`.
    */
   writeBytes(bytes: Uint8Array, options?: FileHandleReadWriteOptions): Promise<void> {
     const at = options?.at;
@@ -206,7 +244,12 @@ export class FileHandle {
    * Writes the provided bytes to the file at the current offset synchronously, then
    * advances the offset by the number of bytes written.
    *
+   * With `options.at`, the call writes at that byte position and leaves `offset` unchanged.
+   * If `at` is past the end of the file, the file grows and the gap is filled with zero bytes.
+   * In `FileMode.Append` the write ignores `at` and goes to the end of the file.
+   *
    * @param bytes A `Uint8Array` containing the bytes to write.
+   * @param options Pass `at` to write at a byte position without using or moving the `offset`.
    */
   writeBytesSync(bytes: Uint8Array, options?: FileHandleReadWriteOptions): void {
     this.ensureOpen();
@@ -221,8 +264,8 @@ export class FileHandle {
    * Closes the file handle and releases the underlying file descriptor.
    *
    * After closing, the `offset` and `size` properties return `null`, and any
-   * subsequent call to `readBytes`, `readBytesSync`, `writeBytes`, or
-   * `writeBytesSync` throws an error.
+   * subsequent call to `readBytes`, `readBytesSync`, `readInto`,
+   * `readIntoSync`, `writeBytes`, or `writeBytesSync` throws an error.
    */
   close(): void {
     if (this.closed) {
