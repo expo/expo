@@ -17,13 +17,13 @@
 
 Thanks for your interest in contributing!
 
-Read ["What we accept"](#-wha-we-accept) and ["Opening a pull request"](#-opening-a-pull-requesst) before you open a pull request.
+Read ["What we accept"](#-what-we-accept) and ["Opening a pull request"](#-opening-a-pull-request) before you open a pull request.
 
 Coding agents must read [AGENTS.md](./AGENTS.md) before they edit. Pull request size and wording are in [Opening a pull request](#-opening-a-pull-request).
 
 We further expect that you please follow best practices before considering to submit a pull request:
 - When using agent to submit a change, agents must read [AGENTS.md](./AGENTS.md) before they edit
-- When using agents to open a PR, agents must follow the template and wording in ["Opening a pull request"](#-opening-a-pull-reques)
+- When using agents to open a PR, agents must follow the template and wording in ["Opening a pull request"](#-opening-a-pull-request)
 - Before submitting, validate, self-review, and test your changes, since in-code tests aren't always comprehensive
 - We expect that changes that are submitted have been tested and **human-reviewed** before submission
 - We expect that changes are tested appropriately, as per the notes in ["Testing your changes"](#-testing-your-changes)
@@ -33,6 +33,7 @@ We further expect that you please follow best practices before considering to su
 Anyone can open an issue, comment on a proposal, or tell us we got something wrong. All of it will be reviewed, provided it passes our template or what we accept issues for, whoever it comes from.
 
 A pull request is different. It asks us to review, verify, and maintain code. Every review takes time out of the iteration loop that ships fixes to everyone.
+
 A pull request must therefore show that it works and that it helps real apps. The same bar applies to everyone, inside and outside of the Expo team.
 
 The most important note is: Please don't open a PR if you're unsure of the problem yourself (meaning: you, as a human operator, not an agent).
