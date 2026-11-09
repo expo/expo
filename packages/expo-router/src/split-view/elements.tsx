@@ -16,6 +16,7 @@ function isSplitColumnNativeChild(child: ReactNode) {
 }
 
 /**
+ * @hidden
  * Split.Column must see a Split.Stack as its direct child, and the native split screen must see its header config
  * as a direct subview. Only the other children are wrapped in a SafeAreaProvider. The result is an array, because
  * Split.Column does not look into fragments.
