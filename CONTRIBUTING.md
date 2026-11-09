@@ -36,8 +36,7 @@ A pull request is different. It asks us to review, verify, and maintain code. Ev
 
 A pull request must therefore show that it works and that it helps real apps. The same bar applies to everyone, inside and outside of the Expo team.
 
-The most important note is: Please don't open a PR if you're unsure of the problem yourself (meaning: you, as a human operator, not an agent).
-A note in an issue is more valuable with a reproduction or context on how this is affecting you.
+The most important note is: Please don't open a PR if you're unsure of the problem yourself (meaning: you, as a human operator, not an agent). A note in an issue is more valuable with a reproduction or context on how this is affecting you.
 
 ### Before you open a pull request
 
