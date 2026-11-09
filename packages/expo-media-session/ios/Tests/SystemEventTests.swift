@@ -14,7 +14,7 @@ struct SystemEventTests {
   let registration: ObserverRegistration
 
   init() throws {
-    manager = MediaSessionManager(backend: backend, scheduler: scheduler)
+    manager = MediaSessionManager(backend: backend, scheduler: scheduler, nowPlayingCenter: FakeNowPlayingCenter())
     registration = manager.addObserver(observer)
     try manager.setPolicy(AudioPolicyUpdate(interruptionMode: .doNotMix))
   }
@@ -209,7 +209,9 @@ struct SystemEventTests {
   @Test
   func testDeactivateFailureIsLoggedAndRetried() throws {
     let lines = Box<[String]>([])
-    let manager = MediaSessionManager(backend: backend, scheduler: scheduler) { line in
+    let manager = MediaSessionManager(backend: backend, scheduler: scheduler, nowPlayingCenter: FakeNowPlayingCenter())
+    {
+      line in
       lines.mutate { $0.append(line) }
     }
     try manager.setPolicy(AudioPolicyUpdate(interruptionMode: .doNotMix))
