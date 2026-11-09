@@ -1023,6 +1023,26 @@ it('falls back to the first trigger when the initial route has no trigger', asyn
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
+it('redirects an untriggered root route to the first screen in a group tab', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Tabs>
+        <TabList>
+          <TabTrigger name="(feed)" href="/feed" />
+        </TabList>
+        <TabSlot />
+      </Tabs>
+    ),
+    index: () => <Text testID="untriggered-root">Index</Text>,
+    '(feed)/_layout': () => <Stack />,
+    '(feed)/feed': () => <Text testID="feed">Feed</Text>,
+  });
+
+  expect(screen).toHavePathname('/feed');
+  expect(screen.getByTestId('feed')).toBeVisible();
+  expect(screen.queryByTestId('untriggered-root')).toBeNull();
+});
+
 it('throws when the configured initial route does not exist', async () => {
   await expect(
     async () =>

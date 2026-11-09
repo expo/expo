@@ -242,6 +242,76 @@ export type LiveActivityComponent<T extends object = object> = (
 ) => LiveActivityLayout;
 
 /**
+ * Options for starting a Live Activity.
+ * @platform ios
+ */
+export type LiveActivityStartOptions = {
+  /**
+   * The URL to open when the user taps the Live Activity.
+   */
+  url?: string;
+  /**
+   * The date when the system considers the activity's content out of date.
+   */
+  staleDate?: Date;
+  /**
+   * The activity's priority relative to other Live Activities from your app.
+   * Higher scores take precedence in the Dynamic Island and on the Lock Screen.
+   * @default 0
+   */
+  relevanceScore?: number;
+  /**
+   * When to start the activity and how to alert the user. Without it, the activity starts
+   * immediately. Scheduling on an earlier version of iOS throws an error.
+   * @platform iOS 26+
+   */
+  schedule?: LiveActivityScheduleOptions;
+};
+
+/**
+ * Options for scheduling a Live Activity.
+ * @platform iOS 26+
+ */
+export type LiveActivityScheduleOptions = {
+  /** The future date when the activity should start. */
+  startDate: Date;
+  /** The alert the system presents when the activity starts. */
+  alertConfiguration: LiveActivityAlertConfiguration;
+};
+
+/**
+ * The alert the system presents when a scheduled Live Activity starts.
+ * @platform iOS 26+
+ */
+export type LiveActivityAlertConfiguration = {
+  /** The title of the alert. */
+  title: string;
+  /** The message to display in the alert. */
+  body: string;
+  /** The name of a sound file in the app bundle. Without it, the system plays its default sound. */
+  sound?: string;
+};
+
+/**
+ * Options for updating a Live Activity's content.
+ * @platform ios
+ */
+export type LiveActivityUpdateOptions = {
+  /** The date when the system considers the updated content out of date. */
+  staleDate?: Date;
+  /**
+   * The updated activity's priority relative to other Live Activities from your app.
+   * An update without this option resets the score to `0`.
+   * @default 0
+   */
+  relevanceScore?: number;
+  /**
+   * The time the data in the update was generated. On iOS 17.2 and later, if this is older than a previous update or push payload, the system ignores this update.
+   */
+  contentDate?: Date;
+};
+
+/**
  * Event emitted when a user interacts with a widget.
  */
 export type UserInteractionEvent = {
@@ -339,15 +409,31 @@ export declare class NativeWidgetObject extends SharedObject {
   setConfigurationParameterEnum(parameterName: string, options?: WidgetConfigurationEnum[]): void;
 }
 
+export type NativeLiveActivityStartOptions = Omit<
+  LiveActivityStartOptions,
+  'staleDate' | 'schedule'
+> & {
+  staleDate?: number;
+  schedule?: Omit<LiveActivityScheduleOptions, 'startDate'> & { startDate: number };
+};
+
 export declare class NativeLiveActivityFactory extends SharedObject {
   constructor(name: string, layout: string);
-  start(props?: string, url?: string, staleDate?: number): NativeLiveActivity;
+  start(props: string, options: NativeLiveActivityStartOptions): NativeLiveActivity;
   getInstances(): NativeLiveActivity[];
 }
 
+export type NativeLiveActivityUpdateOptions = Omit<
+  LiveActivityUpdateOptions,
+  'staleDate' | 'contentDate'
+> & {
+  staleDate?: number;
+  contentDate?: number;
+};
+
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
   getId(): string;
-  update(props?: string, staleDate?: number): Promise<void>;
+  update(props: string, options: NativeLiveActivityUpdateOptions): Promise<void>;
   end(
     dismissalPolicy?: string,
     afterDate?: number,

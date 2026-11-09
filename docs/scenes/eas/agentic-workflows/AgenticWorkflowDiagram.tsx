@@ -11,8 +11,8 @@ const PLACE_ICONS = {
   GitHub: [GithubIcon],
   'GitHub Actions': [GithubIcon],
   'GitHub or TestFlight': [GithubIcon, AppleIcon],
-  'EAS Workflows': [Dataflow03Icon],
-  'EAS Hosting': [Cloud01Icon],
+  'Expo Workflows': [Dataflow03Icon],
+  'Expo Hosting': [Cloud01Icon],
   'Expo Simulators': [Smartphone02Icon],
   'Your team': [Users01Icon],
 };
@@ -29,7 +29,7 @@ const AGENTIC_WORKFLOW_STAGES: Stage[] = [
     text: 'A pull request, an issue, or tester feedback starts a workflow',
   },
   {
-    place: 'EAS Workflows',
+    place: 'Expo Workflows',
     text: 'A job finds or builds the app and starts a coding agent',
     onExpo: true,
   },
@@ -51,12 +51,12 @@ const ISSUE_TO_PR_STAGES: Stage[] = [
   { place: 'GitHub', text: 'A person adds the agent label to an issue' },
   { place: 'GitHub Actions', text: 'An Action starts the Issue to PR workflow' },
   {
-    place: 'EAS Workflows',
+    place: 'Expo Workflows',
     text: 'A coding agent changes the code and opens a pull request',
     onExpo: true,
   },
   {
-    place: 'EAS Workflows',
+    place: 'Expo Workflows',
     text: 'Agentic CI finds or builds the app and starts a session',
     onExpo: true,
   },
@@ -71,7 +71,7 @@ const ISSUE_TO_PR_STAGES: Stage[] = [
 const BUG_TRIAGE_STAGES: Stage[] = [
   { place: 'GitHub or TestFlight', text: 'A bug report arrives as an issue or as tester feedback' },
   {
-    place: 'EAS Workflows',
+    place: 'Expo Workflows',
     text: 'The workflow files feedback as an issue, and finds or builds the app',
     onExpo: true,
   },
@@ -83,7 +83,7 @@ const BUG_TRIAGE_STAGES: Stage[] = [
   { place: 'GitHub', text: 'The workflow posts the verdict and the evidence on the issue' },
   { place: 'Your team', text: 'A person reads the report and adds the agent label' },
   {
-    place: 'EAS Workflows',
+    place: 'Expo Workflows',
     text: 'Issue to PR opens a fix, and Agentic CI tests it',
     onExpo: true,
   },
@@ -92,7 +92,7 @@ const BUG_TRIAGE_STAGES: Stage[] = [
 const QA_SWARM_STAGES: Stage[] = [
   { place: 'Your team', text: 'A person starts the QA Swarm workflow' },
   {
-    place: 'EAS Workflows',
+    place: 'Expo Workflows',
     text: 'A job finds or builds the app for each platform',
     onExpo: true,
   },
@@ -107,7 +107,7 @@ const QA_SWARM_STAGES: Stage[] = [
     onExpo: true,
   },
   {
-    place: 'EAS Hosting',
+    place: 'Expo Hosting',
     text: 'Each lane deploys an evidence site',
     onExpo: true,
   },

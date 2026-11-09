@@ -1,8 +1,8 @@
 package expo.modules.updates.errorrecovery
 
 import android.os.Handler
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updatesinterface.UpdatesLogMessage
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Test
@@ -12,7 +12,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class ErrorRecoveryLoggingTest {
   @Test
-  fun `logs a handled exception with the JSRuntimeError code and its message`() {
+  fun `logs a handled exception with the JS exception key and its message`() {
     val logger = mockk<UpdatesLogger>(relaxed = true)
     val errorRecovery = ErrorRecovery(logger)
     errorRecovery.handler = mockk<Handler>(relaxed = true)
@@ -21,7 +21,7 @@ class ErrorRecoveryLoggingTest {
     errorRecovery.handleException(exception)
 
     verify {
-      logger.error("ErrorRecovery: exception encountered: boom", exception, UpdatesErrorCode.JSRuntimeError)
+      logger.error(UpdatesLogMessage.ErrorRecoveryJsException, exception, mapOf("error" to "boom"))
     }
   }
 }

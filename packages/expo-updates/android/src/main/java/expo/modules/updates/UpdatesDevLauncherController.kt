@@ -19,7 +19,6 @@ import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.reloadscreen.ReloadScreenManager
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyDevelopmentClient
@@ -31,6 +30,7 @@ import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateContext
 import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import expo.modules.updatesinterface.UpdatesInterfaceCallbacks
+import expo.modules.updatesinterface.UpdatesLogMessage
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 import kotlinx.coroutines.CancellationException
@@ -98,7 +98,7 @@ class UpdatesDevLauncherController(
   @get:Synchronized
   override val launchAssetFile: String?
     get() {
-      logger.warn("launchAssetFile should not be called from expo-dev-client build, except for Detox testing")
+      logger.warn(UpdatesLogMessage.DevLauncherLaunchAssetFileCalled)
       return null
     }
 
@@ -244,7 +244,7 @@ class UpdatesDevLauncherController(
       createUpdatesConfiguration(configuration)
       true
     } catch (e: Exception) {
-      logger.error("Invalid updates configuration", e, UpdatesErrorCode.InitializationError)
+      logger.warn(UpdatesLogMessage.DevLauncherConfigInvalid, e)
       false
     }
   }
@@ -340,7 +340,8 @@ class UpdatesDevLauncherController(
           database,
           updatesDirectory,
           launchedUpdate,
-          selectionPolicy
+          selectionPolicy,
+          logger
         )
       }
     }

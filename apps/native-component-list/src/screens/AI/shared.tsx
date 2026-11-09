@@ -22,6 +22,7 @@ export type Action =
   | 'summarize'
   | 'categorize'
   | 'structured'
+  | 'images'
   | 'session'
   | 'turns'
   | 'stream'
@@ -35,6 +36,7 @@ export const ACTION_TITLES: Record<Action, string> = {
   summarize: 'summarizeAsync',
   categorize: 'categorizeAsync',
   structured: 'generateAsync({ schema })',
+  images: 'generateAsync({ images })',
   session: 'createSessionAsync',
   turns: 'session.generateAsync',
   stream: 'generateAsync({ onUpdate })',

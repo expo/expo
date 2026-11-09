@@ -105,4 +105,23 @@ class UpdatesConfigurationTest {
       )
     ).isFalse()
   }
+
+  @Test
+  fun `updateUrl should fall back to embedded URL when override has only request headers`() {
+    val embeddedUpdateUrl = Uri.parse("https://example.com/manifest")
+    val config = UpdatesConfiguration(
+      context = null,
+      overrideMap = mapOf(
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to embeddedUpdateUrl,
+        UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0.0"
+      ),
+      disableAntiBrickingMeasures = true,
+      configOverride = UpdatesConfigurationOverride(
+        updateUrl = null,
+        requestHeaders = mapOf("expo-channel-name" to "preview")
+      )
+    )
+    Truth.assertThat(config.updateUrl).isEqualTo(embeddedUpdateUrl)
+    Truth.assertThat(config.requestHeaders).containsExactly("expo-channel-name", "preview")
+  }
 }

@@ -16,15 +16,6 @@ jest.mock('../../../optional-libraries/expo-ui', () => ({
 jest.mock('@expo/ui/jetpack-compose', () => {
   const { Text, View }: typeof import('react-native') = jest.requireActual('react-native');
 
-  const DropdownMenu = jest.fn((props) => (
-    <View testID="DropdownMenu" {...props} />
-  )) as unknown as jest.MockedFunction<React.FC<Record<string, unknown>>> & {
-    Trigger: jest.MockedFunction<React.FC<Record<string, unknown>>>;
-    Items: jest.MockedFunction<React.FC<Record<string, unknown>>>;
-  };
-  DropdownMenu.Trigger = jest.fn((props) => <View testID="DropdownMenu.Trigger" {...props} />);
-  DropdownMenu.Items = jest.fn((props) => <View testID="DropdownMenu.Items" {...props} />);
-
   const DropdownMenuItem = jest.fn((props) => (
     <View testID="DropdownMenuItem" {...props} />
   )) as unknown as jest.MockedFunction<React.FC<Record<string, unknown>>> & {
@@ -43,8 +34,11 @@ jest.mock('@expo/ui/jetpack-compose', () => {
   return {
     Host: jest.fn((props) => <View testID="Host" {...props} />),
     Row: jest.fn((props) => <View testID="Row" {...props} />),
-    DropdownMenu,
+    Box: jest.fn((props) => <View testID="Box" {...props} />),
+    DropdownMenuGroup: jest.fn((props) => <View testID="DropdownMenuGroup" {...props} />),
     DropdownMenuItem,
+    DropdownMenuPopup: jest.fn((props) => <View testID="DropdownMenuPopup" {...props} />),
+    Spacer: jest.fn((props) => <View testID="Spacer" {...props} />),
     Divider: jest.fn(() => <View testID="Divider" />),
     Icon: jest.fn((props) => <View testID="Icon" {...props} />),
     IconButton: jest.fn((props) => <View testID="IconButton" {...props} />),
@@ -54,6 +48,8 @@ jest.mock('@expo/ui/jetpack-compose', () => {
 
 jest.mock('@expo/ui/jetpack-compose/modifiers', () => ({
   background: jest.fn((color: string) => ({ type: 'background', color })),
+  height: jest.fn((value: number) => ({ type: 'height', value })),
+  verticalScroll: jest.fn(() => ({ type: 'verticalScroll' })),
 }));
 
 jest.mock('../../../color', () => ({
@@ -207,7 +203,7 @@ describe('processHeaderItemsForPlatform', () => {
     expect(capturedMenuContext).toBe(true);
   });
 
-  it('renders menu children with DropdownMenu and IconButton trigger', async () => {
+  it('renders menu children with DropdownMenuPopup and IconButton trigger', async () => {
     // Import the native components directly to test rendering inside the header
     const {
       NativeToolbarMenu,
@@ -224,7 +220,7 @@ describe('processHeaderItemsForPlatform', () => {
     const HeaderRight = result.headerRight!;
     await render(<HeaderRight canGoBack={false} />);
 
-    expect(screen.getByTestId('DropdownMenu')).toBeDefined();
+    expect(screen.getByTestId('DropdownMenuPopup')).toBeDefined();
     expect(screen.getByTestId('IconButton')).toBeDefined();
   });
 
@@ -443,16 +439,15 @@ describe('processHeaderItemsForPlatform', () => {
     );
   });
 
-  it('menu uses context backgroundColor for dropdown', async () => {
-    const { NativeToolbarMenu } = require('../toolbar/StackToolbarMenu/native');
-    const { DropdownMenu } = jest.requireMock(
-      '@expo/ui/jetpack-compose'
-    ) as typeof import('@expo/ui/jetpack-compose');
-    const MockedDropdownMenu = DropdownMenu as jest.MockedFunction<typeof DropdownMenu>;
+  it('menu uses context backgroundColor for menu groups', async () => {
+    const {
+      NativeToolbarMenu,
+      NativeToolbarMenuAction,
+    } = require('../toolbar/StackToolbarMenu/native');
 
     const result = processHeaderItemsForPlatform(
       <NativeToolbarMenu source={{ uri: 'test-icon' }}>
-        <></>
+        <NativeToolbarMenuAction onPress={() => {}}>Action</NativeToolbarMenuAction>
       </NativeToolbarMenu>,
       'right',
       { backgroundColor: 'custom-bg' }
@@ -461,10 +456,7 @@ describe('processHeaderItemsForPlatform', () => {
     const HeaderRight = result.headerRight!;
     await render(<HeaderRight canGoBack={false} />);
 
-    expect(MockedDropdownMenu).toHaveBeenCalledWith(
-      expect.objectContaining({ color: 'custom-bg' }),
-      undefined
-    );
+    expect(screen.getByTestId('DropdownMenuGroup').props.containerColor).toBe('custom-bg');
   });
 
   it('menu uses context tintColor for icon', async () => {

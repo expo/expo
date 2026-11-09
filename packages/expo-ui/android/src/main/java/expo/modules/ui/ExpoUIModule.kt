@@ -373,6 +373,15 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<RangeSliderProps>("RangeSliderView") {
+      val onValueChange by Event<RangeSliderRange>()
+      val onValueChangeFinished by Event<Unit>()
+
+      Content { props ->
+        RangeSliderContent(props, { onValueChange(it) }, { onValueChangeFinished(it) })
+      }
+    }
+
     ExpoUIView<VerticalSliderProps>("VerticalSliderView") {
       val onValueChange by Event<SliderValueChangedEvent>()
       val onValueChangeFinished by Event<Unit>()
@@ -566,6 +575,28 @@ class ExpoUIModule : Module() {
 
       Content { props ->
         DockedSearchBarContent(props) { onQueryChange(it) }
+      }
+    }
+
+    ExpoUIView<SplitButtonLayoutProps>("SplitButtonLayoutView") {
+      Content { props ->
+        SplitButtonLayoutContent(props)
+      }
+    }
+
+    ExpoUIView<SplitButtonLeadingButtonProps>("SplitButtonLeadingButtonView") {
+      val onButtonPressed by Event<Unit>()
+
+      Content { props ->
+        SplitButtonLeadingButtonContent(props) { onButtonPressed(Unit) }
+      }
+    }
+
+    ExpoUIView<SplitButtonTrailingButtonProps>("SplitButtonTrailingButtonView") {
+      val onCheckedChange by Event<SplitButtonCheckedChangeEvent>()
+
+      Content { props ->
+        SplitButtonTrailingButtonContent(props) { onCheckedChange(it) }
       }
     }
 

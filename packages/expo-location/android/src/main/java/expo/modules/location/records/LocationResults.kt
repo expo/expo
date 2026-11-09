@@ -18,7 +18,12 @@ import java.io.Serializable
 internal class MotionActivityStateRecord(
   @Field var detected: Boolean,
   @Field var confidence: MotionActivityConfidence
-) : Record, Serializable
+) : Record, Serializable {
+  internal fun toPersistableBundle() = PersistableBundle().apply {
+    putBoolean("detected", detected)
+    putInt("confidence", confidence.value)
+  }
+}
 
 @OptimizedRecord
 internal class MotionActivitiesRecord(
@@ -28,13 +33,27 @@ internal class MotionActivitiesRecord(
   @Field var walking: MotionActivityStateRecord,
   @Field var stationary: MotionActivityStateRecord,
   @Field var unknown: MotionActivityStateRecord
-) : Record, Serializable
+) : Record, Serializable {
+  internal fun toPersistableBundle() = PersistableBundle().apply {
+    putPersistableBundle("automotive", automotive.toPersistableBundle())
+    putPersistableBundle("cycling", cycling.toPersistableBundle())
+    putPersistableBundle("running", running.toPersistableBundle())
+    putPersistableBundle("walking", walking.toPersistableBundle())
+    putPersistableBundle("stationary", stationary.toPersistableBundle())
+    putPersistableBundle("unknown", unknown.toPersistableBundle())
+  }
+}
 
 @OptimizedRecord
 internal class MotionActivityObjectRecord(
   @Field var activities: MotionActivitiesRecord,
   @Field var timestamp: Double
-) : Record, Serializable
+) : Record, Serializable {
+  internal fun toPersistableBundle() = PersistableBundle().apply {
+    putPersistableBundle("activities", activities.toPersistableBundle())
+    putDouble("timestamp", timestamp)
+  }
+}
 
 @OptimizedRecord
 internal class PermissionRequestResponse(

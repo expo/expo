@@ -32,6 +32,25 @@ For a `Stack`, `activityEnabled` hides a screen when two screens are above it. A
 
 JavaScript tabs, native tabs, headless tabs, and drawers hide a screen when it loses focus.
 
+## Nested navigators
+
+When a route that holds a nested navigator hides, all screens of that navigator also hide. For example, when a tab of `<NativeTabs activityEnabled>` contains a `Stack`, the screens of that `Stack` hide when you open another tab. The layout component of the nested navigator does not hide, so its effects continue to run.
+
+Set `activityEnabled={false}` on a nested navigator or screen to keep it active. For example, a media player screen in a tab can continue to play while another tab is open:
+
+```tsx src/app/media/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function MediaLayout() {
+  return (
+    <Stack>
+      {/* Keep the player active while another tab is open. */}
+      <Stack.Screen name="player" activityEnabled={false} />
+    </Stack>
+  );
+}
+```
+
 ## Wrap route content manually
 
 Use [`<NavigationAwareActivity>`](/versions/v58.0.0/sdk/router/#navigationawareactivityhidewhennestedatlevel) when you need to wrap only part of a screen:

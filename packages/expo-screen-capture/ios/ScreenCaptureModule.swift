@@ -7,7 +7,7 @@ public final class ScreenCaptureModule: Module {
   private var isListening = false
   private var blockView: UIView?
   private var secureCanvas: SecureWindowCanvas?
-  private var blurEffectView: AnimatedBlurEffectView?
+  private var privacyOverlayView: UIView?
   private var blurIntensity: CGFloat = 0.5
   private var keyWindow: UIWindow? {
     return SceneGeometry.keyWindow()
@@ -158,7 +158,7 @@ public final class ScreenCaptureModule: Module {
 
     NotificationCenter.default.addObserver(
       self,
-      selector: #selector(appDidBecomeActive),
+      selector: #selector(onAppDidBecomeActive),
       name: UIApplication.didBecomeActiveNotification,
       object: nil
     )
@@ -186,39 +186,54 @@ public final class ScreenCaptureModule: Module {
   }
 
   @objc
-  private func appDidBecomeActive() {
+  private func onAppDidBecomeActive() {
     removePrivacyOverlay()
   }
 
   private func showPrivacyOverlay() {
-    // Don't add a new blur view if one already exists
-    guard self.blurEffectView == nil,
+    // Don't add a new overlay if one already exists
+    guard self.privacyOverlayView == nil,
       let keyWindow = keyWindow else {
       return
     }
 
-    let blurEffectView = AnimatedBlurEffectView(style: .light, intensity: self.blurIntensity)
-    blurEffectView.frame = keyWindow.bounds
-    blurEffectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    blurEffectView.alpha = 0
+    let overlayView = makePrivacyOverlayView(for: keyWindow)
+    overlayView.frame = keyWindow.bounds
+    overlayView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    overlayView.alpha = 0
 
-    keyWindow.addSubview(blurEffectView)
-    self.blurEffectView = blurEffectView
+    keyWindow.addSubview(overlayView)
+    self.privacyOverlayView = overlayView
 
-    blurEffectView.setupBlur()
+    if let blurEffectView = overlayView as? AnimatedBlurEffectView {
+      blurEffectView.setupBlur()
+    }
 
     UIView.animate(
       withDuration: 0.3,
       delay: 0,
       options: [.curveEaseOut],
       animations: {
-        blurEffectView.alpha = 1.0
+        overlayView.alpha = 1.0
       }
     )
   }
 
+  private func makePrivacyOverlayView(for window: UIWindow) -> UIView {
+    guard UIAccessibility.isReduceTransparencyEnabled else {
+      return AnimatedBlurEffectView(style: .light, intensity: self.blurIntensity)
+    }
+    if let snapshotView = BlurredSnapshotView(snapshotOf: window, intensity: self.blurIntensity) {
+      return snapshotView
+    }
+    // Without a snapshot to blur, fully cover the content instead of leaving it readable.
+    let opaqueView = UIView()
+    opaqueView.backgroundColor = .white
+    return opaqueView
+  }
+
   private func removePrivacyOverlay() {
-    guard let blurEffectView = self.blurEffectView else {
+    guard let overlayView = self.privacyOverlayView else {
       return
     }
     UIView.animate(
@@ -226,11 +241,11 @@ public final class ScreenCaptureModule: Module {
       delay: 0,
       options: [.curveEaseIn],
       animations: {
-        blurEffectView.alpha = 0
+        overlayView.alpha = 0
       },
       completion: { _ in
-        blurEffectView.removeFromSuperview()
-        self.blurEffectView = nil
+        overlayView.removeFromSuperview()
+        self.privacyOverlayView = nil
       }
     )
   }

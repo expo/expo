@@ -22,6 +22,7 @@ const supportedManifestRequests = new Set([
   'test-update-invalid-hash',
   'test-update-with-invalid-asset-hash',
   'test-update-with-multiple-assets',
+  'test-update-with-failing-assets',
   'test-update-with-older-commit-time',
   'test-update-before-rollback',
   'test-rollback',
@@ -117,6 +118,10 @@ app.use(
   }
 );
 app.use('/static', express.static(path.resolve(__dirname, '..', '.static')));
+
+app.get('/failing-asset/:status/:filename', (req: Request<{ status: string }>, res: Response) => {
+  res.status(parseInt(req.params.status, 10)).send(`Asset failed with status ${req.params.status}`);
+});
 
 app.get(
   '/notify/:string',
@@ -536,6 +541,8 @@ async function respondToServeManifestRequest(
       return await serveTestUpdateWithInvalidAssetHash(platform);
     case 'test-update-with-multiple-assets':
       return await serveTestUpdateWithMultipleAssets(platform);
+    case 'test-update-with-failing-assets':
+      return await serveTestUpdateWithFailingAssets(platform);
     case 'test-update-with-older-commit-time':
       return await serveTestUpdateWithOlderCommitTime(platform);
     case 'test-update-before-rollback':
@@ -714,6 +721,44 @@ async function serveTestUpdateWithMultipleAssets(platform: string): Promise<stri
       };
     })
   );
+  const manifest = Update.getUpdateManifestForBundleFilename(
+    new Date(),
+    hash,
+    'test-update-2-key',
+    bundleFilename,
+    assets,
+    projectRoot
+  );
+
+  await serveSignedManifest(manifest, projectRoot);
+  return manifest.id;
+}
+
+async function serveTestUpdateWithFailingAssets(platform: string): Promise<string> {
+  const bundleFilename = 'bundle2.js';
+  const newNotifyString = 'test-update-2';
+  const hash = await Update.copyBundleToStaticFolder(
+    projectRoot,
+    bundleFilename,
+    newNotifyString,
+    platform
+  );
+  const serverUrl = `http://${Update.serverHost}:${Update.serverPort}`;
+  // Nothing listens on port 1, so the connection is refused.
+  const assetUrls = [
+    `${serverUrl}/static/missing-asset0.jpg`,
+    `${serverUrl}/static/missing-asset1.jpg`,
+    `${serverUrl}/failing-asset/500/asset2.jpg`,
+    `http://${Update.serverHost}:1/asset3.jpg`,
+  ];
+  // The downloads fail before any hash check, so each asset only needs a distinct hash.
+  const assets = assetUrls.map((url, index) => ({
+    hash: crypto.createHash('sha256').update(url).digest('base64url'),
+    key: `failing-asset${index}`,
+    contentType: 'image/jpg',
+    fileExtension: '.jpg',
+    url,
+  }));
   const manifest = Update.getUpdateManifestForBundleFilename(
     new Date(),
     hash,

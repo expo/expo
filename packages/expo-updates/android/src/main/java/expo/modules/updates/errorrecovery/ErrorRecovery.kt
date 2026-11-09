@@ -6,8 +6,8 @@ import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarker.MarkerListener
 import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updatesinterface.UpdatesLogMessage
 
 /**
  * Entry point for the error recovery flow. Responsible for initializing the error recovery handler
@@ -58,7 +58,7 @@ class ErrorRecovery(
   }
 
   internal fun handleException(exception: Exception) {
-    logger.error("ErrorRecovery: exception encountered: ${exception.localizedMessage}", exception, UpdatesErrorCode.JSRuntimeError)
+    logger.error(UpdatesLogMessage.ErrorRecoveryJsException, exception, mapOf("error" to (exception.localizedMessage ?: exception.toString())))
     handler.sendMessage(handler.obtainMessage(ErrorRecoveryHandler.MessageType.EXCEPTION_ENCOUNTERED, exception))
   }
 

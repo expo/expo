@@ -1,14 +1,14 @@
 ---
 title: Metrics reference
 sidebar_title: Metrics
-description: A reference of each performance metric tracked by EAS Observe, including concepts and data handling.
+description: A reference of each performance metric tracked by Expo Observe, including concepts and data handling.
 ---
 
 import { Tabs, Tab, TabsGroup } from '~/ui/components/Tabs';
 
 <TabsGroup>
 
-Reference for the performance metrics EAS Observe collects, the core concepts used to organize events (sessions and users), and how collected data is retained.
+Reference for the performance metrics Expo Observe collects, the core concepts used to organize events (sessions and users), and how collected data is retained.
 
 ## Concepts
 
@@ -164,7 +164,7 @@ Each TTI event includes extra params to help triage issues:
 
 #### Network request params
 
-TTI events also summarize the HTTP requests the app made during launch, so you can tell a slow launch caused by the network from one caused by the app's own work. The window runs from the end of the native launch to the moment `markInteractive()` is called. Requests are observed automatically: `URLSession` traffic on iOS and `OkHttpClient` traffic on Android, which covers `fetch` in React Native. EAS Observe excludes its own telemetry uploads. These params are omitted when the window held no requests.
+TTI events also summarize the HTTP requests the app made during launch, so you can tell a slow launch caused by the network from one caused by the app's own work. The window runs from the end of the native launch to the moment `markInteractive()` is called. Requests are observed automatically: `URLSession` traffic on iOS and `OkHttpClient` traffic on Android, which covers `fetch` in React Native. Expo Observe excludes its own telemetry uploads. These params are omitted when the window held no requests.
 
 - **`expo.network.requests.count`** (count): Requests started in the window.
 - **`expo.network.requests.failed`** (count): Requests that errored or returned a non-2xx status. This is the signal for a launch that stalled on a request that never arrived.
@@ -280,15 +280,15 @@ The marker fires only once, on mount, so its `params` are read from the first re
 
 ### Update download time
 
-**What it measures:** Time to download an EAS Update OTA bundle on a user's device. This metric is collected automatically when your app uses [EAS Update](/eas-update/introduction/) and includes `expo-observe`. No extra instrumentation is needed.
+**What it measures:** Time to download an Expo Update OTA bundle on a user's device. This metric is collected automatically when your app uses [Expo Update](/eas-update/introduction/) and includes `expo-observe`. No extra instrumentation is needed.
 
-For dashboard views, per-update breakdowns, and CLI queries, see [EAS Update download performance](/eas/observe/eas-update/).
+For dashboard views, per-update breakdowns, and CLI queries, see [Expo Update download performance](/eas/observe/eas-update/).
 
 ### Navigation metrics
 
 > **info** Navigation metrics require SDK 56 and later, and an enabled navigation integration.
 
-When the [Expo Router](/eas/observe/integrations/expo-router/) or [React Navigation](/eas/observe/integrations/react-navigation/) integration is enabled, EAS Observe collects three per-route metrics:
+When the [Expo Router](/eas/observe/integrations/expo-router/) or [React Navigation](/eas/observe/integrations/react-navigation/) integration is enabled, Expo Observe collects three per-route metrics:
 
 - **Per-route first render (`cold_ttr`)**: Time from a navigation action to when the destination screen first becomes focused.
 - **Per-route warm render (`warm_ttr`)**: The same measurement for screens that were already rendered before focus, for example after preloading or back navigation.
@@ -300,7 +300,7 @@ For setup instructions and the full event params for each metric, see the integr
 
 > **info** Memory warnings require SDK 57 and later, and are recorded on iOS only.
 
-When iOS delivers a low-memory warning to the app, EAS Observe records an `expo.memory.warning` event with `warn` severity. The event marks the moment the system came under memory pressure. It carries a memory usage snapshot taken as the warning is received, before other parts of the app react to it and free memory.
+When iOS delivers a low-memory warning to the app, Expo Observe records an `expo.memory.warning` event with `warn` severity. The event marks the moment the system came under memory pressure. It carries a memory usage snapshot taken as the warning is received, before other parts of the app react to it and free memory.
 
 A memory warning means the OS is running low on memory and may terminate the app to reclaim it. A session that ends shortly after this event is likely an out-of-memory termination, which is not reported as a crash.
 
@@ -328,7 +328,7 @@ Metrics collected while the device is offline are stored on the device. They are
 
 ### Data retention
 
-EAS Observe deletes all collected data after 90 days. This includes all metrics, logs, traces and any included metadata. Deletion runs in monthly batches, so a record can remain for up to 120 days. After deletion, Expo keeps only per-app event counts for billing.
+Expo Observe deletes all collected data after 90 days. This includes all metrics, logs, traces and any included metadata. Deletion runs in monthly batches, so a record can remain for up to 120 days. After deletion, Expo keeps only per-app event counts for billing.
 
 ### Sampling
 

@@ -110,6 +110,8 @@ struct ModuleEventListenersTests {
     }
   }
 
+  // The app lifecycle hooks of modules run on the main actor, so post the notification from it.
+  @MainActor
   @Test
   func `calls OnAppEntersForeground when system's willEnterForegroundNotification is sent`() async throws {
     let appContext = AppContext()
@@ -126,6 +128,8 @@ struct ModuleEventListenersTests {
     }
   }
 
+  // The app lifecycle hooks of modules run on the main actor, so post the notification from it.
+  @MainActor
   @Test
   func `calls OnAppBecomesActive when system's didBecomeActiveNotification is sent`() async throws {
     let appContext = AppContext()
@@ -142,6 +146,8 @@ struct ModuleEventListenersTests {
     }
   }
 
+  // The app lifecycle hooks of modules run on the main actor, so post the notification from it.
+  @MainActor
   @Test
   func `calls OnAppEntersBackground when system's didEnterBackgroundNotification is sent`() async throws {
     let appContext = AppContext()

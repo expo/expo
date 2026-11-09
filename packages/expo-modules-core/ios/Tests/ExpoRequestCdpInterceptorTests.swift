@@ -66,6 +66,15 @@ struct ExpoRequestCdpInterceptorTests {
   }
 
   @Test
+  func `skips requests reported by ExpoNetworkReporter`() {
+    let request = NSMutableURLRequest(url: URL(string: "https://example.com/data")!)
+    #expect(ExpoRequestInterceptorProtocol.canInit(with: request as URLRequest))
+
+    ExpoNetworkReporter().mark(request)
+    #expect(!ExpoRequestInterceptorProtocol.canInit(with: request as URLRequest))
+  }
+
+  @Test
   func `simple json data`() async throws {
     mockDelegate.events.removeAll()
 

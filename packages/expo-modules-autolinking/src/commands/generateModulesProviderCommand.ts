@@ -144,6 +144,7 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
           watchedDirectories,
           inlineModulesTargets,
           appRoot,
+          corePath: expoModulesSearchResults['expo-modules-core']?.path ?? null,
         });
 
         // Otherwise the app would fail at runtime with a missing native module.

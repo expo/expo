@@ -1,7 +1,7 @@
 ---
 title: 'Git タグで本番デプロイをトリガーする'
 sidebar_title: タグベースのリリース
-description: EAS Workflows で Git タグから本番デプロイをトリガーする方法を学びます。
+description: Expo Workflows で Git タグから本番デプロイをトリガーする方法を学びます。
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -15,12 +15,12 @@ import { Step } from '~/ui/components/Step';
 ## この章で学べること
 
 - 本番ワークフローのトリガーを `release/*` ブランチから `v*.*.*` に一致する Git タグへ切り替える
-- `main` からタグをプッシュしてリリースを切り、EAS ダッシュボードでワークフローの実行を確認する
+- `main` からタグをプッシュしてリリースを切り、Expo ダッシュボードでワークフローの実行を確認する
 - `v1.0.0-rc.1` のようなプレリリースタグを本番から除外し、リリース候補は別のワークフローで実行する
 
 ## リリースイベントとしてのタグ
 
-EAS Workflows は、[`on.push`](/eas/workflows/syntax/#onpush) に `tags` のリストを指定することで、タグベースのトリガーに対応しています。ワークフローは、glob パターンに一致するタグがリモートへプッシュされたときにだけ実行されます。Git のタグは、あとから更新できるブランチとは違い、特定のコミットとバージョンに紐づいた一度きりのイベントです。そのため、タグはリリースの目印として適しています。
+Expo Workflows は、[`on.push`](/eas/workflows/syntax/#onpush) に `tags` のリストを指定することで、タグベースのトリガーに対応しています。ワークフローは、glob パターンに一致するタグがリモートへプッシュされたときにだけ実行されます。Git のタグは、あとから更新できるブランチとは違い、特定のコミットとバージョンに紐づいた一度きりのイベントです。そのため、タグはリリースの目印として適しています。
 
 タグベースのリリースワークフローは、次のようなチームに向いています。
 
@@ -151,10 +151,10 @@ jobs:
   cmdCopy="git add . && git commit -m 'Fix welcome copy' && git tag v0.1.0 && git push origin main --tags"
 />
 
-`v0.1.0` タグによってワークフローがトリガーされます。EAS ダッシュボードを開いて **Workflows** の下を見ると、"Deploy to production" がブランチとして `refs/tags/v0.1.0` を伴って実行されているのが分かります。
+`v0.1.0` タグによってワークフローがトリガーされます。Expo ダッシュボードを開いて **Workflows** の下を見ると、"Deploy to production" がブランチとして `refs/tags/v0.1.0` を伴って実行されているのが分かります。
 
 <ContentSpotlight
-  alt="タグによってトリガーされた本番ワークフローの実行で、fingerprint、get-build、そして Android と iOS の update ジョブを表示している EAS Workflows ダッシュボード。"
+  alt="タグによってトリガーされた本番ワークフローの実行で、fingerprint、get-build、そして Android と iOS の update ジョブを表示している Expo Workflows ダッシュボード。"
   src="/static/images/tutorial/cicd/eas-workflows-tag-based-production-run.webp"
   className="max-w-160"
 />
@@ -162,7 +162,7 @@ jobs:
 タグベースのリリースとして生成されたフィンガープリントでの本番実行はこれが初めてなので、Android と iOS の両方で `build` ジョブが実行されます。以降のタグが TypeScript/JavaScript の変更を指している場合は、ビルドジョブがスキップされて `update` ジョブに直行します。
 
 <ContentSpotlight
-  alt="v0.1.0 タグのリリースに対する Android と iOS の本番ビルドジョブを並列に表示している EAS Workflows ダッシュボード。"
+  alt="v0.1.0 タグのリリースに対する Android と iOS の本番ビルドジョブを並列に表示している Expo Workflows ダッシュボード。"
   src="/static/images/tutorial/cicd/eas-workflows-tag-based-build-android-ios.png"
   className="max-w-160"
 />
@@ -188,7 +188,7 @@ on:
   name="CICD_TUTORIAL"
   chapterTitle="第 6 章：タグベースのリリース"
   summary="本番ワークフローのトリガーをリリースブランチから Git タグへ切り替え、main からバージョンタグをプッシュして変更をテストし、プレリリースタグの glob でリリース候補を締め出す方法を学びました。"
-  nextChapterDescription="次の章では、ワークフローから EAS Hosting へ web ビルドをデプロイする方法を学びます。"
+  nextChapterDescription="次の章では、ワークフローから Expo Hosting へ web ビルドをデプロイする方法を学びます。"
   nextChapterTitle="web デプロイ"
   nextChapterLink="/ja/tutorial/cicd/web-deployments"
 />
