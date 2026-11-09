@@ -1,6 +1,6 @@
-import { screen } from '@testing-library/react-native';
-import { Children, isValidElement, type ReactNode } from 'react';
-import { Text } from 'react-native';
+import { act, fireEvent, screen } from '@testing-library/react-native';
+import { Children, isValidElement, useState, type ReactNode } from 'react';
+import { Pressable, Text, type NativeSyntheticEvent } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { IsWithinNativeNavigator } from '../../exports';
@@ -291,7 +291,77 @@ it('wraps SplitView.Inspector content in a horizontal SafeAreaView', async () =>
   expect(jest.mocked(SafeAreaView).mock.calls[1]![0].edges).toEqual({ left: true, right: true });
 });
 
-it('does not render a SafeAreaView when disableHorizontalSafeAreaInsets is true', async () => {
+it('removes the horizontal insets when the split view collapses', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column>
+            <Text>Sidebar</Text>
+          </SplitView.Column>
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  // The handler only forwards the event, so an empty object is enough.
+  const event = {} as NativeSyntheticEvent<object>;
+  await act(() => jest.mocked(Split.Host).mock.lastCall![0].onCollapse!(event));
+
+  // The last call is for the detail column.
+  expect(jest.mocked(SafeAreaView).mock.lastCall![0].edges).toEqual({ left: false, right: false });
+});
+
+it('applies the horizontal insets again when the split view expands', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column>
+            <Text>Sidebar</Text>
+          </SplitView.Column>
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  // The handlers only forward the event, so an empty object is enough.
+  const event = {} as NativeSyntheticEvent<object>;
+  await act(() => jest.mocked(Split.Host).mock.lastCall![0].onCollapse!(event));
+  await act(() => jest.mocked(Split.Host).mock.lastCall![0].onExpand!(event));
+
+  // The last call is for the detail column.
+  expect(jest.mocked(SafeAreaView).mock.lastCall![0].edges).toEqual({ left: true, right: true });
+});
+
+it('applies the horizontal insets in collapsed mode when disableHorizontalSafeAreaInsets is false', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView disableHorizontalSafeAreaInsets={false}>
+          <SplitView.Column>
+            <Text>Sidebar</Text>
+          </SplitView.Column>
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  // The handler only forwards the event, so an empty object is enough.
+  const event = {} as NativeSyntheticEvent<object>;
+  await act(() => jest.mocked(Split.Host).mock.lastCall![0].onCollapse!(event));
+
+  // The last call is for the detail column.
+  expect(jest.mocked(SafeAreaView).mock.lastCall![0].edges).toEqual({ left: true, right: true });
+});
+
+it('keeps the SafeAreaView without insets in expanded mode when disableHorizontalSafeAreaInsets is true', async () => {
   await renderRouter(
     {
       _layout: () => (
@@ -309,14 +379,78 @@ it('does not render a SafeAreaView when disableHorizontalSafeAreaInsets is true'
     { initialUrl: '/' }
   );
 
-  expect(SafeAreaView).not.toHaveBeenCalled();
   // The first Split.Column is the sidebar column. The second is the detail column.
   const sidebarColumnProps = jest.mocked(Split.Column).mock.calls[0]![0];
   expect(
     Children.toArray(sidebarColumnProps.children).map(
       (child) => isValidElement(child) && child.type
     )
-  ).toEqual([SafeAreaProvider]);
+  ).toEqual([SafeAreaView]);
+  // The SafeAreaViews are in the sidebar column, the detail column, and the inspector.
+  expect(jest.mocked(SafeAreaView).mock.calls[0]![0].edges).toEqual({ left: false, right: false });
+  expect(jest.mocked(SafeAreaView).mock.calls[1]![0].edges).toEqual({ left: false, right: false });
+  expect(jest.mocked(SafeAreaView).mock.calls[2]![0].edges).toEqual({ left: false, right: false });
+});
+
+it('calls onCollapse and onExpand passed to SplitView', async () => {
+  const onCollapse = jest.fn();
+  const onExpand = jest.fn();
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView onCollapse={onCollapse} onExpand={onExpand}>
+          <SplitView.Column>
+            <Text>Sidebar</Text>
+          </SplitView.Column>
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  // The handlers only forward the event, so an empty object is enough.
+  const event = {} as NativeSyntheticEvent<object>;
+  await act(() => jest.mocked(Split.Host).mock.lastCall![0].onCollapse!(event));
+  await act(() => jest.mocked(Split.Host).mock.lastCall![0].onExpand!(event));
+
+  expect(onCollapse).toHaveBeenCalledTimes(1);
+  expect(onCollapse).toHaveBeenCalledWith(event);
+  expect(onExpand).toHaveBeenCalledTimes(1);
+  expect(onExpand).toHaveBeenCalledWith(event);
+});
+
+it('applies the horizontal insets again when Split.Host remounts after a collapse', async () => {
+  await renderRouter(
+    {
+      _layout: function Layout() {
+        const [showInspector, setShowInspector] = useState(false);
+        return (
+          <SplitView>
+            <SplitView.Column>
+              <Pressable testID="show-inspector" onPress={() => setShowInspector(true)} />
+            </SplitView.Column>
+            {showInspector && (
+              <SplitView.Inspector>
+                <Text>Inspector</Text>
+              </SplitView.Inspector>
+            )}
+          </SplitView>
+        );
+      },
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  // The handler only forwards the event, so an empty object is enough.
+  const event = {} as NativeSyntheticEvent<object>;
+  await act(() => jest.mocked(Split.Host).mock.lastCall![0].onCollapse!(event));
+  // Adding the inspector changes the Split.Host key, so the native split view is created again.
+  await fireEvent.press(screen.getByTestId('show-inspector'));
+
+  // The last call is for the inspector.
+  expect(jest.mocked(SafeAreaView).mock.lastCall![0].edges).toEqual({ left: true, right: true });
 });
 
 it('does not pass disableHorizontalSafeAreaInsets to Split.Host', async () => {
