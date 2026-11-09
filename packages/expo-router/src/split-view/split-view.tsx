@@ -1,7 +1,8 @@
-import React, { isValidElement, use, useState, type ReactElement, type ReactNode } from 'react';
+import React, { use, useState, type ReactNode } from 'react';
 
 import { Split, type SplitHostProps } from '../optional-libraries/react-native-screens';
 import { IsWithinNativeNavigator } from '../standard-navigation';
+import { useWarnOnce } from '../useDeprecated';
 import { isChildOfType } from '../utils/children';
 import { Slot } from '../views/Navigator';
 import {
@@ -9,7 +10,6 @@ import {
   SplitViewColumn,
   SplitViewContent,
   SplitViewInspector,
-  type SplitViewContentProps,
 } from './elements';
 
 /**
@@ -33,8 +33,6 @@ export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
   horizontalSafeAreaInsets?: 'expanded' | 'always' | 'never';
 }
 
-let didWarnMissingContent = false;
-
 function SplitViewNavigator({
   children,
   activityEnabled,
@@ -46,6 +44,24 @@ function SplitViewNavigator({
   // The native split view starts expanded. It sends `onCollapse` after mount when it starts in one column.
   // TODO(ENG-28941): Get this value from react-native-screens.
   const [isExpanded, setIsExpanded] = useState(true);
+  const allChildrenArray = React.Children.toArray(children);
+  const columnChildren = allChildrenArray.filter((child) => isChildOfType(child, SplitViewColumn));
+  const inspectorChildren = allChildrenArray.filter((child) =>
+    isChildOfType(child, SplitViewInspector)
+  );
+  const contentChildren = allChildrenArray.filter((child) =>
+    isChildOfType(child, SplitViewContent)
+  );
+  const numberOfSidebars = columnChildren.length;
+  const numberOfInspectors = inspectorChildren.length;
+  // Hooks must run before the early returns below, so the guard repeats their conditions.
+  useWarnOnce(
+    'SplitView.Content is missing. Add <SplitView.Content /> to SplitView to configure the content column.',
+    process.env.EXPO_OS === 'ios' &&
+      numberOfSidebars + numberOfInspectors > 0 &&
+      contentChildren.length === 0
+  );
+
   if (use(IsWithinNativeNavigator)) {
     throw new Error('SplitView cannot be used inside another native navigator.');
   }
@@ -56,18 +72,6 @@ function SplitViewNavigator({
     );
     return <Slot activityEnabled={activityEnabled} />;
   }
-
-  const allChildrenArray = React.Children.toArray(children);
-  const columnChildren = allChildrenArray.filter((child) => isChildOfType(child, SplitViewColumn));
-  const inspectorChildren = allChildrenArray.filter((child) =>
-    isChildOfType(child, SplitViewInspector)
-  );
-  const contentChildren = allChildrenArray.filter(
-    (child): child is ReactElement<SplitViewContentProps> =>
-      isValidElement(child) && child.type === SplitViewContent
-  );
-  const numberOfSidebars = columnChildren.length;
-  const numberOfInspectors = inspectorChildren.length;
 
   if (
     allChildrenArray.length !==
@@ -89,17 +93,6 @@ function SplitViewNavigator({
   if (numberOfSidebars + numberOfInspectors === 0) {
     console.warn('No SplitView.Column and SplitView.Inspector found in SplitView.');
     return <Slot activityEnabled={activityEnabled} />;
-  }
-
-  if (
-    process.env.NODE_ENV !== 'production' &&
-    contentChildren.length === 0 &&
-    !didWarnMissingContent
-  ) {
-    didWarnMissingContent = true;
-    console.warn(
-      'SplitView.Content is missing. Add <SplitView.Content /> to SplitView to configure the content column.'
-    );
   }
 
   const applyHorizontalInsets =
