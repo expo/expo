@@ -166,6 +166,11 @@ final class SessionCoordinator: @unchecked Sendable {
     snapshot.withLock { $0.pendingActivationCount }
   }
 
+  // Coordinator queue only.
+  var effectiveInterruptionMode: InterruptionMode {
+    SessionResolver.resolve(policy: policy, requirements: entries.map(\.requirements)).interruptionMode
+  }
+
   func begin(client: String, requirements: SessionRequirements, activation: ActivationSignal) -> UInt64 {
     let id = nextID.withLock { value in
       value += 1
@@ -501,7 +506,7 @@ final class SessionCoordinator: @unchecked Sendable {
     }
   }
 
-  private func notify(_ body: (any MediaSessionObserver) -> Void) {
+  func notify(_ body: (any MediaSessionObserver) -> Void) {
     publishSnapshot()
     for entry in observers {
       body(entry.observer)

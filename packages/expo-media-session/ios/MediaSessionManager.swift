@@ -37,6 +37,7 @@ public protocol MediaSessionObserver: AnyObject {
   func mediaSessionFocusLost(transient: Bool)
   func mediaSessionServicesReset()
   func mediaSessionSilentModeChanged(isSilent: Bool)
+  func mediaSessionNowPlayingOwnerChanged(id: String?)
 }
 
 extension MediaSessionObserver {
@@ -50,6 +51,7 @@ extension MediaSessionObserver {
   public func mediaSessionFocusLost(transient: Bool) {}
   public func mediaSessionServicesReset() {}
   public func mediaSessionSilentModeChanged(isSilent: Bool) {}
+  public func mediaSessionNowPlayingOwnerChanged(id: String?) {}
 }
 
 /// The manager keeps the observer until `remove()` is called or this registration is deallocated.
@@ -77,19 +79,29 @@ public final class MediaSessionManager: @unchecked Sendable {
   public static let shared = MediaSessionManager(
     backend: AVAudioSessionBackend(),
     scheduler: DispatchScheduler(),
+    nowPlayingCenter: MPNowPlayingCenterBackend(),
     observesSystemEvents: true
   )
 
   let coordinator: SessionCoordinator
+  let nowPlaying: NowPlayingStack
   private let systemEvents: SystemEventSource?
 
   init(
     backend: any SessionBackend,
     scheduler: any Scheduler,
+    nowPlayingCenter: any NowPlayingCenterBackend,
     observesSystemEvents: Bool = false,
     log: @escaping @Sendable (String) -> Void = { print($0) }
   ) {
-    coordinator = SessionCoordinator(backend: backend, scheduler: scheduler, log: log)
+    let coordinator = SessionCoordinator(backend: backend, scheduler: scheduler, log: log)
+    self.coordinator = coordinator
+    nowPlaying = NowPlayingStack(
+      center: nowPlayingCenter,
+      scheduler: scheduler,
+      mixingMode: { [weak coordinator] in coordinator?.effectiveInterruptionMode ?? .mixWithOthers },
+      onOwnerChange: { [weak coordinator] id in coordinator?.notify { $0.mediaSessionNowPlayingOwnerChanged(id: id) } }
+    )
     systemEvents = observesSystemEvents ? SystemEventSource(coordinator: coordinator) : nil
   }
 
@@ -119,6 +131,18 @@ public final class MediaSessionManager: @unchecked Sendable {
 
   public func setPolicy(_ update: AudioPolicyUpdate) throws {
     try coordinator.setPolicy(update)
+  }
+
+  public func offerNowPlaying(
+    _ owner: any NowPlayingOwner,
+    info: NowPlayingInfo,
+    commands: Set<RemoteCommandKind>
+  ) -> NowPlayingClaim {
+    nowPlaying.offer(owner, info: info, commands: commands)
+  }
+
+  public var nowPlayingOwnerID: String? {
+    nowPlaying.ownerID
   }
 
   public func addObserver(_ observer: any MediaSessionObserver) -> ObserverRegistration {
