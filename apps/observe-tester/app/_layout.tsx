@@ -27,7 +27,7 @@ Observe.configure({
     },
     'expo-updates': {
       reportWarnings: true,
-      ignoredCodes: ['NoUpdatesAvailable'],
+      ignoredCodes: ['UpdateServerUnreachable'],
       shouldReport: (entry) => entry.key !== 'reaper.assetDeleteFailed',
     },
   },
