@@ -460,6 +460,9 @@ PODS:
     - ExpoModulesCore
   - ExpoLinking (58.0.14):
     - ExpoModulesCore
+  - ExpoLinking/Tests (58.0.14):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoLivePhoto (58.0.6):
     - ExpoModulesCore
   - ExpoLocalAuthentication (58.0.2):
@@ -3438,6 +3441,7 @@ DEPENDENCIES:
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - ExpoLinking (from `../../../packages/expo-linking/ios`)
+  - ExpoLinking/Tests (from `../../../packages/expo-linking/ios`)
   - ExpoLivePhoto (from `../../../packages/expo-live-photo/ios`)
   - ExpoLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
@@ -4172,7 +4176,7 @@ SPEC CHECKSUMS:
   ExpoInsights: fc09ebe79ed553ec18697ee6edaf3c4f19f17bf9
   ExpoKeepAwake: fd18a5d233329013c578030ad399d8e10b252b5f
   ExpoLinearGradient: 0a669599d57e1421c4718d59eed8c96fe02c1467
-  ExpoLinking: 0937be9faa1580dee244062cc4c5a77732dc2c4d
+  ExpoLinking: c749f2ddefa29feb5cf5cb1e654196486528569d
   ExpoLivePhoto: 1a0d2364e0c749b4dd50d5ad6825473b737bfb06
   ExpoLocalAuthentication: ac9c695d877aafc2d7b33b3fdc47ed8fdf90053e
   ExpoLocalization: ed930f5d68e7b3c2073a04787358839e1a8e1680
