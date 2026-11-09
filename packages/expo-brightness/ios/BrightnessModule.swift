@@ -1,5 +1,7 @@
 import ExpoModulesCore
 
+private let brightnessChangeEvent = "Expo.brightnessDidChange"
+
 @Record
 struct BrightnessChangeEvent {
   var brightness: Double
@@ -16,7 +18,11 @@ public class BrightnessModule: Module {
     ])
   }
 
+  // Core calls the listening hooks for every event name, not only for the declared events.
   public override func didStartListening(event: String) {
+    guard event == brightnessChangeEvent else {
+      return
+    }
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(self.brightnessDidChange),
@@ -26,6 +32,9 @@ public class BrightnessModule: Module {
   }
 
   public override func didStopListening(event: String) {
+    guard event == brightnessChangeEvent else {
+      return
+    }
     NotificationCenter.default.removeObserver(
       self,
       name: UIScreen.brightnessDidChangeNotification,

@@ -70,4 +70,38 @@ struct BrightnessModuleTests {
     }
     #expect(received == brightness)
   }
+
+  @Test
+  func `listeners for other event names do not change the brightness observer`() async throws {
+    try await runtime.evalAsync(
+      """
+      globalThis.count = 0
+      expo.modules.ExpoBrightness.addListener('Expo.brightnessDidChange', () => {
+        globalThis.count += 1
+      })
+      globalThis.otherSubscription = expo.modules.ExpoBrightness.addListener('otherEvent', () => {})
+      """
+    )
+
+    try await postBrightnessChange()
+    #expect(try await eventCount() == 1)
+
+    try await runtime.evalAsync("globalThis.otherSubscription.remove()")
+
+    try await postBrightnessChange()
+    #expect(try await eventCount() == 2)
+  }
+
+  private func postBrightnessChange() async throws {
+    await MainActor.run {
+      NotificationCenter.default.post(name: UIScreen.brightnessDidChangeNotification, object: nil)
+    }
+    // The event is scheduled on the JavaScript thread, so an `evalAsync` after this sleep runs after
+    // every listener call that the notification scheduled.
+    try await Task.sleep(nanoseconds: 200_000_000)
+  }
+
+  private func eventCount() async throws -> Int {
+    return try await runtime.evalAsync("globalThis.count").asInt()
+  }
 }
