@@ -1,36 +1,32 @@
 import ExpoModulesCore
 import ExpoModulesWorklets
 
+@ExpoModule
 public final class WorkletsTesterModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("WorkletsTesterModule")
+  @JS
+  func executeWorklet(_ worklet: Worklet) throws {
+    worklet.execute(on: try workletRuntime())
+  }
 
-    Function("executeWorklet") { (worklet: Worklet) in
-      guard let uiRuntime = try appContext?.uiRuntime as? WorkletRuntime else {
-        throw Exceptions.RuntimeLost()
-      }
-      worklet.execute(on: uiRuntime)
-    }
+  @JS
+  func scheduleWorklet(_ worklet: Worklet) throws {
+    worklet.schedule(on: try workletRuntime())
+  }
 
-    Function("scheduleWorklet") { (worklet: Worklet) in
-      guard let uiRuntime = try appContext?.uiRuntime as? WorkletRuntime else {
-        throw Exceptions.RuntimeLost()
-      }
-      worklet.schedule(on: uiRuntime)
-    }
+  @JS
+  func executeWorkletWithArgs(_ worklet: Worklet) throws {
+    worklet.execute(on: try workletRuntime(), arguments: [2026, "worklet", true])
+  }
 
-    Function("executeWorkletWithArgs") { (worklet: Worklet) in
-      guard let uiRuntime = try appContext?.uiRuntime as? WorkletRuntime else {
-        throw Exceptions.RuntimeLost()
-      }
-      worklet.execute(on: uiRuntime, arguments: [2026, "worklet", true])
-    }
+  @JS
+  func scheduleWorkletWithArgs(_ worklet: Worklet) throws {
+    worklet.schedule(on: try workletRuntime(), arguments: [2026, "worklet", true])
+  }
 
-    Function("scheduleWorkletWithArgs") { (worklet: Worklet) in
-      guard let uiRuntime = try appContext?.uiRuntime as? WorkletRuntime else {
-        throw Exceptions.RuntimeLost()
-      }
-      worklet.schedule(on: uiRuntime, arguments: [2026, "worklet", true])
+  private func workletRuntime() throws -> WorkletRuntime {
+    guard let uiRuntime = try appContext?.uiRuntime as? WorkletRuntime else {
+      throw Exceptions.RuntimeLost()
     }
+    return uiRuntime
   }
 }
