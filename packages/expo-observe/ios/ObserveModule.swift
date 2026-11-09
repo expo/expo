@@ -43,6 +43,11 @@ public final class ObserveModule: Module {
       EASClientID.uuid().uuidString.lowercased()
     }
 
+    // Set by the `feedback` option of the config plugin.
+    Constant("isFeedbackEnabled") {
+      Bundle.main.object(forInfoDictionaryKey: "EXObserveFeedbackEnabled") as? Bool ?? false
+    }
+
     AsyncFunction("dispatchEvents") {
       await ObservabilityManager.dispatch()
     }

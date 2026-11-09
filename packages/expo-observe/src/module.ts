@@ -15,7 +15,7 @@ import {
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
 import { reportCaughtError } from './reportCaughtError';
-import { reportFeedback } from './reportFeedback';
+import { reportFeedback, warnFeedbackNotEnabled } from './reportFeedback';
 import type { ObserveConfig, ObserveIntegrationsConfig, ObserveModule } from './types';
 
 /**
@@ -62,7 +62,8 @@ function warnIfErrorSampleRateIsLower({ sampleRate, errorSampleRate }: ObserveCo
   }
 }
 
-const native = requireNativeModule<ObserveModule>('ExpoObserve');
+// `isFeedbackEnabled` is internal, so it is not part of the public `ObserveModule` type.
+const native = requireNativeModule<ObserveModule & { isFeedbackEnabled: boolean }>('ExpoObserve');
 
 const Observe: ObserveModule = new Proxy(native, {
   get(target, prop, receiver) {
@@ -122,7 +123,7 @@ const Observe: ObserveModule = new Proxy(native, {
       return (error: unknown) => reportCaughtError(error);
     }
     if (prop === 'reportFeedback') {
-      return reportFeedback;
+      return target.isFeedbackEnabled ? reportFeedback : warnFeedbackNotEnabled;
     }
 
     // The span wrappers add JS-side behavior over the raw native functions (`parent` folding,

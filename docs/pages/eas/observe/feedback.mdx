@@ -10,6 +10,61 @@ import { Terminal } from '~/ui/components/Snippet';
 
 `reportFeedback` works on Android and iOS. On web, it sends nothing.
 
+## Enable feedback
+
+Feedback is off by default. To turn it on, set the `feedback` option of the `expo-observe` [config plugin](/config-plugins/introduction/) in your [app config](/workflow/configuration/):
+
+```json app.json
+{
+  "expo": {
+    "plugins": [["expo-observe", { "feedback": true }]]
+  }
+}
+```
+
+Then create a new build of your app. The option changes native files, so an over-the-air update cannot turn it on.
+
+During [prebuild](/workflow/continuous-native-generation/), the option makes these changes:
+
+- On Android, it adds the `expo.modules.observe.FEEDBACK_ENABLED` metadata to **AndroidManifest.xml**.
+- On iOS, it adds the `EXObserveFeedbackEnabled` key to **Info.plist**. It also adds the Customer Support data type to the app's privacy manifest. See [Privacy](#privacy).
+
+When the option is not set, `reportFeedback` drops every report and prints a warning in development.
+
+### Enable feedback without CNG
+
+If your app does not use [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/), make the same changes in your native projects.
+
+In **android/app/src/main/AndroidManifest.xml**, add this element inside `<application>`:
+
+```xml
+<meta-data android:name="expo.modules.observe.FEEDBACK_ENABLED" android:value="true"/>
+```
+
+In **ios/[app]/Info.plist**, add this key:
+
+```xml
+<key>EXObserveFeedbackEnabled</key>
+<true/>
+```
+
+In **ios/[app]/PrivacyInfo.xcprivacy**, add this entry to the `NSPrivacyCollectedDataTypes` array:
+
+```xml
+<dict>
+  <key>NSPrivacyCollectedDataType</key>
+  <string>NSPrivacyCollectedDataTypeCustomerSupport</string>
+  <key>NSPrivacyCollectedDataTypeLinked</key>
+  <false/>
+  <key>NSPrivacyCollectedDataTypeTracking</key>
+  <false/>
+  <key>NSPrivacyCollectedDataTypePurposes</key>
+  <array>
+    <string>NSPrivacyCollectedDataTypePurposeAppFunctionality</string>
+  </array>
+</dict>
+```
+
 ## Report feedback
 
 Call `Observe.reportFeedback` with an `id` and a `message`, a `rating`, or both:
@@ -34,6 +89,7 @@ Observe.reportFeedback({
 
 `reportFeedback` drops the report and prints a warning in development when:
 
+- The app was built without the [`feedback` option](#enable-feedback).
 - The `id` is empty.
 - The report has no `message` and no `rating`. An empty `message` counts as no message.
 - The `rating` is not a whole number from 0 to 10.
@@ -249,4 +305,6 @@ Free text from your users can contain personal data, such as names, email addres
 Before you collect feedback:
 
 - Tell your users what you collect and how you use it.
-- Declare the data in the App Store privacy details and in the Google Play Data safety form. See [App store privacy declarations](/eas/observe/reference/store-privacy-declarations/).
+- Declare the data in the App Store privacy details and in the Google Play Data safety form. See [App store privacy declarations](/eas/observe/reference/store-privacy-declarations/#user-feedback).
+
+The `feedback` option adds the privacy manifest entry for iOS. The privacy manifest does not replace the App Store privacy details, so declare the data in App Store Connect too.

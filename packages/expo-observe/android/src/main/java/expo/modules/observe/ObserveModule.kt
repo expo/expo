@@ -1,6 +1,7 @@
 package expo.modules.observe
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
 import expo.modules.appmetrics.AppMetricsModule
 import expo.modules.easclient.EASClientID
@@ -64,6 +65,14 @@ class ObserveModule : Module() {
 
       Constant("clientId") {
         EASClientID(context).uuid.toString().lowercase()
+      }
+
+      // Set by the `feedback` option of the config plugin.
+      Constant("isFeedbackEnabled") {
+        context.packageManager
+          .getApplicationInfo(context.packageName, PackageManager.GET_META_DATA)
+          .metaData
+          ?.getBoolean("expo.modules.observe.FEEDBACK_ENABLED") ?: false
       }
 
       AsyncFunction("dispatchEvents") Coroutine { ->

@@ -43,3 +43,13 @@ export function reportFeedback(feedback: ObserveFeedback): void {
     }
   }
 }
+
+export function warnFeedbackNotEnabled(): void {
+  if (__DEV__) {
+    console.warn(
+      '[expo-observe] `reportFeedback` dropped the report: feedback is not enabled in this build. ' +
+        'Add `["expo-observe", { "feedback": true }]` to `plugins` in your app config, then rebuild the app. ' +
+        'See https://docs.expo.dev/eas/observe/feedback/.'
+    );
+  }
+}

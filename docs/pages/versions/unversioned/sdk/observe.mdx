@@ -9,6 +9,11 @@ platforms: ['android', 'ios', 'tvos']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/ui/components/ConfigSection';
 
 > **info** Expo Observe includes 100,000 events per month on the Free plan and 500,000 on paid plans, roughly 10,000 and 50,000 monthly active users. Beyond that, pricing is usage-based. See [Pricing](https://expo.dev/pricing) for details.
 
@@ -32,6 +37,39 @@ Beyond app startup metrics, the library can also:
 ## Configuration
 
 In release builds, installing the `expo-observe` library is all that is needed to configure the library to start sending startup metrics (though you will need to follow the usage instructions below to call `markInteractive` to track TTI). The library will not dispatch events in debug builds, but you can change this and other config options such as sample rate, environment name and enabling integrations with the `Observe.configure({})` call. For all available options, see the [Expo Observe configuration guide](/eas/observe/configuration/).
+
+## Configuration in app config
+
+You can configure `expo-observe` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [["expo-observe", { "feedback": true }]]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'feedback',
+      description:
+        'Enables [`Observe.reportFeedback`](/eas/observe/feedback/). On iOS, it also adds the Customer Support data type to the privacy manifest of your app.',
+      default: 'false',
+    },
+  ]}
+/>
+
+<ConfigReactNative>
+
+If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)), follow [Enable feedback without CNG](/eas/observe/feedback/#enable-feedback-without-cng) to make the same changes in your native projects.
+
+</ConfigReactNative>
 
 ## Usage
 

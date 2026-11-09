@@ -3,6 +3,7 @@ export {};
 
 const mockNativeTarget = {
   clientId: 'aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee',
+  isFeedbackEnabled: true,
   configure: jest.fn(),
   setBundleDefaults: jest.fn(),
   dispatchEvents: jest.fn(() => Promise.resolve()),
@@ -76,6 +77,7 @@ let warnSpy: jest.SpyInstance;
 beforeEach(() => {
   jest.clearAllMocks();
   jest.resetModules();
+  mockNativeTarget.isFeedbackEnabled = true;
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.doMock('expo', () => ({ requireNativeModule: jest.fn(() => mockNative) }));
   jest.doMock('expo-app-metrics', () => ({
@@ -729,6 +731,14 @@ describe('module Proxy', () => {
     expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith({ id: 'checkout', rating: 5 });
     expect(mockAppMetrics.reportFeedback.mock.calls[0][0]).not.toHaveProperty('message');
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('drops feedback with a warning when the config plugin did not enable it', () => {
+    mockNativeTarget.isFeedbackEnabled = false;
+    const Observe = loadModule();
+    Observe.reportFeedback({ id: 'checkout', message: 'Great' });
+    expect(mockAppMetrics.reportFeedback).not.toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('"feedback": true'));
   });
 
   it('never throws when the native reportFeedback call throws', () => {
