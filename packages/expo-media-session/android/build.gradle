@@ -20,6 +20,7 @@ repositories {
 
 dependencies {
   def androidxMedia3Version = "1.9.1"
+  api "androidx.media3:media3-common:$androidxMedia3Version"
   implementation "androidx.media3:media3-session:$androidxMedia3Version"
 
   testImplementation 'junit:junit:4.13.2'
