@@ -167,7 +167,8 @@ export type NativeTabsTriggerIconProps = {
    *
    * The value can be a single mode, or an object with a distinct mode for the selected state.
    *
-   * When not set, iOS uses `'template'` for a `src` icon in a state with an icon color, and Android tints the icon.
+   * When not set, Android tints the icon. iOS uses `'template'` for a `src` icon in a state with
+   * an icon color, and `'original'` in a state without one.
    *
    * @example
    * ```tsx
@@ -175,6 +176,9 @@ export type NativeTabsTriggerIconProps = {
    * ```
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+   *
+   * @platform Android
+   * @platform iOS
    */
   renderingMode?: IconRenderingMode | { default?: IconRenderingMode; selected: IconRenderingMode };
 } & (

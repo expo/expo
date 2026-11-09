@@ -487,19 +487,11 @@ export default function TabLayout() {
 
 </Tabs>
 
-> **info** In SDK 57 and earlier, the `renderingMode` prop only affects iOS, and Android tints all image icons.
+> **info** In SDK 57 and earlier, Android tints all image icons, and the `renderingMode` prop only affects iOS.
 
-When `renderingMode` is not set, iOS draws an image icon as `template` in a tab state that has an icon color (from `iconColor`, `tintColor`, or `selectedColor`), and as `original` in a state without one.
+When `renderingMode` is not set, iOS picks the mode of an image icon for each tab state. A state with an icon color uses `template`, and a state without one uses `original`. The icon color comes from `iconColor`, `tintColor`, or `selectedColor`. In SDK 57 and earlier, both states must resolve to the same mode, so set a color for both states or set `renderingMode`.
 
 > **info** Rendering modes for SF Symbols and Android icons, and separate modes for selected icons, are available in SDK 58 and later.
-
-**SF Symbols (iOS)**
-
-On iOS, the `renderingMode` prop also applies to SF Symbols:
-
-- **`template`**: The symbol is monochrome and drawn in the tab's icon color.
-- **`original`**: The symbol uses its multicolor rendering.
-- **Not set**: The symbol uses the system default rendering.
 
 **Android icons**
 
@@ -510,6 +502,14 @@ On Android, the `renderingMode` prop applies to `src`, `drawable`, and `md` icon
 - **Not set**: The icon is tinted, same as `template`.
 
 `md` icons are white glyphs, so they render white with `original`.
+
+**SF Symbols (iOS)**
+
+On iOS, the `renderingMode` prop also applies to SF Symbols:
+
+- **`template`**: The symbol is monochrome and drawn in the tab's icon color.
+- **`original`**: The symbol uses its multicolor rendering.
+- **Not set**: The symbol uses the system default rendering.
 
 **Different modes for selected icons**
 
