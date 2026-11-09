@@ -35,7 +35,7 @@ function SplitViewNavigator({
   ...splitViewHostProps
 }: SplitViewProps) {
   // The native split view starts expanded. It sends `onCollapse` after mount when it starts in one column.
-  // TODO: Get this value from react-native-screens.
+  // TODO(ENG-28941): Get this value from react-native-screens.
   const [isExpanded, setIsExpanded] = useState(true);
   if (use(IsWithinNativeNavigator)) {
     throw new Error('SplitView cannot be used inside another native navigator.');
