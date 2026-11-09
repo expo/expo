@@ -14,7 +14,7 @@ struct SessionCoordinatorTests {
   let registration: ObserverRegistration
 
   init() throws {
-    manager = MediaSessionManager(backend: backend, scheduler: scheduler)
+    manager = MediaSessionManager(backend: backend, scheduler: scheduler, nowPlayingCenter: FakeNowPlayingCenter())
     registration = manager.addObserver(observer)
     try manager.setPolicy(AudioPolicyUpdate(interruptionMode: .doNotMix))
   }

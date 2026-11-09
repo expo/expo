@@ -68,7 +68,7 @@ private final class PropertyRun {
 
   init(seed: UInt64) throws {
     random = SeededGenerator(state: seed)
-    manager = MediaSessionManager(backend: backend, scheduler: scheduler)
+    manager = MediaSessionManager(backend: backend, scheduler: scheduler, nowPlayingCenter: FakeNowPlayingCenter())
     observer = EndedObserver(coordinator: manager.coordinator)
     registration = manager.addObserver(observer)
     try manager.setPolicy(AudioPolicyUpdate(interruptionMode: .doNotMix))
