@@ -212,6 +212,31 @@ public struct UpdatesStateContext {
     )
   }
 
+  private static var manifestStringCache: (id: String, string: String)?
+  private static let manifestStringCacheLock = NSLock()
+
+  /// Serializes a manifest for JS once per manifest id, since the context is sent on every event.
+  static func manifestString(_ manifest: [String: Any]?) -> String? {
+    guard let manifest else {
+      return nil
+    }
+    let id = manifest["id"] as? String
+    manifestStringCacheLock.lock()
+    defer { manifestStringCacheLock.unlock() }
+    if let id, let cached = manifestStringCache, cached.id == id {
+      return cached.string
+    }
+    guard JSONSerialization.isValidJSONObject(manifest),
+      let data = try? JSONSerialization.data(withJSONObject: manifest),
+      let string = String(data: data, encoding: .utf8) else {
+      return nil
+    }
+    if let id {
+      manifestStringCache = (id, string)
+    }
+    return string
+  }
+
   var json: [String: Any?] {
     return [
       "isStartupProcedureRunning": self.isStartupProcedureRunning,
@@ -221,8 +246,11 @@ public struct UpdatesStateContext {
       "isDownloading": self.isDownloading,
       "isRestarting": self.isRestarting,
       "restartCount": self.restartCount,
-      "latestManifest": self.latestManifest,
-      "downloadedManifest": self.downloadedManifest,
+      // Send manifests as JSON strings, as Android does (UpdatesStateContext.kt); UpdatesEmitter parses them.
+      // Converting the manifest dictionary to JS on every event (one per download progress tick) allocated
+      // thousands of strings per event and, during a first download, enough memory for iOS to terminate the app.
+      "latestManifestString": UpdatesStateContext.manifestString(self.latestManifest),
+      "downloadedManifestString": UpdatesStateContext.manifestString(self.downloadedManifest),
       "checkError": self.checkError,
       "downloadError": self.downloadError,
       "downloadProgress": self.downloadProgress,
