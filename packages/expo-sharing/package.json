@@ -51,8 +51,5 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
-  },
-  "jest": {
-    "preset": "@expo/internal-scripts"
   }
 }
