@@ -5329,6 +5329,9 @@ importers:
       '@types/jest':
         specifier: ^30.0.0
         version: 30.0.0
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.20.1
       expo:
         specifier: workspace:*
         version: link:../expo

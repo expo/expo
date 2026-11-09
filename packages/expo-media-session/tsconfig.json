@@ -2,6 +2,7 @@
 {
   "extends": "@expo/internal-scripts/tsconfig.base",
   "compilerOptions": {
+    "composite": true,
     "rootDir": "./src",
     "noEmit": true
   },
