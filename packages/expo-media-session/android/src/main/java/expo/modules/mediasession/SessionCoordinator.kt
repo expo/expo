@@ -41,6 +41,8 @@ internal class SessionCoordinator(
 
   var log: (String) -> Unit = { Log.w(TAG, it) }
 
+  var onTask: () -> Unit = {}
+
   private val scope = CoroutineScope(
     SupervisorJob() + dispatcher + CoroutineExceptionHandler { _, error ->
       log("Coordinator task failed: $error")
@@ -249,6 +251,10 @@ internal class SessionCoordinator(
     }
   }
 
+  fun post(body: () -> Unit) {
+    task(body)
+  }
+
   @VisibleForTesting
   fun close() {
     scope.launch {
@@ -353,6 +359,7 @@ internal class SessionCoordinator(
         reconcile(client = null, activating = false, activation = null)
       }
     }
+    onTask()
     body()
     publish()
     publishSnapshot()
@@ -470,7 +477,7 @@ internal class SessionCoordinator(
     }
   }
 
-  private fun notify(body: (MediaSessionObserver) -> Unit) {
+  fun notify(body: (MediaSessionObserver) -> Unit) {
     publishSnapshot()
     observers.toList().forEach { (_, observer) ->
       try {
