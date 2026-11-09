@@ -356,6 +356,11 @@ class FileSystemModule : Module() {
       Function("readAtSync") { fileHandle: FileSystemFileHandle, position: Long, length: Long ->
         ArrayBuffer.wrap(fileHandle.readAt(position, length))
       }
+      Function("readIntoSync") { fileHandle: FileSystemFileHandle, position: Long, target: ArrayBuffer ->
+        target.withMutableJSBytes { buffer ->
+          fileHandle.readInto(position, buffer)
+        }
+      }
       AsyncFunction("writeAt") Coroutine { fileHandle: FileSystemFileHandle, position: Long, data: ArrayBuffer ->
         withContext(Dispatchers.IO) {
           // `toDirectBuffer()` copies the bytes once; for a JS-heap-backed buffer that copy waits
