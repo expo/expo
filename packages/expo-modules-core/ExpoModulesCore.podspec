@@ -147,9 +147,11 @@ Pod::Spec.new do |s|
   # Performance benchmarks. A separate spec, so unit test runs neither build nor run them.
   s.test_spec 'Benchmarks' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
-    test_spec.source_files = 'ios/Benchmarks/**/*.swift'
+    # The descriptor benchmarks run `NewComponentDescriptor` through the test double that the tests use.
+    test_spec.source_files = 'ios/Benchmarks/**/*.{h,swift}', 'ios/Tests/Mocks/EXTestNewComponentDescriptor.{h,mm}'
     test_spec.pod_target_xcconfig = {
-      'OTHER_LDFLAGS' => '$(inherited) -lc++'
+      'OTHER_LDFLAGS' => '$(inherited) -lc++',
+      'SWIFT_OBJC_BRIDGING_HEADER' => '$(PODS_TARGET_SRCROOT)/ios/Benchmarks/Benchmarks-Bridging-Header.h'
     }
   end
 end
