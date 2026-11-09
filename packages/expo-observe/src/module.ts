@@ -20,7 +20,7 @@ import {
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
 import { reportCaughtError } from './reportCaughtError';
-import type { ObserveConfig, ObserveIntegrationsConfig, ObserveModule } from './types';
+import type { ObserveConfig, ObserveModule, ObserveStoredIntegrationsConfig } from './types';
 
 /**
  * Normalizes the `networkTraces` sugar (`true` / `false` / `{ enabled, filter }`) into the config
@@ -164,9 +164,9 @@ const Observe: ObserveModule = new Proxy(native, {
     }
 
     if (prop === 'registerIntegration') {
-      return <K extends keyof ObserveIntegrationsConfig>(
+      return <K extends keyof ObserveStoredIntegrationsConfig>(
         name: K,
-        callback: (config: ObserveIntegrationsConfig[K]) => void
+        callback: (config: ObserveStoredIntegrationsConfig[K]) => void
       ) => registerIntegrationImpl(target, name, callback);
     }
 
@@ -181,10 +181,10 @@ const Observe: ObserveModule = new Proxy(native, {
   },
 });
 
-export function registerIntegrationImpl<K extends keyof ObserveIntegrationsConfig>(
+export function registerIntegrationImpl<K extends keyof ObserveStoredIntegrationsConfig>(
   target: Pick<ObserveModule, 'addListener' | 'getIntegrations'>,
   name: K,
-  callback: (config: ObserveIntegrationsConfig[K]) => void
+  callback: (config: ObserveStoredIntegrationsConfig[K]) => void
 ): void {
   const integrations = target.getIntegrations();
   if (integrations) {

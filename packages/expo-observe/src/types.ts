@@ -345,6 +345,15 @@ export type ObserveExpoUpdatesIntegrationConfig = {
 };
 
 /**
+ * The integrations config that `getIntegrations()`, `registerIntegration` and the `configure`
+ * event return. The native module stores this config, so it does not include function options,
+ * such as the `expo-updates` integration's `shouldReport`.
+ */
+export type ObserveStoredIntegrationsConfig = Omit<ObserveIntegrationsConfig, 'expo-updates'> & {
+  'expo-updates'?: boolean | Omit<ObserveExpoUpdatesIntegrationConfig, 'shouldReport'>;
+};
+
+/**
  * Events emitted by the native `ExpoObserve` module.
  */
 export type ObserveModuleEvents = {
@@ -352,7 +361,7 @@ export type ObserveModuleEvents = {
    * Fired on every `configure(...)` call, carrying the resolved `integrations`
    * config
    */
-  configure: (payload: { integrations: ObserveIntegrationsConfig }) => void;
+  configure: (payload: { integrations: ObserveStoredIntegrationsConfig }) => void;
 };
 
 export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
@@ -438,7 +447,7 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * Returns the `integrations` config from the most recent `configure(...)`
    * call, or an empty object if `configure` has not run yet.
    */
-  getIntegrations(): ObserveIntegrationsConfig;
+  getIntegrations(): ObserveStoredIntegrationsConfig;
   /**
    * Invokes a callback once when the named integration configuration becomes available.
    *
@@ -452,9 +461,9 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * });
    * ```
    */
-  registerIntegration<K extends keyof ObserveIntegrationsConfig>(
+  registerIntegration<K extends keyof ObserveStoredIntegrationsConfig>(
     name: K,
-    callback: (config: ObserveIntegrationsConfig[K]) => void
+    callback: (config: ObserveStoredIntegrationsConfig[K]) => void
   ): void;
   /**
    * Records a log event against the current main session. The event is

@@ -10,10 +10,10 @@ import AppMetrics, {
 import { reportCaughtError } from './reportCaughtError';
 import type {
   ObserveConfig,
-  ObserveIntegrationsConfig,
   ObserveModule,
   ObserveModuleEvents,
   ObserveAttributes,
+  ObserveStoredIntegrationsConfig,
 } from './types';
 
 class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements ObserveModule {
@@ -26,12 +26,12 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
   withSpan = withSpan;
   recordSpan = recordSpan;
   configure(config: ObserveConfig): void {}
-  getIntegrations(): ObserveIntegrationsConfig {
+  getIntegrations(): ObserveStoredIntegrationsConfig {
     return {};
   }
-  registerIntegration<K extends keyof ObserveIntegrationsConfig>(
+  registerIntegration<K extends keyof ObserveStoredIntegrationsConfig>(
     name: K,
-    callback: (config: ObserveIntegrationsConfig[K]) => void
+    callback: (config: ObserveStoredIntegrationsConfig[K]) => void
   ): void {
     // Web does not provide integration configuration or emit `configure` events.
   }

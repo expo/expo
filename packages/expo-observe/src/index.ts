@@ -51,6 +51,7 @@ export type {
   ObserveNavigationIntegrationConfig,
   ObserveNetworkTracesConfig,
   ObserveReanimatedIntegrationConfig,
+  ObserveStoredIntegrationsConfig,
   ObserveExpoUpdatesIntegrationConfig,
   ObserveExpoUpdatesLogEntry,
   ObserveExpoUpdatesLogEntryCode,
