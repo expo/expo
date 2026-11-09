@@ -373,6 +373,18 @@ export type PushToStartTokenEvent = {
  */
 export type LiveActivityDismissalPolicy = 'default' | 'immediate' | ReturnType<typeof after>;
 
+/**
+ * The current state of a Live Activity.
+ * - `'pending'` - Scheduled to start at a future date. Available on iOS 26 and later.
+ * - `'active'` - Visible and able to receive content updates.
+ * - `'stale'` - The content is out of date and needs an update.
+ * - `'ended'` - No longer receives updates, but remains visible on the Lock Screen until dismissed.
+ * - `'dismissed'` - Removed from the Lock Screen by the user or the system.
+ * - `'unknown'` - A state that this version of Expo does not recognize.
+ * @platform ios
+ */
+export type LiveActivityState = 'pending' | 'active' | 'stale' | 'ended' | 'dismissed' | 'unknown';
+
 /** @hidden */
 export type ExpoWidgetsEvents = {
   /**
@@ -433,6 +445,7 @@ export type NativeLiveActivityUpdateOptions = Omit<
 
 export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents> {
   getId(): string;
+  getState(): LiveActivityState;
   update(props: string, options: NativeLiveActivityUpdateOptions): Promise<void>;
   end(
     dismissalPolicy?: string,

@@ -7,6 +7,7 @@ import type {
   LiveActivityComponent,
   LiveActivityDismissalPolicy,
   LiveActivityStartOptions,
+  LiveActivityState,
   LiveActivityUpdateOptions,
   NativeLiveActivity,
   NativeLiveActivityFactory,
@@ -115,6 +116,15 @@ export class LiveActivity<T extends object = object> {
    */
   getId(): string {
     return this.nativeLiveActivity.getId();
+  }
+
+  /**
+   * Returns the current state of this Live Activity.
+   * Throws if ActivityKit no longer returns the activity.
+   * @platform ios
+   */
+  getState(): LiveActivityState {
+    return this.nativeLiveActivity.getState();
   }
 
   /**
@@ -236,7 +246,8 @@ export class LiveActivityFactory<T extends object = object> {
   }
 
   /**
-   * Returns pending, active, and stale instances of this Live Activity type.
+   * Returns all instances of this Live Activity type that ActivityKit still tracks, including ended activities.
+   * Use `getState()` to filter by state, and `end('immediate')` to dismiss an ended activity from the Lock Screen.
    * @platform ios
    */
   getInstances() {
