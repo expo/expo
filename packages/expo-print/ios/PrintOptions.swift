@@ -5,6 +5,14 @@ enum PrintOrientation: String {
   case landscape
 }
 
+internal struct PaperSize: Record {
+  @Field(.required)
+  var width: Double = 0
+
+  @Field(.required)
+  var height: Double = 0
+}
+
 internal struct PrintOptions: Record {
   @Field
   var html: String?
@@ -38,6 +46,9 @@ internal struct PrintOptions: Record {
 
   @Field
   var markupFormatterIOS: String?
+
+  @Field
+  var preferredPaperSize: PaperSize?
 
   let kLetterPaperSize = CGSize(width: 612, height: 792)
 

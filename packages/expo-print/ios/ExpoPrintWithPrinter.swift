@@ -4,6 +4,7 @@ public class ExpoPrintWithPrinter {
   var renderTasks: [ExpoWKPDFRenderer] = []
   var cachedPrinters: [String: UIPrinter] = [:]
   let delegate: ExpoPrintModuleDelegate
+  var paperDelegate: ExpoPrintPaperDelegate?
   let printURLSession = URLSession(configuration: .default)
   var dataTask: URLSessionDataTask?
 
@@ -123,7 +124,10 @@ public class ExpoPrintWithPrinter {
   private func makePrintInteractionController(options: PrintOptions) -> UIPrintInteractionController {
     let uri = options.uri ?? ""
     let printInteractionController = UIPrintInteractionController()
-    printInteractionController.delegate = self.delegate
+    paperDelegate = options.preferredPaperSize.map {
+      ExpoPrintPaperDelegate(paperSize: CGSize(width: $0.width, height: $0.height), fallback: self.delegate)
+    }
+    printInteractionController.delegate = paperDelegate ?? self.delegate
 
     let printInfo = UIPrintInfo.printInfo()
     printInfo.outputType = UIPrintInfo.OutputType.general
