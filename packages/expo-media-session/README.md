@@ -27,7 +27,7 @@ Run `npx pod-install` after installing the npm package.
 
 ### Configure for Android
 
-Now Playing needs the media playback service in **AndroidManifest.xml**. The config plugin adds it. See the [configuration section](https://docs.expo.dev/versions/latest/sdk/media-session/#configuration-in-app-config) of the API documentation for the plugin and the manual steps.
+The library declares the media playback service in **AndroidManifest.xml**. For background playback, the config plugin adds the foreground service type and permissions. See the [configuration section](https://docs.expo.dev/versions/latest/sdk/media-session/#configuration-in-app-config) of the API documentation for the plugin and the manual steps.
 
 # Contributing
 

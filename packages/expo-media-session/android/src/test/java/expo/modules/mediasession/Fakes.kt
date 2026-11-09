@@ -2,6 +2,7 @@ package expo.modules.mediasession
 
 import android.media.AudioManager
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.mediasession.service.FakeMediaPlayerOwner
 
 internal class FakeSessionBackend : SessionBackend {
   sealed class Call {
@@ -56,6 +57,7 @@ internal class RecordingObserver : MediaSessionObserver {
     data class FocusLost(val transient: Boolean) : Event()
     object ServicesReset : Event()
     data class SilentModeChanged(val isSilent: Boolean) : Event()
+    data class NowPlayingOwnerChanged(val id: String?) : Event()
   }
 
   val events = mutableListOf<Event>()
@@ -101,4 +103,88 @@ internal class RecordingObserver : MediaSessionObserver {
   override fun mediaSessionSilentModeChanged(isSilent: Boolean) {
     events.add(Event.SilentModeChanged(isSilent))
   }
+
+  override fun mediaSessionNowPlayingOwnerChanged(owner: NowPlayingOwner?) {
+    events.add(Event.NowPlayingOwnerChanged(owner.testId))
+  }
 }
+
+internal class FakeNowPlayingCenter : NowPlayingCenterBackend {
+  val applied = mutableListOf<NowPlayingCenterState?>()
+  private var onCommand: (RemoteCommand) -> Unit = {}
+  private var onFailure: (CodedException) -> Unit = {}
+
+  val state: NowPlayingCenterState?
+    get() = applied.lastOrNull()
+
+  val targets: Set<RemoteCommandKind>
+    get() = state?.commands ?: emptySet()
+
+  override fun setCommandHandler(handler: (RemoteCommand) -> Unit) {
+    onCommand = handler
+  }
+
+  override fun setFailureHandler(handler: (CodedException) -> Unit) {
+    onFailure = handler
+  }
+
+  override fun apply(state: NowPlayingCenterState?) {
+    applied.add(state)
+  }
+
+  fun send(command: RemoteCommand) = onCommand(command)
+
+  fun fail(error: CodedException) = onFailure(error)
+}
+
+internal class FakeNowPlayingOwner(
+  val nowPlayingId: String,
+  override val mediaType: NowPlayingMediaType = NowPlayingMediaType.AUDIO,
+  override var isPlaying: Boolean = true
+) : NowPlayingOwner {
+  sealed class Event {
+    data class Handled(val command: RemoteCommand) : Event()
+    object PausedForTakeover : Event()
+    object ResumedAfterTakeover : Event()
+  }
+
+  val events = mutableListOf<Event>()
+  var pausesLate = false
+
+  val handledCount: Int
+    get() = events.count { it is Event.Handled }
+
+  override fun handle(command: RemoteCommand) {
+    events.add(Event.Handled(command))
+    when (command.kind) {
+      RemoteCommandKind.PLAY -> isPlaying = true
+      RemoteCommandKind.PAUSE -> isPlaying = false
+      RemoteCommandKind.TOGGLE_PLAY_PAUSE -> isPlaying = !isPlaying
+    }
+  }
+
+  override fun pauseForTakeover() {
+    events.add(Event.PausedForTakeover)
+    if (!pausesLate) {
+      isPlaying = false
+    }
+  }
+
+  override fun resumeAfterTakeover() {
+    events.add(Event.ResumedAfterTakeover)
+    isPlaying = true
+  }
+}
+
+internal val NowPlayingOwner?.testId: String?
+  get() = when (this) {
+    is FakeNowPlayingOwner -> nowPlayingId
+    is FakeMediaPlayerOwner -> nowPlayingId
+    else -> null
+  }
+
+internal val MediaSessionManager.nowPlayingOwnerId: String?
+  get() = nowPlayingOwner.testId
+
+internal val NowPlayingStack.ownerId: String?
+  get() = owner.testId
