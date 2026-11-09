@@ -229,12 +229,8 @@ public struct UpdatesStateContext {
       "lastCheckForUpdateTimeString": lastCheckForUpdateTimeDateString,
       "rollback": rollback?.json,
       "sequenceNumber": sequenceNumber,
-      "downloadStartTime": downloadStartTime != nil
-        ? Int(floor(downloadStartTime?.timeIntervalSince1970 ?? 0.0 * 1000))
-        : nil,
-      "downloadFinishTime": downloadFinishTime != nil
-        ? Int(floor(downloadFinishTime?.timeIntervalSince1970 ?? 0.0 * 1000))
-        : nil
+      "downloadStartTime": downloadStartTime.map { Int(floor($0.timeIntervalSince1970 * 1000)) },
+      "downloadFinishTime": downloadFinishTime.map { Int(floor($0.timeIntervalSince1970 * 1000)) }
     ] as [String: Any?]
   }
 }

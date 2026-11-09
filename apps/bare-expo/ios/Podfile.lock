@@ -594,6 +594,9 @@ PODS:
     - RNWorklets
   - ExpoNetwork (58.0.4):
     - ExpoModulesCore
+  - ExpoNetwork/Tests (58.0.4):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoNotifications (58.1.6):
     - ExpoModulesCore
   - ExpoNotifications/Tests (58.1.6):
@@ -741,6 +744,9 @@ PODS:
     - ExpoModulesCore
   - ExpoWebBrowser (58.0.6):
     - ExpoModulesCore
+  - ExpoWebBrowser/Tests (58.0.6):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - EXStructuredHeaders (58.0.1)
   - EXStructuredHeaders/Tests (58.0.1)
   - EXUpdates (58.0.18):
@@ -3456,6 +3462,7 @@ DEPENDENCIES:
   - ExpoModulesWorklets/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesWorkletsAdapter (from `../../../packages/expo-modules-core`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
+  - ExpoNetwork/Tests (from `../../../packages/expo-network/ios`)
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
   - ExpoNotifications/Tests (from `../../../packages/expo-notifications/ios`)
   - ExpoObserve (from `../../../packages/expo-observe/ios`)
@@ -3489,6 +3496,7 @@ DEPENDENCIES:
   - ExpoVideoDashSupportModule (from `../modules/expo-video-dash-support-module/ios`)
   - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
+  - ExpoWebBrowser/Tests (from `../../../packages/expo-web-browser/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXStructuredHeaders/Tests (from `../../../packages/expo-structured-headers/ios`)
   - EXUpdates (from `../../../packages/expo-updates/ios`)
@@ -4179,7 +4187,7 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: ed72b7c5bffe2d5d16cf128c6322c2d1191c1734
   ExpoModulesWorklets: 208e6112a0467df1cc21530e280d650a3adf6261
   ExpoModulesWorkletsAdapter: e1ecc72bf439a1014911ae5a11197e4c2657706d
-  ExpoNetwork: a42e5fe6c3c70f517b0aad167f5a3eeec2fee7a4
+  ExpoNetwork: 1f6c118baf2856c389fbb106a89e2acab185ce33
   ExpoNotifications: d0ab853f324bacf76f0fe32d06eba2e1f8532ca5
   ExpoObserve: c3da67c549d171e15e80e00fad0e6351879d7bb0
   ExpoPrint: e6103f99d8bfdcdc9fe4513b3c37e31b5c8cb7a9
@@ -4203,7 +4211,7 @@ SPEC CHECKSUMS:
   ExpoVideo: dcfa5764e56e73c9eb1cf54c7c218967280701b7
   ExpoVideoDashSupportModule: a8197584e7b7e533a67e75d3349c5fa827358ad6
   ExpoVideoThumbnails: 62430fc61f4d73da425acf4ba351a0fdf144b529
-  ExpoWebBrowser: 2999ed3f2ee8c06985cb37b4ac566328ca0e4c7a
+  ExpoWebBrowser: 43621dbaa8a0438b13c740f4980348c96c6f9646
   EXStructuredHeaders: d38b81fb2ff838c15bf28135deb247e76293d2b9
   EXUpdates: 9ae98510134bbacb8b94f46c561f5ba8da45c2a2
   EXUpdatesInterface: 1c6a522d0eb0485f4de3fa55d0316288763b3f10

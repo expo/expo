@@ -194,11 +194,8 @@ data class OTResourceSpans(
 data class OTRequestBody(
   val resourceMetrics: List<OTEvent>
 ) {
-  fun toJson(prettyPrint: Boolean = false): String {
-    val json = Json {
-      this.prettyPrint = prettyPrint
-    }
-    return json.encodeToString(serializer(), this)
+  fun toJson(): String {
+    return Json.encodeToString(serializer(), this)
   }
 }
 
@@ -206,11 +203,8 @@ data class OTRequestBody(
 data class OTLogsRequestBody(
   val resourceLogs: List<OTResourceLogs>
 ) {
-  fun toJson(prettyPrint: Boolean = false): String {
-    val json = Json {
-      this.prettyPrint = prettyPrint
-    }
-    return json.encodeToString(serializer(), this)
+  fun toJson(): String {
+    return Json.encodeToString(serializer(), this)
   }
 }
 
@@ -218,11 +212,8 @@ data class OTLogsRequestBody(
 data class OTTracesRequestBody(
   val resourceSpans: List<OTResourceSpans>
 ) {
-  fun toJson(prettyPrint: Boolean = false): String {
-    val json = Json {
-      this.prettyPrint = prettyPrint
-    }
-    return json.encodeToString(serializer(), this)
+  fun toJson(): String {
+    return Json.encodeToString(serializer(), this)
   }
 }
 

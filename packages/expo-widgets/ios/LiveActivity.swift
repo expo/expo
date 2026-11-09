@@ -13,13 +13,30 @@ final class LiveActivity: SharedObject {
     super.init()
   }
 
-  func update(props: String?, staleDate: Date?) async throws {
+  func getState() throws -> String {
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
       throw LiveActivityNotFoundException(id)
     }
 
-    let newState = LiveActivityAttributes.ContentState(name: name, props: props)
-    await activity.update(ActivityContent(state: newState, staleDate: staleDate))
+    return Self.stateName(activity.activityState)
+  }
+
+  func update(props: String?, options: LiveActivityUpdateOptions) async throws {
+    guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
+      throw LiveActivityNotFoundException(id)
+    }
+
+    let content = ActivityContent(
+      state: LiveActivityAttributes.ContentState(name: name, props: props),
+      staleDate: options.staleDate,
+      relevanceScore: options.relevanceScore
+    )
+
+    guard let contentDate = options.contentDate, #available(iOS 17.2, *) else {
+      return await activity.update(content)
+    }
+
+    await activity.update(content, timestamp: contentDate)
   }
 
   func end(dismissalPolicy: LiveActivityDismissalPolicy?, afterDate: Date?, props: String?, contentDate: Date?) async throws {
@@ -51,14 +68,6 @@ final class LiveActivity: SharedObject {
     return tokenData.reduce("") { $0 + String(format: "%02x", $1) }
   }
 
-  func getState() throws -> String {
-    guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
-      throw LiveActivityNotFoundException(id)
-    }
-
-    return Self.stateName(activity.activityState)
-  }
-
   func getProps() throws -> [String: Any]? {
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
       throw LiveActivityNotFoundException(id)
@@ -68,16 +77,13 @@ final class LiveActivity: SharedObject {
   }
 
   private static func stateName(_ state: ActivityState) -> String {
-    if #available(iOS 26.0, *), state == .pending {
-      return "pending"
-    }
-
     switch state {
-    case .active: return "active"
-    case .stale: return "stale"
-    case .ended: return "ended"
-    case .dismissed: return "dismissed"
-    @unknown default: return "unknown"
+    case .pending: "pending"
+    case .active: "active"
+    case .stale: "stale"
+    case .ended: "ended"
+    case .dismissed: "dismissed"
+    @unknown default: "unknown"
     }
   }
 

@@ -86,6 +86,18 @@ export function extractIconRenderingMode(
   return undefined;
 }
 
+/**
+ * Warns in development that iOS header items ignore `image`. Only `placement="bottom"` supports it.
+ * @internal
+ */
+export function warnIfHeaderItemHasImage(componentName: string, image: unknown) {
+  if (process.env.NODE_ENV !== 'production' && image != null) {
+    console.warn(
+      `${componentName} does not support the image prop in header toolbars (placement="left" or "right") on iOS. Use the icon prop instead.`
+    );
+  }
+}
+
 const PRIMITIVE_TYPES = ['string', 'number'];
 
 export function areAllChildrenPrimitiveValues(children: ReactNode) {

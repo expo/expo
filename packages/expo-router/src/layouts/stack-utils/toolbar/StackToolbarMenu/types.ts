@@ -166,8 +166,10 @@ export interface StackToolbarMenuProps {
    */
   title?: string;
   /**
-   * Corner radius in dp for the dropdown menu container. Defaults to the Material3
-   * `MenuDefaults.shape` corner radius.
+   * Corner radius in dp for the dropdown menu container.
+   *
+   * @deprecated This prop has no effect. The Material 3 Expressive menu sets the corner shape of
+   * each group.
    *
    * @platform android
    */

@@ -591,6 +591,12 @@ class VideoPlayerObserver: VideoSourceLoaderListener {
   func onLoadingFinished(loader: VideoSourceLoader, videoSource: VideoSource?, result: VideoPlayerItem?) {
     isLoadingAsynchronously = false
   }
+
+  func onLoadingFailed(loader: VideoSourceLoader, videoSource: VideoSource?, error: Error) {
+    isLoadingAsynchronously = false
+    self.error = error as? Exception ?? PlayerItemLoadException(error.localizedDescription)
+    status = .error
+  }
 }
 
 private extension AVPlayerItemAccessLogEvent {

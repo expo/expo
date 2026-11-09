@@ -41,6 +41,22 @@ struct UpdatesStateMachineTests {
   }
 
   @Test
+  func `download times are in milliseconds in JSON`() throws {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    machine.processEventForTesting(.download)
+    machine.processEventForTesting(.downloadCompleteWithUpdate(manifest: ["id": "00000000-0000-0000-0000-000000000000"]))
+
+    let context = machine.context
+    let startTime = try #require(context.downloadStartTime)
+    let finishTime = try #require(context.downloadFinishTime)
+    let json = context.json
+    #expect(json["downloadStartTime"] as? Int == Int(floor(startTime.timeIntervalSince1970 * 1000)))
+    #expect(json["downloadFinishTime"] as? Int == Int(floor(finishTime.timeIntervalSince1970 * 1000)))
+  }
+
+  @Test
   func `restart`() {
     let testStateChangeEventManager = TestStateChangeEventManager()
     let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
