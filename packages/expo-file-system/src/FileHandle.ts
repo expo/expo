@@ -1,4 +1,4 @@
-import { FileMode } from './File.types';
+import { FileMode, type FileHandleReadWriteOptions } from './File.types';
 import type { NativeFileSystemFileHandle } from './internal/NativeFileSystem.types';
 
 /**
@@ -38,8 +38,8 @@ export class FileHandle {
   // Async operations on one handle run one after another, so concurrent calls read consecutive
   // chunks instead of starting from the same offset.
   private queue: Promise<unknown> = Promise.resolve();
-  // Async operations that have been queued and have not settled yet.
-  private pending = 0;
+  // Async operations, queued or not, that have not settled yet. `close()` waits for them.
+  private readonly inFlight = new Set<Promise<unknown>>();
 
   /**
    * @hidden
@@ -96,7 +96,14 @@ export class FileHandle {
    * @param length The number of bytes to read.
    * @return A promise fulfilled with a `Uint8Array` containing the bytes read.
    */
-  readBytes(length: number): Promise<Uint8Array<ArrayBuffer>> {
+  readBytes(
+    length: number,
+    options?: FileHandleReadWriteOptions
+  ): Promise<Uint8Array<ArrayBuffer>> {
+    const at = options?.at;
+    if (at != null) {
+      return this.track(async () => new Uint8Array(await this.native.readAt(at, length)));
+    }
     return this.enqueue(async () => {
       const start = this.cursor;
       const buffer = await this.native.readAt(start, length);
@@ -113,10 +120,13 @@ export class FileHandle {
    * @param length The number of bytes to read.
    * @return A `Uint8Array` containing the bytes read.
    */
-  readBytesSync(length: number): Uint8Array<ArrayBuffer> {
+  readBytesSync(length: number, options?: FileHandleReadWriteOptions): Uint8Array<ArrayBuffer> {
     this.ensureOpen();
-    const buffer = this.native.readAtSync(this.cursor, length);
-    this.cursor += buffer.byteLength;
+    const at = options?.at;
+    const buffer = this.native.readAtSync(at ?? this.cursor, length);
+    if (at == null) {
+      this.cursor += buffer.byteLength;
+    }
     return new Uint8Array(buffer);
   }
 
@@ -126,9 +136,13 @@ export class FileHandle {
    *
    * @param bytes A `Uint8Array` containing the bytes to write.
    */
-  writeBytes(bytes: Uint8Array): Promise<void> {
+  writeBytes(bytes: Uint8Array, options?: FileHandleReadWriteOptions): Promise<void> {
+    const at = options?.at;
     return this.enqueue(async () => {
-      this.cursor = await this.native.writeAt(this.cursor, bytes);
+      const end = await this.native.writeAt(at ?? this.cursor, bytes);
+      if (at == null) {
+        this.cursor = end;
+      }
     });
   }
 
@@ -138,9 +152,13 @@ export class FileHandle {
    *
    * @param bytes A `Uint8Array` containing the bytes to write.
    */
-  writeBytesSync(bytes: Uint8Array): void {
+  writeBytesSync(bytes: Uint8Array, options?: FileHandleReadWriteOptions): void {
     this.ensureOpen();
-    this.cursor = this.native.writeAtSync(this.cursor, bytes);
+    const at = options?.at;
+    const end = this.native.writeAtSync(at ?? this.cursor, bytes);
+    if (at == null) {
+      this.cursor = end;
+    }
   }
 
   /**
@@ -155,14 +173,13 @@ export class FileHandle {
       return;
     }
     this.closed = true;
-    if (this.pending === 0) {
+    if (this.inFlight.size === 0) {
       this.native.close();
       return;
     }
     // An async operation is still running on a native thread. Closing the descriptor under it is
-    // unsafe, so the native close waits until the queued operations have settled.
-    const closeNative = () => this.native.close();
-    this.queue = this.queue.then(closeNative, closeNative).catch(() => {});
+    // unsafe, so the native close waits until every in-flight operation has settled.
+    Promise.allSettled([...this.inFlight]).then(() => this.native.close());
   }
 
   private ensureOpen(): void {
@@ -175,11 +192,24 @@ export class FileHandle {
     if (this.closed) {
       return Promise.reject(new Error('The file handle is closed'));
     }
-    this.pending += 1;
-    const result = this.queue.then(operation, operation).finally(() => {
-      this.pending -= 1;
-    });
+    const result = this.register(this.queue.then(operation, operation));
     this.queue = result.catch(() => {});
+    return result;
+  }
+
+  // Runs the operation at once, outside the queue, but still makes `close()` wait for it.
+  private track<T>(operation: () => Promise<T>): Promise<T> {
+    if (this.closed) {
+      return Promise.reject(new Error('The file handle is closed'));
+    }
+    return this.register(operation());
+  }
+
+  private register<T>(promise: Promise<T>): Promise<T> {
+    const result = promise.finally(() => {
+      this.inFlight.delete(result);
+    });
+    this.inFlight.add(result);
     return result;
   }
 }

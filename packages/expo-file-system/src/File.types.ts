@@ -49,6 +49,16 @@ export type FileWriteOptions = {
 };
 
 /**
+ * Options for `FileHandle` reads and writes at an explicit position.
+ */
+export type FileHandleReadWriteOptions = {
+  /**
+   * The byte position in the file. When set, the handle `offset` is neither used nor changed.
+   */
+  at?: number;
+};
+
+/**
  * Options for checking whether a file can be previewed.
  * @platform android
  * @platform ios
