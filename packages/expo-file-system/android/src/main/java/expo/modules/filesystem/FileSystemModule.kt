@@ -358,7 +358,8 @@ class FileSystemModule : Module() {
       }
       Function("readIntoSync") { fileHandle: FileSystemFileHandle, position: Long, target: ArrayBuffer ->
         target.withMutableJSBytes { buffer ->
-          fileHandle.readInto(position, buffer)
+          // The scoped buffer may be the storage's shared ByteBuffer, so the binding must not move its position.
+          fileHandle.readInto(position, buffer.duplicate().apply { clear() })
         }
       }
       AsyncFunction("writeAt") Coroutine { fileHandle: FileSystemFileHandle, position: Long, data: ArrayBuffer ->
