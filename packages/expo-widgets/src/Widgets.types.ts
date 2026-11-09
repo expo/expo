@@ -248,6 +248,12 @@ export type LiveActivityStartOptions = {
    * The date when the system considers the activity's content out of date.
    */
   staleDate?: Date;
+  /**
+   * The activity's priority relative to other Live Activities from your app.
+   * Higher scores take precedence in the Dynamic Island and on the Lock Screen.
+   * @default 0
+   */
+  relevanceScore?: number;
 };
 
 /**
@@ -257,6 +263,12 @@ export type LiveActivityStartOptions = {
 export type LiveActivityUpdateOptions = {
   /** The date when the system considers the updated content out of date. */
   staleDate?: Date;
+  /**
+   * The updated activity's priority relative to other Live Activities from your app.
+   * An update without this option resets the score to `0`.
+   * @default 0
+   */
+  relevanceScore?: number;
 };
 
 /**

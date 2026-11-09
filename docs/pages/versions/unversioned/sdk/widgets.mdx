@@ -732,14 +732,13 @@ Use the `url` option to associate a URL with the Live Activity. When the user ta
 
 The example below continues from [Starting a Live Activity](#starting-a-live-activity).
 
+When your app has multiple Live Activities, set a higher `relevanceScore` on the one that iOS should prioritize. iOS uses the score to order your activities in the Dynamic Island and on the Lock Screen. The score defaults to `0` each time you call `start` or `update`.
+
 ```tsx
 import { LiveActivity } from 'expo-widgets';
 
 function updateDelivery(instance: LiveActivity<DeliveryActivityProps>) {
-  instance.update({
-    etaMinutes: 2,
-    status: 'Delivery arriving soon!',
-  });
+  instance.update({ etaMinutes: 2, status: 'Delivery arriving soon!' }, { relevanceScore: 10 });
 }
 ```
 

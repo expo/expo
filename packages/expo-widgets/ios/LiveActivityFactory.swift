@@ -21,9 +21,14 @@ final class LiveActivityFactory: SharedObject {
 
     do {
       let initialState = LiveActivityAttributes.ContentState(name: name, props: props)
+      let content = ActivityContent(
+        state: initialState,
+        staleDate: options.staleDate,
+        relevanceScore: options.relevanceScore
+      )
       let activity = try Activity.request(
         attributes: LiveActivityAttributes(url: options.url?.absoluteString),
-        content: .init(state: initialState, staleDate: options.staleDate),
+        content: content,
         pushType: LiveActivityFactory.pushNotificationsEnabled ? .token : nil
       )
 
