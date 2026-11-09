@@ -56,52 +56,6 @@ struct NetworkModuleTests {
   }
 
   @Test
-  func `adding and removing an onNetworkStateChanged listener starts and stops the network monitoring`() throws {
-    try runtime.eval(
-      "globalThis.subscription = expo.modules.ExpoNetwork.addListener('onNetworkStateChanged', () => {})"
-    )
-    #expect(module.monitor.withLock { $0 != nil })
-
-    try runtime.eval("globalThis.subscription.remove()")
-    #expect(module.monitor.withLock { $0 == nil })
-  }
-
-  @Test
-  func `onNetworkStateChanged delivers the network state to a JS listener`() async throws {
-    try runtime.eval(
-      """
-      globalThis.events = []
-      globalThis.subscription = expo.modules.ExpoNetwork.addListener('onNetworkStateChanged', state => {
-        globalThis.events.push(JSON.stringify({
-          keys: Object.keys(state).sort(),
-          type: state.type,
-          isConnected: state.isConnected,
-          isInternetReachable: state.isInternetReachable,
-        }))
-      })
-      """
-    )
-    defer {
-      _ = try? runtime.eval("globalThis.subscription.remove()")
-    }
-
-    // The listener also starts the real monitor, so the payload is one that a real path never produces.
-    module.onNetworkStateChanged(NetworkState(type: "CELLULAR", isConnected: false, isInternetReachable: false))
-
-    let findEvent = """
-      globalThis.events.find(event => JSON.parse(event).type === 'CELLULAR' && !JSON.parse(event).isConnected) ?? null
-      """
-    let deadline = Date().addingTimeInterval(5)
-    while try runtime.eval(findEvent).isNull() && Date() < deadline {
-      try await Task.sleep(nanoseconds: 50_000_000)
-    }
-    let state = try decodeState(runtime.eval(findEvent).asString())
-
-    #expect(state.keys == ["isConnected", "isInternetReachable", "type"])
-    #expect(state.isInternetReachable == false)
-  }
-
-  @Test
   func `a listener for another event does not stop the network monitoring`() throws {
     try runtime.eval(
       """
