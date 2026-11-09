@@ -1,5 +1,6 @@
 import * as Log from '../../../log';
 import { isInteractive } from '../../../utils/interactive';
+import * as ip from '../../../utils/ip';
 import { UrlCreator } from '../UrlCreator';
 
 jest.mock('../../../log');
@@ -323,4 +324,25 @@ describe('HTTPS tunnel transport', () => {
     };
     expect(creator.constructExpoGoUrl({ forwarded })).toBe('exps://forwarded.test:4443');
   });
+});
+
+it('does not discover a LAN address for localhost URL creation', async () => {
+  const discover = jest.spyOn(ip, 'getGatewayAsync');
+  const discoverSync = jest.spyOn(ip, 'getGateway');
+  try {
+    const creator = await UrlCreator.init({ hostType: 'localhost' }, { getPort: () => 8081 });
+    expect(creator.constructUrl()).toBe('http://127.0.0.1:8081');
+    expect(discover).not.toHaveBeenCalled();
+    expect(discoverSync).not.toHaveBeenCalled();
+  } finally {
+    discover.mockRestore();
+    discoverSync.mockRestore();
+  }
+});
+
+it('preserves LAN overrides and the default route on a localhost creator', async () => {
+  const creator = await UrlCreator.init({ hostType: 'localhost' }, { getPort: () => 8081 });
+  expect(creator.constructUrl()).toBe('http://127.0.0.1:8081');
+  expect(creator.constructUrl({ hostType: 'lan' })).toBe('http://100.100.1.100:8081');
+  expect(creator.getDefaultRouteAddress()).toBe('100.100.1.100');
 });
