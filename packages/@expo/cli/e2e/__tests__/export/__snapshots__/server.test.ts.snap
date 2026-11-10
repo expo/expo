@@ -169,6 +169,7 @@ exports[`server-output express requests exported files has expected routes manif
       },
     },
   ],
+  "origin": "http://localhost:8081",
   "redirects": [],
   "rendering": {
     "file": "_expo/server/render.js",
@@ -347,6 +348,7 @@ exports[`server-output workerd requests exported files has expected routes manif
       },
     },
   ],
+  "origin": "http://localhost:8081",
   "redirects": [],
   "rendering": {
     "file": "_expo/server/render.js",

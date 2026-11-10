@@ -34,6 +34,8 @@ export type Options = {
   redirects?: RedirectConfig[];
   /** Rewrite rules declared in config plugin options */
   rewrites?: RewriteConfig[];
+  /** Production origin declared in config plugin options */
+  origin?: string | boolean;
   /** Global headers declared in config plugin options */
   headers?: Record<string, string | string[]>;
   /** Per-path header rules declared in config plugin options */
