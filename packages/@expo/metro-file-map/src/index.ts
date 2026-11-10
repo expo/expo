@@ -14,7 +14,7 @@ import { performance } from 'perf_hooks';
 import { Watcher } from './Watcher';
 import { DiskCacheManager } from './cache/DiskCacheManager';
 import H from './constants';
-import createFallbackFilesystem from './crawlers/node/fallback';
+import createFallbackFilesystem from './lib/OnDemandFilesystem';
 import { event, debugEvent } from './events';
 import { FileProcessor } from './lib/FileProcessor';
 import { FileSystemChangeAggregator } from './lib/FileSystemChangeAggregator';

@@ -1,8 +1,8 @@
 import { vol } from 'memfs';
 
-import { RootPathUtils } from '../../../lib/RootPathUtils';
-import type { FallbackFilesystem, FileMetadata } from '../../../types';
-import createFallbackFilesystem, { isFallbackDir } from '../fallback';
+import type { FallbackFilesystem, FileMetadata } from '../../types';
+import createFallbackFilesystem, { isFallbackDir } from '../OnDemandFilesystem';
+import { RootPathUtils } from '../RootPathUtils';
 
 // memfs is POSIX-only; pin to POSIX path semantics
 // TODO(@kitten): Fork the test for posix v windows
@@ -332,7 +332,7 @@ describe('createFallbackFilesystem', () => {
 // Test it with both win32 and posix separators.
 describe.each([['win32'], ['posix']] as const)('shouldFallbackCrawlDir on %s', (platform) => {
   let mockPathModule: typeof import('path');
-  let shouldFallbackCrawlDir: typeof import('../fallback').shouldFallbackCrawlDir;
+  let shouldFallbackCrawlDir: typeof import('../OnDemandFilesystem').shouldFallbackCrawlDir;
 
   const p = (filePath: string): string =>
     platform === 'win32' ? filePath.replace(/\//g, '\\').replace(/^\\/, 'C:\\') : filePath;
@@ -344,7 +344,7 @@ describe.each([['win32'], ['posix']] as const)('shouldFallbackCrawlDir on %s', (
   beforeEach(() => {
     jest.resetModules();
     jest.doMock('path', () => mockPathModule);
-    shouldFallbackCrawlDir = require('../fallback').shouldFallbackCrawlDir;
+    shouldFallbackCrawlDir = require('../OnDemandFilesystem').shouldFallbackCrawlDir;
   });
 
   afterEach(() => {

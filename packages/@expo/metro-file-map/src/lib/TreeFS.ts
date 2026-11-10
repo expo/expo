@@ -5,12 +5,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import fs from 'fs';
 import invariant from 'invariant';
 import path from 'path';
 
 import H from '../constants';
-import { isFallbackDir, shouldFallbackCrawlDir } from '../crawlers/node/fallback';
 import type {
   CacheData,
   FallbackFilesystem,
@@ -23,8 +21,13 @@ import type {
   Path,
   ProcessFileFunction,
 } from '../types';
-import { RootPathUtils, getAncestorOfRootIdx, pathsToPattern } from './RootPathUtils';
-import normalizePathSeparatorsToPosix from './normalizePathSeparatorsToPosix';
+import {
+  OnDemandFilesystem,
+  filterTreeToRoots,
+  readSymlinkTargetIntoNode,
+  statIntoNode,
+} from './OnDemandFilesystem';
+import { RootPathUtils } from './RootPathUtils';
 import normalizePathSeparatorsToSystem from './normalizePathSeparatorsToSystem';
 
 type DirectoryNode = Map<string, MixedNode | null>;
@@ -183,12 +186,10 @@ interface MetadataIteratorOptions {
  *   a trailing slash
  */
 export default class TreeFS implements MutableFileSystem {
-  readonly #fallbackBoundaryDepth: number | null;
-  readonly #fallbackFilesystem: FallbackFilesystem | null;
+  readonly #onDemand: OnDemandFilesystem | null;
   readonly #pathUtils: RootPathUtils;
   readonly #processFile: ProcessFileFunction;
   readonly #rootDir: Path;
-  readonly #rootPattern: RegExp | null;
   readonly #roots: readonly string[];
   #rootNode: DirectoryNode = new Map();
 
@@ -229,24 +230,23 @@ export default class TreeFS implements MutableFileSystem {
     this.#rootDir = rootDir;
     this.#pathUtils = new RootPathUtils(rootDir);
     this.#processFile = processFile;
-    this.#fallbackFilesystem = fallbackFilesystem ?? null;
-    if (serverRoot != null) {
-      this.#fallbackBoundaryDepth = getAncestorOfRootIdx(
-        this.#pathUtils.absoluteToNormal(serverRoot)
-      );
-    } else {
-      this.#fallbackBoundaryDepth = null;
-    }
-    const normalRoots = (roots ?? []).map((r) => this.#pathUtils.absoluteToNormal(r));
-    this.#roots = normalRoots;
-    this.#rootPattern = pathsToPattern(roots ?? [], this.#pathUtils);
+    this.#onDemand =
+      fallbackFilesystem != null
+        ? new OnDemandFilesystem({
+            backend: fallbackFilesystem,
+            pathUtils: this.#pathUtils,
+            roots: roots ?? [],
+            serverRoot,
+          })
+        : null;
+    this.#roots = (roots ?? []).map((r) => this.#pathUtils.absoluteToNormal(r));
     if (files != null) {
       this.bulkAddOrModify(files);
     }
   }
 
   getSerializableSnapshot(): CacheData['fileSystemData'] {
-    return this.#cloneTree(this.#rootNode);
+    return filterTreeToRoots(this.#rootNode, this.#roots);
   }
 
   static fromDeserializedSnapshot(args: DeserializedSnapshotInput): TreeFS {
@@ -372,16 +372,8 @@ export default class TreeFS implements MutableFileSystem {
     }
     const { canonicalPath, node: fileMetadata } = result;
 
-    // Populate mtime and size on demand
     if (fileMetadata[H.MTIME] == null || fileMetadata[H.MTIME] === 0) {
-      fileMetadata[H.SHA1] = null;
-      const absolutePath = this.#pathUtils.normalToAbsolute(canonicalPath);
-      try {
-        const stat = await fs.promises.lstat(absolutePath);
-        const diskMtime = stat.mtime.getTime();
-        fileMetadata[H.MTIME] = diskMtime;
-        fileMetadata[H.SIZE] = stat.size;
-      } catch {}
+      await statIntoNode(fileMetadata, this.#pathUtils.normalToAbsolute(canonicalPath));
     }
 
     // Empty strings
@@ -937,15 +929,13 @@ export default class TreeFS implements MutableFileSystem {
 
       if (segmentNode == null) {
         if (segmentName !== '..') {
-          if (this.#fallbackFilesystem != null) {
-            const parentEnd = isLastSegment
-              ? fromIdx - segmentName.length - 1
-              : fromIdx - segmentName.length - 2;
-            const parentCanonicalPath = parentEnd > 0 ? targetNormalPath.slice(0, parentEnd) : '';
-            segmentNode = this.#populateFromFilesystem(
+          if (this.#onDemand != null) {
+            segmentNode = this.#onDemand.lookupMissingSegment(
               parentNode,
               segmentName,
-              parentCanonicalPath,
+              targetNormalPath,
+              fromIdx,
+              isLastSegment,
               followedSymlinks > 0
             );
             if (segmentNode != null) {
@@ -965,7 +955,7 @@ export default class TreeFS implements MutableFileSystem {
         }
         if (segmentNode == null) {
           segmentNode = new Map();
-          if (this.#fallbackFilesystem != null) {
+          if (this.#onDemand != null) {
             parentNode.set(segmentName, segmentNode);
           }
         }
@@ -1087,15 +1077,13 @@ export default class TreeFS implements MutableFileSystem {
 
       if (segmentNode == null) {
         if (segmentName !== '..') {
-          if (!skipFallback && this.#fallbackFilesystem != null) {
-            const parentEnd = isLastSegment
-              ? fromIdx - segmentName.length - 1
-              : fromIdx - segmentName.length - 2;
-            const parentCanonicalPath = parentEnd > 0 ? targetNormalPath.slice(0, parentEnd) : '';
-            segmentNode = this.#populateFromFilesystem(
+          if (!skipFallback && this.#onDemand != null) {
+            segmentNode = this.#onDemand.lookupMissingSegment(
               parentNode,
               segmentName,
-              parentCanonicalPath,
+              targetNormalPath,
+              fromIdx,
+              isLastSegment,
               followedSymlinks > 0
             );
             if (segmentNode != null) {
@@ -1115,7 +1103,7 @@ export default class TreeFS implements MutableFileSystem {
         }
         if (segmentNode == null) {
           segmentNode = new Map();
-          if (!skipFallback && this.#fallbackFilesystem != null) {
+          if (!skipFallback && this.#onDemand != null) {
             parentNode.set(segmentName, segmentNode);
           }
         }
@@ -1560,7 +1548,7 @@ export default class TreeFS implements MutableFileSystem {
     ) {
       const child = start.node.get(subpath);
       if (child == null) {
-        if (this.#fallbackFilesystem != null) {
+        if (this.#onDemand != null) {
           // noop: fall through to slow-path
         } else {
           if (invalidatedBy) {
@@ -1684,19 +1672,12 @@ export default class TreeFS implements MutableFileSystem {
     const pathSep = opts.alwaysYieldPosix ? '/' : path.sep;
     const prefixWithSep = pathPrefix === '' ? pathPrefix : pathPrefix + pathSep;
 
-    // Optimization: We can attempt to eagerly populate directories we're visiting
-    // if they're missing and not accessing a parent ('..')
-    if (
-      this.#fallbackFilesystem != null &&
-      iterationRootNode.size === 0 &&
-      pathPrefix !== '..' &&
-      !pathPrefix.endsWith(pathSep + '..')
-    ) {
-      const canonicalRoot = opts.canonicalPathOfRoot;
-      const rootCanonical =
-        pathPrefix === '' ? canonicalRoot : canonicalRoot + path.sep + pathPrefix;
-      this.#populateDirFromFilesystem(iterationRootNode, rootCanonical, false, false);
-    }
+    this.#onDemand?.populateIfEmpty(
+      iterationRootNode,
+      opts.canonicalPathOfRoot,
+      pathPrefix,
+      pathSep
+    );
 
     const visitEntry = (name: string, node: MixedNode | null): void => {
       if (node == null) {
@@ -1752,17 +1733,7 @@ export default class TreeFS implements MutableFileSystem {
           }
         }
       } else if (opts.recursive) {
-        // Optimization: We can attempt to eagerly popuplate directories we're visiting
-        // if they're missing and not accessing a parent ('..')
-        if (this.#fallbackFilesystem != null && node.size === 0 && name !== '..') {
-          const nodePathWithSystemSeparators =
-            pathSep === path.sep ? nodePath : nodePath.replaceAll(pathSep, path.sep);
-          const canonicalPath =
-            opts.canonicalPathOfRoot === ''
-              ? nodePathWithSystemSeparators
-              : opts.canonicalPathOfRoot + path.sep + nodePathWithSystemSeparators;
-          this.#populateDirFromFilesystem(node, canonicalPath, false, false);
-        }
+        this.#onDemand?.populateIfEmpty(node, opts.canonicalPathOfRoot, nodePath, pathSep);
         this.#forEachPath(
           node,
           iterationRootParentNode,
@@ -1794,20 +1765,8 @@ export default class TreeFS implements MutableFileSystem {
   ): Path | undefined {
     const symlinkTarget = symlinkNode[H.SYMLINK];
     if (symlinkTarget === 1) {
-      // Symlink target not yet resolved — read it lazily on first traversal
-      const absoluteSymlink = this.#pathUtils.normalToAbsolute(canonicalPathOfSymlink);
-      try {
-        const literalSymlinkTarget = fs.readlinkSync(absoluteSymlink);
-        const normalTarget = this.#pathUtils.resolveSymlinkToNormal(
-          canonicalPathOfSymlink,
-          literalSymlinkTarget
-        );
-        symlinkNode[H.SYMLINK] = normalizePathSeparatorsToPosix(normalTarget);
-        symlinkNode[H.VISITED] = 1;
-        return normalTarget;
-      } catch {
-        return undefined;
-      }
+      // Not read yet: read it on first traversal.
+      return readSymlinkTargetIntoNode(symlinkNode, canonicalPathOfSymlink, this.#pathUtils);
     } else if (symlinkTarget === 0 || symlinkTarget == null) {
       // WARN: We shouldn't call this method on non-symlinks. Outside of tests
       // this condition shouldn't trigger. It's fine not to resolve a symlink if
@@ -1816,152 +1775,6 @@ export default class TreeFS implements MutableFileSystem {
     } else {
       invariant(typeof symlinkTarget === 'string', 'Expected symlink target to be populated.');
       return normalizePathSeparatorsToSystem(symlinkTarget);
-    }
-  }
-
-  /**
-   * Return a filtered view of the tree containing only content under watched
-   * roots. Walk each root path from #rootNode, creating intermediate directory
-   * nodes as needed, and reference the subtree at each root endpoint directly.
-   * Since roots are non-overlapping, each contributes independently.
-   */
-  #cloneTree(rootNode: DirectoryNode): DirectoryNode {
-    // NOTE(@kitten): The upstream version deeply clones this structure, but this
-    // isn't necessary since it's serialized right away by the DiskCacheManager.
-    // Even if it isn't, the intention is to store it faithfully, so we're okay
-    // with more modifications
-
-    function copyRootInto(normalRoot: string, source: DirectoryNode, clone: DirectoryNode): void {
-      let currentSource = source;
-      let currentClone = clone;
-      let fromIdx = 0;
-
-      while (fromIdx < normalRoot.length) {
-        const nextSepIdx = normalRoot.indexOf(path.sep, fromIdx);
-        const isLastSegment = nextSepIdx === -1;
-        const seg = isLastSegment
-          ? normalRoot.slice(fromIdx)
-          : normalRoot.slice(fromIdx, nextSepIdx);
-        fromIdx = isLastSegment ? normalRoot.length : nextSepIdx + 1;
-
-        const sourceChild = currentSource.get(seg);
-        if (sourceChild == null || !isDirectory(sourceChild)) {
-          return;
-        } else if (isLastSegment || fromIdx >= normalRoot.length) {
-          currentClone.set(seg, sourceChild);
-        } else {
-          let cloneChild = currentClone.get(seg);
-          if (cloneChild == null || !isDirectory(cloneChild)) {
-            cloneChild = new Map();
-            currentClone.set(seg, cloneChild);
-          }
-          currentSource = sourceChild;
-          currentClone = cloneChild as DirectoryNode;
-        }
-      }
-    }
-
-    if (this.#roots.length === 0) {
-      return rootNode;
-    }
-    const clone: DirectoryNode = new Map();
-    for (const normalRoot of this.#roots) {
-      if (normalRoot === '') {
-        // Root is rootDir itself — include everything except '..'
-        for (const [name, node] of rootNode) {
-          if (node != null && name !== '..') {
-            clone.set(name, node);
-          }
-        }
-      } else {
-        copyRootInto(normalRoot, rootNode, clone);
-      }
-    }
-    return clone;
-  }
-
-  #isOutsideFallbackBoundary(canonicalPath: string, dirNode: DirectoryNode): boolean {
-    // We allow any directory that's already been crawled
-    if (isFallbackDir(dirNode)) {
-      return false;
-    }
-    const maxDepth = this.#fallbackBoundaryDepth;
-    return maxDepth != null && getAncestorOfRootIdx(canonicalPath) > maxDepth;
-  }
-
-  /**
-   * Synchronously populate a missing tree node by querying the injected
-   * fallback filesystem. The fallback returns tree-compatible nodes
-   * (FileMetadata tuples or directory Maps) that are inserted directly.
-   *
-   * Accepts `wasFollowing` to allow traversal on symlinks that were followed.
-   * If we're resolving a symlink target, we allow the lookup to escape the
-   * fallback scope.
-   *
-   * Returns the newly created node, or null if the path doesn't exist on disk.
-   */
-  #populateFromFilesystem(
-    parentNode: DirectoryNode,
-    segmentName: string,
-    parentCanonicalPath: string,
-    wasFollowing: boolean
-  ): MixedNode | null {
-    const fallback = this.#fallbackFilesystem;
-    if (fallback == null) {
-      return null;
-    }
-    // A symlink traversal (wasFollowing) or a parent created by the fallback
-    // (isFallbackDir) lets us skip the boundary check.
-    const childCanonicalPath =
-      parentCanonicalPath === '' ? segmentName : parentCanonicalPath + path.sep + segmentName;
-    if (
-      this.#rootPattern?.test(childCanonicalPath + path.sep) ||
-      (!wasFollowing && this.#isOutsideFallbackBoundary(childCanonicalPath, parentNode))
-    ) {
-      return null;
-    } else if (parentCanonicalPath !== '' && shouldFallbackCrawlDir(parentCanonicalPath)) {
-      this.#populateDirFromFilesystem(parentNode, parentCanonicalPath, true, wasFollowing);
-      return parentNode.get(segmentName) ?? null;
-    } else if (parentNode.has(segmentName)) {
-      return parentNode.get(segmentName) ?? null;
-    } else {
-      const parentAbsolute = this.#pathUtils.normalToAbsolute(parentCanonicalPath);
-      const absolutePath = parentAbsolute + path.sep + segmentName;
-      const node = fallback.lookup(childCanonicalPath, absolutePath, parentNode.get(segmentName));
-      parentNode.set(segmentName, node);
-      return node;
-    }
-  }
-
-  /**
-   * Populate an existing (potentially empty sentinel) directory node from
-   * the filesystem. Used by #forEachPath to fill lazy directories before
-   * iteration, and by #populateFromFilesystem for optimistic parent
-   * population.
-   */
-  #populateDirFromFilesystem(
-    dirNode: DirectoryNode,
-    canonicalPath: string,
-    skipCheck: boolean,
-    wasFollowed: boolean
-  ): void {
-    const fallback = this.#fallbackFilesystem;
-    if (
-      fallback == null ||
-      (!skipCheck &&
-        (this.#rootPattern?.test(canonicalPath + path.sep) ||
-          (!wasFollowed && this.#isOutsideFallbackBoundary(canonicalPath, dirNode))))
-    ) {
-      return;
-    }
-    const absolutePath = this.#pathUtils.normalToAbsolute(canonicalPath);
-    const entries = fallback.readdir(canonicalPath, absolutePath, dirNode);
-    if (entries != null && entries !== dirNode) {
-      for (const [name, entry] of entries) {
-        if (!dirNode.has(name)) {
-          dirNode.set(name, entry);
-        }
-      }
     }
   }
 }

@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import createFallbackFilesystem from '../crawlers/node/fallback';
+import createFallbackFilesystem from '../lib/OnDemandFilesystem';
 import { RootPathUtils } from '../lib/RootPathUtils';
 import TreeFS from '../lib/TreeFS';
 
