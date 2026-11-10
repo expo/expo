@@ -1608,7 +1608,7 @@ describe('optional dependencies', () => {
     expect(dependencies).toHaveLength(checked + (hasAsync ? 1 : 0));
     expect(dependencies).toHaveLength(expectedCount);
   };
-  it('dependency in try-block within 1-level will be optional', () => {
+  it('dependencies in try-blocks stay optional through nested blocks, but not functions', () => {
     const ast = astFromCode(`
       function fFunc() {
         import('not-optional-async-f').then();
@@ -1616,11 +1616,12 @@ describe('optional dependencies', () => {
       try {
         const a = require('optional-a');
         if(true) {
-          const b = require('not-optional-b');
+          const b = require('optional-b');
         }
         const cFunc = () => {
           const c = require('not-optional-c');
         }
+        const deferred = () => require('not-optional-deferred');
         fFunc();
         cFunc();
 
@@ -1633,7 +1634,7 @@ describe('optional dependencies', () => {
       `);
 
     const { dependencies } = collectDependencies(ast, opts);
-    validateDependencies(dependencies, 8);
+    validateDependencies(dependencies, 9);
   });
   it('nested try-block follows the inner-most scope', () => {
     const ast = astFromCode(`
