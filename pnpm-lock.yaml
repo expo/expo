@@ -954,10 +954,10 @@ importers:
         version: 2.5.7(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@react-native-vector-icons/ionicons':
         specifier: ^13.1.2
-        version: 13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@react-native-vector-icons/material-design-icons':
         specifier: ^13.1.2
-        version: 13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@shopify/flash-list':
         specifier: 2.3.2
         version: 2.3.2(@babel/runtime@7.29.7)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -1807,7 +1807,7 @@ importers:
         version: 2.2.0(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))
       '@react-native-vector-icons/material-design-icons':
         specifier: ^13.1.2
-        version: 13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        version: 13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       async-retry:
         specifier: ^1.1.4
         version: 1.3.3
@@ -2894,8 +2894,8 @@ importers:
         specifier: ^1.30.1
         version: 1.32.0
       noxcturnal:
-        specifier: ^0.1.11
-        version: 0.1.11
+        specifier: ^0.1.12
+        version: 0.1.12
       picomatch:
         specifier: ^4.0.4
         version: 4.0.7
@@ -7248,8 +7248,8 @@ packages:
     resolution: {integrity: sha512-RgHBCvtjbOK2gXSNBNIkNoEc9qoVEtau3hj8gEqKQuL3HZAibKarWFEI3Lfm6EYKkLalOh8eSrj9b+ch9H/VBA==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/generator@7.29.12':
-    resolution: {integrity: sha512-2W76mhjrpQFO1lK5e8IvGYB2D0YZ7S2R1Z2BjO2ZUYuW+amcpK/z60U6ZZmzskwoa7sJ6XohP/Wg8H5KxXI/IA==}
+  '@babel/generator@7.29.13':
+    resolution: {integrity: sha512-T5FRo+RzVHvGjWOuF1Ljc44b+NXAOazodHkGUHp4I3zCkQ4/sNVJm56h1S278LMR0bY5xBhztGziSbli8zObIw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/generator@7.29.7':
@@ -7323,8 +7323,8 @@ packages:
     resolution: {integrity: sha512-brcMGQaVzIeUb+6/bs1Av0f8YuNNjKY2JyvfRCsFuFsdKccEQ5Ges2y74D74NZ1Rz8lKJ9ksJkfqwQFJ/iNEyQ==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/helper-string-parser@7.29.11':
-    resolution: {integrity: sha512-snZbO7MEDOof+hvNa97EjEY7qD7h2kwvQr5AJC3ZhQudKW5dnej6k3kP9NQV88hJwaS8vDqRLFo9rivLEhle2g==}
+  '@babel/helper-string-parser@7.29.13':
+    resolution: {integrity: sha512-fWegr+WsEsiMVW4KUNdIIzzMTZSzNiqhy0//6+2MRi2d5NFNsL/AYwBQW8eBnRbTBVRnDVzjaJEUqKaCWjMMdQ==}
     engines: {node: '>=6.9.0'}
 
   '@babel/helper-string-parser@7.29.7':
@@ -7347,8 +7347,8 @@ packages:
     resolution: {integrity: sha512-1k2lAGRMfHTcwuNYcCNUmaUffmQv8KWMfh2iJUUeRlwlwH4FdNG7mfPI10NPfLHJFThE4Tyr4mv7kTNZOiPuBg==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/parser@7.29.12':
-    resolution: {integrity: sha512-WJ7JBp/Q4+z/ImydtI7jS6NVco5++632ExBemSX+Ysb+G1lCwQ5BVo3SY+jGGOcZXI4ZccbZSUSJLNBW6eEpJg==}
+  '@babel/parser@7.29.13':
+    resolution: {integrity: sha512-fJM50YYjlTiBhgdkGmC1tBpv+FMAyo4annf2X6Aks+0yRlaiVkYW/3f07xAfVVkYIoZ9fFZp+mEThUFnuybhkQ==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -7928,8 +7928,8 @@ packages:
     resolution: {integrity: sha512-puq+Gf35oI24FeN11LkoUQFqv9uwNeWpxXZi/Ji3rRIoKAzKnxRaZ+Gkj0vKS9ZCiTESfng1N9LyOyXvo+m+Gg==}
     engines: {node: '>=6.9.0'}
 
-  '@babel/traverse@7.29.12':
-    resolution: {integrity: sha512-MscXe/NAZcOkYEsRajHZFt3ynsb22PUi6CTrp5U7+RYycR9By84mn9mFN54YgfITiqK4hFx3Ju3tZSyzfpS5ew==}
+  '@babel/traverse@7.29.13':
+    resolution: {integrity: sha512-0ve0xMlFA73dgY1oyJRY6RoW+/bncdcOQqg6jjYcVfXBK90OdLXjm9R6lmRetdZVrPjXkKIoMVBqYFPjcAlZ4Q==}
     engines: {node: '>=6.9.0'}
 
   '@babel/traverse@7.29.7':
@@ -8895,54 +8895,54 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@noxcturnal/noxcturnal-darwin-arm64@0.1.11':
-    resolution: {integrity: sha512-tqvZOVmSoiJzm7QjQ+whPxCP45J2C1zCAZnzc1HhwmJrFIWw/qyA8o9Cup0aVqnjNVAN+as9GHX+DbAmkCbGlQ==}
+  '@noxcturnal/noxcturnal-darwin-arm64@0.1.12':
+    resolution: {integrity: sha512-46MqSBhSPSL/LbY0ZhH2Zh+MJUOLWuwEuk6FQLFeJYFepENuNoWinZO/P7xX3dZQ3g2OrJiPE6iWKMBgoeF+gA==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [darwin]
 
-  '@noxcturnal/noxcturnal-darwin-x64@0.1.11':
-    resolution: {integrity: sha512-V2HXkK5iKFBSc2GmeZE2I2wGxBc0kMQUHxxIUBSjuO8enKIby6cEQj8WW5EAuIli622Sqw1V7f0IIz8mXB4M9g==}
+  '@noxcturnal/noxcturnal-darwin-x64@0.1.12':
+    resolution: {integrity: sha512-Neaz3ytiqwdWkgX8aSxnPVGO1ZmzalUEhWOCo2gWQC6DJAps6BjfjZwhdFtiWCOQ9iuukDkWnaKYZG4N1Ab6Bw==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [darwin]
 
-  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.11':
-    resolution: {integrity: sha512-Vf9Qbke9Hq5ToFt88XicQN0FJJuepOnPKspcKDICeYYXS2b5wQnU7uhf33QWzr1KPQhn0L0IWUCwBNhMVn6E6w==}
+  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.12':
+    resolution: {integrity: sha512-amvAnI2qoxJ/LQjFL1pMQHgym/C+SKPATPDcX6W4wcttBRIDh54PbEWKSaWeFoZ1EsqIF2O4SsDXxjImWGVQzw==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.11':
-    resolution: {integrity: sha512-HlwlrcfBE7JBiwWaq32R8eN4APJHQCDoQlapeK+t0wxY9s9YDMDtAnG+v7RrEz05nu7Aci21x/s8qIAA5jE+NA==}
+  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.12':
+    resolution: {integrity: sha512-dTY6LRtSfhZRYRW7Kc4DwAoU8vM0NqopXWWV3RJ8aux8nJ19uhCtRbpEzjIjAT8jG6/Ds5FLEXFqJgVLf4fr2A==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.11':
-    resolution: {integrity: sha512-kIzTkH4rEIn8vFl42lzfK8qmKaXMwHM7txbI+XkhYKjS+2WV08yslBpwHaPGtGLXPEfx+xUTUgY5K3KVET7HKw==}
+  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.12':
+    resolution: {integrity: sha512-v7PyVf9PgGRaFGq8DTilouKHIh/huXqfQOa9hIC7siseaxMzNX/HdweL9ZvXV7ZjkzUbbEZrg3YuIZ874PPYZA==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.11':
-    resolution: {integrity: sha512-KpC0H+v+y/v0j4EmGiopzZ2OKo01JIBrHTjTi+veYAhZbpUfwZfShdTTHEj5OjdQ5VgaJU8yaBXmX48jgAACOg==}
+  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.12':
+    resolution: {integrity: sha512-7oWCdgQ2T1qjC05bz8IHzVRdg/yC+3SRZnDxc1xdY/vPKvrMUHJUB7oiKLHbLPtuMx8m5+lagm7RBQabUTBvxw==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.11':
-    resolution: {integrity: sha512-Q0Q0ll/qPzakp/GBmVDB/XthqyCkfM2CE5gZ78t9Ix/bkZDe5O0G7OyNkXRsGu49VcorxoGbBgSyF6CK+OaYlQ==}
+  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.12':
+    resolution: {integrity: sha512-Ma+0PV4nVdRXCYhgNontvuoAczRC11mbZ18LCaWY2aVTc76HjsQQEFPgXqRNlj2/Rjaax5EXUQqyLYYwI+ZB5A==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [win32]
 
-  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.11':
-    resolution: {integrity: sha512-as4HUwZkQegCcGoFzaLzlZbBqdx8BGgFhAoQsTsdJCUbNTxVH0f3R/AcRLOUJ6odfko0E2SSuJc70FI0zQ/IDg==}
+  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.12':
+    resolution: {integrity: sha512-6QcmxWocHLMfQKT5cy0+KbIYbCpaTd50MC/k6t7pQrfnKMKav5tdQi0lsx3WRrIE/5qUNepNx5iv9DjSJTXrGg==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
@@ -13644,48 +13644,48 @@ packages:
     resolution: {integrity: sha512-orvRIGpb0yK1yMbk5YP3dhVKjmoxUkRB9fdltGJxNppEqus/1tFpNuf9KnGFR3Qjg0izoUrJ4z6WgoBvdkXPrA==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
-  metro-babel-transformer@0.87.2:
-    resolution: {integrity: sha512-ZAfqGp0vttJFI6k1LEw//nGgTYfyVHFjcU61Ac7aPuTSaPsT/MeOi710ODfrxWkwK/y6z45NrIejjMwPv0CnxQ==}
+  metro-babel-transformer@0.87.3:
+    resolution: {integrity: sha512-HtbEBlMLywNWEFNNq92smarzDLUKZcqoykq9YWfkgNN7Xm8pNGMCFoaV6NAOs7OSL8biJdbaKBr1BWPD41KHeg==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
   metro-cache-key@0.87.1:
     resolution: {integrity: sha512-scqVVPMA2c+RVO12I3wyMDp5xCkRPLsyrcG4Qc3xfU5JR0EW/0sz2tjty+5UjMUtG09uiM1KYQ8HjWg7OQXHtw==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
-  metro-cache-key@0.87.2:
-    resolution: {integrity: sha512-wYtWOqRSaYlVtQe9B5YwobOFjf30IUuZZ6FqZ5cCTzisvh1varAdFCs/CGEWxBtJqe3qcgZKSi7cP4yoR0OZEQ==}
+  metro-cache-key@0.87.3:
+    resolution: {integrity: sha512-GZmydYeCV/A2RNJXTEmdeoYmxG6Grq9Wj2Zqi53W+W2psc6lTTbuabNOogsTHqnUoqdF80UbO+PQSFBgwHwj+Q==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
   metro-cache@0.87.1:
     resolution: {integrity: sha512-juNPaj0Xi5tkLp8imXqvbSnEIijwKG36m7OiFFVJMqEkiURwAjkMFVek3/xpix1+LVQqO7kjVp3PvuvIM61mKQ==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
-  metro-cache@0.87.2:
-    resolution: {integrity: sha512-2hWZsXhEYhhzYneNH8Q/ToZZKogcHDWhXTUloiJg+p+QGLEsDx9LXadxXXHfhPDaSRc9B6VOcB0Te02dPv/tRw==}
+  metro-cache@0.87.3:
+    resolution: {integrity: sha512-osREd4eXHIsCCIE2PQlDThtM6qSaZfY59jVdaIRUjixU6emI/RrUetoSEjdAdBoCh95C+f4O51oRgFdwRU3Q0w==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
   metro-config@0.87.1:
     resolution: {integrity: sha512-NmkDlc/qZAdo5gTkVTuO2AKE/khemRKRH5IA+SKfqUBJigI5GqZ5TOXhmEokhlkAqzjt8dyzKhzI6FHvXoXaTQ==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
-  metro-config@0.87.2:
-    resolution: {integrity: sha512-uIlI0RMKHUXI5xEe+7HkWgk8KFDjCCx7o/G/rcyqlUVbjM7N/3rDwCuT++dqC4UzeC4Afv1jDbS+bFI8/gRlNA==}
+  metro-config@0.87.3:
+    resolution: {integrity: sha512-Y68gCZgzg3KrIRpNQAnPTyucfC0e4v7xBiaaEMZEytthqZ8G1kWyRNbwVMN0Bq4ME1kfYAqDH2aSEwEA7a/PrA==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
   metro-core@0.87.1:
     resolution: {integrity: sha512-xizzky/4+c/Mkznege8OW05j7bSdM39VPoEps61Se4+hf32UQujmbvLvIE9+UnP6kNEPVomk0Fw8NsBK9iRQmw==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
-  metro-core@0.87.2:
-    resolution: {integrity: sha512-VlNETRpQXXSyj6hSU5l0xOANSAvJ81wIH/QpXcJ+nPbU6qteofQ0tsYO1HbtBIj/5MwbXjcEeDca9CJ2N40VZA==}
+  metro-core@0.87.3:
+    resolution: {integrity: sha512-9aleh7DWSQpyntLnDALf86LGIg3NgDST/HEmEeR51CuiHfrzIN08aCbe9y+OAqPzFUOzgUfYMVGfgQOIbitigA==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
   metro-file-map@0.87.1:
     resolution: {integrity: sha512-9sPuNCojC3pS4vj+ZPY7FXmHGpdJeckXuKXQrDAfJvZc60AF8owRFTkI8XdwlwrmPIB2w++KraK9FMEXvC4wJw==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
-  metro-file-map@0.87.2:
-    resolution: {integrity: sha512-zXB6o7Oj/xVGOhHQ+dz8BIAjZqjv1S1v/sJIqqRus8XiZISNspO3DmnKWssW0Gh2XO+Sq4TAjkIuYQnBJ+lnjA==}
+  metro-file-map@0.87.3:
+    resolution: {integrity: sha512-onUyGnS8pkLDf6pSvu6GyETu6CPUd5IAk8Mqhn5P3WqBHexBS6bvbMMVuuc350dleA6HH6Emx//0KP5cEBUOCg==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
   metro-minify-terser@0.84.6:
@@ -13696,32 +13696,32 @@ packages:
     resolution: {integrity: sha512-YK4k1oO1wV48hfE+Nbw2rJCnAgeabzrgT/xH5ha5n9gbK4p3HYFC898cERUiyTl9vRh58CNTiXRc88f7y6PfKg==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
-  metro-minify-terser@0.87.2:
-    resolution: {integrity: sha512-+sJo/F9+Xb+duOt4xA1HgNa9FRq1dsPcdTMxVrLsT1RVvgKVuA13qMeYvhR+vdlQbuXFXIrCCDOkMphxlM2/yA==}
+  metro-minify-terser@0.87.3:
+    resolution: {integrity: sha512-9IS44WPQljNEutnDCynZa1Dol+Moj51U7lEfFEqYl0G7W8RkNURKwMq1ctibU3U7ZDS+IkLw1cfVsG8ytAGOfA==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
   metro-resolver@0.87.1:
     resolution: {integrity: sha512-FXH/brY69wT6sPxaSW8BhMmDGD/6irmBr/cL4rUi+VWwqR3pbvdcfUOfyjcHucgQ7pe5IW3xJY21eHKLVKNumQ==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
-  metro-resolver@0.87.2:
-    resolution: {integrity: sha512-5irxge/5uJ+OqPwdj4GARrSmJVMVj4mkgn5WKv83X7NP9MH/AedDStqvZaMwEaiH/mQFm5W4GDbEqx1OJJeLBg==}
+  metro-resolver@0.87.3:
+    resolution: {integrity: sha512-O82NUc8KRKem9oxMzADl6a9u7H2hpKt4I9vfApZsBYmc3wlwP4UgffZJZxd8P0KrbY5CYkgW30ou17/W+ujM4w==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
   metro-runtime@0.87.1:
     resolution: {integrity: sha512-kjeuSvInsM6OzBjkCQsWxnkrKZFMKtnkCl38oXWRI9lDGs2L9hGs9Tak9sQYJ9h3gtDujneB7wZio+irgqJKDw==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
-  metro-runtime@0.87.2:
-    resolution: {integrity: sha512-68CLgcufiI162xyhSyI3Ax1kYPmUxKV6mt7Ll6gNd6Lb5ayJ+tQ1G7G+02Hda2ekV88Vq5zTsJ5hv2qpAhZa8g==}
+  metro-runtime@0.87.3:
+    resolution: {integrity: sha512-2kGsO2ouF5V8m9teQcrmCbH9HonkxgNpyFq1t36x78Xc2fZ3CsE/sKnntEmHS7Uj8bgeObjaXa92caTRk0D6ww==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
   metro-source-map@0.87.1:
     resolution: {integrity: sha512-Bqpm0PBGdy53pigIJb4HRF7QxD2pUOdgSmVh/4AWbP635kSCv+Y6ltVxUZgSnzS/QbSmzyCGijmRPlXMj2/qHw==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
-  metro-source-map@0.87.2:
-    resolution: {integrity: sha512-6jqJ/b+Ho36JmiI1pAjSWvnuDHqLCkF6Pjv4bxyjESu+18TrqvPwOS82QXQwyrr+haoc5kVnguxrgRWFhuqbEg==}
+  metro-source-map@0.87.3:
+    resolution: {integrity: sha512-kvgC0nIP1emXDiMLhmcy1AOxZrfPMWxrvYqOMNVXvKbObtakGXqu60WpeSVlzo3VBfXCMmZDBz1SvsP80Ug+kQ==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
   metro-symbolicate@0.87.1:
@@ -13729,8 +13729,8 @@ packages:
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
     hasBin: true
 
-  metro-symbolicate@0.87.2:
-    resolution: {integrity: sha512-bAE3KvaYjlyOzBHE+FI7NnG57bGoW+n9Et1leevreuMXYEaIhN/CmfCh3fRuApoj5LnJg1rFlxCXaJsIc4P5Gg==}
+  metro-symbolicate@0.87.3:
+    resolution: {integrity: sha512-koHM4gA6iE7OSYACKvJCg/N/9QK6i7vrA3l4gMKtK1Z7XfQVixtWiUTqf+XTkGdVTjioHmlTF/MmG+BmfL301w==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
     hasBin: true
 
@@ -13738,16 +13738,16 @@ packages:
     resolution: {integrity: sha512-qMiJ/x+VfqumFJJSefKS6nj8uojzC29b2/aK8vlMuFABIqGjDucICEOXd2Yt6k/XMFAgAcaJvShUOT0HLyYaPw==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
-  metro-transform-plugins@0.87.2:
-    resolution: {integrity: sha512-pjss163wbj3G3bEANVJtzjIsHUeSP025aSlAxAla6QvwXFedD3tMDT19a9q2KRhp5OgfrDm/FbVusJuVHA0NYg==}
+  metro-transform-plugins@0.87.3:
+    resolution: {integrity: sha512-43+RwCr2EV6KaulqxDDxt0c2hVApVQ364YY5aSNZTbsIb16kwZmUsEeKXko1fc89J5eV2xUIcR+6SKQqzQqtkg==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
   metro-transform-worker@0.87.1:
     resolution: {integrity: sha512-VOzs3OV405FuOLYdAhqA2wsn1F9lvueDVxMDLvCKaQ44U+yknIqphJ9eMjjsGwLDZiJq9sW3DMLhjD27JxQgqQ==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
-  metro-transform-worker@0.87.2:
-    resolution: {integrity: sha512-DLpo4Xl2vShovtqXfB1JYJPAWsWjzuLlbmWYscOr0qpshjZ8Ii6JBDEnFBOVEzeXNyRG/gr697v61N25N9YvDg==}
+  metro-transform-worker@0.87.3:
+    resolution: {integrity: sha512-XchqDAB4g1tImWOuEqHOvSMqIA4ZS1vNy38r8+vU+RvPDz9kva0oYa1S06/RDlYT0xqogQekBNA1n7/rWWzWFw==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
   metro@0.87.1:
@@ -13755,8 +13755,8 @@ packages:
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
     hasBin: true
 
-  metro@0.87.2:
-    resolution: {integrity: sha512-SPdGRafxrx7pf2bNta9qvwfX6tFMxULEEDM5irfsPH+AinubUoLqZUkguJl6bwCZOVO4hOGgjr7esiSDqPjkoQ==}
+  metro@0.87.3:
+    resolution: {integrity: sha512-Wt0Nkme7dVf2+Iaw9Od/MchWfElFyAKCMGX2xauhctc81aIOtYkZqzSN8xtOEMTDZD2EK/h/suJbBm1Bduo3Ow==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
     hasBin: true
 
@@ -13968,8 +13968,8 @@ packages:
     resolution: {integrity: sha512-DlL+XwOy3NxAQ8xuC0okPgK46iuVNAK01YN7RueYBqqFeGsBjV9XmCAzAdgt+667bCl5kPh9EqKKDwnaPG1I7A==}
     engines: {node: '>=10'}
 
-  noxcturnal@0.1.11:
-    resolution: {integrity: sha512-nKgZ4mQpWz5Nry5KRqRcyCv37Uc24VH9UkNsIJJ58sC7ubyXtaiP4zfjOAsGiTVZIJ6rcfkmbYS0P4plVhdHEQ==}
+  noxcturnal@0.1.12:
+    resolution: {integrity: sha512-trkrCAq5t1ynqEbGdHGbGo1ItUye1uelApLhmU0/asW5NrfBRsMQDXBOpUTIfpcX7SdAvVjii7cEPIrfIrEVgg==}
     engines: {node: '>=18'}
 
   npm-bundled@2.0.1:
@@ -14015,8 +14015,8 @@ packages:
     resolution: {integrity: sha512-i8iA8uij0g1YQzS8uOJPSRCgwDjO9warIHUAu1Fqj877Wc3wlfxDYBioYWgKTBF2+URVJttyDWSEpmd99nlvtQ==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
-  ob1@0.87.2:
-    resolution: {integrity: sha512-KLdsz/5QTEG2Y7lhxEOYNBZX7MkD0m3Cu11B72TBJ6sCKGXYatLJ/4WtMKoGLalQyozFYDutPRpsWpDRRA+E4g==}
+  ob1@0.87.3:
+    resolution: {integrity: sha512-g3UMN6od3PKhcpNFKZ1tj4pVFMHcipEGLiUdyGbm5yAQAwSvZA5VQBpvoyC2y8s1oFZ5oTknFxxEFaYPRi2M+Q==}
     engines: {node: ^22.13.0 || ^24.3.0 || >= 26.0.0}
 
   object-assign@4.1.1:
@@ -16264,9 +16264,9 @@ snapshots:
       json5: 2.2.3
       semver: 6.3.1
 
-  '@babel/generator@7.29.12':
+  '@babel/generator@7.29.13':
     dependencies:
-      '@babel/parser': 7.29.12
+      '@babel/parser': 7.29.13
       '@babel/types': 7.29.11
       '@jridgewell/gen-mapping': 0.3.13
       '@jridgewell/trace-mapping': 0.3.31
@@ -16363,7 +16363,7 @@ snapshots:
       '@babel/traverse': 7.29.7
       '@babel/types': 7.29.7
 
-  '@babel/helper-string-parser@7.29.11': {}
+  '@babel/helper-string-parser@7.29.13': {}
 
   '@babel/helper-string-parser@7.29.7': {}
 
@@ -16382,7 +16382,7 @@ snapshots:
       '@babel/template': 7.29.7
       '@babel/types': 7.29.7
 
-  '@babel/parser@7.29.12':
+  '@babel/parser@7.29.13':
     dependencies:
       '@babel/types': 7.29.11
 
@@ -17054,12 +17054,12 @@ snapshots:
       '@babel/parser': 7.29.7
       '@babel/types': 7.29.7
 
-  '@babel/traverse@7.29.12':
+  '@babel/traverse@7.29.13':
     dependencies:
       '@babel/code-frame': 7.29.7
-      '@babel/generator': 7.29.12
+      '@babel/generator': 7.29.13
       '@babel/helper-globals': 7.29.7
-      '@babel/parser': 7.29.12
+      '@babel/parser': 7.29.13
       '@babel/template': 7.29.7
       '@babel/types': 7.29.11
       debug: 4.4.3
@@ -17076,7 +17076,7 @@ snapshots:
 
   '@babel/types@7.29.11':
     dependencies:
-      '@babel/helper-string-parser': 7.29.11
+      '@babel/helper-string-parser': 7.29.13
       '@babel/helper-validator-identifier': 7.29.7
 
   '@babel/types@7.29.7':
@@ -18124,28 +18124,28 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@noxcturnal/noxcturnal-darwin-arm64@0.1.11':
+  '@noxcturnal/noxcturnal-darwin-arm64@0.1.12':
     optional: true
 
-  '@noxcturnal/noxcturnal-darwin-x64@0.1.11':
+  '@noxcturnal/noxcturnal-darwin-x64@0.1.12':
     optional: true
 
-  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.11':
+  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.12':
     optional: true
 
-  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.11':
+  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.12':
     optional: true
 
-  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.11':
+  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.12':
     optional: true
 
-  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.11':
+  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.12':
     optional: true
 
-  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.11':
+  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.12':
     optional: true
 
-  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.11':
+  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.12':
     optional: true
 
   '@octokit/auth-token@3.0.4': {}
@@ -18704,37 +18704,31 @@ snapshots:
       '@react-native/assets-registry': 0.86.0
       expo-font: link:packages/expo-font
 
-  '@react-native-vector-icons/ionicons@13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
+  '@react-native-vector-icons/ionicons@13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@react-native-vector-icons/common': 13.0.1(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react: 19.3.0
       react-native: 0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
-    optionalDependencies:
-      '@expo/config-plugins': link:packages/@expo/config-plugins
     transitivePeerDependencies:
       - '@react-native-vector-icons/get-image'
       - '@react-native/assets-registry'
       - expo-font
 
-  '@react-native-vector-icons/material-design-icons@13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
+  '@react-native-vector-icons/material-design-icons@13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@react-native-vector-icons/common': 13.0.1(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react: 19.3.0
       react-native: 0.89.0-rc.0(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0)
-    optionalDependencies:
-      '@expo/config-plugins': link:packages/@expo/config-plugins
     transitivePeerDependencies:
       - '@react-native-vector-icons/get-image'
       - '@react-native/assets-registry'
       - expo-font
 
-  '@react-native-vector-icons/material-design-icons@13.1.2(@expo/config-plugins@packages+@expo+config-plugins)(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
+  '@react-native-vector-icons/material-design-icons@13.1.2(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
     dependencies:
       '@react-native-vector-icons/common': 13.0.1(@react-native/assets-registry@0.86.0)(expo-font@packages+expo-font)(react-native@0.89.0-rc.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       react: 19.3.0
       react-native: 0.89.0-rc.0(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
-    optionalDependencies:
-      '@expo/config-plugins': link:packages/@expo/config-plugins
     transitivePeerDependencies:
       - '@react-native-vector-icons/get-image'
       - '@react-native/assets-registry'
@@ -18754,7 +18748,7 @@ snapshots:
 
   '@react-native/babel-plugin-codegen@0.89.0-rc.0(@babel/core@7.29.7)':
     dependencies:
-      '@babel/traverse': 7.29.12
+      '@babel/traverse': 7.29.13
       '@react-native/codegen': 0.89.0-rc.0(@babel/core@7.29.7)
     transitivePeerDependencies:
       - '@babel/core'
@@ -18808,7 +18802,7 @@ snapshots:
   '@react-native/codegen@0.89.0-rc.0(@babel/core@7.29.7)':
     dependencies:
       '@babel/core': 7.29.7
-      '@babel/parser': 7.29.12
+      '@babel/parser': 7.29.13
       flow-parser: 0.336.0
       invariant: 2.2.4
       nullthrows: 1.1.1
@@ -18822,7 +18816,7 @@ snapshots:
       commander: 12.1.0
       debug: 4.4.3
       invariant: 2.2.4
-      metro: 0.87.2
+      metro: 0.87.3
       semver: 7.7.4
     optionalDependencies:
       '@react-native/metro-config': 0.87.1(@babel/core@7.29.7)
@@ -23255,19 +23249,19 @@ snapshots:
       metro-cache-key: 0.87.1
       nullthrows: 1.1.1
 
-  metro-babel-transformer@0.87.2:
+  metro-babel-transformer@0.87.3:
     dependencies:
       '@babel/core': 7.29.7
       flow-enums-runtime: 0.0.6
       flow-parser: 0.336.0
-      metro-cache-key: 0.87.2
+      metro-cache-key: 0.87.3
       nullthrows: 1.1.1
 
   metro-cache-key@0.87.1:
     dependencies:
       flow-enums-runtime: 0.0.6
 
-  metro-cache-key@0.87.2:
+  metro-cache-key@0.87.3:
     dependencies:
       flow-enums-runtime: 0.0.6
 
@@ -23278,12 +23272,12 @@ snapshots:
       https-proxy-agent: 7.0.6
       metro-core: 0.87.1
 
-  metro-cache@0.87.2:
+  metro-cache@0.87.3:
     dependencies:
       exponential-backoff: 3.1.3
       flow-enums-runtime: 0.0.6
       https-proxy-agent: 7.0.6
-      metro-core: 0.87.2
+      metro-core: 0.87.3
 
   metro-config@0.87.1:
     dependencies:
@@ -23298,15 +23292,15 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  metro-config@0.87.2:
+  metro-config@0.87.3:
     dependencies:
       connect: 3.7.0
       flow-enums-runtime: 0.0.6
       jest-validate: 29.7.0
-      metro: 0.87.2
-      metro-cache: 0.87.2
-      metro-core: 0.87.2
-      metro-runtime: 0.87.2
+      metro: 0.87.3
+      metro-cache: 0.87.3
+      metro-core: 0.87.3
+      metro-runtime: 0.87.3
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -23317,11 +23311,11 @@ snapshots:
       lodash.throttle: 4.1.1
       metro-resolver: 0.87.1
 
-  metro-core@0.87.2:
+  metro-core@0.87.3:
     dependencies:
       flow-enums-runtime: 0.0.6
       lodash.throttle: 4.1.1
-      metro-resolver: 0.87.2
+      metro-resolver: 0.87.3
 
   metro-file-map@0.87.1:
     dependencies:
@@ -23334,7 +23328,7 @@ snapshots:
       micromatch: 4.0.8
       nullthrows: 1.1.1
 
-  metro-file-map@0.87.2:
+  metro-file-map@0.87.3:
     dependencies:
       debug: 4.4.3
       fb-watchman: 2.0.2
@@ -23353,7 +23347,7 @@ snapshots:
       flow-enums-runtime: 0.0.6
       terser: 5.49.0
 
-  metro-minify-terser@0.87.2:
+  metro-minify-terser@0.87.3:
     dependencies:
       flow-enums-runtime: 0.0.6
       terser: 5.49.0
@@ -23362,7 +23356,7 @@ snapshots:
     dependencies:
       flow-enums-runtime: 0.0.6
 
-  metro-resolver@0.87.2:
+  metro-resolver@0.87.3:
     dependencies:
       flow-enums-runtime: 0.0.6
 
@@ -23371,7 +23365,7 @@ snapshots:
       '@babel/runtime': 7.29.7
       flow-enums-runtime: 0.0.6
 
-  metro-runtime@0.87.2:
+  metro-runtime@0.87.3:
     dependencies:
       '@babel/runtime': 7.29.7
       flow-enums-runtime: 0.0.6
@@ -23388,15 +23382,16 @@ snapshots:
       source-map: 0.5.7
       vlq: 1.0.1
 
-  metro-source-map@0.87.2:
+  metro-source-map@0.87.3:
     dependencies:
-      '@babel/traverse': 7.29.7
+      '@babel/core': 7.29.7
+      '@babel/traverse': 7.29.13
       '@babel/types': 7.29.11
       flow-enums-runtime: 0.0.6
       invariant: 2.2.4
-      metro-symbolicate: 0.87.2
+      metro-symbolicate: 0.87.3
       nullthrows: 1.1.1
-      ob1: 0.87.2
+      ob1: 0.87.3
       source-map: 0.5.7
 
   metro-symbolicate@0.87.1:
@@ -23408,11 +23403,11 @@ snapshots:
       source-map: 0.5.7
       vlq: 1.0.1
 
-  metro-symbolicate@0.87.2:
+  metro-symbolicate@0.87.3:
     dependencies:
       flow-enums-runtime: 0.0.6
       invariant: 2.2.4
-      metro-source-map: 0.87.2
+      metro-source-map: 0.87.3
       nullthrows: 1.1.1
       source-map: 0.5.7
       vlq: 1.0.1
@@ -23426,12 +23421,12 @@ snapshots:
       flow-enums-runtime: 0.0.6
       nullthrows: 1.1.1
 
-  metro-transform-plugins@0.87.2:
+  metro-transform-plugins@0.87.3:
     dependencies:
       '@babel/core': 7.29.7
       '@babel/generator': 7.29.7
       '@babel/template': 7.29.7
-      '@babel/traverse': 7.29.7
+      '@babel/traverse': 7.29.13
       flow-enums-runtime: 0.0.6
       nullthrows: 1.1.1
 
@@ -23454,20 +23449,21 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  metro-transform-worker@0.87.2:
+  metro-transform-worker@0.87.3:
     dependencies:
       '@babel/core': 7.29.7
       '@babel/generator': 7.29.7
-      '@babel/parser': 7.29.12
+      '@babel/parser': 7.29.13
       '@babel/types': 7.29.11
+      '@jridgewell/sourcemap-codec': 1.5.5
       flow-enums-runtime: 0.0.6
-      metro: 0.87.2
-      metro-babel-transformer: 0.87.2
-      metro-cache: 0.87.2
-      metro-cache-key: 0.87.2
-      metro-minify-terser: 0.87.2
-      metro-source-map: 0.87.2
-      metro-transform-plugins: 0.87.2
+      metro: 0.87.3
+      metro-babel-transformer: 0.87.3
+      metro-cache: 0.87.3
+      metro-cache-key: 0.87.3
+      metro-minify-terser: 0.87.3
+      metro-source-map: 0.87.3
+      metro-transform-plugins: 0.87.3
       nullthrows: 1.1.1
     transitivePeerDependencies:
       - bufferutil
@@ -23516,14 +23512,14 @@ snapshots:
       - bufferutil
       - utf-8-validate
 
-  metro@0.87.2:
+  metro@0.87.3:
     dependencies:
       '@babel/code-frame': 7.29.7
       '@babel/core': 7.29.7
       '@babel/generator': 7.29.7
-      '@babel/parser': 7.29.12
+      '@babel/parser': 7.29.13
       '@babel/template': 7.29.7
-      '@babel/traverse': 7.29.7
+      '@babel/traverse': 7.29.13
       '@babel/types': 7.29.11
       accepts: 2.0.0
       connect: 3.7.0
@@ -23535,18 +23531,18 @@ snapshots:
       jest-worker: 29.7.0
       jsc-safe-url: 0.2.4
       lodash.throttle: 4.1.1
-      metro-babel-transformer: 0.87.2
-      metro-cache: 0.87.2
-      metro-cache-key: 0.87.2
-      metro-config: 0.87.2
-      metro-core: 0.87.2
-      metro-file-map: 0.87.2
-      metro-resolver: 0.87.2
-      metro-runtime: 0.87.2
-      metro-source-map: 0.87.2
-      metro-symbolicate: 0.87.2
-      metro-transform-plugins: 0.87.2
-      metro-transform-worker: 0.87.2
+      metro-babel-transformer: 0.87.3
+      metro-cache: 0.87.3
+      metro-cache-key: 0.87.3
+      metro-config: 0.87.3
+      metro-core: 0.87.3
+      metro-file-map: 0.87.3
+      metro-resolver: 0.87.3
+      metro-runtime: 0.87.3
+      metro-source-map: 0.87.3
+      metro-symbolicate: 0.87.3
+      metro-transform-plugins: 0.87.3
+      metro-transform-worker: 0.87.3
       mime-types: 3.0.2
       nullthrows: 1.1.1
       serialize-error: 2.1.0
@@ -23723,19 +23719,19 @@ snapshots:
 
   normalize-url@6.1.0: {}
 
-  noxcturnal@0.1.11:
+  noxcturnal@0.1.12:
     dependencies:
       '@babel/code-frame': 7.29.7
       '@oxc-project/types': 0.154.0
     optionalDependencies:
-      '@noxcturnal/noxcturnal-darwin-arm64': 0.1.11
-      '@noxcturnal/noxcturnal-darwin-x64': 0.1.11
-      '@noxcturnal/noxcturnal-linux-arm64-gnu': 0.1.11
-      '@noxcturnal/noxcturnal-linux-arm64-musl': 0.1.11
-      '@noxcturnal/noxcturnal-linux-x64-gnu': 0.1.11
-      '@noxcturnal/noxcturnal-linux-x64-musl': 0.1.11
-      '@noxcturnal/noxcturnal-win32-arm64-msvc': 0.1.11
-      '@noxcturnal/noxcturnal-win32-x64-msvc': 0.1.11
+      '@noxcturnal/noxcturnal-darwin-arm64': 0.1.12
+      '@noxcturnal/noxcturnal-darwin-x64': 0.1.12
+      '@noxcturnal/noxcturnal-linux-arm64-gnu': 0.1.12
+      '@noxcturnal/noxcturnal-linux-arm64-musl': 0.1.12
+      '@noxcturnal/noxcturnal-linux-x64-gnu': 0.1.12
+      '@noxcturnal/noxcturnal-linux-x64-musl': 0.1.12
+      '@noxcturnal/noxcturnal-win32-arm64-msvc': 0.1.12
+      '@noxcturnal/noxcturnal-win32-x64-msvc': 0.1.12
 
   npm-bundled@2.0.1:
     dependencies:
@@ -23786,7 +23782,7 @@ snapshots:
     dependencies:
       flow-enums-runtime: 0.0.6
 
-  ob1@0.87.2:
+  ob1@0.87.3:
     dependencies:
       flow-enums-runtime: 0.0.6
 
@@ -24565,8 +24561,8 @@ snapshots:
       hermes-compiler: 260318099.0.6
       invariant: 2.2.4
       memoize-one: 6.0.0
-      metro-runtime: 0.87.2
-      metro-source-map: 0.87.2
+      metro-runtime: 0.87.3
+      metro-source-map: 0.87.3
       nullthrows: 1.1.1
       pretty-format: 29.7.0
       promise: 8.3.0
@@ -24606,8 +24602,8 @@ snapshots:
       hermes-compiler: 260318099.0.6
       invariant: 2.2.4
       memoize-one: 6.0.0
-      metro-runtime: 0.87.2
-      metro-source-map: 0.87.2
+      metro-runtime: 0.87.3
+      metro-source-map: 0.87.3
       nullthrows: 1.1.1
       pretty-format: 29.7.0
       promise: 8.3.0
