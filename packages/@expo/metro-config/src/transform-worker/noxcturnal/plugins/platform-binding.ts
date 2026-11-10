@@ -8,7 +8,7 @@ export function createPlatformBindingChecker(nox: Noxcturnal) {
   const visitor = nox.defineVisitor(
     'ImportDeclaration',
     {
-      where: { source: { equals: 'react-native' } },
+      where: { source: { oneOf: ['react-native', 'expo-modules-core', 'react-native-web'] } },
       fields: ['source', 'importKind'],
       children: {
         specifiers: { route: 'ImportSpecifier', fields: ['imported', 'importKind'] },
@@ -17,7 +17,7 @@ export function createPlatformBindingChecker(nox: Noxcturnal) {
     (path) => {
       let bindings = imports.get(path.context);
       if (!bindings) imports.set(path.context, (bindings = new Set()));
-      if (path.node.source !== 'react-native' || path.node.importKind === 'type') return;
+      if (path.node.importKind === 'type') return;
       for (const specifier of path.getChildList('specifiers')) {
         if (specifier.node.imported === 'Platform' && specifier.node.importKind !== 'type') {
           bindings.add(specifier.id);
