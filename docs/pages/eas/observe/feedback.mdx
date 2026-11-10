@@ -5,6 +5,7 @@ description: Collect feedback from your users with Observe.reportFeedback and vi
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 
 `Observe.reportFeedback` sends feedback from your users to Expo Observe. The API has no UI. You build the feedback form, and the API sends what the user enters. `expo-observe` sends each report as an event named `expo.feedback`. The dashboard shows the reports on the [**Observe > Feedback**](#view-feedback) page.
@@ -59,6 +60,14 @@ Each example sends a `rating` from 0 to 10. If your UI uses a smaller scale, con
 <Collapsible summary="Feedback screen with Expo Router">
 
 This example adds a floating button to every screen. The button opens a feedback screen as an iOS sheet. The report includes the route pattern of the screen the user came from, for example, `/(tabs)/sessions/[sessionId]`. The route pattern has no route parameter values, so the report does not carry IDs or other data from the URL.
+
+<FileTree
+  files={[
+    ['src/app/_layout.tsx', 'Registers the feedback sheet'],
+    ['src/app/feedback.tsx', 'Feedback form'],
+    ['src/components/FeedbackButton.tsx', 'Floating button'],
+  ]}
+/>
 
 Register the feedback screen as a sheet, and render the button next to the root `Stack`:
 
@@ -203,7 +212,9 @@ const styles = StyleSheet.create({
 
 <Collapsible summary="Feedback screen with React Navigation">
 
-With React Navigation, use the route name of the current screen. The route name has no route parameter values. Read it from the navigation container ref when the user presses the button:
+With React Navigation, use the route name of the current screen. The route name has no route parameter values. Read it from the navigation container ref when the user presses the button.
+
+<FileTree files={[['App.tsx', 'Root stack and floating button']]} />
 
 ```tsx App.tsx
 import { createNavigationContainerRef } from '@react-navigation/native';
@@ -243,7 +254,9 @@ Register a `Feedback` screen with `presentation: 'formSheet'` in your stack. In 
 
 <Collapsible summary="Thumbs up or down">
 
-This example asks one yes-or-no question. Thumbs down sends a rating of 0. Thumbs up sends a rating of 10:
+This example asks one yes-or-no question. Thumbs down sends a rating of 0. Thumbs up sends a rating of 10.
+
+<FileTree files={[['src/components/ThumbsFeedback.tsx', 'Thumbs up and down buttons']]} />
 
 ```tsx src/components/ThumbsFeedback.tsx
 import { Observe } from 'expo-observe';
@@ -267,7 +280,9 @@ export function ThumbsFeedback() {
 
 <Collapsible summary="Five-star rating">
 
-This example shows five stars. The rating is the number of stars multiplied by 2, so five stars sends a rating of 10:
+This example shows five stars. The rating is the number of stars multiplied by 2, so five stars sends a rating of 10.
+
+<FileTree files={[['src/components/StarFeedback.tsx', 'Five-star rating buttons']]} />
 
 ```tsx src/components/StarFeedback.tsx
 import { Observe } from 'expo-observe';
