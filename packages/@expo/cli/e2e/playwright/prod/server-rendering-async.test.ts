@@ -1,14 +1,14 @@
 import { test, expect } from '@playwright/test';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
-import { getRouterE2ERoot } from '../../__tests__/utils';
+import { getServerTesterRoot } from '../../__tests__/utils';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { pageCollectErrors } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
 
-const projectRoot = getRouterE2ERoot();
+const projectRoot = getServerTesterRoot();
 test.describe.configure({ mode: 'serial' });
 
 const outputDir = 'dist-server-rendering-async-playwright';
@@ -26,8 +26,7 @@ test.describe('server rendering with async routes in production', () => {
     await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputDir], {
       env: {
         NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'server',
-        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_WEB_OUTPUT: 'server',
         E2E_ROUTER_SPLIT_STRATEGY: 'granular',
         E2E_ROUTER_ASYNC: 'true',
       },
@@ -64,16 +63,17 @@ test.describe('server rendering with async routes in production', () => {
     expect(pageErrors.logs.filter((log) => /hydration/i.test(log.text()))).toEqual([]);
   });
 
-  test('boots the generated not-found page and navigates without reloading', async ({ page }) => {
+  test('boots the not-found page and navigates without reloading', async ({ page }) => {
     const pageErrors = pageCollectErrors(page);
     await page.goto(new URL('/missing/deep', expoServe.url).href);
-    await expect(page.getByTestId('expo-router-unmatched')).toBeVisible();
+    await expect(page.getByTestId('custom-404')).toBeVisible();
 
     await page.evaluate(() => {
       (window as any).__e2eMarker = 'alive';
     });
-    await page.getByText('Go back', { exact: true }).click();
-    await expect(page.getByTestId('index-text')).toHaveText('Index');
+    await page.getByTestId('route-links-mounted').waitFor({ state: 'attached' });
+    await page.getByTestId('not-found-home').click();
+    await expect(page.getByTestId('index-text')).toBeVisible();
     expect(await page.evaluate(() => (window as any).__e2eMarker)).toBe('alive');
     expect(pageErrors.errors).toEqual([]);
     expect(
@@ -85,9 +85,11 @@ test.describe('server rendering with async routes in production', () => {
     page,
   }) => {
     const pageErrors = pageCollectErrors(page);
-    await page.goto(new URL('/links', expoServe.url).href);
+    await page.goto(new URL('/rendering/links', expoServe.url).href);
     await expect(page.getByTestId('links-one')).toBeVisible();
-    const html = await (await page.request.get(new URL('/about', expoServe.url).href)).text();
+    const html = await (
+      await page.request.get(new URL('/rendering/about', expoServe.url).href)
+    ).text();
     const urls = [...html.matchAll(/<script[^>]*src="([^"]+)"/g)].map(
       (match) => new URL(match[1]!, expoServe.url).href
     );
@@ -140,9 +142,11 @@ test.describe('server rendering with async routes in production', () => {
     page,
   }) => {
     const pageErrors = pageCollectErrors(page);
-    await page.goto(new URL('/links', expoServe.url).href);
+    await page.goto(new URL('/rendering/links', expoServe.url).href);
     await expect(page.getByTestId('links-one')).toBeVisible();
-    const html = await (await page.request.get(new URL('/about', expoServe.url).href)).text();
+    const html = await (
+      await page.request.get(new URL('/rendering/about', expoServe.url).href)
+    ).text();
     const urls = [...html.matchAll(/<script[^>]*src="([^"]+)"/g)].map(
       (match) => new URL(match[1]!, expoServe.url).href
     );

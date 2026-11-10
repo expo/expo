@@ -19,12 +19,12 @@ const GLOBAL_HEADERS = {
 };
 
 const PAGE_HEADERS = [
-  { source: '/', headers: { 'X-Page-Rule': 'index', 'X-Powered-By': 'page-override' } },
+  { source: '/headers', headers: { 'X-Page-Rule': 'index', 'X-Powered-By': 'page-override' } },
   {
-    source: '/api',
+    source: '/headers/api',
     headers: { 'Set-Cookie': ['page=1'], 'Content-Type': 'text/should-not-apply' },
   },
-  { source: '/blog', headers: { 'X-Page-Rule': 'blog' } },
+  { source: '/headers/blog', headers: { 'X-Page-Rule': 'blog' } },
 ];
 
 const EXPECTED_PAGE_HEADERS = [
@@ -33,15 +33,15 @@ const EXPECTED_PAGE_HEADERS = [
     headers: { 'Cache-Control': 'no-store' },
   },
   {
-    namedRegex: '^/(?:/)?$',
+    namedRegex: '^/headers(?:/)?$',
     headers: { 'X-Page-Rule': 'index', 'X-Powered-By': 'page-override' },
   },
   {
-    namedRegex: '^/api(?:/)?$',
+    namedRegex: '^/headers/api(?:/)?$',
     headers: { 'Set-Cookie': ['page=1'], 'Content-Type': 'text/should-not-apply' },
   },
   {
-    namedRegex: '^/blog(?:/)?$',
+    namedRegex: '^/headers/blog(?:/)?$',
     headers: { 'X-Page-Rule': 'blog' },
   },
 ];
@@ -49,11 +49,14 @@ const EXPECTED_PAGE_HEADERS = [
 describe('export server with headers', () => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_WORKERD], {
-      fixtureName: 'server-headers',
+      app: 'server-tester',
+      uniqueOutputKey: 'headers',
       export: {
         env: {
           E2E_ROUTER_HEADERS: JSON.stringify(GLOBAL_HEADERS),
-          E2E_ROUTER_REWRITES: JSON.stringify([{ source: '/rewrite/api', destination: '/api' }]),
+          E2E_ROUTER_REWRITES: JSON.stringify([
+            { source: '/headers/rewrite', destination: '/headers/api' },
+          ]),
           E2E_ROUTER_PAGE_HEADERS: JSON.stringify(PAGE_HEADERS),
         },
       },
@@ -71,7 +74,7 @@ describe('export server with headers', () => {
 
     it.each([
       {
-        path: '/',
+        path: '/headers',
         status: 200,
         contentType: 'text/html',
         poweredBy: 'page-override',
@@ -80,7 +83,7 @@ describe('export server with headers', () => {
       },
       {
         // API routes only apply global headers
-        path: '/api',
+        path: '/headers/api',
         status: 200,
         contentType: 'application/json',
         poweredBy: 'expo-server',
@@ -88,7 +91,7 @@ describe('export server with headers', () => {
         setCookie: 'session=1, session=2',
       },
       {
-        path: '/rewrite/api',
+        path: '/headers/rewrite',
         status: 200,
         contentType: 'application/json',
         poweredBy: 'expo-server',
@@ -96,7 +99,7 @@ describe('export server with headers', () => {
         setCookie: 'session=1, session=2',
       },
       {
-        path: '/blog',
+        path: '/headers/blog',
         status: 200,
         contentType: 'text/html',
         poweredBy: 'expo-server',
@@ -105,7 +108,7 @@ describe('export server with headers', () => {
       },
       {
         // Loader routes only apply global headers
-        path: '/_expo/loaders/blog',
+        path: '/_expo/loaders/headers/blog',
         status: 200,
         contentType: 'application/json',
         poweredBy: 'expo-server',

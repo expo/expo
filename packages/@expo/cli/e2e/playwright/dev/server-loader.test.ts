@@ -1,14 +1,14 @@
 import { test, expect, type Page } from '@playwright/test';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
-import { getRouterE2ERoot } from '../../__tests__/utils';
+import { getServerTesterRoot } from '../../__tests__/utils';
 import { createExpoStart } from '../../utils/expo';
 import { pageCollectErrors, trackLoaderNetworkStatuses, waitForLoaderData } from '../page';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
 
-const projectRoot = getRouterE2ERoot();
+const projectRoot = getServerTesterRoot();
 
 // TODO: We'll split this test up in the future when server/single do different things.
 const outputModes = ['static', 'server'] as const;
@@ -20,8 +20,7 @@ for (const outputMode of outputModes) {
     const expoStart = createExpoStart({
       cwd: projectRoot,
       env: {
-        EXPO_USE_STATIC: outputMode,
-        E2E_ROUTER_SRC: 'server-loader',
+        E2E_ROUTER_WEB_OUTPUT: outputMode,
 
         // Ensure CI is disabled otherwise the file watcher won't run.
         CI: '0',
@@ -40,7 +39,7 @@ for (const outputMode of outputModes) {
     test('writes large completed Suspense content before the bootstrap script', async ({
       request,
     }) => {
-      const response = await request.get(new URL('/large-suspense', expoStart.url).href);
+      const response = await request.get(new URL('/loaders/large-suspense', expoStart.url).href);
       expect(response.status()).toBe(200);
       const html = await response.text();
       const contentStart = html.indexOf('data-testid="suspense-content"');
@@ -57,7 +56,7 @@ for (const outputMode of outputModes) {
     test('shows large completed Suspense content without JavaScript', async ({ browser }) => {
       const page = await browser.newPage({ javaScriptEnabled: false });
       try {
-        const response = await page.goto(new URL('/large-suspense', expoStart.url).href);
+        const response = await page.goto(new URL('/loaders/large-suspense', expoStart.url).href);
 
         expect(response?.status()).toBe(200);
         await expect(page.getByTestId('suspense-row')).toHaveText(
@@ -76,7 +75,7 @@ for (const outputMode of outputModes) {
     test('hydrates large completed Suspense content', async ({ page }) => {
       const pageErrors = pageCollectErrors(page);
 
-      await page.goto(new URL('/large-suspense', expoStart.url).href);
+      await page.goto(new URL('/loaders/large-suspense', expoStart.url).href);
       await expect(page.getByTestId('suspense-row')).toHaveCount(400);
       await expect(page.getByTestId('suspense-content')).toBeVisible();
       await expect(page.getByTestId('suspense-count')).toHaveText('0');
@@ -90,18 +89,18 @@ for (const outputMode of outputModes) {
     test('loads loader data modules on client-side navigation', async ({ page }) => {
       const loaderRequests: string[] = [];
       page.on('request', (request) => {
-        if (request.url().includes('/_expo/loaders/')) {
+        if (request.url().includes('/_expo/loaders/loaders/')) {
           loaderRequests.push(request.url());
         }
       });
 
-      await gotoHydrated(page, expoStart.url.href);
+      await gotoHydrated(page, new URL('/', expoStart.url.href).href);
       expect(loaderRequests).toHaveLength(0);
 
-      await page.click('a[href="/posts/static-post-1"]');
+      await page.getByRole('link', { name: '/loaders/posts/static-post-1', exact: true }).click();
       await waitForLoaderData(page, { params: { postId: 'static-post-1' } });
       expect(loaderRequests).toContainEqual(
-        expect.stringContaining('/_expo/loaders/posts/static-post-1')
+        expect.stringContaining('/_expo/loaders/loaders/posts/static-post-1')
       );
 
       const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
@@ -111,18 +110,18 @@ for (const outputMode of outputModes) {
     test('loads grouped loader data on client-side navigation', async ({ page }) => {
       const loaderRequests: string[] = [];
       page.on('request', (request) => {
-        if (request.url().includes('/_expo/loaders/')) {
+        if (request.url().includes('/_expo/loaders/loaders/')) {
           loaderRequests.push(request.url());
         }
       });
 
-      await gotoHydrated(page, expoStart.url.href);
-      await page.getByText('Go to Grouped Index').click();
+      await gotoHydrated(page, new URL('/', expoStart.url.href).href);
+      await page.getByRole('link', { name: '/loaders/groups/(group)', exact: true }).click();
       await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
         JSON.stringify({ data: 'grouped-index' }, null, 2)
       );
       expect(loaderRequests).toContainEqual(
-        expect.stringContaining('/_expo/loaders/(group)/index')
+        expect.stringContaining('/_expo/loaders/loaders/groups/(group)/index')
       );
     });
 
@@ -131,19 +130,21 @@ for (const outputMode of outputModes) {
     }) => {
       const loaderRequests: string[] = [];
       page.on('request', (request) => {
-        if (request.url().includes('/_expo/loaders/')) {
+        if (request.url().includes('/_expo/loaders/loaders/')) {
           loaderRequests.push(request.url());
         }
       });
 
-      await gotoHydrated(page, expoStart.url.href);
-      await page.getByText('Go to Platform Catch-all').click();
+      await gotoHydrated(page, new URL('/', expoStart.url.href).href);
+      await page
+        .getByRole('link', { name: '/loaders/groups/platform/alpha/beta', exact: true })
+        .click();
       await expect(page).toHaveURL(/\/platform\/alpha\/beta$/);
       await expect(page.locator('[data-testid="loader-result"]')).toHaveText(
         JSON.stringify({ data: 'platform-catch-all' }, null, 2)
       );
       expect(loaderRequests).toContainEqual(
-        expect.stringContaining('/_expo/loaders/(group)/platform/alpha/beta')
+        expect.stringContaining('/_expo/loaders/loaders/groups/(group)/platform/alpha/beta')
       );
       expect(loaderRequests).not.toContainEqual(expect.stringContaining('[...slug].web'));
     });
@@ -152,9 +153,11 @@ for (const outputMode of outputModes) {
       request,
     }) => {
       const headerless = await request.get(
-        new URL('/_expo/loaders/posts/static-post-1', expoStart.url).href
+        new URL('/_expo/loaders/loaders/posts/static-post-1', expoStart.url).href
       );
-      const declared = await request.get(new URL('/_expo/loaders/response', expoStart.url).href);
+      const declared = await request.get(
+        new URL('/_expo/loaders/loaders/response', expoStart.url).href
+      );
 
       expect(headerless.headers()['cache-control']).toBe('no-store');
       expect(declared.headers()['cache-control']).toBe(
@@ -165,54 +168,53 @@ for (const outputMode of outputModes) {
     test('refetches headerless loader data on every fresh mount', async ({ page }) => {
       const loaderRequests: string[] = [];
       page.on('request', (request) => {
-        if (request.url().includes('/_expo/loaders/')) {
+        if (request.url().includes('/_expo/loaders/loaders/')) {
           loaderRequests.push(request.url());
         }
       });
 
-      await gotoHydrated(page, expoStart.url.href);
+      await gotoHydrated(page, new URL('/loaders', expoStart.url.href).href);
 
-      await page.click('a[href="/posts/static-post-1"]');
+      await page.getByRole('link', { name: '/loaders/posts/static-post-1', exact: true }).click();
       await waitForLoaderData(page, { params: { postId: 'static-post-1' } });
 
-      await page.click('a[href="/"]');
+      await page.goBack();
       await waitForLoaderData(page, { data: 'root-index' });
 
-      await page.click('a[href="/posts/static-post-2"]');
+      await page.getByRole('link', { name: '/loaders/posts/static-post-2', exact: true }).click();
       await waitForLoaderData(page, { params: { postId: 'static-post-2' } });
 
-      await page.click('a[href="/"]');
+      await page.goBack();
       await waitForLoaderData(page, { data: 'root-index' });
 
-      await page.click('a[href="/posts/static-post-1"]');
+      await page.getByRole('link', { name: '/loaders/posts/static-post-1', exact: true }).click();
       await waitForLoaderData(page, { params: { postId: 'static-post-1' } });
 
       expect(loaderRequests).toEqual([
-        expect.stringContaining('/_expo/loaders/posts/static-post-1'),
-        expect.stringContaining('/_expo/loaders/index'),
-        expect.stringContaining('/_expo/loaders/posts/static-post-2'),
-        expect.stringContaining('/_expo/loaders/index'),
-        expect.stringContaining('/_expo/loaders/posts/static-post-1'),
+        expect.stringContaining('/_expo/loaders/loaders/posts/static-post-1'),
+        expect.stringContaining('/_expo/loaders/loaders/index'),
+        expect.stringContaining('/_expo/loaders/loaders/posts/static-post-2'),
+        expect.stringContaining('/_expo/loaders/loaders/index'),
+        expect.stringContaining('/_expo/loaders/loaders/posts/static-post-1'),
       ]);
     });
 
     test('the initial max-age seed fetches once, then primes the HTTP cache', async ({ page }) => {
-      const statuses = await trackLoaderNetworkStatuses(page, '/_expo/loaders/response');
-      const responseUrl = new URL('/response', expoStart.url.href).toString();
+      const statuses = await trackLoaderNetworkStatuses(page, '/_expo/loaders/loaders/response');
+      const responseUrl = new URL('/loaders/response', expoStart.url.href).toString();
 
       await gotoHydrated(page, responseUrl);
       expect(statuses).toEqual([]);
 
       // The first revisit hits the network — the hydration seed never primes the HTTP cache.
-      await page.click('a[href="/"]');
-      await page.waitForSelector('[data-testid="loader-result"]');
-      await page.click('a[href="/response"]');
+      await gotoHydrated(page, new URL('/', expoStart.url.href).href);
+      await page.getByRole('link', { name: '/loaders/response', exact: true }).click();
       await page.waitForSelector('[data-testid="loader-result"]');
       await expect.poll(() => statuses).toEqual([200]);
 
-      await page.click('a[href="/"]');
-      await page.waitForSelector('[data-testid="loader-result"]');
-      await page.click('a[href="/response"]');
+      await page.goBack();
+      await page.getByTestId('index-text').waitFor();
+      await page.getByRole('link', { name: '/loaders/response', exact: true }).click();
       await page.waitForSelector('[data-testid="loader-result"]');
 
       // A second render-driven fetch occurs, but max-age lets Chromium answer it locally.
@@ -220,42 +222,42 @@ for (const outputMode of outputModes) {
     });
 
     test('a declared no-store loader reaches the network on every mount', async ({ page }) => {
-      const statuses = await trackLoaderNetworkStatuses(page, '/_expo/loaders/second');
+      const statuses = await trackLoaderNetworkStatuses(page, '/_expo/loaders/loaders/second');
 
-      await gotoHydrated(page, expoStart.url.href);
-      await page.click('a[href="/second"]');
+      await gotoHydrated(page, new URL('/', expoStart.url.href).href);
+      await page.getByRole('link', { name: '/loaders/second', exact: true }).click();
       await page.waitForSelector('[data-testid="loader-result"]');
-      await page.click('a[href="/"]');
-      await page.waitForSelector('[data-testid="loader-result"]');
-      await page.click('a[href="/second"]');
+      await page.goBack();
+      await page.getByTestId('index-text').waitFor();
+      await page.getByRole('link', { name: '/loaders/second', exact: true }).click();
       await page.waitForSelector('[data-testid="loader-result"]');
 
       await expect.poll(() => statuses).toEqual([200, 200]);
     });
 
     test('handles loader module fetch errors gracefully', async ({ page }) => {
-      await gotoHydrated(page, expoStart.url.href);
+      await gotoHydrated(page, new URL('/', expoStart.url.href).href);
 
       await page.route('**/_expo/loaders/**', (route) => {
         route.abort('failed');
       });
 
-      await page.click('a[href="/posts/static-post-1"]');
+      await page.getByRole('link', { name: '/loaders/posts/static-post-1', exact: true }).click();
 
       await expect(page.locator('[data-testid="loader-result"]')).not.toBeVisible();
     });
 
     test('shows suspense fallback while loading', async ({ page }) => {
-      await gotoHydrated(page, expoStart.url.href);
+      await gotoHydrated(page, new URL('/', expoStart.url.href).href);
 
       await page.route('**/_expo/loaders/**', async (route) => {
-        await new Promise((resolve) => setTimeout(resolve, 500));
+        // The fallback appears only once the lazy route chunks load, so a short delay can end first.
+        await new Promise((resolve) => setTimeout(resolve, 2000));
         await route.continue();
       });
 
-      await page.click('a[href="/posts/static-post-1"]');
-
-      const suspenseFallback = await page.locator('[data-testid="suspense-fallback"]');
+      await page.getByRole('link', { name: '/loaders/posts/static-post-1', exact: true }).click();
+      const suspenseFallback = page.locator('[data-testid="suspense-fallback"]');
       await expect(suspenseFallback).toBeVisible();
 
       await page.waitForSelector('[data-testid="loader-result"]');
@@ -266,20 +268,20 @@ for (const outputMode of outputModes) {
       const pageErrors = pageCollectErrors(page);
       const slowRequests: string[] = [];
       page.on('request', (request) => {
-        if (request.url().includes('/_expo/loaders/slow')) {
+        if (request.url().includes('/_expo/loaders/loaders/slow')) {
           slowRequests.push(request.url());
         }
       });
 
-      await gotoHydrated(page, expoStart.url.href);
-      await page.click('a[href="/slow"]');
+      await gotoHydrated(page, new URL('/', expoStart.url.href).href);
+      await page.getByRole('link', { name: '/loaders/slow', exact: true }).click();
       await expect(page.locator('[data-testid="suspense-fallback"]')).toBeVisible();
       await expect.poll(() => slowRequests).toHaveLength(1);
 
       await page.goBack();
-      await expect(page).toHaveURL(expoStart.url.href);
+      await expect(page).toHaveURL(new URL('/', expoStart.url.href).href);
 
-      await page.click('a[href="/slow"]');
+      await page.getByRole('link', { name: '/loaders/slow', exact: true }).click();
       await expect(page.locator('[data-testid="suspense-fallback"]')).toBeVisible();
       await expect.poll(() => slowRequests).toHaveLength(2);
 
@@ -294,13 +296,13 @@ for (const outputMode of outputModes) {
       const pageErrors = pageCollectErrors(page);
 
       const url = new URL(expoStart.url.href);
-      url.pathname = '/no-loader';
+      url.pathname = '/';
 
       // Start on no loader route
       await gotoHydrated(page, url.toString());
 
       // Navigate to index route (has loader)
-      await page.click('a[href="/"]');
+      await page.getByRole('link', { name: '/loaders', exact: true }).click();
       await waitForLoaderData(page, { data: 'root-index' });
 
       const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
@@ -313,19 +315,19 @@ for (const outputMode of outputModes) {
       const pageErrors = pageCollectErrors(page);
 
       const url = new URL(expoStart.url.href);
-      url.pathname = '/second';
+      url.pathname = '/loaders';
 
-      // Start on second route (with loader)
+      // Start on the index route (with loader)
       await gotoHydrated(page, url.toString());
       await page.waitForSelector('[data-testid="loader-result"]');
 
-      const secondLoaderDataContent = await page
+      const indexLoaderDataContent = await page
         .locator('[data-testid="loader-result"]')
         .textContent();
-      expect(JSON.parse(secondLoaderDataContent!)).toEqual({ data: 'second' });
+      expect(JSON.parse(indexLoaderDataContent!)).toEqual({ data: 'root-index' });
 
       // Navigate to posts route (has loader)
-      await page.click('a[href="/posts/static-post-1"]');
+      await page.getByRole('link', { name: '/loaders/posts/static-post-1', exact: true }).click();
       await waitForLoaderData(page, { params: { postId: 'static-post-1' } });
       const postsLoaderDataContent = await page
         .locator('[data-testid="loader-result"]')
@@ -340,5 +342,5 @@ for (const outputMode of outputModes) {
 // React drops a click that arrives before hydration finishes.
 async function gotoHydrated(page: Page, url: string) {
   await page.goto(url);
-  await page.getByTestId('site-links-mounted').waitFor({ state: 'attached' });
+  await page.getByTestId('route-links-mounted').first().waitFor({ state: 'attached' });
 }

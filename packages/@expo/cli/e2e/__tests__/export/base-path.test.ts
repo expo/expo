@@ -2,13 +2,13 @@ import fs from 'fs';
 import path from 'path';
 
 import { executeExpoAsync } from '../../utils/expo';
-import { findProjectFiles, getPageHtml, getRouterE2ERoot } from '../utils';
+import { findProjectFiles, getPageHtml, getServerTesterRoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
 describe('static-rendering with a custom base path', () => {
-  const projectRoot = getRouterE2ERoot();
+  const projectRoot = getServerTesterRoot();
   const outputName = 'dist-static-rendering-base-path';
   const outputDir = path.join(projectRoot, outputName);
 
@@ -19,8 +19,7 @@ describe('static-rendering with a custom base path', () => {
       env: {
         NODE_ENV: 'production',
         EXPO_E2E_BASE_PATH: baseUrl,
-        EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_WEB_OUTPUT: 'static',
         E2E_ROUTER_ASYNC: 'development',
       },
     });
@@ -40,15 +39,15 @@ describe('static-rendering with a custom base path', () => {
     expect(files).toContain('+not-found.html');
 
     // Normal routes
-    expect(files).toContain('about.html');
+    expect(files).toContain('rendering/about.html');
     expect(files).toContain('index.html');
-    expect(files).toContain('styled.html');
-    expect(files).toContain('links.html');
+    expect(files).toContain('rendering/styled.html');
+    expect(files).toContain('rendering/links.html');
 
     // generateStaticParams values
-    expect(files).toContain('[post].html');
-    expect(files).toContain('welcome-to-the-universe.html');
-    expect(files).toContain('other.html');
+    expect(files).toContain('rendering/[post].html');
+    expect(files).toContain('rendering/welcome-to-the-universe.html');
+    expect(files).toContain('rendering/other.html');
   });
 
   it('writes assets with prefix', async () => {
@@ -73,9 +72,11 @@ describe('static-rendering with a custom base path', () => {
       expect(src).toMatch(/^\/one\/two\/_expo\/static\/css\/.*\.css$/);
     });
 
-    const fontLinks = indexHtml.querySelectorAll('html > head > link[as="font"]');
+    const fontsHtml = await getPageHtml(outputDir, 'rendering/fonts.html');
+    const fontLinks = fontsHtml.querySelectorAll('html > head > link[as="font"]');
 
     const fontFiles = fontLinks.map((link) => link.attributes.href);
+    expect(fontFiles.length).toBeGreaterThan(0);
 
     fontFiles.forEach((src) => {
       // Linked to the expected static location
@@ -104,10 +105,10 @@ describe('static-rendering with a custom base path', () => {
     expect(page).toContain('<div id="root">');
 
     expect(
-      (await getPageHtml(outputDir, 'about.html')).querySelector(
+      (await getPageHtml(outputDir, 'rendering/about.html')).querySelector(
         'html > head > meta[name="expo-e2e-pathname"]'
       )?.attributes.content
-    ).toBe('/about');
+    ).toBe('/rendering/about');
 
     expect(
       (await getPageHtml(outputDir, 'index.html')).querySelector(
@@ -116,13 +117,13 @@ describe('static-rendering with a custom base path', () => {
     ).toBe('/');
 
     expect(
-      (await getPageHtml(outputDir, 'welcome-to-the-universe.html')).querySelector(
+      (await getPageHtml(outputDir, 'rendering/welcome-to-the-universe.html')).querySelector(
         'html > head > meta[name="expo-e2e-pathname"]'
       )?.attributes.content
-    ).toBe('/welcome-to-the-universe');
+    ).toBe('/rendering/welcome-to-the-universe');
 
     expect(
-      (await getPageHtml(outputDir, 'welcome-to-the-universe.html')).querySelector(
+      (await getPageHtml(outputDir, 'rendering/welcome-to-the-universe.html')).querySelector(
         'html > head > meta[name="expo-e2e-params"]'
       )?.attributes.content
     ).toBe('{"post":"welcome-to-the-universe"}');
@@ -130,9 +131,9 @@ describe('static-rendering with a custom base path', () => {
 
   it('supports baseUrl in Links', async () => {
     expect(
-      (await getPageHtml(outputDir, 'links.html')).querySelector(
+      (await getPageHtml(outputDir, 'rendering/links.html')).querySelector(
         'body > #root a[data-testid="links-one"]'
       )?.attributes.href
-    ).toBe('/one/two/about');
+    ).toBe('/one/two/rendering/about');
   });
 });

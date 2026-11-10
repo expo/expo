@@ -1,21 +1,21 @@
 import { test, expect } from '@playwright/test';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
-import { getRouterE2ERoot } from '../../__tests__/utils';
+import { getServerTesterRoot } from '../../__tests__/utils';
 import { createExpoStart } from '../../utils/expo';
 
 test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
 
-const projectRoot = getRouterE2ERoot();
+const projectRoot = getServerTesterRoot();
 
 test.describe('server error page', () => {
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
       NODE_ENV: 'development',
-      EXPO_USE_STATIC: 'server',
-      E2E_ROUTER_SRC: 'server-error-page',
+      E2E_ROUTER_WEB_OUTPUT: 'server',
+      E2E_ROUTER_THROW_ON_LOAD: 'true',
       CI: '0',
     },
   });
@@ -29,11 +29,11 @@ test.describe('server error page', () => {
   });
 
   test('shows the error overlay when a route throws while loading', async ({ page }) => {
-    await page.goto(expoStart.url.href);
+    await page.goto(new URL('/errors/throw-on-load', expoStart.url).href);
 
     await expect(page.getByText('Server Error')).toBeVisible();
     await expect(
-      page.getByText('server-error-page: route module threw while loading', { exact: true })
+      page.getByText('server-tester: route module threw while loading', { exact: true })
     ).toBeVisible();
   });
 });

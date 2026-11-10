@@ -2,13 +2,13 @@ import JsonFile from '@expo/json-file';
 import path from 'path';
 
 import { executeExpoAsync } from '../../utils/expo';
-import { findProjectFiles, getRouterE2ERoot } from '../utils';
+import { findProjectFiles, getServerTesterRoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
 describe('export-no-ssg', () => {
-  const projectRoot = getRouterE2ERoot();
+  const projectRoot = getServerTesterRoot();
   const outputDir = path.join(projectRoot, 'dist-server-no-ssg');
 
   beforeAll(async () => {
@@ -19,8 +19,7 @@ describe('export-no-ssg', () => {
       {
         env: {
           NODE_ENV: 'production',
-          EXPO_USE_STATIC: 'server',
-          E2E_ROUTER_SRC: 'server',
+          E2E_ROUTER_WEB_OUTPUT: 'server',
           E2E_ROUTER_ASYNC: 'development',
         },
       }
@@ -40,8 +39,8 @@ describe('export-no-ssg', () => {
     expect(files).toContain('server/_expo/routes.json');
 
     // Has functions
-    expect(files).toContain('server/_expo/functions/methods+api.js');
-    expect(files).toContain('server/_expo/functions/methods+api.js.map');
+    expect(files).toContain('server/_expo/functions/api/methods+api.js');
+    expect(files).toContain('server/_expo/functions/api/methods+api.js.map');
     expect(files).toContain('server/_expo/functions/api/[dynamic]+api.js');
     expect(files).toContain('server/_expo/functions/api/[dynamic]+api.js.map');
     expect(files).toContain('server/_expo/functions/api/externals+api.js');
@@ -52,9 +51,9 @@ describe('export-no-ssg', () => {
     expect(files).toContain('server/_expo/functions/api/empty+api.js.map');
 
     // Has single variation of group file
-    expect(files).not.toContain('server/(alpha)/index.html');
-    expect(files).not.toContain('server/(alpha)/beta.html');
-    expect(files).not.toContain('server/beta.html');
+    expect(files).not.toContain('server/routing/(alpha)/index.html');
+    expect(files).not.toContain('server/routing/(alpha)/beta.html');
+    expect(files).not.toContain('server/routing/beta.html');
 
     // Injected by framework
     expect(files).not.toContain('server/_sitemap.html');
@@ -62,7 +61,7 @@ describe('export-no-ssg', () => {
 
     // Normal routes
     expect(files).toContain('client/index.html');
-    expect(files).not.toContain('server/blog/[post].html');
+    expect(files).not.toContain('server/routing/posts/[postId].html');
 
     const json = await JsonFile.readAsync(path.join(outputDir, 'server/_expo/routes.json'));
     expect((json.apiRoutes as any[]).length).toBeGreaterThan(0);
@@ -80,7 +79,7 @@ describe('export-no-ssg', () => {
 });
 
 it('exports only API routes with static output and apiRoutes enabled', async () => {
-  const projectRoot = getRouterE2ERoot();
+  const projectRoot = getServerTesterRoot();
   const outputName = 'dist-static-api-routes-no-ssg';
   await executeExpoAsync(
     projectRoot,
@@ -88,16 +87,15 @@ it('exports only API routes with static output and apiRoutes enabled', async () 
     {
       env: {
         NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'static',
+        E2E_ROUTER_WEB_OUTPUT: 'static',
         E2E_ROUTER_API_ROUTES: 'true',
-        E2E_ROUTER_SRC: 'server',
       },
     }
   );
 
   const outputDir = path.join(projectRoot, outputName);
   const files = findProjectFiles(outputDir);
-  expect(files).toContain('server/_expo/functions/methods+api.js');
+  expect(files).toContain('server/_expo/functions/api/methods+api.js');
   expect(files).toContain('client/index.html');
   expect(files).not.toContain('server/_expo/server/render.js');
   const manifest = await JsonFile.readAsync(path.join(outputDir, 'server/_expo/routes.json'));

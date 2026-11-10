@@ -4,13 +4,13 @@ import path from 'path';
 
 import { executeExpoAsync } from '../../utils/expo';
 import { createStaticServe } from '../../utils/server';
-import { findProjectFiles, getRouterE2ERoot } from '../utils';
+import { findProjectFiles, getServerTesterRoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
 describe('exports static', () => {
-  const projectRoot = getRouterE2ERoot();
+  const projectRoot = getServerTesterRoot();
   const outputName = 'dist-static-redirects';
   const outputDir = path.join(projectRoot, outputName);
 
@@ -21,11 +21,10 @@ describe('exports static', () => {
       {
         env: {
           NODE_ENV: 'production',
-          EXPO_USE_STATIC: 'static',
-          E2E_ROUTER_SRC: 'static-rendering',
+          E2E_ROUTER_WEB_OUTPUT: 'static',
           E2E_ROUTER_ASYNC: 'false',
           E2E_ROUTER_REDIRECTS: JSON.stringify([
-            { source: '/styled-redirect', destination: '/styled' },
+            { source: '/styled-redirect', destination: '/rendering/styled' },
           ] as RedirectConfig[]),
         },
       }
@@ -69,16 +68,16 @@ describe('exports static', () => {
     expect(files).toContain('+not-found.html');
 
     // Normal routes
-    expect(files).toContain('about.html');
+    expect(files).toContain('rendering/about.html');
     expect(files).toContain('index.html');
-    expect(files).toContain('styled.html');
+    expect(files).toContain('rendering/styled.html');
 
     // Redirect routes
     expect(files).toContain('styled-redirect.html');
 
     // generateStaticParams values
-    expect(files).toContain('[post].html');
-    expect(files).toContain('welcome-to-the-universe.html');
-    expect(files).toContain('other.html');
+    expect(files).toContain('rendering/[post].html');
+    expect(files).toContain('rendering/welcome-to-the-universe.html');
+    expect(files).toContain('rendering/other.html');
   });
 });

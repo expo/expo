@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { getRouterE2ERoot } from '../__tests__/utils';
+import { getRouterE2ERoot, getServerTesterRoot } from '../__tests__/utils';
 import { createExpoServe, createExpoStart, executeExpoAsync } from './expo';
 import { executeAsync, processFindPrefixedValue } from './process';
 import { BackgroundServer, createBackgroundServer } from './server';
@@ -23,9 +23,14 @@ export type ServerTestConfiguration = {
   prepareDist: () => Promise<[outputDir: string, outputName?: string]>;
 };
 
+/** The app under `apps/` that hosts the routes. */
+export type E2EApp = 'router-e2e' | 'server-tester';
+
 export type ServerTestOptions = {
-  /** The E2E test scenario directory name (e.g., 'server-middleware-async') */
-  fixtureName: string;
+  /** The app under `apps/` that hosts the routes. Defaults to `router-e2e`. */
+  app?: E2EApp;
+  /** The `__e2e__` scenario directory inside `router-e2e` (e.g., 'server-root-group'). Required for that app, unused for `server-tester`. */
+  fixtureName?: string;
   /** A unique value to ensure the output directory is not overwritten by another test running in parallel. Useful for tests that share the same `fixtureName` */
   uniqueOutputKey?: string;
   /** Options for the export command */
@@ -53,7 +58,7 @@ export type ServerTestOptions = {
  * ```ts
  * describe.each(
  *   prepareServers(['expo serve', 'workerd'], {
- *     fixtureName: 'server-middleware-async',
+ *     app: 'server-tester',
  *   })
  * )('$name requests', (config) => {
  *   const ctx = setupServer(config);
@@ -67,8 +72,9 @@ export function prepareServers(
   runtimes: RuntimeType[],
   options: ServerTestOptions
 ): ServerTestConfiguration[] {
-  const { fixtureName, uniqueOutputKey } = options;
-  const projectRoot = getRouterE2ERoot();
+  const { uniqueOutputKey } = options;
+  const app = resolveApp(options);
+  const { projectRoot } = app;
 
   const exportEnv = options.export?.env ?? {};
   const exportCliFlags = options.export?.cliFlags ?? [];
@@ -77,14 +83,14 @@ export function prepareServers(
   const defaultExportEnv = {
     NODE_ENV: 'production',
     EXPO_USE_STATIC: 'server',
-    E2E_ROUTER_SRC: fixtureName,
+    ...app.env,
     ...exportEnv,
   } as const;
 
   let sharedProductionExport: Promise<string> | undefined;
 
   async function prepareProductionDist(runtimeName: string) {
-    const sharedOutputName = generateOutputDir('shared', fixtureName, uniqueOutputKey);
+    const sharedOutputName = generateOutputDir('shared', app.outputPrefix, uniqueOutputKey);
     const sharedOutputDir = path.join(projectRoot, sharedOutputName);
 
     sharedProductionExport ??= executeExpoAsync(
@@ -94,7 +100,7 @@ export function prepareServers(
     ).then(() => sharedOutputDir);
 
     const sourceDir = await sharedProductionExport;
-    const outputName = generateOutputDir(runtimeName, fixtureName, uniqueOutputKey);
+    const outputName = generateOutputDir(runtimeName, app.outputPrefix, uniqueOutputKey);
     const outputDir = path.join(projectRoot, outputName);
 
     await fs.promises.rm(outputDir, { force: true, recursive: true });
@@ -139,7 +145,7 @@ export function prepareServers(
       },
       createServer: (overrideServe) =>
         createBackgroundServer({
-          command: ['node', path.join(projectRoot, `__e2e__/${fixtureName}/express.js`)],
+          command: ['node', app.expressScript],
           host: (chunk: any) => processFindPrefixedValue(chunk, 'Express server listening'),
           cwd: projectRoot,
           env: {
@@ -159,10 +165,10 @@ export function prepareServers(
           '--format=esm',
           '--platform=node',
           `--outfile=${path.join(outputDir, 'server/workerd.js')}`,
-          path.join(projectRoot, `__e2e__/${fixtureName}/workerd/workerd.mjs`),
+          path.join(app.workerdDir, 'workerd.mjs'),
         ]);
         fs.copyFileSync(
-          path.join(projectRoot, `__e2e__/${fixtureName}/workerd/config.capnp`),
+          path.join(app.workerdDir, 'config.capnp'),
           path.join(outputDir, 'server/config.capnp')
         );
 
@@ -175,7 +181,7 @@ export function prepareServers(
             'serve',
             path.join(
               projectRoot,
-              generateOutputDir('workerd', fixtureName, uniqueOutputKey),
+              generateOutputDir('workerd', app.outputPrefix, uniqueOutputKey),
               'server/config.capnp'
             ),
           ],
@@ -267,6 +273,47 @@ export function setupServer(
   };
 }
 
-function generateOutputDir(runtimeName: string, fixtureName: string, uniqueOutputKey?: string) {
-  return `dist-${fixtureName}-${runtimeName}${uniqueOutputKey ? `-${uniqueOutputKey}` : ''}`;
+type ResolvedApp = {
+  projectRoot: string;
+  /** Environment variables that select the routes inside the app. */
+  env: Record<string, string>;
+  /** Absolute path of the Express adapter script. */
+  expressScript: string;
+  /** Absolute path of the directory with `workerd.mjs` and `config.capnp`. */
+  workerdDir: string;
+  /** Segment that keeps output directories of different fixtures apart. Empty when the app has one set of routes. */
+  outputPrefix: string;
+};
+
+function resolveApp({ app = 'router-e2e', fixtureName }: ServerTestOptions): ResolvedApp {
+  switch (app) {
+    case 'router-e2e': {
+      if (!fixtureName) {
+        throw new Error('`fixtureName` is required when the app is "router-e2e"');
+      }
+      const projectRoot = getRouterE2ERoot();
+      const fixtureRoot = path.join(projectRoot, '__e2e__', fixtureName);
+      return {
+        projectRoot,
+        env: { E2E_ROUTER_SRC: fixtureName },
+        expressScript: path.join(fixtureRoot, 'express.js'),
+        workerdDir: path.join(fixtureRoot, 'workerd'),
+        outputPrefix: fixtureName,
+      };
+    }
+    case 'server-tester': {
+      const projectRoot = getServerTesterRoot();
+      return {
+        projectRoot,
+        env: {},
+        expressScript: path.join(projectRoot, 'servers/express.js'),
+        workerdDir: path.join(projectRoot, 'servers/workerd'),
+        outputPrefix: '',
+      };
+    }
+  }
+}
+
+function generateOutputDir(runtimeName: string, outputPrefix: string, uniqueOutputKey?: string) {
+  return ['dist', outputPrefix, runtimeName, uniqueOutputKey].filter(Boolean).join('-');
 }

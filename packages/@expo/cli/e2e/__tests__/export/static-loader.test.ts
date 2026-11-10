@@ -14,11 +14,11 @@ runExportSideEffects();
 
 describe.each(
   prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START], {
-    fixtureName: 'server-loader',
-    uniqueOutputKey: 'static',
+    app: 'server-tester',
+    uniqueOutputKey: 'loaders-static',
     export: {
       env: {
-        EXPO_USE_STATIC: 'static',
+        E2E_ROUTER_WEB_OUTPUT: 'static',
         TEST_SECRET_KEY: 'test-secret-key',
       },
     },
@@ -43,55 +43,55 @@ describe.each(
     expect(files).toContain('+not-found.html');
 
     // HTML routes should be pre-rendered in SSR mode
-    expect(files).toContain('env.html');
-    expect(files).toContain('index.html');
-    expect(files).toContain('meta.html');
-    expect(files).toContain('request.html');
-    expect(files).toContain('response.html');
-    expect(files).toContain('second.html');
-    expect(files).toContain('slow.html');
-    expect(files).toContain('nested/index.html');
-    expect(files).toContain('nullish/[value].html');
-    expect(files).toContain('nullish/null.html');
-    expect(files).toContain('nullish/undefined.html');
-    expect(files).toContain('posts/[postId].html');
-    expect(files).toContain('posts/static-post-1.html');
-    expect(files).toContain('posts/static-post-2.html');
-    expect(files).toContain('platform/alpha/beta.html');
-    expect(files).toContain('static-helper.html');
-    expect(files).toContain('server-helper.html');
+    expect(files).toContain('loaders/env.html');
+    expect(files).toContain('loaders/index.html');
+    expect(files).toContain('loaders/meta.html');
+    expect(files).toContain('loaders/request.html');
+    expect(files).toContain('loaders/response.html');
+    expect(files).toContain('loaders/second.html');
+    expect(files).toContain('loaders/slow.html');
+    expect(files).toContain('loaders/nested/index.html');
+    expect(files).toContain('loaders/nullish/[value].html');
+    expect(files).toContain('loaders/nullish/null.html');
+    expect(files).toContain('loaders/nullish/undefined.html');
+    expect(files).toContain('loaders/posts/[postId].html');
+    expect(files).toContain('loaders/posts/static-post-1.html');
+    expect(files).toContain('loaders/posts/static-post-2.html');
+    expect(files).toContain('loaders/groups/platform/alpha/beta.html');
+    expect(files).toContain('loaders/static-helper.html');
+    expect(files).toContain('loaders/server-helper.html');
 
     // Loader outputs are pre-generated JSON files
-    expect(files).toContain('_expo/loaders/index');
-    expect(files).toContain('_expo/loaders/env');
-    expect(files).toContain('_expo/loaders/meta');
-    expect(files).toContain('_expo/loaders/request');
-    expect(files).toContain('_expo/loaders/response');
-    expect(files).toContain('_expo/loaders/second');
-    expect(files).toContain('_expo/loaders/slow');
-    expect(files).toContain('_expo/loaders/nested/index');
-    expect(files).toContain('_expo/loaders/nullish/[value]');
-    expect(files).toContain('_expo/loaders/nullish/null');
-    expect(files).toContain('_expo/loaders/nullish/undefined');
-    expect(files).toContain('_expo/loaders/posts/[postId]');
-    expect(files).toContain('_expo/loaders/posts/static-post-1');
-    expect(files).toContain('_expo/loaders/posts/static-post-2');
-    expect(files).toContain('_expo/loaders/(group)/index');
-    expect(files).toContain('_expo/loaders/(group)/platform/alpha/beta');
-    expect(files).toContain('_expo/loaders/static-helper');
+    expect(files).toContain('_expo/loaders/loaders/index');
+    expect(files).toContain('_expo/loaders/loaders/env');
+    expect(files).toContain('_expo/loaders/loaders/meta');
+    expect(files).toContain('_expo/loaders/loaders/request');
+    expect(files).toContain('_expo/loaders/loaders/response');
+    expect(files).toContain('_expo/loaders/loaders/second');
+    expect(files).toContain('_expo/loaders/loaders/slow');
+    expect(files).toContain('_expo/loaders/loaders/nested/index');
+    expect(files).toContain('_expo/loaders/loaders/nullish/[value]');
+    expect(files).toContain('_expo/loaders/loaders/nullish/null');
+    expect(files).toContain('_expo/loaders/loaders/nullish/undefined');
+    expect(files).toContain('_expo/loaders/loaders/posts/[postId]');
+    expect(files).toContain('_expo/loaders/loaders/posts/static-post-1');
+    expect(files).toContain('_expo/loaders/loaders/posts/static-post-2');
+    expect(files).toContain('_expo/loaders/loaders/groups/(group)/index');
+    expect(files).toContain('_expo/loaders/loaders/groups/(group)/platform/alpha/beta');
+    expect(files).toContain('_expo/loaders/loaders/static-helper');
   });
 
   it('returns 404 for loader endpoint when route has no loader', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/no-loader');
+    const response = await server.fetchAsync('/_expo/loaders/loaders/no-loader');
     expect(response.status).toBe(404);
   });
 
   it('returns 404 for loader endpoint when route does not exist', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/nonexistent');
+    const response = await server.fetchAsync('/_expo/loaders/loaders/nonexistent');
     expect(response.status).toBe(404);
   });
 
-  it.each(getPageAndLoaderData('/'))(
+  it.each(getPageAndLoaderData('/loaders', true))(
     'can access data for root index route $url ($name)',
     async ({ getData, name, url }) => {
       const response = await server.fetchAsync(url);
@@ -108,7 +108,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/(group)', true))(
+  it.each(getPageAndLoaderData('/loaders/groups/(group)', true))(
     'can access data for group index route $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
@@ -119,7 +119,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/(group)/platform/alpha/beta'))(
+  it.each(getPageAndLoaderData('/loaders/groups/(group)/platform/alpha/beta'))(
     'can access platform-specific catch-all data for $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
@@ -130,7 +130,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/second'))(
+  it.each(getPageAndLoaderData('/loaders/second'))(
     'can access data for $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
@@ -141,7 +141,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/nested', true))(
+  it.each(getPageAndLoaderData('/loaders/nested', true))(
     'can access data for nested index route $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
@@ -152,7 +152,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/posts/static-post-1'))(
+  it.each(getPageAndLoaderData('/loaders/posts/static-post-1'))(
     'can access data with dynamic params for $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
@@ -163,7 +163,7 @@ describe.each(
     }
   );
 
-  (server.isExpoStart ? it.skip : it).each(getPageAndLoaderData('/env'))(
+  (server.isExpoStart ? it.skip : it).each(getPageAndLoaderData('/loaders/env'))(
     'can access server environment variables for $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
@@ -175,7 +175,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/nullish/undefined'))(
+  it.each(getPageAndLoaderData('/loaders/nullish/undefined'))(
     'returns `null` for `undefined` loader data for $url ($name)',
     async ({ getData, name, url }) => {
       const response = await server.fetchAsync(url);
@@ -193,7 +193,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/nullish/null'))(
+  it.each(getPageAndLoaderData('/loaders/nullish/null'))(
     'returns `null` for `null` loader data for $url ($name)',
     async ({ getData, name, url }) => {
       const response = await server.fetchAsync(url);
@@ -211,7 +211,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/request'))(
+  it.each(getPageAndLoaderData('/loaders/request'))(
     'does not receive `Request` object for $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
@@ -225,7 +225,7 @@ describe.each(
   );
 
   it('loader endpoint returns `Response`', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/response');
+    const response = await server.fetchAsync('/_expo/loaders/loaders/response');
     expect(response.status).toBe(200);
     // NOTE(@hassankhan): expo-server returns `application/octet-stream` for extensionless files,
     // but the content is still valid JSON.
@@ -242,7 +242,7 @@ describe.each(
   (server.isExpoStart ? it.skip : it)(
     'applies the SSG default Cache-Control to a headerless loader',
     async () => {
-      const response = await server.fetchAsync('/_expo/loaders/index');
+      const response = await server.fetchAsync('/_expo/loaders/loaders/index');
 
       expect(response.status).toBe(200);
       expect(response.headers.get('cache-control')).toBe('private, must-revalidate, max-age=0');
@@ -250,7 +250,7 @@ describe.each(
   );
 
   it('passes a loader-declared no-store through verbatim', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/second');
+    const response = await server.fetchAsync('/_expo/loaders/loaders/second');
 
     expect(response.status).toBe(200);
     expect(response.headers.get('cache-control')).toBe('private, no-store');
@@ -259,7 +259,7 @@ describe.each(
   (server.isExpoStart ? it.skip : it)(
     'applies loader-declared `Cache-Control` to the pre-rendered page',
     async () => {
-      const response = await server.fetchAsync('/response');
+      const response = await server.fetchAsync('/loaders/response');
       expect(response.status).toBe(200);
       expect(response.headers.get('cache-control')).toBe('public, max-age=604800');
     }
@@ -275,62 +275,95 @@ describe.each(
 
       expect(routesJson.pageHeaders).toEqual([
         // Header-less loader routes: the SSG default, applied to each page and loader file.
-        { namedRegex: '^/(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/\\(group\\)(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/\\(group\\)/platform/\\[\\.\\.\\.slug\\](?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/\\(group\\)/platform/alpha/beta(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/env(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/error(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/large\\-suspense(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/meta(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/nested(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/nullish/\\[value\\](?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/nullish/null(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/nullish/undefined(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/platform/\\[\\.\\.\\.slug\\](?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/platform/alpha/beta(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/posts/\\[postId\\](?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/posts/static\\-post\\-1(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/posts/static\\-post\\-2(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/request(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/slow(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/_expo/loaders/\\(group\\)/index(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/errors/loader(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/env(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/error(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/groups(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/groups/\\(group\\)(?:/)?$', headers: SSG_DEFAULT },
         {
-          namedRegex: '^/_expo/loaders/\\(group\\)/platform/\\[\\.\\.\\.slug\\](?:/)?$',
+          namedRegex: '^/loaders/groups/\\(group\\)/platform/\\[\\.\\.\\.slug\\](?:/)?$',
           headers: SSG_DEFAULT,
         },
         {
-          namedRegex: '^/_expo/loaders/\\(group\\)/platform/alpha/beta(?:/)?$',
+          namedRegex: '^/loaders/groups/\\(group\\)/platform/alpha/beta(?:/)?$',
           headers: SSG_DEFAULT,
         },
-        { namedRegex: '^/_expo/loaders/env(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/_expo/loaders/error(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/_expo/loaders/index(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/_expo/loaders/large\\-suspense(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/_expo/loaders/meta(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/_expo/loaders/nested/index(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/_expo/loaders/nullish/\\[value\\](?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/_expo/loaders/nullish/null(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/_expo/loaders/nullish/undefined(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/_expo/loaders/posts/\\[postId\\](?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/_expo/loaders/posts/static\\-post\\-1(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/_expo/loaders/posts/static\\-post\\-2(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/_expo/loaders/request(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/_expo/loaders/slow(?:/)?$', headers: SSG_DEFAULT },
-        { namedRegex: '^/_expo/loaders/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
+        {
+          namedRegex: '^/loaders/groups/platform/\\[\\.\\.\\.slug\\](?:/)?$',
+          headers: SSG_DEFAULT,
+        },
+        { namedRegex: '^/loaders/groups/platform/alpha/beta(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/large\\-suspense(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/meta(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/nested(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/nullish/\\[value\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/nullish/null(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/nullish/undefined(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/posts/\\[postId\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/posts/static\\-post\\-1(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/posts/static\\-post\\-2(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/request(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/slow(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/loaders/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/errors/loader(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/loaders/env(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/loaders/error(?:/)?$', headers: SSG_DEFAULT },
+        {
+          namedRegex: '^/_expo/loaders/loaders/groups/\\(group\\)/index(?:/)?$',
+          headers: SSG_DEFAULT,
+        },
+        {
+          namedRegex:
+            '^/_expo/loaders/loaders/groups/\\(group\\)/platform/\\[\\.\\.\\.slug\\](?:/)?$',
+          headers: SSG_DEFAULT,
+        },
+        {
+          namedRegex: '^/_expo/loaders/loaders/groups/\\(group\\)/platform/alpha/beta(?:/)?$',
+          headers: SSG_DEFAULT,
+        },
+        { namedRegex: '^/_expo/loaders/loaders/index(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/loaders/large\\-suspense(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/loaders/meta(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/loaders/nested/index(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/loaders/nullish/\\[value\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/loaders/nullish/null(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/loaders/nullish/undefined(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/loaders/posts/\\[postId\\](?:/)?$', headers: SSG_DEFAULT },
+        {
+          namedRegex: '^/_expo/loaders/loaders/posts/static\\-post\\-1(?:/)?$',
+          headers: SSG_DEFAULT,
+        },
+        {
+          namedRegex: '^/_expo/loaders/loaders/posts/static\\-post\\-2(?:/)?$',
+          headers: SSG_DEFAULT,
+        },
+        { namedRegex: '^/_expo/loaders/loaders/request(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/loaders/slow(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/loaders/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
         // Loader-declared headers: appended last so they win, applied to page and loader file.
         {
-          namedRegex: '^/response(?:/)?$',
-          headers: { 'Cache-Control': 'public, max-age=604800' },
-        },
-        { namedRegex: '^/second(?:/)?$', headers: { 'Cache-Control': 'private, no-store' } },
-        {
-          namedRegex: '^/_expo/loaders/response(?:/)?$',
-          headers: { 'Cache-Control': 'public, max-age=604800' },
+          namedRegex: '^/headers/blog(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=86400' },
         },
         {
-          namedRegex: '^/_expo/loaders/second(?:/)?$',
+          namedRegex: '^/loaders/response(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=604800' },
+        },
+        {
+          namedRegex: '^/loaders/second(?:/)?$',
+          headers: { 'Cache-Control': 'private, no-store' },
+        },
+        {
+          namedRegex: '^/_expo/loaders/headers/blog(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=86400' },
+        },
+        {
+          namedRegex: '^/_expo/loaders/loaders/response(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=604800' },
+        },
+        {
+          namedRegex: '^/_expo/loaders/loaders/second(?:/)?$',
           headers: { 'Cache-Control': 'private, no-store' },
         },
       ]);
@@ -338,7 +371,7 @@ describe.each(
   );
 
   it('renders route metadata in HTML', async () => {
-    const response = await server.fetchAsync('/meta');
+    const response = await server.fetchAsync('/loaders/meta');
     expect(response.status).toBe(200);
     const html = getHtml(await response.text());
 
@@ -352,7 +385,7 @@ describe.each(
     expect(html.querySelector('meta[name="author"]')?.getAttribute('content')).toBe('Expo');
   });
 
-  it.each(getPageAndLoaderData('/static-helper'))(
+  it.each(getPageAndLoaderData('/loaders/static-helper'))(
     'can access data from `createStaticLoader()` for $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);

@@ -1617,9 +1617,6 @@ importers:
       expo-sqlite:
         specifier: workspace:*
         version: link:../../packages/expo-sqlite
-      jose:
-        specifier: ^5
-        version: 5.10.0
       react:
         specifier: 19.3.0
         version: 19.3.0
@@ -1788,6 +1785,79 @@ importers:
       babel-preset-expo:
         specifier: workspace:*
         version: link:../../packages/babel-preset-expo
+
+  apps/server-tester:
+    dependencies:
+      '@expo/vector-icons':
+        specifier: ^15.0.2
+        version: 15.1.1(expo-font@packages+expo-font)(react-native@0.88.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+      expo:
+        specifier: workspace:*
+        version: link:../../packages/expo
+      expo-build-properties:
+        specifier: workspace:*
+        version: link:../../packages/expo-build-properties
+      expo-font:
+        specifier: workspace:*
+        version: link:../../packages/expo-font
+      expo-linking:
+        specifier: workspace:*
+        version: link:../../packages/expo-linking
+      expo-router:
+        specifier: workspace:*
+        version: link:../../packages/expo-router
+      expo-server:
+        specifier: workspace:*
+        version: link:../../packages/expo-server
+      expo-splash-screen:
+        specifier: workspace:*
+        version: link:../../packages/expo-splash-screen
+      jose:
+        specifier: ^5
+        version: 5.10.0
+      react:
+        specifier: 19.3.0
+        version: 19.3.0
+      react-dom:
+        specifier: 19.3.0
+        version: 19.3.0(react@19.3.0)
+      react-native:
+        specifier: 0.88.1
+        version: 0.88.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
+      react-native-gesture-handler:
+        specifier: ~3.3.0
+        version: 3.3.0(react-native@0.88.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+      react-native-safe-area-context:
+        specifier: ~5.11.1
+        version: 5.11.1(react-native@0.88.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+      react-native-screens:
+        specifier: 4.30.1
+        version: 4.30.1(react-native@0.88.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+      react-native-web:
+        specifier: ~0.21.4
+        version: 0.21.4(encoding@0.1.13)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+    devDependencies:
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.20.1
+      '@types/react':
+        specifier: ~19.3.0
+        version: 19.3.0
+      compression:
+        specifier: ^1.8.0
+        version: 1.8.1
+      esbuild:
+        specifier: ^0.28.1
+        version: 0.28.1
+      express:
+        specifier: ^5.1.0
+        version: 5.2.1
+      morgan:
+        specifier: ^1.11.0
+        version: 1.11.0
+      workerd:
+        specifier: ^1.20250807.0
+        version: 1.20260317.1
 
   apps/test-suite:
     dependencies:

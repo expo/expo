@@ -4,15 +4,9 @@ exports[`export-no-ssg has expected routes manifest entries 1`] = `
 {
   "apiRoutes": [
     {
-      "file": "_expo/functions/(a,b)/multi-group-api+api.js",
-      "namedRegex": "^(?:/\\((?:a|b)\\))?/multi\\-group\\-api(?:/)?$",
-      "page": "/(b)/multi-group-api",
-      "routeKeys": {},
-    },
-    {
-      "file": "_expo/functions/methods+api.js",
-      "namedRegex": "^/methods(?:/)?$",
-      "page": "/methods",
+      "file": "_expo/functions/routing/(a,b)/multi-group-api+api.js",
+      "namedRegex": "^/routing(?:/\\((?:a|b)\\))?/multi\\-group\\-api(?:/)?$",
+      "page": "/routing/(b)/multi-group-api",
       "routeKeys": {},
     },
     {
@@ -34,15 +28,33 @@ exports[`export-no-ssg has expected routes manifest entries 1`] = `
       "routeKeys": {},
     },
     {
+      "file": "_expo/functions/api/throws+api.js",
+      "namedRegex": "^/api/throws(?:/)?$",
+      "page": "/api/throws",
+      "routeKeys": {},
+    },
+    {
       "file": "_expo/functions/api/headers+api.js",
       "namedRegex": "^/api/headers(?:/)?$",
       "page": "/api/headers",
       "routeKeys": {},
     },
     {
+      "file": "_expo/functions/api/methods+api.js",
+      "namedRegex": "^/api/methods(?:/)?$",
+      "page": "/api/methods",
+      "routeKeys": {},
+    },
+    {
       "file": "_expo/functions/api/runtime+api.js",
       "namedRegex": "^/api/runtime(?:/)?$",
       "page": "/api/runtime",
+      "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/headers/api+api.js",
+      "namedRegex": "^/headers/api(?:/)?$",
+      "page": "/headers/api",
       "routeKeys": {},
     },
     {
@@ -58,22 +70,37 @@ exports[`export-no-ssg has expected routes manifest entries 1`] = `
       "routeKeys": {},
     },
     {
+      "file": "_expo/functions/errors/throw+api.js",
+      "namedRegex": "^/errors/throw(?:/)?$",
+      "page": "/errors/throw",
+      "routeKeys": {},
+    },
+    {
       "file": "_expo/functions/api/externals+api.js",
       "namedRegex": "^/api/externals(?:/)?$",
       "page": "/api/externals",
       "routeKeys": {},
     },
     {
-      "file": "_expo/functions/api/problematic+api.js",
-      "namedRegex": "^/api/problematic(?:/)?$",
-      "page": "/api/problematic",
+      "file": "_expo/functions/api/with-page+api.js",
+      "namedRegex": "^/api/with\\-page(?:/)?$",
+      "page": "/api/with-page",
       "routeKeys": {},
     },
     {
-      "file": "_expo/functions/matching-route/alpha+api.js",
-      "namedRegex": "^/matching\\-route/alpha(?:/)?$",
-      "page": "/matching-route/alpha",
+      "file": "_expo/functions/api/magic-import+api.js",
+      "namedRegex": "^/api/magic\\-import(?:/)?$",
+      "page": "/api/magic-import",
       "routeKeys": {},
+    },
+    {
+      "file": "_expo/functions/redirects/dynamic/[slug]/[other]+api.js",
+      "namedRegex": "^/redirects/dynamic/(?<slug>[^/]+?)/(?<other>[^/]+?)(?:/)?$",
+      "page": "/redirects/dynamic/[slug]/[other]",
+      "routeKeys": {
+        "other": "other",
+        "slug": "slug",
+      },
     },
     {
       "file": "_expo/functions/api/[dynamic]+api.js",
@@ -84,15 +111,34 @@ exports[`export-no-ssg has expected routes manifest entries 1`] = `
       },
     },
     {
-      "file": "_expo/functions/api/a/[...spread]+api.js",
-      "namedRegex": "^/api/a(?:/(?<spread>.+?))?(?:/)?$",
-      "page": "/api/a/[...spread]",
+      "file": "_expo/functions/redirects/dynamic/[slug]/index+api.js",
+      "namedRegex": "^/redirects/dynamic/(?<slug>[^/]+?)(?:/)?$",
+      "page": "/redirects/dynamic/[slug]/index",
+      "routeKeys": {
+        "slug": "slug",
+      },
+    },
+    {
+      "file": "_expo/functions/api/[...spread]+api.js",
+      "namedRegex": "^/api(?:/(?<spread>.+?))?(?:/)?$",
+      "page": "/api/[...spread]",
       "routeKeys": {
         "spread": "spread",
       },
     },
+    {
+      "file": "_expo/functions/redirects/dynamic/[...catchAll]/index+api.js",
+      "namedRegex": "^/redirects/dynamic(?:/(?<catchAll>.+?))?(?:/)?$",
+      "page": "/redirects/dynamic/[...catchAll]/index",
+      "routeKeys": {
+        "catchAll": "catchAll",
+      },
+    },
   ],
   "htmlRoutes": [],
+  "middleware": {
+    "file": "_expo/functions/+middleware.js",
+  },
   "notFoundRoutes": [],
   "redirects": [],
   "rewrites": [],

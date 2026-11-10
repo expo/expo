@@ -1,13 +1,13 @@
 import path from 'path';
 
 import { executeExpoAsync } from '../../utils/expo';
-import { findProjectFiles, getRouterE2ERoot } from '../utils';
+import { findProjectFiles, getServerTesterRoot } from '../utils';
 import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
 describe('static-rendering with no sitemap', () => {
-  const projectRoot = getRouterE2ERoot();
+  const projectRoot = getServerTesterRoot();
   const outputName = 'dist-static-rendering-no-sitemap';
   const outputDir = path.join(projectRoot, outputName);
 
@@ -15,8 +15,7 @@ describe('static-rendering with no sitemap', () => {
     await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputName], {
       env: {
         NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'static',
-        E2E_ROUTER_SRC: 'static-rendering',
+        E2E_ROUTER_WEB_OUTPUT: 'static',
         E2E_ROUTER_ASYNC: 'development',
         E2E_ROUTER_SITEMAP: 'false',
       },
@@ -35,14 +34,14 @@ describe('static-rendering with no sitemap', () => {
     expect(files).toContain('+not-found.html');
 
     // Normal routes
-    expect(files).toContain('about.html');
+    expect(files).toContain('rendering/about.html');
     expect(files).toContain('index.html');
-    expect(files).toContain('styled.html');
-    expect(files).toContain('links.html');
+    expect(files).toContain('rendering/styled.html');
+    expect(files).toContain('rendering/links.html');
 
     // generateStaticParams values
-    expect(files).toContain('[post].html');
-    expect(files).toContain('welcome-to-the-universe.html');
-    expect(files).toContain('other.html');
+    expect(files).toContain('rendering/[post].html');
+    expect(files).toContain('rendering/welcome-to-the-universe.html');
+    expect(files).toContain('rendering/other.html');
   });
 });

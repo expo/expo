@@ -1,19 +1,16 @@
 import { test, expect } from '@playwright/test';
 
-import { getRouterE2ERoot } from '../../__tests__/utils';
+import { getServerTesterRoot } from '../../__tests__/utils';
 import { createExpoStart } from '../../utils/expo';
 import { withTiming } from '../../utils/timing';
 import { pageCollectErrors } from '../page';
 
-const projectRoot = getRouterE2ERoot();
-const inputDir = 'static-rendering';
-
-test.describe(inputDir, () => {
+const projectRoot = getServerTesterRoot();
+test.describe('server-tester', () => {
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
-      EXPO_USE_STATIC: 'single',
-      E2E_ROUTER_SRC: inputDir,
+      E2E_ROUTER_WEB_OUTPUT: 'single',
       E2E_ROUTER_ASYNC: 'development',
       // Ensure CI is disabled otherwise the file watcher won't run.
       CI: '0',
@@ -36,7 +33,7 @@ test.describe(inputDir, () => {
     await withTiming('Open page', () => page.goto(expoStart.url.href));
 
     // Ensure the page is fully loaded
-    await expect(page.locator('[data-testid="index-text"]')).toHaveText('Index');
+    await expect(page.locator('[data-testid="platform-result"]')).toHaveText('"web"');
 
     // Ensure no page errors are presented
     expect(pageErrors.all).toEqual([]);

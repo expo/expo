@@ -72,7 +72,7 @@ module.exports = {
             : process.env.E2E_ROUTER_ASYNC === 'false'
               ? false
               : process.env.E2E_ROUTER_ASYNC,
-        root: path.join('__e2e__', process.env.E2E_ROUTER_SRC ?? 'static-rendering', 'app'),
+        root: path.join('__e2e__', process.env.E2E_ROUTER_SRC ?? 'router-misc', 'app'),
         origin: 'http://localhost:8081/',
         sitemap:
           process.env.E2E_ROUTER_SITEMAP === 'false' ? false : process.env.E2E_ROUTER_SITEMAP,
@@ -84,12 +84,7 @@ module.exports = {
           : undefined,
         headers: process.env.E2E_ROUTER_HEADERS
           ? JSON.parse(process.env.E2E_ROUTER_HEADERS)
-          : process.env.E2E_ROUTER_HEADERS_PREDEFINED
-            ? {
-                'X-Powered-By': 'expo-server',
-                'Set-Cookie': ['session=123', 'token=xyz'],
-              }
-            : undefined,
+          : undefined,
         pageHeaders: process.env.E2E_ROUTER_PAGE_HEADERS
           ? JSON.parse(process.env.E2E_ROUTER_PAGE_HEADERS)
           : undefined,

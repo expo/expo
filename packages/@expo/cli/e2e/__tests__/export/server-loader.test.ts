@@ -15,17 +15,17 @@ runExportSideEffects();
 
 describe.each(
   prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START, RUNTIME_WORKERD], {
-    fixtureName: 'server-loader',
-    uniqueOutputKey: 'server',
+    app: 'server-tester',
+    uniqueOutputKey: 'loaders-server',
     export: {
       env: {
-        EXPO_USE_STATIC: 'server',
+        E2E_ROUTER_WEB_OUTPUT: 'server',
         TEST_SECRET_KEY: 'test-secret-key',
       },
     },
     serve: {
       env: {
-        EXPO_USE_STATIC: 'server',
+        E2E_ROUTER_WEB_OUTPUT: 'server',
         TEST_SECRET_RUNTIME_KEY: 'runtime-secret-value',
         TEST_THROW_ERROR: 'true',
       },
@@ -42,37 +42,37 @@ describe.each(
     expect(files).toContain('_expo/routes.json');
 
     // HTML routes should NOT be pre-rendered in SSR mode
-    expect(files).not.toContain('env.html');
-    expect(files).not.toContain('index.html');
-    expect(files).not.toContain('request.html');
-    expect(files).not.toContain('response.html');
-    expect(files).not.toContain('second.html');
-    expect(files).not.toContain('slow.html');
-    expect(files).not.toContain('nested/index.html');
-    expect(files).not.toContain('nullish/[value].html');
-    expect(files).not.toContain('nullish/null.html');
-    expect(files).not.toContain('nullish/undefined.html');
-    expect(files).not.toContain('posts/[postId].html');
-    expect(files).not.toContain('posts/static-post-1.html');
-    expect(files).not.toContain('posts/static-post-2.html');
-    expect(files).not.toContain('platform/alpha/beta.html');
+    expect(files).not.toContain('loaders/env.html');
+    expect(files).not.toContain('loaders/index.html');
+    expect(files).not.toContain('loaders/request.html');
+    expect(files).not.toContain('loaders/response.html');
+    expect(files).not.toContain('loaders/second.html');
+    expect(files).not.toContain('loaders/slow.html');
+    expect(files).not.toContain('loaders/nested/index.html');
+    expect(files).not.toContain('loaders/nullish/[value].html');
+    expect(files).not.toContain('loaders/nullish/null.html');
+    expect(files).not.toContain('loaders/nullish/undefined.html');
+    expect(files).not.toContain('loaders/posts/[postId].html');
+    expect(files).not.toContain('loaders/posts/static-post-1.html');
+    expect(files).not.toContain('loaders/posts/static-post-2.html');
+    expect(files).not.toContain('loaders/groups/platform/alpha/beta.html');
 
     // Loader bundles should exist
-    expect(files).toContain('_expo/loaders/index.js');
-    expect(files).toContain('_expo/loaders/env.js');
-    expect(files).toContain('_expo/loaders/error.js');
-    expect(files).toContain('_expo/loaders/meta.js');
-    expect(files).toContain('_expo/loaders/nested/index.js');
-    expect(files).toContain('_expo/loaders/request.js');
-    expect(files).toContain('_expo/loaders/response.js');
-    expect(files).toContain('_expo/loaders/second.js');
-    expect(files).toContain('_expo/loaders/slow.js');
-    expect(files).toContain('_expo/loaders/nullish/[value].js');
-    expect(files).toContain('_expo/loaders/posts/[postId].js');
-    expect(files).toContain('_expo/loaders/(group)/index.js');
-    expect(files).toContain('_expo/loaders/(group)/platform/[...slug].js');
-    expect(files).toContain('_expo/loaders/static-helper.js');
-    expect(files).toContain('_expo/loaders/server-helper.js');
+    expect(files).toContain('_expo/loaders/loaders/index.js');
+    expect(files).toContain('_expo/loaders/loaders/env.js');
+    expect(files).toContain('_expo/loaders/loaders/error.js');
+    expect(files).toContain('_expo/loaders/loaders/meta.js');
+    expect(files).toContain('_expo/loaders/loaders/nested/index.js');
+    expect(files).toContain('_expo/loaders/loaders/request.js');
+    expect(files).toContain('_expo/loaders/loaders/response.js');
+    expect(files).toContain('_expo/loaders/loaders/second.js');
+    expect(files).toContain('_expo/loaders/loaders/slow.js');
+    expect(files).toContain('_expo/loaders/loaders/nullish/[value].js');
+    expect(files).toContain('_expo/loaders/loaders/posts/[postId].js');
+    expect(files).toContain('_expo/loaders/loaders/groups/(group)/index.js');
+    expect(files).toContain('_expo/loaders/loaders/groups/(group)/platform/[...slug].js');
+    expect(files).toContain('_expo/loaders/loaders/static-helper.js');
+    expect(files).toContain('_expo/loaders/loaders/server-helper.js');
   });
 
   (server.isExpoStart ? it.skip : it)('routes.json has loader paths', async () => {
@@ -88,16 +88,16 @@ describe.each(
   });
 
   it('returns 404 for loader endpoint when route has no loader', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/no-loader');
+    const response = await server.fetchAsync('/_expo/loaders/loaders/no-loader');
     expect(response.status).toBe(404);
   });
 
   it('returns 404 for loader endpoint when route does not exist', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/nonexistent');
+    const response = await server.fetchAsync('/_expo/loaders/loaders/nonexistent');
     expect(response.status).toBe(404);
   });
 
-  it.each(getPageAndLoaderData('/error'))(
+  it.each(getPageAndLoaderData('/loaders/error'))(
     'returns error when loader throws for $url ($name)',
     async ({ url }) => {
       const response = await server.fetchAsync(url);
@@ -105,7 +105,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/'))(
+  it.each(getPageAndLoaderData('/loaders', true))(
     'can access data for root index route $url ($name)',
     async ({ getData, name, url }) => {
       const response = await server.fetchAsync(url);
@@ -120,7 +120,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/(group)'))(
+  it.each(getPageAndLoaderData('/loaders/groups/(group)'))(
     'can access data for group index route $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
@@ -131,7 +131,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/(group)/platform/alpha/beta'))(
+  it.each(getPageAndLoaderData('/loaders/groups/(group)/platform/alpha/beta'))(
     'can access platform-specific catch-all data for $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
@@ -142,7 +142,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/second'))(
+  it.each(getPageAndLoaderData('/loaders/second'))(
     'can access data for $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
@@ -153,7 +153,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/nested'))(
+  it.each(getPageAndLoaderData('/loaders/nested'))(
     'can access data for nested index route $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
@@ -164,7 +164,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/posts/static-post-1'))(
+  it.each(getPageAndLoaderData('/loaders/posts/static-post-1'))(
     'can access data with dynamic params for $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
@@ -175,7 +175,7 @@ describe.each(
     }
   );
 
-  (server.isExpoStart ? it.skip : it).each(getPageAndLoaderData('/env'))(
+  (server.isExpoStart ? it.skip : it).each(getPageAndLoaderData('/loaders/env'))(
     'can access server environment variables for $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
@@ -187,7 +187,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/nullish/undefined'))(
+  it.each(getPageAndLoaderData('/loaders/nullish/undefined'))(
     'returns `null` for `undefined` loader data for $url ($name)',
     async ({ getData, name, url }) => {
       const response = await server.fetchAsync(url);
@@ -205,7 +205,7 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/nullish/null'))(
+  it.each(getPageAndLoaderData('/loaders/nullish/null'))(
     'returns `null` for `null` loader data for $url ($name)',
     async ({ getData, name, url }) => {
       const response = await server.fetchAsync(url);
@@ -223,33 +223,33 @@ describe.each(
     }
   );
 
-  it.each(getPageAndLoaderData('/request'))(
+  it.each(getPageAndLoaderData('/loaders/request'))(
     'receives `Request` object for $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
       expect(response.status).toBe(200);
       const data = await getData(response);
 
-      expect(new URL(data.url).pathname).toBe('/request');
+      expect(new URL(data.url).pathname).toBe('/loaders/request');
       expect(data.method).toBe('GET');
       expect(Array.isArray(data.headers)).toBe(true);
     }
   );
 
-  it.each(getPageAndLoaderData('/request?foo=bar'))(
+  it.each(getPageAndLoaderData('/loaders/request?foo=bar'))(
     '$name $url receives search params',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
       expect(response.status).toBe(200);
       const data = await getData(response);
 
-      expect(data.url).toContain('/request?foo=bar');
+      expect(data.url).toContain('/loaders/request?foo=bar');
       expect(data.method).toBe('GET');
       expect(Array.isArray(data.headers)).toBe(true);
     }
   );
 
-  it.each(getPageAndLoaderData('/request?immutable=true'))(
+  it.each(getPageAndLoaderData('/loaders/request?immutable=true'))(
     'request is immutable for $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
@@ -262,7 +262,7 @@ describe.each(
   );
 
   it('loader endpoint returns `Response`', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/response');
+    const response = await server.fetchAsync('/_expo/loaders/loaders/response');
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toContain('application/json');
     expect(response.headers.get('cache-control')).toBe('public, max-age=3600');
@@ -273,14 +273,16 @@ describe.each(
   });
 
   it('defaults a headerless server loader to no-store', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/index');
+    const response = await server.fetchAsync('/_expo/loaders/loaders/index');
 
     expect(response.status).toBe(200);
     expect(response.headers.get('cache-control')).toBe('no-store');
   });
 
   it('sets custom headers on response using `setResponseHeaders()`', async () => {
-    const response = await server.fetchAsync('/_expo/loaders/response?setresponseheaders=true');
+    const response = await server.fetchAsync(
+      '/_expo/loaders/loaders/response?setresponseheaders=true'
+    );
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toContain('application/json');
     expect(response.headers.get('Cache-Control')).toBe('public, max-age=3600');
@@ -291,7 +293,7 @@ describe.each(
   });
 
   it('renders meta tags from loader data in HTML', async () => {
-    const response = await server.fetchAsync('/meta');
+    const response = await server.fetchAsync('/loaders/meta');
     expect(response.status).toBe(200);
     const html = getHtml(await response.text());
 
@@ -305,7 +307,7 @@ describe.each(
     expect(html.querySelector('meta[name="author"]')?.getAttribute('content')).toBe('Expo');
   });
 
-  it.each(getPageAndLoaderData('/server-helper'))(
+  it.each(getPageAndLoaderData('/loaders/server-helper'))(
     'can access data from `createServerLoader()` for $url ($name)',
     async ({ getData, url }) => {
       const response = await server.fetchAsync(url);
@@ -313,7 +315,7 @@ describe.each(
       const data = await getData(response);
 
       expect(data.source).toBe('server-helper');
-      expect(new URL(data.url).pathname).toBe('/server-helper');
+      expect(new URL(data.url).pathname).toBe('/loaders/server-helper');
       expect(data.method).toBe('GET');
     }
   );

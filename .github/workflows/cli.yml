@@ -6,6 +6,7 @@ on:
     paths: &trigger_paths
       - .github/workflows/cli.yml
       - apps/router-e2e/**
+      - apps/server-tester/**
       - packages/@expo/cli/**
       - packages/@expo/metro-runtime/**
       - packages/@expo/metro-config/src/**
