@@ -470,7 +470,10 @@ it('passes the SplitView.Column header to the native header as flat props', asyn
     { initialUrl: '/' }
   );
 
-  expect(jest.mocked(SplitViewNativeHeader).mock.calls[0]![0]).toEqual({
+  const props = jest
+    .mocked(SplitViewNativeHeader)
+    .mock.calls.find(([props]) => props.title === 'Mailboxes')![0];
+  expect(props).toEqual({
     title: 'Mailboxes',
     largeTitle: true,
     leftToolbarItems: [{ id: 'left.0', title: 'Edit' }],
@@ -493,7 +496,10 @@ it('passes the SplitView.Column header subtitle to the native header', async () 
     { initialUrl: '/' }
   );
 
-  expect(jest.mocked(SplitViewNativeHeader).mock.calls[0]![0].subtitle).toBe('3 unread');
+  const props = jest
+    .mocked(SplitViewNativeHeader)
+    .mock.calls.find(([props]) => props.title === 'Inbox')![0];
+  expect(props.subtitle).toBe('3 unread');
 });
 
 it('passes the title colors of the SplitView.Column header to the native header', async () => {
@@ -517,7 +523,9 @@ it('passes the title colors of the SplitView.Column header to the native header'
     { initialUrl: '/' }
   );
 
-  const props = jest.mocked(SplitViewNativeHeader).mock.calls[0]![0];
+  const props = jest
+    .mocked(SplitViewNativeHeader)
+    .mock.calls.find(([props]) => props.title === 'Inbox')![0];
   expect(props.titleColor).toBe('red');
   expect(props.largeTitleColor).toBe('blue');
 });
@@ -543,8 +551,9 @@ it('passes the back button options of the SplitView.Column header to the native 
     { initialUrl: '/' }
   );
 
-  const props = jest.mocked(SplitViewNativeHeader).mock.calls[1]![0];
-  expect(props.title).toBe('Inbox');
+  const props = jest
+    .mocked(SplitViewNativeHeader)
+    .mock.calls.find(([props]) => props.title === 'Inbox')![0];
   expect(props.backTitle).toBe('Mail');
   expect(props.backVisible).toBe(false);
 });
@@ -1150,7 +1159,7 @@ it('renders native headers for columns without header options', async () => {
   expect(screen.getAllByTestId('SplitViewNativeHeader')).toHaveLength(3);
 });
 
-it('resets header options when the header prop is removed', async () => {
+it('passes undefined header options when the header prop is removed', async () => {
   const result = await render(<SplitView.Column header={{ title: 'Inbox', hidden: true }} />);
 
   expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0]).toMatchObject({

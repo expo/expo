@@ -33,37 +33,15 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
 
   func configureNavigationItem(_ navigationItem: UINavigationItem) {
     self.navigationItem = navigationItem
+    _ = Self.installHooks
     apply()
   }
 
-  override func didMoveToSuperview() {
-    super.didMoveToSuperview()
-    if superview == nil, let navigationItem {
-      navigationItem.title = nil
-      if #available(iOS 26.0, *) {
-        navigationItem.subtitle = nil
-      }
-      navigationItem.largeTitleDisplayMode = .never
-      navigationItem.leftItemsSupplementBackButton = false
-      navigationItem.leftBarButtonItems = nil
-      navigationItem.rightBarButtonItems = nil
-      navigationItem.searchController = nil
-      navigationItem.hidesBackButton = false
-      navigationItem.standardAppearance = nil
-      navigationItem.compactAppearance = nil
-      navigationItem.scrollEdgeAppearance = nil
-      searchController = nil
-      self.navigationItem = nil
-      applyBackButton()
-    }
-  }
-
-  // The previous column and the navigation controller are known only after this column is in a window.
+  // The previous column is known only after this column is in a window.
   override func didMoveToWindow() {
     super.didMoveToWindow()
     if window != nil {
       applyBackButton()
-      applyNavigationBarHidden()
     }
   }
 
@@ -82,7 +60,17 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
       // A visible bar does not grow by itself when its item starts to show a large title.
       navigationController?.navigationBar.sizeToFit()
     }
-    applyNavigationBarHidden()
+    // Only the column on screen sets the shared bar; changes during a transition wait for its end.
+    if let coordinator = navigationController?.transitionCoordinator {
+      coordinator.animate(alongsideTransition: nil) { [weak self] context in
+        // On cancel, `viewWillAppear` of the column that stays has already set the bar.
+        if !context.isCancelled, let self, self.window != nil {
+          self.applyNavigationBarHidden(animated: false)
+        }
+      }
+    } else if window != nil {
+      applyNavigationBarHidden(animated: false)
+    }
     // Keeps the back button next to the left items when the split view is collapsed.
     navigationItem.leftItemsSupplementBackButton = true
     navigationItem.leftBarButtonItems = barButtonItems(leftToolbarItems)
@@ -111,11 +99,56 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     (superview?.next as? UIViewController)?.navigationController
   }
 
-  private func applyNavigationBarHidden() {
+  private func applyNavigationBarHidden(animated: Bool) {
     guard let navigationController, navigationController.isNavigationBarHidden != navigationBarHidden else {
       return
     }
-    navigationController.setNavigationBarHidden(navigationBarHidden, animated: false)
+    navigationController.setNavigationBarHidden(navigationBarHidden, animated: animated)
+  }
+
+  private static func header(in controller: UIViewController?) -> SplitViewHeaderView? {
+    return controller?.viewIfLoaded?.subviews.lazy.compactMap { $0 as? SplitViewHeaderView }.first
+  }
+
+  // react-native-screens has no callbacks for these, so the methods are replaced at runtime.
+  private static let installHooks: Void = {
+    // UIKit animates and reverts bar changes made in `viewWillAppear` together with the transition.
+    let viewWillAppear = #selector(UIViewController.viewWillAppear(_:))
+    hook("RNSSplitScreenController", viewWillAppear) { original in
+      typealias Original = @convention(c) (UIViewController, Selector, Bool) -> Void
+      let original = unsafeBitCast(original, to: Original.self)
+      return { controller, animated in
+        original(controller, viewWillAppear, animated)
+        header(in: controller)?.applyNavigationBarHidden(animated: animated)
+      } as @convention(block) (UIViewController, Bool) -> Void
+    }
+    // Hides and shows the secondary bar to redraw its buttons, which would show the bar of a hidden column.
+    let refreshSecondaryNavBar = NSSelectorFromString("refreshSecondaryNavBar")
+    hook("RNSSplitHostController", refreshSecondaryNavBar) { original in
+      typealias Original = @convention(c) (UISplitViewController, Selector) -> Void
+      let original = unsafeBitCast(original, to: Original.self)
+      return { host in
+        original(host, refreshSecondaryNavBar)
+        // The column controller is the root of the secondary navigation controller.
+        if let header = header(in: host.viewController(for: .secondary)?.children.first), header.window != nil {
+          header.applyNavigationBarHidden(animated: false)
+        }
+      } as @convention(block) (UISplitViewController) -> Void
+    }
+  }()
+
+  // Skips a missing class or method, so other react-native-screens versions keep working.
+  private static func hook(_ className: String, _ selector: Selector, _ makeBlock: (IMP) -> Any) {
+    guard let targetClass = NSClassFromString(className),
+      let method = class_getInstanceMethod(targetClass, selector)
+    else {
+      return
+    }
+    let replacement = imp_implementationWithBlock(makeBlock(method_getImplementation(method)))
+    // Adds an override when the method is inherited, so the `UIViewController` implementation is never replaced.
+    if !class_addMethod(targetClass, selector, replacement, method_getTypeEncoding(method)) {
+      method_setImplementation(method, replacement)
+    }
   }
 
   // UIKit reads the title of a back button from the item below it in the navigation stack.
