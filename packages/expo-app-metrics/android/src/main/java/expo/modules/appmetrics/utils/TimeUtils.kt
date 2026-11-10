@@ -28,6 +28,13 @@ object TimeUtils {
 
   fun getProcessStartTimeInMillis(): Long = Process.getStartUptimeMillis()
 
+  /**
+   * The wall-clock date of [uptimeMillis], a [getCurrentTimeInMillis] reading, for comparing it
+   * with wall-clock dates such as a network request's timings.
+   */
+  fun uptimeToDate(uptimeMillis: Long): Date =
+    Date(getWallClockMillis() - (getCurrentTimeInMillis() - uptimeMillis))
+
   fun getProcessStartTimestamp(): String {
     val millisFromProcessStart = getCurrentTimeInMillis() - getProcessStartTimeInMillis()
     val processStartDate = Date(System.currentTimeMillis() - millisFromProcessStart)
