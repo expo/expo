@@ -285,13 +285,14 @@ jest.doMock('expo-modules-core', () => {
   // NOTE: The adapter validates the number of arguments, which we don't do in the mocked functions.
   // This means the mock functions will not throw validation errors the way they would in an app.
 
-  const generatedStubs = new WeakSet();
+  const generatedStubs = new WeakMap();
   for (const moduleName of Object.keys(NativeModulesProxy)) {
     const nativeModule = NativeModulesProxy[moduleName];
     for (const propertyName of Object.keys(nativeModule)) {
       if (typeof nativeModule[propertyName] === 'function') {
-        nativeModule[propertyName] = jest.fn(async () => {});
-        generatedStubs.add(nativeModule[propertyName]);
+        const defaultImpl = async () => {};
+        nativeModule[propertyName] = jest.fn(defaultImpl);
+        generatedStubs.set(nativeModule[propertyName], defaultImpl);
       }
     }
   }
@@ -313,7 +314,9 @@ jest.doMock('expo-modules-core', () => {
         // needed for `extends` (e.g. File extends ExpoFileSystem.FileSystemFile).
         const isClass = Object.getOwnPropertyNames(value.prototype ?? {}).length > 1;
         const nativeImpl =
-          generatedStubs.has(value) && typeof nativeModule[key] === 'function'
+          generatedStubs.has(value) &&
+          generatedStubs.get(value) === value.getMockImplementation() &&
+          typeof nativeModule[key] === 'function'
             ? nativeModule[key]
             : value;
         nativeModule[key] = isClass ? value : jest.fn(nativeImpl);

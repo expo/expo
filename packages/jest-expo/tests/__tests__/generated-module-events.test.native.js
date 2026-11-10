@@ -1,4 +1,4 @@
-const { requireNativeModule } = require('expo-modules-core');
+const { NativeModulesProxy, requireNativeModule } = require('expo-modules-core');
 
 describe('generated native module mock events', () => {
   afterEach(() => {
@@ -26,5 +26,16 @@ describe('generated native module mock events', () => {
 
     expect(requireNativeModule('TestEventsModule').addListener()).toBe('custom');
     expect(addListener).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps a customized generated stub', () => {
+    const stub = NativeModulesProxy.ExpoNotificationsEmitter.addListener;
+    const defaultImpl = stub.getMockImplementation();
+    stub.mockReturnValue('custom');
+    try {
+      expect(requireNativeModule('ExpoNotificationsEmitter').addListener()).toBe('custom');
+    } finally {
+      stub.mockImplementation(defaultImpl);
+    }
   });
 });
