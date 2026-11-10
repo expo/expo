@@ -88,11 +88,11 @@ function prepareRenderContext(location: URL, options: GetStaticContentOptions) {
   const search = searchParams.toString();
   const loaderKey = options.loader ? options.loader.key + (search ? `?${search}` : '') : null;
 
-  const loadedData = loaderKey
+  const loadedData: Record<string, unknown> = loaderKey
     ? {
         [loaderKey]: options.loader?.data ?? null,
       }
-    : null;
+    : {};
 
   return { headContext, element, getStyleElement, loadedData };
 }
@@ -124,7 +124,7 @@ export async function getStaticContent(
     debug(`Pushing static fonts: (count: ${fonts.length})`, fonts);
     // Inject static fonts loaded with expo-font
     output = output.replace('</head>', `${fonts.join('')}</head>`);
-    if (loadedData) {
+    if (Object.keys(loadedData).length > 0) {
       output = output.replace('</head>', `${createLoaderDataScriptAsString(loadedData)}</head>`);
     }
 

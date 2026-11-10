@@ -14,9 +14,14 @@ jest.mock('expo-router/_ctx', () => {
     return data?.message ?? 'MISSING';
   }
 
+  function About() {
+    return String(useLoaderData());
+  }
+
   const routes = {
     './posts/[id].tsx': { default: () => 'Post route' },
     './[locale]/index.tsx': { default: LocaleIndex },
+    './about.tsx': { default: About },
   };
   return {
     ctx: Object.assign((key: keyof typeof routes) => routes[key], {
@@ -104,6 +109,17 @@ it('omits the query separator when only a route parameter is in the query', asyn
   } finally {
     consoleWarn.mockRestore();
   }
+});
+
+it('renders a route with no loader without emitting loader data', async () => {
+  const html = parse(
+    await getStaticContent(new URL('http://localhost/about'), {
+      route: { file: './about.tsx', page: '/about' },
+    })
+  );
+
+  expect(html.querySelector('#root')?.textContent).toContain('undefined');
+  expect(html.querySelector('script#expo-router-data')).toBeNull();
 });
 
 it('passes the pathname and params to +html during static rendering', async () => {
