@@ -268,9 +268,20 @@ function attemptLookup(moduleName) {
   }
 }
 
-// TODO(@kitten): This is an invalid dependency chain
-jest.doMock('expo-modules-core', () => {
-  const ExpoModulesCore = jest.requireActual('expo-modules-core');
+// Mock the copy of expo-modules-core that `expo` loads.
+function resolveThroughExpo(request) {
+  try {
+    return require.resolve(request, {
+      paths: [path.dirname(require.resolve('expo/package.json'))],
+    });
+  } catch {
+    return request;
+  }
+}
+const expoModulesCorePath = resolveThroughExpo('expo-modules-core');
+
+jest.doMock(expoModulesCorePath, () => {
+  const ExpoModulesCore = jest.requireActual(expoModulesCorePath);
 
   const { EventEmitter, NativeModule, SharedObject } = globalThis.expo;
 
@@ -355,7 +366,7 @@ jest.doMock('expo-modules-core', () => {
 });
 
 // Installs web implementations of the global.expo object for all platforms to polyfill APIs that are normally installed through JSI.
-require('expo-modules-core/src/polyfill/dangerous-internal').installExpoGlobalPolyfill();
+require(resolveThroughExpo('expo-modules-core/src/polyfill/dangerous-internal')).installExpoGlobalPolyfill();
 
 // `expo/fetch` defines `class FetchResponse extends ExpoFetchModule.NativeResponse`
 // at module load — provide stub classes so tests that transitively import fetch
