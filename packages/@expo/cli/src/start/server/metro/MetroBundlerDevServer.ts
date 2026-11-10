@@ -36,6 +36,7 @@ import {
   type ImmutableRequest,
   resolveLoaderContextKey,
 } from 'expo-server/private';
+import fs from 'node:fs';
 import path from 'path';
 
 import type {
@@ -94,6 +95,11 @@ import {
 } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
+  createNativeAddonLoader,
+  getNativeAddonId,
+  NATIVE_ADDON_EXPORT_PREFIX,
+} from './nativeNodeAddons';
+import {
   fromRuntimeManifestRoute,
   fromServerManifestRoute,
   SSG_LOADER_HEADER_ALLOWLIST,
@@ -134,6 +140,7 @@ type DevServerRenderOptions = {
 };
 
 interface BundleDirectResult {
+  nativeAddons?: string[];
   numModifiedFiles: number;
   lastModifiedDate: Date;
   nextRevId: string;
@@ -201,7 +208,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     includeSourceMaps,
     descriptor,
   }: {
-    contents: { src: string; map?: any } | null | undefined;
+    contents: { src: string; map?: any; nativeAddons?: string[] } | null | undefined;
     artifactFilename: string;
     files: ExportAssetMap;
     includeSourceMaps?: boolean;
@@ -211,6 +218,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     if (!contents) return;
 
     let src = contents.src;
+    if (contents.nativeAddons?.length) {
+      const filenames: Record<string, string> = {};
+      for (const filePath of contents.nativeAddons) {
+        const id = getNativeAddonId(filePath);
+        const filename = `_expo/native/${id}/${path.basename(filePath)}`;
+        filenames[id] = toPosixPath(path.relative(path.dirname(artifactFilename), filename));
+        if (!files.has(filename)) {
+          files.set(filename, {
+            contents: await fs.promises.readFile(filePath),
+            targetDomain: 'server',
+          });
+        }
+      }
+      src = createNativeAddonLoader(filenames) + src;
+    }
     if (includeSourceMaps && contents.map) {
       // TODO(kitten): Merge the source map transformer in the future
       // https://github.com/expo/expo/blob/0dffdb15/packages/%40expo/metro-config/src/serializer/serializeChunks.ts#L422-L439
@@ -239,7 +261,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           }),
           sourcesContent: new Array(parsedMap.sources.length).fill(null),
           names: parsedMap.names,
-          mappings: parsedMap.mappings,
+          mappings: (contents.nativeAddons?.length ? ';' : '') + parsedMap.mappings,
         }),
         targetDomain: 'server',
       };
@@ -861,7 +883,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     return evalMetroAndWrapFunctions(
       this.projectRoot,
-      res.src,
+      res.src +
+        (res.nativeAddons?.length
+          ? '\n' +
+            createNativeAddonLoader(
+              Object.fromEntries(
+                res.nativeAddons.map((filePath) => [getNativeAddonId(filePath), filePath])
+              )
+            )
+          : ''),
       res.filename,
       res.map,
       specificOptions.isExporting ?? this.instanceMetroOptions.isExporting!
@@ -2388,7 +2418,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         bundleMap = bundle.map;
       }
 
+      const nativeAddons = [...revision.graph.dependencies.keys()]
+        .filter((filePath) => filePath.startsWith(NATIVE_ADDON_EXPORT_PREFIX))
+        .map((filePath) => filePath.slice(NATIVE_ADDON_EXPORT_PREFIX.length));
       const result = {
+        nativeAddons,
         numModifiedFiles: delta.reset
           ? delta.added.size + revision.prepend.length
           : delta.added.size + delta.modified.size + delta.deleted.size,

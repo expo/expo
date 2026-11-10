@@ -889,7 +889,31 @@ describe(withExtendedResolver, () => {
       expect(getResolveFunc()).toHaveBeenCalledTimes(1);
     });
 
-    it.each([{}, { environment: 'node', exporting: true }, { environment: 'react-server' }])(
+    it.each<Resolution>([
+      { type: 'sourceFile', filePath: '/root/native/hello.node' },
+      { type: 'assetFiles', filePaths: ['/root/native/hello.node'] },
+    ])('loads an exported $type addon from the exported server files', (resolution) => {
+      const bundler = getMetroBundlerGetter()();
+      jest.mocked(getResolveFunc()).mockReturnValueOnce(resolution);
+      const config = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: () => bundler,
+      });
+
+      const result = config.resolver.resolveRequest!(
+        getResolverContext({ customResolverOptions: { environment: 'node', exporting: true } }),
+        './native/hello.node',
+        'web'
+      );
+
+      expectVirtual(result, '\0node-addon-export:/root/native/hello.node');
+      expect((bundler as any).setVirtualModule).toHaveBeenCalledWith(
+        '\0node-addon-export:/root/native/hello.node',
+        expect.stringMatching(/^module\.exports=__expo_require_native__\("[a-f0-9]+"\);$/)
+      );
+    });
+
+    it.each([{}, { environment: 'react-server' }])(
       'does not externalize native addons for %j',
       (customResolverOptions) => {
         const resolution: Resolution = {
