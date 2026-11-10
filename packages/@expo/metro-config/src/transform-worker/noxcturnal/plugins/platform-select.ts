@@ -21,7 +21,7 @@ export function createPlatformSelectPlugin(
         },
         {
           scope: true,
-          controlFlow: ['dynamic-subscriptions'],
+          controlFlow: ['dynamic-subscriptions', 'skip'],
           children: {
             callee: { route: 'Expression', fields: ['memberPath', 'name'] },
             arguments: {
@@ -68,6 +68,9 @@ export function createPlatformSelectPlugin(
             (platform ? find(platform) : undefined) ??
             (platform === 'web' ? undefined : find('native')) ??
             find('default');
+          for (const property of properties) {
+            if (property !== selected) property.skip();
+          }
           const value = selected?.getChild('value');
           call.replaceWith(
             value
