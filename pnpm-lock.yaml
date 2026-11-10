@@ -4740,6 +4740,10 @@ importers:
         version: link:../expo
 
   packages/expo-eas-client:
+    dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
     devDependencies:
       '@expo/internal-scripts':
         specifier: workspace:*
