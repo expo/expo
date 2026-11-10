@@ -1844,7 +1844,7 @@ describe('where precompiled modules and headers come from', () => {
    * given kinds of place, and a direct module when `headers` says where the
    * ExpoModulesCore headers come from (null for headers that are not found).
    */
-  function sync({ frameworks, headers }) {
+  function sync({ frameworks, headers, react = null }) {
     const tmp = makeTempDir('expo-spm-plugin-sources-');
     const listed = Object.keys({ ...frameworks, ExpoModulesJSI: null }).map((frameworkName) => [
       packageOf[frameworkName],
@@ -1890,14 +1890,18 @@ describe('where precompiled modules and headers come from', () => {
     resolveHeadersXCFramework.mockReturnValue(jsiHeadersXCFramework);
     const outDir = path.join(tmp, 'out');
     providerWrittenTo(outDir);
+    const codegenPkgPath = path.join(tmp, 'ios');
+    fs.mkdirSync(codegenPkgPath);
+    fs.writeFileSync(path.join(codegenPkgPath, 'Package.swift'), '// swift-tools-version: 6.0\n');
     let result = null;
     const thrown = thrownBy(() => {
-      result = runPlugin(tmp);
+      result = runPlugin(tmp, { react });
     });
     return {
       thrown,
       result,
       jsiHeadersPkgPath: path.join(outDir, 'expo', 'ExpoModulesJSIHeaders'),
+      codegenPkgPath,
     };
   }
 
@@ -2026,6 +2030,22 @@ describe('where precompiled modules and headers come from', () => {
     );
     expect(resolveHeadersXCFrameworkWithSource).not.toHaveBeenCalledWith(
       expect.objectContaining({ productName: 'ExpoModulesJSI' })
+    );
+  });
+
+  it("hands a direct module React Native's descriptor and the app codegen package", () => {
+    const react = {
+      packageRef: { name: 'ReactNative', path: '/abs/react-native' },
+      products: [{ name: 'ReactAppHeaders', package: 'React-GeneratedCode' }],
+    };
+    const { thrown, codegenPkgPath } = sync({
+      frameworks: { ExpoModulesCore: 'env' },
+      headers: { ExpoModulesCore: 'env' },
+      react,
+    });
+    expect(thrown).toBeNull();
+    expect(emitDirectPackage).toHaveBeenCalledWith(
+      expect.objectContaining({ react, codegenPkgPath })
     );
   });
 
