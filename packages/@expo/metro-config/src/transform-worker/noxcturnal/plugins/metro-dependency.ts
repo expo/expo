@@ -336,7 +336,7 @@ export function createMetroDependencyPlugin(
               state.importAllName = program.scope.hasBinding('a')
                 ? program.scope.generateUid('a')
                 : 'a';
-            } else if (input.config.unstable_disableModuleWrapping !== true) {
+            } else if (!state.disableModuleWrapping) {
               state.requireName = 'require';
               state.importDefaultName = program.scope.hasGlobal('_$$_IMPORT_DEFAULT')
                 ? '_$$_IMPORT_DEFAULT'
@@ -421,7 +421,7 @@ export function createMetroDependencyPlugin(
           if (!collectOnly && state.disableModuleWrapping) {
             addUnwrappedAsyncRequireShim(call, state, runtimeName);
           }
-          if (!collectOnly && input.config.unstable_disableModuleWrapping !== true) {
+          if (!collectOnly && !state.disableModuleWrapping) {
             call.replaceWith({
               code: `${nativeRequireCall(state, runtime.index, runtimeName)}(${state.dependencyMapName}[${target.index}], ${state.dependencyMapName}.paths${nativeModuleNameArgument(state, name, target.data.isOptional)})`,
               mapping: 'anchor-boundaries',
@@ -631,7 +631,7 @@ export function createMetroDependencyPlugin(
               call.replaceWith({
                 kind: 'composite',
                 parts: [
-                  'require(',
+                  `${state.requireName}(`,
                   ...args.flatMap((argument, index) =>
                     index === 0 ? [argument.getSource()] : [', ', argument.getSource()]
                   ),
@@ -836,7 +836,7 @@ export function createMetroDependencyPlugin(
           const name = call.node.staticArgument as string;
           const optional = isOptionalMetroDependency(input, name, call);
           const registered = registerCommonJsDependency(state, name, call.getLocation(), optional);
-          if (!collectOnly && input.config.unstable_disableModuleWrapping !== true) {
+          if (!collectOnly && !state.disableModuleWrapping) {
             const replacement = /^@babel\/runtime\/helpers\/[^/]+$/.test(name)
               ? nativeRequireCall(
                   state,
@@ -872,7 +872,7 @@ export function createMetroDependencyPlugin(
       context.metadata.set('metroRequireName', state.requireName);
       context.metadata.set('metroImportDefaultName', state.importDefaultName);
       context.metadata.set('metroImportAllName', state.importAllName);
-      if (!collectOnly && input.config.unstable_disableModuleWrapping !== true) {
+      if (!collectOnly && !state.disableModuleWrapping) {
         const pseudoGlobals = metroPluginData(context).pseudoGlobals;
         const parameters = [
           normalizePseudoGlobals ? pseudoGlobals.global : 'global',
