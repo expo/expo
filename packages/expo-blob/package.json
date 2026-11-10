@@ -31,7 +31,8 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
-    "prepack": "expo-module prepack"
+    "prepack": "expo-module prepack",
+    "typegen": "expo-modules typegen"
   },
   "dependencies": {},
   "devDependencies": {

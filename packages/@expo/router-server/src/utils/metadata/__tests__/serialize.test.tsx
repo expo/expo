@@ -41,6 +41,16 @@ describe(serializeMetadataToReact, () => {
     ]);
   });
 
+  it('renders language alternates with the React `hrefLang` prop', () => {
+    const nodes = serializeMetadataToReact({
+      alternates: { languages: { fr: 'https://example.dev/fr' } },
+    });
+
+    expect(nodes).toEqual([
+      <link key="metadata-link-0" rel="alternate" href="https://example.dev/fr" hrefLang="fr" />,
+    ]);
+  });
+
   it('renders OpenGraph property-based <meta> tags', () => {
     const nodes = serializeMetadataToReact({
       openGraph: { title: 'OG Title', description: 'OG Desc' },

@@ -15,6 +15,8 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI Slider matches the official Jetpack Compose [Slider API](https://developer.android.com/develop/ui/compose/components/slider) and allows selecting values from a bounded range.
 
+To select two values on the same track, use [`RangeSlider`](./range-slider).
+
 <ContentSpotlight
   variant="component"
   aspect="landscape"
@@ -128,6 +130,7 @@ export default function SteppedSliderExample() {
 ### Custom colors
 
 Use the `colors` prop to override the default Material3 colors for the slider's thumb, track, and tick marks.
+`Slider` and `VerticalSlider` use the `disabled*` color options when `enabled` is `false`.
 
 <ComponentExample
   title="CustomColorsSliderExample.tsx"

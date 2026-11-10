@@ -120,4 +120,42 @@ struct JavaScriptSymbolTests {
     #expect(object.getProperty(second).getString() == "second")
     #expect(object.getProperty("key").isUndefined() == true)
   }
+
+  // MARK: - JavaScriptCodable
+
+  @Test
+  func `decodes and encodes as JavaScriptCodable`() throws {
+    try runtime.eval("globalThis.symbol = Symbol('key')")
+    let value = try runtime.eval("globalThis.symbol")
+    let symbol = try JavaScriptSymbol.decode(value, in: runtime)
+    #expect(symbol.toString() == "Symbol(key)")
+    let encoded = try JavaScriptSymbol.encode(symbol, in: runtime)
+    let isSame = try runtime.eval("(value) => value === globalThis.symbol").getFunction()
+    #expect(try isSame.call(arguments: encoded.ref()).getBool() == true)
+  }
+
+  @Test
+  func `decodes from an unowned value`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("Symbol('key')").ref(), "key")
+    let symbol = try JavaScriptSymbol.decode(buffer.unownedValue(at: 0), in: runtime)
+    #expect(symbol.toString() == "Symbol(key)")
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptSymbol.decode(buffer.unownedValue(at: 1), in: runtime)
+    }
+  }
+
+  @Test
+  func `decoding rejects a value that is not a symbol`() throws {
+    for source in ["'key'", "42", "({})"] {
+      let value = try runtime.eval(source)
+      #expect(throws: JavaScriptValue.TypeError.self) {
+        _ = try JavaScriptSymbol.decode(value, in: runtime)
+      }
+    }
+  }
+
+  @Test
+  func `decodable kinds are symbols`() {
+    #expect(JavaScriptSymbol.decodableKinds == .symbol)
+  }
 }

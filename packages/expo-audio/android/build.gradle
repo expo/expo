@@ -23,7 +23,6 @@ repositories {
 }
 
 dependencies {
-  implementation 'androidx.appcompat:appcompat:1.7.1'
   implementation 'androidx.core:core-ktx:1.15.0'
 
   def androidxMedia3Version = "1.9.1"

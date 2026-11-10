@@ -34,7 +34,12 @@ class StoreReviewModule : Module() {
       if (task.isSuccessful) {
         val reviewInfo = task.result
         reviewInfo?.let {
-          val flow = manager.launchReviewFlow(appContext.throwingActivity, it)
+          val activity = appContext.currentActivity
+          if (activity == null) {
+            promise.reject(Exceptions.MissingActivity())
+            return@addOnCompleteListener
+          }
+          val flow = manager.launchReviewFlow(activity, it)
           flow.addOnCompleteListener { result ->
             if (result.isSuccessful) {
               promise.resolve(null)

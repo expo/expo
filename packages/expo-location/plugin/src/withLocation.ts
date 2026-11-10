@@ -234,6 +234,14 @@ export type Props = {
    */
   isAndroidMotionActivityEnabled?: boolean;
   /**
+   * Whether to enable the `FOREGROUND_SERVICE` and `FOREGROUND_SERVICE_HEALTH` permissions,
+   * required to run motion activity updates through a foreground service (the `foregroundService`
+   * option of `startMotionActivityUpdatesAsync`).
+   * @default false
+   * @platform android
+   */
+  isAndroidMotionActivityForegroundServiceEnabled?: boolean;
+  /**
    * Local path to an image for the foreground service icon. Should be a 96x96 all-white PNG with transparency.
    * @platform android
    */
@@ -253,6 +261,7 @@ const withLocation: ConfigPlugin<Props | void> = (
     isAndroidBackgroundLocationEnabled,
     isAndroidForegroundServiceEnabled,
     isAndroidMotionActivityEnabled,
+    isAndroidMotionActivityForegroundServiceEnabled,
     androidForegroundServiceIcon,
   } = {}
 ) => {
@@ -317,6 +326,9 @@ const withLocation: ConfigPlugin<Props | void> = (
       enableAndroidForegroundService && 'android.permission.POST_NOTIFICATIONS',
       isAndroidMotionActivityEnabled && 'android.permission.ACTIVITY_RECOGNITION',
       isAndroidMotionActivityEnabled && 'com.google.android.gms.permission.ACTIVITY_RECOGNITION',
+      isAndroidMotionActivityForegroundServiceEnabled && 'android.permission.FOREGROUND_SERVICE',
+      isAndroidMotionActivityForegroundServiceEnabled &&
+        'android.permission.FOREGROUND_SERVICE_HEALTH',
     ].filter(Boolean) as string[]
   );
 };

@@ -12,6 +12,8 @@
 
 import type { ConfigAPI, PluginItem } from '@babel/core';
 
+import { fixHermesV1AsyncArrowRestPattern } from '../plugins/fix-hermes-v1-async-arrow-rest-pattern';
+
 // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
 const loose = true;
 
@@ -22,6 +24,7 @@ export interface HermesV1ConfigOptions {
 /** The JS syntax preset used with Hermes v1 (SDK 56+) */
 module.exports = function (_api: ConfigAPI, _options: HermesV1ConfigOptions) {
   const plugins: PluginItem[] = [
+    [fixHermesV1AsyncArrowRestPattern],
     [require('@babel/plugin-transform-block-scoping')],
     [require('@babel/plugin-transform-class-static-block'), { loose }],
     [require('@babel/plugin-transform-async-generator-functions')],

@@ -334,6 +334,9 @@ PODS:
     - ExpoTaskManager
   - ExpoBattery (58.0.3):
     - ExpoModulesCore
+  - ExpoBattery/Tests (58.0.3):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoBlob (58.0.3):
     - ExpoModulesCore
   - ExpoBlob/Benchmarks (58.0.3):
@@ -346,6 +349,9 @@ PODS:
     - ExpoModulesCore
   - ExpoBrightness (58.0.2):
     - ExpoModulesCore
+  - ExpoBrightness/Tests (58.0.2):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoBrownfield (58.0.16):
     - ExpoModulesCore
   - ExpoCalendar (58.0.6):
@@ -460,6 +466,9 @@ PODS:
     - ExpoModulesCore
   - ExpoLinking (58.0.14):
     - ExpoModulesCore
+  - ExpoLinking/Tests (58.0.14):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoLivePhoto (58.0.6):
     - ExpoModulesCore
   - ExpoLocalAuthentication (58.0.2):
@@ -594,6 +603,9 @@ PODS:
     - RNWorklets
   - ExpoNetwork (58.0.4):
     - ExpoModulesCore
+  - ExpoNetwork/Tests (58.0.4):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoNotifications (58.1.6):
     - ExpoModulesCore
   - ExpoNotifications/Tests (58.1.6):
@@ -741,6 +753,9 @@ PODS:
     - ExpoModulesCore
   - ExpoWebBrowser (58.0.6):
     - ExpoModulesCore
+  - ExpoWebBrowser/Tests (58.0.6):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - EXStructuredHeaders (58.0.1)
   - EXStructuredHeaders/Tests (58.0.1)
   - EXUpdates (58.0.18):
@@ -3644,6 +3659,7 @@ DEPENDENCIES:
   - ExpoBackgroundTask (from `../../../packages/expo-background-task/ios`)
   - ExpoBackgroundTask/Tests (from `../../../packages/expo-background-task/ios`)
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
+  - ExpoBattery/Tests (from `../../../packages/expo-battery/ios`)
   - ExpoBlob (from `../../../packages/expo-blob/ios`)
   - ExpoBlob/Benchmarks (from `../../../packages/expo-blob/ios`)
   - ExpoBlob/Tests (from `../../../packages/expo-blob/ios`)
@@ -3653,6 +3669,7 @@ DEPENDENCIES:
   - ExpoCalendar (from `../../../packages/expo-calendar/ios`)
   - ExpoCamera (from `../../../packages/expo-camera/ios`)
   - ExpoCamera/Tests (from `../../../packages/expo-camera/ios`)
+  - ExpoBrightness/Tests (from `../../../packages/expo-brightness/ios`)
   - ExpoCameraBarcodeScanning (from `../../../packages/expo-camera/ios`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
@@ -3682,6 +3699,7 @@ DEPENDENCIES:
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - ExpoLinking (from `../../../packages/expo-linking/ios`)
+  - ExpoLinking/Tests (from `../../../packages/expo-linking/ios`)
   - ExpoLivePhoto (from `../../../packages/expo-live-photo/ios`)
   - ExpoLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
@@ -3706,6 +3724,7 @@ DEPENDENCIES:
   - ExpoModulesWorklets/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesWorkletsAdapter (from `../../../packages/expo-modules-core`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
+  - ExpoNetwork/Tests (from `../../../packages/expo-network/ios`)
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
   - ExpoNotifications/Tests (from `../../../packages/expo-notifications/ios`)
   - ExpoObserve (from `../../../packages/expo-observe/ios`)
@@ -3739,6 +3758,7 @@ DEPENDENCIES:
   - ExpoVideoDashSupportModule (from `../modules/expo-video-dash-support-module/ios`)
   - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
+  - ExpoWebBrowser/Tests (from `../../../packages/expo-web-browser/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXStructuredHeaders/Tests (from `../../../packages/expo-structured-headers/ios`)
   - EXUpdates (from `../../../packages/expo-updates/ios`)
@@ -4387,10 +4407,10 @@ SPEC CHECKSUMS:
   ExpoAudio: 7f919daf0ebf1b0e1cf8b7464b7c85be6664a412
   ExpoBackgroundFetch: a7f3f09822c310c201056cb86c167ed76036b048
   ExpoBackgroundTask: 58850693ca813a3da1f5410ad3dd5e2ef07e2a75
-  ExpoBattery: 86e72f4bd716952355bcf77b2bdb954af0cd1741
+  ExpoBattery: e9e5059b1bc5784141c61cec44761c8328de9523
   ExpoBlob: f988338eff07fcbd692eabd3550210615c7354d5
   ExpoBlur: 68f7f85ae6584f0bec52a0a42ee5088b093d1473
-  ExpoBrightness: c051f26a4e9cf30ddee2cd5a26581d8290ab9bdf
+  ExpoBrightness: aad8d393b629b489e497427b6c31a27c01ecce5c
   ExpoBrownfield: a61c55990048122ff963aeeb4bb1de67a1a37046
   ExpoCalendar: 47dcd767c17ecec01f449ee57140d8a29ae9eef7
   ExpoCamera: baa3429b8e3609ffd9f17888978e1963ca1171e5
@@ -4414,7 +4434,7 @@ SPEC CHECKSUMS:
   ExpoInsights: 71478e2b6ed6061a92ccd05a3f815a5137ef684e
   ExpoKeepAwake: fd18a5d233329013c578030ad399d8e10b252b5f
   ExpoLinearGradient: 0a669599d57e1421c4718d59eed8c96fe02c1467
-  ExpoLinking: 0937be9faa1580dee244062cc4c5a77732dc2c4d
+  ExpoLinking: c749f2ddefa29feb5cf5cb1e654196486528569d
   ExpoLivePhoto: 1a0d2364e0c749b4dd50d5ad6825473b737bfb06
   ExpoLocalAuthentication: ac9c695d877aafc2d7b33b3fdc47ed8fdf90053e
   ExpoLocalization: ed930f5d68e7b3c2073a04787358839e1a8e1680
@@ -4429,7 +4449,7 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: ed72b7c5bffe2d5d16cf128c6322c2d1191c1734
   ExpoModulesWorklets: 208e6112a0467df1cc21530e280d650a3adf6261
   ExpoModulesWorkletsAdapter: 893a97c0f76a086a0fdf883545629b0b205e167a
-  ExpoNetwork: a42e5fe6c3c70f517b0aad167f5a3eeec2fee7a4
+  ExpoNetwork: 1f6c118baf2856c389fbb106a89e2acab185ce33
   ExpoNotifications: d0ab853f324bacf76f0fe32d06eba2e1f8532ca5
   ExpoObserve: 7be2ac3a9e099c593fd6b93a8fcb12ce28afd300
   ExpoPrint: e6103f99d8bfdcdc9fe4513b3c37e31b5c8cb7a9
@@ -4453,7 +4473,7 @@ SPEC CHECKSUMS:
   ExpoVideo: dcfa5764e56e73c9eb1cf54c7c218967280701b7
   ExpoVideoDashSupportModule: a8197584e7b7e533a67e75d3349c5fa827358ad6
   ExpoVideoThumbnails: 62430fc61f4d73da425acf4ba351a0fdf144b529
-  ExpoWebBrowser: 2999ed3f2ee8c06985cb37b4ac566328ca0e4c7a
+  ExpoWebBrowser: 43621dbaa8a0438b13c740f4980348c96c6f9646
   EXStructuredHeaders: d38b81fb2ff838c15bf28135deb247e76293d2b9
   EXUpdates: 5bda5c13398f4a5792af5ce540085be11b2aae9a
   EXUpdatesInterface: 1c6a522d0eb0485f4de3fa55d0316288763b3f10

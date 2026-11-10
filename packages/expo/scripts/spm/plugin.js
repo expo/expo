@@ -90,12 +90,7 @@ const {
   resolveHeadersXCFrameworkWithSource,
   resolveSpmDependencyFrameworks,
 } = require('./flavored-frameworks');
-const {
-  dependsOnCoreHeaders,
-  dumpModuleManifest,
-  emitDirectPackage,
-  prepareDirectWatchPaths,
-} = require('./direct');
+const { dependsOnCoreHeaders, dumpModuleManifest, emitDirectPackage } = require('./direct');
 const {
   emitExpoModulesJSIHeadersPackage,
   emitPureSwiftSourcePackage,
@@ -577,7 +572,7 @@ function emitSourceModule(identity, hasManifest, emitContext, dumpManifest) {
       outDir: emitContext.outDir,
       coreHeadersXCFramework: emitContext.coreHeadersXCFramework,
       jsiHeadersPkgPath: emitContext.jsiHeadersPkgPath,
-      macroTool: emitContext.macroTool,
+      macrosPackageRoot: emitContext.macrosPackageRoot,
       manifest,
     });
     return { ...emission, direct: true };
@@ -760,8 +755,8 @@ function linkPasses(
         get macroFlags() {
           return (resolvedMacroFlags ??= macroPluginFlags(core.moduleRoot));
         },
-        get macroTool() {
-          return macroPluginTool(core.moduleRoot);
+        get macrosPackageRoot() {
+          return macrosPackageRoot(core.moduleRoot);
         },
         // Lazy: only a direct module needs the headers, and only then must they exist.
         get coreHeadersXCFramework() {
@@ -943,24 +938,22 @@ function watchPaths(identities, { entitlementPath, podfilePropertiesPath }) {
   ];
 }
 
-// Swift macros need the prebuilt plugin executable; mirrors
-// project_integrator.rb#resolve_macros_plugin_dir.
-// It declares no SwiftPM products, so it travels as a compiler flag, not a dependency.
-function macroPluginTool(coreModuleRoot) {
-  const macroPluginFault = (
-    what,
-    missing,
-    how = 'Reinstall your JavaScript dependencies and build again.'
-  ) => ({
-    what,
-    why: `Expo modules are compiled from source here, and their Swift macros cannot expand without ${missing} — the build would fail with "external macro implementation could not be found".`,
-    how,
-  });
-  let pkgJsonPath;
+const macroPluginFault = (
+  what,
+  missing,
+  how = 'Reinstall your JavaScript dependencies and build again.'
+) => ({
+  what,
+  why: `Expo modules are compiled from source here, and their Swift macros cannot expand without ${missing} — the build would fail with "external macro implementation could not be found".`,
+  how,
+});
+
+// Mirrors project_integrator.rb#resolve_macros_plugin_dir.
+function macrosPackageRoot(coreModuleRoot) {
   try {
-    pkgJsonPath = require.resolve('expo-modules-macros/package.json', {
-      paths: [coreModuleRoot],
-    });
+    return path.dirname(
+      require.resolve('expo-modules-macros/package.json', { paths: [coreModuleRoot] })
+    );
   } catch (error) {
     throw pluginError(
       macroPluginFault(
@@ -971,7 +964,11 @@ function macroPluginTool(coreModuleRoot) {
       { cause: error }
     );
   }
-  const tool = path.join(path.dirname(pkgJsonPath), 'apple', 'ExpoModulesMacros');
+}
+
+// Generated manifests load the prebuilt plugin executable with a compiler flag.
+function macroPluginTool(coreModuleRoot) {
+  const tool = path.join(macrosPackageRoot(coreModuleRoot), 'apple', 'ExpoModulesMacros');
   if (!fs.existsSync(tool)) {
     throw pluginError(
       macroPluginFault(`The Expo Swift macro plugin is missing its executable at ${tool}.`, 'it')
@@ -1231,13 +1228,12 @@ module.exports = function expoSpmPlugin(context) {
     );
   }
 
-  const directWatchPaths = prepareDirectWatchPaths(summary.directPackages, outDir);
   return {
     packageDependencies: summary.packageDependencies,
     productDependencies: summary.productDependencies,
     generatedSources,
     flavoredFrameworks,
-    watchPaths: [...watchPaths(identities, appTarget), ...directWatchPaths],
+    watchPaths: watchPaths(identities, appTarget),
     scriptPhases,
   };
 };

@@ -47,6 +47,13 @@ public final class UpdatesLogReader {
   }
 
   /**
+   Remove every log entry
+   */
+  public func clearLogEntries(completion: @escaping (Error?) -> Void) {
+    logPersistence.purgeEntriesNotMatchingFilter(filter: { _ in false }, completion)
+  }
+
+  /**
    Purge all log entries written more than one day ago
    */
   public func purgeLogEntries(completion: @escaping (Error?) -> Void) {

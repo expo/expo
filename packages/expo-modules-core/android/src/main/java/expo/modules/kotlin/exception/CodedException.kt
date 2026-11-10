@@ -47,7 +47,11 @@ open class CodedException(
      */
     @PublishedApi
     internal fun inferCode(clazz: Class<*>): String {
-      val name = requireNotNull(clazz.simpleName) { "Cannot infer code name from class name. We don't support anonymous classes." }
+      // R8 can strip the `InnerClasses` attribute. Then `simpleName` of a nested class includes the outer class name.
+      val name = clazz.name
+        .substringAfterLast('.')
+        .substringAfterLast('$')
+        .trimStart { it.isDigit() }
 
       return "ERR_" + name
         .replace("(Exception)$".toRegex(), "")

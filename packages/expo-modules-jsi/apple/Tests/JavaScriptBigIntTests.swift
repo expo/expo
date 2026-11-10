@@ -609,4 +609,42 @@ struct JavaScriptBigIntTests {
     #expect(value.isBigInt() == true)
     #expect(value.getBigInt().getInt64() == 42)
   }
+
+  // MARK: - JavaScriptCodable
+
+  @Test
+  func `decodes and encodes as JavaScriptCodable`() throws {
+    let value = try runtime.eval("2n ** 64n")
+    let bigInt = try JavaScriptBigInt.decode(value, in: runtime)
+    #expect(try bigInt.toString() == "18446744073709551616")
+    let encoded = try JavaScriptBigInt.encode(bigInt, in: runtime)
+    #expect(encoded.isBigInt() == true)
+    let isExpected = try runtime.eval("(value) => value === 2n ** 64n").getFunction()
+    #expect(try isExpected.call(arguments: encoded.ref()).getBool() == true)
+  }
+
+  @Test
+  func `decodes from an unowned value`() throws {
+    let buffer = JavaScriptValuesBuffer.allocate(in: runtime, with: try runtime.eval("42n").ref(), 42)
+    let bigInt = try JavaScriptBigInt.decode(buffer.unownedValue(at: 0), in: runtime)
+    #expect(bigInt.getInt64() == 42)
+    #expect(throws: JavaScriptValue.TypeError.self) {
+      _ = try JavaScriptBigInt.decode(buffer.unownedValue(at: 1), in: runtime)
+    }
+  }
+
+  @Test
+  func `decoding rejects a value that is not a BigInt`() throws {
+    for source in ["42", "'42'", "({})"] {
+      let value = try runtime.eval(source)
+      #expect(throws: JavaScriptValue.TypeError.self) {
+        _ = try JavaScriptBigInt.decode(value, in: runtime)
+      }
+    }
+  }
+
+  @Test
+  func `decodable kinds are BigInts`() {
+    #expect(JavaScriptBigInt.decodableKinds == .bigint)
+  }
 }

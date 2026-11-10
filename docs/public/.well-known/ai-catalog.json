@@ -1,0 +1,23 @@
+{
+  "specVersion": "1.0",
+  "entries": [
+    {
+      "identifier": "urn:air:expo.dev:mcp:expo",
+      "type": "application/mcp-server-card+json",
+      "data": {
+        "$schema": "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json",
+        "name": "dev.expo/mcp",
+        "title": "Expo MCP Server",
+        "description": "Lets AI-assisted tools interact directly with your Expo projects.",
+        "version": "1.0.0",
+        "websiteUrl": "https://docs.expo.dev/mcp/",
+        "remotes": [
+          {
+            "type": "streamable-http",
+            "url": "https://mcp.expo.dev/mcp"
+          }
+        ]
+      }
+    }
+  ]
+}

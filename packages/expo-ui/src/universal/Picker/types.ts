@@ -60,6 +60,11 @@ export interface PickerProps<T extends PickerItemValue = PickerItemValue> {
   enabled?: boolean;
 
   /**
+   * Label announced by screen readers.
+   */
+  accessibilityLabel?: string;
+
+  /**
    * `<Picker.Item>` children that declare the available options.
    */
   children?: ReactNode;

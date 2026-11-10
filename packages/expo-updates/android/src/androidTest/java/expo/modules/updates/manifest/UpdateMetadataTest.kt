@@ -7,6 +7,7 @@ import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.manifests.core.ExpoUpdatesManifest
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
+import expo.modules.updates.logging.UpdatesLogger
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.After
@@ -20,6 +21,7 @@ import kotlin.test.assertNull
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class UpdateMetadataTest {
+  private val logger = UpdatesLogger(InstrumentationRegistry.getInstrumentation().targetContext.filesDir)
   private lateinit var db: UpdatesDatabase
   private lateinit var config: UpdatesConfiguration
   private lateinit var manifest: ExpoUpdatesManifest
@@ -53,7 +55,7 @@ class UpdateMetadataTest {
     val headers2 = ResponseHeaderData(manifestFiltersRaw = "branch-name=\"rollout-2\"")
     ManifestMetadata.saveMetadata(headers2, db, config)
 
-    val actual = ManifestMetadata.getManifestFilters(db, config)
+    val actual = ManifestMetadata.getManifestFilters(db, config, logger)
     Assert.assertNotNull(actual)
     Assert.assertEquals(1, actual!!.length().toLong())
     Assert.assertEquals("rollout-2", actual.getString("branch-name"))
@@ -68,7 +70,7 @@ class UpdateMetadataTest {
     val headers2 = ResponseHeaderData(manifestFiltersRaw = "")
     ManifestMetadata.saveMetadata(headers2, db, config)
 
-    val actual = ManifestMetadata.getManifestFilters(db, config)
+    val actual = ManifestMetadata.getManifestFilters(db, config, logger)
     Assert.assertNotNull(actual)
     Assert.assertEquals(0, actual!!.length().toLong())
   }
@@ -82,7 +84,7 @@ class UpdateMetadataTest {
     val headers2 = ResponseHeaderData()
     ManifestMetadata.saveMetadata(headers2, db, config)
 
-    val actual = ManifestMetadata.getManifestFilters(db, config)
+    val actual = ManifestMetadata.getManifestFilters(db, config, logger)
     Assert.assertNotNull(actual)
     Assert.assertEquals(1, actual!!.length().toLong())
     Assert.assertEquals("rollout-1", actual.getString("branch-name"))
@@ -90,17 +92,17 @@ class UpdateMetadataTest {
 
   @Test
   fun testExtraClientParams() {
-    val beforeSave = ManifestMetadata.getExtraParams(db, config)
+    val beforeSave = ManifestMetadata.getExtraParams(db, config, logger)
     assertNull(beforeSave)
 
     ManifestMetadata.setExtraParam(db, config, "wat", "hello")
 
-    val afterSave = ManifestMetadata.getExtraParams(db, config)
+    val afterSave = ManifestMetadata.getExtraParams(db, config, logger)
     assertEquals(mapOf("wat" to "hello"), afterSave)
 
     ManifestMetadata.setExtraParam(db, config, "wat", null)
 
-    val afterRemove = ManifestMetadata.getExtraParams(db, config)
+    val afterRemove = ManifestMetadata.getExtraParams(db, config, logger)
     assertEquals(mapOf(), afterRemove)
   }
 
