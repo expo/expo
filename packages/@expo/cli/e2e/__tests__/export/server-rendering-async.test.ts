@@ -11,7 +11,6 @@ runExportSideEffects();
 describe('server rendering with async routes', () => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE], {
-      app: 'server-tester',
       uniqueOutputKey: 'server-rendering-async',
       export: {
         env: {

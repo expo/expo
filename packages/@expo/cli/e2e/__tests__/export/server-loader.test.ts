@@ -15,7 +15,6 @@ runExportSideEffects();
 
 describe.each(
   prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START, RUNTIME_WORKERD], {
-    app: 'server-tester',
     uniqueOutputKey: 'loaders-server',
     export: {
       env: {

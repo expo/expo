@@ -54,7 +54,6 @@ const EXPECTED_LOADER_PAGE_HEADERS = [
 describe('export static with headers', () => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE], {
-      app: 'server-tester',
       uniqueOutputKey: 'static-headers',
       export: {
         env: {

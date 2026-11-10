@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { getRouterE2ERoot, getServerTesterRoot } from '../__tests__/utils';
+import { getServerTesterRoot } from '../__tests__/utils';
 import { createExpoServe, createExpoStart, executeExpoAsync } from './expo';
 import { executeAsync, processFindPrefixedValue } from './process';
 import { BackgroundServer, createBackgroundServer } from './server';
@@ -23,15 +23,8 @@ export type ServerTestConfiguration = {
   prepareDist: () => Promise<[outputDir: string, outputName?: string]>;
 };
 
-/** The app under `apps/` that hosts the routes. */
-export type E2EApp = 'router-e2e' | 'server-tester';
-
 export type ServerTestOptions = {
-  /** The app under `apps/` that hosts the routes. Defaults to `router-e2e`. */
-  app?: E2EApp;
-  /** The `__e2e__` scenario directory inside `router-e2e` (e.g., 'static-redirects'). Required for that app, unused for `server-tester`. */
-  fixtureName?: string;
-  /** A unique value to ensure the output directory is not overwritten by another test running in parallel. Useful for tests that share the same `fixtureName` */
+  /** A unique value to keep suites with different export options in separate output directories. */
   uniqueOutputKey?: string;
   /** Options for the export command */
   export?: {
@@ -48,7 +41,7 @@ export type ServerTestOptions = {
 };
 
 /**
- * Creates server test configurations for the specified runtimes.
+ * Creates server-tester configurations for the specified runtimes.
  * Use with `describe.each()` to run the same tests against multiple server implementations.
  *
  * @param runtimes - Array of runtime identifiers to prepare (e.g., `['expo serve', 'workerd']`)
@@ -57,9 +50,7 @@ export type ServerTestOptions = {
  * @example
  * ```ts
  * describe.each(
- *   prepareServers(['expo serve', 'workerd'], {
- *     app: 'server-tester',
- *   })
+ *   prepareServers(['expo serve', 'workerd'], {})
  * )('$name requests', (config) => {
  *   const ctx = setupServer(config);
  *   it('can serve html', async () => {
@@ -73,8 +64,8 @@ export function prepareServers(
   options: ServerTestOptions
 ): ServerTestConfiguration[] {
   const { uniqueOutputKey } = options;
-  const app = resolveApp(options);
-  const { projectRoot } = app;
+  const projectRoot = getServerTesterRoot();
+  const workerdDir = path.join(projectRoot, 'servers/workerd');
 
   const exportEnv = options.export?.env ?? {};
   const exportCliFlags = options.export?.cliFlags ?? [];
@@ -83,14 +74,13 @@ export function prepareServers(
   const defaultExportEnv = {
     NODE_ENV: 'production',
     EXPO_USE_STATIC: 'server',
-    ...app.env,
     ...exportEnv,
   } as const;
 
   let sharedProductionExport: Promise<string> | undefined;
 
   async function prepareProductionDist(runtimeName: string) {
-    const sharedOutputName = generateOutputDir('shared', app.outputPrefix, uniqueOutputKey);
+    const sharedOutputName = generateOutputDir('shared', uniqueOutputKey);
     const sharedOutputDir = path.join(projectRoot, sharedOutputName);
 
     sharedProductionExport ??= executeExpoAsync(
@@ -100,7 +90,7 @@ export function prepareServers(
     ).then(() => sharedOutputDir);
 
     const sourceDir = await sharedProductionExport;
-    const outputName = generateOutputDir(runtimeName, app.outputPrefix, uniqueOutputKey);
+    const outputName = generateOutputDir(runtimeName, uniqueOutputKey);
     const outputDir = path.join(projectRoot, outputName);
 
     await fs.promises.rm(outputDir, { force: true, recursive: true });
@@ -145,7 +135,7 @@ export function prepareServers(
       },
       createServer: (overrideServe) =>
         createBackgroundServer({
-          command: ['node', app.expressScript],
+          command: ['node', path.join(projectRoot, 'servers/express.js')],
           host: (chunk: any) => processFindPrefixedValue(chunk, 'Express server listening'),
           cwd: projectRoot,
           env: {
@@ -165,10 +155,10 @@ export function prepareServers(
           '--format=esm',
           '--platform=node',
           `--outfile=${path.join(outputDir, 'server/workerd.js')}`,
-          path.join(app.workerdDir, 'workerd.mjs'),
+          path.join(workerdDir, 'workerd.mjs'),
         ]);
         fs.copyFileSync(
-          path.join(app.workerdDir, 'config.capnp'),
+          path.join(workerdDir, 'config.capnp'),
           path.join(outputDir, 'server/config.capnp')
         );
 
@@ -181,7 +171,7 @@ export function prepareServers(
             'serve',
             path.join(
               projectRoot,
-              generateOutputDir('workerd', app.outputPrefix, uniqueOutputKey),
+              generateOutputDir('workerd', uniqueOutputKey),
               'server/config.capnp'
             ),
           ],
@@ -273,47 +263,6 @@ export function setupServer(
   };
 }
 
-type ResolvedApp = {
-  projectRoot: string;
-  /** Environment variables that select the routes inside the app. */
-  env: Record<string, string>;
-  /** Absolute path of the Express adapter script. */
-  expressScript: string;
-  /** Absolute path of the directory with `workerd.mjs` and `config.capnp`. */
-  workerdDir: string;
-  /** Segment that keeps output directories of different fixtures apart. Empty when the app has one set of routes. */
-  outputPrefix: string;
-};
-
-function resolveApp({ app = 'router-e2e', fixtureName }: ServerTestOptions): ResolvedApp {
-  switch (app) {
-    case 'router-e2e': {
-      if (!fixtureName) {
-        throw new Error('`fixtureName` is required when the app is "router-e2e"');
-      }
-      const projectRoot = getRouterE2ERoot();
-      const fixtureRoot = path.join(projectRoot, '__e2e__', fixtureName);
-      return {
-        projectRoot,
-        env: { E2E_ROUTER_SRC: fixtureName },
-        expressScript: path.join(fixtureRoot, 'express.js'),
-        workerdDir: path.join(fixtureRoot, 'workerd'),
-        outputPrefix: fixtureName,
-      };
-    }
-    case 'server-tester': {
-      const projectRoot = getServerTesterRoot();
-      return {
-        projectRoot,
-        env: {},
-        expressScript: path.join(projectRoot, 'servers/express.js'),
-        workerdDir: path.join(projectRoot, 'servers/workerd'),
-        outputPrefix: '',
-      };
-    }
-  }
-}
-
-function generateOutputDir(runtimeName: string, outputPrefix: string, uniqueOutputKey?: string) {
-  return ['dist', outputPrefix, runtimeName, uniqueOutputKey].filter(Boolean).join('-');
+function generateOutputDir(runtimeName: string, uniqueOutputKey?: string) {
+  return ['dist', runtimeName, uniqueOutputKey].filter(Boolean).join('-');
 }

@@ -15,7 +15,6 @@ runExportSideEffects();
 describe('exports middleware', () => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_WORKERD], {
-      app: 'server-tester',
       uniqueOutputKey: 'middleware',
       export: {
         env: {

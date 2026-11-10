@@ -67,6 +67,11 @@ export default function HomeRoute() {
           <RouteLink href="/middleware/redirect-target" />
         </RouteLinks>
       </Section>
+      <Section title="Redirects and rewrites">
+        <RouteLinks>
+          <RouteLink href="/redirects" />
+        </RouteLinks>
+      </Section>
       <Section title="Rendering">
         <RouteLinks>
           <RouteLink href="/rendering/about" />

@@ -18,7 +18,7 @@ runExportSideEffects();
 describe('server-output', () => {
   describe.each(
     prepareServers([RUNTIME_EXPRESS_SERVER, RUNTIME_EXPO_START, RUNTIME_WORKERD], {
-      app: 'server-tester',
+      uniqueOutputKey: 'server',
       export: {
         env: {
           E2E_ROUTER_ASYNC: 'development',
@@ -465,7 +465,6 @@ describe.each([
 ])('apiRoutes setting (output: $output, apiRoutes: $apiRoutes)', ({ output, apiRoutes }) => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START], {
-      app: 'server-tester',
       uniqueOutputKey: `api-routes-${output}-${apiRoutes}`,
       export: {
         env: {

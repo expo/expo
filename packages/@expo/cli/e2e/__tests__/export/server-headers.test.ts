@@ -49,7 +49,6 @@ const EXPECTED_PAGE_HEADERS = [
 describe('export server with headers', () => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_WORKERD], {
-      app: 'server-tester',
       uniqueOutputKey: 'headers',
       export: {
         env: {

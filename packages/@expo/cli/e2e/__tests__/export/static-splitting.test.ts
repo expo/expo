@@ -99,8 +99,8 @@ describe('exports static with granular bundle splitting', () => {
         // The root layout and the `rendering`, `loaders` and `loaders/groups/(group)` layouts.
         ...Array(4).fill('_layout'),
         '\\+not-found',
-        // Every index route: `/`, `headers`, `loaders`, `loaders/nested`, `loaders/groups/(group)`, `middleware` and `routing/(alpha)`.
-        ...Array(7).fill('index'),
+        // Every index route: `/`, `headers`, `loaders`, `loaders/nested`, `loaders/groups/(group)`, `middleware`, `redirects` and `routing/(alpha)`.
+        ...Array(8).fill('index'),
         // api
         'get-dynamic',
         'get-methods',

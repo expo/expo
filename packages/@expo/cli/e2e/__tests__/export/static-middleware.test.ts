@@ -47,7 +47,6 @@ describe.each([
 ])('middleware with $output output and apiRoutes: $apiRoutes', ({ output, apiRoutes }) => {
   describe.each(
     prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPO_START], {
-      app: 'server-tester',
       uniqueOutputKey: `middleware-${output}-${apiRoutes}`,
       export: {
         env: {
