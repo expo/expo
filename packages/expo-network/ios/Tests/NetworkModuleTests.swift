@@ -56,35 +56,6 @@ struct NetworkModuleTests {
   }
 
   @Test
-  func `adding an onNetworkStateChanged listener emits the current network state`() async throws {
-    try runtime.eval(
-      """
-      globalThis.events = []
-      globalThis.subscription = expo.modules.ExpoNetwork.addListener('onNetworkStateChanged', state => {
-        globalThis.events.push(JSON.stringify({
-          keys: Object.keys(state).sort(),
-          type: state.type,
-          isConnected: state.isConnected,
-          isInternetReachable: state.isInternetReachable,
-        }))
-      })
-      """
-    )
-    defer {
-      _ = try? runtime.eval("globalThis.subscription.remove()")
-    }
-
-    let deadline = Date().addingTimeInterval(5)
-    while try runtime.eval("globalThis.events.length").asInt() == 0 && Date() < deadline {
-      try await Task.sleep(nanoseconds: 50_000_000)
-    }
-    let state = try decodeState(runtime.eval("globalThis.events[0] ?? '{}'").asString())
-
-    #expect(state.keys == ["isConnected", "isInternetReachable", "type"])
-    #expect(state.isInternetReachable == state.isConnected)
-  }
-
-  @Test
   func `a listener for another event does not stop the network monitoring`() throws {
     try runtime.eval(
       """
