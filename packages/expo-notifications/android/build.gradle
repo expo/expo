@@ -40,8 +40,6 @@ dependencies {
   // release notes in https://firebase.google.com/support/release-notes/android - cmd + f "Cloud Messaging version"
   implementation 'com.google.firebase:firebase-messaging:25.0.1'
 
-  implementation 'me.leolin:ShortcutBadger:1.1.22@aar'
-
   if (project.findProject(':expo-modules-test-core')) {
     testImplementation project(':expo-modules-test-core')
     androidTestImplementation project(':expo-modules-test-core')
