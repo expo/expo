@@ -2,6 +2,7 @@ import SwiftUI
 import WidgetKit
 import ExpoModulesCore
 import ActivityKit
+import UIKit
 
 struct LiveActivityAttributes: ActivityAttributes {
   // The deep link URL passed to start(). Stored in the static attributes so it is
@@ -36,6 +37,7 @@ public struct WidgetLiveActivity: Widget {
       // widgetURL modifier is undefined behavior, and layouts can set their own through
       // the widgetURL modifier from @expo/ui.
       let banner = LiveActivityBannerView(context: context, nodes: nodes)
+        .activityBackgroundTint(liveActivityBackgroundTint(nodes: nodes, environment: env))
       if let url = context.attributes.url.flatMap(URL.init(string:)) {
         banner.widgetURL(url)
       } else {
@@ -113,4 +115,27 @@ extension WidgetConfiguration {
       return self
     }
   }
+}
+
+// Apply the banner's requested tint at the ActivityConfiguration root so it also
+// reaches the system permission surface. Keep platform colors in concrete sRGB.
+private func liveActivityBackgroundTint(nodes: [String: Any], environment: EnvironmentValues) -> Color? {
+  guard let node = nodes["banner"] as? [String: Any],
+        let props = node["props"] as? [String: Any],
+        let modifiers = props["modifiers"] as? [[String: Any]],
+        let tint = modifiers.last(where: { $0["$type"] as? String == "activityBackgroundTint" }) else {
+    return nil
+  }
+  if let platformColor = try? UIColor.convert(from: tint["color"]) {
+    let traits = UITraitCollection(userInterfaceStyle: environment.colorScheme == .dark ? .dark : .light)
+    let resolved = platformColor.resolvedColor(with: traits)
+    var red: CGFloat = 0
+    var green: CGFloat = 0
+    var blue: CGFloat = 0
+    var alpha: CGFloat = 0
+    if resolved.getRed(&red, green: &green, blue: &blue, alpha: &alpha) {
+      return Color(red: Double(red), green: Double(green), blue: Double(blue), opacity: Double(alpha))
+    }
+  }
+  return try? Color.convert(from: tint["color"])
 }
