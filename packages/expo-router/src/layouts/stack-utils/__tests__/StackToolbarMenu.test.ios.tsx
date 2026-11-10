@@ -586,6 +586,23 @@ describe('StackToolbarMenu component', () => {
     expect(MockedNativeLinkPreviewAction).toHaveBeenCalled();
   });
 
+  it('passes axisBehavior to NativeLinkPreviewAction', async () => {
+    await render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu axisBehavior="verticalPreferred">
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        axisBehavior: 'verticalPreferred',
+      }),
+      undefined
+    );
+  });
+
   it('passes icon to NativeLinkPreviewAction', async () => {
     await render(
       <ToolbarPlacementContext.Provider value="bottom">

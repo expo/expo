@@ -286,6 +286,21 @@ describe('StackToolbarButton component', () => {
     );
   });
 
+  it('passes axisBehavior to RouterToolbarItem', async () => {
+    await render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarButton axisBehavior="horizontalOnly">Test</StackToolbarButton>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+      expect.objectContaining({
+        axisBehavior: 'horizontalOnly',
+      }),
+      undefined
+    );
+  });
+
   it('passes xcassetName from StackToolbarIcon xcasset child', async () => {
     await render(
       <ToolbarPlacementContext.Provider value="bottom">

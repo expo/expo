@@ -20,6 +20,7 @@ class RouterToolbarItemView: RouterViewWithLogger {
   @ReactiveProp var imageRenderingMode: ImageRenderingMode?
   @ReactiveProp var hidesSharedBackground: Bool = false
   @ReactiveProp var sharesBackground: Bool = true
+  @ReactiveProp var axisBehavior: AxisBehavior?
   @ReactiveProp var barButtonItemStyle: UIBarButtonItem.Style?
   @ReactiveProp var width: Double?
 
@@ -164,6 +165,7 @@ class RouterToolbarItemView: RouterViewWithLogger {
       item.hidesSharedBackground = hidesSharedBackground
       item.sharesBackground = sharesBackground
     }
+    (axisBehavior ?? .automatic).apply(to: item)
     item.style = barButtonItemStyle ?? .plain
     item.width = width.map { CGFloat($0) } ?? 0
     item.isSelected = selected
