@@ -34,6 +34,7 @@ import { createExpoInlineManifestPlugin } from './plugins/expo-inline-manifest';
 import { createExpoRouterServerExportsPlugin } from './plugins/expo-router-server-exports';
 import { createExpoUiPlugin } from './plugins/expo-ui';
 import { createExpoWidgetsPlugin, hasExpoWidgets } from './plugins/expo-widgets';
+import { createFixHermesV1AsyncArrowRestPatternPlugin } from './plugins/fix-hermes-v1-async-arrow-rest-pattern';
 import { createImportMetaPlugin } from './plugins/import-meta';
 import { createInlineRequiresPlugin } from './plugins/inline-requires';
 import { createMetroDependencyPlugin } from './plugins/metro-dependency';
@@ -808,6 +809,11 @@ function createPipeline(
       );
     }
     addPlugin('cjs-detection', () => createCjsDetectionPlugin(nox));
+  }
+  if (isHermesV1 && sourceFacts.hasAsync && sourceFacts.hasSpread) {
+    addPlugin('fix-hermes-v1-async-arrow-rest-pattern', () =>
+      createFixHermesV1AsyncArrowRestPatternPlugin(nox)
+    );
   }
   if (baseProfile === 'hermes-v0' || baseProfile === 'webview') {
     addPlugin('display-name', () => createReactDisplayNamePlugin(nox));
