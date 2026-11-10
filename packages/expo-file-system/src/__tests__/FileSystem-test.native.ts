@@ -777,6 +777,20 @@ describe('expo-file-system behavioral mock', () => {
           handle.close();
         });
 
+        it('writeBytes and writeBytesSync accept an ArrayBuffer and write only the range of a view', async () => {
+          const file = makeFile('write-views.txt', '------');
+          const handle = file.open(FileMode.ReadWrite);
+          const backing = encode('xxabcdxx').buffer;
+          // A view must write its own byte range, not the whole backing buffer.
+          handle.writeBytesSync(new Uint8Array(backing, 2, 2), { at: 0 });
+          await handle.writeBytes(new DataView(backing, 4, 2), { at: 2 });
+          expect(file.textSync()).toBe('abcd--');
+          handle.writeBytesSync(encode('ef').buffer as ArrayBuffer, { at: 4 });
+          await handle.writeBytes(new Uint16Array(encode('gh').buffer), { at: 0 });
+          expect(file.textSync()).toBe('ghcdef');
+          handle.close();
+        });
+
         it('readIntoSync fills the buffer, returns the count, and stops at EOF', () => {
           const file = makeFile('into-sync.txt', 'abcdef');
           const handle = file.open(FileMode.ReadOnly);

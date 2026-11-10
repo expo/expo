@@ -229,13 +229,18 @@ export class FileHandle {
    * In `FileMode.Append` the write ignores `at` and goes to the end of the file. Writes always
    * run in the order they are called.
    *
-   * @param bytes A `Uint8Array` containing the bytes to write.
+   * @param bytes An `ArrayBuffer` or a view on one, such as a `Uint8Array` or a `DataView`, containing the
+   * bytes to write. A view writes only its own byte range.
    * @param options Pass `at` to write at a byte position without using or moving the `offset`.
    */
-  writeBytes(bytes: Uint8Array, options?: FileHandleReadWriteOptions): Promise<void> {
+  writeBytes(
+    bytes: ArrayBuffer | ArrayBufferView,
+    options?: FileHandleReadWriteOptions
+  ): Promise<void> {
+    const view = asUint8View(bytes);
     const at = options?.at;
     return this.enqueue(async () => {
-      const end = await this.native.writeAt(this.resolvePosition(at), bytes);
+      const end = await this.native.writeAt(this.resolvePosition(at), view);
       if (at == null) {
         this.cursor = end;
       }
@@ -250,13 +255,14 @@ export class FileHandle {
    * If `at` is past the end of the file, the file grows and the gap is filled with zero bytes.
    * In `FileMode.Append` the write ignores `at` and goes to the end of the file.
    *
-   * @param bytes A `Uint8Array` containing the bytes to write.
+   * @param bytes An `ArrayBuffer` or a view on one, such as a `Uint8Array` or a `DataView`, containing the
+   * bytes to write. A view writes only its own byte range.
    * @param options Pass `at` to write at a byte position without using or moving the `offset`.
    */
-  writeBytesSync(bytes: Uint8Array, options?: FileHandleReadWriteOptions): void {
+  writeBytesSync(bytes: ArrayBuffer | ArrayBufferView, options?: FileHandleReadWriteOptions): void {
     this.ensureOpen();
     const at = options?.at;
-    const end = this.native.writeAtSync(this.resolvePosition(at), bytes);
+    const end = this.native.writeAtSync(this.resolvePosition(at), asUint8View(bytes));
     if (at == null) {
       this.cursor = end;
     }
