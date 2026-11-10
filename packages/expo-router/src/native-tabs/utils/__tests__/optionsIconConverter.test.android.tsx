@@ -45,6 +45,27 @@ describe(appendIconOptions, () => {
     expect(srcOptions).toEqual({ icon: { src: source } });
     expect(drawableOptions).toEqual({ icon: { drawable: 'home' } });
   });
+
+  it('keeps an explicit renderingMode for an md icon', () => {
+    const options = {};
+    appendIconOptions(options, { md: 'home', renderingMode: { selected: 'original' } });
+    expect(options).toEqual({
+      icon: { src: undefined },
+      selectedIcon: { src: undefined, renderingMode: 'original' },
+    });
+  });
+
+  it('applies a renderingMode for each state', () => {
+    const options = {};
+    appendIconOptions(options, {
+      drawable: { default: 'home', selected: 'home_filled' },
+      renderingMode: { default: 'template', selected: 'original' },
+    });
+    expect(options).toEqual({
+      icon: { drawable: 'home', renderingMode: 'template' },
+      selectedIcon: { drawable: 'home_filled', renderingMode: 'original' },
+    });
+  });
 });
 
 describe(convertOptionsIconToScreensPropsIcon, () => {
@@ -91,21 +112,39 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
     ).toBeUndefined();
   });
 
-  it('returns imageSource regardless of renderingMode', () => {
-    const src = { uri: 'https://example.com/icon.png' };
-    expect(convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'template' })).toEqual({
+  it('tints a drawable when renderingMode is "template"', () => {
+    expect(
+      convertOptionsIconToScreensPropsIcon({ drawable: 'ic_launcher', renderingMode: 'template' })
+    ).toEqual({
       platform: 'android',
-      icon: {
-        type: 'imageSource',
-        imageSource: src,
-      },
+      icon: { type: 'drawableResource', name: 'ic_launcher', tinting: 'tinted' },
     });
-    expect(convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'original' })).toEqual({
+  });
+
+  it('keeps the drawable colors when renderingMode is "original"', () => {
+    expect(
+      convertOptionsIconToScreensPropsIcon({ drawable: 'ic_launcher', renderingMode: 'original' })
+    ).toEqual({
       platform: 'android',
-      icon: {
-        type: 'imageSource',
-        imageSource: src,
-      },
+      icon: { type: 'drawableResource', name: 'ic_launcher', tinting: 'original' },
+    });
+  });
+
+  describe('src', () => {
+    const src = { uri: 'https://example.com/icon.png' };
+
+    it('tints the image when renderingMode is "template"', () => {
+      expect(convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'template' })).toEqual({
+        platform: 'android',
+        icon: { type: 'imageSource', imageSource: src, tinting: 'tinted' },
+      });
+    });
+
+    it('keeps the image colors when renderingMode is "original"', () => {
+      expect(convertOptionsIconToScreensPropsIcon({ src, renderingMode: 'original' })).toEqual({
+        platform: 'android',
+        icon: { type: 'imageSource', imageSource: src, tinting: 'original' },
+      });
     });
   });
 });
