@@ -10,7 +10,7 @@ Use the preview host API when a script, an agent, or a web page takes many scree
 
 For one screenshot, [`eas simulator:control screenshot.capture`](/eas/simulators/how-to/control-with-eas-cli/#save-a-screenshot-on-your-computer) is simpler. EAS CLI always saves a full-size PNG.
 
-The image options on this page need serve-sim 0.14.0 or later on the session. Over HTTP, an older session ignores the options and returns a full-size PNG, so check the `Content-Type` header of the response. Over the control socket, an older session returns an error or a file path. To get the latest version, start a new session.
+On an iOS session, the image options on this page need serve-sim 0.14.0 or later. Over HTTP, an older session ignores the options and returns a full-size PNG, so check the `Content-Type` header of the response. Over the control socket, an older session returns an error or a file path. To get the latest version, start a new session.
 
 ## Get the preview host URL and token
 
@@ -71,15 +71,19 @@ An automated screenshot does not reset the idle timeout, and the session does no
 
 ## Request a screenshot on Android
 
-On an Android session, add `/vendor/serve-emu` to the preview host URL:
+On an Android session, add `/vendor/serve-emu` to the preview host URL. With Device Hub 0.26.0 or later, the same `maxWidth`, `format`, and `quality` parameters apply:
 
 <Terminal
   cmd={[
-    '$ curl -fsS -X POST -H "Authorization: Bearer <token>" -o screen.png "https://<preview-host>/vendor/serve-emu/api/screenshot"',
+    '$ curl -fsS -X POST -H "Authorization: Bearer <token>" -o screen.jpg "https://<preview-host>/vendor/serve-emu/api/screenshot?maxWidth=402&format=jpeg&quality=80"',
   ]}
 />
 
-The response is a full-size PNG. With Device Hub 0.23.1 or later, it has the same `X-Expo-Screenshot-Metadata` header. Android sessions ignore the `maxWidth` and `quality` options, the `automation` body, and `format=jpeg`. They do not support `screenshot.capture` over the control socket.
+The preview host captures a full-size PNG with `adb screencap`. Then it makes the image smaller or converts it to JPEG. A smaller image transfers in less time, but the capture itself does not become faster. With Device Hub 0.23.1 or later, the response has the same `X-Expo-Screenshot-Metadata` header as on iOS. Android sessions ignore the `automation` body. An Android screenshot does not reset the idle timer, and when the session saves artifacts, it saves every Android screenshot.
+
+On Android only, the older `format=base64` option returns JSON (`application/json`) with a PNG in its `data` field. It also accepts `maxWidth`. As on iOS, the session artifact is a PNG at the requested size.
+
+An Android session with a Device Hub version earlier than 0.26.0 ignores the options and returns a full-size PNG. Android sessions do not support `screenshot.capture` over the control socket. Use HTTP to take screenshots of an Android session.
 
 ## Request screenshots over the control socket
 
@@ -101,6 +105,8 @@ Open `wss://<preview-host>/exec-ws` with the WebSocket subprotocol `serve-sim.to
 ```
 
 The host captures the device of the session. The reply is one binary message. Its first four bytes are the request `id` as an unsigned 32-bit integer in big-endian byte order. The remaining bytes are the image. If the capture fails, the reply is a JSON text message with `id` and `error`.
+
+With serve-sim 0.14.4 or later, a JSON text message follows the binary message. It has the same `id` and a `screenshotMetadata` object with the same value as the [`X-Expo-Screenshot-Metadata` header](#read-the-image-size-and-rotation). Do not use the `id` again before this message arrives.
 
 To take a [background screenshot](#take-screenshots-in-the-background) over the socket, add `"automation": true` to `params`.
 
@@ -157,6 +163,7 @@ An older serve-sim can ignore `output` and return a file path on the host in JSO
 - `screenshot.capture.properties.output.enum` includes `binary` when the session supports binary output.
 - `screenshot.capture.properties.maxWidth` is present when the session supports the image options.
 - `screenshot.capture.properties.automation` is present when the session supports background screenshots.
+- `screenshot.capture.properties.output.binaryMetadataFrame` is `true` when the session sends the metadata message after the image.
 
 Without `output: "binary"`, `screenshot.capture` saves a file on the host and returns its path. That mode rejects `maxWidth`, `format`, and `quality`. Only that mode accepts `fileName`. EAS CLI uses this mode, so `eas simulator:control screenshot.capture` cannot use the image options.
 
@@ -218,6 +225,6 @@ The EAS CLI connection helper is a different feature. `eas simulator:control:con
 
 Compare captures that use the same `maxWidth`, `format`, and `quality`. A full-resolution PNG can be many times larger than a smaller JPEG, so it takes longer to encode and to transfer.
 
-A successful HTTP response from an iOS session has a `Server-Timing` header. `total` is the time on the preview host until the response starts. It does not include the response transfer. The other values, such as `capture`, `encode`, and `artifact`, show stages of that time. Some stages overlap, so do not add them.
+A successful HTTP response has a `Server-Timing` header. On Android, this needs Device Hub 0.26.0 or later. `total` is the time on the preview host until the response starts. It does not include the response transfer. The other values, such as `capture`, `encode`, and `artifact`, show stages of that time. Some stages overlap, so do not add them.
 
 The time that your client measures minus `total` is the time outside the preview host. It includes the connection setup, the network, the transfer of the image, and the work in your client. It is not only the network transfer time.

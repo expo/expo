@@ -144,6 +144,29 @@ export function SimulatorScreen({
 
 `@expo/hub-client` uses DOM elements, so it runs only on the web.
 
+### Take a screenshot
+
+Call `screenshot()` on the client from `useDeviceClient()`. It uses the same preview host URL and token as the screen. Without options, it returns a full-size PNG. With `@expo/hub-client` 1.14.0 or later, pass options for a smaller image or a JPEG. The preview host needs serve-sim 0.14.0 or later on iOS, or Device Hub 0.26.0 or later on Android. Render the component inside `DeviceClientProvider`:
+
+```tsx
+import { useDeviceClient } from '@expo/hub-client';
+
+function ScreenshotButton() {
+  const client = useDeviceClient();
+
+  async function capture() {
+    const result = await client.screenshot({ maxWidth: 402, format: 'jpeg', quality: 80 });
+    if (!result) return;
+    // An older @expo/hub-client or preview host ignores the options and returns a PNG.
+    console.log(result.blob.type, result.blob.size);
+  }
+
+  return <button onClick={capture}>Screenshot</button>;
+}
+```
+
+`screenshot()` returns `null` when the request fails, for example when an option is not valid. `result.artifact` reports whether the session also saved the screenshot as a session artifact. It is `null` when the preview host does not report it. With `@expo/hub-client` 1.12.1 or later, `result.metadata` has the image `width`, `height`, and `displayRotation` from the [`X-Expo-Screenshot-Metadata` header](/eas/simulators/how-to/capture-screenshots-with-the-preview-api/#read-the-image-size-and-rotation). It is `undefined` when the preview host does not send the header. See [Capture screenshots with the preview host API](/eas/simulators/how-to/capture-screenshots-with-the-preview-api/) for the options.
+
 ## Use both methods in one session
 
 You can pass `--frame-ancestor` and `--cors-origin` in the same command. Each flag controls a different browser check, so set the flag that matches how your page uses the session. An iframe needs only `--frame-ancestor`. A page that uses `@expo/hub-client` needs only `--cors-origin`.
