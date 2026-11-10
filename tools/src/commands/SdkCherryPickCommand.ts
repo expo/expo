@@ -1,77 +1,70 @@
 import { Command } from '@expo/commander';
 
-import { applyBuildAsync } from '../sdk-cherry-pick/ApplyBuild';
-import { loadConfig } from '../sdk-cherry-pick/Config';
-import { GhCli } from '../sdk-cherry-pick/GitHub';
-import { prepareAsync } from '../sdk-cherry-pick/Prepare';
-import { createOutput, FatalError, reportFailureAsync } from '../sdk-cherry-pick/Process';
-import { publishAsync } from '../sdk-cherry-pick/Publish';
+import logger from '../Logger';
+import { backportAsync } from '../sdk-cherry-pick/Backport';
+import { ghCli } from '../sdk-cherry-pick/GitHub';
 
-async function action(step: string | undefined) {
-  const output = createOutput(process.env);
-  if (step !== 'prepare' && step !== 'publish' && step !== 'run' && step !== 'apply-build') {
-    await output.error('Usage: et sdk-cherry-pick prepare | publish | run | apply-build');
-    process.exitCode = 2;
-    return;
+/** `LABELS` is a JSON string for a `labeled` event, and a JSON array when the pull request merged. */
+function readSdkVersions(env: NodeJS.ProcessEnv): number[] {
+  if (env.SDK_VERSION) {
+    return [Number(env.SDK_VERSION)];
   }
-  try {
-    const config = loadConfig(process.env);
-    const dependencies = { github: new GhCli(config.repo, output), output };
-    if (step === 'publish') {
-      await publishAsync(config, dependencies);
-    } else if (step === 'apply-build') {
-      if (!process.env.BUILD_PATCH) {
-        throw new FatalError('BUILD_PATCH must name the patch file that the rebuild job uploaded.');
-      }
-      await applyBuildAsync(config, dependencies, {
-        patchFile: process.env.BUILD_PATCH,
-        mayComment: config.mayCommentOnRebuild,
+  const labels: unknown[] = [JSON.parse(env.LABELS || '[]')].flat();
+  return labels.flatMap((label) => {
+    const match = typeof label === 'string' ? /^sdk-([1-9]\d*)$/.exec(label) : null;
+    return match ? [Number(match[1])] : [];
+  });
+}
+
+async function action() {
+  const { env } = process;
+  const prNumber = Number(env.PR_NUMBER);
+  if (!Number.isInteger(prNumber) || prNumber <= 0) {
+    throw new Error('PR_NUMBER must be the number of a pull request on main, such as 48723.');
+  }
+  const repo = env.GITHUB_REPOSITORY || 'expo/expo';
+  const github = ghCli(repo);
+  const pullRequest =
+    env.MERGE_SHA && env.PR_TITLE && env.PR_AUTHOR
+      ? { mergeSha: env.MERGE_SHA, title: env.PR_TITLE, author: env.PR_AUTHOR }
+      : await github.viewPullRequestAsync(prNumber);
+  const runLogUrl = env.GITHUB_RUN_ID
+    ? `${env.GITHUB_SERVER_URL}/${repo}/actions/runs/${env.GITHUB_RUN_ID}`
+    : undefined;
+
+  for (const sdkVersion of readSdkVersions(env)) {
+    try {
+      await backportAsync({
+        repoDir: env.REPO_DIR || process.cwd(),
+        prNumber,
+        sdkVersion,
+        ...pullRequest,
+        dryRun: env.DRY_RUN !== 'false',
+        github,
+        runLogUrl,
+        log: (message) => logger.log(message),
       });
-    } else {
-      const pullRequest = await prepareAsync(config, dependencies);
-      if (step === 'run') {
-        await publishAsync(config, dependencies, pullRequest.mergeSha);
-      }
+    } catch (error) {
+      logger.error(`The backport to sdk-${sdkVersion} failed:`, error);
+      process.exitCode = 1;
     }
-  } catch (error) {
-    process.exitCode = (await reportFailureAsync(error, output)).status;
   }
 }
 
 export default (program: Command) => {
   program
-    .command('sdk-cherry-pick [step]')
+    .command('sdk-cherry-pick')
     .description(
-      `Backports a pull request that merged into main to an sdk-NN release branch.
+      `Backports a pull request that merged into main to each sdk-NN release branch that its labels name.
 
-  prepare  Cherry-picks, converts changesets, and records what to publish.
-  publish  Pushes the branch, opens the pull request, and comments.
-  run      prepare, then publish. For local use.
-  apply-build
-           Commits the patch of the rebuild job to the backport branch, and pushes it. It checks
-           that the patch changes only regular files in the build/ directories that publish
-           listed in rebuild-request.json.
-
-  prepare and publish are separate steps so that the token that can push is only in the environment of
-  publish. prepare reads changesets and other text that a pull request author wrote.
-
-  Every step reads these environment variables:
-    PR_NUMBER, SDK_VERSION  Required. The pull request on main, and the NN of sdk-NN.
-    REPO_DIR                Required. A clone of the repository with an "origin" remote. prepare fetches
-                            into it and adds a temporary worktree. No code from it runs.
-    MERGE_SHA, PR_TITLE, PR_AUTHOR
-                            Read with "gh pr view" when one of them is missing.
-    DRY_RUN                 "true" (default) or "false". A dry run does not push, open a pull request,
-                            or comment.
-    GH_TOKEN                prepare: a read-only token. publish and apply-build: a token that can
-                            push, open pull requests, and comment.
-    REPO                    Default: $GITHUB_REPOSITORY, or expo/expo.
-    STATE_DIR               Where prepare records the result for publish.
-                            Default: $RUNNER_TEMP or $TMPDIR, then /sdk-cherry-pick-<PR>-<SDK>.
-    BUILD_PATCH             apply-build: the patch file of the rebuild job. A missing file means that
-                            the rebuild failed.
-    GITHUB_EVENT_NAME       publish and apply-build comment about the rebuild on the backport pull
-                            request only when it is pull_request_target.`
+  Environment variables:
+    PR_NUMBER                       The pull request on main.
+    SDK_VERSION                     The NN of sdk-NN. Without it, LABELS names the branches.
+    LABELS                          JSON of the label added, or of every label of the pull request.
+    MERGE_SHA, PR_TITLE, PR_AUTHOR  Read with "gh pr view" when one of them is missing.
+    DRY_RUN                         "false" pushes, opens the pull request, and comments. Default: "true".
+    REPO_DIR                        A clone with an "origin" remote. Default: the current directory.
+    GH_TOKEN                        A token that can push, open pull requests, and comment.`
     )
     .asyncAction(action);
 };

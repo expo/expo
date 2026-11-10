@@ -1,16 +1,8 @@
 name: SDK cherry-pick
 
-# SECURITY: `pull_request_target` runs this workflow from the default branch with secrets, also
-# for pull requests from forks. Only the rebuild job runs code from a pull request: the merged change
-# that a maintainer merged into main, the release branch, and the packages of its lockfile. That job
-# has no secret, and its token only reads. But its code can get the cache credential of the runner,
-# and with it save caches in the scope of the default branch, which other jobs and workflows restore.
-# The team accepted this risk. push-build, which has the bot token, restores no cache.
-# Every other script, action, and `et` command comes from a checkout of the default branch. Outside
-# the rebuild job, the merge commit and the release branch are read only as git data. The changesets
-# that a pull request author wrote are
-# read only as text: `et sdk-cherry-pick` copies their summaries into CHANGELOG.md entries with the
-# code of `et convert-backport-changesets`, and runs nothing from them.
+# SECURITY: `pull_request_target` runs this workflow from the default branch with secrets, also for
+# pull requests from forks. Only code from the default branch runs. The merged change is read as git
+# data with hooks off, and its changesets only as text.
 on:
   pull_request_target:
     types: [closed, labeled]
@@ -30,501 +22,69 @@ on:
         type: boolean
         default: true
 
-# GITHUB_TOKEN only reads. Every write uses EXPO_BOT_GITHUB_TOKEN, and only the steps that
-# publish get it.
 permissions: {}
 
-defaults:
-  run:
-    shell: bash
-
 jobs:
-  # The repository variable SDK_CHERRY_PICK_DISABLED set to `true` stops backports from merges and
-  # labels. A manual run still works, so a dry run can test the bot while it is off.
-  select:
-    name: Select SDK versions
+  cherry-pick:
+    name: Backport to SDK branches
+    # On `closed`, every `sdk-NN` label. On `labeled`, only the label that was added.
     if: >-
       github.repository == 'expo/expo'
       && (github.event_name == 'workflow_dispatch'
-      || (vars.SDK_CHERRY_PICK_DISABLED != 'true'
-      && github.event.pull_request.merged && github.event.pull_request.base.ref == 'main'))
+      || github.event.pull_request.merged
+      && (github.event.action == 'labeled' && startsWith(github.event.label.name, 'sdk-')
+      || github.event.action == 'closed' && contains(join(github.event.pull_request.labels.*.name, ' '), 'sdk-')))
     runs-on: ubuntu-24.04
-    permissions: {}
-    outputs:
-      sdks: ${{ steps.select.outputs.sdks }}
-    steps:
-      # On `closed`, every `sdk-NN` label. On `labeled`, only the label that was added. A label with
-      # a leading zero, such as `sdk-058`, is ignored with a warning. The bot backports only to SDK
-      # 55 and later. An older `sdk-NN` label names an SDK that the change affects, so it is
-      # ignored with a notice.
-      - name: Select SDK versions
-        id: select
-        run: |
-          min_sdk=55
-          if [ "$GITHUB_EVENT_NAME" = workflow_dispatch ]; then
-            sdk=$(jq -r '.inputs.sdk | tostring' "$GITHUB_EVENT_PATH")
-            if ! [[ "$sdk" =~ ^[1-9][0-9]*$ ]] || [ "$sdk" -lt "$min_sdk" ]; then
-              echo "::error::The bot backports only to SDK $min_sdk and later, but the sdk input is \"$sdk\". Run the workflow again with an SDK version of $min_sdk or later."
-              exit 1
-            fi
-          fi
-          jq -r --argjson min "$min_sdk" '
-            if .action == "labeled" then .label.name else .pull_request.labels[]?.name end
-            | if test("^sdk-0[0-9]*$") then
-                "::warning::The label \"\(.)\" is ignored because its version starts with 0. Use a label such as \"sdk-58\"."
-              elif test("^sdk-[1-9][0-9]*$") and (.[4:] | tonumber) < $min then
-                "::notice::The label \"\(.)\" is ignored because the bot backports only to SDK \($min) and later."
-              else empty
-              end
-          ' "$GITHUB_EVENT_PATH"
-          sdks=$(jq -c --arg event "$GITHUB_EVENT_NAME" --argjson min "$min_sdk" '
-            def sdk: capture("^sdk-(?<version>[1-9][0-9]*)$").version | select(tonumber >= $min);
-            if $event == "workflow_dispatch" then [.inputs.sdk | tostring]
-            elif .action == "labeled" then [.label.name | sdk]
-            else [.pull_request.labels[]?.name | sdk]
-            end
-            | unique
-          ' "$GITHUB_EVENT_PATH")
-          echo "Selected SDK versions: $sdks"
-          echo "sdks=$sdks" >> "$GITHUB_OUTPUT"
-
-  cherry-pick:
-    name: Backport to sdk-${{ matrix.sdk }}
-    needs: select
-    if: needs.select.outputs.sdks != '[]'
-    runs-on: ubuntu-24.04
-    timeout-minutes: 45
+    timeout-minutes: 30
     permissions:
       contents: read
-      pull-requests: read
-    strategy:
-      fail-fast: false
-      matrix:
-        sdk: ${{ fromJSON(needs.select.outputs.sdks) }}
     concurrency:
-      group: sdk-cherry-pick-${{ github.event.pull_request.number || inputs.pr }}-${{ matrix.sdk }}
+      group: sdk-cherry-pick-${{ github.event.pull_request.number || inputs.pr }}-${{ github.event.label.name || inputs.sdk || 'merged' }}
     env:
       PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr }}
-      SDK_VERSION: ${{ matrix.sdk }}
+      SDK_VERSION: ${{ inputs.sdk }}
+      LABELS: ${{ github.event.action == 'labeled' && toJSON(github.event.label.name) || toJSON(github.event.pull_request.labels.*.name) }}
       MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
       PR_TITLE: ${{ github.event.pull_request.title }}
       PR_AUTHOR: ${{ github.event.pull_request.user.login }}
-      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
+      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run }}
       REPO_DIR: ${{ github.workspace }}
-      # JS-only job, so skip the ~685 MB @shopify/react-native-skia prebuilt-binary download.
       SKIP_SKIA_DOWNLOAD: '1'
     steps:
-      # SECURITY: the default branch, never the pull request head or its base branch.
-      # persist-credentials is off, so no token is in .git/config while prepare runs.
+      # SECURITY: the default branch, never the pull request head. No token is stored in .git/config.
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           ref: ${{ github.event.repository.default_branch }}
           fetch-depth: 1
           persist-credentials: false
-      # Every existing release branch needs expotools. A missing branch needs nothing: an `sdk-NN`
-      # label can name an SDK that a change affects, or a release that has no branch yet, so the job
-      # ends without a backport and without a comment.
-      - name: 🔍 Check the target branch
-        id: target
-        run: |
-          tools=true
-          heads=$(git -C "$REPO_DIR" ls-remote --heads origin "refs/heads/sdk-$SDK_VERSION")
-          if [ -z "$heads" ]; then
-            echo "sdk-$SDK_VERSION does not exist."
-            tools=false
-          fi
-          echo "tools=$tools"
-          echo "tools=$tools" >> "$GITHUB_OUTPUT"
       - name: 🔨 Install pnpm
-        if: steps.target.outputs.tools == 'true'
         uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
         with:
           install: false
       - name: 🔨 Setup Node
-        if: steps.target.outputs.tools == 'true'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
           cache: 'pnpm'
       - name: 📦 Install dependencies
-        if: steps.target.outputs.tools == 'true'
         run: pnpm install --ignore-scripts --frozen-lockfile
       - name: ♻️ Restore caches
-        if: steps.target.outputs.tools == 'true'
         uses: ./.github/actions/expo-caches
       - name: 🛠 Build expotools
-        id: build
-        if: steps.target.outputs.tools == 'true'
         run: pnpm turbo build --filter expotools...
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
-      # prepare and publish are separate steps so that the token that can push is only in the
-      # environment of publish. prepare reads changesets and other text that a pull request author
-      # wrote.
-      - name: 🍒 Cherry-pick and convert changesets
-        id: prepare
-        if: steps.target.outputs.tools == 'true'
-        run: node tools/bin/expotools.js sdk-cherry-pick prepare
-        env:
-          GH_TOKEN: ${{ github.token }}
-      # Also after a failed prepare, so that it can tell the author that the backport failed.
-      - name: 📝 Open the backport pull request
-        id: publish
-        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
-        run: node tools/bin/expotools.js sdk-cherry-pick publish
+      - name: 🍒 Backport
+        id: backport
+        run: node tools/bin/expotools.js sdk-cherry-pick
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
-      # When the checkout, the target check, the install, or the build fails, or publish fails before
-      # it starts, nothing has told the author. This step does, with the text of the publish fallback
-      # comment. publish writes publish-started first, and comments itself after that. This step
-      # reads no text from the pull request, and it does not run for a manual run.
+      # The backport step comments on its own failures, so this step covers only the steps before it.
       - name: 💬 Comment that the backport failed
-        if: failure() && github.event_name == 'pull_request_target' && (steps.publish.outcome == 'failure' || (steps.build.outcome != 'success' && (steps.target.outputs.tools == 'true' || steps.target.outcome == 'failure' || steps.target.outcome == 'skipped')))
+        if: failure() && github.event_name == 'pull_request_target' && steps.backport.outcome != 'failure'
         run: |
-          state_dir="${STATE_DIR:-${RUNNER_TEMP%/}/sdk-cherry-pick-$PR_NUMBER-$SDK_VERSION}"
-          if [ -e "$state_dir/publish-started" ]; then
-            echo "publish started, so it reports its own failure."
-            exit 0
-          fi
-          target_branch="sdk-$SDK_VERSION"
-          work_branch="bot/sdk-$SDK_VERSION-cherry-pick-$PR_NUMBER"
-          run_log="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          # shellcheck disable=SC2016 # Backticks in single quotes are Markdown code spans.
-          printf -v body 'The backport to `%s` failed before it could finish, so no backport pull request was opened. [Run log](%s)\n\nTo backport it by hand:\n\n```sh\ngit fetch origin main %s\ngit checkout -b %s origin/%s\ngit cherry-pick -x %s\n```\n\nIf `%s` has no `.changeset/config.json`, it does not use changesets. Then, for each `.changeset/*.md` file that this pull request adds, add its summary as an entry under `## Unpublished` in the `CHANGELOG.md` of each package that it names, and delete the changeset file.' \
-            "$target_branch" "$run_log" "$target_branch" "$work_branch" "$target_branch" \
-            "${MERGE_SHA:-<merge commit of #$PR_NUMBER>}" "$target_branch"
-          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "$body"
-        env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
-      # publish writes a rebuild request only after it opened the pull request, or in a dry run, and
-      # only when the backport changes the source next to a `build/` directory that the branch tracks.
-      # Each matrix job uploads its own artifact: a job output of a matrix job keeps one value.
-      - name: 📤 Upload the rebuild request
-        id: upload-request
-        if: ${{ !cancelled() && steps.publish.outcome != 'skipped' }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: sdk-cherry-pick-rebuild-request-${{ matrix.sdk }}
-          path: |
-            ${{ runner.temp }}/sdk-cherry-pick-${{ env.PR_NUMBER }}-${{ matrix.sdk }}/rebuild-request.json
-            ${{ runner.temp }}/sdk-cherry-pick-${{ env.PR_NUMBER }}-${{ matrix.sdk }}/rebuild.bundle
-          if-no-files-found: ignore
-          retention-days: 1
-      # Without the request, the rebuild jobs skip, so nothing else tells the reviewer. This step does,
-      # with the `rebuild` text of rebuildFailedComment in tools/src/sdk-cherry-pick/Text.ts. It reads
-      # only the pull request number from the request that publish wrote in this job, and it does not
-      # run for a manual run.
-      - name: 💬 Comment that the rebuild request was not uploaded
-        if: failure() && steps.upload-request.outcome == 'failure' && github.event_name == 'pull_request_target'
-        run: |
-          state_dir="${STATE_DIR:-${RUNNER_TEMP%/}/sdk-cherry-pick-$PR_NUMBER-$SDK_VERSION}"
-          pull_request=$(jq -r '.pullRequest' "$state_dir/rebuild-request.json" 2>/dev/null || true)
-          if ! [[ "$pull_request" =~ ^[1-9][0-9]*$ ]]; then
-            echo "The rebuild request names no backport pull request, so there is nothing to comment on."
-            exit 0
-          fi
-          run_log="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          # shellcheck disable=SC2016 # Backticks in single quotes are Markdown code spans.
-          printf -v body 'The bot could not rebuild the `build/` directories of this backport. [Run log](%s)\n\nTo rebuild them by hand, run `et check-packages --since origin/sdk-%s` in a checkout of this branch. Then commit and push the changed `build/` files.' \
-            "$run_log" "$SDK_VERSION"
-          gh pr comment "$pull_request" --repo "$GITHUB_REPOSITORY" --body "$body"
-        env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
-
-  find-rebuilds:
-    name: Find backports to rebuild
-    needs: cherry-pick
-    if: ${{ !cancelled() && needs.cherry-pick.result != 'skipped' }}
-    runs-on: ubuntu-24.04
-    permissions:
-      actions: read
-    outputs:
-      requests: ${{ steps.find.outputs.requests }}
-    steps:
-      # SECURITY: rebuild runs code from the branch, and that code can upload artifacts too. This job
-      # runs before rebuild, and the later jobs download each request by the artifact ID listed here,
-      # never by name. An artifact from before this attempt started can come from the rebuild of an
-      # earlier attempt, so it does not count: a forged request from that rebuild looks the same as a
-      # real one. So when "Re-run failed jobs" runs this job again, it finds no request of the earlier
-      # attempt, nothing is rebuilt, and the reviewer runs check-packages by hand. The same holds when
-      # only push-build runs again: it reads only the patch of its own attempt, finds none, and comments.
-      - name: 🔍 List the rebuild requests
-        id: find
-        run: |
-          run="repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          attempt_started=$(gh api "$run/attempts/$GITHUB_RUN_ATTEMPT" --jq '.run_started_at')
-          if ! [[ "$attempt_started" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T ]]; then
-            echo "::error::GitHub returned no start time for this attempt of the run."
-            exit 1
-          fi
-          requests=$(gh api --paginate --jq '.artifacts[]' "$run/artifacts?per_page=100" \
-            | jq -sc --arg since "$attempt_started" '[.[]
-                | select((.expired | not) and .created_at >= $since)
-                | (.name | capture("^sdk-cherry-pick-rebuild-request-(?<sdk>[1-9][0-9]*)$")) as $match
-                | {sdk: $match.sdk, "request-artifact-id": .id}]
-              | group_by(.sdk) | map(max_by(."request-artifact-id"))')
-          echo "Rebuild requests: $requests"
-          echo "requests=$requests" >> "$GITHUB_OUTPUT"
-        env:
-          GH_TOKEN: ${{ github.token }}
-
-  # SECURITY: this job runs code from the backport branch: the change that a maintainer merged into
-  # main, the release branch, and the install scripts and builds of the packages of its lockfile. It
-  # has no secret, and its token only reads. But that code can get the cache credential of the runner,
-  # and with it save caches in the scope of the default branch. The team accepted this risk. Nothing
-  # that a later job trusts comes from this job: its patch is data that push-build checks before it
-  # pushes.
-  rebuild:
-    name: Rebuild build/ for sdk-${{ matrix.sdk }}
-    needs: find-rebuilds
-    if: ${{ !cancelled() && needs.find-rebuilds.result == 'success' && needs.find-rebuilds.outputs.requests != '[]' }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 60
-    permissions:
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        include: ${{ fromJSON(needs.find-rebuilds.outputs.requests) }}
-    env:
-      SKIP_SKIA_DOWNLOAD: '1'
-    steps:
-      # With `merge-multiple`, the files of the artifact land in `path` itself, however many
-      # artifacts the download matches.
-      - name: 📥 Download the rebuild request
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          artifact-ids: ${{ matrix.request-artifact-id }}
-          merge-multiple: true
-          path: ${{ runner.temp }}/rebuild-request
-      - name: 🔍 Read the rebuild request
-        id: request
-        run: |
-          request="$RUNNER_TEMP/rebuild-request/rebuild-request.json"
-          commit=$(jq -r '.commit' "$request")
-          target_tip=$(jq -r '.targetTip' "$request")
-          if ! [[ "$commit" =~ ^[0-9a-f]{40}$ && "$target_tip" =~ ^[0-9a-f]{40}$ ]]; then
-            echo "::error::The rebuild request names no commit. publish writes it."
-            exit 1
-          fi
-          jq --raw-output0 '.dirs[]' "$request" > "$RUNNER_TEMP/build-dirs"
-          echo "commit=$commit" >> "$GITHUB_OUTPUT"
-          echo "target-tip=$target_tip" >> "$GITHUB_OUTPUT"
-      - name: 👀 Checkout the target branch
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ steps.request.outputs.target-tip }}
-          fetch-depth: 1
-          persist-credentials: false
-      # The commit of a dry run is on no remote, so it always comes from the bundle that publish
-      # wrote. The SHA check makes it the commit that publish pushed.
-      - name: 🍒 Check out the backport commit
-        run: |
-          git fetch --quiet --no-tags "$RUNNER_TEMP/rebuild-request/rebuild.bundle" refs/sdk-cherry-pick/backport
-          if [ "$(git rev-parse FETCH_HEAD)" != "$COMMIT" ]; then
-            echo "::error::The bundle does not hold the backport commit $COMMIT."
-            exit 1
-          fi
-          git checkout --quiet --detach "$COMMIT"
-        env:
-          COMMIT: ${{ steps.request.outputs.commit }}
-      # As the check-packages job of the branch's own sdk.yml: Node 20, Bun, and the package manager
-      # of its lockfile. sdk-55 uses yarn. sdk-56 and sdk-57 use pnpm 10 without a packageManager
-      # field. pnpm/action-setup fails when both its version input and packageManager name a version.
-      - name: 🔍 Find the package manager of the branch
-        id: tools
-        run: |
-          if [ -f yarn.lock ]; then
-            manager=yarn
-          elif [ -f pnpm-lock.yaml ]; then
-            manager=pnpm
-          else
-            echo "::error::The branch has neither yarn.lock nor pnpm-lock.yaml."
-            exit 1
-          fi
-          pnpm_version=10
-          if jq -e 'has("packageManager")' package.json > /dev/null; then
-            pnpm_version=
-          fi
-          echo "manager=$manager pnpm_version=$pnpm_version"
-          echo "manager=$manager" >> "$GITHUB_OUTPUT"
-          echo "pnpm-version=$pnpm_version" >> "$GITHUB_OUTPUT"
-      - name: 🔨 Install pnpm
-        if: steps.tools.outputs.manager == 'pnpm'
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
-        with:
-          version: ${{ steps.tools.outputs.pnpm-version }}
-      # No dependency cache: a cache that this job saves holds files that code from the branch can
-      # change.
-      - name: 🔨 Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 20
-      - name: 🏗️ Setup Bun
-        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
-        with:
-          bun-version: latest
-      - name: 📦 Install dependencies of the branch
-        run: |
-          if [ "$MANAGER" = yarn ]; then
-            yarn install --frozen-lockfile
-          else
-            pnpm install --frozen-lockfile
-          fi
-        env:
-          MANAGER: ${{ steps.tools.outputs.manager }}
-      # check-packages runs `clean`, then `build`, in the package directory, with the argument
-      # plugin, cli, or utils for that build directory of the package. It skips a missing script.
-      - name: 🛠 Rebuild the build directories
-        run: |
-          run_script() {
-            if jq -e --arg script "$1" '.scripts[$script]' "$package/package.json" > /dev/null; then
-              if [ "$MANAGER" = yarn ]; then
-                (cd "$package" && yarn "$@")
-              else
-                (cd "$package" && pnpm run "$@")
-              fi
-            fi
-          }
-          while IFS= read -r -d '' dir; do
-            kind=${dir##*/}
-            if [ -f "$dir/package.json" ]; then
-              package=$dir
-              args=()
-            elif [[ "$kind" =~ ^(plugin|cli|utils)$ && -f "${dir%/*}/package.json" ]]; then
-              package=${dir%/*}
-              args=("$kind")
-            else
-              echo "::error::Cannot rebuild $dir/build: check-packages builds only a package, or its plugin, cli, or utils directory."
-              exit 1
-            fi
-            echo "Rebuilding $dir/build"
-            run_script clean "${args[@]}"
-            run_script build "${args[@]}"
-          done < "$RUNNER_TEMP/build-dirs"
-        env:
-          MANAGER: ${{ steps.tools.outputs.manager }}
-      # check-packages compares `git status` of each build directory, so new files count too.
-      # `git add -N` makes them part of the diff without staging their content. A directory name
-      # comes from the branch, so it is a literal path, not a pathspec pattern.
-      - name: 📦 Write the patch of the build directories
-        run: |
-          paths=()
-          existing=()
-          while IFS= read -r -d '' dir; do
-            paths+=("$dir/build")
-            if [ -e "$dir/build" ]; then
-              existing+=("$dir/build")
-            fi
-          done < "$RUNNER_TEMP/build-dirs"
-          export GIT_LITERAL_PATHSPECS=1
-          if [ "${#existing[@]}" -gt 0 ]; then
-            git add -N -- "${existing[@]}"
-          fi
-          mkdir -p "$RUNNER_TEMP/rebuild-result"
-          git diff --binary --no-renames --no-ext-diff --no-textconv HEAD -- "${paths[@]}" > "$RUNNER_TEMP/rebuild-result/build.patch"
-          git diff --stat --no-renames HEAD -- "${paths[@]}"
-      # Also an empty patch: push-build reads a missing patch as a failed rebuild.
-      - name: 📤 Upload the patch
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: sdk-cherry-pick-rebuild-result-${{ matrix.sdk }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/rebuild-result/build.patch
-          if-no-files-found: error
-          retention-days: 1
-
-  # SECURITY: this job has the bot token, so it runs no code from the backport branch. expotools comes
-  # from the default branch, as in cherry-pick. apply-build applies the patch to the index only, and
-  # pushes only regular files under the build directories of the rebuild request.
-  push-build:
-    name: Push the rebuilt build/ to the sdk-${{ matrix.sdk }} backport
-    needs: [find-rebuilds, rebuild]
-    if: ${{ !cancelled() && needs.find-rebuilds.result == 'success' && needs.find-rebuilds.outputs.requests != '[]' }}
-    runs-on: ubuntu-24.04
-    timeout-minutes: 30
-    permissions:
-      contents: read
-    strategy:
-      fail-fast: false
-      matrix:
-        include: ${{ fromJSON(needs.find-rebuilds.outputs.requests) }}
-    env:
-      PR_NUMBER: ${{ github.event.pull_request.number || inputs.pr }}
-      SDK_VERSION: ${{ matrix.sdk }}
-      DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || false }}
-      REPO_DIR: ${{ github.workspace }}
-      SKIP_SKIA_DOWNLOAD: '1'
-    steps:
-      # The request comes from cherry-pick, by the ID that find-rebuilds listed before rebuild ran.
-      # The patch comes from rebuild, which runs code from the branch. A pattern that matches no
-      # artifact downloads nothing and does not fail, and apply-build reads a missing patch as a failed
-      # rebuild. The name has the attempt, so that a patch of an earlier attempt never counts. With
-      # `merge-multiple`, the files land in `path` itself.
-      - name: 📥 Download the rebuild request
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          artifact-ids: ${{ matrix.request-artifact-id }}
-          merge-multiple: true
-          path: ${{ runner.temp }}/sdk-cherry-pick-${{ env.PR_NUMBER }}-${{ matrix.sdk }}
-      - name: 📥 Download the patch
-        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
-        with:
-          pattern: sdk-cherry-pick-rebuild-result-${{ matrix.sdk }}-${{ github.run_attempt }}
-          merge-multiple: true
-          path: ${{ runner.temp }}/rebuild-result
-      # SECURITY: the default branch, never the backport branch.
-      - name: 👀 Checkout
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: ${{ github.event.repository.default_branch }}
-          fetch-depth: 1
-          persist-credentials: false
-      # SECURITY: no shared cache. rebuild can save caches in the scope of the default branch, and this
-      # job has the bot token. pnpm/setup always restores its lockfile verification cache, so npm
-      # installs pnpm here.
-      - name: 🔨 Setup Node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 24
-          package-manager-cache: false
-      - name: 🔨 Install pnpm
-        run: npm install --global --no-audit --no-fund "pnpm@$(jq -r '.devEngines.packageManager.version' package.json)"
-      - name: 📦 Install dependencies
-        run: pnpm install --ignore-scripts --frozen-lockfile
-      - name: 🛠 Build expotools
-        run: pnpm turbo build --filter expotools...
-        env:
-          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
-          TURBO_TEAM: expo
-      - name: 📝 Push the rebuilt build directories
-        id: apply
-        run: node tools/bin/expotools.js sdk-cherry-pick apply-build
-        env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
-          BUILD_PATCH: ${{ runner.temp }}/rebuild-result/build.patch
-      # When a step before apply-build fails, nothing has told the reviewer. This step does, with the
-      # `push` text of rebuildFailedComment in tools/src/sdk-cherry-pick/Text.ts. It reads only the
-      # pull request number from the request that cherry-pick wrote, and it does not run for a manual
-      # run.
-      - name: 💬 Comment that the rebuild failed
-        if: failure() && github.event_name == 'pull_request_target'
-        run: |
-          state_dir="${RUNNER_TEMP%/}/sdk-cherry-pick-$PR_NUMBER-$SDK_VERSION"
-          if [ -e "$state_dir/apply-build-started" ]; then
-            echo "apply-build started, so it reports its own failure."
-            exit 0
-          fi
-          pull_request=$(jq -r '.pullRequest' "$state_dir/rebuild-request.json" 2>/dev/null || true)
-          if ! [[ "$pull_request" =~ ^[1-9][0-9]*$ ]]; then
-            echo "The rebuild request names no backport pull request, so there is nothing to comment on."
-            exit 0
-          fi
-          run_log="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          # shellcheck disable=SC2016 # Backticks in single quotes are Markdown code spans.
-          printf -v body 'The bot could not push the rebuilt `build/` directories to this branch. [Run log](%s)\n\nTo rebuild them by hand, run `et check-packages --since origin/sdk-%s` in a checkout of this branch. Then commit and push the changed `build/` files.' \
-            "$run_log" "$SDK_VERSION"
-          gh pr comment "$pull_request" --repo "$GITHUB_REPOSITORY" --body "$body"
+          gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body "The SDK backport failed before it started, so no backport pull request was opened. [Run log]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
