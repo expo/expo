@@ -32,7 +32,7 @@ You can also use EAS CLI to view a run. Run `eas workflow:view` to select a rece
 
 ### Show the branch and commit of a run started from EAS CLI
 
-By default, `eas workflow:run` uploads your local project files, so the run has no branch or commit. The dashboard shows it without a branch and does not list it under the branch filter. To show the branch and commit, pass `--git-branch` and `--git-commit-hash` together:
+By default, `eas workflow:run` uploads your local project files, so the run has no branch or commit. The dashboard shows it without a branch and does not list it under the branch filter. To show the branch and commit, push the commit to the [GitHub repository linked to your project](/eas/workflows/get-started/#automate-workflows-with-github-events) first. Then pass `--git-branch` and `--git-commit-hash` together:
 
 <Terminal
   cmd={[
@@ -40,7 +40,7 @@ By default, `eas workflow:run` uploads your local project files, so the run has 
   ]}
 />
 
-Push the commit to the [GitHub repository linked to your project](/eas/workflows/get-started/#automate-workflows-with-github-events) first. The dashboard then links the run to that branch and commit. It also lists the run under the branch filter. An `update` job without `branch` or `channel` publishes to the EAS Update branch with the same name as the Git branch. The run still uses your uploaded project files, even if they differ from that commit. Expo Workflows does not post a commit status to GitHub. Workflow expressions see the branch and commit in the [`github` context](/eas/workflows/environment/#github).
+The dashboard then links the run to that branch and commit. It also lists the run under the branch filter. An `update` job without `branch` or `channel` publishes to the Expo Update branch with the same name as the Git branch. The run still uses your uploaded project files, even if they differ from that commit. Expo Workflows does not post a commit status to GitHub. Workflow expressions see the branch and commit in the [`github` context](/eas/workflows/environment/#github).
 
 ## Cancel a workflow run
 
