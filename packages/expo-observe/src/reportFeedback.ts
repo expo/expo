@@ -1,5 +1,6 @@
 import AppMetrics from 'expo-app-metrics';
 
+import { warnIfUserContentEntryMissing } from './privacyManifestWarning';
 import type { ObserveFeedback } from './types';
 
 function invalidFeedbackReason(feedback: ObserveFeedback): string | null {
@@ -37,6 +38,9 @@ export function reportFeedback(feedback: ObserveFeedback): void {
     }
     const { message, ...rest } = feedback;
     AppMetrics.reportFeedback(message?.trim() ? feedback : rest);
+    if (__DEV__) {
+      warnIfUserContentEntryMissing();
+    }
   } catch (error) {
     if (__DEV__) {
       console.warn('[expo-observe] `reportFeedback` failed to record the feedback:', error);

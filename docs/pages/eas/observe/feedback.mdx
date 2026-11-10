@@ -5,6 +5,7 @@ description: Collect feedback from your users with Observe.reportFeedback and vi
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { ConfigReactNative } from '~/ui/components/ConfigSection';
 import { FileTree } from '~/ui/components/FileTree';
 import { Terminal } from '~/ui/components/Snippet';
 
@@ -329,3 +330,63 @@ Before you collect feedback:
 
 - Tell your users what you collect and how you use it.
 - Declare the data in the App Store privacy details and in the Google Play Data safety form. See [App store privacy declarations](/eas/observe/reference/store-privacy-declarations/).
+- On iOS, declare the data in your app's privacy manifest. See [Privacy manifest entry](#privacy-manifest-entry).
+
+### Privacy manifest entry
+
+The privacy manifest that `expo-observe` ships does not declare feedback, because the right data type and the linked value depend on your app. Add the entry to the [privacy manifest](/guides/apple-privacy/) of your app:
+
+- `NSPrivacyCollectedDataType`: Use `NSPrivacyCollectedDataTypeOtherUserContent`. Use `NSPrivacyCollectedDataTypeCustomerSupport` only when your form collects customer support requests.
+- `NSPrivacyCollectedDataTypeLinked`: Set to `true` when you send feedback with a user ID or another account detail, for example, in `attributes` or with `Observe.setGlobalAttributes`. Otherwise, set to `false`.
+- `NSPrivacyCollectedDataTypePurposes`: Use the purposes that match how you use the feedback. Apple's **Analytics** purpose covers evaluating product features. **App Functionality** covers customer support.
+
+You can add the entry with the `ios.privacyManifests` field in your [app config](/workflow/configuration/):
+
+```json app.json
+{
+  "expo": {
+    "ios": {
+      "privacyManifests": {
+        "NSPrivacyCollectedDataTypes": [
+          {
+            "NSPrivacyCollectedDataType": "NSPrivacyCollectedDataTypeOtherUserContent",
+            "NSPrivacyCollectedDataTypeLinked": false,
+            "NSPrivacyCollectedDataTypeTracking": false,
+            "NSPrivacyCollectedDataTypePurposes": ["NSPrivacyCollectedDataTypePurposeAnalytics"]
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+<ConfigReactNative>
+
+Add the same entry to the `NSPrivacyCollectedDataTypes` array in the **PrivacyInfo.xcprivacy** file of your app target:
+
+```xml PrivacyInfo.xcprivacy
+<key>NSPrivacyCollectedDataTypes</key>
+<array>
+  <dict>
+    <key>NSPrivacyCollectedDataType</key>
+    <string>NSPrivacyCollectedDataTypeOtherUserContent</string>
+    <key>NSPrivacyCollectedDataTypeLinked</key>
+    <false/>
+    <key>NSPrivacyCollectedDataTypeTracking</key>
+    <false/>
+    <key>NSPrivacyCollectedDataTypePurposes</key>
+    <array>
+      <string>NSPrivacyCollectedDataTypePurposeAnalytics</string>
+    </array>
+  </dict>
+</array>
+```
+
+</ConfigReactNative>
+
+The privacy manifest does not replace your answers in App Store Connect. Also add **Other User Content** to the [App Store privacy details](/eas/observe/reference/store-privacy-declarations/#app-store-privacy-details).
+
+Apple lets you leave out data that meets all of its criteria for optional disclosure. See **Optional disclosure** in [Apple's app privacy details](https://developer.apple.com/app-store/app-privacy-details/). If your feedback meets all of the criteria, you do not need the entry.
+
+In a development build on iOS, `reportFeedback` prints a warning one time when the privacy manifest of your app has no `NSPrivacyCollectedDataTypeOtherUserContent` or `NSPrivacyCollectedDataTypeCustomerSupport` entry. The warning does not stop the report. Production builds do not check the privacy manifest.
