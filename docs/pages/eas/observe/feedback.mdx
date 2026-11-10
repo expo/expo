@@ -105,12 +105,10 @@ export function FeedbackButton() {
   }
 
   const from = `/${segments.join('/')}`;
-  // For apps with a floating tab bar on iOS, 72 adds room for the bar to the 16-point margin.
-  const bottom = insets.bottom + (process.env.EXPO_OS === 'ios' ? 72 : 16);
 
   return (
     <Pressable
-      style={[styles.button, { bottom }]}
+      style={[styles.button, { bottom: insets.bottom + 16 }]}
       onPress={() => router.push({ pathname: '/feedback', params: { from } })}>
       <Text style={styles.label}>Feedback</Text>
     </Pressable>
