@@ -91,11 +91,10 @@ final class RelaunchProcedure: StateMachineProcedure {
           procedureContext.onComplete()
         } else {
           let reloadException = UpdatesReloadException()
-          if let error {
-            self.logger.error(cause: UpdatesError.relaunchProcedureFailedToRelaunch(cause: error))
-          } else {
-            self.logger.error(cause: UpdatesError.relaunchProcedureFailedToRelaunch(cause: reloadException))
-          }
+          self.logger.error(
+            .launchFailed,
+            values: ["launch": "relaunch", "cause": error?.localizedDescription ?? reloadException.localizedDescription]
+          )
           self.errorBlock(reloadException)
           procedureContext.onComplete()
         }

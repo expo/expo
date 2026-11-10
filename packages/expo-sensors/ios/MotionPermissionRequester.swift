@@ -26,16 +26,27 @@ public final class MotionPermissionRequester: NSObject, EXPermissionsRequester {
     return "motion"
   }
 
+  // The compile define comes from the `MOTION_PERMISSION` Podfile property. Precompiled and
+  // SwiftPM builds cannot receive a per-app define, so the config plugin also writes this key.
+  static func isMotionPermissionDisabled(
+    infoDictionaryValue: (String) -> Any? = Bundle.main.object(forInfoDictionaryKey:)
+  ) -> Bool {
+    #if EXPO_DISABLE_MOTION_PERMISSION
+    return true
+    #else
+    return infoDictionaryValue("ExpoSensors_disableMotionPermission") as? Bool == true
+    #endif
+  }
+
   private var motionUsageDescription: Any? {
     infoDictionaryValue("NSMotionUsageDescription")
   }
 
   public func getPermissions() -> [AnyHashable: Any] {
-    #if EXPO_DISABLE_MOTION_PERMISSION
-    return ["status": EXPermissionStatusDenied.rawValue]
-    #else
+    if Self.isMotionPermissionDisabled(infoDictionaryValue: infoDictionaryValue) {
+      return ["status": EXPermissionStatusDenied.rawValue]
+    }
     return Self.permissions(authorizationStatus: authorizationStatus(), usageDescription: motionUsageDescription)
-    #endif
   }
 
   // `authorizationStatus` is an autoclosure because touching CMPedometer without the usage
@@ -72,11 +83,11 @@ public final class MotionPermissionRequester: NSObject, EXPermissionsRequester {
     resolver resolve: @escaping EXPromiseResolveBlock,
     rejecter reject: @escaping EXPromiseRejectBlock
   ) {
-    #if EXPO_DISABLE_MOTION_PERMISSION
-    resolve(getPermissions())
-    #else
+    if Self.isMotionPermissionDisabled(infoDictionaryValue: infoDictionaryValue) {
+      resolve(getPermissions())
+      return
+    }
     requestPermissions(usageDescription: motionUsageDescription, resolver: resolve, rejecter: reject)
-    #endif
   }
 
   func requestPermissions(

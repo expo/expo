@@ -157,6 +157,18 @@ public final class ModuleHolder {
   }
 
   func post(event: EventName) {
+    // The app lifecycle events come from `UIApplication`/`NSApplication` notifications on the main thread.
+    nonisolated(unsafe) let module = module
+    switch event {
+    case .appEntersForeground:
+      MainActor.assumeIsolated { module.appWillEnterForeground() }
+    case .appBecomesActive:
+      MainActor.assumeIsolated { module.appDidBecomeActive() }
+    case .appEntersBackground:
+      MainActor.assumeIsolated { module.appDidEnterBackground() }
+    default:
+      break
+    }
     listeners(forEvent: event).forEach {
       try? $0.call(module, nil)
     }

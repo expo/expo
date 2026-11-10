@@ -473,7 +473,8 @@ function checkDumpedCase(
 }
 
 /**
- * A directly built manifest must load the ExpoModules macro plugin itself, through
+ * A directly built manifest written before expo-modules-macros 0.29.0 loads the ExpoModules
+ * macro plugin itself, through
  * `.unsafeFlags(["-Xfrontend", "-load-plugin-executable", "-Xfrontend", "<dir>/ExpoModulesMacros#ExpoModulesMacros"])`.
  * The generated manifest already adds that flag to every Swift target that depends on
  * ExpoModulesCore, and a target that does not cannot use the macros, so the setting is dropped

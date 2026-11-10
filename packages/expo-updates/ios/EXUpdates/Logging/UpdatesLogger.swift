@@ -2,6 +2,7 @@
 
 // swiftlint:disable function_parameter_count
 
+import EXUpdatesInterface
 import ExpoModulesCore
 import Foundation
 import os.log
@@ -115,91 +116,118 @@ public final class UpdatesLogger: NSObject {
     info(message: message, code: .none)
   }
 
+  // MARK: - Logging by message key
+
+  /**
+   Logs a warning with the key and template of `message`. The template is filled from `values`, and
+   from `cause` for its `{cause}` placeholder when `values` has no `cause`.
+   */
   func warn(
-    message: String,
-    code: UpdatesErrorCode = .none,
-    updateId: String?,
-    assetId: String?
+    _ message: UpdatesLogMessage,
+    cause: Error? = nil,
+    values: [String: String] = [:],
+    updateId: String? = nil,
+    assetId: String? = nil
   ) {
-    let entry = logEntryString(
-      message: message, code: code, level: .warn,
-      duration: nil, updateId: updateId, assetId: assetId
-    )
-    logger.warn(entry)
-  }
-
-  func warn(
-    message: String,
-    code: UpdatesErrorCode = .none
-  ) {
-    warn(message: message, code: code, updateId: nil, assetId: nil)
-  }
-
-  func warn(message: String) {
-    warn(message: message, code: .none)
-  }
-
-  func error(
-    cause: UpdatesError,
-    code: UpdatesErrorCode = .none,
-    updateId: String?,
-    assetId: String?
-  ) {
-    let entry = logEntryString(
-      message: cause.localizedDescription, code: code, level: .error,
-      duration: nil, updateId: updateId, assetId: assetId
-    )
-    logger.error(entry)
-  }
-
-  func error(
-    cause: UpdatesError,
-    code: UpdatesErrorCode = .none
-  ) {
-    error(cause: cause, code: code, updateId: nil, assetId: nil)
+    logger.warn(logEntryString(
+      message, cause: cause, values: values, level: .warn, updateId: updateId, assetId: assetId
+    ))
   }
 
   /**
-   Logs a failed update load as the error that `wrap` makes from it. When assets of the update failed
-   to load, logs one error for each group of asset failures with the same code and HTTP status, so
-   that one kind of failure does not hide another.
+   Logs an error with the key and template of `message`, filled as for `warn`.
+   */
+  func error(
+    _ message: UpdatesLogMessage,
+    cause: Error? = nil,
+    values: [String: String] = [:],
+    updateId: String? = nil,
+    assetId: String? = nil
+  ) {
+    logger.error(logEntryString(
+      message, cause: cause, values: values, level: .error, updateId: updateId, assetId: assetId
+    ))
+  }
+
+  /**
+   Logs a failed update load with `unreachable` when the device could not reach the server, and
+   with `failed` for any other failure. When assets of the update failed to load, logs one error
+   for each group of asset failures with the same key and HTTP status instead, so that one kind of
+   failure does not hide another. Those errors always have the `remote.assetsFailed` or
+   `remote.assetsUnreachable` key, whatever `failed` and `unreachable` are. A code signing failure
+   is not logged again: the file downloader logs it as `systemCodeSigningVerificationFailed`.
    */
   func errorForLoadFailure(
     _ error: Error,
-    otherwise code: UpdatesErrorCode,
-    updateId: String? = nil,
-    wrap: (Error) -> UpdatesError
-  ) {
-    logLoadFailure(error, as: wrap(error), otherwise: code, updateId: updateId) { wrap($0) }
-  }
-
-  /**
-   Logs a failed update load as `error` itself, with the same grouping of asset failures as
-   `errorForLoadFailure(_:otherwise:updateId:wrap:)`.
-   */
-  func errorForLoadFailure(
-    _ error: UpdatesError,
-    otherwise code: UpdatesErrorCode,
+    failed: UpdatesLogMessage,
+    unreachable: UpdatesLogMessage,
     updateId: String? = nil
   ) {
-    logLoadFailure(error, as: error, otherwise: code, updateId: updateId) { $0 }
-  }
-
-  private func logLoadFailure(
-    _ error: Error,
-    as loggedError: UpdatesError,
-    otherwise code: UpdatesErrorCode,
-    updateId: String?,
-    wrapGroup: (UpdatesError) -> UpdatesError
-  ) {
-    guard let failures = assetLoadFailures(in: error) else {
-      self.error(cause: loggedError, code: UpdatesErrorCode.forLoadFailure(error, otherwise: code), updateId: updateId, assetId: nil)
+    if isCodeSigningFailure(error) {
       return
     }
-    for group in UpdatesErrorCode.groups(of: failures) {
-      let groupError = UpdatesError.appLoaderFailedToLoadAllAssets(failures: group.failures)
-      self.error(cause: wrapGroup(groupError), code: group.code, updateId: updateId, assetId: nil)
+    guard let failures = assetLoadFailures(in: error) else {
+      self.error(
+        UpdatesLogMessage.forLoadFailure(error, failed: failed, unreachable: unreachable),
+        cause: error,
+        updateId: updateId
+      )
+      return
     }
+    for group in UpdatesLogMessage.groups(of: failures) {
+      var values = [
+        "count": String(group.failures.count),
+        "assetKeys": UpdatesLogger.assetKeysValue(group.failures.map { $0.assetKey })
+      ]
+      if let httpStatus = group.httpStatus {
+        values["httpStatus"] = String(httpStatus)
+      }
+      self.error(group.message, cause: group.failures.first?.error, values: values, updateId: updateId)
+    }
+  }
+
+  private static let maxListedAssetKeys = 5
+
+  /**
+   The keys of a list of assets as log values and messages show it: the first few keys, then the
+   number of keys left out.
+   */
+  static func assetKeysValue(_ assetKeys: [String]) -> String {
+    let listedKeys = assetKeys.prefix(maxListedAssetKeys).joined(separator: ", ")
+    let moreKeys = assetKeys.count > maxListedAssetKeys ? ", and \(assetKeys.count - maxListedAssetKeys) more" : ""
+    return listedKeys + moreKeys
+  }
+
+  /**
+   Fills each `{name}` placeholder in `template` with `values[name]`. A placeholder with no value
+   stays as it is.
+   */
+  static func fill(_ template: String, with values: [String: String]) -> String {
+    var result = ""
+    var rest = template[...]
+    while let open = rest.firstIndex(of: "{"), let close = rest[open...].firstIndex(of: "}") {
+      result += rest[..<open]
+      let name = String(rest[rest.index(after: open)..<close])
+      result += values[name] ?? String(rest[open...close])
+      rest = rest[rest.index(after: close)...]
+    }
+    return result + rest
+  }
+
+  private func isCodeSigningFailure(_ error: Error) -> Bool {
+    var current: Error? = error
+    while let error = current {
+      switch error as? UpdatesError {
+      case .fileDownloaderCodeSigningError?,
+        .fileDownloaderCodeSigningUnknownError?,
+        .fileDownloaderCodeSigningIncorrectSignature?,
+        .fileDownloaderCodeSigningCertificateScopeKeyOrProjectIdMismatch?:
+        return true
+      default:
+        current = (error as? UpdatesError)?.cause
+      }
+    }
+    return false
   }
 
   private func assetLoadFailures(in error: Error) -> [AssetLoadFailure]? {
@@ -213,30 +241,39 @@ public final class UpdatesLogger: NSObject {
     return nil
   }
 
-  func fatal(
-    cause: UpdatesError,
-    code: UpdatesErrorCode = .none,
-    updateId: String?,
-    assetId: String?
-  ) {
-    let entry = logEntryString(
-      message: cause.localizedDescription, code: code, level: .fatal,
-      duration: nil, updateId: updateId, assetId: assetId
-    )
-    logger.fatal(entry)
-  }
-
-  func fatal(
-    cause: UpdatesError,
-    code: UpdatesErrorCode = .none
-  ) {
-    fatal(cause: cause, code: code, updateId: nil, assetId: nil)
-  }
-
   func startTimer(label: String) -> LoggerTimer {
     return logger.startTimer { duration in
       self.logEntryString(message: label, code: .none, level: .timer, duration: duration, updateId: nil, assetId: nil)
     }
+  }
+
+  private func logEntryString(
+    _ message: UpdatesLogMessage,
+    cause: Error?,
+    values: [String: String],
+    level: LogType,
+    updateId: String?,
+    assetId: String?
+  ) -> String {
+    var values = values
+    if let cause, values["cause"] == nil {
+      values["cause"] = cause.localizedDescription
+    }
+    // Only for error and fatal logs
+    let symbols = (level == .error || level == .fatal) ? UpdatesLogEntry.currentStackTrace() : nil
+    let logEntry = UpdatesLogEntry(
+      timestamp: UInt(Date().timeIntervalSince1970 * 1000),
+      message: UpdatesLogger.fill(message.template, with: values),
+      code: message.code.asString,
+      level: "\(level)",
+      updateId: updateId,
+      assetId: assetId,
+      stacktrace: symbols,
+      duration: nil,
+      key: message.rawValue,
+      values: values.isEmpty ? nil : values
+    )
+    return logEntry.asString() ?? logEntry.message
   }
 
   func logEntryString(

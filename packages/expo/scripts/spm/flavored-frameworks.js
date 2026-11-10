@@ -159,7 +159,10 @@ function extractTarball(sourcePath, packageName, frameworkName, cacheDir, flavor
 
   validateTarEntries(sourcePath, frameworkName);
   replaceDirectory(destination, (temp) => {
-    execFileSync('tar', ['-xzf', sourcePath, '-C', temp], { stdio: 'pipe' });
+    // `-m` stamps the files with the extraction time. With the archived mtimes,
+    // a newer header version looks older than Xcode's cached explicit module,
+    // and Xcode reuses that stale module.
+    execFileSync('tar', ['-xzmf', sourcePath, '-C', temp], { stdio: 'pipe' });
     const extracted = path.join(temp, `${frameworkName}.xcframework`);
     if (!fs.existsSync(path.join(extracted, 'Info.plist'))) {
       throw incompleteXCFrameworkError(

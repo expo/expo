@@ -28,6 +28,30 @@ struct AppContextTests {
     #expect(AppContext.from(runtime: bareRuntime) == nil)
   }
 
+  @Test
+  func `an app context with its own runtime is deallocated once released`() {
+    weak var weakAppContext: AppContext?
+    do {
+      let appContext = AppContext.create()
+      weakAppContext = appContext
+    }
+    #expect(weakAppContext == nil)
+  }
+
+  @Test
+  func `the native state pins an app context that does not own its runtime`() {
+    weak var weakAppContext: AppContext?
+    let runtime = JavaScriptRuntime()
+    do {
+      let appContext = AppContext()
+      weakAppContext = appContext
+      let coreObject = runtime.createObject()
+      coreObject.setNativeState(AppContext.NativeState(appContext: appContext, ownsLifecycle: false))
+      runtime.global().defineProperty(globalCoreObjectPropertyName, value: coreObject, options: [.enumerable])
+    }
+    #expect(weakAppContext != nil)
+  }
+
   // MARK: - moduleProviderClassNames
 
   @Test

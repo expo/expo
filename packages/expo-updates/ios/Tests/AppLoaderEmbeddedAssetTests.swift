@@ -28,6 +28,20 @@ class RecordingAppLoader: AppLoader {
   }
 }
 
+class HeaderRespondingAppLoader: AppLoader {
+  override func downloadAsset(_ asset: UpdateAsset, extraHeaders: [String: Any]) {
+    let response = HTTPURLResponse(
+      url: asset.url!,
+      statusCode: 200,
+      httpVersion: nil,
+      headerFields: ["Set-Cookie": "session=secret"]
+    )
+    DispatchQueue.global().async {
+      self.handleAssetDownload(withData: Data("downloaded".utf8), response: response, asset: asset)
+    }
+  }
+}
+
 // Only used to locate the test bundle that holds the fixtures.
 class AppLoaderEmbeddedAssetTestsForBundle {}
 
@@ -155,6 +169,65 @@ class AppLoaderEmbeddedAssetTests {
       let storedAsset = try? db.asset(withKey: "shared-asset")
       #expect(storedAsset != nil)
     }
+  }
+
+  @Test
+  func `downloaded assets do not keep response headers`() async throws {
+    let config = try UpdatesConfig.config(fromDictionary: [
+      UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+      UpdatesConfig.EXUpdatesConfigScopeKeyKey: "dummyScope",
+      UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1",
+    ])
+
+    let remoteUpdate = ExpoUpdatesUpdate.update(
+      withExpoUpdatesManifest: ExpoUpdatesManifest(rawManifestJSON: [
+        "runtimeVersion": "1",
+        "id": "8b3c2e10-4f5a-4a1e-9c77-2b0f1d6a4e21",
+        "createdAt": "2026-01-02T00:17:54.797Z",
+        "launchAsset": [
+          "key": "remote-bundle",
+          "url": "https://example.com/index.bundle",
+          "contentType": "application/javascript",
+        ],
+        "assets": [],
+      ]),
+      extensions: [:],
+      config: config,
+      database: db
+    )
+
+    let loader = HeaderRespondingAppLoader(
+      config: config,
+      logger: UpdatesLogger(),
+      database: db,
+      directory: testDatabaseDir,
+      launchedUpdate: nil,
+      completionQueue: DispatchQueue.global(qos: .default)
+    )
+    loader.embeddedUpdate = nil
+
+    let lock = NSLock()
+    var assetHeaders: [[String: Any]?] = []
+
+    let success: Bool = await withCheckedContinuation { continuation in
+      loader.updateResponseBlock = { _ in true }
+      loader.assetBlock = { asset, _, _, _ in
+        lock.lock()
+        assetHeaders.append(asset.headers)
+        lock.unlock()
+      }
+      loader.successBlock = { _ in continuation.resume(returning: true) }
+      loader.errorBlock = { _ in continuation.resume(returning: false) }
+      loader.startLoading(fromUpdateResponse: UpdateResponse(
+        responseHeaderData: nil,
+        manifestUpdateResponsePart: ManifestUpdateResponsePart(updateManifest: remoteUpdate),
+        directiveUpdateResponsePart: nil
+      ))
+    }
+
+    #expect(success == true)
+    #expect(assetHeaders.count == 1)
+    #expect(assetHeaders.allSatisfy { $0 == nil })
   }
 
   @Test

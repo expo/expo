@@ -83,6 +83,8 @@ Environment variables are not the only thing a job can interpolate. The same `${
 
 Fields from the GitHub event that triggered the workflow. When you start a run with `eas workflow:run`, `event_name` is `workflow_dispatch` and the other fields are empty.
 
+If you pass `--git-branch` and `--git-commit-hash`, `event_name` is `push` instead. The `sha` and `commit_message` fields come from the commit, and `ref`, `ref_name`, and `ref_type` come from the branch. The `repository` and `repository_owner` fields stay empty. The `event` field is not set, so read run inputs from the [`inputs`](#inputs) context, not from `github.event.inputs`.
+
 ```js
 github {
   triggering_actor,   // User who triggered the run, e.g. jonexpo
@@ -115,7 +117,7 @@ github {
       merged_at,
       // ... and other fields from the GitHub Pull Request webhook payload
     },
-    inputs,           // workflow_dispatch inputs
+    inputs,           // workflow_dispatch or workflow_call inputs
     schedule,         // Cron expression, for scheduled runs
     number,
   }
@@ -126,7 +128,7 @@ The `event` object contains the full [GitHub webhook payload](https://docs.githu
 
 ### `inputs`
 
-A record of the inputs provided when you start the workflow manually with [`workflow_dispatch`](/eas/workflows/syntax/#onworkflow_dispatchinputs). Empty when the workflow is triggered another way.
+A record of the inputs provided when you start the workflow manually with [`workflow_dispatch`](/eas/workflows/syntax/#onworkflow_dispatchinputs). In a [called run](/eas/workflows/reusable-workflows/#context-of-a-called-run), it contains the inputs of that run. Empty when another trigger starts the workflow.
 
 ```yaml
 jobs:

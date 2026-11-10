@@ -229,7 +229,7 @@ private func blobBenchmarkCase(
   _ measure: @escaping @JavaScriptActor (borrowing JavaScriptFunction, JavaScriptRuntime) throws -> Void
 ) async throws {
   try await moduleBenchmarkCase { appContext in
-    return ExpoBlob(appContext: appContext)
+    return BlobModule(appContext: appContext)
   } _: { _, runtime in
     _ = try runtime.eval(fixtures)
     let run = try javaScriptDriver(runtime, body: body)
@@ -245,7 +245,7 @@ private func blobBenchmarkCase(
 private func blobAsyncBenchmark(_ name: String, body: String) async throws {
   try await benchmarkCase {
     let appContext = TestAppContext()
-    appContext.moduleRegistry.register(module: ExpoBlob(appContext: appContext), name: nil)
+    appContext.moduleRegistry.register(module: BlobModule(appContext: appContext), name: nil)
     let runtime = try appContext.runtime
     try runtime.execute { () throws -> Void in
       _ = try runtime.eval(fixtures)

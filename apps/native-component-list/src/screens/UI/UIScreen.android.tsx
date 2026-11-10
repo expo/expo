@@ -235,6 +235,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'RangeSlider component',
+    route: 'ui/range-slider',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./RangeSliderScreen'));
+    },
+  },
+  {
     name: 'DropdownMenu component',
     route: 'ui/dropdown-menu',
     options: {},

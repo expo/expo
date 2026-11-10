@@ -1,5 +1,6 @@
 //  Copyright (c) 2022 650 Industries, Inc. All rights reserved.
 
+import EXUpdatesInterface
 import ExpoModulesCore
 import Testing
 
@@ -63,7 +64,7 @@ struct UpdatesLogReaderTests {
   @MainActor
   func `timestamps have millisecond precision`() async throws {
     let before = UInt(Date().timeIntervalSince1970 * 1000)
-    logger.warn(message: "Precision message", code: .none)
+    logger.info(message: "Precision message")
     try await Task.sleep(for: .seconds(0.1))
     let after = UInt(Date().timeIntervalSince1970 * 1000)
 
@@ -119,10 +120,15 @@ struct UpdatesLogReaderTests {
     let epoch = Date()
 
     // Write a log message
-    logger.error(cause: UpdatesError.fileDownloaderRemoteUpdateMissingBody, code: .noUpdatesAvailable)
+    logger.error(.remoteFetchFailed, cause: UpdatesError.fileDownloaderRemoteUpdateMissingBody)
 
     // Write another log message
-    logger.warn(message: "Warning message", code: .assetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
+    logger.warn(
+      .remoteAssetDownloadFailed,
+      values: ["assetKey": "myAssetId", "cause": "Warning message"],
+      updateId: "myUpdateId",
+      assetId: "myAssetId"
+    )
 
     try await Task.sleep(for: .seconds(0.1))
 
@@ -138,8 +144,8 @@ struct UpdatesLogReaderTests {
     let logEntry = UpdatesLogEntry.create(from: logEntryText)
     let timestamp = Double(logEntry!.timestamp / 1_000)
     #expect(abs(timestamp - epoch.timeIntervalSince1970) < 120)
-    #expect(logEntry?.message == "Missing body in remote update")
-    #expect(logEntry?.code == "NoUpdatesAvailable")
+    #expect(logEntry?.message == "Failed to download new update: Missing body in remote update")
+    #expect(logEntry?.code == "UpdateFailedToLoad")
     #expect(logEntry?.level == "error")
     #expect(logEntry?.updateId == nil)
     #expect(logEntry?.assetId == nil)
@@ -149,12 +155,64 @@ struct UpdatesLogReaderTests {
     let logEntry2 = UpdatesLogEntry.create(from: logEntryText2)
     let timestamp2 = Double(logEntry2!.timestamp / 1_000)
     #expect(abs(timestamp2 - epoch.timeIntervalSince1970) < 120)
-    #expect(logEntry2?.message == "Warning message")
+    #expect(logEntry2?.message == "Failed to download asset myAssetId: Warning message")
     #expect(logEntry2?.code == "AssetsFailedToLoad")
     #expect(logEntry2?.level == "warn")
     #expect(logEntry2?.updateId == "myUpdateId")
     #expect(logEntry2?.assetId == "myAssetId")
     #expect(logEntry2?.stacktrace == nil)
+  }
+
+  @Test
+  @MainActor
+  func `a keyed warning has its key, values and filled template`() async throws {
+    let epoch = Date()
+
+    logger.warn(
+      .reaperAssetDeleteFailed,
+      cause: UpdatesError.remoteAppLoaderAssetMissingUrl,
+      values: ["path": "/tmp/a.png"],
+      updateId: "myUpdateId"
+    )
+    try await Task.sleep(for: .seconds(0.1))
+
+    let entry = try #require(
+      logReader.getLogEntries(newerThan: epoch).compactMap { UpdatesLogEntry.create(from: $0) }.last
+    )
+    let cause = UpdatesError.remoteAppLoaderAssetMissingUrl.localizedDescription
+    #expect(entry.key == "reaper.assetDeleteFailed")
+    #expect(entry.values == ["path": "/tmp/a.png", "cause": cause])
+    #expect(entry.message == "Error deleting asset at /tmp/a.png: \(cause)")
+    #expect(entry.code == "None")
+    #expect(entry.level == "warn")
+    #expect(entry.updateId == "myUpdateId")
+
+    let dict = entry.asDict()
+    #expect(dict["key"] as? String == "reaper.assetDeleteFailed")
+    #expect(dict["values"] as? [String: String] == ["path": "/tmp/a.png", "cause": cause])
+  }
+
+  @Test
+  func `an entry written before log message keys has no key or values`() throws {
+    let line = #"{"timestamp":1700000000000,"message":"Old message","code":"None","level":"warn"}"#
+
+    let entry = try #require(UpdatesLogEntry.create(from: line))
+
+    #expect(entry.message == "Old message")
+    #expect(entry.key == nil)
+    #expect(entry.values == nil)
+    #expect(entry.asDict()["key"] == nil)
+    #expect(entry.asDict()["values"] == nil)
+  }
+
+  @Test
+  func `fill leaves a placeholder with no value and does not fill values`() {
+    let filled = UpdatesLogger.fill(
+      "Asset {assetKey} failed: {cause} ({reason})",
+      with: ["assetKey": "{cause}", "cause": "timeout"]
+    )
+
+    #expect(filled == "Asset {cause} failed: timeout ({reason})")
   }
 
   @Test
@@ -219,6 +277,23 @@ struct UpdatesLogReaderTests {
     let remaining = PersistentFileLog(category: category).readEntries()
     #expect(remaining.count == 1)
     #expect(!remaining.contains(truncatedEntry))
+  }
+
+  @Test
+  func `clearing the log removes entries with any timestamp`() async throws {
+    let futureTimestamp = UInt(Date().timeIntervalSince1970 * 1000) + 60_000
+    let futureEntry =
+      "xx{\"timestamp\":\(futureTimestamp),\"message\":\"Test message\",\"code\":\"None\",\"level\":\"error\"}"
+    await appendRawEntryAsync(entry: futureEntry)
+
+    let error: Error? = await withCheckedContinuation { continuation in
+      logReader.clearLogEntries { error in
+        continuation.resume(returning: error)
+      }
+    }
+
+    #expect(error == nil)
+    #expect(PersistentFileLog(category: category).readEntries().isEmpty)
   }
 
   // MARK: - Private methods

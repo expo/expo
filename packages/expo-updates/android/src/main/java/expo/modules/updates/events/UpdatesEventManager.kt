@@ -3,6 +3,7 @@ package expo.modules.updates.events
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.statemachine.UpdatesStateContext
+import expo.modules.updatesinterface.UpdatesLogMessage
 import java.lang.ref.WeakReference
 
 class UpdatesEventManager(private val logger: UpdatesLogger) : IUpdatesEventManager {
@@ -20,11 +21,7 @@ class UpdatesEventManager(private val logger: UpdatesLogger) : IUpdatesEventMana
       observer.onStateMachineContextEvent(context)
       logger.debug("Sent state machine context to observer")
     } catch (e: Exception) {
-      logger.error(
-        "Could not send state machine context to observer",
-        e,
-        UpdatesErrorCode.JSRuntimeError
-      )
+      logger.error(UpdatesLogMessage.SystemObserverSendFailed, e)
     }
   }
 }

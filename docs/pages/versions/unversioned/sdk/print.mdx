@@ -186,3 +186,23 @@ They are set by `@page` style block and you can override them in your HTML code:
 ```
 
 See [`@page` documentation on MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/@page) for more details.
+
+## Paper size
+
+**On iOS**, the print dialog starts on the printer's default paper, often US Letter or A4, and scales each page to fit it. To start on another paper, such as a 4 x 6 inch card, set `preferredPaperSize` to the paper size in points (1/72 inch). When the user selects a printer, the dialog selects that printer's paper that best fits the size. The user can still select a different paper. If the user switches to another printer, the dialog no longer uses `preferredPaperSize`.
+
+Also set `width` and `height` to a page with the shape of the paper. Otherwise the HTML renders on a US Letter page, and that page shrinks to fit the paper.
+
+```js
+await Print.printAsync({
+  html,
+  width: 576,
+  height: 384,
+  margins: { top: 0, right: 0, bottom: 0, left: 0 },
+  preferredPaperSize: { width: 432, height: 288 },
+});
+```
+
+Before the user selects a printer, the dialog offers a fixed list of standard papers and keeps its default paper.
+
+With `printerUrl`, `printAsync` prints without the dialog. The job then prints on the printer's paper that best fits `preferredPaperSize`.

@@ -153,14 +153,31 @@ inline jsi::Value valueFromArray(jsi::IRuntime &runtime, const jsi::Array &array
   return jsi::Value(runtime, array);
 }
 
-// Move an object's or an array's handle into a new value, without the clone of the copying
-// counterparts above. The source is left empty, so it must not be used afterwards.
+// Move the handle of an object, an array, a function, an array buffer, a BigInt or a symbol into a
+// new value, without the clone of the copying counterparts. The source is left empty, so it must not
+// be used afterwards.
 inline jsi::Value takeValueFromObject(jsi::Object &object) noexcept {
   return jsi::Value(std::move(object));
 }
 
 inline jsi::Value takeValueFromArray(jsi::Array &array) noexcept {
   return jsi::Value(std::move(array));
+}
+
+inline jsi::Value takeValueFromFunction(jsi::Function &function) noexcept {
+  return jsi::Value(std::move(function));
+}
+
+inline jsi::Value takeValueFromArrayBuffer(jsi::ArrayBuffer &arrayBuffer) noexcept {
+  return jsi::Value(std::move(arrayBuffer));
+}
+
+inline jsi::Value takeValueFromBigInt(jsi::BigInt &bigInt) noexcept {
+  return jsi::Value(std::move(bigInt));
+}
+
+inline jsi::Value takeValueFromSymbol(jsi::Symbol &symbol) noexcept {
+  return jsi::Value(std::move(symbol));
 }
 
 // Clones a value's handle into a function or an array buffer. `value.getObject(runtime)` clones the
