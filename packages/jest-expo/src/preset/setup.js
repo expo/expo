@@ -285,11 +285,13 @@ jest.doMock('expo-modules-core', () => {
   // NOTE: The adapter validates the number of arguments, which we don't do in the mocked functions.
   // This means the mock functions will not throw validation errors the way they would in an app.
 
+  const generatedStubs = new WeakSet();
   for (const moduleName of Object.keys(NativeModulesProxy)) {
     const nativeModule = NativeModulesProxy[moduleName];
     for (const propertyName of Object.keys(nativeModule)) {
       if (typeof nativeModule[propertyName] === 'function') {
         nativeModule[propertyName] = jest.fn(async () => {});
+        generatedStubs.add(nativeModule[propertyName]);
       }
     }
   }
@@ -298,8 +300,8 @@ jest.doMock('expo-modules-core', () => {
     // Support auto-mocking of expo-modules that:
     // 1. have a mock in the `mocks` directory
     // 2. the native module (e.g. ExpoCrypto) name matches the package name (expo-crypto)
-    const handWrittenMock = attemptLookup(name);
-    const nativeModuleMock = handWrittenMock ?? ExpoModulesCore.requireOptionalNativeModule(name);
+    const nativeModuleMock =
+      attemptLookup(name) ?? ExpoModulesCore.requireOptionalNativeModule(name);
     if (!nativeModuleMock) {
       return null;
     }
@@ -310,8 +312,11 @@ jest.doMock('expo-modules-core', () => {
         // Don't wrap classes with jest.fn() as it destroys the prototype chain
         // needed for `extends` (e.g. File extends ExpoFileSystem.FileSystemFile).
         const isClass = Object.getOwnPropertyNames(value.prototype ?? {}).length > 1;
-        const inherited = !handWrittenMock && typeof nativeModule[key] === 'function';
-        nativeModule[key] = isClass ? value : jest.fn(inherited ? nativeModule[key] : value);
+        const nativeImpl =
+          generatedStubs.has(value) && typeof nativeModule[key] === 'function'
+            ? nativeModule[key]
+            : value;
+        nativeModule[key] = isClass ? value : jest.fn(nativeImpl);
       } else {
         nativeModule[key] = value;
       }
