@@ -8,10 +8,12 @@ import EXManifests
 
 class TestStateChangeEventManager: UpdatesEventManager {
   var lastContext: UpdatesStateContext? = nil
+  var sendCount = 0
   weak var observer: (any EXUpdates.UpdatesEventManagerObserver)?
 
   func sendStateMachineContextEvent(context: EXUpdates.UpdatesStateContext) {
     lastContext = context
+    sendCount += 1
   }
 }
 
@@ -158,6 +160,38 @@ struct UpdatesStateMachineTests {
 
     machine.processEventForTesting(.downloadCompleteUnavailable)
     #expect(machine.getStateForTesting() == .idle)
+    #expect(testStateChangeEventManager.lastContext?.downloadProgress == 1)
+  }
+
+  @Test
+  func `should send download progress once per 1% step`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    machine.processEventForTesting(.download)
+    let assetCount = 556
+    for asset in 0..<assetCount {
+      for chunk in 1...4 {
+        machine.processEventForTesting(.downloadProgress(progress: (Double(asset) + Double(chunk) / 4) / Double(assetCount)))
+      }
+    }
+
+    #expect(testStateChangeEventManager.sendCount == 101)
+    #expect(testStateChangeEventManager.lastContext?.downloadProgress == 1)
+  }
+
+  @Test
+  func `should set download progress to 1 when a download completes`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    machine.processEventForTesting(.download)
+    machine.processEventForTesting(.downloadProgress(progress: 0.5))
+    machine.processEventForTesting(.downloadCompleteWithUpdate(manifest: ["updateId": "0000-xxxx"]))
+    #expect(testStateChangeEventManager.lastContext?.downloadProgress == 1)
+
+    machine.processEventForTesting(.download)
+    machine.processEventForTesting(.downloadCompleteWithRollback)
     #expect(testStateChangeEventManager.lastContext?.downloadProgress == 1)
   }
 

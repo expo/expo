@@ -409,6 +409,7 @@ internal class UpdatesStateMachine {
   private func processEvent(_ event: UpdatesStateEvent) {
     // Execute state transition
     if transition(event) {
+      let previousProgress = context.downloadProgress
       // Only change context if transition succeeds
       context = reducedContext(context, event)
       if event.type != .downloadProgress {
@@ -420,7 +421,9 @@ internal class UpdatesStateMachine {
           listener.updatesStateDidChange(event.toMap)
         }
       }
-      sendContextToJS()
+      if event.type != .downloadProgress || (context.downloadProgress * 100).rounded(.down) != (previousProgress * 100).rounded(.down) {
+        sendContextToJS()
+      }
     }
   }
   internal func processEventForTesting(_ event: UpdatesStateEvent) {
@@ -547,6 +550,7 @@ internal class UpdatesStateMachine {
         $0.isDownloading = false
         $0.downloadError = nil
         $0.isUpdatePending = true
+        $0.downloadProgress = 1.0
         $0.downloadStartTime = nil
         $0.downloadFinishTime = nil
       }
@@ -554,6 +558,7 @@ internal class UpdatesStateMachine {
       return context.copyAndIncrementSequenceNumber {
         $0.isDownloading = false
         $0.downloadError = nil
+        $0.downloadProgress = 1.0
         $0.latestManifest = manifest
         $0.downloadedManifest = manifest
         $0.rollback = nil

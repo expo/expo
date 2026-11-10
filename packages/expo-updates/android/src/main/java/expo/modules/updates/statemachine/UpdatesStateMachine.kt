@@ -11,6 +11,7 @@ import expo.modules.updatesinterface.UpdatesControllerRegistry
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.util.Date
+import kotlin.math.floor
 
 /**
  * The Updates state machine class. There should be only one instance of this class
@@ -93,6 +94,7 @@ class UpdatesStateMachine(
    */
   private fun processEvent(event: UpdatesStateEvent) {
     if (transition(event)) {
+      val previousProgress = context.downloadProgress
       context = reduceContext(context, event)
       if (event !is UpdatesStateEvent.DownloadProgress) {
         logger.info("Updates state change: ${event.type}, context = ${context.json}")
@@ -105,7 +107,9 @@ class UpdatesStateMachine(
           }
         }
       }
-      sendContextToJS()
+      if (event !is UpdatesStateEvent.DownloadProgress || floor(context.downloadProgress * 100) != floor(previousProgress * 100)) {
+        sendContextToJS()
+      }
     }
   }
 
@@ -255,12 +259,14 @@ class UpdatesStateMachine(
           isDownloading = false,
           downloadError = null,
           isUpdatePending = true,
+          downloadProgress = 1.0,
           downloadStartTime = null,
           downloadFinishTime = null
         )
         is UpdatesStateEvent.DownloadCompleteWithUpdate -> context.copyAndIncrementSequenceNumber(
           isDownloading = false,
           downloadError = null,
+          downloadProgress = 1.0,
           latestManifest = event.manifest,
           downloadedManifest = event.manifest,
           rollback = null,
