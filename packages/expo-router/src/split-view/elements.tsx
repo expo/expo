@@ -1,9 +1,70 @@
 import { Children, isValidElement, type ReactNode } from 'react';
 import type { NativeSyntheticEvent } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
+import type { SFSymbol } from 'sf-symbols-typescript';
 
 import { SafeAreaView, Split } from '../optional-libraries/react-native-screens';
 import { SplitViewColumnHeader } from './header';
+
+export interface SplitViewToolbarItem {
+  /**
+   * Title of the button. When `icon` is set, it is used as the accessibility label.
+   */
+  title: string;
+  /**
+   * SF Symbol shown instead of the title.
+   */
+  icon?: SFSymbol;
+  /**
+   * Called when the button is pressed. Not called when `menu` is set.
+   */
+  onPress?: () => void;
+  /**
+   * Menu that opens when the button is pressed.
+   */
+  menu?: SplitViewMenu;
+}
+
+export interface SplitViewMenu {
+  /**
+   * Title shown at the top of the menu.
+   */
+  title?: string;
+  /**
+   * Actions shown in the menu.
+   */
+  items: SplitViewMenuAction[];
+}
+
+export interface SplitViewMenuAction {
+  /**
+   * Title of the action.
+   */
+  title: string;
+  /**
+   * SF Symbol shown next to the title.
+   */
+  icon?: SFSymbol;
+  /**
+   * Called when the action is pressed.
+   */
+  onPress?: () => void;
+  /**
+   * Whether the action is shown as destructive.
+   * @default false
+   */
+  destructive?: boolean;
+  /**
+   * Whether the action cannot be pressed.
+   * @default false
+   */
+  disabled?: boolean;
+  /**
+   * Whether the action shows a checkmark.
+   * @default false
+   */
+  isOn?: boolean;
+}
 
 export interface SplitViewSearchBar {
   /**
@@ -30,6 +91,14 @@ export interface SplitViewHeader {
    * @default false
    */
   largeTitle?: boolean;
+  /**
+   * Buttons shown on the leading side of the navigation bar.
+   */
+  leftToolbar?: SplitViewToolbarItem[];
+  /**
+   * Buttons shown on the trailing side of the navigation bar.
+   */
+  rightToolbar?: SplitViewToolbarItem[];
   /**
    * Search bar shown in the navigation bar.
    */

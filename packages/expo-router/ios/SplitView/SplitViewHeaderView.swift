@@ -13,7 +13,10 @@ protocol NavigationItemCustomizer: NSObjectProtocol {
 class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelegate {
   var headerTitle: String?
   var largeTitle = false
+  var leftToolbarItems: [SplitViewToolbarItemRecord] = []
+  var rightToolbarItems: [SplitViewToolbarItemRecord] = []
   var searchBar: SplitViewSearchBarRecord?
+  let onToolbarItemPress = EventDispatcher()
   let onSearchBarChangeText = EventDispatcher()
   let onSearchBarSearchButtonPress = EventDispatcher()
 
@@ -30,6 +33,9 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     if superview == nil, let navigationItem {
       navigationItem.title = nil
       navigationItem.largeTitleDisplayMode = .never
+      navigationItem.leftItemsSupplementBackButton = false
+      navigationItem.leftBarButtonItems = nil
+      navigationItem.rightBarButtonItems = nil
       navigationItem.searchController = nil
       searchController = nil
       self.navigationItem = nil
@@ -49,6 +55,10 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
       // The column view is the view of its controller, so the controller is its next responder.
       (superview?.next as? UIViewController)?.navigationController?.navigationBar.sizeToFit()
     }
+    // Keeps the back button next to the left items when the split view is collapsed.
+    navigationItem.leftItemsSupplementBackButton = true
+    navigationItem.leftBarButtonItems = barButtonItems(leftToolbarItems)
+    navigationItem.rightBarButtonItems = barButtonItems(rightToolbarItems)
     applySearchBar(to: navigationItem)
   }
 
@@ -85,5 +95,38 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     controller.obscuresBackgroundDuringPresentation = false
     controller.searchBar.delegate = self
     return controller
+  }
+
+  // Similar to react-native-screens: https://github.com/software-mansion/react-native-screens/blob/9d7da8f17e40143c8be83f218ab2968b4c4fd1e4/ios/RNSBarButtonItem.mm#L14-L289
+  private func barButtonItems(_ items: [SplitViewToolbarItemRecord]) -> [UIBarButtonItem] {
+    return items.map { item in
+      // With an image, the button shows only the image and uses the title as its accessibility label.
+      let image = item.icon.flatMap { UIImage(systemName: $0) }
+      if let menu = item.menu {
+        return UIBarButtonItem(title: item.title, image: image, primaryAction: nil, menu: makeMenu(menu))
+      }
+      return UIBarButtonItem(primaryAction: makeAction(id: item.id, title: item.title, image: image))
+    }
+  }
+
+  private func makeMenu(_ menu: SplitViewMenuRecord) -> UIMenu {
+    let actions = menu.items.map { item in
+      let action = makeAction(id: item.id, title: item.title, image: item.icon.flatMap { UIImage(systemName: $0) })
+      if item.destructive {
+        action.attributes.insert(.destructive)
+      }
+      if item.disabled {
+        action.attributes.insert(.disabled)
+      }
+      action.state = item.isOn ? .on : .off
+      return action
+    }
+    return UIMenu(title: menu.title ?? "", children: actions)
+  }
+
+  private func makeAction(id: String, title: String, image: UIImage?) -> UIAction {
+    return UIAction(title: title, image: image) { [weak self] _ in
+      self?.onToolbarItemPress(["id": id])
+    }
   }
 }

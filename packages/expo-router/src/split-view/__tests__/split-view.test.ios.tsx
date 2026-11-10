@@ -453,7 +453,13 @@ it('passes the SplitView.Column header to the native header as flat props', asyn
     {
       _layout: () => (
         <SplitView>
-          <SplitView.Column header={{ title: 'Mailboxes', largeTitle: true }}>
+          <SplitView.Column
+            header={{
+              title: 'Mailboxes',
+              largeTitle: true,
+              leftToolbar: [{ title: 'Edit', onPress: () => {} }],
+              rightToolbar: [{ title: 'Search', icon: 'magnifyingglass', onPress: () => {} }],
+            }}>
             <Text>Sidebar</Text>
           </SplitView.Column>
           <SplitView.Content />
@@ -467,7 +473,60 @@ it('passes the SplitView.Column header to the native header as flat props', asyn
   expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0]).toEqual({
     title: 'Mailboxes',
     largeTitle: true,
+    leftToolbarItems: [{ id: 'left.0', title: 'Edit' }],
+    rightToolbarItems: [{ id: 'right.0', title: 'Search', icon: 'magnifyingglass' }],
+    onToolbarItemPress: expect.any(Function),
   });
+});
+
+it('passes the toolbar item menu to the native header with an id for each action', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column
+            header={{
+              rightToolbar: [
+                { title: 'Edit', onPress: () => {} },
+                {
+                  title: 'Filter',
+                  icon: 'line.3.horizontal.decrease.circle',
+                  menu: {
+                    title: 'Filter by',
+                    items: [
+                      { title: 'Unread', icon: 'envelope.badge', isOn: true, onPress: () => {} },
+                      { title: 'Flagged', disabled: true },
+                      { title: 'Delete All', destructive: true, onPress: () => {} },
+                    ],
+                  },
+                },
+              ],
+            }}
+          />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].rightToolbarItems).toEqual([
+    { id: 'right.0', title: 'Edit' },
+    {
+      id: 'right.1',
+      title: 'Filter',
+      icon: 'line.3.horizontal.decrease.circle',
+      menu: {
+        title: 'Filter by',
+        items: [
+          { id: 'right.1.0', title: 'Unread', icon: 'envelope.badge', isOn: true },
+          { id: 'right.1.1', title: 'Flagged', disabled: true },
+          { id: 'right.1.2', title: 'Delete All', destructive: true },
+        ],
+      },
+    },
+  ]);
 });
 
 it('renders the SplitView.Column header as the last child of its Split.Column', async () => {
@@ -491,6 +550,79 @@ it('renders the SplitView.Column header as the last child of its Split.Column', 
   expect(
     Children.toArray(columnProps.children).map((child) => isValidElement(child) && child.type)
   ).toEqual([SafeAreaView, SplitViewColumnHeader]);
+});
+
+it('calls onPress of the pressed native toolbar item', async () => {
+  const onEditPress = jest.fn();
+  const onSearchPress = jest.fn();
+  const onArchivePress = jest.fn();
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column
+            header={{
+              leftToolbar: [{ title: 'Edit', onPress: onEditPress }],
+              rightToolbar: [
+                { title: 'Search', onPress: onSearchPress },
+                { title: 'Archive', onPress: onArchivePress },
+              ],
+            }}
+          />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  const { onToolbarItemPress } = jest.mocked(SplitViewNativeHeader).mock.lastCall![0];
+  onToolbarItemPress({ nativeEvent: { id: 'right.1' } });
+
+  expect(onArchivePress).toHaveBeenCalledTimes(1);
+  expect(onSearchPress).not.toHaveBeenCalled();
+  expect(onEditPress).not.toHaveBeenCalled();
+});
+
+it('calls onPress of the pressed native menu action', async () => {
+  const onFilterPress = jest.fn();
+  const onUnreadPress = jest.fn();
+  const onFlaggedPress = jest.fn();
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column
+            header={{
+              leftToolbar: [
+                {
+                  title: 'Filter',
+                  onPress: onFilterPress,
+                  menu: {
+                    items: [
+                      { title: 'Unread', onPress: onUnreadPress },
+                      { title: 'Flagged', onPress: onFlaggedPress },
+                    ],
+                  },
+                },
+              ],
+            }}
+          />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  const { onToolbarItemPress } = jest.mocked(SplitViewNativeHeader).mock.lastCall![0];
+  onToolbarItemPress({ nativeEvent: { id: 'left.0.1' } });
+
+  expect(onFlaggedPress).toHaveBeenCalledTimes(1);
+  expect(onUnreadPress).not.toHaveBeenCalled();
+  expect(onFilterPress).not.toHaveBeenCalled();
 });
 
 it('passes the search bar placeholder to the native header without callbacks', async () => {
