@@ -116,7 +116,8 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     var controller = superview?.next as? UIViewController
     while let current = controller,
       let navigationController = current.navigationController,
-      let index = navigationController.viewControllers.firstIndex(of: current) {
+      let index = navigationController.viewControllers.firstIndex(of: current)
+    {
       if index > 0 {
         let previous = navigationController.viewControllers[index - 1]
         return ((previous as? UINavigationController)?.topViewController ?? previous).navigationItem
