@@ -1,3 +1,4 @@
+import { getSingularId } from '../../utils/getSingularId';
 import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { attachRouteState, type RouteState } from './attachRouteState';
@@ -572,6 +573,10 @@ function stackRouterExtension({
 
           const getId = options.routeGetIdList[action.payload.name];
           const id = getId?.({ params: action.payload.params });
+          // Expo Router: without an id, a route with other path params is another screen.
+          const singularId = getSingularId(action.payload.name, { params: action.payload.params });
+          const hasSamePathParams = (route: Route<string>) =>
+            getSingularId(route.name, { params: route.params }) === singularId;
 
           if (id !== undefined) {
             index = activeRoutes.findIndex(
@@ -582,7 +587,10 @@ function stackRouterExtension({
             index = currentIndex;
           } else {
             for (let i = currentIndex; i >= 0; i--) {
-              if (activeRoutes[i]!.name === action.payload.name) {
+              if (
+                activeRoutes[i]!.name === action.payload.name &&
+                hasSamePathParams(activeRoutes[i]!)
+              ) {
                 index = i;
                 break;
               }
@@ -594,7 +602,10 @@ function stackRouterExtension({
             // Re-use preloaded route if available
             let route = preloadedRoutes.find(
               (route) =>
-                route.name === action.payload.name && id === getId?.({ params: route.params })
+                route.name === action.payload.name &&
+                (id === undefined
+                  ? hasSamePathParams(route)
+                  : id === getId?.({ params: route.params }))
             );
 
             if (!route) {
