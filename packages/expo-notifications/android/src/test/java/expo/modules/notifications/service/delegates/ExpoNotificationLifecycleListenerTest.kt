@@ -86,6 +86,18 @@ class ExpoNotificationLifecycleListenerTest {
     assertEquals("queued", responses.single().getString(GOOGLE_MESSAGE_ID_KEY))
   }
 
+  @Test
+  fun `relaunch after process death does not replay the root intent or suppress a different message`() {
+    startActivity(notificationIntent("root"))
+    controller.pause().stop().destroy()
+
+    startActivity(notificationIntent("root"))
+    controller.pause().stop().destroy()
+    startActivity(notificationIntent("next"))
+
+    assertEquals(listOf("root", "next"), responses.map { it.getString(GOOGLE_MESSAGE_ID_KEY) })
+  }
+
   private fun startActivity(intent: Intent) {
     controller = Robolectric.buildActivity(NotificationActivity::class.java, intent).setup()
   }
