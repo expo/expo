@@ -12,24 +12,18 @@ export type ProgramStatus =
       msg?: string;
     };
 
-export type ProgramResult = {
-  state: 'done' | 'error';
-  msg?: string;
-};
-
-let hasReportedWorking = false;
 let lastStatusId = 0;
 
-function writeProgramStatus(status: ProgramStatus | ProgramResult | 'clear', id?: number) {
+function writeProgramStatus(status: ProgramStatus | 'clear', id: number) {
   try {
     if (isInteractive()) {
       const body = status === 'clear' ? 'state=clear' : formatProgramStatus(status);
-      process.stdout.write(`\x1b]7501;${body}${id ? `:id=${id}` : ''}\x1b\\`);
+      process.stdout.write(`\x1b]7501;${body}:id=${id}\x1b\\`);
     }
   } catch {}
 }
 
-function formatProgramStatus(status: ProgramStatus | ProgramResult): string {
+function formatProgramStatus(status: ProgramStatus): string {
   const text = status.msg
     ? stripAnsi(status.msg)
         ?.replace(/[\s\p{Cc}]+/gu, ' ')
@@ -45,9 +39,6 @@ export async function withProgramStatus<T>(
 ): Promise<T> {
   const id = ++lastStatusId;
   const clear = () => writeProgramStatus('clear', id);
-  if (status.state === 'working') {
-    hasReportedWorking = true;
-  }
   writeProgramStatus(status, id);
   process.on('exit', clear);
   try {
@@ -55,11 +46,5 @@ export async function withProgramStatus<T>(
   } finally {
     process.off('exit', clear);
     clear();
-  }
-}
-
-export function reportProgramResult(result: ProgramResult) {
-  if (hasReportedWorking) {
-    writeProgramStatus(result);
   }
 }

@@ -50,8 +50,6 @@ export const expoInstall: Command = async (argv) => {
   const { findUpProjectRootOrAssert } =
     require('../utils/findUp') as typeof import('../utils/findUp');
   const { loadEnvFiles } = require('../utils/nodeEnv') as typeof import('../utils/nodeEnv');
-  const { reportProgramResult } =
-    require('../utils/programStatus') as typeof import('../utils/programStatus');
   const { resolveArgsAsync } = require('./resolveOptions') as typeof import('./resolveOptions');
 
   return (async () => {
@@ -60,10 +58,6 @@ export const expoInstall: Command = async (argv) => {
     loadEnvFiles(projectRoot, { mode: 'development' });
 
     const { installAsync } = require('./installAsync') as typeof import('./installAsync');
-    await installAsync(variadic, { ...options, projectRoot }, extras);
-    reportProgramResult({ state: 'done', msg: 'Installed packages' });
-  })().catch((error) => {
-    reportProgramResult({ state: 'error', msg: 'Installing packages failed' });
-    return logCmdError(error);
-  });
+    return installAsync(variadic, { ...options, projectRoot }, extras);
+  })().catch(logCmdError);
 };
