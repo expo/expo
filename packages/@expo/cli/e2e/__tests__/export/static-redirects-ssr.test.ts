@@ -1,48 +1,34 @@
-/* eslint-env jest */
 import type { RedirectConfig } from 'expo-router';
 
-import { createExpoServe, executeExpoAsync } from '../../utils/expo';
-import { getRouterE2ERoot } from '../utils';
+import {
+  prepareServers,
+  RUNTIME_EXPO_SERVE,
+  RUNTIME_EXPRESS_SERVER,
+  RUNTIME_WORKERD,
+  setupServer,
+} from '../../utils/runtime';
 import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
-describe('exports server', () => {
-  const projectRoot = getRouterE2ERoot();
-  const outputName = 'dist-static-redirects-ssr';
-
-  beforeAll(async () => {
-    await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', outputName], {
+describe.each(
+  prepareServers([RUNTIME_EXPO_SERVE, RUNTIME_EXPRESS_SERVER, RUNTIME_WORKERD], {
+    app: 'server-tester',
+    uniqueOutputKey: 'redirects-ssr',
+    export: {
       env: {
-        NODE_ENV: 'production',
-        EXPO_USE_STATIC: 'server',
-        E2E_ROUTER_SRC: 'static-redirects',
         E2E_ROUTER_REDIRECTS: JSON.stringify([
-          { source: '/external-redirect', destination: 'https://expo.dev' },
-        ] as RedirectConfig[]),
+          { source: '/redirects/external', destination: 'https://expo.dev' },
+        ] satisfies RedirectConfig[]),
       },
-    });
-  });
+    },
+  })
+)('external redirects - $name', (config) => {
+  const server = setupServer(config);
 
-  describe('requests', () => {
-    const server = createExpoServe({
-      cwd: projectRoot,
-      env: {
-        NODE_ENV: 'production',
-      },
-    });
-
-    beforeAll(async () => {
-      await server.startAsync([outputName]);
-    });
-    afterAll(async () => {
-      await server.stopAsync();
-    });
-
-    it('gets an external URL redirect', async () => {
-      const res = await server.fetchAsync('/external-redirect');
-      expect(res.status).toBe(200);
-      expect(res.url).toBe('https://expo.dev/');
-    });
+  it('gets an external URL redirect', async () => {
+    const res = await server.fetchAsync('/redirects/external');
+    expect(res.status).toBe(200);
+    expect(res.url).toBe('https://expo.dev/');
   });
 });

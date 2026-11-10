@@ -29,7 +29,7 @@ export type E2EApp = 'router-e2e' | 'server-tester';
 export type ServerTestOptions = {
   /** The app under `apps/` that hosts the routes. Defaults to `router-e2e`. */
   app?: E2EApp;
-  /** The `__e2e__` scenario directory inside `router-e2e` (e.g., 'static-redirects'). Required for that app, unused for `server-tester`. */
+  /** The `__e2e__` scenario directory inside `router-e2e` (e.g., 'server-root-group'). Required for that app, unused for `server-tester`. */
   fixtureName?: string;
   /** A unique value to ensure the output directory is not overwritten by another test running in parallel. Useful for tests that share the same `fixtureName` */
   uniqueOutputKey?: string;

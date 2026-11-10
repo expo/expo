@@ -94,6 +94,15 @@ exports[`server-output express requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "_expo/functions/redirects/dynamic/[slug]/[other]+api.js",
+      "namedRegex": "^/redirects/dynamic/(?<slug>[^/]+?)/(?<other>[^/]+?)(?:/)?$",
+      "page": "/redirects/dynamic/[slug]/[other]",
+      "routeKeys": {
+        "other": "other",
+        "slug": "slug",
+      },
+    },
+    {
       "file": "_expo/functions/api/[dynamic]+api.js",
       "namedRegex": "^/api/(?<dynamic>[^/]+?)(?:/)?$",
       "page": "/api/[dynamic]",
@@ -102,11 +111,27 @@ exports[`server-output express requests exported files has expected routes manif
       },
     },
     {
+      "file": "_expo/functions/redirects/dynamic/[slug]/index+api.js",
+      "namedRegex": "^/redirects/dynamic/(?<slug>[^/]+?)(?:/)?$",
+      "page": "/redirects/dynamic/[slug]/index",
+      "routeKeys": {
+        "slug": "slug",
+      },
+    },
+    {
       "file": "_expo/functions/api/[...spread]+api.js",
       "namedRegex": "^/api(?:/(?<spread>.+?))?(?:/)?$",
       "page": "/api/[...spread]",
       "routeKeys": {
         "spread": "spread",
+      },
+    },
+    {
+      "file": "_expo/functions/redirects/dynamic/[...catchAll]/index+api.js",
+      "namedRegex": "^/redirects/dynamic(?:/(?<catchAll>.+?))?(?:/)?$",
+      "page": "/redirects/dynamic/[...catchAll]/index",
+      "routeKeys": {
+        "catchAll": "catchAll",
       },
     },
   ],
@@ -348,6 +373,12 @@ exports[`server-output express requests exported files has expected routes manif
       "file": "./rendering/safe-area-stack.tsx",
       "namedRegex": "^/rendering/safe\\-area\\-stack(?:/)?$",
       "page": "/rendering/safe-area-stack",
+      "routeKeys": {},
+    },
+    {
+      "file": "./redirects/index.tsx",
+      "namedRegex": "^/redirects(?:/)?$",
+      "page": "/redirects/index",
       "routeKeys": {},
     },
     {
@@ -596,6 +627,15 @@ exports[`server-output workerd requests exported files has expected routes manif
       "routeKeys": {},
     },
     {
+      "file": "_expo/functions/redirects/dynamic/[slug]/[other]+api.js",
+      "namedRegex": "^/redirects/dynamic/(?<slug>[^/]+?)/(?<other>[^/]+?)(?:/)?$",
+      "page": "/redirects/dynamic/[slug]/[other]",
+      "routeKeys": {
+        "other": "other",
+        "slug": "slug",
+      },
+    },
+    {
       "file": "_expo/functions/api/[dynamic]+api.js",
       "namedRegex": "^/api/(?<dynamic>[^/]+?)(?:/)?$",
       "page": "/api/[dynamic]",
@@ -604,11 +644,27 @@ exports[`server-output workerd requests exported files has expected routes manif
       },
     },
     {
+      "file": "_expo/functions/redirects/dynamic/[slug]/index+api.js",
+      "namedRegex": "^/redirects/dynamic/(?<slug>[^/]+?)(?:/)?$",
+      "page": "/redirects/dynamic/[slug]/index",
+      "routeKeys": {
+        "slug": "slug",
+      },
+    },
+    {
       "file": "_expo/functions/api/[...spread]+api.js",
       "namedRegex": "^/api(?:/(?<spread>.+?))?(?:/)?$",
       "page": "/api/[...spread]",
       "routeKeys": {
         "spread": "spread",
+      },
+    },
+    {
+      "file": "_expo/functions/redirects/dynamic/[...catchAll]/index+api.js",
+      "namedRegex": "^/redirects/dynamic(?:/(?<catchAll>.+?))?(?:/)?$",
+      "page": "/redirects/dynamic/[...catchAll]/index",
+      "routeKeys": {
+        "catchAll": "catchAll",
       },
     },
   ],
@@ -850,6 +906,12 @@ exports[`server-output workerd requests exported files has expected routes manif
       "file": "./rendering/safe-area-stack.tsx",
       "namedRegex": "^/rendering/safe\\-area\\-stack(?:/)?$",
       "page": "/rendering/safe-area-stack",
+      "routeKeys": {},
+    },
+    {
+      "file": "./redirects/index.tsx",
+      "namedRegex": "^/redirects(?:/)?$",
+      "page": "/redirects/index",
       "routeKeys": {},
     },
     {
