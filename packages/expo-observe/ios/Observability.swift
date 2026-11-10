@@ -428,13 +428,9 @@ internal struct ObservabilityManager {
     shouldDispatchErrors: Bool,
     ignoredEvents: Set<String>
   ) -> [LogRow] {
-    return logs.filter { log in
-      let eligible =
-        shouldDispatch
-        || (shouldDispatchErrors && errorLogNames.contains(log.name))
-        || log.name == feedbackLogName
-      return eligible && !ignoredEvents.contains(log.name)
-    }
+    let supportedLogNames = (shouldDispatchErrors ? errorLogNames : []).union([feedbackLogName])
+    let eligible = shouldDispatch ? logs : logs.filter { supportedLogNames.contains($0.name) }
+    return eligible.filter { !ignoredEvents.contains($0.name) }
   }
 
   private static func isInSample(rate: Double?) -> Bool {
