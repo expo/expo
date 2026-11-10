@@ -8,6 +8,7 @@ export const E2E_TEMPLATE_SDK_VERSION = `sdk-56`;
  * Expected 3rd party modules in templates
  */
 export const E2E_EXPECTED_3RD_PARTY_MODULES = [
+  'bplist-parser',
   // Transitive dependencies of expo-router
   '@react-native-masked-view',
 ];
