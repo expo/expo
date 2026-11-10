@@ -573,6 +573,8 @@ function emitSourceModule(identity, hasManifest, emitContext, dumpManifest) {
       coreHeadersXCFramework: emitContext.coreHeadersXCFramework,
       jsiHeadersPkgPath: emitContext.jsiHeadersPkgPath,
       macrosPackageRoot: emitContext.macrosPackageRoot,
+      react: emitContext.react,
+      codegenPkgPath: emitContext.codegenPkgPath,
       manifest,
     });
     return { ...emission, direct: true };
