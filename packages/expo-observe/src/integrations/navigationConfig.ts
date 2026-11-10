@@ -17,6 +17,10 @@ function getFilteredParamKeys(config: NavigationIntegrationConfig): Set<string> 
   return keys.size > 0 ? keys : null;
 }
 
+export function isTotalBlockingTimeEnabled(config: NavigationIntegrationConfig): boolean {
+  return !!config && typeof config === 'object' && config.experimental_totalBlockingTime === true;
+}
+
 function prepareNavigationRouteParams(
   config: NavigationIntegrationConfig,
   params: object | undefined

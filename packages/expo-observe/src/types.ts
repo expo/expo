@@ -32,7 +32,8 @@ export type ObserveMetricName =
   | 'expo.updates.download_time'
   | 'expo.navigation.cold_ttr'
   | 'expo.navigation.warm_ttr'
-  | 'expo.navigation.tti';
+  | 'expo.navigation.tti'
+  | 'expo.navigation.tbt';
 
 /**
  * Name of an event that EAS Observe sends. Custom names passed to `logEvent` are allowed.
@@ -180,12 +181,20 @@ export type ObserveNavigationIntegrationConfig = {
    * Does not affect `routeName`.
    */
   filteredParams?: string[];
+  /**
+   * Experimental. Enables the `tbt` (total blocking time) navigation metric.
+   * May change or be removed in a patch release.
+   *
+   * @default false
+   */
+  experimental_totalBlockingTime?: boolean;
 };
 
 export interface ObserveIntegrationsConfig {
   /**
    * Enables the `expo-router` integration, which records navigation metrics
-   * (`cold_ttr`, `warm_ttr`, `tti`) from router state changes.
+   * (`cold_ttr`, `warm_ttr`, `tti`) from router state changes. The `tbt`
+   * metric needs `experimental_totalBlockingTime`.
    *
    * Requires `expo-router` to be installed.
    *
@@ -196,7 +205,8 @@ export interface ObserveIntegrationsConfig {
   'expo-router'?: boolean | ObserveNavigationIntegrationConfig;
   /**
    * Enables the `@react-navigation/native` integration, which records
-   * navigation metrics (`cold_ttr`, `warm_ttr`, `tti`).
+   * navigation metrics (`cold_ttr`, `warm_ttr`, `tti`). The `tbt` metric
+   * needs `experimental_totalBlockingTime`.
    *
    * Requires `@react-navigation/native` to be installed and the app tree
    * to be wrapped in `<ObserveNavigationContainer>` instead of the stock

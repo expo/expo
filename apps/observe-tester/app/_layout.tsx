@@ -13,7 +13,10 @@ Observe.configure({
   // ignoredMetrics: ['expo.app_startup.tti'],
   // ignoredEvents: ['debug.info_button_pressed'],
   integrations: {
-    'expo-router': { filteredParams: ['accountId', 'firstName'] },
+    'expo-router': {
+      filteredParams: ['accountId', 'firstName'],
+      experimental_totalBlockingTime: true,
+    },
     'expo-image': {
       oversizeThreshold: 1.5,
       includeUrlParams: false,
