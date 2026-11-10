@@ -9,10 +9,19 @@ import java.util.concurrent.CopyOnWriteArrayList
  *
  * Helper class for implementing [AppCompatActivityAware].
  */
+@Deprecated("Use HostActivityAwareHelper. This helper fires only when the host Activity extends AppCompatActivity.")
+@Suppress("DEPRECATION")
 class AppCompatActivityAwareHelper : AppCompatActivityAware {
   val listeners = CopyOnWriteArrayList<OnActivityAvailableListener>()
 
   private var activityReference = WeakReference<AppCompatActivity>(null)
+
+  /**
+   * Forgets the cached Activity, so a listener added later waits for the next one.
+   */
+  fun clearActivity() {
+    this.activityReference = WeakReference(null)
+  }
 
   fun dispatchOnActivityAvailable(activity: AppCompatActivity) {
     this.activityReference = WeakReference(activity)

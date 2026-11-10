@@ -1,5 +1,6 @@
 package expo.modules.kotlin.exception
 
+import android.app.Activity
 import expo.modules.interfaces.permissions.Permissions
 import kotlin.reflect.KClass
 
@@ -59,6 +60,20 @@ class Exceptions {
    * An exception to throw when the current Android activity is not longer available.
    */
   class MissingActivity : CodedException(message = "The current activity is no longer available")
+
+  /**
+   * An exception to throw when the host Activity does not extend the class that Expo or a module needs.
+   */
+  class UnsupportedHostActivity(
+    activity: Activity,
+    requiredClass: Class<out Activity>,
+    requester: String = "Expo Modules Core"
+  ) : CodedException(
+    message = "$requester needs a host Activity that extends ${requiredClass.name}. " +
+      "The current Activity ${activity.javaClass.name} does not extend it. " +
+      "Change the superclass of ${activity.javaClass.simpleName} to ${requiredClass.simpleName} " +
+      "or to one of its subclasses, such as AppCompatActivity."
+  )
 
   /**
    * An exception to throw when function was called on the incorrect thread.

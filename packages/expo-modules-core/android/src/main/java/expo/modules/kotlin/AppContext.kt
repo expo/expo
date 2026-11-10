@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
-import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.adapters.react.NativeModulesProxy
@@ -22,6 +21,7 @@ import expo.modules.kotlin.events.KEventEmitterWrapper
 import expo.modules.kotlin.events.KModuleEventEmitterWrapper
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.hostactivity.HostActivity
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
 import expo.modules.kotlin.runtime.MainRuntime
@@ -299,10 +299,7 @@ class AppContext(
   internal fun onHostResume() {
     // If the current activity is null, it means that the current React context was destroyed.
     // We can just return here.
-    val activity = currentActivity ?: return
-    check(activity is AppCompatActivity) {
-      "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity?.localClassName}"
-    }
+    val hostActivity = hostActivity ?: return
 
     // We need to re-register activity contracts when reusing AppContext with new Activity after host destruction.
     if (hostWasDestroyed) {
@@ -310,7 +307,7 @@ class AppContext(
       registry.registerActivityContracts()
     }
 
-    activityResultsManager.onHostResume(activity)
+    activityResultsManager.onHostResume(hostActivity)
     registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
@@ -323,12 +320,8 @@ class AppContext(
   }
 
   internal fun onHostDestroy() {
-    currentActivity?.let {
-      check(it is AppCompatActivity) {
-        "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity?.localClassName}"
-      }
-
-      activityResultsManager.onHostDestroy(it)
+    currentActivity?.let { activity ->
+      HostActivity.fromOrNull(activity)?.let { activityResultsManager.onHostDestroy(it) }
     }
     registry.post(EventName.ACTIVITY_DESTROYS)
     // The host (Activity) was destroyed, but it doesn't mean that modules will be destroyed too.
@@ -383,6 +376,14 @@ class AppContext(
         ?: (reactContext as? ReactApplicationContext)?.currentActivity
       return current ?: throw Exceptions.MissingActivity()
     }
+
+  /**
+   * The Activity that hosts the React instance, wrapped as a [HostActivity].
+   * Returns null when no Activity is attached.
+   * Throws [Exceptions.UnsupportedHostActivity] when the Activity does not extend `androidx.activity.ComponentActivity`.
+   */
+  val hostActivity: HostActivity?
+    get() = currentActivity?.let { HostActivity.from(it) }
 
 // endregion
 }
