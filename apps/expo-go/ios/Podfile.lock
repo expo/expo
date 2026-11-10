@@ -3692,7 +3692,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - RNDateTimePicker (9.2.1):
+  - RNDateTimePicker (9.2.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -4435,7 +4435,7 @@ DEPENDENCIES:
   - "RNCAsyncStorage (from `../modules/@react-native-async-storage/async-storage`)"
   - "RNCMaskedView (from `../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.88.1_@babel+core@7.29.7_@rea_a20a2550c93b83347714d43b9980dc8e/node_modules/@react-native-masked-view/masked-view`)"
   - "RNCPicker (from `../../../node_modules/.pnpm/@react-native-picker+picker@2.11.4_react-native@0.88.1_@babel+core@7.29.7_@react-native_3007b29afa5664cdd5a38c4b86c45ec9/node_modules/@react-native-picker/picker`)"
-  - "RNDateTimePicker (from `../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.2.1_expo@packages+expo_react-native@0.88.1_@ba_fe5bf976cb47630d5f2e9310965ef842/node_modules/@react-native-community/datetimepicker`)"
+  - "RNDateTimePicker (from `../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.2.2_expo@packages+expo_react-native@0.88.1_@ba_d60633ff183b6708f50a3e7104ae0869/node_modules/@react-native-community/datetimepicker`)"
   - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@3.3.0_react-native@0.88.1_@babel+core@7.29.7_@react-native_844a86fda77232be986326d8510f62f1/node_modules/react-native-gesture-handler`)"
   - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.7.1_patch_hash=0f735c4b33f9af576a7af1a9cffcea5220cbbc671ec2f1_257704949e83788085962a6575a46fe2/node_modules/react-native-reanimated`)"
   - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.30.1_react-native@0.88.1_@babel+core@7.29.7_@react-native+metro-_8bbaa73fbf3a54b8f1611664ed144b57/node_modules/react-native-screens`)"
@@ -4836,7 +4836,7 @@ EXTERNAL SOURCES:
   RNCPicker:
     :path: "../../../node_modules/.pnpm/@react-native-picker+picker@2.11.4_react-native@0.88.1_@babel+core@7.29.7_@react-native_3007b29afa5664cdd5a38c4b86c45ec9/node_modules/@react-native-picker/picker"
   RNDateTimePicker:
-    :path: "../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.2.1_expo@packages+expo_react-native@0.88.1_@ba_fe5bf976cb47630d5f2e9310965ef842/node_modules/@react-native-community/datetimepicker"
+    :path: "../../../node_modules/.pnpm/@react-native-community+datetimepicker@9.2.2_expo@packages+expo_react-native@0.88.1_@ba_d60633ff183b6708f50a3e7104ae0869/node_modules/@react-native-community/datetimepicker"
   RNGestureHandler:
     :path: "../../../node_modules/.pnpm/react-native-gesture-handler@3.3.0_react-native@0.88.1_@babel+core@7.29.7_@react-native_844a86fda77232be986326d8510f62f1/node_modules/react-native-gesture-handler"
   RNReanimated:
@@ -5049,7 +5049,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: f47445f5456576a324e6b459ce391f5eb26ef444
   RNCMaskedView: 0c84a5ae272dbf6682ac13812f47032f4025f484
   RNCPicker: b512b82e5e502a1533f0899a3d2d33c2fb37a0b2
-  RNDateTimePicker: 337d04032de1b11a6651e0aefb70d18f583d5fab
+  RNDateTimePicker: 22624114d3114f7fd0585d0c09cb22d5b2278923
   RNGestureHandler: 9eb2437cb5a73b75be84b6bf6876d450fa3a2371
   RNReanimated: c85de7177656b27e373540ed63468153ca286888
   RNScreens: c64651f2a1b1c91c4a43291fdf1c1a63fb90d915

@@ -28,7 +28,7 @@
     "@lottiefiles/dotlottie-react": "^0.13.5",
     "@lottiefiles/react-lottie-player": "^3.5.4",
     "@react-native-async-storage/async-storage": "2.2.0",
-    "@react-native-community/datetimepicker": "9.2.1",
+    "@react-native-community/datetimepicker": "9.2.2",
     "@react-native-community/netinfo": "12.0.1",
     "@react-native-community/slider": "5.2.1",
     "@react-native-masked-view/masked-view": "0.3.2",

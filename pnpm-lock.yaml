@@ -203,8 +203,8 @@ importers:
         specifier: 2.2.0
         version: 2.2.0(react-native@0.88.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))
       '@react-native-community/datetimepicker':
-        specifier: 9.2.1
-        version: 9.2.1(expo@packages+expo)(react-native@0.88.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        specifier: 9.2.2
+        version: 9.2.2(expo@packages+expo)(react-native@0.88.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@react-native-community/netinfo':
         specifier: 12.0.1
         version: 12.0.1(patch_hash=ced0cb79848978ecc3e780a4d812d948684346cce85aa5d06f6b91a11e10ad5b)(react-native@0.88.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -561,8 +561,8 @@ importers:
         specifier: 2.2.0
         version: 2.2.0(react-native@0.88.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))
       '@react-native-community/datetimepicker':
-        specifier: 9.2.1
-        version: 9.2.1(expo@packages+expo)(react-native@0.88.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        specifier: 9.2.2
+        version: 9.2.2(expo@packages+expo)(react-native@0.88.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@react-native-community/netinfo':
         specifier: 12.0.1
         version: 12.0.1(patch_hash=ced0cb79848978ecc3e780a4d812d948684346cce85aa5d06f6b91a11e10ad5b)(react-native@0.88.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -933,8 +933,8 @@ importers:
         specifier: 2.2.0
         version: 2.2.0(react-native@0.88.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))
       '@react-native-community/datetimepicker':
-        specifier: 9.2.1
-        version: 9.2.1(expo@packages+expo)(react-native@0.88.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
+        specifier: 9.2.2
+        version: 9.2.2(expo@packages+expo)(react-native@0.88.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
       '@react-native-community/netinfo':
         specifier: 12.0.1
         version: 12.0.1(patch_hash=ced0cb79848978ecc3e780a4d812d948684346cce85aa5d06f6b91a11e10ad5b)(react-native@0.88.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)
@@ -9581,8 +9581,8 @@ packages:
     peerDependencies:
       react-native: 0.88.1
 
-  '@react-native-community/datetimepicker@9.2.1':
-    resolution: {integrity: sha512-P2dir8EcPYuS6g7N/E4jImugB99h2+e1kzNX6Ihg+2T2v5IZ5dB+4afLisG6rdua4YZ1mADYCZ2iqI34sPjIKA==}
+  '@react-native-community/datetimepicker@9.2.2':
+    resolution: {integrity: sha512-0cZGrK61UZ8VxpKKV/lun/L/b5wKus55IhvqqdewUayHwIc73lrLI0l5CIlHw8tA0/yQEzHEMEdtHQglAD+hKA==}
     peerDependencies:
       expo: '>=52.0.0'
       react: '*'
@@ -18530,7 +18530,7 @@ snapshots:
       merge-options: 3.0.4
       react-native: 0.88.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
 
-  '@react-native-community/datetimepicker@9.2.1(expo@packages+expo)(react-native@0.88.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
+  '@react-native-community/datetimepicker@9.2.2(expo@packages+expo)(react-native@0.88.1(@babel/core@7.29.7)(@react-native/metro-config@0.87.1(@babel/core@7.29.7))(@types/react@19.3.0)(react@19.3.0))(react@19.3.0)':
     dependencies:
       invariant: 2.2.4
       react: 19.3.0
