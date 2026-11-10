@@ -208,6 +208,15 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   func replaceCurrentItem(with videoSource: VideoSource?) throws {
     dangerousPropertiesStore.ownerIsReplacing = true
+    do {
+      try replaceCurrentItemSynchronously(with: videoSource)
+    } catch {
+      endFailedReplace()
+      throw error
+    }
+  }
+
+  private func replaceCurrentItemSynchronously(with videoSource: VideoSource?) throws {
     videoSourceLoader.cancelCurrentTask()
     guard
       let videoSource = videoSource,
@@ -253,6 +262,15 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
 
     dangerousPropertiesStore.ownerIsReplacing = true
+    do {
+      try await loadAndReplaceCurrentItem(with: videoSource)
+    } catch {
+      endFailedReplace()
+      throw error
+    }
+  }
+
+  private func loadAndReplaceCurrentItem(with videoSource: VideoSource) async throws {
     guard let playerItem = try await videoSourceLoader.load(videoSource: videoSource) else {
       // Resolve the promise without applying the source. The loading task has been cancelled.
       // The caller that cancelled this task should handle dangerousPropertiesStore
@@ -277,6 +295,13 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
       dangerousPropertiesStore.ownerIsReplacing = false
       dangerousPropertiesStore.applyProperties(to: self)
     }
+  }
+
+  // Not dispatched to the main queue like the success path: JS can set `currentTime` as soon as the replace rejects.
+  // The flag is cleared first, so a value set in between is applied instead of being stored.
+  private func endFailedReplace() {
+    dangerousPropertiesStore.ownerIsReplacing = false
+    dangerousPropertiesStore.reset()
   }
 
   /**
