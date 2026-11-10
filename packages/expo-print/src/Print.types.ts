@@ -53,6 +53,20 @@ export type PrintOptions = {
    * @platform ios
    */
   margins?: PageMargins;
+  /**
+   * Paper size, in points (1/72 inch), that the print job prefers. The job selects the printer's
+   * paper that best fits this size, with
+   * [`UIPrintPaper.bestPaper(forPageSize:withPapersFrom:)`](https://developer.apple.com/documentation/uikit/uiprintpaper/bestpaper(forpagesize:withpapersfrom:)).
+   * In the print dialog, this happens when the user selects a printer. With `printerUrl`, the job
+   * prints on that paper without the dialog.
+   * For example, `{ width: 432, height: 288 }` selects 4 x 6 inch paper on a printer that reports
+   * it. The order of `width` and `height` does not matter. The page still scales to fit the
+   * selected paper. The user can still select a different paper. The system selects the paper
+   * before the user selects a printer, after the user switches to another printer, or when this
+   * option is not set.
+   * @platform ios
+   */
+  preferredPaperSize?: PaperSize;
 };
 
 // @needsAudit
@@ -82,6 +96,18 @@ export type PageMargins = {
   right: number;
   bottom: number;
   left: number;
+};
+
+// @needsAudit
+export type PaperSize = {
+  /**
+   * Paper width in points (1/72 inch).
+   */
+  width: number;
+  /**
+   * Paper height in points (1/72 inch).
+   */
+  height: number;
 };
 
 // @docsMissing
