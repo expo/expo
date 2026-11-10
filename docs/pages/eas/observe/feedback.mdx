@@ -130,21 +130,13 @@ const styles = StyleSheet.create({
 });
 ```
 
-The feedback screen reads `from` with `useLocalSearchParams()`, checks the input, and sends the report. `KeyboardAvoidingView` keeps the text field and the send button above the keyboard in the iOS sheet:
+The feedback screen reads `from` with `useLocalSearchParams()`, checks the input, and sends the report. On iOS, the `ScrollView` starts the form below the sheet header and keeps the text field and the send button above the keyboard:
 
 ```tsx src/app/feedback.tsx
-import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Observe } from 'expo-observe';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
-import {
-  Button,
-  KeyboardAvoidingView,
-  Pressable,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Button, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const RATINGS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -172,16 +164,21 @@ export default function FeedbackScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      behavior={process.env.EXPO_OS === 'ios' ? 'padding' : undefined}
-      style={styles.container}>
+    <ScrollView
+      contentInsetAdjustmentBehavior="automatic"
+      automaticallyAdjustKeyboardInsets
+      keyboardShouldPersistTaps="handled"
+      contentContainerStyle={styles.container}>
       <View style={styles.ratings}>
         {RATINGS.map(value => (
           <Pressable
             key={value}
-            onPress={() => setRating(value)}
+            onPress={() => {
+              setRating(value);
+              setError(undefined);
+            }}
             style={[styles.rating, rating === value && styles.selected]}>
-            <Text>{value}</Text>
+            <Text style={rating === value && styles.selectedText}>{value}</Text>
           </Pressable>
         ))}
       </View>
@@ -189,21 +186,40 @@ export default function FeedbackScreen() {
         multiline
         placeholder="Tell us what you think"
         value={message}
-        onChangeText={setMessage}
+        onChangeText={text => {
+          setMessage(text);
+          setError(undefined);
+        }}
         style={styles.input}
       />
       {error ? <Text style={styles.error}>{error}</Text> : null}
       <Button title="Send" onPress={send} />
-    </KeyboardAvoidingView>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, gap: 12 },
-  ratings: { flexDirection: 'row', flexWrap: 'wrap', gap: 6 },
-  rating: { padding: 8, borderRadius: 6, borderWidth: 1, borderColor: '#ccc' },
-  selected: { backgroundColor: '#ddd' },
-  input: { flex: 1, borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 8 },
+  container: { padding: 16, gap: 12 },
+  ratings: { flexDirection: 'row', gap: 4 },
+  rating: {
+    flex: 1,
+    minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#ccc',
+  },
+  selected: { backgroundColor: '#000', borderColor: '#000' },
+  selectedText: { color: '#fff' },
+  input: {
+    minHeight: 120,
+    textAlignVertical: 'top',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    padding: 8,
+  },
   error: { color: '#c00' },
 });
 ```
@@ -248,7 +264,7 @@ export default function App() {
 }
 ```
 
-Register a `Feedback` screen with `presentation: 'formSheet'` in your stack. In that screen, read `from` from `useRoute().params`, and use the same form as the [Expo Router example](#feedback-screen-with-expo-router).
+Register a `Feedback` screen with `presentation: 'formSheet'` in your stack. In that screen, read `from` from `useRoute().params`, and use the same form as the [Expo Router example](#feedback-screen-with-expo-router). To close the screen, call `navigation.goBack()` instead of `router.back()`.
 
 </Collapsible>
 
