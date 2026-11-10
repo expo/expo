@@ -12,11 +12,13 @@ struct SplitViewHeaderViewTests {
   // The hooks install once per process, so this must run before the first `configureNavigationItem`.
   init() {
     if NSClassFromString("RNSSplitScreenController") == nil,
-      let screenClass = objc_allocateClassPair(UIViewController.self, "RNSSplitScreenController", 0) {
+      let screenClass = objc_allocateClassPair(UIViewController.self, "RNSSplitScreenController", 0)
+    {
       objc_registerClassPair(screenClass)
     }
     if NSClassFromString("RNSSplitHostController") == nil,
-      let hostClass = objc_allocateClassPair(UISplitViewController.self, "RNSSplitHostController", 0) {
+      let hostClass = objc_allocateClassPair(UISplitViewController.self, "RNSSplitHostController", 0)
+    {
       // Same as `refreshSecondaryNavBar` of react-native-screens.
       let refreshSecondaryNavBar: @convention(block) (UISplitViewController) -> Void = { host in
         let navigationController = host.viewController(for: .secondary) as? UINavigationController
@@ -24,7 +26,11 @@ struct SplitViewHeaderViewTests {
         navigationController?.setNavigationBarHidden(false, animated: false)
       }
       class_addMethod(
-        hostClass, NSSelectorFromString("refreshSecondaryNavBar"), imp_implementationWithBlock(refreshSecondaryNavBar), "v@:")
+        hostClass,
+        NSSelectorFromString("refreshSecondaryNavBar"),
+        imp_implementationWithBlock(refreshSecondaryNavBar),
+        "v@:"
+      )
       objc_registerClassPair(hostClass)
     }
   }
@@ -189,7 +195,9 @@ private final class FakeTransitionCoordinator: NSObject, UIViewControllerTransit
 
   func end(cancelled: Bool) {
     isCancelled = cancelled
-    completions.forEach { $0(self) }
+    for completion in completions {
+      completion(self)
+    }
   }
 
   func animate(
