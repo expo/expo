@@ -20,6 +20,7 @@ export function createPlatformSelectPlugin(
           children: { arguments: { route: 'ObjectExpression' } },
         },
         {
+          ancestry: { mode: 'findParent' },
           scope: true,
           controlFlow: ['dynamic-subscriptions', 'skip'],
           children: {
@@ -72,15 +73,22 @@ export function createPlatformSelectPlugin(
             if (property !== selected) property.skip();
           }
           const value = selected?.getChild('value');
+          const replacement = value
+            ? value.is('Identifier') ||
+              value.is('StringLiteral') ||
+              value.is('BooleanLiteral') ||
+              value.is('NullLiteral')
+              ? value.getSource()
+              : call.context.code.template`(${value.getSource()})`
+            : call.context.code.parseExpression('undefined');
+          const statement = call.findParent(
+            (parent) => parent.start !== call.start || parent.is('ExpressionStatement')
+          );
+          // A safe leading token preserves ASI, including single-statement if/loop bodies.
           call.replaceWith(
-            value
-              ? value.is('Identifier') ||
-                value.is('StringLiteral') ||
-                value.is('BooleanLiteral') ||
-                value.is('NullLiteral')
-                ? value.getSource()
-                : call.context.code.template`(${value.getSource()})`
-              : call.context.code.parseExpression('undefined')
+            statement?.is('ExpressionStatement') && statement.start === call.start
+              ? call.context.code.template`0, ${replacement}`
+              : replacement
           );
         }
       ),
