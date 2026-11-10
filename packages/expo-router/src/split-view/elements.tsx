@@ -162,6 +162,15 @@ export interface SplitViewHeader {
    * Search bar shown in the navigation bar.
    */
   searchBar?: SplitViewSearchBar;
+  /**
+   * Title of the back button. Defaults to the title of the previous column.
+   */
+  backTitle?: string;
+  /**
+   * Whether the back button is visible.
+   * @default true
+   */
+  backVisible?: boolean;
 }
 
 export interface SplitViewColumnProps {

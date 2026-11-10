@@ -23,10 +23,14 @@ public class SplitViewModule: Module {
       Prop("searchBar") { (view: SplitViewHeaderView, searchBar: SplitViewSearchBarRecord?) in
         view.searchBar = searchBar
       }
-      Events("onToolbarItemPress", "onSearchBarChangeText", "onSearchBarSearchButtonPress")
-      OnViewDidUpdateProps { (view: SplitViewHeaderView) in
-        view.apply()
+      Prop("backTitle") { (view: SplitViewHeaderView, backTitle: String?) in
+        view.backTitle = backTitle
       }
+      Prop("backVisible") { (view: SplitViewHeaderView, backVisible: Bool?) in
+        view.backVisible = backVisible ?? true
+      }
+      Events("onToolbarItemPress", "onSearchBarChangeText", "onSearchBarSearchButtonPress")
+      OnViewDidUpdateProps { (view: SplitViewHeaderView) in view.apply() }
     }
   }
 }
