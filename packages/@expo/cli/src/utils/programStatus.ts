@@ -18,12 +18,13 @@ export type ProgramResult = {
 };
 
 let hasReportedWorking = false;
+let lastStatusId = 0;
 
-function writeProgramStatus(status: ProgramStatus | ProgramResult | 'clear') {
+function writeProgramStatus(status: ProgramStatus | ProgramResult | 'clear', id?: number) {
   try {
     if (isInteractive()) {
       const body = status === 'clear' ? 'state=clear' : formatProgramStatus(status);
-      process.stdout.write(`\x1b]7501;${body}\x1b\\`);
+      process.stdout.write(`\x1b]7501;${body}${id ? `:id=${id}` : ''}\x1b\\`);
     }
   } catch {}
 }
@@ -42,11 +43,12 @@ export async function withProgramStatus<T>(
   status: ProgramStatus,
   action: () => Promise<T>
 ): Promise<T> {
-  const clear = () => writeProgramStatus('clear');
+  const id = ++lastStatusId;
+  const clear = () => writeProgramStatus('clear', id);
   if (status.state === 'working') {
     hasReportedWorking = true;
   }
-  writeProgramStatus(status);
+  writeProgramStatus(status, id);
   process.on('exit', clear);
   try {
     return await action();
