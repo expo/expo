@@ -11,9 +11,17 @@ public class SplitViewModule: Module {
       Prop("largeTitle") { (view: SplitViewHeaderView, largeTitle: Bool?) in
         view.largeTitle = largeTitle ?? false
       }
+      Prop("searchBar") { (view: SplitViewHeaderView, searchBar: SplitViewSearchBarRecord?) in
+        view.searchBar = searchBar
+      }
+      Events("onSearchBarChangeText", "onSearchBarSearchButtonPress")
       OnViewDidUpdateProps { (view: SplitViewHeaderView) in
         view.apply()
       }
     }
   }
+}
+
+struct SplitViewSearchBarRecord: Record {
+  @Field var placeholder: String?
 }

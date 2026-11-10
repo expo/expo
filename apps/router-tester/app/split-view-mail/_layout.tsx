@@ -33,6 +33,7 @@ export default function Layout() {
   const [largeTitle, setLargeTitle] = useState(true);
   const [threeColumns, setThreeColumns] = useState(true);
   const [showInspector, setShowInspector] = useState(false);
+  const [search, setSearch] = useState('');
 
   return (
     <SplitView
@@ -47,11 +48,17 @@ export default function Layout() {
             ? {
                 title: alternateTitles ? 'Folders' : 'Mailboxes',
                 largeTitle,
+                searchBar: {
+                  placeholder: 'Search mailboxes',
+                  onChangeText: (event) => setSearch(event.nativeEvent.text),
+                },
               }
             : undefined
         }>
         <ScrollView contentInsetAdjustmentBehavior="automatic">
-          {MAILBOXES.map((mailbox) => (
+          {MAILBOXES.filter((mailbox) =>
+            mailbox.name.toLowerCase().includes(search.toLowerCase())
+          ).map((mailbox) => (
             <Pressable
               key={mailbox.name}
               style={styles.row}
@@ -72,7 +79,10 @@ export default function Layout() {
               label="Headers"
               testID="split-view-mail-headers"
               value={showHeaders}
-              onValueChange={setShowHeaders}
+              onValueChange={(value) => {
+                setShowHeaders(value);
+                setSearch('');
+              }}
             />
             <ToggleRow
               label="Alternate titles"

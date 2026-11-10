@@ -493,6 +493,83 @@ it('renders the SplitView.Column header as the last child of its Split.Column', 
   ).toEqual([SafeAreaView, SplitViewColumnHeader]);
 });
 
+it('passes the search bar placeholder to the native header without callbacks', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column
+            header={{
+              searchBar: {
+                placeholder: 'Search mailboxes',
+                onChangeText: () => {},
+                onSearchButtonPress: () => {},
+              },
+            }}
+          />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  expect(jest.mocked(SplitViewNativeHeader).mock.lastCall![0].searchBar).toEqual({
+    placeholder: 'Search mailboxes',
+  });
+});
+
+it('calls onChangeText of the search bar when the native search text changes', async () => {
+  const onChangeText = jest.fn();
+  const onSearchButtonPress = jest.fn();
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column header={{ searchBar: { onChangeText, onSearchButtonPress } }} />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  // The test sends only the fields that the native header sends.
+  const event = { nativeEvent: { text: 'Inbox' } } as NativeSyntheticEvent<{ text: string }>;
+  jest.mocked(SplitViewNativeHeader).mock.lastCall![0].onSearchBarChangeText!(event);
+
+  expect(onChangeText).toHaveBeenCalledTimes(1);
+  expect(onChangeText).toHaveBeenCalledWith(event);
+  expect(onSearchButtonPress).not.toHaveBeenCalled();
+});
+
+it('calls onSearchButtonPress of the search bar when the native search button is pressed', async () => {
+  const onChangeText = jest.fn();
+  const onSearchButtonPress = jest.fn();
+  await renderRouter(
+    {
+      _layout: () => (
+        <SplitView>
+          <SplitView.Column header={{ searchBar: { onChangeText, onSearchButtonPress } }} />
+          <SplitView.Content />
+        </SplitView>
+      ),
+      index: () => <Text>Index</Text>,
+    },
+    { initialUrl: '/' }
+  );
+
+  // The test sends only the fields that the native header sends.
+  const event = { nativeEvent: { text: 'Inbox' } } as NativeSyntheticEvent<{ text: string }>;
+  jest.mocked(SplitViewNativeHeader).mock.lastCall![0].onSearchBarSearchButtonPress!(event);
+
+  expect(onSearchButtonPress).toHaveBeenCalledTimes(1);
+  expect(onSearchButtonPress).toHaveBeenCalledWith(event);
+  expect(onChangeText).not.toHaveBeenCalled();
+});
+
 it('renders the SplitView.Content header in the content column', async () => {
   await renderRouter(
     {
