@@ -143,8 +143,8 @@ describe(fixPackagesAsync, () => {
       });
 
       expect(writesBeforePlugins).toEqual([
-        ['\x1b]7501;state=working:app=expo:msg=SW5zdGFsbGluZyBwYWNrYWdlcw==\x1b\\'],
-        ['\x1b]7501;state=clear\x1b\\'],
+        ['\x1b]7501;state=working:app=expo:msg=SW5zdGFsbGluZyBwYWNrYWdlcw==:id=5\x1b\\'],
+        ['\x1b]7501;state=clear:id=5\x1b\\'],
       ]);
     } finally {
       write.mockRestore();

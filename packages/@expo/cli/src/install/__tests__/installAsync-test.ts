@@ -141,7 +141,7 @@ describe(installAsync, () => {
       await installAsync(['expo-camera'], { projectRoot });
 
       expect(writesWhileInstalling).toEqual([
-        ['\x1b]7501;state=working:app=expo:msg=SW5zdGFsbGluZyBwYWNrYWdlcw==\x1b\\'],
+        ['\x1b]7501;state=working:app=expo:msg=SW5zdGFsbGluZyBwYWNrYWdlcw==:id=2\x1b\\'],
       ]);
     } finally {
       write.mockRestore();
