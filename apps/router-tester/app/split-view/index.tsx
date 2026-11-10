@@ -1,5 +1,18 @@
-import { Redirect } from 'expo-router';
+import { useRouter } from 'expo-router';
 
-export default function Index() {
-  return <Redirect href="/split-view/all/" />;
+import { ColumnScreen, OptionButton } from '@/components/split-view';
+
+export default function NoItem() {
+  const router = useRouter();
+  return (
+    <ColumnScreen column="content">
+      {['item-1', 'item-2', 'item-3'].map((item) => (
+        <OptionButton
+          key={item}
+          label={`Open ${item}`}
+          onPress={() => router.replace(`/split-view/${item}`)}
+        />
+      ))}
+    </ColumnScreen>
+  );
 }

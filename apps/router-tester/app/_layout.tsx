@@ -29,11 +29,7 @@ export default function Layout() {
         },
       }}>
       {/* SplitView cannot be inside a native navigator. */}
-      {segments[0] === 'split-view-mail' ? (
-        <Slot />
-      ) : (
-        <Stack screenOptions={{ headerShown: false }} />
-      )}
+      {segments[0] === 'split-view' ? <Slot /> : <Stack screenOptions={{ headerShown: false }} />}
     </ThemeProvider>
   );
 }
