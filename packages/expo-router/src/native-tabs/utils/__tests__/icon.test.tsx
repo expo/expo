@@ -193,40 +193,14 @@ describe(convertComponentSrcToImageSource, () => {
     mockGetImageSource.mockClear();
   });
 
-  it('forwards renderingMode for VectorIcon elements', () => {
+  it('returns a promise src for VectorIcon elements', () => {
     const element = <NativeTabsTriggerVectorIcon family={mockFamily as any} name="home" />;
-    const result = convertComponentSrcToImageSource(element, 'template');
-    expect(result).toEqual({
-      src: expect.any(Promise),
-      renderingMode: 'template',
-    });
+    expect(convertComponentSrcToImageSource(element)).toEqual({ src: expect.any(Promise) });
   });
 
-  it('forwards renderingMode "original" for VectorIcon elements', () => {
-    const element = <NativeTabsTriggerVectorIcon family={mockFamily as any} name="home" />;
-    const result = convertComponentSrcToImageSource(element, 'original');
-    expect(result).toEqual({
-      src: expect.any(Promise),
-      renderingMode: 'original',
-    });
-  });
-
-  it('omits renderingMode when undefined for VectorIcon elements', () => {
-    const element = <NativeTabsTriggerVectorIcon family={mockFamily as any} name="home" />;
-    const result = convertComponentSrcToImageSource(element);
-    expect(result).toEqual({
-      src: expect.any(Promise),
-    });
-    expect(result).not.toHaveProperty('renderingMode');
-  });
-
-  it('forwards renderingMode for PromiseIcon elements', () => {
+  it('returns a promise src for PromiseIcon elements', () => {
     const loader = () => Promise.resolve({ uri: 'loaded' } as ImageSourcePropType);
     const element = <NativeTabsTriggerPromiseIcon loader={loader} />;
-    const result = convertComponentSrcToImageSource(element, 'template');
-    expect(result).toEqual({
-      src: expect.any(Promise),
-      renderingMode: 'template',
-    });
+    expect(convertComponentSrcToImageSource(element)).toEqual({ src: expect.any(Promise) });
   });
 });
