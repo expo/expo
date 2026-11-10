@@ -23,9 +23,6 @@ public class SplitViewModule: Module {
       Prop("searchBar") { (view: SplitViewHeaderView, searchBar: SplitViewSearchBarRecord?) in
         view.searchBar = searchBar
       }
-      Prop("backButtonDisplayMode") { (view: SplitViewHeaderView, mode: SplitViewBackButtonDisplayMode?) in
-        view.backButtonDisplayMode = mode?.backButtonDisplayMode ?? .default
-      }
       Prop("backTitle") { (view: SplitViewHeaderView, backTitle: String?) in
         view.backTitle = backTitle
       }
@@ -72,21 +69,4 @@ struct SplitViewMenuActionRecord: Record {
 
 struct SplitViewSearchBarRecord: Record {
   @Field var placeholder: String?
-}
-
-enum SplitViewBackButtonDisplayMode: String, Enumerable {
-  case `default`
-  case generic
-  case minimal
-
-  var backButtonDisplayMode: UINavigationItem.BackButtonDisplayMode {
-    switch self {
-    case .default:
-      return .default
-    case .generic:
-      return .generic
-    case .minimal:
-      return .minimal
-    }
-  }
 }

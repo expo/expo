@@ -17,7 +17,6 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
   var leftToolbarItems: [SplitViewToolbarItemRecord] = []
   var rightToolbarItems: [SplitViewToolbarItemRecord] = []
   var searchBar: SplitViewSearchBarRecord?
-  var backButtonDisplayMode: UINavigationItem.BackButtonDisplayMode = .default
   var backTitle: String?
   var backVisible = true
   let onToolbarItemPress = EventDispatcher()
@@ -26,7 +25,7 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
 
   private weak var navigationItem: UINavigationItem?
   private var searchController: UISearchController?
-  // The item of the previous column, which holds the back button options of this column.
+  // The item of the previous column, which holds the back button title of this column.
   private weak var backButtonNavigationItem: UINavigationItem?
 
   func configureNavigationItem(_ navigationItem: UINavigationItem) {
@@ -99,21 +98,16 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
     onSearchBarSearchButtonPress(["text": searchBar.text ?? ""])
   }
 
-  // UIKit reads the title and the display mode of a back button from the item below it in the navigation stack.
+  // UIKit reads the title of a back button from the item below it in the navigation stack.
   // When the split view is collapsed, that is the item of the previous column.
   private func applyBackButton() {
     // Keeps the last found item, because the previous column is found only while collapsed.
     let previousItem = navigationItem == nil ? nil : previousNavigationItem() ?? backButtonNavigationItem
     if backButtonNavigationItem !== previousItem {
       backButtonNavigationItem?.backButtonTitle = nil
-      backButtonNavigationItem?.backButtonDisplayMode = .default
       backButtonNavigationItem = previousItem
     }
-    guard let previousItem else {
-      return
-    }
-    previousItem.backButtonTitle = backTitle?.isEmpty == false ? backTitle : nil
-    previousItem.backButtonDisplayMode = backButtonDisplayMode
+    previousItem?.backButtonTitle = backTitle?.isEmpty == false ? backTitle : nil
   }
 
   // Each column is the root of its own navigation controller. When the split view collapses,

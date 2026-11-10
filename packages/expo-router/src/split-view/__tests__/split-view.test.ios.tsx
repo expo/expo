@@ -505,7 +505,6 @@ it('passes the back button options of the SplitView.Column header to the native 
           <SplitView.Column
             header={{
               title: 'Inbox',
-              backButtonDisplayMode: 'minimal',
               backTitle: 'Mail',
               backVisible: false,
             }}
@@ -520,7 +519,6 @@ it('passes the back button options of the SplitView.Column header to the native 
 
   const props = jest.mocked(SplitViewNativeHeader).mock.lastCall![0];
   expect(props.title).toBe('Inbox');
-  expect(props.backButtonDisplayMode).toBe('minimal');
   expect(props.backTitle).toBe('Mail');
   expect(props.backVisible).toBe(false);
 });

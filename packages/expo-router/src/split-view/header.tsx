@@ -10,7 +10,6 @@ export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
     leftToolbar,
     rightToolbar,
     searchBar,
-    backButtonDisplayMode,
     backTitle,
     backVisible,
   } = header;
@@ -33,7 +32,6 @@ export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
       searchBar={searchBar && { placeholder: searchBar.placeholder }}
       onSearchBarChangeText={searchBar?.onChangeText}
       onSearchBarSearchButtonPress={searchBar?.onSearchButtonPress}
-      backButtonDisplayMode={backButtonDisplayMode}
       backTitle={backTitle}
       backVisible={backVisible}
     />

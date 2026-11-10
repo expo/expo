@@ -37,7 +37,6 @@ export interface SplitViewNativeHeaderProps {
   searchBar?: Pick<SplitViewSearchBar, 'placeholder'>;
   onSearchBarChangeText?: SplitViewSearchBar['onChangeText'];
   onSearchBarSearchButtonPress?: SplitViewSearchBar['onSearchButtonPress'];
-  backButtonDisplayMode?: SplitViewHeader['backButtonDisplayMode'];
   backTitle?: SplitViewHeader['backTitle'];
   backVisible?: SplitViewHeader['backVisible'];
 }

@@ -27,7 +27,6 @@ const MAILBOXES: { name: string; icon: SFSymbol }[] = [
 // Applied to every column after the first, whose back button shows when the split view is collapsed.
 const BACK_BUTTONS: { label: string; options: SplitViewHeader }[] = [
   { label: 'Default', options: {} },
-  { label: 'Minimal', options: { backButtonDisplayMode: 'minimal' } },
   { label: 'Custom title', options: { backTitle: 'Back to list' } },
   { label: 'Hidden', options: { backVisible: false } },
 ];

@@ -2,4 +2,4 @@
 'expo-router': patch
 ---
 
-[iOS] Add `backButtonDisplayMode`, `backTitle` and `backVisible` to SplitView column headers.
+[iOS] Add `backTitle` and `backVisible` to SplitView column headers.
