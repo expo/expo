@@ -48,7 +48,7 @@ function invalidFeedbackReason(feedback: ObserveFeedback): string | null {
  * Validates the feedback and records it through the AppMetrics module. Never throws, like
  * `reportCaughtError`.
  */
-export function reportFeedback(feedback: ObserveFeedback): void {
+export function reportFeedback(feedback: ObserveFeedback, native: object): void {
   try {
     const reason = invalidFeedbackReason(feedback);
     if (reason) {
@@ -65,7 +65,7 @@ export function reportFeedback(feedback: ObserveFeedback): void {
       ...(rest.rating != null ? { scale: scale ?? DEFAULT_SCALE } : null),
     });
     if (__DEV__) {
-      warnIfUserContentEntryMissing();
+      warnIfUserContentEntryMissing(native);
     }
   } catch (error) {
     if (__DEV__) {
