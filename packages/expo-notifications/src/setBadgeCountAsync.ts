@@ -11,13 +11,20 @@ export interface SetBadgeCountOptions {
 }
 
 /**
- * Sets the badge of the app's icon to the specified number. Setting it to `0` clears the badge. On iOS, this method requires that you have requested
- * the user's permission for `allowBadge` via [`requestPermissionsAsync`](#requestpermissionsasyncpermissions),
- * otherwise it will automatically return `false`.
- * > **Note:** On Android, setting a nonzero count is not supported and resolves to `false`. Setting the count to `0` dismisses all notifications and resolves to `true`.
- * @param badgeCount The count which should appear on the badge. A value of `0` will clear the badge.
+ * Sets the app icon's badge count on iOS and web. Setting the count to `0` clears the badge.
+ *
+ * On Android, setting an app icon's badge count independently of notifications is not supported.
+ * This method resolves to `false` for nonzero counts. Setting the count to `0` dismisses the app's
+ * notifications and resolves to `true`; it does not send a separate badge update to the launcher.
+ * To associate a count with a notification, set `badge` in [`NotificationContentInput`](#notificationcontentinput).
+ * The launcher and the user's notification settings determine whether a badge appears and how it is displayed.
+ *
+ * On iOS, badge permission must be enabled. Request `allowBadge` through
+ * [`requestPermissionsAsync`](#notificationsrequestpermissionsasyncpermissions). This method resolves to `false`
+ * if badge permission is disabled. Clearing the badge does not dismiss notifications on iOS.
+ * @param badgeCount The requested badge count. A value of `0` clears the badge on iOS and web, and dismisses notifications on Android.
  * @param options An object of options configuring behavior applied.
- * @return It returns a Promise resolving to a boolean representing whether the setting of the badge succeeded.
+ * @return A Promise resolving to whether the platform-specific operation succeeded. This does not confirm that a badge is visible.
  * @header badge
  */
 export async function setBadgeCountAsync(

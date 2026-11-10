@@ -13,7 +13,7 @@ Provides an API to fetch push notification tokens and to present, schedule, rece
 
 - 📣 schedule a one-off notification for a specific date, or some time from now,
 - 🔁 schedule a notification repeating in some time interval (or a calendar date match on iOS),
-- 1️⃣ get and set application badge icon number on iOS and web, and clear it on Android,
+- 1️⃣ get and set app icon badge counts on iOS and web, and configure notification badges on Android,
 - 📲 fetch a native device push token so you can send push notifications with FCM and APNS,
 - 😎 fetch an Expo push token so you can send push notifications with Expo,
 - 📬 listen to incoming notifications in the foreground and background,

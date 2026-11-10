@@ -548,7 +548,8 @@ export type NotificationContentAttachmentIos = {
  */
 export type NotificationContentAndroid = {
   /**
-   * Application badge number associated with the notification.
+   * Count associated with this notification. The launcher determines whether and where to display it,
+   * such as in the app icon's touch-and-hold menu. It is not a separate app icon badge count.
    */
   badge?: number;
   /**
@@ -605,7 +606,13 @@ export type NotificationContentInput = {
    */
   data?: Record<string, unknown>;
   /**
-   * Application badge number associated with the notification.
+   * On Android, the number of items this notification represents. This maps to Android's
+   * [`setNumber`](https://developer.android.com/develop/ui/views/notifications/badges#set-custom-notification-count).
+   * The launcher may display the count in the app icon's touch-and-hold menu. A numeric badge on the icon is not guaranteed.
+   * Badge display also depends on the notification channel's `showBadge` setting and the user's notification settings.
+   * Setting this to `0` does not dismiss notifications or clear other notifications' badges.
+   *
+   * On iOS, the number to display on the app icon. Set it to `0` to clear the badge, or omit it to leave the badge unchanged.
    */
   badge?: number;
   /**
@@ -730,6 +737,9 @@ export interface NotificationBehavior {
   shouldShowList: boolean;
   shouldPlaySound: boolean;
   /**
+   * Whether this notification may update the app icon's badge on iOS.
+   * This option has no effect on Android. Android badge display depends on the notification channel's
+   * `showBadge` setting, the launcher, and the user's notification settings.
    * @platform ios
    */
   shouldSetBadge: boolean;

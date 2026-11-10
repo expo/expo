@@ -35,7 +35,7 @@ import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 - Schedule a one-off notification for a specific date or some time from now
 - Schedule a notification repeating in some time interval (or a calendar date match on iOS)
-- Get and set the application badge icon number
+- Manage app icon badges, with [platform-specific behavior](#app-icon-badges)
 - Obtain a native device push token, so you can send push notifications with FCM (for Android) and APNs (for iOS)
 - Obtain an Expo push token, so you can send push notifications with [Expo Push Service](/push-notifications/sending-notifications/)
 - Listen to incoming notifications in the foreground and background
@@ -642,6 +642,22 @@ by specifying the `categoryIdentifier` in the [`NotificationContent`](#notificat
 On iOS, notification categories also allow you to customize your notifications further. With each category, you can set the interactive actions a user can take and configure things like the placeholder text to display when the user disables notification previews for your app.
 
 ## Platform-specific guides
+
+### App icon badges
+
+On Android, setting an app icon's badge count independently of notifications is not supported by `expo-notifications`. Android has no standard API for this operation. Starting with Android 8.0, supported launchers show badges for active notifications. The launcher and the user's notification settings determine whether the icon shows a dot, a number, or no badge.
+
+To associate a count with an Android notification, set `badge` in [`NotificationContentInput`](#notificationcontentinput). For example, use `badge: 3` when one notification represents three new messages. `expo-notifications` passes this value to Android's `setNumber()` method. A launcher may show it in the app icon's touch-and-hold menu; it does not guarantee a numeric badge on the icon. See [Android's notification badge guide](https://developer.android.com/develop/ui/views/notifications/badges).
+
+The notification channel's [`showBadge`](#notificationchannel) option controls whether its notifications may appear as launcher badges. It does not set a count or override the user's settings. The notification handler's `shouldSetBadge` option applies only to iOS.
+
+On Android, the standalone badge methods behave as follows:
+
+- [`getBadgeCountAsync()`](#notificationsgetbadgecountasync) always returns `0`. It cannot read the launcher's badge count. This result does not mean that no badge is visible.
+- [`setBadgeCountAsync(count)`](#notificationssetbadgecountasyncbadgecount-options) returns `false` for nonzero counts.
+- `setBadgeCountAsync(0)` dismisses the app's notifications and returns `true`. It does not send a separate badge update to the launcher. To dismiss individual notifications, use [`dismissNotificationAsync()`](#notificationsdismissnotificationasyncidentifier).
+
+On iOS, `getBadgeCountAsync()` reads the app icon's badge count, and `setBadgeCountAsync()` updates it when badge permission is enabled. Request this permission with `allowBadge`. Setting the count to `0` clears the badge without dismissing notifications.
 
 ### Handling notification channels&ensp;<PlatformTags platforms={['android 8+']} />
 
