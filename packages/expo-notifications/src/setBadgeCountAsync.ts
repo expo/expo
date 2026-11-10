@@ -11,20 +11,17 @@ export interface SetBadgeCountOptions {
 }
 
 /**
- * Sets the app icon's badge count on iOS and web. Setting the count to `0` clears the badge.
+ * Sets the app icon's badge count on iOS and web. Setting `0` clears the badge without dismissing notifications.
  *
- * On Android, setting an app icon's badge count independently of notifications is not supported.
- * This method resolves to `false` for nonzero counts. Setting the count to `0` dismisses the app's
- * notifications and resolves to `true`; it does not send a separate badge update to the launcher.
- * To associate a count with a notification, set `badge` in [`NotificationContentInput`](#notificationcontentinput).
- * The launcher and the user's notification settings determine whether a badge appears and how it is displayed.
+ * On Android, setting a badge count independently of notifications is unsupported. Nonzero counts resolve
+ * to `false`. Setting `0` dismisses the app's notifications and resolves to `true`.
+ * See [App icon badges](#app-icon-badges) for launcher behavior.
  *
- * On iOS, badge permission must be enabled. Request `allowBadge` through
- * [`requestPermissionsAsync`](#notificationsrequestpermissionsasyncpermissions). This method resolves to `false`
- * if badge permission is disabled. Clearing the badge does not dismiss notifications on iOS.
- * @param badgeCount The requested badge count. A value of `0` clears the badge on iOS and web, and dismisses notifications on Android.
- * @param options An object of options configuring behavior applied.
- * @return A Promise resolving to whether the platform-specific operation succeeded. This does not confirm that a badge is visible.
+ * On iOS, this method resolves to `false` if badge permission is disabled. Request `allowBadge` through
+ * [`requestPermissionsAsync`](#notificationsrequestpermissionsasyncpermissions).
+ * @param badgeCount The requested badge count.
+ * @param options Options configuring badge behavior.
+ * @return Whether the operation succeeded. This does not confirm that a badge is visible.
  * @header badge
  */
 export async function setBadgeCountAsync(

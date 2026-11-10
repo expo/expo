@@ -645,19 +645,11 @@ On iOS, notification categories also allow you to customize your notifications f
 
 ### App icon badges
 
-On Android, setting an app icon's badge count independently of notifications is not supported by `expo-notifications`. Android has no standard API for this operation. Starting with Android 8.0, supported launchers show badges for active notifications. The launcher and the user's notification settings determine whether the icon shows a dot, a number, or no badge.
+Setting an app icon's badge count independently of notifications is unsupported on Android. Badges depend on active notifications, the launcher, and the user's settings. A launcher may show a dot, a number, or no badge.
 
-To associate a count with an Android notification, set `badge` in [`NotificationContentInput`](#notificationcontentinput). For example, use `badge: 3` when one notification represents three new messages. `expo-notifications` passes this value to Android's `setNumber()` method. A launcher may show it in the app icon's touch-and-hold menu; it does not guarantee a numeric badge on the icon. See [Android's notification badge guide](https://developer.android.com/develop/ui/views/notifications/badges).
+The notification's [`badge`](#notificationcontentinput) value supplies a count, while the channel's [`showBadge`](#notificationchannel) setting allows badges. Neither guarantees a number on the app icon. See [Android's notification badge guide](https://developer.android.com/develop/ui/views/notifications/badges).
 
-The notification channel's [`showBadge`](#notificationchannel) option controls whether its notifications may appear as launcher badges. It does not set a count or override the user's settings. The notification handler's `shouldSetBadge` option applies only to iOS.
-
-On Android, the standalone badge methods behave as follows:
-
-- [`getBadgeCountAsync()`](#notificationsgetbadgecountasync) always returns `0`. It cannot read the launcher's badge count. This result does not mean that no badge is visible.
-- [`setBadgeCountAsync(count)`](#notificationssetbadgecountasyncbadgecount-options) returns `false` for nonzero counts.
-- `setBadgeCountAsync(0)` dismisses the app's notifications and returns `true`. It does not send a separate badge update to the launcher. To dismiss individual notifications, use [`dismissNotificationAsync()`](#notificationsdismissnotificationasyncidentifier).
-
-On iOS, `getBadgeCountAsync()` reads the app icon's badge count, and `setBadgeCountAsync()` updates it when badge permission is enabled. Request this permission with `allowBadge`. Setting the count to `0` clears the badge without dismissing notifications.
+On Android, [`getBadgeCountAsync()`](#notificationsgetbadgecountasync) always returns `0`, regardless of visible badges. [`setBadgeCountAsync()`](#notificationssetbadgecountasyncbadgecount-options) returns `false` for nonzero counts. Setting `0` dismisses the app's notifications and returns `true`.
 
 ### Handling notification channels&ensp;<PlatformTags platforms={['android 8+']} />
 

@@ -98,9 +98,7 @@ export interface NotificationChannel {
   lightColor: string;
   lockscreenVisibility: AndroidNotificationVisibility;
   /**
-   * Whether notifications in this channel may appear as badges on the app's launcher icon.
-   * This does not set a badge count or guarantee a numeric badge. The launcher and the user's
-   * notification settings determine how badges are displayed.
+   * Whether this channel allows launcher badges. Display depends on the launcher and the user's settings.
    */
   showBadge: boolean;
   sound: 'default' | 'custom' | null;
