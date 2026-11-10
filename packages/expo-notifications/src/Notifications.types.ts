@@ -735,8 +735,6 @@ export interface NotificationBehavior {
   shouldShowList: boolean;
   shouldPlaySound: boolean;
   /**
-   * Whether this notification may update the app icon's badge on iOS.
-   * This option has no effect on Android.
    * @platform ios
    */
   shouldSetBadge: boolean;
