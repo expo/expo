@@ -43,7 +43,7 @@
     "@expo/image-utils": "workspace:^",
     "@expo/json-file": "workspace:^",
     "@expo/require-utils": "workspace:^",
-    "@react-native/normalize-colors": "0.88.1",
+    "@react-native/normalize-colors": "0.89.0-rc.0",
     "debug": "^4.3.1",
     "semver": "^7.7.4"
   },
