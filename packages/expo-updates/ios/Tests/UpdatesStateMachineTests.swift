@@ -197,6 +197,21 @@ struct UpdatesStateMachineTests {
   }
 
   @Test
+  func `should set download progress to 1 when a download completes`() {
+    let testStateChangeEventManager = TestStateChangeEventManager()
+    let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))
+
+    machine.processEventForTesting(.download)
+    machine.processEventForTesting(.downloadProgress(progress: 0.5))
+    machine.processEventForTesting(.downloadCompleteWithUpdate(manifest: ["updateId": "0000-xxxx"]))
+    #expect(testStateChangeEventManager.lastContext?.downloadProgress == 1)
+
+    machine.processEventForTesting(.download)
+    machine.processEventForTesting(.downloadCompleteWithRollback)
+    #expect(testStateChangeEventManager.lastContext?.downloadProgress == 1)
+  }
+
+  @Test
   func `should handle rollback`() {
     let testStateChangeEventManager = TestStateChangeEventManager()
     let machine = UpdatesStateMachine(logger: UpdatesLogger(), eventManager: testStateChangeEventManager, validUpdatesStateValues: Set(UpdatesStateValue.allCases))

@@ -276,6 +276,21 @@ class UpdatesStateMachineInstrumentationTest {
   }
 
   @Test
+  fun test_downloadProgressIsOneWhenADownloadCompletes() {
+    val testStateChangeEventManager = TestStateChangeEventManager()
+    val machine = UpdatesStateMachine(logger, testStateChangeEventManager, UpdatesStateValue.entries.toSet())
+
+    machine.processEventTest(UpdatesStateEvent.Download())
+    machine.processEventTest(UpdatesStateEvent.DownloadProgress(0.5))
+    machine.processEventTest(UpdatesStateEvent.DownloadCompleteWithUpdate(JSONObject("{\"updateId\":\"0000-xxxx\"}")))
+    Assert.assertEquals(1.0, testStateChangeEventManager.lastContext!!.downloadProgress, 0.0)
+
+    machine.processEventTest(UpdatesStateEvent.Download())
+    machine.processEventTest(UpdatesStateEvent.DownloadCompleteWithRollback())
+    Assert.assertEquals(1.0, testStateChangeEventManager.lastContext!!.downloadProgress, 0.0)
+  }
+
+  @Test
   fun test_handleRollback() {
     val testStateChangeEventManager = TestStateChangeEventManager()
     val machine = UpdatesStateMachine(logger, testStateChangeEventManager, UpdatesStateValue.entries.toSet())
