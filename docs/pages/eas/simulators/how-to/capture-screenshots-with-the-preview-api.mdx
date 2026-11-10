@@ -1,0 +1,186 @@
+---
+title: Capture screenshots with the preview host API
+sidebar_title: Use the screenshot API
+description: Request full-size PNG or smaller JPEG screenshots from an iOS Expo Simulators session over HTTP or the control socket, and reuse connections for repeated captures.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+Use the preview host API when a script, an agent, or a web page takes many screenshots of an iOS session. You can request a smaller image or a JPEG. You can also keep one connection open for repeated captures.
+
+For one screenshot, [`eas simulator:control screenshot.capture`](/eas/simulators/how-to/control-with-eas-cli/#save-a-screenshot-on-your-computer) is simpler. EAS CLI always saves a full-size PNG.
+
+The image options on this page need serve-sim 0.14.0 or later on the session. Over HTTP, an older session ignores the options and returns a full-size PNG, so check the `Content-Type` header of the response. Over the control socket, an older session returns an error or a file path. To get the latest version, start a new session.
+
+## Get the preview host URL and token
+
+You need the preview host URL and the preview token of a running iOS session. For a session with `--public-link`, copy `remoteConfig.previewApiUrl` from `eas simulator:get --json`. It has the form `https://<preview-host>/?token=<token>`. For a session with private links, get `previewApiUrl` and `webPreviewToken` from the [REST API](/eas/simulators/reference/rest-api/#get-a-session).
+
+Send the token in an `Authorization` header. Anyone who has the token can view and control the simulator, so keep it private. See [Security model](/eas/simulators/how-it-works/security-model/).
+
+## Request a screenshot over HTTP
+
+Send a `POST` request to `/api/screenshot`. Without options, the response is a PNG of the active screen at full resolution:
+
+<Terminal
+  cmd={[
+    '$ curl -fsS -X POST -H "Authorization: Bearer <token>" -o screen.png "https://<preview-host>/api/screenshot"',
+  ]}
+/>
+
+Add query parameters to get a smaller image or a JPEG:
+
+<Terminal
+  cmd={[
+    '$ curl -fsS -X POST -H "Authorization: Bearer <token>" -o screen.jpg "https://<preview-host>/api/screenshot?maxWidth=402&format=jpeg&quality=80"',
+  ]}
+/>
+
+| Parameter  | Values                    | Description                                                                                                                                  |
+| ---------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `maxWidth` | Integer from 1 to 8192    | Largest width in pixels. The image keeps its aspect ratio after rotation. The API does not make a smaller screen larger.                     |
+| `format`   | `png` (default) or `jpeg` | Image format. JPEG is lossy and does not keep transparency.                                                                                  |
+| `quality`  | Integer from 1 to 100     | JPEG quality. The default is 80.                                                                                                             |
+| `display`  | A positive screen ID      | Captures one screen of a device with more than one screen, such as `1` or `3` on iPhone Duo. By default, the API captures the active screen. |
+
+An option with a value that is not valid returns `400` before the capture. The `Content-Type` header is `image/png` or `image/jpeg`.
+
+When the session saves screenshots as session artifacts, the artifact is a PNG at the requested size, also when the response is a JPEG.
+
+## Request screenshots over the control socket
+
+The control socket is the WebSocket that EAS CLI uses for `eas simulator:control`. It can return a screenshot as one binary message, without a file on the host.
+
+Open `wss://<preview-host>/exec-ws` with the WebSocket subprotocol `serve-sim.token.<token>`. Wait for the `{"ready": true}` message. Then send `screenshot.capture` with `output: "binary"`. The image options go in `params`:
+
+```json
+{
+  "id": 42,
+  "action": "screenshot.capture",
+  "params": {
+    "output": "binary",
+    "maxWidth": 402,
+    "format": "jpeg",
+    "quality": 80
+  }
+}
+```
+
+The host captures the device of the session. The reply is one binary message. Its first four bytes are the request `id` as an unsigned 32-bit integer in big-endian byte order. The remaining bytes are the image. If the capture fails, the reply is a JSON text message with `id` and `error`.
+
+This example runs in Node.js 22 or later, which includes the `WebSocket` API:
+
+```js capture.mjs
+const host = 'https://<preview-host>';
+const token = process.env.PREVIEW_TOKEN;
+
+const ws = new WebSocket(`${host.replace(/^http/, 'ws')}/exec-ws`, [`serve-sim.token.${token}`]);
+ws.binaryType = 'arraybuffer';
+const pending = new Map();
+const ready = new Promise((resolve, reject) => {
+  ws.onerror = ws.onclose = () =>
+    reject(new Error('The socket closed. Check the URL and the token.'));
+  ws.onmessage = ({ data }) => {
+    if (typeof data !== 'string') {
+      const id = new DataView(data).getUint32(0);
+      pending.get(id)?.resolve(new Uint8Array(data, 4));
+      pending.delete(id);
+      return;
+    }
+    const message = JSON.parse(data);
+    if (message.ready) return resolve();
+    const request = pending.get(message.id);
+    pending.delete(message.id);
+    if (message.error) request?.reject(new Error(message.error));
+    else request?.resolve(message);
+  };
+});
+
+let nextId = 1;
+function send(action, params = {}) {
+  const id = nextId++;
+  return new Promise((resolve, reject) => {
+    pending.set(id, { resolve, reject });
+    ws.send(JSON.stringify({ id, action, params }));
+  });
+}
+
+await ready;
+const capture = { output: 'binary', maxWidth: 402, format: 'jpeg', quality: 80 };
+const image = await send('screenshot.capture', capture);
+console.log(`Received ${image.byteLength} bytes`);
+ws.close();
+```
+
+Match each reply to its request by `id`. Replies to requests that run at the same time can arrive in a different order. One socket runs up to eight actions at the same time.
+
+### Check that the session supports binary output
+
+An older serve-sim can ignore `output` and return a file path on the host in JSON. Before you depend on binary output, send `actions.describe` and parse the `stdout` field of the reply:
+
+- `screenshot.capture.properties.output.enum` includes `binary` when the session supports binary output.
+- `screenshot.capture.properties.maxWidth` is present when the session supports the image options.
+
+Without `output: "binary"`, `screenshot.capture` saves a file on the host and returns its path. That mode rejects `maxWidth`, `format`, and `quality`. Only that mode accepts `fileName`. EAS CLI uses this mode, so `eas simulator:control screenshot.capture` cannot use the image options.
+
+## Reuse connections for repeated captures
+
+A new connection for each screenshot repeats the connection setup, such as the handshakes that open a secure connection. Reuse one connection when you take many screenshots. Reuse saves that setup time. It does not make the capture, the image encoding, or the image transfer faster.
+
+### Over HTTP
+
+Use one HTTP client for the same preview host. Read each response body to the end, so that the client can reuse the connection. Do not start a new process or create a new client for each screenshot. In Node.js, give `https.request` an agent with `keepAlive: true`:
+
+```js keep-alive.mjs
+import https from 'node:https';
+
+const host = 'https://<preview-host>';
+const token = process.env.PREVIEW_TOKEN;
+const agent = new https.Agent({ keepAlive: true });
+
+function screenshot(query = '') {
+  return new Promise((resolve, reject) => {
+    const request = https.request(
+      `${host}/api/screenshot?${query}`,
+      { method: 'POST', agent, headers: { Authorization: `Bearer ${token}` } },
+      response => {
+        const chunks = [];
+        response.on('data', chunk => chunks.push(chunk));
+        response.on('end', () =>
+          resolve({
+            status: response.statusCode,
+            type: response.headers['content-type'],
+            serverTiming: response.headers['server-timing'],
+            image: Buffer.concat(chunks),
+            reusedSocket: request.reusedSocket,
+          })
+        );
+      }
+    );
+    request.on('error', reject);
+    request.end();
+  });
+}
+
+for (let i = 0; i < 3; i++) {
+  const { type, image, reusedSocket } = await screenshot('maxWidth=402&format=jpeg&quality=80');
+  console.log(type, image.byteLength, 'bytes, reused connection:', reusedSocket);
+}
+agent.destroy();
+```
+
+`request.reusedSocket` is `true` when a request used a connection that was already open. Keep-alive is a setting of your HTTP client. It is not a parameter of the screenshot request.
+
+### Over the control socket
+
+Keep one authenticated socket open and send each action on it, as in the [control socket example](#request-screenshots-over-the-control-socket). Close the socket when you finish.
+
+The EAS CLI connection helper is a different feature. `eas simulator:control:connection open` keeps the control socket of EAS CLI open between `eas simulator:control` commands. It does not change HTTP requests that you send yourself. See [Keep the connection open](/eas/simulators/how-to/control-with-eas-cli/#keep-the-connection-open).
+
+## Compare screenshot latency
+
+Compare captures that use the same `maxWidth`, `format`, and `quality`. A full-resolution PNG can be many times larger than a smaller JPEG, so it takes longer to encode and to transfer.
+
+A successful HTTP response has a `Server-Timing` header. `total` is the time on the preview host until the response starts. It does not include the response transfer. The other values, such as `capture`, `encode`, and `artifact`, show stages of that time. Some stages overlap, so do not add them.
+
+The time that your client measures minus `total` is the time outside the preview host. It includes the connection setup, the network, the transfer of the image, and the work in your client. It is not only the network transfer time.

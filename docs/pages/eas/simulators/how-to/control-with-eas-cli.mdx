@@ -201,6 +201,8 @@ Pass the scheme without `://`. `http` and `https` links do not need approval. Th
 
 Add `--json` to return the action result with `id`, `action`, `output`, and `file`. For a downloaded file, `file` is the local path. See [Capture evidence](/eas/simulators/how-to/capture-evidence/) for recordings and session artifacts.
 
+EAS CLI saves a full-size PNG. For a smaller image or a JPEG, or for many screenshots in a script, use the [preview host screenshot API](/eas/simulators/how-to/capture-screenshots-with-the-preview-api/).
+
 ### Capture both iPhone Duo screens
 
 On iPhone Duo, `display=1` selects the outer screen. Use `display=3` for the inner screen. Save both as separate files:
