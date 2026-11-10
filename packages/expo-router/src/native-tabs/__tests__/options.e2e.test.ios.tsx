@@ -31,6 +31,11 @@ jest.mock('react-native-screens', () => {
   };
 });
 
+// Mocked so a test can replace `isScreens5`; everything else stays real.
+jest.mock('../../optional-libraries/react-native-screens', () => ({
+  ...jest.requireActual('../../optional-libraries/react-native-screens'),
+}));
+
 // `Tabs` is mocked by `jest.mock` above; cast to read `.mock` with the props type.
 // `icon` and `selectedIcon` are not in `TabsScreenProps`. Tests check that they are not passed at the top level.
 const TabsScreen = Tabs.Screen as jest.MockedFunction<
@@ -838,6 +843,42 @@ describe('Icons', () => {
     );
 
     warnSpy.mockRestore();
+  });
+
+  it('when using Icon xcasset with react-native-screens 5, it does not pass the icon and warns', async () => {
+    const isScreens5Replacement = jest.replaceProperty(
+      jest.requireMock<typeof import('../../optional-libraries/react-native-screens')>(
+        '../../optional-libraries/react-native-screens'
+      ),
+      'isScreens5',
+      true
+    );
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon
+              xcasset={{ default: 'home-outline', selected: 'home-filled' }}
+            />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0]![0].ios?.icon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0]![0].ios?.selectedIcon).toBeUndefined();
+    expect(warnSpy).toHaveBeenCalledWith(
+      'The "index" tab uses an `xcasset` icon, which NativeTabs cannot show with react-native-screens 5 yet. ' +
+        'Use the `sf` or `src` prop of `NativeTabs.Trigger.Icon` instead.'
+    );
+
+    warnSpy.mockRestore();
+    isScreens5Replacement.restore();
   });
 });
 

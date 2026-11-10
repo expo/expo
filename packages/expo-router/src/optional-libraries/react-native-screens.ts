@@ -8,6 +8,7 @@ type ScreensV5Exports = Pick<typeof ScreensExperimental, 'Stack' | 'Split'>;
 // `experimental`. Our types target 4.x, where the main entry doesn't declare them, hence the cast.
 const screensV5 = Screens as unknown as Partial<ScreensV5Exports>;
 
+export const isScreens5 = screensV5.Stack !== undefined;
 export const StackV5 = screensV5.Stack ?? ScreensExperimental.Stack;
 // react-native-screens 5 adds column stacks and header configs to `Split`. 4.x doesn't have them.
 type SplitV5Components = {
