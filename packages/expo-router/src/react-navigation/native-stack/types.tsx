@@ -15,6 +15,7 @@ import type {
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { StandardNavigatorEmit } from '../../standard-navigation';
+import type { ToolbarAxisBehavior } from '../../toolbar/axisBehavior';
 import type {
   DefaultNavigatorOptions,
   Descriptor,
@@ -963,6 +964,21 @@ type SharedHeaderItem = {
    * Read more: https://developer.apple.com/documentation/uikit/uibarbuttonitem/sharesbackground
    */
   sharesBackground?: boolean;
+  /**
+   * Controls whether this item can move into the vertical bar that iOS 27.1 shows on iPhone Duo.
+   * `automatic` lets the system decide from the item's content. `horizontalOnly` keeps the item in
+   * the horizontal bar and hides it when no horizontal bar is present. `verticalPreferred` prefers
+   * the vertical bar when both bars are present.
+   * Only available from iOS 27.1 and later.
+   *
+   * Header items need a `react-native-screens` release that reads `axisBehavior`. Until then, they
+   * stay on `automatic`.
+   *
+   * Read more: https://developer.apple.com/documentation/uikit/uibarbuttonitem/axisbehavior-swift.property
+   *
+   * @default 'automatic'
+   */
+  axisBehavior?: ToolbarAxisBehavior;
   /**
    * An identifier used to match items across transitions.
    * Only available from iOS 26.0 and later.
