@@ -23,6 +23,8 @@ import WaSQLiteFactory from './wa-sqlite/wa-sqlite';
 import wasmModule from './wa-sqlite/wa-sqlite.wasm';
 import {
   type ConfigureWorkerMessage,
+  type InitWorkerMessage,
+  type ShutdownWorkerMessage,
   type SQLiteWorkerMessage,
   type SQLiteWorkerMessageType,
   type MessageTypeMap,
@@ -55,9 +57,16 @@ const MAX_INT32 = 0x7fffffff;
 const MIN_INT32 = -0x80000000;
 
 let _sqlite3: SQLiteAPI | null = null;
+let _wasmModule: any = null;
 let _vfs: AccessHandlePoolVFS | null = null;
 let _vfsMemory: MemoryVFS | null = null;
 let _webOptions: SQLiteWebOptions = {};
+let wasmPromise: Promise<SQLiteAPI> | null = null;
+let vfsPromise: Promise<{
+  sqlite3: SQLiteAPI;
+  vfs: AccessHandlePoolVFS;
+  vfsMemory: MemoryVFS;
+}> | null = null;
 
 const databaseIdMap = new Map<number, DatabaseEntity>();
 const statementIdMap = new Map<number, StatementEntity>();
@@ -65,9 +74,40 @@ const sessionIdMap = new Map<number, SessionEntity>();
 
 class SQLiteErrorException extends Error {}
 
-self.onmessage = async (event: MessageEvent<SQLiteWorkerMessage | ConfigureWorkerMessage>) => {
+self.onmessage = async (
+  event: MessageEvent<
+    SQLiteWorkerMessage | ConfigureWorkerMessage | InitWorkerMessage | ShutdownWorkerMessage
+  >
+) => {
   if (event.data.type === 'configure') {
     _webOptions = event.data.data;
+    return;
+  }
+  if (event.data.type === 'shutdown') {
+    try {
+      await wasmPromise?.catch(() => undefined);
+      await vfsPromise?.catch(() => undefined);
+      await _vfs?.close();
+      _vfsMemory?.close();
+    } finally {
+      _sqlite3 = null;
+      _wasmModule = null;
+      _vfs = null;
+      _vfsMemory = null;
+      wasmPromise = null;
+      vfsPromise = null;
+      self.postMessage({ type: 'workerShutdown' });
+    }
+    return;
+  }
+  if (event.data.type === 'init') {
+    try {
+      // Load the wasm module only. The database files stay closed until the first database call.
+      await loadWasmAsync();
+    } catch (e) {
+      const error = e instanceof Error ? e.message || String(e) : String(e);
+      self.postMessage({ type: 'workerReady', error });
+    }
     return;
   }
 
@@ -772,38 +812,79 @@ async function maybeFinalizeAllStatements(sqlite3: SQLiteAPI, dbEntity: Database
   }
 }
 
+async function loadWasmAsync(): Promise<SQLiteAPI> {
+  if (_sqlite3 != null) {
+    return _sqlite3;
+  }
+  // onmessage is async, so init and the first database call can overlap. Share one load.
+  // Post workerReady here so a retry after a failed wasm load clears the stored error.
+  if (wasmPromise == null) {
+    wasmPromise = loadWaSQLiteModuleAsync()
+      .then((module) => {
+        const sqlite3 = SQLite.Factory(module) as SQLiteAPI;
+        if (!sqlite3) {
+          throw new Error('Failed to initialize wa-sqlite');
+        }
+        _wasmModule = module;
+        _sqlite3 = sqlite3;
+        self.postMessage({ type: 'workerReady' });
+        return sqlite3;
+      })
+      .catch((error: unknown) => {
+        wasmPromise = null;
+        _sqlite3 = null;
+        _wasmModule = null;
+        throw error;
+      });
+  }
+  return wasmPromise;
+}
+
 async function maybeInitAsync(): Promise<{
   sqlite3: SQLiteAPI;
   vfs: AccessHandlePoolVFS;
   vfsMemory: MemoryVFS;
 }> {
-  if (!_sqlite3) {
-    const module = await loadWaSQLiteModuleAsync();
-    _sqlite3 = SQLite.Factory(module) as SQLiteAPI;
-    if (!_sqlite3) {
-      throw new Error('Failed to initialize wa-sqlite');
-    }
-
-    if (_vfs == null) {
-      _vfs = await AccessHandlePoolVFS.create(VFS_NAME_PERSISTENT, module);
-      if (_vfs == null) {
-        throw new Error('Failed to initialize AccessHandlePoolVFS');
-      }
-    }
-    _sqlite3.vfs_register(_vfs, true);
-
-    if (_vfsMemory == null) {
-      _vfsMemory = await MemoryVFS.create(VFS_NAME_MEMORY, module);
-      if (_vfsMemory == null) {
-        throw new Error('Failed to initialize MemoryVFS');
-      }
-    }
-    _sqlite3.vfs_register(_vfsMemory, false);
+  if (vfsPromise == null) {
+    vfsPromise = createVfsAsync().catch(async (error: unknown) => {
+      // Drop the failed VFS so the next attempt can open the database files again.
+      const vfs = _vfs;
+      const vfsMemory = _vfsMemory;
+      vfsPromise = null;
+      _vfs = null;
+      _vfsMemory = null;
+      await vfs?.close().catch(() => undefined);
+      vfsMemory?.close();
+      throw error;
+    });
   }
-  if (_vfs == null || _vfsMemory == null) {
-    throw new Error('Invalid VFS state');
+  return vfsPromise;
+}
+
+async function createVfsAsync(): Promise<{
+  sqlite3: SQLiteAPI;
+  vfs: AccessHandlePoolVFS;
+  vfsMemory: MemoryVFS;
+}> {
+  const sqlite3 = await loadWasmAsync();
+  const module = _wasmModule;
+  if (_vfs == null) {
+    const vfs = await AccessHandlePoolVFS.create(VFS_NAME_PERSISTENT, module);
+    if (vfs == null) {
+      throw new Error('Failed to initialize AccessHandlePoolVFS');
+    }
+    _vfs = vfs;
+    sqlite3.vfs_register(_vfs, true);
   }
-  return { sqlite3: _sqlite3, vfs: _vfs, vfsMemory: _vfsMemory };
+  if (_vfsMemory == null) {
+    const vfsMemory = await MemoryVFS.create(VFS_NAME_MEMORY, module);
+    if (vfsMemory == null) {
+      throw new Error('Failed to initialize MemoryVFS');
+    }
+    _vfsMemory = vfsMemory;
+    sqlite3.vfs_register(_vfsMemory, false);
+  }
+  return { sqlite3, vfs: _vfs, vfsMemory: _vfsMemory };
 }
 
 async function loadWaSQLiteModuleAsync(): Promise<any> {
