@@ -21,6 +21,10 @@ jest.mock('@expo/require-utils', () => {
 
 const asMetroConfig = (config: Partial<ConfigT> = {}): ConfigT => ({
   ...(config as any),
+  resolver: {
+    sourceExts: ['js'],
+    ...config.resolver,
+  },
   transformer: {
     asyncRequireModulePath: 'expo/internal/async-require-module',
   },
@@ -864,6 +868,30 @@ describe(withExtendedResolver, () => {
   });
 
   describe('native Node.js addons', () => {
+    it('loads native files returned directly by a custom resolver', () => {
+      const bundler = getMetroBundlerGetter()();
+      const config = withExtendedResolver(
+        asMetroConfig({
+          projectRoot: '/root/',
+          resolver: {
+            ...asMetroConfig().resolver,
+            resolveRequest: () => ({ type: 'sourceFile', filePath: '/root/native/hello.node' }),
+          },
+        }),
+        { isTsconfigPathsEnabled: false, getMetroBundler: () => bundler }
+      );
+
+      expect(config.resolver.sourceExts).toContain('node');
+      expectVirtual(
+        config.resolver.resolveRequest!(getNodeResolverContext(), '@native/hello', 'web'),
+        '\0node-addon:/root/native/hello.node'
+      );
+      expect((bundler as any).setVirtualModule).toHaveBeenCalledWith(
+        '\0node-addon:/root/native/hello.node',
+        'module.exports=$$require_external("/root/native/hello.node");'
+      );
+    });
+
     it.each<Resolution>([
       { type: 'sourceFile', filePath: '/root/native/hello.node' },
       { type: 'assetFiles', filePaths: ['/root/native/hello.node'] },

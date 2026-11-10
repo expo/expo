@@ -704,27 +704,6 @@ export function withExtendedResolver(
       }
 
       const result = getStrictResolver(context, platform)(moduleName);
-      if (context.customResolverOptions?.environment === 'node') {
-        const filePath =
-          result.type === 'sourceFile'
-            ? result.filePath
-            : result.type === 'assetFiles'
-              ? result.filePaths[0]
-              : null;
-        if (filePath?.endsWith('.node')) {
-          const isExporting = context.customResolverOptions.exporting;
-          const virtualModuleId = isExporting
-            ? `${NATIVE_ADDON_EXPORT_PREFIX}${filePath}`
-            : `\0node-addon:${filePath}`;
-          getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
-            virtualModuleId,
-            isExporting
-              ? `module.exports=__expo_require_native__(${JSON.stringify(getNativeAddonId(filePath))});`
-              : `module.exports=$$require_external(${JSON.stringify(filePath)});`
-          );
-          return { type: 'sourceFile', filePath: virtualModuleId };
-        }
-      }
       if (result.type !== 'sourceFile') {
         return result;
       }
@@ -904,8 +883,40 @@ export function withExtendedResolver(
     }
   );
 
+  const resolveRequest = metroConfigWithCustomContext.resolver.resolveRequest!;
   return withMetroErrorReportingResolver(
-    withMetroSupervisingTransformWorker(metroConfigWithCustomContext)
+    withMetroSupervisingTransformWorker({
+      ...metroConfigWithCustomContext,
+      resolver: {
+        ...metroConfigWithCustomContext.resolver,
+        sourceExts: [...new Set([...metroConfigWithCustomContext.resolver.sourceExts, 'node'])],
+        resolveRequest(context, moduleName, platform) {
+          const result = resolveRequest(context, moduleName, platform);
+          if (context.customResolverOptions?.environment === 'node') {
+            const filePath =
+              result.type === 'sourceFile'
+                ? result.filePath
+                : result.type === 'assetFiles'
+                  ? result.filePaths[0]
+                  : null;
+            if (filePath?.endsWith('.node')) {
+              const isExporting = context.customResolverOptions.exporting;
+              const virtualModuleId = isExporting
+                ? `${NATIVE_ADDON_EXPORT_PREFIX}${filePath}`
+                : `\0node-addon:${filePath}`;
+              getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
+                virtualModuleId,
+                isExporting
+                  ? `module.exports=__expo_require_native__(${JSON.stringify(getNativeAddonId(filePath))});`
+                  : `module.exports=$$require_external(${JSON.stringify(filePath)});`
+              );
+              return { type: 'sourceFile', filePath: virtualModuleId };
+            }
+          }
+          return result;
+        },
+      },
+    })
   );
 }
 
