@@ -687,27 +687,35 @@ describe('module Proxy', () => {
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
+  const idReason = '`id` must be a non-empty string';
+  const messageReason = '`message` must be a string';
+  const ratingReason = '`rating` must be a whole number from 0 to 10';
+  const emptyReason = 'set `message` or `rating`';
+
   it.each([
-    { id: 'checkout' },
-    { id: 42, message: 'Great' },
-    { id: 'checkout', message: 42 },
-    { id: 'checkout', rating: 4.5 },
-    { id: 'checkout', rating: -1 },
-    { id: 'checkout', rating: 11 },
-    { id: 'checkout', rating: NaN },
-    { id: 'checkout', rating: Infinity },
-    { id: 'checkout', rating: '5' },
-    { id: 'checkout', message: 'Great', rating: 4.5 },
-    { id: '', message: 'Great' },
-    { id: '  ', message: 'Great' },
-    { id: 'checkout', message: '' },
-    { id: 'checkout', message: '  ' },
-  ])('drops feedback with a warning: %o', (feedback) => {
+    [{ id: 'checkout' }, emptyReason],
+    [{ id: 42, message: 'Great' }, idReason],
+    [{ id: 'checkout', message: 42 }, messageReason],
+    [{ id: 'checkout', rating: 4.5 }, ratingReason],
+    [{ id: 'checkout', rating: -1 }, ratingReason],
+    [{ id: 'checkout', rating: 11 }, ratingReason],
+    [{ id: 'checkout', rating: NaN }, ratingReason],
+    [{ id: 'checkout', rating: Infinity }, ratingReason],
+    [{ id: 'checkout', rating: '5' }, ratingReason],
+    [{ id: 'checkout', message: 'Great', rating: 4.5 }, ratingReason],
+    [{ id: '', message: 'Great' }, idReason],
+    [{ id: '  ', message: 'Great' }, idReason],
+    [{ id: 'checkout', message: '' }, emptyReason],
+    [{ id: 'checkout', message: '  ' }, emptyReason],
+  ])('drops feedback with a warning: %o', (feedback, reason) => {
     const Observe = loadModule();
     // The cases pass wrong types on purpose, the way an untyped caller can.
     Observe.reportFeedback(feedback as Parameters<typeof Observe.reportFeedback>[0]);
     expect(mockAppMetrics.reportFeedback).not.toHaveBeenCalled();
     expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      `[expo-observe] \`reportFeedback\` dropped the report: ${reason}.`
+    );
   });
 
   it.each([null, undefined, 'Great'])(

@@ -244,10 +244,11 @@ class BaseObservabilityManager(
       }
 
       val highestId = logs.last().id
-      val sampledLogs = logs.filter {
-        dispatchLogsAndErrors ||
-          (dispatchErrors && it.name in ERROR_LOG_NAMES) ||
-          it.name == FEEDBACK_LOG_NAME
+      val sampledLogs = if (dispatchLogsAndErrors) {
+        logs
+      } else {
+        val supportedLogNames = (if (dispatchErrors) ERROR_LOG_NAMES else emptySet()) + FEEDBACK_LOG_NAME
+        logs.filter { it.name in supportedLogNames }
       }.filterNot { it.name in ignoredEvents }
       val logsBySessionId = sampledLogs.groupBy { it.sessionId }
       val sessions = sessionManager.getSessions(logsBySessionId.keys).associateBy { it.id }

@@ -1,12 +1,13 @@
 ---
 title: User feedback
 sidebar_title: Feedback
-description: Collect feedback from your users with Observe.reportFeedback and view it as events in Expo Observe.
+description: Collect feedback from your users with Observe.reportFeedback and view it in Expo Observe.
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-`Observe.reportFeedback` sends feedback from your users to Expo Observe. The API has no UI. You build the feedback form, and the API sends what the user enters. Expo Observe records each report as a custom event named `expo.feedback`, next to your other [user-defined events](/eas/observe/events/).
+`Observe.reportFeedback` sends feedback from your users to Expo Observe. The API has no UI. You build the feedback form, and the API sends what the user enters. `expo-observe` sends each report as an event named `expo.feedback`. The dashboard shows the reports on the [**Observe > Feedback**](#view-feedback) page.
 
 `reportFeedback` works on Android and iOS. On web, it sends nothing.
 
@@ -39,7 +40,7 @@ Observe.reportFeedback({
 - The `rating` is not a whole number from 0 to 10.
 - An argument has the wrong type.
 
-`reportFeedback` returns nothing. To tell the user that a report is not valid, check the input before you call it, as the [example](#add-a-feedback-screen-with-expo-router) below does.
+`reportFeedback` returns nothing. To tell the user that a report is not valid, check the input before you call it, as the [Expo Router example](#feedback-screen-with-expo-router) below does.
 
 ## Sampling and configuration
 
@@ -51,7 +52,11 @@ Other options apply to feedback the same way as to other events:
 - When `dispatchingEnabled` is `false`, feedback is dropped, and no warning is printed. Pending feedback is not kept to send later.
 - In a debug build, feedback is dropped unless `dispatchInDebug` is `true`.
 
-## Add a feedback screen with Expo Router
+## Feedback UI examples
+
+Each example sends a `rating` from 0 to 10. If your UI uses a smaller scale, convert it to 0 to 10 before you send it.
+
+<Collapsible summary="Feedback screen with Expo Router">
 
 This example adds a floating button to every screen. The button opens a feedback screen as an iOS sheet. The report includes the route pattern of the screen the user came from, for example, `/(tabs)/sessions/[sessionId]`. The route pattern has no route parameter values, so the report does not carry IDs or other data from the URL.
 
@@ -194,7 +199,9 @@ const styles = StyleSheet.create({
 });
 ```
 
-## Add a feedback screen with React Navigation
+</Collapsible>
+
+<Collapsible summary="Feedback screen with React Navigation">
 
 With React Navigation, use the route name of the current screen. The route name has no route parameter values. Read it from the navigation container ref when the user presses the button:
 
@@ -230,11 +237,68 @@ export default function App() {
 }
 ```
 
-Register a `Feedback` screen with `presentation: 'formSheet'` in your stack. In that screen, read `from` from `useRoute().params`, and use the same form as the [Expo Router example](#add-a-feedback-screen-with-expo-router).
+Register a `Feedback` screen with `presentation: 'formSheet'` in your stack. In that screen, read `from` from `useRoute().params`, and use the same form as the [Expo Router example](#feedback-screen-with-expo-router).
+
+</Collapsible>
+
+<Collapsible summary="Thumbs up or down">
+
+This example asks one yes-or-no question. Thumbs down sends a rating of 0. Thumbs up sends a rating of 10:
+
+```tsx src/components/ThumbsFeedback.tsx
+import { Observe } from 'expo-observe';
+import { Button, View } from 'react-native';
+
+export function ThumbsFeedback() {
+  function send(rating: number) {
+    Observe.reportFeedback({ id: 'article-helpful', rating });
+  }
+
+  return (
+    <View style={{ flexDirection: 'row', gap: 12 }}>
+      <Button title="Thumbs down" onPress={() => send(0)} />
+      <Button title="Thumbs up" onPress={() => send(10)} />
+    </View>
+  );
+}
+```
+
+</Collapsible>
+
+<Collapsible summary="Five-star rating">
+
+This example shows five stars. The rating is the number of stars multiplied by 2, so five stars sends a rating of 10:
+
+```tsx src/components/StarFeedback.tsx
+import { Observe } from 'expo-observe';
+import { Pressable, Text, View } from 'react-native';
+
+const STARS = [1, 2, 3, 4, 5];
+
+export function StarFeedback() {
+  function send(stars: number) {
+    Observe.reportFeedback({ id: 'order-rating', rating: stars * 2 });
+  }
+
+  return (
+    <View style={{ flexDirection: 'row', gap: 8 }}>
+      {STARS.map(stars => (
+        <Pressable key={stars} accessibilityLabel={`${stars} stars`} onPress={() => send(stars)}>
+          <Text style={{ fontSize: 32 }}>★</Text>
+        </Pressable>
+      ))}
+    </View>
+  );
+}
+```
+
+</Collapsible>
 
 ## View feedback
 
-Feedback is a custom event, so it appears on the [**Observe > Events**](https://expo.dev/accounts/[account]/projects/[project]/observe/events) page of the dashboard under the `expo.feedback` name.
+The [**Observe > Feedback**](https://expo.dev/accounts/[account]/projects/[project]/observe/feedback) page of the dashboard lists your feedback by `id`. For each `id`, the page shows how your users rate it.
+
+Select an `id` to see its totals, the spread of ratings from 0 to 10, and its reports. Select a report to see the full message, the rating, and the device and app details. You can also open a report as its own page.
 
 From the CLI:
 
