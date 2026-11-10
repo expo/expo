@@ -44,6 +44,13 @@ Run focused package scripts from `packages/expo-router` as needed:
 
 Use the [router-tester app](../../apps/router-tester/README.md) for app behavior that needs a simulator. Internal agent runs follow its [EAS simulator instructions](../../apps/router-tester/AGENTS.md); external contributors use the README's local iOS or Android simulator setup. The README also documents its Maestro test.
 
+For internal runs, when you change native code in `ios/` or update a dependency with iOS native code, such as `react-native-screens`, build router-tester on EAS with both Xcode 27 and Xcode 26. Run from `apps/router-tester`; both builds must succeed:
+
+```sh
+pnpm eas:build -p ios --profile ios-simulator --non-interactive
+pnpm eas:build -p ios --profile ios-simulator-xcode-26 --non-interactive
+```
+
 For integration or end-to-end projects, inspect [`apps/router-e2e`](../../apps/router-e2e/package.json) and the relevant [`@expo/cli` test scripts](../@expo/cli/package.json). Select a project and platform that exercise the changed behavior; do not require a simulator for every edit.
 
 ## Changelog and docs
