@@ -1,5 +1,6 @@
 import AppMetrics from 'expo-app-metrics';
 
+import { warnIfUserContentEntryMissing } from './privacyManifestWarning';
 import type { ObserveFeedback } from './types';
 
 const DEFAULT_SCALE = { min: 0, max: 10 };
@@ -63,6 +64,9 @@ export function reportFeedback(feedback: ObserveFeedback): void {
       // Sent with every rating, also the default one, so the dashboard can compare ratings.
       ...(rest.rating != null ? { scale: scale ?? DEFAULT_SCALE } : null),
     });
+    if (__DEV__) {
+      warnIfUserContentEntryMissing();
+    }
   } catch (error) {
     if (__DEV__) {
       console.warn('[expo-observe] `reportFeedback` failed to record the feedback:', error);
