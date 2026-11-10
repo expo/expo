@@ -20,7 +20,8 @@ export interface SplitViewProps extends Omit<SplitHostProps, 'children'> {
    * When SplitView applies the left and right safe area insets to the content of each column and inspector.
    * - `'expanded'`: only while the split view shows more than one column.
    * - `'always'`: in all modes.
-   * - `'never'`: never.
+   * - `'never'`: never. Apply the insets yourself, for example with `SafeAreaView` from `react-native-screens/experimental`.
+   *   Otherwise, the content can show under the sidebar.
    * @default 'expanded'
    */
   horizontalSafeAreaInsets?: 'expanded' | 'always' | 'never';

@@ -126,7 +126,7 @@ To use `expo-router/unstable-split-view` in your project, you need to install `e
 
 - `'expanded'` (default): only when the split view shows more than one column.
 - `'always'`: also when the split view collapses to one column.
-- `'never'`: never. Use this value to apply the insets yourself.
+- `'never'`: never. Apply the insets yourself with `SafeAreaView` from `react-native-screens/experimental`, as in the example below. Otherwise, the content can show under the sidebar.
 
 A vertical `ScrollView` does not add left and right content insets by default. If the column content is a `ScrollView`, set `horizontalSafeAreaInsets="never"` so that the scroll view fills the column from edge to edge. Then apply the left and right insets inside the scroll view:
 
