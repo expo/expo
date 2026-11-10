@@ -436,6 +436,10 @@ public final class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendab
    to a synchronous no-op scheduler — callers can detect this via
    `JavaScriptRuntime.supportsAsyncScheduling`.
 
+   `scheduler` is an opaque handle that `dispatch` understands; the factories pass
+   a handle created by `expo::createReactSchedulerHandle` that references the React
+   runtime scheduler weakly (see `EXReactSchedulerDispatch.h`).
+
    `dispatch` is a raw pointer to a C function with signature
    `void (*)(void *scheduler, int priority, void (^callback)())` — cast back
    to the typed pointer inside `ExpoModulesJSI`. It's typed as `UnsafeRawPointer`
