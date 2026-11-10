@@ -1,4 +1,4 @@
-import { type EventSubscription, UnavailabilityError } from 'expo-modules-core';
+import { type EventSubscription, UnavailabilityError } from 'expo';
 import { useEffect, useRef } from 'react';
 
 import type {

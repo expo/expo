@@ -1,4 +1,4 @@
-import { NativeModule, requireOptionalNativeModule } from 'expo-modules-core';
+import { NativeModule, requireOptionalNativeModule } from 'expo';
 
 import type {
   AppIntentDonationFilter,
