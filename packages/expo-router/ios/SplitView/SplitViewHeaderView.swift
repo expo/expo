@@ -132,7 +132,8 @@ class SplitViewHeaderView: ExpoView, NavigationItemCustomizer, UISearchBarDelega
 
   private func toolbarItemImage(_ item: SplitViewToolbarItemRecord) -> UIImage? {
     if let xcassetName = item.xcassetName {
-      let renderingMode: UIImage.RenderingMode = item.imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
+      let renderingMode: UIImage.RenderingMode =
+        item.imageRenderingMode == .template ? .alwaysTemplate : .alwaysOriginal
       return UIImage(named: xcassetName)?.withRenderingMode(renderingMode)
     }
     return item.icon.flatMap { UIImage(systemName: $0) }
