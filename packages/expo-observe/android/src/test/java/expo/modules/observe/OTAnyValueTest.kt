@@ -10,7 +10,9 @@ import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import kotlinx.serialization.json.long
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -35,12 +37,17 @@ class OTAnyValueCodableTest {
   }
 
   @Test
-  fun `encodes Int64 under intValue as a string`() {
+  fun `encodes Int64 under intValue as a JSON number`() {
     val obj = encode(OTAnyValue.Int64(42))
     assertEquals(1, obj.size)
-    // OTLP encodes int64 as a JSON string to avoid JS-number precision loss.
-    assertEquals("42", obj["intValue"]!!.jsonPrimitive.content)
-    assertTrue(obj["intValue"]!!.jsonPrimitive.isString)
+    assertEquals(42L, obj["intValue"]!!.jsonPrimitive.long)
+    assertFalse(obj["intValue"]!!.jsonPrimitive.isString)
+  }
+
+  @Test
+  fun `decodes intValue written as a string`() {
+    val decoded = Json.decodeFromString(OTAnyValueSerializer, """{"intValue":"42"}""")
+    assertEquals(OTAnyValue.Int64(42), decoded)
   }
 
   @Test

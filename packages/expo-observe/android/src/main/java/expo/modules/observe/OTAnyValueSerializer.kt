@@ -24,7 +24,7 @@ import kotlinx.serialization.json.longOrNull
  * Custom serializer that emits the OTLP-correct wire shape for `OTAnyValue`.
  * Each variant becomes a single-key JSON object:
  *   - Str   -> {"stringValue": "..."}
- *   - Int64 -> {"intValue": "42"}        (string per OTLP int64 mapping)
+ *   - Int64 -> {"intValue": 42}          (a number, as the iOS encoder writes and the ingestion server requires)
  *   - Dbl   -> {"doubleValue": 3.14}
  *   - Bln   -> {"boolValue": true}
  *   - Arr   -> {"arrayValue": {"values": [...]}}
@@ -40,7 +40,7 @@ internal object OTAnyValueSerializer : KSerializer<OTAnyValue> {
 
     val element: JsonElement = when (value) {
       is OTAnyValue.Str -> buildJsonObject { put("stringValue", JsonPrimitive(value.value)) }
-      is OTAnyValue.Int64 -> buildJsonObject { put("intValue", JsonPrimitive(value.value.toString())) }
+      is OTAnyValue.Int64 -> buildJsonObject { put("intValue", JsonPrimitive(value.value)) }
       is OTAnyValue.Dbl -> buildJsonObject { put("doubleValue", JsonPrimitive(value.value)) }
       is OTAnyValue.Bln -> buildJsonObject { put("boolValue", JsonPrimitive(value.value)) }
       is OTAnyValue.Arr -> buildJsonObject {
