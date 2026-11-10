@@ -247,7 +247,13 @@ class BaseObservabilityManager(
       val sampledLogs = if (dispatchLogsAndErrors) {
         logs
       } else {
-        val supportedLogNames = (if (dispatchErrors) ERROR_LOG_NAMES else emptySet()) + FEEDBACK_LOG_NAME
+        val supportedLogNames = (
+          if (dispatchErrors) {
+            ERROR_LOG_NAMES
+          } else {
+            emptySet()
+          }
+          ) + FEEDBACK_LOG_NAME
         logs.filter { it.name in supportedLogNames }
       }.filterNot { it.name in ignoredEvents }
       val logsBySessionId = sampledLogs.groupBy { it.sessionId }
