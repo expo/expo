@@ -1,5 +1,5 @@
 ---
-'expo-router': minor
+'expo-router': patch
 ---
 
 [iOS] Add the `splitViewColumnName` navigation option and the `useSplitView` hook to choose the column that a collapsed `SplitView` shows.
