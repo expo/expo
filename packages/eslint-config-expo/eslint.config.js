@@ -1,5 +1,5 @@
-const eslintPluginPrettierRecommended = require('eslint-plugin-prettier/recommended');
 const globals = require('globals');
+
 const expoConfig = require('./flat');
 
 module.exports = [
@@ -10,12 +10,6 @@ module.exports = [
         ...globals.node,
         ...globals.jest,
       },
-    },
-  },
-  eslintPluginPrettierRecommended,
-  {
-    rules: {
-      'prettier/prettier': 'warn',
     },
   },
   {

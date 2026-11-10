@@ -3677,21 +3677,12 @@ importers:
       eslint:
         specifier: ^9.18.0
         version: 9.39.4(jiti@2.7.0)
-      eslint-plugin-prettier:
-        specifier: ^5.2.1
-        version: 5.5.5(@types/eslint@9.6.1)(eslint-config-prettier@9.1.2(eslint@9.39.4(jiti@2.7.0)))(eslint@9.39.4(jiti@2.7.0))(prettier@3.8.3)
       eslint8:
         specifier: npm:eslint@^8.57.1
         version: eslint@8.57.1
-      prettier:
-        specifier: ^3.8.3
-        version: 3.8.3
       react:
         specifier: 19.3.0
         version: 19.3.0
-      react-native:
-        specifier: 0.88.1
-        version: 0.88.1(@babel/core@7.29.7)(@types/react@19.3.0)(react@19.3.0)
 
   packages/eslint-config-universe:
     dependencies:
