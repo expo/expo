@@ -31,16 +31,15 @@ afterEach(() => {
   globals.__DEV__ = true;
 });
 
-function loadReportFeedback() {
+function loadObserve() {
   // `require` returns `any`, so restore the module type.
-  return require('../reportFeedback')
-    .reportFeedback as typeof import('../reportFeedback').reportFeedback;
+  return require('../module').default as typeof import('../module').default;
 }
 
-describe('reportFeedback privacy manifest warning on iOS', () => {
+describe('Observe.reportFeedback privacy manifest warning on iOS', () => {
   it('warns when the privacy manifest has no user content entry', () => {
     mockHasUserContentPrivacyEntry.mockReturnValue(false);
-    loadReportFeedback()(feedback);
+    loadObserve().reportFeedback(feedback);
     expect(mockReportFeedback).toHaveBeenCalledWith(feedback);
     expect(warnSpy).toHaveBeenCalledTimes(1);
     expect(warnSpy.mock.calls[0][0]).toContain('NSPrivacyCollectedDataTypeOtherUserContent');
@@ -51,24 +50,33 @@ describe('reportFeedback privacy manifest warning on iOS', () => {
 
   it('does not warn when the privacy manifest has a user content entry', () => {
     mockHasUserContentPrivacyEntry.mockReturnValue(true);
-    loadReportFeedback()(feedback);
+    loadObserve().reportFeedback(feedback);
     expect(mockReportFeedback).toHaveBeenCalledWith(feedback);
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it('does not warn when the native binary has no privacy manifest check', () => {
     delete mockNative.hasUserContentPrivacyEntry;
-    expect(() => loadReportFeedback()(feedback)).not.toThrow();
+    const Observe = loadObserve();
+    expect(() => Observe.reportFeedback(feedback)).not.toThrow();
     expect(mockReportFeedback).toHaveBeenCalledWith(feedback);
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
+  it('does not check or warn when the feedback is dropped', () => {
+    mockHasUserContentPrivacyEntry.mockReturnValue(false);
+    loadObserve().reportFeedback({ id: 'checkout' });
+    expect(mockReportFeedback).not.toHaveBeenCalled();
+    expect(mockHasUserContentPrivacyEntry).not.toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+  });
+
   it('checks and warns only one time across many reports', () => {
     mockHasUserContentPrivacyEntry.mockReturnValue(false);
-    const reportFeedback = loadReportFeedback();
-    reportFeedback(feedback);
-    reportFeedback(feedback);
-    reportFeedback(feedback);
+    const Observe = loadObserve();
+    Observe.reportFeedback(feedback);
+    Observe.reportFeedback(feedback);
+    Observe.reportFeedback(feedback);
     expect(mockReportFeedback).toHaveBeenCalledTimes(3);
     expect(mockHasUserContentPrivacyEntry).toHaveBeenCalledTimes(1);
     expect(warnSpy).toHaveBeenCalledTimes(1);
@@ -77,7 +85,7 @@ describe('reportFeedback privacy manifest warning on iOS', () => {
   it('does not check or warn outside development', () => {
     globals.__DEV__ = false;
     mockHasUserContentPrivacyEntry.mockReturnValue(false);
-    loadReportFeedback()(feedback);
+    loadObserve().reportFeedback(feedback);
     expect(mockReportFeedback).toHaveBeenCalledWith(feedback);
     expect(mockHasUserContentPrivacyEntry).not.toHaveBeenCalled();
     expect(warnSpy).not.toHaveBeenCalled();
