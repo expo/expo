@@ -60,6 +60,31 @@ describe('BottomSheet', () => {
     }
   );
 
+  itAndroid.each([
+    { enablePanDownToClose: false, shouldDismissOnBackPress: undefined, expected: false },
+    { enablePanDownToClose: true, shouldDismissOnBackPress: undefined, expected: true },
+    { enablePanDownToClose: true, shouldDismissOnBackPress: false, expected: false },
+    { enablePanDownToClose: false, shouldDismissOnBackPress: true, expected: true },
+  ])(
+    'dismisses on back press: $expected (enablePanDownToClose: $enablePanDownToClose, shouldDismissOnBackPress: $shouldDismissOnBackPress)',
+    async ({ enablePanDownToClose, shouldDismissOnBackPress, expected }) => {
+      await render(
+        <BottomSheet
+          index={0}
+          enablePanDownToClose={enablePanDownToClose}
+          shouldDismissOnBackPress={shouldDismissOnBackPress}>
+          <View />
+        </BottomSheet>
+      );
+
+      expect(latestNativeViewProps('ModalBottomSheetView')?.properties).toEqual({
+        shouldDismissOnBackPress: expected,
+        // Scrim taps still follow `enablePanDownToClose`.
+        shouldDismissOnClickOutside: enablePanDownToClose,
+      });
+    }
+  );
+
   it('fills the snap point height when snap points are set', async () => {
     await render(
       <BottomSheet index={0} snapPoints={['50%']}>

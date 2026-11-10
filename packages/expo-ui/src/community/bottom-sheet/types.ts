@@ -187,9 +187,20 @@ export interface BottomSheetProps {
    * @remarks On iOS, this enables both swipe-to-dismiss and backdrop tap dismiss —
    * SwiftUI does not allow separating these behaviors. In `@gorhom/bottom-sheet`,
    * only swipe-to-dismiss is controlled (there is no backdrop since the sheet is inline).
-   * On Android, this also controls back button and scrim tap dismiss.
+   * On Android, this also controls scrim tap dismiss, and back button dismiss unless
+   * `shouldDismissOnBackPress` is set.
    */
   enablePanDownToClose?: boolean;
+
+  /**
+   * Whether pressing the Android back button (or using the back gesture) dismisses the sheet.
+   * Set it to `false` to keep the sheet open on back while `enablePanDownToClose` is `true`, or
+   * set it to `true` to allow back to dismiss a sheet that can't be dragged down.
+   * When `false`, the back press doesn't reach React Native's `BackHandler` either.
+   * @default enablePanDownToClose
+   * @platform android
+   */
+  shouldDismissOnBackPress?: boolean;
 
   /**
    * Whether the sheet should automatically size to fit its content.
