@@ -11,7 +11,10 @@ Observe.configure({
   sampleRate: 1,
   errorSampleRate: 1,
   integrations: {
-    'expo-router': { filteredParams: ['accountId', 'firstName'] },
+    'expo-router': {
+      filteredParams: ['accountId', 'firstName'],
+      experimental_totalBlockingTime: true,
+    },
     'expo-image': {
       oversizeThreshold: 1.5,
       includeUrlParams: false,
