@@ -11,12 +11,11 @@
         "Hermes",
         "expo-modules-core/ExpoModulesCore"
       ],
+      "swiftLanguageVersions": ["5"],
       "targets": [
         {
           "type": "swift",
           "name": "ExpoSensors",
-          "path": "ios",
-          "pattern": "**/*.swift",
           "dependencies": [
             "ReactNativeDependencies",
             "React",

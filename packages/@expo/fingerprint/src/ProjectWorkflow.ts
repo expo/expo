@@ -1,6 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs/promises';
-import { glob } from 'glob';
 import type { Ignore as SingleFileIgnore } from 'ignore';
 import createIgnore from 'ignore';
 import type { Minimatch } from 'minimatch';
@@ -159,15 +158,9 @@ class Ignore {
   constructor(private rootDir: string) {}
 
   public async initIgnoreAsync(): Promise<void> {
-    const ignoreFilePaths = (
-      await glob(`**/${GITIGNORE_FILENAME}`, {
-        cwd: this.rootDir,
-        ignore: ['node_modules'],
-        follow: false,
-      })
-    )
-      // ensure that parent dir is before child directories
-      .sort((a, b) => a.length - b.length && a.localeCompare(b));
+    const ignoreFilePaths = await findIgnoreFilesAsync(this.rootDir);
+    // ensure that parent dir is before child directories
+    ignoreFilePaths.sort((a, b) => a.length - b.length || a.localeCompare(b));
 
     const ignoreMapping = await Promise.all(
       ignoreFilePaths.map(async (filePath) => {
@@ -191,3 +184,24 @@ class Ignore {
 }
 
 //#endregion - a copy of vcs client and ignore handler from expo-updates
+
+async function findIgnoreFilesAsync(root: string): Promise<string[]> {
+  const files: string[] = [];
+  const directories = [''];
+  for (const directory of directories) {
+    const entries = await fs
+      .readdir(path.join(root, directory), { withFileTypes: true })
+      .catch(() => []);
+    for (const entry of entries) {
+      const file = path.join(directory, entry.name);
+      if (entry.isDirectory()) {
+        if (entry.name !== 'node_modules' && !entry.name.startsWith('.')) {
+          directories.push(file);
+        }
+      } else if (entry.name === GITIGNORE_FILENAME) {
+        files.push(file);
+      }
+    }
+  }
+  return files;
+}

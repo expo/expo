@@ -81,10 +81,15 @@ public class ExpoPrintWithPrinter {
       return
     }
 
-    let printInteractionController = makePrintInteractionController(options: options)
+    let paperDelegate = options.preferredPaperSize.map {
+      ExpoPrintPaperDelegate(paperSize: CGSize(width: $0.width, height: $0.height), fallback: self.delegate)
+    }
+    let printInteractionController = makePrintInteractionController(options: options, delegate: paperDelegate ?? self.delegate)
     printInteractionController.printingItem = printingData
 
     let completionHandler = { (_: UIPrintInteractionController, completed: Bool, error: Error?) in
+      // The controller holds its delegate weakly, so this job's delegate lives as long as the job.
+      withExtendedLifetime(paperDelegate) {}
       if error != nil {
         promise.reject(PrintingJobFailedException(error?.localizedDescription))
       }
@@ -120,10 +125,10 @@ public class ExpoPrintWithPrinter {
     }
   }
 
-  private func makePrintInteractionController(options: PrintOptions) -> UIPrintInteractionController {
+  private func makePrintInteractionController(options: PrintOptions, delegate: ExpoPrintModuleDelegate) -> UIPrintInteractionController {
     let uri = options.uri ?? ""
     let printInteractionController = UIPrintInteractionController()
-    printInteractionController.delegate = self.delegate
+    printInteractionController.delegate = delegate
 
     let printInfo = UIPrintInfo.printInfo()
     printInfo.outputType = UIPrintInfo.OutputType.general

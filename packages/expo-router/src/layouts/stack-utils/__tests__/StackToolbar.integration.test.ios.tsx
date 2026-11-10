@@ -195,6 +195,30 @@ describe('Stack.Toolbar integration tests', () => {
       });
     });
 
+    it('forwards axisBehavior to headerRightBarButtonItems for a right toolbar', async () => {
+      await renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index">
+              <Stack.Toolbar placement="right">
+                <Stack.Toolbar.Button icon="questionmark.circle" axisBehavior="horizontalOnly">
+                  Help
+                </Stack.Toolbar.Button>
+              </Stack.Toolbar>
+            </Stack.Screen>
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+
+      const items = MockedScreenStackItem.mock.calls[0]![0].headerConfig?.headerRightBarButtonItems;
+      expect(items?.[0]).toMatchObject({
+        axisBehavior: 'horizontalOnly',
+      });
+    });
+
     it('passes headerRightBarButtonItems to ScreenStackItem for right toolbar', async () => {
       await renderRouter({
         _layout: () => (

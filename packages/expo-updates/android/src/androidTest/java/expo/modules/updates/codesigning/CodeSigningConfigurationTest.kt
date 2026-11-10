@@ -1,6 +1,8 @@
 package expo.modules.updates.codesigning
 
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+import androidx.test.platform.app.InstrumentationRegistry
+import expo.modules.updates.logging.UpdatesLogger
 import org.junit.Test
 import org.junit.runner.RunWith
 import kotlin.test.assertFailsWith
@@ -8,6 +10,8 @@ import kotlin.test.assertEquals
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class CodeSigningConfigurationTest {
+  private val logger = UpdatesLogger(InstrumentationRegistry.getInstrumentation().targetContext.filesDir)
+
   @Test
   fun test_separateCertificateChain() {
     val leafCert = getTestCertificate(TestCertificateType.CHAIN_LEAF)
@@ -84,7 +88,7 @@ class CodeSigningConfigurationTest {
       includeManifestResponseCertificateChain = false,
       allowUnsignedManifests = false
     )
-    val signatureValidationResult = codeSigningConfiguration.validateSignature(CertificateFixtures.testExpoUpdatesManifestBodySignature, CertificateFixtures.testExpoUpdatesManifestBody.toByteArray(), null)
+    val signatureValidationResult = codeSigningConfiguration.validateSignature(CertificateFixtures.testExpoUpdatesManifestBodySignature, CertificateFixtures.testExpoUpdatesManifestBody.toByteArray(), null, logger)
     assertEquals(SignatureValidationResult(ValidationResult.VALID, null), signatureValidationResult)
   }
 
@@ -98,7 +102,7 @@ class CodeSigningConfigurationTest {
       allowUnsignedManifests = false
     )
 
-    val signatureValidationResult = codeSigningConfiguration.validateSignature("sig=\"aGVsbG8=\"", CertificateFixtures.testExpoUpdatesManifestBody.toByteArray(), null)
+    val signatureValidationResult = codeSigningConfiguration.validateSignature("sig=\"aGVsbG8=\"", CertificateFixtures.testExpoUpdatesManifestBody.toByteArray(), null, logger)
     assertEquals(SignatureValidationResult(ValidationResult.INVALID, null), signatureValidationResult)
   }
 
@@ -117,7 +121,7 @@ class CodeSigningConfigurationTest {
     val exception = assertFailsWith(
       exceptionClass = Exception::class,
       block = {
-        codeSigningConfiguration.validateSignature("sig=\"aGVsbG8=\", keyid=\"other\"", CertificateFixtures.testExpoUpdatesManifestBody.toByteArray(), null)
+        codeSigningConfiguration.validateSignature("sig=\"aGVsbG8=\", keyid=\"other\"", CertificateFixtures.testExpoUpdatesManifestBody.toByteArray(), null, logger)
       }
     )
     assertEquals("Key with keyid=other from signature not found in client configuration", exception.message)
@@ -136,7 +140,7 @@ class CodeSigningConfigurationTest {
       includeManifestResponseCertificateChain = false,
       allowUnsignedManifests = false
     )
-    val signatureValidationResult = codeSigningConfiguration.validateSignature(CertificateFixtures.testExpoUpdatesManifestBodySignature, CertificateFixtures.testExpoUpdatesManifestBody.toByteArray(), leafCert + intermediateCert)
+    val signatureValidationResult = codeSigningConfiguration.validateSignature(CertificateFixtures.testExpoUpdatesManifestBodySignature, CertificateFixtures.testExpoUpdatesManifestBody.toByteArray(), leafCert + intermediateCert, logger)
     assertEquals(SignatureValidationResult(ValidationResult.VALID, null), signatureValidationResult)
   }
 
@@ -153,7 +157,7 @@ class CodeSigningConfigurationTest {
       includeManifestResponseCertificateChain = true,
       allowUnsignedManifests = false
     )
-    val signatureValidationResult = codeSigningConfiguration.validateSignature(CertificateFixtures.testExpoUpdatesManifestBodyValidChainLeafSignature, CertificateFixtures.testExpoUpdatesManifestBody.toByteArray(), leafCert + intermediateCert)
+    val signatureValidationResult = codeSigningConfiguration.validateSignature(CertificateFixtures.testExpoUpdatesManifestBodyValidChainLeafSignature, CertificateFixtures.testExpoUpdatesManifestBody.toByteArray(), leafCert + intermediateCert, logger)
     assertEquals(SignatureValidationResult(ValidationResult.VALID, ExpoProjectInformation(projectId = "285dc9ca-a25d-4f60-93be-36dc312266d7", scopeKey = "@test/app")), signatureValidationResult)
   }
 
@@ -168,7 +172,7 @@ class CodeSigningConfigurationTest {
       includeManifestResponseCertificateChain = false,
       allowUnsignedManifests = true
     )
-    val signatureValidationResult = codeSigningConfiguration.validateSignature(null, CertificateFixtures.testExpoUpdatesManifestBody.toByteArray(), null)
+    val signatureValidationResult = codeSigningConfiguration.validateSignature(null, CertificateFixtures.testExpoUpdatesManifestBody.toByteArray(), null, logger)
     assertEquals(SignatureValidationResult(ValidationResult.SKIPPED, null), signatureValidationResult)
   }
 
@@ -181,7 +185,7 @@ class CodeSigningConfigurationTest {
       includeManifestResponseCertificateChain = false,
       allowUnsignedManifests = true
     )
-    val signatureValidationResult = codeSigningConfiguration.validateSignature("sig=\"aGVsbG8=\"", CertificateFixtures.testExpoUpdatesManifestBody.toByteArray(), null)
+    val signatureValidationResult = codeSigningConfiguration.validateSignature("sig=\"aGVsbG8=\"", CertificateFixtures.testExpoUpdatesManifestBody.toByteArray(), null, logger)
     assertEquals(SignatureValidationResult(ValidationResult.INVALID, null), signatureValidationResult)
   }
 }

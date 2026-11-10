@@ -212,7 +212,10 @@ it('keeps extra params as query params', async () => {
             {
               key: expect.any(String),
               name: 'bar',
-              path: '/bar',
+              params: {
+                extra: 'param',
+              },
+              path: '/bar?extra=param',
             },
           ],
           stale: false,

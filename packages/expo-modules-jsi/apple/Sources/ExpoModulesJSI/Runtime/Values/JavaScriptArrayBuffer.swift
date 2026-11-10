@@ -8,7 +8,8 @@ internal import jsi
 public struct JavaScriptArrayBuffer: ~Copyable {
   /// Handle to the runtime the array buffer belongs to.
   internal let runtimeHandle: JavaScriptRuntimeHandle
-  internal let pointee: facebook.jsi.ArrayBuffer
+  /// Mutable so that ``takeValue()`` can move the engine value out of a consumed array buffer.
+  internal var pointee: facebook.jsi.ArrayBuffer
 
   /// The runtime the array buffer belongs to, or `nil` if it has been deallocated. Prefer
   /// ``jsiRuntime`` on hot paths: it costs no reference counting.
@@ -90,6 +91,11 @@ public struct JavaScriptArrayBuffer: ~Copyable {
     return JavaScriptValue(runtimeHandle, expo.valueFromArrayBuffer(jsiRuntime, pointee))
   }
 
+  /// Moves the array buffer into a `JavaScriptValue`, without the clone that ``asValue()`` makes.
+  public consuming func takeValue() -> JavaScriptValue {
+    return JavaScriptValue(runtimeHandle, expo.takeValueFromArrayBuffer(&pointee))
+  }
+
   // MARK: - Providing JavaScriptObject API
 
   public func getProperty(_ name: String) -> JavaScriptValue {
@@ -97,5 +103,42 @@ public struct JavaScriptArrayBuffer: ~Copyable {
       FatalError.runtimeLost()
     }
     return JavaScriptValue(runtimeHandle, pointee.getProperty(jsiRuntime, name))
+  }
+}
+
+// MARK: - JavaScriptCodable
+
+// A `JavaScriptArrayBuffer` argument receives the JS `ArrayBuffer` unconverted, so native code reads and
+// writes its bytes in place, without the copy that `Data` makes. Decoding anything else, including a
+// typed array, throws a `TypeError`. An `ArrayBuffer` is an object to `JavaScriptValueKinds`, so the kind
+// check alone can't skip the other objects.
+extension JavaScriptArrayBuffer: JavaScriptCodable {
+  @inlinable
+  public static var decodableKinds: JavaScriptValueKinds {
+    return .object
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptArrayBuffer
+  {
+    return try value.asArrayBuffer()
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func decode(_ value: borrowing JavaScriptUnownedValue, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptArrayBuffer
+  {
+    return try value.asArrayBuffer(in: runtime)
+  }
+
+  @JavaScriptActor
+  @inlinable
+  public static func encode(_ value: consuming JavaScriptArrayBuffer, in runtime: borrowing JavaScriptRuntime) throws
+    -> JavaScriptValue
+  {
+    return value.takeValue()
   }
 }

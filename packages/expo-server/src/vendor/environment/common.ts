@@ -58,6 +58,7 @@ interface EnvironmentInput {
 }
 
 export interface CommonEnvironment {
+  isDevelopment: boolean;
   getRoutesManifest(): Promise<Manifest | null>;
   getHtml(request: Request, route: Route): Promise<string | ReadableStream | Response | null>;
   getApiRoute(route: Route): Promise<unknown>;
@@ -161,6 +162,7 @@ export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
   }
 
   return {
+    isDevelopment: input.isDevelopment,
     getRoutesManifest,
 
     async getHtml(request, route) {

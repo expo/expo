@@ -50,6 +50,15 @@ jest.mock('../handleStateChange', () => {
   };
 });
 
+jest.mock('../../shared/navigation/blockingTime', () => ({
+  __esModule: true,
+  createNavigationBlockingTime: jest.fn(() => ({
+    start: jest.fn(),
+    setMetric: jest.fn(),
+    dispose: jest.fn(),
+  })),
+}));
+
 // Mutable mock so individual tests can simulate @react-navigation/native being
 // missing. The component reads the export at use time (CJS interop), so the
 // getter is consulted on every render.
@@ -89,7 +98,12 @@ const mockAddMetric = (
   }
 ).getMainSession().addMetric;
 
+const mockCreateNavigationBlockingTime = (
+  require('../../shared/navigation/blockingTime') as { createNavigationBlockingTime: jest.Mock }
+).createNavigationBlockingTime;
+
 const mockIsInitialized = initModule.isInitialized as jest.Mock;
+const mockGetConfig = initModule.getReactNavigationIntegrationConfig as jest.Mock;
 const attachActionListenerMock = actionListenerModule.attachActionListener;
 const attachActionListenerCleanup = actionListenerModule.__cleanup;
 const createStateChangeHandlerMock = handleStateChangeModule.createStateChangeHandler;
@@ -130,6 +144,7 @@ function flushAsync() {
 beforeEach(() => {
   jest.clearAllMocks();
   mockIsInitialized.mockReturnValue(true);
+  mockGetConfig.mockReturnValue(undefined);
   reactNavigationModule.__setOptionalReactNavigation({});
   fakeNavigationRef.isReady.mockReturnValue(false);
   fakeNavigationRef.getRootState.mockReturnValue(undefined);
@@ -210,7 +225,7 @@ describe('ObserveNavigationProvider', () => {
     stateListener!({ data: { state: staleEventState } });
 
     expect(stateChangeHandler).toHaveBeenCalledTimes(1);
-    expect(stateChangeHandler).toHaveBeenCalledWith(rootState);
+    expect(stateChangeHandler).toHaveBeenCalledWith(rootState, undefined);
   });
 
   it('forwards each subsequent state change to the handler', async () => {
@@ -233,8 +248,8 @@ describe('ObserveNavigationProvider', () => {
     stateListener();
     stateListener();
 
-    expect(stateChangeHandler).toHaveBeenNthCalledWith(1, first);
-    expect(stateChangeHandler).toHaveBeenNthCalledWith(2, second);
+    expect(stateChangeHandler).toHaveBeenNthCalledWith(1, first, undefined);
+    expect(stateChangeHandler).toHaveBeenNthCalledWith(2, second, undefined);
   });
 
   it('catches up on the initial state when the container is already ready at mount', async () => {
@@ -251,7 +266,7 @@ describe('ObserveNavigationProvider', () => {
     );
 
     expect(stateChangeHandler).toHaveBeenCalledTimes(1);
-    expect(stateChangeHandler).toHaveBeenCalledWith(initialState);
+    expect(stateChangeHandler).toHaveBeenCalledWith(initialState, undefined);
   });
 
   it('skips the catch-up when the container is not ready yet and relies on the state listener', async () => {
@@ -266,7 +281,7 @@ describe('ObserveNavigationProvider', () => {
     const initialState = { index: 0, routes: [{ key: 'a', name: 'A' }] };
     fakeNavigationRef.getRootState.mockReturnValue(initialState);
     getStateListener()!();
-    expect(stateChangeHandler).toHaveBeenCalledWith(initialState);
+    expect(stateChangeHandler).toHaveBeenCalledWith(initialState, undefined);
   });
 
   it('does not invoke the handler from the catch-up when there is no root state', async () => {
@@ -323,7 +338,11 @@ describe('ObserveNavigationProvider', () => {
         <Text>child</Text>
       </ObserveNavigationProvider>
     );
-    expect(attachActionListenerMock).toHaveBeenLastCalledWith(fakeNavigationRef, expect.anything());
+    expect(attachActionListenerMock).toHaveBeenLastCalledWith(
+      fakeNavigationRef,
+      expect.anything(),
+      undefined
+    );
 
     const secondStateListenerCleanup = jest.fn();
     const secondNavigationRef = {
@@ -348,12 +367,13 @@ describe('ObserveNavigationProvider', () => {
     expect(stateListenerCleanup).toHaveBeenCalledTimes(1);
     expect(attachActionListenerMock).toHaveBeenLastCalledWith(
       secondNavigationRef,
-      expect.anything()
+      expect.anything(),
+      undefined
     );
     expect(secondNavigationRef.addListener.mock.calls.some(([event]) => event === 'state')).toBe(
       true
     );
-    expect(stateChangeHandler).toHaveBeenCalledWith(initialState);
+    expect(stateChangeHandler).toHaveBeenCalledWith(initialState, undefined);
   });
 
   it('uses the same createStateChangeHandler for the entire mount lifetime', async () => {
@@ -368,6 +388,59 @@ describe('ObserveNavigationProvider', () => {
       </ObserveNavigationProvider>
     );
     expect(createStateChangeHandlerMock).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([undefined, true, {}, { experimental_totalBlockingTime: false }])(
+    'does not measure tbt when the experimental flag is not enabled (config: %p)',
+    async (config) => {
+      mockGetConfig.mockReturnValue(config);
+      await render(
+        <ObserveNavigationProvider navigationRef={fakeNavigationRef as never}>
+          <Text>child</Text>
+        </ObserveNavigationProvider>
+      );
+      expect(mockCreateNavigationBlockingTime).not.toHaveBeenCalled();
+      expect(attachActionListenerMock).toHaveBeenLastCalledWith(
+        fakeNavigationRef,
+        expect.anything(),
+        undefined
+      );
+    }
+  );
+
+  it('shares one tbt measurement between both listeners and disposes it on unmount', async () => {
+    mockGetConfig.mockReturnValue({ experimental_totalBlockingTime: true });
+    const initialState = { index: 0, routes: [{ key: 'a', name: 'A' }] };
+    fakeNavigationRef.isReady.mockReturnValue(true);
+    fakeNavigationRef.getRootState.mockReturnValue(initialState);
+    const { unmount } = await render(
+      <ObserveNavigationProvider navigationRef={fakeNavigationRef as never}>
+        <Text>child</Text>
+      </ObserveNavigationProvider>
+    );
+    const blockingTime = mockCreateNavigationBlockingTime.mock.results.at(-1)!.value;
+
+    expect(attachActionListenerMock).toHaveBeenLastCalledWith(
+      fakeNavigationRef,
+      expect.anything(),
+      blockingTime
+    );
+    expect(stateChangeHandler).toHaveBeenLastCalledWith(initialState, blockingTime);
+
+    await unmount();
+    expect(blockingTime.dispose).toHaveBeenCalledTimes(1);
+  });
+
+  it('records the measured tbt in the main session', async () => {
+    mockGetConfig.mockReturnValue({ experimental_totalBlockingTime: true });
+    await render(
+      <ObserveNavigationProvider navigationRef={fakeNavigationRef as never}>
+        <Text>child</Text>
+      </ObserveNavigationProvider>
+    );
+    const metric = { category: 'navigation', name: 'tbt', routeName: '/b', value: 0.12 };
+    mockCreateNavigationBlockingTime.mock.lastCall![0](metric);
+    expect(mockAddMetric).toHaveBeenLastCalledWith(metric);
   });
 
   it('throws when @react-navigation/native is not installed', async () => {

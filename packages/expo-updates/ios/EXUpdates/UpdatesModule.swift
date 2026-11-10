@@ -102,7 +102,7 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
     }
 
     AsyncFunction("clearLogEntriesAsync") { (promise: Promise) in
-      UpdatesLogReader().purgeLogEntries(olderThan: Date()) { error in
+      UpdatesLogReader().clearLogEntries { error in
         guard let error = error else {
           promise.resolve(nil)
           return

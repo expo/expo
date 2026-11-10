@@ -50,37 +50,46 @@ struct AsyncFunctionTests {
 
   @Test("works with optional argument provided")
   func testOptionalArgPresent() async throws {
-    let result = try await runtime.evalAsync("expo.modules.TestModule.optionalAndPromise('Hello JS')")
-    #expect(try result.asString() == "Hello JS")
+    let result = try await runtime.evalAsync("expo.modules.TestModule.optionalAndPromise('Hello JS')").ref()
+    // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+    #expect(try await runtime.execute { try result.take().asString() } == "Hello JS")
   }
 
   @Test("works skipping trailing optional argument")
   func testOptionalArgMissing() async throws {
-    let result = try await runtime.evalAsync("expo.modules.TestModule.optionalAndPromise()")
-    #expect(try result.asString() == "nil")
+    let result = try await runtime.evalAsync("expo.modules.TestModule.optionalAndPromise()").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "nil")
   }
 
   @Test("works with mandatory arg but skipping optional")
   func testMandatoryArg() async throws {
-    let result = try await runtime.evalAsync("expo.modules.TestModule.mandatoryOptionalPromise('mandatory')")
-    #expect(try result.asString() == "mandatory + nil")
+    let result = try await runtime.evalAsync("expo.modules.TestModule.mandatoryOptionalPromise('mandatory')").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "mandatory + nil")
   }
 
   @Test("converts a Record resolved via the manual promise path")
   func testResolvesRecord() async throws {
-    let result = try await runtime.evalAsync("expo.modules.TestModule.resolvesRecord().then((result) => result.message)")
-    #expect(try result.asString() == "resolved")
+    let result = try await runtime.evalAsync("expo.modules.TestModule.resolvesRecord().then((result) => result.message)").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "resolved")
   }
 
   @Test
   func `converts a Record with undefined fields returned from async function`() async throws {
-    let result = try await runtime.evalAsync("expo.modules.TestModule.resolvesRecordWithUndefined()")
-    let object = try result.asObject()
+    let result = try await runtime.evalAsync("expo.modules.TestModule.resolvesRecordWithUndefined()").ref()
+    let (hasA, a, hasB, isBUndefined) = try await runtime.execute {
+      let object = try result.take().asObject()
+      return (
+        object.hasProperty("a"),
+        try object.getProperty("a").asDouble(),
+        object.hasProperty("b"),
+        object.getProperty("b").isUndefined()
+      )
+    }
 
-    #expect(object.hasProperty("a") == true)
-    #expect(try object.getProperty("a").asDouble() == 1.0)
-    #expect(object.hasProperty("b") == true)
-    #expect(object.getProperty("b").isUndefined() == true)
+    #expect(hasA == true)
+    #expect(a == 1.0)
+    #expect(hasB == true)
+    #expect(isBUndefined == true)
   }
 
   @Test
@@ -91,19 +100,25 @@ struct AsyncFunctionTests {
 
   @Test
   func `passes through the value when the optional return value is non-nil`() async throws {
-    let result = try await runtime.evalAsync("expo.modules.TestModule.returnsOptionalString(false)")
-    #expect(result.isString() == true)
-    #expect(result.getString() == "present")
+    let result = try await runtime.evalAsync("expo.modules.TestModule.returnsOptionalString(false)").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "present")
   }
 
   @Test
   func `keeps a nil field as null when returning an optional record`() async throws {
-    let result = try await runtime.evalAsync("expo.modules.TestModule.returnsOptionalRecordWithNilField()")
-    let object = try result.asObject()
+    let result = try await runtime.evalAsync("expo.modules.TestModule.returnsOptionalRecordWithNilField()").ref()
+    let (name, hasNote, isNoteNull) = try await runtime.execute {
+      let object = try result.take().asObject()
+      return (
+        try object.getProperty("name").asString(),
+        object.hasProperty("note"),
+        object.getProperty("note").isNull()
+      )
+    }
 
-    #expect(try object.getProperty("name").asString() == "present")
-    #expect(object.hasProperty("note") == true)
-    #expect(object.getProperty("note").isNull() == true)
+    #expect(name == "present")
+    #expect(hasNote == true)
+    #expect(isNoteNull == true)
   }
 }
 
