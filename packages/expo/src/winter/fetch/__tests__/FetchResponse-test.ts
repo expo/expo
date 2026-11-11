@@ -397,6 +397,16 @@ describe('FetchResponse', () => {
       await pending;
     });
 
+    it('calls native cancel when both clone branches are canceled', async () => {
+      const response = makeResponse();
+      const nativeCancel = jest.spyOn(response, 'cancelStreaming');
+      const cloned = response.clone();
+
+      await Promise.all([response.body!.cancel('not needed'), cloned.body!.cancel('not needed')]);
+
+      expect(nativeCancel).toHaveBeenCalledTimes(1);
+    });
+
     it('rejects body methods on a clone after its body has been read', async () => {
       const response = makeResponse();
       const cloned = response.clone();

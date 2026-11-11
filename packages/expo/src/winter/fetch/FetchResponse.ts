@@ -334,9 +334,10 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
             // Flag first — the stream is already `closed` when this callback
             // runs, so the guard must not go stale if cancelStreaming throws.
             this.bodyStreamClosed = true;
-            // text() and arrayBuffer() set this before the native read.
-            // Leave that read alone so it can still finish.
-            if (body.consumed) {
+            // text() and arrayBuffer() set this before the native read, and
+            // only on an uncloned response. A clone sets the same flag from
+            // its stream wrapper, and that cancel still has to reach native.
+            if (body.consumed && !body.cloned) {
               return;
             }
             body.consumed = true;
