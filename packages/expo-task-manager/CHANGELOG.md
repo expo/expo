@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- [Android] Fix JS timers, and anything built on them such as `fetch()`, hanging in background tasks on React Native 0.86 and later. The headless task that keeps timers alive no longer finishes as soon as it starts. ([#53102](https://github.com/expo/expo/pull/53102) by [@chrfalch](https://github.com/chrfalch))
+
 ## 58.0.13
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- [iOS] Fix `AudioStream` leaving its input tap installed and the audio engine allocated when starting the engine fails. The failed `start()` now removes the tap and stops the engine before rethrowing. ([#52301](https://github.com/expo/expo/pull/52301) by [@dileepapeiris](https://github.com/dileepapeiris))
+- [iOS] Fix `AudioStream` emitting non-interleaved samples for multichannel input, and throw instead of emitting Float32 samples when the requested format cannot be converted. ([#52380](https://github.com/expo/expo/pull/52380) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.11
 
 ### Patch Changes

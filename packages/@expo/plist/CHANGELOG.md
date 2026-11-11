@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.2
+
+### Patch Changes
+
+- Drop the base64-js dependency. ([#52929](https://github.com/expo/expo/pull/52929) by [@kitten](https://github.com/kitten))
+
 ## 0.10.1
 
 ### Patch Changes

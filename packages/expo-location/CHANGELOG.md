@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.21
+
+### Patch Changes
+
+- [Android] Fixed the foreground location service not coming back when the app returns to the foreground after the system stopped its process. ([#52634](https://github.com/expo/expo/pull/52634) by [@HubertBer](https://github.com/HubertBer))
+- Updated dependencies. ([#52932](https://github.com/expo/expo/pull/52932))
+  - @expo/image-utils@0.12.7
+
 ## 58.0.20
 
 ### Patch Changes

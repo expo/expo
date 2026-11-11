@@ -1,5 +1,28 @@
 # Changelog
 
+## 58.0.24
+
+### Patch Changes
+
+- [iOS] A module built from its checked-in Package.swift gets the Expo Swift macros through the `ExpoModulesCoreHeaders` package, which depends on the `expo-modules-macros` Swift package. The SwiftPM plugin no longer links the macro plugin into the build folder, and the manifest needs no unsafe flags. ([#53135](https://github.com/expo/expo/pull/53135) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] A module built from its checked-in Package.swift gets the React Native headers through the `ExpoModulesCoreHeaders` package. That package now depends on the React Native header products and the app's generated code package, the same as a module whose Package.swift the SwiftPM plugin generates. ([#53289](https://github.com/expo/expo/pull/53289) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix an incremental SwiftPM build that reuses a stale `ExpoModulesCore` module after the precompiled headers change version. The SwiftPM plugin now gives the files it unpacks from a precompiled tarball the time of extraction. ([#53211](https://github.com/expo/expo/pull/53211) by [@chrfalch](https://github.com/chrfalch))
+- Updated dependencies. ([#53214](https://github.com/expo/expo/pull/53214), [#52975](https://github.com/expo/expo/pull/52975), [#53121](https://github.com/expo/expo/pull/53121), [#52088](https://github.com/expo/expo/pull/52088), [#52712](https://github.com/expo/expo/pull/52712), [#53085](https://github.com/expo/expo/pull/53085), [#53026](https://github.com/expo/expo/pull/53026), [#52796](https://github.com/expo/expo/pull/52796), [#52924](https://github.com/expo/expo/pull/52924), [#52647](https://github.com/expo/expo/pull/52647), [#53091](https://github.com/expo/expo/pull/53091), [#53129](https://github.com/expo/expo/pull/53129), [#52991](https://github.com/expo/expo/pull/52991), [#52747](https://github.com/expo/expo/pull/52747), [#51184](https://github.com/expo/expo/pull/51184), [#53094](https://github.com/expo/expo/pull/53094), [#50207](https://github.com/expo/expo/pull/50207), [#52927](https://github.com/expo/expo/pull/52927), [#52745](https://github.com/expo/expo/pull/52745), [#52932](https://github.com/expo/expo/pull/52932), [#52934](https://github.com/expo/expo/pull/52934), [#53002](https://github.com/expo/expo/pull/53002), [#52750](https://github.com/expo/expo/pull/52750), [#52910](https://github.com/expo/expo/pull/52910), [#53136](https://github.com/expo/expo/pull/53136))
+  - expo-modules-autolinking@58.1.0
+  - @expo/cli@58.1.20
+  - @expo/config-plugins@58.0.13
+  - expo-modules-core@58.1.0
+  - @expo/fingerprint@0.21.10
+  - babel-preset-expo@58.0.25
+  - @expo/metro-config@58.0.22
+  - expo-modules-cli@0.5.0
+  - @expo/config@58.0.12
+  - expo-asset@58.0.21
+  - expo-font@58.0.12
+  - expo-keep-awake@58.0.4
+  - expo-constants@58.0.16
+  - @expo/local-build-cache-provider@58.0.12
+
 ## 58.0.23
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # expo-modules-test-core
 
+## 58.0.7
+
+### Patch Changes
+
+- [iOS] Fix app contexts that own their runtime, such as the ones in unit tests, never being deallocated. ([#53094](https://github.com/expo/expo/pull/53094) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.6
 
 ### Patch Changes

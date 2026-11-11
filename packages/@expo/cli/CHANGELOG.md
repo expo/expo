@@ -1,5 +1,37 @@
 # Changelog
 
+## 58.1.20
+
+### Patch Changes
+
+- Fix `expo start` skipping all manifest assets (icons, splash images) when a config section on an asset path, such as `splash`, is `null` or `undefined`. ([#52975](https://github.com/expo/expo/pull/52975) by [@Shaurya55555](https://github.com/Shaurya55555))
+- Replace the HMR client with a no-op shim in production native bundles, so `expo/src/async-require/hmr.ts` and its dependencies (`pretty-format`, `@expo/log-box-utils`, `@expo/metro/metro-runtime/modules/HMRClient`) are no longer bundled. ([#53121](https://github.com/expo/expo/pull/53121) by [@huntie](https://github.com/huntie))
+- Replace glob with Node glob, tinyglobby, and filesystem directory listings. ([#52796](https://github.com/expo/expo/pull/52796) by [@kitten](https://github.com/kitten))
+- Fix parsing Android device serials containing spaces. ([#53129](https://github.com/expo/expo/pull/53129) by [@kitten](https://github.com/kitten))
+- Fix opening browser URLs with query parameters and special characters on Windows and WSL. ([#52747](https://github.com/expo/expo/pull/52747) by [@kitten](https://github.com/kitten))
+- Select the iOS device before installing CocoaPods when running `expo run:ios`. ([#52745](https://github.com/expo/expo/pull/52745) by [@kitten](https://github.com/kitten))
+- Use @expo/env instead of getenv to read environment variables. ([#52934](https://github.com/expo/expo/pull/52934) by [@kitten](https://github.com/kitten))
+- [Internal] Remove the unused `getStaticContent()` renderer. ([#53002](https://github.com/expo/expo/pull/53002) by [@hassankhan](https://github.com/hassankhan))
+- Preserve HTTPS tunnel URLs when opening Expo Go, development builds, and the runtime selection page.
+
+  Keep development-build app schemes out of web and server URLs when using a WS tunnel.
+
+  ([#52750](https://github.com/expo/expo/pull/52750) by [@kitten](https://github.com/kitten))
+
+- Updated dependencies. ([#52088](https://github.com/expo/expo/pull/52088), [#52991](https://github.com/expo/expo/pull/52991), [#50078](https://github.com/expo/expo/pull/50078), [#53115](https://github.com/expo/expo/pull/53115), [#52929](https://github.com/expo/expo/pull/52929), [#52831](https://github.com/expo/expo/pull/52831), [#52932](https://github.com/expo/expo/pull/52932), [#52934](https://github.com/expo/expo/pull/52934), [#53002](https://github.com/expo/expo/pull/53002))
+  - @expo/config-plugins@58.0.13
+  - @expo/metro-config@58.0.22
+  - @expo/metro-file-map@58.0.6
+  - expo-server@58.1.0
+  - @expo/plist@0.10.2
+  - @expo/require-utils@58.0.6
+  - @expo/config@58.0.12
+  - @expo/image-utils@0.12.7
+  - @expo/env@2.6.0
+  - @expo/router-server@58.0.22
+  - @expo/prebuild-config@58.0.20
+  - @expo/inline-modules@0.2.10
+
 ## 58.1.19
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.22
+
+### Patch Changes
+
+- Use the Expo Router `origin` option to allow form submissions when the server runs behind a proxy. ([#53115](https://github.com/expo/expo/pull/53115) by [@kitten](https://github.com/kitten))
+- [Internal] Remove the unused `getStaticContent()` renderer. ([#53002](https://github.com/expo/expo/pull/53002) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.21
 
 No changes in this release.

@@ -1,5 +1,16 @@
 # Changelog
 
+## 58.1.0
+
+### Minor Changes
+
+- Reject cross-origin form-compatible mutations by default, before middleware and route handlers run. Pass `checkOrigin: false` as the second adapter handler argument when providing application-specific CSRF protection. ([#53115](https://github.com/expo/expo/pull/53115) by [@kitten](https://github.com/kitten))
+
+### Patch Changes
+
+- Use the Expo Router `origin` option to allow form submissions when the server runs behind a proxy. ([#53115](https://github.com/expo/expo/pull/53115) by [@kitten](https://github.com/kitten))
+- [Internal] Remove the unused `getStaticContent()` renderer. ([#53002](https://github.com/expo/expo/pull/53002) by [@hassankhan](https://github.com/hassankhan))
+
 ## 58.0.6
 
 ### Patch Changes

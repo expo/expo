@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.12
+
+### Patch Changes
+
+- Remove the already deprecated EXPO_USE_METRO_WORKSPACE_ROOT environment variable. ([#52932](https://github.com/expo/expo/pull/52932) by [@kitten](https://github.com/kitten))
+- Drop the getenv dependency. ([#52932](https://github.com/expo/expo/pull/52932) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#52088](https://github.com/expo/expo/pull/52088), [#52831](https://github.com/expo/expo/pull/52831), [#52932](https://github.com/expo/expo/pull/52932))
+  - @expo/config-plugins@58.0.13
+  - @expo/require-utils@58.0.6
+
 ## 58.0.11
 
 ### Patch Changes

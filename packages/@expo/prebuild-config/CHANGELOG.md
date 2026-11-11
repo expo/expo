@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.20
+
+### Patch Changes
+
+- Updated dependencies. ([#53214](https://github.com/expo/expo/pull/53214), [#52088](https://github.com/expo/expo/pull/52088), [#52647](https://github.com/expo/expo/pull/52647), [#50207](https://github.com/expo/expo/pull/50207), [#52932](https://github.com/expo/expo/pull/52932))
+  - expo-modules-autolinking@58.1.0
+  - @expo/config-plugins@58.0.13
+  - @expo/config@58.0.12
+  - @expo/image-utils@0.12.7
+
 ## 58.0.19
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.1.0
+
+### Minor Changes
+
+- Add `getAdvertisingIdAsync` to read the advertising ID off the JavaScript thread. On Android the synchronous `getAdvertisingId` makes an IPC call to Google Play Services and can block the JavaScript thread for hundreds of milliseconds. ([#47144](https://github.com/expo/expo/pull/47144) by [@greg-schrammel](https://github.com/greg-schrammel))
+
+### Patch Changes
+
+- [Web] Fix `Cannot find native module 'ExpoTrackingTransparency'` when the package is imported on web. `isAvailable()` now returns `false` on web. ([#52964](https://github.com/expo/expo/pull/52964) by [@chrfalch](https://github.com/chrfalch))
+
 ## 58.0.2
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- Updated dependencies. ([#53136](https://github.com/expo/expo/pull/53136))
+  - expo-dev-menu-interface@58.0.2
+
 ## 58.0.12
 
 ### Patch Changes

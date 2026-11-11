@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.19
+
+### Patch Changes
+
+- [Android] Send events as compact JSON instead of pretty-printed JSON, and write request bodies to logcat only in debug builds. ([#53170](https://github.com/expo/expo/pull/53170) by [@tsapeta](https://github.com/tsapeta))
+- Export the `Span`, `SpanStatus`, `StartSpanOptions`, `SpanEventOptions`, `SpanEndOptions`, and `RecordSpanOptions` types, so apps can type the spans they pass as `parent` without importing `expo-app-metrics`. ([#52893](https://github.com/expo/expo/pull/52893) by [@tsapeta](https://github.com/tsapeta))
+
 ## 58.0.18
 
 ### Patch Changes

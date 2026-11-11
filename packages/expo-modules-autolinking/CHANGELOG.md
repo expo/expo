@@ -1,5 +1,18 @@
 # Changelog
 
+## 58.1.0
+
+### Minor Changes
+
+- On iOS, generated modules providers also list the modules declared with `@ExpoModule` (Expo Modules API 2.0) by npm package, as an `ExpoPackage` for each package, in the new `packages` property. Local modules and inline modules declared with `@ExpoModule` are in the `$local` package. The property is generated only when the installed `expo-modules-core` supports it. Module registration doesn't change: all modules stay in `getModuleClasses()`. ([#52647](https://github.com/expo/expo/pull/52647) by [@tsapeta](https://github.com/tsapeta))
+
+### Patch Changes
+
+- [Internal] [iOS] Add a single description of the precompiled xcframework artifact layout, located per package version, so the producer, the CocoaPods integrator and the artifact cache can stop each encoding their own copy. ([#53214](https://github.com/expo/expo/pull/53214) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Fix the `ExpoModulesCore` checksum in `Podfile.lock` changing with the project path when precompiled modules are on. `pod install --deployment` now passes with a lockfile from another machine. ([#50207](https://github.com/expo/expo/pull/50207) by [@cristunaranjo](https://github.com/cristunaranjo))
+- Updated dependencies. ([#52831](https://github.com/expo/expo/pull/52831))
+  - @expo/require-utils@58.0.6
+
 ## 58.0.17
 
 ### Patch Changes

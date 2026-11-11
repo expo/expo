@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.21.10
+
+### Patch Changes
+
+- Drop the `glob` dependency and update `minimatch` to `^10.2.6`. ([#53091](https://github.com/expo/expo/pull/53091) by [@kitten](https://github.com/kitten))
+- Use @expo/env instead of getenv to read environment variables. ([#52934](https://github.com/expo/expo/pull/52934) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#52934](https://github.com/expo/expo/pull/52934))
+  - @expo/env@2.6.0
+
 ## 0.21.9
 
 ### Patch Changes

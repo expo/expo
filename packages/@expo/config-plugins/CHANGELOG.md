@@ -1,5 +1,15 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- [iOS] Fix `appendScheme` and `removeScheme` throwing when an `Info.plist` URL type has no `CFBundleURLSchemes`. ([#52088](https://github.com/expo/expo/pull/52088) by [@batuhansalkim](https://github.com/batuhansalkim))
+- Drop the getenv dependency. ([#52932](https://github.com/expo/expo/pull/52932) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#52929](https://github.com/expo/expo/pull/52929), [#52831](https://github.com/expo/expo/pull/52831))
+  - @expo/plist@0.10.2
+  - @expo/require-utils@58.0.6
+
 ## 58.0.12
 
 ### Patch Changes
