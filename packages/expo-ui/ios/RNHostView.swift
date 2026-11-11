@@ -2,6 +2,9 @@
 
 import SwiftUI
 import ExpoModulesCore
+#if canImport(ExpoUIObjC)
+import ExpoUIObjC
+#endif
 
 internal final class RNHostViewProps: ExpoSwiftUI.ViewProps {
   @Field var matchContentsHorizontal: Bool = false
