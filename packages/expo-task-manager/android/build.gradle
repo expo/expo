@@ -16,15 +16,7 @@ android {
 }
 
 dependencies {
-  def appLoaderProject = findProject(':unimodules-app-loader')
-  if (appLoaderProject != null) {
-    implementation appLoaderProject
-  } else {
-    def appLoaderPublication = gradle.expoGradle.config.allProjects
-      .find { it.name == 'unimodules-app-loader' }
-      .publication
-    implementation "${appLoaderPublication.groupId}:${appLoaderPublication.artifactId}:${appLoaderPublication.version}"
-  }
+  implementation expoModule.getExpoDependency("unimodules-app-loader")
   api "androidx.core:core:1.17.0"
   compileOnly "com.facebook.react:react-android"
   testImplementation 'junit:junit:4.13.2'
