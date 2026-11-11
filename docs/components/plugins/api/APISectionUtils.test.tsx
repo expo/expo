@@ -487,4 +487,19 @@ describe('APISectionUtils.resolveTypeName', () => {
     );
     expect(screen.getByRole('link', { name: 'Date' })).toHaveAttribute('href', '#date');
   });
+
+  test('array of a library type with the name of a global type', () => {
+    render(
+      <>
+        {resolveTypeName(
+          {
+            type: 'array',
+            elementType: { type: 'reference', name: 'Date', package: 'expo-contacts' },
+          },
+          'v58.0.0'
+        )}
+      </>
+    );
+    expect(screen.getByRole('link', { name: 'Date[]' })).toHaveAttribute('href', '#date');
+  });
 });
