@@ -617,8 +617,7 @@ public final class ImageView: ExpoView {
   private func applyContentPosition(contentSize: CGSize, containerSize: CGSize) {
     let offset = contentPosition.offset(contentSize: contentSize, containerSize: containerSize)
 
-    // Core Animation raises `CALayerInvalidGeometry` and aborts the app when the position is not
-    // a number, so never pass such an offset to the layer. Keep the previous offset instead.
+    // Core Animation raises `CALayerInvalidGeometry` when a layer position contains NaN.
     guard offset.x.isFinite, offset.y.isFinite else {
       log.warn("Skipping the content position update because the offset is not finite: \(offset)")
       return
