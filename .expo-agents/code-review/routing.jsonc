@@ -1,5 +1,7 @@
 // Routing for the autonomous code review trial.
 // The last matching scope wins per changed file.
+// The autonomous paths are the one list. The sandbox step reads them, and
+// expo-code-review-owners.yml checks that .github/CODEOWNERS gives the same paths to expo-bot.
 {
   "defaults": {
     "enforceAgents": ["security", "correctness"],
