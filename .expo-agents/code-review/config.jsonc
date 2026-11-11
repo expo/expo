@@ -90,8 +90,8 @@
   // model cannot destroy the sandbox; a workflow step does, so the token also holds
   // destroy_sandbox (extraTokenTools).
   // ecr refuses the server when the token offers any other tool, or when tokenInfoUrl
-  // does not call it a scoped token that expires. A fork PR gets the sandbox only
-  // with the ai-review label.
+  // does not call it a scoped token that expires, with no network access in the
+  // sandbox. A fork PR gets the sandbox only with the ai-review label.
   "mcpServers": {
     "sandbox": {
       "url": "https://agile-minnow-543.convex.site/mcp",
@@ -100,7 +100,8 @@
       "agents": ["deep", "verifier"],
       "extraTokenTools": ["destroy_sandbox"],
       "forkLabel": "ai-review",
-      "tokenInfoUrl": "https://agile-minnow-543.convex.site/tokens/info"
+      "tokenInfoUrl": "https://agile-minnow-543.convex.site/tokens/info",
+      "requireNoNetwork": true
     }
   },
   "research": {
