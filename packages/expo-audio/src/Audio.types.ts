@@ -182,6 +182,35 @@ export type PreloadOptions = {
 export type AudioLoadOptions = AudioPlayerOptions;
 
 /**
+ * Type of an audio input device. On Android, the value is mapped from the `AudioDeviceInfo` type.
+ * On iOS, the value is the `AVAudioSession.Port` raw value. On web, the value is `Default` or `Unknown`.
+ * Other values are possible, for example, for a device type that a newer OS version adds.
+ */
+export type RecordingInputType =
+  | 'MicrophoneBuiltIn'
+  | 'MicrophoneWired'
+  | 'BluetoothHFP'
+  | 'BluetoothSCO'
+  | 'BluetoothLE'
+  | 'BluetoothA2DP'
+  | 'USBAudio'
+  | 'LineIn'
+  | 'CarAudio'
+  | 'HDMI'
+  | 'Telephony'
+  | 'ContinuityMicrophone'
+  | 'Virtual'
+  | 'PCI'
+  | 'FireWire'
+  | 'DisplayPort'
+  | 'AVB'
+  | 'Thunderbolt'
+  | 'Default'
+  | 'Unknown'
+  | 'Unknown device type'
+  | (string & {});
+
+/**
  * Represents an available audio input device for recording.
  *
  * This type describes audio input sources like built-in microphones, external microphones,
@@ -191,11 +220,8 @@ export type AudioLoadOptions = AudioPlayerOptions;
 export type RecordingInput = {
   /** Human-readable name of the audio input device. */
   name: string;
-  /**
-   * Type of the input device, for example, `MicrophoneBuiltIn` or `USBAudio`. On Android, the value is
-   * mapped from the `AudioDeviceInfo` type. On iOS, the value is the `AVAudioSession.Port` raw value.
-   */
-  type: string;
+  /** Type of the input device, for example, `MicrophoneBuiltIn` or `USBAudio`. */
+  type: RecordingInputType;
   /** Unique identifier for the input device, used to select the input ('Built-in Microphone', 'External Microphone') for recording. */
   uid: string;
 };
