@@ -1,4 +1,4 @@
-import type { ConfigPlugin } from 'expo/config-plugins';
+import { WarningAggregator, type ConfigPlugin } from 'expo/config-plugins';
 
 import {
   withAndroidBuildProperties,
@@ -13,7 +13,12 @@ import {
 import { withIosBuildProperties, withIosDeploymentTarget, withIosInfoPlist } from './ios';
 import { withIosSceneSupport } from './iosSceneSupport';
 import type { PluginConfigType } from './pluginConfig';
-import { validateConfig } from './pluginConfig';
+import { resolveConfigValue, validateConfig } from './pluginConfig';
+
+const USE_HERMES_V1_DEPRECATION_MESSAGE =
+  '`useHermesV1` is deprecated and has no effect. ' +
+  'React Native 0.88 and newer always use Hermes V1. ' +
+  'Remove `useHermesV1` from the expo-build-properties config.';
 
 /**
  * Config plugin allowing customizing native Android and iOS build properties for managed apps.
@@ -21,8 +26,14 @@ import { validateConfig } from './pluginConfig';
  * @param props Configuration for the build properties plugin.
  */
 export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, props) => {
-  const projectRoot = config._internal?.projectRoot;
-  const pluginConfig = validateConfig(props || {}, projectRoot);
+  const pluginConfig = validateConfig(props || {});
+
+  if (resolveConfigValue(pluginConfig, 'android', 'useHermesV1') !== undefined) {
+    WarningAggregator.addWarningAndroid('useHermesV1', USE_HERMES_V1_DEPRECATION_MESSAGE);
+  }
+  if (resolveConfigValue(pluginConfig, 'ios', 'useHermesV1') !== undefined) {
+    WarningAggregator.addWarningIOS('useHermesV1', USE_HERMES_V1_DEPRECATION_MESSAGE);
+  }
 
   config = withAndroidBuildProperties(config, pluginConfig);
 

@@ -14,7 +14,7 @@ jest.mock('expo/config-plugins', () => {
   return {
     ...plugins,
     withDangerousMod: jest.fn().mockImplementation((config) => config),
-    WarningAggregator: { addWarningIOS: jest.fn() },
+    WarningAggregator: { addWarningAndroid: jest.fn(), addWarningIOS: jest.fn() },
   };
 });
 
@@ -592,6 +592,42 @@ describe('shared config fields', () => {
     expect(iosModResults).toMatchObject({
       'expo.useHermesV1': 'false',
     });
+  });
+});
+
+describe('useHermesV1 deprecation', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should not warn when useHermesV1 is not set', () => {
+    withBuildProperties({} as any, {});
+
+    expect(WarningAggregator.addWarningAndroid).not.toHaveBeenCalled();
+    expect(WarningAggregator.addWarningIOS).not.toHaveBeenCalled();
+  });
+
+  it('should warn on both platforms when top-level useHermesV1 is set', () => {
+    withBuildProperties({} as any, { useHermesV1: true });
+
+    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
+      'useHermesV1',
+      expect.stringContaining('deprecated')
+    );
+    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
+      'useHermesV1',
+      expect.stringContaining('deprecated')
+    );
+  });
+
+  it('should warn only on the platform that sets useHermesV1', () => {
+    withBuildProperties({} as any, { android: { useHermesV1: false } });
+
+    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
+      'useHermesV1',
+      expect.stringContaining('deprecated')
+    );
+    expect(WarningAggregator.addWarningIOS).not.toHaveBeenCalled();
   });
 });
 

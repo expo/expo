@@ -257,28 +257,14 @@ describe(validateConfig, () => {
 });
 
 describe('shared config resolution', () => {
-  it('should throw when useHermesV1 is false without buildReactNativeFromSource', () => {
-    expect(() => validateConfig({ useHermesV1: false })).toThrow(
-      '`useHermesV1`: false requires `buildReactNativeFromSource` to be `true`'
-    );
-  });
-
-  it('should validate useHermesV1 with buildReactNativeFromSource', () => {
+  it('should not throw when useHermesV1 is false without buildReactNativeFromSource', () => {
     expect(() =>
-      validateConfig({ useHermesV1: false, buildReactNativeFromSource: true })
+      validateConfig({
+        useHermesV1: false,
+        android: { useHermesV1: false },
+        ios: { useHermesV1: false },
+      })
     ).not.toThrow();
-  });
-
-  it('should throw for android-specific useHermesV1 without buildReactNativeFromSource', () => {
-    expect(() => validateConfig({ android: { useHermesV1: false } })).toThrow(
-      '`useHermesV1`: false requires `buildReactNativeFromSource` to be `true` for Android.'
-    );
-  });
-
-  it('should throw for ios-specific useHermesV1 without buildReactNativeFromSource', () => {
-    expect(() => validateConfig({ ios: { useHermesV1: false } })).toThrow(
-      '`useHermesV1`: false requires `buildReactNativeFromSource` to be `true` for iOS.'
-    );
   });
 
   it('should validate top-level buildReactNativeFromSource', () => {
