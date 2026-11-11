@@ -212,7 +212,7 @@
   },
   "scripts": {
     "build": "../@expo/internal-scripts/bin/expo-build src",
-    "clean": "rimraf build",
+    "clean": "../@expo/internal-scripts/bin/expo-module-clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
     "test": "jest && jest --config scripts/spm/jest.config.js && pnpm test:templates",
