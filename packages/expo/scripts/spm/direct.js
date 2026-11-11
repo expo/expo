@@ -66,9 +66,12 @@ function headersStandInsOf(manifest) {
     HEADERS_STAND_INS[name].standIns.forEach(add);
     standIns.add(name);
   };
-  for (const target of manifest.targets ?? []) {
+  const targets = manifest.targets ?? [];
+  const targetNames = new Set(targets.map((target) => target.name));
+  for (const target of targets) {
     for (const dependency of target.dependencies ?? []) {
-      const name = (dependency.product ?? dependency.byName)?.[0];
+      const name = dependency.product?.[0] ?? dependency.byName?.[0];
+      if (dependency.byName != null && targetNames.has(name)) continue;
       if (Object.hasOwn(HEADERS_STAND_INS, name)) add(name);
     }
   }

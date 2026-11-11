@@ -2173,8 +2173,13 @@ describe('where precompiled modules and headers come from', () => {
         },
       ],
     });
+    /** The ExpoModulesWorklets binary comes from where ExpoModulesCore does unless `frameworks` says. */
     const syncWorklets = (frameworks, headers) =>
-      sync({ frameworks, headers, manifest: workletsManifest });
+      sync({
+        frameworks: { ExpoModulesWorklets: frameworks.ExpoModulesCore, ...frameworks },
+        headers,
+        manifest: workletsManifest,
+      });
 
     it('hands it the ExpoModulesWorklets headers and the ExpoModulesCore headers they depend on', () => {
       resolveHeadersXCFrameworkWithSource.mockClear();
@@ -2213,13 +2218,13 @@ describe('where precompiled modules and headers come from', () => {
       expect(emitDirectPackage).not.toHaveBeenCalled();
     });
 
-    it('fails naming the ExpoModulesWorklets headers when the local ExpoModulesCore build has none', () => {
+    it('fails naming the ExpoModulesWorklets headers when the local ExpoModulesWorklets build has none', () => {
       const { thrown } = syncWorklets(
         { ExpoModulesCore: 'monorepo' },
         { ExpoModulesCore: 'monorepo', ExpoModulesWorklets: 'bundled' }
       );
       expect(thrown?.message).toContain(
-        `ExpoModulesWorkletsHeaders.xcframework is missing under ${sourceAt('monorepo', 'ExpoModulesCore').dir}, where ExpoModulesCore comes from`
+        `ExpoModulesWorkletsHeaders.xcframework is missing under ${sourceAt('monorepo', 'ExpoModulesWorklets').dir}, where ExpoModulesWorklets comes from`
       );
       expect(emitDirectPackage).not.toHaveBeenCalled();
     });
@@ -2232,6 +2237,32 @@ describe('where precompiled modules and headers come from', () => {
       expect(thrown?.message).toContain(
         'ExpoModulesWorkletsHeaders.xcframework (expo-modules-core) comes from'
       );
+      expect(emitDirectPackage).not.toHaveBeenCalled();
+    });
+
+    it('fails when the ExpoModulesWorklets headers come from another place than the ExpoModulesWorklets binary', () => {
+      const { thrown } = syncWorklets(
+        { ExpoModulesCore: 'env', ExpoModulesWorklets: 'bundled' },
+        { ExpoModulesCore: 'env', ExpoModulesWorklets: 'env' }
+      );
+      expect(thrown?.message).toContain(
+        `ExpoModulesWorkletsHeaders.xcframework (expo-modules-core) comes from EXPO_PRECOMPILED_MODULES_PATH (${sourceAt('env', 'ExpoModulesWorklets').dir}), but ExpoModulesWorklets comes from its npm package (${sourceAt('bundled', 'ExpoModulesWorklets').dir}).`
+      );
+      expect(thrown.message).toContain(rerunSpmUpdate);
+      expect(emitDirectPackage).not.toHaveBeenCalled();
+    });
+
+    it('fails when ExpoModulesWorklets is not linked precompiled', () => {
+      const { thrown } = sync({
+        frameworks: { ExpoModulesCore: 'env' },
+        headers: { ExpoModulesCore: 'env', ExpoModulesWorklets: 'env' },
+        manifest: workletsManifest,
+      });
+      expect(thrown?.message).toContain(
+        'compile against ExpoModulesWorkletsHeaders.xcframework, but no precompiled ExpoModulesWorklets (expo-modules-core) is linked'
+      );
+      expect(thrown.message).toContain('prebuild expo-modules-core');
+      expect(thrown.message).toContain(rerunSpmUpdate);
       expect(emitDirectPackage).not.toHaveBeenCalled();
     });
   });
