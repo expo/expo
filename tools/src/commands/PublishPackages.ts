@@ -1,15 +1,18 @@
 import { Command } from '@expo/commander';
 
 import { runTurboTasksAsync } from '../Turbo';
+import { spawnAsync } from '../Utils';
 import {
   assertCleanWorkingTreeAsync,
   assertChangesetPrerequisiteAsync,
   assertReleaseBranch,
   assertVersionCommitAsync,
+  getPreparedPublishEnv,
   getReleaseBranchAsync,
   getPublishPlanAsync,
   getStablePublishArgsAsync,
   packChangesetsAsync,
+  prepareReleasePackagesAsync,
   runChangesetsAsync,
 } from '../changesets/Changesets';
 
@@ -37,6 +40,9 @@ export default (program: Command) => {
       if (publishPlan.length) {
         await runTurboTasksAsync(['build']);
         await runTurboTasksAsync(['precompile-ios', 'precompile-android']);
+        await prepareReleasePackagesAsync(
+          publishPlan.filter((entry) => entry.kind === 'publish').map((entry) => entry.name)
+        );
       }
       if (options.dryRun) {
         if (publishPlan.length) {
@@ -45,7 +51,11 @@ export default (program: Command) => {
         return;
       }
       if (publishPlan.length) {
-        await runChangesetsAsync(await getStablePublishArgsAsync(branchName));
+        await runChangesetsAsync(
+          await getStablePublishArgsAsync(branchName),
+          spawnAsync,
+          getPreparedPublishEnv()
+        );
       }
     });
 };

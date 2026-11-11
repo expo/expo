@@ -198,10 +198,35 @@ type SpawnChangesetsAsync = typeof spawnAsync;
 
 export async function runChangesetsAsync(
   args: string[],
-  spawnChangesetsAsync: SpawnChangesetsAsync = spawnAsync
+  spawnChangesetsAsync: SpawnChangesetsAsync = spawnAsync,
+  env?: NodeJS.ProcessEnv
 ): Promise<void> {
   await spawnChangesetsAsync('pnpm', ['exec', 'changeset', ...args], {
     cwd: EXPO_DIR,
     stdio: 'inherit',
+    ...(env && { env }),
   });
+}
+
+export function getPreparedPublishEnv(): NodeJS.ProcessEnv {
+  return { ...process.env, EXPO_PUBLISH_PREPARED: '1' };
+}
+
+// One package at a time: a package's `clean` must not run while another package's build reads its output.
+export async function prepareReleasePackagesAsync(
+  packageNames: string[],
+  spawnPnpmAsync: SpawnChangesetsAsync = spawnAsync
+): Promise<void> {
+  if (packageNames.length === 0) return;
+  await spawnPnpmAsync(
+    'pnpm',
+    [
+      '-r',
+      '--workspace-concurrency=1',
+      ...packageNames.map((name) => `--filter=${name}`),
+      'run',
+      'prepublishOnly',
+    ],
+    { cwd: EXPO_DIR, stdio: 'inherit' }
+  );
 }

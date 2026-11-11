@@ -11,7 +11,9 @@ import {
   assertNoMajorChangesetsAsync,
   getPendingChangesetsAsync,
   getReleaseTagAsync,
+  getPreparedPublishEnv,
   getStablePublishArgsAsync,
+  prepareReleasePackagesAsync,
   runChangesetsAsync,
 } from './Changesets';
 
@@ -142,6 +144,58 @@ describe('Changesets release prerequisites', () => {
     assert.deepEqual(invocation?.args, ['exec', 'changeset', 'publish', '--tag', 'latest']);
     assert.equal(invocation?.options.stdio, 'inherit');
     assert.equal(invocation?.options.env, undefined);
+  });
+
+  it('publishes a prepared release with the Changesets Action environment intact', async () => {
+    const previousOutput = process.env.CHANGESETS_OUTPUT;
+    process.env.CHANGESETS_OUTPUT = '/tmp/action-publish-output.json';
+    let options: any;
+
+    try {
+      await runChangesetsAsync(
+        ['publish', '--tag', 'latest'],
+        ((_command, _args, spawnOptions) => {
+          options = spawnOptions;
+          return Promise.resolve({ status: 0, signal: null, stdout: '', stderr: '', output: [] });
+        }) as any,
+        getPreparedPublishEnv()
+      );
+    } finally {
+      if (previousOutput === undefined) {
+        delete process.env.CHANGESETS_OUTPUT;
+      } else {
+        process.env.CHANGESETS_OUTPUT = previousOutput;
+      }
+    }
+
+    assert.equal(options.env.EXPO_PUBLISH_PREPARED, '1');
+    assert.equal(options.env.CHANGESETS_OUTPUT, '/tmp/action-publish-output.json');
+  });
+
+  it('builds release packages one at a time', async () => {
+    const invocations: { command: string; args: readonly string[] }[] = [];
+    const spawn = ((command: string, args: readonly string[]) => {
+      invocations.push({ command, args });
+      return Promise.resolve({ status: 0, signal: null, stdout: '', stderr: '', output: [] });
+    }) as any;
+
+    await prepareReleasePackagesAsync([], spawn);
+    assert.equal(invocations.length, 0);
+
+    await prepareReleasePackagesAsync(['@expo/env', 'expo-doctor'], spawn);
+    assert.deepEqual(invocations, [
+      {
+        command: 'pnpm',
+        args: [
+          '-r',
+          '--workspace-concurrency=1',
+          '--filter=@expo/env',
+          '--filter=expo-doctor',
+          'run',
+          'prepublishOnly',
+        ],
+      },
+    ]);
   });
 
   it('derives release tags and respects disabled routes', async () => {
