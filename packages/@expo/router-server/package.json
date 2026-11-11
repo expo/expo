@@ -51,7 +51,7 @@
     "expect-type": "^1.3.0",
     "expo-router": "workspace:*",
     "node-html-parser": "^6.1.5",
-    "react-server-dom-webpack": "~19.0.8"
+    "react-server-dom-webpack": "~19.0.9"
   },
   "peerDependencies": {
     "@expo/metro-runtime": "workspace:^",
