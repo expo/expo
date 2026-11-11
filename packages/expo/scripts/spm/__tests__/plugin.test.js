@@ -2386,6 +2386,24 @@ describe('where precompiled modules and headers come from', () => {
       expect(emitDirectPackage).not.toHaveBeenCalled();
     });
 
+    it.each(['monorepo', 'env'])(
+      'fails naming @expo/ui when the local ExpoUI build from %s has no headers',
+      (kind) => {
+        const { thrown } = syncUI(
+          { ExpoModulesCore: kind },
+          { ExpoModulesCore: kind, ExpoModulesWorklets: kind, ExpoUI: 'bundled' }
+        );
+        expect(thrown?.message).toContain(
+          `ExpoUIHeaders.xcframework is missing under ${sourceAt(kind, 'ExpoUI').dir}, where ExpoUI comes from`
+        );
+        expect(thrown.message).toContain(
+          kind === 'env' ? 'a complete prebuild of @expo/ui' : 'prebuild @expo/ui`'
+        );
+        expect(thrown.message).not.toContain('expo-modules-jsi');
+        expect(emitDirectPackage).not.toHaveBeenCalled();
+      }
+    );
+
     it('fails when the ExpoUI headers come from another place than the ExpoUI binary', () => {
       const { thrown } = syncUI(
         { ExpoModulesCore: 'env', ExpoUI: 'bundled' },
