@@ -525,8 +525,8 @@ function resolveHeadersStandIn({ packageName, productName }, precompiled, cacheD
   if (binary == null) {
     throw pluginError({
       what: `Expo modules built from their own Package.swift compile against ${productName}Headers.xcframework, but no precompiled ${productName} (${packageName}) is linked to check those headers against.`,
-      why: `The headers must come from the same build as the ${productName} binary. ${packageName} is not autolinked, ships no precompiled ${productName}, or a buildFromSource pattern builds ${productName} from source.`,
-      how: `Remove any buildFromSource pattern that matches ${productName}. If you build ${packageName} locally, run \`node tools/bin/expotools.js prebuild ${packageName}\` from the Expo repository root. ${rerunSpmUpdate()}`,
+      why: `The headers must come from the same build as the ${productName} binary. Either a buildFromSource entry names ${productName} or ${packageName} exactly, or ${packageName} has no precompiled ${productName}.`,
+      how: `Remove the buildFromSource entry that names ${productName} or ${packageName}. Otherwise, from the Expo repository root, run \`node tools/bin/expotools.js prebuild ${packageName}\`. ${rerunSpmUpdate()}`,
     });
   }
   const lookup = { packageName, moduleRoot: binary.identity.moduleRoot, productName };
@@ -1082,6 +1082,14 @@ module.exports = function expoSpmPlugin(context) {
   const fallbackEntries = new Map();
   const coreMatch = matchBuildFromSource({ podName: CORE_POD, packageName: CORE_PACKAGE });
   if (coreMatch != null) fallbackEntries.set(CORE_POD, coreMatch.entry);
+  // A direct module checks its headers against the binary of their product in the first round,
+  // so a product a pattern matches must be linked precompiled from the start.
+  for (const { packageName, productName } of Object.values(HEADERS_STAND_INS)) {
+    const match = matchBuildFromSource({ podName: productName, packageName });
+    if (match?.exact === false && !fallbackEntries.has(productName)) {
+      fallbackEntries.set(productName, match.entry);
+    }
+  }
   const emittedByRound = [];
   let passes;
   let fallingBack;

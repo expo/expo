@@ -1845,11 +1845,14 @@ describe('where precompiled modules and headers come from', () => {
    * given kinds of place, and a direct module when `headers` says where the
    * headers of each product come from (null for headers that are not found). The direct
    * module's manifest is `manifest`, by default one depending on the ExpoModulesCore headers.
+   * The products in `mixed` have Objective-C sources, and `buildFromSource` is the app's option.
    */
   function sync({
     frameworks,
     headers,
     manifest = dumpedManifest('expo-haptics', 'ExpoHaptics', { onCoreHeaders: true }),
+    mixed = [],
+    buildFromSource,
   }) {
     const tmp = makeTempDir('expo-spm-plugin-sources-');
     const listed = Object.keys({ ...frameworks, ExpoModulesJSI: null }).map((frameworkName) => [
@@ -1857,7 +1860,12 @@ describe('where precompiled modules and headers come from', () => {
       [
         [
           frameworkName,
-          pureSwiftModule(path.join(tmp, packageOf[frameworkName]), frameworkName, spec()),
+          mixed.includes(frameworkName)
+            ? mixedModule(
+                path.join(tmp, `${packageOf[frameworkName]}-${frameworkName}`),
+                frameworkName
+              )
+            : pureSwiftModule(path.join(tmp, packageOf[frameworkName]), frameworkName, spec()),
         ],
       ],
     ]);
@@ -1884,7 +1892,10 @@ describe('where precompiled modules and headers come from', () => {
         },
       });
     }
-    resolveExpoModules.mockReturnValue(modulesOf(listed));
+    resolveExpoModules.mockReturnValue({
+      ...modulesOf(listed),
+      ...(buildFromSource != null ? { buildFromSource } : {}),
+    });
     resolveFlavoredFramework.mockImplementation(({ frameworkName }) =>
       frameworkName in frameworks ? { id: frameworkName, frameworkName } : null
     );
@@ -2229,7 +2240,7 @@ describe('where precompiled modules and headers come from', () => {
       expect(emitDirectPackage).not.toHaveBeenCalled();
     });
 
-    it('fails when the ExpoModulesWorklets headers come from another place than ExpoModulesCore', () => {
+    it('fails when the ExpoModulesWorklets headers come from another place than the ExpoModulesWorklets binary they belong to', () => {
       const { thrown } = syncWorklets(
         { ExpoModulesCore: 'bundled' },
         { ExpoModulesCore: 'bundled', ExpoModulesWorklets: 'env' }
@@ -2249,6 +2260,47 @@ describe('where precompiled modules and headers come from', () => {
         `ExpoModulesWorkletsHeaders.xcframework (expo-modules-core) comes from EXPO_PRECOMPILED_MODULES_PATH (${sourceAt('env', 'ExpoModulesWorklets').dir}), but ExpoModulesWorklets comes from its npm package (${sourceAt('bundled', 'ExpoModulesWorklets').dir}).`
       );
       expect(thrown.message).toContain(rerunSpmUpdate);
+      expect(emitDirectPackage).not.toHaveBeenCalled();
+    });
+
+    const syncWorkletsBuildingFromSource = (buildFromSource) => {
+      hasPrecompiledArtifact.mockImplementation(
+        ({ frameworkName }) => frameworkName !== 'ExpoHaptics'
+      );
+      return sync({
+        frameworks: { ExpoModulesCore: 'env', ExpoModulesWorklets: 'env' },
+        headers: { ExpoModulesCore: 'env', ExpoModulesWorklets: 'env' },
+        manifest: workletsManifest,
+        mixed: ['ExpoModulesWorklets'],
+        buildFromSource,
+      });
+    };
+
+    it('links ExpoModulesWorklets precompiled when a buildFromSource pattern matches it', () => {
+      const { thrown, result } = syncWorkletsBuildingFromSource(['.*']);
+      expect(thrown).toBeNull();
+      expect(result.flavoredFrameworks.map((f) => f.frameworkName)).toContain(
+        'ExpoModulesWorklets'
+      );
+      expect(emitDirectPackage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          headersXCFrameworks: {
+            ExpoModulesCoreHeaders: '/abs/ExpoModulesCoreHeaders.xcframework',
+            ExpoModulesWorkletsHeaders: '/abs/ExpoModulesWorkletsHeaders.xcframework',
+          },
+        })
+      );
+    });
+
+    it('fails naming the cause when buildFromSource names ExpoModulesWorklets exactly', () => {
+      const { thrown } = syncWorkletsBuildingFromSource(['ExpoModulesWorklets']);
+      expect(thrown?.message).toContain(
+        'but no precompiled ExpoModulesWorklets (expo-modules-core) is linked'
+      );
+      expect(thrown.message).toContain(
+        'a buildFromSource entry names ExpoModulesWorklets or expo-modules-core exactly'
+      );
+      expect(thrown.message).not.toContain('not autolinked');
       expect(emitDirectPackage).not.toHaveBeenCalled();
     });
 
