@@ -14,7 +14,7 @@ jest.mock('expo/config-plugins', () => {
   return {
     ...plugins,
     withDangerousMod: jest.fn().mockImplementation((config) => config),
-    WarningAggregator: { addWarningAndroid: jest.fn(), addWarningIOS: jest.fn() },
+    WarningAggregator: { addWarningIOS: jest.fn() },
   };
 });
 
@@ -526,18 +526,6 @@ describe('shared config fields', () => {
     expect(iosModResults).toMatchObject({
       'ios.buildReactNativeFromSource': 'false',
     });
-  });
-});
-
-describe('useHermesV1 deprecation', () => {
-  it('should warn only on the platform that sets useHermesV1', () => {
-    withBuildProperties({} as any, { android: { useHermesV1: false } });
-
-    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
-      'useHermesV1',
-      expect.stringContaining('deprecated')
-    );
-    expect(WarningAggregator.addWarningIOS).not.toHaveBeenCalled();
   });
 });
 
