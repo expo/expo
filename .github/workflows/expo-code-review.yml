@@ -231,7 +231,8 @@ jobs:
 
       # A sandbox lets reviewers check how a tool behaves by running it. The parent
       # EXPO_SANDBOX_MCP_TOKEN reaches only this step and the revoke step. The review
-      # gets a child token with one sandbox, no builds, and the tools listed here.
+      # gets a child token with one sandbox, no builds, no network access in the sandbox,
+      # and the tools listed here.
       # Minting creates no sandbox. If it fails, the review runs without one.
       # Only the autonomous scope has sandbox rules, so other PRs get no token.
       # A fork PR gets a sandbox only after a maintainer labels it, even when
@@ -249,7 +250,7 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           body=$(jq -cn --arg name "ecr-review-$RUN_ID" '{
-            sandboxBudget: 1, buildBudget: 0, ttlSeconds: 6000, name: $name,
+            sandboxBudget: 1, buildBudget: 0, ttlSeconds: 6000, name: $name, network: false,
             allowedTools: ["list_sandboxes", "create_sandbox", "sandbox_write_file", "sandbox_exec", "destroy_sandbox"]
           }')
           token=$(curl -sf -m 30 "$MCP_URL/tokens/scoped" \
