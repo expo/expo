@@ -109,8 +109,38 @@ export default function DocumentationNestedScrollLayout({
       data-nested-scroll-layout
       className="mx-auto flex h-(--nested-scroll-layout-height) w-full flex-col overflow-hidden">
       <div className="max-lg:sticky">{header}</div>
-      <div className="mx-auto flex h-[calc(100dvh-60px)] w-full items-center justify-between">
-        <div className="relative h-full max-lg:hidden">
+      <div className="[reading-flow:flex-visual] mx-auto flex h-[calc(100dvh-60px)] w-full items-center justify-between">
+        <div
+          className={mergeClasses(
+            'relative flex h-[calc(var(--nested-scroll-layout-height)-60px)] w-full self-start overflow-hidden',
+            'max-lg:overflow-auto',
+            isMobileMenuVisible && 'hidden'
+          )}>
+          <ScrollContainer ref={contentRef} scrollHandler={scrollHandler}>
+            <div
+              className={mergeClasses(
+                'mx-auto max-w-screen-xl pb-[calc(var(--nested-scroll-layout-height)-100dvh)] transition-[padding,max-width,margin] duration-200 ease-out will-change-[padding,max-width,margin]',
+                isChatExpanded && 'max-lg:max-w-screen-xl max-lg:pr-0 max-lg:pl-0'
+              )}>
+              {children}
+            </div>
+          </ScrollContainer>
+        </div>
+        {!hideTOC && (
+          <div
+            className={mergeClasses(
+              'flex h-[calc(100dvh-60px)] max-w-70 shrink-0 flex-col overflow-hidden border-l border-l-default',
+              'max-xl:hidden'
+            )}>
+            <ScrollContainer ref={sidebarRightRef}>
+              {cloneElement(sidebarRight, {
+                selfRef: sidebarRightRef,
+                contentRef,
+              })}
+            </ScrollContainer>
+          </div>
+        )}
+        <div className="relative order-first h-full max-lg:hidden">
           {onSidebarToggle ? (
             <div
               className={mergeClasses(
@@ -171,36 +201,6 @@ export default function DocumentationNestedScrollLayout({
             )}
           </div>
         </div>
-        <div
-          className={mergeClasses(
-            'relative flex h-[calc(var(--nested-scroll-layout-height)-60px)] w-full self-start overflow-hidden',
-            'max-lg:overflow-auto',
-            isMobileMenuVisible && 'hidden'
-          )}>
-          <ScrollContainer ref={contentRef} scrollHandler={scrollHandler}>
-            <div
-              className={mergeClasses(
-                'mx-auto max-w-screen-xl pb-[calc(var(--nested-scroll-layout-height)-100dvh)] transition-[padding,max-width,margin] duration-200 ease-out will-change-[padding,max-width,margin]',
-                isChatExpanded && 'max-lg:max-w-screen-xl max-lg:pr-0 max-lg:pl-0'
-              )}>
-              {children}
-            </div>
-          </ScrollContainer>
-        </div>
-        {!hideTOC && (
-          <div
-            className={mergeClasses(
-              'flex h-[calc(100dvh-60px)] max-w-70 shrink-0 flex-col overflow-hidden border-l border-l-default',
-              'max-xl:hidden'
-            )}>
-            <ScrollContainer ref={sidebarRightRef}>
-              {cloneElement(sidebarRight, {
-                selfRef: sidebarRightRef,
-                contentRef,
-              })}
-            </ScrollContainer>
-          </div>
-        )}
       </div>
     </div>
   );
