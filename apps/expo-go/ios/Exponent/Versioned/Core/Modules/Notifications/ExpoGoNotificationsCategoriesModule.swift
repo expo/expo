@@ -30,9 +30,15 @@ final class ExpoGoNotificationsCategoriesModule: CategoriesModule {
 
   public override func setNotificationCategoriesAsync(categories: [CategoryRecord]) async throws {
     let scopeKey = self.scopeKey
-    let scopedCategories = categories.map { category in
+    let scopedCategories = try categories.map { category in
       var scopedCategory = category
       scopedCategory.identifier = EXScopedNotificationsUtils.scopedIdentifier(fromId: category.identifier, forExperience: scopeKey)
+      guard EXScopedNotificationsUtils.isId(scopedCategory.identifier, scopedByExperience: scopeKey) else {
+        throw Exception(
+          name: "AmbiguousCategoryIdentifier",
+          description: "Could not replace notification categories because identifier \(category.identifier.debugDescription) has an ambiguous project scope. Use a different category identifier."
+        )
+      }
       return scopedCategory
     }
     try await replaceNotificationCategories(scopedCategories) {
