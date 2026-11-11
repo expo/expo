@@ -27,7 +27,6 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
   private(set) var redirected = false
   private(set) var error: Error?
   var redirectMode: NativeRequestRedirect = .follow
-  private var bufferedBodyReadInProgress = false
 
   var bodyUsed: Bool {
     return self.sink.bodyUsed
@@ -53,27 +52,12 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
     return nil
   }
 
-  func readBufferedBody(_ callback: @escaping @Sendable (ResponseState) -> Void) {
-    bufferedBodyReadInProgress = true
-    waitFor(states: [.bodyCompleted, .errorReceived]) { state in
-      self.bufferedBodyReadInProgress = false
-      callback(state)
-    }
-  }
-
   func cancelStreaming() {
     if state == .bodyCompleted || state == .bodyStreamingCanceled || state == .errorReceived {
       return
     }
-    // text() and arrayBuffer() wait in this state and finalize the same sink.
-    if state == .responseReceived && bufferedBodyReadInProgress {
+    if isInvalidState(.bodyStreamingStarted) {
       return
-    }
-    if isInvalidState(.responseReceived, .bodyStreamingStarted) {
-      return
-    }
-    if state == .responseReceived {
-      sink.discard()
     }
     state = .bodyStreamingCanceled
   }

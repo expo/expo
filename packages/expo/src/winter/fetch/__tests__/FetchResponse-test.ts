@@ -379,13 +379,6 @@ describe('FetchResponse', () => {
       await expect(response.arrayBuffer()).rejects.toThrow(TypeError);
     });
 
-    it('flips bodyUsed and rejects text() after the body is canceled before any read', async () => {
-      const response = makeResponse();
-      await response.body!.cancel('not needed');
-      expect(response.bodyUsed).toBe(true);
-      await expect(response.text()).rejects.toThrow(TypeError);
-    });
-
     it('rejects body methods on a clone after its body has been read', async () => {
       const response = makeResponse();
       const cloned = response.clone();

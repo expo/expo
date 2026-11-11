@@ -15,10 +15,6 @@ internal class ResponseSink {
     bodyQueue.add(data)
   }
 
-  fun discard() {
-    bodyQueue.clear()
-  }
-
   fun finalize(directBuffer: Boolean): ByteBuffer {
     val size = bodyQueue.sumOf { it.size }
     val byteBuffer = if (directBuffer) {
