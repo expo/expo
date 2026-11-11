@@ -29,7 +29,7 @@ import {
 import { BuiltFramework } from './SPMBuild.types';
 import { BuildPlatform, SPMConfig, SPMProduct } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
-import { assertSafeSPMIdentifier } from './SPMIdentifier';
+import { assertSafeSPMIdentifier, swiftPMPackageName } from './SPMIdentifier';
 import { createAsyncSpinner, SpinnerError } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
 
@@ -464,8 +464,8 @@ export const copyResourceBundlesIntoXCFrameworkAsync = async (
   const spinner = createAsyncSpinner(`Copying resource bundles`, pkg, product);
 
   for (const target of targetsWithResources) {
-    // SPM names the resource bundle as {packageName}_{targetName}.bundle
-    const bundleName = `${pkg.packageName}_${target.name}.bundle`;
+    // SPM names the resource bundle {SwiftPM package name}_{targetName}.bundle, not the npm name.
+    const bundleName = `${swiftPMPackageName(pkg.packageName)}_${target.name}.bundle`;
 
     for (const slice of slices) {
       // Map slice name to build folder prefix (e.g., 'ios-arm64' -> 'iphoneos')

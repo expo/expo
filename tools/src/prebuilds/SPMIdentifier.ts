@@ -37,6 +37,16 @@ function isFrameworkName(entry: unknown): entry is string {
 }
 
 /**
+ * The SwiftPM package name for an npm package: `@scope/name` becomes `scope-name`, because Xcode
+ * cannot name a scheme or a resource bundle after a name that contains `/`.
+ */
+export function swiftPMPackageName(npmPackageName: string): string {
+  return npmPackageName.startsWith('@')
+    ? npmPackageName.slice(1).replace('/', '-')
+    : npmPackageName;
+}
+
+/**
  * Reads a target's `linkedFrameworks` from spm.config.json, which nothing validates at runtime.
  * A missing value means no frameworks; any other value that is not a list of framework names throws.
  */

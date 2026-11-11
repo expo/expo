@@ -277,6 +277,16 @@ describe('buildXcodeBuildArgs', () => {
     );
   });
 
+  it('names the scheme after the SwiftPM package name of a scoped npm package', () => {
+    const args = buildXcodeBuildArgs(
+      { ...pkg, packageName: '@expo/ui' },
+      productWithTargets([{ type: 'swift', name: 'ExpoUI', path: 'ios' }]),
+      'Debug',
+      'iOS'
+    );
+    assert.equal(args[args.indexOf('-scheme') + 1], 'expo-ui');
+  });
+
   describe('a target generated under .build/', () => {
     const screensPkg: SPMPackageSource = {
       path: '/repo/node_modules/react-native-screens',
