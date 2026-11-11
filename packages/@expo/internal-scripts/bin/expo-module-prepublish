@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+import { commandRunner } from '../utils/commandUtils.js';
+
+const command = process.argv[2];
+if (!command || process.argv.length > 3) {
+  console.error(
+    'expo-module prepublish needs one quoted command, for example: expo-module prepublish \'pnpm run clean && pnpm run build\''
+  );
+  process.exit(1);
+}
+
+if (process.env.EXPO_PUBLISH_PREPARED === '1') {
+  console.log('Skipping the build: the release already built this package');
+} else {
+  await commandRunner('sh', ['-c', command]);
+}

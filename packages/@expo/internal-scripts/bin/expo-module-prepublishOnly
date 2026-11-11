@@ -11,10 +11,14 @@ import { validateRawAndroidPrebuilds } from '../utils/androidPrebuilds.js';
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function runAsync() {
-  console.log('Preparing module for publishing');
-  await commandRunner(path.join(dirname, 'expo-module-clean'));
-  // Run the package's own `build` script so `expo-build` modules still emit output before publishing.
-  await packageManagerRunAsync(['build']);
+  if (process.env.EXPO_PUBLISH_PREPARED === '1') {
+    console.log('Skipping the build: the release already built this package');
+  } else {
+    console.log('Preparing module for publishing');
+    await commandRunner(path.join(dirname, 'expo-module-clean'));
+    // Run the package's own `build` script so `expo-build` modules still emit output before publishing.
+    await packageManagerRunAsync(['build']);
+  }
   validateRawIosPrebuilds();
   validateRawAndroidPrebuilds();
 }

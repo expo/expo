@@ -12,5 +12,9 @@ program.command('clean', `Removes compiled files`);
 // Lifecycle scripts
 program.command('prepack', `Scripts to run during the "prepack" phase`);
 program.command('prepublishOnly', `Scripts to run during the "prepublishOnly" phase`);
+program.command(
+  'prepublish',
+  `Run a package's own "prepublishOnly" command unless the release already built the package`
+);
 
 program.parse(process.argv);
