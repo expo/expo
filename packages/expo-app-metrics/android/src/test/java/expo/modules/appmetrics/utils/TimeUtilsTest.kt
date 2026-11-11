@@ -27,10 +27,7 @@ class TimeUtilsTest {
   fun `uptimeToDate maps the current uptime to the current wall-clock time`() {
     val now = TimeUtils.uptimeToDate(TimeUtils.getCurrentTimeInMillis())
 
-    assertTrue(
-      "${now.time} should be within a second of ${System.currentTimeMillis()}",
-      Math.abs(now.time - System.currentTimeMillis()) < 1_000
-    )
+    assertEquals(System.currentTimeMillis().toDouble(), now.time.toDouble(), 100.0)
   }
 
   @Test

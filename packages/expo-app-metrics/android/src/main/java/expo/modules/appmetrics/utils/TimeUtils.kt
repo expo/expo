@@ -28,18 +28,12 @@ object TimeUtils {
 
   fun getProcessStartTimeInMillis(): Long = Process.getStartUptimeMillis()
 
-  /**
-   * The wall-clock date of [uptimeMillis], a [getCurrentTimeInMillis] reading, for comparing it
-   * with wall-clock dates such as a network request's timings.
-   */
+  /** Converts a `getCurrentTimeInMillis` (uptime) reading to a wall-clock `Date`. */
   fun uptimeToDate(uptimeMillis: Long): Date =
     Date(getWallClockMillis() - (getCurrentTimeInMillis() - uptimeMillis))
 
-  fun getProcessStartTimestamp(): String {
-    val millisFromProcessStart = getCurrentTimeInMillis() - getProcessStartTimeInMillis()
-    val processStartDate = Date(System.currentTimeMillis() - millisFromProcessStart)
-    return dateToTimestamp(processStartDate)
-  }
+  fun getProcessStartTimestamp(): String =
+    dateToTimestamp(uptimeToDate(getProcessStartTimeInMillis()))
 
   // Cannot use Instant.now() as it's only available in API 26+
   fun getCurrentTimestampInISOFormat(): String = dateToTimestamp(Date())
