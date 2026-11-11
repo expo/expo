@@ -38,18 +38,18 @@ export default function LaunchScreen() {
       <View
         style={{
           paddingTop: 62,
-          height: 106,
+          height: 116,
           backgroundColor: colors.bar,
           alignItems: 'center',
           justifyContent: 'flex-end',
-          paddingBottom: 12,
+          paddingBottom: 22,
         }}>
         <Text style={{ fontSize: 17, fontWeight: '600', color: colors.text }}>Expo Test Suite</Text>
         <View
           style={{
             position: 'absolute',
             right: 16,
-            bottom: 6,
+            bottom: 16,
             width: 32,
             height: 32,
             borderRadius: 16,
@@ -64,14 +64,14 @@ export default function LaunchScreen() {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            paddingVertical: 10,
-            paddingHorizontal: 16,
-            height: 39,
-            borderBottomWidth: 1,
+            gap: 16,
+            paddingVertical: 16,
+            paddingHorizontal: 20,
+            borderBottomWidth: 1 / 3,
             borderBottomColor: colors.separator,
           }}>
-          <Text style={{ fontSize: 16, color: colors.text }}>{label}</Text>
-          <View style={{ width: 18, height: 18, borderRadius: 3, borderWidth: 2, borderColor: colors.tint }} />
+          <Text style={{ flex: 1, fontSize: 16, color: colors.text }}>{label}</Text>
+          <View style={{ width: 20, height: 20, borderRadius: 4, borderWidth: 2, borderColor: colors.tint }} />
         </View>
       ))}
       <View
@@ -80,7 +80,7 @@ export default function LaunchScreen() {
           left: 0,
           right: 0,
           bottom: 0,
-          height: 118,
+          height: 128,
           backgroundColor: colors.bar,
         }}>
         <View

@@ -17,6 +17,7 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
   s.dependency 'React-RCTFabric'
   s.dependency 'React-Fabric'
+  s.dependency 'React-FabricComponents'
   install_modules_dependencies(s)
 
   s.source_files = "**/*.{h,mm,swift}"

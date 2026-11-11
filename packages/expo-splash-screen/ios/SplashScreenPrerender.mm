@@ -6,9 +6,17 @@
 
 #import <React/RCTComponentViewFactory.h>
 #import <React/RCTMountingManager.h>
+#import <React/RCTParagraphComponentView.h>
+#import <React/RCTSafeAreaViewComponentView.h>
+#import <React/RCTScrollViewComponentView.h>
+#import <React/RCTViewComponentView.h>
 #import <React/RCTUtils.h>
 
+#import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
+#import <react/renderer/componentregistry/ComponentDescriptorProviderRegistry.h>
 #import <react/renderer/componentregistry/ComponentDescriptorRegistry.h>
+#import <react/renderer/components/text/RawTextComponentDescriptor.h>
+#import <react/renderer/components/text/TextComponentDescriptor.h>
 #import <react/renderer/components/root/RootShadowNode.h>
 #import <react/renderer/core/ComponentDescriptor.h>
 #import <react/renderer/core/LayoutConstraints.h>
@@ -140,6 +148,7 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   dispatch_group_t _prepared;
   CGRect _bounds;
   std::shared_ptr<const ContextContainer> _contextContainer;
+  std::shared_ptr<ComponentDescriptorProviderRegistry> _providerRegistry;
   std::shared_ptr<const ComponentDescriptorRegistry> _registry;
   RCTMountingManager *_mountingManager;
   std::unique_ptr<MountingTreeDelegate> _treeDelegate;
@@ -246,11 +255,11 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 
   auto contextContainer = std::make_shared<ContextContainer>();
   _contextContainer = contextContainer;
-  _registry = [[RCTComponentViewFactory currentComponentViewFactory]
-      createComponentDescriptorRegistryWithParameters:ComponentDescriptorParameters{
-                                                          .eventDispatcher = EventDispatcher::Shared{},
-                                                          .contextContainer = contextContainer,
-                                                          .flavor = nullptr}];
+  // A private descriptor registry with the core components only (no Image yet: its descriptor needs
+  // an RCTImageLoader in the context container). Asking the component view factory
+  // for one would tie it to every component registered later (and build their descriptors against
+  // this context container, which has no bridge); the view classes themselves still come from the
+  // factory when the mounting manager creates views.
   RCTMountingManager *mountingManager = [RCTMountingManager new];
   mountingManager.contextContainer = contextContainer;
   _mountingManager = mountingManager;
@@ -266,6 +275,27 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   _tree = std::make_unique<ShadowTree>(kSurfaceId, layoutConstraints, layoutContext, *_treeDelegate, *contextContainer);
 
   try {
+    // Providers for view-producing components come from the component view classes, so their
+    // component handles are the ones the view factory registered (React Native may be a prebuilt
+    // framework; a template instantiated here would get a different handle). RawText and Text
+    // produce no views, so local instantiations are fine.
+    // The factory registers view classes lazily, when React asks for a component by name; the
+    // mounting manager can only create views for classes it has registered.
+    RCTComponentViewFactory *viewFactory = [RCTComponentViewFactory currentComponentViewFactory];
+    [viewFactory registerComponentViewClass:[RCTViewComponentView class]];
+    [viewFactory registerComponentViewClass:[RCTScrollViewComponentView class]];
+    [viewFactory registerComponentViewClass:[RCTSafeAreaViewComponentView class]];
+
+    auto providerRegistry = std::make_shared<ComponentDescriptorProviderRegistry>();
+    providerRegistry->add([RCTViewComponentView componentDescriptorProvider]);
+    providerRegistry->add([RCTParagraphComponentView componentDescriptorProvider]);
+    providerRegistry->add([RCTScrollViewComponentView componentDescriptorProvider]);
+    providerRegistry->add([RCTSafeAreaViewComponentView componentDescriptorProvider]);
+    providerRegistry->add(concreteComponentDescriptorProvider<TextComponentDescriptor>());
+    providerRegistry->add(concreteComponentDescriptorProvider<RawTextComponentDescriptor>());
+    _providerRegistry = providerRegistry;
+    _registry = providerRegistry->createComponentDescriptorRegistry(ComponentDescriptorParameters{
+        .eventDispatcher = EventDispatcher::Shared{}, .contextContainer = contextContainer, .flavor = nullptr});
     TemplateBuilder builder(*_registry, *contextContainer);
     auto child = builder.build(templateDynamic);
     auto children = std::make_shared<const std::vector<std::shared_ptr<const ShadowNode>>>(
@@ -309,13 +339,6 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
     return;
   }
   [self log:@"mounted"];
-  // The views exist now; drop the renderer objects. The component view factory keeps every
-  // registry it created updated with components registered later, instantiating their
-  // descriptors with our context container, which lacks what interop descriptors need.
-  _tree.reset();
-  _treeDelegate.reset();
-  _registry.reset();
-  _contextContainer.reset();
 }
 
 - (void)showInWindowScene:(UIWindowScene *)windowScene
@@ -384,6 +407,7 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   _treeDelegate.reset();
   _mountingManager = nil;
   _registry.reset();
+  _providerRegistry.reset();
   _contextContainer.reset();
 }
 
