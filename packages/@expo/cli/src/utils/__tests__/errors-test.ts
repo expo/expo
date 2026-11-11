@@ -2,6 +2,12 @@ import { events, flushEventLogger } from '2g';
 
 import { exit } from '../../log';
 import { AbortCommandError, CommandError, logCmdError, SilentError } from '../errors';
+import { isInteractive } from '../interactive';
+import { withProgramStatus } from '../programStatus';
+
+jest.mock('../interactive', () => ({
+  isInteractive: jest.fn(() => false),
+}));
 
 jest.mock('../../log');
 jest.mock('2g', () => {
@@ -44,4 +50,42 @@ it.each([
   } finally {
     processExit.mockRestore();
   }
+});
+
+describe('program status', () => {
+  let write: jest.SpyInstance;
+  let processExit: jest.SpyInstance;
+  const stopped = new Error('process exited');
+  const stop = () => {
+    throw stopped;
+  };
+
+  beforeEach(async () => {
+    jest.mocked(isInteractive).mockReturnValue(true);
+    jest.mocked(exit).mockImplementation(stop);
+    processExit = jest.spyOn(process, 'exit').mockImplementation(stop);
+    write = jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+    await withProgramStatus({ state: 'working' }, async () => {});
+    write.mockClear();
+  });
+
+  afterEach(() => {
+    write.mockRestore();
+    processExit.mockRestore();
+    jest.mocked(isInteractive).mockReturnValue(false);
+  });
+
+  it('reports error with the message after reporting working', async () => {
+    await expect(logCmdError(new Error('Installing failed'))).rejects.toThrow(stopped);
+
+    expect(write.mock.calls).toEqual([
+      ['\x1b]7501;state=error:app=expo:msg=SW5zdGFsbGluZyBmYWlsZWQ=\x1b\\'],
+    ]);
+  });
+
+  it('reports nothing for a cancelled prompt', async () => {
+    await expect(logCmdError(new AbortCommandError())).rejects.toThrow(stopped);
+
+    expect(write).not.toHaveBeenCalled();
+  });
 });
