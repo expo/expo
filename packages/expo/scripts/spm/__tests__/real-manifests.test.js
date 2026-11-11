@@ -31,10 +31,8 @@ afterEach(removeTempDirs);
 
 const CORE_ONLY = ['ExpoModulesCoreHeaders'];
 
-const CORE_AND_WORKLETS = ['ExpoModulesCoreHeaders', 'ExpoModulesWorkletsHeaders'];
-
 const DIRECT_MANIFESTS = [
-  ['@expo/ui', 'ExpoUI', CORE_AND_WORKLETS],
+  ['@expo/ui', 'ExpoUI', ['ExpoModulesCoreHeaders', 'ExpoModulesWorkletsHeaders']],
   ['expo-age-range', 'ExpoAgeRange', CORE_ONLY],
   ['expo-apple-authentication', 'ExpoAppleAuthentication', CORE_ONLY],
   ['expo-asset', 'ExpoAsset', CORE_ONLY],
@@ -46,7 +44,7 @@ const DIRECT_MANIFESTS = [
   ['expo-document-picker', 'ExpoDocumentPicker', CORE_ONLY],
   ['expo-font', 'ExpoFont', CORE_ONLY],
   ['expo-haptics', 'ExpoHaptics', CORE_ONLY],
-  ['expo-hinge', 'ExpoHinge', CORE_AND_WORKLETS],
+  ['expo-hinge', 'ExpoHinge', ['ExpoModulesCoreHeaders', 'ExpoModulesWorkletsHeaders']],
   ['expo-keep-awake', 'ExpoKeepAwake', CORE_ONLY],
   ['expo-linear-gradient', 'ExpoLinearGradient', CORE_ONLY],
   ['expo-linking', 'ExpoLinking', CORE_ONLY],
