@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import { resolveTypeName } from './APISectionUtils';
 
@@ -477,5 +477,14 @@ describe('APISectionUtils.resolveTypeName', () => {
       </>
     );
     expect(container).toMatchSnapshot();
+  });
+
+  test('library type with the name of a global type', () => {
+    render(
+      <>
+        {resolveTypeName({ type: 'reference', name: 'Date', package: 'expo-contacts' }, 'v58.0.0')}
+      </>
+    );
+    expect(screen.getByRole('link', { name: 'Date' })).toHaveAttribute('href', '#date');
   });
 });
