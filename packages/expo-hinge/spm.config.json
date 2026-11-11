@@ -17,7 +17,6 @@
         {
           "type": "swift",
           "name": "ExpoHinge",
-          "path": "ios",
           "dependencies": [
             "Hermes",
             "React",
