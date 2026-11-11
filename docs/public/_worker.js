@@ -50,6 +50,10 @@ function prefersType(accept, wanted) {
   return wantedQuality > 0 && wantedQuality >= htmlQuality;
 }
 
+function listsHtml(accept) {
+  return accept.split(",").some(entry => entry.split(";")[0].trim().toLowerCase() === "text/html");
+}
+
 function upgradeHelperPairPath(url) {
   if (!/^\/bare\/upgrade\/?$/.test(url.pathname)) return null;
 
@@ -133,7 +137,11 @@ export default {
       const recovered = await recoverNotFoundAsync(request, env, false).catch(() => null);
       if (recovered) return recovered;
 
-      if (prefersType(accept, "application/json")) {
+      const wantsJson =
+        prefersType(accept, "application/json") ||
+        (url.pathname.startsWith("/api/") && !listsHtml(accept));
+
+      if (wantsJson) {
         return new Response(request.method === "HEAD" ? null : NOT_FOUND_JSON, {
           status: 404,
           headers: {
