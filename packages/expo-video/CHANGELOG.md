@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.14
+
+### Patch Changes
+
+- [iOS] Fix a crash when a video with embedded artwork plays with `showNowPlayingNotification` and no `metadata.artwork`. The Now Playing info now gets the title, the artist and the artwork as plain values instead of the asset's `AVMetadataItem`s. ([#53212](https://github.com/expo/expo/pull/53212) by [@chrfalch](https://github.com/chrfalch))
+
 ## 58.0.13
 
 ### Patch Changes

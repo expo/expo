@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.16
+
+### Patch Changes
+
+- Fix `SQLiteProvider` skipping re-renders when only `children` change. Re-import the database when `assetSource` changes, and keep it open when a new object has the same contents. ([#45099](https://github.com/expo/expo/pull/45099) by [@vladlenskiy](https://github.com/vladlenskiy))
+
 ## 58.0.15
 
 ### Patch Changes

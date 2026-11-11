@@ -1,5 +1,15 @@
 # expo-modules-cli
 
+## 0.5.0
+
+### Minor Changes
+
+- Rename the `generate-types` command to `typegen`. ([#52927](https://github.com/expo/expo/pull/52927) by [@tsapeta](https://github.com/tsapeta))
+
+### Patch Changes
+
+- Read the `scan-exports` schema of `expo-modules-macros` 0.31.0, which `expo-modules-core` depends on. An event reports `dispatch` instead of `sync`. ([#52712](https://github.com/expo/expo/pull/52712) by [@tsapeta](https://github.com/tsapeta))
+
 ## 0.4.0
 
 ### Minor Changes

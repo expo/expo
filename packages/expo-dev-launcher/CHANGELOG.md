@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.19
+
+### Patch Changes
+
+- Updated dependencies.
+  - expo-dev-menu@58.0.13
+
 ## 58.0.18
 
 ### Patch Changes

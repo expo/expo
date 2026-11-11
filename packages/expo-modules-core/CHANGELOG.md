@@ -1,5 +1,25 @@
 # Changelog
 
+## 58.1.0
+
+### Minor Changes
+
+- [iOS] Add `JavaScriptDecodable` and `JavaScriptEncodable` conformances to `URL`, `UIColor`, `CGColor` and SwiftUI `Color`, so the Expo Modules API 2.0 macros accept them as arguments, return values, record fields and event payloads. ([#53085](https://github.com/expo/expo/pull/53085) by [@tsapeta](https://github.com/tsapeta))
+
+### Patch Changes
+
+- [iOS] Add the `.inline` and `.blocking` options of `@Event` and the `emitInline` and `emitBlocking` methods of `EventEmitter` that they use. With `.inline`, the listeners run before the call returns when it is made on the JavaScript thread. With `.blocking`, they run before the call returns on any thread. ([#52712](https://github.com/expo/expo/pull/52712) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Update `expo-modules-macros` to 0.31.0. `@ExpoModule` and `@SharedObject` warn when the class isn't `public`, and `@Event` takes the `.inline` and `.blocking` options. ([#52712](https://github.com/expo/expo/pull/52712) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Update `expo-modules-macros` to 0.33.0. The `ExpoModulesMacrosPlugin` Swift package product no longer breaks iOS builds in Xcode. The macros report more mistakes as build errors: generic, `static` or misplaced `@JS` members, reserved JavaScript names, a `@SharedObject` class without a superclass, and invalid `@Record`, `@Event` and `@Union` declarations. A parenthesized optional type is treated as optional. ([#53026](https://github.com/expo/expo/pull/53026) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Define `REACT_NATIVE_TARGET_VERSION` in the precompiled `ExpoModulesCore`, so it sends view size updates with `unstable_Immediate` and keeps the size-commit budget, like a source build. ([#52924](https://github.com/expo/expo/pull/52924) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- On iOS, generated modules providers also list the modules declared with `@ExpoModule` (Expo Modules API 2.0) by npm package, as an `ExpoPackage` for each package, in the new `packages` property. Local modules and inline modules declared with `@ExpoModule` are in the `$local` package. The property is generated only when the installed `expo-modules-core` supports it. Module registration doesn't change: all modules stay in `getModuleClasses()`. ([#52647](https://github.com/expo/expo/pull/52647) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fix `RNHeadlessAppLoader.isRunning` reporting an app as headless after an Activity took over its React host, for example when a background task event arrived during a cold start. `expo-task-manager` then skipped forwarding `onHostResume`, `onHostPause` and `onHostDestroy` to task consumers such as `expo-location`'s, which kept reporting locations as if the app were in the foreground or background. ([#51184](https://github.com/expo/expo/pull/51184) by [@retu2libc](https://github.com/retu2libc))
+- [iOS] Fix app contexts that own their runtime, such as the ones in unit tests, never being deallocated. ([#53094](https://github.com/expo/expo/pull/53094) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Declare the `ExpoModulesCore` source attributes unconditionally, so autolinking patches the prebuilt `ExpoModulesCore` like other precompiled modules. ([#50207](https://github.com/expo/expo/pull/50207) by [@cristunaranjo](https://github.com/cristunaranjo))
+- [iOS] Fix React Native content in a SwiftUI `List` row going blank. When SwiftUI builds more than one instance of a row, the instance it displays now holds the hosted view. ([#52910](https://github.com/expo/expo/pull/52910) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- Updated dependencies. ([#53050](https://github.com/expo/expo/pull/53050))
+  - expo-modules-jsi@58.0.23
+
 ## 58.0.30
 
 ### Patch Changes

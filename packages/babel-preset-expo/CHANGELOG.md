@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.25
+
+### Patch Changes
+
+- Fix Hermes production compilation of async arrow functions with destructured rest parameters. ([#52991](https://github.com/expo/expo/pull/52991) by [@kitten](https://github.com/kitten))
+
 ## 58.0.24
 
 No changes in this release.

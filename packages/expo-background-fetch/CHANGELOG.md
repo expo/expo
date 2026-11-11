@@ -1,5 +1,13 @@
 # Changelog
 
+## 58.0.13
+
+### Patch Changes
+
+- [iOS] Build from a checked-in Package.swift that the Expo SwiftPM plugin uses when the module is built from source. ([#53136](https://github.com/expo/expo/pull/53136) by [@chrfalch](https://github.com/chrfalch))
+- Updated dependencies. ([#53102](https://github.com/expo/expo/pull/53102))
+  - expo-task-manager@58.0.14
+
 ## 58.0.12
 
 ### Patch Changes

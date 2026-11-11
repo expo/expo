@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.5
+
+### Patch Changes
+
+- [iOS] Build from a checked-in Package.swift that the Expo SwiftPM plugin uses directly when the module is built from source. ([#53135](https://github.com/expo/expo/pull/53135) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Read the `motionPermission: false` opt-out at runtime, so it also applies to precompiled and SwiftPM builds. ([#53135](https://github.com/expo/expo/pull/53135) by [@chrfalch](https://github.com/chrfalch))
+
 ## 58.0.4
 
 ### Patch Changes

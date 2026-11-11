@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.8
+
+### Patch Changes
+
+- [Android] Implement `Enumerable` on the digest enums so R8 keeps their values in release builds. ([#52560](https://github.com/expo/expo/pull/52560) by [@1kuko3](https://github.com/1kuko3))
+
 ## 58.0.7
 
 ### Patch Changes

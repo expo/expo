@@ -1,5 +1,16 @@
 # Changelog
 
+## 58.0.22
+
+### Patch Changes
+
+- Fix gitignore discovery on older supported Node versions. ([#52960](https://github.com/expo/expo/pull/52960) by [@kitten](https://github.com/kitten))
+- Use @expo/env instead of getenv to read environment variables. ([#52934](https://github.com/expo/expo/pull/52934) by [@kitten](https://github.com/kitten))
+- Send download progress to JavaScript in 1% steps, so updates with many assets no longer use a large amount of memory while they download. ([#53250](https://github.com/expo/expo/pull/53250) by [@alanjhughes](https://github.com/alanjhughes))
+- Updated dependencies. ([#52929](https://github.com/expo/expo/pull/52929), [#52934](https://github.com/expo/expo/pull/52934))
+  - @expo/plist@0.10.2
+  - @expo/env@2.6.0
+
 ## 58.0.21
 
 ### Patch Changes
