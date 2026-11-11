@@ -12,12 +12,11 @@
         "expo-modules-core/ExpoModulesCore",
         "expo-modules-core/ExpoModulesWorklets"
       ],
+      "swiftLanguageVersions": ["5"],
       "targets": [
         {
           "type": "swift",
           "name": "ExpoHinge",
-          "path": "ios",
-          "pattern": "*.swift",
           "dependencies": [
             "Hermes",
             "React",
