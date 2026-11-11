@@ -255,7 +255,13 @@ function reduceOperation(
   const projected =
     operation.type === 'NAVIGATOR_UNMOUNTED' || operation.type === 'NAVIGATOR_CHANGED'
       ? updateCurrentHistoryEntry(next.history, next.state, config)
-      : applyRouterHistoryAction(next.history, next.state, config, next.browserHistoryAction);
+      : applyRouterHistoryAction(
+          next.history,
+          next.state,
+          config,
+          next.browserHistoryAction,
+          operation.type === 'ACTION' ? operation.payload.action : undefined
+        );
   return appendReportEvents({ ...next, history: projected.history }, projected.events);
 }
 
