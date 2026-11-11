@@ -78,6 +78,49 @@ export const withIosInfoPlist: ConfigPlugin<PluginConfigType> = (config, props) 
   return config;
 };
 
+export const withIosRegions: ConfigPlugin<PluginConfigType> = (config, props) => {
+  const { developmentRegion, knownRegions } = props.ios ?? {};
+  if (!developmentRegion && !knownRegions) {
+    return config;
+  }
+
+  return withXcodeProject(config, (config) => {
+    config.modResults = updateRegionsXcodeProject(config.modResults, {
+      developmentRegion,
+      knownRegions,
+    });
+    return config;
+  });
+};
+
+// Xcode quotes region names that contain characters such as `-` (for example, `"zh-Hans"`).
+function quoteRegion(region: string): string {
+  return /^[A-Za-z0-9_]+$/.test(region) ? region : `"${region}"`;
+}
+
+function unquoteRegion(region: string): string {
+  return region.replace(/^"(.*)"$/, '$1');
+}
+
+export function updateRegionsXcodeProject(
+  project: XcodeProject,
+  { developmentRegion, knownRegions }: { developmentRegion?: string; knownRegions?: string[] }
+): XcodeProject {
+  const { firstProject } = project.getFirstProject();
+  if (developmentRegion) {
+    firstProject.developmentRegion = quoteRegion(developmentRegion);
+  }
+
+  const regions = knownRegions
+    ? ['Base', ...knownRegions]
+    : (firstProject.knownRegions ?? []).map(unquoteRegion);
+  const resolvedDevelopmentRegion = unquoteRegion(firstProject.developmentRegion ?? 'en');
+  firstProject.knownRegions = [...new Set([resolvedDevelopmentRegion, ...regions])].map(
+    quoteRegion
+  );
+  return project;
+}
+
 const withIosReactNativeReleaseLevel: ConfigPlugin<{
   reactNativeReleaseLevel: 'stable' | 'canary' | 'experimental';
 }> = (config, { reactNativeReleaseLevel }) => {
