@@ -8,12 +8,14 @@ const { makeTempDir, removeTempDirs } = require('./helpers');
 
 const REPO_ROOT = path.resolve(__dirname, '../../../../..');
 
+const REPO_FOLDERS = { '@expo/ui': 'expo-ui' };
+
 /**
  * Copies a repository package the way npm installs it: the package's `.npmignore` strips
  * `/ios/Tests/**`, so a manifest that excludes `Tests` names a directory that is not there.
  */
 function installLikeNpm(packageName, destination) {
-  const source = path.join(REPO_ROOT, 'packages', packageName);
+  const source = path.join(REPO_ROOT, 'packages', REPO_FOLDERS[packageName] ?? packageName);
   const moduleRoot = path.join(destination, 'node_modules', packageName);
   fs.cpSync(source, moduleRoot, {
     recursive: true,
@@ -29,7 +31,10 @@ afterEach(removeTempDirs);
 
 const CORE_ONLY = ['ExpoModulesCoreHeaders'];
 
+const CORE_AND_WORKLETS = ['ExpoModulesCoreHeaders', 'ExpoModulesWorkletsHeaders'];
+
 const DIRECT_MANIFESTS = [
+  ['@expo/ui', 'ExpoUI', CORE_AND_WORKLETS],
   ['expo-age-range', 'ExpoAgeRange', CORE_ONLY],
   ['expo-apple-authentication', 'ExpoAppleAuthentication', CORE_ONLY],
   ['expo-asset', 'ExpoAsset', CORE_ONLY],
@@ -41,7 +46,7 @@ const DIRECT_MANIFESTS = [
   ['expo-document-picker', 'ExpoDocumentPicker', CORE_ONLY],
   ['expo-font', 'ExpoFont', CORE_ONLY],
   ['expo-haptics', 'ExpoHaptics', CORE_ONLY],
-  ['expo-hinge', 'ExpoHinge', ['ExpoModulesCoreHeaders', 'ExpoModulesWorkletsHeaders']],
+  ['expo-hinge', 'ExpoHinge', CORE_AND_WORKLETS],
   ['expo-keep-awake', 'ExpoKeepAwake', CORE_ONLY],
   ['expo-linear-gradient', 'ExpoLinearGradient', CORE_ONLY],
   ['expo-linking', 'ExpoLinking', CORE_ONLY],
@@ -105,9 +110,12 @@ it.each(DIRECT_MANIFESTS)(
       manifest,
     });
 
+    const swiftPackageName = packageName.startsWith('@')
+      ? packageName.slice(1).replace('/', '-')
+      : packageName;
     const link = path.join(outDir, 'direct', packageName);
-    expect(ok.packageDep).toEqual({ name: packageName, path: link });
-    expect(ok.productDeps).toEqual([{ name: productName, package: packageName }]);
+    expect(ok.packageDep).toEqual({ name: swiftPackageName, path: link });
+    expect(ok.productDeps).toEqual([{ name: productName, package: swiftPackageName }]);
     expect(fs.realpathSync(link)).toBe(fs.realpathSync(moduleRoot));
   },
   60_000
