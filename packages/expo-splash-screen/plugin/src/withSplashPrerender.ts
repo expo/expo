@@ -4,8 +4,12 @@ import path from 'path';
 
 export const PRERENDER_FILE_NAME = 'SplashScreenPrerender.json';
 
+// A component (anything but `.json`) is rendered by `expo export:embed` at build time and written
+// next to the JS bundle; only a prebuilt JSON template is copied into the native project here.
+const isTemplateFile = (prerender?: string): prerender is string => !!prerender && prerender.endsWith('.json');
+
 export const withIosSplashPrerender: ConfigPlugin<{ prerender?: string }> = (config, { prerender }) => {
-  if (!prerender) {
+  if (!isTemplateFile(prerender)) {
     return config;
   }
   config = withDangerousMod(config, [
@@ -37,7 +41,7 @@ export const withIosSplashPrerender: ConfigPlugin<{ prerender?: string }> = (con
 };
 
 export const withAndroidSplashPrerender: ConfigPlugin<{ prerender?: string }> = (config, { prerender }) => {
-  if (!prerender) {
+  if (!isTemplateFile(prerender)) {
     return config;
   }
   return withDangerousMod(config, [

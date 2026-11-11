@@ -38,9 +38,11 @@ export type Props = {
    */
   backgroundColor?: string;
   /**
-   * Path to a JSON template of the app's first screen, a tree of Fabric component names and raw
-   * props (`{ "name": "View", "props": { ... }, "children": [ ... ] }`). When set, the native side
-   * renders it through Fabric before React Native starts and shows it instead of the splash image.
+   * Path to a React component (default export, no props) that draws the app's first screen with
+   * core `View`/`Text`/`Image` components. At build time `expo export:embed` renders it through
+   * React Native's Fabric renderer and bundles the result; at launch the native side commits that
+   * tree through Fabric before React Native starts and shows it instead of the splash image.
+   * A `.json` path is used as a prebuilt template instead.
    */
   prerender?: string;
   /**

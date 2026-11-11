@@ -41,6 +41,11 @@ import { copyPublicFolderAsync, getPublicFolderPath } from '../publicFolder';
 import type { BundleAssetWithFileHashes, ExportAssetMap } from '../saveAssets';
 import { persistMetroFilesAsync } from '../saveAssets';
 import { exportStandaloneServerAsync } from './exportServer';
+import {
+  SPLASH_PRERENDER_FILE_NAME,
+  exportSplashPrerenderAsync,
+  prepareSplashPrerenderEntry,
+} from './splashPrerender';
 import type { Options } from './resolveOptions';
 import { deserializeEagerKey, getExportEmbedOptionsKey } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
@@ -131,7 +136,10 @@ export async function exportEmbedInternalAsync(projectRoot: string, options: Opt
     }
   }
 
-  const { bundle, assets, files } = await exportEmbedBundleAndAssetsAsync(projectRoot, options);
+  const { bundle, assets, files, splashPrerender } = await exportEmbedBundleAndAssetsAsync(
+    projectRoot,
+    options
+  );
 
   fs.mkdirSync(path.dirname(options.bundleOutput), { recursive: true, mode: 0o755 });
 
@@ -144,6 +152,15 @@ export async function exportEmbedInternalAsync(projectRoot: string, options: Opt
   // Persist bundle and source maps.
   await Promise.all([
     output.save(bundle, options, Log.log),
+
+    // The splash prerender template lands in the same place as the JS bundle: the app bundle on
+    // Apple platforms, the APK assets directory on Android.
+    splashPrerender && domComponentProxyOutputDir
+      ? fs.promises.writeFile(
+          path.join(domComponentProxyOutputDir, SPLASH_PRERENDER_FILE_NAME),
+          splashPrerender
+        )
+      : null,
 
     // Write dom components proxy files.
     hasDomComponents ? persistMetroFilesAsync(files, domComponentProxyOutputDir) : null,
@@ -174,7 +191,12 @@ export async function exportEmbedBundleAndAssetsAsync(
   bundle: Awaited<ReturnType<Server['build']>>;
   assets: readonly BundleAssetWithFileHashes[];
   files: ExportAssetMap;
+  splashPrerender?: string | null;
 }> {
+  const { exp, pkg } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  // Written before Metro starts so the entry is in the initial file map.
+  const splashPrerenderEntry = prepareSplashPrerenderEntry(projectRoot, exp, options.platform);
+
   const devServerManager = await DevServerManager.startMetroAsync(projectRoot, {
     minify: options.minify,
     mode: options.dev ? 'development' : 'production',
@@ -188,7 +210,6 @@ export async function exportEmbedBundleAndAssetsAsync(
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
-  const { exp, pkg } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   const isHermes = isEnableHermesManaged(exp, options.platform);
 
   let sourceMapUrl = options.sourcemapOutput;
@@ -282,6 +303,16 @@ export async function exportEmbedBundleAndAssetsAsync(
       );
     }
 
+    const splashPrerender = splashPrerenderEntry
+      ? await exportSplashPrerenderAsync({
+          projectRoot,
+          exp,
+          devServer,
+          platform: options.platform,
+          entryFile: splashPrerenderEntry.entryFile,
+        })
+      : null;
+
     return {
       files,
       bundle: {
@@ -290,6 +321,7 @@ export async function exportEmbedBundleAndAssetsAsync(
         map: bundles.artifacts.filter((a: any) => a.type === 'map')[0]?.source.toString()!,
       },
       assets: bundles.assets,
+      splashPrerender,
     };
   } catch (error: any) {
     if (isError(error)) {
