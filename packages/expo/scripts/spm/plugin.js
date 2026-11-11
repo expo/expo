@@ -90,7 +90,12 @@ const {
   resolveHeadersXCFrameworkWithSource,
   resolveSpmDependencyFrameworks,
 } = require('./flavored-frameworks');
-const { dependsOnCoreHeaders, dumpModuleManifest, emitDirectPackage } = require('./direct');
+const {
+  HEADERS_STAND_INS,
+  dumpModuleManifest,
+  emitDirectPackage,
+  headersStandInsOf,
+} = require('./direct');
 const {
   emitExpoModulesJSIHeadersPackage,
   emitPureSwiftSourcePackage,
@@ -507,12 +512,13 @@ function mixedSourcesReport(coreSource, subjects) {
 }
 
 /**
- * The ExpoModulesCore headers xcframework, for direct modules to compile against. It must
+ * The headers xcframework of `productName`, for direct modules to compile against. It must
  * come from the same kind of place as the ExpoModulesCore binary.
+ *
+ * @param lookup `{ packageName, moduleRoot, productName }`: the product and where its package is.
  */
-function resolveCoreHeaders(core, coreSource, cacheDir) {
-  const { packageName, moduleRoot, productName } = core;
-  const lookup = { packageName, moduleRoot, productName };
+function resolveHeadersStandIn(lookup, core, coreSource, cacheDir) {
+  const { packageName, productName } = lookup;
   const lookupRank = (source) => PRECOMPILED_SOURCE_KINDS.indexOf(source.kind);
   const builtLocally = coreSource?.kind === 'env' || coreSource?.kind === 'monorepo';
   // Headers past the place a local ExpoModulesCore build comes from cannot match it, so the
@@ -526,8 +532,8 @@ function resolveCoreHeaders(core, coreSource, cacheDir) {
   if (builtLocally && (headers == null || lookupRank(headers.source) > lookupRank(coreSource))) {
     const prebuild = '`node tools/bin/expotools.js prebuild expo-modules-core expo-modules-jsi`';
     throw pluginError({
-      what: `${productName}Headers.xcframework is missing under ${coreSource.dir}, where ${productName} comes from (${SOURCE_LABELS[coreSource.kind]}).`,
-      why: `Expo modules built from their own Package.swift compile against these headers, and the headers must come from the same build as ${productName}. That build did not produce them.`,
+      what: `${productName}Headers.xcframework is missing under ${coreSource.dir}, where ${core.productName} comes from (${SOURCE_LABELS[coreSource.kind]}).`,
+      why: `Expo modules built from their own Package.swift compile against these headers, and the headers must come from the same build as ${core.productName}. That build did not produce them.`,
       how:
         coreSource.kind === 'env'
           ? `Unset EXPO_PRECOMPILED_MODULES_PATH, or point it at a directory that holds a complete prebuild of expo-modules-core and expo-modules-jsi, including their headers. ${rerunSpmUpdate()}`
@@ -550,7 +556,7 @@ function resolveCoreHeaders(core, coreSource, cacheDir) {
 
 /**
  * Emits the source package of the module whose first pod is `identity`: its checked-in
- * manifest as it stands when that depends on ExpoModulesCoreHeaders (`direct` is then
+ * manifest as it stands when that depends on a headers stand-in (`direct` is then
  * set), else that manifest mirrored, or else one Swift target over its sources. A
  * pure-Swift module is refused when its podspec declares linkage, because the
  * emitted package would link less than the podspec does. Returns null for a module
@@ -563,14 +569,17 @@ function emitSourceModule(identity, hasManifest, emitContext, dumpManifest) {
     identity;
   if (hasManifest) {
     const { json, manifest } = dumpManifest(moduleRoot, packageName);
-    if (!dependsOnCoreHeaders(manifest)) {
+    const standIns = headersStandInsOf(manifest);
+    if (standIns.length === 0) {
       return emitSourceManifestPackage(moduleRoot, emitContext, json);
     }
     const emission = emitDirectPackage({
       moduleRoot,
       packageName,
       outDir: emitContext.outDir,
-      coreHeadersXCFramework: emitContext.coreHeadersXCFramework,
+      headersXCFrameworks: Object.fromEntries(
+        standIns.map((standIn) => [standIn, emitContext.headersXCFramework(standIn)])
+      ),
       jsiHeadersPkgPath: emitContext.jsiHeadersPkgPath,
       macrosPackageRoot: emitContext.macrosPackageRoot,
       manifest,
@@ -740,7 +749,7 @@ function linkPasses(
   let sourceModules = { emitted: [], refusals: new Map() };
   if (coreAvailable) {
     let resolvedMacroFlags = null;
-    let resolvedCoreHeadersXCFramework = null;
+    const resolvedHeadersXCFrameworks = new Map();
     sourceModules = linkSourceModules(
       modules,
       identities,
@@ -758,13 +767,24 @@ function linkPasses(
         get macrosPackageRoot() {
           return macrosPackageRoot(core.moduleRoot);
         },
-        // Lazy: only a direct module needs the headers, and only then must they exist.
-        get coreHeadersXCFramework() {
-          return (resolvedCoreHeadersXCFramework ??= resolveCoreHeaders(
-            core,
-            coreSource,
-            cacheDir
-          ));
+        // Lazy: only a direct module needs headers, and only then must they exist.
+        headersXCFramework(standIn) {
+          if (!resolvedHeadersXCFrameworks.has(standIn)) {
+            const { packageName, productName } = HEADERS_STAND_INS[standIn];
+            const owner = [core, ...identities.values()].find(
+              (identity) => identity.packageName === packageName
+            );
+            resolvedHeadersXCFrameworks.set(
+              standIn,
+              resolveHeadersStandIn(
+                { packageName, moduleRoot: owner?.moduleRoot ?? null, productName },
+                core,
+                coreSource,
+                cacheDir
+              )
+            );
+          }
+          return resolvedHeadersXCFrameworks.get(standIn);
         },
       },
       dumpManifest

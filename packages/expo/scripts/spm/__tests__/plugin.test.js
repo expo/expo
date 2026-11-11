@@ -1825,6 +1825,7 @@ describe('where precompiled modules and headers come from', () => {
   const packageOf = {
     ExpoModulesCore: 'expo-modules-core',
     ExpoModulesJSI: 'expo-modules-jsi',
+    ExpoModulesWorklets: 'expo-modules-core',
     ExpoFont: 'expo-font',
   };
   const sourceAt = (kind, frameworkName) => ({
@@ -1842,9 +1843,14 @@ describe('where precompiled modules and headers come from', () => {
   /**
    * Syncs an app with expo-modules-jsi autolinked, the `frameworks` precompiled from the
    * given kinds of place, and a direct module when `headers` says where the
-   * ExpoModulesCore headers come from (null for headers that are not found).
+   * headers of each product come from (null for headers that are not found). The direct
+   * module's manifest is `manifest`, by default one depending on the ExpoModulesCore headers.
    */
-  function sync({ frameworks, headers }) {
+  function sync({
+    frameworks,
+    headers,
+    manifest = dumpedManifest('expo-haptics', 'ExpoHaptics', { onCoreHeaders: true }),
+  }) {
     const tmp = makeTempDir('expo-spm-plugin-sources-');
     const listed = Object.keys({ ...frameworks, ExpoModulesJSI: null }).map((frameworkName) => [
       packageOf[frameworkName],
@@ -1859,9 +1865,7 @@ describe('where precompiled modules and headers come from', () => {
       const haptics = path.join(tmp, 'expo-haptics');
       const podspecDir = pureSwiftModule(haptics, 'ExpoHaptics', spec());
       fs.writeFileSync(path.join(haptics, 'Package.swift'), '// swift-tools-version: 6.0\n');
-      runDumpPackage.mockReturnValue(
-        dumpedManifest('expo-haptics', 'ExpoHaptics', { onCoreHeaders: true })
-      );
+      runDumpPackage.mockReturnValue(manifest);
       listed.push(['expo-haptics', [['ExpoHaptics', podspecDir]]]);
       resolveHeadersXCFrameworkWithSource.mockImplementation(({ productName }) =>
         headers[productName] == null
@@ -2019,7 +2023,9 @@ describe('where precompiled modules and headers come from', () => {
     expect(thrown).toBeNull();
     expect(emitDirectPackage).toHaveBeenCalledWith(
       expect.objectContaining({
-        coreHeadersXCFramework: '/abs/ExpoModulesCoreHeaders.xcframework',
+        headersXCFrameworks: {
+          ExpoModulesCoreHeaders: '/abs/ExpoModulesCoreHeaders.xcframework',
+        },
         jsiHeadersPkgPath,
         macrosPackageRoot: expect.any(String),
       })
@@ -2147,6 +2153,87 @@ describe('where precompiled modules and headers come from', () => {
     const { thrown } = sync({ frameworks: { ExpoModulesCore: 'env', ExpoFont: 'env' } });
     expect(thrown).toBeNull();
     expect(resolveHeadersXCFrameworkWithSource).not.toHaveBeenCalled();
+  });
+
+  describe('for a direct module depending only on the ExpoModulesWorklets headers', () => {
+    const workletsManifest = JSON.stringify({
+      name: 'expo-haptics',
+      dependencies: [{ fileSystem: [{ identity: 'expomodulesworkletsheaders' }] }],
+      products: [
+        { name: 'ExpoHaptics', type: { library: ['automatic'] }, targets: ['ExpoHaptics'] },
+      ],
+      targets: [
+        {
+          name: 'ExpoHaptics',
+          type: 'regular',
+          path: 'ios',
+          dependencies: [
+            { product: ['ExpoModulesWorkletsHeaders', 'ExpoModulesWorkletsHeaders', null, null] },
+          ],
+        },
+      ],
+    });
+    const syncWorklets = (frameworks, headers) =>
+      sync({ frameworks, headers, manifest: workletsManifest });
+
+    it('hands it the ExpoModulesWorklets headers and the ExpoModulesCore headers they depend on', () => {
+      resolveHeadersXCFrameworkWithSource.mockClear();
+      const { thrown, jsiHeadersPkgPath } = syncWorklets(
+        { ExpoModulesCore: 'env' },
+        { ExpoModulesCore: 'env', ExpoModulesWorklets: 'env' }
+      );
+      expect(thrown).toBeNull();
+      expect(emitDirectPackage).toHaveBeenCalledWith(
+        expect.objectContaining({
+          headersXCFrameworks: {
+            ExpoModulesCoreHeaders: '/abs/ExpoModulesCoreHeaders.xcframework',
+            ExpoModulesWorkletsHeaders: '/abs/ExpoModulesWorkletsHeaders.xcframework',
+          },
+          jsiHeadersPkgPath,
+        })
+      );
+      const lookups = resolveHeadersXCFrameworkWithSource.mock.calls.map(([lookup]) => lookup);
+      const coreLookup = lookups.find((lookup) => lookup.productName === 'ExpoModulesCore');
+      expect(lookups.find((lookup) => lookup.productName === 'ExpoModulesWorklets')).toEqual({
+        ...coreLookup,
+        productName: 'ExpoModulesWorklets',
+      });
+    });
+
+    it('fails naming the ExpoModulesWorklets headers when they are missing everywhere', () => {
+      const { thrown } = syncWorklets(
+        { ExpoModulesCore: 'bundled' },
+        { ExpoModulesCore: 'bundled', ExpoModulesWorklets: null }
+      );
+      expect(thrown?.message).toContain(
+        'Expo modules built from their own Package.swift compile against ExpoModulesWorkletsHeaders.xcframework, which was not found'
+      );
+      expect(thrown.message).toContain('prebuild expo-modules-core');
+      expect(thrown.message).toContain(rerunSpmUpdate);
+      expect(emitDirectPackage).not.toHaveBeenCalled();
+    });
+
+    it('fails naming the ExpoModulesWorklets headers when the local ExpoModulesCore build has none', () => {
+      const { thrown } = syncWorklets(
+        { ExpoModulesCore: 'monorepo' },
+        { ExpoModulesCore: 'monorepo', ExpoModulesWorklets: 'bundled' }
+      );
+      expect(thrown?.message).toContain(
+        `ExpoModulesWorkletsHeaders.xcframework is missing under ${sourceAt('monorepo', 'ExpoModulesCore').dir}, where ExpoModulesCore comes from`
+      );
+      expect(emitDirectPackage).not.toHaveBeenCalled();
+    });
+
+    it('fails when the ExpoModulesWorklets headers come from another place than ExpoModulesCore', () => {
+      const { thrown } = syncWorklets(
+        { ExpoModulesCore: 'bundled' },
+        { ExpoModulesCore: 'bundled', ExpoModulesWorklets: 'env' }
+      );
+      expect(thrown?.message).toContain(
+        'ExpoModulesWorkletsHeaders.xcframework (expo-modules-core) comes from'
+      );
+      expect(emitDirectPackage).not.toHaveBeenCalled();
+    });
   });
 });
 
