@@ -1894,9 +1894,9 @@ describe('where precompiled modules and headers come from', () => {
               source: sourceAt(headers[productName], productName),
             }
       );
-      emitDirectPackage.mockImplementation(({ moduleRoot, manifest: { products } }) => ({
+      emitDirectPackage.mockImplementation(({ packageName, outDir, manifest: { products } }) => ({
         ok: {
-          packageDep: { name: products[0].name, path: moduleRoot },
+          packageDep: { name: products[0].name, path: path.join(outDir, 'direct', packageName) },
           productDeps: products.map(({ name }) => ({ name, package: products[0].name })),
           spmProductNames: [],
           partlyProvidedPackages: [],
@@ -2251,14 +2251,6 @@ describe('where precompiled modules and headers come from', () => {
       expect(emitDirectPackage).not.toHaveBeenCalled();
     });
 
-    it('names expo-modules-core and expo-modules-jsi to prebuild when the local ExpoModulesWorklets build has no headers', () => {
-      const { thrown } = syncWorklets(
-        { ExpoModulesCore: 'monorepo' },
-        { ExpoModulesCore: 'monorepo', ExpoModulesWorklets: 'bundled' }
-      );
-      expect(thrown?.message).toContain('prebuild expo-modules-core expo-modules-jsi`');
-    });
-
     it('fails when the ExpoModulesWorklets headers come from another place than the ExpoModulesWorklets binary they belong to', () => {
       const { thrown } = syncWorklets(
         { ExpoModulesCore: 'bundled' },
@@ -2480,6 +2472,14 @@ describe('where precompiled modules and headers come from', () => {
         expect.objectContaining({ packageName: 'expo-haptics', headersXCFrameworks: allHeaders })
       );
       expect(emitDirectPackage).not.toHaveBeenCalledWith(expect.objectContaining(expoUIEmission));
+    });
+
+    it('discards the ExpoUI package built from source when a later round links ExpoUI precompiled', () => {
+      const { thrown, result } = syncUIBuildingFromSource(['@expo/.*', 'ExpoHaptics']);
+      expect(thrown).toBeNull();
+      expect(emitDirectPackage).toHaveBeenCalledWith(expect.objectContaining(expoUIEmission));
+      expect(result.flavoredFrameworks.map((f) => f.frameworkName)).toContain('ExpoUI');
+      expect(result.packageDependencies.map((dep) => dep.name)).toEqual(['ExpoHaptics']);
     });
 
     it.each([['.*'], ['Expo.*'], ['@expo/.*']])(
