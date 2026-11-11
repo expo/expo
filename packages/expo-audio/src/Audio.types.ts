@@ -191,7 +191,10 @@ export type AudioLoadOptions = AudioPlayerOptions;
 export type RecordingInput = {
   /** Human-readable name of the audio input device. */
   name: string;
-  /** Type or category of the input device (for example, 'Built-in Microphone', 'External Microphone'). */
+  /**
+   * Type of the input device, for example, `MicrophoneBuiltIn` or `USBAudio`. On Android, the value is
+   * mapped from the `AudioDeviceInfo` type. On iOS, the value is the `AVAudioSession.Port` raw value.
+   */
   type: string;
   /** Unique identifier for the input device, used to select the input ('Built-in Microphone', 'External Microphone') for recording. */
   uid: string;
