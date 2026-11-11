@@ -177,7 +177,7 @@ You can customize the root HTML file by creating a **src/app/+html.tsx** file in
 
 > **Note**: Global context providers should go in the [Root Layout](/router/basics/navigation-layouts/#root-layout) component, not the Root HTML component.
 
-In SDK 58 and later, static rendering requires custom HTML components to render the values from `useServerDocumentContext()`. Render `headNodes` inside `<head>` and `bodyNodes` after `children` inside `<body>`.
+In SDK 58 and later, static rendering requires custom HTML components to render the values from `useServerDocumentContext()`. Render `headNodes` inside `<head>` and `bodyNodes` after `children` inside `<body>`. Render only `children` and `bodyNodes` inside `<body>`. Expo Router moves other `<body>` elements into a `<div style="display: contents">` after the app and logs a warning, so the server and the browser render the same document.
 
 ```tsx src/app/+html.tsx
 import { ScrollViewStyleReset, useServerDocumentContext } from 'expo-router/html';

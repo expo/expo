@@ -11,7 +11,6 @@ import * as Font from 'expo-font/build/server';
 import { ExpoRoot } from 'expo-router';
 import { ctx } from 'expo-router/_ctx';
 import Head from 'expo-router/head';
-import { ServerDocument } from 'expo-router/internal/server';
 import {
   getRouteInfoForMatchedRoute,
   InnerRoot,
@@ -21,7 +20,7 @@ import { normalizeCssAssets, type AssetInfo, type MatchedRoute } from 'expo-serv
 import React, { type ReactNode } from 'react';
 import ReactDOMServer from 'react-dom/server';
 
-import { getRootComponent } from '../static/getRootComponent';
+import { getRootComponent, getRootComponentSource } from '../static/getRootComponent';
 import { createDebug } from '../utils/debug';
 import {
   createFaviconAsNode,
@@ -30,6 +29,13 @@ import {
   createInjectedScriptAsNodes,
   getBootstrapContents,
 } from '../utils/react';
+import {
+  HtmlDocument,
+  HtmlDocumentContext,
+  injectDocumentAttributes,
+  injectDocumentAttributesIntoStream,
+  renderDocumentTemplate,
+} from './renderDocument';
 
 const debug = createDebug('expo:router:server:renderStreamingContent');
 
@@ -82,11 +88,7 @@ function prepareRenderContext(location: URL, options: GetStreamingContentOptions
   } = registerStaticRootComponent(ExpoRoot, {
     location,
     context: ctx,
-    wrapper: ({ children }: React.ComponentProps<any>) => (
-      <Root pathname={pathname} params={params}>
-        <div id="root">{children}</div>
-      </Root>
-    ),
+    wrapper: ({ children }: React.ComponentProps<any>) => <HtmlDocument>{children}</HtmlDocument>,
   });
 
   resetReactNavigationContexts();
@@ -100,7 +102,7 @@ function prepareRenderContext(location: URL, options: GetStreamingContentOptions
       }
     : null;
 
-  return { headContext, element, getStyleElement, loadedData };
+  return { headContext, element, getStyleElement, loadedData, Root, pathname, params };
 }
 
 function FontResources() {
@@ -128,10 +130,8 @@ export async function getStreamingContent(
   options: GetStreamingContentOptions
 ): Promise<string | ReadableStream<Uint8Array>> {
   return Font.withServerContext(async () => {
-    const { headContext, element, getStyleElement, loadedData } = prepareRenderContext(
-      location,
-      options
-    );
+    const { headContext, element, getStyleElement, loadedData, Root, pathname, params } =
+      prepareRenderContext(location, options);
 
     const { headNodes: cssNodes } = createInjectedCssAsNodes(normalizeCssAssets(options.assets));
     const faviconNode = options.assets?.favicon
@@ -142,27 +142,32 @@ export async function getStreamingContent(
       options.assets?.js ?? []
     );
 
-    const serverDocumentData = {
-      headNodes: [
-        ...(options.metadata?.headNodes ?? []),
-        faviconNode,
-        getStyleElement({ key: 'rnw-style-element' }),
-        ...(cssNodes ?? []),
-        ...(headJsNodes ?? []),
-      ].filter(Boolean),
-      // NOTE(@hassankhan): React's bootstrapScripts emits async scripts, but Metro chunks must
-      // execute in asset order so the runtime initializes before dependent chunks.
-      bodyNodes: [<FontResources key="font-resources" />, ...(bodyJsNodes ?? [])],
-    };
+    const headNodes = [
+      ...(options.metadata?.headNodes ?? []),
+      faviconNode,
+      getStyleElement({ key: 'rnw-style-element' }),
+      ...(cssNodes ?? []),
+      ...(headJsNodes ?? []),
+    ].filter(Boolean);
+    // NOTE(@hassankhan): React's bootstrapScripts emits async scripts, but Metro chunks must
+    // execute in asset order so the runtime initializes before dependent chunks.
+    const bodyNodes = [<FontResources key="font-resources" />, ...(bodyJsNodes ?? [])];
+
+    const template = renderDocumentTemplate(Root, {
+      pathname,
+      params,
+      headNodes,
+      source: getRootComponentSource(),
+    });
 
     const isStatic = options.output === 'static';
     const renderErrors: unknown[] = [];
     const stream = await ReactDOMServer.renderToReadableStream(
-      <ServerDocument data={serverDocumentData}>
+      <HtmlDocumentContext value={{ template, bodyNodes }}>
         <Head.Provider context={headContext}>
           <InnerRoot loadedData={loadedData}>{element}</InnerRoot>
         </Head.Provider>
-      </ServerDocument>,
+      </HtmlDocumentContext>,
       {
         progressiveChunkSize: Number.MAX_SAFE_INTEGER,
         bootstrapScriptContent:
@@ -189,9 +194,9 @@ export async function getStreamingContent(
       if (renderErrors.length > 0) {
         throw renderErrors[0];
       }
-      return new Response(stream).text();
+      return injectDocumentAttributes(await new Response(stream).text(), template);
     }
-    return stream;
+    return injectDocumentAttributesIntoStream(stream, template);
   });
 }
 
