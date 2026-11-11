@@ -26,7 +26,7 @@ import { getPackageLocalBuildPath, usesPackageLocalBuildPath } from './PackageLo
 import { BuildFlavor } from './Prebuilder.types';
 import { ObjcTarget, SwiftTarget, CppTarget, SPMProduct } from './SPMConfig.types';
 import { derivePackageNameFromUrl } from './SPMGitUrl';
-import { parseLinkedFrameworks } from './SPMIdentifier';
+import { parseLinkedFrameworks, swiftPMPackageName } from './SPMIdentifier';
 import {
   ExternalDependencyConfig,
   PackageSwiftContext,
@@ -1882,7 +1882,7 @@ async function buildPackageSwiftContext(
     : product;
 
   return {
-    packageName: pkg.packageName,
+    packageName: swiftPMPackageName(pkg.packageName),
     packageVersion: pkg.packageVersion,
     packageRootPath: pkg.path,
     platforms: product.platforms,

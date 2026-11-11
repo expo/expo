@@ -12,6 +12,7 @@ import { Frameworks } from './Frameworks';
 import { getPackageLocalBuildPath, usesPackageLocalBuildPath } from './PackageLocalBuild';
 import { BuildFlavor } from './Prebuilder.types';
 import { SPMProduct } from './SPMConfig.types';
+import { swiftPMPackageName } from './SPMIdentifier';
 import { verifyNoTestOnlyImports } from './SwiftInterfaceChecks';
 import { AsyncSpinner, createAsyncSpinner } from './Utils';
 import type {
@@ -245,7 +246,7 @@ export const FrameworkVerifier = {
         let allBundlesFound = true;
 
         for (const target of targetsWithResources) {
-          const bundleName = `${pkg.packageName}_${target.name}.bundle`;
+          const bundleName = `${swiftPMPackageName(pkg.packageName)}_${target.name}.bundle`;
 
           const missingSlices: string[] = [];
           const foundSlices: string[] = [];

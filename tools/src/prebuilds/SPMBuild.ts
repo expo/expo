@@ -24,7 +24,7 @@ import {
 } from './SPMConfig.types';
 import { SPMGenerator } from './SPMGenerator';
 import { derivePackageNameFromUrl, normalizeGitUrl } from './SPMGitUrl';
-import { assertSafeSPMIdentifier } from './SPMIdentifier';
+import { assertSafeSPMIdentifier, swiftPMPackageName } from './SPMIdentifier';
 import { createAsyncSpinner } from './Utils';
 import { spawnXcodeBuildWithSpinner } from './XCodeRunner';
 
@@ -360,7 +360,7 @@ export const buildXcodeBuildArgs = (
 
   return [
     '-scheme',
-    pkg.packageName,
+    swiftPMPackageName(pkg.packageName),
     '-destination',
     `generic/platform=${buildPlatform}`,
     '-derivedDataPath',
