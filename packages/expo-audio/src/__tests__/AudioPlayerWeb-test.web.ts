@@ -91,3 +91,21 @@ describe('when the browser blocks playback', () => {
     expect(playlist.events.at(-1)?.payload).toEqual(expect.objectContaining({ playing: false }));
   });
 });
+
+describe('when the player seeks during playback', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it('AudioPlayer reports playing after a seek to the start', () => {
+    jest.spyOn(HTMLMediaElement.prototype, 'paused', 'get').mockReturnValue(false);
+    const player = new AudioPlayerWeb('https://example.com/a.mp3');
+
+    player.media.dispatchEvent(new Event('seeked'));
+
+    expect(player.events.at(-1)).toEqual({
+      name: 'playbackStatusUpdate',
+      payload: expect.objectContaining({ playing: true, currentTime: 0 }),
+    });
+  });
+});
