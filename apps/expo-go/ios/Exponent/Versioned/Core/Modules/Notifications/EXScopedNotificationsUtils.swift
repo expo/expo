@@ -48,7 +48,7 @@ public class EXScopedNotificationsUtils {
 
     do {
       let regex = try NSRegularExpression(pattern: pattern, options: [])
-      let range = NSRange(location: 0, length: scopedIdentifier.count)
+      let range = NSRange(location: 0, length: scopedIdentifier.utf16.count)
 
       if let match = regex.firstMatch(in: scopedIdentifier, options: [], range: range) {
         let scopeRange = match.range(at: 1)
@@ -76,12 +76,12 @@ public class EXScopedNotificationsUtils {
   }
 
   private static func escapedString(_ string: String) -> String {
-    return string.replacingOccurrences(of: "\\", with: "\\\\")
-      .replacingOccurrences(of: "/", with: "\\/")
+    return string.replacingOccurrences(of: "\\", with: "\\\\", options: .literal)
+      .replacingOccurrences(of: "/", with: "\\/", options: .literal)
   }
 
   private static func unescapedString(_ string: String) -> String {
-    return string.replacingOccurrences(of: "\\/", with: "/")
-      .replacingOccurrences(of: "\\\\", with: "\\")
+    return string.replacingOccurrences(of: "\\/", with: "/", options: .literal)
+      .replacingOccurrences(of: "\\\\", with: "\\", options: .literal)
   }
 }
