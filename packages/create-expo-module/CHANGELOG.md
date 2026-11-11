@@ -1,5 +1,11 @@
 # create-expo-module
 
+## 58.0.5
+
+### Patch Changes
+
+- Fix the CLI failing to start with `Cannot find module '@expo/env'`. ([#53326](https://github.com/expo/expo/pull/53326) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.4
 
 ### Patch Changes
