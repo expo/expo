@@ -2,18 +2,5 @@
 
 import ExpoModulesCore
 
-public final class BlurViewModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoBlur")
-
-    View(ExpoBlurView.self) {
-      Prop("tint") { (view, tint: TintStyle) in
-        view.setTint(tint)
-      }
-
-      Prop("intensity") { (view, intensity: Double) in
-        view.setIntensity(intensity / 100)
-      }
-    }
-  }
-}
+@ExpoModule("ExpoBlur", views: [ExpoBlurView.self])
+public final class BlurViewModule: Module {}
