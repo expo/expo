@@ -257,6 +257,22 @@ This section walks through the process of updating documentation for an Expo pac
 
 > For more information on how TypeDoc/JSDoc parses comments, see [**Doc comments in TypeDoc documentation**](https://typedoc.org/documents/Doc_Comments.html).
 
+#### Which data to update and when
+
+The `et generate-docs-api-data` command (alias `et gdad`) reads the **src** directory of a package from the branch that you have checked out. It writes one JSON file for each package to **public/static/data**.
+
+| Reference                          | Data directory                     | How the data updates                                                                                                                       |
+| ---------------------------------- | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| Next SDK (`unversioned`)           | **public/static/data/unversioned** | The deploy workflow regenerates this data when it deploys from `main`. It does not commit the result. PR previews use the committed files. |
+| Released SDK (for example, SDK 58) | **public/static/data/v58.0.0**     | No workflow regenerates this data. It changes only when a PR commits a new JSON file.                                                      |
+
+Keep these rules in mind:
+
+- If your PR changes the TSDoc comments or the public types of a package, run `et gdad` and commit the JSON file in the same PR. The docs team regenerates the data for all packages only during an SDK release.
+- The docs site deploys only from the `main` branch. A JSON file that you commit only to an `sdk-NN` branch does not appear on the site.
+- The `--sdk` option selects the output directory. It does not select the source. The source is always the branch that you have checked out.
+- The same split applies to MDX pages. Edit **pages/versions/unversioned** for the next SDK and **pages/versions/vNN.0.0** for a released SDK.
+
 #### Prerequisites
 
 Before proceeding, make sure you:
@@ -306,25 +322,19 @@ expoConfig: ExpoConfig | null;
 
 #### Step 2: Apply TypeDoc updates to expo/docs repo
 
-> [!IMPORTANT]
->
-> If you are fixing issues in package's reference or after an SDK version is released, make sure to only update the `unversioned` reference of that package. This way the changes will be reflected in the next SDK version from the `main` branch. Updating the reference for a specific SDK version requires updating that SDK's branch (see collapsible below) and SDK team decides cherry-picking changes for the specific SDK branch (after an SDK version has been released).
-
-In the terminal window and run the following command with to generate the JSON data file for the package (which is stored at the location `expo/docs/public/static/data/[SDK-VERSION]`)
-
-- Read the **NOTE** in the below snippet for updating the docs for `unversioned`:
+In the terminal window, run the following command to generate the JSON data file for the package:
 
 ```shell
+# Next SDK: writes docs/public/static/data/unversioned/expo-constants.json
 et generate-docs-api-data --packageName expo-constants
 
-#### NOTE ####
-# To update a specific SDK reference, run the command by mentioning the SDK version
-et gdad -p expo-constants --sdk 54
+# Released SDK: writes docs/public/static/data/v58.0.0/expo-constants.json
+et gdad -p expo-constants --sdk 58
 
 # For more information about et command, run: et gdad --help
 ```
 
-**Why update `unversioned` docs?** If these are new changes/updates, apply them to `unversioned` to make sure that those changes are part of the next SDK version.
+If the change is new, update only `unversioned`. The change then ships with the next SDK version. To update the reference of a released SDK, see [Update the reference of a released SDK](#update-the-reference-of-a-released-sdk).
 
 #### Step 3: See the changes in the docs repo
 
@@ -332,30 +342,16 @@ Now, in the terminal window, navigate to **expo/docs** repo and run the command 
 
 - Open [http://localhost:3002/](http://localhost:3002/) in the browser and go to the API doc to see the changes you have made. Make sure to select the right SDK version to see the changes in the left sidebar.
 
-<details>
-<summary>Updating versioned documentation data after SDK lifecycle is latest or already released</summary>
+#### Update the reference of a released SDK
 
-When you need to update versioned documentation data late in the SDK lifecycle, follow these steps:
+Use these steps when a change is cherry-picked to an `sdk-NN` branch after the release, and the `vNN.0.0` reference must show it. The SDK team decides which changes to cherry-pick.
 
-1. Ensure the related code change exists on the `main` branch and `sdk *` branch.
-
-2. Make branch changes:
-
-- Switch to the `sdk *` branch and make your changes
-- Run command: `et gdad -p expo-library --sdk 52`, where `expo-library` is the library you want to update and `52` is the SDK version.
-- Store/shelf the changes locally (you can use `git stash`)
-
-3. Update `main` branch:
-
-- Switch back to `main` branch
-- Run command: `et gdad -p expo-library`
-
-4. Finalize changes:
-
-- Add previously stored versioned `expo-library.json` to the main changeset
-- Create as a Pull Request
-
-</details>
+1. Make sure that the code change is on the `main` branch and on the `sdk-NN` branch.
+2. Check out the `sdk-NN` branch and run `et gdad -p expo-library --sdk NN`. For example, run `et gdad -p expo-font --sdk 58` on the `sdk-58` branch.
+3. Store the generated **docs/public/static/data/vNN.0.0/expo-library.json** file with `git stash`.
+4. Create a branch from `main` and apply the stored file with `git stash pop`.
+5. If the `unversioned` reference is also out of date, run `et gdad -p expo-library` on this branch.
+6. Open the pull request against `main`, not against the `sdk-NN` branch.
 
 #### Tips
 
