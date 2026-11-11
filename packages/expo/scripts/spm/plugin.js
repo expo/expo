@@ -542,13 +542,17 @@ function resolveHeadersStandIn({ packageName, productName }, precompiled, cacheD
     lastKind: builtLocally ? binarySource.kind : undefined,
   });
   if (builtLocally && (headers == null || lookupRank(headers.source) > lookupRank(binarySource))) {
-    const prebuild = '`node tools/bin/expotools.js prebuild expo-modules-core expo-modules-jsi`';
+    const prebuildPackages =
+      packageName === 'expo-modules-core'
+        ? ['expo-modules-core', 'expo-modules-jsi']
+        : [packageName];
+    const prebuild = `\`node tools/bin/expotools.js prebuild ${prebuildPackages.join(' ')}\``;
     throw pluginError({
       what: `${productName}Headers.xcframework is missing under ${binarySource.dir}, where ${productName} comes from (${SOURCE_LABELS[binarySource.kind]}).`,
       why: `Expo modules built from their own Package.swift compile against these headers, and the headers must come from the same build as ${productName}. That build did not produce them.`,
       how:
         binarySource.kind === 'env'
-          ? `Unset EXPO_PRECOMPILED_MODULES_PATH, or point it at a directory that holds a complete prebuild of expo-modules-core and expo-modules-jsi, including their headers. ${rerunSpmUpdate()}`
+          ? `Unset EXPO_PRECOMPILED_MODULES_PATH, or point it at a directory that holds a complete prebuild of ${prebuildPackages.join(' and ')}, including their headers. ${rerunSpmUpdate()}`
           : `From the Expo repository root, run ${prebuild}. ${rerunSpmUpdate()}`,
     });
   }
