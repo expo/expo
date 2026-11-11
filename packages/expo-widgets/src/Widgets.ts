@@ -201,9 +201,10 @@ export class LiveActivity<T extends object = object> {
   }
 
   /**
-   * Returns the props set by a push-to-start `attributes`, merged with the current content-state props (content-state keys win),
-   * or `null` if there are none or they are malformed.
-   * @throws If the activity no longer exists.
+   * Returns the current props of this Live Activity. If a push-to-start payload set `props` in
+   * `attributes`, the result also includes those props, and a content-state key overrides the same
+   * key from `attributes`. Returns `null` if the activity has no props or the props are not a valid
+   * JSON object. Throws if ActivityKit no longer returns the activity.
    * @platform ios
    */
   getProps(): T | null {
@@ -344,8 +345,9 @@ export function addPushToStartTokenListener(
 
 /**
  * Adds a listener for Live Activity start events of every type, including starts by push-to-start.
- * Use `name` to find the factory, then `getInstances()` to get the instance.
- * Events are delivered only while the app process is running, so also call `getInstances()` on launch.
+ * Use the event's `name` to find the factory, then `getInstances()` to get the instance.
+ * Events are delivered only while the app process is running, so also call `getInstances()` on
+ * launch.
  * @param listener Callback function to handle start events.
  * @return An event subscription that can be used to remove the listener.
  * @platform ios

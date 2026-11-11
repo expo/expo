@@ -778,7 +778,7 @@ for (const instance of activeInstances) {
 }
 ```
 
-`getInstances` also returns activities that have ended. An ended activity stays on the Lock Screen until its dismissal date, but it can no longer be updated. Use `getState()` to find them, for example to remove one right away, and `getProps()` to read the current props of an instance.
+`getInstances` also returns activities that have ended. An ended activity stays on the Lock Screen until its dismissal date, but you can no longer update it. Use `getState()` to find ended activities, for example to remove one right away. Use `getProps()` to read the current props of an instance.
 
 ```tsx
 for (const instance of DeliveryActivity.getInstances()) {
@@ -880,7 +880,7 @@ To start a Live Activity remotely, send a `start` event to the push-to-start tok
 
 Remote start requires iOS 17.2 or later. Include `input-push-token: 1` in the `aps` payload on iOS 18 or later if you want APNs to provide a new per-activity token for future updates.
 
-To learn about a remote start while your app runs, use `addLiveActivityStartListener`. It fires for activities of every type, so use `name` to find the factory. Starts that happen while the app is not running do not fire it, so also call `getInstances()` when your app launches.
+To learn about a remote start while your app runs, use `addLiveActivityStartListener`. The listener fires for every start of every activity type, including a `start()` call from your app. Use the event's `name` to find the factory. Starts that happen while the app is not running do not fire it, so also call `getInstances()` when your app launches.
 
 ```tsx
 import { addLiveActivityStartListener } from 'expo-widgets';
@@ -888,13 +888,15 @@ import DeliveryActivity from './DeliveryActivity';
 
 const startSubscription = addLiveActivityStartListener(event => {
   if (event.name === 'DeliveryActivity') {
-    const instance = DeliveryActivity.getInstances().find(item => item.getId() === event.activityId);
-    console.log('Started remotely:', instance?.getProps());
+    const instance = DeliveryActivity.getInstances().find(
+      item => item.getId() === event.activityId
+    );
+    console.log('Started:', instance?.getProps());
   }
 });
 ```
 
-A `start` event can also set `props` in `attributes`, as a JSON string like `content-state.props`. The activity then renders the `attributes` props with the `content-state` props on top, key by key. Later `update` and `end` events then only need the keys that differ from the start, and the `content-state` still needs `name`. Each event replaces the previous `content-state`, so a key that an earlier update changed must be sent again if it should keep that value.
+A `start` event can also set `props` in `attributes`, as a JSON string like `content-state.props`. The activity then renders the `attributes` props. Each top-level key in the `content-state` props overrides the same key from `attributes`. Later `update` and `end` events only need the keys that differ from the start. The `content-state` still needs `name`. Each event replaces the previous `content-state`. To keep a value that an earlier update changed, send that key again.
 
 ```json
 {
