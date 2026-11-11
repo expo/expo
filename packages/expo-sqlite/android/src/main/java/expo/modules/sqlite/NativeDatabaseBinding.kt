@@ -93,6 +93,7 @@ internal class NativeDatabaseBinding : Closeable {
 
     // These error code should be synced with sqlite3.h
     const val SQLITE_OK = 0
+    const val SQLITE_BUSY = 5
 
     const val SQLITE_ROW = 100
     const val SQLITE_DONE = 101

@@ -419,9 +419,12 @@ class SQLiteModule : Module() {
       if (ret != NativeDatabaseBinding.SQLITE_ROW && ret != NativeDatabaseBinding.SQLITE_DONE) {
         // A step that fails with SQLITE_BUSY leaves the statement running, so every later COMMIT
         // on the connection fails until the statement is reset.
+        // Reset only for SQLITE_BUSY. A reset also clears other errors, which finalize() must still report.
         // Read the message first. sqlite3_reset() replaces the error message.
         val message = database.ref.convertSqlLiteErrorToString()
-        statement.ref.sqlite3_reset()
+        if ((ret and 0xff) == NativeDatabaseBinding.SQLITE_BUSY) {
+          statement.ref.sqlite3_reset()
+        }
         throw SQLiteErrorException(message)
       }
       val firstRowValues: SQLiteColumnValues =

@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS][Android] Fix every later transaction on a connection failing with `cannot commit transaction - SQL statements in progress` after a statement fails with `database is locked`, by resetting the statement when its run fails. ([#51413](https://github.com/expo/expo/pull/51413) by [@kudo](https://github.com/kudo))
+- [iOS][Android] Fix `finalizeAsync()` and `finalizeSync()` not reporting the earlier error of a failed `run()`, by resetting the statement only when the run fails with `database is locked`. ([#53339](https://github.com/expo/expo/pull/53339) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

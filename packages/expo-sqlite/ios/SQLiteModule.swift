@@ -415,9 +415,12 @@ public final class SQLiteModule: Module {
     if ret != SQLITE_ROW && ret != SQLITE_DONE {
       // A step that fails with `SQLITE_BUSY` leaves the statement running, so every later `COMMIT`
       // on the connection fails with "SQL statements in progress" until the statement is reset.
+      // Reset only for `SQLITE_BUSY`. A reset also clears other errors, which `finalize()` must still report.
       // Read the message first. `sqlite3_reset` replaces the error message.
       let message = convertSqlLiteErrorToString(database)
-      exsqlite3_reset(statement.pointer)
+      if ret & 0xff == SQLITE_BUSY {
+        exsqlite3_reset(statement.pointer)
+      }
       throw SQLiteErrorException(message)
     }
     let firstRowValues: SQLiteColumnValues = (ret == SQLITE_ROW) ? try getColumnValues(statement: statement) : []
