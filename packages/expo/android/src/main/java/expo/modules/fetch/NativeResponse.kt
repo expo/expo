@@ -75,8 +75,15 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     ) {
       return
     }
-    if (isInvalidState(ResponseState.BODY_STREAMING_STARTED)) {
+    if (isInvalidState(
+        ResponseState.RESPONSE_RECEIVED,
+        ResponseState.BODY_STREAMING_STARTED
+      )
+    ) {
       return
+    }
+    if (state == ResponseState.RESPONSE_RECEIVED) {
+      sink.discard()
     }
     state = ResponseState.BODY_STREAMING_CANCELED
   }

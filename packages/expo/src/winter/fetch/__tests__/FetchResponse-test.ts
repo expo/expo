@@ -379,6 +379,24 @@ describe('FetchResponse', () => {
       await expect(response.arrayBuffer()).rejects.toThrow(TypeError);
     });
 
+    it('flips bodyUsed and rejects text() after the body is canceled before any read', async () => {
+      const response = makeResponse();
+      const nativeCancel = jest.spyOn(response, 'cancelStreaming');
+      await response.body!.cancel('not needed');
+      expect(nativeCancel).toHaveBeenCalledTimes(1);
+      expect(response.bodyUsed).toBe(true);
+      await expect(response.text()).rejects.toThrow(TypeError);
+    });
+
+    it('skips native cancel when text() has already started', async () => {
+      const response = makeResponse();
+      const nativeCancel = jest.spyOn(response, 'cancelStreaming');
+      const pending = response.text();
+      await response.body!.cancel('not needed');
+      expect(nativeCancel).not.toHaveBeenCalled();
+      await pending;
+    });
+
     it('rejects body methods on a clone after its body has been read', async () => {
       const response = makeResponse();
       const cloned = response.clone();

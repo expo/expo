@@ -56,8 +56,11 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
     if state == .bodyCompleted || state == .bodyStreamingCanceled || state == .errorReceived {
       return
     }
-    if isInvalidState(.bodyStreamingStarted) {
+    if isInvalidState(.responseReceived, .bodyStreamingStarted) {
       return
+    }
+    if state == .responseReceived {
+      sink.discard()
     }
     state = .bodyStreamingCanceled
   }
