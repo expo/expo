@@ -76,7 +76,7 @@
           "image": "./assets/splash-icon.png",
           "resizeMode": "cover",
           "backgroundColor": "#000020",
-          "prerender": "./LaunchScreen.tsx"
+          "prerender": { "component": "./LaunchScreen.tsx", "snapshot": true }
         }
       ],
       [

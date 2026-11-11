@@ -22,8 +22,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)shared;
 
-/** Whether a template is bundled and the prerender is active for this launch. */
+/** Whether the prerender is configured (a bundled template or snapshots) and active for this launch. */
 @property (nonatomic, readonly) BOOL isEnabled;
+
+/** Whether the config plugin's `prerender.snapshot` is on (`ExpoSplashScreenPrerenderSnapshot` in Info.plist). */
+@property (nonatomic, readonly) BOOL isSnapshotEnabled;
+
+/**
+ Main thread. Whether this launch has something to show (a bundled template or a matching
+ snapshot). Waits briefly for the background preparation. When NO, the splash image should be
+ shown instead.
+ */
+- (BOOL)hasTemplate;
 
 /** Main thread. Mounts the prepared tree into a detached view if the background preparation is done. */
 - (void)mountIfPrepared;

@@ -514,8 +514,11 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
   if (self = [super init]) {
     // `-ExpoSplashScreenPrerenderDisabled 1` as a launch argument turns the prerender off for A/B runs.
     BOOL disabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"ExpoSplashScreenPrerenderDisabled"];
-    _isEnabled = !disabled && [[NSBundle mainBundle] URLForResource:kTemplateResourceName withExtension:@"json"] != nil &&
-        !RCTRunningInAppExtension();
+    // Both come from the config plugin's `prerender` option: a bundled template and/or the
+    // `ExpoSplashScreenPrerenderSnapshot` Info.plist flag.
+    BOOL hasBundledTemplate = [[NSBundle mainBundle] URLForResource:kTemplateResourceName withExtension:@"json"] != nil;
+    _isSnapshotEnabled = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"ExpoSplashScreenPrerenderSnapshot"] boolValue];
+    _isEnabled = !disabled && (hasBundledTemplate || _isSnapshotEnabled) && !RCTRunningInAppExtension();
     _processStart = [[NSProcessInfo processInfo] systemUptime] - ([[NSDate date] timeIntervalSince1970] - processStartTime());
   }
   return self;
@@ -577,7 +580,8 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
 {
   NSDictionary *json = [self loadTemplate];
   if (!json) {
-    NSLog(@"[expo-splash-screen] prerender: invalid %@.json, skipping", kTemplateResourceName);
+    // Snapshot-only configuration before the first capture, or an invalid template.
+    [self log:@"no template for this launch"];
     return;
   }
   folly::dynamic templateDynamic = convertIdToFollyDynamic(json);
@@ -674,7 +678,7 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
 
 - (nullable NSDictionary *)loadTemplate
 {
-  NSData *snapshotData = [NSData dataWithContentsOfURL:[self snapshotURL]];
+  NSData *snapshotData = _isSnapshotEnabled ? [NSData dataWithContentsOfURL:[self snapshotURL]] : nil;
   if (snapshotData) {
     id snapshot = [NSJSONSerialization JSONObjectWithData:snapshotData options:0 error:nil];
     NSDictionary *expected = [self environmentKeyForTraits:UIScreen.mainScreen.traitCollection
@@ -713,7 +717,7 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
 {
   RCTAssertMainQueue();
   UIView *rootView = _appRootView;
-  if (!_isEnabled || !rootView || !rootView.window) {
+  if (!_isEnabled || !_isSnapshotEnabled || !rootView || !rootView.window) {
     return NO;
   }
   int budget = 5000;
@@ -834,6 +838,15 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
 }
 
 #pragma mark - Main thread
+
+- (BOOL)hasTemplate
+{
+  if (!_prepared) {
+    return NO;
+  }
+  dispatch_group_wait(_prepared, dispatch_time(DISPATCH_TIME_NOW, 50 * NSEC_PER_MSEC));
+  return _preparedRoot != nullptr || _containerView != nil;
+}
 
 - (void)mountIfPrepared
 {

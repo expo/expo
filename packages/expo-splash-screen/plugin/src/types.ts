@@ -31,6 +31,18 @@ export type IOSSplashConfig = BaseIOSSplashConfig & {
   dark?: BaseIOSSplashConfig;
 };
 
+export type PrerenderConfig = {
+  /** Path to the React component (or `.json` template) of the first screen. */
+  component?: string;
+  /**
+   * Capture the first screen on the device after the splash hides and prerender it on the next
+   * launch. `SplashScreen.saveLaunchScreenAsync()` recaptures on demand.
+   * @platform ios
+   * @default false
+   */
+  snapshot?: boolean;
+};
+
 export type Props = {
   /**
    * Hex color for the splash screen background.
@@ -38,13 +50,15 @@ export type Props = {
    */
   backgroundColor?: string;
   /**
-   * Path to a React component (default export, no props) that draws the app's first screen with
-   * core `View`/`Text`/`Image` components. At build time `expo export:embed` renders it through
-   * React Native's Fabric renderer and bundles the result; at launch the native side commits that
-   * tree through Fabric before React Native starts and shows it instead of the splash image.
-   * A `.json` path is used as a prebuilt template instead.
+   * Draws the app's first screen through Fabric before React Native starts, instead of the splash
+   * image. A string is the path to a React component (default export, no props) that draws the
+   * first screen with core `View`/`Text`/`Image` components; `expo export:embed` renders it at build
+   * time and the native side commits the result at launch. A `.json` path is a prebuilt template.
+   * The object form adds `snapshot`: once the splash is hidden, the screen on display is captured
+   * and prerendered on the next launch (iOS), so the first screen follows the app's state (signed in
+   * or out, theme, locale). With `snapshot` alone the very first launch shows the splash image.
    */
-  prerender?: string;
+  prerender?: string | PrerenderConfig;
   /**
    * The width to make the image.
    * @default 100

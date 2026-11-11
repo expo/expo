@@ -25,9 +25,11 @@ export function getSplashPrerenderComponentPath(projectRoot: string, exp: ExpoCo
     if (!Array.isArray(plugin) || plugin[0] !== 'expo-splash-screen') {
       continue;
     }
+    // `prerender: './LaunchScreen.tsx'` or `prerender: { component: '...', snapshot: true }`.
     const prerender = plugin[1]?.prerender;
-    if (typeof prerender === 'string' && !prerender.endsWith('.json')) {
-      return path.resolve(projectRoot, prerender);
+    const component = typeof prerender === 'string' ? prerender : prerender?.component;
+    if (typeof component === 'string' && !component.endsWith('.json')) {
+      return path.resolve(projectRoot, component);
     }
   }
   return null;

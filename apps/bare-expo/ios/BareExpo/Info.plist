@@ -148,6 +148,8 @@
         </array>
       </dict>
     </dict>
+    <key>ExpoSplashScreenPrerenderSnapshot</key>
+    <true/>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
     <key>UIRequiredDeviceCapabilities</key>
