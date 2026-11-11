@@ -89,11 +89,12 @@ The plugin decides each module in this order:
 
 1. When a precompiled artifact exists, the module is linked precompiled, unless
    the app lists it in `buildFromSource`.
-2. Otherwise, when its `Package.swift` depends on the `ExpoModulesCoreHeaders`
-   or the `ExpoModulesWorkletsHeaders` product, the plugin builds it from that
-   manifest as it stands. The manifest compiles against the `ExpoModulesCoreHeaders`
-   and `ExpoModulesJSIHeaders` xcframeworks, and against
-   `ExpoModulesWorkletsHeaders` when it depends on it. `ExpoModulesCoreHeaders`
+2. Otherwise, when its `Package.swift` depends on the `ExpoModulesCoreHeaders`,
+   `ExpoModulesWorkletsHeaders` or `ExpoUIHeaders` product, the plugin builds it
+   from that manifest as it stands. The manifest compiles against the
+   `ExpoModulesCoreHeaders` and `ExpoModulesJSIHeaders` xcframeworks, and against
+   `ExpoModulesWorkletsHeaders` when it depends on it or on `ExpoUIHeaders`, and
+   against `ExpoUIHeaders` when it depends on it. `ExpoModulesCoreHeaders`
    depends on the `expo-modules-macros` package, so SwiftPM builds the Expo macro
    plugin and loads it into the module with no compiler flags in its manifest.
 3. Otherwise its `Package.swift` is mirrored into a generated package, or a

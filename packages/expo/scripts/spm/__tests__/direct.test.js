@@ -90,6 +90,20 @@ describe('headersStandInsOf', () => {
     }
   );
 
+  it.each([
+    ['product', { product: ['ExpoUIHeaders', 'ExpoUIHeaders', null, null] }],
+    ['name', { byName: ['ExpoUIHeaders', null] }],
+  ])(
+    'is the ExpoUI headers package after the ones it depends on for a %s dependency on ExpoUIHeaders alone',
+    (_, dependency) => {
+      expect(headersStandInsOf(manifestDependingOn(dependency))).toEqual([
+        'ExpoModulesCoreHeaders',
+        'ExpoModulesWorkletsHeaders',
+        'ExpoUIHeaders',
+      ]);
+    }
+  );
+
   it('is empty for a dependency by name that a target of the manifest has', () => {
     expect(
       headersStandInsOf({
@@ -421,6 +435,65 @@ describe('emitDirectPackage', () => {
       expect(manifest()).toContain(
         '.binaryTarget(name: "ExpoModulesCoreHeaders", path: "ExpoModulesCoreHeaders.xcframework")'
       );
+    });
+  });
+
+  describe('with the ExpoUI headers', () => {
+    let uiHeadersXCFramework;
+    let uiPkgDir;
+    const uiManifest = () => fs.readFileSync(path.join(uiPkgDir, 'Package.swift'), 'utf8');
+
+    beforeEach(() => {
+      uiPkgDir = path.join(outDir, 'direct', 'ExpoUIHeaders');
+      uiHeadersXCFramework = path.join(root, 'expo-ui', 'headers', 'ExpoUIHeaders.xcframework');
+      const workletsHeadersXCFramework = path.join(
+        root,
+        'expo-modules-core',
+        'headers',
+        'ExpoModulesWorkletsHeaders.xcframework'
+      );
+      fs.mkdirSync(uiHeadersXCFramework, { recursive: true });
+      fs.mkdirSync(workletsHeadersXCFramework, { recursive: true });
+      emitDirectPackage({
+        moduleRoot: path.join(root, 'expo-haptics'),
+        packageName: 'expo-haptics',
+        outDir,
+        headersXCFrameworks: {
+          ExpoModulesCoreHeaders: coreHeadersXCFramework,
+          ExpoModulesWorkletsHeaders: workletsHeadersXCFramework,
+          ExpoUIHeaders: uiHeadersXCFramework,
+        },
+        jsiHeadersPkgPath,
+        macrosPackageRoot,
+        manifest: hapticsManifest,
+      });
+    });
+
+    it('declares one product over the ExpoUI headers binary target', () => {
+      expect(uiManifest().match(/\.binaryTarget\(/g)).toHaveLength(1);
+      expect(uiManifest()).toContain(
+        '.binaryTarget(name: "ExpoUIHeaders", path: "ExpoUIHeaders.xcframework")'
+      );
+      expect(uiManifest()).toMatch(/\.library\(name: "ExpoUIHeaders", targets: \["ExpoUIHeaders"/);
+    });
+
+    it('places the ExpoUI headers xcframework in the package by link', () => {
+      const link = path.join(uiPkgDir, 'ExpoUIHeaders.xcframework');
+      expect(fs.lstatSync(link).isSymbolicLink()).toBe(true);
+      expect(fs.realpathSync(link)).toBe(fs.realpathSync(uiHeadersXCFramework));
+    });
+
+    it('depends on the ExpoModulesCore and ExpoModulesWorklets headers packages beside it, and on nothing else', () => {
+      expect(uiManifest()).toContain(
+        '.package(name: "ExpoModulesCoreHeaders", path: "../ExpoModulesCoreHeaders")'
+      );
+      expect(uiManifest()).toContain(
+        '.package(name: "ExpoModulesWorkletsHeaders", path: "../ExpoModulesWorkletsHeaders")'
+      );
+      expect(uiManifest()).toMatch(
+        /\.target\(\s*name: "ExpoUIHeadersDependencies",\s*dependencies: \[\s*\.product\(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders"\),\s*\.product\(name: "ExpoModulesWorkletsHeaders", package: "ExpoModulesWorkletsHeaders"\),\s*\]/
+      );
+      expect(uiManifest().match(/\.package\(/g)).toHaveLength(2);
     });
   });
 
