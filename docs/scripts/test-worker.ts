@@ -571,6 +571,46 @@ async function testHtmlNotFoundAsync(): Promise<void> {
   console.log(`✓ Nonexistent HTML page returns HTTP ${response.status} (not a server error)`);
 }
 
+async function testJsonNotFoundAsync(): Promise<void> {
+  console.log('\n--- Testing JSON 404 responses ---');
+
+  const response = await fetch(`${BASE_URL}/api/v1/nonexistent`, {
+    headers: { Accept: 'application/json' },
+  });
+  const contentType = response.headers.get('content-type') ?? '';
+
+  if (response.status !== 404 || !contentType.includes('application/json')) {
+    throw new Error(`Expected a JSON 404, got: HTTP ${response.status} ${contentType}`);
+  }
+  if (!varyTokens(response).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept on the JSON 404, got: ${response.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+
+  const body = (await response.json()) as {
+    error?: { code?: string };
+    links?: { index?: string };
+  };
+
+  if (body.error?.code !== 'not_found' || !body.links?.index?.endsWith('/llms.txt')) {
+    throw new Error(`Expected an error code and recovery links, got: ${JSON.stringify(body)}`);
+  }
+  console.log('✓ JSON 404 responds with a JSON error body and recovery links');
+
+  const htmlPreferred = await fetch(`${BASE_URL}/api/v1/nonexistent`, {
+    headers: { Accept: 'text/html, application/json;q=0.9' },
+  });
+  const htmlPreferredType = htmlPreferred.headers.get('content-type') ?? '';
+
+  if (htmlPreferred.status !== 404 || !htmlPreferredType.includes('text/html')) {
+    throw new Error(
+      `Expected an HTML 404 when HTML carries the higher q, got: HTTP ${htmlPreferred.status} ${htmlPreferredType}`
+    );
+  }
+  console.log('✓ HTML 404 stays when HTML carries the higher q');
+}
+
 function navigateAsync(path: string, headers: http.OutgoingHttpHeaders = {}) {
   return new Promise<http.IncomingMessage>((resolve, reject) => {
     http
@@ -622,6 +662,7 @@ async function mainAsync(): Promise<void> {
     await testRemovedSdkRedirectsAsync();
     await testAgentDiscoveryRedirectsAsync();
     await testHtmlNotFoundAsync();
+    await testJsonNotFoundAsync();
     await testUrlRecoveryAsync();
 
     console.log('\n=== All tests passed! ===');
