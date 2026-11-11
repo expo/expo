@@ -88,6 +88,9 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
         return
       }
 
+      // UIKit validates the geometry request against its cached supported orientations.
+      // Invalidate the cache first, or the request uses the previous mask and is refused.
+      self.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
       let windowScene = SceneGeometry.windowScene(for: self.rootViewController?.view)
       windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: orientationMask)) { error in
         #if DEBUG
@@ -101,7 +104,6 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
         )
         #endif
       }
-      self.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
       UIDevice.current.setValue(newOrientation.rawValue, forKey: "orientation")
       UIViewController.attemptRotationToDeviceOrientation()
 
