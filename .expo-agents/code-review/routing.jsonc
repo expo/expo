@@ -1,0 +1,18 @@
+// Routing for the autonomous code review trial.
+// The last matching scope wins per changed file.
+{
+  "defaults": {
+    "enforceAgents": ["security", "correctness"],
+    "commentTag": "expo-ai-code-reviewer"
+  },
+  "comment": "single",
+  "scopes": [
+    { "name": "default", "paths": ["**/*"], "config": "." },
+    // The engine reads a scope's prompts from <config>/.expo-agents/code-review/, hence the nesting.
+    {
+      "name": "autonomous",
+      "paths": ["packages/patch-project/**"],
+      "config": ".expo-agents/autonomous-code-review"
+    }
+  ]
+}
