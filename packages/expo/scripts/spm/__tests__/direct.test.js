@@ -11,7 +11,7 @@ jest.mock('../cli', () => ({
 }));
 
 const { runDumpPackage } = require('../cli');
-const { dependsOnCoreHeaders, dumpModuleManifest, emitDirectPackage } = require('../direct');
+const { dumpModuleManifest, emitDirectPackage, headersStandInsOf } = require('../direct');
 const { rerunSpmUpdate, thrownBy } = require('./helpers');
 
 const hapticsManifest = {
@@ -26,23 +26,23 @@ const manifestDependingOn = (...dependencies) => ({
   targets: [{ name: 'ExpoHaptics', type: 'regular', dependencies }],
 });
 
-describe('dependsOnCoreHeaders', () => {
+describe('headersStandInsOf', () => {
   // Verbatim shape from `swift package dump-package` (Swift 6.4) of a manifest with
   // `.product(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders")`.
   const coreHeadersProduct = {
     product: ['ExpoModulesCoreHeaders', 'ExpoModulesCoreHeaders', null, null],
   };
 
-  it('is true when a target depends on the ExpoModulesCoreHeaders product', () => {
+  it('is ExpoModulesCoreHeaders when a target depends on the ExpoModulesCoreHeaders product', () => {
     expect(
-      dependsOnCoreHeaders({
+      headersStandInsOf({
         ...manifestDependingOn(),
         targets: [
           { name: 'ExpoHapticsObjC', type: 'regular', dependencies: [] },
           { name: 'ExpoHaptics', type: 'regular', dependencies: [coreHeadersProduct] },
         ],
       })
-    ).toBe(true);
+    ).toEqual(['ExpoModulesCoreHeaders']);
   });
 
   // `.byName(name:)` and a bare string both dump as `byName`; SwiftPM resolves the name to
@@ -50,8 +50,8 @@ describe('dependsOnCoreHeaders', () => {
   it.each([
     ['without a condition', { byName: ['ExpoModulesCoreHeaders', null] }],
     ['with a condition', { byName: ['ExpoModulesCoreHeaders', { platformNames: ['ios'] }] }],
-  ])('is true for a dependency by name %s', (_, dependency) => {
-    expect(dependsOnCoreHeaders(manifestDependingOn(dependency))).toBe(true);
+  ])('is ExpoModulesCoreHeaders for a dependency by name %s', (_, dependency) => {
+    expect(headersStandInsOf(manifestDependingOn(dependency))).toEqual(['ExpoModulesCoreHeaders']);
   });
 
   it.each([
@@ -70,8 +70,51 @@ describe('dependsOnCoreHeaders', () => {
       },
     ],
     ['no targets', { name: 'expo-haptics', products: [] }],
-  ])('is false for a manifest with %s', (_, manifest) => {
-    expect(dependsOnCoreHeaders(manifest)).toBe(false);
+  ])('is empty for a manifest with %s', (_, manifest) => {
+    expect(headersStandInsOf(manifest)).toEqual([]);
+  });
+
+  it.each([
+    [
+      'product',
+      { product: ['ExpoModulesWorkletsHeaders', 'ExpoModulesWorkletsHeaders', null, null] },
+    ],
+    ['name', { byName: ['ExpoModulesWorkletsHeaders', null] }],
+  ])(
+    'is both headers packages for a %s dependency on ExpoModulesWorkletsHeaders alone',
+    (_, dependency) => {
+      expect(headersStandInsOf(manifestDependingOn(dependency))).toEqual([
+        'ExpoModulesCoreHeaders',
+        'ExpoModulesWorkletsHeaders',
+      ]);
+    }
+  );
+
+  it('is empty for a dependency by name that a target of the manifest has', () => {
+    expect(
+      headersStandInsOf({
+        ...manifestDependingOn(),
+        targets: [
+          {
+            name: 'ExpoHaptics',
+            type: 'regular',
+            dependencies: [{ byName: ['ExpoModulesCoreHeaders', null] }],
+          },
+          { name: 'ExpoModulesCoreHeaders', type: 'regular', dependencies: [] },
+        ],
+      })
+    ).toEqual([]);
+  });
+
+  it('names each headers package once when targets depend on both', () => {
+    expect(
+      headersStandInsOf(
+        manifestDependingOn(
+          { byName: ['ExpoModulesWorkletsHeaders', null] },
+          { product: ['ExpoModulesCoreHeaders', 'ExpoModulesCoreHeaders', null, null] }
+        )
+      )
+    ).toEqual(['ExpoModulesCoreHeaders', 'ExpoModulesWorkletsHeaders']);
   });
 });
 
@@ -139,7 +182,7 @@ describe('emitDirectPackage', () => {
       moduleRoot: path.join(root, 'expo-haptics'),
       packageName: 'expo-haptics',
       outDir,
-      coreHeadersXCFramework,
+      headersXCFrameworks: { ExpoModulesCoreHeaders: coreHeadersXCFramework },
       jsiHeadersPkgPath,
       macrosPackageRoot,
       manifest: hapticsManifest,
@@ -278,7 +321,7 @@ describe('emitDirectPackage', () => {
       moduleRoot,
       packageName: '@acme/widgets',
       outDir,
-      coreHeadersXCFramework,
+      headersXCFrameworks: { ExpoModulesCoreHeaders: coreHeadersXCFramework },
       jsiHeadersPkgPath,
       macrosPackageRoot,
       manifest: hapticsManifest,
@@ -297,7 +340,7 @@ describe('emitDirectPackage', () => {
       moduleRoot: path.join(root, 'expo-haptics'),
       packageName: 'expo-haptics',
       outDir,
-      coreHeadersXCFramework,
+      headersXCFrameworks: { ExpoModulesCoreHeaders: coreHeadersXCFramework },
       jsiHeadersPkgPath,
       macrosPackageRoot,
       manifest: { ...hapticsManifest, name: 'ExpoHapticsPackage' },
@@ -317,6 +360,68 @@ describe('emitDirectPackage', () => {
       { name: 'ExpoHaptics', package: 'expo-haptics' },
       { name: 'ExpoHapticsExtras', package: 'expo-haptics' },
     ]);
+  });
+
+  describe('with the ExpoModulesWorklets headers', () => {
+    let workletsHeadersXCFramework;
+    let workletsPkgDir;
+    const workletsManifest = () =>
+      fs.readFileSync(path.join(workletsPkgDir, 'Package.swift'), 'utf8');
+
+    beforeEach(() => {
+      workletsPkgDir = path.join(outDir, 'direct', 'ExpoModulesWorkletsHeaders');
+      workletsHeadersXCFramework = path.join(
+        root,
+        'expo-modules-core',
+        'headers',
+        'ExpoModulesWorkletsHeaders.xcframework'
+      );
+      fs.mkdirSync(workletsHeadersXCFramework, { recursive: true });
+      emitDirectPackage({
+        moduleRoot: path.join(root, 'expo-haptics'),
+        packageName: 'expo-haptics',
+        outDir,
+        headersXCFrameworks: {
+          ExpoModulesCoreHeaders: coreHeadersXCFramework,
+          ExpoModulesWorkletsHeaders: workletsHeadersXCFramework,
+        },
+        jsiHeadersPkgPath,
+        macrosPackageRoot,
+        manifest: hapticsManifest,
+      });
+    });
+
+    it('declares one product over the ExpoModulesWorklets headers binary target', () => {
+      expect(workletsManifest().match(/\.binaryTarget\(/g)).toHaveLength(1);
+      expect(workletsManifest()).toContain(
+        '.binaryTarget(name: "ExpoModulesWorkletsHeaders", path: "ExpoModulesWorkletsHeaders.xcframework")'
+      );
+      expect(workletsManifest()).toMatch(
+        /\.library\(name: "ExpoModulesWorkletsHeaders", targets: \["ExpoModulesWorkletsHeaders"/
+      );
+    });
+
+    it('places the ExpoModulesWorklets headers xcframework in the package by link', () => {
+      const link = path.join(workletsPkgDir, 'ExpoModulesWorkletsHeaders.xcframework');
+      expect(fs.lstatSync(link).isSymbolicLink()).toBe(true);
+      expect(fs.realpathSync(link)).toBe(fs.realpathSync(workletsHeadersXCFramework));
+    });
+
+    it('depends on the ExpoModulesCore headers package beside it, and on nothing else', () => {
+      expect(workletsManifest()).toContain(
+        '.package(name: "ExpoModulesCoreHeaders", path: "../ExpoModulesCoreHeaders")'
+      );
+      expect(workletsManifest()).toMatch(
+        /\.target\(\s*name: "ExpoModulesWorkletsHeadersDependencies",\s*dependencies: \[\s*\.product\(name: "ExpoModulesCoreHeaders", package: "ExpoModulesCoreHeaders"\),\s*\]/
+      );
+      expect(workletsManifest().match(/\.package\(/g)).toHaveLength(1);
+    });
+
+    it('also writes the ExpoModulesCore headers package', () => {
+      expect(manifest()).toContain(
+        '.binaryTarget(name: "ExpoModulesCoreHeaders", path: "ExpoModulesCoreHeaders.xcframework")'
+      );
+    });
   });
 
   it('changes no file in the package when emitted again with the same inputs', () => {

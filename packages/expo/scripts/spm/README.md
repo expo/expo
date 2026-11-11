@@ -90,17 +90,18 @@ The plugin decides each module in this order:
 1. When a precompiled artifact exists, the module is linked precompiled, unless
    the app lists it in `buildFromSource`.
 2. Otherwise, when its `Package.swift` depends on the `ExpoModulesCoreHeaders`
-   product, the plugin builds it from that manifest as it stands. The manifest
-   compiles against the `ExpoModulesCoreHeaders` and `ExpoModulesJSIHeaders`
-   xcframeworks. `ExpoModulesCoreHeaders` depends on the `expo-modules-macros`
-   package, so SwiftPM builds the Expo macro plugin and loads it into the module
-   with no compiler flags in its manifest.
+   or the `ExpoModulesWorkletsHeaders` product, the plugin builds it from that
+   manifest as it stands. The manifest compiles against the `ExpoModulesCoreHeaders`
+   and `ExpoModulesJSIHeaders` xcframeworks, and against
+   `ExpoModulesWorkletsHeaders` when it depends on it. `ExpoModulesCoreHeaders`
+   depends on the `expo-modules-macros` package, so SwiftPM builds the Expo macro
+   plugin and loads it into the module with no compiler flags in its manifest.
 3. Otherwise its `Package.swift` is mirrored into a generated package, or a
    pure-Swift module gets a generated package over its sources.
 
 A manifest built as it stands is linked at `<outDir>/direct/<npm package name>`,
-a symlink to the module root, next to the `ExpoModulesCoreHeaders` package the
-plugin emits in `direct/`. Link names are not flattened, so a scoped package
+a symlink to the module root, next to the headers packages the plugin emits in
+`direct/`. Link names are not flattened, so a scoped package
 lands at `direct/@scope/pkg`. SwiftPM resolves the manifest's relative paths
 from the link, not from the module's real directory, so the path to the headers
 package depends on that depth: `../ExpoModulesCoreHeaders` for an unscoped

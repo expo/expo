@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const { dependsOnCoreHeaders, dumpModuleManifest, emitDirectPackage } = require('../direct');
+const { dumpModuleManifest, emitDirectPackage, headersStandInsOf } = require('../direct');
 const { makeTempDir, removeTempDirs } = require('./helpers');
 
 const REPO_ROOT = path.resolve(__dirname, '../../../../..');
@@ -76,7 +76,7 @@ it.each(DIRECT_MANIFESTS)(
     expect(fs.existsSync(path.join(moduleRoot, 'ios', 'Tests'))).toBe(false);
 
     const { manifest } = dumpModuleManifest(moduleRoot, packageName);
-    expect(dependsOnCoreHeaders(manifest)).toBe(true);
+    expect(headersStandInsOf(manifest)).toEqual(['ExpoModulesCoreHeaders']);
 
     const outDir = path.join(tmp, 'out');
     const coreHeadersXCFramework = path.join(tmp, 'headers', 'ExpoModulesCoreHeaders.xcframework');
@@ -92,7 +92,7 @@ it.each(DIRECT_MANIFESTS)(
       moduleRoot,
       packageName,
       outDir,
-      coreHeadersXCFramework,
+      headersXCFrameworks: { ExpoModulesCoreHeaders: coreHeadersXCFramework },
       jsiHeadersPkgPath: path.join(outDir, 'ExpoModulesJSIHeaders'),
       macrosPackageRoot,
       manifest,
