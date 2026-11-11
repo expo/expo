@@ -20,7 +20,7 @@ export function SimulatorsLaunchCallout() {
     <BoxLink
       title="New: Expo Simulators"
       description="Cloud Android and iOS simulators for you and your agents. Run your builds without a local simulator."
-      href="/preview/simulators/get-started/"
+      href="/eas/simulators/get-started/"
       Icon={Smartphone02Icon}
     />
   );

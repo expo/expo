@@ -98,6 +98,19 @@ test('rewrites /eas/insights/** prefix to /eas-insights/**', () => {
   expect(getRedirectPath('/eas/insights/introduction/')).toEqual('/eas-insights/introduction/');
 });
 
+test('rewrites old Expo Simulators preview paths to /eas/simulators/**', () => {
+  expect(getRedirectPath('/preview/simulators/')).toEqual('/eas/simulators/introduction/');
+  expect(getRedirectPath('/preview/simulators/get-started/')).toEqual(
+    '/eas/simulators/get-started/'
+  );
+  expect(getRedirectPath('/preview/simulators/how-to/run-in-ci')).toEqual(
+    '/eas/simulators/how-to/run-in-ci/'
+  );
+  expect(getRedirectPath('/preview/eas-simulator/get-started/')).toEqual(
+    '/eas/simulators/get-started/'
+  );
+});
+
 test('does not rewrite /eas/** paths that are canonical (workflows, hosting, metadata, ai)', () => {
   expect(getRedirectPath('/eas/workflows/get-started/')).toEqual('/eas/workflows/get-started/');
   expect(getRedirectPath('/eas/hosting/introduction/')).toEqual('/eas/hosting/introduction/');

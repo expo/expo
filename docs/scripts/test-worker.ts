@@ -532,6 +532,31 @@ async function testRemovedSdkRedirectsAsync(): Promise<void> {
   }
 }
 
+async function testSimulatorsPreviewRedirectsAsync(): Promise<void> {
+  console.log('\n--- Testing Expo Simulators preview redirects ---');
+
+  const cases = [
+    { from: '/preview/simulators', to: '/eas/simulators/introduction' },
+    { from: '/preview/simulators/', to: '/eas/simulators/introduction' },
+    { from: '/preview/simulators/get-started', to: '/eas/simulators/get-started' },
+    { from: '/preview/simulators/how-to/run-in-ci/', to: '/eas/simulators/how-to/run-in-ci' },
+    { from: '/preview/simulators/limitations.md', to: '/eas/simulators/limitations.md' },
+    { from: '/preview/eas-simulator/get-started/', to: '/eas/simulators/get-started' },
+  ];
+
+  for (const { from, to } of cases) {
+    const response = await fetch(`${BASE_URL}${from}`, { redirect: 'manual' });
+    const location = response.headers.get('location') ?? '';
+
+    if (response.status !== 301 || !location.endsWith(to)) {
+      throw new Error(
+        `Expected ${from} to 301 to ${to}, got: HTTP ${response.status} -> ${location}`
+      );
+    }
+    console.log(`✓ ${from} redirects to ${to}`);
+  }
+}
+
 async function testAgentDiscoveryRedirectsAsync(): Promise<void> {
   console.log('\n--- Testing agent discovery redirects ---');
 
@@ -620,6 +645,7 @@ async function mainAsync(): Promise<void> {
     await testUpgradePairNegotiationAsync();
     await testDeletedPageRedirectsAsync();
     await testRemovedSdkRedirectsAsync();
+    await testSimulatorsPreviewRedirectsAsync();
     await testAgentDiscoveryRedirectsAsync();
     await testHtmlNotFoundAsync();
     await testUrlRecoveryAsync();
