@@ -29,7 +29,7 @@ actor CategoryManager {
   }
 
   func setCategories(_ categories: [CategoryRecord], replacing replaces: @Sendable (String) -> Bool) async throws {
-    guard Set(categories.map { $0.identifier }).count == categories.count else {
+    guard Set(categories.map { Array($0.identifier.utf16) }).count == categories.count else {
       throw Exception(name: "DuplicateCategoryIdentifier", description: "Could not replace notification categories because identifiers are duplicated. Use a unique identifier for each category.")
     }
     let kept = await loadCategories().filter { !replaces($0.identifier) }
