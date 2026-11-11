@@ -17,14 +17,16 @@ swap:
   cocoapods: CocoaPods
   devops: DevOps
   eas: EAS
-  'eas[ ]build': EAS Build
   'eas[ ]cli': EAS CLI
-  'eas[ ]metadata': EAS Metadata
-  'eas[ ]submit': EAS Submit
-  'eas[ ]update': EAS Update
+  'expo[ ]build': Expo Build
   'expo[ ]cli': Expo CLI
   'expo[ ]go': Expo Go
+  'expo[ ]metadata': Expo Metadata
+  'expo[ ]observe': Expo Observe
   'expo[ ]sdk': Expo SDK
+  'expo[ ]simulators': Expo Simulators
+  'expo[ ]submit': Expo Submit
+  'expo[ ]update': Expo Update
   github: GitHub
   Github: GitHub
   gitlab: GitLab
