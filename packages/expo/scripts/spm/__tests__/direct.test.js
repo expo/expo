@@ -74,7 +74,6 @@ describe('headersStandInsOf', () => {
     expect(headersStandInsOf(manifest)).toEqual([]);
   });
 
-  // The ExpoModulesWorklets headers package depends on the ExpoModulesCore headers package.
   it.each([
     [
       'product',
@@ -90,6 +89,22 @@ describe('headersStandInsOf', () => {
       ]);
     }
   );
+
+  it('is empty for a dependency by name that a target of the manifest has', () => {
+    expect(
+      headersStandInsOf({
+        ...manifestDependingOn(),
+        targets: [
+          {
+            name: 'ExpoHaptics',
+            type: 'regular',
+            dependencies: [{ byName: ['ExpoModulesCoreHeaders', null] }],
+          },
+          { name: 'ExpoModulesCoreHeaders', type: 'regular', dependencies: [] },
+        ],
+      })
+    ).toEqual([]);
+  });
 
   it('names each headers package once when targets depend on both', () => {
     expect(
