@@ -98,8 +98,7 @@ If you plan to contribute to the documentation, see [Updating Documentation](#-u
 
 ### Set up for development
 
-1. Install [pnpm](https://pnpm.io/)
-2. Downloads the Node packages: `pnpm install`
+Install [pnpm](https://pnpm.io/) and download Node packages using `pnpm install` command.
 
 ### Set up Android
 
