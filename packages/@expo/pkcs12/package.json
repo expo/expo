@@ -34,7 +34,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "node-forge": "^1.4.0"
+    "node-forge": "^1.4.3"
   },
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",

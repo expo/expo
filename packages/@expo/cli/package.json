@@ -95,7 +95,7 @@
     "fetch-nodeshim": "^0.4.10",
     "lan-network": "^0.2.1",
     "multitars": "^1.0.2",
-    "node-forge": "^1.4.0",
+    "node-forge": "^1.4.3",
     "npm-package-arg": "^11.0.0",
     "ora": "^3.4.0",
     "picomatch": "^4.0.4",
