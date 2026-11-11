@@ -9,10 +9,17 @@
     "facebookDisplayName": "Expo APIs",
     "privacy": "unlisted",
     "version": "1.0.0",
-    "platforms": ["ios", "android", "web", "macos"],
+    "platforms": [
+      "ios",
+      "android",
+      "web",
+      "macos"
+    ],
     "userInterfaceStyle": "automatic",
     "android": {
-      "scheme": ["com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"],
+      "scheme": [
+        "com.googleusercontent.apps.29635966244-knmlpr1upnv6rs4bumqea7hpit4o7kg2"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000020"
@@ -28,9 +35,14 @@
       "supportsTablet": true,
       "requireFullScreen": false,
       "entitlements": {
-        "com.apple.security.application-groups": ["group.dev.expo.Payments"]
+        "com.apple.security.application-groups": [
+          "group.dev.expo.Payments"
+        ]
       },
-      "associatedDomains": ["applinks:bare-expo.expo.app", "webcredentials:bare-expo.expo.app"]
+      "associatedDomains": [
+        "applinks:bare-expo.expo.app",
+        "webcredentials:bare-expo.expo.app"
+      ]
     },
     "web": {
       "bundler": "metro"
@@ -63,13 +75,16 @@
         {
           "image": "./assets/splash-icon.png",
           "resizeMode": "cover",
-          "backgroundColor": "#000020"
+          "backgroundColor": "#000020",
+          "prerender": "./LaunchScreen.tsx"
         }
       ],
       [
         "expo-font",
         {
-          "fonts": ["./assets/icomoon.ttf"]
+          "fonts": [
+            "./assets/icomoon.ttf"
+          ]
         }
       ],
       [
@@ -85,7 +100,9 @@
         {
           "icon": "./assets/ic_stat_notifications.png",
           "color": "#4630EB",
-          "sounds": ["./assets/notification.wav"]
+          "sounds": [
+            "./assets/notification.wav"
+          ]
         }
       ],
       [
@@ -136,7 +153,9 @@
           "../native-component-list/src/screens/ModulesCore",
           "../native-component-list/app-intents"
         ],
-        "xcodeProjectTargets": ["BareExpo"]
+        "xcodeProjectTargets": [
+          "BareExpo"
+        ]
       }
     }
   }

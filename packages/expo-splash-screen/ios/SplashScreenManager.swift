@@ -43,7 +43,7 @@ class SplashScreenManager: NSObject, RCTReloadListener {
       return
     }
 
-    SplashScreenPrerender.shared().dismiss()
+    SplashScreenPrerender.shared().dismiss(withFadeDuration: options.fade ? options.duration / 1000 : 0)
     DispatchQueue.main.async { [weak self] in
       guard let self, let rootView, isLoadingViewVisible() else {
         return

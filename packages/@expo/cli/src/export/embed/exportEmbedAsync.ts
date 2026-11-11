@@ -156,10 +156,14 @@ export async function exportEmbedInternalAsync(projectRoot: string, options: Opt
     // The splash prerender template lands in the same place as the JS bundle: the app bundle on
     // Apple platforms, the APK assets directory on Android.
     splashPrerender && domComponentProxyOutputDir
-      ? fs.promises.writeFile(
-          path.join(domComponentProxyOutputDir, SPLASH_PRERENDER_FILE_NAME),
-          splashPrerender
-        )
+      ? fs.promises
+          .mkdir(domComponentProxyOutputDir, { recursive: true })
+          .then(() =>
+            fs.promises.writeFile(
+              path.join(domComponentProxyOutputDir, SPLASH_PRERENDER_FILE_NAME),
+              splashPrerender
+            )
+          )
       : null,
 
     // Write dom components proxy files.

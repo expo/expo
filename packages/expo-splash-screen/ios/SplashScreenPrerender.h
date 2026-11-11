@@ -30,6 +30,9 @@ NS_ASSUME_NONNULL_BEGIN
 /** Removes the overlay window and releases the renderer objects. */
 - (void)dismiss;
 
+/** Fades the overlay out over `duration` seconds (0 removes it immediately), then releases it. */
+- (void)dismissWithFadeDuration:(NSTimeInterval)duration;
+
 /** Whether the view is the root component view of the prerender surface (and not the app's). */
 - (BOOL)isPrerenderRootView:(UIView *)view;
 

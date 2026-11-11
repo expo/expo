@@ -27,9 +27,24 @@
 
 using namespace facebook::react;
 
+#import <sys/sysctl.h>
+#import <unistd.h>
+
 namespace {
 
 NSString *const kTemplateResourceName = @"SplashScreenPrerender";
+
+/// Wall-clock process start time in seconds since the Unix epoch, from the kernel.
+double processStartTime()
+{
+  struct kinfo_proc info;
+  size_t size = sizeof(info);
+  int mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_PID, getpid()};
+  if (sysctl(mib, 4, &info, &size, NULL, 0) != 0) {
+    return [[NSDate date] timeIntervalSince1970];
+  }
+  return (double)info.kp_proc.p_un.__p_starttime.tv_sec + (double)info.kp_proc.p_un.__p_starttime.tv_usec / 1e6;
+}
 // Root tags end in 1; this one is far above anything React allocates.
 const SurfaceId kSurfaceId = 900001;
 
@@ -132,6 +147,7 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   RootShadowNode::Unshared _preparedRoot;
   UIView *_containerView;
   UIWindow *_window;
+  NSTimeInterval _processStart;
 }
 
 + (instancetype)shared
@@ -148,6 +164,7 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 {
   SplashScreenPrerender *prerender = [self shared];
   if (prerender.isEnabled) {
+    [prerender log:@"+load"];
     [prerender prepare];
   }
 }
@@ -155,10 +172,22 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 - (instancetype)init
 {
   if (self = [super init]) {
-    _isEnabled = [[NSBundle mainBundle] URLForResource:kTemplateResourceName withExtension:@"json"] != nil &&
+    // `-ExpoSplashScreenPrerenderDisabled 1` as a launch argument turns the prerender off for A/B runs.
+    BOOL disabled = [[NSUserDefaults standardUserDefaults] boolForKey:@"ExpoSplashScreenPrerenderDisabled"];
+    _isEnabled = !disabled && [[NSBundle mainBundle] URLForResource:kTemplateResourceName withExtension:@"json"] != nil &&
         !RCTRunningInAppExtension();
+    _processStart = [[NSProcessInfo processInfo] systemUptime] - ([[NSDate date] timeIntervalSince1970] - processStartTime());
   }
   return self;
+}
+
+- (void)log:(NSString *)stage
+{
+  if (![[NSUserDefaults standardUserDefaults] boolForKey:@"ExpoSplashScreenPrerenderLog"]) {
+    return;
+  }
+  NSLog(@"[expo-splash-screen] prerender %@ at %.1f ms since process start", stage,
+        ([[NSProcessInfo processInfo] systemUptime] - _processStart) * 1000.0);
 }
 
 #pragma mark - Preparation (background)
@@ -246,6 +275,7 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
     std::vector<const LayoutableShadowNode *> affected;
     newRoot->layoutIfNeeded(&affected);
     _preparedRoot = newRoot;
+    [self log:@"prepared (background)"];
   } catch (const std::exception &e) {
     NSLog(@"[expo-splash-screen] prerender: failed to build template: %s", e.what());
   }
@@ -256,6 +286,7 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 - (void)mountIfPrepared
 {
   RCTAssertMainQueue();
+  [self log:_containerView ? @"mountIfPrepared (already mounted)" : @"mountIfPrepared"];
   if (_containerView || !_prepared) {
     return;
   }
@@ -275,12 +306,22 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
       ShadowTree::CommitOptions{.mountSynchronously = true});
   if (status != ShadowTree::CommitStatus::Succeeded) {
     [self dismiss];
+    return;
   }
+  [self log:@"mounted"];
+  // The views exist now; drop the renderer objects. The component view factory keeps every
+  // registry it created updated with components registered later, instantiating their
+  // descriptors with our context container, which lacks what interop descriptors need.
+  _tree.reset();
+  _treeDelegate.reset();
+  _registry.reset();
+  _contextContainer.reset();
 }
 
 - (void)showInWindowScene:(UIWindowScene *)windowScene
 {
   RCTAssertMainQueue();
+  [self log:@"scene connect"];
   [self mountIfPrepared];
   if (!_containerView || _window) {
     return;
@@ -293,10 +334,42 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
   window.rootViewController = controller;
   window.hidden = NO;
   _window = window;
+  [self log:@"shown"];
+}
+
+- (void)dismissWithFadeDuration:(NSTimeInterval)duration
+{
+  if (!RCTIsMainQueue()) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self dismissWithFadeDuration:duration];
+    });
+    return;
+  }
+  UIView *container = _containerView;
+  if (!_window || !container || duration <= 0) {
+    [self dismiss];
+    return;
+  }
+  [self log:@"fading out"];
+  _window.backgroundColor = UIColor.clearColor;
+  [UIView animateWithDuration:duration
+                        delay:0
+                      options:UIViewAnimationOptionBeginFromCurrentState
+                   animations:^{
+                     container.alpha = 0;
+                   }
+                   completion:nil];
+  // Tear down on our own clock: the completion block fires early when UIKit coalesces the animation.
+  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(duration * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    [self dismiss];
+  });
 }
 
 - (void)dismiss
 {
+  if (_window) {
+    [self log:@"dismissed"];
+  }
   if (!RCTIsMainQueue()) {
     dispatch_async(dispatch_get_main_queue(), ^{
       [self dismiss];
