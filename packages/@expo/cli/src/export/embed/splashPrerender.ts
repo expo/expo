@@ -2,9 +2,9 @@ import type { ExpoConfig } from '@expo/config';
 import { convertEntryPointToRelative } from '@expo/config/paths';
 import fs from 'fs';
 import path from 'path';
-import vm from 'vm';
 
 import { Log } from '../../log';
+import { evalMetroNoHandling } from '../../start/server/getStaticRenderFunctions';
 import type { MetroBundlerDevServer } from '../../start/server/metro/MetroBundlerDevServer';
 
 /** File name the native side of `expo-splash-screen` loads from the app bundle / assets. */
@@ -103,7 +103,7 @@ export async function exportSplashPrerenderAsync({
       minify: false,
       mode: 'production',
       engine: undefined,
-      serializerIncludeMaps: false,
+      serializerIncludeMaps: true,
       bytecode: false,
       reactCompiler: false,
     },
@@ -111,20 +111,39 @@ export async function exportSplashPrerenderAsync({
     { unstable_transformProfile: 'default' }
   );
   const code = bundles.artifacts.find((artifact) => artifact.type === 'js')?.source;
+  const sourceMap = bundles.artifacts.find((artifact) => artifact.type === 'map')?.source;
   if (typeof code !== 'string') {
     throw new Error(
       'expo-splash-screen: Metro did not produce a JavaScript bundle for the prerender component'
     );
   }
 
-  const template = await recordTemplateAsync(code, platform);
+  const template = await recordTemplateAsync({
+    projectRoot,
+    code,
+    filename: entryFile,
+    sourceMap: typeof sourceMap === 'string' ? sourceMap : undefined,
+    platform,
+  });
   warnAboutUnknownComponents(template);
   return JSON.stringify(template);
 }
 
 type RecordedNode = { name: string; props: Record<string, unknown>; children: RecordedNode[] };
 
-async function recordTemplateAsync(code: string, platform: string): Promise<SplashPrerenderTemplate> {
+async function recordTemplateAsync({
+  projectRoot,
+  code,
+  filename,
+  sourceMap,
+  platform,
+}: {
+  projectRoot: string;
+  code: string;
+  filename: string;
+  sourceMap?: string;
+  platform: string;
+}): Promise<SplashPrerenderTemplate> {
   const roots = new Map<number, RecordedNode[]>();
   const node = (name: string, props: Record<string, unknown> | null, children: RecordedNode[] = []): RecordedNode => ({
     name,
@@ -228,55 +247,67 @@ async function recordTemplateAsync(code: string, platform: string): Promise<Spla
           }
         );
 
-  const errors: unknown[] = [];
-  const sandbox: Record<string, unknown> = {
-    console,
-    setTimeout,
-    clearTimeout,
-    setInterval,
-    clearInterval,
-    setImmediate,
-    clearImmediate,
-    queueMicrotask,
-    MessageChannel,
-    performance,
-    navigator: { product: 'ReactNative' },
+  const fatalErrors: unknown[] = [];
+  const reportedErrors: unknown[] = [];
+  // The bundle runs in this Node context (the same evaluator web static rendering and RSC use,
+  // with source maps and Metro's error formatting), so the globals it expects go on `globalThis`
+  // for the duration of the render. React Native's runtime replaces `console` (and reports
+  // `console.error` through `RN$handleException`), so logging goes through the original console.
+  const originalConsole = console;
+  const originalSetTimeout = setTimeout;
+  const globals: Record<string, unknown> = {
     RN$Bridgeless: true,
     RN$registerCallableModule() {},
     RN$useAlwaysAvailableJSErrorHandling: true,
-    RN$handleException: (error: unknown) => {
-      errors.push(error);
+    RN$handleException: (error: unknown, isFatal: boolean) => {
+      (isFatal ? fatalErrors : reportedErrors).push(error);
     },
     nativeFabricUIManager: fabricUIManager,
     __turboModuleProxy: (name: string) => stubModule(name),
     nativeModuleProxy: new Proxy({}, { get: (_, name) => stubModule(String(name)) }),
     nativeLoggingHook: (message: string, level: number) => {
       if (level >= 3) {
-        Log.warn(`expo-splash-screen prerender: ${message}`);
+        originalConsole.warn(`expo-splash-screen prerender: ${message}`);
       }
     },
   };
-  sandbox.globalThis = sandbox;
-  sandbox.global = sandbox;
-  sandbox.self = sandbox;
-  vm.createContext(sandbox);
-  vm.runInContext(code, sandbox, { filename: 'splash-prerender.bundle.js' });
-
-  // React commits through the scheduler (timers), so give the event loop a moment.
-  for (let i = 0; i < 200 && roots.size === 0 && errors.length === 0; i++) {
-    await new Promise((resolve) => setTimeout(resolve, 10));
+  const touched = ['console', 'setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'setImmediate', 'clearImmediate', 'requestAnimationFrame', 'cancelAnimationFrame', 'queueMicrotask', 'ErrorUtils', 'performance', 'fetch', 'XMLHttpRequest', 'navigator', 'process', '__r', '__d', '__c', '__registerSegment', ...Object.keys(globals)];
+  const previous = new Map<string, PropertyDescriptor | undefined>();
+  for (const key of touched) {
+    previous.set(key, Object.getOwnPropertyDescriptor(globalThis, key));
   }
-  if (errors.length > 0) {
-    const error = errors[0];
+  for (const [key, value] of Object.entries(globals)) {
+    (globalThis as any)[key] = value;
+  }
+  try {
+    evalMetroNoHandling(projectRoot, code, filename, sourceMap);
+    // React commits through the scheduler (timers), so give the event loop a moment.
+    for (let i = 0; i < 200 && roots.size === 0 && fatalErrors.length === 0; i++) {
+      await new Promise((resolve) => originalSetTimeout(resolve, 10));
+    }
+  } finally {
+    for (const [key, descriptor] of previous) {
+      if (descriptor) {
+        Object.defineProperty(globalThis, key, descriptor);
+      } else {
+        delete (globalThis as any)[key];
+      }
+    }
+  }
+  const childSet = roots.get(1);
+  const failure = fatalErrors[0] ?? (!childSet || childSet.length === 0 ? reportedErrors[0] : undefined);
+  if (failure !== undefined) {
     throw new Error(
-      `expo-splash-screen: the prerender component threw while rendering: ${
-        error instanceof Error ? error.stack ?? error.message : String(error)
+      `expo-splash-screen: the prerender component failed to render: ${
+        failure instanceof Error ? failure.stack ?? failure.message : String(failure)
       }`
     );
   }
-  const childSet = roots.get(1);
   if (!childSet || childSet.length === 0) {
     throw new Error('expo-splash-screen: the prerender component did not render anything');
+  }
+  for (const reported of reportedErrors) {
+    Log.warn(`expo-splash-screen prerender: ${reported instanceof Error ? reported.message : String(reported)}`);
   }
 
   const strip = ({ name, props, children }: RecordedNode): SplashPrerenderTemplate => ({
