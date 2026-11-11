@@ -133,12 +133,7 @@ export default {
       const recovered = await recoverNotFoundAsync(request, env, false).catch(() => null);
       if (recovered) return recovered;
 
-      const listsHtml = /(^|,)\s*text\/html\s*(;|,|$)/i.test(accept);
-      const probeDiagnostic =
-        (url.pathname.startsWith("/api/v1/") && !listsHtml) ||
-        (url.pathname.startsWith("/v1/") && listsHtml);
-
-      if (probeDiagnostic || prefersType(accept, "application/json")) {
+      if (prefersType(accept, "application/json")) {
         return new Response(request.method === "HEAD" ? null : NOT_FOUND_JSON, {
           status: 404,
           headers: {
