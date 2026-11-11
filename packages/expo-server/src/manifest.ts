@@ -8,7 +8,7 @@ export type CssAsset =
 /**
  * Asset manifest for client hydration bundles.
  *
- * {@link import('@expo/router-server/src/static/renderStaticContent').GetStaticContentOptions}
+ * {@link import('@expo/router-server/src/server/renderStreamingContent').GetStreamingContentOptions}
  */
 export interface AssetInfo {
   /**
@@ -185,7 +185,9 @@ export interface MatchedRoute {
 }
 
 /**
- * @type {import('@expo/router-server/src/static/renderStaticContent').GetStaticContentOptions}
+ * Options of the legacy `getStaticContent()` renderer.
+ *
+ * @deprecated Use {@link GetStreamingContentOptions}.
  */
 export interface GetStaticContentOptions {
   loader?: { data?: unknown; key: string };
@@ -198,7 +200,7 @@ export interface GetStaticContentOptions {
 }
 
 /**
- * @type {import('@expo/router-server/src/static/renderStreamingContent').GetStreamingContentOptions}
+ * @type {import('@expo/router-server/src/server/renderStreamingContent').GetStreamingContentOptions}
  */
 export interface GetStreamingContentOptions {
   loader?: { data?: unknown; key: string };
