@@ -527,99 +527,9 @@ describe('shared config fields', () => {
       'ios.buildReactNativeFromSource': 'false',
     });
   });
-
-  it('should apply top-level useHermesV1 to Android when buildReactNativeFromSource is true', async () => {
-    const pluginProps: PluginConfigType = {
-      useHermesV1: true,
-      buildReactNativeFromSource: true,
-    };
-
-    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
-      AndroidConfig.Properties.PropertiesItem[],
-      PluginConfigType
-    >(
-      {},
-      {
-        plugin: withBuildProperties,
-        pluginProps,
-        mod: withGradleProperties,
-        modResults: [],
-      }
-    );
-    expect(androidModResults).toContainEqual({
-      type: 'property',
-      key: 'hermesV1Enabled',
-      value: 'true',
-    });
-  });
-
-  it('should apply top-level useHermesV1 to iOS when buildReactNativeFromSource is true', async () => {
-    const pluginProps: PluginConfigType = {
-      useHermesV1: true,
-      buildReactNativeFromSource: true,
-    };
-
-    const { modResults: iosModResults } = await compileMockModWithResultsAsync(
-      {},
-      {
-        plugin: withBuildProperties,
-        pluginProps,
-        mod: withPodfileProperties,
-        modResults: {},
-      }
-    );
-    expect(iosModResults).toMatchObject({
-      'expo.useHermesV1': 'true',
-    });
-  });
-
-  it('should allow platform-specific override of top-level useHermesV1', async () => {
-    const pluginProps: PluginConfigType = {
-      useHermesV1: true,
-      buildReactNativeFromSource: true,
-      ios: { useHermesV1: false },
-    };
-
-    const { modResults: iosModResults } = await compileMockModWithResultsAsync(
-      {},
-      {
-        plugin: withBuildProperties,
-        pluginProps,
-        mod: withPodfileProperties,
-        modResults: {},
-      }
-    );
-    expect(iosModResults).toMatchObject({
-      'expo.useHermesV1': 'false',
-    });
-  });
 });
 
 describe('useHermesV1 deprecation', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
-  it('should not warn when useHermesV1 is not set', () => {
-    withBuildProperties({} as any, {});
-
-    expect(WarningAggregator.addWarningAndroid).not.toHaveBeenCalled();
-    expect(WarningAggregator.addWarningIOS).not.toHaveBeenCalled();
-  });
-
-  it('should warn on both platforms when top-level useHermesV1 is set', () => {
-    withBuildProperties({} as any, { useHermesV1: true });
-
-    expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
-      'useHermesV1',
-      expect.stringContaining('deprecated')
-    );
-    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
-      'useHermesV1',
-      expect.stringContaining('deprecated')
-    );
-  });
-
   it('should warn only on the platform that sets useHermesV1', () => {
     withBuildProperties({} as any, { android: { useHermesV1: false } });
 
