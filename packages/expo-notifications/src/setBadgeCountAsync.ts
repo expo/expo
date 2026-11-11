@@ -18,7 +18,7 @@ export interface SetBadgeCountOptions {
  * See [App icon badges](#app-icon-badges) for launcher behavior.
  *
  * On iOS, this method resolves to `false` if badge permission is disabled. Request `allowBadge` through
- * [`requestPermissionsAsync`](#notificationsrequestpermissionsasyncpermissions).
+ * [`requestPermissionsAsync`](#requestpermissionsasyncpermissions).
  * @param badgeCount The requested badge count.
  * @param options Options configuring badge behavior.
  * @return Whether the operation succeeded. This does not confirm that a badge is visible.

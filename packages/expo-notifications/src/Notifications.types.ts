@@ -606,7 +606,7 @@ export type NotificationContentInput = {
   data?: Record<string, unknown>;
   /**
    * On Android, the number of items this notification represents. This maps to Android's
-   * [`setNumber`](https://developer.android.com/develop/ui/views/notifications/badges#set-custom-notification-count).
+   * [`setNumber`](https://developer.android.com/develop/ui/views/notifications/badges#set-custom-count).
    * The launcher may show this count in the app icon's touch-and-hold menu, but a numeric icon badge is not guaranteed.
    * Setting `0` does not dismiss notifications.
    *

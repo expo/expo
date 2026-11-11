@@ -649,7 +649,7 @@ Setting an app icon's badge count independently of notifications is unsupported 
 
 The notification's [`badge`](#notificationcontentinput) value supplies a count, while the channel's [`showBadge`](#notificationchannel) setting allows badges. Neither guarantees a number on the app icon. See [Android's notification badge guide](https://developer.android.com/develop/ui/views/notifications/badges).
 
-On Android, [`getBadgeCountAsync()`](#notificationsgetbadgecountasync) always returns `0`, regardless of visible badges. [`setBadgeCountAsync()`](#notificationssetbadgecountasyncbadgecount-options) returns `false` for nonzero counts. Setting `0` dismisses the app's notifications and returns `true`.
+On Android, [`getBadgeCountAsync()`](#getbadgecountasync) always returns `0`, regardless of visible badges. [`setBadgeCountAsync()`](#setbadgecountasyncbadgecount-options) returns `false` for nonzero counts. Setting `0` dismisses the app's notifications and returns `true`.
 
 ### Handling notification channels&ensp;<PlatformTags platforms={['android 8+']} />
 
