@@ -54,7 +54,7 @@ A create session link starts a session from an Expo Build, build fingerprint, ap
 
 Create session links start browser-preview-only sessions. They do not provision agent-device, Appium, or Argent. Use [EAS CLI](/eas/simulators/reference/cli/) or the [REST API](/eas/simulators/reference/rest-api/) when you need a controller, a blank device, or custom duration and idle limits.
 
-Create session links support Android and iOS. Android support is still in development. A link with `platform=android`, or with an archive URL that ends in **.apk**, starts an Android session and shows an in-development warning. An Android application archive must be an **.apk**.
+Create session links support Android and iOS. A link with `platform=android`, or with an archive URL that ends in **.apk**, starts an Android session. An Android application archive must be an **.apk**.
 
 > **warning** Opening a create session link starts a new session without a confirmation step. The link is not idempotent: opening it again can create another session that consumes Expo Simulators usage. To avoid starting a new session, open the existing one from the project's **Simulator sessions** page and share its session page URL.
 
