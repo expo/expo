@@ -4,6 +4,7 @@ import chalk from 'chalk';
 import { execSync } from 'child_process';
 
 import { exit, exception, warn } from '../log';
+import { reportProgramResult } from './programStatus';
 
 const ERROR_PREFIX = 'Error: ';
 
@@ -70,6 +71,7 @@ export async function logCmdError(error: any): Promise<never> {
     await flushEventLogger();
     process.exit(1);
   }
+  reportProgramResult({ state: 'error', msg: error.message });
   event('error', { error: event.error(error) });
   await flushEventLogger();
   if (
