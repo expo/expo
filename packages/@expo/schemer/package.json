@@ -29,7 +29,7 @@
     "test:e2e": "jest --config e2e/jest.config.js",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
-    "prepublishOnly": "pnpm run clean && pnpm run build"
+    "prepublishOnly": "expo-module prepublish 'pnpm run clean && pnpm run build'"
   },
   "dependencies": {
     "@expo/schema-utils": "workspace:*",

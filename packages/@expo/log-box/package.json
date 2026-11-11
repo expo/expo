@@ -66,7 +66,7 @@
     "clean": "run-p clean:lib clean:bundle",
     "clean:lib": "rimraf build",
     "clean:bundle": "rimraf dist",
-    "prepublishOnly": "run-s clean build:publish",
+    "prepublishOnly": "expo-module prepublish 'run-s clean build:publish'",
     "build": "run-s build:lib",
     "build:publish": "run-s build:lib build:bundle",
     "build:lib": "expo-build src",

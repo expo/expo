@@ -39,7 +39,7 @@
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
     "test": "jest",
-    "prepublishOnly": "pnpm run clean && pnpm run build:prod"
+    "prepublishOnly": "expo-module prepublish 'pnpm run clean && pnpm run build:prod'"
   },
   "devDependencies": {
     "@expo/config": "workspace:*",

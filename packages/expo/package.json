@@ -219,7 +219,7 @@
     "test:spm-plugin": "jest --config scripts/spm/jest.config.js",
     "test:templates": "et check-template-packages",
     "prepack": "et create-expo-template-tarball",
-    "prepublishOnly": "run-s clean build",
+    "prepublishOnly": "../@expo/internal-scripts/bin/expo-module-prepublish 'run-s clean build'",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json"
   },
