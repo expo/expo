@@ -574,7 +574,7 @@ async function testHtmlNotFoundAsync(): Promise<void> {
 async function testJsonNotFoundAsync(): Promise<void> {
   console.log('\n--- Testing JSON 404 responses ---');
 
-  const response = await fetch(`${BASE_URL}/api/v1/nonexistent`, {
+  const response = await fetch(`${BASE_URL}/nonexistent-page`, {
     headers: { Accept: 'application/json' },
   });
   const contentType = response.headers.get('content-type') ?? '';
@@ -598,17 +598,24 @@ async function testJsonNotFoundAsync(): Promise<void> {
   }
   console.log('✓ JSON 404 responds with a JSON error body and recovery links');
 
-  const htmlPreferred = await fetch(`${BASE_URL}/api/v1/nonexistent`, {
-    headers: { Accept: 'text/html, application/json;q=0.9' },
-  });
-  const htmlPreferredType = htmlPreferred.headers.get('content-type') ?? '';
+  const expectations = [
+    { route: '/nonexistent-page', accept: '*/*', type: 'text/html' },
+    { route: '/nonexistent-page', accept: 'text/html, application/json;q=0.9', type: 'text/html' },
+    { route: '/api/v1/nonexistent', accept: '*/*', type: 'application/json' },
+    { route: '/api/v1/nonexistent', accept: 'text/html,application/xml;q=0.9', type: 'text/html' },
+  ];
 
-  if (htmlPreferred.status !== 404 || !htmlPreferredType.includes('text/html')) {
-    throw new Error(
-      `Expected an HTML 404 when HTML carries the higher q, got: HTTP ${htmlPreferred.status} ${htmlPreferredType}`
-    );
+  for (const { route, accept, type } of expectations) {
+    const result = await fetch(`${BASE_URL}${route}`, { headers: { Accept: accept } });
+    const resultType = result.headers.get('content-type') ?? '';
+
+    if (result.status !== 404 || !resultType.includes(type)) {
+      throw new Error(
+        `Expected a ${type} 404 for ${route} with Accept "${accept}", got: HTTP ${result.status} ${resultType}`
+      );
+    }
+    console.log(`✓ ${route} with Accept "${accept}" returns a ${type} 404`);
   }
-  console.log('✓ HTML 404 stays when HTML carries the higher q');
 }
 
 function navigateAsync(path: string, headers: http.OutgoingHttpHeaders = {}) {
