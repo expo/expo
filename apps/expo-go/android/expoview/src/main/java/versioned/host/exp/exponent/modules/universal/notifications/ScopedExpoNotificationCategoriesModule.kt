@@ -40,4 +40,8 @@ class ScopedExpoNotificationCategoriesModule(
   override fun ownsCategory(identifier: String): Boolean {
     return identifier.startsWith(ScopedNotificationsIdUtils.getScopedCategoryId(experienceKey, ""))
   }
+
+  override fun serializeCategory(category: NotificationCategoryRecord): NotificationCategoryRecord {
+    return category.copy(identifier = category.identifier.removePrefix(ScopedNotificationsIdUtils.getScopedCategoryId(experienceKey, "")))
+  }
 }
