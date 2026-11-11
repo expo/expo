@@ -633,23 +633,6 @@ Notification categories allow you to create interactive push notifications, so t
 either via buttons or a text response. A category defines the set of actions a user can take, and then those actions are applied to a notification
 by specifying the `categoryIdentifier` in the [`NotificationContent`](#notificationcontent).
 
-Use [`setNotificationCategoriesAsync`](#setnotificationcategoriesasynccategories) to register your categories. This is the recommended registration API. Call it during app initialization with the complete list of categories your app supports.
-
-```tsx
-import * as Notifications from 'expo-notifications';
-
-await Notifications.setNotificationCategoriesAsync([
-  {
-    identifier: 'new_message',
-    actions: [{ identifier: 'open', buttonTitle: 'Open' }],
-  },
-]);
-```
-
-Each call replaces the previously registered categories. To remove a category, omit it from the complete list in your next call. Pass an empty array to remove all categories. In Expo Go, the call replaces only the current project's categories.
-
-[`setNotificationCategoryAsync`](#setnotificationcategoryasyncidentifier-actions-options) and [`deleteNotificationCategoryAsync`](#deletenotificationcategoryasyncidentifier) are deprecated but remain functional. When migrating, combine your registrations into one complete list instead of replacing each single-category call with a separate bulk call.
-
 <ContentSpotlight
   src="/static/images/sdk/notifications/categories.webp"
   className="max-w-[800px]"
