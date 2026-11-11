@@ -9,9 +9,22 @@ No markdown exists for this path. Useful starting points:
 - [Documentation home](https://docs.expo.dev/)
 `;
 
-function acceptsMarkdown(accept) {
-  let markdownListed = false;
-  let markdownQuality = 0;
+const NOT_FOUND_JSON = JSON.stringify({
+  error: {
+    status: 404,
+    code: "not_found",
+    message:
+      "No documentation page exists at this path. Find a valid path in the documentation index or the sitemap.",
+  },
+  links: {
+    index: "https://docs.expo.dev/llms.txt",
+    sitemap: "https://docs.expo.dev/sitemap.xml",
+    home: "https://docs.expo.dev/",
+  },
+});
+
+function prefersType(accept, wanted) {
+  let wantedQuality = 0;
   let htmlQuality = 0;
 
   for (const entry of accept.split(",")) {
@@ -27,15 +40,14 @@ function acceptsMarkdown(accept) {
       }
     }
 
-    if (name === "text/markdown") {
-      markdownListed = true;
-      markdownQuality = Math.max(markdownQuality, quality);
+    if (name === wanted) {
+      wantedQuality = Math.max(wantedQuality, quality);
     } else if (name === "text/html" || name === "text/*" || name === "*/*") {
       htmlQuality = Math.max(htmlQuality, quality);
     }
   }
 
-  return markdownListed && markdownQuality > 0 && markdownQuality >= htmlQuality;
+  return wantedQuality > 0 && wantedQuality >= htmlQuality;
 }
 
 function upgradeHelperPairPath(url) {
@@ -60,7 +72,7 @@ export default {
     const directMarkdown = url.pathname.endsWith(".md");
     const wantsMarkdown =
       directMarkdown ||
-      acceptsMarkdown(accept) ||
+      prefersType(accept, "text/markdown") ||
       (pairPath !== null && /\.md$/.test(url.searchParams.get("toSdk") || ""));
 
     if (wantsMarkdown) {
@@ -120,6 +132,16 @@ export default {
     if (htmlResponse.status === 404) {
       const recovered = await recoverNotFoundAsync(request, env, false).catch(() => null);
       if (recovered) return recovered;
+
+      if (prefersType(accept, "application/json")) {
+        return new Response(request.method === "HEAD" ? null : NOT_FOUND_JSON, {
+          status: 404,
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            Vary: "Accept",
+          },
+        });
+      }
     }
     const response = new Response(htmlResponse.body, htmlResponse);
     response.headers.append("Vary", "Accept");
