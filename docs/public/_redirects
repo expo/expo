@@ -900,6 +900,9 @@
 /versions/v53.0.0/* /versions/latest/:splat 301
 /versions/v54.0.0/* /versions/latest/:splat 301
 
+# Agent skill files keep their own .md paths, so this rule must come before the /*.md rewrite
+/.well-known/agent-skills/* /.well-known/agent-skills/:splat 200
+
 # Serve markdown at the sibling /<slug>.md path that AI agents typically request,
 # rewriting to the canonical /<slug>/index.md the build script writes.
 # The first two rules are pass-throughs that preserve canonical URLs (root /index.md
