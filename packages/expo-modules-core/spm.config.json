@@ -101,6 +101,7 @@
     {
       "name": "ExpoModulesWorklets",
       "podName": "ExpoModulesWorklets",
+      "headersXCFramework": true,
       "platforms": ["iOS(\"16.4\")"],
       "externalDependencies": [
         "ReactNativeDependencies",
