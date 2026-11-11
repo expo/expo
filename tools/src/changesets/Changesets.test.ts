@@ -10,6 +10,7 @@ import {
   assertChangesetPrerequisiteAsync,
   assertNoMajorChangesetsAsync,
   getPendingChangesetsAsync,
+  getReleasePublishEnv,
   getReleaseTagAsync,
   getStablePublishArgsAsync,
   runChangesetsAsync,
@@ -142,6 +143,32 @@ describe('Changesets release prerequisites', () => {
     assert.deepEqual(invocation?.args, ['exec', 'changeset', 'publish', '--tag', 'latest']);
     assert.equal(invocation?.options.stdio, 'inherit');
     assert.equal(invocation?.options.env, undefined);
+  });
+
+  it('publishes a release with clean skipped and the Changesets Action environment intact', async () => {
+    const previousOutput = process.env.CHANGESETS_OUTPUT;
+    process.env.CHANGESETS_OUTPUT = '/tmp/action-publish-output.json';
+    let options: any;
+
+    try {
+      await runChangesetsAsync(
+        ['publish', '--tag', 'latest'],
+        ((_command: string, _args: readonly string[], spawnOptions: any) => {
+          options = spawnOptions;
+          return Promise.resolve({ status: 0, signal: null, stdout: '', stderr: '', output: [] });
+        }) as any,
+        getReleasePublishEnv()
+      );
+    } finally {
+      if (previousOutput === undefined) {
+        delete process.env.CHANGESETS_OUTPUT;
+      } else {
+        process.env.CHANGESETS_OUTPUT = previousOutput;
+      }
+    }
+
+    assert.equal(options.env.EXPO_PUBLISH_SKIP_CLEAN, '1');
+    assert.equal(options.env.CHANGESETS_OUTPUT, '/tmp/action-publish-output.json');
   });
 
   it('derives release tags and respects disabled routes', async () => {
