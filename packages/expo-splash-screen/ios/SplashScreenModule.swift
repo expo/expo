@@ -33,6 +33,14 @@ public class SplashScreenModule: Module {
       return true
     }
 
+    AsyncFunction("saveLaunchScreenAsync") { () -> Bool in
+      return SplashScreenManager.shared.saveLaunchScreen()
+    }.runOnQueue(.main)
+
+    AsyncFunction("clearLaunchScreenAsync") {
+      SplashScreenManager.shared.clearLaunchScreen()
+    }
+
     AsyncFunction("internalPreventAutoHideAsync") {
       SplashScreenManager.shared.preventAutoHideCalled = true
     }

@@ -38,3 +38,14 @@ export async function preventAutoHideAsync() {
 
   return SplashModule.preventAutoHideAsync();
 }
+
+export async function saveLaunchScreenAsync(): Promise<boolean> {
+  if (!SplashModule?.saveLaunchScreenAsync) {
+    return false;
+  }
+  return SplashModule.saveLaunchScreenAsync();
+}
+
+export async function clearLaunchScreenAsync(): Promise<void> {
+  await SplashModule?.clearLaunchScreenAsync?.();
+}

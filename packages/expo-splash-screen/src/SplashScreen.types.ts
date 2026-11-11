@@ -19,6 +19,8 @@ export interface SplashScreenNativeModule extends NativeModule {
   preventAutoHideAsync: () => Promise<boolean>;
   hide: () => void;
   hideAsync: () => Promise<void>;
+  saveLaunchScreenAsync: () => Promise<boolean>;
+  clearLaunchScreenAsync: () => Promise<void>;
   // @private
   _internal_maybeHideAsync: () => Promise<void>;
   // @private
