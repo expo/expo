@@ -930,3 +930,6 @@
 /privacy/ https://expo.dev/privacy 301
 /about https://expo.dev/about 301
 /about/ https://expo.dev/about 301
+
+# ARD reads the catalog at ard.json; MCP Server Card discovery reads it at ai-catalog.json
+/.well-known/ard.json /.well-known/ai-catalog.json 200
