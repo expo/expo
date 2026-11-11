@@ -47,7 +47,7 @@
     "@expo/sdk-compatibility": "link:../packages/@expo/sdk-compatibility",
     "@expo/styleguide": "^15.0.2",
     "@expo/styleguide-base": "^4.0.1",
-    "@expo/styleguide-cookie-consent": "4.0.0-datagrail.4",
+    "@expo/styleguide-cookie-consent": "4.0.0",
     "@expo/styleguide-icons": "^5.0.1",
     "@expo/styleguide-search-ui": "^10.0.3",
     "@kapaai/react-sdk": "^0.9.6",
