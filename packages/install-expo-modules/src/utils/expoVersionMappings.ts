@@ -1,4 +1,5 @@
 import assert from 'assert';
+import fs from 'fs';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
@@ -13,6 +14,20 @@ export interface VersionInfo {
 
 export const ExpoVersionMappings: VersionInfo[] = [
   // Please keep sdk versions in sorted order (latest sdk first)
+  {
+    expoPackageVersion: '~58.0.0',
+    sdkVersion: '58.0.0',
+    iosDeploymentTarget: '16.4',
+    reactNativeVersionRange: '~0.88.0',
+    supportCliIntegration: true,
+  },
+  {
+    expoPackageVersion: '~57.0.0',
+    sdkVersion: '57.0.0',
+    iosDeploymentTarget: '16.4',
+    reactNativeVersionRange: '~0.86.0',
+    supportCliIntegration: true,
+  },
   {
     expoPackageVersion: '~56.0.0',
     sdkVersion: '56.0.0',
@@ -122,7 +137,9 @@ export function getDefaultSdkVersion(projectRoot: string): VersionInfo {
   if (!reactNativePackageJsonPath) {
     throw new Error(`Unable to find react-native package - projectRoot[${projectRoot}]`);
   }
-  const reactNativeVersion = require(reactNativePackageJsonPath).version;
+  const reactNativeVersion = JSON.parse(
+    fs.readFileSync(reactNativePackageJsonPath, 'utf8')
+  ).version;
   // Allow RNTV-style version strings
   const reactNativeVersionForSemverCheck = reactNativeVersion.split('-')[0];
   const versionInfo = ExpoVersionMappings.find((info) =>

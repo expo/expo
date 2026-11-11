@@ -6,6 +6,7 @@ import {
 import { createInitialState } from '../../react-navigation/core/createInitialState';
 import { CommonActions, type RouterConfigOptions } from '../../react-navigation/native';
 import type { ParamListBase, TabNavigationState } from '../../react-navigation/routers';
+import { expectHandled } from '../../react-navigation/routers/__tests__/__fixtures__/expectHandled';
 import { NativeBottomTabsRouter } from '../NativeBottomTabsRouter';
 
 let warn: jest.SpyInstance;
@@ -55,21 +56,23 @@ test('post-processes a first navigation to an unvisited tab', () => {
     __internal__routerActionState: true as const,
   };
 
-  const { state: result, affectedRouteKey } = router.getStateForAction(
-    state,
-    {
-      type: 'NAVIGATE',
-      payload: {
-        name: 'second',
-        params: {
-          [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: 'screen-id',
-          [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]: 'source-id',
+  const { state: result, affectedRouteKey } = expectHandled(
+    router.getStateForAction(
+      state,
+      {
+        type: 'NAVIGATE',
+        payload: {
+          name: 'second',
+          params: {
+            [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: 'screen-id',
+            [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]: 'source-id',
+          },
+          state: destinationState,
         },
-        state: destinationState,
       },
-    },
-    options
-  )!;
+      options
+    )
+  );
   const route = result.routes[result.index!]!;
   const params = route.params as Record<string, unknown>;
 
@@ -101,27 +104,29 @@ test('does not disable animation when navigating within the focused tab', () => 
     parentChain: 'test',
   });
 
-  const result = router.getStateForAction(
-    state,
-    {
-      type: 'NAVIGATE',
-      payload: {
-        name: 'index',
-        state: {
-          routes: [
-            {
-              name: 'nested',
-              state: {
-                routes: [{ name: 'deep' }],
+  const result = expectHandled(
+    router.getStateForAction(
+      state,
+      {
+        type: 'NAVIGATE',
+        payload: {
+          name: 'index',
+          state: {
+            routes: [
+              {
+                name: 'nested',
+                state: {
+                  routes: [{ name: 'deep' }],
+                },
               },
-            },
-          ],
-          __internal__routerActionState: true,
+            ],
+            __internal__routerActionState: true,
+          },
         },
       },
-    },
-    options
-  )!;
+      options
+    )
+  );
   const route = result.state.routes[result.state.index!]!;
 
   expect(route.params).toBeUndefined();
@@ -140,7 +145,9 @@ test('does not disable animation for a tab-bar navigation action', () => {
     parentChain: 'test',
   });
 
-  const result = router.getStateForAction(state, CommonActions.navigate('second'), options)!;
+  const result = expectHandled(
+    router.getStateForAction(state, CommonActions.navigate('second'), options)
+  );
   const route = result.state.routes[result.state.index!]!;
 
   expect(route.params).toBeUndefined();
@@ -157,11 +164,13 @@ test('does not treat a screen param as a deep destination', () => {
     parentChain: 'test',
   });
 
-  const result = router.getStateForAction(
-    state,
-    CommonActions.navigate('second', { screen: 'ordinary-user-param' }),
-    options
-  )!;
+  const result = expectHandled(
+    router.getStateForAction(
+      state,
+      CommonActions.navigate('second', { screen: 'ordinary-user-param' }),
+      options
+    )
+  );
 
   expect(result.state.routes[result.state.index!]?.params).toEqual({
     screen: 'ordinary-user-param',

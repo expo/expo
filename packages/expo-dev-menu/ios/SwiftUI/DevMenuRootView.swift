@@ -3,6 +3,8 @@
 import SwiftUI
 
 struct DevMenuRootView: View {
+  static let coordinateSpace = "DevMenuRootView"
+
   @StateObject private var viewModel = DevMenuViewModel()
   @State private var navigationId = UUID()
 
@@ -19,10 +21,19 @@ struct DevMenuRootView: View {
         if !viewModel.isOnboardingFinished {
           DevMenuOnboardingView(
             onFinish: viewModel.finishOnboarding,
-            appName: viewModel.configuration.onboardingAppName ?? "your development builds"
+            appName: viewModel.configuration.onboardingAppName ?? "your development builds",
+            onContentBottomChange: { bottom in
+              DevMenuManager.shared.setOnboardingContentHeight(bottom)
+            }
           )
         }
         #endif
+      }
+    }
+    .coordinateSpace(name: Self.coordinateSpace)
+    .onChange(of: viewModel.isOnboardingFinished) { isFinished in
+      if isFinished {
+        DevMenuManager.shared.setOnboardingContentHeight(nil)
       }
     }
 #if !os(macOS)

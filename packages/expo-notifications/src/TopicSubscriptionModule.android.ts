@@ -1,5 +1,8 @@
-import { requireNativeModule } from 'expo';
+import { requireOptionalNativeModule } from 'expo';
 
 import type { TopicSubscriptionModule } from './TopicSubscriptionModule.types';
 
-export default requireNativeModule<TopicSubscriptionModule>('ExpoTopicSubscriptionModule');
+const topicSubscriptionModule: TopicSubscriptionModule =
+  requireOptionalNativeModule<TopicSubscriptionModule>('ExpoTopicSubscriptionModule') ?? {};
+
+export default topicSubscriptionModule;

@@ -34,7 +34,7 @@ public final class DeviceMotionModule: Module {
         return
       }
       permissionsManager.getPermissionUsingRequesterClass(
-        EXMotionPermissionRequester.self,
+        MotionPermissionRequester.self,
         resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
@@ -45,7 +45,7 @@ public final class DeviceMotionModule: Module {
         return
       }
       permissionsManager.askForPermission(
-        usingRequesterClass: EXMotionPermissionRequester.self,
+        usingRequesterClass: MotionPermissionRequester.self,
         resolve: promise.legacyResolver,
         reject: promise.legacyRejecter
       )
@@ -67,7 +67,7 @@ public final class DeviceMotionModule: Module {
       guard let permissionsManager = appContext?.permissions else {
         return
       }
-      permissionsManager.register([EXMotionPermissionRequester()])
+      permissionsManager.register([MotionPermissionRequester()])
     }
   }
 

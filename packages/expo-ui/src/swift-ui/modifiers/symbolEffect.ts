@@ -1,5 +1,6 @@
 import { getStateId, type ObservableState } from '../../State';
 import { createModifier } from './createModifier';
+import { flattenOptions } from './symbolEffectOptions';
 
 // https://developer.apple.com/documentation/symbols/appearsymboleffect
 type AppearSymbolEffect = {
@@ -101,19 +102,65 @@ export type SymbolEffect =
   | WiggleSymbolEffect;
 
 /**
- * Animation options for a symbol effect.
+ * A transition that applies the default animation to a symbol-based image in a context-sensitive manner.
+ *
+ * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/symboleffect/automatic).
+ */
+export type AutomaticSymbolEffect = {
+  effect: 'automatic';
+};
+
+/**
+ * An animation that replaces the layers of one symbol-based image with those of another.
+ *
+ * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/symboleffect/replace).
+ */
+export type ReplaceSymbolEffect = {
+  effect: 'replace';
+  /**
+   * The variant of the Replace animation.
+   * - `'downUp'` - replaces a symbol by scaling it down, and scaling a different symbol up.
+   * - `'upUp'` - replaces a symbol by scaling it up, and scaling a different symbol up.
+   * - `'offUp'` - replaces a symbol by removing it, and scaling a different symbol up.
+   */
+  direction?: 'downUp' | 'upUp' | 'offUp';
+  /**
+   * How the effect replaces the symbol layers.
+   * - `'byLayer'` - replaces each layer separately.
+   * - `'wholeSymbol'` - replaces all layers simultaneously.
+   */
+  scope?: 'byLayer' | 'wholeSymbol';
+};
+
+/**
+ * An effect that animates between symbols or different configurations of the same symbol.
+ *
+ * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/contenttransitionsymboleffect).
+ */
+export type ContentTransitionSymbolEffect = AutomaticSymbolEffect | ReplaceSymbolEffect;
+
+/**
+ * Options that configure how effects apply to symbol-based images.
  *
  * @see Official [Apple documentation](https://developer.apple.com/documentation/symbols/symboleffectoptions).
  */
 export type SymbolEffectOptions = {
   /**
-   * How the effect repeats. Omit for the effect's natural cadence.
-   * - `'nonRepeating'` — play exactly once.
-   * - `'continuous'` — smooth, indefinite repetition (iOS 18+).
-   * - `{ count?, delay? }` — periodic repetition with optional count and delay in seconds (iOS 18+).
+   * The preferred repeat behavior. Omit it to use the default set of effect options.
+   * - `'nonRepeating'` - prefers to not repeat.
+   * - `'continuous'` - prefers to repeat indefinitely, using continuous animations if available.
+   * - `{ count?, delay? }` - repeats with a preferred play count and delay, using periodic animations.
+   *   `count` is the preferred number of times to play the effect. Omit it to play indefinitely.
+   *   `delay` is the preferred delay between repetitions, in seconds. Omit it for the default delay.
+   *
+   * The `'continuous'` and `{ count?, delay? }` values require iOS 18.0+ and tvOS 18.0+.
+   * On earlier versions, the effect uses the default repeat behavior.
    */
   repeat?: 'continuous' | 'nonRepeating' | { count?: number; delay?: number };
-  /** Animation speed multiplier (1.0 = default). */
+  /**
+   * The preferred speed multiplier to play the effect with. The default multiplier is `1.0`.
+   * The system may clamp very large or small values.
+   */
   speed?: number;
 };
 
@@ -154,27 +201,6 @@ export const symbolEffect = (
     value: value ? getStateId(value) : undefined,
   });
 };
-
-function flattenOptions(options?: SymbolEffectOptions) {
-  if (!options) return undefined;
-  const { speed } = options;
-  const repeatField = options.repeat;
-  if (repeatField === undefined) {
-    return { speed };
-  }
-  if (repeatField === 'nonRepeating') {
-    return { repeatKind: 'nonRepeating' as const, speed };
-  }
-  if (repeatField === 'continuous') {
-    return { repeatKind: 'continuous' as const, speed };
-  }
-  return {
-    repeatKind: 'periodic' as const,
-    repeatCount: repeatField.count,
-    repeatDelay: repeatField.delay,
-    speed,
-  };
-}
 
 // exported for docs api data
 export { type ObservableState };

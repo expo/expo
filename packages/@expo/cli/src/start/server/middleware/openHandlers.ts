@@ -108,15 +108,13 @@ async function resolvePlatformInfo(
     if (isRedirectPageEnabled) {
       return { url: urlCreator.constructLoadingUrl({}, platform), appId };
     }
-    return { runtime: 'expo', url: urlCreator.constructUrl({ scheme: 'exp' }), appId };
+    return { runtime: 'expo', url: urlCreator.constructExpoGoUrl(), appId };
   }
 
   return {
     runtime,
     url:
-      runtime === 'custom'
-        ? urlCreator.constructDevClientUrl()
-        : urlCreator.constructUrl({ scheme: 'exp' }),
+      runtime === 'custom' ? urlCreator.constructDevClientUrl() : urlCreator.constructExpoGoUrl(),
     appId,
   };
 }

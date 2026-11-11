@@ -46,3 +46,29 @@ it.each([
     resolveOptions.mock.invocationCallOrder[0]!
   );
 });
+
+it('drops .env values inherited from a parent Expo process before loading', async () => {
+  const originalEnv = process.env;
+  process.env = {
+    ...originalEnv,
+    EXPO_PUBLIC_PARENT_VALUE: 'from-parent-dotenv',
+    __EXPO_ENV_LOADED: JSON.stringify(['EXPO_PUBLIC_PARENT_VALUE']),
+  };
+  let envWhenLoading: NodeJS.ProcessEnv | undefined;
+  loadEnvFiles.mockImplementationOnce(() => {
+    envWhenLoading = { ...process.env };
+  });
+  resolveCustomBooleanArgsAsync.mockResolvedValue({
+    projectRoot: '/app',
+    args: { '--dev': false },
+  });
+
+  try {
+    await expoExportEmbed([]);
+  } finally {
+    process.env = originalEnv;
+  }
+
+  expect(envWhenLoading).not.toHaveProperty('EXPO_PUBLIC_PARENT_VALUE');
+  expect(envWhenLoading).not.toHaveProperty('__EXPO_ENV_LOADED');
+});

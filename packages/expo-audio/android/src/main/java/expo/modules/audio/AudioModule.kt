@@ -73,7 +73,9 @@ class AudioModule : Module() {
     }
 
   private val ringerModeReceiver = RingerModeReceiver {
-    if (playsInSilentMode) return@RingerModeReceiver
+    if (playsInSilentMode) {
+      return@RingerModeReceiver
+    }
     appContext.mainQueue.launch {
       allPlayables.forEach { playable ->
         if (playable.isPlaying) {
@@ -292,6 +294,28 @@ class AudioModule : Module() {
     focusAcquired = false
   }
 
+  // Called on the main thread, from JS and from outside it (see `Playable.onPlayRequest`).
+  private fun playWithAudioFocus(playable: Playable) {
+    if (!audioEnabled) {
+      Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
+      return
+    }
+    if (!shouldPlayInSilentMode()) {
+      return
+    }
+    val focusResult = requestAudioFocus()
+    if (focusResult == AudioFocusResult.FAILED) {
+      return
+    }
+    (playable as? AudioPlayer)?.let { registerAudioSessionActivityKeeper(it) }
+    if (focusResult == AudioFocusResult.DELAYED) {
+      // The AUDIOFOCUS_GAIN branch starts it once the system grants focus.
+      playable.isPaused = true
+      return
+    }
+    playable.play()
+  }
+
   private fun registerAudioSessionActivityKeeper(player: AudioPlayer) {
     if (player.keepAudioSessionActive) {
       audioSessionActivityKeepers.add(player.id)
@@ -373,11 +397,11 @@ class AudioModule : Module() {
 
     AsyncFunction("setAudioModeAsync") { mode: AudioMode ->
       val previousInterruptionMode = interruptionMode
-      shouldPlayInBackground = mode.shouldPlayInBackground
+      shouldPlayInBackground = mode.shouldPlayInBackground ?: shouldPlayInBackground
       interruptionMode = mode.interruptionMode ?: previousInterruptionMode
-      playsInSilentMode = mode.playsInSilentMode
-      updatePlaySoundThroughEarpiece(mode.shouldRouteThroughEarpiece ?: false)
-      allowsBackgroundRecording = mode.allowsBackgroundRecording
+      playsInSilentMode = mode.playsInSilentMode ?: playsInSilentMode
+      mode.shouldRouteThroughEarpiece?.let { updatePlaySoundThroughEarpiece(it) }
+      allowsBackgroundRecording = mode.allowsBackgroundRecording ?: allowsBackgroundRecording
 
       recorders.values.forEach { recorder ->
         recorder.useForegroundService = allowsBackgroundRecording
@@ -430,12 +454,13 @@ class AudioModule : Module() {
     }
 
     AsyncFunction("preload") Coroutine { source: AudioSource, _: Double ->
-      val uri = source.uri ?: return@Coroutine
-      val factory = when (uri.toUri().scheme) {
+      val uriString = source.uri ?: return@Coroutine
+      val uri = resolveSourceUri(uriString)
+      val factory = when (uri.scheme) {
         "http", "https" -> httpDataSourceFactory(source.headers)
         else -> DefaultDataSource.Factory(context)
       }
-      AudioPreloadManager.preload(uri, factory)
+      AudioPreloadManager.preload(uriString, uri, factory)
     }
 
     AsyncFunction("clearPreloadedSource") Coroutine { source: AudioSource ->
@@ -465,9 +490,7 @@ class AudioModule : Module() {
       }
       if (!allowsBackgroundRecording) {
         recorders.values.forEach { recorder ->
-          if (recorder.isRecording) {
-            recorder.pauseRecording()
-          }
+          recorder.pauseForSystem()
         }
       }
     }
@@ -490,9 +513,7 @@ class AudioModule : Module() {
       }
       if (!allowsBackgroundRecording) {
         recorders.values.forEach { recorder ->
-          if (recorder.isPaused) {
-            recorder.record()
-          }
+          recorder.resumeAfterSystemPause()
         }
       }
       if (shouldRouteThroughEarpiece) {
@@ -547,6 +568,7 @@ class AudioModule : Module() {
               releaseAudioFocusIfUnused()
             }
           }
+          player.onPlayRequest = { playWithAudioFocus(player) }
           players[player.id] = player
           player
         }
@@ -609,7 +631,13 @@ class AudioModule : Module() {
       }.set { player, muted: Boolean? ->
         val newMuted = muted ?: false
         player.isMuted = newMuted
-        player.setVolume(if (newMuted) 0f else player.previousVolume)
+        player.setVolume(
+          if (newMuted) {
+            0f
+          } else {
+            player.previousVolume
+          }
+        )
       }
 
       Property("shouldCorrectPitch") { player ->
@@ -634,6 +662,10 @@ class AudioModule : Module() {
         runOnMain {
           player.ref.playbackParameters.speed
         }
+      }.set { player: AudioPlayer, rate: Float ->
+        appContext.mainQueue.launch {
+          player.setPlaybackRate(rate)
+        }
       }
 
       Property("volume") { player ->
@@ -645,19 +677,8 @@ class AudioModule : Module() {
       }
 
       Function("play") { player: AudioPlayer ->
-        if (!audioEnabled) {
-          Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
-          return@Function
-        }
-        if (!shouldPlayInSilentMode()) {
-          return@Function
-        }
         runOnMain {
-          if (requestAudioFocus() == AudioFocusResult.FAILED) {
-            return@runOnMain
-          }
-          registerAudioSessionActivityKeeper(player)
-          player.ref.play()
+          playWithAudioFocus(player)
         }
       }
 
@@ -887,21 +908,11 @@ class AudioModule : Module() {
             context,
             appContext,
             sources,
-            updateInterval,
-            DefaultDataSource.Factory(context)
+            updateInterval
           )
           playlist.loopMode = loop
-          playlist.setMediaItemCreator { source ->
-            source.uri?.let { uriString ->
-              val uri = uriString.toUri()
-              when {
-                isRawResource(uri) -> {
-                  val file = getResourceName(uri, uriString)
-                  MediaItem.fromUri(getRawResourceURI(file))
-                }
-                else -> MediaItem.fromUri(uri)
-              }
-            }
+          playlist.setMediaSourceCreator { source ->
+            createMediaItem(source)
           }
           playlist.loadInitialPlaylist()
           playlist.onPlaybackStateChange = { isPlaying ->
@@ -909,6 +920,7 @@ class AudioModule : Module() {
               releaseAudioFocusIfUnused()
             }
           }
+          playlist.onPlayRequest = { playWithAudioFocus(playlist) }
           playlists[playlist.id] = playlist
           playlist
         }
@@ -945,7 +957,13 @@ class AudioModule : Module() {
       }.set { playlist, muted: Boolean? ->
         val newMuted = muted ?: false
         playlist.isMuted = newMuted
-        playlist.setVolume(if (newMuted) 0f else playlist.previousVolume)
+        playlist.setVolume(
+          if (newMuted) {
+            0f
+          } else {
+            playlist.previousVolume
+          }
+        )
       }
 
       Property("isLoaded") { playlist ->
@@ -1005,18 +1023,8 @@ class AudioModule : Module() {
       }
 
       Function("play") { playlist: AudioPlaylist ->
-        if (!audioEnabled) {
-          Log.e(TAG, "Audio has been disabled. Re-enable to start playing")
-          return@Function
-        }
-        if (!shouldPlayInSilentMode()) {
-          return@Function
-        }
         runOnMain {
-          if (!focusAcquired && requestAudioFocus() == AudioFocusResult.FAILED) {
-            return@runOnMain
-          }
-          playlist.ref.play()
+          playWithAudioFocus(playlist)
         }
       }
 
@@ -1110,13 +1118,7 @@ class AudioModule : Module() {
 
   private fun createMediaItem(source: AudioSource?): MediaSource? = source?.uri?.let { uriString ->
     val uri = uriString.toUri()
-    val mediaItem = when {
-      isRawResource(uri) -> {
-        val file = getResourceName(uri, uriString)
-        MediaItem.fromUri(getRawResourceURI(file))
-      }
-      else -> MediaItem.fromUri(uri)
-    }
+    val mediaItem = MediaItem.fromUri(resolveSourceUri(uriString))
 
     val preloadedBytes = AudioPreloadManager.get(uriString)
     val factory: DataSource.Factory = if (preloadedBytes != null) {
@@ -1135,6 +1137,17 @@ class AudioModule : Module() {
       headers?.let { headers ->
         setDefaultRequestProperties(headers)
       }
+    }
+  }
+
+  // Bundled assets arrive as a bare resource name (embedded bundle) or as
+  // `file:///android_res/raw/...` (expo-updates). Neither can be opened as a file.
+  private fun resolveSourceUri(uriString: String): Uri {
+    val uri = uriString.toUri()
+    return if (isRawResource(uri)) {
+      getRawResourceURI(getResourceName(uri, uriString))
+    } else {
+      uri
     }
   }
 
@@ -1166,7 +1179,11 @@ class AudioModule : Module() {
 
   @Suppress("DEPRECATION")
   private fun updatePlaySoundThroughEarpiece(playThroughEarpiece: Boolean) {
-    audioManager.mode = if (playThroughEarpiece) AudioManager.MODE_IN_COMMUNICATION else AudioManager.MODE_NORMAL
+    audioManager.mode = if (playThroughEarpiece) {
+      AudioManager.MODE_IN_COMMUNICATION
+    } else {
+      AudioManager.MODE_NORMAL
+    }
     audioManager.setSpeakerphoneOn(!playThroughEarpiece)
   }
 

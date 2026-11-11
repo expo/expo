@@ -5,6 +5,7 @@ import expo.modules.filesystem.unifiedfile.UnifiedFileInterface
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.types.OptimizedRecord
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -83,6 +84,7 @@ class FileSystemUploadTask : SharedObject() {
   private val progressThrottleInterval = 100.milliseconds
 
   suspend fun start(url: String, file: FileSystemFile, options: UploadTaskOptions): UploadTaskResult {
+    file.validatePermission(FilePermissionService.Permission.READ)
     cancelled = false
     val request = buildUploadRequest(url, file, options)
     return executeUploadRequest(request)
@@ -143,7 +145,7 @@ class FileSystemUploadTask : SharedObject() {
         override fun onResponse(call: Call, response: Response) {
           try {
             val body = response.body?.string() ?: ""
-            val headers = response.headers.toMultimap().mapValues { it.value.firstOrNull() ?: "" }
+            val headers = response.headers.toResponseHeaders()
 
             val result = UploadTaskResult()
             result.body = body

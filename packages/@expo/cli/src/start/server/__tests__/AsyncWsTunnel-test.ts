@@ -100,6 +100,8 @@ describe('startAsync (signed)', () => {
     );
     expect(error.message).toMatch(/Couldn't create a signed tunnel URL for this project/);
     expect(error.message).toMatch(/npx expo login/);
+    expect(error.message).toContain('npx expo start --tunnel ngrok');
+    expect(error.message).not.toContain('EXPO_UNSTABLE_TUNNEL_V2');
   });
 
   it('omits the login hint when the user is already logged in', async () => {

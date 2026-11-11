@@ -90,6 +90,39 @@ export default function ExplicitSizingExample() {
 }
 ```
 
+### Placing components inside React Native views
+
+`Host` renders its children with SwiftUI. A React Native view inside `Host`, such as `View` or `ScrollView`, switches back to React Native rendering. To use a SwiftUI component inside that view, wrap the component in a new `Host`. Do this even when a `Host` higher in the tree wraps the view.
+
+```tsx ReactNativeLayoutExample.tsx
+import { useState } from 'react';
+import { ScrollView, Text, View } from 'react-native';
+import { Host, Toggle } from '@expo/ui/swift-ui';
+
+export default function ReactNativeLayoutExample() {
+  const [isOn, setIsOn] = useState(false);
+
+  return (
+    <ScrollView>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: 16,
+        }}>
+        <Text>Notifications</Text>
+        <Host matchContents>
+          <Toggle isOn={isOn} onIsOnChange={setIsOn} />
+        </Host>
+      </View>
+    </ScrollView>
+  );
+}
+```
+
+To place React Native views inside SwiftUI components, use [`RNHostView`](rnhostview).
+
 ### Ignoring keyboard safe area
 
 Use `ignoreSafeArea="keyboard"` when React Native is already handling keyboard avoidance (for example, with `react-native-keyboard-controller`), to prevent the SwiftUI host from applying its own keyboard inset.

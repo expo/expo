@@ -105,6 +105,7 @@ export default function CommunityDateTimePickerScreen() {
   const [timeZoneName, setTimeZoneName] = useState<string | undefined>();
   const [positiveLabel, setPositiveLabel] = useState('');
   const [negativeLabel, setNegativeLabel] = useState('');
+  const [themeVariant, setThemeVariant] = useState<'system' | 'light' | 'dark'>('system');
   const [presentation, setPresentation] = useState<'inline' | 'dialog'>(
     Platform.OS === 'android' ? 'dialog' : 'inline'
   );
@@ -195,6 +196,14 @@ export default function CommunityDateTimePickerScreen() {
             placeholderTextColor={isDark ? '#999' : '#666'}
           />
         </View>
+
+        {/* themeVariant */}
+        <ThemedText style={styles.label}>themeVariant:</ThemedText>
+        <SegmentedButtons
+          values={['system', 'light', 'dark']}
+          selected={themeVariant}
+          onSelect={(v) => setThemeVariant(v)}
+        />
 
         {/* disabled (iOS) */}
         {Platform.OS === 'ios' && (
@@ -301,6 +310,7 @@ export default function CommunityDateTimePickerScreen() {
               minimumDate={minimumDate}
               maximumDate={maximumDate}
               accentColor={accentColor || undefined}
+              themeVariant={themeVariant === 'system' ? undefined : themeVariant}
               disabled={disabled}
               locale="en-US"
               timeZoneName={timeZoneName}

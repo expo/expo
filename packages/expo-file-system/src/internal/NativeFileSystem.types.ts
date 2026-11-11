@@ -29,6 +29,7 @@ import type { DownloadTask, UploadTask } from '../NetworkTasks';
 import type {
   DownloadOptions,
   DownloadProgress,
+  DownloadResponse,
   DownloadTaskOptions,
   UploadOptions,
   UploadProgress,
@@ -397,6 +398,14 @@ export declare class FileSystemDownloadTask extends SharedObject<DownloadTaskEve
     resumeData: string,
     options?: Record<string, any>
   ): Promise<string | null>;
+  /**
+   * @hidden
+   */
+  acknowledgeBackgroundCompletionAsync(): Promise<void>;
+  /**
+   * @hidden
+   */
+  readonly response: DownloadResponse;
   /**
    * @hidden
    */

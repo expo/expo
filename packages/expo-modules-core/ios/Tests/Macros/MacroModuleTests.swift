@@ -1,5 +1,6 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -12,8 +13,10 @@ private struct MacroOptions {
   var count: Int = 0
 }
 
+// `@unchecked Sendable`: the `.concurrent` and `.withAsync` members send `self` off the JavaScript thread,
+// which Swift 6 mode allows only for a `Sendable` module.
 @ExpoModule
-private final class MacroGreeter: Module {
+private final class MacroGreeter: Module, @unchecked Sendable {
   @JS
   func greet(name: String) -> String {
     return "Hi, \(name)"
@@ -39,6 +42,16 @@ private final class MacroGreeter: Module {
     return MacroOptions(label: options.label, count: options.count + 1)
   }
 
+  // An `Either` argument and return. The return is an `EitherOfThree`, which conforms through the
+  // conformance inherited from `Either`.
+  @JS
+  func describe(value: Either<String, Int>) -> EitherOfThree<String, Int, Bool> {
+    if let string: String = value.get() {
+      return EitherOfThree(string.uppercased())
+    }
+    return EitherOfThree(value.is(Int.self))
+  }
+
   // A throwing function, whose coded error surfaces to JS.
   @JS
   func fail() throws {
@@ -51,6 +64,24 @@ private final class MacroGreeter: Module {
   func delayed(value: String) async throws -> String {
     return value
   }
+
+  // An async function whose body runs off the JS thread, on the concurrent pool.
+  @JS(.concurrent)
+  func offThread(value: String) async throws -> String {
+    return value
+  }
+
+  // The `.concurrent` option combined with a JS name override.
+  @JS("renamedOffThread", .concurrent)
+  func offThreadWithName(value: String) async throws -> String {
+    return value
+  }
+
+  // A synchronous function that is also bound as a promise-returning variant.
+  @JS("joinSync", .withAsync("join"))
+  func join(first: String, second: String) -> String {
+    return first + second
+  }
 }
 
 @ExpoModule("RenamedMacroModule")
@@ -58,6 +89,81 @@ private final class MacroRenamed: Module {
   @JS
   func ping() -> String {
     return "pong"
+  }
+}
+
+// Closure arguments: JS passes a function, and the binding wraps it in a native closure.
+@ExpoModule
+private final class MacroCallbacks: Module {
+  private var stored: ((String) -> Void)?
+
+  @JS
+  func transform(value: Int, using transform: (Int) throws -> Int) throws -> Int {
+    return try transform(value)
+  }
+
+  // A `Record` crosses into the closure, so its argument is encoded on the way to JS.
+  @JS
+  func describe(options: MacroOptions, format: (MacroOptions) throws -> String) throws -> String {
+    return try format(options)
+  }
+
+  // Keeps the closure past the call that received it.
+  @JS
+  func store(onEvent: @escaping (String) -> Void) {
+    stored = onEvent
+  }
+
+  @JS
+  func fire(value: String) {
+    stored?(value)
+  }
+
+  // Returns whether a closure was passed.
+  @JS
+  func optional(callback: ((String) throws -> Void)?) throws -> Bool {
+    try callback?("called")
+    return callback != nil
+  }
+
+  @JS
+  @JavaScriptActor
+  func awaitCallback(fetch: @escaping (Int) async throws -> Int) async throws -> Int {
+    return try await fetch(20) + 1
+  }
+}
+
+// JSI value arguments and results: the binding passes the value through, checked for its kind.
+@ExpoModule
+private final class MacroJSIValues: Module {
+  @JS
+  func apply(function: borrowing JavaScriptFunction, value: Int) throws -> Int {
+    return try function.call(arguments: value).asInt()
+  }
+
+  @JS
+  func identity(function: consuming JavaScriptFunction) -> JavaScriptFunction {
+    return function
+  }
+
+  @JS
+  func bigIntString(value: borrowing JavaScriptBigInt) throws -> String {
+    return try value.toString()
+  }
+
+  @JS
+  func sameSymbol(_ symbol: consuming JavaScriptSymbol) -> JavaScriptSymbol {
+    return symbol
+  }
+
+  @JS
+  func size(buffer: borrowing JavaScriptArrayBuffer) -> Int {
+    return buffer.size
+  }
+
+  @JS
+  func sameTypedArray(_ typedArray: consuming JavaScriptTypedArray) -> JavaScriptTypedArray {
+    return typedArray
   }
 }
 
@@ -72,7 +178,7 @@ private struct MacroModuleTests {
   }
 
   init() {
-    appContext = AppContext.create()
+    appContext = TestAppContext()
   }
 
   private func register(_ module: AnyModule) {
@@ -144,8 +250,32 @@ private struct MacroModuleTests {
   @Test
   func `binds an async @JS function that returns a promise`() async throws {
     register(MacroGreeter(appContext: appContext))
-    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.delayed('done')")
-    #expect(try await result.asString() == "done")
+    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.delayed('done')").ref()
+    // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+    #expect(try await runtime.execute { try result.take().asString() } == "done")
+  }
+
+  @Test
+  func `binds a @JS(.concurrent) async function that returns a promise`() async throws {
+    register(MacroGreeter(appContext: appContext))
+    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.offThread('done')").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "done")
+  }
+
+  @Test
+  func `honors the @JS name override combined with .concurrent`() async throws {
+    register(MacroGreeter(appContext: appContext))
+    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.renamedOffThread('done')").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "done")
+    #expect(try await runtime.execute { try runtime.eval("'offThreadWithName' in expo.modules.MacroGreeter").asBool() } == false)
+  }
+
+  @Test
+  func `binds a @JS(.withAsync) variant that returns a promise`() async throws {
+    register(MacroGreeter(appContext: appContext))
+    #expect(try runtime.eval("expo.modules.MacroGreeter.joinSync('a', 'b')").asString() == "ab")
+    let result = try await runtime.evalAsync("expo.modules.MacroGreeter.join('a', 'b').then((value) => value + '!')").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "ab!")
   }
 
   // MARK: - Non-primitive decode/encode
@@ -156,6 +286,13 @@ private struct MacroModuleTests {
     let result = try runtime.eval("expo.modules.MacroGreeter.repeated({ label: 'a', count: 2 })").asObject()
     #expect(try result.getProperty("label").asString() == "a")
     #expect(try result.getProperty("count").asInt() == 3)
+  }
+
+  @Test
+  func `decodes and encodes an Either across a @JS function`() throws {
+    register(MacroGreeter(appContext: appContext))
+    #expect(try runtime.eval("expo.modules.MacroGreeter.describe('expo')").asString() == "EXPO")
+    #expect(try runtime.eval("expo.modules.MacroGreeter.describe(42)").asBool() == true)
   }
 
   // MARK: - Error propagation
@@ -177,5 +314,154 @@ private struct MacroModuleTests {
     let message = try runtime.eval("try { expo.modules.MacroGreeter.greet(); '' } catch (error) { error.message }")
     #expect(try message.asString().contains("greet"))
     #expect(try message.asString().contains("argument"))
+  }
+
+  // MARK: - Closure arguments
+
+  @Test
+  func `a closure argument calls back into JS and returns its result`() throws {
+    register(MacroCallbacks(appContext: appContext))
+    #expect(try runtime.eval("expo.modules.MacroCallbacks.transform(20, (x) => x * 2 + 2)").asInt() == 42)
+  }
+
+  @Test
+  func `a closure argument encodes a Record for JS`() throws {
+    register(MacroCallbacks(appContext: appContext))
+    let format = "(options) => options.label + options.count"
+    let result = try runtime.eval("expo.modules.MacroCallbacks.describe({ label: 'a', count: 2 }, \(format))")
+    #expect(try result.asString() == "a2")
+  }
+
+  @Test
+  func `a JS exception in a closure argument reaches the JS caller`() throws {
+    register(MacroCallbacks(appContext: appContext))
+    let message = try runtime.eval(
+      """
+      try {
+        expo.modules.MacroCallbacks.transform(1, () => { throw new Error('nope') })
+        ''
+      } catch (error) {
+        error.message
+      }
+      """)
+    #expect(try message.asString().contains("nope"))
+  }
+
+  @Test
+  func `null or undefined for a required closure argument throws a TypeError`() throws {
+    register(MacroCallbacks(appContext: appContext))
+    for value in ["null", "undefined"] {
+      let message = try runtime.eval(
+        "try { expo.modules.MacroCallbacks.transform(1, \(value)); '' } catch (error) { error.message }")
+      #expect(try message.asString().contains("TypeError"))
+    }
+  }
+
+  @Test
+  func `a stored closure argument can be called later`() throws {
+    register(MacroCallbacks(appContext: appContext))
+    let runtime = try runtime
+    // A non-throwing closure is called detached, which runs inline only on the JavaScript thread.
+    // Elsewhere it's scheduled and may not have run yet when `globalThis.received` is read.
+    let value = try runtime.execute {
+      try runtime.eval(
+        """
+        expo.modules.MacroCallbacks.store((value) => { globalThis.received = value })
+        expo.modules.MacroCallbacks.fire('later')
+        globalThis.received
+        """
+      ).asString()
+    }
+    #expect(value == "later")
+  }
+
+  @Test
+  func `an optional closure argument is nil when omitted or null`() throws {
+    register(MacroCallbacks(appContext: appContext))
+    #expect(try runtime.eval("expo.modules.MacroCallbacks.optional()").asBool() == false)
+    #expect(try runtime.eval("expo.modules.MacroCallbacks.optional(null)").asBool() == false)
+    #expect(try runtime.eval("expo.modules.MacroCallbacks.optional(() => {})").asBool() == true)
+  }
+
+  @Test
+  func `an async closure argument awaits the promise the JS function returns`() async throws {
+    register(MacroCallbacks(appContext: appContext))
+    let result = try await runtime.evalAsync("expo.modules.MacroCallbacks.awaitCallback(async (x) => x * 2)")
+    #expect(try await result.asInt() == 41)
+  }
+
+  // MARK: - JSI value arguments
+
+  @Test
+  func `a JavaScriptFunction argument is called from native code`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    #expect(try runtime.eval("expo.modules.MacroJSIValues.apply((x) => x * 2, 21)").asInt() == 42)
+  }
+
+  @Test
+  func `a returned JavaScriptFunction is the same function`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    let result = try runtime.eval(
+      """
+      const fn = () => {}
+      expo.modules.MacroJSIValues.identity(fn) === fn
+      """)
+    #expect(try result.asBool() == true)
+  }
+
+  @Test
+  func `a value that is not a function for a JavaScriptFunction argument throws a TypeError`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    for value in ["{}", "42", "null"] {
+      let message = try runtime.eval(
+        "try { expo.modules.MacroJSIValues.apply(\(value), 1); '' } catch (error) { error.message }")
+      #expect(try message.asString().contains("TypeError"))
+    }
+  }
+
+  @Test
+  func `a JavaScriptBigInt argument keeps a value outside the Int64 range`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    let result = try runtime.eval("expo.modules.MacroJSIValues.bigIntString(2n ** 64n)")
+    #expect(try result.asString() == "18446744073709551616")
+  }
+
+  @Test
+  func `a returned JavaScriptSymbol is the same symbol`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    let result = try runtime.eval(
+      """
+      const symbol = Symbol('key')
+      expo.modules.MacroJSIValues.sameSymbol(symbol) === symbol
+      """)
+    #expect(try result.asBool() == true)
+  }
+
+  @Test
+  func `a JavaScriptArrayBuffer argument reads the buffer`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    #expect(try runtime.eval("expo.modules.MacroJSIValues.size(new ArrayBuffer(12))").asInt() == 12)
+  }
+
+  @Test
+  func `a returned JavaScriptTypedArray is the same typed array`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    let result = try runtime.eval(
+      """
+      const array = new Uint8Array([1, 2, 3])
+      expo.modules.MacroJSIValues.sameTypedArray(array) === array
+      """)
+    #expect(try result.asBool() == true)
+  }
+
+  @Test
+  func `a value of another kind for a JSI value argument throws a TypeError`() throws {
+    register(MacroJSIValues(appContext: appContext))
+    let calls = ["bigIntString(42)", "sameSymbol('key')", "size(new Uint8Array(4))", "sameTypedArray(new ArrayBuffer(4))"]
+    for call in calls {
+      let message = try runtime.eval(
+        "try { expo.modules.MacroJSIValues.\(call); '' } catch (error) { error.message }")
+      #expect(try message.asString().contains("TypeError"))
+    }
   }
 }

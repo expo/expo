@@ -30,7 +30,9 @@ private fun assertStringValueNull(bundle: Bundle, key: String) {
 }
 
 private fun assertListsEqual(first: List<*>?, second: List<*>?, message: String = "") {
-  if (first == second) return
+  if (first == second) {
+    return
+  }
 
   if (first == null || second == null) {
     throw throw ComparisonFailure(message, first.toString(), second.toString())
@@ -137,6 +139,42 @@ internal class WebBrowserModuleTest {
       )
     )
 
+    assertEquals("com.browser.package", intentSlot.captured.intent.`package`)
+  }
+
+  @Test
+  fun `test intent is pinned to preferred browser when no package given`() = withWebBrowserMock {
+    // given
+    val intentSlot = slot<CustomTabsIntent>()
+    val mock = mockkCustomTabsActivitiesHelper(
+      preferredActivity = "com.preferred.browser",
+      startIntentSlot = intentSlot,
+      defaultCanResolveIntent = true
+    )
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
+
+    // when
+    module.openBrowserAsync("http://expo.io", OpenBrowserOptions())
+
+    // then
+    assertEquals("com.preferred.browser", intentSlot.captured.intent.`package`)
+  }
+
+  @Test
+  fun `test explicit package is not overridden by preferred browser`() = withWebBrowserMock {
+    // given
+    val intentSlot = slot<CustomTabsIntent>()
+    val mock = mockkCustomTabsActivitiesHelper(
+      preferredActivity = "com.preferred.browser",
+      startIntentSlot = intentSlot,
+      defaultCanResolveIntent = true
+    )
+    initialize(moduleSpy, customTabsActivitiesHelper = mock)
+
+    // when
+    module.openBrowserAsync("http://expo.io", OpenBrowserOptions(browserPackage = "com.browser.package"))
+
+    // then
     assertEquals("com.browser.package", intentSlot.captured.intent.`package`)
   }
 

@@ -13,16 +13,47 @@ import ExpoModulesCore
 #if !os(macOS)
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
+    attachToWindowRootIfNeeded()
     updateTopSafeAreaInset()
   }
 
-  private func updateTopSafeAreaInset() {
-    let hostingViewInset = hostingController?.view.safeAreaInsets.top ?? 0
-    let windowInset = view.window?.safeAreaInsets.top ?? 0
-    let newInset: CGFloat = hostingViewInset > 0 ? 0 : windowInset
+  private func attachToWindowRootIfNeeded() {
+    guard parent == nil,
+      let hostingView = hostingController?.view,
+      hostingView.isDescendant(of: view),
+      let windowRootViewController = view.window?.rootViewController,
+      windowRootViewController !== self,
+      view.superview?.next === windowRootViewController else {
+      return
+    }
+    windowRootViewController.addChild(self)
+    didMove(toParent: windowRootViewController)
+    refreshHostingAppearance()
+  }
 
-    if newInset != viewModel.topSafeAreaInset {
-      viewModel.topSafeAreaInset = newInset
+  private func refreshHostingAppearance() {
+    DispatchQueue.main.async { [weak self] in
+      guard let hostingController = self?.hostingController else {
+        return
+      }
+      hostingController.beginAppearanceTransition(true, animated: false)
+      hostingController.endAppearanceTransition()
+      hostingController.view.setNeedsLayout()
+    }
+  }
+
+  // Some hosts (e.g. SwiftUI or brownfield apps) do not pass the window's safe area down to the launcher.
+  private func updateTopSafeAreaInset() {
+    guard let hostingController else {
+      return
+    }
+    let additionalInset = hostingController.additionalSafeAreaInsets.top
+    let inheritedInset = hostingController.view.safeAreaInsets.top - additionalInset
+    let windowInset = view.window?.safeAreaInsets.top ?? 0
+    let newInset: CGFloat = parent != nil || inheritedInset > 0 ? 0 : windowInset
+
+    if newInset != additionalInset {
+      hostingController.additionalSafeAreaInsets.top = newInset
     }
   }
 #endif
@@ -75,6 +106,9 @@ import ExpoModulesCore
 #if !os(macOS)
     navigationController?.setNavigationBarHidden(true, animated: false)
     hostingController.didMove(toParent: self)
+    if parent != nil {
+      refreshHostingAppearance()
+    }
 #endif
   }
 }

@@ -1,6 +1,7 @@
 package expo.modules.appmetrics
 
 import android.content.Context
+import android.util.Log
 import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.jserrors.ErrorReport
 import expo.modules.appmetrics.jserrors.PendingErrorStore
@@ -13,7 +14,16 @@ import expo.modules.appmetrics.crashreporting.PreferencesLastProcessedExitStore
 import expo.modules.appmetrics.crashreporting.attributeAndStoreCrashReport
 import expo.modules.appmetrics.logevents.LogEventOptions
 import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
+import expo.modules.appmetrics.networkrequests.NetworkRequestMonitor
 import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
+import expo.modules.appmetrics.networkrequests.NetworkRequestPersistence
+import expo.modules.appmetrics.networkrequests.NetworkTracesConfiguration
+import expo.modules.appmetrics.spans.SpanHandle
+import expo.modules.appmetrics.spans.SpanRecorder
+import expo.modules.appmetrics.spans.SpanWriter
+import expo.modules.appmetrics.storage.Span
+import expo.modules.appmetrics.logevents.MAX_EVENT_NAME_LENGTH
+import expo.modules.appmetrics.logevents.RESERVED_EVENT_NAME_PREFIX
 import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.logevents.sanitizeLogEventAttributes
 import expo.modules.appmetrics.logevents.validateDisplayName
@@ -22,6 +32,7 @@ import expo.modules.appmetrics.logevents.validateEventName
 import expo.modules.appmetrics.logevents.withDisplayNameAttribute
 import expo.modules.appmetrics.memory.MemoryMetricsManager
 import expo.modules.appmetrics.storage.JsDebugSession
+import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.JsLogRecord
 import expo.modules.appmetrics.storage.JsMetric
 import expo.modules.appmetrics.storage.LogRecord
@@ -45,9 +56,10 @@ import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesStateChangeListener
 import expo.modules.updatesinterface.UpdatesStateChangeSubscription
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 class AppMetricsModule : Module(), UpdatesStateChangeListener {
   private val context: Context
@@ -65,7 +77,17 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
   lateinit var mainSession: SessionSharedObject
 
+  /**
+   * The span producer installed on the monitor in `OnCreate`, kept so `setNetworkTracesConfig`
+   * can apply a new recording policy to the live instance and `OnDestroy` can uninstall it
+   * when the module is torn down (a JS reload).
+   */
+  private var networkRequestPersistence: NetworkRequestPersistence? = null
+
   // Lazy-initialized metadata - created once when first needed
+  /** The shared sink every span producer writes completed rows through. Set in `OnCreate`. */
+  private lateinit var spanWriter: SpanWriter
+
   private val metadata: AppMetadata? by lazy {
     AppMetadataProvider.getAppMetadata(appContext.service<ConstantsInterface>(), context)
   }
@@ -82,7 +104,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         AppStartupManager.markInteractive(context, attributes?.routeName, attributes?.params)
 
         scope.launch {
-          saveStartupMetricsIfNotSaved()
+          saveStartupMetrics()
         }
       }
 
@@ -103,7 +125,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           // alongside whatever's being logged. The session row itself is
           // already persisted eagerly in `OnCreate`, so this is purely about
           // ordering startup-metric writes ahead of caller-driven log events.
-          saveStartupMetricsIfNotSaved()
+          saveStartupMetrics()
           // Globals merge happens inside `sessionManager.addLogs` so every
           // persistence path picks them up. The session waits for its row
           // before inserting.
@@ -127,6 +149,90 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         GlobalAttributes.set(attributes)
       }
 
+      Function("startSpan") { name: String, options: StartSpanOptions?, parent: SpanHandle? ->
+        val validatedName = validatedSpanName(name)
+        val recorder = SpanRecorder(
+          name = validatedName ?: name,
+          sessionId = mainSession.sessionId,
+          parentTraceId = parent?.recorder?.traceId,
+          parentSpanId = parent?.recorder?.spanId,
+          attributes = options?.attributes,
+          startTimestampMs = resolvedTimestamp(options?.startTime, "startTime")
+        )
+        // A span with an invalid name still works for the caller, including as a parent, but it
+        // is never written.
+        val onEnd: (Span) -> Unit = if (validatedName != null) {
+          spanWriter::write
+        } else {
+          { _ -> }
+        }
+        SpanHandle(recorder = recorder, onEnd = onEnd)
+      }
+
+      Function("recordSpan") { name: String, options: RecordSpanOptions, parent: SpanHandle? ->
+        val validatedName = validatedSpanName(name) ?: return@Function
+        val (startTime, endTime) = recordedSpanWindow(options.startTime, options.endTime) ?: return@Function
+        // One code path with `startSpan`: an ephemeral recorder validates the attributes and
+        // produces the same write-once row shape.
+        val recorder = SpanRecorder(
+          name = validatedName,
+          sessionId = mainSession.sessionId,
+          parentTraceId = parent?.recorder?.traceId,
+          parentSpanId = parent?.recorder?.spanId,
+          attributes = options.attributes,
+          startTimestampMs = startTime,
+          attributeSource = "recordSpan"
+        )
+        recorder.end(statusCode = null, statusMessage = null, endTimestampMs = endTime)?.let {
+          spanWriter.write(it)
+        }
+      }
+
+      Class("Span", SpanHandle::class) {
+        Constructor { ->
+          throw SpanConstructorUnavailableException()
+        }
+
+        Property("traceId") { span: SpanHandle -> span.recorder.traceId }
+        Property("spanId") { span: SpanHandle -> span.recorder.spanId }
+
+        Function("setAttributes") { span: SpanHandle, attributes: Map<String, Any?> ->
+          span.recorder.setAttributes(attributes)
+        }
+
+        Function("addEvent") { span: SpanHandle, name: String, options: SpanEventOptions? ->
+          span.recorder.addEvent(
+            name = name,
+            attributes = options?.attributes,
+            timeMs = resolvedTimestamp(options?.time, "time")
+          )
+        }
+
+        Function("end") { span: SpanHandle, options: SpanEndOptions? ->
+          span.end(
+            statusCode = spanStatusCode(options?.status),
+            statusMessage = options?.message,
+            endTimestampMs = resolvedTimestamp(options?.endTime, "endTime")
+          )
+        }
+      }
+
+      Function("setNetworkTracesConfig") { config: NetworkTracesConfigParam ->
+        val configuration = NetworkTracesConfiguration(
+          enabled = config.enabled,
+          hosts = config.filter?.hosts,
+          methods = config.filter?.methods
+        )
+        // Persisted before the hop, so a configure racing startup is either read from
+        // preferences by the installing producer or applied to the live one below.
+        AppMetricsPreferences.setNetworkTracesConfiguration(context, configuration)
+        scope.launch {
+          // `modulesQueue` is a single thread fed from the JS thread, so rapid calls land in
+          // order. iOS re-reads instead, because its actor hops carry no such guarantee.
+          networkRequestPersistence?.setConfiguration(configuration)
+        }
+      }
+
       OnCreate {
         sessionManager = SessionManager(context)
 
@@ -147,10 +253,31 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
         JvmCrashHandler.currentSessionId = mainSession.sessionId
 
+        spanWriter = SpanWriter(
+          database = MetricsDatabase.getDatabase(context),
+          scope = scope
+        ) {
+          mainSession.awaitSessionPersisted()
+        }
+
         // Persist the session row eagerly so it's visible to readers
         // (`getMainSession`, …) as soon as possible. Idempotent:
         // a racing write triggers (and joins) the same single start job.
-        scope.launch { mainSession.awaitSessionPersisted() }
+        scope.launch {
+          mainSession.awaitSessionPersisted()
+          // From here on every completed request is written to the `spans` table, attributed to
+          // the main session. The await above keeps the FK satisfied for every span insert;
+          // installation also drains requests buffered since process start.
+          val persistence = NetworkRequestPersistence(
+            writer = spanWriter,
+            // Read here rather than left to the constructor default: recording is opt-in, so
+            // without the persisted policy every span before the first `configure` is dropped.
+            initialConfiguration = AppMetricsPreferences.getNetworkTracesConfiguration(context),
+            sessionId = mainSession.sessionId
+          )
+          networkRequestPersistence = persistence
+          NetworkRequestMonitor.shared.installPersistence(persistence)
+        }
 
         // Sweep sessions orphaned by a previous process. The cutoff equals this
         // session's start and the comparison is strict (`<`), so this session
@@ -206,8 +333,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       OnActivityEntersBackground {
+        // A pause skews startup timings, so stop recording and save what was recorded before.
+        AppStartupManager.stopRecording()
         scope.launch {
-          saveStartupMetricsIfNotSaved()
+          saveStartupMetrics()
         }
       }
 
@@ -216,6 +345,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       OnDestroy {
+        // Stop persisting spans for this module's session. Without this, a JS reload leaves
+        // the old instance on the process-wide monitor, writing rows attributed to the
+        // torn-down session until the next OnCreate replaces it.
+        networkRequestPersistence?.let { NetworkRequestMonitor.shared.uninstallPersistence(it) }
         // `modulesQueue` is cancelled immediately after this hook returns, so
         // run the UPDATE on the calling thread to make sure the end timestamp
         // is persisted before teardown. `stop` awaits the session-start job
@@ -339,25 +472,25 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           // Attach any pending startup metrics first so the download-time
           // metric lands alongside them. The session waits for its row before
           // inserting.
-          saveStartupMetricsIfNotSaved()
+          saveStartupMetrics()
           mainSession.addMetrics(listOf(metric))
         }
       }
     }
   }
 
-  // Persists the collected startup metrics once, then suspends until that write
-  // completes. The session waits for its row before inserting.
-  internal suspend fun saveStartupMetricsIfNotSaved() = saveStartupMetricsJob.join()
-
-  // Startup metrics are persisted on first access and exactly once: `by lazy`
-  // runs the initializer a single time even across threads, so concurrent callers
-  // don't each insert them.
-  private val saveStartupMetricsJob: Job by lazy {
-    scope.launch {
-      mainSession.addMetrics(AppStartupManager.metrics)
+  // Persists the startup metrics recorded since the last save. The lock makes a concurrent
+  // caller wait for an in-flight save, so its own write still lands after the startup metrics.
+  // The session waits for its row before inserting.
+  private suspend fun saveStartupMetrics() =
+    saveStartupMetricsMutex.withLock {
+      val metrics = AppStartupManager.takeUnsavedMetrics()
+      if (metrics.isNotEmpty()) {
+        mainSession.addMetrics(metrics)
+      }
     }
-  }
+
+  private val saveStartupMetricsMutex = Mutex()
 }
 
 @OptimizedRecord
@@ -365,3 +498,197 @@ data class MetricAttributes(
   @Field val routeName: String? = null,
   @Field val params: Map<String, Any>? = null
 ) : Record
+
+/**
+ * Payload of `setNetworkTracesConfig`: the normalized `networkTraces` setting pushed down by
+ * `Observe.configure`.
+ */
+@OptimizedRecord
+data class NetworkTracesConfigParam(
+  @Field val enabled: Boolean = true,
+  @Field val filter: NetworkRequestFilter? = null
+) : Record
+
+@OptimizedRecord
+data class StartSpanOptions(
+  @Field val attributes: Map<String, Any?>? = null,
+  /** Unix-epoch milliseconds overriding "now" as the span start. */
+  @Field val startTime: Double? = null
+) : Record
+
+@OptimizedRecord
+data class SpanEventOptions(
+  @Field val attributes: Map<String, Any?>? = null,
+  /** Unix-epoch milliseconds overriding "now" as the event time. */
+  @Field val time: Double? = null
+) : Record
+
+@OptimizedRecord
+data class SpanEndOptions(
+  /**
+   * `"ok"` or `"error"`. Omitted means UNSET, per the conventions; any other value warns and
+   * also means UNSET.
+   */
+  @Field val status: String? = null,
+  @Field val message: String? = null,
+  /** Unix-epoch milliseconds overriding "now" as the span end. */
+  @Field val endTime: Double? = null
+) : Record
+
+@OptimizedRecord
+data class RecordSpanOptions(
+  @Field val startTime: Double? = null,
+  @Field val endTime: Double? = null,
+  @Field val attributes: Map<String, Any?>? = null
+) : Record
+
+/**
+ * The earliest timestamp accepted from JavaScript, 2001-09-09T01:46:40Z. A smaller value almost
+ * always comes from the wrong clock or is in the wrong unit: `performance.now()` measures uptime,
+ * and a timestamp in seconds is 1000 times too small.
+ */
+internal const val MIN_TIMESTAMP_MS = 1_000_000_000_000L
+
+/**
+ * How far past the current time a timestamp from JavaScript may be. A later value almost always
+ * is in the wrong unit, such as microseconds.
+ */
+internal const val MAX_TIMESTAMP_AHEAD_MS = 24 * 60 * 60 * 1_000L
+
+/**
+ * Resolves a caller-supplied timestamp, falling back to now when it is missing or unusable.
+ *
+ * An unusable value warns rather than passing silently: substituting now would otherwise record
+ * a plausible-looking span whose window the caller never chose.
+ */
+internal fun resolvedTimestamp(value: Double?, field: String): Long {
+  if (value == null) {
+    return TimeUtils.getWallClockMillis()
+  }
+  return unixMilliseconds(value) ?: run {
+    Log.w(
+      TAG,
+      "[AppMetrics] Ignoring `$field`: $value is not a unix-epoch timestamp in milliseconds. " +
+        "Values from `performance.now()` and timestamps in seconds or microseconds are common " +
+        "causes. Using the current time instead; pass a value from `Date.now()`."
+    )
+    TimeUtils.getWallClockMillis()
+  }
+}
+
+/**
+ * Converts a required `recordSpan` timestamp. Returns null and warns when it is missing or
+ * unusable, so the caller drops the span.
+ */
+internal fun requiredTimestamp(value: Double?, field: String): Long? {
+  if (value == null) {
+    Log.w(
+      TAG,
+      "[AppMetrics] recordSpan received no `$field`, so the span is not recorded. It needs both " +
+        "startTime and endTime (unix-epoch milliseconds) because it records an already-measured " +
+        "operation. To time an operation as it runs, use startSpan() and end() instead."
+    )
+    return null
+  }
+  return unixMilliseconds(value) ?: run {
+    Log.w(
+      TAG,
+      "[AppMetrics] recordSpan received $value as `$field`, which is not a unix-epoch timestamp " +
+        "in milliseconds, so the span is not recorded. Values from `performance.now()` and " +
+        "timestamps in seconds or microseconds are common causes. Pass a value from `Date.now()`."
+    )
+    null
+  }
+}
+
+/**
+ * Unix-epoch milliseconds from a JS number, or null when the value can't be one: NaN, infinity,
+ * a value before [MIN_TIMESTAMP_MS], or one more than [MAX_TIMESTAMP_AHEAD_MS] after [nowMs].
+ */
+internal fun unixMilliseconds(value: Double, nowMs: Long = TimeUtils.getWallClockMillis()): Long? {
+  // `toLong()` saturates: NaN becomes 0 and a value past the `Long` range becomes its bound, so
+  // every value outside the accepted window is rejected before converting.
+  if (!value.isFinite()) {
+    return null
+  }
+  if (value < MIN_TIMESTAMP_MS || value > nowMs + MAX_TIMESTAMP_AHEAD_MS) {
+    return null
+  }
+  return value.toLong()
+}
+
+/**
+ * The measured window of a `recordSpan` call. Returns null and warns when a time is missing or
+ * unusable, or when the window ends before it starts, so the caller drops the span.
+ */
+internal fun recordedSpanWindow(startTime: Double?, endTime: Double?): Pair<Long, Long>? {
+  val start = requiredTimestamp(startTime, "startTime") ?: return null
+  val end = requiredTimestamp(endTime, "endTime") ?: return null
+  if (end < start) {
+    Log.w(
+      TAG,
+      "[AppMetrics] recordSpan received an endTime before its startTime, so the span is not " +
+        "recorded. Check that both times come from `Date.now()` and are passed in the right order."
+    )
+    return null
+  }
+  return start to end
+}
+
+/**
+ * Validates a caller-provided span name with the rules `validateEventName` applies to log events.
+ * Returns null and warns when the name is invalid, so the caller doesn't record the span.
+ */
+internal fun validatedSpanName(name: String): String? {
+  val trimmed = name.trim()
+  if (trimmed.isEmpty()) {
+    Log.w(
+      TAG,
+      "[AppMetrics] A span with an empty name is not recorded. Pass a short, stable identifier " +
+        "for the operation being measured, like 'checkout' or 'image-decode'."
+    )
+    return null
+  }
+  if (trimmed.startsWith(RESERVED_EVENT_NAME_PREFIX)) {
+    Log.w(
+      TAG,
+      "[AppMetrics] The span `$trimmed` is not recorded because the `expo.` prefix is reserved " +
+        "for spans the SDK records, like network requests. Pick a name from your own namespace, " +
+        "like 'checkout' or 'image-decode'."
+    )
+    return null
+  }
+  if (trimmed.length > MAX_EVENT_NAME_LENGTH) {
+    Log.w(
+      TAG,
+      "[AppMetrics] A span with a ${trimmed.length}-character name is not recorded because the " +
+        "limit is $MAX_EVENT_NAME_LENGTH characters. Use a short, stable identifier and move the " +
+        "variable details into attributes."
+    )
+    return null
+  }
+  return trimmed
+}
+
+/**
+ * Maps the JS `status` option to the OTLP status code. `null` stays UNSET, and an unknown value
+ * warns and stays UNSET too.
+ */
+internal fun spanStatusCode(status: String?): Int? = when (status) {
+  null -> null
+  "ok" -> Span.STATUS_OK
+  "error" -> Span.STATUS_ERROR
+  else -> {
+    Log.w(
+      TAG,
+      "[AppMetrics] Ignoring the span status '$status', so the span ends with an unset status. " +
+        "Pass 'error' for a failed operation, 'ok' to explicitly mark success, or omit the status."
+    )
+    null
+  }
+}
+
+private class SpanConstructorUnavailableException : CodedException(
+  "Span objects can't be constructed directly because a span's identity and session " +
+    "attribution are assigned natively at start time. Get one from AppMetrics.startSpan() instead."
+)

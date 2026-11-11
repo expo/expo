@@ -8,10 +8,6 @@ jest.mock('../PlatformUtils', () => ({
   })),
 }));
 
-jest.mock('react-native/asset-registry', () => ({
-  getAssetByID: jest.fn(),
-}));
-
 jest.mock('react-native/Libraries/Image/resolveAssetSource', () => {
   return {
     default: jest.fn(),
@@ -131,8 +127,8 @@ if (Platform.OS !== 'web') {
   it(`creates assets from virtual modules`, () => {
     const { Asset } = require('../index');
 
-    const { getAssetByID } = require('react-native/asset-registry');
-    getAssetByID.mockReturnValueOnce(mockImageMetadata);
+    const { AssetRegistry } = require('react-native');
+    jest.spyOn(AssetRegistry, 'getAssetByID').mockReturnValueOnce(mockImageMetadata);
 
     const asset = Asset.fromModule(1);
     expect(asset.hash).toBe('cafecafecafecafecafecafecafecafe');
@@ -154,8 +150,8 @@ it(`can parse object asset`, () => {
 it(`throws when creating an asset from a missing module`, () => {
   const { Asset } = require('../index');
 
-  const { getAssetByID } = require('react-native/asset-registry');
-  getAssetByID.mockReturnValueOnce(undefined);
+  const { AssetRegistry } = require('react-native');
+  jest.spyOn(AssetRegistry, 'getAssetByID').mockReturnValueOnce(undefined);
 
   expect(() => Asset.fromModule(2)).toThrow();
 });

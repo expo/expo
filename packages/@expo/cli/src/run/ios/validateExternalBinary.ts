@@ -1,6 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs';
-import { glob as globAsync } from 'glob';
 import path from 'path';
 
 import { createTempDirectoryPath } from '../../utils/createTempPath';
@@ -44,11 +43,11 @@ async function extractIpaAsync(ipaPath: string, outputPath: string): Promise<str
     throw new Error(`Error extracting IPA: ${error.message}`);
   }
 
-  const appBinPaths = await globAsync('Payload/*.app', {
-    cwd: outputPath,
-    absolute: true,
-    maxDepth: 2,
-  });
+  const appBinPaths = (
+    await Array.fromAsync(fs.promises.glob('Payload/*.app', { cwd: outputPath }))
+  )
+    .map((file) => path.resolve(outputPath, file))
+    .sort((a, b) => b.localeCompare(a, 'en'));
 
   if (appBinPaths.length === 0) {
     throw new Error('No .app directory found in the IPA');

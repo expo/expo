@@ -14,6 +14,10 @@ import { resolveSource } from './utils/resolveSources';
  * It loads a new image every time the `uri` of the provided source changes.
  * To trigger reloads in some other scenarios, you can provide an additional dependency list.
  *
+ * On Android, when neither `maxWidth` nor `maxHeight` is provided, large images may be
+ * downsampled to fit the platform's bitmap size limit. The returned `ImageRef.width` and
+ * `ImageRef.height` reflect the decoded size and may differ from the original dimensions or iOS.
+ *
  * > **warning** Avoid using this hook for large images without specifying size constraints,
  * > as it may cause crashes due to excessive memory usage. It is recommended to use either
  * > `maxWidth` or `maxHeight` option to scale down the image appropriately for your use case.
@@ -67,6 +71,8 @@ export function useImage(
         .then((image) => {
           if (isEffectValid) {
             setImage(image);
+          } else {
+            image.release();
           }
         })
         .catch((error) => {
@@ -88,11 +94,21 @@ export function useImage(
     loadImage();
 
     return () => {
-      // Invalidate the effect and release the shared object to free up memory.
+      // Invalidate the effect. The current image stays rendered until the next one replaces it.
       isEffectValid = false;
-      image?.release();
     };
   }, [resolvedSource.uri, ...dependencies]);
+
+  useEffect(() => {
+    if (!image) {
+      return;
+    }
+    return () => {
+      // Release the image once it is replaced or the component unmounts. In development, React reads
+      // the previous props after this cleanup, so the release waits until the commit finishes.
+      Promise.resolve().then(() => image.release());
+    };
+  }, [image]);
 
   return image;
 }

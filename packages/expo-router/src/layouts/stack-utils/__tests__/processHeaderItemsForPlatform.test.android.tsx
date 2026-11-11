@@ -14,16 +14,7 @@ jest.mock('../../../optional-libraries/expo-ui', () => ({
 }));
 
 jest.mock('@expo/ui/jetpack-compose', () => {
-  const { View }: typeof import('react-native') = jest.requireActual('react-native');
-
-  const DropdownMenu = jest.fn((props) => (
-    <View testID="DropdownMenu" {...props} />
-  )) as unknown as jest.MockedFunction<React.FC<Record<string, unknown>>> & {
-    Trigger: jest.MockedFunction<React.FC<Record<string, unknown>>>;
-    Items: jest.MockedFunction<React.FC<Record<string, unknown>>>;
-  };
-  DropdownMenu.Trigger = jest.fn((props) => <View testID="DropdownMenu.Trigger" {...props} />);
-  DropdownMenu.Items = jest.fn((props) => <View testID="DropdownMenu.Items" {...props} />);
+  const { Text, View }: typeof import('react-native') = jest.requireActual('react-native');
 
   const DropdownMenuItem = jest.fn((props) => (
     <View testID="DropdownMenuItem" {...props} />
@@ -32,7 +23,7 @@ jest.mock('@expo/ui/jetpack-compose', () => {
     LeadingIcon: jest.MockedFunction<React.FC<Record<string, unknown>>>;
     TrailingIcon: jest.MockedFunction<React.FC<Record<string, unknown>>>;
   };
-  DropdownMenuItem.Text = jest.fn((props) => <View testID="DropdownMenuItem.Text" {...props} />);
+  DropdownMenuItem.Text = jest.fn((props) => <Text testID="DropdownMenuItem.Text" {...props} />);
   DropdownMenuItem.LeadingIcon = jest.fn((props) => (
     <View testID="DropdownMenuItem.LeadingIcon" {...props} />
   ));
@@ -43,17 +34,22 @@ jest.mock('@expo/ui/jetpack-compose', () => {
   return {
     Host: jest.fn((props) => <View testID="Host" {...props} />),
     Row: jest.fn((props) => <View testID="Row" {...props} />),
-    DropdownMenu,
+    Box: jest.fn((props) => <View testID="Box" {...props} />),
+    DropdownMenuGroup: jest.fn((props) => <View testID="DropdownMenuGroup" {...props} />),
     DropdownMenuItem,
+    DropdownMenuPopup: jest.fn((props) => <View testID="DropdownMenuPopup" {...props} />),
+    Spacer: jest.fn((props) => <View testID="Spacer" {...props} />),
     Divider: jest.fn(() => <View testID="Divider" />),
     Icon: jest.fn((props) => <View testID="Icon" {...props} />),
     IconButton: jest.fn((props) => <View testID="IconButton" {...props} />),
-    Text: jest.fn((props) => <View testID="ComposeText" {...props} />),
+    Text: jest.fn((props) => <Text testID="ComposeText" {...props} />),
   };
 });
 
 jest.mock('@expo/ui/jetpack-compose/modifiers', () => ({
   background: jest.fn((color: string) => ({ type: 'background', color })),
+  height: jest.fn((value: number) => ({ type: 'height', value })),
+  verticalScroll: jest.fn(() => ({ type: 'verticalScroll' })),
 }));
 
 jest.mock('../../../color', () => ({
@@ -133,10 +129,10 @@ describe('processHeaderItemsForPlatform', () => {
     expect(result).not.toHaveProperty('headerLeft');
   });
 
-  it('headerLeft renders Host > Row wrapper', () => {
+  it('headerLeft renders Host > Row wrapper', async () => {
     const result = processHeaderItemsForPlatform(<></>, 'left')!;
     const HeaderLeft = result.headerLeft!;
-    render(<HeaderLeft canGoBack={false} />);
+    await render(<HeaderLeft canGoBack={false} />);
 
     const host = screen.getByTestId('Host');
     expect(host).toBeDefined();
@@ -144,25 +140,25 @@ describe('processHeaderItemsForPlatform', () => {
     expect(within(host).getByTestId('Row')).toBeDefined();
   });
 
-  it('headerRight renders Host > Row wrapper', () => {
+  it('headerRight renders Host > Row wrapper', async () => {
     const result = processHeaderItemsForPlatform(<></>, 'right')!;
     const HeaderRight = result.headerRight!;
-    render(<HeaderRight canGoBack={false} />);
+    await render(<HeaderRight canGoBack={false} />);
 
     const host = screen.getByTestId('Host');
     expect(host).toBeDefined();
     expect(within(host).getByTestId('Row')).toBeDefined();
   });
 
-  it('Row is rendered inside Host', () => {
+  it('Row is rendered inside Host', async () => {
     const result = processHeaderItemsForPlatform(<></>, 'left')!;
     const HeaderLeft = result.headerLeft!;
-    render(<HeaderLeft canGoBack={false} />);
+    await render(<HeaderLeft canGoBack={false} />);
 
     expect(MockedRow).toHaveBeenCalled();
   });
 
-  it('provides ToolbarPlacementContext with actual placement "left"', () => {
+  it('provides ToolbarPlacementContext with actual placement "left"', async () => {
     let capturedPlacement: string | null = null;
     const PlacementCapture = () => {
       const placement = React.useContext(ToolbarPlacementContext);
@@ -172,12 +168,12 @@ describe('processHeaderItemsForPlatform', () => {
 
     const result = processHeaderItemsForPlatform(<PlacementCapture />, 'left')!;
     const HeaderLeft = result.headerLeft!;
-    render(<HeaderLeft canGoBack={false} />);
+    await render(<HeaderLeft canGoBack={false} />);
 
     expect(capturedPlacement).toBe('left');
   });
 
-  it('provides ToolbarPlacementContext with actual placement "right"', () => {
+  it('provides ToolbarPlacementContext with actual placement "right"', async () => {
     let capturedPlacement: string | null = null;
     const PlacementCapture = () => {
       const placement = React.useContext(ToolbarPlacementContext);
@@ -187,12 +183,12 @@ describe('processHeaderItemsForPlatform', () => {
 
     const result = processHeaderItemsForPlatform(<PlacementCapture />, 'right')!;
     const HeaderRight = result.headerRight!;
-    render(<HeaderRight canGoBack={false} />);
+    await render(<HeaderRight canGoBack={false} />);
 
     expect(capturedPlacement).toBe('right');
   });
 
-  it('provides NativeMenuContext with value true', () => {
+  it('provides NativeMenuContext with value true', async () => {
     let capturedMenuContext: boolean | null = null;
     const MenuContextCapture = () => {
       const isNativeMenu = React.useContext(NativeMenuContext);
@@ -202,12 +198,12 @@ describe('processHeaderItemsForPlatform', () => {
 
     const result = processHeaderItemsForPlatform(<MenuContextCapture />, 'left')!;
     const HeaderLeft = result.headerLeft!;
-    render(<HeaderLeft canGoBack={false} />);
+    await render(<HeaderLeft canGoBack={false} />);
 
     expect(capturedMenuContext).toBe(true);
   });
 
-  it('renders menu children with DropdownMenu and IconButton trigger', () => {
+  it('renders menu children with DropdownMenuPopup and IconButton trigger', async () => {
     // Import the native components directly to test rendering inside the header
     const {
       NativeToolbarMenu,
@@ -222,13 +218,13 @@ describe('processHeaderItemsForPlatform', () => {
     )!;
 
     const HeaderRight = result.headerRight!;
-    render(<HeaderRight canGoBack={false} />);
+    await render(<HeaderRight canGoBack={false} />);
 
-    expect(screen.getByTestId('DropdownMenu')).toBeDefined();
+    expect(screen.getByTestId('DropdownMenuPopup')).toBeDefined();
     expect(screen.getByTestId('IconButton')).toBeDefined();
   });
 
-  it('renders button children with IconButton and Icon', () => {
+  it('renders button children with IconButton and Icon', async () => {
     const { NativeToolbarButton } = require('../toolbar/StackToolbarButton/native');
 
     const result = processHeaderItemsForPlatform(
@@ -237,7 +233,7 @@ describe('processHeaderItemsForPlatform', () => {
     )!;
 
     const HeaderLeft = result.headerLeft!;
-    render(<HeaderLeft canGoBack={false} />);
+    await render(<HeaderLeft canGoBack={false} />);
 
     const AnimatedItemContainer = screen.getByTestId('AnimatedItemContainer');
     expect(AnimatedItemContainer).toBeDefined();
@@ -249,7 +245,7 @@ describe('processHeaderItemsForPlatform', () => {
     expect(Icon.props.source).toEqual({ uri: 'test-icon' });
   });
 
-  it('renders hidden items with AnimatedItemContainer visible={false}', () => {
+  it('renders hidden items with AnimatedItemContainer visible={false}', async () => {
     const { NativeToolbarButton } = require('../toolbar/StackToolbarButton/native');
 
     const result = processHeaderItemsForPlatform(
@@ -258,12 +254,12 @@ describe('processHeaderItemsForPlatform', () => {
     )!;
 
     const HeaderLeft = result.headerLeft!;
-    render(<HeaderLeft canGoBack={false} />);
+    await render(<HeaderLeft canGoBack={false} />);
 
     expect(screen.getByTestId('AnimatedItemContainer').props.visible).toBe(false);
   });
 
-  it('renders multiple children correctly inside wrapper', () => {
+  it('renders multiple children correctly inside wrapper', async () => {
     const { NativeToolbarButton } = require('../toolbar/StackToolbarButton/native');
 
     const result = processHeaderItemsForPlatform(
@@ -275,12 +271,12 @@ describe('processHeaderItemsForPlatform', () => {
     )!;
 
     const HeaderRight = result.headerRight!;
-    render(<HeaderRight canGoBack={false} />);
+    await render(<HeaderRight canGoBack={false} />);
 
     expect(screen.getAllByTestId('IconButton')).toHaveLength(2);
   });
 
-  it('passes callback props tintColor and backgroundColor to ToolbarColorContext', () => {
+  it('passes callback props tintColor and backgroundColor to ToolbarColorContext', async () => {
     let capturedColors: { tintColor?: unknown; backgroundColor?: unknown } = {};
     const ColorCapture = () => {
       const colors = React.useContext(ToolbarColorContext);
@@ -290,7 +286,7 @@ describe('processHeaderItemsForPlatform', () => {
 
     const result = processHeaderItemsForPlatform(<ColorCapture />, 'left')!;
     const HeaderLeft = result.headerLeft!;
-    render(
+    await render(
       <HeaderLeft tintColor="callback-tint" backgroundColor="callback-bg" canGoBack={false} />
     );
 
@@ -298,7 +294,7 @@ describe('processHeaderItemsForPlatform', () => {
     expect(capturedColors.backgroundColor).toBe('callback-bg');
   });
 
-  it('explicit colors take precedence over callback props', () => {
+  it('explicit colors take precedence over callback props', async () => {
     let capturedColors: { tintColor?: unknown; backgroundColor?: unknown } = {};
     const ColorCapture = () => {
       const colors = React.useContext(ToolbarColorContext);
@@ -311,7 +307,7 @@ describe('processHeaderItemsForPlatform', () => {
       backgroundColor: 'explicit-bg',
     })!;
     const HeaderRight = result.headerRight!;
-    render(
+    await render(
       <HeaderRight tintColor="callback-tint" backgroundColor="callback-bg" canGoBack={false} />
     );
 
@@ -319,7 +315,7 @@ describe('processHeaderItemsForPlatform', () => {
     expect(capturedColors.backgroundColor).toBe('explicit-bg');
   });
 
-  it('merges explicit colors with callback props', () => {
+  it('merges explicit colors with callback props', async () => {
     let capturedColors: { tintColor?: unknown; backgroundColor?: unknown } = {};
     const ColorCapture = () => {
       const colors = React.useContext(ToolbarColorContext);
@@ -331,13 +327,13 @@ describe('processHeaderItemsForPlatform', () => {
       tintColor: 'explicit-tint',
     })!;
     const HeaderLeft = result.headerLeft!;
-    render(<HeaderLeft backgroundColor="callback-bg" canGoBack={false} />);
+    await render(<HeaderLeft backgroundColor="callback-bg" canGoBack={false} />);
 
     expect(capturedColors.tintColor).toBe('explicit-tint');
     expect(capturedColors.backgroundColor).toBe('callback-bg');
   });
 
-  it('provides ToolbarColorContext with passed colors', () => {
+  it('provides ToolbarColorContext with passed colors', async () => {
     let capturedColors: { tintColor?: unknown; backgroundColor?: unknown } = {};
     const ColorCapture = () => {
       const colors = React.useContext(ToolbarColorContext);
@@ -350,13 +346,13 @@ describe('processHeaderItemsForPlatform', () => {
       backgroundColor: 'blue',
     })!;
     const HeaderLeft = result.headerLeft!;
-    render(<HeaderLeft canGoBack={false} />);
+    await render(<HeaderLeft canGoBack={false} />);
 
     expect(capturedColors.tintColor).toBe('red');
     expect(capturedColors.backgroundColor).toBe('blue');
   });
 
-  it('provides empty ToolbarColorContext when no colors passed', () => {
+  it('provides empty ToolbarColorContext when no colors passed', async () => {
     let capturedColors: { tintColor?: unknown; backgroundColor?: unknown } = {
       tintColor: 'sentinel',
     };
@@ -368,13 +364,13 @@ describe('processHeaderItemsForPlatform', () => {
 
     const result = processHeaderItemsForPlatform(<ColorCapture />, 'right')!;
     const HeaderRight = result.headerRight!;
-    render(<HeaderRight canGoBack={false} />);
+    await render(<HeaderRight canGoBack={false} />);
 
     expect(capturedColors.tintColor).toBeUndefined();
     expect(capturedColors.backgroundColor).toBeUndefined();
   });
 
-  it('button uses context tintColor when no prop tintColor is set', () => {
+  it('button uses context tintColor when no prop tintColor is set', async () => {
     const { NativeToolbarButton } = require('../toolbar/StackToolbarButton/native');
     const { Icon } = jest.requireMock(
       '@expo/ui/jetpack-compose'
@@ -388,7 +384,7 @@ describe('processHeaderItemsForPlatform', () => {
     )!;
 
     const HeaderLeft = result.headerLeft!;
-    render(<HeaderLeft canGoBack={false} />);
+    await render(<HeaderLeft canGoBack={false} />);
 
     expect(MockedIcon).toHaveBeenCalledWith(
       expect.objectContaining({ tint: 'custom-tint' }),
@@ -396,7 +392,7 @@ describe('processHeaderItemsForPlatform', () => {
     );
   });
 
-  it('button prop tintColor takes precedence over context tintColor', () => {
+  it('button prop tintColor takes precedence over context tintColor', async () => {
     const { NativeToolbarButton } = require('../toolbar/StackToolbarButton/native');
     const { Icon } = jest.requireMock(
       '@expo/ui/jetpack-compose'
@@ -414,7 +410,7 @@ describe('processHeaderItemsForPlatform', () => {
     )!;
 
     const HeaderLeft = result.headerLeft!;
-    render(<HeaderLeft canGoBack={false} />);
+    await render(<HeaderLeft canGoBack={false} />);
 
     expect(MockedIcon).toHaveBeenCalledWith(
       expect.objectContaining({ tint: 'prop-tint' }),
@@ -422,7 +418,7 @@ describe('processHeaderItemsForPlatform', () => {
     );
   });
 
-  it('button falls back to default tintColor when no prop or context', () => {
+  it('button falls back to default tintColor when no prop or context', async () => {
     const { NativeToolbarButton } = require('../toolbar/StackToolbarButton/native');
     const { Icon } = jest.requireMock(
       '@expo/ui/jetpack-compose'
@@ -435,7 +431,7 @@ describe('processHeaderItemsForPlatform', () => {
     )!;
 
     const HeaderLeft = result.headerLeft!;
-    render(<HeaderLeft canGoBack={false} />);
+    await render(<HeaderLeft canGoBack={false} />);
 
     expect(MockedIcon).toHaveBeenCalledWith(
       expect.objectContaining({ tint: 'dynamic:onSurface' }),
@@ -443,31 +439,27 @@ describe('processHeaderItemsForPlatform', () => {
     );
   });
 
-  it('menu uses context backgroundColor for dropdown', () => {
-    const { NativeToolbarMenu } = require('../toolbar/StackToolbarMenu/native');
-    const { DropdownMenu } = jest.requireMock(
-      '@expo/ui/jetpack-compose'
-    ) as typeof import('@expo/ui/jetpack-compose');
-    const MockedDropdownMenu = DropdownMenu as jest.MockedFunction<typeof DropdownMenu>;
+  it('menu uses context backgroundColor for menu groups', async () => {
+    const {
+      NativeToolbarMenu,
+      NativeToolbarMenuAction,
+    } = require('../toolbar/StackToolbarMenu/native');
 
     const result = processHeaderItemsForPlatform(
       <NativeToolbarMenu source={{ uri: 'test-icon' }}>
-        <></>
+        <NativeToolbarMenuAction onPress={() => {}}>Action</NativeToolbarMenuAction>
       </NativeToolbarMenu>,
       'right',
       { backgroundColor: 'custom-bg' }
     )!;
 
     const HeaderRight = result.headerRight!;
-    render(<HeaderRight canGoBack={false} />);
+    await render(<HeaderRight canGoBack={false} />);
 
-    expect(MockedDropdownMenu).toHaveBeenCalledWith(
-      expect.objectContaining({ color: 'custom-bg' }),
-      undefined
-    );
+    expect(screen.getByTestId('DropdownMenuGroup').props.containerColor).toBe('custom-bg');
   });
 
-  it('menu uses context tintColor for icon', () => {
+  it('menu uses context tintColor for icon', async () => {
     const { NativeToolbarMenu } = require('../toolbar/StackToolbarMenu/native');
     const { Icon } = jest.requireMock(
       '@expo/ui/jetpack-compose'
@@ -483,7 +475,7 @@ describe('processHeaderItemsForPlatform', () => {
     )!;
 
     const HeaderRight = result.headerRight!;
-    render(<HeaderRight canGoBack={false} />);
+    await render(<HeaderRight canGoBack={false} />);
 
     expect(MockedIcon).toHaveBeenCalledWith(
       expect.objectContaining({ tint: 'custom-tint' }),

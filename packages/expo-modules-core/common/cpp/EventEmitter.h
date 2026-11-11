@@ -93,6 +93,12 @@ public:
   using Shared = std::shared_ptr<NativeState>;
 
   /**
+   Function called when the first listener for an event is added (`isListening` is `true`)
+   and when the last listener for an event is removed (`isListening` is `false`).
+   */
+  using ListeningHook = void (*)(void *context, const char *eventName, bool isListening);
+
+  /**
    The `context` and `contextDeallocator` are forwarded to `expo::NativeState`
    on Apple platforms so the JS-side `getNativeState` can round-trip back to a
    Swift wrapper. They are ignored on platforms without ExpoModulesJSI.
@@ -106,10 +112,24 @@ public:
   Listeners listeners;
 
   /**
+   Sets a native hook that the emitter calls instead of the `__expo_onStartListeningToEvent`,
+   `__expo_onStopListeningToEvent`, `startObserving` and `stopObserving` functions of the emitter object.
+   The emitter calls `releaseContext` with the context when the hook is replaced or the state is destroyed.
+   */
+  void setListeningHook(void *context, ListeningHook hook, void (*releaseContext)(void *)) noexcept;
+
+  /**
    Gets event emitter's native state from the given object.
    If `createIfMissing` is set to `true`, the state will be automatically created.
    */
   static Shared get(jsi::Runtime &runtime, const jsi::Object &object, bool createIfMissing = false);
+
+private:
+  friend void notifyListening(jsi::Runtime &runtime, const jsi::Object &emitter, NativeState &state, const std::string &eventName, bool isListening);
+
+  void *listeningHookContext = nullptr;
+  ListeningHook listeningHook = nullptr;
+  void (*releaseListeningHookContext)(void *) = nullptr;
 };
 
 /**

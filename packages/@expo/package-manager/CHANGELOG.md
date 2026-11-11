@@ -1,16 +1,24 @@
 # Changelog
 
-## Unpublished
+## 1.14.2
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Drop legacy Node `url` usage in favor of `URL` ([#51602](https://github.com/expo/expo/pull/51602) by [@byCedric](https://github.com/byCedric))
+
+## 1.14.1
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+- Updated dependencies. ([#50762](https://github.com/expo/expo/pull/50762))
+  - @expo/json-file@11.2.1
+
+## 1.14.0 — 2026-09-10
 
 ### 🎉 New features
 
 - Add [nub](https://nubjs.com/) package manager support ([#48060](https://github.com/expo/expo/pull/48060) by [@colinhacks](https://github.com/colinhacks))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 1.13.1 - 2026-07-15
 

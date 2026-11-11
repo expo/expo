@@ -73,8 +73,8 @@ struct JavaScriptCodableEnumerableTests {
   @Test
   func `encodes a string enum to a JS string and an int enum to a JS number`() throws {
     let runtime = try runtime
-    #expect(try CodableColor.encode(.red, in: runtime).isString())
-    #expect(try CodablePriority.encode(.low, in: runtime).isNumber())
+    #expect(try CodableColor.encode(.red, in: runtime).isString() == true)
+    #expect(try CodablePriority.encode(.low, in: runtime).isNumber() == true)
   }
 
   // MARK: - Error paths

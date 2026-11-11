@@ -32,6 +32,7 @@ test.describe(inputDir, () => {
         NODE_ENV: 'production',
         EXPO_USE_STATIC: 'static',
         E2E_ROUTER_SRC: 'tree-shaking',
+        E2E_ROUTER_ASYNC: 'false',
         EXPO_UNSTABLE_METRO_OPTIMIZE_GRAPH: 'true',
       },
     });

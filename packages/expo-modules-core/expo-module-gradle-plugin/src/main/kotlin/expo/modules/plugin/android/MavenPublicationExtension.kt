@@ -119,7 +119,7 @@ internal fun Project.createExpoPublishTask(publicationInfo: PublicationInfo, exp
     val publishTask = tasks.getByName("publish")
 
     task.group = "publishing"
-    task.description = "Publishes the library to the GitHub Packages repository"
+    task.description = "Publishes the library to the embedded npm Maven repository"
     task.dependsOn(publishTask)
   }
 
@@ -134,7 +134,7 @@ internal fun Project.createEmptyExpoPublishTask(): TaskProvider<Task> {
   }
   taskProvider.configure { task ->
     task.group = "publishing"
-    task.description = "Publishes the library to the GitHub Packages repository"
+    task.description = "Publishes the library to the embedded npm Maven repository"
   }
 
   return taskProvider
@@ -204,11 +204,11 @@ private fun Project.expoPublishBody(publicationInfo: PublicationInfo, expoModule
   providers.exec { env ->
     env.workingDir(layout.projectDirectory.file(".."))
     // TODO(@lukmccall): support other package managers
-    env.commandLine("pnpm", "prettier", "--write", "expo-module.config.json")
+    env.commandLine("pnpm", "oxfmt", "--write", "expo-module.config.json")
   }.result.get()
 }
 
-private fun Project.validateProjectConfiguration(expoModulesExtension: ExpoModuleExtension) {
+internal fun Project.validateProjectConfiguration(expoModulesExtension: ExpoModuleExtension) {
   val shouldUsePublicationScript = expoModulesExtension.autolinking.getShouldUsePublicationScriptPath(this)
     ?: return // If the path to the script is not defined, we assume that we can publish the module.
 

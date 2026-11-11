@@ -1,0 +1,57 @@
+---
+title: EAS and Expo service names
+description: Learn the current Expo names of the services that were called EAS, such as Expo Build for EAS Build.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
+
+Expo's cloud services were called EAS (Expo Application Services). Their current name is Expo Services, and each service has an Expo name. The services are the same. Only the names changed. Use this page when you see "EAS" in older documentation, tutorials, or AI answers.
+
+| Older name                     | Current name    | What it does                                                     | Documentation                                         |
+| ------------------------------ | --------------- | ---------------------------------------------------------------- | ----------------------------------------------------- |
+| EAS, Expo Application Services | Expo Services   | Cloud services for Expo and React Native apps                    | [Expo Services](/eas/)                                |
+| EAS Build                      | Expo Build      | Builds Android and iOS app binaries in the cloud                 | [Expo Build](/build/introduction/)                    |
+| EAS Submit                     | Expo Submit     | Submits app binaries to the Google Play Store and the App Store  | [Submit to app stores](/deploy/submit-to-app-stores/) |
+| EAS Update                     | Expo Update     | Serves over-the-air updates to apps that use `expo-updates`      | [Expo Update](/eas-update/introduction/)              |
+| EAS Workflows                  | Expo Workflows  | Runs CI/CD workflows for builds, updates, submissions, and tests | [Expo Workflows](/eas/workflows/introduction/)        |
+| EAS Hosting                    | Expo Hosting    | Deploys web projects built with Expo Router                      | [Expo Hosting](/eas/hosting/introduction/)            |
+| EAS Metadata                   | Expo Metadata   | Manages your app store listings from the command line            | [Expo Metadata](/eas/metadata/)                       |
+| EAS Insights                   | Expo Insights   | Shows trends in app usage, workflow runs, and Maestro tests      | [Expo Insights](/eas-insights/introduction/)          |
+| EAS Observe                    | Expo Observe    | Tracks how your app performs in production                       | [Expo Observe](/eas/observe/introduction/)            |
+| EAS Simulator                  | Expo Simulators | Runs remote Android Emulators and iOS Simulators                 | [Expo Simulators](/preview/simulators/introduction/)  |
+| EAS dashboard                  | Expo dashboard  | Shows your projects and services on expo.dev                     | [expo.dev](https://expo.dev)                          |
+| EAS CLI                        | EAS CLI         | Runs Expo Services from your terminal. Its name does not change. | [EAS CLI](/eas/cli/)                                  |
+
+## Names that do not change
+
+Code and configuration keep the `eas` name:
+
+- The `eas` command and its subcommands, such as `eas build` and `eas update`
+- The `eas-cli` npm package
+- The **eas.json** configuration file
+- Environment variables that start with `EAS_`, such as `EAS_BUILD_PROFILE`
+
+## FAQ
+
+<FAQ>
+
+<Collapsible summary="Is Expo Build the same as EAS Build?">
+
+Yes. Expo Build is the current name of EAS Build. The service did not change. This is also true for the other services in the table.
+
+</Collapsible>
+
+<Collapsible summary="Do I need to change my project?">
+
+No. Existing projects, credentials, and builds keep working. The `eas` commands and **eas.json** keep their names.
+
+</Collapsible>
+
+<Collapsible summary="Why do AI tools still say EAS?">
+
+Older training data and older documentation use the name EAS. This page lists the current name of each service.
+
+</Collapsible>
+
+</FAQ>

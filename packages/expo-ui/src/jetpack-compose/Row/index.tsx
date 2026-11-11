@@ -27,6 +27,11 @@ export interface RowProps extends PrimitiveBaseProps {
    * Vertical alignment of children.
    */
   verticalAlignment?: VerticalAlignment;
+  /**
+   * When `true`, a child percentage is a fraction of this row.
+   * Universal `Row` sets this. Leave it unset to keep the Compose `Row`.
+   */
+  resolvesChildPercentages?: boolean;
 }
 
 const RowNativeView: React.ComponentType<RowProps> = requireNativeView('ExpoUI', 'RowView');

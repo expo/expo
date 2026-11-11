@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import expo.modules.easclient.EASClientID
 import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.appmetrics.storage.Span
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.interfaces.constants.ConstantsInterface
 import kotlinx.coroutines.currentCoroutineContext
@@ -49,6 +50,10 @@ class ObservabilityManager(
     baseManager.dispatchUnsentLogs()
   }
 
+  suspend fun dispatchUnsentSpans() {
+    baseManager.dispatchUnsentSpans()
+  }
+
   fun scheduleBackgroundDispatch() {
     ObservabilityBackgroundWorker.scheduleBackgroundDispatch(
       context = context,
@@ -91,6 +96,7 @@ class BaseObservabilityManager(
    */
   private var metricsRetryGate: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
   private var logsRetryGate: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
+  private var spansRetryGate: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
 
   /**
    * Returns true and logs when an active retry gate suppresses this dispatch round. Called
@@ -100,7 +106,9 @@ class BaseObservabilityManager(
   private fun retryGateBlocks(state: DispatchUtils.RetryGateState, signal: String): Boolean {
     val until = state.dispatchAfterMs ?: return false
     val now = currentTimeMs()
-    if (until <= now) return false
+    if (until <= now) {
+      return false
+    }
     Log.d(OBSERVE_TAG, "$signal dispatch suppressed by retry gate until $until (now $now)")
     return true
   }
@@ -127,7 +135,9 @@ class BaseObservabilityManager(
     }
 
     repairMetricCursorIfStale(context, sessionManager)
-    if (!shouldDispatch()) {
+    val config = ObservePreferences.getConfig(context)
+    val ignoredMetrics = config?.ignoredMetrics?.toSet() ?: emptySet()
+    if (!shouldDispatch(config, config?.sampleRate)) {
       val maxId = sessionManager.getMaxMetricId() ?: -1
       if (ObservePreferences.getLastDispatchedMetricId(context) != maxId) {
         ObservePreferences.setLastDispatchedMetricId(context, maxId)
@@ -145,7 +155,9 @@ class BaseObservabilityManager(
       }
 
       val highestId = metrics.last().id
-      val metricsBySessionId = metrics.groupBy { it.sessionId }
+      val metricsBySessionId = metrics
+        .filterNot { exportedMetricName(it.category, it.name) in ignoredMetrics }
+        .groupBy { it.sessionId }
       val sessions = sessionManager.getSessions(metricsBySessionId.keys).associateBy { it.id }
       val events = metricsBySessionId.mapNotNull { (sessionId, sessionMetrics) ->
         sessions[sessionId]?.let { session ->
@@ -206,7 +218,12 @@ class BaseObservabilityManager(
     }
 
     repairLogCursorIfStale(context, sessionManager)
-    if (!shouldDispatch()) {
+    val config = ObservePreferences.getConfig(context)
+    val ignoredEvents = config?.ignoredEvents?.toSet() ?: emptySet()
+    // Installations in-sample for `sampleRate` send all logs. Errors use the higher of the two rates.
+    val dispatchLogsAndErrors = shouldDispatch(config, config?.sampleRate)
+    val dispatchErrors = shouldDispatch(config, config?.errorSampleRate ?: config?.sampleRate)
+    if (!dispatchLogsAndErrors && !dispatchErrors) {
       val maxId = sessionManager.getMaxLogId() ?: -1
       if (ObservePreferences.getLastDispatchedLogId(context) != maxId) {
         ObservePreferences.setLastDispatchedLogId(context, maxId)
@@ -224,14 +241,19 @@ class BaseObservabilityManager(
       }
 
       val highestId = logs.last().id
-      val logsBySessionId = logs.groupBy { it.sessionId }
+      val sampledLogs = if (dispatchLogsAndErrors) {
+        logs
+      } else {
+        logs.filter { it.name in ERROR_LOG_NAMES }
+      }.filterNot { it.name in ignoredEvents }
+      val logsBySessionId = sampledLogs.groupBy { it.sessionId }
       val sessions = sessionManager.getSessions(logsBySessionId.keys).associateBy { it.id }
       val events = logsBySessionId.mapNotNull { (sessionId, sessionLogs) ->
         sessions[sessionId]?.let { session ->
           Event(
             metadata = Metadata.fromSessionMetadata(session),
             metrics = emptyList(),
-            logs = sessionLogs.map(LogEvent::fromLogRecord)
+            logs = sessionLogs.map { LogEvent.fromLogRecord(it, inSampleRate = dispatchLogsAndErrors) }
           )
         }
       }
@@ -247,12 +269,12 @@ class BaseObservabilityManager(
         is DispatchResult.PartialSuccess ->
           Log.w(
             OBSERVE_TAG,
-            "Partial success on batch of ${logs.size} log event(s): " +
+            "Partial success on batch of ${sampledLogs.size} log event(s): " +
               "server rejected ${result.partial.rejectedCount} " +
               "(${result.partial.errorMessage ?: "no error message"})"
           )
         is DispatchResult.NonRetryableFailure ->
-          Log.w(OBSERVE_TAG, "Dropping batch of ${logs.size} log event(s): ${result.reason}")
+          Log.w(OBSERVE_TAG, "Dropping batch of ${sampledLogs.size} log event(s): ${result.reason}")
         DispatchResult.PayloadTooLarge -> if (logs.size == 1) {
           Log.w(OBSERVE_TAG, "Dropping log event that exceeds the server's payload limit")
         }
@@ -276,14 +298,98 @@ class BaseObservabilityManager(
     }
   }
 
-  private fun isInSample(): Boolean {
-    val rate = ObservePreferences.getConfig(context)?.sampleRate ?: return true
+  /**
+   * Dispatches persisted spans to `/v1/traces`.
+   *
+   * Unlike metrics and logs there is no persisted cursor yet: a consumed (or deliberately
+   * dropped) batch is deleted outright and the table itself acts as the queue. Rows survive
+   * on a retryable failure and go out on the next dispatch. Batches are chunked at the
+   * server's per-request span limit.
+   */
+  suspend fun dispatchUnsentSpans(): Unit = spansDispatchMutex.withLock {
+    if (retryGateBlocks(spansRetryGate, "spans")) {
+      return
+    }
+
+    val config = ObservePreferences.getConfig(context)
+    if (!shouldDispatch(config, config?.sampleRate)) {
+      // Mirrors metrics/logs advancing the cursor past rows they won't send.
+      sessionManager.getMaxSpanId()?.let { sessionManager.deleteSpansUpTo(it) }
+      return
+    }
+
+    // Rows are read in id order one server-sized chunk at a time; a chunk that fails retryably
+    // stops the loop and leaves its rows (and everything after them) for the next dispatch. An
+    // oversized chunk is split in half and retried, so one huge span doesn't drop its whole
+    // chunk.
+    var readCursor = -1L
+    val chunks = ArrayDeque<List<Span>>()
+    while (currentCoroutineContext().isActive) {
+      if (chunks.isEmpty()) {
+        val nextChunk = sessionManager.getSpans(readCursor, MAX_SPANS_PER_REQUEST)
+        if (nextChunk.isEmpty()) {
+          return
+        }
+        readCursor = nextChunk.last().id
+        chunks.addLast(nextChunk)
+      }
+      val chunk = chunks.removeFirst()
+      val spansBySessionId = chunk.groupBy { it.sessionId }
+      // Batched because an offline backlog spans many sessions, and each halving retry would
+      // otherwise re-run every lookup.
+      val sessions = sessionManager.getSessions(spansBySessionId.keys).associateBy { it.id }
+      val batches = spansBySessionId.mapNotNull { (sessionId, spans) ->
+        // Spans whose session row no longer exists are skipped, because their rows are about to be
+        // deleted below anyway.
+        val session = sessions[sessionId] ?: return@mapNotNull null
+        SpanBatch(
+          event = Event(metadata = Metadata.fromSessionMetadata(session), metrics = emptyList()),
+          spans = spans.map { it.toOTSpan() }
+        )
+      }
+      val highestId = chunk.last().id
+      if (batches.isEmpty()) {
+        sessionManager.deleteSpansUpTo(highestId)
+        continue
+      }
+      val result = eventDispatcher.dispatchSpans(batches)
+      spansRetryGate = nextGate(spansRetryGate, result)
+      when (result) {
+        is DispatchResult.PartialSuccess ->
+          Log.w(
+            OBSERVE_TAG,
+            "Partial success on batch of ${chunk.size} span(s): " +
+              "server rejected ${result.partial.rejectedCount} " +
+              "(${result.partial.errorMessage ?: "no error message"})"
+          )
+        is DispatchResult.NonRetryableFailure ->
+          Log.w(OBSERVE_TAG, "Dropping batch of ${chunk.size} span(s): ${result.reason}")
+        DispatchResult.PayloadTooLarge -> if (chunk.size == 1) {
+          Log.w(OBSERVE_TAG, "Dropping span that exceeds the server's payload limit")
+        }
+        DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
+      }
+      when (spanDispatchDisposition(result, chunk.size)) {
+        SpanDispatchDisposition.HALVE_AND_RETRY -> {
+          // `toList()` rather than the `subList` views: nested views would keep the whole
+          // original chunk (up to 512 rows with their JSON blobs) reachable until every
+          // descendant had been processed. Matches iOS, which materializes with `Array`.
+          chunks.addFirst(chunk.subList(chunk.size / 2, chunk.size).toList())
+          chunks.addFirst(chunk.subList(0, chunk.size / 2).toList())
+        }
+        SpanDispatchDisposition.DELETE_AND_CONTINUE -> sessionManager.deleteSpansUpTo(highestId)
+        SpanDispatchDisposition.KEEP_AND_STOP -> return
+      }
+    }
+  }
+
+  private fun isInSample(rate: Double?): Boolean {
+    rate ?: return true
     val clamped = rate.coerceIn(0.0, 1.0)
     return deterministicUniformValueProvider() < clamped
   }
 
-  private fun shouldDispatch(): Boolean {
-    val config = ObservePreferences.getConfig(context)
+  private fun shouldDispatch(config: PersistedConfig?, rate: Double?): Boolean {
     val dispatchingEnabled = config?.dispatchingEnabled ?: true
     val dispatchInDebug = config?.dispatchInDebug ?: false
     // `isDev` is the OR of the JS-bundle dev flag (pushed via `setBundleDefaults` on JS
@@ -291,7 +397,7 @@ class BaseObservabilityManager(
     // bundle should be treated as dev for dispatch-gating.
     val isJsDev = ObservePreferences.getBundleDefaults(context)?.isJsDev ?: false
     val isDev = isDebugBuild || isJsDev
-    return dispatchingEnabled && isInSample() && (!isDev || dispatchInDebug)
+    return dispatchingEnabled && isInSample(rate) && (!isDev || dispatchInDebug)
   }
 
   suspend fun cleanup() {
@@ -303,8 +409,15 @@ class BaseObservabilityManager(
   }
 
   companion object {
+    /**
+     * Maximum spans per request accepted by the ingestion endpoint; it rejects everything past
+     * this count within one POST, so larger backlogs are sent as sequential chunks.
+     */
+    const val MAX_SPANS_PER_REQUEST = 512
+
     // Serialize foreground and background dispatches without blocking the other signal.
     private val metricsDispatchMutex = Mutex()
     private val logsDispatchMutex = Mutex()
+    private val spansDispatchMutex = Mutex()
   }
 }

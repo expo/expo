@@ -8,6 +8,11 @@ type Props = {
   className?: string;
 };
 
+const CLIENT_PLATFORM_LABELS: Record<string, string> = {
+  'expo-go': 'Included in Expo Go',
+  'expo-widgets': 'Available in Widgets',
+};
+
 export function PagePlatformTags({ platforms, className }: Props) {
   const standardPlatforms = platforms
     .filter(platform => !isClientPlatformTag(platform))
@@ -20,17 +25,17 @@ export function PagePlatformTags({ platforms, className }: Props) {
       {orderedPlatforms.map(platform => {
         const text = platform.includes('*') ? platform.replace('*', ' (device only)') : platform;
         const platformLower = platform.toLowerCase();
-        const isExpoGo = platformLower.includes('expo-go');
+        const clientLabel = CLIENT_PLATFORM_LABELS[platformLower];
 
-        if (!isExpoGo) {
+        if (!clientLabel) {
           return <PlatformTag key={text} platform={text} className="rounded-full px-2.5 py-1.5" />;
         }
 
         return (
           <PlatformTag
             key={text}
-            platform="expo-go"
-            label="Included in Expo Go"
+            platform={platformLower}
+            label={clientLabel}
             className="rounded-full border-palette-gray4 bg-palette-gray3 px-2.5 py-1.5 text-palette-gray12 dark:border-palette-gray4 dark:bg-palette-gray4"
           />
         );

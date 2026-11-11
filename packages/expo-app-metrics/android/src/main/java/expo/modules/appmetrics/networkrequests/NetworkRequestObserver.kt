@@ -111,7 +111,10 @@ class NetworkRequestObserver private constructor(
         mapOf(
           "fromUrl" to redirect.fromUrl,
           "toUrl" to redirect.toUrl,
-          "statusCode" to redirect.statusCode
+          "statusCode" to redirect.statusCode,
+          // Same ISO 8601 UTC shape as `startedAt`, with fractional seconds: hops within one
+          // request are usually fractions of a second apart.
+          "respondedAt" to redirect.respondedAtMs?.let { TimeUtils.millisToTimestamp(it) }
         )
       }
     )

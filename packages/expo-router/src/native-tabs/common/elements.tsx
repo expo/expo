@@ -52,21 +52,6 @@ export interface SrcIcon {
         default?: ImageSourcePropType | React.ReactElement;
         selected: ImageSourcePropType | React.ReactElement;
       };
-  /**
-   * Controls how the image icon is rendered on iOS.
-   *
-   * - `'template'`: iOS applies tint color to the icon (selected/unselected states)
-   * - `'original'`: Preserves original icon colors
-   *
-   * **Default behavior:**
-   * - If tab bar icon color is configured, defaults to `'template'`
-   * - If no icon color is set, defaults to `'original'`
-   *
-   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
-   *
-   * @platform ios
-   */
-  renderingMode?: IconRenderingMode;
 }
 
 export interface SFSymbolIcon {
@@ -97,11 +82,12 @@ export interface XcassetIcon {
    * The name of the iOS asset catalog image to use as an icon.
    *
    * Xcassets provide automatic multi-resolution (@1x/@2x/@3x), dark mode variants,
-   * and device-specific images via `[UIImage imageNamed:]`.
+   * and device-specific images via `[UIImage imageNamed:]`. Both image sets and
+   * symbol sets are supported.
    *
-   * The rendering mode (template vs original) can be controlled via the `renderingMode` prop
-   * on the `Icon` component. By default, icons are tinted when `iconColor` is set, and
-   * rendered as original otherwise.
+   * > **Note:** The rendering mode comes from the asset's **Render As** setting in the
+   * > asset catalog, not from the `renderingMode` prop. Set it to **Template Image** for
+   * > the icon to be tinted with `iconColor` and `selectedIconColor`.
    *
    * The value can be provided in two ways:
    * - As a string with the asset catalog image name
@@ -171,7 +157,31 @@ export interface MaterialIcon {
   md: AndroidSymbol | { default?: AndroidSymbol; selected: AndroidSymbol };
 }
 
-export type NativeTabsTriggerIconProps = { selectedColor?: ColorValue } & (
+export type NativeTabsTriggerIconProps = {
+  selectedColor?: ColorValue;
+  /**
+   * Controls how the `src`, `sf`, `drawable`, or `md` icon is drawn.
+   *
+   * - `'template'`: The icon is drawn in the tab's icon color. SF Symbols use the monochrome rendering.
+   * - `'original'`: The icon keeps its own colors. SF Symbols use the multicolor rendering.
+   *
+   * The value can be a single mode, or an object with a distinct mode for the selected state.
+   *
+   * When not set, Android tints the icon. iOS uses `'template'` for a `src` icon in a state with
+   * an icon color, and `'original'` in a state without one.
+   *
+   * @example
+   * ```tsx
+   * <Icon src={require('./path/to/icon.png')} renderingMode={{ default: 'template', selected: 'original' }} />
+   * ```
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uiimage/renderingmode-swift.enum) for more information.
+   *
+   * @platform Android
+   * @platform iOS
+   */
+  renderingMode?: IconRenderingMode | { default?: IconRenderingMode; selected: IconRenderingMode };
+} & (
   | (SFSymbolIcon & DrawableIcon)
   | (SFSymbolIcon & MaterialIcon)
   | (SFSymbolIcon & SrcIcon)
@@ -212,7 +222,7 @@ export const NativeTabsTriggerIcon: React.FC<NativeTabsTriggerIconProps> = Icon;
  *
  * @example
  * ```tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ * import { NativeTabs } from 'expo-router/native-tabs';
  * import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
  *
  * export default Layout(){
@@ -264,7 +274,7 @@ export interface NativeTabsBottomAccessoryProps {
  *
  * @example
  * ```tsx
- * import { NativeTabs } from 'expo-router/unstable-native-tabs';
+ * import { NativeTabs } from 'expo-router/native-tabs';
  *
  * export default Layout(){
  *   return (

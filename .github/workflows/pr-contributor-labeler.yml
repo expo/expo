@@ -50,15 +50,6 @@ jobs:
             const item = context.payload.pull_request ?? context.payload.issue;
             const username = item.user.login;
 
-            // Bots that are ours are internal, and this has to be decided
-            // BEFORE the bot skip below or their pull requests come out
-            // unlabelled — which is exactly what happened to expo-tuft.
-            const INTERNAL_BOTS = new Set(['expo-tuft[bot]']);
-            if (INTERNAL_BOTS.has(username)) {
-              await labelInternal('known internal bot');
-              return;
-            }
-
             if (item.user.type === 'Bot') {
               core.info(`Skipping bot author: ${username}`);
               return;
@@ -93,17 +84,17 @@ jobs:
               });
             }
 
-            async function labelInternal(reason) {
-              core.info(`${username} is internal (${reason})`);
-              await applyLabel('contributor: internal', 'b6f3a4',
-                'PR author is a member, owner, or collaborator of the expo org');
+            // Internal authors get no label. Only external contributions are
+            // labeled, so a missing label means the author is internal.
+            function skipInternal(reason) {
+              core.info(`${username} is internal (${reason}), not labeling`);
             }
 
             // Prefer author_association from the webhook payload — GitHub
             // itself attests to the relationship, no token dependency.
             const INTERNAL = new Set(['MEMBER', 'OWNER', 'COLLABORATOR']);
             if (INTERNAL.has(item.author_association)) {
-              await labelInternal(item.author_association);
+              skipInternal(item.author_association);
               return;
             }
 
@@ -113,7 +104,7 @@ jobs:
             // expo-bot is itself an expo org member, so with read:org the
             // membership check sees private members too.
             if (await isMember('expo', username)) {
-              await labelInternal('private member, via API');
+              skipInternal('private member, via API');
               return;
             }
 

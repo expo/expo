@@ -59,6 +59,20 @@ class JNIDeallocator(shouldCreateDestructorThread: Boolean = true) : AutoCloseab
   }
 
   /**
+   * Deallocates the hybrid objects whose Java wrappers were already garbage collected,
+   * without waiting for the destructor thread. Returns how many objects were deallocated.
+   */
+  internal fun processPendingReferences(): Int = synchronized(this) {
+    var processed = 0
+    while (true) {
+      val current = referenceQueue.poll() ?: break
+      destructorMap.remove(current)?.resetNative()
+      processed++
+    }
+    processed
+  }
+
+  /**
    * Returns references to all hybrid objects that contain references to the jsi value
    * and are present in the memory.
    */

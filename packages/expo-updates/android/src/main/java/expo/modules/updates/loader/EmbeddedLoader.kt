@@ -102,7 +102,11 @@ class EmbeddedLoader internal constructor(
       } catch (e: FileNotFoundException) {
         throw AssertionError(
           "APK bundle must contain the expected embedded asset " +
-            if (assetEntity.embeddedAssetFilename != null) assetEntity.embeddedAssetFilename else assetEntity.resourcesFilename
+            if (assetEntity.embeddedAssetFilename != null) {
+              assetEntity.embeddedAssetFilename
+            } else {
+              assetEntity.resourcesFilename
+            }
         )
       }
     }

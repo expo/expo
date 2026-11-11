@@ -202,7 +202,9 @@ internal class PerfMonitorOverlay(
   }
 
   fun hide() {
-    if (!isShowing) return
+    if (!isShowing) {
+      return
+    }
 
     mainHandler.post {
       if (!isShowing) {
@@ -329,9 +331,15 @@ private fun Graph(samples: List<Double>) {
       .fillMaxWidth()
       .height(58.dp)
   ) {
-    if (clamped.isEmpty()) return@Canvas
+    if (clamped.isEmpty()) {
+      return@Canvas
+    }
 
-    val stepX = if (clamped.size <= 1) size.width else size.width / (clamped.size - 1)
+    val stepX = if (clamped.size <= 1) {
+      size.width
+    } else {
+      size.width / (clamped.size - 1)
+    }
     val points = clamped.mapIndexed { index, value ->
       val x = stepX * index
       val normalized = (value / 120.0f).coerceIn(0.0, 1.0)
@@ -339,7 +347,9 @@ private fun Graph(samples: List<Double>) {
       Offset(x, y.toFloat())
     }
 
-    if (points.isEmpty()) return@Canvas
+    if (points.isEmpty()) {
+      return@Canvas
+    }
 
     val gradientPath = Path().apply {
       moveTo(points.first().x, size.height)

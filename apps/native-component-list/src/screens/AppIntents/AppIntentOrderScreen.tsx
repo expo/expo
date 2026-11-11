@@ -6,9 +6,17 @@ import { StyleSheet, View } from 'react-native';
 import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import { ScrollPage, Section } from '../../components/Page';
+import { AppIntentDonationButtons } from './AppIntentDonationButtons';
 import { AppIntentExitButton } from './AppIntentExitButton';
-import { clearLatestOrder, getLatestOrder, type AppIntentOrder } from './AppIntentsStore';
+import {
+  appIntentDishCatalog,
+  clearLatestOrder,
+  getLatestOrder,
+  type AppIntentOrder,
+} from './AppIntentsStore';
 import { useAppIntentState } from './useAppIntentState';
+
+const donatedDish = appIntentDishCatalog[0];
 
 function formatDate(timestamp?: number): string {
   return timestamp ? new Date(timestamp).toLocaleString() : 'Never';
@@ -64,6 +72,21 @@ export default function AppIntentOrderScreen() {
                 );
               });
             }}
+          />
+        </View>
+      </Section>
+
+      <Section title="Donations">
+        <View style={styles.controls}>
+          <BodyText>
+            Donates an order of {donatedDish.title}. The donation passes only the dish id, and Swift
+            reads the dish from the published catalog, so the donation fails for a dish that is not
+            in the catalog.
+          </BodyText>
+          <AppIntentDonationButtons
+            title={`Order ${donatedDish.title}`}
+            intent="orderFood"
+            params={{ dishId: donatedDish.id }}
           />
         </View>
       </Section>

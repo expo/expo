@@ -14,7 +14,7 @@ public struct MainValueConverter: ~Copyable {
    It **must** be run on the thread used by the JavaScript runtime.
    */
   @JavaScriptActor
-  public func toNative(_ value: JavaScriptValue, _ type: AnyDynamicType) throws -> Any {
+  public func toNative(_ value: borrowing JavaScriptValue, _ type: AnyDynamicType) throws -> Any {
     return try type.cast(jsValue: value, appContext: appContext)
   }
 

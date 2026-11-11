@@ -17,6 +17,10 @@ const productionBaseUrl = 'https://exp.host/--/api/v2/';
  * To provide offline support to your users, you should `try/catch` this method and implement retry logic to attempt
  * to get the push token later, once the device is back online.
  *
+ * If the [app config](/workflow/configuration/) has no project ID and `options.projectId` is not
+ * set, this method rejects with the `ERR_NOTIFICATIONS_NO_EXPERIENCE_ID` error.
+ * See [`ExpoPushTokenOptions`](#expopushtokenoptions).
+ *
  * > For Expo's backend to be able to send notifications to your app, you will need to provide it with push notification keys.
  * For more information, see [credentials](/push-notifications/push-notifications-setup/#get-credentials-for-development-builds) in the push notifications setup.
  *

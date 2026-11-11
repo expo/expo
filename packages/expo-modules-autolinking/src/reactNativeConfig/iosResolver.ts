@@ -1,3 +1,4 @@
+import fs from 'fs/promises';
 import path from 'path';
 
 import type { ExpoModuleConfig } from '../ExpoModuleConfig';
@@ -20,10 +21,58 @@ const findPodspecFile = async (targetPath: string): Promise<string | null> => {
   return mainPodspecFile ?? podspecFiles[0] ?? null;
 };
 
+/** The CocoaPods platform name of each Apple platform that autolinking reports. */
+const PODSPEC_PLATFORM_NAMES = { ios: 'ios', tvos: 'tvos', macos: 'osx' } as const;
+
+type ApplePlatform = keyof typeof PODSPEC_PLATFORM_NAMES;
+
+/**
+ * Reads the platforms a podspec declares, or `null` when it does not spell them out.
+ *
+ * Podspecs are Ruby, so this only recognizes the literal forms: `:osx =>` and `osx:` hash keys, and
+ * `s.osx.deployment_target`-style accessors. Comment lines are dropped first. A podspec that
+ * computes its platforms (for example `s.platforms = min_supported_versions`) yields `null`, and
+ * the caller keeps the dependency, because CocoaPods treats an unspecified platform list as
+ * "all platforms".
+ */
+export async function readPodspecPlatformsAsync(podspecPath: string): Promise<Set<string> | null> {
+  let contents: string;
+  try {
+    contents = await fs.readFile(podspecPath, 'utf8');
+  } catch {
+    return null;
+  }
+  const code = contents.replace(/^\s*#.*$/gm, '');
+  const platforms = new Set<string>();
+  const names = 'ios|osx|tvos|visionos|watchos';
+  for (const re of [
+    new RegExp(`:(${names})\\b`, 'g'),
+    new RegExp(`(?<![\\w:.])(${names}):(?!:)`, 'g'),
+    new RegExp(
+      `\\.(${names})\\.(?:deployment_target|exclude_files|source_files|frameworks|dependency|resource_bundles|resources|vendored_frameworks|pod_target_xcconfig)\\b`,
+      'g'
+    ),
+  ]) {
+    for (const match of code.matchAll(re)) {
+      platforms.add(match[1]!);
+    }
+  }
+  return platforms.size > 0 ? platforms : null;
+}
+
 export async function resolveDependencyConfigImplIosAsync(
   resolution: { path: string; version: string },
   reactNativeConfig: RNConfigReactNativePlatformsConfigIos | null | undefined,
-  expoModuleConfig?: ExpoModuleConfig | null
+  expoModuleConfig?: ExpoModuleConfig | null,
+  options?: {
+    /**
+     * The Apple platform being resolved. For `tvos` and `macos`, a dependency whose podspec
+     * declares platforms without that one is skipped. The Podfile filters such pods anyway, but
+     * codegen and Metro consume this config too and would otherwise reference native code that
+     * is never built.
+     */
+    platform?: ApplePlatform;
+  }
 ): Promise<RNConfigDependencyIos | null> {
   if (reactNativeConfig === null) {
     // Skip autolinking for this package.
@@ -33,6 +82,14 @@ export async function resolveDependencyConfigImplIosAsync(
   const podspecPath = await findPodspecFile(resolution.path);
   if (!podspecPath) {
     return null;
+  }
+
+  const platform = options?.platform;
+  if (platform && platform !== 'ios') {
+    const declaredPlatforms = await readPodspecPlatformsAsync(podspecPath);
+    if (declaredPlatforms && !declaredPlatforms.has(PODSPEC_PLATFORM_NAMES[platform])) {
+      return null;
+    }
   }
 
   if (reactNativeConfig === undefined && expoModuleConfig?.supportsPlatform('apple')) {

@@ -23,6 +23,7 @@ import {
   useTapGesture,
 } from 'react-native-gesture-handler';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import GalleryScreen from './GalleryScreen';
 
@@ -108,6 +109,7 @@ function Gestures({ children }: { children: React.ReactNode }) {
 
 export default function CameraScreen() {
   const camera = useRef<CameraView>(null);
+  const insets = useSafeAreaInsets();
   const [state, setState] = useState<State>({
     flash: 'off',
     zoom: 0,
@@ -386,7 +388,7 @@ export default function CameraScreen() {
   );
 
   const renderBottomBar = () => (
-    <View style={{ alignItems: 'center' }}>
+    <View style={{ alignItems: 'center', paddingBottom: insets.bottom }}>
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.bottomButton} onPress={changeMode}>
           <MaterialCommunityIcons

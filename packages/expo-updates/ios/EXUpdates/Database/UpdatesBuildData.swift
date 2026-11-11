@@ -33,7 +33,7 @@ internal final class UpdatesBuildData {
       do {
         staticBuildData = try database.staticBuildData(withScopeKey: scopeKey)
       } catch {
-        logger.warn(message: "Error getting static build data: \(error.localizedDescription)")
+        logger.warn(.buildDataOperationFailed, cause: error, values: ["operation": "getting"])
         return
       }
       let buildDataFromConfig = self.getBuildDataFromConfig(config)
@@ -46,7 +46,7 @@ internal final class UpdatesBuildData {
         do {
           try database.setStaticBuildData(getBuildDataFromConfig(config), withScopeKey: scopeKey)
         } catch {
-          logger.warn(message: "Error setting static build data: \(error.localizedDescription)")
+          logger.warn(.buildDataOperationFailed, cause: error, values: ["operation": "setting"])
           return
         }
       }
@@ -73,21 +73,21 @@ internal final class UpdatesBuildData {
     do {
       allUpdates = try database.allUpdates(withConfig: config)
     } catch {
-      logger.warn(message: "Error loading updates from database: \(error.localizedDescription)")
+      logger.warn(.buildDataOperationFailed, cause: error, values: ["operation": "loading updates to reset"])
       return
     }
 
     do {
       try database.deleteUpdates(allUpdates)
     } catch {
-      logger.warn(message: "Error clearing all updates from database: \(error.localizedDescription)")
+      logger.warn(.buildDataOperationFailed, cause: error, values: ["operation": "clearing updates to reset"])
       return
     }
 
     do {
       try database.setStaticBuildData(getBuildDataFromConfig(config), withScopeKey: scopeKey)
     } catch {
-      logger.warn(message: "Error setting static build data: \(error.localizedDescription)")
+      logger.warn(.buildDataOperationFailed, cause: error, values: ["operation": "setting"])
       return
     }
   }
@@ -100,7 +100,7 @@ internal final class UpdatesBuildData {
         UpdatesDatabase.JSONDataKey.ManifestFiltersKey
       ])
     } catch {
-      logger.warn(message: "Error deleting JSON data from database: \(error.localizedDescription)")
+      logger.warn(.buildDataOperationFailed, cause: error, values: ["operation": "clearing manifest metadata to reset"])
       return
     }
   }

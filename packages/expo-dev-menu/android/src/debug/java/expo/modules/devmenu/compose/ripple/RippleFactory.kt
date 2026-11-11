@@ -77,7 +77,11 @@ fun ripple(
   color: Color = Color.Unspecified
 ): IndicationNodeFactory {
   return if (radius == Dp.Unspecified && color == Color.Unspecified) {
-    if (bounded) return DefaultBoundedRipple else DefaultUnboundedRipple
+    if (bounded) {
+      return DefaultBoundedRipple
+    } else {
+      DefaultUnboundedRipple
+    }
   } else {
     RippleNodeFactory(bounded, radius, color)
   }
@@ -207,11 +211,19 @@ class RippleConfiguration(
   val rippleAlpha: RippleAlpha? = null
 ) {
   override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (other !is RippleConfiguration) return false
+    if (this === other) {
+      return true
+    }
+    if (other !is RippleConfiguration) {
+      return false
+    }
 
-    if (color != other.color) return false
-    if (rippleAlpha != other.rippleAlpha) return false
+    if (color != other.color) {
+      return false
+    }
+    if (rippleAlpha != other.rippleAlpha) {
+      return false
+    }
 
     return true
   }
@@ -249,12 +261,22 @@ private constructor(
   }
 
   override fun equals(other: Any?): Boolean {
-    if (this === other) return true
-    if (other !is RippleNodeFactory) return false
+    if (this === other) {
+      return true
+    }
+    if (other !is RippleNodeFactory) {
+      return false
+    }
 
-    if (bounded != other.bounded) return false
-    if (radius != other.radius) return false
-    if (colorProducer != other.colorProducer) return false
+    if (bounded != other.bounded) {
+      return false
+    }
+    if (radius != other.radius) {
+      return false
+    }
+    if (colorProducer != other.colorProducer) {
+      return false
+    }
     return color == other.color
   }
 
@@ -294,7 +316,9 @@ private class DelegatingThemeAwareRippleNode(
       if (configuration == null) {
         removeRipple()
       } else {
-        if (rippleNode == null) attachNewRipple()
+        if (rippleNode == null) {
+          attachNewRipple()
+        }
       }
     }
   }

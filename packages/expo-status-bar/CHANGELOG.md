@@ -1,14 +1,32 @@
 # Changelog
 
-## Unpublished
+## 58.0.4
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Share one native read and listener across all `useVerticalBarEdgeIOS()` callers. ([#51996](https://github.com/expo/expo/pull/51996) by [@huntie](https://github.com/huntie))
+- Add the `verticalBarBehaviorIOS` prop and `StatusBar.setVerticalBarBehaviorIOS()` to keep the status bar horizontal on devices such as iPhone Duo. ([#51928](https://github.com/expo/expo/pull/51928) by [@huntie](https://github.com/huntie))
+- Add `StatusBar.getVerticalBarEdgeIOS()` and `useVerticalBarEdgeIOS()` to read the edge of the vertical bar that holds the status bar on devices such as iPhone Duo. ([#51927](https://github.com/expo/expo/pull/51927) by [@huntie](https://github.com/huntie))
 
-### 🐛 Bug fixes
+## 58.0.3
 
-### 💡 Others
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.2
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.1 — 2026-09-21
+
+_This version does not introduce any user-facing changes._
+
+## 58.0.0 — 2026-09-10
+
+_This version does not introduce any user-facing changes._
 
 ## 57.0.1 - 2026-07-15
 

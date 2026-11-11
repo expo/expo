@@ -1,8 +1,24 @@
 # Changelog
 
-## Unpublished
+## 2.5.3
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Drop an inherited `BABEL_ENV` in `setNodeEnv` and ignore it in **.env** files. ([#51946](https://github.com/expo/expo/pull/51946) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+## 2.5.2
+
+### Patch Changes
+
+- Fix `PYTHONNOUSERSITE` not being blocked in `.env` files due to a typo. ([#51321](https://github.com/expo/expo/pull/51321) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+## 2.5.1
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 2.5.0 — 2026-09-10
 
 ### 🎉 New features
 

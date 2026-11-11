@@ -1,6 +1,6 @@
 import { mergeClasses } from '@expo/styleguide';
 import { slug } from 'github-slugger';
-import { type ComponentType, type ReactNode } from 'react';
+import { type ComponentType, type ReactNode, createContext, useContext } from 'react';
 import { type Components } from 'react-markdown';
 
 import { HeadingType } from '~/common/headingManager';
@@ -38,6 +38,7 @@ import {
   nonLinkableTypes,
   omittableTypes,
   packageLinks,
+  packagesWithoutReplaceableTypes,
   replaceableTypes,
   sdkVersionHardcodedTypeLinks,
 } from './APIStaticData';
@@ -105,18 +106,21 @@ export const mdComponentsNoValidation: Components = {
   a: ({ href, children }) => <A href={href}>{children}</A>,
 };
 
-const renderWithLink = ({
-  name,
-  type,
-  typePackage,
-  sdkVersion,
-}: {
+export const APISectionPackageContext = createContext<string[]>([]);
+
+type TypeLinkProps = {
   name: string;
   type?: string;
   typePackage?: string;
   sdkVersion: string;
-}) => {
-  const replacedName = replaceableTypes[name] ?? name;
+};
+
+const TypeLink = ({ name, type, typePackage, sdkVersion }: TypeLinkProps) => {
+  const packageNames = useContext(APISectionPackageContext);
+  const skipReplacement = packageNames.some(packageName =>
+    packagesWithoutReplaceableTypes.includes(packageName)
+  );
+  const replacedName = skipReplacement ? name : (replaceableTypes[name] ?? name);
 
   if (name.includes('.')) {
     return name;
@@ -147,6 +151,10 @@ const renderWithLink = ({
 
   return replacedName + (type === 'array' ? '[]' : '');
 };
+
+const renderWithLink = (props: TypeLinkProps) => (
+  <TypeLink key={`type-link-${props.name}`} {...props} />
+);
 
 const renderUnion = (types: TypeDefinitionData[], { sdkVersion }: { sdkVersion: string }) =>
   types
@@ -573,6 +581,15 @@ export const getComponentName = (name?: string, children: PropData[] = []) => {
 export function getPossibleComponentPropsNames(name?: string, children: PropData[] = []) {
   const componentName = getComponentName(name, children);
   return [`${componentName}Props`, `${componentName.replace('View', '')}Props`];
+}
+
+const PROPS_WITH_CHILDREN_NAMES = new Set(['PropsWithChildren', 'React.PropsWithChildren']);
+
+export function unwrapPropsWithChildren(type?: TypeDefinitionData) {
+  if (type?.type === 'reference' && PROPS_WITH_CHILDREN_NAMES.has(type.name ?? '')) {
+    return type.typeArguments?.[0] ?? type;
+  }
+  return type;
 }
 
 export function extractDefaultPropValue(

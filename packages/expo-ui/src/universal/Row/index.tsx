@@ -1,19 +1,16 @@
 import { Pressable, StyleSheet, View, type ViewStyle } from 'react-native';
 
 import { useUniversalLifecycle } from '../hooks';
+import { StackAxisContext, useCrossAxisSize } from '../stackAxis';
 import type { UniversalAlignment } from '../types';
 import type { RowProps } from './types';
 
 const styles = StyleSheet.create({
-  row: {
-    // Fill the parent's cross-axis by default so a `<Spacer flexible />`
-    // child has room to grow. Without this, a Row placed inside a `Column`
-    // with alignment other than 'stretch' is content-sized on web, which
-    // leaves flex children with no leftover space. SwiftUI and Compose
-    // achieve the same effect via their own layout phases.
-    alignSelf: 'stretch',
-    flexDirection: 'row',
-  },
+  row: { flexDirection: 'row' },
+  // Fill the parent's cross axis when this row has no size of its own on that axis,
+  // so a flexible child still has leftover space. A set size must not use
+  // stretch, or the parent's alignment cannot move it.
+  stretch: { alignSelf: 'stretch' },
   hidden: { display: 'none' },
   disabled: {
     opacity: 0.5,
@@ -43,6 +40,7 @@ export function Row({
   testID,
 }: RowProps) {
   useUniversalLifecycle(onAppear, onDisappear);
+  const crossAxisSize = useCrossAxisSize(style);
 
   const Container = onPress ? Pressable : View;
 
@@ -53,13 +51,14 @@ export function Row({
       testID={testID}
       style={[
         styles.row,
+        crossAxisSize == null && styles.stretch,
         alignmentStyles[alignment],
         spacing != null && { gap: spacing },
         style,
         hidden && styles.hidden,
         disabled && styles.disabled,
       ]}>
-      {children}
+      <StackAxisContext.Provider value="horizontal">{children}</StackAxisContext.Provider>
     </Container>
   );
 }

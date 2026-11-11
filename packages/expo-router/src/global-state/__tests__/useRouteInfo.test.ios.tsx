@@ -6,13 +6,13 @@ import { defaultRouteInfo, type UrlObject } from '../getRouteInfoFromState';
 import { RouteInfoContext } from '../routeInfoContext';
 import { useRouteInfo } from '../useRouteInfo';
 
-it('returns default route info outside a navigation container', () => {
-  const { result } = renderHook(() => useRouteInfo());
+it('returns default route info outside a navigation container', async () => {
+  const { result } = await renderHook(() => useRouteInfo());
 
   expect(result.current).toBe(defaultRouteInfo);
 });
 
-it('returns route info from the navigation container', () => {
+it('returns route info from the navigation container', async () => {
   const routeInfo: UrlObject = {
     ...defaultRouteInfo,
     pathname: '/second',
@@ -24,12 +24,12 @@ it('returns route info from the navigation container', () => {
     <RouteInfoContext.Provider value={routeInfo}>{children}</RouteInfoContext.Provider>
   );
 
-  const { result } = renderHook(() => useRouteInfo(), { wrapper });
+  const { result } = await renderHook(() => useRouteInfo(), { wrapper });
 
   expect(result.current).toBe(routeInfo);
 });
 
-it('returns preview route info inside a preview', () => {
+it('returns preview route info inside a preview', async () => {
   const preview = {
     pathname: '/preview/one',
     segments: ['preview', 'one'],
@@ -39,7 +39,7 @@ it('returns preview route info inside a preview', () => {
     <PreviewRouteContext.Provider value={preview}>{children}</PreviewRouteContext.Provider>
   );
 
-  const { result } = renderHook(() => useRouteInfo(), { wrapper });
+  const { result } = await renderHook(() => useRouteInfo(), { wrapper });
 
   expect(result.current).toEqual({
     pathname: '/preview/one',

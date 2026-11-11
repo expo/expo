@@ -3,7 +3,7 @@ import { Children, Fragment, isValidElement, use, useMemo } from 'react';
 import type { ViewProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
-import { getValidInitialRouteName, useRouteNode, useContextKey } from '../Route';
+import { useRouteNode, useContextKey } from '../Route';
 import { useComponent } from '../fork/useComponent';
 import { useRouteInfo } from '../hooks';
 import { GuardContextProvider, type GuardedRedirects } from '../layouts/GuardContext';
@@ -16,11 +16,14 @@ import type {
   TabRouterOptions,
 } from '../react-navigation/native';
 import { LinkingContext, useNavigationBuilder } from '../react-navigation/native';
+import { getValidInitialRouteName } from '../routeNode';
 import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 import type { PlaceholderDescriptorMap } from '../standard-navigation/types';
+import { useNonStackAnchorWarning } from '../standard-navigation/useNonStackAnchorWarning';
+import { useReconcileTabHistory } from '../standard-navigation/useReconcileTabHistory';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
@@ -54,8 +57,9 @@ export type UseTabsOptions = Omit<
     TabNavigationEventMap,
     any
   >,
-  'children' | 'initialRouteName'
+  'activityEnabled' | 'children' | 'initialRouteName'
 > & {
+  activityEnabled?: boolean;
   backBehavior?: TabRouterOptions['backBehavior'];
 };
 
@@ -63,6 +67,11 @@ export type TabsProps = ViewProps & {
   /** Forward props to child component and removes the extra `<View>`. Useful for custom wrappers. */
   asChild?: boolean;
   options?: UseTabsOptions;
+  /**
+   * Enables React Activity for tab screens. Inactive tabs are hidden while preserving their state.
+   * @default false
+   */
+  activityEnabled?: boolean;
 };
 
 /**
@@ -80,7 +89,7 @@ export type TabsProps = ViewProps & {
  * ```
  */
 export function Tabs(props: TabsProps) {
-  const { children, asChild, options, ...rest } = props;
+  const { children, asChild, options, activityEnabled, ...rest } = props;
   const Comp = asChild ? ViewSlot : View;
 
   const { NavigationContent } = useTabsWithChildren({
@@ -94,6 +103,7 @@ export function Tabs(props: TabsProps) {
         ? (children.props.children as ReactNode)
         : children,
     ...options,
+    activityEnabled: activityEnabled ?? options?.activityEnabled,
   });
 
   return (
@@ -162,6 +172,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   }
 
   const initialRouteName = getValidInitialRouteName(routeNode);
+  const backBehavior = rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined);
 
   const { children, triggerMap } = useTriggersToScreens(
     triggers,
@@ -178,14 +189,18 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     TabActionHelpers<ParamListBase>,
     ExpoTabsScreenOptions,
     TabNavigationEventMap
-  >(ExpoTabRouter, {
-    children,
-    ...rest,
-    triggerMap,
-    id: contextKey,
-    initialRouteName,
-    backBehavior: rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined),
-  });
+  >(
+    ExpoTabRouter,
+    {
+      children,
+      ...rest,
+      triggerMap,
+      id: contextKey,
+      initialRouteName,
+      backBehavior,
+    },
+    { activityDefaultThreshold: 1 }
+  );
 
   const {
     state,
@@ -194,6 +209,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     navigation,
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
+  useReconcileTabHistory({ state, navigation });
   const descriptors = useMemo(
     () =>
       appendMissingPlaceholderTabDescriptors(
@@ -221,7 +237,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   const NavigationContent = useComponent((children: React.ReactNode) => (
     // Headless tabs have no guards, so shadow parent guards whose route names may collide.
     <GuardContextProvider node={routeNode} guardedRedirects={emptyGuardedRedirects}>
-      <TabVisibilityRedirect state={state} descriptors={descriptors} />
+      <TabVisibilityRedirect state={state} descriptors={descriptors} backBehavior={backBehavior} />
       <TabTriggerMapContext.Provider value={triggerMap}>
         <TabNavigatorStatesContext.Provider value={navigatorStates}>
           <NavigatorContext.Provider value={navigatorContextValue}>
@@ -238,19 +254,24 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
 function TabVisibilityRedirect({
   state,
   descriptors,
+  backBehavior,
 }: {
   state: TabNavigationState<any>;
   descriptors: PlaceholderDescriptorMap;
+  backBehavior: TabRouterOptions['backBehavior'];
 }) {
   const stateWithPlaceholders = useMemo(
     () => appendMissingPlaceholderTabRoutes(state, descriptors),
     [descriptors, state]
   );
+  useNonStackAnchorWarning(backBehavior);
   useVisibleTabsWithRedirect({
     routes: stateWithPlaceholders.routes,
     routeNames: stateWithPlaceholders.routeNames,
     focusedRouteKey: stateWithPlaceholders.routes[stateWithPlaceholders.index]?.key,
     descriptors,
+    // This runs before the tab's NavigationContent provides its own state context.
+    navigatorKey: state.key,
   });
   return null;
 }
@@ -295,7 +316,7 @@ function parseTriggersFromChildren(
       return;
     }
 
-    const { href, name } = child.props;
+    const { href, name, activityEnabled } = child.props;
 
     if (!href) {
       if (process.env.NODE_ENV === 'development') {
@@ -325,7 +346,7 @@ function parseTriggersFromChildren(
       return;
     }
 
-    return screenTriggers.push({ type: 'internal', href: resolvedHref, name });
+    return screenTriggers.push({ type: 'internal', href: resolvedHref, name, activityEnabled });
   });
 
   return screenTriggers;

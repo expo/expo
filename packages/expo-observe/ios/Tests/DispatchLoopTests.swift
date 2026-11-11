@@ -37,7 +37,12 @@ struct DispatchLoopTests {
 
   @Test
   func `partial success advances and continues`() async {
-    let partial = OTPartialSuccess(rejectedDataPoints: 1, rejectedLogRecords: nil, errorMessage: nil)
+    let partial = OTPartialSuccess(
+      rejectedDataPoints: 1,
+      rejectedLogRecords: nil,
+      rejectedSpans: nil,
+      errorMessage: nil
+    )
     let state = State(rows: rows(1...3), results: [.partialSuccess(partial), .success], chunkSize: 2)
 
     await drain(state)
@@ -111,6 +116,89 @@ struct DispatchLoopTests {
     #expect(state.sentIds == [[1, 2], [3]])
     #expect(state.persistedCursors == [2, 3])
     #expect(state.observedResults.map(\.result) == [.success])
+  }
+
+  @Test
+  func `mixed and all ignored metric batches advance past every row`() async {
+    let metrics = [
+      // Ignored: `expo.app_startup.tti`.
+      MetricRow(
+        id: 1,
+        sessionId: "s",
+        timestamp: "t",
+        category: "appStartup",
+        name: "timeToInteractive",
+        value: 1
+      ),
+      // Sent: `expo.navigation.tti`.
+      MetricRow(
+        id: 2,
+        sessionId: "s",
+        timestamp: "t",
+        category: "navigation",
+        name: "tti",
+        value: 2
+      ),
+      // Ignored. Alone in chunk 2, so that chunk sends nothing.
+      MetricRow(
+        id: 3,
+        sessionId: "s",
+        timestamp: "t",
+        category: "appStartup",
+        name: "timeToInteractive",
+        value: 3
+      ),
+    ]
+    var cursors: [Int64] = []
+    var sent: [String] = []
+
+    await DispatchLoop.drain(
+      startCursor: 0,
+      chunkSize: 2,
+      fetchBatch: { cursor, limit in Array(metrics.filter { ($0.id ?? 0) > cursor }.prefix(limit)) },
+      rowId: { $0.id },
+      send: { batch in
+        let remaining = ObservabilityManager.filteredMetrics(
+          batch,
+          ignoredMetrics: ["expo.app_startup.tti"]
+        )
+        sent += remaining.map(\.name)
+        return remaining.isEmpty ? nil : .success // Same as `dispatchMetrics`: `nil` skips the chunk.
+      },
+      onResult: { _, _, _ in },
+      persistCursor: { cursors.append($0) }
+    )
+
+    #expect(sent == ["tti"])
+    #expect(cursors == [2, 3]) // Chunk 2 has only ignored rows, but the cursor still moves to 3.
+  }
+
+  @Test
+  func `retryable mixed log batch keeps its ignored rows for retry`() async {
+    let logs = ["hidden", "visible"].enumerated().map { index, name in
+      LogRow(id: Int64(index + 1), sessionId: "s", timestamp: "t", severity: "info", name: name)
+    }
+    var cursors: [Int64] = []
+    var sent: [String] = []
+
+    await DispatchLoop.drain(
+      startCursor: 0,
+      fetchBatch: { cursor, limit in Array(logs.filter { ($0.id ?? 0) > cursor }.prefix(limit)) },
+      rowId: { $0.id },
+      send: { batch in
+        sent = ObservabilityManager.sampledLogs(
+          batch,
+          shouldDispatch: true,
+          ignoredEvents: ["hidden"]
+        ).map(\.name)
+        return .retryableFailure(retryAfter: nil)
+      },
+      onResult: { _, _, _ in },
+      persistCursor: { cursors.append($0) }
+    )
+
+    #expect(sent == ["visible"])
+    #expect(cursors.isEmpty)
   }
 
   @Test

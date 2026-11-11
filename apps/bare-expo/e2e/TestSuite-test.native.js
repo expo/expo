@@ -14,6 +14,7 @@ const TESTS = [
   'Constants',
   // 'Contacts',
   'Crypto',
+  'CryptoAES',
   // 'GLView',
   'Haptics',
   'Localization',

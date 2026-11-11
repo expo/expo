@@ -1,6 +1,6 @@
 {
   "name": "expo-brownfield",
-  "version": "57.0.8",
+  "version": "58.0.16",
   "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
   "keywords": [
     "brownfield",
@@ -52,7 +52,8 @@
     "postpack": "node scripts/resolve-symlinks.js restore",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -b tsconfig.all.json"
+    "typecheck": "tsc -b tsconfig.all.json",
+    "typegen": "expo-modules typegen"
   },
   "dependencies": {
     "@expo/env": "workspace:~",
@@ -67,15 +68,14 @@
   },
   "devDependencies": {
     "@bacons/xcode": "1.0.0-alpha.29",
+    "@expo/internal-scripts": "workspace:*",
     "@types/diff": "^5.2.0",
-    "@types/jest": "^29.2.1",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/prompts": "^2.0.6",
-    "@types/react": "~19.2.0",
+    "@types/react": "~19.3.0",
     "create-expo": "workspace:*",
-    "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*",
-    "glob": "^13.0.6"
+    "expo": "workspace:*"
   },
   "peerDependencies": {
     "expo": "*",

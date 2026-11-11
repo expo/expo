@@ -10,7 +10,8 @@ describe(buildTechArticleSchema, () => {
     const result = buildTechArticleSchema({
       title: 'Introduction to Expo Router',
       description: 'Expo Router is a file-based routing library.',
-      modificationDate: '2026-01-15',
+      modificationDate: 'January 15, 2026',
+      image: 'https://og.expo.dev/?theme=docs&title=Introduction%20to%20Expo%20Router',
       url: 'https://docs.expo.dev/router/introduction/',
     });
 
@@ -19,7 +20,9 @@ describe(buildTechArticleSchema, () => {
       '@type': 'TechArticle',
       headline: 'Introduction to Expo Router',
       description: 'Expo Router is a file-based routing library.',
-      dateModified: '2026-01-15',
+      dateModified: '2026-01-15T00:00:00Z',
+      image: 'https://og.expo.dev/?theme=docs&title=Introduction%20to%20Expo%20Router',
+      author: websiteSchema.publisher,
       publisher: websiteSchema.publisher,
       url: 'https://docs.expo.dev/router/introduction/',
     });

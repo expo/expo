@@ -186,7 +186,8 @@ export function BottomSheet(props: BottomSheetProps) {
   return (
     <BottomSheetInternalContext.Provider value={internalContextValue}>
       <BottomSheetContext.Provider value={methods}>
-        <Host style={{ position: 'absolute', width }} pointerEvents="none">
+        {/* Fill the parent, so `removeClippedSubviews` doesn't detach a zero-height host. */}
+        <Host style={{ position: 'absolute', top: 0, bottom: 0, width }} pointerEvents="none">
           <ModalBottomSheet
             ref={sheetRef}
             onDismissRequest={handleDismiss}

@@ -1,7 +1,7 @@
 import { ExpoConfig } from 'expo/config';
 import { ConfigPlugin, withEntitlementsPlist } from 'expo/config-plugins';
 
-export type IosProps = {
+export type Props = {
   /**
    * Sets the `com.apple.developer.icloud-container-environment` entitlement which is read by EAS CLI to set
    * the `iCloudContainerEnvironment` in the `xcodebuild` `exportOptionsPlist`.
@@ -17,7 +17,7 @@ export type IosProps = {
   kvStoreIdentifier?: string;
 };
 
-export const withDocumentPickerIOS: ConfigPlugin<IosProps> = (
+export const withDocumentPickerIOS: ConfigPlugin<Props> = (
   config,
   { iCloudContainerEnvironment, kvStoreIdentifier } = {}
 ) => {
@@ -33,7 +33,7 @@ export const withDocumentPickerIOS: ConfigPlugin<IosProps> = (
 
 export function setICloudEntitlements(
   config: Pick<ExpoConfig, 'ios'>,
-  { iCloudContainerEnvironment, kvStoreIdentifier }: IosProps,
+  { iCloudContainerEnvironment, kvStoreIdentifier }: Props,
   { 'com.apple.developer.icloud-container-environment': _env, ...entitlements }: Record<string, any>
 ): Record<string, any> {
   if (config.ios?.usesIcloudStorage) {

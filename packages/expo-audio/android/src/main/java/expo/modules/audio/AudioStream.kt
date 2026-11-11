@@ -32,6 +32,11 @@ private data class ResolvedAudioConfig(
   val readSize: Int
 )
 
+internal fun trimToRecordedBytes(byteBuffer: ByteBuffer, bytesRead: Int): ByteBuffer {
+  byteBuffer.limit(bytesRead)
+  return byteBuffer.slice()
+}
+
 class AudioStream(
   appContext: AppContext,
   private val options: AudioStreamOptions
@@ -47,8 +52,14 @@ class AudioStream(
     private set
   var channels: Int = 0
     private set
+
+  @Volatile
   var isStreaming: Boolean = false
     private set
+
+  // Incremented by each start(). A queued buffer event compares it to drop audio from a stopped session.
+  @Volatile
+  private var session: Int = 0
 
   private var startTimeNanos: Long = 0
 
@@ -77,6 +88,7 @@ class AudioStream(
     channels = config.channelCount
     audioRecord = recorder
     startTimeNanos = System.nanoTime()
+    session += 1
     isStreaming = true
     emitStatus()
 
@@ -84,13 +96,22 @@ class AudioStream(
   }
 
   fun stop() {
-    if (!isStreaming) return
+    if (!isStreaming) {
+      return
+    }
     isStreaming = false
     captureJob?.cancel()
     captureJob = null
-    audioRecord?.stop()
-    audioRecord?.release()
+    val recorder = audioRecord
     audioRecord = null
+    try {
+      recorder?.stop()
+    } catch (e: IllegalStateException) {
+      // The recorder is not initialized, so there is nothing to stop. It still has to be released.
+      appContext?.jsLogger?.warn("AudioStream: failed to stop the AudioRecord", e)
+    } finally {
+      recorder?.release()
+    }
     emitStatus()
 
     // Auto-finalize any in-progress file recording.
@@ -134,7 +155,11 @@ class AudioStream(
     val currentChannels = channels
     AudioStreamFileRecordingResult().apply {
       uri = writer.file.toURI().toURL()
-      duration = if (currentSampleRate > 0) frames.toDouble() / currentSampleRate else 0.0
+      duration = if (currentSampleRate > 0) {
+        frames.toDouble() / currentSampleRate
+      } else {
+        0.0
+      }
       size = totalSize
       sampleRate = currentSampleRate
       channels = currentChannels
@@ -172,8 +197,16 @@ class AudioStream(
     }
 
     val resolvedMinBuffer = AudioRecord.getMinBufferSize(sampleRate, channelConfig, audioEncoding)
-    val bytesPerSample = if (isInt16) 2 else 4
-    val channelCount = if (options.channels == 2) 2 else 1
+    val bytesPerSample = if (isInt16) {
+      2
+    } else {
+      4
+    }
+    val channelCount = if (options.channels == 2) {
+      2
+    } else {
+      1
+    }
     val desiredBufferSize = sampleRate * channelCount * bytesPerSample * DEFAULT_BUFFER_DURATION_MS / 1000
     val bufferSize = maxOf(resolvedMinBuffer, desiredBufferSize)
 
@@ -211,11 +244,12 @@ class AudioStream(
   }
 
   private fun startCaptureLoop(recorder: AudioRecord, config: ResolvedAudioConfig) {
+    val captureSession = session
     captureJob = coroutineScope.launch {
       val readSizeBytes = config.readSize
 
       while (isActive && isStreaming) {
-        readAndEmit(recorder, readSizeBytes, config.channelCount, config.sampleRate)
+        readAndEmit(recorder, readSizeBytes, config.channelCount, config.sampleRate, captureSession)
       }
     }
   }
@@ -224,16 +258,17 @@ class AudioStream(
     recorder: AudioRecord,
     readSizeBytes: Int,
     channels: Int,
-    sampleRate: Int
+    sampleRate: Int,
+    captureSession: Int
   ) {
     val byteBuffer = ByteBuffer.allocateDirect(readSizeBytes).order(ByteOrder.nativeOrder())
     val bytesRead = recorder.read(byteBuffer, readSizeBytes, AudioRecord.READ_BLOCKING)
     if (bytesRead > 0) {
-      byteBuffer.limit(bytesRead)
+      val recorded = trimToRecordedBytes(byteBuffer, bytesRead)
       // Copy PCM bytes before acquiring the lock so the lock covers only the file write,
       // not the allocation+copy. Write to file before constructing NativeArrayBuffer.
       val pcmBytes = ByteArray(bytesRead).also { buf ->
-        byteBuffer.duplicate().apply {
+        recorded.duplicate().apply {
           position(0)
           get(buf)
         }
@@ -241,23 +276,27 @@ class AudioStream(
       synchronized(fileWriterLock) {
         fileWriter?.append(pcmBytes)
       }
-      emitBufferEvent(NativeArrayBuffer(byteBuffer), channels, sampleRate)
+      emitBufferEvent(NativeArrayBuffer(recorded), channels, sampleRate, captureSession)
     }
   }
 
   private fun emitStatus() {
+    val streaming = isStreaming
     appContext?.mainQueue?.launch {
       emit(
         AUDIO_STREAM_STATUS,
-        mapOf("isStreaming" to isStreaming)
+        mapOf("isStreaming" to streaming)
       )
     }
   }
 
-  private fun emitBufferEvent(data: NativeArrayBuffer, channels: Int, sampleRate: Int) {
+  private fun emitBufferEvent(data: NativeArrayBuffer, channels: Int, sampleRate: Int, bufferSession: Int) {
     val timestamp = (System.nanoTime() - startTimeNanos) / 1_000_000_000.0
 
     appContext?.mainQueue?.launch {
+      if (!isStreaming || bufferSession != session) {
+        return@launch
+      }
       emit(
         AUDIO_STREAM_BUFFER,
         mapOf(

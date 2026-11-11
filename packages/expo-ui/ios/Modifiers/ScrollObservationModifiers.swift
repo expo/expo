@@ -17,7 +17,7 @@ internal struct OnScrollGeometryChangeModifier: ViewModifier, Record {
   }
 
   func body(content: Content) -> some View {
-    if #available(iOS 18.0, tvOS 18.0, *) {
+    if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
       content
         .onScrollGeometryChange(for: ScrollGeometryPayload.self) { ScrollGeometryPayload($0) }
         action: { [workletCallback, eventDispatcher] _, payload in
@@ -45,7 +45,7 @@ internal struct OnScrollPhaseChangeModifier: ViewModifier, Record {
   }
 
   func body(content: Content) -> some View {
-    if #available(iOS 18.0, tvOS 18.0, *) {
+    if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
       content.onScrollPhaseChange { [eventDispatcher] _, newPhase, context in
         eventDispatcher?([
           "onScrollPhaseChange": [
@@ -59,7 +59,7 @@ internal struct OnScrollPhaseChangeModifier: ViewModifier, Record {
     }
   }
 
-  @available(iOS 18.0, tvOS 18.0, *)
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, *)
   private static func phaseString(_ phase: ScrollPhase) -> String {
     return switch phase {
     case .idle: "idle"
@@ -92,7 +92,7 @@ internal struct ScrollGeometryPayload: Equatable {
   }
 }
 
-@available(iOS 18.0, tvOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, tvOS 18.0, *)
 extension ScrollGeometryPayload {
   init(_ geometry: ScrollGeometry) {
     self.init(

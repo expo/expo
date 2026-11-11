@@ -1,7 +1,7 @@
 /** @jest-environment jsdom */
 import { act, render, screen } from '@testing-library/react';
 import * as React from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 
 import { ExpoRoot } from '../../../ExpoRoot';
 import { getRouteInfoFromState } from '../../../global-state/getRouteInfoFromState';
@@ -83,4 +83,40 @@ test('allows parent back after disabling nested prevention', () => {
   act(() => discard());
   expect(getRouteInfoFromState(navigationRef.getRootState()).pathname).toBe('/');
   expect(onPreventRemove).toHaveBeenCalledTimes(1);
+});
+
+test('prevents browser unload until prevention is disabled', () => {
+  if (Platform.OS !== 'web' || process.env.EXPO_SERVER) {
+    return;
+  }
+
+  let setDirty: React.Dispatch<React.SetStateAction<boolean>>;
+  let disablePrevention: () => void;
+  const Form = () => {
+    const [dirty, setDirtyState] = React.useState(true);
+    setDirty = setDirtyState;
+    disablePrevention = usePreventRemove(dirty);
+    return <View testID="form" />;
+  };
+
+  process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
+  const context = getMockContext({
+    _layout: () => <Stack />,
+    index: Form,
+  });
+  const result = render(<ExpoRoot context={context} location="/" />);
+
+  expect(window.dispatchEvent(new Event('beforeunload', { cancelable: true }))).toBe(false);
+
+  act(() => {
+    disablePrevention();
+    expect(window.dispatchEvent(new Event('beforeunload', { cancelable: true }))).toBe(true);
+    setDirty(false);
+  });
+
+  act(() => setDirty(true));
+  expect(window.dispatchEvent(new Event('beforeunload', { cancelable: true }))).toBe(false);
+
+  result.unmount();
+  expect(window.dispatchEvent(new Event('beforeunload', { cancelable: true }))).toBe(true);
 });

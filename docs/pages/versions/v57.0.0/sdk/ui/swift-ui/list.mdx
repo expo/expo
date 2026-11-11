@@ -308,7 +308,13 @@ export default function RefreshableListExample() {
 
 Use [`listRowBackground`](modifiers/#listrowbackgroundcolor), [`listRowSeparator`](modifiers/#listrowseparatorvisibility-edges), [`listRowSeparatorTint`](modifiers/#listrowseparatortintcolor-edges), and [`listRowInsets`](modifiers/#listrowinsetsparams) modifiers to customize individual rows. Use [`alignmentGuide`](modifiers/#alignmentguideguide-value) with the `listRowSeparatorLeading` guide to set where a row separator starts.
 
-```tsx RowStylingExample.tsx
+<ComponentExample
+  title="RowStylingExample.tsx"
+  src="/static/images/expo-ui/examples/list-row-styling-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/list-row-styling-ios-dark.webp"
+  alt="A grouped list with a blue row, a red separator, an indented row, and a row flush to the edges">
+
+```tsx
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
 import {
   alignmentGuide,
@@ -353,6 +359,8 @@ export default function RowStylingExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ### Keyboard dismiss behavior
 

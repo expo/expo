@@ -1,7 +1,7 @@
 ---
-title: Run E2E tests on EAS Workflows with Maestro
+title: Run E2E tests on Expo Workflows with Maestro
 sidebar_title: Run E2E tests
-description: Learn how to set up and run E2E tests on EAS Workflows with Maestro.
+description: Learn how to set up and run E2E tests on Expo Workflows with Maestro.
 ---
 
 import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
@@ -12,14 +12,14 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-In this guide, you'll learn how to run end-to-end (E2E) tests on EAS Workflows using [Maestro](https://maestro.dev/). The example demonstrates how to configure your E2E tests workflow using the [default Expo template](/more/create-expo/#--template). For your own app, you'll need to adjust the flows to match your app's UI.
+In this guide, you'll learn how to run end-to-end (E2E) tests on Expo Workflows using [Maestro](https://maestro.dev/). The example demonstrates how to configure your E2E tests workflow using the [default Expo template](/more/create-expo/#--template). For your own app, you'll need to adjust the flows to match your app's UI.
 
 <Step label="1">
 ## Set up your project
 
-If you haven't already, create a new project and sync it with EAS.
+If you haven't already, create a new project and sync it with Expo Services.
 
-Follow the [Get started with EAS Workflows guide](/eas/workflows/get-started/) to create a new project and sync it with EAS. Then, [configure your project](/eas/workflows/get-started/) and link your GitHub repository.
+Follow the [Get started with Expo Workflows guide](/eas/workflows/get-started/) to create a new project and sync it with Expo Services. Then, [configure your project](/eas/workflows/get-started/) and link your GitHub repository.
 
 </Step>
 
@@ -86,7 +86,7 @@ The video below shows a successful run of the **.maestro/expand_test.yml** flow:
 <Step label="4">
 ## Build profile for E2E tests
 
-E2E tests require a built app file: **.apk** for Android or **.app** for iOS — that EAS can install and test on an emulator/simulator.
+E2E tests require a built app file: **.apk** for Android or **.app** for iOS — that Expo Workflows can install and test on an emulator/simulator.
 
 In your **eas.json** file, create a build profile for E2E tests. If the file doesn't exist, run `eas build:configure` to generate it.
 
@@ -106,7 +106,7 @@ In your **eas.json** file, create a build profile for E2E tests. If the file doe
 }
 ```
 
-The above build profile creates an **.apk** for Android and an **.app** for iOS. The workflow uses this profile to build the app on EAS servers.
+The above build profile creates an **.apk** for Android and an **.app** for iOS. The workflow uses this profile to build the app on Expo servers.
 
 </Step>
 
@@ -162,7 +162,7 @@ jobs:
       flow_path: ['.maestro/home.yml', '.maestro/expand_test.yml']
 ```
 
-Learn more about [Syntax for EAS Workflows](/eas/workflows/syntax/).
+Learn more about [Syntax for Expo Workflows](/eas/workflows/syntax/).
 
 </Step>
 
@@ -177,12 +177,12 @@ You can run the E2E test workflow in two ways:
 
 2. **Automatically when you open a pull request**
 
-The workflow uses a `pull_request` trigger to run automatically when someone opens a pull request to your repository. Learn more about [EAS Workflows triggers](/eas/workflows/syntax/#on).
+The workflow uses a `pull_request` trigger to run automatically when someone opens a pull request to your repository. Learn more about [Expo Workflows triggers](/eas/workflows/syntax/#on).
 
-After the workflow starts, you can track its progress and view the results in the EAS dashboard. Here's a screenshot of a completed workflow run:
+After the workflow starts, you can track its progress and view the results in the Expo dashboard. Here's a screenshot of a completed workflow run:
 
 <ContentSpotlight
-  alt="The EAS dashboard showing a completed end-to-end test workflow run, with its iOS build and Maestro test jobs finished."
+  alt="The Expo dashboard showing a completed end-to-end test workflow run, with its iOS build and Maestro test jobs finished."
   src="/static/images/eas-build/tests/e2e-workflow.webp"
 />
 
@@ -191,15 +191,15 @@ After the workflow starts, you can track its progress and view the results in th
 ## More
 
 <BoxLink
-  title="Syntax for EAS Workflows"
-  description="Learn more about the syntax for EAS Workflows."
+  title="Syntax for Expo Workflows"
+  description="Learn more about the syntax for Expo Workflows."
   href="/eas/workflows/syntax/"
   Icon={Dataflow03Icon}
 />
 
 <BoxLink
   title="Example CI/CD workflows"
-  description="Learn more about example CI/CD workflows for EAS Workflows."
+  description="Learn more about example CI/CD workflows for Expo Workflows."
   href="/eas/workflows/examples/introduction/"
   Icon={Dataflow03Icon}
 />

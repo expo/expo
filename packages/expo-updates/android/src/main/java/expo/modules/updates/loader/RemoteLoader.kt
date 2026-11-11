@@ -5,15 +5,16 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
-import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.EmbeddedManifestUtils
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.selectionpolicy.SelectionPolicy
+import expo.modules.updatesinterface.UpdatesLogMessage
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import java.io.File
+import java.io.IOException
 
 data class ProcessSuccessLoaderResult(
   val availableUpdate: UpdateEntity?,
@@ -54,7 +55,7 @@ class RemoteLoader internal constructor(
     configuration: UpdatesConfiguration
   ): UpdateResponse {
     val embeddedUpdate = loaderFiles.readEmbeddedUpdate(context, configuration)?.updateEntity
-    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(database, configuration, launchedUpdate, embeddedUpdate)
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(database, configuration, launchedUpdate, embeddedUpdate, logger)
     return mFileDownloader.downloadRemoteUpdate(extraHeaders)
   }
 
@@ -66,9 +67,28 @@ class RemoteLoader internal constructor(
     embeddedUpdate: UpdateEntity?
   ): FileDownloader.AssetDownloadResult {
     val extraHeaders = FileDownloader.getExtraHeadersForRemoteAssetRequest(launchedUpdate, embeddedUpdate, requestedUpdate)
-    return mFileDownloader.downloadAsset(assetEntity, updatesDirectory, extraHeaders, launchedUpdate, requestedUpdate) { progress ->
-      assetLoadProgressListener(assetEntity, progress)
-    }
+    return mFileDownloader.downloadAsset(
+      asset = assetEntity,
+      destinationDirectory = updatesDirectory,
+      extraHeaders = extraHeaders,
+      launchedUpdate = launchedUpdate,
+      requestedUpdate = requestedUpdate,
+      embeddedAssetExtractor = { launchAsset, destination ->
+        // The stored path is not the APK asset name; resolve it through the embedded manifest by key.
+        val embeddedLaunchAsset = loaderFiles.readEmbeddedUpdate(context, configuration)
+          ?.assetEntityList
+          ?.find { it.key == launchAsset.key }
+          ?: throw IOException("No embedded asset matches launch asset ${launchAsset.key}")
+        val assetName = embeddedLaunchAsset.embeddedAssetFilename
+          ?: throw IOException("Embedded launch asset ${launchAsset.key} has no APK asset filename")
+        context.assets.open(assetName).use { input ->
+          destination.outputStream().use { output -> input.copyTo(output) }
+        }
+      },
+      assetLoadProgressListener = { progress ->
+        assetLoadProgressListener(assetEntity, progress)
+      }
+    )
   }
 
   companion object {
@@ -116,7 +136,7 @@ class RemoteLoader internal constructor(
       }
 
       val embeddedUpdate = EmbeddedManifestUtils.getEmbeddedUpdate(context, configuration)!!.updateEntity
-      val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
+      val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration, logger)
       if (!selectionPolicy.shouldLoadRollBackToEmbeddedDirective(updateDirective, embeddedUpdate, launchedUpdate, manifestFilters)) {
         return false
       }
@@ -134,7 +154,7 @@ class RemoteLoader internal constructor(
         database.updateDao().setUpdateCommitTime(embeddedUpdateToLoad!!, updateDirective.commitTime)
         true
       } catch (e: Exception) {
-        logger.error("Embedded update erroneously null when applying roll back to embedded directive", e, UpdatesErrorCode.UpdateFailedToLoad)
+        logger.error(UpdatesLogMessage.EmbeddedRollbackFailed, e)
         false
       }
     }

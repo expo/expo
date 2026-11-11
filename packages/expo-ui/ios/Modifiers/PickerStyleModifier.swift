@@ -24,14 +24,18 @@ internal enum PickerStyleType: String, Enumerable {
         content.pickerStyle(.automatic)
       }
     case .navigationLink:
+#if os(macOS)
+      content.pickerStyle(.automatic)
+#else
       if #available(iOS 16.0, tvOS 16.0, *) {
         content.pickerStyle(.navigationLink)
       } else {
         content.pickerStyle(.automatic)
       }
+#endif
     case .palette:
 #if !os(tvOS)
-      if #available(iOS 17.0, *) {
+      if #available(iOS 17.0, macOS 14.0, *) {
         content.pickerStyle(.palette)
       } else {
         content.pickerStyle(.automatic)
@@ -42,7 +46,7 @@ internal enum PickerStyleType: String, Enumerable {
     case .segmented:
       content.pickerStyle(.segmented)
     case .wheel:
-#if !os(tvOS)
+#if !os(tvOS) && !os(macOS)
       content.pickerStyle(.wheel)
 #else
       content.pickerStyle(.automatic)

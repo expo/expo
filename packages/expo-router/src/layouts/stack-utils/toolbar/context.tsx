@@ -18,6 +18,7 @@ export function useToolbarPlacement(): ToolbarPlacement | null {
 export interface ToolbarColors {
   tintColor?: ColorValue;
   backgroundColor?: ColorValue;
+  buttonContainerColor?: ColorValue;
 }
 
 /**

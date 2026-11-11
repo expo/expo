@@ -1,5 +1,5 @@
-import minimatch from 'minimatch';
 import path from 'path';
+import picomatch from 'picomatch';
 import prettyBytes from 'pretty-bytes';
 
 import Git from '../../Git';
@@ -27,7 +27,7 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
       const logs: string[] = [];
 
       // We may ignore some paths where the files are allowed to be bigger (e.g. versioned .aar files).
-      if (IGNORED_PATHS.some((pattern) => minimatch(file.path, pattern))) {
+      if (IGNORED_PATHS.some((pattern) => picomatch.isMatch(file.path, pattern))) {
         return null;
       }
 

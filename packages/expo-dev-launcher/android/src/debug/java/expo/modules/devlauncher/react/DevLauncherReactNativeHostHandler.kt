@@ -23,7 +23,11 @@ class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandl
   }
 
   override fun getUseDeveloperSupport(): Boolean? {
-    return if (DevLauncherController.wasInitialized()) DevLauncherController.instance.useDeveloperSupport else null
+    return if (DevLauncherController.wasInitialized()) {
+      DevLauncherController.instance.useDeveloperSupport
+    } else {
+      null
+    }
   }
 
   override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {

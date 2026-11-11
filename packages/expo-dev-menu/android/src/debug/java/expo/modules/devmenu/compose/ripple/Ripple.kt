@@ -69,7 +69,11 @@ internal class CommonRippleNode(
   override fun addRipple(interaction: PressInteraction.Press, size: Size, targetRadius: Float) {
     // Finish existing ripples
     ripples.forEach { _, ripple -> ripple.finish() }
-    val origin = if (bounded) interaction.pressPosition else null
+    val origin = if (bounded) {
+      interaction.pressPosition
+    } else {
+      null
+    }
     val rippleAnimation =
       RippleAnimation(origin = origin, radius = targetRadius, bounded = bounded)
     ripples[interaction] = rippleAnimation
@@ -186,7 +190,9 @@ internal class AndroidRippleNode(
   }
 
   private fun getOrCreateRippleContainer(): RippleContainer {
-    if (rippleContainer != null) return rippleContainer!!
+    if (rippleContainer != null) {
+      return rippleContainer!!
+    }
     val view = findNearestViewGroup(currentValueOf(LocalView))
     rippleContainer = createAndAttachRippleContainerIfNeeded(view)
     return rippleContainer!!

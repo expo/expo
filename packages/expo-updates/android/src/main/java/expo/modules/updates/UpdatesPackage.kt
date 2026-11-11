@@ -28,11 +28,19 @@ class UpdatesPackage : Package {
     val handler: ReactNativeHostHandler = object : ReactNativeHostHandler {
 
       override fun getJSBundleFile(useDeveloperSupport: Boolean): String? {
-        return if (UpdatesController.instance.isActiveController) UpdatesController.instance.launchAssetFile else null
+        return if (UpdatesController.instance.isActiveController) {
+          UpdatesController.instance.launchAssetFile
+        } else {
+          null
+        }
       }
 
       override fun getBundleAssetName(useDeveloperSupport: Boolean): String? {
-        return if (UpdatesController.instance.isActiveController) UpdatesController.instance.bundleAssetName else null
+        return if (UpdatesController.instance.isActiveController) {
+          UpdatesController.instance.bundleAssetName
+        } else {
+          null
+        }
       }
 
       override fun onWillCreateReactInstance(useDeveloperSupport: Boolean) {

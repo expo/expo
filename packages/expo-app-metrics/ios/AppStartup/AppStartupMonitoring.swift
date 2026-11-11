@@ -34,7 +34,9 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
     }
   }
 
-  nonisolated func markDidFinishLaunching() {
+  /// - Parameter runningInBackground: Whether the app is running in the background. Tests pass it explicitly.
+  @MainActor
+  func markDidFinishLaunching(runningInBackground: Bool = AppStartupMonitoring.isRunningInBackground()) {
     // App has finished loading – save the current app launch state
     AppMetricsUserDefaults.lastAppLaunchState = appLaunchState
 
@@ -46,6 +48,12 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
 
     AppMetricsActor.isolated { [self] in
       if startupState != .launching {
+        return
+      }
+      // The system may launch the app in the background, for example for a background fetch or a silent push notification.
+      // Such launches are interrupted right away, otherwise TTR and TTI would include the whole time until the user opens the app.
+      if runningInBackground {
+        startupState = .interrupted
         return
       }
       markers.finishedLaunching = currentTime
@@ -76,6 +84,11 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       }
       markers.timeToFirstRender = currentTime
 
+      if let ttfr = markers.getTTFR(), ttfr > Self.maxStartupDuration {
+        startupState = .interrupted
+        return
+      }
+
       // There is no event for when the bundle finished loading,
       // but we're sure it's already available once the first render occurs.
       if let bundleLoadTime = markers.getBundleLoadTime() {
@@ -104,6 +117,10 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       markers.timeToInteractive = currentTime
 
       if let tti = markers.getTTI() {
+        if tti > Self.maxStartupDuration {
+          startupState = .interrupted
+          return
+        }
         let frameMetrics = frameMetricsRecorder.stop()
         let deviceState = await DeviceConditions.deviceState()
         let networkPath = await NetworkPathMonitor.shared.waitForFirstPath()
@@ -193,5 +210,25 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       return .warm
     }
     return .cold
+  }
+
+  // MARK: - Background launches
+
+  /// TTR and TTI longer than this are dropped. It is a safety guard for background launches that
+  /// `isRunningInBackground` doesn't detect, as their startup times include the whole time until the user opens the app.
+  private static let maxStartupDuration: TimeInterval = 3 * 60
+
+  /// Background launches got about 30 seconds in our tests. Apple only documents the foreground value as
+  /// "suitably large", so we compare against a threshold rather than `greatestFiniteMagnitude`.
+  private static let backgroundTimeRemainingThreshold: TimeInterval = 60 * 60
+
+  /// Returns whether the app is currently running in the background.
+  ///
+  /// `UIApplication.applicationState` can't be used here, because apps using the scene-based life cycle report
+  /// `.background` in `didFinishLaunching` even when the user launches them from the home screen.
+  /// In the foreground there is no limit on the background execution time, so `backgroundTimeRemaining` is very large.
+  @MainActor
+  private static func isRunningInBackground() -> Bool {
+    return UIApplication.shared.backgroundTimeRemaining < backgroundTimeRemainingThreshold
   }
 }

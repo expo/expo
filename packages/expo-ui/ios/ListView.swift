@@ -11,8 +11,16 @@ final class ListProps: UIBaseViewProps {
 struct ListView: ExpoSwiftUI.View {
   @ObservedObject var props: ListProps
   @State private var selection = Set<AnyHashable>()
+  @State private var crossAxisSize: CGFloat = 0
 
   var body: some View {
+    list
+      .onGeometryChange(for: CGFloat.self, of: { $0.size.width }, action: { crossAxisSize = $0 })
+      .environment(\.containerCrossAxisSize, crossAxisSize)
+  }
+
+  @ViewBuilder
+  private var list: some View {
     if props.selection != nil {
       List(selection: $selection) {
         Children()

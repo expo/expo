@@ -33,7 +33,7 @@ public struct ConcentricRectangleView: ExpoSwiftUI.View {
   }
 
 #if compiler(>=6.2) // Xcode 26
-  @available(iOS 26.0, tvOS 26.0, *)
+  @available(iOS 26.0, macOS 26.0, tvOS 26.0, *)
   private func cornerStyle(from config: CornerStyleConfig?) -> Edge.Corner.Style {
     // default to concentric
     guard let config = config else {
@@ -57,7 +57,7 @@ public struct ConcentricRectangleView: ExpoSwiftUI.View {
 
   public var body: some View {
 #if compiler(>=6.2) // Xcode 26
-    if #available(iOS 26.0, tvOS 26.0, *) {
+    if #available(iOS 26.0, macOS 26.0, tvOS 26.0, *) {
       let topLeadingCorner = cornerStyle(from: props.corners?.topLeadingCorner)
       let topTrailingCorner = cornerStyle(from: props.corners?.topTrailingCorner)
       let bottomLeadingCorner = cornerStyle(from: props.corners?.bottomLeadingCorner)

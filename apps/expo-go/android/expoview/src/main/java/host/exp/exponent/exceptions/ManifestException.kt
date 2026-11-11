@@ -32,7 +32,11 @@ class ManifestException : ExponentException {
       try {
         when (it.getString("errorCode")) {
           "EXPERIENCE_SDK_VERSION_OUTDATED" -> {
-            val projectType = if (isSnackURL) "This Snack" else "Project"
+            val projectType = if (isSnackURL) {
+              "This Snack"
+            } else {
+              "Project"
+            }
             "$projectType is incompatible with this version of Expo Go"
           }
           "EXPERIENCE_SDK_VERSION_TOO_NEW" -> "Project is incompatible with this version of Expo Go"
@@ -90,7 +94,11 @@ class ManifestException : ExponentException {
             val expoDevLink =
               "https://expo.dev/go?sdkVersion=$sdkVersionRequired&platform=android&device=${!isRunningOnEmulator()}"
 
-            val projectType = if (isSnackURL) "snack" else "project"
+            val projectType = if (isSnackURL) {
+              "snack"
+            } else {
+              "project"
+            }
 
             formattedMessage =
               "• The installed version of Expo Go is for <b>SDK $supportedSdk</b>.<br>" +

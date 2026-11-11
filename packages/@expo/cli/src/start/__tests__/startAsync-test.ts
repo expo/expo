@@ -40,3 +40,21 @@ describe(_getMultiBundlerStartOptions, () => {
     ]);
   });
 });
+
+it.each(['expo', 'ngrok', null])(
+  'passes tunnel provider %s to every bundler',
+  async (tunnelProvider) => {
+    const [commonOptions, startOptions] = await _getMultiBundlerStartOptions(
+      '/',
+      { web: true, host: 'tunnel', tunnelProvider } as any,
+      { ...NATIVE_METRO_WEB_WEBPACK }
+    );
+    expect(commonOptions).toMatchObject({
+      tunnelProvider: tunnelProvider ?? undefined,
+      location: { hostType: 'tunnel' },
+    });
+    for (const { options } of startOptions) {
+      expect(options?.tunnelProvider).toBe(tunnelProvider ?? undefined);
+    }
+  }
+);

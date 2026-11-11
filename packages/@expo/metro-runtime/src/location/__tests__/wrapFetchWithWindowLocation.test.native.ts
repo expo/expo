@@ -15,6 +15,11 @@ function mockLocation(origin: string | null) {
 describe(wrapFetchWithWindowLocation, () => {
   afterEach(() => mockLocation(null));
 
+  it(`keeps the expo.builtin marker of the fetch it wraps`, () => {
+    const fetch = Object.defineProperty(jest.fn(), Symbol.for('expo.builtin'), { value: true });
+    expect((wrapFetchWithWindowLocation(fetch) as any)[Symbol.for('expo.builtin')]).toBe(true);
+  });
+
   it(`resolves a relative URL against the location origin`, () => {
     mockLocation('http://proxy.test:4443');
     const fetch = jest.fn();

@@ -1,5 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Foundation
 import Testing
 
@@ -11,7 +12,7 @@ struct OptimizedFunctionTests {
   let appContext: AppContext
 
   init() {
-    self.appContext = AppContext.create()
+    self.appContext = TestAppContext()
 
     appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
       Name("TestModule")
@@ -174,9 +175,9 @@ struct OptimizedFunctionTests {
 
   @Test
   func `concatenates two strings`() async throws {
-    let result = try await runtime.evalAsync("expo.modules.TestModule.concat('Hello, ', 'world!')")
-    #expect(result.isString() == true)
-    #expect(result.getString() == "Hello, world!")
+    let result = try await runtime.evalAsync("expo.modules.TestModule.concat('Hello, ', 'world!')").ref()
+    // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+    #expect(try await runtime.execute { try result.take().asString() } == "Hello, world!")
   }
 
   @Test
@@ -207,9 +208,8 @@ struct OptimizedFunctionTests {
 
   @Test
   func `resolves with a string`() async throws {
-    let result = try await runtime.evalAsync("expo.modules.TestModule.concatAsync('async ', 'works')")
-    #expect(result.isString() == true)
-    #expect(result.getString() == "async works")
+    let result = try await runtime.evalAsync("expo.modules.TestModule.concatAsync('async ', 'works')").ref()
+    #expect(try await runtime.execute { try result.take().asString() } == "async works")
   }
 
   // MARK: - Exceptions
@@ -225,10 +225,13 @@ struct OptimizedFunctionTests {
           return { message: error.message, code: error.code };
         }
       })()
-      """)
-    let error = try result.asObject()
-    #expect(try error.getProperty("message").asString() == "intentional failure")
-    #expect(try error.getProperty("code").asString() == "ERR_OPTIMIZED_TEST")
+      """).ref()
+    let (message, code) = try await runtime.execute {
+      let error = try result.take().asObject()
+      return (try error.getProperty("message").asString(), try error.getProperty("code").asString())
+    }
+    #expect(message == "intentional failure")
+    #expect(code == "ERR_OPTIMIZED_TEST")
   }
 
   @Test
@@ -245,16 +248,19 @@ struct OptimizedFunctionTests {
         () => null,
         (error) => ({ message: error.message, code: error.code })
       )
-      """)
-    let error = try result.asObject()
-    #expect(try error.getProperty("message").asString() == "intentional async failure")
-    #expect(try error.getProperty("code").asString() == "ERR_OPTIMIZED_ASYNC_TEST")
+      """).ref()
+    let (message, code) = try await runtime.execute {
+      let error = try result.take().asObject()
+      return (try error.getProperty("message").asString(), try error.getProperty("code").asString())
+    }
+    #expect(message == "intentional async failure")
+    #expect(code == "ERR_OPTIMIZED_ASYNC_TEST")
   }
 
   @Test
   func `throws when fewer arguments than declared are passed`() async throws {
     let error = try await #require(throws: ScriptEvaluationError.self) {
-      return try await runtime.evalAsync("expo.modules.TestModule.addNumbers(1)")
+      _ = try await runtime.evalAsync("expo.modules.TestModule.addNumbers(1)")
     }
     #expect(error.message == "Received 1 arguments, but 2 was expected")
   }
@@ -262,7 +268,7 @@ struct OptimizedFunctionTests {
   @Test
   func `throws when more arguments than declared are passed`() async throws {
     let error = try await #require(throws: ScriptEvaluationError.self) {
-      return try await runtime.evalAsync("expo.modules.TestModule.addNumbers(1, 2, 3)")
+      _ = try await runtime.evalAsync("expo.modules.TestModule.addNumbers(1, 2, 3)")
     }
     #expect(error.message == "Received 3 arguments, but 2 was expected")
   }
@@ -272,7 +278,7 @@ struct OptimizedFunctionTests {
     // Argument count is validated synchronously, so the host function throws
     // before a promise is ever returned.
     let error = try await #require(throws: ScriptEvaluationError.self) {
-      return try await runtime.evalAsync("expo.modules.TestModule.addNumbersAsync(1)")
+      _ = try await runtime.evalAsync("expo.modules.TestModule.addNumbersAsync(1)")
     }
     #expect(error.message == "Received 1 arguments, but 2 was expected")
   }
@@ -296,10 +302,11 @@ struct OptimizedFunctionTests {
         expo.modules.TestModule.addNumbersAsync(1, 2),
         expo.modules.TestModule.addNumbersAsync(10, 20)
       ])
-      """)
-    let array = try result.asArray()
-    #expect(array.length == 2)
-    #expect(try array.getValue(at: 0).asDouble() == 3.0)
-    #expect(try array.getValue(at: 1).asDouble() == 30.0)
+      """).ref()
+    let values = try await runtime.execute {
+      let array = try result.take().asArray()
+      return try (0..<array.length).map { try array.getValue(at: $0).asDouble() }
+    }
+    #expect(values == [3.0, 30.0])
   }
 }

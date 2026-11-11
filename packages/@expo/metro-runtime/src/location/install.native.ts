@@ -1,7 +1,7 @@
 // WARN(@kitten): We must ensure that the core react-native globals are initialized before ours
 // Otherwise we're relying on `getModulesRunBeforeMainModule` which is unstable or can be missing
 // See: `expo/winter/runtime.native.ts`
-import 'react-native/Libraries/Core/InitializeCore';
+import 'react-native/setup-env';
 // Ensure fetch is installed before adding our fetch polyfill to ensure Headers and Request are available globally.
 import 'whatwg-fetch';
 // This MUST be imported to ensure URL is installed.
@@ -54,6 +54,7 @@ function getBaseUrl() {
 }
 
 const polyfillSymbol = Symbol.for('expo.polyfillFetchWithWindowLocation');
+const builtinSymbol = Symbol.for('expo.builtin');
 
 export function wrapFetchWithWindowLocation(fetch: Function & { [polyfillSymbol]?: boolean }) {
   if (fetch[polyfillSymbol]) {
@@ -78,6 +79,13 @@ export function wrapFetchWithWindowLocation(fetch: Function & { [polyfillSymbol]
   };
 
   _fetch[polyfillSymbol] = true;
+  if ((fetch as any)[builtinSymbol] === true) {
+    Object.defineProperty(_fetch, builtinSymbol, {
+      value: true,
+      enumerable: false,
+      configurable: false,
+    });
+  }
 
   return _fetch;
 }

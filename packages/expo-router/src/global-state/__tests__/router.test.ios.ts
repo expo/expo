@@ -54,6 +54,7 @@ jest.mock('../../link/href', () => ({
 }));
 
 const mockAdd = jest.fn();
+const mockSetTransitionMode = jest.fn();
 const mockEmitDomDismiss = emitDomDismiss as jest.Mock;
 const mockEmitDomDismissAll = emitDomDismissAll as jest.Mock;
 const mockEmitDomGoBack = emitDomGoBack as jest.Mock;
@@ -67,7 +68,7 @@ beforeEach(() => {
 it('throws before the module-level router is installed', () => {
   expect(() => navigate('/first')).toThrow('first render');
 
-  Object.assign(router, createImperativeRouter(mockAdd));
+  Object.assign(router, createImperativeRouter(mockAdd, mockSetTransitionMode));
 });
 
 describe('canDismiss', () => {
@@ -267,6 +268,65 @@ describe('router action functions', () => {
     );
   });
 
+  it('push forwards the inTransition option', () => {
+    push('/path', { inTransition: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'NAVIGATE_TO_HREF',
+      inTransition: true,
+      payload: {
+        href: '/path',
+        options: { event: 'PUSH' },
+      },
+    });
+  });
+
+  it('back forwards the inTransition option', () => {
+    router.back({ inTransition: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'GO_BACK' } },
+      inTransition: true,
+    });
+  });
+
+  it('dismiss forwards the inTransition option', () => {
+    router.dismiss(2, { inTransition: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'POP', payload: { count: 2 } } },
+      inTransition: true,
+    });
+  });
+
+  it('dismissAll forwards the inTransition option', () => {
+    router.dismissAll({ inTransition: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'POP_TO_TOP' } },
+      inTransition: true,
+    });
+  });
+
+  it('preserves inTransition when a relative href becomes GO_BACK', () => {
+    push('..', { inTransition: true });
+
+    expect(mockAdd).toHaveBeenCalledWith({
+      type: 'ACTION',
+      payload: { action: { type: 'GO_BACK' } },
+      inTransition: true,
+    });
+  });
+
+  it('sets the transition mode for subsequent queue batches', () => {
+    router.setTransitionMode('preload-only');
+
+    expect(mockSetTransitionMode).toHaveBeenCalledWith('preload-only');
+  });
+
   it('replace enqueues NAVIGATE_TO_HREF intent with REPLACE event', () => {
     replace('/path');
 
@@ -376,27 +436,27 @@ describe('DOM short-circuit paths', () => {
   it('dismiss short-circuits when emitDomDismiss returns true', () => {
     mockEmitDomDismiss.mockReturnValueOnce(true);
 
-    dismiss(1);
+    dismiss(1, { inTransition: true });
 
-    expect(mockEmitDomDismiss).toHaveBeenCalledWith(1);
+    expect(mockEmitDomDismiss).toHaveBeenCalledWith(1, { inTransition: true });
     expect(mockAdd).not.toHaveBeenCalled();
   });
 
   it('dismissAll short-circuits when emitDomDismissAll returns true', () => {
     mockEmitDomDismissAll.mockReturnValueOnce(true);
 
-    dismissAll();
+    dismissAll({ inTransition: true });
 
-    expect(mockEmitDomDismissAll).toHaveBeenCalled();
+    expect(mockEmitDomDismissAll).toHaveBeenCalledWith({ inTransition: true });
     expect(mockAdd).not.toHaveBeenCalled();
   });
 
   it('goBack short-circuits when emitDomGoBack returns true', () => {
     mockEmitDomGoBack.mockReturnValueOnce(true);
 
-    goBack();
+    goBack({ inTransition: true });
 
-    expect(mockEmitDomGoBack).toHaveBeenCalled();
+    expect(mockEmitDomGoBack).toHaveBeenCalledWith({ inTransition: true });
     expect(mockAdd).not.toHaveBeenCalled();
   });
 });

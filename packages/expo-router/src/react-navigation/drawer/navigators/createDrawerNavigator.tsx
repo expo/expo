@@ -3,9 +3,11 @@
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { StandardNavigatorContentProps } from '../../../standard-navigation/types';
+import { useNonStackAnchorWarning } from '../../../standard-navigation/useNonStackAnchorWarning';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
+import { useReconcileTabHistory } from '../../../standard-navigation/useReconcileTabHistory';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
-import type { DrawerNavigationState, ParamListBase } from '../../native';
+import type { DrawerNavigationState, DrawerRouterOptions, ParamListBase } from '../../native';
 import type {
   DrawerDescriptorMap,
   DrawerNavigationConfig,
@@ -16,6 +18,8 @@ import type {
 import { DrawerView } from '../views/DrawerView';
 
 export interface DrawerNavigatorCreateProps {
+  isPreloaded: (key: string) => boolean;
+  isRemovalPrevented: (key: string) => boolean;
   drawerState: DrawerNavigationState<ParamListBase>;
   navigation: DrawerNavigationHelpers;
   preload: (name: string) => void;
@@ -36,19 +40,25 @@ export type StandardDrawerNavigationEventMap = {
 type ContentArgs = StandardNavigatorContentProps<
   DrawerNavigationOptions,
   StandardDrawerNavigationEventMap,
-  DrawerNavigatorContentProps
+  // Router options are forwarded to the content too.
+  DrawerNavigatorContentProps & Pick<DrawerRouterOptions, 'backBehavior'>
 >;
 
 function DrawerNavigatorContent({
   descriptors,
   drawerState,
   navigation,
+  isPreloaded: _isPreloaded,
+  isRemovalPrevented: _isRemovalPrevented,
   preload,
   defaultStatus = 'closed',
   drawerContent,
   detachInactiveScreens,
+  backBehavior,
 }: ContentArgs) {
-  const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
+  useNonStackAnchorWarning(backBehavior);
+  useReconcileTabHistory();
+  const { visibleRoutes, focusedIndex, focusedFallbackRoute } = useVisibleTabsWithRedirect({
     routes: drawerState.routes,
     routeNames: drawerState.routeNames,
     focusedRouteKey: drawerState.routes[drawerState.index]?.key,
@@ -64,6 +74,10 @@ function DrawerNavigatorContent({
     preload,
     lazyByDefault: true,
   });
+
+  if (focusedFallbackRoute) {
+    return descriptors[focusedFallbackRoute.key]?.render() ?? null;
+  }
 
   if (visibleRoutes.length === 0 || focusedIndex < 0) {
     return null;

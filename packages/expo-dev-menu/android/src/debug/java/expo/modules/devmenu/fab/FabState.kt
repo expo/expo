@@ -41,8 +41,16 @@ class FabState(
 
   fun savePosition(offset: Offset) {
     // Store position as 0–1 ratios within the safe area so it survives screen size changes
-    val normalizedX = if (fabAreaBounds.x > 0f) offset.x / fabAreaBounds.x else 0f
-    val normalizedY = if (fabAreaBounds.y > 0f) offset.y / fabAreaBounds.y else 0f
+    val normalizedX = if (fabAreaBounds.x > 0f) {
+      offset.x / fabAreaBounds.x
+    } else {
+      0f
+    }
+    val normalizedY = if (fabAreaBounds.y > 0f) {
+      offset.y / fabAreaBounds.y
+    } else {
+      0f
+    }
 
     prefs.edit {
       putFloat(FAB_POSITION_X, normalizedX)

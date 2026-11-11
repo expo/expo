@@ -2,12 +2,12 @@
 
 set +e
 
-bootanim=""
+booted=""
 connectionAttempts=0
-until [[ "$bootanim" =~ "stopped" ]]; do
-   bootanim=`${ANDROID_SDK_ROOT:-$ANDROID_HOME}/platform-tools/adb -e shell getprop init.svc.bootanim 2>&1`
-   echo " ☛  $bootanim"
-   if [[ "$bootanim" =~ "not found" ]]; then
+until [[ "$booted" =~ ^1 ]]; do
+   booted=`${ANDROID_SDK_ROOT:-$ANDROID_HOME}/platform-tools/adb -e shell getprop sys.boot_completed 2>&1`
+   echo " ☛  $booted"
+   if [[ "$booted" =~ "not found" ]]; then
       let "connectionAttempts += 1"
       if [[ $connectionAttempts -gt 15 ]]; then
         echo " 🛑  Failed to start emulator"

@@ -69,6 +69,15 @@ describe('NativeUpgradePromptCallout', () => {
     expect(await screen.findByText('Copied!')).toBeInTheDocument();
   });
 
+  it('reveals the generated prompt behind the disclosure', () => {
+    setupClipboard();
+
+    render(<NativeUpgradePromptCallout fromVersion="52" toVersion="53" diff={DIFF} />);
+    fireEvent.click(screen.getByRole('button', { name: /show prompt/i }));
+
+    expect(screen.getByText(/Apply every change in this diff/)).toBeVisible();
+  });
+
   it('has no axe violations', async () => {
     setupClipboard();
 

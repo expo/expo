@@ -3,14 +3,18 @@
 import ExpoModulesCore
 import SwiftUI
 
-internal class OverlayViewProps: UIBaseViewProps {
+public final class OverlayViewProps: UIBaseViewProps {
   @Field var alignment: AlignmentOptions?
 }
 
-internal struct OverlayView: ExpoSwiftUI.View {
-  @ObservedObject var props: OverlayViewProps
+public struct OverlayView: ExpoSwiftUI.View {
+  @ObservedObject public var props: OverlayViewProps
 
-  var body: some View {
+  public init(props: OverlayViewProps) {
+    self.props = props
+  }
+
+  public var body: some View {
     baseContent
       .overlay(alignment: props.alignment?.toAlignment() ?? .center) {
         overlayContent
@@ -19,7 +23,7 @@ internal struct OverlayView: ExpoSwiftUI.View {
 
   @ViewBuilder
   private var baseContent: some View {
-    ForEach(props.children?.withoutSlots() ?? [], id: \.id) { child in
+    ForEach(props.children?.withoutSlots() ?? [], id: \.childIdentity) { child in
       let view: any View = child.childView
       AnyView(view)
     }

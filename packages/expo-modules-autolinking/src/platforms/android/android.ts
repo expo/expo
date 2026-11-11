@@ -89,7 +89,12 @@ export async function resolveModuleAsync(
       };
     });
 
-    const { publication } = project;
+    const publication = project.publication
+      ? {
+          ...project.publication,
+          version: project.publication.version ?? revision.version,
+        }
+      : undefined;
     const shouldUsePublicationScriptPath = project.shouldUsePublicationScriptPath
       ? path.join(revision.path, project.shouldUsePublicationScriptPath)
       : undefined;
@@ -120,7 +125,6 @@ export async function resolveModuleAsync(
       name: project.name,
       sourceDir: projectPath,
       modules: project.modules ?? [],
-      modulesV2: project.modulesV2 ?? [],
       services: project.services ?? [],
       packages: [...packages].sort((a, b) => a.localeCompare(b)),
       ...(shouldUsePublicationScriptPath ? { shouldUsePublicationScriptPath } : {}),

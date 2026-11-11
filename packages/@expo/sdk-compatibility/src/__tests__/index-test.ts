@@ -42,7 +42,7 @@ describe(getSdkCompatibility, () => {
   });
 
   it('returns null for unknown or invalid SDK versions', () => {
-    expect(getSdkCompatibility('58.0.0')).toBeNull();
+    expect(getSdkCompatibility('99.0.0')).toBeNull();
     expect(getSdkCompatibility('latest')).toBeNull();
   });
 });

@@ -349,7 +349,6 @@ describe('middleware', () => {
           internal_stripLoadRoute: true,
           skipGenerated: true,
           preserveRedirectAndRewrites: true,
-          unstable_useServerMiddleware: true,
         }
       )
     ).toEqual({
@@ -386,7 +385,6 @@ describe('middleware', () => {
           internal_stripLoadRoute: true,
           skipGenerated: true,
           preserveRedirectAndRewrites: true,
-          unstable_useServerMiddleware: true,
         }
       );
     }).toThrow(
@@ -405,7 +403,6 @@ describe('middleware', () => {
           internal_stripLoadRoute: true,
           skipGenerated: true,
           preserveRedirectAndRewrites: true,
-          unstable_useServerMiddleware: true,
         }
       );
     }).toThrow(
@@ -427,7 +424,6 @@ describe('middleware', () => {
         {
           internal_stripLoadRoute: true,
           skipGenerated: true,
-          unstable_useServerMiddleware: true,
         }
       );
     }).toThrow(
@@ -450,7 +446,6 @@ describe('middleware', () => {
       {
         internal_stripLoadRoute: true,
         skipGenerated: true,
-        unstable_useServerMiddleware: true,
       }
     );
 
@@ -474,7 +469,6 @@ describe('middleware', () => {
         {
           internal_stripLoadRoute: true,
           skipGenerated: true,
-          unstable_useServerMiddleware: true,
         }
       );
     }).toThrow(

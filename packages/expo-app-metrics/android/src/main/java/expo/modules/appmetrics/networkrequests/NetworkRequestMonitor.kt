@@ -4,6 +4,7 @@ package expo.modules.appmetrics.networkrequests
 
 import java.lang.ref.WeakReference
 import java.util.Date
+import java.util.UUID
 
 /**
  * Receives notifications about HTTP requests observed by `NetworkRequestInterceptor`. Both
@@ -33,13 +34,66 @@ interface NetworkRequestObserverDelegate {
  * code). All shared state is guarded by a single intrinsic lock - the work inside is small and
  * synchronous, so contention is negligible.
  */
-class NetworkRequestMonitor internal constructor() {
+class NetworkRequestMonitor internal constructor(
   /** Maximum number of completed requests retained for debug surfaces. */
-  private val recentCapacity = 200
+  private val recentCapacity: Int = 200
+) {
 
   private val lock = Any()
   private val recentRequests = ArrayDeque<NetworkRequest>()
   private val delegates = mutableListOf<WeakReference<NetworkRequestObserverDelegate>>()
+
+  /**
+   * Persists each recorded completion into the metrics database. Held strongly, because unlike
+   * delegates, persistence is part of the pipeline, not an observer of it. `null` until the
+   * module installs it (and in tests that don't exercise persistence).
+   */
+  private var persistence: NetworkRequestPersistence? = null
+
+  // Requests already handed to a persistence instance, so a reload's reinstall does not rewrite
+  // them under a fresh session id.
+
+  private val drainedRequestIds = mutableSetOf<UUID>()
+
+  internal val drainedRequestIdCount: Int
+    get() = synchronized(lock) { drainedRequestIds.size }
+
+  /**
+   * Installs the persistence hook and drains any buffered requests through it.
+   *
+   * The interceptor starts at `Application.onCreate`, before the session exists, so requests
+   * observed in between wait in the buffer for this call.
+   */
+  fun installPersistence(persistence: NetworkRequestPersistence) {
+    val buffered = synchronized(lock) {
+      this.persistence = persistence
+      // Snapshotted under the same lock as `record`, so a concurrent completion is either here
+      // or persisted live, never both.
+      recentRequests.filter { it.id !in drainedRequestIds }
+    }
+    if (buffered.isEmpty()) {
+      return
+    }
+    persistence.persistBuffered(buffered) {
+      synchronized(lock) {
+        // Marked only on completion: a reload cancels the batch, and marking eagerly would lose
+        // those rows for good. Duplicates after a mid-drain reload are the cheaper failure.
+        buffered.forEach { drainedRequestIds.add(it.id) }
+      }
+    }
+  }
+
+  /**
+   * Uninstalls `persistence` if it is still the installed instance. Called from the module's
+   * `OnDestroy` so a JS reload doesn't leave the torn-down module's instance writing rows
+   * attributed to a stale session while the next module instance spins up. The identity check
+   * keeps a late-arriving destroy from removing the replacement.
+   */
+  fun uninstallPersistence(persistence: NetworkRequestPersistence) = synchronized(lock) {
+    if (this.persistence === persistence) {
+      this.persistence = null
+    }
+  }
 
   /**
    * Most recently observed completed requests, oldest first. Bounded by `recentCapacity`.
@@ -86,16 +140,24 @@ class NetworkRequestMonitor internal constructor() {
     }
   }
 
-  /** Records a completed request: appends to the ring buffer and fans out. */
+  /** Records a completed request: appends to the ring buffer, persists it, and fans out. */
   fun record(request: NetworkRequest) {
-    val snapshot = synchronized(lock) {
+    val (persistence, snapshot) = synchronized(lock) {
       recentRequests.addLast(request)
       while (recentRequests.size > recentCapacity) {
-        recentRequests.removeFirst()
+        // Forget the evicted request's drain state with it: the set only has to cover ids a
+        // future install could still see in the buffer.
+        drainedRequestIds.remove(recentRequests.removeFirst().id)
+      }
+      // A live persistence writes this request below, so mark it now: a later install must not
+      // drain it a second time, or every reload would duplicate whatever is still buffered.
+      if (this.persistence != null) {
+        drainedRequestIds.add(request.id)
       }
       delegates.removeAll { it.get() == null }
-      delegates.mapNotNull { it.get() }
+      persistence to delegates.mapNotNull { it.get() }
     }
+    persistence?.persist(request)
     for (delegate in snapshot) {
       if (delegate.shouldObserveRequest(request.url, request.method)) {
         delegate.onNetworkRequestCompleted(request)

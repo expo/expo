@@ -13,6 +13,12 @@ export const getLoadedFonts: ExpoFontLoaderModule['getLoadedFonts'] = jest.fn(
   }
 );
 
+export const loadFontFamilyAsync: ExpoFontLoaderModule['loadFontFamilyAsync'] = jest.fn(
+  async function mockLoadFontFamilyAsync(fontFamilyName: string, faces: any[]): Promise<void> {
+    return Promise.resolve();
+  }
+);
+
 // the below are used only on web
 const mod = jest.requireActual('../src/ExpoFontLoader.web');
 

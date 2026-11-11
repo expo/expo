@@ -4,8 +4,8 @@ import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import { randomUUID } from 'crypto';
 import fs, { mkdirp } from 'fs-extra';
-import { glob } from 'glob';
 import inquirer from 'inquirer';
+import { globSync } from 'node:fs';
 import ora from 'ora';
 import path from 'path';
 import semver from 'semver';
@@ -200,19 +200,17 @@ async function iosBuildAndSubmitAsync() {
       { stdio: isDebug ? 'inherit' : 'pipe' }
     );
 
-    const privateKeyMatches = glob.sync('*/certs/distribution/*.p12', {
-      absolute: true,
+    const privateKeyMatches = globSync('*/certs/distribution/*.p12', {
       cwd: fastlaneMatchBucketCopyPath,
     });
     assert(privateKeyMatches.length === 1);
-    const privateKeyPath = privateKeyMatches[0];
+    const privateKeyPath = path.resolve(fastlaneMatchBucketCopyPath, privateKeyMatches[0]);
 
-    const certDERMatches = glob.sync('*/certs/distribution/*.cer', {
-      absolute: true,
+    const certDERMatches = globSync('*/certs/distribution/*.cer', {
       cwd: fastlaneMatchBucketCopyPath,
     });
     assert(certDERMatches.length === 1);
-    const certDERPath = certDERMatches[0];
+    const certDERPath = path.resolve(fastlaneMatchBucketCopyPath, certDERMatches[0]);
 
     const certPEMPath = path.join(credentialsDir, 'cert.pem');
     const p12KeystorePath = path.join(credentialsDir, 'dist.p12');

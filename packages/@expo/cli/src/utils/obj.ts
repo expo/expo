@@ -4,7 +4,7 @@ export function get(obj: any, key: string): any | null {
   let current: any = obj;
   let branch: string | undefined;
   while ((branch = branches.shift())) {
-    if (!(branch in current)) {
+    if (current == null || typeof current !== 'object' || !(branch in current)) {
       return null;
     }
     current = current[branch];
@@ -18,6 +18,10 @@ export function set(obj: any, key: string, value: any): any | null {
   let current: any = obj;
   let branch: string | undefined;
   while ((branch = branches.shift())) {
+    if (branch === '__proto__' || branch === 'constructor' || branch === 'prototype') {
+      return obj;
+    }
+
     if (branches.length === 0) {
       current[branch] = value;
       return obj;

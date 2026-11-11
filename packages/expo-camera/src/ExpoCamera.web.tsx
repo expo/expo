@@ -18,7 +18,7 @@ import type {
   CameraType,
 } from './Camera.types';
 import CameraManager from './ExpoCameraManager.web';
-import { capture } from './web/WebCameraUtils';
+import { capture, isVideoReadyForCapture } from './web/WebCameraUtils';
 import { PictureSizes } from './web/WebConstants';
 import { useWebBarcodeScanner } from './web/useWebBarcodeScanner';
 import { useWebCameraStream } from './web/useWebCameraStream';
@@ -72,7 +72,7 @@ const ExponentCamera = ({
         return PictureSizes;
       },
       async takePicture(options: CameraPictureOptions): Promise<CameraCapturedPicture> {
-        if (!video.current || video.current.readyState !== video.current.HAVE_ENOUGH_DATA) {
+        if (!video.current || !isVideoReadyForCapture(video.current)) {
           throw new CodedError(
             'ERR_CAMERA_NOT_READY',
             'HTMLVideoElement does not have enough camera data to construct an image yet.'

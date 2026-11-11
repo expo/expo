@@ -3,7 +3,6 @@ import { getConfig } from '@expo/config';
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
 import { respond } from 'expo-server/adapter/http';
 import { posix } from 'node:path';
-import { resolve } from 'url';
 
 import { getActorDisplayName, getUserAsync } from '../../../api/user/user';
 import { isEnableHermesManaged } from '../../../export/exportHermes';
@@ -12,7 +11,7 @@ import { env } from '../../../utils/env';
 import { toPosixPath } from '../../../utils/filePath';
 import * as ProjectDevices from '../../project/devices';
 import type { UrlCreator } from '../UrlCreator';
-import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
+import { getRouterDirectoryModuleIdWithManifest, isExpoRouterApp } from '../metro/router';
 import type { PlatformBundlers } from '../platformBundlers';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
@@ -308,7 +307,7 @@ export abstract class ManifestMiddleware<
           // without the `assets/` subpath redirect.
           return shouldUseRelativeManifestUrls
             ? toAssetUrlPath(assetPath)
-            : resolve(bundleUrl!.match(/^https?:\/\/.*?\//)![0], assetPath);
+            : bundleUrl!.match(/^https?:\/\/.*?\//)![0] + toAssetUrlPath(assetPath);
         }
         const assetUrlPath = 'assets/' + toAssetUrlPath(assetPath);
         return shouldUseRelativeManifestUrls
@@ -375,7 +374,10 @@ export abstract class ManifestMiddleware<
       const platform = parsePlatformHeader(req);
       // On web, serve the public folder
       if (!platform || platform === 'web') {
-        if (['static', 'server'].includes(this.initialProjectConfig.exp.web?.output ?? '')) {
+        if (
+          isExpoRouterApp(this.initialProjectConfig.pkg) &&
+          ['static', 'server'].includes(this.initialProjectConfig.exp.web?.output ?? '')
+        ) {
           // Skip the spa-styled index.html when static generation is enabled.
           next();
           return true;

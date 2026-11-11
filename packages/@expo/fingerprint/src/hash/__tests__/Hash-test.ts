@@ -197,6 +197,49 @@ describe(createDirHashResultsAsync, () => {
     expect(result?.hex).not.toBe('');
   });
 
+  it('should skip a nested node_modules directory when hashing a package dir', async () => {
+    const limiter = createLimiter(3);
+    const options = await normalizeOptionsAsync('/app', { debug: true });
+    vol.fromJSON({
+      '/app/pkg/index.js': 'export default 1',
+      '/app/pkg/android/build.gradle': 'android',
+      '/app/pkg/node_modules/nested/index.js': 'should be ignored',
+    });
+
+    const withNested = await createDirHashResultsAsync('pkg', limiter, '/app', options);
+
+    vol.reset();
+    vol.fromJSON({
+      '/app/pkg/index.js': 'export default 1',
+      '/app/pkg/android/build.gradle': 'android',
+    });
+    const withoutNested = await createDirHashResultsAsync('pkg', limiter, '/app', options);
+
+    expect(withNested?.hex).toBe(withoutNested?.hex);
+    expect(withNested?.hex).toBeTruthy();
+  });
+
+  it('should hash a package dir in a virtual store', async () => {
+    const limiter = createLimiter(3);
+    const options = await normalizeOptionsAsync('/app', { debug: true });
+    vol.fromJSON({
+      '/app/node_modules/.pnpm/pkg@1.0.0/node_modules/pkg/index.js': 'export default 1',
+      '/app/node_modules/.pnpm/pkg@1.0.0/node_modules/pkg/android/build.gradle': 'android',
+      '/app/node_modules/.pnpm/pkg@1.0.0/node_modules/pkg/node_modules/nested/index.js':
+        'should be ignored',
+    });
+
+    const result = await createDirHashResultsAsync(
+      'node_modules/.pnpm/pkg@1.0.0/node_modules/pkg',
+      limiter,
+      '/app',
+      options
+    );
+
+    expect(result?.hex).toBeTruthy();
+    expect(JSON.stringify(result?.debugInfo)).not.toContain('nested');
+  });
+
   it('should ignore dir if it is in options.ignorePaths', async () => {
     const limiter = createLimiter(3);
     const options = await normalizeOptionsAsync('/app', {

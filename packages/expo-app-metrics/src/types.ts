@@ -1,6 +1,7 @@
 import type { SharedObject } from 'expo';
 
 import type { Session } from './Session';
+import type { Span } from './Span';
 
 export type AppStartupTimes = {
   /**
@@ -356,6 +357,13 @@ export type NetworkRequestRedirect = {
   toUrl: string;
   /** The 3xx status code (301, 302, 307, 308, …) returned by `fromUrl`. */
   statusCode: number;
+  /**
+   * ISO 8601 UTC timestamp of when `fromUrl` returned the 3xx response, or `null` when the
+   * platform did not report it. Includes milliseconds (for example `2026-09-07T12:00:00.250Z`),
+   * unlike the whole-second `startedAt`, because hops within one request are usually fractions of
+   * a second apart.
+   */
+  respondedAt: string | null;
 };
 
 /**
@@ -494,6 +502,102 @@ export type DebugSession = {
   crashReport?: CrashReport | null;
 };
 
+/**
+ * Normalized form of `Observe.configure({ networkTraces })`, persisted natively.
+ * @hidden
+ */
+export type NetworkTracesConfig = {
+  /**
+   * Whether completed network requests are written to the local `spans` table.
+   */
+  enabled: boolean;
+  /**
+   * Only requests matching the filter are recorded. An omitted filter records every request.
+   */
+  filter?: NetworkRequestFilter | null;
+};
+
+/**
+ * Status of a completed span. Omitting the status leaves it unset, which is the usual choice
+ * for successful operations, per the OpenTelemetry conventions.
+ */
+export type SpanStatus = 'ok' | 'error';
+
+export type StartSpanOptions = {
+  /**
+   * Attributes attached to the span at start. Values go through the same validation as
+   * `logEvent` attributes.
+   */
+  attributes?: Record<string, LogAttributeValue> | null;
+  /**
+   * The span this one nests under. The child continues the parent's trace and references its
+   * span id. Omit for a root span starting its own trace. There is no implicit parenting.
+   */
+  parent?: Span | null;
+  /**
+   * Unix-epoch milliseconds overriding "now" as the span start, for operations whose start was
+   * measured before the call. Take it from `Date.now()`: a value from `performance.now()`, or one
+   * in seconds or microseconds, is ignored with a warning, and the span starts now.
+   */
+  startTime?: number | null;
+};
+
+export type SpanEventOptions = {
+  /**
+   * Attributes attached to the event. Values go through the same validation as `logEvent`
+   * attributes.
+   */
+  attributes?: Record<string, LogAttributeValue> | null;
+  /**
+   * Unix-epoch milliseconds overriding the event time. Without it the event is stamped with the
+   * current time when `addEvent` runs. A value from `performance.now()`, or one in seconds or
+   * microseconds, is ignored with a warning.
+   */
+  time?: number | null;
+};
+
+export type SpanEndOptions = {
+  /**
+   * `'error'` marks the operation as failed; `'ok'` explicitly marks success. Omit to leave
+   * the status unset, the usual choice for successful spans. Any other value is ignored with a
+   * warning.
+   */
+  status?: SpanStatus | null;
+  /**
+   * Free-text detail explaining an `'error'` status, such as the failure's message. Ignored
+   * for any other status: OpenTelemetry allows a status description only with the error status.
+   */
+  message?: string | null;
+  /**
+   * Unix-epoch milliseconds overriding "now" as the span end. A value from `performance.now()`, or
+   * one in seconds or microseconds, is ignored with a warning, and the span ends now.
+   */
+  endTime?: number | null;
+};
+
+export type RecordSpanOptions = {
+  /**
+   * Unix-epoch milliseconds when the measured operation started, such as a value from
+   * `Date.now()`.
+   */
+  startTime: number;
+  /**
+   * Unix-epoch milliseconds when the measured operation ended, such as a value from
+   * `Date.now()`.
+   */
+  endTime: number;
+  /**
+   * Attributes attached to the span. Values go through the same validation as `logEvent`
+   * attributes.
+   */
+  attributes?: Record<string, LogAttributeValue> | null;
+  /**
+   * The span this one nests under. The recorded span continues the parent's trace and references
+   * its span id. Omit for a root span starting its own trace.
+   */
+  parent?: Span | null;
+};
+
 export interface ExpoAppMetricsModuleType {
   markFirstRender(): void;
   markInteractive(attributes?: MetricAttributes): void;
@@ -508,6 +612,22 @@ export interface ExpoAppMetricsModuleType {
    * @param options Optional body, attributes, and severity overrides.
    */
   logEvent(name: string, options?: LogEventOptions): void;
+  /**
+   * Applies and persists the network traces recording setting. Affects future captures only;
+   * spans already written keep dispatching.
+   * @hidden
+   */
+  setNetworkTracesConfig(config: NetworkTracesConfig): void;
+  /**
+   * Native shape behind the `startSpan` wrapper, which folds `parent` into the options.
+   * @hidden
+   */
+  startSpan(name: string, options?: Omit<StartSpanOptions, 'parent'> | null, parent?: Span): Span;
+  /**
+   * Native shape behind the `recordSpan` wrapper, which folds `parent` into the options.
+   * @hidden
+   */
+  recordSpan(name: string, options: Omit<RecordSpanOptions, 'parent'>, parent?: Span): void;
   /**
    * Sets attributes merged into every subsequent metric and log event.
    * Per-record keys win on collision. Pass `null`, `undefined`, or an empty
@@ -552,12 +672,13 @@ export interface ExpoAppMetricsModuleType {
    * Reports an unhandled JavaScript error, recorded natively as a `js.exception` log event following
    * OpenTelemetry's exception conventions. Called by the global `ErrorUtils` handler that
    * `installErrorHandler` installs and by `AppMetricsErrorBoundary`; the `source` field records
-   * which path captured the error.
+   * which path captured the error. An integration that reports errors for a library uses the
+   * `integration` source.
    *
    * @private This API is unstable and may change without notice.
    */
   reportError(error: {
-    source: 'global' | 'errorBoundary' | 'reportedByUser';
+    source: 'global' | 'errorBoundary' | 'reportedByUser' | 'integration';
     type?: string;
     message: string;
     stacktrace?: string;

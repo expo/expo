@@ -1,5 +1,5 @@
 import fs from 'fs';
-import * as Glob from 'glob';
+import { vol } from 'memfs';
 import path from 'path';
 
 import {
@@ -9,9 +9,6 @@ import {
 } from '../Template';
 
 jest.mock('fs');
-jest.mock('glob');
-const ActualFs = jest.requireActual('fs') as typeof fs;
-const ActualGlob = jest.requireActual('glob') as typeof Glob;
 const cwd = path.resolve(__dirname, 'fixtures/contrived-template');
 
 describe(resolvePackageModuleId, () => {
@@ -83,50 +80,24 @@ describe('getTemplateFilesToRenameAsync', () => {
   });
 
   it('returns no files when passed an empty rename config', async () => {
-    const spyGlob = jest.spyOn(Glob, 'glob').mockImplementation(async (source, options) => {
-      return await ActualGlob.glob(source, { ...options, fs: ActualFs });
-    });
-
     const files = await getTemplateFilesToRenameAsync({ cwd, renameConfig: [] });
     expect(files).toHaveLength(0);
-    expect(spyGlob).toHaveBeenCalledTimes(1);
   });
 });
 
 describe('getTemplateFilesToRenameAsync — nested patterns via custom rename config', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+  afterEach(() => vol.reset());
 
   it('lets a template-supplied config reach app.json files inside apps/*', async () => {
-    const monorepoFixture = path.resolve(__dirname, 'fixtures/monorepo-template');
-    jest
-      .spyOn(Glob, 'glob')
-      .mockImplementation(async (source, options) =>
-        ActualGlob.glob(source, { ...options, fs: ActualFs })
-      );
-
-    // Fixture is created on-demand below if it doesn't already exist.
-    await ActualFs.promises.mkdir(path.join(monorepoFixture, 'apps/mobile'), { recursive: true });
-    await ActualFs.promises.mkdir(path.join(monorepoFixture, 'apps/tv'), { recursive: true });
-    await ActualFs.promises.writeFile(
-      path.join(monorepoFixture, 'apps/mobile/app.json'),
-      '{ "name": "HelloWorld" }'
-    );
-    await ActualFs.promises.writeFile(
-      path.join(monorepoFixture, 'apps/tv/app.json'),
-      '{ "name": "HelloWorld" }'
-    );
-
-    try {
-      const files = await getTemplateFilesToRenameAsync({
-        cwd: monorepoFixture,
-        renameConfig: ['apps/*/app.json'],
-      });
-      expect(files.sort()).toEqual(['apps/mobile/app.json', 'apps/tv/app.json']);
-    } finally {
-      await ActualFs.promises.rm(monorepoFixture, { recursive: true, force: true });
-    }
+    vol.fromJSON({
+      '/template/apps/mobile/app.json': '{ "name": "HelloWorld" }',
+      '/template/apps/tv/app.json': '{ "name": "HelloWorld" }',
+    });
+    const files = await getTemplateFilesToRenameAsync({
+      cwd: '/template',
+      renameConfig: ['apps/*/app.json'],
+    });
+    expect(files.sort()).toEqual(['apps/mobile/app.json', 'apps/tv/app.json']);
   });
 });
 
@@ -274,13 +245,49 @@ describe('renameTemplateAppNameAsync', () => {
       expect(spyWriteFile).toHaveBeenCalledTimes(1);
     });
 
-    // Whether the expected behaviour is a bug or not is up for discussion. This
-    // test is partially for the purpose of characterising the current behaviour.
-    //
-    // To be precise, this quirk originally existed only in Expo CLI (because XML
-    // escaping was only performed there), but now Create Expo has been made
-    // consistent with that behaviour as well.
-    it('sanitizes XML-unsafe characters in XML and Plist files when renaming', async () => {
+    it('derives the lowercase identifier from the sanitized name, matching path renames', async () => {
+      // Lowercasing happens after sanitizing ('Ǉubljana' -> 'LJubljana' ->
+      // 'ljubljana'), like in file-path renames.
+      jest.spyOn(fs.promises, 'readFile').mockImplementation(async () => 'package com.helloworld;');
+      let written = '';
+      jest.spyOn(fs.promises, 'writeFile').mockImplementation(async (_filePath, data) => {
+        written = data as string;
+      });
+
+      await renameTemplateAppNameAsync({ cwd, files: ['Main.kt'], name: 'Ǉubljana' });
+      expect(written).toBe('package com.ljubljana;');
+    });
+
+    it.each([
+      // XML-unsafe characters use entities in generic XML/plist files; Android
+      // resource files (.xml) use backslash escapes for quotes
+      ['A & B & C', 'strings.xml', '<string>A &amp; B &amp; C</string>'],
+      ["Bob's App", 'strings.xml', "<string>Bob\\'s App</string>"],
+      ['A "B" C', 'strings.xml', '<string>A \\"B\\" C</string>'],
+      ['@string/foo', 'strings.xml', '<string>\\@string/foo</string>'],
+      ['?attr', 'strings.xml', '<string>\\?attr</string>'],
+      ['C:\\Temp', 'strings.xml', '<string>C:\\\\Temp</string>'],
+      [' Padded ', 'strings.xml', '<string>" Padded "</string>'],
+      ["Bob's App", 'app.plist', '<string>Bob&apos;s App</string>'],
+      ['A "B" C', 'app.plist', '<string>A &quot;B&quot; C</string>'],
+      // replacement patterns in the name are inserted literally, not expanded
+      ['Cost $& Fees', 'app.json', '<string>Cost $& Fees</string>'],
+    ])('renders the display name %j in %s as %j', async (name, file, expected) => {
+      jest
+        .spyOn(fs.promises, 'readFile')
+        .mockImplementation(async () => '<string>Hello App Display Name</string>');
+      let written = '';
+      jest.spyOn(fs.promises, 'writeFile').mockImplementation(async (_filePath, data) => {
+        written = data as string;
+      });
+
+      await renameTemplateAppNameAsync({ cwd, files: [file], name });
+      expect(written).toBe(expected);
+    });
+
+    // XML escaping applies only to the display name; the sanitized project
+    // identifiers derive from the raw name so they match across all files.
+    it('derives the same sanitized identifier in XML and non-XML files', async () => {
       // There is probably a more Jesty way to spy this, but I am tired
       const filesRead: string[] = [];
       const filesWritten: string[] = [];
@@ -295,15 +302,8 @@ describe('renameTemplateAppNameAsync', () => {
       const spyWriteFile = jest
         .spyOn(fs.promises, 'writeFile')
         .mockImplementation(async (filePath, data) => {
-          if (['.plist', '.xml'].includes(path.extname(filePath as string))) {
-            // XML escaping followed by sanitization:
-            // Bye<World -> Bye&lt;World -> ByeltWorld
-            expect(data).toMatch('ByeltWorld');
-          } else {
-            // Sanitization:
-            // Bye<World -> ByeWorld
-            expect(data).toMatch('ByeWorld');
-          }
+          // Sanitization: Bye<World -> ByeWorld
+          expect(data).toMatch('ByeWorld');
 
           filesWritten.push(filePath as string);
         });

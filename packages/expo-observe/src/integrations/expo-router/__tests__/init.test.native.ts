@@ -1,17 +1,10 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import AppMetrics from 'expo-app-metrics';
 
+import { createNavigationBlockingTime } from '../../shared/navigation/blockingTime';
 import { initListeners, initRouterIntegration } from '../init';
+import type { RouterPerformanceMark, RouterPerformanceObserver } from '../router';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
-
-// These are `expo-router`'s event types, but importing them here would pull expo-router's source
-// (and its vendored react-navigation global augmentation of `ReactNavigation.RootParamList`/`Theme`)
-// into the program, which clashes with the real `@react-navigation/core` augmentation loaded by the
-// sibling react-navigation integration tests. They're only used to shape test event payloads, so we
-// alias them to `any` to keep the clash out of this package.
-type ActionDispatchedEvent = any;
-type PageFocusedEvent = any;
-type PagePreloadedEvent = any;
 
 jest.mock('expo-app-metrics', () => {
   const mainSession = {
@@ -30,67 +23,77 @@ jest.mock('expo-app-metrics', () => {
 });
 
 jest.mock('../router', () => ({ optionalRouter: undefined, isRouterInstalled: false }));
+jest.mock('../../shared/navigation/blockingTime', () => ({
+  createNavigationBlockingTime: jest.fn(() => ({
+    start: jest.fn(),
+    setMetric: jest.fn(),
+    dispose: jest.fn(),
+  })),
+}));
 
 const mockGetMainSession = AppMetrics.getMainSession as jest.Mock;
 const mockAddMetric = AppMetrics.getMainSession().addMetric as jest.Mock;
+const mockCreateNavigationBlockingTime = createNavigationBlockingTime as jest.Mock;
 
-type Listener<T> = (event: T) => void;
-
-interface FakeNavigationEvents {
-  addListener<T>(type: string, cb: Listener<T>): () => void;
-  emit<T>(type: string, event: T): void;
+function lastBlockingTime() {
+  return mockCreateNavigationBlockingTime.mock.results.at(-1)!.value;
 }
 
-function createFakeNavigationEvents(): FakeNavigationEvents {
-  const listeners: Record<string, Set<Listener<any>>> = {};
+type ObserverCallback = ConstructorParameters<RouterPerformanceObserver>[0];
+
+interface FakeRouterPerformance {
+  PerformanceObserver: RouterPerformanceObserver;
+  mark(name: RouterPerformanceMark['name'], detail: object, startTime?: number): void;
+}
+
+function createFakeRouterPerformance(): FakeRouterPerformance {
+  const callbacks = new Set<ObserverCallback>();
   return {
-    addListener(type, cb) {
-      const set = listeners[type] ?? new Set();
-      listeners[type] = set;
-      set.add(cb);
-      return () => set.delete(cb);
+    PerformanceObserver: class {
+      constructor(private callback: ObserverCallback) {}
+      observe() {
+        callbacks.add(this.callback);
+      }
+      disconnect() {
+        callbacks.delete(this.callback);
+      }
     },
-    emit(type, event) {
-      listeners[type]?.forEach((cb) => cb(event));
+    mark(name, detail, startTime = performance.now()) {
+      // Tests pass partial or loosely typed details to cover edge cases.
+      const entries = [{ name, startTime, detail } as RouterPerformanceMark];
+      callbacks.forEach((callback) => callback({ getEntries: () => entries }));
     },
   };
 }
 
-function dispatch(events: FakeNavigationEvents, actionType: string) {
-  events.emit<Partial<ActionDispatchedEvent>>('actionDispatched', {
-    type: 'actionDispatched',
-    actionType: actionType as ActionDispatchedEvent['actionType'],
-  });
+function dispatch(
+  events: FakeRouterPerformance,
+  actionType: string,
+  startTime?: number,
+  actionId?: number
+) {
+  events.mark('expo-router:action-dispatched', { actionType, actionId }, startTime);
+}
+
+function enqueue(events: FakeRouterPerformance, actionId: number, startTime: number) {
+  events.mark('expo-router:action-enqueued', { actionId }, startTime);
+}
+
+function pageDetail(screenId: string, overrides?: object) {
+  return { screenId, pathname: `/${screenId}`, params: {}, segments: [screenId], ...overrides };
 }
 
 function focus(
-  events: FakeNavigationEvents,
+  events: FakeRouterPerformance,
   screenId: string,
-  overrides?: Partial<PageFocusedEvent>
+  overrides?: object,
+  startTime?: number
 ) {
-  events.emit<Partial<PageFocusedEvent>>('pageFocused', {
-    type: 'pageFocused',
-    screenId,
-    pathname: `/${screenId}`,
-    params: {},
-    segments: [screenId],
-    ...overrides,
-  });
+  events.mark('expo-router:page-focused', pageDetail(screenId, overrides), startTime);
 }
 
-function preload(
-  events: FakeNavigationEvents,
-  screenId: string,
-  overrides?: Partial<PagePreloadedEvent>
-) {
-  events.emit<Partial<PagePreloadedEvent>>('pagePreloaded', {
-    type: 'pagePreloaded',
-    screenId,
-    pathname: `/${screenId}`,
-    params: {},
-    segments: [screenId],
-    ...overrides,
-  });
+function preload(events: FakeRouterPerformance, screenId: string) {
+  events.mark('expo-router:page-preloaded', pageDetail(screenId));
 }
 
 function flushAsync() {
@@ -98,7 +101,7 @@ function flushAsync() {
 }
 
 let storage: RouterIntegrationStorage;
-let events: FakeNavigationEvents;
+let events: FakeRouterPerformance;
 let cleanup: () => void;
 let logSpy: jest.SpyInstance;
 let warnSpy: jest.SpyInstance;
@@ -109,14 +112,14 @@ beforeEach(() => {
   logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   storage = createRouterIntegrationStorage();
-  events = createFakeNavigationEvents();
-  cleanup = initListeners(storage, events as any);
+  events = createFakeRouterPerformance();
+  cleanup = initListeners(storage, events.PerformanceObserver);
 });
 
 function setRouterConfig(config: Parameters<typeof initRouterIntegration>[0]) {
   cleanup?.();
   initRouterIntegration(config);
-  cleanup = initListeners(storage, events as any);
+  cleanup = initListeners(storage, events.PerformanceObserver);
 }
 
 afterEach(() => {
@@ -128,9 +131,12 @@ afterEach(() => {
 
 describe('initListeners', () => {
   it('records cold_ttr with isAppLaunch=true on the first focus after a non-PRELOAD action', async () => {
-    const now = performance.now();
-    jest.spyOn(performance, 'now').mockReturnValue(now + 100);
-    focus(events, 'a');
+    // Pin the launch time captured by `initListeners`, so the time spent between
+    // `beforeEach` and this test doesn't leak into the measured TTR.
+    jest.spyOn(performance, 'now').mockReturnValueOnce(1000);
+    setRouterConfig(undefined);
+
+    focus(events, 'a', undefined, 1100);
     await flushAsync();
 
     expect(mockAddMetric).toHaveBeenCalledTimes(1);
@@ -139,7 +145,7 @@ describe('initListeners', () => {
       category: 'navigation',
       name: 'cold_ttr',
       routeName: '/a',
-      value: expect.closeTo(0.1, 2),
+      value: 0.1,
       params: { isAppLaunch: true, routeParams: {}, url: '/a' },
     });
   });
@@ -222,6 +228,87 @@ describe('initListeners', () => {
       dispatchTime: expect.any(Number),
       isAppLaunch: false,
     });
+  });
+
+  it('measures TTR between the startTime of the action and focus marks', async () => {
+    storage.hasRecordedInitialTtr = true;
+
+    dispatch(events, 'NAVIGATE', 1000);
+    focus(events, 'a', undefined, 1250);
+    await flushAsync();
+
+    expect(mockAddMetric).toHaveBeenCalledWith(expect.objectContaining({ value: 0.25 }));
+    expect(storage.screenTimes['a']?.dispatchTime).toBe(1000);
+  });
+
+  it('measures TTR from the action-enqueued mark of the dispatched action', async () => {
+    storage.hasRecordedInitialTtr = true;
+
+    enqueue(events, 1, 1000);
+    dispatch(events, 'NAVIGATE', 1200, 1);
+    focus(events, 'a', undefined, 1250);
+    await flushAsync();
+
+    expect(mockAddMetric).toHaveBeenCalledWith(expect.objectContaining({ value: 0.25 }));
+  });
+
+  it('ignores an enqueued action that never dispatched', async () => {
+    storage.hasRecordedInitialTtr = true;
+
+    enqueue(events, 1, 1000);
+    enqueue(events, 2, 1100);
+    dispatch(events, 'NAVIGATE', 1200, 1);
+    focus(events, 'a', undefined, 1250);
+    await flushAsync();
+
+    expect(mockAddMetric).toHaveBeenCalledWith(expect.objectContaining({ value: 0.25 }));
+  });
+
+  it('measures TTR from the enqueue time of an action that dispatches after a later action', async () => {
+    storage.hasRecordedInitialTtr = true;
+
+    enqueue(events, 1, 1000);
+    enqueue(events, 2, 1100);
+    dispatch(events, 'NAVIGATE', 1200, 2);
+    dispatch(events, 'NAVIGATE', 1300, 1);
+    focus(events, 'a', undefined, 1350);
+    await flushAsync();
+
+    expect(mockAddMetric).toHaveBeenCalledWith(expect.objectContaining({ value: 0.35 }));
+  });
+
+  it('drops the oldest enqueue time when the map exceeds its cap', () => {
+    for (let id = 1; id <= 101; id++) {
+      enqueue(events, id, id);
+    }
+
+    expect(storage.enqueueTimes.size).toBe(100);
+    expect(storage.enqueueTimes.has(1)).toBe(false);
+  });
+
+  it('keeps the enqueue time of an action enqueued before the previous focus', async () => {
+    storage.hasRecordedInitialTtr = true;
+
+    enqueue(events, 1, 1000);
+    dispatch(events, 'NAVIGATE', 1100, 1);
+    enqueue(events, 2, 1200);
+    focus(events, 'a', undefined, 1250);
+    dispatch(events, 'NAVIGATE', 1300, 2);
+    focus(events, 'b', undefined, 1400);
+    await flushAsync();
+
+    expect(mockAddMetric.mock.calls[1][0].value).toBeCloseTo(0.2);
+  });
+
+  it('does not record a TTR for an enqueued PRELOAD action', async () => {
+    storage.hasRecordedInitialTtr = true;
+
+    enqueue(events, 1, 1000);
+    dispatch(events, 'PRELOAD', 1200, 1);
+    focus(events, 'a', undefined, 1250);
+    await flushAsync();
+
+    expect(mockAddMetric).not.toHaveBeenCalled();
   });
 
   it('records cold_ttr with isAppLaunch=false on subsequent focuses of a new screen', async () => {
@@ -440,11 +527,8 @@ describe('initListeners', () => {
     storage.hasRecordedInitialTtr = true;
     storage.screenTimes['b'] = { lastInteractiveCall: 1000 };
 
-    const nowSpy = jest.spyOn(performance, 'now');
-    nowSpy.mockReturnValue(2000);
-    dispatch(events, 'NAVIGATE');
-    nowSpy.mockReturnValue(2100);
-    focus(events, 'b');
+    dispatch(events, 'NAVIGATE', 2000);
+    focus(events, 'b', undefined, 2100);
     await flushAsync();
 
     // After pageFocused: dispatchTime < lastInteractiveCall (now), so a
@@ -465,6 +549,117 @@ describe('initListeners', () => {
   });
 });
 
+describe('navigation total blocking time flag', () => {
+  it.each([undefined, true, {}, { experimental_totalBlockingTime: false }])(
+    'does not measure tbt when the experimental flag is not enabled (config: %p)',
+    (config) => {
+      mockCreateNavigationBlockingTime.mockClear();
+      setRouterConfig(config);
+      expect(mockCreateNavigationBlockingTime).not.toHaveBeenCalled();
+    }
+  );
+});
+
+describe('navigation total blocking time', () => {
+  beforeEach(async () => {
+    setRouterConfig({ experimental_totalBlockingTime: true });
+    focus(events, 'a');
+    await flushAsync();
+  });
+
+  it('sets the tbt metric for the destination route', async () => {
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b', { pathname: '/b?q=1', params: { q: '1' } });
+    await flushAsync();
+
+    expect(lastBlockingTime().start).toHaveBeenCalledTimes(1);
+    expect(lastBlockingTime().setMetric).toHaveBeenCalledWith(
+      {
+        timestamp: expect.any(String),
+        category: 'navigation',
+        name: 'tbt',
+        routeName: '/b',
+        params: { routeParams: { q: '1' }, url: '/b?q=1' },
+      },
+      expect.any(Number)
+    );
+  });
+
+  it('starts the tbt window at the navigation time', () => {
+    enqueue(events, 1, 1000);
+    dispatch(events, 'NAVIGATE', 1200, 1);
+    dispatch(events, 'NAVIGATE', 1300);
+
+    expect(lastBlockingTime().start.mock.calls).toEqual([[1000], [1300]]);
+  });
+
+  it('links the tbt metric at the focus mark time', async () => {
+    dispatch(events, 'NAVIGATE', 1000);
+    focus(events, 'b', undefined, 1250);
+    await flushAsync();
+
+    expect(lastBlockingTime().setMetric).toHaveBeenCalledWith(expect.anything(), 1250);
+  });
+
+  it('records the measured tbt in the main session', () => {
+    const metric = { category: 'navigation', name: 'tbt', routeName: '/b', value: 0.12 };
+    mockCreateNavigationBlockingTime.mock.lastCall![0](metric);
+    expect(mockAddMetric).toHaveBeenLastCalledWith(metric);
+  });
+
+  it('filters route params from tbt', async () => {
+    setRouterConfig({ filteredParams: ['token'], experimental_totalBlockingTime: true });
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b', { pathname: '/b?token=secret', params: { token: 'secret' } });
+    await flushAsync();
+
+    expect(lastBlockingTime().setMetric.mock.lastCall[0].params).toEqual({
+      routeParams: {},
+      urlHidden: true,
+    });
+  });
+
+  it('sets the tbt metric only on the first focus of a screen', async () => {
+    preload(events, 'b');
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+    dispatch(events, 'GO_BACK');
+    focus(events, 'a');
+    await flushAsync();
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b');
+    await flushAsync();
+
+    expect(lastBlockingTime().setMetric).toHaveBeenCalledTimes(1);
+    expect(lastBlockingTime().setMetric).toHaveBeenCalledWith(
+      expect.objectContaining({ routeName: '/b' }),
+      expect.any(Number)
+    );
+  });
+
+  it('does not measure the initial app launch', () => {
+    expect(lastBlockingTime().start).not.toHaveBeenCalled();
+    expect(lastBlockingTime().setMetric).not.toHaveBeenCalled();
+  });
+
+  it('does not measure PRELOAD actions', () => {
+    dispatch(events, 'PRELOAD');
+    expect(lastBlockingTime().start).not.toHaveBeenCalled();
+  });
+
+  it('starts a measurement for every navigation action', () => {
+    dispatch(events, 'NAVIGATE');
+    dispatch(events, 'SET_PARAMS');
+    expect(lastBlockingTime().start).toHaveBeenCalledTimes(2);
+  });
+
+  it('disposes the measurement on cleanup', () => {
+    cleanup();
+    expect(lastBlockingTime().dispose).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe('isInitialized + initRouterIntegration', () => {
   it('flips initialized when initRouterIntegration is called and stays decoupled from initListeners', () => {
     jest.isolateModules(() => {
@@ -472,8 +667,7 @@ describe('isInitialized + initRouterIntegration', () => {
       expect(init.isInitialized()).toBe(false);
 
       const fresh = createRouterIntegrationStorage();
-      const fakeEvents = createFakeNavigationEvents();
-      const dispose = init.initListeners(fresh, fakeEvents);
+      const dispose = init.initListeners(fresh, createFakeRouterPerformance().PerformanceObserver);
       expect(init.isInitialized()).toBe(false);
       dispose();
 

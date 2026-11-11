@@ -2,6 +2,7 @@ import type { DefinedNativePlugin } from 'noxcturnal';
 
 import { expoPluginInput, isNodeModule, mappedLiteral } from '../noxcturnal-transformer';
 import type { Noxcturnal } from '../noxcturnal-transformer';
+import { addCacheVary } from './cache-vary';
 
 interface DefineState {
   identifiers: Map<string, unknown>;
@@ -87,6 +88,12 @@ export function createDefinePlugin(nox: Noxcturnal): DefinedNativePlugin<DefineS
           if (!members.has(pattern)) return;
           const root = pattern.slice(0, pattern.indexOf('.'));
           if (path.scope.hasBinding(root)) return;
+          if (pattern.startsWith('process.env.EXPO_PUBLIC_')) {
+            addCacheVary(path.context, {
+              scheme: 'env',
+              name: pattern.slice('process.env.'.length),
+            });
+          }
           path.replaceWith(mappedLiteral(path.context, members.get(pattern)));
         }
       ),

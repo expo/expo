@@ -27,7 +27,7 @@ struct ReactSchedulerDispatchIntegrationTests {
     hermesRuntime.withUnsafePointee { runtimePointer in
       testScheduler.drainWorkLoops(withRuntime: runtimePointer)
     }
-    #expect(try runtime.eval("globalThis.settled === true").getBool())
+    #expect(try runtime.eval("globalThis.settled === true").getBool() == true)
   }
 
   @Test
@@ -45,7 +45,7 @@ struct ReactSchedulerDispatchIntegrationTests {
 
     #expect(testScheduler.scheduledWorkLoopCount == workLoopCountBeforeTeardown)
     // The runtime itself stays fully usable and the promise just never settles.
-    #expect(try runtime.eval("globalThis.settled !== true").getBool())
+    #expect(try runtime.eval("globalThis.settled !== true").getBool() == true)
   }
 
   @Test

@@ -1,10 +1,21 @@
 import type { ViewStyle } from 'react-native';
 
 import type { ModifierConfig } from '../types';
+import type { UniversalDimension } from './modifierUtils';
+
+export type { UniversalDimension } from './modifierUtils';
 
 /**
  * Subset of React Native `ViewStyle` that maps cleanly to both SwiftUI modifiers
  * and Jetpack Compose modifiers. On web, passes through to React Native StyleSheet.
+ *
+ * `width` and `height` also accept a percentage of the parent, such as `'50%'`.
+ * On Android and iOS, a percentage resolves when the parent is a universal `Row`, `Column`,
+ * or `Host` with a size on that axis.
+ * A universal `ScrollView` resolves the cross axis only.
+ * The scroll axis stays unbounded.
+ * On web, the value is passed through to the view style.
+ * A Jetpack Compose `Row` or `Column`, or a SwiftUI stack, does not resolve it.
  * @docsInline
  */
 export type UniversalStyle = Pick<
@@ -21,9 +32,22 @@ export type UniversalStyle = Pick<
   | 'borderWidth'
   | 'borderColor'
   | 'opacity'
-  | 'width'
-  | 'height'
->;
+> & {
+  /**
+   * Fixed size in density-independent pixels, or a percentage of the parent's content width.
+   * On Android and iOS, percentages resolve when the parent is a universal `Row`, `Column`,
+   * `ScrollView`, or `Host` with a defined width.
+   * A horizontal `ScrollView` leaves width unbounded.
+   */
+  width?: UniversalDimension;
+  /**
+   * Fixed size in density-independent pixels, or a percentage of the parent's content height.
+   * On Android and iOS, percentages resolve when the parent is a universal `Row`, `Column`,
+   * `ScrollView`, or `Host` with a defined height.
+   * A vertical `ScrollView` leaves height unbounded.
+   */
+  height?: UniversalDimension;
+};
 
 /**
  * Base props inherited by all universal components.
@@ -111,3 +135,30 @@ export interface UniversalBaseProps {
  * @docsInline
  */
 export type UniversalAlignment = 'start' | 'center' | 'end';
+
+/**
+ * Observable state created with `useNativeState`.
+ *
+ * On Android and iOS, the value is shared with native views. A write from the JavaScript thread
+ * is applied on the UI thread asynchronously, so a read right after it may still return the
+ * previous value. Writes don't re-render the component that created the state.
+ *
+ * On web, the value is backed by React state. A write is readable immediately and re-renders the
+ * component that created the state.
+ */
+export type ObservableState<T> = {
+  /**
+   * The current value.
+   */
+  value: T;
+
+  /**
+   * Reads the current value. A React Compiler-compliant alternative to reading `.value`.
+   */
+  get(): T;
+
+  /**
+   * Writes a new value. A React Compiler-compliant alternative to assigning `.value`.
+   */
+  set(value: T): void;
+};

@@ -1,5 +1,5 @@
+import { boolish } from '@expo/env';
 import chalk from 'chalk';
-import { boolish } from 'getenv';
 
 import { FingerprintPreset, Options, createFingerprintAsync } from '../../../build/index';
 import { Command } from '../cli';

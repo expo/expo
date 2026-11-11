@@ -47,7 +47,7 @@ The precompiled modules system allows Expo packages to be distributed as prebuil
 │     - configure_header_search_paths                                        │
 │     - configure_codegen_for_prebuilt_modules                               │
 │     - stub_bundled_pod_targets                                             │
-│     - configure_use_frameworks (if use_frameworks! active)                 │
+│     - ensure_modular_react_header_flags (prebuilt React only)              │
 │                                                                             │
 │   Result in Pods/<PodName>/:                                               │
 │     <Product>.xcframework/            (extracted by CocoaPods)             │
@@ -103,7 +103,7 @@ Each of these has an `spm.config.json` in its package root:
 | `expo-age-range` | `ExpoAgeRange` |
 | `expo-app-integrity` | `ExpoAppIntegrity` |
 | `expo-apple-authentication` | `ExpoAppleAuthentication` |
-| `expo-application` | `EXApplication` |
+| `expo-application` | `ExpoApplication` |
 | `expo-asset` | `ExpoAsset` |
 | `expo-audio` | `ExpoAudio` |
 | `expo-background-fetch` | `ExpoBackgroundFetch` |
@@ -315,21 +315,6 @@ Create `packages/<package-name>/spm.config.json`:
 
 Most podspecs are **auto-patched** at pod install time by `sandbox.rb`. The system intercepts `store_podspec` and applies `patch_spec_for_prebuilt` on-the-fly — no manual podspec changes required.
 
-The only exception is `expo-modules-core`, which uses the inline pattern:
-
-```ruby
-Pod::Spec.new do |s|
-  # ... metadata ...
-  s.dependency 'ExpoModulesCore'
-
-  if (!Expo::PackagesConfig.instance.try_link_with_prebuilt_xcframework(s))
-    s.static_framework = true
-    s.source_files = "**/*.{h,m,swift}"
-    s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
-  end
-end
-```
-
 ### Step 4: Build and Verify
 
 ```bash
@@ -365,8 +350,7 @@ packages/precompile/.cache/
 └── react/
     └── 0.76.7/
         └── debug/
-            ├── React.xcframework/
-            └── React-VFS.yaml
+            └── React.xcframework/
 ```
 
 ### Environment Variable
@@ -448,7 +432,7 @@ Version specifiers: `{ "exact": "4.5.0" }`, `{ "from": "4.0.0" }`, `{ "branch": 
 | `path`               | string          | Source path relative to package root               |
 | `pattern`            | string          | Glob pattern for source files                      |
 | `headerPattern`      | string          | Glob pattern for header files (objc/cpp only)      |
-| `exclude`            | array           | Paths to exclude from sources                      |
+| `exclude`            | array           | Paths to exclude from sources. `**/Tests/**` is always excluded, and generated `.swiftinterface` files are rejected if they import test-only modules such as `Testing` |
 | `dependencies`       | array           | Target dependencies                                |
 | `linkedFrameworks`   | array           | System frameworks to link                          |
 | `includeDirectories` | array           | Header search paths (objc/cpp only, default: `["include"]`) |
@@ -458,7 +442,6 @@ Version specifiers: `{ "exact": "4.5.0" }`, `{ "from": "4.0.0" }`, `{ "branch": 
 | `fileMapping`        | array           | File mapping rules (objects with `from`, `to`, `type`) |
 | `moduleMapContent`   | string          | Custom module map content                          |
 | `publicHeaders`      | boolean         | Whether headers are public (default: `true`)       |
-| `vfsOverlayPath`     | string          | Path to VFS overlay file (framework targets only)  |
 
 #### Framework Target Type
 
@@ -557,10 +540,6 @@ The Ruby code in `packages/expo-modules-autolinking/scripts/ios/` handles all Co
 
 This means **most podspecs don't need manual modification** to support precompiled modules.
 
-#### Inline Patching (expo-modules-core only)
-
-`ExpoModulesCore.podspec` calls `try_link_with_prebuilt_xcframework(spec)` directly, which sets `spec.source`, `vendored_frameworks`, `prepare_command`, and script phases inline.
-
 ### Key Functions
 
 | Function | Purpose |
@@ -571,14 +550,14 @@ This means **most podspecs don't need manual modification** to support precompil
 | `pod_registration_options(...)` | Returns `:podspec` options for prebuilt pods, `:path` for source |
 | `register_external_pods(...)` | Registers 3rd-party prebuilt pods BEFORE RN CLI's `use_native_modules!` |
 | `patch_spec_for_prebuilt(spec)` | Auto-patches specs on-the-fly (called from sandbox.rb) |
-| `try_link_with_prebuilt_xcframework(spec)` | Inline spec patching (used by ExpoModulesCore) |
+| `try_link_with_prebuilt_xcframework(spec)` | Inline spec patching from a podspec |
 | `perform_pre_install(installer)` | Downgrades `USE_FRAMEWORKS` for incompatible pods |
 | `perform_post_install(installer)` | Runs all post-install configuration steps |
 | `ensure_artifacts(installer)` | Copies flavor tarballs into `Pods/<Pod>/artifacts/` |
 | `configure_header_search_paths(installer)` | Ensures ExpoModulesJSI headers are found |
 | `configure_codegen_for_prebuilt_modules(installer)` | Excludes prebuilt modules from ReactCodegen |
 | `stub_bundled_pod_targets(installer)` | Removes implementation sources from bundled pod compile phases |
-| `configure_use_frameworks(installer)` | Patches modulemaps and injects flags for `use_frameworks!` builds |
+| `ensure_modular_react_header_flags(installer)` | Extends React Native's prebuilt module-map coverage to the Expo pods |
 | `disable_swift_interface_verification(installer)` | Adds `SWIFT_EMIT_MODULE_INTERFACE = NO` when prebuilt React active |
 | `clear_cocoapods_cache` | Removes stale CocoaPods cache entries for prebuilt pods |
 

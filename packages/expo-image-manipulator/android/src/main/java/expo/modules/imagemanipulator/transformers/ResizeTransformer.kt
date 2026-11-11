@@ -19,7 +19,11 @@ class ResizeTransformer(
 
     if (resizeOptions.height != null) {
       targetHeight = resizeOptions.height
-      targetWidth = if (targetWidth == 0) (resizeOptions.height * imageRatio).toInt() else targetWidth
+      targetWidth = if (targetWidth == 0) {
+        (resizeOptions.height * imageRatio).toInt()
+      } else {
+        targetWidth
+      }
     }
 
     return Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true)

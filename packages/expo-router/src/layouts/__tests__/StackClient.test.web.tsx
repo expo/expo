@@ -51,4 +51,20 @@ describe('StackClient on web', () => {
     expect(screen.getByTestId('index')).toBeTruthy();
     expect(getRouteInfoFromState(navigationRef.getRootState()).pathname).toBe('/');
   });
+
+  it('hides a preloaded route until it is focused', () => {
+    process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
+    const context = getMockContext({
+      _layout: () => <Stack />,
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+    render(<ExpoRoot context={context} location="/" />);
+
+    act(() => router.prefetch('/second'));
+    expect(screen.getByTestId('second').closest('[style*="display: none"]')).not.toBeNull();
+
+    act(() => router.push('/second'));
+    expect(screen.getByTestId('second').closest('[style*="display: none"]')).toBeNull();
+  });
 });

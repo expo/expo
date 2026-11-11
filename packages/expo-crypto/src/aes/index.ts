@@ -7,7 +7,7 @@ import type {
   BinaryInput,
   AESSealedDataConfig,
 } from './aes.types';
-import { uint8ArrayToBase64 } from './web-utils';
+import { base64ToUintArray, uint8ArrayToBase64 } from './web-utils';
 
 export * from './aes.types';
 
@@ -54,7 +54,9 @@ export class AESSealedData extends AesCryptoModule.SealedData {
     if (!tag || typeof tag === 'number') {
       return AesCryptoModule.SealedData.fromParts(processedIV, processedCiphertext, tag as number);
     } else {
-      const processedTag = convertBinaryInput(tag);
+      // The native modules take the tag as bytes or a length, not as a base64 string.
+      const processedTag =
+        typeof tag === 'string' ? base64ToUintArray(tag) : convertBinaryInput(tag);
       return AesCryptoModule.SealedData.fromParts(processedIV, processedCiphertext, processedTag);
     }
   }

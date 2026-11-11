@@ -19,7 +19,7 @@ internal struct DynamicSwiftUIViewType<ViewType: ExpoSwiftUIView>: AnyDynamicTyp
   /**
    Resolves the React component instance to the native SwiftUI view via its tag.
    */
-  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+  func cast(jsValue: borrowing JavaScriptValue, appContext: AppContext) throws -> Any {
     guard let viewTag = findViewTag(jsValue) else {
       throw InvalidViewTagException()
     }
@@ -69,7 +69,7 @@ internal struct DynamicSwiftUIViewType<ViewType: ExpoSwiftUIView>: AnyDynamicTyp
   }
 }
 
-private func findViewTag(_ value: JavaScriptValue) -> Int? {
+private func findViewTag(_ value: borrowing JavaScriptValue) -> Int? {
   if value.isNumber() {
     return value.getInt()
   }

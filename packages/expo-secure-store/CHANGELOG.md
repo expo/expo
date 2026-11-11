@@ -1,8 +1,18 @@
 # Changelog
 
-## Unpublished
+## 58.0.2
 
-### 🛠 Breaking changes
+### Patch Changes
+
+- Bump precompiled artifacts due to ABI breakage in expo-modules-jsi@58.0.6. ([#50881](https://github.com/expo/expo/pull/50881) by [@kitten](https://github.com/kitten))
+
+## 58.0.1
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.0 — 2026-09-10
 
 ### 🎉 New features
 
@@ -13,8 +23,6 @@
 - [Android] Fix `deleteItemAsync` resolving when a retried delete left the value on disk. ([#49151](https://github.com/expo/expo/pull/49151) by [@vonovak](https://github.com/vonovak))
 - [iOS] Reject `deleteItemAsync` when the keychain refuses the delete, instead of resolving as if the item was removed. ([#49146](https://github.com/expo/expo/pull/49146) by [@vonovak](https://github.com/vonovak))
 - [iOS] Apply `keychainAccessible` when overwriting an existing item, instead of silently keeping the accessibility it was first stored with. ([#49128](https://github.com/expo/expo/pull/49128) by [@JoRo-Code](https://github.com/JoRo-Code) and [@behenate](https://github.com/behenate))
-
-### 💡 Others
 
 ## 57.0.1 - 2026-07-15
 

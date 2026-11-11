@@ -54,7 +54,7 @@ struct DevServersView: View {
           if viewModel.hiddenDevServerCount == 0 && viewModel.permissionStatus != .denied {
             HStack {
               Text("Searching for development servers...")
-                .foregroundColor(.secondary)
+                .foregroundStyle(Color.secondary)
               Spacer()
               ProgressView()
                 .controlSize(.small)
@@ -63,7 +63,7 @@ struct DevServersView: View {
             Divider()
           }
         } else {
-          ForEach(viewModel.devServers, id: \.self) { server in
+          ForEach(viewModel.devServers, id: \.url) { server in
             DevServerRow(server: server) {
               viewModel.openApp(url: server.url)
             }
@@ -100,7 +100,7 @@ struct DevServersView: View {
             .font(.system(size: 14))
             #endif
           Spacer()
-          if viewModel.isLoadingServer && viewModel.devServers.isEmpty {
+          if viewModel.loadingServerURL != nil && viewModel.devServers.isEmpty {
             ProgressView()
           }
         }
@@ -114,9 +114,9 @@ struct DevServersView: View {
           .submitLabel(.go)
         #if !os(macOS)
           .keyboardType(.URL)
-          .autocapitalization(.none)
+          .textInputAutocapitalization(.never)
         #endif
-          .disableAutocorrection(true)
+          .autocorrectionDisabled()
           .toolbar {
             #if os(tvOS)
             ToolbarItemGroup(placement: .automatic) {
@@ -142,7 +142,7 @@ struct DevServersView: View {
           }
           .padding(.horizontal, 16)
           .padding(.vertical, 12)
-          .foregroundColor(.primary)
+          .foregroundStyle(Color.primary)
         #if !os(tvOS)
           .overlay(
             RoundedRectangle(cornerRadius: 5)
@@ -168,10 +168,10 @@ struct DevServersView: View {
     } label: {
       HStack {
         Image(systemName: "doc.fill")
-          .foregroundColor(.blue)
+          .foregroundStyle(Color.blue)
           .frame(width: 12)
         Text("Load embedded bundle")
-          .foregroundColor(.primary)
+          .foregroundStyle(Color.primary)
         Spacer()
         Group {
           if viewModel.isLoadingLocalBundle {
@@ -180,7 +180,7 @@ struct DevServersView: View {
           } else {
             Image(systemName: "chevron.right")
               .font(.caption)
-              .foregroundColor(.secondary)
+              .foregroundStyle(Color.secondary)
           }
         }
         .frame(width: 20, height: 20)
@@ -196,7 +196,7 @@ struct DevServersView: View {
     HStack {
       Text("development servers".uppercased())
         .font(.caption)
-        .foregroundColor(.primary.opacity(0.6))
+        .foregroundStyle(Color.primary.opacity(0.6))
 
       Spacer()
 
@@ -205,7 +205,7 @@ struct DevServersView: View {
       } label: {
         Text("info".uppercased())
           #if os(tvOS)
-          .foregroundColor(.primary)
+          .foregroundStyle(Color.primary)
           .font(.system(size: 24))
           #else
           .font(.system(size: 12))
@@ -221,10 +221,10 @@ struct DevServersView: View {
     } label: {
       Text("Connect")
         .font(.headline)
-        .foregroundColor(.white)
+        .foregroundStyle(Color.expoSystemBackground)
         .frame(maxWidth: .infinity)
         .padding()
-        .background(urlText.isEmpty ? Color.gray : Color.black)
+        .background(urlText.isEmpty ? Color.gray : Color.primary)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
     .disabled(urlText.isEmpty)
@@ -243,10 +243,10 @@ struct HiddenDevServersNotice: View {
   var body: some View {
     HStack(spacing: 6) {
       Image(systemName: "line.3.horizontal.decrease.circle")
-        .foregroundColor(.secondary)
+        .foregroundStyle(Color.secondary)
       Text(message)
         .font(.system(size: 13))
-        .foregroundColor(.secondary)
+        .foregroundStyle(Color.secondary)
       Spacer()
     }
     .padding(.horizontal)
@@ -271,17 +271,17 @@ struct DevServerRow: View {
 
         if server.description == server.url {
           Text(server.description)
-            .foregroundColor(.primary)
+            .foregroundStyle(Color.primary)
             .lineLimit(1)
         } else {
           VStack(alignment: .leading) {
             Text(server.description)
               .font(.headline)
-              .foregroundColor(.primary)
+              .foregroundStyle(Color.primary)
               .lineLimit(1)
             Text(server.url)
               .font(.caption)
-              .foregroundColor(.secondary)
+              .foregroundStyle(Color.secondary)
               .lineLimit(1)
           }
         }
@@ -289,13 +289,13 @@ struct DevServerRow: View {
         Spacer()
 
         Group {
-          if viewModel.isLoadingServer {
+          if viewModel.loadingServerURL == server.url {
             ProgressView()
               .controlSize(.small)
           } else {
             Image(systemName: "chevron.right")
               .font(.caption)
-              .foregroundColor(.secondary)
+              .foregroundStyle(Color.secondary)
           }
         }
         .frame(width: 20, height: 20)

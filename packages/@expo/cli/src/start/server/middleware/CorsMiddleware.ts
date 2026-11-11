@@ -37,7 +37,7 @@ export const _isLocalHostname = (hostname: string) => {
   }
   if (maybeIp === '::1') {
     return true;
-  } else if (/^127(?:.\d+){3}$/.test(maybeIp)) {
+  } else if (/^127(?:\.\d+){3}$/.test(maybeIp)) {
     return maybeIp.split('.').every((part) => {
       const num = parseInt(part, 10);
       return num >= 0 && num <= 255;

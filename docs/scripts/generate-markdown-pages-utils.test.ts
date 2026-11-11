@@ -515,11 +515,11 @@ describe('convertHtmlToMarkdown', () => {
     </main>`;
     const md = convertHtmlToMarkdown(html);
 
-    expect(md).toContain('[CLI](/more/expo-cli.md#install)');
+    expect(md).toContain('[CLI](https://docs.expo.dev/more/expo-cli.md#install)');
     expect(md).toContain(
       '[Contacts](https://docs.expo.dev/versions/v56.0.0/sdk/contacts.md#contactgetalloptions)'
     );
-    expect(md).toContain('[llms](/llms.txt)');
+    expect(md).toContain('[llms](https://docs.expo.dev/llms.txt)');
     expect(md).toContain('[External](https://expo.dev)');
     expect(md).toContain('[Inside](/more/expo-cli#install)');
   });
@@ -574,7 +574,7 @@ describe('card links', () => {
       </a>
     </main>`;
     const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('[My Guide](/guide.md)');
+    expect(md).toContain('[My Guide](https://docs.expo.dev/guide.md)');
     expect(md).toContain('Guide description.');
   });
 });
@@ -951,7 +951,9 @@ describe('convertHtmlToMarkdown with real page structure', () => {
     expect(md).toContain('[Node.js (LTS)](https://nodejs.org)');
     expect(md).toContain('```sh\nnpx create-expo-app@latest\n```');
     expect(md).toContain('## Next step');
-    expect(md).toContain('[development environment](/get-started/set-up-your-environment.md)');
+    expect(md).toContain(
+      '[development environment](https://docs.expo.dev/get-started/set-up-your-environment.md)'
+    );
 
     // Non-content is removed
     expect(md).not.toContain('Home');
@@ -1302,6 +1304,20 @@ describe('API platform tags', () => {
     ].join('');
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('Supported platforms: Android, iOS');
+  });
+});
+
+describe('Package version', () => {
+  it('converts package-version to a recommended version line', () => {
+    const html = [
+      '<main><h1>Camera</h1>',
+      '<div data-md="package-version" data-md-version="~58.0.3">',
+      '<svg/>Recommended version:<div><span>~58.0.3</span></div><button><svg/></button>',
+      '</div>',
+      '<p>Camera API.</p></main>',
+    ].join('');
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('Recommended version: ~58.0.3');
   });
 });
 
@@ -1739,5 +1755,64 @@ describe('extractFrontmatter', () => {
   it('returns null when all fields are UI-only', () => {
     const result = extractFrontmatter(path.join(tmpDir, 'only-ui-fields.mdx'));
     expect(result).toBeNull();
+  });
+});
+
+describe('agent prompt blocks', () => {
+  function fence(text: string) {
+    return `<div class="code-block-wrapper"><pre data-md-lang="text" data-text="true"><div><code>${text}</code></div></pre></div>`;
+  }
+
+  function agentPromptHtml(body: string) {
+    return [
+      '<main>',
+      '<h1>Get started with EAS Update</h1>',
+      '<div data-testid="agent-prompt">',
+      '<div><svg viewBox="0 0 24 24"><path d="M0 0"/></svg><div>',
+      '<h2 data-heading="true">Set up EAS Update with an AI agent</h2>',
+      '<p>Paste this into an agent.</p>',
+      '</div><div><button>Copy prompt</button></div></div>',
+      '<div><button data-md="skip" aria-expanded="false">Show prompt</button><div hidden="">',
+      body,
+      '</div></div>',
+      '</div>',
+      '<p>EAS Update ships over-the-air updates.</p>',
+      '</main>',
+    ].join('');
+  }
+
+  it('renders a single prompt as a section with one code block', () => {
+    const md = convertHtmlToMarkdown(
+      agentPromptHtml(fence('Install expo-updates.\n\nRun `eas update:configure`.'))
+    );
+    expect(md).toContain('## Set up EAS Update with an AI agent');
+    expect(md).toContain('Paste this into an agent.');
+    expect(md).toContain('```text\nInstall expo-updates.\n\nRun `eas update:configure`.\n```');
+    expect(md).not.toContain('Show prompt');
+    expect(md).not.toContain('Copy prompt');
+    expect(md).not.toContain('###');
+    expect(md).toContain('EAS Update ships over-the-air updates.');
+  });
+
+  it('keeps every option under its own heading, hidden ones included', () => {
+    const md = convertHtmlToMarkdown(
+      agentPromptHtml(
+        [
+          '<section data-agent-prompt-option="build-locally">',
+          '<h3 class="sr-only">Build locally</h3>',
+          fence('Run `npx expo run:ios`.'),
+          '</section>',
+          '<section data-agent-prompt-option="build-with-eas" hidden="">',
+          '<h3 class="sr-only">Build with EAS</h3>',
+          fence('Run `eas build`.'),
+          '</section>',
+        ].join('')
+      )
+    );
+    expect(md).toContain('### Build locally');
+    expect(md).toContain('### Build with EAS');
+    expect(md).toContain('Run `npx expo run:ios`.');
+    expect(md).toContain('Run `eas build`.');
+    expect(md.indexOf('### Build locally')).toBeLessThan(md.indexOf('Run `npx expo run:ios`.'));
   });
 });

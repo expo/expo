@@ -27,6 +27,10 @@ internal class ExpoVideoCacheKeyFactory(
     } else {
       CacheVariantIndex.storageKey(context, url, requestHeaders)
     }
-    return if (variantKey.isEmpty()) url else "$url#$variantKey"
+    return if (variantKey.isEmpty()) {
+      url
+    } else {
+      "$url#$variantKey"
+    }
   }
 }

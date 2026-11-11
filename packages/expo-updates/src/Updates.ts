@@ -38,7 +38,7 @@ export const updateId: string | null =
     : null;
 
 /**
- * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
+ * The channel name of the current build, if configured for use with Expo Update. `null` otherwise.
  *
  * Expo Go and development builds are not set to a specific channel and can run any updates compatible with their native runtime. Therefore, this value will always be `null` when running an update on Expo Go or a development build.
  */
@@ -300,10 +300,7 @@ export async function readLogEntriesAsync(maxAge: number = 3600000): Promise<Upd
 }
 
 /**
- * Clears existing `expo-updates` log entries.
- *
- * > For now, this operation does nothing on the client.  Once log persistence has been
- * > implemented, this operation will actually remove existing logs.
+ * Removes every `expo-updates` log entry from the log on the device.
  *
  * @return A promise that fulfills if the clear operation was successful.
  *

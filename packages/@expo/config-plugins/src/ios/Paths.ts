@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from 'fs';
-import { globSync } from 'glob';
 import * as path from 'path';
+import { globSync } from 'tinyglobby';
 
 import { UnexpectedError } from '../utils/errors';
 import { withSortedGlobResult } from '../utils/glob';
@@ -101,29 +101,11 @@ export function getAppDelegateObjcHeaderFilePath(projectRoot: string): string {
 }
 
 export function getPodfilePath(projectRoot: string): string {
-  const [using, ...extra] = withSortedGlobResult(
-    globSync('ios/Podfile', {
-      absolute: true,
-      cwd: projectRoot,
-      ignore: ignoredPaths,
-    })
-  );
-
-  if (!using) {
+  const podfilePath = path.resolve(projectRoot, 'ios', 'Podfile');
+  if (!existsSync(podfilePath)) {
     throw new UnexpectedError(`Could not locate a valid Podfile at root: "${projectRoot}"`);
   }
-
-  if (extra.length) {
-    warnMultipleFiles({
-      tag: 'podfile',
-      fileName: 'Podfile',
-      projectRoot,
-      using,
-      extra,
-    });
-  }
-
-  return using;
+  return podfilePath;
 }
 
 function getLanguage(filePath: string): AppleLanguage {
@@ -180,9 +162,13 @@ export function findSchemeNames(projectRoot: string): string[] {
 export function getAllXcodeProjectPaths(projectRoot: string): string[] {
   const iosFolder = 'ios';
   const pbxprojPaths = withSortedGlobResult(
-    globSync('ios/**/*.xcodeproj', { cwd: projectRoot, ignore: ignoredPaths })
-      // Drop leading `/` from glob results to mimic glob@<9 behavior
-      .map((filePath) => filePath.replace(/^\//, ''))
+    globSync('ios/**/*.xcodeproj', {
+      onlyFiles: false,
+      expandDirectories: false,
+      cwd: projectRoot,
+      ignore: ignoredPaths,
+    })
+      .map((filePath) => filePath.replace(/\/$/, ''))
       .filter(
         (project) => !/test|example|sample/i.test(project) || path.dirname(project) === iosFolder
       )

@@ -67,6 +67,43 @@ struct CrashReportSymbolicatorTests {
     }
   }
 
+  @Suite("isSymbolMatchPlausible")
+  struct SymbolMatchDistanceTests {
+    @Test
+    func `accepts an exact hit on the symbol's start`() {
+      #expect(CrashReportSymbolicator.isSymbolMatchPlausible(address: 0x1000, symbolStart: 0x1000))
+    }
+
+    @Test
+    func `accepts an address inside a plausible function body`() {
+      #expect(CrashReportSymbolicator.isSymbolMatchPlausible(address: 0x1000 + 512, symbolStart: 0x1000))
+    }
+
+    @Test
+    func `accepts an address exactly at the limit`() {
+      let limit = CrashReportSymbolicator.maxSymbolMatchDistance
+      #expect(CrashReportSymbolicator.isSymbolMatchPlausible(address: 0x1000 + limit, symbolStart: 0x1000))
+    }
+
+    @Test
+    func `rejects an address one byte past the limit`() {
+      let limit = CrashReportSymbolicator.maxSymbolMatchDistance
+      #expect(!CrashReportSymbolicator.isSymbolMatchPlausible(address: 0x1000 + limit + 1, symbolStart: 0x1000))
+    }
+
+    @Test
+    func `rejects a match from across a symbol void`() {
+      // The shape that produced wrong names: a stripped binary leaves the nearest symbol hundreds
+      // of kilobytes below the frame we asked about.
+      #expect(!CrashReportSymbolicator.isSymbolMatchPlausible(address: 0x1000 + 770_160, symbolStart: 0x1000))
+    }
+
+    @Test
+    func `rejects a symbol that starts above the address`() {
+      #expect(!CrashReportSymbolicator.isSymbolMatchPlausible(address: 0x1000, symbolStart: 0x2000))
+    }
+  }
+
   @Suite("symbolicate")
   struct SymbolicateTests {
     @Test

@@ -1,9 +1,20 @@
 {
   "name": "react-native-view-shot",
-  "version": "4.0.3",
+  "version": "6.1.1",
   "description": "Capture a React Native view to an image",
-  "main": "src/index.js",
-  "types": "src/index.d.ts",
+  "type": "module",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "react-native": "src/index.tsx",
+  "exports": {
+    ".": {
+      "react-native": "./src/index.tsx",
+      "types": "./lib/index.d.ts",
+      "import": "./lib/index.js",
+      "default": "./lib/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "keywords": [
     "react-native",
     "screenshot",
@@ -19,17 +30,55 @@
     "type": "git",
     "url": "https://github.com/gre/react-native-view-shot.git"
   },
-  "dependencies": {
-    "html2canvas": "^1.4.1"
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint .",
+    "lint:ci": "eslint . --max-warnings 0",
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json,md}\"",
+    "type-check": "tsc --noEmit",
+    "build": "tsc",
+    "prepare": "npm run build"
   },
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+    "react": ">=18.0.0",
+    "react-native": ">=0.80.0",
+    "html2canvas-pro": "^2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react-native": {
+      "optional": true
+    },
+    "html2canvas-pro": {
+      "optional": true
+    }
   },
   "devDependencies": {
-    "flow-bin": "^0.246.0",
-    "html-webpack-plugin": "^5.5.1",
-    "react-native-windows": "^0.63.16"
+    "@babel/core": "^8.0.6",
+    "@babel/preset-env": "^8.0.6",
+    "@babel/preset-react": "^8.0.1",
+    "@babel/preset-typescript": "^8.0.1",
+    "@eslint/js": "^10",
+    "@types/jest": "^30.0.0",
+    "@types/react": "^19.1.1",
+    "@types/react-test-renderer": "^19.1.0",
+    "babel-jest": "^30.2.0",
+    "eslint": "^10.11.0",
+    "eslint-config-prettier": "^10.1.8",
+    "html-webpack-plugin": "^5.6.0",
+    "html2canvas-pro": "^2.4.4",
+    "jest": "^30.3.0",
+    "jest-environment-jsdom": "^30.3.0",
+    "prettier": "^3.4.2",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-native": "^0.84.1",
+    "react-test-renderer": "^19.2.4",
+    "typescript": "^7.0.2"
+  },
+  "engines": {
+    "node": ">=20.19.4",
+    "npm": ">=10"
   },
   "codegenConfig": {
     "name": "rnviewshot",

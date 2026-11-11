@@ -31,9 +31,18 @@ jest.mock('react-native-screens', () => {
   };
 });
 
-const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
+// Mocked so a test can replace `isScreens5`; everything else stays real.
+jest.mock('../../optional-libraries/react-native-screens', () => ({
+  ...jest.requireActual('../../optional-libraries/react-native-screens'),
+}));
 
-it('can pass props via unstable_nativeProps', () => {
+// `Tabs` is mocked by `jest.mock` above; cast to read `.mock` with the props type.
+// `icon` and `selectedIcon` are not in `TabsScreenProps`. Tests check that they are not passed at the top level.
+const TabsScreen = Tabs.Screen as jest.MockedFunction<
+  (props: TabsScreenProps & { icon?: unknown; selectedIcon?: unknown }) => React.ReactNode
+>;
+
+it('can pass props via unstable_nativeProps', async () => {
   const indexOptions = {
     title: 'Test Title',
     iconColor: 'blue',
@@ -42,7 +51,7 @@ it('can pass props via unstable_nativeProps', () => {
     title: 'Second Title',
     iconColor: 'red',
   };
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" unstable_nativeProps={{ ...indexOptions }} />
@@ -56,16 +65,16 @@ it('can pass props via unstable_nativeProps', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(4);
-  expect(TabsScreen.mock.calls[2][0]).toMatchObject({
+  expect(TabsScreen.mock.calls[2]![0]).toMatchObject({
     ...indexOptions,
   });
-  expect(TabsScreen.mock.calls[3][0]).toMatchObject({
+  expect(TabsScreen.mock.calls[3]![0]).toMatchObject({
     ...secondOptions,
   });
 });
 
-it('can pass options via elements', () => {
-  renderRouter({
+it('can pass options via elements', async () => {
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index">
@@ -78,7 +87,7 @@ it('can pass options via elements', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(1);
-  expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+  expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
     ios: {
       icon: { type: 'sfSymbol', name: 'homepod.2.fill' },
       // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
@@ -87,8 +96,8 @@ it('can pass options via elements', () => {
   } as TabsScreenProps);
 });
 
-it('when no options are passed, default ones are used', () => {
-  renderRouter({
+it('when no options are passed, default ones are used', async () => {
+  await renderRouter({
     _layout: () => (
       <NativeTabs>
         <NativeTabs.Trigger name="index" />
@@ -99,7 +108,7 @@ it('when no options are passed, default ones are used', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(1);
-  expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+  expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
     hidden: false,
     specialEffects: {},
     screenKey: 'index',
@@ -110,8 +119,8 @@ it('when no options are passed, default ones are used', () => {
 describe('disabled', () => {
   it.each([true, false] as const)(
     'forwards disabled=%p to Tabs.Screen as preventNativeSelection',
-    (value) => {
-      renderRouter({
+    async (value) => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" disabled={value} />
@@ -128,8 +137,8 @@ describe('disabled', () => {
     }
   );
 
-  it('does not forward preventNativeSelection when disabled is not set', () => {
-    renderRouter({
+  it('does not forward preventNativeSelection when disabled is not set', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -143,8 +152,8 @@ describe('disabled', () => {
     expect(TabsScreen.mock.calls.at(-1)![0].preventNativeSelection).toBeUndefined();
   });
 
-  it('lets unstable_nativeProps.preventNativeSelection override disabled', () => {
-    renderRouter({
+  it('lets unstable_nativeProps.preventNativeSelection override disabled', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger
@@ -163,9 +172,72 @@ describe('disabled', () => {
   });
 });
 
+describe('search role', () => {
+  it('forwards role="search" as a search tab with search activation on', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" role="search" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalled();
+    expect(TabsScreen.mock.calls.at(-1)![0].ios).toMatchObject({
+      systemItem: 'search',
+      role: 'search',
+      automaticallyActivatesSearch: true,
+    });
+  });
+
+  it('turns search activation off when the layout trigger sets disableAutomaticSearchActivation', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" role="search" disableAutomaticSearchActivation />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalled();
+    expect(TabsScreen.mock.calls.at(-1)![0].ios).toMatchObject({
+      systemItem: 'search',
+      role: 'search',
+      automaticallyActivatesSearch: false,
+    });
+  });
+
+  it('turns search activation off when the screen trigger sets disableAutomaticSearchActivation', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" role="search" />
+        </NativeTabs>
+      ),
+      index: () => (
+        <View testID="index">
+          <NativeTabs.Trigger disableAutomaticSearchActivation />
+        </View>
+      ),
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalled();
+    expect(TabsScreen.mock.calls.at(-1)![0].ios).toMatchObject({
+      systemItem: 'search',
+      role: 'search',
+      automaticallyActivatesSearch: false,
+    });
+  });
+});
+
 describe('testID and accessibilityLabel', () => {
-  it('forwards testID and accessibilityLabel to Tabs.Screen tab bar item props', () => {
-    renderRouter({
+  it('forwards testID and accessibilityLabel to Tabs.Screen tab bar item props', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" testID="home-tab" accessibilityLabel="Home tab" />
@@ -184,8 +256,8 @@ describe('testID and accessibilityLabel', () => {
 });
 
 describe('Icons', () => {
-  it('when using Icon with sf prop, it is passed as sfSymbolName', () => {
-    renderRouter({
+  it('when using Icon with sf prop, it is passed as sfSymbolName', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -198,13 +270,13 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       ios: { icon: { type: 'sfSymbol', name: 'homepod.2.fill' } },
     } as TabsScreenProps);
   });
 
-  it('when using Icon with sf selected prop, it is passed as selected icon sfSymbolName', () => {
-    renderRouter({
+  it('when using Icon with sf selected prop, it is passed as selected icon sfSymbolName', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -217,13 +289,13 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       ios: { selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' } },
     } as TabsScreenProps);
   });
 
-  it('when using Icon with sf object, values are passed correctly', () => {
-    renderRouter({
+  it('when using Icon with sf object, values are passed correctly', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -236,7 +308,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       ios: {
         icon: { type: 'sfSymbol', name: 'stairs' },
         selectedIcon: { type: 'sfSymbol', name: 'star.bubble' },
@@ -244,8 +316,8 @@ describe('Icons', () => {
     } as TabsScreenProps);
   });
 
-  it('when using Icon drawable on iOS, no value is passed', () => {
-    renderRouter({
+  it('when using Icon drawable on iOS, no value is passed', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -258,12 +330,13 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].icon).toBeUndefined();
-    expect(TabsScreen.mock.calls[0][0].selectedIcon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0]![0].ios).toBeDefined();
+    expect(TabsScreen.mock.calls[0]![0].ios?.icon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0]![0].ios?.selectedIcon).toBeUndefined();
   });
 
-  it('uses last Icon sf value when multiple are provided', () => {
-    renderRouter({
+  it('uses last Icon sf value when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -277,7 +350,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       ios: {
         icon: { type: 'sfSymbol', name: 'homepod.2.fill' },
         // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
@@ -286,8 +359,8 @@ describe('Icons', () => {
     } as TabsScreenProps);
   });
 
-  it('uses last Icon sf selected when multiple are provided', () => {
-    renderRouter({
+  it('uses last Icon sf selected when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -301,13 +374,13 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       ios: { selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' } },
     } as TabsScreenProps);
   });
 
-  it('uses last Icon sf for each type when multiple are provided', () => {
-    renderRouter({
+  it('uses last Icon sf for each type when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -324,7 +397,7 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       ios: {
         icon: { type: 'sfSymbol', name: '0.circle.ar' },
         // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
@@ -333,8 +406,8 @@ describe('Icons', () => {
     } as TabsScreenProps);
   });
 
-  it('uses last Icon sf for each type when multiple are provided', () => {
-    renderRouter({
+  it('uses last Icon sf for each type when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -351,13 +424,13 @@ describe('Icons', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       ios: { selectedIcon: { type: 'sfSymbol', name: '0.circle.ar' }, icon: undefined },
     } as TabsScreenProps);
   });
 
-  it('when selectedIconColor is provided, it is passed to screen', () => {
-    renderRouter({
+  it('when selectedIconColor is provided, it is passed to screen', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs iconColor={{ selected: 'red' }}>
           <NativeTabs.Trigger name="index" />
@@ -367,7 +440,7 @@ describe('Icons', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       ios: {
         standardAppearance: {
           stacked: {
@@ -380,8 +453,8 @@ describe('Icons', () => {
     } as Partial<TabsScreenProps>);
   });
 
-  it('when selectedIconColor is provided in container and tab, the tab should use the tab color', () => {
-    renderRouter({
+  it('when selectedIconColor is provided in container and tab, the tab should use the tab color', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs iconColor={{ selected: 'red' }}>
           <NativeTabs.Trigger name="index">
@@ -395,7 +468,7 @@ describe('Icons', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[2][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[2]![0]).toMatchObject({
       ios: {
         standardAppearance: {
           stacked: {
@@ -406,7 +479,7 @@ describe('Icons', () => {
         },
       },
     } as Partial<TabsScreenProps>);
-    expect(TabsScreen.mock.calls[3][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[3]![0]).toMatchObject({
       ios: {
         standardAppearance: {
           stacked: {
@@ -441,17 +514,29 @@ describe('Icons', () => {
     },
     {
       src: { uri: 'some-uri' },
-      expectedIcon: { type: 'imageSource', imageSource: { uri: 'some-uri' } },
+      expectedIcon: {
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'original',
+      },
     },
     {
       src: { uri: 'some-uri' },
       drawable: 'ic_some_drawable',
-      expectedIcon: { type: 'imageSource', imageSource: { uri: 'some-uri' } },
+      expectedIcon: {
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'original',
+      },
     },
     {
       src: { uri: 'some-uri' },
       md: 'home',
-      expectedIcon: { type: 'imageSource', imageSource: { uri: 'some-uri' } },
+      expectedIcon: {
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'original',
+      },
     },
   ] as (DrawableIcon &
     MaterialIcon &
@@ -460,8 +545,8 @@ describe('Icons', () => {
       expectedIcon: NonNullable<NonNullable<TabsScreenProps['ios']>['icon']> | undefined;
     })[])(
     'For <Icon sf="$sf" src="$src" drawable="$drawable">, icon is $expectedIcon',
-    ({ sf, src, drawable, md, expectedIcon }) => {
-      renderRouter({
+    async ({ sf, src, drawable, md, expectedIcon }) => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
@@ -474,88 +559,332 @@ describe('Icons', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(TabsScreen).toHaveBeenCalledTimes(1);
-      expect(TabsScreen.mock.calls[0][0].ios?.icon).toEqual(expectedIcon);
+      expect(TabsScreen.mock.calls[0]![0].ios?.icon).toEqual(expectedIcon);
     }
   );
 
-  // React Native Screens throws when `icon` and `selectedIcon` have different types, so both
-  // states have to use the same rendering mode — the one resolved for the normal state.
   describe('rendering mode', () => {
-    let warnSpy: jest.SpyInstance;
+    it('renders an image as a template in a state with an icon color and keeps its colors in a state without one', async () => {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs iconColor={{ selected: 'red' }}>
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon src={{ uri: 'some-uri' }} />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
 
-    beforeEach(() => {
-      warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
+      expect(TabsScreen.mock.calls[0]![0].ios?.icon).toEqual({
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'original',
+      });
+      expect(TabsScreen.mock.calls[0]![0].ios?.selectedIcon).toEqual({
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'template',
+      });
     });
 
-    afterEach(() => {
-      warnSpy.mockRestore();
+    it('renders an image as a template in both states when iconColor is set', async () => {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs iconColor="red">
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon src={{ uri: 'some-uri' }} />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
+      expect(TabsScreen.mock.calls[0]![0].ios?.icon).toEqual({
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'template',
+      });
+      expect(TabsScreen.mock.calls[0]![0].ios?.selectedIcon).toEqual({
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'template',
+      });
     });
 
-    it.each([
-      {
-        name: 'only selectedIconColor is set',
-        iconColor: { selected: 'red' } as const,
-        expectedType: 'imageSource',
-        expectsWarning: true,
-      },
-      {
-        // `iconColor` applies to every state, so both icons agree without a warning.
-        name: 'only iconColor is set',
-        iconColor: { default: 'red' } as const,
-        expectedType: 'templateSource',
-        expectsWarning: false,
-      },
-      {
-        name: 'both icon colors are set',
-        iconColor: { default: 'blue', selected: 'red' } as const,
-        expectedType: 'templateSource',
-        expectsWarning: false,
-      },
-      {
-        name: 'no icon color is set',
-        iconColor: undefined,
-        expectedType: 'imageSource',
-        expectsWarning: false,
-      },
-    ])(
-      'icon and selectedIcon are $expectedType when $name',
-      ({ iconColor, expectedType, expectsWarning }) => {
-        renderRouter({
-          _layout: () => (
-            <NativeTabs iconColor={iconColor}>
-              <NativeTabs.Trigger name="index">
-                <NativeTabs.Trigger.Icon src={{ uri: 'some-uri' }} />
-              </NativeTabs.Trigger>
-            </NativeTabs>
-          ),
-          index: () => <View testID="index" />,
-        });
+    it('keeps the image colors in both states when no icon color is set', async () => {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon src={{ uri: 'some-uri' }} />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
 
-        expect(screen.getByTestId('index')).toBeVisible();
-        expect(TabsScreen).toHaveBeenCalledTimes(1);
-        const { icon, selectedIcon } = TabsScreen.mock.calls[0][0].ios ?? {};
-        expect(icon?.type).toBe(expectedType);
-        expect(selectedIcon?.type).toBe(expectedType);
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
+      expect(TabsScreen.mock.calls[0]![0].ios?.icon).toEqual({
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'original',
+      });
+      expect(TabsScreen.mock.calls[0]![0].ios?.selectedIcon).toEqual({
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'original',
+      });
+    });
 
-        if (expectsWarning) {
-          expect(warnSpy).toHaveBeenCalledWith(
-            expect.stringContaining(
-              'NativeTabs does not currently support rendering icons in different modes'
-            )
-          );
-          // The warning names the tab so it can be found in a layout with many triggers.
-          expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('"index" tab'));
-        } else {
-          expect(warnSpy).not.toHaveBeenCalled();
-        }
-      }
+    it('keeps the image colors when renderingMode is "original" and an icon color is set', async () => {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs iconColor="red">
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon src={{ uri: 'some-uri' }} renderingMode="original" />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
+      expect(TabsScreen.mock.calls[0]![0].ios?.icon).toEqual({
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'original',
+      });
+      expect(TabsScreen.mock.calls[0]![0].ios?.selectedIcon).toEqual({
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'original',
+      });
+    });
+
+    it('passes a different renderingMode for each image state', async () => {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon
+                src={{ default: { uri: 'default-uri' }, selected: { uri: 'selected-uri' } }}
+                renderingMode={{ default: 'template', selected: 'original' }}
+              />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
+      expect(TabsScreen.mock.calls[0]![0].ios?.icon).toEqual({
+        type: 'imageSource',
+        imageSource: { uri: 'default-uri' },
+        renderingMode: 'template',
+      });
+      expect(TabsScreen.mock.calls[0]![0].ios?.selectedIcon).toEqual({
+        type: 'imageSource',
+        imageSource: { uri: 'selected-uri' },
+        renderingMode: 'original',
+      });
+    });
+
+    it('renders one image differently in the selected state when only the selected renderingMode is set', async () => {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs iconColor="red">
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon
+                src={{ uri: 'some-uri' }}
+                renderingMode={{ selected: 'original' }}
+              />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
+      expect(TabsScreen.mock.calls[0]![0].ios?.icon).toEqual({
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'template',
+      });
+      expect(TabsScreen.mock.calls[0]![0].ios?.selectedIcon).toEqual({
+        type: 'imageSource',
+        imageSource: { uri: 'some-uri' },
+        renderingMode: 'original',
+      });
+    });
+
+    it('renders an SF Symbol in monochrome when renderingMode is "template"', async () => {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon sf="cloud.sun.fill" renderingMode="template" />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
+      expect(TabsScreen.mock.calls[0]![0].ios?.icon).toEqual({
+        type: 'sfSymbol',
+        name: 'cloud.sun.fill',
+        renderingMode: 'monochrome',
+      });
+    });
+
+    it('passes a different renderingMode for each SF Symbol state', async () => {
+      await renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index">
+              <NativeTabs.Trigger.Icon
+                sf={{ default: 'cloud.sun', selected: 'cloud.sun.fill' }}
+                renderingMode={{ default: 'template', selected: 'original' }}
+              />
+            </NativeTabs.Trigger>
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(TabsScreen).toHaveBeenCalledTimes(1);
+      expect(TabsScreen.mock.calls[0]![0].ios?.icon).toEqual({
+        type: 'sfSymbol',
+        name: 'cloud.sun',
+        renderingMode: 'monochrome',
+      });
+      expect(TabsScreen.mock.calls[0]![0].ios?.selectedIcon).toEqual({
+        type: 'sfSymbol',
+        name: 'cloud.sun.fill',
+        renderingMode: 'original',
+      });
+    });
+  });
+
+  it('when using Icon xcasset, it is passed as an asset catalog icon', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon
+              xcasset={{ default: 'home-outline', selected: 'home-filled' }}
+            />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
+      ios: {
+        icon: { type: 'xcasset', name: 'home-outline' },
+        selectedIcon: { type: 'xcasset', name: 'home-filled' },
+      },
+    } as TabsScreenProps);
+  });
+
+  it('when using Icon xcasset with an icon color, it stays an asset catalog icon', async () => {
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs iconColor="red">
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon xcasset="home-outline" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
+      ios: {
+        icon: { type: 'xcasset', name: 'home-outline' },
+        selectedIcon: { type: 'xcasset', name: 'home-outline' },
+      },
+    } as TabsScreenProps);
+  });
+
+  it('warns when using Icon xcasset together with renderingMode', async () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon xcasset="home-outline" renderingMode="template" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('`renderingMode` has no effect on `xcasset` icons')
     );
+
+    warnSpy.mockRestore();
+  });
+
+  it('when using Icon xcasset with react-native-screens 5, it does not pass the icon and warns', async () => {
+    const isScreens5Replacement = jest.replaceProperty(
+      jest.requireMock<typeof import('../../optional-libraries/react-native-screens')>(
+        '../../optional-libraries/react-native-screens'
+      ),
+      'isScreens5',
+      true
+    );
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    await renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon
+              xcasset={{ default: 'home-outline', selected: 'home-filled' }}
+            />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0]![0].ios?.icon).toBeUndefined();
+    expect(TabsScreen.mock.calls[0]![0].ios?.selectedIcon).toBeUndefined();
+    expect(warnSpy).toHaveBeenCalledWith(
+      'The "index" tab uses an `xcasset` icon, which NativeTabs cannot show with react-native-screens 5 yet. ' +
+        'Use the `sf` or `src` prop of `NativeTabs.Trigger.Icon` instead.'
+    );
+
+    warnSpy.mockRestore();
+    isScreens5Replacement.restore();
   });
 });
 
 describe('Badge', () => {
-  it('passes badge value via Badge element', () => {
-    renderRouter({
+  it('passes badge value via Badge element', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -568,13 +897,13 @@ describe('Badge', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       badgeValue: '5',
     } as TabsScreenProps);
   });
 
-  it('passes badge value as string', () => {
-    renderRouter({
+  it('passes badge value as string', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -587,13 +916,13 @@ describe('Badge', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       badgeValue: 'New',
     } as TabsScreenProps);
   });
 
-  it('does not pass badge when Badge is not used', () => {
-    renderRouter({
+  it('does not pass badge when Badge is not used', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -604,11 +933,11 @@ describe('Badge', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0]).not.toHaveProperty('badgeValue');
+    expect(TabsScreen.mock.calls[0]![0]).not.toHaveProperty('badgeValue');
   });
 
-  it('uses last Badge value when multiple are provided', () => {
-    renderRouter({
+  it('uses last Badge value when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -623,13 +952,13 @@ describe('Badge', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       badgeValue: '3',
     } as TabsScreenProps);
   });
 
-  it('when empty Badge is used, passes space to badgeValue', () => {
-    renderRouter({
+  it('when empty Badge is used, passes space to badgeValue', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -642,11 +971,11 @@ describe('Badge', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].badgeValue).toBe(' '); // Space is used to show empty badge
+    expect(TabsScreen.mock.calls[0]![0].badgeValue).toBe(' '); // Space is used to show empty badge
   });
 
-  it('when empty Badge is used with hidden, passes undefined to badgeValue', () => {
-    renderRouter({
+  it('when empty Badge is used with hidden, passes undefined to badgeValue', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -659,13 +988,13 @@ describe('Badge', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].badgeValue).toBeUndefined();
+    expect(TabsScreen.mock.calls[0]![0].badgeValue).toBeUndefined();
   });
 });
 
 describe('Label', () => {
-  it('passes title via Label element', () => {
-    renderRouter({
+  it('passes title via Label element', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -678,13 +1007,13 @@ describe('Label', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       title: 'Custom Title',
     } as TabsScreenProps);
   });
 
-  it('when title is not set, uses the route name', () => {
-    renderRouter({
+  it('when title is not set, uses the route name', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" />
@@ -698,12 +1027,12 @@ describe('Label', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('one')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[2][0].title).toBe('index');
-    expect(TabsScreen.mock.calls[3][0].title).toBe('one');
+    expect(TabsScreen.mock.calls[2]![0].title).toBe('index');
+    expect(TabsScreen.mock.calls[3]![0].title).toBe('one');
   });
 
-  it('uses last Label value when multiple are provided', () => {
-    renderRouter({
+  it('uses last Label value when multiple are provided', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -718,13 +1047,13 @@ describe('Label', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       title: 'Last Title',
     } as TabsScreenProps);
   });
 
-  it('when empty Label is used, passes route name to title', () => {
-    renderRouter({
+  it('when empty Label is used, passes route name to title', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -737,11 +1066,11 @@ describe('Label', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].title).toBe('index'); // Route name is used as title when Label is empty
+    expect(TabsScreen.mock.calls[0]![0].title).toBe('index'); // Route name is used as title when Label is empty
   });
 
-  it('when Label with hidden is used, passes empty string to title', () => {
-    renderRouter({
+  it('when Label with hidden is used, passes empty string to title', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -754,11 +1083,11 @@ describe('Label', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0].title).toBe(''); // Route name is used as title when Label is empty
+    expect(TabsScreen.mock.calls[0]![0].title).toBe(''); // Route name is used as title when Label is empty
   });
 
-  it('when selectedLabelStyle is provided, it is passed to screen', () => {
-    renderRouter({
+  it('when selectedLabelStyle is provided, it is passed to screen', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs labelStyle={{ selected: { fontSize: 24, color: 'red' } }}>
           <NativeTabs.Trigger name="index" />
@@ -768,7 +1097,7 @@ describe('Label', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       ios: {
         standardAppearance: {
           stacked: {
@@ -782,8 +1111,8 @@ describe('Label', () => {
     } as Partial<TabsScreenProps>);
   });
 
-  it('when selectedLabelStyle is provided in container and tab, the tab should use the tab color', () => {
-    renderRouter({
+  it('when selectedLabelStyle is provided in container and tab, the tab should use the tab color', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs labelStyle={{ selected: { fontSize: 24, color: 'red' } }}>
           <NativeTabs.Trigger name="index">
@@ -797,7 +1126,7 @@ describe('Label', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[2][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[2]![0]).toMatchObject({
       ios: {
         standardAppearance: {
           stacked: {
@@ -809,7 +1138,7 @@ describe('Label', () => {
         },
       },
     } as Partial<TabsScreenProps>);
-    expect(TabsScreen.mock.calls[3][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[3]![0]).toMatchObject({
       ios: {
         standardAppearance: {
           stacked: {
@@ -826,8 +1155,8 @@ describe('Label', () => {
 
 describe('Tab options', () => {
   describe('disablePopToTop', () => {
-    it('When disablePopToTop is true, popToRoot is false', () => {
-      renderRouter({
+    it('When disablePopToTop is true, popToRoot is false', async () => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" disablePopToTop>
@@ -840,7 +1169,7 @@ describe('Tab options', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(TabsScreen).toHaveBeenCalledTimes(1);
-      expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+      expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
         specialEffects: {
           repeatedTabSelection: {
             popToRoot: false,
@@ -849,8 +1178,8 @@ describe('Tab options', () => {
       } as TabsScreenProps);
     });
 
-    it('When disablePopToTop is not set or false, popToRoot is true', () => {
-      renderRouter({
+    it('When disablePopToTop is not set or false, popToRoot is true', async () => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
@@ -867,7 +1196,7 @@ describe('Tab options', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(TabsScreen).toHaveBeenCalledTimes(4);
-      expect(TabsScreen.mock.calls[2][0]).toMatchObject({
+      expect(TabsScreen.mock.calls[2]![0]).toMatchObject({
         title: 'Custom Title',
         specialEffects: {
           repeatedTabSelection: {
@@ -875,7 +1204,7 @@ describe('Tab options', () => {
           },
         },
       } as TabsScreenProps);
-      expect(TabsScreen.mock.calls[3][0]).toMatchObject({
+      expect(TabsScreen.mock.calls[3]![0]).toMatchObject({
         title: 'One',
         specialEffects: {
           repeatedTabSelection: {
@@ -887,8 +1216,8 @@ describe('Tab options', () => {
   });
 
   describe('disableScrollToTop', () => {
-    it('When disableScrollToTop is true, scrollToTop is false', () => {
-      renderRouter({
+    it('When disableScrollToTop is true, scrollToTop is false', async () => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" disableScrollToTop>
@@ -901,7 +1230,7 @@ describe('Tab options', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(TabsScreen).toHaveBeenCalledTimes(1);
-      expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+      expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
         specialEffects: {
           repeatedTabSelection: {
             scrollToTop: false,
@@ -910,8 +1239,8 @@ describe('Tab options', () => {
       } as TabsScreenProps);
     });
 
-    it('When disableScrollToTop is not set or false, scrollToTop is true', () => {
-      renderRouter({
+    it('When disableScrollToTop is not set or false, scrollToTop is true', async () => {
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index">
@@ -928,7 +1257,7 @@ describe('Tab options', () => {
 
       expect(screen.getByTestId('index')).toBeVisible();
       expect(TabsScreen).toHaveBeenCalledTimes(4);
-      expect(TabsScreen.mock.calls[2][0]).toMatchObject({
+      expect(TabsScreen.mock.calls[2]![0]).toMatchObject({
         title: 'Custom Title',
         specialEffects: {
           repeatedTabSelection: {
@@ -936,7 +1265,7 @@ describe('Tab options', () => {
           },
         },
       } as TabsScreenProps);
-      expect(TabsScreen.mock.calls[3][0]).toMatchObject({
+      expect(TabsScreen.mock.calls[3]![0]).toMatchObject({
         title: 'One',
         specialEffects: {
           repeatedTabSelection: {
@@ -948,8 +1277,8 @@ describe('Tab options', () => {
 
     it.each([true, false, undefined])(
       'When disableAutomaticContentInsets is %p, overrideScrollViewContentInsetAdjustmentBehavior is the opposite',
-      (value) => {
-        renderRouter({
+      async (value) => {
+        await renderRouter({
           _layout: () => (
             <NativeTabs>
               <NativeTabs.Trigger name="index" disableAutomaticContentInsets={value} />
@@ -960,7 +1289,7 @@ describe('Tab options', () => {
 
         expect(screen.getByTestId('index')).toBeVisible();
         expect(TabsScreen).toHaveBeenCalledTimes(1);
-        expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+        expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
           ios: {
             overrideScrollViewContentInsetAdjustmentBehavior: !value,
           },
@@ -971,8 +1300,8 @@ describe('Tab options', () => {
 });
 
 describe('Dynamic options', () => {
-  it('updates nativeProps dynamically', () => {
-    renderRouter({
+  it('updates nativeProps dynamically', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" unstable_nativeProps={{ title: 'Initial Title' }} />
@@ -986,7 +1315,7 @@ describe('Dynamic options', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
@@ -997,7 +1326,7 @@ describe('Dynamic options', () => {
         selectedIcon: undefined,
       },
     } as TabsScreenProps);
-    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[1]![0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
@@ -1010,8 +1339,8 @@ describe('Dynamic options', () => {
     } as TabsScreenProps);
   });
 
-  it('unstable_nativeProps override dynamic options configuration', () => {
-    renderRouter({
+  it('unstable_nativeProps override dynamic options configuration', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" unstable_nativeProps={{ title: 'Initial Title' }} />
@@ -1029,7 +1358,7 @@ describe('Dynamic options', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
@@ -1039,7 +1368,7 @@ describe('Dynamic options', () => {
         selectedIcon: undefined,
       },
     } as TabsScreenProps);
-    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[1]![0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
@@ -1059,8 +1388,8 @@ describe('Dynamic options', () => {
     } as TabsScreenProps);
   });
 
-  it('can override component children from _layout with unstable_nativeProps', () => {
-    renderRouter({
+  it('can override component children from _layout with unstable_nativeProps', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -1087,7 +1416,7 @@ describe('Dynamic options', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       title: 'Initial Title',
       badgeValue: '3',
       ios: {
@@ -1100,7 +1429,7 @@ describe('Dynamic options', () => {
       specialEffects: {},
       screenKey: 'index',
     } as TabsScreenProps);
-    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[1]![0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
@@ -1115,8 +1444,8 @@ describe('Dynamic options', () => {
     } as TabsScreenProps);
   });
 
-  it('can override component children from _layout with dynamic children', () => {
-    renderRouter({
+  it('can override component children from _layout with dynamic children', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -1138,7 +1467,7 @@ describe('Dynamic options', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[0]![0]).toMatchObject({
       title: 'Initial Title',
       badgeValue: '3',
       hidden: false,
@@ -1151,7 +1480,7 @@ describe('Dynamic options', () => {
       specialEffects: {},
       screenKey: 'index',
     } as TabsScreenProps);
-    expect(TabsScreen.mock.calls[1][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[1]![0]).toMatchObject({
       title: 'Updated Title',
       hidden: false,
       specialEffects: {},
@@ -1166,8 +1495,8 @@ describe('Dynamic options', () => {
     } as TabsScreenProps);
   });
 
-  it('can dynamically update options with state update', () => {
-    renderRouter({
+  it('can dynamically update options with state update', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -1190,18 +1519,18 @@ describe('Dynamic options', () => {
     });
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(2);
-    expect(TabsScreen.mock.calls[0][0].title).toBe('Initial Title');
-    expect(TabsScreen.mock.calls[1][0].title).toBe('Updated Title 0');
-    act(() => fireEvent.press(screen.getByTestId('update-button')));
+    expect(TabsScreen.mock.calls[0]![0].title).toBe('Initial Title');
+    expect(TabsScreen.mock.calls[1]![0].title).toBe('Updated Title 0');
+    await act(() => fireEvent.press(screen.getByTestId('update-button')));
     expect(TabsScreen).toHaveBeenCalledTimes(3);
-    expect(TabsScreen.mock.calls[2][0].title).toBe('Updated Title 1');
-    act(() => fireEvent.press(screen.getByTestId('update-button')));
+    expect(TabsScreen.mock.calls[2]![0].title).toBe('Updated Title 1');
+    await act(() => fireEvent.press(screen.getByTestId('update-button')));
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[3][0].title).toBe('Updated Title 2');
+    expect(TabsScreen.mock.calls[3]![0].title).toBe('Updated Title 2');
   });
 
-  it('can be used in preview', () => {
-    renderRouter({
+  it('can be used in preview', async () => {
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index">
@@ -1232,7 +1561,7 @@ describe('Dynamic options', () => {
     expect(screen.getAllByTestId('second')).toHaveLength(2);
     expect(within(screen.getByTestId('index')).getByTestId('second')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[2][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[2]![0]).toMatchObject({
       title: 'Initial Title',
       hidden: false,
       specialEffects: {},
@@ -1242,7 +1571,7 @@ describe('Dynamic options', () => {
         selectedIcon: undefined,
       },
     } as TabsScreenProps);
-    expect(TabsScreen.mock.calls[3][0]).toMatchObject({
+    expect(TabsScreen.mock.calls[3]![0]).toMatchObject({
       title: 'Second',
       hidden: false,
       specialEffects: {},
@@ -1285,6 +1614,24 @@ describe(appendIconOptions, () => {
       },
       { icon: { sf: '0.circle' }, selectedIcon: undefined },
     ],
+    [
+      { sf: '0.circle', renderingMode: 'original' },
+      { icon: { sf: '0.circle', renderingMode: 'original' }, selectedIcon: undefined },
+    ],
+    [
+      { sf: '0.circle', renderingMode: { selected: 'original' } },
+      { icon: { sf: '0.circle' }, selectedIcon: { sf: '0.circle', renderingMode: 'original' } },
+    ],
+    [
+      {
+        src: { default: 'xxx', selected: 'yyy' },
+        renderingMode: { default: 'template', selected: 'original' },
+      },
+      {
+        icon: { src: 'xxx', renderingMode: 'template' },
+        selectedIcon: { src: 'yyy', renderingMode: 'original' },
+      },
+    ],
   ] as [NativeTabsTriggerIconProps, NativeTabOptions][])(
     'should append icon props %p to options correctly',
     (props, expected) => {
@@ -1293,6 +1640,18 @@ describe(appendIconOptions, () => {
       expect(options).toEqual(expected);
     }
   );
+  it('loads a vector icon once when only the selected renderingMode is set', () => {
+    const options: NativeTabOptions = {};
+    appendIconOptions(options, {
+      src: <NativeTabs.Trigger.VectorIcon family={ICON_FAMILY} name="a" />,
+      renderingMode: { selected: 'original' },
+    });
+    expect(options.selectedIcon).toEqual({ src: expect.any(Promise), renderingMode: 'original' });
+    const { icon, selectedIcon } = options;
+    expect(selectedIcon && 'src' in selectedIcon && selectedIcon.src).toBe(
+      icon && 'src' in icon && icon.src
+    );
+  });
   it('when vector icon is used, promise is set', () => {
     const options: NativeTabOptions = {};
     const props: NativeTabsTriggerIconProps = {

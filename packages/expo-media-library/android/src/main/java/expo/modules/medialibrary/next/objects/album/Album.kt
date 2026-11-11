@@ -8,6 +8,7 @@ import expo.modules.medialibrary.next.exceptions.AlbumPropertyNotFoundException
 import expo.modules.medialibrary.next.exceptions.ContentResolverNotObtainedException
 import expo.modules.medialibrary.next.extensions.getOrThrow
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumAssetsContentUris
+import expo.modules.medialibrary.next.extensions.resolver.queryAlbumAssetsCount
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumFilepath
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumRelativePath
 import expo.modules.medialibrary.next.extensions.resolver.queryAlbumTitle
@@ -61,6 +62,9 @@ class Album(
     contentResolver
       .queryAlbumAssetsContentUris(id)
       .map { assetFactory.create(it) }
+
+  suspend fun getAssetCount(): Int =
+    contentResolver.queryAlbumAssetsCount(id)
 
   suspend fun delete() =
     assetDeleter.delete(

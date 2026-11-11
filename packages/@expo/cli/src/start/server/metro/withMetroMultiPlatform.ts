@@ -26,10 +26,7 @@ import { env } from '../../../utils/env';
 import { isServerEnvironment } from '../middleware/metroOptions';
 import type { PlatformBundlers } from '../platformBundlers';
 import type { ExpoMetroConfig } from './ExpoMetroConfig';
-import type {
-  AutolinkingModuleResolverInput,
-  AutolinkingPlatform,
-} from './createExpoAutolinkingResolver';
+import type { AutolinkingModuleResolverInput } from './createExpoAutolinkingResolver';
 import {
   createAutolinkingModuleResolverInput,
   createAutolinkingModuleResolver,
@@ -38,7 +35,11 @@ import { createFallbackModuleResolver } from './createExpoFallbackResolver';
 import { createTypescriptResolver } from './createTypescriptResolver';
 import { FailedToResolveNativeOnlyModuleError } from './errors/FailedToResolveNativeOnlyModuleError';
 import { isNodeExternal, shouldCreateVirtualShim } from './externals';
-import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
+import {
+  isFailedToResolveNameError,
+  isFailedToResolvePathError,
+  isFailedToResolveUnsupportedError,
+} from './metroErrors';
 import { getMetroBundlerWithVirtualModules } from './metroVirtualModules';
 import { withMetroErrorReportingResolver } from './withMetroErrorReportingResolver';
 import { withMetroMutatedResolverContext, withMetroResolvers } from './withMetroResolvers';
@@ -49,10 +50,6 @@ export type StrictResolverFactory = (
   context: ResolutionContext,
   platform: string | null
 ) => StrictResolver;
-
-// Serves both import shapes: Metro's generated asset modules call `registerAsset` on the module
-// itself, while react-native core destructures `{AssetRegistry}` from its internal registry module.
-const ASSET_REGISTRY_SRC = `const assets=[];const registry={registerAsset:s=>assets.push(s),getAssetByID:s=>assets[s-1]};module.exports={registerAsset:registry.registerAsset,getAssetByID:registry.getAssetByID,AssetRegistry:registry};`;
 
 interface PlatformExtensions {
   sourceExts: string[];
@@ -243,12 +240,30 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
   return nodejsSourceExtensions;
 }
 
+const HMR_CLIENT_PROD_SHIM_ID = '\0shim:HMRClientProdShim.js';
+const HMR_CLIENT_PROD_SHIM = `
+const HMRClientProdShim = {
+  setup() {},
+  enable() {
+    console.error(
+      'Fast Refresh is disabled in JavaScript bundles built in production mode. Did you forget to run Metro?'
+    );
+  },
+  disable() {},
+  registerBundle() {},
+  log() {},
+};
+export default HMRClientProdShim;
+`;
+
 /**
  * Apply custom resolvers to do the following:
  * - Disable `.native.js` extensions on web.
  * - Alias `react-native` to `react-native-web` on web.
- * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to `@react-native/assets/registry.js` on web.
  * - Add support for `tsconfig.json`/`jsconfig.json` aliases via `compilerOptions.paths`.
+ * - Redirect legacy AssetRegistry imports to new public RN API (to remove in Expo SDK 59)
+ *   - `react-native/Libraries/Image/AssetRegistry` -> `react-native/asset-registry`
+ *   - `@react-native/assets-registry/registry` -> `react-native/asset-registry`
  */
 export function withExtendedResolver(
   config: ConfigT,
@@ -274,14 +289,10 @@ export function withExtendedResolver(
     web: {
       'react-native': 'react-native-web',
       'react-native/index': 'react-native-web',
+      'react-native/asset-registry': 'react-native-web/asset-registry',
       'react-native/Libraries/Image/resolveAssetSource': 'expo-asset/build/resolveAssetSource',
     },
   };
-
-  const isExpoRouterInstalled = hasExpoRouterModule(
-    config.projectRoot,
-    autolinkingModuleResolverInput
-  );
 
   let _universalAliases: [RegExp, string][] | null;
 
@@ -342,7 +353,9 @@ export function withExtendedResolver(
         // If the error is directly related to a resolver not being able to resolve a module, then
         // we can ignore the error and try the next resolver. Otherwise, we should throw the error.
         const isResolutionError =
-          isFailedToResolveNameError(error) || isFailedToResolvePathError(error);
+          isFailedToResolveNameError(error) ||
+          isFailedToResolvePathError(error) ||
+          isFailedToResolveUnsupportedError(error);
         if (!isResolutionError) {
           throw error;
         }
@@ -371,18 +384,6 @@ export function withExtendedResolver(
     return _asyncRequireModuleResolvedPath
       ? ({ type: 'sourceFile', filePath: _asyncRequireModuleResolvedPath } as const)
       : null;
-  };
-
-  const getAssetRegistryModule = () => {
-    const virtualModuleId = `\0polyfill:assets-registry`;
-    getMetroBundlerWithVirtualModules(getMetroBundler()).setVirtualModule(
-      virtualModuleId,
-      ASSET_REGISTRY_SRC
-    );
-    return {
-      type: 'sourceFile',
-      filePath: virtualModuleId,
-    } as const;
   };
 
   // If Node.js pass-through, then remap to a module like `module.exports = $$require_external(<module>)`.
@@ -456,8 +457,6 @@ export function withExtendedResolver(
 
   const skipMetroMainFieldOverride = env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE;
   const useExpoUnstableLogBox = env.EXPO_UNSTABLE_LOG_BOX;
-  const disableReactNavigationCheck = env.EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK;
-
   const metroConfigWithCustomResolver = withMetroResolvers(config, [
     // Mock out production react imports in development.
     function requestDevMockProdReact(
@@ -662,40 +661,20 @@ export function withExtendedResolver(
         return getAsyncRequireModule();
       }
 
-      // TODO(@kitten): Revisit the virtual registry approach after the React Native 0.87 upgrade
-      // lands. The virtual module predates the upgrade (introduced by @EvanBacon) and it needs
-      // some testing and sleuthing to establish why it exists instead of resolving react-native's
-      // real registry module, and whether the internal-import capture below can then be dropped.
-      // Redirect every asset registry request to the virtual registry module so all consumers
-      // share one instance: Metro's generated asset modules (`assetRegistryPath`), imports of
-      // `react-native/asset-registry`, and imports of the legacy `@react-native/assets-registry`
-      // package, which no longer ships with react-native 0.87.
+      // TODO(@bycedric): React Native 0.87+ drops `react-native/Libraries/Image/AssetRegistry.js`,
+      // in favor of the public API alternative `import { AssetRegistry } from 'react-native'`.
+      // Some libraries have not moved over to `@react-native/assets-registry/registry` or the
+      // new public API, causing resolution or registry issues. This forces usage of the new API.
+      // `react-native-web@>=0.21.4` contains the `react-native-web/asset-registry` export too.
+      // TODO(@bycedric): Drop this in Expo SDK 59
       if (
-        moduleName === config.transformer.assetRegistryPath ||
-        moduleName === 'react-native/asset-registry' ||
-        /^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName)
+        /^@react-native\/assets-registry\/registry(\.js)?$/.test(moduleName) ||
+        /^react-native\/Libraries\/Image\/AssetRegistry(\.js)?$/.test(moduleName)
       ) {
-        return getAssetRegistryModule();
-      }
-
-      // react-native core imports its registry singleton through relative paths (e.g.
-      // `../../src/private/assets/AssetRegistry` from `Libraries/Image/resolveAssetSource.js`),
-      // which the specifier checks above can never match. Capture those too, or React Native's
-      // `<Image>` would read a different registry instance than Metro's asset modules write to.
-      if (
-        moduleName.startsWith('.') &&
-        /[\\/]private[\\/]assets[\\/]AssetRegistry(\.js)?$/.test(moduleName) &&
-        /[\\/]react-native[\\/](src|Libraries)[\\/]/.test(context.originModulePath)
-      ) {
-        return getAssetRegistryModule();
-      }
-
-      if (
-        platform === 'web' &&
-        context.originModulePath.match(/node_modules[\\/]react-native-web[\\/]/) &&
-        moduleName.includes('/modules/AssetRegistry')
-      ) {
-        return getAssetRegistryModule();
+        return getStrictResolver(
+          context,
+          platform
+        )(platform === 'web' ? 'react-native-web/asset-registry' : 'react-native/asset-registry');
       }
 
       return null;
@@ -738,40 +717,6 @@ export function withExtendedResolver(
         });
       const doReplaceStrict = (from: string, to: string | undefined) =>
         doReplace(from, to, { throws: true });
-
-      if (!disableReactNavigationCheck) {
-        // TODO(@ubax): Remove this rewrite once we published migration guide for library authors
-        if (isExpoRouterInstalled && moduleName.startsWith('@react-navigation/')) {
-          const filePath = context.originModulePath;
-          if (!filePath.includes('node_modules')) {
-            if (
-              moduleName === '@react-navigation/native-stack' ||
-              moduleName === '@react-navigation/drawer'
-            ) {
-              throw new Error(
-                [
-                  'As of SDK 56, expo-router is no longer compatible with react-navigation.',
-                  '',
-                  `Instead of ${moduleName}, use Stack or Drawer from expo-router instead:`,
-                  '',
-                  "  import { Stack } from 'expo-router';",
-                  "  import { Drawer } from 'expo-router/drawer';",
-                  '',
-                  'For more information, see https://docs.expo.dev/router/migrate/sdk-55-to-56/.',
-                  'You can disable this check by setting the environment variable EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1.',
-                ].join('\n')
-              );
-            }
-            throw new Error(
-              'As of SDK 56, expo-router is no longer compatible with react-navigation. For more information, see https://docs.expo.dev/router/migrate/sdk-55-to-56/. You can disable this check by setting the environment variable EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1.'
-            );
-          }
-          if (moduleName === '@react-navigation/core') {
-            // We already checked if expo-router resolves
-            return doResolve('expo-router/react-navigation');
-          }
-        }
-      }
 
       if (platform === 'web') {
         if (result.filePath.includes('node_modules')) {
@@ -818,19 +763,29 @@ export function withExtendedResolver(
 
         // Shim out React Native native runtime globals in server mode for native.
         if (isServer) {
-          const emptyModule = doReplace(
+          const emptyInitializeCore = doReplace(
             `${hostPackage}/Libraries/Core/InitializeCore.js`,
             undefined
           );
-          if (emptyModule) {
-            return emptyModule;
+          if (emptyInitializeCore) {
+            return emptyInitializeCore;
+          }
+          const emptySetupEnv = doReplace(`${hostPackage}/src/setup-env.js`, undefined);
+          if (emptySetupEnv) {
+            return emptySetupEnv;
           }
         }
 
-        const hmrModule = doReplaceStrict(
-          `${hostPackage}/Libraries/Utilities/HMRClient.js`,
-          'expo/src/async-require/hmr.ts'
-        );
+        const hmrClientPath = `${hostPackage}/Libraries/Utilities/HMRClient.js`;
+        if (!context.dev && normalizedPath.endsWith(hmrClientPath)) {
+          const bundler = getMetroBundlerWithVirtualModules(getMetroBundler());
+          if (!bundler.hasVirtualModule(HMR_CLIENT_PROD_SHIM_ID)) {
+            bundler.setVirtualModule(HMR_CLIENT_PROD_SHIM_ID, HMR_CLIENT_PROD_SHIM);
+          }
+          return { ...result, filePath: HMR_CLIENT_PROD_SHIM_ID };
+        }
+
+        const hmrModule = doReplaceStrict(hmrClientPath, 'expo/src/async-require/hmr.ts');
         if (hmrModule) return hmrModule;
 
         if (useExpoUnstableLogBox) {
@@ -1070,19 +1025,4 @@ export async function withMetroMultiPlatformAsync(
     isReactServerComponentsEnabled,
     getMetroBundler,
   });
-}
-
-function hasExpoRouterModule(
-  projectRoot: string,
-  autolinkingModuleResolverInput: AutolinkingModuleResolverInput | undefined
-) {
-  if (autolinkingModuleResolverInput) {
-    // If we have autolinking enabled, we can skip resolution
-    const platform = Object.keys(autolinkingModuleResolverInput)[0] as AutolinkingPlatform;
-    return !!autolinkingModuleResolverInput[platform]?.resolvedModulePaths['expo-router'];
-  } else {
-    return !!resolveFrom(projectRoot, 'expo-router/package.json', {
-      skipNodePath: true,
-    });
-  }
 }

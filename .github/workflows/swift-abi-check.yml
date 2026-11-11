@@ -1,0 +1,172 @@
+name: Swift ABI Check
+
+on:
+  pull_request:
+    types: [labeled, unlabeled, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  # Other labels get a unique group, so adding or removing them does not cancel a running check.
+  group: "${{ github.workflow }}-${{ github.ref }}-${{ (github.event.action == 'labeled' || github.event.action == 'unlabeled') && github.event.label.name != 'check: ABI' && github.run_id || 'check' }}"
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Swift ABI check
+    if: >-
+      contains(github.event.pull_request.labels.*.name, 'check: ABI') &&
+      (github.event.action == 'synchronize' || github.event.action == 'reopened' ||
+       (github.event.action == 'labeled' && github.event.label.name == 'check: ABI'))
+    runs-on: blacksmith-6vcpu-macos-26
+    timeout-minutes: 90
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: ⬇️ Fetch the base branch
+        run: git fetch origin "$BASE_REF" --depth 1
+        env:
+          BASE_REF: ${{ github.base_ref }}
+      - name: 🔨 Switch to Xcode 26.4.1
+        run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        with:
+          install: false
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      - name: 🏗️ Precompile ExpoModulesCore and ExpoModulesJSI
+        run: bin/expo-turbo run precompile-ios --filter=expo-modules-core --filter=expo-modules-jsi --cache=local:rw,remote:r
+        env:
+          RCT_HERMES_V1_ENABLED: '1'
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      - name: 🔍 Compare the Swift ABI with the published versions
+        id: abi
+        shell: bash
+        run: |
+          et check-swift-abi --base-ref "origin/$BASE_REF" 2>&1 \
+            | tee "$RUNNER_TEMP/swift-abi-output.txt"
+        env:
+          BASE_REF: ${{ github.base_ref }}
+      - name: 📝 Write the report to the job summary
+        id: report
+        if: ${{ always() && steps.abi.outcome != 'skipped' }}
+        env:
+          OUTCOME: ${{ steps.abi.outcome }}
+        run: |
+          report="$RUNNER_TEMP/swift-abi-report.txt"
+          perl -pe 's/\e\[[0-9;]*m//g' "$RUNNER_TEMP/swift-abi-output.txt" > "$report"
+          if [ "$OUTCOME" = failure ] && grep -q 'Swift ABI check failed:' "$report"; then
+            result=break
+          elif [ "$OUTCOME" = failure ]; then
+            result=error
+            echo "::warning::The Swift ABI check could not finish. The job log has the error."
+          elif grep -q 'was not compared' "$report"; then
+            result=incomplete
+          else
+            result=pass
+          fi
+          echo "result=$result" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Swift ABI check: $result"
+            echo '```'
+            cat "$report"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: 🔍 Find the previous ABI check comment
+        if: ${{ always() && steps.report.outputs.result != '' && github.event.pull_request.head.repo.full_name == github.repository }}
+        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4.0.0
+        id: old_comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'expo-bot'
+          body-includes: <!-- swift-abi-check comment -->
+      - name: 💬 Add or update the ABI check comment
+        if: ${{ always() && steps.report.outputs.result == 'break' && github.event.pull_request.head.repo.full_name == github.repository }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          COMMENT_ID: ${{ steps.old_comment.outputs.comment-id }}
+        with:
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          script: |
+            const fs = require('fs');
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            let report = fs.readFileSync(process.env.RUNNER_TEMP + '/swift-abi-report.txt', 'utf8');
+            if (report.length > 60000) {
+              report = report.slice(0, 60000) + '\n...';
+            }
+
+            const body = `<!-- swift-abi-check comment -->
+            This PR removes or changes declarations or symbols in ExpoModulesCore or ExpoModulesJSI that precompiled modules use. Apps that use those precompiled modules with this version can crash at launch.
+
+            \`\`\`
+            ${report}
+            \`\`\`
+
+            The full output is in the [workflow run](${runUrl}).
+            `;
+
+            if (process.env.COMMENT_ID) {
+              await github.rest.issues.updateComment({
+                comment_id: process.env.COMMENT_ID,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body,
+              });
+            }
+      - name: 💬 Delete the ABI check comment
+        if: ${{ steps.report.outputs.result == 'pass' && steps.old_comment.outputs.comment-id != '' && github.event.pull_request.head.repo.full_name == github.repository }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.deleteComment({
+              comment_id: '${{ steps.old_comment.outputs.comment-id }}',
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });
+
+  remove-comment:
+    name: Remove the ABI check comment
+    if: >-
+      github.event.action == 'unlabeled' && github.event.label.name == 'check: ABI' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 🔍 Find the ABI check comment
+        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4.0.0
+        id: old_comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'expo-bot'
+          body-includes: <!-- swift-abi-check comment -->
+      - name: 💬 Delete the ABI check comment
+        if: ${{ steps.old_comment.outputs.comment-id != '' }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        with:
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.deleteComment({
+              comment_id: '${{ steps.old_comment.outputs.comment-id }}',
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+            });

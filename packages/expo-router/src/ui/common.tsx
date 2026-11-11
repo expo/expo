@@ -1,9 +1,4 @@
-import {
-  findRouteNodeByName,
-  getValidInitialRouteName,
-  sortRoutesWithInitial,
-  type RouteNode,
-} from '../Route';
+import { sortRoutesWithInitial, type RouteNode } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
 import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import { resolveNavigationDestination } from '../global-state/resolveNavigationDestination';
@@ -16,6 +11,7 @@ import type {
   ParamListBase,
   PartialState,
 } from '../react-navigation/native';
+import { findRouteNodeByName, getValidInitialRouteName } from '../routeNode';
 import type { Href } from '../types';
 import { type ScreenProps, useSortedScreens } from '../useScreens';
 import { Slot } from './Slot';
@@ -28,6 +24,7 @@ export type ScreenTrigger =
       type: 'internal';
       href: Href;
       name: string;
+      activityEnabled?: boolean;
     }
   | {
       type: 'external';
@@ -47,6 +44,7 @@ type TriggerConfig =
       action: JumpToNavigationAction;
       targetState?: PartialState<NavigationState>;
       deep: boolean;
+      activityEnabled?: boolean;
     }
   | { type: 'external'; name: string; href: string };
 
@@ -238,7 +236,10 @@ export function useTriggersToScreens(
       // TODO(https://github.com/expo/expo/pull/48756): Resolved internal-trigger href params need
       // to flow through ExpoTabRouter to placeholder, fallback, and action-recreated routes without
       // restoring Screen.initialParams. Explicit action params must override these defaults.
-      screenProps.push({ name: config.routeNode.route });
+      screenProps.push({
+        name: config.routeNode.route,
+        activityEnabled: config.activityEnabled,
+      });
     }
   }
 

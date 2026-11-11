@@ -46,7 +46,38 @@
           "productName": "libavif",
           "version": {
             "exact": "1.0.0"
-          }
+          },
+          "manifestPatches": [
+            {
+              "find": ".package(url: \"https://github.com/SDWebImage/libaom-Xcode.git\", from: \"3.0.0\")",
+              "replace": ".package(url: \"https://github.com/SDWebImage/libdav1d-Xcode.git\", from: \"1.2.0\")"
+            },
+            {
+              "find": "dependencies: [\"libaom\"]",
+              "replace": "dependencies: [\"libdav1d\"]"
+            },
+            {
+              "find": "\"src/codec_dav1d.c\"",
+              "replace": "\"src/codec_aom.c\""
+            },
+            {
+              "find": "cSettings: [.define(\"AVIF_CODEC_AOM\", to: \"1\"), .define(\"AVIF_CODEC_AOM_DECODE\", to: \"1\"), .define(\"AVIF_CODEC_AOM_ENCODE\", to: \"1\")]",
+              "replace": "cSettings: [.define(\"AVIF_CODEC_DAV1D\", to: \"1\")]"
+            }
+          ]
+        },
+        {
+          "url": "https://github.com/SDWebImage/libdav1d-Xcode.git",
+          "productName": "libdav1d",
+          "version": {
+            "exact": "1.2.0"
+          },
+          "manifestPatches": [
+            {
+              "find": "\"dav1d/src/arm\", ",
+              "replace": "\"dav1d/src/arm/32\", \"dav1d/src/arm/64\", \"dav1d/src/arm/asm.S\", "
+            }
+          ]
         }
       ],
       "targets": [
@@ -64,7 +95,8 @@
             "SDWebImageAVIFCoder",
             "SDWebImageSVGCoder",
             "SDWebImageWebPCoder",
-            "libavif"
+            "libavif",
+            "libdav1d"
           ],
           "linkedFrameworks": ["Foundation", "UIKit"],
           "exclude": ["Tests/**"]

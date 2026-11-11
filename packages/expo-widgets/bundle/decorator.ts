@@ -32,6 +32,15 @@ function decorateNode(
     return node.map((child) => decorateNode(child, context));
   }
 
+  if (isSectionMap(node)) {
+    return Object.fromEntries(
+      Object.entries(node).map(([section, child]) => [
+        section,
+        decorateNode(child, { ...context, nearestParentKey: section }),
+      ])
+    );
+  }
+
   if (!isReactElementNode(node)) {
     return node;
   }
@@ -56,6 +65,10 @@ function decorateNode(
 
 function isReactElementNode(node: unknown): node is ReactElementNode {
   return Boolean(node) && typeof node === 'object' && 'type' in node && 'props' in node;
+}
+
+function isSectionMap(node: unknown): node is Record<string, unknown> {
+  return Boolean(node) && typeof node === 'object' && !isReactElementNode(node);
 }
 
 function buildButtonTargetId(index: number, parentKey: string | null) {

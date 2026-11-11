@@ -98,7 +98,7 @@ describe(renderMetadataTags, () => {
 
     expect(tags).toContainEqual(link({ rel: 'canonical', href: 'https://example.dev' }));
     expect(tags).toContainEqual(
-      link({ rel: 'alternate', href: 'https://example.dev/en', hreflang: 'en' })
+      link({ rel: 'alternate', href: 'https://example.dev/en', hrefLang: 'en' })
     );
   });
 

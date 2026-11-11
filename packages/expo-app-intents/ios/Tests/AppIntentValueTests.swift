@@ -55,4 +55,43 @@ struct AppIntentValueTests {
     #expect((invocation.toDict()["params"] as? [String: Any])?["x"] is NSNull)
     _ = try JSONEncoder().encode(invocation)
   }
+
+  @Test
+  func `foundation values from JavaScript convert to the matching case`() throws {
+    let value = try AppIntentValue(
+      foundationValue: [
+        "string": "s",
+        "int": NSNumber(value: 3),
+        "double": NSNumber(value: 1.5),
+        "null": NSNull(),
+        "array": [NSNumber(value: 1), "two"],
+      ] as [String: Any]
+    )
+
+    #expect(
+      value
+        == .object([
+          "string": .string("s"),
+          "int": .int(3),
+          "double": .double(1.5),
+          "null": .null,
+          "array": .array([.int(1), .string("two")]),
+        ])
+    )
+    #expect(try AppIntentValue(foundationValue: nil) == .null)
+  }
+
+  @Test
+  func `numbers from JavaScript keep booleans and integers, and non-finite numbers become null`() throws {
+    #expect(try AppIntentValue(foundationValue: kCFBooleanTrue) == .bool(true))
+    // JavaScript has no integer type, so 250 arrives as the double 250.0. Decoding persisted params
+    // turns it into an integer too, so both paths give Swift the same value.
+    #expect(try AppIntentValue(foundationValue: NSNumber(value: 250.0)) == .int(250))
+    #expect(try AppIntentValue(foundationValue: NSNumber(value: 1e300)) == .double(1e300))
+    #expect(try AppIntentValue(foundationValue: NSNumber(value: Double.nan)) == .null)
+    #expect(
+      try AppIntentValue(foundationValue: [NSNumber(value: Double.infinity), NSNumber(value: -Double.infinity)])
+        == .array([.null, .null])
+    )
+  }
 }

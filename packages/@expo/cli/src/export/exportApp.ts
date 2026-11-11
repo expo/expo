@@ -12,12 +12,16 @@ import * as Log from '../log';
 import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
-import { getRouterDirectoryModuleIdWithManifest } from '../start/server/metro/router';
+import {
+  getRouterDirectoryModuleIdWithManifest,
+  isApiRoutesEnabled,
+} from '../start/server/metro/router';
 import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
 import { getBaseUrlFromExpoConfig } from '../start/server/middleware/metroOptions';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
+import { compileHermesArtifactsAsync } from './compileHermesArtifacts';
 import { type PlatformMetadata, createMetadataJson } from './createMetadataJson';
 import { event } from './events';
 import { exportAssetsAsync } from './exportAssets';
@@ -80,8 +84,13 @@ export async function exportAppAsync(
 
   const useServerRendering = ['static', 'server'].includes(exp.web?.output ?? '');
 
-  if (skipSSG && exp.web?.output !== 'server') {
-    throw new CommandError('--no-ssg can only be used with `web.output: server`');
+  const exportServer =
+    exp.web?.output === 'server' || (exp.web?.output === 'static' && isApiRoutesEnabled(exp));
+
+  if (skipSSG && !exportServer) {
+    throw new CommandError(
+      '--no-ssg requires server output or static output with apiRoutes: true in the expo-router config plugin'
+    );
   }
 
   const baseUrl = getBaseUrlFromExpoConfig(exp);
@@ -213,12 +222,6 @@ export async function exportAppAsync(
             ms: Date.now() - bundleStartedAt,
           });
 
-          getFilesFromSerialAssets(bundle.artifacts, {
-            includeSourceMaps: sourceMaps,
-            files,
-            isServerHosted: devServer.isReactServerComponentsEnabled || hostedNative,
-          });
-
           const expoDomComponentReferences = [
             ...new Set(
               bundle.artifacts
@@ -268,6 +271,16 @@ export async function exportAppAsync(
               ];
             })
           );
+
+          if (bytecode && isHermes && !dev) {
+            await compileHermesArtifactsAsync(projectRoot, bundle.artifacts);
+          }
+
+          getFilesFromSerialAssets(bundle.artifacts, {
+            includeSourceMaps: sourceMaps,
+            files,
+            isServerHosted: devServer.isReactServerComponentsEnabled || hostedNative,
+          });
 
           if (platform === 'web') {
             const faviconAsset = await generateFaviconAssetAsync(projectRoot, {
@@ -353,8 +366,6 @@ export async function exportAppAsync(
     // Additional web-only steps...
 
     if (platforms.includes('web') && useServerRendering) {
-      const exportServer = exp.web?.output === 'server';
-
       if (exportServer) {
         // TODO: Remove when this is abstracted into the files map
         await copyPublicFolderAsync(publicPath, path.resolve(outputPath, 'client'));

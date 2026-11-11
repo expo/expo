@@ -3,7 +3,9 @@ package expo.modules.audio
 import android.content.Context
 import android.media.AudioDeviceInfo
 import android.os.Bundle
+import androidx.annotation.OptIn
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.session.MediaSession
 import java.io.File
 import java.io.IOException
@@ -31,8 +33,9 @@ fun getMapFromDeviceInfo(deviceInfo: AudioDeviceInfo): Bundle {
   return map
 }
 
-fun buildBasicMediaSession(context: Context, player: Player): MediaSession {
-  return MediaSession.Builder(context, player)
+@OptIn(UnstableApi::class)
+fun buildBasicMediaSession(context: Context, player: Player, onPlay: () -> Unit): MediaSession {
+  return MediaSession.Builder(context, PlayRequestingPlayer(player, onPlay))
     .setId("ExpoAudioBasicMediaSession_${player.hashCode()}")
     .build()
 }

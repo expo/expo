@@ -1,9 +1,8 @@
-import { Platform } from 'expo';
 import { Image, ImageErrorEventData } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as MediaLibrary from 'expo-media-library/legacy';
 import { useRef, useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
+import { Alert, Dimensions, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { captureRef as takeSnapshotAsync, captureScreen } from 'react-native-view-shot';
 
 import Button from '../components/Button';
@@ -52,13 +51,18 @@ export default function ViewShotScreen() {
 
   const handleAddToMediaLibraryPress = async () => {
     if (screenUri) {
-      const { status } = await MediaLibrary.requestPermissionsAsync();
-
-      if (status === 'granted') {
-        await MediaLibrary.createAssetAsync(screenUri);
-        alert('Successfully added captured screen to media library');
-      } else {
-        alert('Media library permissions not granted');
+      try {
+        if (Platform.OS !== 'android' || Platform.Version < 29) {
+          const { granted } = await MediaLibrary.requestPermissionsAsync(true, ['photo']);
+          if (!granted) {
+            Alert.alert('Media library permissions not granted');
+            return;
+          }
+        }
+        await MediaLibrary.saveToLibraryAsync(screenUri);
+        Alert.alert('Successfully added captured screen to media library');
+      } catch (error) {
+        Alert.alert('Could not save captured screen', String(error));
       }
     }
   };

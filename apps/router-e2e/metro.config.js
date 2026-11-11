@@ -5,7 +5,7 @@ const { getDefaultConfig } = require('expo/metro-config');
 /** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(
   __dirname,
-  require('getenv').boolish('E2E_USE_MOCK_SERIALIZER_PLUGINS', false)
+  ['true', '1'].includes((process.env.E2E_USE_MOCK_SERIALIZER_PLUGINS ?? '').toLowerCase())
     ? {
         // Mock the serializer plugins to inject a virtual module. This ensures that we compute correct source maps with tools like sentry.
         unstable_beforeAssetSerializationPlugins: [

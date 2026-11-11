@@ -107,8 +107,26 @@ private:
 
   jsi::Function createPromiseBody(
     jsi::Runtime &runtime,
-    jobjectArray globalArgs
+    jobjectArray globalArgs,
+    std::shared_ptr<std::vector<jsi::Value>> retainedValues
   );
+
+  /**
+   * Indexes into `info.argTypes` of the arguments whose JS values have to stay alive until an async call
+   * is settled, computed once from the converters. When the receiver is taken, index 0 is the receiver.
+   */
+  std::vector<size_t> retainedArgIndices;
+
+  /**
+   * Copies the JS values of the arguments listed in `retainedArgIndices`.
+   * They are kept alive until the returned promise is settled.
+   */
+  std::vector<jsi::Value> retainArguments(
+    jsi::Runtime &rt,
+    const jsi::Value &thisValue,
+    const jsi::Value *args,
+    size_t count
+  ) const;
 
   jobjectArray convertJSIArgsToJNI(
     JNIEnv *env,

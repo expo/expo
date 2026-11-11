@@ -8,9 +8,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXTaskDelegate <NSObject>
 
-- (void)executeTask:(nonnull id<EXTaskInterface>)task
-           withData:(nullable NSDictionary *)data
-          withError:(nullable NSError *)error;
+/**
+ *  Sends the task to the JS app and returns the ID of the event, which its response carries.
+ */
+- (nonnull NSString *)executeTask:(nonnull id<EXTaskInterface>)task
+                         withData:(nullable NSDictionary *)data
+                        withError:(nullable NSError *)error;
 
 @end
 

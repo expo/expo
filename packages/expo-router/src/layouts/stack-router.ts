@@ -7,22 +7,31 @@ import {
 } from '../navigationParams';
 import {
   type CommonNavigationAction,
+  extendRouter,
   type NavigationAction,
   type ParamListBase,
   type PartialRoute,
   type PartialState,
   type Route,
+  RouterActionHandling,
   type RouterConfigOptions,
   type StackActionType,
   type StackNavigationState,
   StackRouter as RNStackRouter,
 } from '../react-navigation/native';
 import type { NativeStackNavigatorProps } from '../react-navigation/native-stack';
+import { getStackBrowserHistoryAction } from '../react-navigation/routers/StackRouter';
 import { attachRouteState } from '../react-navigation/routers/attachRouteState';
 import { ensureStateType } from '../react-navigation/routers/ensureStateType';
 import { createRouteKeyMinter } from '../react-navigation/routers/stateKeys';
+import { isActionHandled } from '../react-navigation/routers/utils';
 import type { SingularOptions } from '../useScreens';
 import { getSingularId } from '../utils/getSingularId';
+import {
+  insertRequiredRoutes,
+  SYNC_REQUIRED_SCREENS,
+  type SyncRequiredScreensPayload,
+} from './stack-utils/requiredScreensBelow';
 
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
@@ -47,13 +56,14 @@ function isStackAction(
   );
 }
 
-const isPreviewAction = (action: NavigationAction): boolean =>
-  !!action.payload &&
-  'params' in action.payload &&
-  typeof action.payload.params === 'object' &&
-  !!getInternalExpoRouterParams(action.payload?.params ?? undefined)[
-    INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME
-  ];
+const getPreviewKey = (action: NavigationAction): string | undefined => {
+  const payload = action.payload;
+  return payload &&
+    '__internal__PreviewKey' in payload &&
+    typeof payload.__internal__PreviewKey === 'string'
+    ? payload.__internal__PreviewKey
+    : undefined;
+};
 
 const getZoomTransitionIdFromAction = (action: NavigationAction): string | undefined => {
   const allParams =
@@ -81,11 +91,27 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
   original
 ) => {
   return {
+    // The sync is not a new visit, so it updates the current browser entry.
+    getBrowserHistoryForAction: (previous, next, action) =>
+      action.type === SYNC_REQUIRED_SCREENS
+        ? undefined
+        : original.getBrowserHistoryForAction?.(previous, next, action),
     getStateForAction: (state, action, options) => {
       state = ensureStateType(state, 'stack');
 
       if (action.target && action.target !== state.key) {
-        return null;
+        return RouterActionHandling.Unhandled;
+      }
+      if (action.type === SYNC_REQUIRED_SCREENS) {
+        // Only the stack sends this action, with this payload.
+        const { routeKey, ...required } = action.payload as SyncRequiredScreensPayload;
+        return {
+          state:
+            state.routes[state.index]?.key === routeKey
+              ? insertRequiredRoutes(state, required)
+              : state,
+          affectedRouteKey: undefined,
+        };
       }
       if (!isStackAction(action)) {
         return original.getStateForAction(state, action, options);
@@ -123,50 +149,65 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
         case 'PUSH':
         case 'NAVIGATE': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
 
           const getId = getIdFunction();
           const id = getId?.({ params: action.payload.params });
           const activeRoutes = state.routes.slice(0, state.index + 1);
           const preloadedRoutes = state.routes.slice(state.index + 1);
-          const isPreview = isPreviewAction(action);
-          const activeMatch =
-            id === undefined
-              ? undefined
-              : activeRoutes.findLast(
-                  (route) =>
-                    route.name === action.payload.name && id === getId?.({ params: route.params })
-                );
-          const previewRoute =
-            isPreview && !activeMatch
-              ? preloadedRoutes.find(
-                  (route) => route.name === action.payload.name && id === route.key
-                )
-              : undefined;
+          const previewKey = getPreviewKey(action);
+          const previewRoute = preloadedRoutes.find(
+            (route) => route.key === previewKey && route.name === action.payload.name
+          );
           const currentRoute = activeRoutes[state.index]!;
           const shouldCreateSingularRoute =
             action.type === 'NAVIGATE' &&
-            !isPreview &&
+            !previewRoute &&
             id === undefined &&
             currentRoute.name === action.payload.name &&
-            getSingularId(currentRoute.name, { params: currentRoute.params }) !==
-              getSingularId(action.payload.name, { params: action.payload.params });
-          const baseAction =
-            isPreview && !activeMatch ? { ...action, type: 'PUSH' as const } : action;
+            getSingularId(currentRoute.name, {
+              params: currentRoute.params,
+            }) !==
+              getSingularId(action.payload.name, {
+                params: action.payload.params,
+              });
           const routeGetIdList = { ...options.routeGetIdList };
           if (getId) {
             routeGetIdList[action.payload.name] = getId;
           }
-          if (previewRoute) {
-            const previewParams = previewRoute.params;
-            const actionParams = action.payload.params;
-            routeGetIdList[action.payload.name] = ({ params }) =>
-              params === previewParams || params === actionParams ? id : getId?.({ params });
-          }
-
           let actionResult: ReturnType<typeof original.getStateForAction>;
-          if (shouldCreateSingularRoute) {
+          if (previewRoute) {
+            // Native committed this exact React child. Name/getId matching can select a
+            // different preload after reopen, or an active route in a nested navigator.
+            const route = attachRouteState(
+              {
+                ...previewRoute,
+                path:
+                  (action.type === 'NAVIGATE' ? action.payload.path : undefined) ??
+                  previewRoute.path,
+                params: {
+                  ...(action.type === 'NAVIGATE' && action.payload.merge
+                    ? previewRoute.params
+                    : {}),
+                  ...action.payload.params,
+                  [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
+                },
+              },
+              action
+            );
+            actionResult = {
+              state: {
+                ...state,
+                index: activeRoutes.length,
+                routes: activeRoutes.concat(
+                  route,
+                  preloadedRoutes.filter((r) => r.key !== previewKey)
+                ),
+              },
+              affectedRouteKey: route.key,
+            };
+          } else if (shouldCreateSingularRoute) {
             const minter = createRouteKeyMinter(state);
             const params = action.payload.merge
               ? { ...currentRoute.params, ...action.payload.params }
@@ -188,14 +229,15 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
                 routes: activeRoutes.concat(route, preloadedRoutes),
               },
               affectedRouteKey: route.key,
+              browserHistory: { type: 'push' },
             };
           } else {
-            actionResult = original.getStateForAction(state, baseAction, {
+            actionResult = original.getStateForAction(state, action, {
               ...options,
               routeGetIdList,
             });
           }
-          if (!actionResult) {
+          if (!isActionHandled(actionResult)) {
             return actionResult;
           }
 
@@ -203,7 +245,11 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
           const result = actionResult.state;
           if (actionSingularOptions) {
             const filteredState = filterSingular(result, getId);
-            return { state: filteredState, affectedRouteKey };
+            return {
+              ...actionResult,
+              state: filteredState,
+              browserHistory: getStackBrowserHistoryAction(state, filteredState, action),
+            };
           }
 
           const zoomTransitionId = getZoomTransitionIdFromAction(action);
@@ -217,6 +263,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
               },
             };
             return {
+              ...actionResult,
               state: {
                 ...result,
                 routes: result.routes.map((route, index) =>
@@ -227,14 +274,14 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
             };
           }
 
-          return { state: result, affectedRouteKey };
+          return actionResult;
         }
         case 'PRELOAD': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
           const actionResult = original.getStateForAction(state, action, options);
-          if (!actionResult) {
+          if (!isActionHandled(actionResult)) {
             return actionResult;
           }
           const affectedRouteKey = actionResult.affectedRouteKey;
@@ -265,6 +312,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
           }
 
           return {
+            ...actionResult,
             state:
               routes === actionResult.state.routes
                 ? actionResult.state
@@ -344,10 +392,6 @@ function filterSingular<
   };
 }
 
-export const StackRouter: typeof RNStackRouter = (options) => {
-  const router = RNStackRouter(options);
-  return {
-    ...router,
-    ...stackRouterOverride(router),
-  };
-};
+export const StackRouter = extendRouter(RNStackRouter, ({ baseRouter }) =>
+  stackRouterOverride(baseRouter)
+);

@@ -51,8 +51,8 @@ export function PlatformAndDeviceForm() {
     <div className="flex flex-wrap gap-4">
       <div className="flex flex-wrap gap-4">
         <SelectCard
-          imgSrc="/static/images/get-started/android-device.png"
-          darkImgSrc="/static/images/get-started/android-device-dark.png"
+          imgSrc="/static/images/get-started/android-device.webp"
+          darkImgSrc="/static/images/get-started/android-device-dark.webp"
           title="Android device"
           alt="Android device"
           isSelected={platform === 'android' && device === 'physical'}
@@ -61,8 +61,8 @@ export function PlatformAndDeviceForm() {
           }}
         />
         <SelectCard
-          imgSrc="/static/images/get-started/ios-device.png"
-          darkImgSrc="/static/images/get-started/ios-device-dark.png"
+          imgSrc="/static/images/get-started/ios-device.webp"
+          darkImgSrc="/static/images/get-started/ios-device-dark.webp"
           title="iOS device"
           alt="iOS device"
           isSelected={platform === 'ios' && device === 'physical'}
@@ -73,8 +73,8 @@ export function PlatformAndDeviceForm() {
       </div>
       <div className="flex flex-wrap gap-4">
         <SelectCard
-          imgSrc="/static/images/get-started/android-emulator.png"
-          darkImgSrc="/static/images/get-started/android-emulator-dark.png"
+          imgSrc="/static/images/get-started/android-emulator.webp"
+          darkImgSrc="/static/images/get-started/android-emulator-dark.webp"
           title="Android Emulator"
           alt="Android Emulator"
           isSelected={platform === 'android' && device === 'simulated'}
@@ -83,8 +83,8 @@ export function PlatformAndDeviceForm() {
           }}
         />
         <SelectCard
-          imgSrc="/static/images/get-started/ios-simulator.png"
-          darkImgSrc="/static/images/get-started/ios-simulator-dark.png"
+          imgSrc="/static/images/get-started/ios-simulator.webp"
+          darkImgSrc="/static/images/get-started/ios-simulator-dark.webp"
           title="iOS Simulator"
           alt="iOS Simulator"
           isSelected={platform === 'ios' && device === 'simulated'}

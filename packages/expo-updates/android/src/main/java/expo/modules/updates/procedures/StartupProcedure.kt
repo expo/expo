@@ -2,6 +2,7 @@ package expo.modules.updates.procedures
 
 import android.content.Context
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.BuildData
 import expo.modules.updates.db.UpdatesDatabase
@@ -11,6 +12,7 @@ import expo.modules.updates.errorrecovery.ErrorRecovery
 import expo.modules.updates.errorrecovery.ErrorRecoveryDelegate
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.NoDatabaseLauncher
+import expo.modules.updates.loader.AssetsFailedToLoadException
 import expo.modules.updates.loader.FileDownloader
 import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.LoaderTask
@@ -18,6 +20,7 @@ import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.loader.UpdateDirective
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogger
+import expo.modules.updatesinterface.UpdatesLogMessage
 import expo.modules.updates.manifest.Update
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.statemachine.UpdatesStateEvent
@@ -80,7 +83,7 @@ class StartupProcedure(
     logger,
     object : LoaderTask.LoaderTaskCallback {
       override fun onFailure(e: Exception) {
-        logger.error("UpdatesController loaderTask onFailure", e, UpdatesErrorCode.None)
+        logger.error(UpdatesLogMessage.ErrorRecoveryStartupFailed, e, mapOf("error" to e.localizedMessageWithCauseLocalizedMessage()))
         launcher = NoDatabaseLauncher(context, logger, e, procedureScope)
         emergencyLaunchException = e
         notifyController()
@@ -155,7 +158,12 @@ class StartupProcedure(
             if (exception == null) {
               throw AssertionError("Background update with error status must have a nonnull exception object")
             }
-            logger.error("UpdatesController onBackgroundUpdateFinished", exception, UpdatesErrorCode.Unknown)
+            logger.errorForLoadFailure(
+              UpdatesLogMessage.StartupRemoteLoadFailed,
+              UpdatesLogMessage.StartupRemoteLoadUnreachable,
+              exception,
+              AssetsFailedToLoadException.failureGroups(exception)
+            )
             remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
 
             // Since errors can happen through a number of paths, we do these checks
@@ -164,18 +172,21 @@ class StartupProcedure(
               UpdatesStateValue.Idle -> {
                 procedureContext.processStateEvent(UpdatesStateEvent.Download())
                 procedureContext.processStateEvent(
-                  UpdatesStateEvent.DownloadError(exception.message ?: "")
+                  UpdatesStateEvent.DownloadError(exception.localizedMessageWithCauseLocalizedMessage())
                 )
               }
               UpdatesStateValue.Checking -> {
                 procedureContext.processStateEvent(
-                  UpdatesStateEvent.CheckError(exception.message ?: "")
+                  UpdatesStateEvent.CheckError(exception.localizedMessageWithCauseLocalizedMessage())
                 )
               }
+              // The machine accepts no events while restarting. errorForLoadFailure above logged
+              // the failure.
+              UpdatesStateValue.Restarting -> {}
               else -> {
                 // .downloading
                 procedureContext.processStateEvent(
-                  UpdatesStateEvent.DownloadError(exception.message ?: "")
+                  UpdatesStateEvent.DownloadError(exception.localizedMessageWithCauseLocalizedMessage())
                 )
               }
             }
@@ -275,7 +286,13 @@ class StartupProcedure(
           } catch (e: CancellationException) {
             throw e
           } catch (e: Exception) {
-            logger.error("UpdatesController loadRemoteUpdate onFailure", e, UpdatesErrorCode.UpdateFailedToLoad, launchedUpdate?.loggingId, null)
+            logger.errorForLoadFailure(
+              UpdatesLogMessage.StartupErrorRecoveryLoadFailed,
+              UpdatesLogMessage.StartupErrorRecoveryLoadUnreachable,
+              e,
+              AssetsFailedToLoadException.failureGroups(e),
+              launchedUpdate?.loggingId
+            )
             setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
           }
         }
@@ -294,6 +311,11 @@ class StartupProcedure(
         }
         procedureScope.launch {
           val launchedUpdate = launchedUpdate ?: return@launch
+          logger.warn(
+            UpdatesLogMessage.StartupMarkFailedLaunch,
+            values = mapOf("updateId" to launchedUpdate.loggingId),
+            updateId = launchedUpdate.loggingId
+          )
           database.updateDao().incrementFailedLaunchCount(launchedUpdate)
         }
       }

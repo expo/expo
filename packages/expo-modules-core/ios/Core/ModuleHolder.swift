@@ -53,18 +53,12 @@ public final class ModuleHolder {
     self._name = name
     self.module = module
     self.definition = ModuleHolder.buildDefinition(for: module)
+    (module as? BaseModule)?.holder = self
     post(event: .moduleCreate)
   }
 
-  /// Combines the user-authored definition with the entries synthesized by the
-  /// `@ExpoModule` macro on this module's class (if any). The macro emits a
-  /// `_synthesizedDefinition()` method returning an `[AnyDefinition]` array of the
-  /// `Function` / `Property` / `Constructor` entries it generated from `@JS`
-  /// members. Those entries are prepended to the user's definitions and the
-  /// whole list is fed back through `ModuleDefinition.init` so the merged
-  /// result is rebucketed (into `functions`, `properties`, etc.) just like a
-  /// hand-written definition. Modules that don't use the macro fall through
-  /// the empty-synthesized fast path and return the user's definition unchanged.
+  /// Merges the entries from `_synthesizedDefinition()` into the user-authored definition. Only module
+  /// binaries built with earlier `@ExpoModule` macros return any, so other modules take the fast path.
   private static func buildDefinition(for module: AnyModule) -> ModuleDefinition {
     let userDefinition = module.definition()
     let synthesized = module._synthesizedDefinition()
@@ -136,6 +130,11 @@ public final class ModuleHolder {
       log.info("Creating JS object for module '\(name)'")
       let object = try definition.build(appContext: appContext)
 
+      // Install the `@SharedObject` classes the `@ExpoModule` macro registers by type.
+      for classType in type(of: module)._classTypes {
+        object.setProperty(classType._jsName, value: try JavaScriptBindings.buildSharedObjectClass(classType, appContext: appContext))
+      }
+
       // Install the `@JS` members the `@ExpoModule` macro binds directly into the JS object
       // (the direct-JSI path). A no-op for modules that don't use the macro.
       try module._decorateModule(object: object, in: appContext.runtime)
@@ -158,6 +157,18 @@ public final class ModuleHolder {
   }
 
   func post(event: EventName) {
+    // The app lifecycle events come from `UIApplication`/`NSApplication` notifications on the main thread.
+    nonisolated(unsafe) let module = module
+    switch event {
+    case .appEntersForeground:
+      MainActor.assumeIsolated { module.appWillEnterForeground() }
+    case .appBecomesActive:
+      MainActor.assumeIsolated { module.appDidBecomeActive() }
+    case .appEntersBackground:
+      MainActor.assumeIsolated { module.appDidEnterBackground() }
+    default:
+      break
+    }
     listeners(forEvent: event).forEach {
       try? $0.call(module, nil)
     }
@@ -178,29 +189,65 @@ public final class ModuleHolder {
 
   // MARK: - Privates
 
-  /// Installs host functions that the JavaScript `EventEmitter` implementation calls when
-  /// the number of listeners for an event switches between zero and non-zero. They notify
-  /// the module through the `didStartListening` and `didStopListening` lifecycle hooks.
+  /// Sets the native hook that the event emitter calls when the number of listeners for an event
+  /// switches between zero and non-zero. The hook notifies the module through the `didStartListening`
+  /// and `didStopListening` lifecycle hooks, and calls the `OnStartObserving` and `OnStopObserving` definitions.
   @JavaScriptActor
   private func installListeningHooks(on object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) {
-    let startListening = runtime.createFunction("__expo_onStartListeningToEvent") {
-      [weak module = self.module] _, arguments in
-      guard let module, arguments.count > 0 else {
-        return .undefined
+    let eventObservers =
+      definition.eventObservers.isEmpty
+      ? nil
+      : EventObservers(definitions: definition.eventObservers)
+    let hookContext = ListeningHookContext(module: module, appContext: appContext, eventObservers: eventObservers)
+
+    // The emitter owns this retained reference and releases it together with the object's native state.
+    let context = Unmanaged.passRetained(hookContext).toOpaque()
+
+    object.withUnsafePointee { objectPointer in
+      runtime.withUnsafePointee { runtimePointer in
+        setJSListeningHook(
+          runtimePointer: runtimePointer,
+          objectPointer: objectPointer,
+          context: context,
+          hook: { context, eventName, isListening in
+            Unmanaged<ListeningHookContext>.fromOpaque(context)
+              .takeUnretainedValue()
+              .call(event: String(cString: eventName), isListening: isListening)
+          },
+          releaseContext: { context in
+            Unmanaged<ListeningHookContext>.fromOpaque(context).release()
+          }
+        )
       }
-      module.didStartListening(event: try arguments[0].asString())
-      return .undefined
     }
-    let stopListening = runtime.createFunction("__expo_onStopListeningToEvent") {
-      [weak module = self.module] _, arguments in
-      guard let module, arguments.count > 0 else {
-        return .undefined
+  }
+
+  private final class ListeningHookContext {
+    weak var module: AnyModule?
+    weak var appContext: AppContext?
+    let eventObservers: EventObservers?
+
+    init(module: AnyModule, appContext: AppContext?, eventObservers: EventObservers?) {
+      self.module = module
+      self.appContext = appContext
+      self.eventObservers = eventObservers
+    }
+
+    func call(event: String, isListening: Bool) {
+      if isListening {
+        module?.didStartListening(event: event)
+      } else {
+        module?.didStopListening(event: event)
       }
-      module.didStopListening(event: try arguments[0].asString())
-      return .undefined
+      guard let eventObservers, let appContext else {
+        return
+      }
+      if isListening {
+        eventObservers.didStartListening(event: event, appContext: appContext)
+      } else {
+        eventObservers.didStopListening(event: event, appContext: appContext)
+      }
     }
-    object.defineProperty("__expo_onStartListeningToEvent", value: startListening.asValue(), options: [])
-    object.defineProperty("__expo_onStopListeningToEvent", value: stopListening.asValue(), options: [])
   }
 
   // MARK: - Exceptions

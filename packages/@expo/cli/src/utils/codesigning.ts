@@ -388,17 +388,9 @@ function validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
 }
 
 function actorCanGetProjectDevelopmentCertificate(actor: Actor, app: App) {
-  const owningAccountId = app.ownerAccount.id;
-
-  const owningAccountIsActorPrimaryAccount =
-    actor.__typename === 'User' || actor.__typename === 'SSOUser'
-      ? actor.primaryAccount.id === owningAccountId
-      : false;
-  const userHasPublishPermissionForOwningAccount = !!actor.accounts
-    .find((account) => account.id === owningAccountId)
-    ?.users?.find((userPermission) => userPermission.actor.id === actor.id)
-    ?.permissions?.includes('PUBLISH');
-  return owningAccountIsActorPrimaryAccount || userHasPublishPermissionForOwningAccount;
+  return !!actor.accounts
+    .find((account) => account.id === app.ownerAccount.id)
+    ?.viewerUserPermission2.effectivePermissions.includes('RUN');
 }
 
 async function fetchAndCacheNewDevelopmentCodeSigningInfoAsync(

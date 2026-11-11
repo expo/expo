@@ -14,6 +14,7 @@ internal enum PageIndexDisplayMode: String, Enumerable {
   case always
   case never
 
+#if !os(macOS)
   var asSwiftUI: PageTabViewStyle.IndexDisplayMode {
     switch self {
     case .automatic: .automatic
@@ -21,6 +22,7 @@ internal enum PageIndexDisplayMode: String, Enumerable {
     case .never: .never
     }
   }
+#endif
 }
 
 internal struct TabViewStyleModifier: ViewModifier, Record {
@@ -31,11 +33,15 @@ internal struct TabViewStyleModifier: ViewModifier, Record {
   func body(content: Content) -> some View {
     switch type ?? .page {
     case .page:
+#if os(macOS)
+      content.tabViewStyle(.automatic)
+#else
       content.tabViewStyle(.page(indexDisplayMode: (indexDisplayMode ?? .automatic).asSwiftUI))
+#endif
     case .automatic:
       content.tabViewStyle(.automatic)
     case .sidebarAdaptable:
-      if #available(iOS 18.0, tvOS 18.0, *) {
+      if #available(iOS 18.0, macOS 15.0, tvOS 18.0, *) {
         content.tabViewStyle(.sidebarAdaptable)
       } else {
         content.tabViewStyle(.automatic)

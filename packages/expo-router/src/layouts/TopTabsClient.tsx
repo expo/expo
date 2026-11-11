@@ -18,16 +18,46 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from '../react-navigation/native';
-import { unstable_integrateWithRouter } from '../standard-navigation';
+import { integrateWithRouter } from '../standard-navigation';
 import {
   appendMissingPlaceholderTabDescriptors,
   appendMissingPlaceholderTabRoutes,
 } from '../standard-navigation/appendMissingPlaceholderTabRoutes';
+import type { StandardNavigatorCreatePropsFactoryDeps } from '../standard-navigation/types';
+import { createBaseTabProps } from './createBaseTabProps';
 
 // Keep React Navigation client-only so the entry evaluates in React Server Components.
 export * from '../react-navigation/material-top-tabs';
 
-const TopTabs = unstable_integrateWithRouter<
+/**
+ * Creates the props required to integrate Expo Router's JavaScript top tabs navigator.
+ *
+ * @param dependencies The navigation state and dispatch functions provided to a `createProps`
+ * factory.
+ * @returns The JavaScript top tabs navigator props.
+ *
+ * @example
+ * ```tsx
+ * import { TabRouter, integrateWithRouter } from 'expo-router';
+ * import { createJSTopTabsProps } from 'expo-router/js-top-tabs';
+ * import { navigator } from './navigator';
+ *
+ * export const TopTabs = integrateWithRouter(navigator, TabRouter, {
+ *   createProps: createJSTopTabsProps,
+ * });
+ * ```
+ */
+export function createJSTopTabsProps(
+  args: StandardNavigatorCreatePropsFactoryDeps<TabNavigationState<ParamListBase>>
+): MaterialTopTabNavigatorCreateProps {
+  const { dispatchSync } = args;
+  return {
+    ...createBaseTabProps(args),
+    navigateToTabSync: (name, params) => dispatchSync(CommonActions.navigate(name, params)),
+  };
+}
+
+const TopTabs = integrateWithRouter<
   MaterialTopTabNavigationOptions,
   TabNavigationState<ParamListBase>,
   MaterialTopTabNavigationEventMap,
@@ -35,13 +65,10 @@ const TopTabs = unstable_integrateWithRouter<
   TabRouterOptions,
   MaterialTopTabNavigatorCreateProps
 >(createStandardMaterialTopTabNavigator, TabRouter, {
+  activityDefaultThreshold: 1,
   processDescriptors: appendMissingPlaceholderTabDescriptors,
   processState: appendMissingPlaceholderTabRoutes,
-  createProps: ({ state, dispatch, dispatchSync }) => ({
-    routeNames: state.routeNames,
-    preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
-    navigateToTabSync: (name, params) => dispatchSync(CommonActions.navigate(name, params)),
-  }),
+  createProps: createJSTopTabsProps,
 });
 
 export type JSTopTabsProps = ComponentProps<typeof TopTabs>;

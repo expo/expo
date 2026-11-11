@@ -17,6 +17,10 @@ internal protocol AnyConcurrentFunctionDefinition: AnyFunctionDefinition {
  As opposed to `AsyncFunctionDefinition`, it can leverage the new Swift's concurrency model and take the async/await closure.
  */
 public class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyConcurrentFunctionDefinition, @unchecked Sendable {
+  public var _definitionClassification: DefinitionClassification {
+    return DefinitionClassification(kind: .function(self))
+  }
+
   typealias ClosureType = @Sendable (Args) async throws -> sending ReturnType
 
   let body: ClosureType
@@ -97,7 +101,7 @@ public class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyCo
       do {
         // Promote the borrowed `this` only when the function converts it to its owner; the owning
         // value stays within the decode phase.
-        let owner: JavaScriptValue = self.takesOwner ? this.copied(in: try appContext.runtime) : .undefined
+        let owner: JavaScriptValue = self.takesOwner ? this.copied(in: try appContext.runtime) : .undefined()
         argumentsTuple = try self.decodeArguments(appContext: appContext, this: owner, arguments: arguments)
       } catch let error as Exception {
         throw FunctionCallException(self.name).causedBy(error)
@@ -116,7 +120,7 @@ public class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyCo
   @JavaScriptActor
   private func decodeArguments(
     appContext: AppContext,
-    this: JavaScriptValue,
+    this: borrowing JavaScriptValue,
     arguments: borrowing JavaScriptValuesBuffer
   ) throws -> Args {
     try validateArgumentsNumber(function: self, received: arguments.count)

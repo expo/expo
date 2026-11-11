@@ -17,15 +17,28 @@ interface Playable {
   var onPlaybackStateChange: ((Boolean) -> Unit)?
   var onRelease: (() -> Unit)?
 
+  /**
+   * Starts playback through `AudioModule`, which requests audio focus first. Playback started outside
+   * JS (the notification, the lock screen, a headset or Bluetooth button) goes through `requestPlay`
+   * too, so the player never plays without holding focus.
+   */
+  var onPlayRequest: (() -> Unit)?
+
   val player: Player
   val appContext: AppContext?
 
   val currentTime: Double get() = player.currentPosition / 1000.0
-  val duration: Double get() = if (player.duration != C.TIME_UNSET) player.duration / 1000.0 else 0.0
+  val duration: Double get() = if (player.duration != C.TIME_UNSET) {
+    player.duration / 1000.0
+  } else {
+    0.0
+  }
   val isPlaying: Boolean get() = player.isPlaying
   val volume: Float get() = player.volume
 
   fun play() = player.play()
+
+  fun requestPlay() = onPlayRequest?.invoke() ?: player.play()
 
   fun pause() = player.pause()
 

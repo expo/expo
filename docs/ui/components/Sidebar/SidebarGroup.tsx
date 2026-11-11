@@ -59,7 +59,7 @@ export const SidebarGroup = ({ route, parentRoute }: SidebarNodeProps) => {
       onAllCompleted?: () => void;
     }
   > = {
-    'EAS tutorial': {
+    'Expo Services tutorial': {
       name: 'EAS_TUTORIAL',
       resetHref: '/tutorial/eas/introduction/',
       onAllCompleted: reportEasTutorialCompleted,
@@ -224,21 +224,23 @@ function getIconElement(iconName?: string) {
       return DataIcon;
     case 'Development process':
       return CodeSquare01Icon;
-    case 'EAS Build':
+    case 'Expo Build':
       return Cube01Icon;
-    case 'EAS Submit':
+    case 'Expo Submit':
       return EasSubmitIcon;
-    case 'EAS Update':
+    case 'Expo Update':
       return LayersTwo02Icon;
-    case 'EAS Metadata':
+    case 'Expo Metadata':
       return EasMetadataIcon;
-    case 'EAS Insights':
+    case 'Expo Insights':
       return DataIcon;
-    case 'EAS Workflows':
+    case 'Expo Workflows':
       return Dataflow03Icon;
-    case 'EAS Hosting':
+    case 'Agentic workflows':
+      return Star06Icon;
+    case 'Expo Hosting':
       return Cloud01Icon;
-    case 'EAS Observe':
+    case 'Expo Observe':
       return ActivityIcon;
     case 'Expo Modules API':
       return CpuChip01Icon;
@@ -260,7 +262,7 @@ function getIconElement(iconName?: string) {
       return HandWaveIcon;
     case 'Build with AI tutorial':
       return Star06Icon;
-    case 'EAS tutorial':
+    case 'Expo Services tutorial':
       return PlanEnterpriseIcon;
     case 'CI/CD tutorial':
       return Dataflow03Icon;

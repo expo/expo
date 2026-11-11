@@ -1,7 +1,7 @@
 import { AsyncLocalStorage } from 'async_hooks';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { glob } from 'glob';
+import { glob } from 'node:fs/promises';
 import ora from 'ora';
 import path from 'path';
 
@@ -14,7 +14,7 @@ import {
   isExternalPackage,
   SPMPackageSource,
 } from './ExternalPackage';
-import { SPMProduct } from './SPMConfig.types';
+import { FrameworkTarget, SPMProduct } from './SPMConfig.types';
 import { resolvePackagePath } from './resolvePackage';
 
 /**
@@ -52,6 +52,32 @@ export function runWithLogPrefix<T>(prefix: string, fn: () => T): T {
 
 export function getActiveLogPrefix(): string | null {
   return _logPrefixStorage.getStore() ?? null;
+}
+
+/**
+ * Resolves the directory holding a framework target's xcframework.
+ *
+ * By default the xcframework ships inside the package being built. Some packages ship their
+ * binaries in a separate npm package instead (e.g. `@shopify/react-native-skia` publishes its
+ * Skia slices as `react-native-skia-apple-ios`); those targets name it in `package` and their
+ * `path` is then relative to that package's root.
+ */
+export function resolveFrameworkTargetPath(packagePath: string, target: FrameworkTarget): string {
+  if (!target.package) {
+    return path.join(packagePath, target.path);
+  }
+  let packageJsonPath: string;
+  try {
+    packageJsonPath = require.resolve(`${target.package}/package.json`, { paths: [packagePath] });
+  } catch {
+    throw new Error(
+      `Cannot find "${target.package}", the package that ships the "${target.name}" xcframework. ` +
+        `Its spm.config.json expects it next to "${packagePath}", so it is either not a dependency ` +
+        `of that package anymore or node_modules is out of date. Run \`pnpm install\` and, if it ` +
+        `still fails, update the framework targets in the package's spm.config.json.`
+    );
+  }
+  return path.join(path.dirname(packageJsonPath), target.path);
 }
 
 /**
@@ -225,19 +251,16 @@ export const validatePodNamesAsync = async (
     }
 
     // Look for matching podspec
-    const foundPodspecs = await glob(podspecPattern, {
-      cwd: searchPath,
-      absolute: false,
-    });
+    const foundPodspecs = await Array.fromAsync(
+      glob(podspecPattern, { cwd: searchPath })
+    );
 
     if (foundPodspecs.length === 0) {
       // Find all podspecs in the package to help debug
-      const allPodspecs = await glob(
-        isExternalPackage(pkg) ? '*.podspec' : '{*.podspec,ios/*.podspec,apple/*.podspec}',
-        {
+      const allPodspecs = await Array.fromAsync(
+        glob(isExternalPackage(pkg) ? '*.podspec' : '{*.podspec,ios/*.podspec,apple/*.podspec}', {
           cwd: searchPath,
-          absolute: false,
-        }
+        })
       );
 
       errors.push({

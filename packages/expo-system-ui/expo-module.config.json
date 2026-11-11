@@ -4,6 +4,11 @@
     "modules": ["ExpoSystemUIModule"]
   },
   "android": {
-    "modules": ["expo.modules.systemui.SystemUIModule"]
+    "modules": ["expo.modules.systemui.SystemUIModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.systemui",
+      "repository": "local-maven-repo"
+    }
   }
 }

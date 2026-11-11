@@ -4,6 +4,7 @@ package expo.modules.ui
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.view.MotionEvent
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
@@ -24,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.Layout
@@ -38,6 +40,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.facebook.react.uimanager.events.NativeGestureUtil
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -50,6 +53,7 @@ import expo.modules.kotlin.views.ExpoComposeView
 import expo.modules.kotlin.views.OptimizedComposeProps
 import expo.modules.ui.colors.isDynamicColorSupported
 import expo.modules.ui.colors.seedColorScheme
+import expo.modules.ui.colors.withOverrides
 
 internal enum class ExpoLayoutDirection(val value: String) : Enumerable {
   LeftToRight("leftToRight"),
@@ -67,6 +71,7 @@ internal enum class ExpoLayoutDirection(val value: String) : Enumerable {
 internal data class HostProps(
   val colorScheme: MutableState<ExpoColorScheme?> = mutableStateOf(null),
   val seedColor: MutableState<android.graphics.Color?> = mutableStateOf(null),
+  val colorOverrides: MutableState<Map<String, android.graphics.Color>?> = mutableStateOf(null),
   val layoutDirection: MutableState<ExpoLayoutDirection> = mutableStateOf(ExpoLayoutDirection.LeftToRight),
   val useViewportSizeMeasurement: MutableState<Boolean> = mutableStateOf(false),
   val ignoreSafeAreaKeyboardInsets: MutableState<Boolean> = mutableStateOf(false),
@@ -80,17 +85,33 @@ internal enum class ExpoColorScheme(val value: String) : Enumerable {
 
   fun toColorScheme(context: Context): ColorScheme {
     return when (this) {
-      LIGHT -> if (isDynamicColorSupported) dynamicLightColorScheme(context) else lightColorScheme()
-      DARK -> if (isDynamicColorSupported) dynamicDarkColorScheme(context) else darkColorScheme()
+      LIGHT -> if (isDynamicColorSupported) {
+        dynamicLightColorScheme(context)
+      } else {
+        lightColorScheme()
+      }
+      DARK -> if (isDynamicColorSupported) {
+        dynamicDarkColorScheme(context)
+      } else {
+        darkColorScheme()
+      }
     }
   }
 
   companion object {
     fun defaultColorScheme(context: Context, isSystemInDarkTheme: Boolean): ColorScheme {
       return if (isDynamicColorSupported) {
-        if (isSystemInDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+        if (isSystemInDarkTheme) {
+          dynamicDarkColorScheme(context)
+        } else {
+          dynamicLightColorScheme(context)
+        }
       } else {
-        if (isSystemInDarkTheme) darkColorScheme() else lightColorScheme()
+        if (isSystemInDarkTheme) {
+          darkColorScheme()
+        } else {
+          lightColorScheme()
+        }
       }
     }
   }
@@ -103,6 +124,56 @@ internal class HostView(context: Context, appContext: AppContext) :
   private val onLayoutContent by EventDispatcher<LayoutContentEvent>()
   private var lastDispatchedContentSize: IntSize? = null
 
+  // The size a child fraction was resolved against, in dp.
+  // matchContents would otherwise publish the percentage result and the next pass divides it again.
+  private var percentageBaseWidthDp: Double? = null
+  private var percentageBaseHeightDp: Double? = null
+
+  /**
+   * True while this view passes down an `ACTION_CANCEL` that came from its React Native parent,
+   * not from a Compose gesture detector. React Native already owns that gesture: the usual cause is
+   * the JS responder's view intercepting the stream, which cancels its native children.
+   */
+  internal var isDispatchingCancelFromParent = false
+    private set
+
+  // Set by a hosted `RNHostView` under the down. That content handles its touches in JS.
+  internal var reactNativeContentHit = false
+  private var ownsNativeGesture = false
+
+  override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+      reactNativeContentHit = false
+      ownsNativeGesture = false
+    }
+
+    val handled = if (ev.actionMasked != MotionEvent.ACTION_CANCEL) {
+      super.dispatchTouchEvent(ev)
+    } else {
+      isDispatchingCancelFromParent = true
+      try {
+        super.dispatchTouchEvent(ev)
+      } finally {
+        isDispatchingCancelFromParent = false
+      }
+    }
+
+    when (ev.actionMasked) {
+      // Compose only handles a down that a touch handler is under, like a native view.
+      // Then cancel the JS touch, so a JS responder around this view can't take the gesture.
+      MotionEvent.ACTION_DOWN -> if (handled && !reactNativeContentHit) {
+        ownsNativeGesture = true
+        NativeGestureUtil.notifyNativeGestureStarted(this, ev)
+      }
+      // On a cancel, a native parent like a scroll view took over and ends the gesture itself.
+      MotionEvent.ACTION_UP -> if (ownsNativeGesture) {
+        ownsNativeGesture = false
+        NativeGestureUtil.notifyNativeGestureEnded(this, ev)
+      }
+    }
+    return handled
+  }
+
   @Composable
   override fun ComposableScope.Content() {
     val context = LocalContext.current
@@ -112,11 +183,13 @@ internal class HostView(context: Context, appContext: AppContext) :
       null -> isSystemInDarkTheme()
     }
     val seedArgb = props.seedColor.value?.composeOrNull?.toArgb()
-    val colorScheme = when {
-      seedArgb != null -> seedColorScheme(seedArgb, isDark)
-      else -> props.colorScheme.value?.toColorScheme(context)
-        ?: ExpoColorScheme.defaultColorScheme(context, isSystemInDarkTheme())
+    val seededScheme = remember(seedArgb, isDark) {
+      seedArgb?.let { seedColorScheme(it, isDark) }
     }
+    val baseColorScheme = seededScheme
+      ?: props.colorScheme.value?.toColorScheme(context)
+      ?: ExpoColorScheme.defaultColorScheme(context, isSystemInDarkTheme())
+    val colorScheme = baseColorScheme.withOverrides(props.colorOverrides.value.orEmpty())
     val layoutDirection = props.layoutDirection.value.toLayoutDirection()
 
     // Material3's `MaterialTheme` does not provide `LocalContentColor` — only `Surface` does — so
@@ -157,8 +230,20 @@ internal class HostView(context: Context, appContext: AppContext) :
 
     Layout(
       modifier = Modifier
-        .then(if (props.matchContentsHorizontal.value == true) Modifier.wrapContentWidth() else Modifier)
-        .then(if (props.matchContentsVertical.value == true) Modifier.wrapContentHeight() else Modifier)
+        .then(
+          if (props.matchContentsHorizontal.value == true) {
+            Modifier.wrapContentWidth()
+          } else {
+            Modifier
+          }
+        )
+        .then(
+          if (props.matchContentsVertical.value == true) {
+            Modifier.wrapContentHeight()
+          } else {
+            Modifier
+          }
+        )
         .onSizeChanged { size -> dispatchOnLayoutContent(size, density) },
       content = content
     ) { measurables, constraints ->
@@ -186,19 +271,66 @@ internal class HostView(context: Context, appContext: AppContext) :
           constraints.maxHeight
         }
       )
-      val placeables = measurables.map { it.measure(boundedConstraints) }
+      // `measure` does not read a child percentage, so apply it here when this host
+      // has a size on that axis. A child with no percentage keeps these constraints.
+      // Compose Row and Column do not read that percentage.
+      val definiteWidth = boundedConstraints.maxWidth.takeIf {
+        it != Constraints.Infinity && (boundedConstraints.minWidth == it || useViewportSizeMeasurement)
+      }
+      val definiteHeight = boundedConstraints.maxHeight.takeIf {
+        it != Constraints.Infinity && (boundedConstraints.minHeight == it || useViewportSizeMeasurement)
+      }
+      val placeables = measurables.map {
+        measureUniversalChild(it, boundedConstraints, definiteWidth, definiteHeight)
+      }
 
       val contentWidthPx = placeables.maxOfOrNull { it.width } ?: 0
       val contentHeightPx = placeables.maxOfOrNull { it.height } ?: 0
+      // A child percentage is a fraction of the safe area proposed above.
+      // Publishing that result as the view size makes the next pass resolve it again.
+      val widthFromPercentage = definiteWidth != null && measurables.any {
+        it.parentData.asUniversalLayoutParentData().dimensions.widthFraction != null
+      }
+      val heightFromPercentage = definiteHeight != null && measurables.any {
+        it.parentData.asUniversalLayoutParentData().dimensions.heightFraction != null
+      }
+      // setStyleSize replaces the pending setViewSize flush.
+      // Publish this base for a viewport fraction so both updates describe the same size.
+      percentageBaseWidthDp = if (useViewportSizeMeasurement && widthFromPercentage && definiteWidth != null) {
+        with(density) { definiteWidth.toDp().value.toDouble() }
+      } else {
+        null
+      }
+      percentageBaseHeightDp = if (useViewportSizeMeasurement && heightFromPercentage && definiteHeight != null) {
+        with(density) { definiteHeight.toDp().value.toDouble() }
+      } else {
+        null
+      }
 
       if (useViewportSizeMeasurement && (constraints.maxWidth == 0 || constraints.maxHeight == 0)) {
         with(density) {
-          val widthDp = contentWidthPx.toDp().value.toDouble()
-          val heightDp = contentHeightPx.toDp().value.toDouble()
+          val widthDp = if (widthFromPercentage) {
+            safeWidthPx.toDp().value.toDouble()
+          } else {
+            contentWidthPx.toDp().value.toDouble()
+          }
+          val heightDp = if (heightFromPercentage) {
+            safeHeightPx.toDp().value.toDouble()
+          } else {
+            contentHeightPx.toDp().value.toDouble()
+          }
 
           shadowNodeProxy.setViewSize(
-            if (constraints.maxWidth == 0) widthDp else Double.NaN,
-            if (constraints.maxHeight == 0) heightDp else Double.NaN
+            if (constraints.maxWidth == 0) {
+              widthDp
+            } else {
+              Double.NaN
+            },
+            if (constraints.maxHeight == 0) {
+              heightDp
+            } else {
+              Double.NaN
+            }
           )
         }
       }
@@ -225,12 +357,26 @@ internal class HostView(context: Context, appContext: AppContext) :
       val height = size.height.toDp().value
 
       if (matchContentsHorizontal == true || matchContentsVertical == true) {
-        val styleWidth = if (matchContentsHorizontal == true && width > 0) width else null
-        val styleHeight = if (matchContentsVertical == true && height > 0) height else null
-        shadowNodeProxy.setStyleSize(styleWidth?.toDouble(), styleHeight?.toDouble())
+        val styleWidth = if (matchContentsHorizontal == true) {
+          percentageBaseWidthDp ?: width.takeIf { it > 0 }?.toDouble()
+        } else {
+          null
+        }
+        val styleHeight = if (matchContentsVertical == true) {
+          percentageBaseHeightDp ?: height.takeIf { it > 0 }?.toDouble()
+        } else {
+          null
+        }
+        shadowNodeProxy.setStyleSize(styleWidth, styleHeight)
       }
 
-      onLayoutContent(LayoutContentEvent(width.toDouble(), height.toDouble()))
+      // `onSizeChanged` runs inside the Compose measure pass. Emitting the event here reaches
+      // Fabric event listeners synchronously (e.g. reanimated's `onEventDispatch` hook), which
+      // can flush mount items and re-enter `onMeasure` of a view that is mid-measure — Compose
+      // then throws "performMeasureAndLayout called during measure layout" and takes down the
+      // ReactHost. Post the dispatch so it runs after the measure pass completes.
+      // See https://github.com/expo/expo/issues/47625.
+      post { onLayoutContent(LayoutContentEvent(width.toDouble(), height.toDouble())) }
     }
   }
 
@@ -261,8 +407,16 @@ internal class HostView(context: Context, appContext: AppContext) :
     val matchContentsVertical = props.matchContentsVertical.value
     val composeView = findComposeView()
     composeView.layoutParams = LayoutParams(
-      if (matchContentsHorizontal == true) LayoutParams.WRAP_CONTENT else LayoutParams.MATCH_PARENT,
-      if (matchContentsVertical == true) LayoutParams.WRAP_CONTENT else LayoutParams.MATCH_PARENT
+      if (matchContentsHorizontal == true) {
+        LayoutParams.WRAP_CONTENT
+      } else {
+        LayoutParams.MATCH_PARENT
+      },
+      if (matchContentsVertical == true) {
+        LayoutParams.WRAP_CONTENT
+      } else {
+        LayoutParams.MATCH_PARENT
+      }
     )
   }
 

@@ -17,6 +17,7 @@ enum KeySize: Int, Enumerable {
   }
 }
 
+@SharedObject
 final class EncryptionKey: SharedObject {
   private var inner: CryptoKit.SymmetricKey
 
@@ -46,7 +47,27 @@ final class EncryptionKey: SharedObject {
     try self.init(bytes: bytes)
   }
 
-  var keySize: KeySize {
+  @JS
+  static func generate(size: KeySize?) async -> EncryptionKey {
+    return EncryptionKey(size: size ?? .aes256)
+  }
+
+  @JS("import")
+  static func importKey(rawKey: BinaryInput, encoding: DataEncoding?) async throws -> EncryptionKey {
+    switch rawKey {
+    case .bytes(let bytes):
+      return try EncryptionKey(bytes: bytes)
+    case .string(let keyString):
+      guard let encoding else {
+        throw MissingEncodingException()
+      }
+      return try EncryptionKey(string: keyString, encodedWith: encoding)
+    }
+  }
+
+  // `nonisolated` so `bytes` and `getAdditionalMemoryPressure()`, which aren't isolated, can read it.
+  @JS("size")
+  nonisolated var keySize: KeySize {
     // size is always verified when inner is created
     // swiftlint:disable:next force_unwrapping
     KeySize(rawValue: inner.bitCount)!
@@ -62,7 +83,13 @@ final class EncryptionKey: SharedObject {
     return keyBytes
   }
 
-  func encoded(with encoding: DataEncoding) -> String {
+  @JS("bytes")
+  func bytesData() async -> Data {
+    return bytes
+  }
+
+  @JS
+  func encoded(with encoding: DataEncoding) async -> String {
     bytes.getEncoded(with: encoding)
   }
 

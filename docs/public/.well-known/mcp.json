@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "transport": "http",
+  "url": "https://mcp.expo.dev/mcp",
+  "servers": [
+    {
+      "name": "expo",
+      "url": "https://mcp.expo.dev/mcp",
+      "transport": "http",
+      "authentication": "oauth2"
+    }
+  ]
+}

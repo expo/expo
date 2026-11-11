@@ -27,8 +27,16 @@ class DimensionsExporter(private val file: File) {
   }
 
   val width: Int
-    get() = if (isRotatedLandscape) metadata.outHeight else metadata.outWidth
+    get() = if (isRotatedLandscape) {
+      metadata.outHeight
+    } else {
+      metadata.outWidth
+    }
 
   val height
-    get() = if (isRotatedLandscape) metadata.outWidth else metadata.outHeight
+    get() = if (isRotatedLandscape) {
+      metadata.outWidth
+    } else {
+      metadata.outHeight
+    }
 }

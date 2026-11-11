@@ -4,7 +4,6 @@ import {
   getEnvVarDevString,
   serverPreludeSerializerPlugin,
 } from '../environmentVariableSerializerPlugin';
-import { installPackedMap } from '../packedMap';
 
 describe(serverPreludeSerializerPlugin, () => {
   it('updates lineCount after modifying the server prelude', () => {
@@ -71,13 +70,8 @@ describe(environmentVariableSerializerPlugin, () => {
     const data = {
       code: '(function (global) {\n//\n})(globalThis);',
       lineCount: 3,
-      map: undefined,
+      map: { mappings: ';AACA;A', names: [] },
     };
-    installPackedMap(data, [
-      [2, 0, 1, 0],
-      [3, 0],
-    ]);
-    const previousPackedMap = (data as any).__packedMap;
     const prelude = {
       path: '\0polyfill:environment-variables',
       output: [{ type: 'js/script', data }],
@@ -92,9 +86,7 @@ describe(environmentVariableSerializerPlugin, () => {
 
     expect(data.code).toBe(getEnvVarDevString());
     expect(data.lineCount).toBe(1);
-    expect((data as any).__packedMap).not.toBe(previousPackedMap);
-    expect((data as any).__packedMap.count).toBe(0);
-    expect(data.map).toEqual([]);
+    expect(data.map).toEqual({ mappings: '', names: [] });
   });
 });
 

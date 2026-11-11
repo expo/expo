@@ -127,7 +127,7 @@ export function QuickStart() {
           />
           <WorkflowsImage className="text-palette-blue9" />
           <h2 className="relative z-10 max-w-[24ch] heading-xl font-bold text-palette-green12">
-            Automate builds and releases with EAS Workflows
+            Automate builds and releases with Expo Workflows
           </h2>
           <HomeButton
             className="border-palette-green11 bg-palette-green11 text-palette-white dark:text-palette-green2 hocus:bg-palette-green10"

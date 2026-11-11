@@ -1,0 +1,105 @@
+---
+title: App store privacy declarations for Expo Update
+sidebar_title: Privacy declarations
+description: Learn what the expo-updates library sends off the device, what Expo stores, and how to declare it in the Google Play Data safety form and the App Store privacy details.
+---
+
+import { NoIcon } from '~/ui/components/DocIcons';
+
+Google Play requires every app with a store listing to complete the [Data safety form](https://support.google.com/googleplay/android-developer/answer/10787469) in Play Console. The App Store requires the same for [app privacy details](https://developer.apple.com/app-store/app-privacy-details/) in App Store Connect. Both cover every library in your app, so your answers include what `expo-updates` sends to Expo Update. This guide lists that data and the answers that match it.
+
+> **info** You are responsible for the accuracy of your declarations. This guide covers only the data that `expo-updates` and Expo Update handle. Combine it with the data practices of the rest of your app before you submit either form.
+
+## What expo-updates sends off the device
+
+When your app checks for an update or downloads an asset, `expo-updates` sends an HTTPS request to Expo Update. The request carries the following headers:
+
+| Header                                                                                                           | What it contains                                                                                                                                                                                                |
+| ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `EAS-Client-ID`                                                                                                  | The [Expo Services client ID](/eas/observe/reference/client-id/), a random identifier for one installation of your app. It is generated on the device and is not derived from a hardware or account identifier. |
+| `Expo-Platform`, `Expo-Runtime-Version`, `Expo-Protocol-Version`, `Expo-API-Version`, `Expo-Updates-Environment` | Facts about the build and the updates protocol.                                                                                                                                                                 |
+| `Expo-Current-Update-ID`, `Expo-Embedded-Update-ID`                                                              | The IDs of the update that is running and the update embedded in the build.                                                                                                                                     |
+| `expo-channel-name` and other headers in `updates.requestHeaders`                                                | The channel name from the **eas.json** build profile, and any other header you add to `updates.requestHeaders`. Your code can change them at runtime with `Updates.setUpdateRequestHeadersOverride()`.          |
+| `Expo-Extra-Params`                                                                                              | Values your app sets with [`Updates.setExtraParamAsync()`](/versions/latest/sdk/updates/#updatessetextraparamasynckey-value). The library sends nothing here unless your code sets a value.                     |
+| `expo-expect-signature`                                                                                          | Present when [code signing](/eas-update/code-signing/) is configured.                                                                                                                                           |
+| `Expo-Fatal-Error`                                                                                               | The text of the last error that stopped your app from launching, up to 1,024 characters. The library sends it once.                                                                                             |
+| `Expo-Recent-Failed-Update-IDs`                                                                                  | The IDs of up to five updates that failed to launch on this device. Present after [error recovery](/eas-update/error-recovery/) records a failed launch. No stack trace or error message is sent.               |
+
+Like every network request, the request also exposes the device's IP address to the server.
+
+The library does not add personal information such as a name, email address, or account ID. The requests carry such data only if your code puts it in an extra param, a request header, or an error message. The library does not read the device's location, contacts, or files.
+
+## What Expo stores
+
+Expo Update stores the client ID and the IP address with each request record, including the failed update IDs when the request carries them. It uses the records to count installations and failed installs per update for the deployments dashboard and to measure usage. It also uses the client ID to decide which installations get an update during a rollout. The launch error text is kept only in raw request logs, which Expo deletes after three days. Expo does not derive a location from the request. It does not combine this data with data from other apps, use it for advertising, or share it with data brokers. Expo processes it on your behalf, as your service provider, under Expo's data processing agreement. See [privacy explained](https://expo.dev/privacy-explained) for what Expo collects across its services.
+
+The answers below assume you use Expo Update as your update server. If you [host updates yourself](/eas-update/standalone-service/), the same headers go to your server, and you declare what your server stores instead.
+
+## Google Play Data safety form
+
+The form has three parts that your Expo Update usage affects.
+
+### Data collection and security
+
+| Question                                                              | Answer                                                                                                                                            |
+| --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Does your app collect or share any of the required user data types?   | **Yes**. The client ID is a device identifier, and the failed update IDs and the launch error text are crash information.                         |
+| Is all of the user data collected by your app encrypted in transit?   | **Yes** for Expo Update. The library sends every request over HTTPS. Answer for your whole app.                                                   |
+| Do you provide a way for users to request that their data is deleted? | Google allows **Yes** when you give users a way to request deletion. The answer covers your whole app, so base it on your own deletion practices. |
+
+### Data types
+
+Select these data types for Expo Update:
+
+- **Device or other IDs**: the client ID. Google lists installation identifiers in this category.
+- **App info and performance > Crash logs**: the failed update IDs and the launch error text. Google's definition covers any information directly related to a crash.
+
+### Data usage and handling
+
+For each selected data type, the form asks how the data is collected and used. Use these answers:
+
+| Question                                                                        | Device or other IDs          | Crash logs |
+| ------------------------------------------------------------------------------- | ---------------------------- | ---------- |
+| Is this data collected, shared, or both?                                        | Collected                    | Collected  |
+| Is this data processed ephemerally?                                             | <NoIcon />                   | <NoIcon /> |
+| Is this data required for your app, or can users choose whether it's collected? | Required                     | Required   |
+| Why is this user data collected?                                                | App functionality, Analytics | Analytics  |
+
+The data is **collected** rather than **shared** because Expo acts as your service provider. A service provider processes data only on your behalf and on your instructions. Google's form counts a transfer to a service provider as collection by your app, not as sharing with a third party.
+
+The data is **required** because `expo-updates` sends the client ID on every update request, and error recovery runs in every release build. Google allows **optional** only when every user, in every region, can opt out.
+
+## App Store privacy details
+
+In App Store Connect, the **App Privacy** section asks whether you or your third-party partners collect data from the app. It then asks which data types you collect. For each type, it asks for the purposes, whether the data is linked to the user's identity, and whether it is used for tracking.
+
+Apple's definition of "collect" covers data that leaves the device and is stored for longer than it takes to serve the request. Expo Update stores the client ID and the failed update IDs with each request record, and keeps the launch error text in raw request logs for three days, so all three count as collected.
+
+### Data types
+
+Answer **Yes, we collect data from this app**, then select these data types for Expo Update:
+
+- **Identifiers > Device ID**: the client ID. Apple lists other device-level IDs in this category.
+- **Diagnostics > Crash Data**: the failed update IDs and the launch error text.
+
+### Data usage
+
+For each selected data type, use these answers:
+
+| Question                                                   | Device ID                    | Crash Data        |
+| ---------------------------------------------------------- | ---------------------------- | ----------------- |
+| Purposes                                                   | App Functionality, Analytics | App Functionality |
+| Is this data linked to the user's identity?                | <NoIcon />                   | <NoIcon />        |
+| Do you or your third-party partners use this for tracking? | <NoIcon />                   | <NoIcon />        |
+
+The data is **not linked to the user** because the client ID is random and does not come from an account or hardware identifier. Expo also does not tie it to other datasets. Apple treats data as linked once you or a partner connect it to the user's identity. If your app sends the client ID to your own backend alongside a user account, as the [client ID guide](/eas/observe/reference/client-id/) describes, declare it as linked.
+
+The data is **not used for tracking**. Apple defines tracking as linking app data with data from other companies for advertising, or sharing it with a data broker. Expo does neither.
+
+### Privacy manifest
+
+Xcode can generate a privacy report for an archive from the [privacy manifests](/guides/apple-privacy/) of the app and its libraries. The report is organized like the App Store privacy details. `expo-updates` does not ship a privacy manifest, so the report does not list the data above. Add it to your answers from this page.
+
+## Apps that also use Expo Observe
+
+If your app also includes `expo-observe`, add the declarations in [App store privacy declarations for Expo Observe](/eas/observe/reference/store-privacy-declarations/). Both libraries use the same client ID. One **Device or other IDs** entry on Google Play and one **Device ID** entry on the App Store cover both. The same applies to the crash data entries.

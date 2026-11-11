@@ -20,11 +20,10 @@ import {
 } from '../react-navigation/native';
 import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import type { NativeStackNavigationConfig } from '../react-navigation/native-stack/types';
-import { makePopAction } from '../react-navigation/native-stack/utils/makePopAction';
-import { IsWithinNativeNavigator, unstable_integrateWithRouter } from '../standard-navigation';
-import { subscribePopToTopOnParentTabPress } from '../standard-navigation/subscribePopToTopOnParentTabPress';
+import { IsWithinNativeNavigator, integrateWithRouterInternal } from '../standard-navigation';
 import { isChildOfType } from '../utils/children';
 import { Protected } from '../views/Protected';
+import { createNativeStackProps } from './createNativeStackProps';
 import { StackRouter } from './stack-router';
 import {
   type StackScreenProps,
@@ -37,21 +36,24 @@ import {
   mapProtectedScreen,
   validateStackPresentation,
 } from './stack-utils';
+import { useRequiredScreensBelow } from './stack-utils/requiredScreensBelow';
 
-const RNStack = unstable_integrateWithRouter<
+const RNStack = integrateWithRouterInternal<
   NativeStackNavigationOptions,
   StackNavigationState<ParamListBase>,
   StandardNativeStackEventMap,
   NativeStackNavigationConfig,
   StackRouterOptions,
   NativeStackNavigatorCreateProps
->(createStandardNativeStackNavigator, StackRouter, {
-  createProps: ({ state, dispatch, dispatchSync, navigation }) => ({
-    pop: makePopAction(dispatchSync, state.key),
-    removeRoutes: (routeNames) => dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
-    subscribePopToTopOnParentTabPress: () => subscribePopToTopOnParentTabPress(navigation, state),
-  }),
-});
+>(
+  createStandardNativeStackNavigator,
+  StackRouter,
+  {
+    activityDefaultThreshold: 2,
+    createProps: createNativeStackProps,
+  },
+  useRequiredScreensBelow
+);
 
 /**
  * Renders a native stack navigator.

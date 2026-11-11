@@ -4,7 +4,9 @@ import { use } from 'react';
 
 import type { RouteNode } from '../../Route';
 import { findFocusedRoute } from '../../fork/findFocusedRoute';
+import { BrowserHistorySync } from '../../global-state/BrowserHistorySync';
 import { RoutingQueueDrainer } from '../../global-state/RoutingQueueDrainer';
+import { createBrowserHistoryAdapter } from '../../global-state/browserHistoryAdapter';
 import {
   areUrlObjectsEqual,
   getRouteInfoFromState,
@@ -19,6 +21,7 @@ import {
 } from '../../global-state/routerRegistry';
 import {
   ImperativeRoutingQueueBridge,
+  NavigationPendingContext,
   RoutingQueueApiContext,
 } from '../../global-state/routingQueueContext';
 import { useNavigationTreeReducer } from '../../global-state/useNavigationTreeReducer';
@@ -31,6 +34,8 @@ import {
   type ParamListBase,
   type Route,
 } from '../routers';
+import { CanDismissContext, getCanDismiss } from './CanDismissContext';
+import { CanGoBackContext, getFocusedCanGoBack } from './CanGoBackContext';
 import { EnsureSingleNavigator } from './EnsureSingleNavigator';
 import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationContainerRefContext } from './NavigationContainerRefContext';
@@ -64,7 +69,6 @@ const duplicateNameWarnings: string[] = [];
  * This should be rendered at the root wrapping the whole app.
  *
  * @param props.initialState Initial state object for the navigation tree.
- * @param props.onUnhandledAction Callback which is called when an action is not handled. TODO(@ubax): restore this callback. https://linear.app/expo/issue/ENG-26123
  * @param props.theme Theme object for the UI elements.
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
@@ -75,6 +79,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   const inheritedRouteInfo = use(RouteInfoContext);
   const routerConfig = use(RouterConfigContext);
   const routingQueue = use(RoutingQueueApiContext);
+  const isNavigationPending = use(NavigationPendingContext);
   const routesWithRemovalPrevented = use(GlobalRoutesWithRemovalPreventedContext);
 
   if (!parent.isDefault) {
@@ -93,16 +98,24 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   const [registry, setRegistry] = React.useState<RouterRegistry>(() => new Map());
 
   // TODO(@ubax): consider moving this state to ExpoRoot.
-  const { state, report, consumeReportEvents, resetNavigator, handleAction, processIntent } =
-    useNavigationTreeReducer({
-      initialState,
-      routeNode: UNSTABLE_routeNode,
-      registry,
-      routesWithRemovalPrevented,
-      linking: routerConfig?.linking,
-      redirects: routerConfig?.redirects,
-    });
-  useNavigationTreeReportEvents(report, consumeReportEvents);
+  const {
+    state,
+    isWaitingForLayouts,
+    report,
+    consumeReportEvents,
+    resetNavigator,
+    handleAction,
+    processIntent,
+  } = useNavigationTreeReducer({
+    initialState,
+    routeNode: UNSTABLE_routeNode,
+    registry,
+    routesWithRemovalPrevented,
+    linking: routerConfig?.linking,
+    redirects: routerConfig?.redirects,
+  });
+  const [browserHistory] = React.useState(createBrowserHistoryAdapter);
+  useNavigationTreeReportEvents(report, consumeReportEvents, browserHistory);
   const registrySetters = React.useMemo<RouterRegistrySetters>(
     () => ({
       register(stateKey, entry) {
@@ -159,6 +172,9 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
   });
 
   const getRootState = useLatestCallback(() => state);
+  // TODO(@ubax): Back router.canGoBack() with this value (ENG-28350).
+  const focusedCanGoBack = getFocusedCanGoBack(state);
+  const canDismiss = getCanDismiss(state);
 
   const getCurrentRoute = useLatestCallback(() => {
     const state = getRootState();
@@ -272,7 +288,7 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
             }
           }
 
-          const message = `Non-serializable values were found in the navigation state. Check:\n\n${path} (${reason})\n\nThis can break usage such as persisting and restoring state. This might happen if you passed non-serializable values such as function, class instances etc. in params. If you need to use components with callbacks in your options, you can use 'navigation.setOptions' instead. See https://reactnavigation.org/docs/troubleshooting#i-get-the-warning-non-serializable-values-were-found-in-the-navigation-state for more details.`;
+          const message = `Non-serializable values were found in the navigation state. Check:\n\n${path} (${reason})\n\nThis can break usage such as persisting and restoring state. This might happen if you passed non-serializable values such as function, class instances etc. in params. If you need to use components with callbacks in your options, you can use 'navigation.setOptions' instead. Pass only serializable values in route params.`;
 
           if (!serializableWarnings.includes(message)) {
             serializableWarnings.push(message);
@@ -306,13 +322,23 @@ export function BaseNavigationContainer(props: InternalNavigationContainerProps)
         <NavigationStateContext.Provider value={context}>
           <RouteInfoContext.Provider value={routeInfo}>
             <RootNavigationStateContext.Provider value={state}>
-              <RouterRegistrySettersContext.Provider value={registrySetters}>
-                <EnsureSingleNavigator>
-                  <ThemeProvider value={theme}>{children}</ThemeProvider>
-                </EnsureSingleNavigator>
-              </RouterRegistrySettersContext.Provider>
-              <ImperativeRoutingQueueBridge enqueue={routingQueue.enqueue} />
+              <CanGoBackContext value={focusedCanGoBack}>
+                <CanDismissContext value={canDismiss}>
+                  <RouterRegistrySettersContext.Provider value={registrySetters}>
+                    <EnsureSingleNavigator>
+                      <NavigationPendingContext value={isNavigationPending || isWaitingForLayouts}>
+                        <ThemeProvider value={theme}>{children}</ThemeProvider>
+                      </NavigationPendingContext>
+                    </EnsureSingleNavigator>
+                  </RouterRegistrySettersContext.Provider>
+                </CanDismissContext>
+              </CanGoBackContext>
+              <ImperativeRoutingQueueBridge
+                enqueue={routingQueue.enqueue}
+                setTransitionMode={routingQueue.setTransitionMode}
+              />
               <RoutingQueueDrainer processIntent={processIntent} />
+              <BrowserHistorySync adapter={browserHistory} />
             </RootNavigationStateContext.Provider>
           </RouteInfoContext.Provider>
         </NavigationStateContext.Provider>

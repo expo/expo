@@ -130,7 +130,7 @@ export function Code({ className, children, title }: CodeProps) {
   const forceWordWrap = params?.wrap === 'true';
   const commonClasses = mergeClasses(
     '[scrollbar-color:var(--slate-5)_transparent] scrollbar-thin',
-    (wordWrap || forceWordWrap) && 'wrap-break-word! whitespace-pre-wrap!',
+    (wordWrap || forceWordWrap) && 'wrap-anywhere! whitespace-pre-wrap!',
     showExpand && !isExpanded && 'overflow-y-hidden!'
   );
 

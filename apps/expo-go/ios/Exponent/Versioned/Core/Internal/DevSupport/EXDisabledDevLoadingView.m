@@ -15,7 +15,7 @@
 
 RCT_EXPORT_METHOD(hide)
 {
-  RCTDevSettings *settings = [self.bridge devSettings];
+  RCTDevSettings *settings = [self.bridge moduleForClass:[RCTDevSettings class]];
   BOOL isFastRefreshEnabled = [settings isHotLoadingEnabled];
   if (_isObserving && isFastRefreshEnabled) {
     [self sendEventWithName:@"devLoadingView:hide" body:@{}];
@@ -24,7 +24,7 @@ RCT_EXPORT_METHOD(hide)
 
 RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgroundColor:(UIColor *)backgroundColor dismissButton:(BOOL)dismissButton)
 {
-  RCTDevSettings *settings =  [self.bridge devSettings];
+  RCTDevSettings *settings = [self.bridge moduleForClass:[RCTDevSettings class]];
   BOOL isFastRefreshEnabled = [settings isHotLoadingEnabled];
   if (_isObserving && isFastRefreshEnabled) {
     [self sendEventWithName:@"devLoadingView:showMessage" body:@{@"message":message}];

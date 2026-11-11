@@ -14,7 +14,12 @@ import {
   type ModifierConfig,
 } from '@expo/ui/jetpack-compose/modifiers';
 
-import { omitUserOverridden } from './modifierUtils';
+import {
+  createUniversalLayoutModifier,
+  omitUserOverridden,
+  omitUserOverriddenDimensions,
+  serializeUniversalDimensions,
+} from './modifierUtils';
 import type { UniversalBaseProps, UniversalStyle } from './types';
 
 /**
@@ -23,29 +28,42 @@ import type { UniversalBaseProps, UniversalStyle } from './types';
  *
  * Compose modifiers apply outside-in (left to right). To match React Native's
  * box model where background includes the padding area and border is outermost:
- *   sizing → border → clip → background → padding → opacity
+ *   universal layout → fixed size → border → clip → background → padding → opacity
  *   → events → behavior → user escape-hatch
  *
+ * Fixed sizes become `size`, `width`, or `height`.
+ * Percentages stay on `universalLayout` so the parent stack can resolve them.
  * Style-derived modifiers yield to user-supplied modifiers of the same
  * `$type`, so the escape hatch can override anything derived from props.
  */
 export function transformToModifiers(
   style: UniversalStyle | undefined,
   props: Pick<UniversalBaseProps, 'onPress' | 'disabled' | 'hidden' | 'testID'>,
-  extraModifiers?: ModifierConfig[]
+  extraModifiers?: ModifierConfig[],
+  options?: { componentName?: string }
 ): ModifierConfig[] {
   let mods: ModifierConfig[] = [];
+  const dimensions = omitUserOverriddenDimensions(
+    serializeUniversalDimensions(style, options?.componentName),
+    extraModifiers,
+    'android'
+  );
+  const fixedWidth = dimensions.widthPoints;
+  const fixedHeight = dimensions.heightPoints;
+  const universalLayoutModifier = createUniversalLayoutModifier(dimensions);
+
+  if (universalLayoutModifier) mods.push(universalLayoutModifier);
+
+  // Fixed sizing is applied directly. Percentages remain as parent data for
+  // the owning universal layout to resolve against its content box.
+  if (fixedWidth != null && fixedHeight != null) {
+    mods.push(size(fixedWidth, fixedHeight));
+  } else {
+    if (fixedWidth != null) mods.push(width(fixedWidth));
+    if (fixedHeight != null) mods.push(height(fixedHeight));
+  }
 
   if (style) {
-    // Sizing (outermost)
-    if (style.width != null && style.height != null) {
-      mods.push(size(style.width as number, style.height as number));
-    } else if (style.width != null) {
-      mods.push(width(style.width as number));
-    } else if (style.height != null) {
-      mods.push(height(style.height as number));
-    }
-
     // Border + background + borderRadius handling.
     // Compose's border() doesn't accept a shape, so when borderRadius is set
     // alongside border, we simulate a rounded border using layered backgrounds:

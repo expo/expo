@@ -141,6 +141,18 @@ describe(validateConfig, () => {
     }).toThrow();
   });
 
+  it('should validate ios.enableSceneSupport', () => {
+    expect(() => {
+      validateConfig({ ios: { enableSceneSupport: true } });
+    }).not.toThrow();
+    expect(() => {
+      validateConfig({ ios: { enableSceneSupport: false } });
+    }).not.toThrow();
+    expect(() => {
+      validateConfig({ ios: { enableSceneSupport: 'yes' } });
+    }).toThrow();
+  });
+
   it('should validate ios.forceStaticLinking', () => {
     expect(() => {
       validateConfig({ ios: {} });
@@ -245,30 +257,6 @@ describe(validateConfig, () => {
 });
 
 describe('shared config resolution', () => {
-  it('should throw when useHermesV1 is false without buildReactNativeFromSource', () => {
-    expect(() => validateConfig({ useHermesV1: false })).toThrow(
-      '`useHermesV1`: false requires `buildReactNativeFromSource` to be `true`'
-    );
-  });
-
-  it('should validate useHermesV1 with buildReactNativeFromSource', () => {
-    expect(() =>
-      validateConfig({ useHermesV1: false, buildReactNativeFromSource: true })
-    ).not.toThrow();
-  });
-
-  it('should throw for android-specific useHermesV1 without buildReactNativeFromSource', () => {
-    expect(() => validateConfig({ android: { useHermesV1: false } })).toThrow(
-      '`useHermesV1`: false requires `buildReactNativeFromSource` to be `true` for Android.'
-    );
-  });
-
-  it('should throw for ios-specific useHermesV1 without buildReactNativeFromSource', () => {
-    expect(() => validateConfig({ ios: { useHermesV1: false } })).toThrow(
-      '`useHermesV1`: false requires `buildReactNativeFromSource` to be `true` for iOS.'
-    );
-  });
-
   it('should validate top-level buildReactNativeFromSource', () => {
     expect(() => validateConfig({ buildReactNativeFromSource: true })).not.toThrow();
   });
@@ -281,70 +269,19 @@ describe('shared config resolution', () => {
     expect(() =>
       validateConfig({
         buildReactNativeFromSource: true,
-        useHermesV1: false,
         reactNativeReleaseLevel: 'experimental',
         android: {
           minSdkVersion: 24,
         },
         ios: {
           deploymentTarget: '16.4',
-          useHermesV1: false,
         },
-      })
-    ).not.toThrow();
-  });
-
-  it('should allow platform-specific buildReactNativeFromSource to satisfy useHermesV1: false', () => {
-    expect(() =>
-      validateConfig({
-        useHermesV1: false,
-        android: { buildReactNativeFromSource: true },
-        ios: { buildReactNativeFromSource: true },
       })
     ).not.toThrow();
   });
 });
 
 describe(resolveConfigValue, () => {
-  describe('useHermesV1 resolution', () => {
-    it('returns undefined when not set anywhere', () => {
-      const config: PluginConfigType = {};
-      expect(resolveConfigValue(config, 'android', 'useHermesV1')).toBeUndefined();
-      expect(resolveConfigValue(config, 'ios', 'useHermesV1')).toBeUndefined();
-    });
-
-    it('returns top-level value when platform-specific not set', () => {
-      const config: PluginConfigType = { useHermesV1: true };
-      expect(resolveConfigValue(config, 'android', 'useHermesV1')).toBe(true);
-      expect(resolveConfigValue(config, 'ios', 'useHermesV1')).toBe(true);
-    });
-
-    it('returns platform-specific value when set (overrides top-level)', () => {
-      const config: PluginConfigType = {
-        useHermesV1: true,
-        android: { useHermesV1: false },
-      };
-      expect(resolveConfigValue(config, 'android', 'useHermesV1')).toBe(false);
-      expect(resolveConfigValue(config, 'ios', 'useHermesV1')).toBe(true);
-    });
-
-    it('returns platform-specific false even when top-level is true', () => {
-      const config: PluginConfigType = {
-        useHermesV1: true,
-        ios: { useHermesV1: false },
-      };
-      expect(resolveConfigValue(config, 'ios', 'useHermesV1')).toBe(false);
-    });
-
-    it('returns platform-specific value when only platform-specific is set', () => {
-      const config: PluginConfigType = {
-        android: { useHermesV1: true },
-      };
-      expect(resolveConfigValue(config, 'android', 'useHermesV1')).toBe(true);
-      expect(resolveConfigValue(config, 'ios', 'useHermesV1')).toBeUndefined();
-    });
-  });
-
   describe('buildReactNativeFromSource resolution', () => {
     it('returns top-level value when platform-specific not set', () => {
       const config: PluginConfigType = { buildReactNativeFromSource: true };

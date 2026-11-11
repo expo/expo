@@ -7,8 +7,14 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
-import { ensureStateType } from './ensureStateType';
-import type { CommonNavigationAction, ParamListBase, Router } from './types';
+import {
+  extendRouter,
+  type RouterExtensionContext,
+  type RouterExtensionMembers,
+} from './extendRouter';
+import { getBrowserHistoryForHistoryChange } from './getBrowserHistoryForHistoryChange';
+import { type CommonNavigationAction, type ParamListBase, RouterActionHandling } from './types';
+import { isActionHandled } from './utils';
 export type DrawerStatus = 'open' | 'closed';
 
 export type DrawerActionType =
@@ -67,28 +73,24 @@ export const DrawerActions = {
   },
 };
 
-/**
- * DrawerRouter is considered internal implementation and its behavior may change without a notice between expo-router's version
- */
-export function DrawerRouter({
-  defaultStatus = 'closed',
-  ...rest
-}: DrawerRouterOptions): Router<
+function drawerRouterExtension({
+  baseRouter: router,
+  options: { defaultStatus = 'closed', backBehavior = 'firstRoute', initialRouteName },
+}: RouterExtensionContext<
   DrawerNavigationState<ParamListBase>,
-  DrawerActionType | CommonNavigationAction
-> {
-  const { backBehavior = 'firstRoute', initialRouteName } = rest;
-
-  const router = TabRouter(rest) as unknown as Router<
+  DrawerActionType | CommonNavigationAction,
+  DrawerRouterOptions
+>): Partial<
+  RouterExtensionMembers<
     DrawerNavigationState<ParamListBase>,
-    TabActionType | CommonNavigationAction
-  >;
-
+    DrawerActionType | CommonNavigationAction
+  >
+> {
   // `ensureStateHistory` is typed for the tab state. The drawer state differs only by the extra
   // drawer entries in `history`, which reconstruction never produces.
-  const ensureDrawerStateOptionalProperties = (state: DrawerNavigationState<ParamListBase>) =>
+  const ensureDrawerStateHistory = (state: DrawerNavigationState<ParamListBase>) =>
     ensureStateHistory(
-      ensureStateType(state, 'drawer') as unknown as TabNavigationState<ParamListBase>,
+      state as unknown as TabNavigationState<ParamListBase>,
       backBehavior,
       initialRouteName
     ) as unknown as DrawerNavigationState<ParamListBase>;
@@ -149,19 +151,50 @@ export function DrawerRouter({
   };
 
   return {
-    ...router,
+    getBrowserHistoryForAction(previous, next, action) {
+      switch (action.type) {
+        case 'OPEN_DRAWER':
+        case 'CLOSE_DRAWER':
+        case 'TOGGLE_DRAWER':
+          return getBrowserHistoryForHistoryChange(ensureDrawerStateHistory(previous), next);
+        case 'PUSH':
+        case 'NAVIGATE':
+        case 'JUMP_TO':
+          if (
+            isDrawerInHistory(previous) &&
+            (backBehavior === 'history' || backBehavior === 'fullHistory') &&
+            previous.routes[previous.index]?.key !== next.routes[next.index]?.key
+          ) {
+            // Switching routes closes the drawer and reuses its browser entry.
+            return undefined;
+          }
+      }
+      return router.getBrowserHistoryForAction?.(previous, next, action);
+    },
 
-    type: 'drawer',
+    getBrowserHistoryForRouteFocus(previous, next, childAction) {
+      if (
+        isDrawerInHistory(previous) &&
+        !isDrawerInHistory(next) &&
+        (childAction?.type === 'push' ||
+          previous.routes[previous.index]?.key !== next.routes[next.index]?.key)
+      ) {
+        // Pushing Details from an open drawer replaces the drawer entry with Details.
+        // Back then returns to the page with the drawer closed.
+        return { type: 'replace' };
+      }
+      return getBrowserHistoryForHistoryChange(ensureDrawerStateHistory(previous), next);
+    },
 
     getStateForRouteFocus(state, key) {
-      const result = router.getStateForRouteFocus(ensureDrawerStateOptionalProperties(state), key);
+      const result = router.getStateForRouteFocus(ensureDrawerStateHistory(state), key);
 
       return closeDrawer(result);
     },
 
     getStateForAction(inputState, action, options) {
       // Restore route history before drawer actions can add drawer-only history.
-      const state = ensureDrawerStateOptionalProperties(inputState);
+      const state = ensureDrawerStateHistory(inputState);
       const focusedRouteKey = state.routes[state.index]?.key;
 
       switch (action.type) {
@@ -190,7 +223,7 @@ export function DrawerRouter({
         case 'NAVIGATE': {
           const actionResult = router.getStateForAction(state, action, options);
 
-          if (actionResult !== null) {
+          if (isActionHandled(actionResult)) {
             const nextState = actionResult.state;
             if (nextState.index === state.index) {
               return actionResult;
@@ -198,11 +231,11 @@ export function DrawerRouter({
 
             return {
               ...actionResult,
-              state: closeDrawer(nextState as DrawerNavigationState<ParamListBase>),
+              state: closeDrawer(nextState),
             };
           }
 
-          return null;
+          return RouterActionHandling.Unhandled;
         }
 
         case 'GO_BACK':
@@ -223,3 +256,8 @@ export function DrawerRouter({
     actionCreators: DrawerActions,
   };
 }
+
+/**
+ * DrawerRouter is considered internal implementation and its behavior may change without a notice between expo-router's version
+ */
+export const DrawerRouter = extendRouter(TabRouter, drawerRouterExtension, { type: 'drawer' });

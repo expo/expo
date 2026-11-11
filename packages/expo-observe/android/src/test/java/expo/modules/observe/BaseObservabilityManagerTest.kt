@@ -5,6 +5,7 @@ import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.Session
 import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.appmetrics.storage.Span
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -24,6 +25,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -278,6 +280,155 @@ class BaseObservabilityManagerTest {
 
   // endregion
 
+  // region Error sample rate tests
+
+  @Test
+  fun `when only errors are in-sample, only exception logs are dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    stubLogDispatch(logs = listOf(log(1, "info"), log(2, "js.exception"), log(3, "native.exception")))
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(3, logCursor)
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(
+        match { events -> events.single().logs.map { it.name } == listOf("js.exception", "native.exception") }
+      )
+    }
+  }
+
+  @Test
+  fun `when in-sample for sampleRate, all logs are dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 1.0, errorSampleRate = 0.0)
+    stubLogDispatch(logs = listOf(log(1, "info"), log(2, "js.exception"), log(3, "native.exception")))
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(3, logCursor)
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(
+        match { events -> events.single().logs.map { it.name } == listOf("info", "js.exception", "native.exception") }
+      )
+    }
+  }
+
+  @Test
+  fun `when only errors are in-sample, logs are marked as not in the sampleRate sample`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    stubLogDispatch(logs = listOf(log(1, "js.exception"), log(2, "native.exception")))
+
+    createManager().dispatchUnsentLogs()
+
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(
+        match { events ->
+          events.single().logs.map { it.attributes?.get("expo.in_sample_rate") } ==
+            listOf(JsonPrimitive(false), JsonPrimitive(false))
+        }
+      )
+    }
+  }
+
+  @Test
+  fun `when in-sample for sampleRate, all logs are marked as in the sampleRate sample`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 1.0, errorSampleRate = 0.0)
+    stubLogDispatch(logs = listOf(log(1, "info"), log(2, "js.exception"), log(3, "native.exception")))
+
+    createManager().dispatchUnsentLogs()
+
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(
+        match { events ->
+          events.single().logs.map { it.attributes?.get("expo.in_sample_rate") } ==
+            listOf(JsonPrimitive(true), JsonPrimitive(true), JsonPrimitive(true))
+        }
+      )
+    }
+  }
+
+  @Test
+  fun `when errorSampleRate is null, exception logs follow sampleRate`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.5, errorSampleRate = null)
+    stubLogDispatch(logs = listOf(log(1, "js.exception")))
+
+    createManager(deterministicUniformValue = 0.8).dispatchUnsentLogs()
+
+    assertEquals(1, logCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatchLogs(any()) }
+  }
+
+  @Test
+  fun `when dispatchingEnabled is false, errorSampleRate has no effect`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns
+      PersistedConfig(dispatchingEnabled = false, errorSampleRate = 1.0)
+    stubLogDispatch(logs = listOf(log(1, "js.exception")))
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(1, logCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatchLogs(any()) }
+  }
+
+  @Test
+  fun `on a debug build without dispatchInDebug, errorSampleRate has no effect`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(errorSampleRate = 1.0)
+    stubLogDispatch(logs = listOf(log(1, "js.exception")))
+
+    createManager(isDebugBuild = true).dispatchUnsentLogs()
+
+    assertEquals(1, logCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatchLogs(any()) }
+  }
+
+  @Test
+  fun `a chunk with only out-of-sample logs is skipped and the next chunk is dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    coEvery { sessionManager.getMaxLogId() } returns 4
+    coEvery { sessionManager.getLogs(-1, 2) } returns listOf(log(1, "one"), log(2, "two"))
+    coEvery { sessionManager.getLogs(2, 2) } returns listOf(log(3, "js.exception"), log(4, "four"))
+    coEvery { sessionManager.getLogs(4, 2) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
+
+    createManager(chunkSize = 2).dispatchUnsentLogs()
+
+    assertEquals(4, logCursor)
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(match { events -> events.single().logs.map { it.name } == listOf("js.exception") })
+    }
+  }
+
+  @Test
+  fun `a retryable failure keeps the cursor before in-sample exception logs`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    stubLogDispatch(
+      logs = listOf(log(1, "info"), log(2, "js.exception")),
+      result = DispatchResult.RetryableFailure(60_000)
+    )
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(-1, logCursor)
+  }
+
+  @Test
+  fun `when only errors are in-sample, metrics and spans are not dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    coEvery { sessionManager.getMaxMetricId() } returns 10
+    coEvery { sessionManager.getMaxSpanId() } returns 42
+    val manager = createManager()
+
+    manager.dispatchUnsentMetrics()
+    manager.dispatchUnsentSpans()
+
+    assertEquals(10, metricCursor)
+    coVerify(exactly = 1) { sessionManager.deleteSpansUpTo(42) }
+    coVerify(exactly = 0) { eventDispatcher.dispatch(any()) }
+    coVerify(exactly = 0) { eventDispatcher.dispatchSpans(any()) }
+  }
+
+  // endregion
+
   // region Fetching and dispatch tests
 
   @Test
@@ -370,7 +521,11 @@ class BaseObservabilityManagerTest {
     coEvery { sessionManager.getMetrics(2, 4) } returns metrics.drop(2)
     coEvery { sessionManager.getMetrics(4, 4) } returns emptyList()
     coEvery { sessionManager.getSessions(any()) } answers {
-      if ("valid-session" in firstArg<Collection<String>>()) listOf(session(id = "valid-session")) else emptyList()
+      if ("valid-session" in firstArg<Collection<String>>()) {
+        listOf(session(id = "valid-session"))
+      } else {
+        emptyList()
+      }
     }
     coEvery { eventDispatcher.dispatch(any()) } returnsMany listOf(
       DispatchResult.PayloadTooLarge,
@@ -533,7 +688,11 @@ class BaseObservabilityManagerTest {
     coEvery { sessionManager.getLogs(2, 4) } returns logs.drop(2)
     coEvery { sessionManager.getLogs(4, 4) } returns emptyList()
     coEvery { sessionManager.getSessions(any()) } answers {
-      if ("valid-session" in firstArg<Collection<String>>()) listOf(session(id = "valid-session")) else emptyList()
+      if ("valid-session" in firstArg<Collection<String>>()) {
+        listOf(session(id = "valid-session"))
+      } else {
+        emptyList()
+      }
     }
     coEvery { eventDispatcher.dispatchLogs(any()) } returnsMany listOf(
       DispatchResult.PayloadTooLarge,
@@ -798,6 +957,71 @@ class BaseObservabilityManagerTest {
 
   // endregion
 
+  // region Ignored names tests
+
+  @Test
+  fun `ignored metrics are consumed across mixed and all ignored chunks`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(
+      ignoredMetrics = listOf("expo.app_startup.tti")
+    )
+    val first = listOf(metric(1, "timeToInteractive", category = "appStartup"), metric(2, "visible"))
+    val second = listOf(metric(3, "timeToInteractive", category = "appStartup"))
+    coEvery { sessionManager.getMetrics(-1, 2) } returns first
+    coEvery { sessionManager.getMetrics(2, 2) } returns second
+    coEvery { sessionManager.getMetrics(3, 2) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatch(any()) } returns DispatchResult.Success
+
+    createManager(chunkSize = 2).dispatchUnsentMetrics()
+
+    assertEquals(3, metricCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatch(match { it.single().metrics.map { metric -> metric.name } == listOf("visible") }) }
+  }
+
+  @Test
+  fun `retryable mixed metrics keep ignored rows in the batch`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(ignoredMetrics = listOf("expo.app_startup.tti"))
+    stubMetricDispatch(metrics = listOf(metric(1, "timeToInteractive", category = "appStartup"), metric(2, "visible")), result = DispatchResult.RetryableFailure(null))
+
+    createManager().dispatchUnsentMetrics()
+
+    assertEquals(-1, metricCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
+  }
+
+  @Test
+  fun `ignored events apply after error sampling and consume all ignored chunks`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(
+      sampleRate = 0.0, errorSampleRate = 1.0,
+      ignoredEvents = listOf("js.exception")
+    )
+    val first = listOf(log(1, "info"), log(2, "js.exception"), log(3, "native.exception"))
+    val second = listOf(log(4, "js.exception"))
+    coEvery { sessionManager.getLogs(-1, 3) } returns first
+    coEvery { sessionManager.getLogs(3, 3) } returns second
+    coEvery { sessionManager.getLogs(4, 3) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
+
+    createManager(chunkSize = 3).dispatchUnsentLogs()
+
+    assertEquals(4, logCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatchLogs(match { it.single().logs.map { log -> log.name } == listOf("native.exception") }) }
+  }
+
+  @Test
+  fun `retryable mixed logs keep ignored rows in the batch`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(ignoredEvents = listOf("hidden"))
+    stubLogDispatch(logs = listOf(log(1, "hidden"), log(2, "visible")), result = DispatchResult.RetryableFailure(null))
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(-1, logCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatchLogs(any()) }
+  }
+
+  // endregion
+
   // region Helper methods
 
   private fun stubMetricDispatch(
@@ -825,6 +1049,184 @@ class BaseObservabilityManagerTest {
     coEvery { sessionManager.getSessions(logs.mapTo(linkedSetOf()) { it.sessionId }) } returns sessions
     coEvery { eventDispatcher.dispatchLogs(any()) } returns result
   }
+
+  // region Span dispatch tests
+
+  @Test
+  fun `disabled dispatch drops the whole span backlog without reading it`() = runTest {
+    // Spans have no persisted cursor, so "advancing past" a backlog means deleting it. One
+    // SELECT MAX is enough; materializing rows the SDK will not send would be wasted work.
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(dispatchingEnabled = false)
+    coEvery { sessionManager.getMaxSpanId() } returns 42
+
+    createManager().dispatchUnsentSpans()
+
+    coVerify(exactly = 1) { sessionManager.deleteSpansUpTo(42) }
+    coVerify(exactly = 0) { sessionManager.getSpans(any(), any()) }
+    coVerify(exactly = 0) { eventDispatcher.dispatchSpans(any()) }
+  }
+
+  @Test
+  fun `an empty span table sends nothing and deletes nothing`() = runTest {
+    stubSpanDispatch(spans = emptyList())
+
+    createManager().dispatchUnsentSpans()
+
+    coVerify(exactly = 0) { eventDispatcher.dispatchSpans(any()) }
+    coVerify(exactly = 0) { sessionManager.deleteSpansUpTo(any()) }
+  }
+
+  @Test
+  fun `a successful chunk is deleted up to its highest id`() = runTest {
+    stubSpanDispatch(spans = spans(1..3), result = DispatchResult.Success)
+
+    createManager().dispatchUnsentSpans()
+
+    coVerify(exactly = 1) { eventDispatcher.dispatchSpans(any()) }
+    coVerify(exactly = 1) { sessionManager.deleteSpansUpTo(3) }
+  }
+
+  @Test
+  fun `a retryable failure keeps the rows for the next dispatch`() = runTest {
+    // The table is the queue: leaving the rows is the only way a retry can find them again.
+    stubSpanDispatch(
+      spans = spans(1..3),
+      result = DispatchResult.RetryableFailure(retryAfterMs = null)
+    )
+
+    createManager().dispatchUnsentSpans()
+
+    coVerify(exactly = 1) { eventDispatcher.dispatchSpans(any()) }
+    coVerify(exactly = 0) { sessionManager.deleteSpansUpTo(any()) }
+  }
+
+  @Test
+  fun `a non-retryable failure drops the chunk instead of retrying it forever`() = runTest {
+    stubSpanDispatch(
+      spans = spans(1..3),
+      result = DispatchResult.NonRetryableFailure(reason = "malformed")
+    )
+
+    createManager().dispatchUnsentSpans()
+
+    coVerify(exactly = 1) { sessionManager.deleteSpansUpTo(3) }
+  }
+
+  @Test
+  fun `partial success deletes the chunk including the rows the server rejected`() = runTest {
+    // A rejection is permanent (a malformed id, a session id that is not a UUID), so retrying
+    // the same bytes would fail identically. The count is logged and the rows go.
+    stubSpanDispatch(
+      spans = spans(1..3),
+      result = DispatchResult.PartialSuccess(
+        partial = OTPartialSuccess(rejectedSpans = 2, errorMessage = "2 invalid spans")
+      )
+    )
+
+    createManager().dispatchUnsentSpans()
+
+    coVerify(exactly = 1) { sessionManager.deleteSpansUpTo(3) }
+  }
+
+  @Test
+  fun `an oversized chunk is halved and both halves are sent`() = runTest {
+    // The server rejected the payload by size, not content, so the same rows can succeed in
+    // smaller batches. Without halving, one huge span would take its whole chunk down with it.
+    val rows = spans(1..4)
+    stubSpanDispatch(spans = rows)
+    val sentSizes = mutableListOf<Int>()
+    coEvery { eventDispatcher.dispatchSpans(any()) } answers {
+      val batches = firstArg<List<SpanBatch>>()
+      sentSizes.add(batches.sumOf { it.spans.size })
+      if (sentSizes.size == 1) {
+        DispatchResult.PayloadTooLarge
+      } else {
+        DispatchResult.Success
+      }
+    }
+
+    createManager().dispatchUnsentSpans()
+
+    assertEquals(listOf(4, 2, 2), sentSizes)
+    coVerify(exactly = 1) { sessionManager.deleteSpansUpTo(2) }
+    coVerify(exactly = 1) { sessionManager.deleteSpansUpTo(4) }
+  }
+
+  @Test
+  fun `halving stops at a single span, which is dropped rather than retried`() = runTest {
+    // Two rows halve to one each. A single row that is still too large cannot be split, so it
+    // is dropped: keeping it would block every span behind it forever.
+    stubSpanDispatch(spans = spans(1..2), result = DispatchResult.PayloadTooLarge)
+
+    createManager().dispatchUnsentSpans()
+
+    coVerify(exactly = 3) { eventDispatcher.dispatchSpans(any()) }
+    coVerify(exactly = 1) { sessionManager.deleteSpansUpTo(1) }
+    coVerify(exactly = 1) { sessionManager.deleteSpansUpTo(2) }
+  }
+
+  @Test
+  fun `a retryable failure after halving leaves every row of the original chunk`() = runTest {
+    val sentSizes = mutableListOf<Int>()
+    stubSpanDispatch(spans = spans(1..4))
+    coEvery { eventDispatcher.dispatchSpans(any()) } answers {
+      val batches = firstArg<List<SpanBatch>>()
+      sentSizes.add(batches.sumOf { it.spans.size })
+      if (sentSizes.size == 1) {
+        DispatchResult.PayloadTooLarge
+      } else {
+        DispatchResult.RetryableFailure(retryAfterMs = null)
+      }
+    }
+
+    createManager().dispatchUnsentSpans()
+
+    assertEquals(listOf(4, 2), sentSizes)
+    coVerify(exactly = 0) { sessionManager.deleteSpansUpTo(any()) }
+  }
+
+  @Test
+  fun `spans whose session row is gone are deleted without being sent`() = runTest {
+    // The session was pruned, so its resource metadata is unrecoverable and the rows are about
+    // to be deleted anyway. Sending them without an envelope is not an option.
+    val rows = spans(1..2)
+    coEvery { sessionManager.getSpans(-1, any()) } returns rows
+    coEvery { sessionManager.getSpans(2, any()) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns emptyList()
+
+    createManager().dispatchUnsentSpans()
+
+    coVerify(exactly = 0) { eventDispatcher.dispatchSpans(any()) }
+    coVerify(exactly = 1) { sessionManager.deleteSpansUpTo(2) }
+  }
+
+  @Test
+  fun `spans are grouped into one batch per session`() = runTest {
+    // Each batch carries its own session's resource metadata, so a chunk spanning two sessions
+    // must not be sent under a single envelope.
+    val rows = listOf(
+      span(id = 1, sessionId = "a"),
+      span(id = 2, sessionId = "b"),
+      span(id = 3, sessionId = "a")
+    )
+    coEvery { sessionManager.getSpans(-1, any()) } returns rows
+    coEvery { sessionManager.getSpans(3, any()) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } answers {
+      firstArg<Collection<String>>().map { session(id = it) }
+    }
+    var batchSizes: List<Int> = emptyList()
+    coEvery { eventDispatcher.dispatchSpans(any()) } answers {
+      batchSizes = firstArg<List<SpanBatch>>().map { it.spans.size }
+      DispatchResult.Success
+    }
+
+    createManager().dispatchUnsentSpans()
+
+    assertEquals(listOf(2, 1), batchSizes)
+    coVerify(exactly = 1) { sessionManager.deleteSpansUpTo(3) }
+  }
+
+  // endregion
 
   private fun createManager(
     chunkSize: Int = DISPATCH_CHUNK_SIZE,
@@ -864,10 +1266,39 @@ class BaseObservabilityManagerTest {
     reactNativeVersion = "0.81"
   )
 
-  private fun metric(id: Long, name: String, sessionId: String = "session") = Metric(
+  private fun span(id: Long, sessionId: String = "session") = Span(
+    sessionId = sessionId,
+    name = "GET",
+    kind = Span.CLIENT_KIND,
+    startTimestampMs = 1_782_131_895_000,
+    endTimestampMs = 1_782_131_895_250,
+    id = id
+  )
+
+  private fun spans(ids: IntRange) = ids.map { span(id = it.toLong()) }
+
+  /**
+   * Stubs a single-chunk span read plus its session lookup. The second read returns empty so the
+   * loop terminates instead of re-reading the same rows.
+   */
+  private fun stubSpanDispatch(
+    spans: List<Span>,
+    result: DispatchResult = DispatchResult.Success
+  ) {
+    coEvery { sessionManager.getSpans(-1, any()) } returns spans
+    if (spans.isNotEmpty()) {
+      coEvery { sessionManager.getSpans(spans.last().id, any()) } returns emptyList()
+    }
+    coEvery { sessionManager.getSessions(any()) } answers {
+      firstArg<Collection<String>>().map { session(id = it) }
+    }
+    coEvery { eventDispatcher.dispatchSpans(any()) } returns result
+  }
+
+  private fun metric(id: Long, name: String, sessionId: String = "session", category: String = "test") = Metric(
     sessionId = sessionId,
     timestamp = "2025-01-01T00:00:00Z",
-    category = "test",
+    category = category,
     name = name,
     value = 1.0,
     id = id

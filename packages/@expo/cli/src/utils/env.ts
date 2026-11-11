@@ -1,5 +1,4 @@
-import { getOriginalEnvValue } from '@expo/env';
-import { boolish, int, string } from 'getenv';
+import { boolish, int, string, getOriginalEnvValue } from '@expo/env';
 import process from 'node:process';
 
 // @expo/webpack-config -> expo-pwa -> @expo/image-utils: EXPO_IMAGE_UTILS_NO_SHARP
@@ -39,7 +38,8 @@ class Env {
 
   /** Is running in non-interactive CI mode */
   get CI() {
-    return boolish('CI', false);
+    const ci = process.env.CI;
+    return ci === '1' || ci?.toLowerCase() === 'true';
   }
 
   /** Disable telemetry (analytics) */
@@ -80,9 +80,17 @@ class Env {
   get EXPO_NO_CACHE() {
     return boolish('EXPO_NO_CACHE', false);
   }
+  /** Disable validating Metro's transform cache against inlined ambient values (e.g. `EXPO_PUBLIC_*` env vars). */
+  get EXPO_NO_CACHE_VARY() {
+    return boolish('EXPO_NO_CACHE_VARY', false);
+  }
   /** Disable the app select redirect page. */
   get EXPO_NO_REDIRECT_PAGE() {
     return boolish('EXPO_NO_REDIRECT_PAGE', false);
+  }
+  /** Append the reserved `__expo_*` params that keep the dev menu closed to Expo Go and development build launch URLs. Unset defaults to the inverse of `isInteractive()`. */
+  get EXPO_NO_DEV_MENU(): boolean {
+    return boolish('EXPO_NO_DEV_MENU', false);
   }
   /** Disable printing the QR code in the interactive Terminal UI. */
   get EXPO_NO_QR_CODE(): boolean {
@@ -123,10 +131,6 @@ class Env {
   get EXPO_PACKAGER_PROXY_URL(): string {
     // Read from the pre-dotenv env — overrides dev server URL served to clients.
     return getOriginalEnvValue('EXPO_PACKAGER_PROXY_URL') || '';
-  }
-
-  get EXPO_UNSTABLE_TUNNEL_V2(): boolean {
-    return boolish('EXPO_UNSTABLE_TUNNEL_V2', false);
   }
 
   /**
@@ -285,11 +289,6 @@ class Env {
     return boolish('EXPO_FORCE_WEBCONTAINER_ENV', false);
   }
 
-  /** Disable @react-navigation checks for expo-router projects */
-  get EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK(): boolean {
-    return boolish('EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK', false);
-  }
-
   /** Disable by falsy value live binding in experimental import export support. Enabled by default. */
   get EXPO_UNSTABLE_LIVE_BINDINGS(): boolean {
     return boolish('EXPO_UNSTABLE_LIVE_BINDINGS', true);
@@ -310,6 +309,16 @@ class Env {
   /** Enable Expo Log Box for iOS and Android (Web is enabled by default) */
   get EXPO_UNSTABLE_LOG_BOX(): boolean {
     return boolish('EXPO_UNSTABLE_LOG_BOX', false);
+  }
+
+  /**
+   * Disable Expo's custom network inspection (the `/inspector/network` relay, response body
+   * storage, and the "Expo Network" DevTools tab), leaving the React Native DevTools Network
+   * panel to React Native's core network reporting. Temporary until the custom network
+   * inspection is removed.
+   */
+  get EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR(): boolean {
+    return boolish('EXPO_UNSTABLE_CORE_NETWORK_INSPECTOR', false);
   }
 
   /**

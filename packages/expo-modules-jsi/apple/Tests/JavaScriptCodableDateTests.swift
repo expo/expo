@@ -47,8 +47,17 @@ struct JavaScriptCodableDateTests {
     // `Date` does not override the zero-copy overload (it needs a `getTime()` call), so this goes
     // through the default that copies the borrowed value into an owning one and forwards.
     let value = try runtime.eval("new Date(5000)")
-    let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [value])
+    let buffer = JavaScriptValuesBuffer.copying(in: runtime, values: [JavaScriptValue.Ref(value)])
     let decoded = try Date.decode(buffer.unownedValue(at: 0), in: runtime)
+    #expect(decoded.timeIntervalSince1970 == 5.0)
+  }
+
+  @Test
+  func `decode ignores a getTime override on the Date`() throws {
+    // Decode calls `Date.prototype.getTime` directly, so it reads the time value even when JS code
+    // replaces `getTime` on the object.
+    let value = try runtime.eval("(() => { const date = new Date(5000); date.getTime = () => 0; return date })()")
+    let decoded = try Date.decode(value, in: runtime)
     #expect(decoded.timeIntervalSince1970 == 5.0)
   }
 

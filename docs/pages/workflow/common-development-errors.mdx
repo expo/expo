@@ -35,6 +35,11 @@ This page outlines a list of errors that are commonly encountered by developers 
 - There is a mismatch between the AppKey registered in the native and JS portion of your app.
 - [Align your AppKey](/troubleshooting/application-has-not-been-registered/) with the native side of your project.
 
+### Filename longer than 260 characters
+
+- On Windows, the Android native build fails because a generated file path is longer than 260 characters.
+- Follow the steps in ["Filename longer than 260 characters" error on Windows](/troubleshooting/windows-long-paths/).
+
 ### Application not behaving as expected
 
 - It is possible caches may be preventing you from seeing the current state of your application.

@@ -1,7 +1,7 @@
 import assert from 'assert';
-import { boolish } from 'getenv';
 
 import type { ConfigPlugin, StaticPlugin } from '../Plugin.types';
+import { env } from '../utils/env';
 import { PluginError } from '../utils/errors';
 import {
   assertInternalProjectRoot,
@@ -9,13 +9,13 @@ import {
   resolveConfigPluginFunction,
 } from '../utils/plugin-resolver';
 
-const EXPO_DEBUG = boolish('EXPO_DEBUG', false);
+const EXPO_DEBUG = env.EXPO_DEBUG;
 
 // Show all error info related to plugin resolution.
-const EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS = boolish('EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS', false);
+const EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS = env.EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS;
 // Force using the fallback unversioned plugin instead of a local versioned copy,
 // this should only be used for testing the CLI.
-const EXPO_USE_UNVERSIONED_PLUGINS = boolish('EXPO_USE_UNVERSIONED_PLUGINS', false);
+const EXPO_USE_UNVERSIONED_PLUGINS = env.EXPO_USE_UNVERSIONED_PLUGINS;
 
 function isModuleMissingError(name: string, error: Error): boolean {
   // @ts-ignore

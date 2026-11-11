@@ -79,16 +79,13 @@ export type HrefOutputParams<T extends ExpoRouter.__routes = ExpoRouter.__routes
 /**
  * @hidden
  */
-export type RouteInputParams<T> =
-  Extract<Href, { pathname: T }> extends never
-    ? HrefInputParams extends infer H
-      ? H extends Record<'pathname' | 'params', any>
-        ? T extends H['pathname']
-          ? H['params']
-          : never
-        : never
+export type RouteInputParams<T> = HrefInputParams extends infer U
+  ? U extends { pathname: string; params?: infer Params }
+    ? T extends U['pathname']
+      ? Params
       : never
-    : Extract<HrefInputParams, { pathname: T }>['params'];
+    : never
+  : never;
 
 /**
  * @hidden
@@ -116,11 +113,11 @@ export type UnknownInputParams = Record<
 
 /**
  * Routes can have unknown outputs (e.g query params).
- * Unlike inputs, outputs can't be undefined or null.
+ * Unlike inputs, outputs can't be `null`.
  *
  * @hidden
  */
-export type UnknownOutputParams = Record<string, string | string[]>;
+export type UnknownOutputParams = Record<string, string | string[] | undefined>;
 
 /**
  * Return only the RoutePart of a string. If the string has multiple parts return never

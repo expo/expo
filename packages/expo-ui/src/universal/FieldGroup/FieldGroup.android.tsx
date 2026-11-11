@@ -27,7 +27,14 @@ export function FieldGroup({
   if (hidden) return null;
 
   const mergedStyle = { backgroundColor: colors.surface, ...style };
-  const modifiers = transformToModifiers(mergedStyle, { disabled, hidden, testID }, extraModifiers);
+  const modifiers = transformToModifiers(
+    mergedStyle,
+    { disabled, hidden, testID },
+    extraModifiers,
+    {
+      componentName: 'FieldGroup',
+    }
+  );
 
   return (
     <LazyColumn

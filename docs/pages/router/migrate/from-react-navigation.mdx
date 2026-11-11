@@ -8,7 +8,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { FileTree } from '~/ui/components/FileTree';
 import { DiffBlock } from '~/ui/components/Snippet';
 
-> **info** This guide targets **SDK 56 and later**. In SDK 56, Expo Router stopped accepting application-code imports from `@react-navigation/*. They now come from `expo-router/\*` entry points. If you are upgrading an existing Expo Router app from SDK 55 or earlier, follow the [SDK 55 to 56 migration guide](/router/migrate/sdk-55-to-56). The samples below already use the SDK 56 and later import paths.
+> **info** This guide targets **SDK 56 and later**. In SDK 56, Expo Router stopped accepting application-code imports from `@react-navigation/*`. They now come from `expo-router/*` entry points. If you are upgrading an existing Expo Router app from SDK 55 or earlier, follow the [SDK 55 to 56 migration guide](/router/migrate/sdk-55-to-56). The samples below already use the SDK 56 and later import paths.
 
 ## Pitch
 
@@ -186,7 +186,7 @@ export default function RootLayout() {
 The tab navigator will be moved to a subdirectory.
 
 ```tsx src/app/(home)/_layout.tsx
-import { Tabs } from 'expo-router';
+import { Tabs } from 'expo-router/js-tabs';
 
 export default function HomeLayout() {
   return <Tabs />;
@@ -370,63 +370,20 @@ Use the `useNavigationContainerRef()` hook instead.
 
 </Collapsible>
 
-### Rewrite custom navigators
+### Migrate a custom navigator
 
-If your project has a custom navigator, you can rewrite this or port it to Expo Router.
+> **info** The stable APIs in this section are available in **SDK 58 and later**. In SDK 56 and SDK 57, use `unstable_createStandardRouterNavigator` and `unstable_integrateWithRouter` instead.
 
-To port, simply use the `withLayoutContext` function:
+Use `createStandardRouterNavigator` when the navigator belongs to your app:
 
-```js
-import { createCustomNavigator } from './my-navigator';
+```tsx src/components/CustomTabs.tsx
+import { createStandardRouterNavigator, TabRouter } from 'expo-router';
+import { CustomTabsContent } from './CustomTabsContent';
 
-export const CustomNavigator = withLayoutContext(createCustomNavigator().Navigator);
+export const CustomTabs = createStandardRouterNavigator(CustomTabsContent, TabRouter);
 ```
 
-To rewrite, use the `Navigator` component, which wraps the [`useNavigationBuilder`](https://reactnavigation.org/docs/custom-navigators#usenavigationbuilder) hook from React Navigation.
-
-The return value of `useNavigationBuilder` can be accessed with the `Navigator.useContext()` hook from inside the `<Navigator />` component. Properties can be passed to `useNavigationBuilder` using the props of the `<Navigator />` component, this includes `initialRouteName`, `screenOptions`, `router`.
-
-All of the `children` of a `<Navigator />` component will be rendered as-is.
-
-- `Navigator.useContext`: Access the React Navigation `state`, `navigation`, `descriptors`, and `router` for the custom navigator.
-- `Navigator.Slot`: A React component used to render the currently selected route. This component can only be rendered inside a `<Navigator />` component.
-
-#### Example
-
-Custom layouts have an internal context that is ignored when using the `<Slot />` component without a `<Navigator />` component wrapping it.
-
-{/* prettier-ignore */}
-```jsx
-import { View } from 'react-native';
-import { TabRouter } from 'expo-router/react-navigation';
-
-import { Navigator, usePathname, Slot, Link } from 'expo-router';
-
-export default function App() {
-  return (
-    /* @info */<Navigator router={TabRouter}>/* @end */
-      <Header />
-      <Slot />
-    </Navigator>
-  );
-}
-
-function Header() {;
-  const pathname = usePathname();
-
-  return (
-    <View>
-      <Link href="/">Home</Link>
-      <Link
-        href="/profile"
-        style={/* @info Use `pathname` to determine if the link is active. */[pathname === '/profile' && { color: 'blue' }]/* @end */}>
-        Profile
-      </Link>
-      <Link href="/settings">Settings</Link>
-    </View>
-  );
-}
-```
+If a library already exposes a `standard-navigation` navigator, use `integrateWithRouter` instead. See [Custom navigators](/router/advanced/custom-navigators/) for the complete integration and the JavaScript stack, JavaScript tabs, and native stack helpers.
 
 ### Use Expo Router's Splash Screen wrapper
 

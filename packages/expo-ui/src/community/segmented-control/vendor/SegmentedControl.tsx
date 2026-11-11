@@ -5,7 +5,15 @@
  */
 
 import * as React from 'react';
-import { Animated, Easing, I18nManager, StyleSheet, View, useColorScheme } from 'react-native';
+import {
+  Animated,
+  Easing,
+  I18nManager,
+  Platform,
+  StyleSheet,
+  View,
+  useColorScheme,
+} from 'react-native';
 
 import { SegmentedControlTab } from './SegmentedControlTab';
 import { SegmentsSeparators } from './SegmentsSeparators';
@@ -53,7 +61,7 @@ export function SegmentedControl({
         toValue: isRTL * (selectedIndex ?? 0),
         duration: 300,
         easing: Easing.out(Easing.quad),
-        useNativeDriver: true,
+        useNativeDriver: Platform.OS !== 'web',
       }).start();
     }
   }, [animation, segmentWidth, selectedIndex]);

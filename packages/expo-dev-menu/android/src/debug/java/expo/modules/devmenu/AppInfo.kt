@@ -59,6 +59,7 @@ object AppInfo {
     val engine = when {
       jsExecutorName.contains("Hermes") -> "Hermes"
       jsExecutorName.contains("V8") -> "V8"
+      jsExecutorName.contains("QuickJS") -> "QuickJS"
       else -> "JSC"
     }
 

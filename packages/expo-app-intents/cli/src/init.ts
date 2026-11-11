@@ -15,6 +15,17 @@ export type InitOptions = {
   directory: string;
   examples: InitExample[];
   templatesDir: string;
+  /**
+   * Adds Spotlight indexing, a `Transferable` export, and an open intent on top of the mail
+   * example, and has the setup module register the entity kind so `appEntityIdentifier()` works
+   * from JavaScript.
+   */
+  visualIntelligence?: boolean;
+  /**
+   * Adds `DonatableAppIntent` extensions to the intents of the selected examples, and has the setup
+   * module register them so `donateIntentAsync()` can donate them from JavaScript.
+   */
+  donations?: boolean;
 };
 
 export const DEFAULT_DIRECTORY = 'app-intents';
@@ -45,23 +56,137 @@ const EXAMPLE_TEMPLATE_FILES: Record<InitExample, string[]> = {
   ],
 };
 
+/** The example that `--visual-intelligence` extends. */
+export const VISUAL_INTELLIGENCE_EXAMPLE: InitExample = 'mail';
+
+const VISUAL_INTELLIGENCE_DESCRIPTION =
+  'Allows Siri to more intelligently read the on-screen contents of your app.';
+
+/**
+ * Added on top of the mail example by `--visual-intelligence`. These are all extensions of the
+ * base types, so the mail example itself is unchanged whether or not the flag is used.
+ */
+const VISUAL_INTELLIGENCE_TEMPLATE_FILES = [
+  'examples/mail-visual-intelligence/OpenMailDraftIntent.swift',
+  'examples/mail-visual-intelligence/Entities/MailDraftEntity+Spotlight.swift',
+  'examples/mail-visual-intelligence/Entities/MailDraftEntity+Transferable.swift',
+  'examples/mail-visual-intelligence/Queries/MailDraftEntityQuery+Indexed.swift',
+];
+
+/**
+ * The `OnCreate` statement that turns the visual intelligence files into a working layer.
+ * `registerIndexed` also mirrors the catalog published with `setEntityCatalogAsync` into Spotlight,
+ * so nothing has to index the drafts by hand.
+ *
+ * Indented for the body of `OnCreate`, because it is both rendered into a new setup module and
+ * offered to the user for pasting into one this run kept.
+ */
+const VISUAL_INTELLIGENCE_REGISTRATION = `      if #available(iOS 18.0, macOS 15.0, *) {
+        AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft", as: MailDraftEntity.self)
+      }`;
+
+/** Finds the registration in an `AppIntentsSetup.swift` on disk, however it is formatted around. */
+const VISUAL_INTELLIGENCE_REGISTRATION_PATTERN = /registerIndexed\s*\(\s*["']mailDraft["']/;
+
+const DONATIONS_DESCRIPTION =
+  'Adds extensions to the example intents that let JavaScript donate them, so Siri and Spotlight ' +
+  'can suggest them.';
+
+type DonationEntry = {
+  /** The extension that makes the intent donatable. */
+  templateFile: string;
+  /** The name JavaScript donates the intent by. It reuses the name the intent dispatches. */
+  name: string;
+  /** The `OnCreate` statement that registers the intent, indented for the body of `OnCreate`. */
+  registration: string;
+};
+
+/**
+ * Added by `--donations`. Like the visual intelligence layer, these are extensions of the base
+ * types, so each example is unchanged whether or not the flag is used.
+ */
+const DONATION_ENTRIES: Partial<Record<InitExample, DonationEntry>> = {
+  counter: {
+    templateFile: 'examples/donations/IncreaseCounterIntent+Donation.swift',
+    name: 'increaseCounter',
+    registration: `      AppIntentDonationRegistry.shared.register("increaseCounter", as: IncreaseCounterIntent.self)`,
+  },
+  restaurant: {
+    templateFile: 'examples/donations/OrderFoodIntent+Donation.swift',
+    name: 'orderFood',
+    registration: `      AppIntentDonationRegistry.shared.register("orderFood", as: OrderFoodIntent.self)`,
+  },
+  mail: {
+    templateFile: 'examples/donations/CreateDraftIntent+Donation.swift',
+    name: 'createMailDraft',
+    registration: `      if #available(iOS 18.0, macOS 15.0, *) {
+        AppIntentDonationRegistry.shared.register("createMailDraft", as: CreateDraftIntent.self)
+      }`,
+  },
+};
+
+/** Added by `--donations` together with `--visual-intelligence`, for its open intent. */
+const VISUAL_INTELLIGENCE_DONATION_ENTRY: DonationEntry = {
+  templateFile: 'examples/donations/OpenMailDraftIntent+Donation.swift',
+  name: 'openMailDraft',
+  // `OpenMailDraftIntent` only exists when the app is compiled with the iOS 27 SDK.
+  registration: `      #if compiler(>=6.4)
+      if #available(iOS 27.0, macOS 27.0, *) {
+        AppIntentDonationRegistry.shared.register("openMailDraft", as: OpenMailDraftIntent.self)
+      }
+      #endif`,
+};
+
+function getDonationEntries(
+  examples: readonly InitExample[],
+  visualIntelligence: boolean
+): DonationEntry[] {
+  const entries = examples.flatMap((example) => {
+    const entry = DONATION_ENTRIES[example];
+    return entry ? [entry] : [];
+  });
+  if (visualIntelligence) {
+    entries.push(VISUAL_INTELLIGENCE_DONATION_ENTRY);
+  }
+  return entries;
+}
+
+/** Finds a donation registration in an `AppIntentsSetup.swift` on disk, however it is formatted. */
+function hasDonationRegistration(contents: string, entry: DonationEntry): boolean {
+  return new RegExp(`register\\s*\\(\\s*["']${entry.name}["']`).test(contents);
+}
+
 /**
  * Builds the setup module. It is generated rather than copied because what it wires up depends on
- * the selection: it may only refer to `AppShortcuts` when a provider is actually written.
+ * the selection: it may only refer to `AppShortcuts` when a provider is actually written, it
+ * registers the entity kind only for visual intelligence, and it registers intents for donation
+ * only when their donation code is scaffolded.
  */
-function renderAppIntentsSetup(options: { hasShortcuts: boolean }): string {
-  const body: string[] = ['    Name("AppIntentsSetup")'];
+function renderAppIntentsSetup(options: {
+  hasShortcuts: boolean;
+  visualIntelligence: boolean;
+  donationEntries: readonly DonationEntry[];
+}): string {
+  const onCreate: string[] = [];
+  if (options.donationEntries.length > 0) {
+    onCreate.push(options.donationEntries.map((entry) => entry.registration).join('\n'));
+  }
+  if (options.visualIntelligence) {
+    onCreate.push(VISUAL_INTELLIGENCE_REGISTRATION);
+  }
   if (options.hasShortcuts) {
-    body.push(`    OnCreate {
-      Task {
+    onCreate.push(`      Task {
         await AppIntentDispatcher.shared.setShortcutsRefreshHandler {
           AppShortcuts.updateAppShortcutParameters()
         }
         AppShortcuts.updateAppShortcutParameters()
-      }
-    }`);
+      }`);
   }
 
+  const body: string[] = ['    Name("AppIntentsSetup")'];
+  if (onCreate.length > 0) {
+    body.push(`    OnCreate {\n${onCreate.join('\n\n')}\n    }`);
+  }
   return `internal import ExpoAppIntents
 internal import ExpoModulesCore
 
@@ -194,7 +319,7 @@ export function getExamplesPrompt(): PromptObject {
   return {
     type: 'multiselect',
     name: 'examples',
-    message: 'Which App Intents examples should be included?',
+    message: 'Which examples should be scaffolded?',
     choices: ALL_INIT_EXAMPLES.map((example) => ({
       title: example,
       value: example,
@@ -205,21 +330,72 @@ export function getExamplesPrompt(): PromptObject {
   };
 }
 
+/**
+ * Asked only after the example it extends has been selected, which is why it is a follow-up prompt
+ * rather than an entry in the picker: a `prompts` multiselect cannot enable a choice in response to
+ * another choice being selected.
+ */
+export function getVisualIntelligencePrompt(): PromptObject {
+  return {
+    type: 'confirm',
+    name: 'visualIntelligence',
+    message: `Add visual intelligence support? ${VISUAL_INTELLIGENCE_DESCRIPTION}`,
+    initial: false,
+  };
+}
+
+/**
+ * Asked last, and only when a selected example has intents to donate. It is a follow-up prompt for
+ * the same reason as the visual intelligence one.
+ */
+export function getDonationsPrompt(): PromptObject {
+  return {
+    type: 'confirm',
+    name: 'donations',
+    message: `Include donation native code? ${DONATIONS_DESCRIPTION}`,
+    initial: false,
+  };
+}
+
+export type ResolvedExamples = {
+  examples: InitExample[];
+  visualIntelligence: boolean;
+  donations: boolean;
+};
+
 export async function resolveExamplesAsync(
   interactive: boolean,
-  values: readonly string[] | undefined
-): Promise<InitExample[]> {
+  values: readonly string[] | undefined,
+  visualIntelligence: boolean = false,
+  donations: boolean = false
+): Promise<ResolvedExamples> {
   if (values && values.length > 0) {
-    return resolveExamples(values);
+    return { examples: resolveExamples(values), visualIntelligence, donations };
   }
   if (!interactive) {
-    return DEFAULT_EXAMPLES;
+    return { examples: DEFAULT_EXAMPLES, visualIntelligence, donations };
   }
 
   const { examples } = await prompts(getExamplesPrompt(), {
     onCancel: () => process.exit(0),
   });
-  return resolveExamples(examples);
+  const selected = resolveExamples(examples);
+
+  if (!visualIntelligence && selected.includes(VISUAL_INTELLIGENCE_EXAMPLE)) {
+    const answer = await prompts(getVisualIntelligencePrompt(), {
+      onCancel: () => process.exit(0),
+    });
+    visualIntelligence = answer.visualIntelligence === true;
+  }
+
+  if (!donations && getDonationEntries(selected, false).length > 0) {
+    const answer = await prompts(getDonationsPrompt(), {
+      onCancel: () => process.exit(0),
+    });
+    donations = answer.donations === true;
+  }
+
+  return { examples: selected, visualIntelligence, donations };
 }
 
 export function normalizeDirectory(directory: string | undefined): string {
@@ -378,11 +554,149 @@ async function warnAboutMissingShortcutRefreshAsync(
   );
 }
 
-function getTemplateFiles(examples: readonly InitExample[]): string[] {
+/**
+ * What to paste into a kept `AppIntentsSetup.swift` to run `statements` on create, and where.
+ *
+ * A setup module that already has an `OnCreate` - one that refreshes a shortcuts provider, or one
+ * the user wrote - needs the statements alone; a module without one needs the block around them too.
+ */
+function getOnCreateSnippet(
+  contents: string,
+  directory: string,
+  statements: string
+): { snippet: string; location: string } {
+  if (contents.includes('OnCreate')) {
+    return {
+      snippet: statements,
+      location: `the OnCreate block in ${directory}/AppIntentsSetup.swift`,
+    };
+  }
+  return {
+    snippet: `    OnCreate {\n${statements}\n    }`,
+    location: `the definition() body in ${directory}/AppIntentsSetup.swift`,
+  };
+}
+
+/**
+ * Warns when visual intelligence was requested but the `AppIntentsSetup.swift` this run kept does
+ * not register the entity kind.
+ *
+ * `init` never overwrites the setup module, so adding the flag to a setup scaffolded earlier copies
+ * the Spotlight, `Transferable` and open-intent files but leaves the registration out. That one call
+ * is what gives `appEntityIdentifier()` a kind to resolve and what mirrors the catalog into
+ * Spotlight, so without it every file is in place and nothing works.
+ */
+async function warnAboutMissingEntityRegistrationAsync(
+  filePath: string,
+  directory: string
+): Promise<void> {
+  const contents = await fs.readFile(filePath, 'utf8');
+  if (VISUAL_INTELLIGENCE_REGISTRATION_PATTERN.test(contents)) {
+    return;
+  }
+
+  const { snippet, location } = getOnCreateSnippet(
+    contents,
+    directory,
+    VISUAL_INTELLIGENCE_REGISTRATION
+  );
+  console.warn(
+    `${directory}/AppIntentsSetup.swift already exists and init never overwrites it, so the visual ` +
+      `intelligence layer is scaffolded but not registered. Its Swift files are compiled into the ` +
+      `app, and the MailDraftEntity kind is only usable once the setup module registers it: until ` +
+      `then appEntityIdentifier() resolves nothing and no draft reaches Spotlight, so the feature ` +
+      `is inert with no error to go on. Add this to ${location}:\n\n${snippet}\n`
+  );
+}
+
+/**
+ * Warns when donation code was requested but the `AppIntentsSetup.swift` this run kept does not
+ * register every donatable intent.
+ *
+ * `init` never overwrites the setup module, so adding the flag to a setup scaffolded earlier copies
+ * the `DonatableAppIntent` extensions but leaves the registrations out. JavaScript donates by the
+ * registered name, so without them every `donateIntentAsync()` call for those intents rejects.
+ */
+async function warnAboutMissingDonationRegistrationsAsync(
+  filePath: string,
+  directory: string,
+  entries: readonly DonationEntry[]
+): Promise<void> {
+  const contents = await fs.readFile(filePath, 'utf8');
+  const missing = entries.filter((entry) => !hasDonationRegistration(contents, entry));
+  if (missing.length === 0) {
+    return;
+  }
+
+  const { snippet, location } = getOnCreateSnippet(
+    contents,
+    directory,
+    missing.map((entry) => entry.registration).join('\n')
+  );
+  console.warn(
+    `${directory}/AppIntentsSetup.swift already exists and init never overwrites it, so these ` +
+      `intents have donation code but are not registered for donation: ` +
+      `${missing.map((entry) => entry.name).join(', ')}. JavaScript donates an intent by the name ` +
+      `it is registered under, so donateIntentAsync() rejects these names until the setup module ` +
+      `registers them. Add this to ${location}:\n\n${snippet}\n`
+  );
+}
+
+/**
+ * Throws when `--donations` was requested without an example that has intents to donate, rather
+ * than scaffolding the flag away silently. Like the visual intelligence check, the flag can reach
+ * this from the interactive picker too.
+ */
+export function assertDonationsSelection(
+  examples: readonly InitExample[],
+  donations: boolean
+): void {
+  if (donations && getDonationEntries(examples, false).length === 0) {
+    const donatable = ALL_INIT_EXAMPLES.filter((example) => DONATION_ENTRIES[example]);
+    throw new Error(
+      `--donations adds donation code to the selected examples, and the selected examples ` +
+        `(${examples.join(', ')}) have no intents to donate. Add one of ${donatable.join(', ')} ` +
+        `— select it in the picker, or pass --examples — or run again without --donations.`
+    );
+  }
+}
+
+/**
+ * Throws when `--visual-intelligence` was requested without the example it extends, rather than
+ * scaffolding the flag away silently.
+ *
+ * The flag reaches this check from the interactive picker too — it is passed on the command line
+ * while the examples are chosen in the prompt — so the message cannot assume that passing
+ * `--examples` is the only way out.
+ */
+export function assertVisualIntelligenceSelection(
+  examples: readonly InitExample[],
+  visualIntelligence: boolean
+): void {
+  if (visualIntelligence && !examples.includes(VISUAL_INTELLIGENCE_EXAMPLE)) {
+    throw new Error(
+      `--visual-intelligence extends the ${VISUAL_INTELLIGENCE_EXAMPLE} example with Spotlight ` +
+        `indexing and on-screen entity support, and the selected examples ` +
+        `(${examples.join(', ')}) do not include it. Add the ${VISUAL_INTELLIGENCE_EXAMPLE} ` +
+        `example — select it in the picker, or pass ` +
+        `--examples ${VISUAL_INTELLIGENCE_EXAMPLE} — or run again without --visual-intelligence.`
+    );
+  }
+}
+
+function getTemplateFiles(
+  examples: readonly InitExample[],
+  visualIntelligence: boolean,
+  donationEntries: readonly DonationEntry[]
+): string[] {
   const files: string[] = [];
   for (const example of examples) {
     files.push(...EXAMPLE_TEMPLATE_FILES[example]);
   }
+  if (visualIntelligence) {
+    files.push(...VISUAL_INTELLIGENCE_TEMPLATE_FILES);
+  }
+  files.push(...donationEntries.map((entry) => entry.templateFile));
   return files;
 }
 
@@ -587,7 +901,7 @@ async function findOtherAppIntentsSetupAsync(
         entry.name === APP_INTENTS_SETUP_FILE_NAME &&
         path.resolve(entryPath) !== requestedSetupPath
       ) {
-        return path.relative(projectRoot, entryPath);
+        return path.relative(projectRoot, entryPath).split(path.sep).join('/');
       }
     }
   }
@@ -621,7 +935,7 @@ async function assertDirectoryIsNotAlreadyConfiguredAsync(
           `plugins list is computed in JavaScript in ` +
           `${path.relative(projectRoot, config.dynamicConfigPath)}, but the watched inline-module ` +
           `tree already contains '${existingSetup}'. This run would also create ` +
-          `'${path.join(directory, APP_INTENTS_SETUP_FILE_NAME)}', and autolinking would compile ` +
+          `'${directory}/${APP_INTENTS_SETUP_FILE_NAME}', and autolinking would compile ` +
           `both files into the app target, making the iOS build fail with ` +
           `\`error: filename "${APP_INTENTS_SETUP_FILE_NAME}" used twice\`. Point the existing ` +
           `expo-app-intents plugin entry at '${directory}' and move the Swift files there, or ` +
@@ -715,6 +1029,11 @@ function getConfigModifications(
  */
 export async function runInit(options: InitOptions): Promise<void> {
   const { projectRoot, directory, examples, templatesDir } = options;
+  const visualIntelligence = options.visualIntelligence ?? false;
+  const donations = options.donations ?? false;
+  assertVisualIntelligenceSelection(examples, visualIntelligence);
+  assertDonationsSelection(examples, donations);
+  const donationEntries = donations ? getDonationEntries(examples, visualIntelligence) : [];
 
   const config = readAppConfig(projectRoot, directory);
   await assertDirectoryIsNotAlreadyConfiguredAsync(projectRoot, config, directory);
@@ -749,13 +1068,17 @@ export async function runInit(options: InitOptions): Promise<void> {
     appIntentsSetupPath,
     // A provider kept from an earlier run counts too: the setup module has to refresh it even when
     // this run's selection contributes no phrase and writes none.
-    renderAppIntentsSetup({ hasShortcuts }),
+    renderAppIntentsSetup({
+      hasShortcuts,
+      visualIntelligence,
+      donationEntries,
+    }),
     written,
     skipped,
     'AppIntentsSetup.swift'
   );
 
-  for (const templateFile of getTemplateFiles(examples)) {
+  for (const templateFile of getTemplateFiles(examples, visualIntelligence, donationEntries)) {
     const destinationPath = getDestinationPath(templateFile);
     const destination = path.join(intentsDir, destinationPath);
     if (existsSync(destination)) {
@@ -795,9 +1118,16 @@ export async function runInit(options: InitOptions): Promise<void> {
       );
     }
   }
-  console.log(`Selected examples: ${examples.join(', ')}`);
+  const additions = [
+    ...(visualIntelligence ? ['visual intelligence'] : []),
+    ...(donations ? ['donations'] : []),
+  ];
+  console.log(
+    `Selected examples: ${examples.join(', ')}` +
+      additions.map((addition) => ` (+ ${addition})`).join('')
+  );
   if (written.length) {
-    console.log(`Created ${directory}/: ${written.join(', ')}`);
+    console.log(`Created in ${directory}/: ${written.join(', ')}`);
   }
   if (skipped.length) {
     console.log(`Skipped existing files: ${skipped.join(', ')}`);
@@ -808,5 +1138,21 @@ export async function runInit(options: InitOptions): Promise<void> {
   if (keptExistingAppIntentsSetup && hasShortcuts) {
     await warnAboutMissingShortcutRefreshAsync(appIntentsSetupPath, directory);
   }
-  console.log(`\nNext steps:\n  1. npx expo prebuild -p ios\n  2. npx expo run:ios`);
+  if (visualIntelligence && keptExistingAppIntentsSetup) {
+    await warnAboutMissingEntityRegistrationAsync(appIntentsSetupPath, directory);
+  }
+  if (donationEntries.length > 0 && keptExistingAppIntentsSetup) {
+    await warnAboutMissingDonationRegistrationsAsync(
+      appIntentsSetupPath,
+      directory,
+      donationEntries
+    );
+  }
+  console.log(
+    `\nNext steps:\n` +
+      `  1. npx expo prebuild -p ios\n` +
+      `  2. npx expo run:ios\n` +
+      `  3. Learn how to receive intent invocations in your JavaScript code\n` +
+      `     https://docs.expo.dev/versions/latest/sdk/app-intents/#usage`
+  );
 }

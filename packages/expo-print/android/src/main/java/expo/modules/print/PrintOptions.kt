@@ -1,17 +1,14 @@
 package expo.modules.print
 
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import java.io.Serializable
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Record
 
-@OptimizedRecord
-internal class PrintOptions(
-  @Field var html: String? = null,
-  @Field var uri: String? = null,
-  @Field var width: Int? = null,
-  @Field var height: Int? = null,
-  @Field var orientation: String? = null,
-  @Field var textZoom: Int? = null,
-  @Field var base64: Boolean = false
-) : Record, Serializable
+@Record
+internal data class PrintOptions(
+  val html: String? = null,
+  val uri: String? = null,
+  val width: Int? = null,
+  val height: Int? = null,
+  val orientation: String? = null,
+  val textZoom: Int? = null,
+  val base64: Boolean = false
+)

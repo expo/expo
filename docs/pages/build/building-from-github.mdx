@@ -1,7 +1,7 @@
 ---
 title: Trigger builds from the Expo GitHub App
 sidebar_title: Trigger builds from GitHub App
-description: Learn how to trigger builds on EAS for your app using the Expo GitHub App.
+description: Learn how to trigger builds with Expo Build for your app using the Expo GitHub App.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -32,7 +32,7 @@ This guide explains how to trigger builds directly from your GitHub repository u
 
   </Requirement>
   <Requirement title="A successful build from your local machine">
-    To trigger EAS builds from a GitHub repository, you'll need to configure your project for EAS Build and successfully run a build from your computer for each platform that you'd like to support on GitHub. If you haven't successfully run `eas build -p [all|ios|android]` yet, see [Create your first build](/build/setup/) for more information.
+    To trigger builds from a GitHub repository, you'll need to configure your project for Expo Build and successfully run a build from your computer for each platform that you'd like to support on GitHub. If you haven't successfully run `eas build -p [all|ios|android]` yet, see [Create your first build](/build/setup/) for more information.
   </Requirement>
   <Requirement title="Linked GitHub account and app permissions">
     - An Expo user in the organization must have a linked GitHub user with access to the target repository. Check **Account settings** > **Overview** > **User settings** > [**Connections**](https://expo.dev/settings#connections) and verify that your GitHub user account is linked.
@@ -132,7 +132,7 @@ The build will be triggered for the latest commit on the PR's base branch. You c
 of the build in the PR's checks. A link to the build will be available in the check's details.
 
 <ContentSpotlight
-  alt="EAS Build check details on a GitHub PR"
+  alt="Expo Build check details on a GitHub PR"
   src="/static/images/eas-build/build-from-github/gh-check-details.png"
 />
 
@@ -140,11 +140,11 @@ of the build in the PR's checks. A link to the build will be available in the ch
 
 You can take your build automation further by automatically building your Expo project when you push code to GitHub.
 
-#### Using EAS Workflows
+#### Using Expo Workflows
 
-EAS Workflows is a service from Expo that allows you to run builds, and many other types of jobs, on EAS. You can use EAS Workflows to automate your development and release processes, like creating development builds or automatically building and submitting to the app stores.
+Expo Workflows is a service from Expo that allows you to run builds, and many other types of jobs, on Expo servers. You can use Expo Workflows to automate your development and release processes, like creating development builds or automatically building and submitting to the app stores.
 
-To create a build with EAS Workflows, start by adding the following code in **.eas/workflows/build.yml**:
+To create a build with Expo Workflows, start by adding the following code in **.eas/workflows/build.yml**:
 
 ```yaml .eas/workflows/build.yml
 name: Build
@@ -167,15 +167,15 @@ jobs:
       platform: ios
 ```
 
-When a commit is pushed to the main branch, this workflow will create Android and iOS builds. You can learn how to modify this workflow and sequence other types of jobs in the [EAS Workflows documentation](/eas/workflows/get-started).
+When a commit is pushed to the main branch, this workflow will create Android and iOS builds. You can learn how to modify this workflow and sequence other types of jobs in the [Expo Workflows documentation](/eas/workflows/get-started).
 
 #### Set up build triggers
 
-> **warning** **[Deprecated](/more/release-statuses/#deprecated):** This feature is deprecated and disabled for new projects. We recommend using [EAS Workflows](/eas/workflows/get-started/) instead.
+> **warning** **[Deprecated](/more/release-statuses/#deprecated):** This feature is deprecated and disabled for new projects. We recommend using [Expo Workflows](/eas/workflows/get-started/) instead.
 
 <Collapsible summary="Learn how to set up build triggers">
 
-You can set up build triggers to configure when EAS builds your app from GitHub. We allow you to build when pushing to a branch, pull request, and Git tag.
+You can set up build triggers to configure when Expo Build builds your app from GitHub. We allow you to build when pushing to a branch, pull request, and Git tag.
 
 Open your Expo project in the dashboard. To create a build trigger, scroll down to the **Build
 triggers** section of the project GitHub settings page and click **New Build Trigger**.
@@ -243,7 +243,7 @@ these builds in the checks section of the pull request:
 
 #### Manage build triggers
 
-On your project's GitHub settings page in the EAS dashboard, you can click the options button to the right of
+On your project's GitHub settings page in the Expo dashboard, you can click the options button to the right of
 a build trigger row to disable, edit, or delete the trigger.
 
 <ContentSpotlight
@@ -254,18 +254,18 @@ a build trigger row to disable, edit, or delete the trigger.
 
 You can also run a GitHub build with the parameters from the trigger manually. This will not count toward your automatic build trigger record.
 
-#### Automatic app stores submission with EAS Submit
+#### Automatic app stores submission with Expo Submit
 
-Once your build completes, you can automatically submit your app to the app stores using EAS Submit. This feature streamlines the process, reducing the manual steps required to publish your app.
+Once your build completes, you can automatically submit your app to the app stores using Expo Submit. This feature streamlines the process, reducing the manual steps required to publish your app.
 
 To enable automatic submission, you need to configure your build triggers to include submission as part of the build process. Here's how you can set it up:
 
-- Navigate to your project's GitHub settings page on the EAS dashboard.
+- Navigate to your project's GitHub settings page on the Expo dashboard.
 - Find the build trigger you want to modify, and click the options button.
 - Select **Edit trigger** and in the dialog that appears, check the option **Submit to store after build**.
 
 <ContentSpotlight
-  alt="The EAS Submit form fields on the trigger edit form"
+  alt="The Expo Submit form fields on the trigger edit form"
   src="/static/images/eas-build/build-from-github/eas-submit-form-fields.png"
   className="max-w-[640px]"
 />
@@ -282,7 +282,7 @@ Once enabled, every time a build is triggered from this configuration, it will a
 
 > **Note:** Ensure that your **eas.json** is properly configured for submission, including
 > specifying the correct app store's credentials and submission profile. For more information, see
-> the [EAS Submit](/submit/eas-json/).
+> the [Expo Submit](/submit/eas-json/).
 
 </Collapsible>
 

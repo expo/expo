@@ -28,6 +28,30 @@ struct AppContextTests {
     #expect(AppContext.from(runtime: bareRuntime) == nil)
   }
 
+  @Test
+  func `an app context with its own runtime is deallocated once released`() {
+    weak var weakAppContext: AppContext?
+    do {
+      let appContext = AppContext.create()
+      weakAppContext = appContext
+    }
+    #expect(weakAppContext == nil)
+  }
+
+  @Test
+  func `the native state pins an app context that does not own its runtime`() {
+    weak var weakAppContext: AppContext?
+    let runtime = JavaScriptRuntime()
+    do {
+      let appContext = AppContext()
+      weakAppContext = appContext
+      let coreObject = runtime.createObject()
+      coreObject.setNativeState(AppContext.NativeState(appContext: appContext, ownsLifecycle: false))
+      runtime.global().defineProperty(globalCoreObjectPropertyName, value: coreObject, options: [.enumerable])
+    }
+    #expect(weakAppContext != nil)
+  }
+
   // MARK: - moduleProviderClassNames
 
   @Test
@@ -86,6 +110,33 @@ struct AppContextTests {
     ])
   }
 
+  // MARK: - appIdentifier
+
+  @Test
+  func `app contexts get increasing indices`() {
+    let first = AppContext()
+    let second = AppContext()
+    #expect(second.appIndex > first.appIndex)
+  }
+
+  @Test
+  func `app contexts get distinct identifiers`() {
+    let first = AppContext()
+    let second = AppContext()
+    #expect(first.appIdentifier != second.appIdentifier)
+  }
+
+  @Test
+  func `the first app context has no identifier`() {
+    #expect(AppContext.appIdentifier(forIndex: 0) == nil)
+  }
+
+  @Test
+  func `later app contexts use their index as the identifier`() {
+    #expect(AppContext.appIdentifier(forIndex: 1) == "1")
+    #expect(AppContext.appIdentifier(forIndex: 42) == "42")
+  }
+
   // MARK: - NativeState
 
   @Suite("NativeState")
@@ -141,7 +192,7 @@ struct AppContextTests {
       coreObject.setNativeState(nativeState)
 
       coreObject.unsetNativeState()
-      try runtime.eval("gc() && gc() && gc()")
+      runtime.collectGarbage { deallocatorCallCount == 1 }
 
       #expect(deallocatorCallCount == 1)
     }
@@ -160,13 +211,16 @@ struct AppContextTests {
       secondObject.setNativeState(nativeState)
 
       // Releasing the first holder must not fire the deallocator while the second still holds it.
+      // `secondObject` keeps a strong ref, so no number of collections may release the pointee;
+      // this assertion needs a fixed number of passes, not a retry loop, because it is waiting for
+      // something that must never happen.
       firstObject.unsetNativeState()
-      try runtime.eval("gc() && gc() && gc()")
+      runtime.collectGarbage()
       #expect(deallocatorCallCount == 0)
 
       // Releasing the last holder fires it exactly once.
       secondObject.unsetNativeState()
-      try runtime.eval("gc() && gc() && gc()")
+      runtime.collectGarbage { deallocatorCallCount == 1 }
       #expect(deallocatorCallCount == 1)
     }
 
@@ -205,7 +259,7 @@ struct AppContextTests {
 
       // Tear the subordinate runtime down.
       try subordinateRuntime.global().getPropertyAsObject(globalCoreObjectPropertyName).unsetNativeState()
-      try subordinateRuntime.eval("gc() && gc() && gc()")
+      subordinateRuntime.collectGarbage()
 
       // The app context survived: its main runtime is still recoverable.
       #expect(throws: Never.self) {
@@ -225,7 +279,7 @@ struct AppContextTests {
 
       // Tearing it down runs `destroy()`, which unpins the app context's runtime.
       try mainRuntime.global().getPropertyAsObject(globalCoreObjectPropertyName).unsetNativeState()
-      try mainRuntime.eval("gc() && gc() && gc()")
+      mainRuntime.collectGarbage { (try? appContext.runtime) == nil }
 
       #expect(throws: Exceptions.RuntimeLost.self) {
         _ = try appContext.runtime
@@ -255,7 +309,7 @@ struct AppContextTests {
 
       // Tear the subordinate down first: it must not destroy the shared app context.
       try subordinateRuntime.global().getPropertyAsObject(globalCoreObjectPropertyName).unsetNativeState()
-      try subordinateRuntime.eval("gc() && gc() && gc()")
+      subordinateRuntime.collectGarbage()
 
       #expect(throws: Never.self) {
         _ = try appContext.runtime
@@ -264,7 +318,7 @@ struct AppContextTests {
 
       // Now tear the main runtime down: this one owns the lifecycle, so it destroys the context.
       try mainRuntime.global().getPropertyAsObject(globalCoreObjectPropertyName).unsetNativeState()
-      try mainRuntime.eval("gc() && gc() && gc()")
+      mainRuntime.collectGarbage { (try? appContext.runtime) == nil }
 
       #expect(throws: Exceptions.RuntimeLost.self) {
         _ = try appContext.runtime

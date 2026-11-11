@@ -1,83 +1,118 @@
 import ExpoModulesCore
 
-let brightnessChangeEvent = "Expo.brightnessDidChange"
+private let brightnessChangeEvent = "Expo.brightnessDidChange"
 
+@Record
+struct BrightnessChangeEvent {
+  var brightness: Double
+}
+
+@ExpoModule("ExpoBrightness")
 public class BrightnessModule: Module {
-  private var hasListeners = false
+  @Event("Expo.brightnessDidChange")
+  var onBrightnessChange: (BrightnessChangeEvent) -> Void
 
-  public func definition() -> ModuleDefinition {
-    Name("ExpoBrightness")
+  public override func didCreate() {
+    appContext?.permissions?.register([
+      BrightnessPermissionsRequester()
+    ])
+  }
 
-    OnCreate {
-      appContext?.permissions?.register([
-        BrightnessPermissionsRequester()
-      ])
+  // Core calls the listening hooks for every event name, not only for the declared events.
+  public override func didStartListening(event: String) {
+    guard event == brightnessChangeEvent else {
+      return
     }
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(self.brightnessDidChange),
+      name: UIScreen.brightnessDidChangeNotification,
+      object: nil
+    )
+  }
 
-    Events(brightnessChangeEvent)
+  public override func didStopListening(event: String) {
+    guard event == brightnessChangeEvent else {
+      return
+    }
+    NotificationCenter.default.removeObserver(
+      self,
+      name: UIScreen.brightnessDidChangeNotification,
+      object: nil
+    )
+  }
 
-    AsyncFunction("getPermissionsAsync") { (promise: Promise) in
-      guard let permissions = appContext?.permissions else {
-        throw Exceptions.PermissionsModuleNotFound()
-      }
+  @JS
+  func getPermissionsAsync() async throws -> [String: Any] {
+    guard let permissions = appContext?.permissions else {
+      throw Exceptions.PermissionsModuleNotFound()
+    }
+    return try await withPermissionsContinuation { resolve, reject in
       permissions.getPermissionUsingRequesterClass(
         BrightnessPermissionsRequester.self,
-        resolve: promise.legacyResolver,
-        reject: promise.legacyRejecter
+        resolve: resolve,
+        reject: reject
       )
     }
+  }
 
-    AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
-      guard let permissions = appContext?.permissions else {
-        throw Exceptions.PermissionsModuleNotFound()
-      }
+  @JS
+  func requestPermissionsAsync() async throws -> [String: Any] {
+    guard let permissions = appContext?.permissions else {
+      throw Exceptions.PermissionsModuleNotFound()
+    }
+    return try await withPermissionsContinuation { resolve, reject in
       permissions.askForPermission(
         usingRequesterClass: BrightnessPermissionsRequester.self,
-        resolve: promise.legacyResolver,
-        reject: promise.legacyRejecter
+        resolve: resolve,
+        reject: reject
       )
     }
-
-    AsyncFunction("setBrightnessAsync") { (brightnessValue: Double) in
-      UIScreen.main.brightness = brightnessValue
-    }
-    .runOnQueue(.main)
-
-    AsyncFunction("getBrightnessAsync") {
-      return UIScreen.main.brightness
-    }
-
-    OnStartObserving {
-      hasListeners = true
-      NotificationCenter.default.addObserver(
-        self,
-        selector: #selector(self.brightnessDidChange),
-        name: UIScreen.brightnessDidChangeNotification,
-        object: nil
-      )
-    }
-
-    OnStopObserving {
-      hasListeners = false
-      NotificationCenter.default.removeObserver(
-        self,
-        name: UIScreen.brightnessDidChangeNotification,
-        object: nil
-      )
-    }
-
-    AsyncFunction("getSystemBrightnessAsync") {}
-    AsyncFunction("setSystemBrightnessAsync") {}
-    AsyncFunction("isUsingSystemBrightnessAsync") {}
-    AsyncFunction("getSystemBrightnessModeAsync") {}
-    AsyncFunction("setSystemBrightnessModeAsync") {}
   }
+
+  @JS
+  @MainActor
+  func setBrightnessAsync(brightnessValue: Double) async {
+    UIScreen.main.brightness = brightnessValue
+  }
+
+  @JS
+  @MainActor
+  func getBrightnessAsync() async -> Double {
+    return UIScreen.main.brightness
+  }
+
+  @JS
+  func getSystemBrightnessAsync() async {}
+
+  @JS
+  func setSystemBrightnessAsync() async {}
+
+  @JS
+  func isUsingSystemBrightnessAsync() async {}
+
+  @JS
+  func getSystemBrightnessModeAsync() async {}
+
+  @JS
+  func setSystemBrightnessModeAsync() async {}
 
   @objc
   private func brightnessDidChange() {
-    if !hasListeners {
-      return
+    onBrightnessChange(BrightnessChangeEvent(brightness: UIScreen.main.brightness))
+  }
+
+  private func withPermissionsContinuation(
+    _ body: (@escaping EXPromiseResolveBlock, @escaping EXPromiseRejectBlock) -> Void
+  ) async throws -> [String: Any] {
+    return try await withCheckedThrowingContinuation { continuation in
+      let resolve: EXPromiseResolveBlock = { result in
+        continuation.resume(returning: result as? [String: Any] ?? [:])
+      }
+      let reject: EXPromiseRejectBlock = { code, message, _ in
+        continuation.resume(throwing: Exception(name: code ?? "", description: message ?? "", code: code ?? ""))
+      }
+      body(resolve, reject)
     }
-    sendEvent(brightnessChangeEvent, ["brightness": UIScreen.main.brightness])
   }
 }

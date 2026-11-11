@@ -27,7 +27,7 @@ export enum ExecutionEnvironment {
    * [existing React Native project](/bare/overview/).
    */
   Bare = 'bare',
-  /** Production/release build created with or without EAS Build. */
+  /** Production/release build created with or without Expo Build. */
   Standalone = 'standalone',
   /** Expo Go or a development build built with `expo-dev-client`. */
   StoreClient = 'storeClient',
@@ -177,18 +177,22 @@ export type NativeConstants = {
   /**
    * @hidden
    * Manifest embedded in the build. Returns `null` when `manifest2` is non-null.
-   * @deprecated Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
-   * and EAS Update.
+   * @deprecated Use `Constants.expoConfig` instead, which behaves more consistently across Expo Build
+   * and Expo Update.
    */
   manifest: EmbeddedManifest | null;
   /**
    * Manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
-   * use EAS Update. `Constants.expoConfig` should be used for accessing the Expo config object.
+   * use Expo Update. `Constants.expoConfig` should be used for accessing the Expo config object.
    */
   manifest2: ExpoUpdatesManifest | null;
   /**
-   * The standard Expo config object defined in **app.json** and **app.config.js** files. For both
-   * classic and modern manifests, whether they are embedded or remote.
+   * The resolved [app config](/workflow/configuration/#reading-configuration-values-in-your-app),
+   * without fields such as `android.config` and `ios.config` that the public config filters out.
+   *
+   * In a build, this is the config embedded at build time. When the app runs an update, this is
+   * the config that comes with that update. During development, this is the config that the
+   * development server serves. To print it for your project, run `npx expo config --type public`.
    */
   expoConfig:
     | (ExpoConfig & {
@@ -203,7 +207,7 @@ export type NativeConstants = {
    */
   expoGoConfig: ManifestsExpoGoConfig | null;
   /**
-   * The standard EAS config object populated when using EAS.
+   * The standard Expo Services config object populated when using Expo Services.
    */
   easConfig: ManifestsEASConfig | null;
   /**

@@ -60,7 +60,8 @@ export function PagePackageVersion({
     <div className={mergeClasses('flex items-center gap-2', className)}>
       {versionRange && (
         <div
-          data-md="skip"
+          data-md="package-version"
+          data-md-version={versionRange}
           className="flex items-center justify-center gap-1.5 text-sm text-secondary">
           <PackageIcon aria-hidden="true" className="icon-sm text-icon-secondary" />
           Recommended version:

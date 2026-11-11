@@ -1,8 +1,7 @@
 import type { JSONSchema } from './JSONSchema';
+import { validateSchema } from './validate';
 
 export type SchemaVisitor = (schema: JSONSchema, value: unknown, path: string) => void;
-
-const COMBINATOR_KEYWORDS = ['allOf', 'anyOf', 'oneOf', 'if', 'then', 'else'];
 
 const isSchemaNode = (value: unknown): value is JSONSchema =>
   value != null && typeof value === 'object' && !Array.isArray(value);
@@ -109,22 +108,72 @@ const visitItems = (
   }
 };
 
+// `validateSchema` throws for what it cannot evaluate, such as an unsupported
+// `format`. It checks a branch's other string keywords first, so a throw means
+// the branch passed everything it could check: treat it as applying, as the
+// walk did before it matched values, rather than abort the whole walk.
+const matches = (schema: JSONSchema | boolean, value: unknown, path: string): boolean => {
+  try {
+    return validateSchema(schema as JSONSchema, value, path) === null;
+  } catch {
+    return true;
+  }
+};
+
+const visitEach = (
+  schemas: unknown,
+  value: unknown,
+  visitor: SchemaVisitor,
+  path: string,
+  applies: (schema: JSONSchema) => boolean = () => true
+): void => {
+  if (!Array.isArray(schemas)) {
+    return;
+  }
+  for (const item of schemas) {
+    if (isSchemaNode(item) && applies(item)) {
+      visitNode(item, value, visitor, path);
+    }
+  }
+};
+
+// Only the subschemas that apply to `value` are visited. A `oneOf`/`anyOf`
+// branch the value does not match, or the `then`/`else` its `if` did not
+// select, describes some other value: visiting it reported, for example, the
+// image branch of `ios.icon` for a `.icon` directory. A matching `if` is
+// visited too, since its annotations apply (draft-07). A path declared in both
+// `if` and `then` is therefore visited twice, as before. Without a value there
+// is nothing to match against, so every subschema is visited.
 const visitCombinators = (
   schema: JSONSchema,
   value: unknown,
   visitor: SchemaVisitor,
   path: string
 ): void => {
-  for (const keyword of COMBINATOR_KEYWORDS) {
-    const combinator = (schema as Record<string, unknown>)[keyword];
-    if (Array.isArray(combinator)) {
-      for (const item of combinator) {
-        if (isSchemaNode(item)) {
-          visitNode(item, value, visitor, path);
-        }
-      }
-    } else if (isSchemaNode(combinator)) {
-      visitNode(combinator, value, visitor, path);
+  const hasValue = value !== undefined;
+  const applies = (branch: JSONSchema) => !hasValue || matches(branch, value, path);
+
+  visitEach(schema.allOf, value, visitor, path);
+  visitEach(schema.anyOf, value, visitor, path, applies);
+  visitEach(schema.oneOf, value, visitor, path, applies);
+
+  // `then` and `else` mean nothing without an `if`. A boolean `if` is a valid
+  // schema: `true` selects `then`, `false` selects `else`.
+  const { if: condition, then: consequent, else: alternative } = schema;
+  if (condition === undefined) {
+    return;
+  }
+  let selected: unknown[];
+  if (!hasValue) {
+    selected = [condition, consequent, alternative];
+  } else if (matches(condition as JSONSchema | boolean, value, path)) {
+    selected = [condition, consequent];
+  } else {
+    selected = [alternative];
+  }
+  for (const branch of selected) {
+    if (isSchemaNode(branch)) {
+      visitNode(branch, value, visitor, path);
     }
   }
 };

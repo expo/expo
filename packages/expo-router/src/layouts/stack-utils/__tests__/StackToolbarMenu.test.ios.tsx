@@ -5,6 +5,8 @@ import {
   StackToolbarMenuAction,
   convertStackToolbarMenuPropsToRNHeaderItem,
   convertStackToolbarMenuActionPropsToRNHeaderItem,
+  type StackToolbarMenuProps,
+  type StackToolbarMenuActionProps,
 } from '../toolbar/StackToolbarMenu';
 import { ToolbarPlacementContext, type ToolbarPlacement } from '../toolbar/context';
 import {
@@ -14,18 +16,18 @@ import {
 } from '../toolbar/toolbar-primitives';
 
 jest.mock('../../../link/preview/native', () => {
-  const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  const { Text }: typeof import('react-native') = jest.requireActual('react-native');
   return {
     NativeLinkPreviewAction: jest.fn((props) => (
-      <View testID="NativeLinkPreviewAction" {...props} />
+      <Text testID="NativeLinkPreviewAction" {...props} />
     )),
   };
 });
 
 jest.mock('../../../link/elements', () => {
-  const { View }: typeof import('react-native') = jest.requireActual('react-native');
+  const { Text }: typeof import('react-native') = jest.requireActual('react-native');
   return {
-    LinkMenuAction: jest.fn((props) => <View testID="LinkMenuAction" {...props} />),
+    LinkMenuAction: jest.fn((props) => <Text testID="LinkMenuAction" {...props} />),
   };
 });
 
@@ -132,6 +134,39 @@ describe(convertStackToolbarMenuPropsToRNHeaderItem, () => {
       label: 'Submenu',
     });
   });
+
+  describe('image prop warning', () => {
+    let consoleSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleSpy.mockRestore();
+    });
+
+    it('warns when image is set', () => {
+      // The conversion only checks that `image` is set, so an empty object can stand in for an `ImageRef`.
+      const image = {} as StackToolbarMenuProps['image'];
+
+      convertStackToolbarMenuPropsToRNHeaderItem({ image });
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Stack.Toolbar.Menu does not support the image prop in header toolbars (placement="left" or "right") on iOS. Use the icon prop instead.'
+      );
+      expect(consoleSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not warn when hidden is true', () => {
+      // The conversion only checks that `image` is set, so an empty object can stand in for an `ImageRef`.
+      const image = {} as StackToolbarMenuProps['image'];
+
+      convertStackToolbarMenuPropsToRNHeaderItem({ image, hidden: true });
+
+      expect(consoleSpy).not.toHaveBeenCalled();
+    });
+  });
 });
 
 describe(convertStackToolbarMenuActionPropsToRNHeaderItem, () => {
@@ -231,6 +266,30 @@ describe(convertStackToolbarMenuActionPropsToRNHeaderItem, () => {
         source: { uri: 'https://example.com/icon.png' },
         tinted: true,
       });
+    });
+  });
+
+  describe('image prop warning', () => {
+    let consoleSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleSpy.mockRestore();
+    });
+
+    it('warns when image is set', () => {
+      // The conversion only checks that `image` is set, so an empty object can stand in for an `ImageRef`.
+      const image = {} as StackToolbarMenuActionProps['image'];
+
+      convertStackToolbarMenuActionPropsToRNHeaderItem({ image });
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Stack.Toolbar.MenuAction does not support the image prop in header toolbars (placement="left" or "right") on iOS. Use the icon prop instead.'
+      );
+      expect(consoleSpy).toHaveBeenCalledTimes(1);
     });
   });
 });
@@ -448,15 +507,60 @@ describe('submenu conversion', () => {
       });
     });
   });
+
+  describe('image prop warning', () => {
+    let consoleSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      consoleSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      consoleSpy.mockRestore();
+    });
+
+    it('warns when image is set', () => {
+      // The conversion only checks that `image` is set, so an empty object can stand in for an `ImageRef`.
+      const image = {} as StackToolbarMenuProps['image'];
+
+      convertStackToolbarMenuPropsToRNHeaderItem({
+        children: (
+          <StackToolbarMenu title="Submenu" image={image}>
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        ),
+      });
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'Stack.Toolbar.Menu does not support the image prop in header toolbars (placement="left" or "right") on iOS. Use the icon prop instead.'
+      );
+      expect(consoleSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not warn when hidden is true', () => {
+      // The conversion only checks that `image` is set, so an empty object can stand in for an `ImageRef`.
+      const image = {} as StackToolbarMenuProps['image'];
+
+      convertStackToolbarMenuPropsToRNHeaderItem({
+        children: (
+          <StackToolbarMenu title="Submenu" image={image} hidden>
+            <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+          </StackToolbarMenu>
+        ),
+      });
+
+      expect(consoleSpy).not.toHaveBeenCalled();
+    });
+  });
 });
 
 describe('StackToolbarMenu component', () => {
   it.each(['left', 'right', undefined, 'xyz'] as const)(
     'throws error when not in bottom placement (placement=%s)',
-    (placement) => {
+    async (placement) => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
-      expect(() => {
-        render(
+      await expect(async () => {
+        await render(
           // Intentionally passing invalid placement as well
           <ToolbarPlacementContext.Provider value={placement as ToolbarPlacement}>
             <StackToolbarMenu icon="ellipsis.circle">
@@ -464,13 +568,13 @@ describe('StackToolbarMenu component', () => {
             </StackToolbarMenu>
           </ToolbarPlacementContext.Provider>
         );
-      }).toThrow('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
+      }).rejects.toThrow('Stack.Toolbar.Menu must be used inside a Stack.Toolbar');
       jest.restoreAllMocks();
     }
   );
 
-  it('renders NativeLinkPreviewAction in bottom placement', () => {
-    render(
+  it('renders NativeLinkPreviewAction in bottom placement', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarMenu icon="ellipsis.circle">
           <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
@@ -482,8 +586,25 @@ describe('StackToolbarMenu component', () => {
     expect(MockedNativeLinkPreviewAction).toHaveBeenCalled();
   });
 
-  it('passes icon to NativeLinkPreviewAction', () => {
-    render(
+  it('passes axisBehavior to NativeLinkPreviewAction', async () => {
+    await render(
+      <ToolbarPlacementContext.Provider value="bottom">
+        <StackToolbarMenu axisBehavior="verticalPreferred">
+          <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
+        </StackToolbarMenu>
+      </ToolbarPlacementContext.Provider>
+    );
+
+    expect(MockedNativeLinkPreviewAction).toHaveBeenCalledWith(
+      expect.objectContaining({
+        axisBehavior: 'verticalPreferred',
+      }),
+      undefined
+    );
+  });
+
+  it('passes icon to NativeLinkPreviewAction', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarMenu icon="ellipsis.circle">
           <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
@@ -499,8 +620,8 @@ describe('StackToolbarMenu component', () => {
     );
   });
 
-  it('passes xcassetName from StackToolbarIcon xcasset child', () => {
-    render(
+  it('passes xcassetName from StackToolbarIcon xcasset child', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarMenu>
           <StackToolbarIcon xcasset="custom-icon" />
@@ -518,8 +639,8 @@ describe('StackToolbarMenu component', () => {
     );
   });
 
-  it('passes imageRenderingMode as template for xcasset menu when tintColor is set', () => {
-    render(
+  it('passes imageRenderingMode as template for xcasset menu when tintColor is set', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarMenu tintColor="blue">
           <StackToolbarIcon xcasset="custom-icon" />
@@ -537,8 +658,8 @@ describe('StackToolbarMenu component', () => {
     );
   });
 
-  it('passes imageRenderingMode as original for xcasset menu without tintColor', () => {
-    render(
+  it('passes imageRenderingMode as original for xcasset menu without tintColor', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarMenu>
           <StackToolbarIcon xcasset="custom-icon" />
@@ -556,8 +677,8 @@ describe('StackToolbarMenu component', () => {
     );
   });
 
-  it('Icon child renderingMode overrides parent iconRenderingMode for xcasset', () => {
-    render(
+  it('Icon child renderingMode overrides parent iconRenderingMode for xcasset', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarMenu iconRenderingMode="template" tintColor="blue">
           <StackToolbarIcon xcasset="custom-icon" renderingMode="original" />
@@ -575,8 +696,8 @@ describe('StackToolbarMenu component', () => {
     );
   });
 
-  it('passes computed label and title', () => {
-    render(
+  it('passes computed label and title', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarMenu title="Menu Title">
           <StackToolbarLabel>Button Label</StackToolbarLabel>
@@ -606,18 +727,18 @@ describe('StackToolbarMenu component', () => {
       jest.restoreAllMocks();
     });
 
-    it('throws error for invalid children in development', () => {
+    it('throws error for invalid children in development', async () => {
       process.env.NODE_ENV = 'development';
 
-      expect(() => {
-        render(
+      await expect(async () => {
+        await render(
           <ToolbarPlacementContext.Provider value="bottom">
             <StackToolbarMenu icon="ellipsis.circle">
               <div>Invalid Child</div>
             </StackToolbarMenu>
           </ToolbarPlacementContext.Provider>
         );
-      }).toThrow(
+      }).rejects.toThrow(
         'Stack.Toolbar.Menu only accepts Stack.Toolbar.Menu, Stack.Toolbar.MenuAction, Stack.Toolbar.Label, Stack.Toolbar.Icon, and Stack.Toolbar.Badge as its children.'
       );
     });
@@ -636,10 +757,10 @@ describe('StackToolbarMenu component', () => {
       consoleSpy.mockRestore();
     });
 
-    it('warns about Badge in bottom placement', () => {
+    it('warns about Badge in bottom placement', async () => {
       process.env.NODE_ENV = 'development';
 
-      render(
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarMenu icon="ellipsis.circle">
             <StackToolbarBadge>3</StackToolbarBadge>
@@ -670,10 +791,10 @@ describe('StackToolbarMenu component', () => {
       consoleSpy.mockRestore();
     });
 
-    it('warns when icon prop is an image source in development', () => {
+    it('warns when icon prop is an image source in development', async () => {
       process.env.NODE_ENV = 'development';
 
-      render(
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarMenu icon={{ uri: 'image' }}>
             <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
@@ -684,10 +805,10 @@ describe('StackToolbarMenu component', () => {
       expect(consoleSpy).toHaveBeenCalledWith(imageWarning);
     });
 
-    it('warns when <StackToolbarIcon src> child is used in development', () => {
+    it('warns when <StackToolbarIcon src> child is used in development', async () => {
       process.env.NODE_ENV = 'development';
 
-      render(
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarMenu>
             <StackToolbarIcon src={{ uri: 'image' }} />
@@ -699,10 +820,10 @@ describe('StackToolbarMenu component', () => {
       expect(consoleSpy).toHaveBeenCalledWith(imageWarning);
     });
 
-    it('does not warn in production', () => {
+    it('does not warn in production', async () => {
       process.env.NODE_ENV = 'production';
 
-      render(
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarMenu icon={{ uri: 'image' }}>
             <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
@@ -713,10 +834,10 @@ describe('StackToolbarMenu component', () => {
       expect(consoleSpy).not.toHaveBeenCalledWith(imageWarning);
     });
 
-    it('does not warn for SF Symbol string icon', () => {
+    it('does not warn for SF Symbol string icon', async () => {
       process.env.NODE_ENV = 'development';
 
-      render(
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarMenu icon="ellipsis.circle">
             <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
@@ -727,10 +848,10 @@ describe('StackToolbarMenu component', () => {
       expect(consoleSpy).not.toHaveBeenCalledWith(imageWarning);
     });
 
-    it('does not warn for xcasset icon child', () => {
+    it('does not warn for xcasset icon child', async () => {
       process.env.NODE_ENV = 'development';
 
-      render(
+      await render(
         <ToolbarPlacementContext.Provider value="bottom">
           <StackToolbarMenu>
             <StackToolbarIcon xcasset="custom-icon" />
@@ -747,22 +868,22 @@ describe('StackToolbarMenu component', () => {
 describe('StackToolbarMenuAction component', () => {
   it.each(['left', 'right', undefined, 'xyz'] as const)(
     'throws error when not in bottom placement (placement=%s)',
-    (placement) => {
+    async (placement) => {
       jest.spyOn(console, 'error').mockImplementation(() => {});
-      expect(() => {
-        render(
+      await expect(async () => {
+        await render(
           // Intentionally passing invalid placement as well
           <ToolbarPlacementContext.Provider value={placement as ToolbarPlacement}>
             <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
           </ToolbarPlacementContext.Provider>
         );
-      }).toThrow('Stack.Toolbar.MenuAction must be used inside a Stack.Toolbar.Menu');
+      }).rejects.toThrow('Stack.Toolbar.MenuAction must be used inside a Stack.Toolbar.Menu');
       jest.restoreAllMocks();
     }
   );
 
-  it('renders LinkMenuAction in bottom placement', () => {
-    render(
+  it('renders LinkMenuAction in bottom placement', async () => {
+    await render(
       <ToolbarPlacementContext.Provider value="bottom">
         <StackToolbarMenuAction onPress={() => {}}>Action</StackToolbarMenuAction>
       </ToolbarPlacementContext.Provider>

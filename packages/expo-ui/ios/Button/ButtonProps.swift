@@ -7,6 +7,7 @@ public enum ButtonRole: String, Enumerable {
   case `default`
   case destructive
   case cancel
+  case close
 
   public func toNativeRole() -> SwiftUI.ButtonRole? {
     switch self {
@@ -16,6 +17,11 @@ public enum ButtonRole: String, Enumerable {
       return SwiftUI.ButtonRole.destructive
     case .cancel:
       return SwiftUI.ButtonRole.cancel
+    case .close:
+      if #available(iOS 26.0, tvOS 26.0, macOS 26.0, *) {
+        return SwiftUI.ButtonRole.close
+      }
+      return nil
     }
   }
 }

@@ -4,7 +4,7 @@ import Foundation
 
 /// On devices running the new AI Siri, the `CreateDraftIntent` should be automatically
 /// picked up by the system without the need of registering it in AppShortcutProvider phrases.
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 @AppIntent(schema: .mail.createDraft)
 struct CreateDraftIntent {
   static let openAppWhenRun: Bool = true

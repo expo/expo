@@ -80,7 +80,7 @@ import { Host, HStack, Image } from '@expo/ui/swift-ui';
 
 export default function ImageSizeColorExample() {
   return (
-    <Host style={{ flex: 1 }}>
+    <Host matchContents>
       <HStack spacing={16}>
         <Image systemName="heart.fill" size={24} color="red" />
         <Image systemName="star.fill" size={32} color="orange" />
@@ -192,7 +192,7 @@ export default function ImageSymbolEffectValueExample() {
   const trigger = useNativeState(0);
 
   return (
-    <Host style={{ flex: 1 }}>
+    <Host matchContents>
       <VStack spacing={16}>
         <Image
           systemName="bell.fill"

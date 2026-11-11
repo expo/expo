@@ -58,6 +58,12 @@ struct CodableBinary {
   var buffer: ArrayBuffer
 }
 
+// A record without the macro, so it converts through `Record`'s default `decode` and `encode`.
+struct ReflectedPoint: Record {
+  @Field var x: Double = 0
+  @Field var y: Double = 0
+}
+
 @Suite("JavaScriptCodable+Record")
 @JavaScriptActor
 struct JavaScriptCodableRecordTests {
@@ -115,7 +121,7 @@ struct JavaScriptCodableRecordTests {
     let bareRuntime = JavaScriptRuntime()
     let value = try bareRuntime.eval("({ x: 1, y: 2 })")
     #expect(throws: Exceptions.AppContextNotFound.self) {
-      _ = try CodablePoint.decode(value, in: bareRuntime)
+      _ = try ReflectedPoint.decode(value, in: bareRuntime)
     }
   }
 
@@ -123,8 +129,19 @@ struct JavaScriptCodableRecordTests {
   func `record encode throws when the runtime has no app context`() throws {
     let bareRuntime = JavaScriptRuntime()
     #expect(throws: Exceptions.AppContextNotFound.self) {
-      _ = try CodablePoint.encode(CodablePoint(x: 1, y: 2), in: bareRuntime)
+      _ = try ReflectedPoint.encode(ReflectedPoint(), in: bareRuntime)
     }
+  }
+
+  @Test
+  func `macro record converts on a runtime with no app context`() throws {
+    let bareRuntime = JavaScriptRuntime()
+    let value = try bareRuntime.eval("({ x: 1, y: 2 })")
+    let decoded = try CodablePoint.decode(value, in: bareRuntime)
+    #expect(decoded == CodablePoint(x: 1, y: 2))
+    let object = try CodablePoint.encode(decoded, in: bareRuntime).getObject()
+    #expect(object.getProperty("x").getDouble() == 1)
+    #expect(object.getProperty("y").getDouble() == 2)
   }
 
   // MARK: - Optional and nullable fields
@@ -145,7 +162,7 @@ struct JavaScriptCodableRecordTests {
   func `encodes a nil optional field as JS null`() throws {
     let runtime = try runtime
     let encoded = try CodableLabeledPoint.encode(CodableLabeledPoint(x: 1, label: nil, note: "b"), in: runtime)
-    #expect(encoded.getObject().getProperty("label").isNull())
+    #expect(encoded.getObject().getProperty("label").isNull() == true)
   }
 
   @Test
@@ -223,7 +240,7 @@ struct JavaScriptCodableRecordTests {
     let decoded = try CodableEmpty.decode(value, in: runtime)
     #expect(decoded == CodableEmpty())
     let reencoded = try CodableEmpty.encode(decoded, in: runtime)
-    #expect(reencoded.isObject())
+    #expect(reencoded.isObject() == true)
   }
 
   // MARK: - Binary fields
@@ -255,7 +272,7 @@ struct JavaScriptCodableRecordTests {
     let decoded = try CodableBinary.decode(value, in: runtime)
     let encoded = try CodableBinary.encode(decoded, in: runtime)
     runtime.global().setProperty("encodedBinary", value: encoded)
-    #expect(try runtime.eval("encodedBinary.data instanceof Uint8Array && encodedBinary.data[0] === 9").getBool())
-    #expect(try runtime.eval("encodedBinary.buffer instanceof ArrayBuffer && encodedBinary.buffer.byteLength === 4").getBool())
+    #expect(try runtime.eval("encodedBinary.data instanceof Uint8Array && encodedBinary.data[0] === 9").getBool() == true)
+    #expect(try runtime.eval("encodedBinary.buffer instanceof ArrayBuffer && encodedBinary.buffer.byteLength === 4").getBool() == true)
   }
 }

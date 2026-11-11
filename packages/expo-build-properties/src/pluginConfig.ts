@@ -1,6 +1,4 @@
 import { validate, type JSONSchema } from '@expo/schema-utils';
-import fs from 'fs';
-import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
 /**
@@ -18,13 +16,6 @@ const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
     deploymentTarget: '16.4',
   },
 };
-
-/**
- * The hermes-compiler version expected to use legacy Hermes compiler version.
- * Keep this in sync with the expected `react-native` version.
- * @ignore
- */
-const LEGACY_HERMES_COMPILER_VERSION = '0.15.0';
 
 /**
  * Shared build configuration fields that can be set at the top level
@@ -53,15 +44,11 @@ export interface SharedBuildConfigFields {
   reactNativeReleaseLevel?: 'stable' | 'canary' | 'experimental';
 
   /**
-   * Enable Hermes V1 engine. Turning on will provide faster startup times, improved runtime
-   * performance, and reduced memory usage.
+   * Enable Hermes V1 engine.
    *
-   * Hermes V1 is the default JavaScript engine starting in React Native 0.84.
-   * Set this to `false` to use the legacy Hermes engine instead, which also
-   * requires setting `buildReactNativeFromSource` to `true`.
-   *
+   * @deprecated React Native 0.88 and newer always use Hermes V1 and ignore this option.
+   * Remove it from your config.
    * @default true
-   * @see [Hermes V1 as Default](https://reactnative.dev/blog/2026/02/11/react-native-0.84#hermes-v1-as-default)
    */
   useHermesV1?: boolean;
 }
@@ -305,6 +292,14 @@ export interface PluginConfigTypeAndroid extends SharedBuildConfigFields {
    * @see [Using a Maven Mirror](https://reactnative.dev/docs/build-speed#using-a-maven-mirror-android-only)
    */
   exclusiveMavenMirror?: string;
+  /**
+   * Compile the `expo-modules-core` native libraries from source instead of using the precompiled
+   * libraries shipped with the package. Turning this on will increase the build times.
+   * Enable it when you modify the C++ sources of `expo-modules-core`.
+   *
+   * @default false
+   */
+  buildExpoModulesCoreFromSource?: boolean;
 }
 
 // @docsMissing
@@ -482,6 +477,17 @@ export interface PluginConfigTypeIos extends SharedBuildConfigFields {
    * @default true
    */
   usePrecompiledModules?: boolean;
+
+  /**
+   * Adopt the UIKit scene lifecycle in an Expo SDK 57 iOS project, as required by the iOS 27 SDK (Xcode 27).
+   * When `true`, the AppDelegate exposes its `ExpoReactNativeFactory`, React Native startup moves to Expo's
+   * scene delegate, and the scene manifest is added to **Info.plist**. When `false`, these changes are reverted.
+   *
+   * Only the standard SDK 57 Swift AppDelegate template is supported. Requires Expo SDK 57.0.23 or newer.
+   *
+   * Expo SDK 58 and newer include scene lifecycle support, so this property is no longer required and can be removed.
+   */
+  enableSceneSupport?: boolean;
 }
 
 /**
@@ -806,6 +812,7 @@ const schema: JSONSchema<PluginConfigType> = {
         buildReactNativeFromSource: { type: 'boolean', nullable: true },
         buildArchs: { type: 'array', items: { type: 'string' }, nullable: true },
         exclusiveMavenMirror: { type: 'string', nullable: true },
+        buildExpoModulesCoreFromSource: { type: 'boolean', nullable: true },
         reactNativeReleaseLevel: {
           type: 'string',
           enum: ['stable', 'canary', 'experimental'],
@@ -856,6 +863,7 @@ const schema: JSONSchema<PluginConfigType> = {
         },
         useHermesV1: { type: 'boolean', nullable: true },
         usePrecompiledModules: { type: 'boolean', nullable: true },
+        enableSceneSupport: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
@@ -936,29 +944,9 @@ const fixupDeprecatedEnableProguardInReleaseBuilds = (config: unknown) => {
 };
 
 /**
- * Reads the hermes-compiler version from node_modules
  * @ignore
  */
-function getHermesCompilerVersion(projectRoot: string): string | null {
-  const reactNativePath = resolveFrom.silent(projectRoot, 'react-native/package.json');
-  const hermesCompilerPackageJsonPath =
-    reactNativePath && resolveFrom.silent(reactNativePath, 'hermes-compiler/package.json');
-  if (!hermesCompilerPackageJsonPath) {
-    return null;
-  }
-
-  try {
-    const packageJson = JSON.parse(fs.readFileSync(hermesCompilerPackageJsonPath, 'utf8'));
-    return packageJson.version ?? null;
-  } catch {
-    return null;
-  }
-}
-
-/**
- * @ignore
- */
-export function validateConfig(config: unknown, projectRoot?: string): PluginConfigType {
+export function validateConfig(config: unknown): PluginConfigType {
   fixupDeprecatedEnableProguardInReleaseBuilds(config);
   validate(schema, config);
   maybeThrowInvalidVersions(config);
@@ -969,38 +957,6 @@ export function validateConfig(config: unknown, projectRoot?: string): PluginCon
   ) {
     throw new Error(
       '`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableMinifyInReleaseBuilds` to be enabled.'
-    );
-  }
-
-  const androidUseHermesV1 = resolveConfigValue(config, 'android', 'useHermesV1') ?? true;
-  const iosUseHermesV1 = resolveConfigValue(config, 'ios', 'useHermesV1') ?? true;
-
-  // Disabling Hermes V1 requires a specific hermes-compiler version
-  if ((!androidUseHermesV1 || !iosUseHermesV1) && projectRoot) {
-    const hermesCompilerVersion = getHermesCompilerVersion(projectRoot);
-    if (hermesCompilerVersion && hermesCompilerVersion !== LEGACY_HERMES_COMPILER_VERSION) {
-      throw new Error(
-        `\`useHermesV1\`: false, requires setting the hermes-compiler version to ${LEGACY_HERMES_COMPILER_VERSION} through resolutions. ` +
-          `Found version "${hermesCompilerVersion}" instead.`
-      );
-    }
-  }
-
-  // Validate legacy Hermes requires buildReactNativeFromSource for Android
-  const androidBuildFromSource =
-    resolveConfigValue(config, 'android', 'buildReactNativeFromSource') ??
-    config.android?.buildFromSource; // Deprecated fallback
-  if (androidUseHermesV1 === false && androidBuildFromSource !== true) {
-    throw new Error(
-      '`useHermesV1`: false requires `buildReactNativeFromSource` to be `true` for Android.'
-    );
-  }
-
-  // Validate legacy Hermes requires buildReactNativeFromSource for iOS
-  const iosBuildFromSource = resolveConfigValue(config, 'ios', 'buildReactNativeFromSource');
-  if (iosUseHermesV1 === false && iosBuildFromSource !== true) {
-    throw new Error(
-      '`useHermesV1`: false requires `buildReactNativeFromSource` to be `true` for iOS.'
     );
   }
 

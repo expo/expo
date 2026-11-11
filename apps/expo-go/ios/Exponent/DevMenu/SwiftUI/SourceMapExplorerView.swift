@@ -364,7 +364,7 @@ struct CodeFileView: View {
 
   private func contentUnavailableView() -> some View {
     VStack(spacing: 12) {
-      Image(systemName: "doc.questionmark")
+      Image(systemName: "questionmark.folder")
         .font(.system(size: 40))
         .foregroundColor(.secondary)
       Text("Contents not available for this file")
@@ -544,6 +544,7 @@ struct CodeTextEditor: UIViewRepresentable {
   func updateUIView(_ textView: UITextView, context: Context) {
     let wasEditable = textView.isEditable
     let coordinator = context.coordinator
+    coordinator.parent = self
     textView.isEditable = isEditable
     textView.backgroundColor = UIColor(theme.background)
 

@@ -20,6 +20,8 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
+  s.ios.dependency 'ExpoUI'
+  s.tvos.dependency 'ExpoUI'
 
   s.source_files = "**/*.{h,m,swift}"
   s.pod_target_xcconfig = {
@@ -31,5 +33,9 @@ Pod::Spec.new do |s|
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
     test_spec.source_files = 'Tests/**/*.{m,swift}'
+    # The test bundle links C++ code from ExpoModulesCore but does not inherit its
+    # user_target_xcconfig (-lc++). Clean builds fail on operator new and __cxa_* symbols
+    # without explicitly linking the C++ runtime here.
+    test_spec.libraries = 'c++'
   end
 end

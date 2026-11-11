@@ -1,7 +1,7 @@
 import { requireOptionalNativeModule } from 'expo';
 import { setStringAsync } from 'expo-clipboard';
 import React, { useEffect, useState } from 'react';
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Button, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 type JestMockSchemaModule = { getModulesSchema(): string };
 
@@ -138,6 +138,9 @@ export default function JestMockGeneratorScreen() {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    if (Platform.OS !== 'ios') {
+      return;
+    }
     try {
       const generated = `module.exports = ${JSON.stringify(getExpoModuleSpecs(), replacer)};`;
       setCode(generated);
@@ -146,6 +149,14 @@ export default function JestMockGeneratorScreen() {
       setError(e?.message ?? String(e));
     }
   }, []);
+
+  if (Platform.OS !== 'ios') {
+    return (
+      <View style={styles.container}>
+        <Text>The Jest mock generator is only available in the iOS bare-expo app.</Text>
+      </View>
+    );
+  }
 
   if (error) {
     return (

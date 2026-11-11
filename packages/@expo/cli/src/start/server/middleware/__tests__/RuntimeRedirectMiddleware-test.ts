@@ -102,6 +102,18 @@ describe('handleRequestAsync', () => {
     expect(onDeepLink).toHaveBeenCalledWith({ runtime: 'custom', platform: 'ios' });
   });
 
+  it('redirects to a custom runtime from a path-only url', async () => {
+    const { middleware, getLocation } = createMiddleware();
+
+    const response = createMockResponse();
+    await middleware.handleRequestAsync(
+      asReq({ url: '/_expo/link?platform=ios&choice=expo-dev-client' }),
+      response
+    );
+    expect(response.statusCode).toBe(307);
+    expect(getLocation).toHaveBeenCalledWith({ runtime: 'custom', forwarded: null });
+  });
+
   it('passes the forwarded address to the location resolver', async () => {
     const { middleware, getLocation } = createMiddleware();
 

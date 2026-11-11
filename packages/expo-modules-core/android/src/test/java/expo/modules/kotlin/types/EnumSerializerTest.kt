@@ -2,6 +2,7 @@ package expo.modules.kotlin.types
 
 import com.google.common.truth.Truth
 import expo.modules.kotlin.EnumWithInt
+import expo.modules.kotlin.EnumWithRenamedParameter
 import expo.modules.kotlin.EnumWithString
 import expo.modules.kotlin.EnumWithoutParameter
 import org.junit.Test
@@ -43,6 +44,11 @@ class EnumSerializerTest {
     Truth.assertThat(v1.toJSValue()).isEqualTo("value1")
     Truth.assertThat(v2.toJSValue()).isEqualTo("value2")
     Truth.assertThat(v3.toJSValue()).isEqualTo("value3")
+  }
+
+  @Test
+  fun `should convert enum with renamed constructor parameter to its value`() {
+    Truth.assertThat(EnumWithRenamedParameter.VALUE1.toJSValue()).isEqualTo("value1")
   }
 
   @Test(expected = IllegalStateException::class)

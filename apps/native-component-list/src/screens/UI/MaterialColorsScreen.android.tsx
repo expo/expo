@@ -47,20 +47,26 @@ const SEED_PRESETS: SeedPreset[] = [
 
 const COLOR_SCHEMES: ColorSchemeOption[] = ['auto', 'light', 'dark'];
 
+const PRIMARY_OVERRIDE = { primary: '#00897BFF', onPrimary: '#FFFFFFFF' } as const;
+
 export default function MaterialColorsScreen() {
   const [colorScheme, setColorScheme] = useState<ColorSchemeOption>('auto');
   const [seedColor, setSeedColor] = useState<string | undefined>(undefined);
+  const [overridePrimary, setOverridePrimary] = useState(false);
 
   return (
     <Host
       style={{ flex: 1 }}
       colorScheme={colorScheme === 'auto' ? undefined : colorScheme}
-      seedColor={seedColor}>
+      seedColor={seedColor}
+      colorOverrides={overridePrimary ? PRIMARY_OVERRIDE : undefined}>
       <Content
         colorScheme={colorScheme}
         seedColor={seedColor}
+        overridePrimary={overridePrimary}
         setColorScheme={setColorScheme}
         setSeedColor={setSeedColor}
+        setOverridePrimary={setOverridePrimary}
       />
     </Host>
   );
@@ -69,13 +75,17 @@ export default function MaterialColorsScreen() {
 function Content({
   colorScheme,
   seedColor,
+  overridePrimary,
   setColorScheme,
   setSeedColor,
+  setOverridePrimary,
 }: {
   colorScheme: ColorSchemeOption;
   seedColor: string | undefined;
+  overridePrimary: boolean;
   setColorScheme: (s: ColorSchemeOption) => void;
   setSeedColor: (s: string | undefined) => void;
+  setOverridePrimary: (value: boolean) => void;
 }) {
   const colors = useMaterialColors();
 
@@ -130,6 +140,20 @@ function Content({
           );
         })}
       </FlowRow>
+
+      <Text style={{ fontSize: 16, fontWeight: '600' }}>Color overrides</Text>
+      <SingleChoiceSegmentedButtonRow>
+        {[false, true].map((option) => (
+          <SegmentedButton
+            key={String(option)}
+            selected={overridePrimary === option}
+            onClick={() => setOverridePrimary(option)}>
+            <SegmentedButton.Label>
+              <Text>{option ? 'Teal primary' : 'None'}</Text>
+            </SegmentedButton.Label>
+          </SegmentedButton>
+        ))}
+      </SingleChoiceSegmentedButtonRow>
 
       <Text style={{ fontSize: 16, fontWeight: '600' }}>Compose components</Text>
       <Text>These native buttons inherit the palette from Host.</Text>

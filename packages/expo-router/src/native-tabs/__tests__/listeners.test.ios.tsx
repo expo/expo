@@ -1,8 +1,10 @@
+import type { ReactNode } from 'react';
 import { View, type NativeSyntheticEvent } from 'react-native';
 import {
   Tabs as _Tabs,
   type TabSelectedEvent,
   type TabsHostProps,
+  type TabsScreenProps,
   // @ts-expect-error: method is declared in mock below
   __triggerTabSelected,
 } from 'react-native-screens';
@@ -36,7 +38,8 @@ const triggerTabSelected: NonNullable<TabsHostProps['onTabSelected']> = (event) 
     __triggerTabSelected(event);
   });
 
-const TabsScreen = _Tabs.Screen as jest.MockedFunction<typeof _Tabs.Screen>;
+// `Tabs` is mocked by `jest.mock` above; cast to read `.mock` with the props type.
+const TabsScreen = _Tabs.Screen as jest.MockedFunction<(props: TabsScreenProps) => ReactNode>;
 
 const warn = jest.fn();
 const error = jest.fn();
@@ -68,9 +71,9 @@ function tabSelectedEvent(selectedScreenKey: string): NativeSyntheticEvent<TabSe
 }
 
 describe('NativeTabs.Trigger listeners prop', () => {
-  it('calls tabPress listener when tab is pressed', () => {
+  it('calls tabPress listener when tab is pressed', async () => {
     const tabPressListener = jest.fn();
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" listeners={{ tabPress: tabPressListener }} />
@@ -81,18 +84,18 @@ describe('NativeTabs.Trigger listeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
+    const indexTabKey = TabsScreen.mock.calls[0]![0].screenKey;
 
-    triggerTabSelected(tabSelectedEvent(indexTabKey));
+    await triggerTabSelected(tabSelectedEvent(indexTabKey));
 
-    act(() => jest.runAllTimers());
+    await act(() => jest.runAllTimers());
 
     expect(tabPressListener).toHaveBeenCalledTimes(1);
   });
 
-  it('calls functional listeners with route', () => {
+  it('calls functional listeners with route', async () => {
     const tabPressListener = jest.fn();
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger
@@ -112,21 +115,21 @@ describe('NativeTabs.Trigger listeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
+    const indexTabKey = TabsScreen.mock.calls[0]![0].screenKey;
 
-    triggerTabSelected(tabSelectedEvent(indexTabKey));
+    await triggerTabSelected(tabSelectedEvent(indexTabKey));
 
-    act(() => jest.runAllTimers());
+    await act(() => jest.runAllTimers());
 
     expect(tabPressListener).toHaveBeenCalledWith({
       routeName: 'index',
     });
   });
 
-  it('only calls listener for the pressed tab', () => {
+  it('only calls listener for the pressed tab', async () => {
     const indexListener = jest.fn();
     const secondListener = jest.fn();
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <NativeTabs>
           <NativeTabs.Trigger name="index" listeners={{ tabPress: indexListener }} />
@@ -137,11 +140,11 @@ describe('NativeTabs.Trigger listeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
+    const secondTabKey = TabsScreen.mock.calls[1]![0].screenKey;
 
-    triggerTabSelected(tabSelectedEvent(secondTabKey));
+    await triggerTabSelected(tabSelectedEvent(secondTabKey));
 
-    act(() => jest.runAllTimers());
+    await act(() => jest.runAllTimers());
 
     expect(indexListener).not.toHaveBeenCalled();
     expect(secondListener).toHaveBeenCalledTimes(1);
@@ -149,9 +152,9 @@ describe('NativeTabs.Trigger listeners prop', () => {
 });
 
 describe('NativeTabs screenListeners prop', () => {
-  it('calls screenListeners for any tab press', () => {
+  it('calls screenListeners for any tab press', async () => {
     const screenListener = jest.fn();
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <NativeTabs screenListeners={{ tabPress: screenListener }}>
           <NativeTabs.Trigger name="index" />
@@ -162,25 +165,25 @@ describe('NativeTabs screenListeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
-    const secondTabKey = TabsScreen.mock.calls[1][0].screenKey;
+    const indexTabKey = TabsScreen.mock.calls[0]![0].screenKey;
+    const secondTabKey = TabsScreen.mock.calls[1]![0].screenKey;
 
-    triggerTabSelected(tabSelectedEvent(indexTabKey));
+    await triggerTabSelected(tabSelectedEvent(indexTabKey));
 
-    act(() => jest.runAllTimers());
+    await act(() => jest.runAllTimers());
     expect(screenListener).toHaveBeenCalledTimes(1);
 
     jest.clearAllMocks();
 
-    triggerTabSelected(tabSelectedEvent(secondTabKey));
+    await triggerTabSelected(tabSelectedEvent(secondTabKey));
 
-    act(() => jest.runAllTimers());
+    await act(() => jest.runAllTimers());
     expect(screenListener).toHaveBeenCalledTimes(1);
   });
 
-  it('calls functional screenListeners with route', () => {
+  it('calls functional screenListeners with route', async () => {
     const screenListener = jest.fn();
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <NativeTabs
           screenListeners={({ route }) => ({
@@ -198,21 +201,21 @@ describe('NativeTabs screenListeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
+    const indexTabKey = TabsScreen.mock.calls[0]![0].screenKey;
 
-    triggerTabSelected(tabSelectedEvent(indexTabKey));
+    await triggerTabSelected(tabSelectedEvent(indexTabKey));
 
-    act(() => jest.runAllTimers());
+    await act(() => jest.runAllTimers());
 
     expect(screenListener).toHaveBeenCalledWith({
       routeName: 'index',
     });
   });
 
-  it('calls both screenListeners and trigger listeners', () => {
+  it('calls both screenListeners and trigger listeners', async () => {
     const screenListener = jest.fn();
     const triggerListener = jest.fn();
-    renderRouter({
+    await renderRouter({
       _layout: () => (
         <NativeTabs screenListeners={{ tabPress: screenListener }}>
           <NativeTabs.Trigger name="index" listeners={{ tabPress: triggerListener }} />
@@ -223,11 +226,11 @@ describe('NativeTabs screenListeners prop', () => {
       second: () => <View testID="second" />,
     });
 
-    const indexTabKey = TabsScreen.mock.calls[0][0].screenKey;
+    const indexTabKey = TabsScreen.mock.calls[0]![0].screenKey;
 
-    triggerTabSelected(tabSelectedEvent(indexTabKey));
+    await triggerTabSelected(tabSelectedEvent(indexTabKey));
 
-    act(() => jest.runAllTimers());
+    await act(() => jest.runAllTimers());
 
     expect(screenListener).toHaveBeenCalledTimes(1);
     expect(triggerListener).toHaveBeenCalledTimes(1);

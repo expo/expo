@@ -1,6 +1,5 @@
 import { expect, test } from '@playwright/test';
 import klawSync from 'klaw-sync';
-import { assert } from 'node:console';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -49,16 +48,12 @@ test.describe(baseDir, () => {
     });
 
     test('bundle contains live bindings', async () => {
-      const jsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
+      const indexChunkJsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
         nodir: true,
-      });
-      const bundleFile = jsFiles[0]?.path;
+      }).filter((file) => /^index-.*\.js$/.test(path.basename(file.path)));
+      expect(indexChunkJsFiles).toHaveLength(1);
 
-      // Sanity check
-      assert(jsFiles.length === 1, 'This test expects a single JS bundle file to be generated.');
-      assert(bundleFile, 'No JS bundle file found.');
-
-      const bundleContent = fs.readFileSync(bundleFile, 'utf8');
+      const bundleContent = fs.readFileSync(indexChunkJsFiles[0].path, 'utf8');
 
       // The useBananas code which otherwise causes the app to crash uses live bindings.
       expect(bundleContent).toMatch(
@@ -96,7 +91,8 @@ test.describe(baseDir, () => {
         {
           env: {
             NODE_ENV: 'production',
-            EXPO_USE_STATIC: 'static',
+            // Exercise the broken bindings in the browser instead of failing during prerendering.
+            EXPO_USE_STATIC: 'single',
             E2E_ROUTER_SRC: 'compiler',
             E2E_ROUTER_COMPILER: 'true',
             EXPO_UNSTABLE_LIVE_BINDINGS: 'false',
@@ -116,16 +112,12 @@ test.describe(baseDir, () => {
     });
 
     test('bundle does not have live bindings', async () => {
-      const jsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
+      const indexChunkJsFiles = klawSync(path.join(projectRoot, inputDir, '_expo/static/js'), {
         nodir: true,
-      });
-      const bundleFile = jsFiles[0]?.path;
+      }).filter((file) => /^index-.*\.js$/.test(path.basename(file.path)));
+      expect(indexChunkJsFiles).toHaveLength(1);
 
-      // Sanity check
-      assert(jsFiles.length === 1, 'This test expects a single JS bundle file to be generated.');
-      assert(bundleFile, 'No JS bundle file found.');
-
-      const bundleContent = fs.readFileSync(bundleFile, 'utf8');
+      const bundleContent = fs.readFileSync(indexChunkJsFiles[0].path, 'utf8');
 
       // The useBananas code which causes the application to crash uses static bindings.
       expect(bundleContent).not.toMatch(

@@ -9,7 +9,7 @@ import Foundation
 ///
 /// The schema requires an authentication policy at least as restrictive as
 /// `.requiresLocalDeviceAuthentication`, because deleting content is destructive.
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 @AppIntent(schema: .mail.deleteDraft)
 struct DeleteDraftIntent {
   static let authenticationPolicy: IntentAuthenticationPolicy = .requiresLocalDeviceAuthentication

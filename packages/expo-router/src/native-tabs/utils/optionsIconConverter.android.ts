@@ -1,10 +1,15 @@
-import type { PlatformIconAndroid } from 'react-native-screens';
-
 import type { NativeTabsTriggerIconProps } from '../common/elements';
 import type { NativeTabOptions } from '../types';
 import type { AwaitedIcon } from './icon';
 import { convertMaterialIconNameToImageSource } from './materialIconConverter';
-import { applyIconSrcOptions, applySelectedColor } from './optionsIconConverter.shared';
+import {
+  applyIconSrcOptions,
+  applyIconStates,
+  applySelectedColor,
+  type ScreensPropsIcon,
+} from './optionsIconConverter.shared';
+
+const TINTINGS = { template: 'tinted', original: 'original' } as const;
 
 export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTriggerIconProps) {
   if ('drawable' in props && props.drawable) {
@@ -13,15 +18,7 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
         'Both `md` and `drawable` props are provided to NativeTabs.Trigger.Icon. `drawable` will take precedence on Android platform.'
       );
     }
-    if (typeof props.drawable === 'string') {
-      options.icon = { drawable: props.drawable };
-      options.selectedIcon = undefined;
-    } else {
-      options.icon = props.drawable.default ? { drawable: props.drawable.default } : undefined;
-      options.selectedIcon = props.drawable.selected
-        ? { drawable: props.drawable.selected }
-        : undefined;
-    }
+    applyIconStates(options, props.drawable, (drawable) => ({ drawable }), props.renderingMode);
   } else if ('md' in props && props.md) {
     if (process.env.NODE_ENV !== 'production') {
       if ('drawable' in props) {
@@ -30,34 +27,32 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
         );
       }
     }
-    if (typeof props.md === 'string') {
-      options.icon = convertMaterialIconNameToImageSource(props.md);
-      options.selectedIcon = undefined;
-    } else {
-      options.icon = props.md.default
-        ? convertMaterialIconNameToImageSource(props.md.default)
-        : undefined;
-      options.selectedIcon = props.md.selected
-        ? convertMaterialIconNameToImageSource(props.md.selected)
-        : undefined;
-    }
+    applyIconStates(options, props.md, convertMaterialIconNameToImageSource, props.renderingMode);
   } else if ('src' in props && props.src) {
-    applyIconSrcOptions(options, props);
+    applyIconSrcOptions(options, props.src, props.renderingMode);
   }
   applySelectedColor(options, props.selectedColor);
 }
 
+// Without `renderingMode`, `tinting` stays unset and the tab bar tints the icon.
 export function convertOptionsIconToScreensPropsIcon(
   icon: AwaitedIcon | undefined
-): PlatformIconAndroid | undefined {
-  if (icon && 'drawable' in icon && icon.drawable) {
+): Extract<ScreensPropsIcon, { platform: 'android' }> | undefined {
+  if (!icon) {
+    return undefined;
+  }
+  const tinting = icon.renderingMode && { tinting: TINTINGS[icon.renderingMode] };
+  if ('drawable' in icon && icon.drawable) {
     return {
-      type: 'drawableResource',
-      name: icon.drawable,
+      platform: 'android',
+      icon: { type: 'drawableResource', name: icon.drawable, ...tinting },
     };
   }
-  if (icon && 'src' in icon && icon.src) {
-    return { type: 'imageSource', imageSource: icon.src };
+  if ('src' in icon && icon.src) {
+    return {
+      platform: 'android',
+      icon: { type: 'imageSource', imageSource: icon.src, ...tinting },
+    };
   }
   return undefined;
 }

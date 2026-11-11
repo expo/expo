@@ -44,8 +44,8 @@ internal class NativeDatabaseBinding : Closeable {
   // region sqlite3 bindings
 
   external fun sqlite3_changes(): Int
-  external fun sqlite3_finalize_all_statement()
   external fun sqlite3_close(): Int
+  external fun sqlite3_interrupt()
   external fun sqlite3_db_filename(databaseName: String): String
   external fun sqlite3_enable_load_extension(onoff: Int): Int
   external fun sqlite3_exec(source: String): Int
@@ -89,6 +89,7 @@ internal class NativeDatabaseBinding : Closeable {
 
     // These error code should be synced with sqlite3.h
     const val SQLITE_OK = 0
+    const val SQLITE_BUSY = 5
 
     const val SQLITE_ROW = 100
     const val SQLITE_DONE = 101

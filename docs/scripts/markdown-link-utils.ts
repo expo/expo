@@ -44,7 +44,7 @@ export function getMarkdownUrl(href: string): string {
 
 function rewriteMarkdownLinks(line: string): string {
   return line.replace(
-    /(!?\[[^\n\]]+]\()([^\s)]+)((?:\s+["'][^\n)]*["'])?\))/g,
+    /(!?\[(?:[^\n[\]]|\[[^\n[\]]*])+]\()([^\s)]+)((?:\s+["'][^\n)]*["'])?\))/g,
     (match, prefix: string, url: string, suffix: string) => {
       if (prefix.startsWith('!')) {
         return match;
@@ -55,7 +55,7 @@ function rewriteMarkdownLinks(line: string): string {
       }
 
       if (url.startsWith('/') && !url.startsWith('//')) {
-        return `${prefix}${getMarkdownHref(url)}${suffix}`;
+        return `${prefix}${getMarkdownUrl(url)}${suffix}`;
       }
 
       return match;

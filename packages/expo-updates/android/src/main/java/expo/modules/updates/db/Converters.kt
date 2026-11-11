@@ -15,7 +15,11 @@ class Converters {
 
   @TypeConverter
   fun longToDate(value: Long?): Date? {
-    return if (value == null) null else Date(value)
+    return if (value == null) {
+      null
+    } else {
+      Date(value)
+    }
   }
 
   @TypeConverter
@@ -25,7 +29,11 @@ class Converters {
 
   @TypeConverter
   fun stringToUri(string: String?): Uri? {
-    return if (string == null) null else Uri.parse(string)
+    return if (string == null) {
+      null
+    } else {
+      Uri.parse(string)
+    }
   }
 
   @TypeConverter

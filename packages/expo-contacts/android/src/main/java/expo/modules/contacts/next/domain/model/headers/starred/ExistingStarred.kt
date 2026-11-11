@@ -11,6 +11,13 @@ class ExistingStarred(
 ) : Updatable.Contacts {
   override val contentValues =
     ContentValues().apply {
-      put(ContactsContract.Contacts.STARRED, if (starred) 1 else 0)
+      put(
+        ContactsContract.Contacts.STARRED,
+        if (starred) {
+          1
+        } else {
+          0
+        }
+      )
     }
 }

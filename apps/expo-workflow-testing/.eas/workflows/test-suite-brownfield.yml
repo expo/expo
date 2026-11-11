@@ -7,6 +7,7 @@ defaults:
 on:
   workflow_dispatch: {}
   pull_request:
+    if: ${{ !startsWith(github.event.pull_request.head.ref, 'changeset-release/') }}
     paths:
       - apps/expo-workflow-testing/.eas/workflows/test-suite-brownfield.yml
       - apps/brownfield-tester/**
@@ -17,6 +18,14 @@ on:
       - '!**/*.md'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
+      - '!**/ios/Tests/**'
+      - '!**/ios/WorkletsTests/**'
+      - '!**/ios/Benchmarks/**'
+      - '!**/apple/Tests/**'
+      - '!**/apple/Benchmarks/**'
+      - '!**/android/src/test/**'
+      - '!**/android/src/androidTest/**'
+      - '!**/android/src/testDebug/**'
 
 concurrency:
   group: ${{ workflow.filename }}-${{ github.ref }}

@@ -478,7 +478,11 @@ object NotificationHelper {
               }
 
               val body: String = try {
-                if (data.containsKey("data")) getJSONString(data["data"]!!) else ""
+                if (data.containsKey("data")) {
+                  getJSONString(data["data"]!!)
+                } else {
+                  ""
+                }
               } catch (e: JSONException) {
                 listener.onFailure(Exception("Couldn't deserialize JSON for experience scope key $experienceScopeKey"))
                 return@Runnable
@@ -490,7 +494,11 @@ object NotificationHelper {
               intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString())
 
               // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
-              val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+              val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                PendingIntent.FLAG_MUTABLE
+              } else {
+                0
+              }
               val contentIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag)
               builder.setContentIntent(contentIntent)
 
@@ -516,13 +524,21 @@ object NotificationHelper {
               }
 
               builder.color = getColor(
-                if (data.containsKey("color")) data["color"] as String? else null,
+                if (data.containsKey("color")) {
+                  data["color"] as String?
+                } else {
+                  null
+                },
                 manifest,
                 exponentManifest
               )
 
               loadIcon(
-                if (data.containsKey("icon")) data["icon"] as String? else null,
+                if (data.containsKey("icon")) {
+                  data["icon"] as String?
+                } else {
+                  null
+                },
                 manifest,
                 exponentManifest,
                 object : BitmapListener {

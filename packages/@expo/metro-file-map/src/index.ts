@@ -77,7 +77,6 @@ export interface InputOptions {
   readonly enableFallback?: boolean | undefined | null;
   readonly enableSymlinks?: boolean | undefined | null;
   readonly extensions: readonly string[];
-  readonly forceNodeFilesystemAPI?: boolean | undefined | null;
   readonly ignorePattern?: RegExp | undefined | null;
   readonly plugins?: readonly InputFileMapPlugin[] | undefined;
   readonly retainAllFiles: boolean;
@@ -311,7 +310,6 @@ export default class FileMap extends EventEmitter {
       computeSha1: options.computeSha1 || false,
       enableSymlinks: options.enableSymlinks || false,
       extensions: options.extensions,
-      forceNodeFilesystemAPI: !!options.forceNodeFilesystemAPI,
       ignorePattern,
       plugins,
       retainAllFiles: options.retainAllFiles,
@@ -515,7 +513,6 @@ export default class FileMap extends EventEmitter {
       computeSha1,
       enableSymlinks,
       extensions,
-      forceNodeFilesystemAPI,
       ignorePattern,
       retainAllFiles,
       roots,
@@ -548,7 +545,6 @@ export default class FileMap extends EventEmitter {
       console: this.#console,
       enableSymlinks,
       extensions,
-      forceNodeFilesystemAPI,
       healthCheckFilePrefix: this.#options.healthCheck.enabled
         ? this.#options.healthCheck.filePrefix
         : null,

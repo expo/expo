@@ -343,7 +343,11 @@ open class FileSystemLegacyModule : Module() {
         val file = uri.toFile()
         val previouslyCreated = file.isDirectory
         val setIntermediates = options.intermediates
-        val success = if (setIntermediates) file.mkdirs() else file.mkdir()
+        val success = if (setIntermediates) {
+          file.mkdirs()
+        } else {
+          file.mkdir()
+        }
         if (success || setIntermediates && previouslyCreated) {
           return@AsyncFunction
         } else {
@@ -971,7 +975,11 @@ open class FileSystemLegacyModule : Module() {
         override fun read(sink: Buffer, byteCount: Long): Long {
           val bytesRead = super.read(sink, byteCount)
           // read() returns the number of bytes read, or -1 if this source is exhausted.
-          totalBytesRead += if (bytesRead != -1L) bytesRead else 0
+          totalBytesRead += if (bytesRead != -1L) {
+            bytesRead
+          } else {
+            0
+          }
           progressListener.update(
             totalBytesRead,
             responseBody?.contentLength()
@@ -1060,7 +1068,14 @@ open class FileSystemLegacyModule : Module() {
   @Throws(IOException::class)
   private fun getOutputStream(uri: Uri, append: Boolean = false) = when {
     uri.scheme == "file" -> FileOutputStream(uri.toFile(), append)
-    uri.isSAFUri -> context.contentResolver.openOutputStream(uri, if (append) "wa" else "w")!!
+    uri.isSAFUri -> context.contentResolver.openOutputStream(
+      uri,
+      if (append) {
+        "wa"
+      } else {
+        "w"
+      }
+    )!!
     else -> throw IOException("Unsupported scheme for location '$uri'.")
   }
 

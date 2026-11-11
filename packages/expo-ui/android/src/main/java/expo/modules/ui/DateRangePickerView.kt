@@ -1,6 +1,7 @@
 package expo.modules.ui
 
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DatePickerColors
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import expo.modules.kotlin.records.Field
@@ -38,6 +40,8 @@ data class DateRangePickerProps(
   val initialEndDate: Long? = null,
   val variant: Variant = Variant.PICKER,
   val showVariantToggle: Boolean = true,
+  val showTitle: Boolean = true,
+  val showHeadline: Boolean = true,
   val color: AndroidColor? = null,
   val elementColors: DateTimePickerColorOverrides = DateTimePickerColorOverrides(),
   val selectableDates: SelectableDatesRecord? = null,
@@ -50,6 +54,8 @@ data class DateRangePickerDialogProps(
   val initialEndDate: Long? = null,
   val variant: Variant = Variant.PICKER,
   val showVariantToggle: Boolean = true,
+  val showTitle: Boolean = true,
+  val showHeadline: Boolean = true,
   val confirmButtonLabel: String? = null,
   val dismissButtonLabel: String? = null,
   val color: AndroidColor? = null,
@@ -147,9 +153,11 @@ fun ExpoDateRangePickerDialogContent(
     ApplyDatePickerDialogKeyboardBehavior(displayMode)
 
     CompositionLocalProvider(LocalContentColor provides colors.navigationContentColor) {
-      DateRangePicker(
+      MaterialDateRangePicker(
         state = state,
         showModeToggle = props.showVariantToggle,
+        showTitle = props.showTitle,
+        showHeadline = props.showHeadline,
         colors = colors
       )
     }
@@ -181,11 +189,36 @@ fun FunctionalComposableScope.DateRangePickerContent(
 
   val colors = buildDatePickerColors(props.elementColors, props.color.composeOrNull)
   CompositionLocalProvider(LocalContentColor provides colors.navigationContentColor) {
-    DateRangePicker(
+    MaterialDateRangePicker(
       modifier = modifier,
       state = state,
       showModeToggle = props.showVariantToggle,
+      showTitle = props.showTitle,
+      showHeadline = props.showHeadline,
       colors = colors
     )
+  }
+}
+
+// See MaterialDatePicker: branching keeps Material 3's own default title and headline slots.
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MaterialDateRangePicker(
+  modifier: Modifier = Modifier,
+  state: DateRangePickerState,
+  showModeToggle: Boolean,
+  showTitle: Boolean,
+  showHeadline: Boolean,
+  colors: DatePickerColors
+) {
+  when {
+    showTitle && showHeadline ->
+      DateRangePicker(state = state, modifier = modifier, colors = colors, showModeToggle = showModeToggle)
+    showTitle ->
+      DateRangePicker(state = state, modifier = modifier, colors = colors, headline = null, showModeToggle = showModeToggle)
+    showHeadline ->
+      DateRangePicker(state = state, modifier = modifier, colors = colors, title = null, showModeToggle = showModeToggle)
+    else ->
+      DateRangePicker(state = state, modifier = modifier, colors = colors, title = null, headline = null, showModeToggle = showModeToggle)
   }
 }

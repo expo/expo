@@ -1,4 +1,5 @@
 'use client';
+import { useVerticalBarEdgeIOS } from 'expo-status-bar';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
@@ -20,6 +21,7 @@ type Props = StackNavigationConfig & {
   direction: LocaleDirection;
   state: StackViewState;
   emit: StackViewEmit;
+  isPreloaded: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
   restoreRoute: (route: Route<string>) => boolean;
   descriptors: StackViewDescriptorMap;
@@ -60,7 +62,7 @@ export class StackView extends React.Component<Props, State> {
       ? state.previousState.routes[state.previousState.index]
       : undefined;
     const nextFocusedRouteFromState = props.state.routes[props.state.index];
-    const activeRoutes = props.state.routes.slice(0, props.state.index + 1);
+    const activeRoutes = props.state.routes.filter((route) => !props.isPreloaded(route.key));
 
     // If there was no change in routes, we don't need to compute anything
     if (
@@ -308,7 +310,7 @@ export class StackView extends React.Component<Props, State> {
   private handleOpenRoute = ({ route }: { route: Route<string> }) => {
     const { state, restoreRoute } = this.props;
     const { closingRouteKeys, replacingRouteKeys } = this.state;
-    const activeRoutes = state.routes.slice(0, state.index + 1);
+    const activeRoutes = state.routes.filter((route) => !this.props.isPreloaded(route.key));
 
     if (
       closingRouteKeys.some((key) => key === route.key) &&
@@ -349,7 +351,7 @@ export class StackView extends React.Component<Props, State> {
 
   private handleCloseRoute = ({ route }: { route: Route<string> }) => {
     const { state, pop } = this.props;
-    const activeRoutes = state.routes.slice(0, state.index + 1);
+    const activeRoutes = state.routes.filter((route) => !this.props.isPreloaded(route.key));
 
     if (activeRoutes.some((r) => r.key === route.key)) {
       // If a route exists in state, trigger a pop
@@ -420,7 +422,7 @@ export class StackView extends React.Component<Props, State> {
                 {(isParentModal) => (
                   <HeaderShownContext.Consumer>
                     {(isParentHeaderShown) => (
-                      <CardStack
+                      <CardStackWithVerticalBarEdge
                         insets={insets!}
                         isParentHeaderShown={isParentHeaderShown}
                         isParentModal={isParentModal}
@@ -457,3 +459,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+function CardStackWithVerticalBarEdge(
+  props: Omit<React.ComponentProps<typeof CardStack>, 'verticalBarEdge'>
+) {
+  return <CardStack {...props} verticalBarEdge={useVerticalBarEdgeIOS()} />;
+}
