@@ -21,7 +21,7 @@ open class ExpoNotificationCategoriesModule : Module() {
     AsyncFunction("setNotificationCategoriesAsync", this@ExpoNotificationCategoriesModule::setNotificationCategoriesAsync)
 
     AsyncFunction("getNotificationCategoriesAsync") { promise: Promise ->
-      promise.resolve(store.allNotificationCategories.filter { ownsCategory(it.identifier) })
+      promise.resolve(store.allNotificationCategories.filter { ownsCategory(it.identifier) }.map(::serializeCategory))
     }
 
     AsyncFunction("setNotificationCategoryAsync", this@ExpoNotificationCategoriesModule::setNotificationCategoryAsync)
@@ -37,7 +37,7 @@ open class ExpoNotificationCategoriesModule : Module() {
   ) {
     val category = NotificationCategoryRecord(identifier, actionArguments)
     store.saveNotificationCategory(category)
-    promise.resolve(category)
+    promise.resolve(serializeCategory(category))
   }
 
   open fun setNotificationCategoriesAsync(categories: List<NotificationCategoryRecord>, promise: Promise) {
@@ -51,4 +51,6 @@ open class ExpoNotificationCategoriesModule : Module() {
   }
 
   protected open fun ownsCategory(identifier: String): Boolean = true
+
+  protected open fun serializeCategory(category: NotificationCategoryRecord): NotificationCategoryRecord = category
 }

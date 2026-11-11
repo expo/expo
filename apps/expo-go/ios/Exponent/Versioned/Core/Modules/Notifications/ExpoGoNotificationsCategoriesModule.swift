@@ -46,7 +46,9 @@ final class ExpoGoNotificationsCategoriesModule: CategoriesModule {
     options: CategoryOptionsRecord?
   ) async -> CategoryRecord {
     let scopedIdentifier = EXScopedNotificationsUtils.scopedIdentifier(fromId: identifier, forExperience: scopeKey)
-    return await super.setNotificationCategoryAsync(identifier: scopedIdentifier, actions: actions, options: options)
+    var category = await super.setNotificationCategoryAsync(identifier: scopedIdentifier, actions: actions, options: options)
+    category.identifier = identifier
+    return category
   }
 
   public override func deleteNotificationCategoryAsync(identifier: String) async -> Bool {
