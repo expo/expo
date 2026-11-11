@@ -96,14 +96,17 @@ When the change meets this guide, open a new pull request and link the old one.
 
 If you plan to contribute to the documentation, see [Updating Documentation](#-updating-documentation) section below.
 
+### Set up for development
+
+1. Install [pnpm](https://pnpm.io/)
+2. Downloads the Node packages: `pnpm install`
+
 ### Set up Android
 
 If you plan to contribute to Android, run `pnpm run setup:native`. This command does the following for you:
 
 - Downloads submodules (like `react-native`) with `git submodule update --init`
-- Ensures pnpm is installed
 - Ensures your computer is set up for React Native (will install the Android NDK if it's not present)
-- Downloads the Node packages (`pnpm install`)
 
 We recommend JDK 17 (eg. zulu17). Run the following commands in a terminal window to install it:
 
