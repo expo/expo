@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS][Android] Fix every later transaction on a connection failing with `cannot commit transaction - SQL statements in progress` after a statement fails with `database is locked`, by resetting the statement when its run fails. ([#51413](https://github.com/expo/expo/pull/51413) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 57.0.4 — 2026-10-06

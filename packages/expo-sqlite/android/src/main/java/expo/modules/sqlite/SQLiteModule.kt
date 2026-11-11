@@ -417,7 +417,12 @@ class SQLiteModule : Module() {
 
       val ret = statement.ref.sqlite3_step()
       if (ret != NativeDatabaseBinding.SQLITE_ROW && ret != NativeDatabaseBinding.SQLITE_DONE) {
-        throw SQLiteErrorException(database.ref.convertSqlLiteErrorToString())
+        // A step that fails with SQLITE_BUSY leaves the statement running, so every later COMMIT
+        // on the connection fails until the statement is reset.
+        // Read the message first. sqlite3_reset() replaces the error message.
+        val message = database.ref.convertSqlLiteErrorToString()
+        statement.ref.sqlite3_reset()
+        throw SQLiteErrorException(message)
       }
       val firstRowValues: SQLiteColumnValues =
         if (ret == NativeDatabaseBinding.SQLITE_ROW) {
