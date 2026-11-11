@@ -106,14 +106,14 @@ class ExpoFetchModule : Module() {
       }
 
       AsyncFunction("arrayBuffer") { response: NativeResponse, promise: Promise ->
-        response.waitForStates(listOf(ResponseState.BODY_COMPLETED)) {
+        response.readBufferedBody {
           val data = response.sink.finalize(directBuffer = true)
           promise.resolve(NativeArrayBuffer(data))
         }
       }
 
       AsyncFunction("text") { response: NativeResponse, promise: Promise ->
-        response.waitForStates(listOf(ResponseState.BODY_COMPLETED)) {
+        response.readBufferedBody {
           val data = response.sink.finalize(directBuffer = false).array()
           val text = data.toString(Charsets.UTF_8)
           promise.resolve(text)

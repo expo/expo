@@ -37,6 +37,7 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
   var error: Exception? = null
     private set
   var redirectMode: NativeRequestRedirect? = null
+  private var bufferedBodyReadInProgress = false
 
   val bodyUsed: Boolean
     get() = this.sink.bodyUsed
@@ -68,6 +69,14 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     return null
   }
 
+  fun readBufferedBody(onBody: (ResponseState) -> Unit) {
+    bufferedBodyReadInProgress = true
+    waitForStates(listOf(ResponseState.BODY_COMPLETED)) { state ->
+      bufferedBodyReadInProgress = false
+      onBody(state)
+    }
+  }
+
   fun cancelStreaming() {
     if (state == ResponseState.BODY_COMPLETED ||
       state == ResponseState.BODY_STREAMING_CANCELED ||
@@ -75,8 +84,19 @@ internal class NativeResponse(appContext: AppContext, private val coroutineScope
     ) {
       return
     }
-    if (isInvalidState(ResponseState.BODY_STREAMING_STARTED)) {
+    // text() and arrayBuffer() wait in this state and finalize the same sink.
+    if (state == ResponseState.RESPONSE_RECEIVED && bufferedBodyReadInProgress) {
       return
+    }
+    if (isInvalidState(
+        ResponseState.RESPONSE_RECEIVED,
+        ResponseState.BODY_STREAMING_STARTED
+      )
+    ) {
+      return
+    }
+    if (state == ResponseState.RESPONSE_RECEIVED) {
+      sink.discard()
     }
     state = ResponseState.BODY_STREAMING_CANCELED
   }

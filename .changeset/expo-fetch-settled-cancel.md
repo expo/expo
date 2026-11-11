@@ -2,4 +2,4 @@
 'expo': patch
 ---
 
-Fix the error-level `Invalid state` log on iOS, and the same warning on Android, when `expo/fetch` cancels a body that has already settled.
+Fix `expo/fetch` logging `Invalid state` when a body is cancelled, and leaving `bodyUsed` false when that cancel happens before the first read.
