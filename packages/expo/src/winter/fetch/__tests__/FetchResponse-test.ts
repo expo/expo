@@ -379,6 +379,21 @@ describe('FetchResponse', () => {
       await expect(response.arrayBuffer()).rejects.toThrow(TypeError);
     });
 
+    it('locks the body stream once text() starts, so cancel() rejects', async () => {
+      const response = makeResponse();
+      const text = response.text();
+      await expect(response.body!.cancel('not needed')).rejects.toHaveProperty('name', 'TypeError');
+      await expect(text).resolves.toBe('hello world');
+      expect(response.body!.locked).toBe(true);
+    });
+
+    it('locks the body stream once arrayBuffer() starts', async () => {
+      const response = makeResponse();
+      const buffer = response.arrayBuffer();
+      expect(response.body!.locked).toBe(true);
+      expect((await buffer).byteLength).toBe(11);
+    });
+
     it('rejects body methods on a clone after its body has been read', async () => {
       const response = makeResponse();
       const cloned = response.clone();

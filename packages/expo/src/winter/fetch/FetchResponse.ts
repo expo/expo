@@ -415,6 +415,7 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
       return body.readAsBuffer();
     }
 
+    this.lockBodyStream();
     return super.arrayBuffer();
   }
 
@@ -428,6 +429,7 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
       return new TextDecoder().decode(await body.readAsBuffer());
     }
 
+    this.lockBodyStream();
     return super.text();
   }
 
@@ -490,6 +492,13 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     state.body.cloned = true;
 
     return clone;
+  }
+
+  // Native reads the body without a reader on the stream. Lock the stream as
+  // the Fetch spec does, so a later cancel() rejects instead of cancelling
+  // native under the pending read.
+  private lockBodyStream(): void {
+    this.body?.getReader();
   }
 
   private checkBodyUsedError(method: string): void {
