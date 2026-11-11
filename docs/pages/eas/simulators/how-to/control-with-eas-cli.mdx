@@ -6,8 +6,6 @@ description: Discover the actions a running iOS session supports and select a se
 
 import { Terminal } from '~/ui/components/Snippet';
 
-> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
-
 Use `eas simulator:control` for direct actions on a running iOS Simulator. It connects through the session's preview server, so it works with any iOS session type that exposes that server, including `web-preview-only`.
 
 For accessibility snapshots and actions that select elements by their labels, use [agent-device, Argent, or Appium](/eas/simulators/how-to/drive-the-device/). Direct controls do not provide an accessibility tree. Android sessions use those controllers instead.

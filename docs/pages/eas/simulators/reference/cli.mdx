@@ -7,8 +7,6 @@ description: Reference for the experimental eas simulator commands that create, 
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
-
 The `simulator:*` commands are experimental. Install or update [EAS CLI](/eas/cli/) before running them:
 
 <Terminal cmd={['$ eas simulator:start --help']} />
@@ -39,7 +37,7 @@ To manage sessions without EAS CLI, use the [Expo Simulators REST API](/eas/simu
 
 <Terminal cmd={['$ eas simulator:availability --json']} />
 
-The `--json` flag is optional. It prints a stable, machine-readable result for agents and automation; omit it for human-readable output. The JSON object contains `available` and `accountName`. When the account does not have access, it also contains `waitlistUrl`. This command does not create a session or consume simulator usage.
+The `--json` flag is optional. It prints a stable, machine-readable result for agents and automation; omit it for human-readable output. The JSON object contains `available` and `accountName`. When the account does not have access, it also contains `billingUrl`, the URL of the account's billing page. This command does not create a session or consume simulator usage.
 
 ## `simulator:start`
 

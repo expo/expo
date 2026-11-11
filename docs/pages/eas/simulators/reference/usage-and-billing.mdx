@@ -8,17 +8,15 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { FAQ } from '~/ui/components/FAQ';
 import { Terminal } from '~/ui/components/Snippet';
 
-> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
-
 Expo Simulators is part of Expo Services. To control usage, stop each session when you finish and set a maximum duration.
 
 ## Access
 
-Access to Expo Simulators does not come with a plan. Expo enables it for each account. Check the account of the current project:
+Expo Simulators is available on the Starter, Production, and Enterprise plans. Check the account of the current project:
 
 <Terminal cmd={['$ eas simulator:availability --json']} />
 
-The check is read-only. It does not start a device or consume usage. If `available` is `false`, `eas simulator:start` fails with a message that links to the waitlist.
+The check is read-only. It does not start a device or consume usage. If `available` is `false`, `eas simulator:start` fails with a message that links to the account's billing page. Upgrade the account to a paid plan, or update billing if a payment is past due. If the account is on an annual Enterprise plan, contact your Expo account executive.
 
 ## Session duration limits
 

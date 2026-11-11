@@ -10,12 +10,10 @@ import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
-
 <Prerequisites>
   <Requirement title="An Expo account with Expo Simulators access">
-    Expo Simulators access is granted directly to select partners. Check the current project's
-    account before starting a session.
+    Expo Simulators is available on paid plans. Check the current project's account before starting
+    a session.
   </Requirement>
   <Requirement title="A linked Expo project">
     Run these commands from the project directory. If the project does not have an Expo Services
@@ -23,7 +21,7 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
   </Requirement>
   <Requirement title="A recent EAS CLI">
     The `simulator:*` commands are experimental. [Install or update EAS CLI](/eas/cli/) before using
-    them. Since the preview changes quickly, use `eas simulator:start --help` to check the flags
+    them. Since the commands change quickly, use `eas simulator:start --help` to check the flags
     supported by your installed version.
   </Requirement>
 </Prerequisites>
@@ -71,7 +69,7 @@ An enabled account returns:
 }
 ```
 
-If `available` is `false`, do not call `simulator:start`. Use a local simulator or emulator, or [join the waitlist](https://expo.dev/services/simulators) for access.
+If `available` is `false`, do not call `simulator:start`. Use a local simulator or emulator, or upgrade the account to a paid plan. See [Expo Simulators access](/eas/simulators/reference/usage-and-billing/#access).
 
 </Step>
 
