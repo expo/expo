@@ -215,7 +215,6 @@ dependencies {
 
   api 'com.google.android.gms:play-services-fitness:17.0.0'
   api 'commons-io:commons-io:2.6'
-  api 'me.leolin:ShortcutBadger:1.1.4@aar'
   api 'net.openid:appauth:0.7.1'
   api 'com.airbnb.android:lottie:6.5.2'
   compileOnly 'io.branch.sdk.android:library:4.1.0'
