@@ -5,6 +5,7 @@ import { Props } from './types';
 import { withIosSplashAssets } from './withIosSplashAssets';
 import { withIosSplashColors } from './withIosSplashColors';
 import { withIosSplashInfoPlist } from './withIosSplashInfoPlist';
+import { withIosSplashPrerender } from './withSplashPrerender';
 import { withIosSplashScreenStoryboardBaseMod } from './withIosSplashScreenStoryboard';
 import { withIosSplashScreenImage } from './withIosSplashScreenStoryboardImage';
 import { withIosSplashXcodeProject } from './withIosSplashXcodeProject';
@@ -14,6 +15,7 @@ export const withIosSplashScreen: ConfigPlugin<Props> = (config, props) => {
 
   return withPlugins(config, [
     [withIosSplashInfoPlist, splash],
+    [withIosSplashPrerender, props],
     [withIosSplashAssets, splash],
     [withIosSplashColors, splash],
     // Add the image settings to the storyboard.

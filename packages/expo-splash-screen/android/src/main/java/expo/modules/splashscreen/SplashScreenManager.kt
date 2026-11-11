@@ -35,6 +35,10 @@ object SplashScreenManager {
 
     splashScreen.setOnExitAnimationListener { splashScreenViewProvider ->
       val splashScreenView = splashScreenViewProvider.view
+      if (SplashScreenPrerender.isActive) {
+        splashScreenViewProvider.remove()
+        return@setOnExitAnimationListener
+      }
       splashScreenView
         .animate()
         .setDuration(duration)
@@ -74,6 +78,9 @@ object SplashScreenManager {
 
   fun hide() {
     keepSplashScreenOnScreen = false
+    if (SplashScreenPrerender.isActive) {
+      SplashScreenPrerender.dismiss()
+    }
   }
 
   fun setSplashScreenOptions(options: SplashScreenOptions) {

@@ -38,6 +38,12 @@ export type Props = {
    */
   backgroundColor?: string;
   /**
+   * Path to a JSON template of the app's first screen, a tree of Fabric component names and raw
+   * props (`{ "name": "View", "props": { ... }, "children": [ ... ] }`). When set, the native side
+   * renders it through Fabric before React Native starts and shows it instead of the splash image.
+   */
+  prerender?: string;
+  /**
    * The width to make the image.
    * @default 100
    */

@@ -7,6 +7,7 @@ import { withAndroidSplashImages } from './withAndroidSplashImages';
 import { withAndroidSplashMainActivity } from './withAndroidSplashMainActivity';
 import { withAndroidSplashStrings } from './withAndroidSplashStrings';
 import { withAndroidSplashStyles } from './withAndroidSplashStyles';
+import { withAndroidSplashPrerender } from './withSplashPrerender';
 
 export const withAndroidSplashScreen: ConfigPlugin<Props> = (config, props) => {
   const splash = getAndroidSplashConfig(props);
@@ -17,5 +18,6 @@ export const withAndroidSplashScreen: ConfigPlugin<Props> = (config, props) => {
     [withAndroidSplashDrawables, splash],
     [withAndroidSplashStyles, splash],
     [withAndroidSplashStrings, splash],
+    [withAndroidSplashPrerender, props],
   ]);
 };

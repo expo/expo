@@ -49,6 +49,10 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
       )
     }
 
+    ExpoAppDelegateSubscriberRepository.subscribers.forEach {
+      $0.windowSceneWillConnect?(windowScene)
+    }
+
     let window = UIWindow(windowScene: windowScene)
     self.window = window
 
