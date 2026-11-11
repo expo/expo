@@ -439,7 +439,7 @@ Link your project to Expo Services and check that your account can use Expo Simu
 
 `eas init` sets `extra.eas.projectId` in your app config. The integration uses this project ID to start sessions.
 
-The integration authenticates with an Expo access token from the `EXPO_TOKEN` environment variable. It does not use the account that you signed in to with `eas login`. Create a [personal access token](/accounts/programmatic-access/#personal-access-tokens) to use when you run the tests.
+The integration authenticates with an Expo access token from the `EXPO_TOKEN` environment variable. If `EXPO_TOKEN` is not set, it uses the account that you signed in to with `eas login`. The same behavior applies to share sessions and you can set `EXPO_TOKEN` on these machines to avoid that. Create a [personal access token](/accounts/programmatic-access/#personal-access-tokens) to use when you run the tests.
 
 </Step>
 
