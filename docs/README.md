@@ -41,7 +41,7 @@ pnpm export-server
 
 All documentation-related content is inside the **pages** directory. We write docs in markdown with the help of custom React components that provide additional functionality, such as embedding Snack examples, representing commands inside a terminal component and so on.
 
-The documentation is divided into four main sections:
+The documentation is divided into the following main sections:
 
 - **Home**: Provides a guided path from starting a project from scratch to deploying it to app stores.
 - **Guides**: General purpose and fundamental guides that help you understand how Expo works and how to use it.
@@ -50,7 +50,7 @@ The documentation is divided into four main sections:
 - **Learn**: Tutorials and guides that help you learn how to use Expo and React Native.
 
 > [!NOTE]
-> We are currently in the process of moving our API documentation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command for some Expo libraries.
+> The API documentation of most Expo libraries is generated from the TypeScript source with the `et generate-docs-api-data` command. See [Update API reference docs](#update-api-reference-docs).
 
 ### Metadata of a page
 
@@ -143,10 +143,10 @@ We use two layers of redirects:
 - **Server-side redirects** defined in `public/_redirects` using the Cloudflare Pages redirect format (`source_path destination_path status_code`, one rule per line). These are 301 permanent redirects for simple 1:1 path mappings and SEO-friendly behavior.
 - **Client-side redirects** in `common/client-redirects.ts` that run on the 404 page for more complex rules (for example, stripping `.html`, version fallbacks) and to catch cases where server-side redirects do not apply (local/dev/preview or missed mappings).
 
-We currently do two client-side redirects, using meta tags with `http-equiv="refresh"`:
+Some index pages also redirect on the client with a `http-equiv="refresh"` meta tag. These pages call `redirect()` from `common/redirect.tsx`. For example:
 
-- `/` -> `/versions/latest/`
-- `/versions` -> `/versions/latest`
+- `/versions` -> `/versions/latest/`
+- `/tutorial` -> `/tutorial/overview/`
 
 This works by loading a page and then immediately navigating, which can confuse assistive tech (announced content disappears, focus resets) and gives developers less control. Treat this as a fallback and prefer server-side redirects or the 404-based client rules when possible.
 
@@ -162,7 +162,7 @@ Every published page is served in two formats: HTML for browsers, and markdown f
 
 ### 2. Content negotiation
 
-`public/_worker.js` inspects the `Accept` header on every request. If it includes `text/markdown`, the worker rewrites the path to `<pathname>/index.md` and returns that asset with `Content-Type: text/markdown; charset=utf-8`. All other requests fall through to the normal asset pipeline.
+`public/_worker.js` inspects every request. If the `Accept` header includes `text/markdown`, the worker rewrites the path to `<pathname>/index.md` and returns that asset with `Content-Type: text/markdown; charset=utf-8`. The worker also handles a path that ends in `.md` as a markdown request. All other requests fall through to the normal asset pipeline.
 
 ```sh
 curl -H "Accept: text/markdown" https://docs.expo.dev/get-started/set-up-your-environment/
@@ -170,7 +170,7 @@ curl -H "Accept: text/markdown" https://docs.expo.dev/get-started/set-up-your-en
 
 ### 3. Sibling `.md` URLs via `_redirects`
 
-Some agents prefer to append `.md` to a URL rather than negotiate via headers. Three rules at the bottom of `public/_redirects` handle that:
+Some agents prefer to append `.md` to a URL rather than negotiate via headers. Three rules in `public/_redirects` handle that:
 
 ```
 /index.md /index.md 200
@@ -210,7 +210,7 @@ Besides the query, the results are also filtered based on the `version` tag. Thi
 Inside `@expo/styleguide` library, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]` in `packages/search-ui/src/components/CommandMenu.tsx`. Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version.
 
 - All unversioned pages use the version tag `none`
-- All versioned pages use the SDK version (for example, `v51.0.0` or `v50.0.0`)
+- All versioned pages use the SDK version (for example, `v58.0.0` or `v57.0.0`)
 - All pages with `hideFromSearch: true` frontmatter entry don't have the version tag
 
 Currently, the base results for Expo docs are combined with other results from multiple sources, such as:
@@ -234,20 +234,25 @@ The docs are deployed automatically via a GitHub Action each time a PR with docs
 
 If you need to link from one MDX file to another, use the static/full path to this file (avoid relative links):
 
-- From: **tutorial/button.mdx**, to: **introduction/expo.mdx** -> `/introduction/expo`
-- From: **index.mdx**, to: **guides/errors.mdx#tracking-js-errors** -> `/guides/errors/#tracking-javascript-errors`
+- From: **tutorial/add-navigation.mdx**, to: **get-started/create-a-project.mdx** -> `/get-started/create-a-project/`
+- From: **guides/environment-variables.mdx**, to the "System requirements" heading in **get-started/create-a-project.mdx** -> `/get-started/create-a-project/#system-requirements`
 
 Validate all current links by running the `pnpm check-internal-links` script after a build (it scans the exported site in **out**).
 
 ### Update latest version of API reference docs
 
-When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from **package.json** so make sure to update the `version` key there as well.
+Two scripts update the docs for a new SDK version. Each script has a GitHub workflow that runs it and opens a PR:
+
+- `pnpm sdk-beta --sdk <major>` (**scripts/sdk-release/beta.ts**) cuts the beta docs. It regenerates the `unversioned` API data, generates the **pages/versions/vNN.0.0** reference docs, and sets `betaVersion` in **package.json**.
+- `pnpm sdk-promote --sdk <major>` (**scripts/sdk-release/promote.ts**) makes the version the latest. It sets the `version` key in **package.json**, removes `betaVersion`, and updates the SDK version in **pages/workflow/upgrading-expo-sdk-walkthrough.mdx**.
+
+The latest version of the docs is read from the `version` key in **package.json**.
 
 Make sure to also grab the upgrade instructions from the release notes blog post and put them in **upgrading-expo-sdk-walkthrough.mdx**.
 
-The `versions` directory is listed on server start to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `versions`.
+The `versions` directory is listed to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `versions`.
 
-Since the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. So, if you want to override the alphabetical ordering, manipulate page titles in **constants/navigation.js**.
+Since the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. To override the alphabetical ordering, set `sidebar_order` in the frontmatter of a page.
 
 ### Update API reference docs
 
@@ -295,30 +300,19 @@ cd expo/packages/expo-constants
 ```
 
 - Then, open **.ts** file in your code editor/IDE where you want to make changes/updates.
-- Start the TypeScript build compilation in watch mode using `pnpm build` in the terminal window.
-- Make the update. For example, we want to update the TypeDoc description of [`expoConfig` property](https://docs.expo.dev/versions/latest/sdk/constants/#nativeconstants)
+- Make the update. For example, to update the TypeDoc description of the [`expoConfig` property](https://docs.expo.dev/versions/latest/sdk/constants/#nativeconstants):
   - Inside the **src/** directory, open **Constants.types.ts** file.
-  - Search for `expoConfig` property. It has a current description as shown below:
+  - Search for the `expoConfig` property.
+  - Edit the TSDoc comment above the property. The API reference shows the text of this comment:
 
   ```ts
   /**
-   * The standard Expo config object defined in `app.json` and `app.config.js` files. For both
-   * classic and modern manifests, whether they are embedded or remote.
+   * The description of the property.
    */
-  expoConfig: ExpoConfig | null;
+  expoConfig: ...
   ```
 
-- In the above example, let's fix the typo by changing `confg` to `config`:
-
-```ts
-/**
- * The standard app config object defined in `app.json` and `app.config.js` files. For both
- * classic and modern manifests, whether they are embedded or remote.
- */
-expoConfig: ExpoConfig | null;
-```
-
-- Before moving to the next step, make sure to exit the "watch mode" by pressing `Ctrl + C` from the keyboard.
+- You do not have to build the package. The `et generate-docs-api-data` command reads the **src** directory.
 
 #### Step 2: Apply TypeDoc updates to expo/docs repo
 
@@ -355,15 +349,13 @@ Use these steps when a change is cherry-picked to an `sdk-NN` branch after the r
 
 #### Tips
 
-##### Disable changelog
+##### Changesets
 
-After making changes, when you are opening the PR, consider adding `<!-- disable:changelog-checks -->` in the PR description if the changes you are making are docs-related changes (such as updating the field description or fixing a typo, and so on).
-
-This will make sure that the ExpoBot on GitHub will not complain about updating the package's changelog (some of these changes, as described above, are not worth mentioning in the changelog).
+If your PR only updates TSDoc comments and the generated JSON data, it does not need a changeset. Changes that only affect documentation do not need one. See [Recording Package Changes](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-recording-package-changes).
 
 ##### Use the correct package name
 
-Some of the packages have documentation spread over multiple pages. For example, `expo-sensors` package has a separate overview page in Expo Sensors reference, and rest of the information is separated into components such as, `Accelerometer`, `Gyroscope`, `Magnetometer`, and more. For such packages, always make sure to check the [name of the package](https://github.com/expo/expo/blob/main/tools/src/commands/GenerateDocsAPIData.ts#L24) for `et` command.
+Some of the packages have documentation spread over multiple pages. For example, `expo-sensors` package has a separate overview page in Expo Sensors reference, and rest of the information is separated into components such as, `Accelerometer`, `Gyroscope`, `Magnetometer`, and more. For such packages, always make sure to check the name of the package in [`PACKAGES_MAPPING`](https://github.com/expo/expo/blob/main/tools/src/commands/GenerateDocsAPIData.ts) for the `et` command.
 
 ### Sync app config with the schema
 
@@ -414,6 +406,29 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 | `darkSrc` | Optional. Path to the dark-theme image. Rendered via `<picture>` and shown when the user has the dark theme active.                                        |
 | `alt`     | **Required**. Alt text describing the component preview for screen readers.                                                                                |
 
+To show the code of an example with its preview for each platform, use the `ComponentExample` component. Put the fenced code block of the example inside the component:
+
+```mdx
+import { ComponentExample } from '~/ui/components/ComponentExample';
+
+<ComponentExample
+  title="SwitchExample.tsx"
+  android={{
+    src: '/static/images/expo-ui/examples/universal-switch-basic-android-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-switch-basic-android-dark.webp',
+    alt: 'A switch in the off position',
+  }}
+  ios={{
+    src: '/static/images/expo-ui/examples/universal-switch-basic-ios-light.webp',
+    darkSrc: '/static/images/expo-ui/examples/universal-switch-basic-ios-dark.webp',
+    alt: 'A switch in the off position',
+  }}>
+
+{/* Add the fenced code block of the example here */}
+
+</ComponentExample>
+```
+
 ### Add video links from Expo's YouTube channel
 
 To reference a video from Expo's YouTube channel, use the `VideoBoxLink` component. This component is imported from `~/ui/components/VideoBoxLink`.
@@ -421,14 +436,16 @@ To reference a video from Expo's YouTube channel, use the `VideoBoxLink` compone
 ```tsx
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-<VideoBoxLink videoId="Gk7RHDWsLsQ" title="Required title" description="Optional" />;
+<VideoBoxLink videoId="Gk7RHDWsLsQ" title="Required title" description="Required description" />;
 ```
 
-| Param       | Description                                                                                                                                                                        |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `videoId`   | **Required**. The ID of the video from YouTube. You can find this in the URL of the video. For example, in `https://www.youtube.com/watch?v=Gk7RHDWsLsQ`, the ID is `Gk7RHDWsLsQ`. |
-| title       | **Required**. The title of the video.                                                                                                                                              |
-| description | **Optional**. The description of the video.                                                                                                                                        |
+| Param         | Description                                                                                                                                                                        |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `videoId`     | **Required**. The ID of the video from YouTube. You can find this in the URL of the video. For example, in `https://www.youtube.com/watch?v=Gk7RHDWsLsQ`, the ID is `Gk7RHDWsLsQ`. |
+| `title`       | **Required**. The title of the video.                                                                                                                                              |
+| `description` | **Required**. The description of the video.                                                                                                                                        |
+| `time`        | **Optional**. The start time in seconds. The link opens the video at this time.                                                                                                    |
+| `uploadDate`  | **Optional**. The upload date of the video in `YYYY-MM-DD` format. Without it, the component looks up the date from the `videoId`.                                                 |
 
 ### Add code block
 
@@ -472,16 +489,17 @@ Fenced code blocks support dynamic variable substitution using `{{variableName}}
 
 | Variable                  | Example value | Description                   |
 | ------------------------- | ------------- | ----------------------------- |
-| `{{iosDeploymentTarget}}` | `15.1`        | Minimum iOS deployment target |
+| `{{iosDeploymentTarget}}` | `16.4`        | Minimum iOS deployment target |
 | `{{androidVersion}}`      | `7`           | Minimum Android version       |
-| `{{compileSdkVersion}}`   | `36`          | Android compileSdkVersion     |
+| `{{compileSdkVersion}}`   | `37`          | Android compileSdkVersion     |
 | `{{targetSdkVersion}}`    | `36`          | Android targetSdkVersion      |
-| `{{reactNativeVersion}}`  | `0.83`        | React Native version          |
-| `{{reactVersion}}`        | `19.2.0`      | React version                 |
-| `{{xcodeVersion}}`        | `26.2`        | Minimum Xcode version         |
-| `{{nodeVersion}}`         | `20.19.x`     | Minimum Node.js version       |
-| `{{expoSdkVersion}}`      | `55.0.0`      | Expo SDK version              |
-| `{{expoSdkMajorVersion}}` | `55`          | Expo SDK major version number |
+| `{{buildToolsVersion}}`   | `37.0.0`      | Android buildToolsVersion     |
+| `{{reactNativeVersion}}`  | `0.88`        | React Native version          |
+| `{{reactVersion}}`        | `19.3.0`      | React version                 |
+| `{{xcodeVersion}}`        | `26.4`        | Minimum Xcode version         |
+| `{{nodeVersion}}`         | `22.13.x`     | Minimum Node.js version       |
+| `{{expoSdkVersion}}`      | `58.0.0`      | Expo SDK version              |
+| `{{expoSdkMajorVersion}}` | `58`          | Expo SDK major version number |
 
 **Usage in a fenced code block:**
 
@@ -497,7 +515,7 @@ Fenced code blocks support dynamic variable substitution using `{{variableName}}
     ```
 ```
 
-The rendered output will show the resolved values (for example, `"expo": "~55.0.0"`). The copy button also copies the resolved values.
+The rendered output will show the resolved values (for example, `"expo": "~58.0.0"`). The copy button also copies the resolved values.
 
 All variables are defined in `common/code-utilities.ts` and sourced from `sdkVersionValues` in `ui/components/SDKTables/utils.ts`, which reads `@expo/sdk-compatibility/data`. To add a new variable, add a new key to the object returned by `buildVariablesForSdk` in `common/code-utilities.ts`.
 
@@ -510,7 +528,7 @@ Snacks are a great way to add instantly-runnable examples to our docs. The [`Sna
 
 <!-- prettier-ignore -->
 ```mdx
-import SnackInline from '~/components/plugins/SnackInline';
+import { SnackInline } from '~/ui/components/Snippet';
 
 <SnackInline label='My Example Label' dependencies={['array of', 'packages', 'this Snack relies on']}>
     ```js
@@ -570,13 +588,13 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 
 To ignore a page from the search result, use `hideFromSearch: true` on that page. This removes the `<meta name="docsearch:version">` tag from that page and filters it from our facet-based search.
 
-Please note that `hideFromSearch` only prevents the page from showing up in the internal docs search (Algolia). The page will still show up in search engine results like Google. To hide a page from search engine results, you need to edit the sitemap that is generated via our Next.js config (**next.config.js**).
+Please note that `hideFromSearch` only prevents the page from showing up in the internal docs search (Algolia). The page will still show up in search engine results like Google. To hide a page from search engine results, you need to edit the sitemap that is generated via our Next.js config (**next.config.ts**), which calls **scripts/create-sitemap.js**.
 
-### Exclude directories from the sidebar
+### Exclude pages from the sidebar
 
-Certain directories are excluded from the sidebar to prevent it from getting too long and unnavigable. You can find a list of these directories, and add new ones, in **constants/navigation.js** under `hiddenSections`.
+The sidebar sections are defined in **constants/navigation.js**. A new page does not appear in the sidebar until you register it in that file.
 
-If you just want to hide a single page from the sidebar, set `hideInSidebar: true` in the page metadata.
+If you just want to hide a single page from the sidebar, set `hidden: true` in the page metadata.
 
 ### Use `Terminal` component for shell commands snippets
 
@@ -586,12 +604,14 @@ Whenever shell commands are used or referred, use `Terminal` component to make t
 
 | Option          | Type                              | Description                                                                                                                                                                    |
 | --------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `cmd`           | `string[]`                        | **Required**. Lines to render. Use `$` to mark commands, `#` for comments, and empty strings for spacing.                                                                      |
+| `cmd`           | `string[]` or an object           | **Required**. Lines to render. Use `$` to mark commands, `#` for comments, and empty strings for spacing.                                                                      |
 | `cmdCopy`       | `string`                          | **Optional**. Overrides the auto-generated copy text. Helpful when multiple commands should be chained (for example with `&&`) or when you want to control the copied content. |
 | `title`         | `string`                          | **Optional**. Overrides the default header label of "Terminal".                                                                                                                |
 | `browserAction` | `{ href: string; label: string }` | **Optional**. Adds a launch button in the header that opens the link in a new tab—ideal for flows that continue in a web UI.                                                   |
 | `hideOverflow`  | `boolean`                         | **Optional**. Prevents horizontal scrollbars when you prefer the content to clip instead of scroll.                                                                            |
 | `className`     | `string`                          | **Optional**. Additional utility classes for adjusting layout or spacing around the snippet.                                                                                   |
+
+To show a command for each package manager, pass an object to `cmd` with `npm`, `yarn`, `pnpm`, and `bun` keys. Each key takes an array of lines.
 
 ```mdx
 import { Terminal } from '~/ui/components/Snippet';
@@ -650,7 +670,7 @@ Pass `open` to render the block expanded by default:
 
 ### Use callouts
 
-Four different types of callouts can be used with markdown syntax for `> ...` blockquote. Each callout represents a purpose.
+Five different types of callouts can be used with markdown syntax for `> ...` blockquote. Each callout represents a purpose.
 
 ```md
 > Normal callout that doesn't demand much attention but is required to add as a note.
