@@ -252,7 +252,7 @@ export const resolveTypeName = (
         return renderWithLink({
           name: elementType.name,
           type,
-          typePackage: typeDefinition.package,
+          typePackage: elementType.package,
           sdkVersion,
         });
       } else if (type === 'array') {
