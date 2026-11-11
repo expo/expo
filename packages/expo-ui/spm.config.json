@@ -12,30 +12,23 @@
         "expo-modules-core/ExpoModulesCore",
         "expo-modules-core/ExpoModulesWorklets"
       ],
+      "swiftLanguageVersions": ["5"],
       "targets": [
         {
-          "type": "objc",
-          "name": "ExpoUI_ios_objc",
-          "moduleName": "ExpoUI",
-          "path": "ios",
-          "pattern": "**/*.{m,mm}",
-          "headerPattern": "**/*.h",
+          "type": "cpp",
+          "name": "ExpoUIObjC",
           "dependencies": ["Hermes", "React", "ReactNativeDependencies"],
-          "linkedFrameworks": ["Foundation"],
-          "includeDirectories": ["."]
+          "linkedFrameworks": ["Foundation"]
         },
         {
           "type": "swift",
           "name": "ExpoUI",
-          "path": "ios",
-          "pattern": "**/*.swift",
           "dependencies": [
             "Hermes",
             "React",
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore",
-            "expo-modules-core/ExpoModulesWorklets",
-            "ExpoUI_ios_objc"
+            "expo-modules-core/ExpoModulesWorklets"
           ],
           "linkedFrameworks": ["Foundation", "UIKit"]
         }
