@@ -108,3 +108,22 @@ final class MissingPlistKeyException: GenericException<String>, @unchecked Senda
     "granted. Add the key via the expo-location config plugin or by hand, then rebuild the app"
   }
 }
+
+final class InvalidCoordinatesException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Cannot reverse geocode invalid coordinates. Provide a finite latitude between -90 and 90 " +
+    "and a finite longitude between -180 and 180, in degrees"
+  }
+}
+
+final class GeocodingUnavailableException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Geocoding is unavailable."
+  }
+}
+
+final class GeocodingFailedException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Geocoding failed."
+  }
+}
