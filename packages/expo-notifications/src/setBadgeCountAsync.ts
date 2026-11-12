@@ -11,13 +11,17 @@ export interface SetBadgeCountOptions {
 }
 
 /**
- * Sets the badge of the app's icon to the specified number. Setting it to `0` clears the badge. On iOS, this method requires that you have requested
- * the user's permission for `allowBadge` via [`requestPermissionsAsync`](#requestpermissionsasyncpermissions),
- * otherwise it will automatically return `false`.
- * > **Note:** Not all Android launchers support application badges. If the launcher does not support icon badges, the method will resolve to `false`.
- * @param badgeCount The count which should appear on the badge. A value of `0` will clear the badge.
- * @param options An object of options configuring behavior applied.
- * @return It returns a Promise resolving to a boolean representing whether the setting of the badge succeeded.
+ * Sets the app icon's badge count on iOS and web. Setting `0` clears the badge without dismissing notifications.
+ *
+ * On Android, setting a badge count independently of notifications is unsupported. Nonzero counts resolve
+ * to `false`. Setting `0` dismisses the app's notifications and resolves to `true`.
+ * See [App icon badges](#app-icon-badges) for launcher behavior.
+ *
+ * On iOS, this method resolves to `false` if badge permission is disabled. Request `allowBadge` through
+ * [`requestPermissionsAsync`](#requestpermissionsasyncpermissions).
+ * @param badgeCount The requested badge count.
+ * @param options Options configuring badge behavior.
+ * @return Whether the operation succeeded. This does not confirm that a badge is visible.
  * @header badge
  */
 export async function setBadgeCountAsync(

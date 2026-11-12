@@ -222,8 +222,8 @@ data class UpdatesConfiguration(
       configOverride: UpdatesConfigurationOverride?
     ): Uri? {
       if (disableAntiBrickingMeasures) {
-        configOverride?.let {
-          return it.updateUrl
+        configOverride?.updateUrl?.let {
+          return it
         }
       }
       return getOriginalEmbeddedUpdateUrl(context, overrideMap)

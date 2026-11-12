@@ -10,6 +10,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 
+    appContext.ownsRuntime = true
     appContext._runtime = ExpoRuntime()
     return appContext
   }
@@ -62,6 +63,18 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
   /// Observes the surface presenter of the host to know when the views of this app context are created.
   private var surfacePresenterObserver: SurfacePresenterObserver?
+
+  /**
+   Whether the app context owns its runtime, as the one from `create()` and `TestAppContext` do,
+   rather than React Native. The `global.expo` native state then doesn't pin the app context (see
+   ``NativeState``): nothing else tears that runtime down, so the pin would be a cycle that keeps
+   both alive forever. Set it before the runtime.
+   */
+  internal var ownsRuntime = false {
+    willSet {
+      assert(_runtime == nil, "Set ownsRuntime before the runtime: the global.expo native state reads it only once")
+    }
+  }
 
   /**
    Underlying JSI runtime of the running app.
@@ -727,8 +740,15 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   /// intentional: the cycle is broken only when the runtime is torn down (which frees the
   /// native state and fires its deallocator), which is exactly what defers the app context's
   /// release until the runtime is gone. The app context never holds the native state directly.
+  ///
+  /// An app context that owns its runtime (see ``ownsRuntime``) isn't pinned, as the cycle would
+  /// never break. The native state references it weakly and the app context tears the runtime
+  /// down in its own `deinit`.
   internal final class NativeState: JavaScriptNativeState {
-    internal let appContext: AppContext
+    internal weak let appContext: AppContext?
+
+    /// The strong reference that pins the app context, or `nil` when it isn't pinned.
+    private let pinnedAppContext: AppContext?
 
     /// Whether releasing this native state should tear the app context down. Set only for the
     /// main runtime; subordinate runtimes pin the app context and enable recovery without
@@ -737,6 +757,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
 
     internal init(appContext: AppContext, ownsLifecycle: Bool) {
       self.appContext = appContext
+      self.pinnedAppContext = appContext.ownsRuntime ? nil : appContext
       self.ownsLifecycle = ownsLifecycle
       super.init()
       setDeallocator { nativeState in
@@ -749,7 +770,7 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
         // values. A future cross-runtime sharing path that could drop this state's last JSI slot
         // while the runtime still runs JavaScript (see `JavaScriptNativeState.acquireShared`)
         // would need to hop to the JS thread here first.
-        nativeState.appContext.destroy()
+        nativeState.appContext?.destroy()
       }
     }
   }
@@ -772,6 +793,12 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
    */
   deinit {
     NotificationCenter.default.removeObserver(self)
+
+    // Nothing pins an app context that owns its runtime, so the runtime outlives it only until its
+    // stored properties are released. Release the JavaScript objects before that.
+    if ownsRuntime && _runtime != nil {
+      destroy()
+    }
 
     // Post an event to the registry only if it was already created.
     // If we let it to lazy-load here, that would crash since the module registry

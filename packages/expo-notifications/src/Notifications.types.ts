@@ -548,7 +548,7 @@ export type NotificationContentAttachmentIos = {
  */
 export type NotificationContentAndroid = {
   /**
-   * Application badge number associated with the notification.
+   * Count associated with this notification. The launcher determines whether and where to display it.
    */
   badge?: number;
   /**
@@ -605,7 +605,12 @@ export type NotificationContentInput = {
    */
   data?: Record<string, unknown>;
   /**
-   * Application badge number associated with the notification.
+   * On Android, the number of items this notification represents. This maps to Android's
+   * [`setNumber`](https://developer.android.com/develop/ui/views/notifications/badges#set-custom-count).
+   * The launcher may show this count in the app icon's touch-and-hold menu, but a numeric icon badge is not guaranteed.
+   * Setting `0` does not dismiss notifications.
+   *
+   * On iOS, the number to display on the app icon. Set it to `0` to clear the badge, or omit it to leave the badge unchanged.
    */
   badge?: number;
   /**

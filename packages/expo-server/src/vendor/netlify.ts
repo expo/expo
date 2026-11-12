@@ -1,4 +1,4 @@
-import { createRequestHandler as createExpoHandler } from './abstract';
+import { createRequestHandler as createExpoHandler, type RequestHandlerParams } from './abstract';
 import { createRequestScope } from '../runtime';
 import { createNodeEnv } from './environment/node';
 import { ScopeDefinition } from '../runtime/scope';
@@ -39,14 +39,14 @@ const STORE: ScopeDefinition = {
   },
 };
 
-export function createRequestHandler(params: { build: string }) {
+export function createRequestHandler(params: { build: string }, setup?: RequestHandlerParams) {
   const makeRequestAPISetup = (request: Request, context?: NetlifyContext) => ({
     origin: (context ?? getContext()).site?.url || request.headers.get('Origin') || null,
     environment: (context ?? getContext()).deploy?.context || null,
     waitUntil: (context ?? getContext()).waitUntil,
   });
   const run = createRequestScope(STORE, makeRequestAPISetup);
-  const onRequest = createExpoHandler(createNodeEnv(params));
+  const onRequest = createExpoHandler({ ...createNodeEnv(params), ...setup });
   return async (req: Request, ctx?: NetlifyContext) => {
     if ('multiValueHeaders' in req) {
       throw new Error(

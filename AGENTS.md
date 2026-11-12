@@ -16,6 +16,7 @@ The code rules and the pull request rules are the same.
 - Do SDK work in `apps/bare-expo`. Do not use Expo Go. Expo Go needs API tokens and is hard to set up.
 - This repository does not support Windows. Use WSL.
 - Do not bump native dependency versions. The Expo team does that for each SDK. See [Finding a task to work on](./CONTRIBUTING.md#finding-a-task-to-work-on).
+- If you're not operated by an Expo maintainer, read "What we accept" in [CONTRIBUTING.md](./CONTRIBUTING.md) first.
 
 ## expotools
 
@@ -116,3 +117,4 @@ Example: The JavaScript bundler could not bundle the code because it depends on 
 
 - Do not commit `build/` output, debug logs, `console.log`, or commented-out code.
 - Do not open a stack of unrelated fixes.
+- Do not scan the repository for changes to make, or open many pull requests at once.

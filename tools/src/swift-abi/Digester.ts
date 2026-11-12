@@ -20,8 +20,13 @@ export function parseDigesterReport(report: string): DigesterFinding[] {
   return findings;
 }
 
+const ADDITIVE_PATTERNS = [
+  / is a new API without '@available'$/,
+  / has added a conformance to an existing protocol /,
+];
+
 export function isBreakingFinding(finding: DigesterFinding): boolean {
-  return !finding.message.endsWith("is a new API without '@available'");
+  return !ADDITIVE_PATTERNS.some((pattern) => pattern.test(finding.message));
 }
 
 const REMOVAL_PATTERNS = [

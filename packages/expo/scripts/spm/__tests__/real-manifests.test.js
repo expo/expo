@@ -27,12 +27,48 @@ function installLikeNpm(packageName, destination) {
 
 afterEach(removeTempDirs);
 
+const DIRECT_MANIFESTS = [
+  ['expo-age-range', 'ExpoAgeRange'],
+  ['expo-apple-authentication', 'ExpoAppleAuthentication'],
+  ['expo-asset', 'ExpoAsset'],
+  ['expo-background-fetch', 'ExpoBackgroundFetch'],
+  ['expo-battery', 'ExpoBattery'],
+  ['expo-blur', 'ExpoBlur'],
+  ['expo-brightness', 'ExpoBrightness'],
+  ['expo-cellular', 'ExpoCellular'],
+  ['expo-document-picker', 'ExpoDocumentPicker'],
+  ['expo-font', 'ExpoFont'],
+  ['expo-haptics', 'ExpoHaptics'],
+  ['expo-keep-awake', 'ExpoKeepAwake'],
+  ['expo-linear-gradient', 'ExpoLinearGradient'],
+  ['expo-linking', 'ExpoLinking'],
+  ['expo-live-photo', 'ExpoLivePhoto'],
+  ['expo-local-authentication', 'ExpoLocalAuthentication'],
+  ['expo-mail-composer', 'ExpoMailComposer'],
+  ['expo-mesh-gradient', 'ExpoMeshGradient'],
+  ['expo-network', 'ExpoNetwork'],
+  ['expo-print', 'ExpoPrint'],
+  ['expo-secure-store', 'ExpoSecureStore'],
+  ['expo-sensors', 'ExpoSensors'],
+  ['expo-sms', 'ExpoSMS'],
+  ['expo-speech', 'ExpoSpeech'],
+  ['expo-status-bar', 'ExpoStatusBar'],
+  ['expo-store-review', 'ExpoStoreReview'],
+  ['expo-symbols', 'ExpoSymbols'],
+  ['expo-video-thumbnails', 'ExpoVideoThumbnails'],
+  ['expo-web-browser', 'ExpoWebBrowser'],
+];
+
+// expo-dev-menu-interface depends on nothing, so the plugin builds it through the generated
+// manifest, not the direct path.
+const CHECKED_IN_MANIFESTS = [
+  ...DIRECT_MANIFESTS.map(([packageName]) => packageName),
+  'expo-dev-menu-interface',
+];
+
 // These run the real `swift package dump-package`, so they read the checked-in manifests as
 // SwiftPM does rather than a recorded dump of them.
-it.each([
-  ['expo-haptics', 'ExpoHaptics'],
-  ['expo-sensors', 'ExpoSensors'],
-])(
+it.each(DIRECT_MANIFESTS)(
   'links the real %s, installed from npm, directly through its checked-in Package.swift',
   (packageName, productName) => {
     const tmp = makeTempDir('spm-real-manifest-');
@@ -70,7 +106,7 @@ it.each([
   60_000
 );
 
-it.each(['expo-haptics', 'expo-sensors'])(
+it.each(CHECKED_IN_MANIFESTS)(
   'loads the macros of the real %s with no unsafe flags',
   (packageName) => {
     const moduleRoot = installLikeNpm(packageName, makeTempDir('spm-real-manifest-'));

@@ -240,6 +240,22 @@ export function getNodejsExtensions(srcExts: readonly string[]): string[] {
   return nodejsSourceExtensions;
 }
 
+const HMR_CLIENT_PROD_SHIM_ID = '\0shim:HMRClientProdShim.js';
+const HMR_CLIENT_PROD_SHIM = `
+const HMRClientProdShim = {
+  setup() {},
+  enable() {
+    console.error(
+      'Fast Refresh is disabled in JavaScript bundles built in production mode. Did you forget to run Metro?'
+    );
+  },
+  disable() {},
+  registerBundle() {},
+  log() {},
+};
+export default HMRClientProdShim;
+`;
+
 /**
  * Apply custom resolvers to do the following:
  * - Disable `.native.js` extensions on web.
@@ -760,10 +776,16 @@ export function withExtendedResolver(
           }
         }
 
-        const hmrModule = doReplaceStrict(
-          `${hostPackage}/Libraries/Utilities/HMRClient.js`,
-          'expo/src/async-require/hmr.ts'
-        );
+        const hmrClientPath = `${hostPackage}/Libraries/Utilities/HMRClient.js`;
+        if (!context.dev && normalizedPath.endsWith(hmrClientPath)) {
+          const bundler = getMetroBundlerWithVirtualModules(getMetroBundler());
+          if (!bundler.hasVirtualModule(HMR_CLIENT_PROD_SHIM_ID)) {
+            bundler.setVirtualModule(HMR_CLIENT_PROD_SHIM_ID, HMR_CLIENT_PROD_SHIM);
+          }
+          return { ...result, filePath: HMR_CLIENT_PROD_SHIM_ID };
+        }
+
+        const hmrModule = doReplaceStrict(hmrClientPath, 'expo/src/async-require/hmr.ts');
         if (hmrModule) return hmrModule;
 
         if (useExpoUnstableLogBox) {

@@ -194,11 +194,8 @@ data class OTResourceSpans(
 data class OTRequestBody(
   val resourceMetrics: List<OTEvent>
 ) {
-  fun toJson(prettyPrint: Boolean = false): String {
-    val json = Json {
-      this.prettyPrint = prettyPrint
-    }
-    return json.encodeToString(serializer(), this)
+  fun toJson(): String {
+    return Json.encodeToString(serializer(), this)
   }
 }
 
@@ -206,11 +203,8 @@ data class OTRequestBody(
 data class OTLogsRequestBody(
   val resourceLogs: List<OTResourceLogs>
 ) {
-  fun toJson(prettyPrint: Boolean = false): String {
-    val json = Json {
-      this.prettyPrint = prettyPrint
-    }
-    return json.encodeToString(serializer(), this)
+  fun toJson(): String {
+    return Json.encodeToString(serializer(), this)
   }
 }
 
@@ -218,11 +212,8 @@ data class OTLogsRequestBody(
 data class OTTracesRequestBody(
   val resourceSpans: List<OTResourceSpans>
 ) {
-  fun toJson(prettyPrint: Boolean = false): String {
-    val json = Json {
-      this.prettyPrint = prettyPrint
-    }
-    return json.encodeToString(serializer(), this)
+  fun toJson(): String {
+    return Json.encodeToString(serializer(), this)
   }
 }
 
@@ -288,7 +279,8 @@ private val metricNameMap = mapOf(
   // Navigation
   (MetricCategory.Navigation.categoryName to "cold_ttr") to "expo.navigation.cold_ttr",
   (MetricCategory.Navigation.categoryName to "warm_ttr") to "expo.navigation.warm_ttr",
-  (MetricCategory.Navigation.categoryName to "tti") to "expo.navigation.tti"
+  (MetricCategory.Navigation.categoryName to "tti") to "expo.navigation.tti",
+  (MetricCategory.Navigation.categoryName to "tbt") to "expo.navigation.tbt"
 )
 
 internal fun exportedMetricName(category: String, name: String): String =

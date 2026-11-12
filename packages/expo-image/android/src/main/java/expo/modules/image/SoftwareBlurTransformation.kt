@@ -5,7 +5,6 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import com.bumptech.glide.load.engine.bitmap_recycle.BitmapPool
 import com.bumptech.glide.load.resource.bitmap.BitmapTransformation
-import jp.wasabeef.glide.transformations.internal.FastBlur
 import java.security.MessageDigest
 import kotlin.math.max
 

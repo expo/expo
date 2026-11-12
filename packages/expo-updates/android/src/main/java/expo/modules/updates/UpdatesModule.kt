@@ -232,11 +232,7 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
       }
 
     internal suspend fun clearLogEntries(filesDirectory: File, completionHandler: (_: Exception?) -> Unit) {
-      val reader = UpdatesLogReader(filesDirectory)
-      reader.purgeLogEntries(
-        olderThan = Date(),
-        completionHandler
-      )
+      UpdatesLogReader(filesDirectory).clearLogEntries(completionHandler)
     }
   }
 

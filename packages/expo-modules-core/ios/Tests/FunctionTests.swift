@@ -416,9 +416,9 @@ struct FunctionTests {
 
     @Test
     func `returns URL (async)`() async throws {
-      let urlValue = try await runtime.evalAsync("expo.modules.TestModule.withURLAsync()")
-      #expect(urlValue.kind == .string)
-      #expect(urlValue.getString() == TestURLRecord.defaultURLString)
+      let urlValue = try await runtime.evalAsync("expo.modules.TestModule.withURLAsync()").ref()
+      // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+      #expect(try await runtime.execute { try urlValue.take().asString() } == TestURLRecord.defaultURLString)
     }
 
     @Test
@@ -436,15 +436,22 @@ struct FunctionTests {
 
     @Test
     func `returns value or undefined (async)`() async throws {
-      let object = try await runtime.evalAsync("expo.modules.TestModule.withUndefinedAsync()")
-      #expect(object.kind == .object)
+      let object = try await runtime.evalAsync("expo.modules.TestModule.withUndefinedAsync()").ref()
+      let (hasA, a, hasB, isBUndefined) = try await runtime.execute {
+        let object = try object.take().asObject()
+        return (
+          object.hasProperty("a"),
+          try object.getProperty("a").asDouble(),
+          object.hasProperty("b"),
+          object.getProperty("b").isUndefined()
+        )
+      }
 
-      #expect(object.getObject().hasProperty("a") == true)
-      #expect(object.getObject().getProperty("a").kind == .number)
-      #expect(object.getObject().getProperty("a").getDouble() == 1.0)
+      #expect(hasA == true)
+      #expect(a == 1.0)
 
-      #expect(object.getObject().hasProperty("b") == true)
-      #expect(object.getObject().getProperty("b").kind == .undefined)
+      #expect(hasB == true)
+      #expect(isBUndefined == true)
     }
 
     @Test
@@ -459,13 +466,12 @@ struct FunctionTests {
     func `returns a record with url (async)`() async throws {
       let object = try await runtime.evalAsync(
         "expo.modules.TestModule.withNestedURLAsync().then((result) => (globalThis.object = result))"
-      )
-      #expect(object.kind == .object)
-      #expect(object.getObject().hasProperty("url") == true)
-
-      let urlValue = try runtime.eval("object.url")
-      #expect(urlValue.kind == .string)
-      #expect(urlValue.getString() == TestURLRecord.defaultURLString)
+      ).ref()
+      let (hasURL, url) = try await runtime.execute {
+        (try object.take().asObject().hasProperty("url"), try runtime.eval("object.url").asString())
+      }
+      #expect(hasURL == true)
+      #expect(url == TestURLRecord.defaultURLString)
     }
 
     @Test
@@ -481,32 +487,35 @@ struct FunctionTests {
     func `returns a SharedObject (async)`() async throws {
       let object = try await runtime.evalAsync(
         "expo.modules.TestModule.withSharedObjectAsync().then((result) => (globalThis.object = result))"
-      )
+      ).ref()
+      let (hasValue, value) = try await runtime.execute {
+        (try object.take().asObject().hasProperty("value"), try runtime.eval("object.value").asString())
+      }
 
-      #expect(object.kind == .object)
-      #expect(object.getObject().hasProperty("value") == true)
-
-      let result = try runtime.eval("object.value")
-      #expect(result.kind == .string)
-      #expect(result.getString() == "Test")
+      #expect(hasValue == true)
+      #expect(value == "Test")
     }
 
     @Test
     func `returns an Array of SharedObjects (async)`() async throws {
       let object = try await runtime.evalAsync(
         "expo.modules.TestModule.withArrayOfSharedObjectsAsync().then((result) => (globalThis.object = result))"
-      )
+      ).ref()
+      let elements = try await runtime.execute {
+        var elements: [(hasValue: Bool, value: String)] = []
+        try object.take().asArray().forEachIndexed { index, element in
+          elements.append((
+            hasValue: try element.asObject().hasProperty("value"),
+            value: try runtime.eval("object[\(index)].value").asString()
+          ))
+        }
+        return elements
+      }
 
-      #expect(object.kind == .object)
-      #expect(object.getObject().hasProperty("length") == true)
-
-      let result = object.getArray()
-      try result.forEachIndexed { index, element in
-        #expect(element.kind == .object)
-        #expect(element.getObject().hasProperty("value") == true)
-        let value = try runtime.eval("object[\(index)].value")
-        #expect(value.kind == .string)
-        #expect(value.getString() == "Test\(index + 1)")
+      #expect(!elements.isEmpty)
+      for (index, element) in elements.enumerated() {
+        #expect(element.hasValue == true)
+        #expect(element.value == "Test\(index + 1)")
       }
     }
 
@@ -514,14 +523,13 @@ struct FunctionTests {
     func `returns a SharedObject with Promise`() async throws {
       let object = try await runtime.evalAsync(
         "expo.modules.TestModule.withSharedObjectPromise().then((result) => (globalThis.object = result))"
-      )
+      ).ref()
+      let (hasValue, value) = try await runtime.execute {
+        (try object.take().asObject().hasProperty("value"), try runtime.eval("object.value").asString())
+      }
 
-      #expect(object.kind == .object)
-      #expect(object.getObject().hasProperty("value") == true)
-
-      let result = try runtime.eval("object.value")
-      #expect(result.kind == .string)
-      #expect(result.getString() == "Test with Promise")
+      #expect(hasValue == true)
+      #expect(value == "Test with Promise")
     }
 
     @Test

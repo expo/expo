@@ -416,7 +416,7 @@ For agent steps:
 
 Expo Simulators runs Android Emulators and iOS Simulators on Expo infrastructure. The [`@e2e-dev/eas`](https://e2e.com/docs/integrations/eas) integration starts an Expo Simulators session for each e2e worker when a run starts. It stops the sessions when the run ends. e2e runs on your computer and drives each remote device through agent-device. The following example runs the tests on a remote iOS Simulator.
 
-> **important** Expo Simulators is a limited-access preview. For more information, see the [Expo Simulators documentation](/preview/simulators/introduction/).
+> **info** Expo Simulators is available on paid plans. For more information, see the [Expo Simulators documentation](/eas/simulators/introduction/).
 
 <Step label="1">
 
@@ -439,7 +439,7 @@ Link your project to Expo Services and check that your account can use Expo Simu
 
 `eas init` sets `extra.eas.projectId` in your app config. The integration uses this project ID to start sessions.
 
-The integration authenticates with an Expo access token from the `EXPO_TOKEN` environment variable. It does not use the account that you signed in to with `eas login`. Create a [personal access token](/accounts/programmatic-access/#personal-access-tokens) to use when you run the tests.
+The integration authenticates with an Expo access token from the `EXPO_TOKEN` environment variable. If `EXPO_TOKEN` is not set, it uses the account that you signed in to with `eas login`. The same behavior applies to share sessions and you can set `EXPO_TOKEN` on these machines to avoid that. Create a [personal access token](/accounts/programmatic-access/#personal-access-tokens) to use when you run the tests.
 
 </Step>
 

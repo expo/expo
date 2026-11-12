@@ -7,10 +7,13 @@ export type ProgramStatus = {
   msg?: string;
 };
 
-function writeProgramStatus(body: string) {
-  if (isInteractive()) {
-    process.stdout.write(`\x1b]7501;${body}\x1b\\`);
-  }
+function writeProgramStatus(status: ProgramStatus | 'clear') {
+  try {
+    if (isInteractive()) {
+      const body = status === 'clear' ? 'state=clear' : formatProgramStatus(status);
+      process.stdout.write(`\x1b]7501;${body}\x1b\\`);
+    }
+  } catch {}
 }
 
 function formatProgramStatus({ state, kind, msg }: ProgramStatus): string {
@@ -26,8 +29,8 @@ export async function withProgramStatus<T>(
   status: ProgramStatus,
   action: () => Promise<T>
 ): Promise<T> {
-  const clear = () => writeProgramStatus('state=clear');
-  writeProgramStatus(formatProgramStatus(status));
+  const clear = () => writeProgramStatus('clear');
+  writeProgramStatus(status);
   process.on('exit', clear);
   try {
     return await action();

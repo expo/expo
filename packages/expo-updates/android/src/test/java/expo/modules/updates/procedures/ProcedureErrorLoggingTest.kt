@@ -83,7 +83,7 @@ class ProcedureErrorLoggingTest {
       logger,
       createFileDownloaderFailingWithHttp500(),
       SelectionPolicyFactory.createFilterAwarePolicy(config.getRuntimeVersion(), config),
-      null
+      { null }
     ) { result = it }
 
     procedure.run(procedureContext)
@@ -104,7 +104,7 @@ class ProcedureErrorLoggingTest {
         IOException("Failed to download remote update", UnknownHostException("Unable to resolve host \"u.expo.dev\""))
       ),
       SelectionPolicyFactory.createFilterAwarePolicy(config.getRuntimeVersion(), config),
-      null
+      { null }
     ) {}
 
     procedure.run(procedureContext)
@@ -129,7 +129,7 @@ class ProcedureErrorLoggingTest {
       temporaryFolder.newFolder(),
       createFileDownloaderFailingWithHttp500(),
       SelectionPolicyFactory.createFilterAwarePolicy(config.getRuntimeVersion(), config),
-      null,
+      { null },
       this
     ) { result = it }
 
@@ -150,7 +150,7 @@ class ProcedureErrorLoggingTest {
       temporaryFolder.newFolder(),
       createFileDownloaderFailingWith(IOException("Failed to download remote update", SocketTimeoutException("timeout"))),
       SelectionPolicyFactory.createFilterAwarePolicy(config.getRuntimeVersion(), config),
-      null,
+      { null },
       this
     ) {}
 
@@ -175,7 +175,7 @@ class ProcedureErrorLoggingTest {
       temporaryFolder.newFolder(),
       createFileDownloaderWithFailingAssets { notFound() },
       SelectionPolicyFactory.createFilterAwarePolicy(config.getRuntimeVersion(), config),
-      null,
+      { null },
       this
     ) {}
 
@@ -196,7 +196,7 @@ class ProcedureErrorLoggingTest {
       temporaryFolder.newFolder(),
       createFileDownloaderWithFailingAssets { timeout() },
       SelectionPolicyFactory.createFilterAwarePolicy(config.getRuntimeVersion(), config),
-      null,
+      { null },
       this
     ) {}
 
@@ -227,7 +227,7 @@ class ProcedureErrorLoggingTest {
         }
       },
       SelectionPolicyFactory.createFilterAwarePolicy(config.getRuntimeVersion(), config),
-      null,
+      { null },
       this
     ) {}
 

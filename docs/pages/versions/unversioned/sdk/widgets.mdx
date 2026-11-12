@@ -694,7 +694,7 @@ The layout object supports these regions:
 - `compactLeading`, `compactTrailing`, `minimal`: The compact and minimal Dynamic Island states.
 - `expandedLeading`, `expandedTrailing`, `expandedCenter`, `expandedBottom`: The regions of the expanded Dynamic Island.
 
-The `environment` object also exposes `isLuminanceReduced`, `isActivityFullscreen`, `isActivityUpdateReduced`, and `activityFamily` so you can adapt the layout to the current presentation.
+The `environment` object also exposes `isLuminanceReduced`, `isActivityFullscreen`, `isActivityUpdateReduced`, and `activityFamily` so you can adapt the layout to the current presentation. Its `activityId` is the identifier of the Live Activity being drawn, the same value that `LiveActivity.getId()` returns.
 
 #### Starting a Live Activity
 
@@ -712,7 +712,7 @@ function App() {
         etaMinutes: 15,
         status: 'Your delivery is on the way',
       },
-      'myapp://deliveries/12345'
+      { url: 'myapp://deliveries/12345' }
     );
     // Store instance
   };
@@ -726,26 +726,47 @@ function App() {
 export default App;
 ```
 
-The optional second argument is a URL associated with the Live Activity. When the user taps the activity, the system opens your app with that URL, so you can route to the relevant screen using [linking](/linking/into-your-app/) (for example with Expo Router's deep linking).
+Use the `url` option to associate a URL with the Live Activity. When the user taps the activity, the system opens your app with that URL, so you can route to the relevant screen using [linking](/linking/into-your-app/) (for example with Expo Router's deep linking).
+
+#### Scheduling a Live Activity
+
+On iOS 26 or later, use the `schedule` option to start a Live Activity at a future date. Supply a `startDate` and the alert that iOS presents when the activity starts. Passing `schedule` on earlier iOS versions throws an error.
+
+```tsx
+import DeliveryActivity from './DeliveryActivity';
+
+DeliveryActivity.start(
+  { etaMinutes: 15, status: 'Your delivery is on the way' },
+  {
+    schedule: {
+      startDate: new Date(Date.now() + 10 * 60 * 1000),
+      alertConfiguration: { title: 'Delivery update', body: 'Your driver is on the way.' },
+    },
+  }
+);
+```
 
 #### Updating a Live Activity
 
 The example below continues from [Starting a Live Activity](#starting-a-live-activity).
 
+When your app has multiple Live Activities, set a higher `relevanceScore` on the one that iOS should prioritize. iOS uses the score to order your activities in the Dynamic Island and on the Lock Screen. The score defaults to `0` each time you call `start` or `update`.
+
 ```tsx
 import { LiveActivity } from 'expo-widgets';
 
 function updateDelivery(instance: LiveActivity<DeliveryActivityProps>) {
-  instance.update({
-    etaMinutes: 2,
-    status: 'Delivery arriving soon!',
-  });
+  instance.update({ etaMinutes: 2, status: 'Delivery arriving soon!' }, { relevanceScore: 10 });
 }
 ```
 
+Both `start` and `update` accept a `staleDate` option to tell iOS when the content becomes out of date. To migrate from the deprecated positional arguments, use `start(props, { url, staleDate })` and `update(props, { staleDate })`.
+
+If you also update the Live Activity with push notifications, pass the time the data was generated as the `contentDate` option of `update`. On iOS 17.2 and later, the system then ignores a local update that is older than a push payload it has already applied.
+
 #### Recovering active Live Activities
 
-A Live Activity can outlive the app process that started it. Use `getInstances` on the factory to retrieve the activities of that type that are currently active, for example to update or end them after your app relaunches.
+A Live Activity can outlive the app process that started it. Use `getInstances` on the factory to retrieve the pending, active, and stale activities of that type. You can then update or end them after your app relaunches. To cancel a scheduled activity before it starts, call `end()` on its pending instance.
 
 ```tsx
 import DeliveryActivity from './DeliveryActivity';

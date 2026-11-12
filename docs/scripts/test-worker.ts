@@ -194,7 +194,7 @@ async function testDirectMarkdownAccessAsync(): Promise<void> {
     throw new Error('Direct .md request did not return markdown content');
   }
   if (
-    response.headers.get('Link') !== '</llms.txt>; rel="llms-txt"' ||
+    response.headers.get('Link') !== '</llms.txt>; rel="llms-txt", </sitemap.xml>; rel="sitemap"' ||
     response.headers.get('X-Llms-Txt') !== '/llms.txt'
   ) {
     throw new Error('Direct .md response lost the asset discovery headers');
@@ -350,6 +350,55 @@ async function testAcceptQualityValuesAsync(): Promise<void> {
     );
   }
   console.log('✓ Markdown with the higher q is served');
+}
+
+async function testAiUserAgentMarkdownAsync(): Promise<void> {
+  console.log('\n--- Testing markdown for AI user agents ---');
+
+  const aiUserAgents = [
+    'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot',
+    'Claude-User/1.0',
+    'Perplexity-User/1.0',
+  ];
+
+  for (const userAgent of aiUserAgents) {
+    const response = await fetch(`${BASE_URL}/test-page`, {
+      headers: { 'User-Agent': userAgent, Accept: 'text/html' },
+    });
+    const contentType = response.headers.get('content-type') ?? '';
+    const body = await response.text();
+
+    if (!contentType.includes('text/markdown') || !body.includes('Test Markdown Content')) {
+      throw new Error(`Expected markdown for "${userAgent}", got: ${contentType}`);
+    }
+    if (!varyTokens(response).includes('user-agent')) {
+      throw new Error(
+        `Expected Vary header listing User-Agent, got: ${response.headers.get('vary') ?? '(absent)'}`
+      );
+    }
+    console.log(`✓ ${userAgent.match(/[\w-]+-User/)?.[0]} gets markdown when it requests HTML`);
+  }
+
+  const expectations = [
+    { route: '/html-only-page', userAgent: 'Claude-User/1.0', status: 200 },
+    { route: '/nonexistent-page', userAgent: 'Claude-User/1.0', status: 404 },
+    { route: '/test-page', userAgent: 'ClaudeBot/1.0', status: 200 },
+    { route: '/test-page', userAgent: 'Mozilla/5.0 (Macintosh) Chrome/157.0', status: 200 },
+  ];
+
+  for (const { route, userAgent, status } of expectations) {
+    const response = await fetch(`${BASE_URL}${route}`, {
+      headers: { 'User-Agent': userAgent, Accept: 'text/html' },
+    });
+    const contentType = response.headers.get('content-type') ?? '';
+
+    if (response.status !== status || !contentType.includes('text/html')) {
+      throw new Error(
+        `Expected an HTML ${status} for ${route} with "${userAgent}", got: HTTP ${response.status} ${contentType}`
+      );
+    }
+    console.log(`✓ ${route} with "${userAgent}" returns an HTML ${status}`);
+  }
 }
 
 async function testUpgradePairNegotiationAsync(): Promise<void> {
@@ -571,6 +620,53 @@ async function testHtmlNotFoundAsync(): Promise<void> {
   console.log(`✓ Nonexistent HTML page returns HTTP ${response.status} (not a server error)`);
 }
 
+async function testJsonNotFoundAsync(): Promise<void> {
+  console.log('\n--- Testing JSON 404 responses ---');
+
+  const response = await fetch(`${BASE_URL}/nonexistent-page`, {
+    headers: { Accept: 'application/json' },
+  });
+  const contentType = response.headers.get('content-type') ?? '';
+
+  if (response.status !== 404 || !contentType.includes('application/json')) {
+    throw new Error(`Expected a JSON 404, got: HTTP ${response.status} ${contentType}`);
+  }
+  if (!varyTokens(response).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept on the JSON 404, got: ${response.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+
+  const body = (await response.json()) as {
+    error?: { code?: string };
+    links?: { index?: string };
+  };
+
+  if (body.error?.code !== 'not_found' || !body.links?.index?.endsWith('/llms.txt')) {
+    throw new Error(`Expected an error code and recovery links, got: ${JSON.stringify(body)}`);
+  }
+  console.log('✓ JSON 404 responds with a JSON error body and recovery links');
+
+  const expectations = [
+    { route: '/nonexistent-page', accept: '*/*', type: 'text/html' },
+    { route: '/nonexistent-page', accept: 'text/html, application/json;q=0.9', type: 'text/html' },
+    { route: '/api/v1/nonexistent', accept: '*/*', type: 'application/json' },
+    { route: '/api/v1/nonexistent', accept: 'text/html,application/xml;q=0.9', type: 'text/html' },
+  ];
+
+  for (const { route, accept, type } of expectations) {
+    const result = await fetch(`${BASE_URL}${route}`, { headers: { Accept: accept } });
+    const resultType = result.headers.get('content-type') ?? '';
+
+    if (result.status !== 404 || !resultType.includes(type)) {
+      throw new Error(
+        `Expected a ${type} 404 for ${route} with Accept "${accept}", got: HTTP ${result.status} ${resultType}`
+      );
+    }
+    console.log(`✓ ${route} with Accept "${accept}" returns a ${type} 404`);
+  }
+}
+
 function navigateAsync(path: string, headers: http.OutgoingHttpHeaders = {}) {
   return new Promise<http.IncomingMessage>((resolve, reject) => {
     http
@@ -617,11 +713,13 @@ async function mainAsync(): Promise<void> {
     await testMarkdownContentNegotiationAsync();
     await testMarkdownNotFoundAsync();
     await testAcceptQualityValuesAsync();
+    await testAiUserAgentMarkdownAsync();
     await testUpgradePairNegotiationAsync();
     await testDeletedPageRedirectsAsync();
     await testRemovedSdkRedirectsAsync();
     await testAgentDiscoveryRedirectsAsync();
     await testHtmlNotFoundAsync();
+    await testJsonNotFoundAsync();
     await testUrlRecoveryAsync();
 
     console.log('\n=== All tests passed! ===');

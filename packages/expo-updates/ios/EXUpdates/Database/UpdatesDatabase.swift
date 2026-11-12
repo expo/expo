@@ -52,7 +52,7 @@ internal enum UpdatesDatabaseError: Error, Sendable, LocalizedError {
 }
 
 enum UpdatesDatabaseHashType: Int {
-  case Sha1 = 0
+  case Sha256 = 0
 }
 
 /**
@@ -190,7 +190,7 @@ public final class UpdatesDatabase: NSObject {
           asset.downloadTime.require("asset downloadTime should be nonnull"),
           asset.filename,
           asset.contentHash,
-          UpdatesDatabaseHashType.Sha1.rawValue,
+          UpdatesDatabaseHashType.Sha256.rawValue,
           asset.expectedHash
         ]
       )
@@ -595,12 +595,12 @@ public final class UpdatesDatabase: NSObject {
 
   internal func deleteJsonDataForAllScopeKeys(withKeys keys: [JSONDataKey]) throws {
     sqlite3_exec(db, "BEGIN;", nil, nil, nil)
+    let placeholders = keys.indices.map { "?\($0 + 1)" }.joined(separator: ", ")
     let deleteSql = """
-      DELETE FROM json_data WHERE "keys" IN (?1);
+      DELETE FROM json_data WHERE "key" IN (\(placeholders));
     """
-    let keysArg = keys.map { $0.rawValue }.joined(separator: ",")
     do {
-      _ = try execute(sql: deleteSql, withArgs: [keysArg])
+      _ = try execute(sql: deleteSql, withArgs: keys.map { $0.rawValue })
     } catch {
       sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
       throw UpdatesDatabaseError.setJsonDataError(cause: error)

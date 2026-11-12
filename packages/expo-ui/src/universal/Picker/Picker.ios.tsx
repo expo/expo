@@ -1,5 +1,6 @@
 import { Picker as SwiftUIPicker, Text } from '@expo/ui/swift-ui';
 import {
+  accessibilityLabel as accessibilityLabelModifier,
   disabled as disabledModifier,
   pickerStyle,
   tag,
@@ -19,12 +20,16 @@ export function Picker<T extends PickerItemValue>({
   onValueChange,
   appearance = 'menu',
   enabled = true,
+  accessibilityLabel,
   children,
   testID,
 }: PickerProps<T>) {
   const items = extractPickerItems<T>(children);
   const swiftUIStyle = appearance === 'wheel' ? 'wheel' : 'menu';
   const modifiers: ModifierConfig[] = [pickerStyle(swiftUIStyle)];
+  if (accessibilityLabel !== undefined) {
+    modifiers.push(accessibilityLabelModifier(accessibilityLabel));
+  }
   if (!enabled) modifiers.push(disabledModifier(true));
 
   return (
