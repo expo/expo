@@ -17,7 +17,7 @@ import nodeCrawl from '../index';
 jest.mock('path', () => jest.requireActual<typeof import('path')>('path').posix);
 
 const rootDir = '/project';
-const processFile = async () => null;
+const processFile = () => null;
 
 function makeTreeFS(files?: FileData): TreeFS {
   return new TreeFS({ rootDir, files, processFile });

@@ -121,16 +121,16 @@ export class FileProcessor {
     return { errors };
   }
 
-  async processRegularFile(
+  processRegularFile(
     normalPath: string,
     fileMetadata: FileMetadata,
     req: ProcessFileRequest
-  ): Promise<{ content: Buffer | undefined | null } | null> {
+  ): { content: Buffer | undefined | null } | null {
     const workerInput = this.#getWorkerInput(normalPath, fileMetadata, req);
     return workerInput
       ? {
           content: processWorkerReply(
-            await this.#inBandWorker.processFile(workerInput),
+            this.#inBandWorker.processFile(workerInput),
             workerInput.pluginsToRun,
             fileMetadata
           ),
