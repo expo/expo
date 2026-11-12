@@ -3,6 +3,7 @@ import path from 'path';
 
 import {
   createFakeProject,
+  createLocalTemplateAsync,
   createTestPath,
   ensureFolderExists,
   execute,
@@ -16,11 +17,12 @@ import {
   runScriptPassing,
 } from './utils';
 
-/** Absolute path to the local expo-module-template package */
-const localTemplatePath = path.resolve(__dirname, '../../../expo-module-template');
+const localTemplateRoot = getTemporaryPath();
+let localTemplatePath: string;
 
 beforeAll(async () => {
   ensureFolderExists(projectRoot);
+  localTemplatePath = await createLocalTemplateAsync(localTemplateRoot);
 });
 
 afterAll(async () => {
@@ -28,6 +30,7 @@ afterAll(async () => {
   if (fs.existsSync(projectRoot)) {
     await fs.promises.rm(projectRoot, { recursive: true, force: true });
   }
+  await fs.promises.rm(localTemplateRoot, { recursive: true, force: true });
 });
 
 describe('CLI flags', () => {
