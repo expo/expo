@@ -181,4 +181,46 @@ describe('verifySwiftInterfaceImports', () => {
 
     assert.deepEqual(await verifySwiftInterfaceImports(swiftInterfacePath, frameworkPath), []);
   });
+
+  describe('with an SDK', () => {
+    /** Creates an empty SDK directory; each entry is a path under `System/Library/Frameworks`. */
+    async function createSdkFixtureAsync(frameworkEntries: string[]): Promise<string> {
+      const sdkPath = await fs.mkdtemp(path.join(os.tmpdir(), 'verifier-sdk-'));
+      tempRoots.push(sdkPath);
+      for (const entry of frameworkEntries) {
+        await fs.outputFile(path.join(sdkPath, 'System', 'Library', 'Frameworks', entry), '');
+      }
+      return sdkPath;
+    }
+
+    const APP_INTENTS_SWIFTUI_OVERLAY =
+      'AppIntents.framework/Modules/AppIntents.swiftcrossimport/SwiftUI.swiftoverlay';
+
+    const interfaceExporting = (moduleName: string) =>
+      ['// swift-interface-format-version: 1.0', `@_exported import ${moduleName}`].join('\n');
+
+    it('accepts an exported cross-import overlay that the SDK declares', async () => {
+      const { frameworkPath, swiftInterfacePath } = await createFrameworkFixtureAsync(
+        interfaceExporting('_AppIntents_SwiftUI')
+      );
+      const sdkPath = await createSdkFixtureAsync([APP_INTENTS_SWIFTUI_OVERLAY]);
+
+      assert.deepEqual(
+        await verifySwiftInterfaceImports(swiftInterfacePath, frameworkPath, new Set(), sdkPath),
+        []
+      );
+    });
+
+    it('accepts an exported framework that the SDK ships', async () => {
+      const { frameworkPath, swiftInterfacePath } = await createFrameworkFixtureAsync(
+        interfaceExporting('AppIntents')
+      );
+      const sdkPath = await createSdkFixtureAsync(['AppIntents.framework/Info.plist']);
+
+      assert.deepEqual(
+        await verifySwiftInterfaceImports(swiftInterfacePath, frameworkPath, new Set(), sdkPath),
+        []
+      );
+    });
+  });
 });
