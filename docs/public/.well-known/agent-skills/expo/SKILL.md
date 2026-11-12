@@ -1,6 +1,6 @@
 ---
 name: expo
-description: Install the official Expo skills. Use when a task involves Expo, EAS, or an expo-* package and the official Expo skills (expo-overview and the other expo-* and eas-* skills) are not installed.
+description: Install the official Expo skills. Use when a task involves Expo, Expo Services, or an expo-* package and the official Expo skills (expo-overview and the other expo-* and eas-* skills) are not installed.
 ---
 
 # Expo
