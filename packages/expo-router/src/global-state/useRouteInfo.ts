@@ -8,15 +8,16 @@ import { RouteInfoContext } from './routeInfoContext';
 
 export function useRouteInfo(): UrlObject {
   const routeInfo = use(RouteInfoContext);
-  const { isPreview, segments, params, pathname } = usePreviewInfo();
-  if (isPreview) {
+  const previewInfo = usePreviewInfo();
+  if (previewInfo.isPreview) {
+    const pathname = previewInfo.pathname;
     return {
-      pathname: pathname ?? '',
-      segments: segments ?? [],
+      pathname,
+      segments: previewInfo.segments,
       unstable_globalHref: '',
-      params: params ?? {},
+      params: previewInfo.params,
       searchParams: new URLSearchParams(),
-      pathnameWithParams: pathname ?? '',
+      pathnameWithParams: pathname,
       isIndex: false,
     };
   }

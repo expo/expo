@@ -15,7 +15,7 @@ const asPageRouteNode = (route: string): PageRouteNode => {
       };
     },
     route,
-    contextKey: 'INVALID_TEST_VALUE',
+    contextKey: './INVALID_TEST_VALUE',
   };
 };
 

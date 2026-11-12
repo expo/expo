@@ -1,7 +1,7 @@
 import { renderHook as renderHookWithoutProvider } from '@testing-library/react-native';
 import { use, type PropsWithChildren } from 'react';
 
-import { useRouteNode } from '../../Route';
+import { useRouteNode, type RouteNode } from '../../Route';
 import { node } from '../../global-state/__tests__/__fixtures__/routeNode';
 import type { RoutingIntent } from '../../global-state/routingQueue';
 import {
@@ -45,7 +45,7 @@ const descriptors = {
 };
 const routeNames = routes.map((route) => route.name);
 
-function routeNode(anchor: string) {
+function routeNode(anchor: string): RouteNode {
   return {
     ...node(
       '_layout',
@@ -232,9 +232,10 @@ describe('useVisibleTabsWithRedirect', () => {
   });
 
   it('does not redirect when there are no visible routes', async () => {
-    mockedUseRouteNode.mockReturnValue({ contextKey: './app/_layout.tsx' } as ReturnType<
-      typeof useRouteNode
-    >);
+    mockedUseRouteNode.mockReturnValue({
+      ...routeNode('home'),
+      contextKey: './app/_layout.tsx',
+    });
     await renderHook(() =>
       useVisibleTabsWithRedirect({
         routes: [routes[3]!],

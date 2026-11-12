@@ -1,3 +1,5 @@
+import type { ExternalPathString } from '../typed-routes/types';
+
 /**
  * Does the input string start with a valid URL scheme.
  * NOTE: Additional strictness added to ensure URLs sent in query parameters for in-app navigation are not matched.
@@ -13,7 +15,7 @@ export function isWellKnownUri(href: string): boolean {
   return /^(https?|mailto|tel|sms|geo|maps|market|itmss?|itms-apps|content|file):/.test(href);
 }
 
-export function shouldLinkExternally(href: string): boolean {
+export function shouldLinkExternally(href: string): href is ExternalPathString {
   // Cheap check first to avoid regex if the href is not a path fragment.
   return !href.startsWith('.') && (hasUrlProtocolPrefix(href) || isWellKnownUri(href));
 }

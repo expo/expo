@@ -1,7 +1,10 @@
 import { renderHook } from '@testing-library/react-native';
 import type { PropsWithChildren } from 'react';
 
-import { PreviewRouteContext } from '../../link/preview/PreviewRouteContext';
+import {
+  PreviewRouteContext,
+  type PreviewRouteContextType,
+} from '../../link/preview/PreviewRouteContext';
 import { defaultRouteInfo, type UrlObject } from '../getRouteInfoFromState';
 import { RouteInfoContext } from '../routeInfoContext';
 import { useRouteInfo } from '../useRouteInfo';
@@ -30,7 +33,7 @@ it('returns route info from the navigation container', async () => {
 });
 
 it('returns preview route info inside a preview', async () => {
-  const preview = {
+  const preview: PreviewRouteContextType = {
     pathname: '/preview/one',
     segments: ['preview', 'one'],
     params: { id: 'one' },

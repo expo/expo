@@ -1,6 +1,17 @@
 import type { ComponentProps } from 'react';
 
+import type { MiddlewareNode, PageRouteNode, RedirectRouteNode, RouteNode } from '../Route';
+import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import type { Stack as JSStack } from '../layouts/JSStack';
+import type { RequireContextPonyFill } from '../testing-library/require-context-ponyfill';
+import type { RequireContext } from '../types';
+import type {
+  AbsoluteHref,
+  AbsolutePath,
+  ContextKey,
+  EntryPoint,
+  FileContextKey,
+} from '../types/paths';
 import type { ScreenProps } from '../useScreens';
 import type { Navigator, Slot } from '../views/Navigator';
 
@@ -21,6 +32,46 @@ export type _SlotLacksInitialRouteName = Expect<
 >;
 export type _JSStackLacksInitialRouteName = Expect<
   Equal<'initialRouteName' extends keyof ComponentProps<typeof JSStack> ? true : false, false>
+>;
+
+export type _RouteNodeContextKeyIsContextKey = Expect<Equal<RouteNode['contextKey'], ContextKey>>;
+export type _MetroContextKeysAreFileContextKeys = Expect<
+  Equal<ReturnType<__MetroModuleApi.RequireContext['keys']>, FileContextKey[]>
+>;
+export type _RouterUsesMetroRequireContext = Expect<
+  Equal<RequireContext, __MetroModuleApi.RequireContext>
+>;
+export type _RouterContextKeysAreFileContextKeys = Expect<
+  Equal<ReturnType<RequireContext['keys']>, FileContextKey[]>
+>;
+export type _PonyfillAddRequiresFileContextKey = Expect<
+  Equal<Parameters<RequireContextPonyFill['__add']>[0], FileContextKey>
+>;
+export type _RouteNodeParentContextKeyIsContextKey = Expect<
+  Equal<PageRouteNode['parentContextKey'], ContextKey | undefined>
+>;
+export type _MiddlewareContextKeyIsContextKey = Expect<
+  Equal<MiddlewareNode['contextKey'], ContextKey>
+>;
+export type _SyntheticContextKeyIsAContextKey = Expect<
+  Equal<'expo-router/build/views/Sitemap.js' extends ContextKey ? true : false, true>
+>;
+export type _PlainNameIsNotAContextKey = Expect<
+  Equal<'app/index.tsx' extends ContextKey ? true : false, false>
+>;
+export type _DestinationContextKeyAllowsExternalUrls = Expect<
+  Equal<RedirectRouteNode['destinationContextKey'], EntryPoint>
+>;
+export type _ExternalUrlIsAnEntryPoint = Expect<
+  Equal<'https://example.com/x' extends EntryPoint ? true : false, true>
+>;
+
+export type _UrlObjectPathnameIsAbsolutePath = Expect<Equal<UrlObject['pathname'], AbsolutePath>>;
+export type _UrlObjectPathnameWithParamsIsHref = Expect<
+  Equal<UrlObject['pathnameWithParams'], AbsoluteHref>
+>;
+export type _UrlObjectGlobalHrefIsHref = Expect<
+  Equal<UrlObject['unstable_globalHref'], AbsoluteHref>
 >;
 
 describe('public types', () => {
