@@ -111,18 +111,32 @@ it('renders a Link with React Native array style prop when using asChild', async
 });
 
 it('renders a Link with a slot and array style', async () => {
-  await expect(
-    async () =>
-      await render(
-        <Link asChild href="/foo">
-          <Pressable style={[{ padding: 10 }, { margin: 5 }]}>
-            <Text>Button</Text>
-          </Pressable>
-        </Link>
-      )
-  ).rejects.toThrow(
-    '[expo-router]: You are passing an array of styles to a child of <Slot>. Consider flattening the styles with StyleSheet.flatten before passing them to the child component.'
+  const { getByTestId } = await render(
+    <Link asChild href="/foo">
+      <Pressable testID="pressable" style={[{ padding: 10 }, { margin: 5 }]}>
+        <Text>Button</Text>
+      </Pressable>
+    </Link>
   );
+  expect(getByTestId('pressable').props.style).toStrictEqual({
+    padding: 10,
+    margin: 5,
+  });
+});
+
+it('merges a child array style over the Link style when using asChild', async () => {
+  const { getByTestId } = await render(
+    <Link asChild href="/foo" style={{ backgroundColor: 'blue', padding: 4 }}>
+      <Pressable testID="pressable" style={[{ backgroundColor: 'red' }, { margin: 8 }]}>
+        <Text>Button</Text>
+      </Pressable>
+    </Link>
+  );
+  expect(getByTestId('pressable').props.style).toStrictEqual({
+    backgroundColor: 'red',
+    padding: 4,
+    margin: 8,
+  });
 });
 
 xit('renders a Link with a slot', async () => {

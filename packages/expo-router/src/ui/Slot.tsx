@@ -14,7 +14,9 @@ import { StyleSheet, type ViewProps } from 'react-native';
  * This could be fixed upstream (PR open), but it may not as RN is not their target
  * platform.
  *
- * This shim calls `StyleSheet.flatten` on the styles before we render the <Slot />
+ * This shim calls `StyleSheet.flatten` on the Slot style and on a child style
+ * array before we render the <Slot />. Radix merges `style` with an object
+ * spread, so an array becomes indexed keys.
  *
  * @see https://github.com/expo/expo/issues/31352
  * @see https://github.com/radix-ui/primitives/issues/3107
@@ -24,21 +26,24 @@ import { StyleSheet, type ViewProps } from 'react-native';
 function ShimSlotForReactNative(Component: typeof RUISlot): typeof RUISlot {
   return forwardRef(function RNSlotHOC({ style, ...props }, ref) {
     const flattenedStyle = useMemo(() => StyleSheet.flatten(style), [style]);
-    if (process.env.NODE_ENV !== 'production') {
-      if (React.isValidElement(props.children)) {
-        if (
-          typeof props.children.props === 'object' &&
-          props.children.props !== null &&
-          'style' in props.children.props &&
-          Array.isArray(props.children.props.style)
-        ) {
-          throw new Error(
-            `[expo-router]: You are passing an array of styles to a child of <Slot>. Consider flattening the styles with StyleSheet.flatten before passing them to the child component.`
-          );
-        }
-      }
-    }
-    return <Component ref={ref} {...props} style={flattenedStyle} />;
+    return (
+      <Component ref={ref} {...props} style={flattenedStyle}>
+        {flattenChildStyleArray(props.children)}
+      </Component>
+    );
+  });
+}
+
+function flattenChildStyleArray(children: React.ReactNode): React.ReactNode {
+  if (!React.isValidElement<{ style?: unknown }>(children)) {
+    return children;
+  }
+  const { style } = children.props;
+  if (!Array.isArray(style)) {
+    return children;
+  }
+  return React.cloneElement(children, {
+    style: StyleSheet.flatten(style),
   });
 }
 
