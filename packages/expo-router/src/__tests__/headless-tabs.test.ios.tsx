@@ -8,7 +8,7 @@ import { unstable_useIsNavigating } from '../exports';
 import { internalNavigationEvents } from '../global-state/internalNavigationEvents';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
-import { useGuardRedirect } from '../layouts/GuardContext';
+import { useResolvedGuard } from '../layouts/GuardContext';
 import { Stack } from '../layouts/Stack';
 import { Tabs as JSTabs } from '../layouts/Tabs';
 import { Link, Redirect } from '../link/Link';
@@ -1869,9 +1869,9 @@ it('renders an external trigger without a navigator route', async () => {
 });
 
 it('does not use a parent guard redirect for a tab with the same route name', async () => {
-  let inheritedGuardRedirect: ReturnType<typeof useGuardRedirect>;
+  let inheritedGuardRedirect: ReturnType<typeof useResolvedGuard>;
   function TabsLayout() {
-    inheritedGuardRedirect = useGuardRedirect('settings');
+    inheritedGuardRedirect = useResolvedGuard('settings');
     return (
       <Tabs>
         <TabList>
@@ -1905,7 +1905,7 @@ it('does not use a parent guard redirect for a tab with the same route name', as
     login: () => <Text testID="login">Login</Text>,
   });
 
-  expect(inheritedGuardRedirect).toBe('/login');
+  expect(inheritedGuardRedirect).toEqual({ redirectTo: '/login' });
   await act(() => router.push('/(tabs)/settings'));
 
   expect(screen).toHavePathname('/');
