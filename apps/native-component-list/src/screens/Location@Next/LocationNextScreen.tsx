@@ -4,7 +4,9 @@ import {
   LocationProvider,
   LocationUpdatesHandle,
   PositionWatchHandle,
+  HeadingWatchHandle,
   type BackgroundTaskStatus,
+  type HeadingWatchStatus,
   type Position,
   type PositionWatchStatus,
 } from 'expo-location/next';
@@ -33,6 +35,10 @@ const ADDRESS_SHAPE =
   '[{ coordinates: { latitude, longitude }, name, formattedAddress,\n' +
   '   city, country, isoCountryCode }]\n' +
   'Every field except coordinates may be null. Empty array when nothing matches.';
+
+const HEADING_SHAPE =
+  '{ trueHeading, magneticHeading, accuracy, timestamp }\n' +
+  'Headings in degrees clockwise from north, accuracy in degrees; trueHeading and accuracy may be null.';
 
 const NOTIFICATION_PERMISSION_SHAPE = '{ status, granted, canAskAgain, expires }';
 
@@ -218,7 +224,7 @@ function GridButton({ label, onPress }: { label: string; onPress: () => void }) 
 // flags say which one it is; grey means released, the one state you cannot come back from.
 // isSubscribed is checked first on purpose: it is the one flag we observe rather than derive,
 // so if the provider is feeding us the handle is alive no matter what the others claim.
-function describeWatch(status: PositionWatchStatus | null) {
+function describeWatch(status: PositionWatchStatus | HeadingWatchStatus | null) {
   if (!status) {
     return { color: '#bdbdbd', label: 'no watcher' };
   }
@@ -234,13 +240,13 @@ function describeWatch(status: PositionWatchStatus | null) {
   if (!status.isStarted) {
     return { color: '#ed6c02', label: 'no listener' };
   }
-  if (!status.isInForeground) {
+  if ('isInForeground' in status && !status.isInForeground) {
     return { color: '#ed6c02', label: 'backgrounded' };
   }
   return { color: '#ed6c02', label: 'not subscribed' };
 }
 
-function WatchIndicator({ status }: { status: PositionWatchStatus | null }) {
+function WatchIndicator({ status }: { status: PositionWatchStatus | HeadingWatchStatus | null }) {
   const { color, label } = describeWatch(status);
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
@@ -266,6 +272,8 @@ export default function LocationNextScreen() {
   });
   const [watchStatus, setWatchStatus] = useState<PositionWatchStatus | null>(null);
   const watcher = useRef<PositionWatchHandle | null>(null);
+  const [headingStatus, setHeadingStatus] = useState<HeadingWatchStatus | null>(null);
+  const headingWatcher = useRef<HeadingWatchHandle | null>(null);
   const updates = useRef<LocationUpdatesHandle | null>(null);
   const fixCount = useRef(0);
   const [fixes, setFixes] = useState<LoggedFix[]>([]);
@@ -311,16 +319,18 @@ export default function LocationNextScreen() {
       setLocationTaskListener(null);
       watcher.current?.dispose();
       watcher.current = null;
+      headingWatcher.current?.dispose();
+      headingWatcher.current = null;
     };
   }, []);
 
   // Polled rather than tracked locally, so the dot also catches changes the native side makes
   // on its own — it drops the subscription when the activity goes to the background.
   useEffect(() => {
-    const id = setInterval(
-      () => setWatchStatus(watcher.current ? watcher.current.status() : null),
-      1000
-    );
+    const id = setInterval(() => {
+      setWatchStatus(watcher.current ? watcher.current.status() : null);
+      setHeadingStatus(headingWatcher.current ? headingWatcher.current.status() : null);
+    }, 1000);
     return () => clearInterval(id);
   }, []);
 
@@ -333,6 +343,15 @@ export default function LocationNextScreen() {
         return 'no watcher yet — press start first';
       }
       return action(watcher.current);
+    };
+
+  const withHeadingWatcher =
+    <T,>(action: (handle: HeadingWatchHandle) => T) =>
+    async () => {
+      if (!headingWatcher.current) {
+        return 'no heading watcher yet — press start first';
+      }
+      return action(headingWatcher.current);
     };
 
   const run = (label: string, expected: string, action: () => Promise<unknown>) => async () => {
@@ -540,6 +559,78 @@ export default function LocationNextScreen() {
               async () => {
                 watcher.current?.dispose();
                 watcher.current = null;
+              }
+            )}
+          />
+        </Section>
+
+        <Section
+          title="Heading"
+          note="iOS only. The simulator has no magnetometer, so start throws there; use a device. trueHeading stays null until CoreLocation has a location fix, which needs foreground access."
+          right={<WatchIndicator status={headingStatus} />}>
+          <GridButton
+            label="start"
+            onPress={run(
+              'heading',
+              `done right away, then a Heading whenever it changes by 1° or more.\n${HEADING_SHAPE}`,
+              async () => {
+                headingWatcher.current?.dispose();
+                headingWatcher.current = null;
+                headingWatcher.current = Location.watchHeading({
+                  onHeading: (heading) =>
+                    setOutput({
+                      actual: `[heading] ${JSON.stringify(heading, null, 2)}`,
+                      expected: HEADING_SHAPE,
+                    }),
+                  onError: (error) =>
+                    setOutput({
+                      actual: `[heading] ${error.code}: ${error.message}`,
+                      expected: 'An error code and message from CoreLocation.',
+                    }),
+                });
+              }
+            )}
+          />
+          <GridButton
+            label="pause"
+            onPress={run(
+              'heading',
+              'done. Updates stop, the dot goes amber.\nisSubscribed false, isPaused true, isHandleAlive still true.',
+              withHeadingWatcher((handle) => handle.pause())
+            )}
+          />
+          <GridButton
+            label="resume"
+            onPress={run(
+              'heading',
+              'Immediate. true if it re-subscribed, false if it could not.',
+              withHeadingWatcher((handle) => handle.resume())
+            )}
+          />
+          <GridButton
+            label="filter 10°"
+            onPress={run(
+              'heading',
+              'Immediate. true once re-subscribed with a 10° filter:\nupdates now arrive only after the heading moves by 10° or more.',
+              withHeadingWatcher((handle) => handle.withFilter(10).restart())
+            )}
+          />
+          <GridButton
+            label="status"
+            onPress={run(
+              'heading',
+              'Immediate. { isSubscribed, isHandleAlive, isStarted, isPaused }.',
+              withHeadingWatcher((handle) => handle.status())
+            )}
+          />
+          <GridButton
+            label="dispose"
+            onPress={run(
+              'heading',
+              'done. isHandleAlive goes false — the one state the handle cannot come back from.',
+              async () => {
+                headingWatcher.current?.dispose();
+                headingWatcher.current = null;
               }
             )}
           />

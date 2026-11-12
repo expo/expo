@@ -127,3 +127,25 @@ final class GeocodingFailedException: Exception, @unchecked Sendable {
     "Geocoding failed."
   }
 }
+
+final class HeadingUnavailable: Exception, @unchecked Sendable {
+  override var reason: String {
+    "This device has no magnetometer, so it cannot report its heading. Catch this error where the " +
+    "app starts watching the heading, and hide compass features on this device"
+  }
+}
+
+final class InvalidHeadingFilterException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Heading filter must be a finite, non-negative number of degrees"
+  }
+}
+
+final class HeadingUpdatesFailed: Exception, @unchecked Sendable {
+  override var reason: String {
+    "The device could not determine its heading, so the updates stopped. This usually comes from " +
+    "magnetic interference near the device, such as a magnet, a metal case, or electronic equipment. " +
+    "Ask the user to move the device away from the interference, then call resume() or restart() to " +
+    "read the heading again"
+  }
+}
