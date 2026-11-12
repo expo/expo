@@ -1879,6 +1879,41 @@ test("doesn't popTo to nonexistent screen", () => {
   ).toBe(RouterActionHandling.Unhandled);
 });
 
+test('replaces the current screen on popTo when no dynamic route has the same path params', () => {
+  const router = StackRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['index', '[id]', 'modal'],
+    routeGetIdList: {},
+  };
+
+  const { state } = expectHandled(
+    router.getStateForAction(
+      {
+        stale: false,
+        routeKeySeq: 0,
+        type: 'stack',
+        key: 'navigator:root',
+        index: 2,
+        routeNames: ['index', '[id]', 'modal'],
+        routes: [
+          { key: 'index', name: 'index' },
+          { key: 'one', name: '[id]', params: { id: '1' } },
+          { key: 'modal', name: 'modal' },
+        ],
+      },
+      StackActions.popTo('[id]', { id: '2' }),
+      options
+    )
+  );
+
+  expect(state.index).toBe(2);
+  expect(state.routes.map((route) => [route.key, route.params])).toEqual([
+    ['index', undefined],
+    ['one', { id: '1' }],
+    [expect.any(String), { id: '2' }],
+  ]);
+});
+
 test("doesn't merge params on popTo to an existing screen", () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
