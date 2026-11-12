@@ -104,7 +104,7 @@
   "react-dom": "19.3.0",
   "react-native": "0.89.0-rc.0",
   "react-native-web": "~0.21.4",
-  "react-native-gesture-handler": "~3.3.0",
+  "react-native-gesture-handler": "~3.4.0",
   "react-native-keyboard-controller": "1.22.7",
   "react-native-maps": "1.29.11",
   "react-native-pager-view": "9.0.7",
