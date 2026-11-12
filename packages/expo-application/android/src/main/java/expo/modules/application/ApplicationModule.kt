@@ -78,6 +78,8 @@ class ApplicationModule : Module() {
               continuation.resume(installReferrer.toString())
             } catch (e: RemoteException) {
               continuation.resumeWithException(ApplicationInstallReferrerRemoteException(e))
+            } catch (e: NullPointerException) {
+              continuation.resumeWithException(ApplicationInstallReferrerDetailsUnavailableException(e))
             }
           }
 
