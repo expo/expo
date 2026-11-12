@@ -30,3 +30,9 @@ export const FacingModeToCameraType: Record<string, CameraType> = {
   user: 'front',
   environment: 'back',
 };
+
+// Lowercase parts of a camera's label that identify its type, for cameras that don't report `facingMode`.
+export const CameraTypeLabels: Record<CameraType, string[]> = {
+  front: ['front', 'user', 'facetime'],
+  back: ['back', 'rear'],
+};
