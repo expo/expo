@@ -1,6 +1,7 @@
 import chalk from 'chalk';
 
 import * as Log from '../../log';
+import { reportProgramResult, withProgramStatus } from '../../utils/programStatus';
 import { copyBinaryToOutputAsync } from '../copyBinaryToOutputAsync';
 import { debugEvent, event } from '../events';
 import type { ResolvedOptions } from '../resolveOptions';
@@ -17,7 +18,9 @@ export async function compileAndroidAsync(projectRoot: string, options: Resolved
 
   const doneBuild = event.span();
   try {
-    await buildAsync(projectRoot, props);
+    await withProgramStatus({ state: 'working', msg: 'Building Android app' }, () =>
+      buildAsync(projectRoot, props)
+    );
   } catch (error) {
     event('build:failed', { platform: 'android', error: event.error(error as Error) });
     throw error;
@@ -34,6 +37,7 @@ export async function compileAndroidAsync(projectRoot: string, options: Resolved
     outputType: props.outputType,
     outputPath: event.path(binaryPath),
   });
+  reportProgramResult({ state: 'done', msg: 'Build complete' });
   Log.log(chalk`\n{green ✓} Build complete`);
   Log.log(chalk`{bold Binary:} ${binaryPath}`);
 }
