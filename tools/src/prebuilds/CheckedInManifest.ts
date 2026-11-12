@@ -178,6 +178,9 @@ function manifestError(product: string, target: string, what: string, how: strin
  */
 const DIRECT_BUILD_STAND_INS: Record<string, Record<string, string>> = {
   expomodulescoreheaders: { ExpoModulesCoreHeaders: 'expo-modules-core/ExpoModulesCore' },
+  expomodulesworkletsheaders: {
+    ExpoModulesWorkletsHeaders: 'expo-modules-core/ExpoModulesWorklets',
+  },
   xcframeworks: { ReactHeaders: 'React' },
 };
 
