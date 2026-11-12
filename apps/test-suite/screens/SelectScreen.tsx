@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Checkbox } from 'expo-checkbox';
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import { useObserve } from 'expo-observe';
+import * as SplashScreen from 'expo-splash-screen';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   FlatList,
@@ -138,16 +139,22 @@ export default function SelectScreen({ onRunTests }: { onRunTests: (tests: strin
 
   const footer = (
     <FooterBar>
+      {/* Both labels depend on the selection state, so they stay out of the launch screen snapshot:
+          the first one blank, the second one as a skeleton block. */}
       <TouchableOpacity onPress={selectAll}>
-        <Text style={[styles.footerButtonText, { color: theme.text.link }]}>{buttonTitle}</Text>
+        <SplashScreen.Exclude>
+          <Text style={[styles.footerButtonText, { color: theme.text.link }]}>{buttonTitle}</Text>
+        </SplashScreen.Exclude>
       </TouchableOpacity>
       <TouchableOpacity
         onPress={navigateToTests}
         disabled={selected.size === 0}
         style={{ opacity: selected.size === 0 ? 0.4 : 1 }}>
-        <Text style={[styles.footerButtonText, { color: theme.text.link }]}>
-          {selected.size > 0 ? `Run tests (${selected.size})` : 'Run tests'}
-        </Text>
+        <SplashScreen.Exclude placeholderColor={theme.background.element} style={{ borderRadius: 6 }}>
+          <Text style={[styles.footerButtonText, { color: theme.text.link }]}>
+            {selected.size > 0 ? `Run tests (${selected.size})` : 'Run tests'}
+          </Text>
+        </SplashScreen.Exclude>
       </TouchableOpacity>
     </FooterBar>
   );

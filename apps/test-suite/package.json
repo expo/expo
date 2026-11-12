@@ -64,6 +64,7 @@
     "expo-secure-store": "workspace:*",
     "expo-sms": "workspace:*",
     "expo-speech": "workspace:*",
+    "expo-splash-screen": "workspace:*",
     "expo-sqlite": "workspace:*",
     "expo-store-review": "workspace:*",
     "expo-system-ui": "workspace:*",

@@ -399,6 +399,12 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
     }
   }
 
+  // `SplashScreen.Exclude`: the box stays, its content is never serialized.
+  if ([view conformsToProtocol:@protocol(SplashScreenSnapshotExcluded)]) {
+    setColor(props, "backgroundColor", ((id<SplashScreenSnapshotExcluded>)view).placeholderColor);
+    return folly::dynamic::object("name", name)("props", std::move(props))("children", std::move(children));
+  }
+
   if ([view isKindOfClass:[RCTViewComponentView class]]) {
     auto *componentView = (RCTViewComponentView *)view;
     const auto &metrics = layoutMetricsOf(componentView);

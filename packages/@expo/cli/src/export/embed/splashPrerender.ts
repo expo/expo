@@ -258,6 +258,8 @@ async function recordTemplateAsync({
   const originalConsole = console;
   const originalSetTimeout = setTimeout;
   const globals: Record<string, unknown> = {
+    // Lets `SplashScreen.Exclude` render its box without its content.
+    __EXPO_SPLASH_PRERENDER__: true,
     RN$Bridgeless: true,
     RN$registerCallableModule() {},
     RN$useAlwaysAvailableJSErrorHandling: true,

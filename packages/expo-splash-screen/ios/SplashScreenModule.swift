@@ -48,5 +48,11 @@ public class SplashScreenModule: Module {
     OnDestroy {
       SplashScreenManager.shared.removeObservers()
     }
+
+    View(SplashScreenExcludeView.self) {
+      Prop("placeholderColor") { (view, color: UIColor?) in
+        view.placeholderColor = color
+      }
+    }
   }
 }

@@ -5,6 +5,14 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
+ A view whose subtree is left out of launch screen snapshots. Its frame is kept (blank, or filled
+ with `placeholderColor`) so the layout around it does not change when React takes over.
+ */
+@protocol SplashScreenSnapshotExcluded <NSObject>
+@property (nonatomic, strong, nullable) UIColor *placeholderColor;
+@end
+
+/**
  Renders the app's launch screen through Fabric before React Native starts.
 
  The template (`SplashScreenPrerender.json` in the main bundle, written by the config plugin from
