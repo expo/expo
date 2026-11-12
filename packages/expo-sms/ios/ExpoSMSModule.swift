@@ -39,6 +39,7 @@ public class ExpoSMSModule: Module, SMSResultHandler {
 
     let messageComposeViewController = MFMessageComposeViewController()
     messageComposeViewController.messageComposeDelegate = context.smsDelegate
+    messageComposeViewController.presentationController?.delegate = context.smsDelegate
     messageComposeViewController.recipients = addresses
     messageComposeViewController.body = message
 
