@@ -215,6 +215,15 @@ export async function renamePackageOnDiskForType({
       if (fs.lstatSync(filepath).isFile()) {
         let contents = fs.readFileSync(filepath).toString();
         if (path.extname(filepath) === '.kt') {
+          // A previous rename may have written the current package with wrapped keywords
+          const kotlinSanitizedCurrentPackageName = kotlinSanitized(currentPackageName);
+          if (kotlinSanitizedCurrentPackageName !== currentPackageName) {
+            contents = replacePackageName(
+              contents,
+              kotlinSanitizedCurrentPackageName,
+              kotlinSanitizedPackageName
+            );
+          }
           contents = replacePackageName(contents, currentPackageName, kotlinSanitizedPackageName);
         } else {
           contents = replacePackageName(contents, currentPackageName, packageName);

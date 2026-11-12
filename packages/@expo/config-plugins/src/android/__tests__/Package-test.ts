@@ -155,6 +155,30 @@ describe(renamePackageOnDiskForType, () => {
       /import com.facebook.react.ReactActivity/
     );
   });
+  it('renames a package with a kotlin keyword segment to another package', async () => {
+    const projectRoot = '/';
+    vol.fromJSON(rnFixture, projectRoot);
+
+    await renamePackageOnDiskForType({
+      projectRoot,
+      type: 'main',
+      packageName: 'is.example.app',
+    });
+    const initial = vol.toJSON();
+    expect(initial['/android/app/src/main/java/is/example/app/MainActivity.kt']).toMatch(
+      /^package `is`.example.app/
+    );
+
+    await renamePackageOnDiskForType({
+      projectRoot,
+      type: 'main',
+      packageName: 'com.example.app',
+    });
+    const results = vol.toJSON();
+    expect(results['/android/app/src/main/java/com/example/app/MainActivity.kt']).toMatch(
+      /^package com.example.app/
+    );
+  });
 });
 
 describe(renameJniOnDiskForType, () => {
