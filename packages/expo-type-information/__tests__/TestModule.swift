@@ -98,6 +98,21 @@ public class TestModule: Module {
       return TestEnum.simpleCase
     }
 
+    Function("TestNullableReturn") { () -> String? in
+      return nil
+    }
+
+    Function("TestOptionalArguments") { (a: Int?, b: [String?], c: ValueOrUndefined<Int>) -> Double? in
+      return nil
+    }
+
+    Function("TestMixedOptionalArguments") { (a: Int, b: String?, c: Double, d: Bool?, e: [Int]?) in
+    }
+
+    Function("TestSharedRef") { (ref: SharedRef<UIImage>) -> SharedRef<UIImage> in
+      return ref
+    }
+
     AsyncFunction("TestSimpleAsyncFunction") { (a: String, b: String) async ->  String in
       return a + b
     }
