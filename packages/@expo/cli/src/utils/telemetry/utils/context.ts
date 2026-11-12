@@ -2,7 +2,7 @@ import * as ciInfo from 'ci-info';
 import os from 'os';
 
 import { groupBy } from '../../array';
-import { parentCommand } from '../../cliCommand';
+import { parentCommand } from '../../parentCommand';
 
 export function createContext() {
   return {

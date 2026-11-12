@@ -1,4 +1,3 @@
-import * as cliCommand from '../../cliCommand';
 import { Telemetry } from '../Telemetry';
 import { commandEvent } from '../events';
 import { getAgentTelemetryContext } from '../utils/agent';
@@ -10,7 +9,6 @@ jest.mock('../utils/agent', () => ({
 jest.mock('../utils/sandbox', () => ({
   getSandboxTelemetryContext: jest.fn(),
 }));
-jest.mock('../../cliCommand', () => ({ __esModule: true, parentCommand: null }));
 
 const getAgentTelemetryContextMock = getAgentTelemetryContext as jest.MockedFunction<
   typeof getAgentTelemetryContext
@@ -20,34 +18,11 @@ const getSandboxTelemetryContextMock = getSandboxTelemetryContext as jest.Mocked
 >;
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   getAgentTelemetryContextMock.mockReset();
   getAgentTelemetryContextMock.mockReturnValue(null);
   getSandboxTelemetryContextMock.mockReset();
   getSandboxTelemetryContextMock.mockReturnValue(null);
 });
-
-it.each([null, 'eas build', 'expo install'])(
-  'includes parent command %p in initialized and buffered telemetry',
-  (parentCommand) => {
-    jest.replaceProperty(cliCommand, 'parentCommand', parentCommand);
-    const telemetry = new Telemetry({ anonymousId: 'xxx' });
-    const client = mockTelemetryClient(telemetry);
-
-    telemetry.record(commandEvent('config'));
-    telemetry.initialize({ userId: null });
-    telemetry.record(commandEvent('config'));
-
-    expect(client.record).toHaveBeenCalledTimes(2);
-    for (const [records] of client.record.mock.calls) {
-      expect(records).toEqual([
-        expect.objectContaining({
-          context: expect.objectContaining({ parent_command: parentCommand }),
-        }),
-      ]);
-    }
-  }
-);
 
 it('starts with default detached client', () => {
   const telemetry = new Telemetry({ anonymousId: 'xxx' });

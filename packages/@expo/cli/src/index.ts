@@ -4,7 +4,7 @@ import { boolish } from '@expo/env';
 import arg from 'arg';
 import chalk from 'chalk';
 
-import { setCliCommand } from './utils/cliCommand';
+import { markAsParentCommand } from './utils/parentCommand';
 
 // Bridge the legacy `EXPO_DEBUG`/`DEBUG=expo:*` switches onto `2g`'s `LOG_DEBUG` so existing
 // muscle memory keeps surfacing debug events. This must run before `installEventLogger()` so the
@@ -262,7 +262,7 @@ process.on('SIGINT', () => process.exit(0));
 process.on('SIGTERM', () => process.exit(0));
 
 // Child CLI invocations inherit this command, including those launched through build tools.
-setCliCommand(`expo ${command}`);
+markAsParentCommand(`expo ${command}`);
 
 commands[command]!().then((exec) => {
   exec(commandArgs);

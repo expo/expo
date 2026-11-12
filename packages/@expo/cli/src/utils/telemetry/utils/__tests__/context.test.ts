@@ -5,6 +5,7 @@ import { createContext } from '../context';
 const originalVersion = process.env.__EXPO_VERSION;
 
 jest.mock('ci-info', () => ({ isCI: true, isPR: true, name: 'GitHub Actions' }));
+jest.mock('../../../parentCommand', () => ({ parentCommand: 'eas build' }));
 
 beforeEach(() => {
   delete process.env.__EXPO_VERSION;
@@ -34,4 +35,8 @@ it('contains ci name and if its executed from PR', () => {
     name: 'GitHub Actions',
     isPr: true,
   });
+});
+
+it('contains the parent command', () => {
+  expect(createContext().parent_command).toBe('eas build');
 });
