@@ -858,6 +858,40 @@ describe('executeServerDataLoaderAsync', () => {
 });
 
 describe('exportServerRouteAsync', () => {
+  it('copies native addons with matching basenames and loads them relative to a nested route', async () => {
+    vol.fromJSON({ '/first/hello.node': 'first binary', '/second/hello.node': 'second binary' });
+    const devServer = createDevServerForStaticPageTests();
+    const files: ExportAssetMap = new Map();
+
+    await devServer['exportServerRouteAsync']({
+      contents: {
+        src: 'module.exports = true;',
+        map: JSON.stringify({ version: 3, sources: ['route.js'], names: [], mappings: 'AAAA' }),
+        nativeAddons: ['/first/hello.node', '/second/hello.node'],
+      },
+      artifactFilename: '_expo/functions/nested/hello+api.js',
+      files,
+      includeSourceMaps: true,
+      descriptor: {},
+    });
+
+    const binaries = [...files].filter(([name]) => name.endsWith('.node'));
+    expect(binaries).toHaveLength(2);
+    expect(binaries.map(([, asset]) => asset.contents.toString())).toEqual([
+      'first binary',
+      'second binary',
+    ]);
+    expect(binaries.every(([, asset]) => asset.targetDomain === 'server')).toBe(true);
+    const src = files.get('_expo/functions/nested/hello+api.js')!.contents.toString();
+    expect(src).not.toContain('/first/hello.node');
+    expect(src).not.toContain('/second/hello.node');
+    expect(src).toContain('../../native/');
+    expect(src).toContain('__dirname');
+    expect(
+      JSON.parse(files.get('_expo/functions/nested/hello+api.js.map')!.contents.toString()).mappings
+    ).toBe(';AAAA');
+  });
+
   it('rewrites only the trailing source map directive', async () => {
     // https://github.com/expo/expo/issues/47960
     const devServer = new MetroBundlerDevServer(

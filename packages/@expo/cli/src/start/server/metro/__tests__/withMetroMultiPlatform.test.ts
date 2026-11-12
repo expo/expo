@@ -21,6 +21,10 @@ jest.mock('@expo/require-utils', () => {
 
 const asMetroConfig = (config: Partial<ConfigT> = {}): ConfigT => ({
   ...(config as any),
+  resolver: {
+    sourceExts: ['js'],
+    ...config.resolver,
+  },
   transformer: {
     asyncRequireModulePath: 'expo/internal/async-require-module',
   },
@@ -861,6 +865,104 @@ describe(withExtendedResolver, () => {
       filePath: expectedPath,
       type: 'sourceFile',
     });
+  });
+
+  describe('native Node.js addons', () => {
+    it('loads native files returned directly by a custom resolver', () => {
+      const bundler = getMetroBundlerGetter()();
+      const config = withExtendedResolver(
+        asMetroConfig({
+          projectRoot: '/root/',
+          resolver: {
+            ...asMetroConfig().resolver,
+            resolveRequest: () => ({ type: 'sourceFile', filePath: '/root/native/hello.node' }),
+          },
+        }),
+        { isTsconfigPathsEnabled: false, getMetroBundler: () => bundler }
+      );
+
+      expect(config.resolver.sourceExts).toContain('node');
+      expectVirtual(
+        config.resolver.resolveRequest!(getNodeResolverContext(), '@native/hello', 'web'),
+        '\0node-addon:/root/native/hello.node'
+      );
+      expect((bundler as any).setVirtualModule).toHaveBeenCalledWith(
+        '\0node-addon:/root/native/hello.node',
+        'module.exports=$$require_external("/root/native/hello.node");'
+      );
+    });
+
+    it.each<Resolution>([
+      { type: 'sourceFile', filePath: '/root/native/hello.node' },
+      { type: 'assetFiles', filePaths: ['/root/native/hello.node'] },
+    ])('loads a $type addon with Node.js in development', (resolution) => {
+      const bundler = getMetroBundlerGetter()();
+      jest.mocked(getResolveFunc()).mockReturnValueOnce(resolution);
+      const config = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: () => bundler,
+      });
+
+      const result = config.resolver.resolveRequest!(
+        getNodeResolverContext(),
+        './native/hello.node',
+        'web'
+      );
+
+      expectVirtual(result, '\0node-addon:/root/native/hello.node');
+      expect((bundler as any).setVirtualModule).toHaveBeenCalledWith(
+        '\0node-addon:/root/native/hello.node',
+        'module.exports=$$require_external("/root/native/hello.node");'
+      );
+      expect(getResolveFunc()).toHaveBeenCalledTimes(1);
+    });
+
+    it.each<Resolution>([
+      { type: 'sourceFile', filePath: '/root/native/hello.node' },
+      { type: 'assetFiles', filePaths: ['/root/native/hello.node'] },
+    ])('loads an exported $type addon from the exported server files', (resolution) => {
+      const bundler = getMetroBundlerGetter()();
+      jest.mocked(getResolveFunc()).mockReturnValueOnce(resolution);
+      const config = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+        isTsconfigPathsEnabled: false,
+        getMetroBundler: () => bundler,
+      });
+
+      const result = config.resolver.resolveRequest!(
+        getResolverContext({ customResolverOptions: { environment: 'node', exporting: true } }),
+        './native/hello.node',
+        'web'
+      );
+
+      expectVirtual(result, '\0node-addon-export:/root/native/hello.node');
+      expect((bundler as any).setVirtualModule).toHaveBeenCalledWith(
+        '\0node-addon-export:/root/native/hello.node',
+        expect.stringMatching(/^module\.exports=__expo_require_native__\("[a-f0-9]+"\);$/)
+      );
+    });
+
+    it.each([{}, { environment: 'react-server' }])(
+      'does not externalize native addons for %j',
+      (customResolverOptions) => {
+        const resolution: Resolution = {
+          type: 'sourceFile',
+          filePath: '/root/native/hello.node',
+        };
+        jest.mocked(getResolveFunc()).mockReturnValueOnce(resolution);
+        const config = withExtendedResolver(asMetroConfig({ projectRoot: '/root/' }), {
+          isTsconfigPathsEnabled: false,
+          getMetroBundler: getMetroBundlerGetter(),
+        });
+
+        expect(
+          config.resolver.resolveRequest!(
+            getResolverContext({ customResolverOptions }),
+            './native/hello.node',
+            'web'
+          )
+        ).toEqual(resolution);
+      }
+    );
   });
 
   describe('built-in externals', () => {
