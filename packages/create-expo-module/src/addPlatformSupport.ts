@@ -12,7 +12,7 @@ import { copyNativeFileSnippets, copyWebFileSnippets } from './snippets';
 import {
   buildAugmentedData,
   copyTemplateFiles,
-  handleSuffix,
+  createSubstitutionData,
   slugToAndroidPackage,
   updateWebStub,
   withTemplateAsync,
@@ -222,35 +222,26 @@ function buildSubstitutionData(
   features: Feature[],
   sharedObjectName: string | null
 ): SubstitutionData | LocalSubstitutionData {
-  const allPlatforms = [...info.platforms, ...newPlatforms];
-  const resolvedSharedObjectName = sharedObjectName ?? `${info.moduleName}SharedObject`;
-
-  const project = {
-    slug: info.slug,
-    name: info.name,
-    package: info.packageName,
-    moduleName: info.moduleName,
-    viewName: handleSuffix(info.name, 'View'),
-    swiftUIViewName: handleSuffix(info.name, 'SwiftUIView'),
-    swiftUIModifierName: handleSuffix(info.name, 'SwiftUIModifier'),
-    composeViewName: handleSuffix(info.name, 'ComposeView'),
-    composeModifierName: handleSuffix(info.name, 'ComposeModifier'),
-    sharedObjectName: resolvedSharedObjectName,
-    platforms: allPlatforms,
-    features,
-  };
-
-  if (info.isLocal) {
-    return { project, type: 'local' };
-  }
-
-  return {
-    project: { ...project, version: info.version, description: info.description },
-    author: info.author,
-    license: info.license,
-    repo: info.repo,
-    type: 'standalone',
-  };
+  return createSubstitutionData(
+    {
+      slug: info.slug,
+      name: info.name,
+      package: info.packageName,
+      moduleName: info.moduleName,
+      sharedObjectName: sharedObjectName ?? `${info.moduleName}SharedObject`,
+      platforms: [...info.platforms, ...newPlatforms],
+      features,
+    },
+    info.isLocal
+      ? null
+      : {
+          version: info.version,
+          description: info.description,
+          author: info.author,
+          license: info.license,
+          repo: info.repo,
+        }
+  );
 }
 
 async function updateModuleConfig(

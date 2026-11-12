@@ -34,24 +34,33 @@ export type CommandOptions = {
 };
 
 /**
+ * Names of the native classes and JavaScript exports that the template generates.
+ */
+export type GeneratedNames = {
+  moduleName: string;
+  viewName: string;
+  swiftUIViewName: string;
+  swiftUIModifierName: string;
+  composeViewName: string;
+  composeModifierName: string;
+  sharedObjectName: string;
+};
+
+export type ProjectData = GeneratedNames & {
+  slug: string;
+  name: string;
+  package: string;
+  platforms: Platform[];
+  features: Feature[];
+};
+
+/**
  * Represents an object that is passed to `ejs` when rendering the template.
  */
 export type SubstitutionData = {
-  project: {
-    slug: string;
-    name: string;
+  project: ProjectData & {
     version: string;
     description: string;
-    package: string;
-    moduleName: string;
-    viewName: string;
-    swiftUIViewName: string;
-    swiftUIModifierName: string;
-    composeViewName: string;
-    composeModifierName: string;
-    sharedObjectName: string;
-    platforms: Platform[];
-    features: Feature[];
   };
   author: string;
   license: string;
@@ -60,20 +69,7 @@ export type SubstitutionData = {
 };
 
 export type LocalSubstitutionData = {
-  project: {
-    slug: string;
-    name: string;
-    package: string;
-    moduleName: string;
-    viewName: string;
-    swiftUIViewName: string;
-    swiftUIModifierName: string;
-    composeViewName: string;
-    composeModifierName: string;
-    sharedObjectName: string;
-    platforms: Platform[];
-    features: Feature[];
-  };
+  project: ProjectData;
   type: 'local';
 };
 

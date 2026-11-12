@@ -36,7 +36,7 @@ import {
   buildAugmentedData,
   copyPnpmWorkspaceFiles,
   copyTemplateFiles,
-  handleSuffix,
+  createSubstitutionData,
   slugToAndroidPackage,
   withTemplateAsync,
 } from './templateUtils';
@@ -579,24 +579,9 @@ async function askForSubstitutionDataAsync(
   const name = resolveModuleName(rawName);
   const projectPackage = options.package ?? promptedValues.package ?? slugToAndroidPackage(slug);
 
+  const project = { slug, name, package: projectPackage, platforms, features };
   if (isLocal) {
-    return {
-      project: {
-        slug,
-        name,
-        package: projectPackage,
-        moduleName: handleSuffix(name, 'Module'),
-        viewName: handleSuffix(name, 'View'),
-        swiftUIViewName: handleSuffix(name, 'SwiftUIView'),
-        swiftUIModifierName: handleSuffix(name, 'SwiftUIModifier'),
-        composeViewName: handleSuffix(name, 'ComposeView'),
-        composeModifierName: handleSuffix(name, 'ComposeModifier'),
-        sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
-        platforms,
-        features,
-      },
-      type: 'local',
-    };
+    return createSubstitutionData(project, null);
   }
 
   const description = options.description ?? promptedValues.description ?? 'My new module';
@@ -611,28 +596,13 @@ async function askForSubstitutionDataAsync(
   const license = options.license ?? promptedValues.license ?? 'MIT';
   const version = options.moduleVersion ?? promptedValues.version ?? '0.1.0';
 
-  return {
-    project: {
-      slug,
-      name,
-      version,
-      description,
-      package: projectPackage,
-      moduleName: handleSuffix(name, 'Module'),
-      viewName: handleSuffix(name, 'View'),
-      swiftUIViewName: handleSuffix(name, 'SwiftUIView'),
-      swiftUIModifierName: handleSuffix(name, 'SwiftUIModifier'),
-      composeViewName: handleSuffix(name, 'ComposeView'),
-      composeModifierName: handleSuffix(name, 'ComposeModifier'),
-      sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
-      platforms,
-      features,
-    },
+  return createSubstitutionData(project, {
+    version,
+    description,
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license,
     repo,
-    type: 'standalone',
-  };
+  });
 }
 
 /**
@@ -684,27 +654,12 @@ async function getSubstitutionDataFromOptions(
 
   debug(`Non-interactive mode: name="${name}", package="${projectPackage}"`);
 
+  const project = { slug, name, package: projectPackage, platforms, features };
   if (isLocal) {
     const warning = buildDefaultsWarning(defaults);
     if (warning) process.stderr.write(chalk.yellow(warning) + '\n');
 
-    return {
-      project: {
-        slug,
-        name,
-        package: projectPackage,
-        moduleName: handleSuffix(name, 'Module'),
-        viewName: handleSuffix(name, 'View'),
-        swiftUIViewName: handleSuffix(name, 'SwiftUIView'),
-        swiftUIModifierName: handleSuffix(name, 'SwiftUIModifier'),
-        composeViewName: handleSuffix(name, 'ComposeView'),
-        composeModifierName: handleSuffix(name, 'ComposeModifier'),
-        sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
-        platforms,
-        features,
-      },
-      type: 'local',
-    };
+    return createSubstitutionData(project, null);
   }
 
   const description = options.description ?? 'My new module';
@@ -735,28 +690,13 @@ async function getSubstitutionDataFromOptions(
     process.stderr.write(chalk.yellow(warning) + '\n');
   }
 
-  return {
-    project: {
-      slug,
-      name,
-      version,
-      description,
-      package: projectPackage,
-      moduleName: handleSuffix(name, 'Module'),
-      viewName: handleSuffix(name, 'View'),
-      swiftUIViewName: handleSuffix(name, 'SwiftUIView'),
-      swiftUIModifierName: handleSuffix(name, 'SwiftUIModifier'),
-      composeViewName: handleSuffix(name, 'ComposeView'),
-      composeModifierName: handleSuffix(name, 'ComposeModifier'),
-      sharedObjectName: handleSuffix(name, 'Module') + 'SharedObject',
-      platforms,
-      features,
-    },
+  return createSubstitutionData(project, {
+    version,
+    description,
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license,
     repo,
-    type: 'standalone',
-  };
+  });
 }
 
 /**
