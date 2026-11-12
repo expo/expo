@@ -201,7 +201,7 @@ export async function setItemAsync(
 }
 
 /**
- * Stores a key–value pair synchronously.
+ * Stores a key–value pair synchronously. It throws if the value cannot be stored on the device.
  * > **Note:** This function blocks the JavaScript thread, so the application may not be interactive when the `requireAuthentication` option is set to `true` until the user authenticates.
  *
  * @param key The key to associate with the stored value. Keys may contain alphanumeric characters, `.`, `-`, and `_`.
@@ -230,8 +230,8 @@ export function setItem(key: string, value: string, options: SecureStoreOptions 
  * @param key The key that was used to store the associated value.
  * @param options An [`SecureStoreOptions`](#securestoreoptions) object.
  *
- * @return Previously stored value. It resolves with `null` if there is no entry
- * for the given key or if the key has been invalidated.
+ * @return Previously stored value. It returns `null` if there is no entry
+ * for the given key or if the key has been invalidated. It throws if an error occurs while retrieving the value.
  *
  * > **Note:** When `requireAuthentication` is `true`, the biometric prompt itself can fail independently of the stored value: the app user cancels or dismisses the prompt, no biometrics are enrolled, the hardware is unavailable, the user is locked out after too many failed attempts, or the prompt times out.
  * > In these cases the function throws an error whose `message` is the native string (for example, `"User canceled the authentication"` on Android or `"User canceled the operation."` on iOS).
