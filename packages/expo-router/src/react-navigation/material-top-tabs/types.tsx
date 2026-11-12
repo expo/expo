@@ -290,7 +290,19 @@ export type MaterialTopTabNavigationConfig = Omit<
   tabBar?: (props: MaterialTopTabBarProps) => React.ReactNode;
 };
 
-export type MaterialTopTabBarProps = any & {
+/**
+ * The subset of `SceneRendererProps` from `react-native-tab-view` that
+ * `MaterialTopTabView` forwards to the tab bar. It is declared structurally so
+ * that this package keeps no direct dependency on `react-native-tab-view`,
+ * which is resolved dynamically by the views in this folder.
+ */
+type TabViewSceneRendererProps = {
+  layout: { width: number; height: number };
+  position: Animated.AnimatedInterpolation<number>;
+  jumpTo: (key: string) => void;
+};
+
+export type MaterialTopTabBarProps = TabViewSceneRendererProps & {
   state: TabNavigationState<ParamListBase>;
   navigation: NavigationHelpers<ParamListBase, MaterialTopTabNavigationEventMap>;
   descriptors: MaterialTopTabDescriptorMap;
