@@ -13,6 +13,7 @@ struct ErrorReport {
   var message: String = ""
   var stacktrace: String?
   var componentStack: String?
+  var code: String?
   var isFatal: Bool = false
 
   /// How the error was captured. A closed set so the `expo.error.source` attribute stays consistent.
@@ -31,6 +32,7 @@ struct ErrorReport {
       message: message,
       stacktrace: stacktrace,
       componentStack: componentStack,
+      code: code,
       isFatal: isFatal
     )
   }
@@ -39,7 +41,7 @@ struct ErrorReport {
   /// time it happened (both resolved now, since by drain time the main session has rotated).
   ///
   /// Only fatal errors are persisted, and those come from the global handler, which has no React
-  /// component stack, so `componentStack` isn't carried through this path.
+  /// component stack and no error code, so `componentStack` and `code` aren't carried through this path.
   func toPendingError(sessionId: String) -> PendingErrorStore.PendingError {
     return PendingErrorStore.PendingError(
       source: source.rawValue,
@@ -62,6 +64,7 @@ extension PendingErrorStore.PendingError {
       message: message,
       stacktrace: stacktrace,
       componentStack: nil,
+      code: nil,
       isFatal: true,
       timestamp: timestamp
     )
@@ -76,13 +79,15 @@ extension PendingErrorStore.PendingError {
 /// Absent `type`/`stacktrace` are kept as explicit `null` rather than omitted (the boxed optionals
 /// encode as JSON `null`), so every `js.exception` event carries the same attribute keys. The React
 /// component stack only exists for error-boundary captures, so `expo.error.component_stack` is
-/// omitted entirely when absent rather than logged as `null` on every event.
+/// omitted entirely when absent rather than logged as `null` on every event. An absent
+/// `expo.error.code` is omitted the same way.
 private func makeExceptionLogRecord(
   source: String,
   type: String?,
   message: String,
   stacktrace: String?,
   componentStack: String?,
+  code: String?,
   isFatal: Bool,
   timestamp: String = Date.now.ISO8601Format()
 ) -> LogRecord {
@@ -95,6 +100,9 @@ private func makeExceptionLogRecord(
   ]
   if let componentStack {
     attributes["expo.error.component_stack"] = componentStack
+  }
+  if let code {
+    attributes["expo.error.code"] = code
   }
   return LogRecord(
     name: jsExceptionLogName,

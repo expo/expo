@@ -44,6 +44,33 @@ class ErrorReportTest {
   }
 
   @Test
+  fun `includes the error code attribute when present`() {
+    val report = ErrorReport(
+      source = ErrorSource.INTEGRATION,
+      type = "updates.error",
+      message = "Failed to download remote update",
+      code = "UpdateFailedToLoad",
+      isFatal = false
+    )
+
+    val attributes = report.toLogRecord(sessionId = "s").attributes ?: ""
+    assertTrue(attributes.contains("\"expo.error.code\":\"UpdateFailedToLoad\""))
+  }
+
+  @Test
+  fun `omits the error code attribute when absent`() {
+    val report = ErrorReport(
+      source = ErrorSource.REPORTED_BY_USER,
+      type = "Error",
+      message = "boom",
+      isFatal = false
+    )
+
+    val attributes = report.toLogRecord(sessionId = "s").attributes ?: ""
+    assertFalse(attributes.contains("expo.error.code"))
+  }
+
+  @Test
   fun `tags a user-reported error with the reportedByUser source at error severity`() {
     val report = ErrorReport(
       source = ErrorSource.REPORTED_BY_USER,
