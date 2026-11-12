@@ -174,7 +174,9 @@ export function findSwiftFunctionCodeBlock(contents: string, selector: string): 
   // `functName` === 'doSomething' of 'doSomething(_:withSomeValue:)'
   const funcName = selector.substring(0, parenthesesIndex);
   // `argLabels` === ['_', 'withSomeValue'] 'doSomething(_:withSomeValue:)'
-  const argLabels = selector.substring(parenthesesIndex + 1, selector.length - 2).split(':');
+  // `argLabels` === [] for 'doSomething()'
+  const argLabelsString = selector.substring(parenthesesIndex + 1, selector.length - 1);
+  const argLabels = argLabelsString ? argLabelsString.slice(0, -1).split(':') : [];
 
   let searchOffset = 0;
   const funcCandidateRegExp = new RegExp(`\\sfunc\\s+${funcName}\\(`, 'm');
@@ -184,7 +186,7 @@ export function findSwiftFunctionCodeBlock(contents: string, selector: string): 
     const paramsStartOffset = contents.indexOf('(', funcCandidateOffset);
     const paramsEndOffset = findMatchingBracketPosition(contents, '(', paramsStartOffset);
     const paramsString = contents.substring(paramsStartOffset + 1, paramsEndOffset);
-    const params = paramsString.split(',').map(parseSwiftFunctionParam);
+    const params = paramsString.trim() ? paramsString.split(',').map(parseSwiftFunctionParam) : [];
 
     // Prepare offset for next round
     searchOffset = paramsEndOffset + 1;
@@ -194,10 +196,8 @@ export function findSwiftFunctionCodeBlock(contents: string, selector: string): 
     if (argLabels.length !== params.length) {
       continue;
     }
-    for (let i = 0; i < argLabels.length; ++i) {
-      if (argLabels[i] !== params[i]?.argumentLabel) {
-        continue;
-      }
+    if (argLabels.some((argLabel, i) => argLabel !== params[i]?.argumentLabel)) {
+      continue;
     }
 
     // This function is matched one, get the code block.
@@ -216,7 +216,10 @@ export function findSwiftFunctionCodeBlock(contents: string, selector: string): 
 
 function parseSwiftFunctionParam(paramTuple: string): SwiftFunctionParam {
   const semiIndex = paramTuple.indexOf(':');
-  const [argumentLabel = '', parameterName = ''] = paramTuple.substring(0, semiIndex).split(/\s+/);
+  const [argumentLabel = '', parameterName = ''] = paramTuple
+    .substring(0, semiIndex)
+    .trim()
+    .split(/\s+/);
   const typeString = paramTuple.substring(semiIndex + 1).trim();
   return {
     argumentLabel,
