@@ -11,11 +11,8 @@
           "type": "objc",
           "name": "UMAppLoader",
           "path": "ios",
-          "pattern": "**/*.m",
-          "headerPattern": "**/*.h",
           "dependencies": [],
-          "linkedFrameworks": ["Foundation", "UIKit"],
-          "includeDirectories": ["."]
+          "linkedFrameworks": ["Foundation", "UIKit"]
         }
       ]
     }
