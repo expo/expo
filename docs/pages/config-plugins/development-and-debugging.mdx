@@ -393,7 +393,7 @@ As a real-world example, introspection is used by `eas-cli` to determine what th
 
 ## Legacy plugins
 
-To make `eas build` work the same as the classic `expo build` service, we added support for "legacy plugins" which are applied automatically to a project when they're installed in the project.
+To work the same as the classic `expo build` service, `eas build` supports "legacy plugins" which are applied automatically to a project when they're installed in the project.
 
 For instance, say a project has `expo-camera` installed but doesn't have `plugins: ['expo-camera']` in their **app.json**.
 Expo CLI would automatically add `expo-camera` to the plugins to ensure that the required camera and microphone permissions are added to the project.
