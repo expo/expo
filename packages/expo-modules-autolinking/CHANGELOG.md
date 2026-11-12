@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix the `ExpoModulesCore` checksum in `Podfile.lock` changing with the project path when precompiled modules are on. `pod install --deployment` now passes with a lockfile from another machine. ([#50207](https://github.com/expo/expo/pull/50207) by [@cristunaranjo](https://github.com/cristunaranjo))
-
 ### 💡 Others
+
+## 57.0.18 — 2026-11-12
+
+### 🐛 Bug fixes
+
+- [iOS] Fix the `ExpoModulesCore` checksum in `Podfile.lock` changing with the project path when precompiled modules are on. `pod install --deployment` now passes with a lockfile from another machine. ([#50207](https://github.com/expo/expo/pull/50207) by [@cristunaranjo](https://github.com/cristunaranjo))
 
 ## 57.0.17 — 2026-11-05
 

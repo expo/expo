@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Declare the `ExpoModulesCore` source attributes unconditionally, so autolinking patches the prebuilt `ExpoModulesCore` like other precompiled modules. ([#50207](https://github.com/expo/expo/pull/50207) by [@cristunaranjo](https://github.com/cristunaranjo))
-
 ### 💡 Others
+
+## 57.0.26 — 2026-11-12
+
+### 🐛 Bug fixes
+
+- [iOS] Declare the `ExpoModulesCore` source attributes unconditionally, so autolinking patches the prebuilt `ExpoModulesCore` like other precompiled modules. ([#50207](https://github.com/expo/expo/pull/50207) by [@cristunaranjo](https://github.com/cristunaranjo))
 
 ## 57.0.25 — 2026-11-05
 

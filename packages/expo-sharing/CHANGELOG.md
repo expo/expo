@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Store files shared into the app in a unique directory for each file, with a safe file name. Files with the same name no longer replace each other. `clearSharedPayloads()` now deletes these files, and files older than 24 hours are deleted when new shared files are processed. On iOS, the files are now in the app group's `Library/Caches/expo-sharing` directory. `useIncomingShare()` now also clears its returned payloads when you call `clearSharedPayloads()`. ([#51839](https://github.com/expo/expo/pull/51839) by [@behenate](https://github.com/behenate))
-
 ### 💡 Others
+
+## 57.0.26 — 2026-11-12
+
+### 🐛 Bug fixes
+
+- Store files shared into the app in a unique directory for each file, with a safe file name. Files with the same name no longer replace each other. `clearSharedPayloads()` now deletes these files, and files older than 24 hours are deleted when new shared files are processed. On iOS, the files are now in the app group's `Library/Caches/expo-sharing` directory. `useIncomingShare()` now also clears its returned payloads when you call `clearSharedPayloads()`. ([#51839](https://github.com/expo/expo/pull/51839) by [@behenate](https://github.com/behenate))
 
 ## 57.0.25 — 2026-11-05
 

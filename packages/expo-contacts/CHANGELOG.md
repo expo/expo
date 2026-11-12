@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 57.0.9 — 2026-11-12
+
+### 🐛 Bug fixes
+
 - [iOS] Fix missing `image` and `rawImage` in contacts returned by `presentContactPickerAsync`. ([#53216](https://github.com/expo/expo/pull/53216) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Fix `Contact.getNote`, `Contact.setNote`, and `Contact.patch` with a `note` stopping the app when the app cannot access the note field. They now reject with `ERR_CONTACT_NOTES_NOT_ACCESSIBLE`. ([#52935](https://github.com/expo/expo/pull/52935) by [@hryhoriiK97](https://github.com/hryhoriiK97))
-
-### 💡 Others
 
 ## 57.0.8 — 2026-10-14
 

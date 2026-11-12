@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix dependency resolution for packages symlinked to an external store when an ancestor of the app is a watched workspace package. ([#50078](https://github.com/expo/expo/pull/50078) by [@jeromenagle537](https://github.com/jeromenagle537))
-
 ### 💡 Others
+
+## 57.0.5 — 2026-11-12
+
+### 🐛 Bug fixes
+
+- Fix dependency resolution for packages symlinked to an external store when an ancestor of the app is a watched workspace package. ([#50078](https://github.com/expo/expo/pull/50078) by [@jeromenagle537](https://github.com/jeromenagle537))
 
 ## 57.0.4 — 2026-10-06
 

@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Send download progress to JavaScript in 1% steps, so updates with many assets no longer use a large amount of memory while they download. ([#53250](https://github.com/expo/expo/pull/53250) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 57.0.28 — 2026-11-12
+
+### 🐛 Bug fixes
+
+- Send download progress to JavaScript in 1% steps, so updates with many assets no longer use a large amount of memory while they download. ([#53250](https://github.com/expo/expo/pull/53250) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 57.0.27 — 2026-11-05
 

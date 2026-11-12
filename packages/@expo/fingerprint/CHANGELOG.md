@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.20.16 — 2026-11-12
+
+### 🐛 Bug fixes
+
 - Fix config-plugin ignore patterns on Windows in monorepos with hoisted dependencies by normalizing module paths before matching. ([#53095](https://github.com/expo/expo/pull/53095) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others

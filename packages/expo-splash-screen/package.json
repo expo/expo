@@ -39,7 +39,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/splash-screen/",
   "dependencies": {
-    "@expo/config-plugins": "workspace:~57.0.12",
+    "@expo/config-plugins": "workspace:~57.0.13",
     "@expo/image-utils": "workspace:^0.11.7",
     "xml2js": "0.6.0"
   },

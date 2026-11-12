@@ -1,6 +1,6 @@
 {
   "name": "@expo/prebuild-config",
-  "version": "57.0.20",
+  "version": "57.0.21",
   "description": "Get the prebuild config",
   "main": "build/index.js",
   "scripts": {
@@ -40,13 +40,13 @@
   },
   "dependencies": {
     "@expo/config": "workspace:~57.0.11",
-    "@expo/config-plugins": "workspace:~57.0.12",
+    "@expo/config-plugins": "workspace:~57.0.13",
     "@expo/config-types": "workspace:^57.0.2",
     "@expo/image-utils": "workspace:^0.11.7",
     "@expo/json-file": "workspace:^11.0.1",
     "@react-native/normalize-colors": "0.86.3",
     "debug": "^4.3.1",
-    "expo-modules-autolinking": "workspace:~57.0.17",
+    "expo-modules-autolinking": "workspace:~57.0.18",
     "resolve-from": "^5.0.0",
     "semver": "^7.6.0"
   },

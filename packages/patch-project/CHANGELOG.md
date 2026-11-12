@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 57.0.29 — 2026-11-12
+
+_This version does not introduce any user-facing changes._
+
 ## 57.0.28 — 2026-11-05
 
 ### 💡 Others
