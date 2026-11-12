@@ -53,6 +53,11 @@ export default function ExamplesIndex() {
         description="reportFeedback from a form sheet, thumbs, and a star rating"
         onPress={() => router.push('/examples/feedback')}
       />
+      <Button
+        title="Expo Updates"
+        description="Report expo-updates log errors and crashes handled by error recovery"
+        onPress={() => router.push('/examples/expo-updates')}
+      />
     </ScrollView>
   );
 }
