@@ -35,13 +35,17 @@ const roots: string[] = [];
 after(() => roots.forEach((root) => fs.rmSync(root, { recursive: true, force: true })));
 
 /** Converts one changeset for `expo-modules-core` and returns the new CHANGELOG.md. */
-async function convert(type: string, summary: string, changelog = CHANGELOG) {
+async function convert(type: string, summary: string, changelog = CHANGELOG, template = false) {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-backport-changelog-'));
   roots.push(root);
+  const templateRelease = template ? `'expo-template-default': ${type}\n` : '';
   const files = {
     'packages/expo-modules-core/package.json': '{ "name": "expo-modules-core" }\n',
     'packages/expo-modules-core/CHANGELOG.md': changelog,
-    '.changeset/fix.md': `---\n'expo-modules-core': ${type}\n---\n\n${summary}\n`,
+    ...(template && {
+      'templates/expo-template-default/package.json': '{ "name": "expo-template-default" }\n',
+    }),
+    '.changeset/fix.md': `---\n'expo-modules-core': ${type}\n${templateRelease}---\n\n${summary}\n`,
   };
   for (const [file, content] of Object.entries(files)) {
     fs.mkdirSync(path.dirname(path.join(root, file)), { recursive: true });
@@ -120,6 +124,13 @@ describe('convertChangesetsAsync', () => {
         '',
         `  ${TRAILER}`,
       ])
+    );
+  });
+
+  it('skips a named package without a CHANGELOG.md, such as a template', async () => {
+    assert.equal(
+      await convert('patch', 'Fix a crash.', CHANGELOG, true),
+      replaceLine(CHANGELOG, OTHERS, [OTHERS, '', `- Fix a crash. ${TRAILER}`])
     );
   });
 

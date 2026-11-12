@@ -40,6 +40,10 @@ export async function convertChangesetsAsync(
         throw new Error(`${changesetPath} names "${name}", which is not a package on this branch.`);
       }
       const changelogPath = path.posix.join(packageDir, 'CHANGELOG.md');
+      // Templates have no CHANGELOG.md on sdk-55 to sdk-57.
+      if (!(await fs.stat(path.join(repoDir, changelogPath)).catch(() => null))) {
+        continue;
+      }
       const changelog =
         changelogs.get(changelogPath) ?? new Changelog(path.join(repoDir, changelogPath));
       changelogs.set(changelogPath, changelog);
