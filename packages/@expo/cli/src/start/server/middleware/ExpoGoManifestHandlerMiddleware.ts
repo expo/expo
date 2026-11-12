@@ -16,10 +16,10 @@ import { CommandError } from '../../../utils/errors';
 import { stripPort } from '../../../utils/url';
 import type { ManifestRequestInfo } from './ManifestMiddleware';
 import { ManifestMiddleware } from './ManifestMiddleware';
+import { RuntimeVersionCache } from './RuntimeVersionCache';
 import { manifestDebugEvent } from './events';
 import { parseForwardedRequestInfo } from './resolveForwarded';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
-import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
 import type { ServerRequest } from './server.types';
 
 const MULTIPART_TYPE = 'multipart/form-data';
@@ -55,6 +55,8 @@ interface ExpoGoManifestRequestInfo extends ManifestRequestInfo {
 }
 
 export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoManifestRequestInfo> {
+  private runtimeVersionCache = new RuntimeVersionCache(this.projectRoot);
+
   public getParsedHeaders(req: ServerRequest): ExpoGoManifestRequestInfo {
     let platform = parsePlatformHeader(req);
 
@@ -123,10 +125,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       await this._resolveProjectSettingsAsync(requestOptions);
 
     const runtimeVersion =
-      (await resolveRuntimeVersionWithExpoUpdatesAsync({
-        projectRoot: this.projectRoot,
-        platform: requestOptions.platform,
-      })) ??
+      (await this.runtimeVersionCache.getRuntimeVersionAsync(requestOptions.platform, exp)) ??
       // if expo-updates can't determine runtime version, fall back to calculation from config-plugin.
       // this happens when expo-updates is installed but runtimeVersion hasn't yet been configured or when
       // expo-updates is not installed.
