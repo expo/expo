@@ -443,8 +443,13 @@ public class AppContext: NSObject, EXAppContextProtocol, @unchecked Sendable {
   @MainActor
   private func registerNativeViews() {
     for holder in moduleRegistry {
+      // Views of Expo Modules v1, declared with `View` in the module definition.
       for viewName in holder.definition.views.keys {
         ExpoFabricView.registerComponent(moduleName: holder.name, viewName: viewName)
+      }
+      // Views of Expo Modules v2, the `@ExpoView` classes in `@ExpoModule(views:)`.
+      for (viewName, viewType) in holder.nativeViewTypes {
+        ExpoNativeView.registerComponent(viewType, moduleName: holder.name, viewName: viewName)
       }
     }
     AppContext.viewsRegisteringAppContext = self

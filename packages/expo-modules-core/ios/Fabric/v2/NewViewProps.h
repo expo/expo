@@ -13,7 +13,7 @@
 namespace expo::views {
 
 /**
- The props of a view of the Expo Modules API 2.0: the base view props that React Native parses
+ The props of a view of Expo Modules v2: the base view props that React Native parses
  (layout, style, accessibility) and the view's own props, decoded by its `NewPropsDecoder`.
  */
 class NewViewProps final : public facebook::react::ViewProps {

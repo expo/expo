@@ -27,7 +27,7 @@ struct NewComponentFlavor {
 };
 
 /**
- The component descriptor of the views of the Expo Modules API 2.0, one instance for each view type.
+ The component descriptor of the views of Expo Modules v2, one instance for each view type.
  It decodes the view's own props in `cloneProps`, straight from the JavaScript props object.
  */
 class NewComponentDescriptor final : public facebook::react::ConcreteComponentDescriptor<NewViewShadowNode> {

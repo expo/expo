@@ -29,6 +29,14 @@ public final class ModuleHolder {
   let definition: ModuleDefinition
 
   /**
+   The `@ExpoView` views that the module registers with `@ExpoModule(views:)`, keyed by the view name,
+   which is the unqualified type name. When the definition has no views, the first one is also the
+   module's default view, as the first view of the definition is. A view whose name another view of
+   the module already has isn't included.
+   */
+  let nativeViewTypes: [String: any AnyNativeView.Type]
+
+  /**
    The module's name. Prefers the name passed at registration, then a non-empty `Name(…)` from the
    definition, and finally `_jsName` — the `@ExpoModule` macro's synthesized name, defaulting to the
    module type name.
@@ -53,6 +61,7 @@ public final class ModuleHolder {
     self._name = name
     self.module = module
     self.definition = ModuleHolder.buildDefinition(for: module)
+    self.nativeViewTypes = ModuleHolder.nativeViewTypes(of: module, definitionViews: definition.views)
     (module as? BaseModule)?.holder = self
     post(event: .moduleCreate)
   }
@@ -75,6 +84,29 @@ public final class ModuleHolder {
       definition.name = type(of: module)._jsName
     }
     return definition
+  }
+
+  private static func nativeViewTypes(
+    of module: AnyModule,
+    definitionViews: [String: AnyViewDefinition]
+  ) -> [String: any AnyNativeView.Type] {
+    var viewTypes: [String: any AnyNativeView.Type] = [:]
+
+    for viewType in type(of: module)._viewTypes {
+      let viewName = unqualifiedTypeName(viewType)
+
+      if viewTypes[viewName] != nil || definitionViews[viewName] != nil {
+        log.error(
+          "The view '\(viewType)' of module '\(type(of: module))' isn't registered, because the module already has a view named '\(viewName)'"
+        )
+        continue
+      }
+      if viewTypes.isEmpty && definitionViews.isEmpty {
+        viewTypes[DEFAULT_MODULE_VIEW] = viewType
+      }
+      viewTypes[viewName] = viewType
+    }
+    return viewTypes
   }
 
   // MARK: Constants
