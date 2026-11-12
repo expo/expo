@@ -9,6 +9,8 @@ No markdown exists for this path. Useful starting points:
 - [Documentation home](https://docs.expo.dev/)
 `;
 
+const AI_USER_AGENTS = /\b(?:ChatGPT-User|Claude-User|Perplexity-User)\b/i;
+
 function acceptsMarkdown(accept) {
   let markdownListed = false;
   let markdownQuality = 0;
@@ -62,8 +64,10 @@ export default {
       directMarkdown ||
       acceptsMarkdown(accept) ||
       (pairPath !== null && /\.md$/.test(url.searchParams.get("toSdk") || ""));
+    const offersMarkdown =
+      !wantsMarkdown && AI_USER_AGENTS.test(request.headers.get("User-Agent") || "");
 
-    if (wantsMarkdown) {
+    if (wantsMarkdown || offersMarkdown) {
       if (!directMarkdown) {
         let mdPath = url.pathname;
         if (!mdPath.endsWith("/")) mdPath += "/";
@@ -88,12 +92,14 @@ export default {
             if (contentType.includes("text/markdown")) {
               response.headers.set("Content-Type", "text/markdown; charset=utf-8");
             }
-            response.headers.append("Vary", "Accept");
+            response.headers.append("Vary", offersMarkdown ? "Accept, User-Agent" : "Accept");
             return response;
           }
         }
       }
+    }
 
+    if (wantsMarkdown) {
       const passthrough = await env.ASSETS.fetch(request);
       if (
         (directMarkdown && passthrough.status !== 404) ||
