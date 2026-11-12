@@ -1,9 +1,12 @@
 package expo.modules.notifications
 
+import android.net.Uri
 import androidx.core.os.bundleOf
 import expo.modules.notifications.notifications.NotificationSerializer
+import expo.modules.notifications.notifications.model.NotificationContent
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -51,5 +54,17 @@ class NotificationSerializerTest {
   fun `toResponseBundleFromExtras normalizes empty threadIdentifier to null`() {
     val content = serializedContent(bundleOf("title" to "t", "threadIdentifier" to ""))
     assertNull(content.getString("threadIdentifier"))
+  }
+
+  @Test
+  fun `content image is serialized`() {
+    val content = NotificationContent.Builder().setImage(Uri.parse("file:///data/image.jpg")).build()
+    assertEquals("file:///data/image.jpg", NotificationSerializer.toBundle(content).getString("image"))
+  }
+
+  @Test
+  fun `content without an image has no image key`() {
+    val content = NotificationContent.Builder().setTitle("t").build()
+    assertFalse(NotificationSerializer.toBundle(content).containsKey("image"))
   }
 }
