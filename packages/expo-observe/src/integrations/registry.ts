@@ -85,6 +85,17 @@ export type IntegrationValueStore = {
   setIntegrationValue(integration: string, key: string, value: string | null): Promise<void>;
 };
 
+// Library integrations that register through the registry, by config key, with the package that
+// registers each one when the app imports it.
+const LIBRARY_INTEGRATION_PACKAGES: Readonly<Record<string, string>> = {
+  'expo-updates': 'expo-updates',
+};
+// A library can register after `configure`, for example when a screen that imports it loads, so
+// the warning about a missing integration waits this long.
+const UNREGISTERED_WARNING_DELAY_MS = 5000;
+const warnedUnregistered = new Set<string>();
+let unregisteredWarning: ReturnType<typeof setTimeout> | null = null;
+
 // Only one `expo-observe` copy configures the registry, so this state is per module instance.
 const active = new Map<ObserveIntegration, ActiveIntegration>();
 let latestIntegrations: ObserveIntegrationsConfig | null = null;
@@ -255,8 +266,61 @@ export function configureRegisteredIntegrations(
     if (latestIntegrations) {
       apply(activate(integration), latestIntegrations);
     }
+    if (unregisteredWarning && unregisteredLibraries(integrations).length === 0) {
+      clearTimeout(unregisteredWarning);
+      unregisteredWarning = null;
+    }
   };
   for (const integration of registry.integrations) {
     apply(activate(integration), integrations);
+  }
+  scheduleUnregisteredWarning(integrations);
+}
+
+/**
+ * The library integrations that `integrations` enables and whose packages have not registered
+ * them, and that were not warned about yet.
+ */
+function unregisteredLibraries(integrations: ObserveIntegrationsConfig): string[] {
+  const registered = new Set(getIntegrationRegistry().integrations.map(({ name }) => name));
+  return Object.keys(LIBRARY_INTEGRATION_PACKAGES).filter(
+    (name) =>
+      !!(integrations as Record<string, unknown>)[name] &&
+      !registered.has(name) &&
+      !warnedUnregistered.has(name)
+  );
+}
+
+/**
+ * Replaces the pending warning with one for `integrations`, armed only while one of its enabled
+ * library integrations has not registered.
+ */
+function scheduleUnregisteredWarning(integrations: ObserveIntegrationsConfig): void {
+  if (unregisteredWarning) {
+    clearTimeout(unregisteredWarning);
+    unregisteredWarning = null;
+  }
+  if (unregisteredLibraries(integrations).length === 0) {
+    return;
+  }
+  unregisteredWarning = setTimeout(() => {
+    unregisteredWarning = null;
+    warnAboutUnregisteredIntegrations(integrations);
+  }, UNREGISTERED_WARNING_DELAY_MS);
+}
+
+/**
+ * Warns once for each library integration that `integrations` enables and whose package has not
+ * registered it, which happens when the app never imports the package.
+ */
+function warnAboutUnregisteredIntegrations(integrations: ObserveIntegrationsConfig): void {
+  for (const name of unregisteredLibraries(integrations)) {
+    const packageName = LIBRARY_INTEGRATION_PACKAGES[name]!;
+    warnedUnregistered.add(name);
+    console.warn(
+      `[expo-observe] \`integrations: { '${name}': ... }\` was set, but \`${packageName}\` has not ` +
+        `registered its integration. Import \`${packageName}\` in your app, for example in the root ` +
+        'layout. The integration will not initialize.'
+    );
   }
 }
