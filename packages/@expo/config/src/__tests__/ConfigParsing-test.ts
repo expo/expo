@@ -187,7 +187,7 @@ describe(getConfig, () => {
         skipSDKVersionRequirement: true,
         skipPlugins: true,
       });
-      expect(exp.plugins).toBeUndefined();
+      expect(exp.plugins).toEqual(['__missing-plugin']);
     });
     it(`skips JS plugin parsing`, () => {
       vol.fromJSON(
@@ -208,7 +208,7 @@ describe(getConfig, () => {
         skipPlugins: true,
       });
       expect(exp.name).toBe('cool+export-json_app.config');
-      expect(exp.plugins).toBeUndefined();
+      expect(exp.plugins).toEqual(['withAnonymous']);
     });
     it(`applies JS plugins`, () => {
       vol.fromJSON(
