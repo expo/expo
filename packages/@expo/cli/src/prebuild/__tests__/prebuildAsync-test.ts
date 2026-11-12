@@ -1,4 +1,5 @@
 import { getConfig } from '@expo/config';
+import type { ModPlatform } from '@expo/config-plugins';
 import { vol } from 'memfs';
 
 import { Log } from '../../log';
@@ -167,6 +168,14 @@ describe('Swift Package Manager', () => {
       expect(installCocoaPodsAsync).not.toHaveBeenCalled();
     });
 
+    it(`uses Swift Package Manager for iOS and CocoaPods for tvOS`, async () => {
+      await prebuildAsync(projectRoot, { platforms: ['ios', 'tvos'], install: true });
+
+      expect(setupSwiftPMAsync).toHaveBeenCalledWith(projectRoot, { install: true });
+      expect(installCocoaPodsAsync).toHaveBeenCalledTimes(1);
+      expect(installCocoaPodsAsync).toHaveBeenCalledWith(projectRoot, { platform: 'tvos' });
+    });
+
     it(`fails prebuild when Swift Package Manager setup fails`, async () => {
       jest.mocked(setupSwiftPMAsync).mockRejectedValueOnce(new Error('setup failed'));
 
@@ -180,7 +189,7 @@ describe('Swift Package Manager', () => {
     it(`installs CocoaPods when the project has no marker`, async () => {
       await prebuildAsync(projectRoot, { platforms: ['ios'], install: true });
 
-      expect(installCocoaPodsAsync).toHaveBeenCalledWith(projectRoot);
+      expect(installCocoaPodsAsync).toHaveBeenCalledWith(projectRoot, { platform: 'ios' });
       expect(setupSwiftPMAsync).not.toHaveBeenCalled();
     });
 
@@ -207,7 +216,7 @@ describe('Swift Package Manager', () => {
       await prebuildAsync(projectRoot, { platforms: ['ios'], install: true, clean: true });
 
       expect(clearNativeFolder).toHaveBeenCalled();
-      expect(installCocoaPodsAsync).toHaveBeenCalledWith(projectRoot);
+      expect(installCocoaPodsAsync).toHaveBeenCalledWith(projectRoot, { platform: 'ios' });
       expect(setupSwiftPMAsync).not.toHaveBeenCalled();
     });
 
@@ -233,5 +242,63 @@ describe('Swift Package Manager', () => {
       expect(configureProjectAsync).toHaveBeenCalled();
       expect(setupSwiftPMAsync).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe('CocoaPods', () => {
+  beforeEach(() => {
+    jest.mocked(getConfig).mockReturnValue({ exp: {} } as unknown as ReturnType<typeof getConfig>);
+    installCocoaPodsAsync.mockResolvedValue(true);
+  });
+
+  it(`installs CocoaPods in the ios directory when prebuilding for ios`, async () => {
+    await prebuildAsync('/', { platforms: ['ios'], install: true });
+
+    expect(installCocoaPodsAsync).toHaveBeenCalledTimes(1);
+    expect(installCocoaPodsAsync).toHaveBeenCalledWith('/', { platform: 'ios' });
+  });
+
+  it(`installs CocoaPods in the tvos directory when prebuilding for tvos`, async () => {
+    await prebuildAsync('/', { platforms: ['tvos'], install: true });
+
+    expect(installCocoaPodsAsync).toHaveBeenCalledTimes(1);
+    expect(installCocoaPodsAsync).toHaveBeenCalledWith('/', { platform: 'tvos' });
+  });
+
+  it(`installs CocoaPods in both directories when prebuilding for ios and tvos`, async () => {
+    await prebuildAsync('/', { platforms: ['ios', 'tvos'], install: true });
+
+    expect(installCocoaPodsAsync).toHaveBeenCalledTimes(2);
+    expect(installCocoaPodsAsync).toHaveBeenCalledWith('/', { platform: 'ios' });
+    expect(installCocoaPodsAsync).toHaveBeenCalledWith('/', { platform: 'tvos' });
+  });
+
+  it(`does not install CocoaPods for macos, which prebuild does not generate`, async () => {
+    await prebuildAsync('/', { platforms: ['macos' as ModPlatform], install: true });
+
+    expect(installCocoaPodsAsync).not.toHaveBeenCalled();
+  });
+
+  it(`skips CocoaPods when install is disabled`, async () => {
+    await prebuildAsync('/', { platforms: ['tvos'], install: false });
+
+    expect(installCocoaPodsAsync).not.toHaveBeenCalled();
+  });
+
+  it(`reports a failed pod install for tvos`, async () => {
+    installCocoaPodsAsync.mockResolvedValue(false);
+
+    const results = await prebuildAsync('/', { platforms: ['tvos'], install: true });
+
+    expect(results?.podInstall).toBe(true);
+  });
+
+  it(`applies the config to the tvos platform`, async () => {
+    await prebuildAsync('/', { platforms: ['tvos'], install: true });
+
+    expect(configureProjectAsync).toHaveBeenCalledWith(
+      '/',
+      expect.objectContaining({ platforms: ['tvos'] })
+    );
   });
 });

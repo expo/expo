@@ -232,7 +232,7 @@ describe('setupDependenciesAsync with swiftpm', () => {
 
     await setupDependenciesAsync(projectRoot, { install: true, swiftpm: false });
 
-    expect(installPodsAsync).toHaveBeenCalledWith(projectRoot);
+    expect(installPodsAsync).toHaveBeenCalledWith(projectRoot, 'ios');
     expect(spawnAsync).not.toHaveBeenCalled();
     expect(loggedOutput()).not.toContain('Swift Package Manager');
   });

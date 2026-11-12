@@ -2,6 +2,8 @@ import type { ExpoConfig } from '@expo/config';
 import type { JSONObject } from '@expo/json-file';
 import JsonFile from '@expo/json-file';
 import * as PackageManager from '@expo/package-manager';
+import type { AppleTargetPlatformName } from '@expo/platforms';
+import { PREBUILD_APPLE_PLATFORMS } from '@expo/platforms';
 import chalk from 'chalk';
 import fs from 'fs';
 import ora from 'ora';
@@ -263,6 +265,12 @@ export const defaultRenameConfig = [
   'ios/**/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme',
   'ios/**/*.xcworkspace/contents.xcworkspacedata',
 
+  // tvOS
+  'tvos/Podfile',
+  'tvos/**/*.xcodeproj/project.pbxproj',
+  'tvos/**/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme',
+  'tvos/**/*.xcworkspace/contents.xcworkspacedata',
+
   // macOS
   'macos/Podfile',
   'macos/**/*.xcodeproj/project.pbxproj',
@@ -388,8 +396,8 @@ export async function renameTemplateAppNameAsync({
 }
 
 function templateHasNativeCode(root: string): boolean {
-  return [path.join(root, 'android'), path.join(root, 'ios')].some((folder) =>
-    fs.existsSync(folder)
+  return ['android', ...PREBUILD_APPLE_PLATFORMS].some((folder) =>
+    fs.existsSync(path.join(root, folder))
   );
 }
 
@@ -560,14 +568,14 @@ export function logProjectReady({
   console.log(`- ${chalk.bold(formatRunCommand(packageManager, 'web'))}`);
 }
 
-export async function installPodsAsync(projectRoot: string) {
+export async function installPodsAsync(projectRoot: string, platform: AppleTargetPlatformName) {
   let step = logNewSection('Installing CocoaPods.');
   if (process.platform !== 'darwin') {
     step.succeed('Skipped installing CocoaPods because operating system is not macOS.');
     return false;
   }
   const packageManager = new PackageManager.CocoaPodsPackageManager({
-    cwd: path.join(projectRoot, 'ios'),
+    cwd: path.join(projectRoot, platform),
     silent: !env.EXPO_DEBUG,
   });
 
@@ -577,7 +585,7 @@ export async function installPodsAsync(projectRoot: string) {
       step.render();
       await packageManager.installCLIAsync();
       step.succeed('Installed CocoaPods CLI');
-      step = logNewSection('Running `pod install` in the `ios` directory.');
+      step = logNewSection(`Running \`pod install\` in the \`${platform}\` directory.`);
     } catch (e: any) {
       step.stopAndPersist({
         symbol: '⚠️ ',
@@ -600,7 +608,7 @@ export async function installPodsAsync(projectRoot: string) {
     step.stopAndPersist({
       symbol: '⚠️ ',
       text: chalk.red(
-        'Something went wrong running `pod install` in the `ios` directory. Continuing with initializing the project, you can debug this afterwards.'
+        `Something went wrong running \`pod install\` in the \`${platform}\` directory. Continuing with initializing the project, you can debug this afterwards.`
       ),
     });
     if (e.message) {
