@@ -345,6 +345,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       OnDestroy {
+        // A React context can be destroyed without an Activity (headless JS), so
+        // OnActivityDestroys does not always run.
+        subscription?.remove()
+        subscription = null
         // Stop persisting spans for this module's session. Without this, a JS reload leaves
         // the old instance on the process-wide monitor, writing rows attributed to the
         // torn-down session until the next OnCreate replaces it.
