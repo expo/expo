@@ -44,10 +44,20 @@ function readKotlinMessages(): Record<string, MessageDefinition> {
   return messages;
 }
 
-function readTypeScriptKeys(): string[] {
+function readTypeScriptMessages(): Record<string, MessageDefinition> {
   const source = fs.readFileSync(typesPath, 'utf8');
-  const union = source.match(/export type UpdatesLogMessageKey =([^;]+);/)?.[1] ?? '';
-  return [...union.matchAll(/'([^']+)'/g)].map(([, key = '']) => key);
+  const body = source.match(/export enum UpdatesLogMessageKey \{\n([\s\S]+?)\n\}\n/)?.[1] ?? '';
+  const messages: Record<string, MessageDefinition> = {};
+  const memberPattern =
+    /^ {2}\/\*\*\n {3}\* Message: `(.*)`\n {3}\*\n {3}\* Code: `(\w+)`\n {3}\*\/\n {2}[A-Z_]+ = '([^']+)',$/gm;
+  for (const [, template = '', code = '', key = ''] of body.matchAll(memberPattern)) {
+    messages[key] = { template, code: code.toLowerCase() };
+  }
+  const memberCount = [...body.matchAll(/^ {2}[A-Z_]+ = /gm)].length;
+  if (Object.keys(messages).length !== memberCount) {
+    throw new Error('UpdatesLogMessageKey has a member without a Message and Code comment');
+  }
+  return messages;
 }
 
 describe('UpdatesLogMessage', () => {
@@ -57,8 +67,8 @@ describe('UpdatesLogMessage', () => {
     expect(readKotlinMessages()).toEqual(swiftMessages);
   });
 
-  test('UpdatesLogMessageKey lists the native keys', () => {
-    expect(readTypeScriptKeys().sort()).toEqual(Object.keys(readSwiftMessages()).sort());
+  test('UpdatesLogMessageKey documents the native keys, templates and codes', () => {
+    expect(readTypeScriptMessages()).toEqual(readSwiftMessages());
   });
 
   test('keys are dotted area and event names', () => {
