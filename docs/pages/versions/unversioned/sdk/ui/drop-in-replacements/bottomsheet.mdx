@@ -279,6 +279,7 @@ This difference is intentional. `@gorhom/bottom-sheet` owns the gesture and anim
 - `handleComponent={null}` hides the native or web drag indicator. Custom handle components are not rendered on native platforms.
 - `backgroundStyle` applies fully on web. On Android, `backgroundColor` is used for the native container color. On iOS, the system sheet background is used.
 - Animation, over-drag, content panning, handle panning, keyboard behavior, custom backdrop, custom background, custom footer, animated value, and detached props are accepted for API compatibility but do not change behavior.
+- `modifiers` is an addition to the `@gorhom/bottom-sheet` API. It takes modifier configs from `@expo/ui/swift-ui/modifiers` or `@expo/ui/jetpack-compose/modifiers` and applies them to the native sheet's content on iOS and to the `ModalBottomSheet` on Android. It is ignored on web.
 
 ## API
 
