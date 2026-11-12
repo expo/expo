@@ -75,6 +75,11 @@ public final class ObserveModule: Module {
       return self.lastIntegrations
     }
 
+    Function("hasUserContentPrivacyEntry") {
+      let url = Bundle.main.url(forResource: "PrivacyInfo", withExtension: "xcprivacy")
+      return hasUserContentEntry(privacyManifest: url.flatMap { try? Data(contentsOf: $0) })
+    }
+
     Function("setBundleDefaults") { (defaults: BundleDefaults) in
       guard !defaults.environment.isEmpty else {
         observeLogger.warn(
@@ -126,4 +131,19 @@ private func getManifestProperty(_ propertyChain: String, _ manifest: [String: A
     value = nextValue
   }
   return value
+}
+
+/// Whether the privacy manifest declares a user content data type, which covers user feedback.
+internal func hasUserContentEntry(privacyManifest: Data?) -> Bool {
+  guard let privacyManifest,
+    let plist = try? PropertyListSerialization.propertyList(from: privacyManifest, format: nil) as? [String: Any],
+    let dataTypes = plist["NSPrivacyCollectedDataTypes"] as? [[String: Any]]
+  else {
+    return false
+  }
+  let userContentTypes: Set = [
+    "NSPrivacyCollectedDataTypeOtherUserContent",
+    "NSPrivacyCollectedDataTypeCustomerSupport",
+  ]
+  return dataTypes.contains { userContentTypes.contains($0["NSPrivacyCollectedDataType"] as? String ?? "") }
 }
