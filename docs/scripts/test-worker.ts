@@ -194,7 +194,7 @@ async function testDirectMarkdownAccessAsync(): Promise<void> {
     throw new Error('Direct .md request did not return markdown content');
   }
   if (
-    response.headers.get('Link') !== '</llms.txt>; rel="llms-txt"' ||
+    response.headers.get('Link') !== '</llms.txt>; rel="llms-txt", </sitemap.xml>; rel="sitemap"' ||
     response.headers.get('X-Llms-Txt') !== '/llms.txt'
   ) {
     throw new Error('Direct .md response lost the asset discovery headers');
