@@ -2,6 +2,9 @@
 
 import ExpoModulesCore
 import Photos
+#if canImport(ExpoFileSystemObjC)
+import ExpoFileSystemObjC
+#endif
 
 private let EVENT_DOWNLOAD_PROGRESS = "expo-file-system.downloadProgress"
 private let EVENT_UPLOAD_PROGRESS = "expo-file-system.uploadProgress"
