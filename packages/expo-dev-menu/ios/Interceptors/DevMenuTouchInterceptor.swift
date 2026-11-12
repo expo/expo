@@ -3,9 +3,11 @@
 import Foundation
 #if os(iOS) || os(tvOS)
 import UIKit
+import ExpoModulesCore
 
 class DevMenuTouchInterceptor {
   static fileprivate let recognizer: DevMenuGestureRecognizer = DevMenuGestureRecognizer()
+  static private var keyWindowObserver: NSObjectProtocol?
 
   /**
    Returns bool value whether the dev menu touch gestures are being intercepted.
@@ -13,44 +15,41 @@ class DevMenuTouchInterceptor {
   static var isInstalled: Bool = false {
     willSet {
       if isInstalled != newValue {
-        // Capture touch gesture from any window by swizzling default implementation from UIWindow.
-        swizzle()
-
         // Make sure recognizer is enabled/disabled accordingly.
         recognizer.isEnabled = newValue
       }
     }
-  }
-
-  static private func swizzle() {
-    DevMenuUtils.swizzle(
-      selector: #selector(getter: UIWindow.gestureRecognizers),
-      withSelector: #selector(getter: UIWindow.EXDevMenu_gestureRecognizers),
-      forClass: UIWindow.self
-    )
-  }
-}
-
-extension UIWindow {
-  @objc open var EXDevMenu_gestureRecognizers: [UIGestureRecognizer]? {
-    // Just for thread safety, someone may uninstall the interceptor in the meantime and we would fall into recursive loop.
-    if !DevMenuTouchInterceptor.isInstalled {
-      return self.gestureRecognizers
+    didSet {
+      if isInstalled {
+        observeKeyWindow()
+      }
     }
+  }
 
-    // Check for the case where singleton instance of gesture recognizer is not created yet or is attached to different window.
-    let recognizer = DevMenuTouchInterceptor.recognizer
-    if recognizer.view != self {
-      // Remove it from the window it's attached to.
+  static private func observeKeyWindow() {
+    guard keyWindowObserver == nil else {
+      return
+    }
+    keyWindowObserver = NotificationCenter.default.addObserver(
+      forName: UIWindow.didBecomeKeyNotification,
+      object: nil,
+      queue: .main
+    ) { _ in
+      attachToKeyWindow()
+    }
+    attachToKeyWindow()
+  }
+
+  static private func attachToKeyWindow() {
+    // Moving the recognizer while UIKit processes a touch crashes in iOS 26's gesture system.
+    // A window can become key during a touch, so move the recognizer on the next run loop turn.
+    DispatchQueue.main.async {
+      guard let window = SceneGeometry.keyWindow(), recognizer.view != window else {
+        return
+      }
       recognizer.view?.removeGestureRecognizer(recognizer)
-
-      // Attach to this window.
-      self.addGestureRecognizer(recognizer)
+      window.addGestureRecognizer(recognizer)
     }
-
-    // `EXDevMenu_gestureRecognizers` implementation has been swizzled with `gestureRecognizers`
-    // It might be confusing that we call it recursively, but we don't.
-    return self.EXDevMenu_gestureRecognizers
   }
 }
 
