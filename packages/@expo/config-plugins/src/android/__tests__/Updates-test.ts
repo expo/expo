@@ -149,6 +149,56 @@ describe('Android Updates config', () => {
     expect(runtimeVersion![0]!.$['android:value']).toMatch('@string/expo_runtime_version');
   });
 
+  describe('useReactNativeHttpClient', () => {
+    const useReactNativeHttpClientKey = 'expo.modules.updates.USE_REACT_NATIVE_HTTP_CLIENT';
+
+    async function getUseReactNativeHttpClientEntriesAsync(
+      updates: ExpoConfig['updates'],
+      startingManifest?: AndroidManifest
+    ) {
+      const config: ExpoConfig = {
+        name: 'foo',
+        slug: 'my-app',
+        runtimeVersion: '1.0.0',
+        updates,
+      };
+      const androidManifestJson = await Updates.setUpdatesConfigAsync(
+        '/app',
+        config,
+        startingManifest ?? (await getFixtureManifestAsync()),
+        '0.11.0'
+      );
+      const entries = (getMainApplication(androidManifestJson)!['meta-data'] ?? []).filter(
+        (e) => e.$['android:name'] === useReactNativeHttpClientKey
+      );
+      return { androidManifestJson, entries };
+    }
+
+    it('writes false when useReactNativeHttpClient is false', async () => {
+      const { entries } = await getUseReactNativeHttpClientEntriesAsync({
+        useReactNativeHttpClient: false,
+      });
+      expect(entries).toHaveLength(1);
+      expect(entries[0]!.$['android:value']).toBe('false');
+    });
+
+    it('writes nothing when useReactNativeHttpClient is not set', async () => {
+      const { entries } = await getUseReactNativeHttpClientEntriesAsync({});
+      expect(entries).toHaveLength(0);
+    });
+
+    it('removes a previous entry when useReactNativeHttpClient is set back to true', async () => {
+      const { androidManifestJson } = await getUseReactNativeHttpClientEntriesAsync({
+        useReactNativeHttpClient: false,
+      });
+      const { entries } = await getUseReactNativeHttpClientEntriesAsync(
+        { useReactNativeHttpClient: true },
+        androidManifestJson
+      );
+      expect(entries).toHaveLength(0);
+    });
+  });
+
   describe('Runtime version tests', () => {
     const sampleStringsXML = `
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
