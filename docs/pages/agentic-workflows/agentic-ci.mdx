@@ -14,8 +14,6 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-> **important** **Expo Simulators is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulators) if you are interested in trying it.
-
 Agentic CI is an automated workflow in which a coding agent tests a pull request (PR) on a remote Android Emulator or iOS Simulator. The agent tests the change that the PR describes. Then it reports back on the PR with a verdict and evidence.
 
 ## How Agentic CI works
@@ -172,8 +170,6 @@ jobs:
           echo "The verdict of the agent is not PASS. See the comment on the pull request."
           exit 1
 ```
-
-Android support in Expo Simulators is still in development. Some features that work on iOS may not work on Android yet. See [Limitations](/preview/simulators/limitations/).
 
 </Tab>
 
@@ -382,13 +378,13 @@ When the verdict is not `PASS`, the `result` job fails, and the workflow run sho
 <BoxLink
   title="Run Expo Simulators sessions in CI"
   description="Start, use, and always stop sessions from GitHub Actions, Expo Workflows, or another CI system."
-  href="/preview/simulators/how-to/run-in-ci/"
+  href="/eas/simulators/how-to/run-in-ci/"
   Icon={Cloud01Icon}
 />
 
 <BoxLink
   title="Capture screenshots, recordings, and logs"
   description="Collect evidence from a remote device and download the session artifacts."
-  href="/preview/simulators/how-to/capture-evidence/"
+  href="/eas/simulators/how-to/capture-evidence/"
   Icon={Cloud01Icon}
 />
