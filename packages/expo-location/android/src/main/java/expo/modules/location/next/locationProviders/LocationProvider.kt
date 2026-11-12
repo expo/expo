@@ -120,6 +120,10 @@ interface LocationProvider {
   fun getLocationTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> = ProviderResult.Unsupported
 
   fun getRegisteredTaskConsumerClass(taskManager: TaskManagerInterface, taskName: String): ProviderResult<Class<out TaskConsumer>> = ProviderResult.Unsupported
+
+  fun getGeofencingTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> = ProviderResult.Unsupported
+
+  fun getRegisteredGeofencingTaskConsumerClass(taskManager: TaskManagerInterface, taskName: String): ProviderResult<Class<out TaskConsumer>> = ProviderResult.Unsupported
 }
 
 class OperationUnavailableException(functionName: String) : CodedException("$functionName is currently unavailable")
