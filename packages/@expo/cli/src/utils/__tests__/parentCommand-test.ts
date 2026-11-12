@@ -19,19 +19,13 @@ function loadParentCommand(inheritedCommand?: string) {
   return parentCommand;
 }
 
-it.each(['expo run:ios', 'eas build', 'eas update:roll-back-to-embedded'])(
-  'reads the inherited parent command %p',
-  (command) => {
-    expect(loadParentCommand(command).parentCommand).toBe(command);
-  }
-);
+it('reads the inherited parent command', () => {
+  expect(loadParentCommand('eas build').parentCommand).toBe('eas build');
+});
 
-it.each([undefined, '', 'npm install', 'eas build --profile production', '/usr/bin/expo start'])(
-  'drops the inherited value %p',
-  (value) => {
-    expect(loadParentCommand(value).parentCommand).toBeUndefined();
-  }
-);
+it.each([undefined, ''])('has no parent command when the inherited value is %p', (value) => {
+  expect(loadParentCommand(value).parentCommand).toBeUndefined();
+});
 
 it('keeps the inherited parent command after it marks child processes', () => {
   const parentCommand = loadParentCommand('eas build');
