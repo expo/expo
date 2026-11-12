@@ -18,7 +18,7 @@ interface Params {
   backup: boolean;
 }
 
-type BackupFileMappings = Record<string, string>;
+export type BackupFileMappings = Record<string, string>;
 
 /**
  * Normalize the native projects to minimize the diff between prebuilds.
