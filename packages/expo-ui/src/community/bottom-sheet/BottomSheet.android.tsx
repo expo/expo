@@ -64,6 +64,7 @@ export function BottomSheet(props: BottomSheetProps) {
     enableDynamicSizing = true,
     handleComponent,
     backgroundStyle,
+    modifiers,
     children,
   } = props;
   const { width } = useWindowDimensions();
@@ -196,6 +197,7 @@ export function BottomSheet(props: BottomSheetProps) {
             showDragHandle={handleComponent !== null}
             sheetGesturesEnabled={enablePanDownToClose}
             containerColor={containerColor}
+            modifiers={modifiers}
             properties={{
               shouldDismissOnBackPress: enablePanDownToClose,
               shouldDismissOnClickOutside: enablePanDownToClose,
