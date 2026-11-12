@@ -549,7 +549,7 @@ it.each([
 
     expect(result.status).toBe('complete');
     if (result.status !== 'complete') return;
-    expect(result.code).toBe(source);
+    expect(result.code).toBe(`"use strict";\n${source}`);
     expect(result.metadata.loaderReference).toBeUndefined();
     expect(result.metadata.performConstantFolding).toBeUndefined();
   }
@@ -1851,7 +1851,7 @@ it('preserves development deep React Native import warnings', async () => {
   expect(
     result.result.code.match(/Deep imports from the 'react-native' package are deprecated/g)
   ).toHaveLength(4);
-  expect(result.result.code).toContain(`Source: ${candidate} 1:0`);
+  expect(result.result.code).toContain(`Source: ${candidate} 2:0`);
   expect(result.result.code).not.toContain(
     "deprecated ('react-native/Libraries/Core/InitializeCore')"
   );

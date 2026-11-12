@@ -2192,7 +2192,11 @@ it.each([
   });
   if (!expected?.code) throw new Error('Babel live-bindings transform produced no output');
 
-  expect(canonicalModuleBody(native.result.code, true)).toBe(canonicalModuleBody(expected.code));
+  expect(canonicalModuleBody(native.result.code, true)).toBe(
+    canonicalModuleBody(
+      expected.code.startsWith('"use strict";') ? expected.code : `"use strict";\n${expected.code}`
+    )
+  );
 });
 
 it.each([
@@ -2219,7 +2223,11 @@ it.each([
     plugins: [[importExportLiveBindingsPlugin, { performConstantFolding: true, resolve: false }]],
   });
   if (!expected?.code) throw new Error('Babel live-bindings transform produced no output');
-  expect(canonicalModuleBody(native.result.code, true)).toBe(canonicalModuleBody(expected.code));
+  expect(canonicalModuleBody(native.result.code, true)).toBe(
+    canonicalModuleBody(
+      expected.code.startsWith('"use strict";') ? expected.code : `"use strict";\n${expected.code}`
+    )
+  );
 });
 
 it('uses static import and export values when live bindings are disabled', async () => {
