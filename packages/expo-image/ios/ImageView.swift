@@ -75,6 +75,9 @@ public final class ImageView: ExpoView {
 
   var allowDownscaling: Bool = true
 
+  // Bumped by each reload, so a downscale finishing off the main thread can tell it is stale.
+  private var loadGeneration = 0
+
   var lockResource: Bool = false
 
   var enforceEarlyResizing: Bool = false
@@ -169,6 +172,7 @@ public final class ImageView: ExpoView {
     if lockResource && !force {
       return
     }
+    loadGeneration += 1
     if isViewEmpty {
       if placeholderImage != nil {
         displayPlaceholderIfNecessary()
@@ -378,6 +382,26 @@ public final class ImageView: ExpoView {
       contentFit: contentFit
     )
     let imageIdealSize = imageLayoutSize.rounded(.up)
+    if allowDownscaling && !image.sd_isAnimated && !bounds.isEmpty && shouldDownscale(image: image, toSize: imageIdealSize, scale: scale) {
+      // Downscale off the main thread. Every bounds change reloads the image, so a window resize
+      // (rotation, a foldable switching screens) ran this for each image on screen at once on the
+      // main thread and held the whole UI back; the view keeps showing what it had meanwhile.
+      sdImageView.animationTransformer = nil
+      let generation = loadGeneration
+      let layoutSize = imageLayoutSize
+      let resolvedCacheType = ImageCacheType.fromSdCacheType(cacheType)
+      DispatchQueue.global(qos: .userInitiated).async { [weak self] in
+        let resized = resize(image: image, toSize: imageIdealSize, scale: scale)
+        DispatchQueue.main.async {
+          guard let self, self.loadGeneration == generation else {
+            return
+          }
+          self.applyContentPosition(contentSize: layoutSize, containerSize: self.frame.size)
+          self.renderSourceImage(resized, cacheType: resolvedCacheType)
+        }
+      }
+      return
+    }
     let image = processImage(image, idealSize: imageIdealSize, scale: scale)
     applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
     renderSourceImage(image, cacheType: ImageCacheType.fromSdCacheType(cacheType))
