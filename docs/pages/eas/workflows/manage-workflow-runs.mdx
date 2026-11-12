@@ -30,6 +30,8 @@ Open your project's [workflows page](https://expo.dev/accounts/[account]/project
 
 You can also use EAS CLI to view a run. Run `eas workflow:view` to select a recent run, or provide a workflow run ID to view a specific run. Use `eas workflow:logs` to inspect logs. Use `eas workflow:status WORKFLOW_RUN_ID --wait` to follow a run until it completes.
 
+To open a shell on the worker that runs a job, see [Debug a workflow run with SSH](/eas/workflows/debug-with-ssh/).
+
 ### Show the branch and commit of a run started from EAS CLI
 
 By default, `eas workflow:run` uploads your local project files, so the run has no branch or commit. The dashboard shows it without a branch and does not list it under the branch filter. To show the branch and commit, push the commit to the [GitHub repository linked to your project](/eas/workflows/get-started/#automate-workflows-with-github-events) first. Then pass `--git-branch` and `--git-commit-hash` together:
