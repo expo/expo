@@ -620,6 +620,53 @@ async function testHtmlNotFoundAsync(): Promise<void> {
   console.log(`✓ Nonexistent HTML page returns HTTP ${response.status} (not a server error)`);
 }
 
+async function testJsonNotFoundAsync(): Promise<void> {
+  console.log('\n--- Testing JSON 404 responses ---');
+
+  const response = await fetch(`${BASE_URL}/nonexistent-page`, {
+    headers: { Accept: 'application/json' },
+  });
+  const contentType = response.headers.get('content-type') ?? '';
+
+  if (response.status !== 404 || !contentType.includes('application/json')) {
+    throw new Error(`Expected a JSON 404, got: HTTP ${response.status} ${contentType}`);
+  }
+  if (!varyTokens(response).includes('accept')) {
+    throw new Error(
+      `Expected Vary header listing Accept on the JSON 404, got: ${response.headers.get('vary') ?? '(absent)'}`
+    );
+  }
+
+  const body = (await response.json()) as {
+    error?: { code?: string };
+    links?: { index?: string };
+  };
+
+  if (body.error?.code !== 'not_found' || !body.links?.index?.endsWith('/llms.txt')) {
+    throw new Error(`Expected an error code and recovery links, got: ${JSON.stringify(body)}`);
+  }
+  console.log('✓ JSON 404 responds with a JSON error body and recovery links');
+
+  const expectations = [
+    { route: '/nonexistent-page', accept: '*/*', type: 'text/html' },
+    { route: '/nonexistent-page', accept: 'text/html, application/json;q=0.9', type: 'text/html' },
+    { route: '/api/v1/nonexistent', accept: '*/*', type: 'application/json' },
+    { route: '/api/v1/nonexistent', accept: 'text/html,application/xml;q=0.9', type: 'text/html' },
+  ];
+
+  for (const { route, accept, type } of expectations) {
+    const result = await fetch(`${BASE_URL}${route}`, { headers: { Accept: accept } });
+    const resultType = result.headers.get('content-type') ?? '';
+
+    if (result.status !== 404 || !resultType.includes(type)) {
+      throw new Error(
+        `Expected a ${type} 404 for ${route} with Accept "${accept}", got: HTTP ${result.status} ${resultType}`
+      );
+    }
+    console.log(`✓ ${route} with Accept "${accept}" returns a ${type} 404`);
+  }
+}
+
 function navigateAsync(path: string, headers: http.OutgoingHttpHeaders = {}) {
   return new Promise<http.IncomingMessage>((resolve, reject) => {
     http
@@ -672,6 +719,7 @@ async function mainAsync(): Promise<void> {
     await testRemovedSdkRedirectsAsync();
     await testAgentDiscoveryRedirectsAsync();
     await testHtmlNotFoundAsync();
+    await testJsonNotFoundAsync();
     await testUrlRecoveryAsync();
 
     console.log('\n=== All tests passed! ===');
