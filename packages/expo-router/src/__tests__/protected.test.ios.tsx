@@ -1,14 +1,234 @@
 import { act, fireEvent, screen } from '@testing-library/react-native';
 import type { Dispatch, SetStateAction } from 'react';
-import { createContext, use, useState } from 'react';
-import { Text } from 'react-native';
+import { createContext, use, useEffect, useState } from 'react';
+import { Text, View } from 'react-native';
 
 import { navigationRef } from '../global-state/navigationRef';
+import { useIsNavigating } from '../global-state/useIsNavigating';
 import { router } from '../imperative-api';
 import JSStack from '../layouts/JSStack';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
+
+it('does not dispatch an unhandled removal when a mount effect replaces the stack', async () => {
+  const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+  try {
+    await renderRouter({
+      _layout: function RootLayout() {
+        const [loading, setLoading] = useState(false);
+        useEffect(() => setLoading(true), []);
+        if (loading) {
+          return (
+            <View>
+              <Text>Restoring account data</Text>
+            </View>
+          );
+        }
+        return (
+          <Stack>
+            <Stack.Screen name="index" />
+            <Stack.Protected guard={false}>
+              <Stack.Screen name="private" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text>Public</Text>,
+      private: () => <Text>Private</Text>,
+    });
+    expect(screen.getByText('Restoring account data')).toBeVisible();
+    expect(consoleError).not.toHaveBeenCalled();
+  } finally {
+    consoleError.mockRestore();
+  }
+});
+
+it('does not dispatch an unhandled removal when a mount effect replaces the JS stack', async () => {
+  const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+  try {
+    await renderRouter({
+      _layout: function RootLayout() {
+        const [loading, setLoading] = useState(false);
+        useEffect(() => setLoading(true), []);
+        if (loading) {
+          return (
+            <View>
+              <Text>Restoring account data</Text>
+            </View>
+          );
+        }
+        return (
+          <JSStack>
+            <JSStack.Screen name="index" />
+            <JSStack.Protected guard={false}>
+              <JSStack.Screen name="private" />
+            </JSStack.Protected>
+          </JSStack>
+        );
+      },
+      index: () => <Text>Public</Text>,
+      private: () => <Text>Private</Text>,
+    });
+    expect(screen.getByText('Restoring account data')).toBeVisible();
+    expect(consoleError).not.toHaveBeenCalled();
+  } finally {
+    consoleError.mockRestore();
+  }
+});
+
+it('settles a queued push and prunes guarded history when a guard flips in the stack', async () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter({
+    _layout: function Layout() {
+      const [guard, setState] = useState(true);
+      setGuard = setState;
+      return (
+        <>
+          <Text testID="is-navigating">{String(useIsNavigating())}</Text>
+          <Stack>
+            <Stack.Protected guard={guard}>
+              <Stack.Screen name="secret" />
+            </Stack.Protected>
+            <Stack.Screen name="other" />
+            <Stack.Screen name="third" />
+          </Stack>
+        </>
+      );
+    },
+    index: () => <Text testID="index">index</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+    other: () => <Text testID="other">other</Text>,
+    third: () => <Text testID="third">third</Text>,
+  });
+
+  await act(() => router.push('/secret'));
+  await act(() => router.push('/other'));
+  expect(screen.getByTestId('other')).toBeVisible();
+
+  await act(() => {
+    setGuard(false);
+    router.push('/third', { inTransition: true });
+  });
+
+  expect(screen.getByTestId('third')).toBeVisible();
+  expect(screen).toHavePathname('/third');
+  expect(screen.getByTestId('is-navigating')).toHaveTextContent('false');
+
+  await act(() => router.back());
+
+  expect(screen.getByTestId('other')).toBeVisible();
+  expect(screen).toHavePathname('/other');
+
+  await act(() => router.back());
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+  expect(router.canGoBack()).toBe(false);
+});
+
+it('settles a queued push and prunes guarded history when a guard flips in the JS stack', async () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter({
+    _layout: function Layout() {
+      const [guard, setState] = useState(true);
+      setGuard = setState;
+      return (
+        <>
+          <Text testID="is-navigating">{String(useIsNavigating())}</Text>
+          <JSStack>
+            <JSStack.Protected guard={guard}>
+              <JSStack.Screen name="secret" />
+            </JSStack.Protected>
+            <JSStack.Screen name="other" />
+            <JSStack.Screen name="third" />
+          </JSStack>
+        </>
+      );
+    },
+    index: () => <Text testID="index">index</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+    other: () => <Text testID="other">other</Text>,
+    third: () => <Text testID="third">third</Text>,
+  });
+
+  await act(() => router.push('/secret'));
+  await act(() => router.push('/other'));
+  expect(screen.getByTestId('other')).toBeVisible();
+
+  await act(() => {
+    setGuard(false);
+    router.push('/third', { inTransition: true });
+  });
+
+  expect(screen.getByTestId('third')).toBeVisible();
+  expect(screen).toHavePathname('/third');
+  expect(screen.getByTestId('is-navigating')).toHaveTextContent('false');
+
+  await act(() => router.back());
+
+  expect(screen.getByTestId('other')).toBeVisible();
+  expect(screen).toHavePathname('/other');
+
+  await act(() => router.back());
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+  expect(router.canGoBack()).toBe(false);
+});
+
+it('redirects a focused guarded route to the anchor and prunes guarded history in one flip', async () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter(
+    {
+      _layout: {
+        unstable_settings: {
+          anchor: 'home',
+        },
+        default: function Layout() {
+          const [guard, setState] = useState(true);
+          setGuard = setState;
+          return (
+            <>
+              <Text testID="is-navigating">{String(useIsNavigating())}</Text>
+              <Stack>
+                <Stack.Protected guard={guard}>
+                  <Stack.Screen name="secret" />
+                  <Stack.Screen name="vault" />
+                </Stack.Protected>
+                <Stack.Screen name="home" />
+              </Stack>
+            </>
+          );
+        },
+      },
+      index: () => <Text testID="index">index</Text>,
+      home: () => <Text testID="home">home</Text>,
+      vault: () => <Text testID="vault">vault</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/home' }
+  );
+
+  await act(() => router.push('/vault'));
+  await act(() => router.push('/secret'));
+  expect(screen.getByTestId('secret')).toBeVisible();
+
+  await act(() => {
+    setGuard(false);
+  });
+
+  expect(screen.getByTestId('home')).toBeVisible();
+  expect(screen).toHavePathname('/home');
+  expect(screen.getByTestId('is-navigating')).toHaveTextContent('false');
+  // The redirect replaces `secret` with `home`; the cleanup removes `vault` from history.
+  expect(
+    navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+  ).toStrictEqual(['home', 'home']);
+});
 
 it('redirects a guarded route to the anchor default during the initial load', async () => {
   let useStateResult: [boolean, Dispatch<SetStateAction<boolean>>];
