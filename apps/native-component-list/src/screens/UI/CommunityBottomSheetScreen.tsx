@@ -4,6 +4,7 @@ import BottomSheet, {
   BottomSheetView,
   useBottomSheet,
 } from '@expo/ui/community/bottom-sheet'; // can replace with `@gorhom/bottom-sheet` to check compatibility
+import { ignoreSafeArea } from '@expo/ui/swift-ui/modifiers';
 import { useRef, useState } from 'react';
 import { Button, Modal, Platform, StyleSheet, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -32,6 +33,7 @@ export default function CommunityBottomSheetScreen() {
   const modalRef = useRef<BottomSheetModal>(null);
   const fitRef = useRef<BottomSheetModal>(null);
   const modalFromDismissRef = useRef<BottomSheetModal>(null);
+  const edgeToEdgeRef = useRef<BottomSheetModal>(null);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [log, setLog] = useState<string[]>([]);
@@ -214,6 +216,9 @@ const styles = StyleSheet.create({
   },
   sheetView: {
     flex: 1,
+  },
+  edgeToEdge: {
+    backgroundColor: '#ffe0d6',
   },
   sheetContent: {
     padding: 16,
