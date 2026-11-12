@@ -657,6 +657,70 @@ export const eas = [
       makePage('eas/observe/reference/troubleshooting.mdx'),
     ]),
   ]),
+  makeSection('Expo Simulators', [
+    makePage('eas/simulators/introduction.mdx'),
+    makePage('eas/simulators/get-started.mdx'),
+    makeGroup(
+      'How-to',
+      [
+        makePage('eas/simulators/how-to/start-a-session.mdx'),
+        makePage('eas/simulators/how-to/install-your-app.mdx'),
+        makePage('eas/simulators/how-to/drive-the-device.mdx'),
+        makePage('eas/simulators/how-to/control-with-eas-cli.mdx'),
+        makePage('eas/simulators/how-to/iterate-on-your-code.mdx'),
+        makePage('eas/simulators/how-to/capture-evidence.mdx'),
+        makePage('eas/simulators/how-to/organize-sessions.mdx'),
+        makePage('eas/simulators/how-to/verify-a-change-with-an-agent.mdx'),
+        makePage('eas/simulators/how-to/work-without-a-mac.mdx'),
+        makePage('eas/simulators/how-to/review-a-pull-request.mdx'),
+        makePage('eas/simulators/how-to/run-in-ci.mdx'),
+        makePage('eas/simulators/how-to/hand-off-a-session.mdx'),
+        makePage('eas/simulators/how-to/embed-a-session.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Works with',
+      [
+        makePage('eas/simulators/works-with/overview.mdx'),
+        makePage('eas/simulators/works-with/expo-and-react-native.mdx'),
+        makePage('eas/simulators/works-with/expo-go.mdx'),
+        makePage('eas/simulators/works-with/native-ios-and-android.mdx'),
+        makePage('eas/simulators/works-with/flutter.mdx'),
+        makePage('eas/simulators/works-with/unity-and-hybrid.mdx'),
+        makePage('eas/simulators/works-with/appium.mdx'),
+        makePage('eas/simulators/works-with/maestro.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Reference',
+      [
+        makePage('eas/simulators/reference/session-types.mdx'),
+        makePage('eas/simulators/reference/cli.mdx'),
+        makePage('eas/simulators/reference/rest-api.mdx'),
+        makePage('eas/simulators/reference/devices.mdx'),
+        makePage('eas/simulators/reference/usage-and-billing.mdx'),
+        makePage('eas/simulators/reference/security-and-data.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'How it works',
+      [
+        makePage('eas/simulators/how-it-works/sessions.mdx'),
+        makePage('eas/simulators/how-it-works/security-model.mdx'),
+        makePage('eas/simulators/how-it-works/network-inspection.mdx'),
+        makePage('eas/simulators/how-it-works/builds-and-bundles.mdx'),
+        makePage('eas/simulators/how-it-works/agent-targeting.mdx'),
+        makePage('eas/simulators/how-it-works/devices-compared.mdx'),
+        makePage('eas/simulators/how-it-works/session-lifetime.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makePage('eas/simulators/troubleshooting.mdx'),
+    makePage('eas/simulators/limitations.mdx'),
+  ]),
   makeSection('Expo Metadata', [
     makePage('eas/metadata/index.mdx'),
     makePage('eas/metadata/getting-started.mdx'),
@@ -769,79 +833,7 @@ export const learn = [
   makeSection('More', [makePage('additional-resources/index.mdx')]),
 ];
 
-const preview = [
-  makeSection('Preview', [
-    makePage('preview/introduction.mdx'),
-    makeGroup(
-      'Expo Simulators',
-      [
-        makePage('preview/simulators/introduction.mdx'),
-        makePage('preview/simulators/get-started.mdx'),
-        makeGroup(
-          'How-to',
-          [
-            makePage('preview/simulators/how-to/start-a-session.mdx'),
-            makePage('preview/simulators/how-to/install-your-app.mdx'),
-            makePage('preview/simulators/how-to/drive-the-device.mdx'),
-            makePage('preview/simulators/how-to/control-with-eas-cli.mdx'),
-            makePage('preview/simulators/how-to/iterate-on-your-code.mdx'),
-            makePage('preview/simulators/how-to/capture-evidence.mdx'),
-            makePage('preview/simulators/how-to/organize-sessions.mdx'),
-            makePage('preview/simulators/how-to/verify-a-change-with-an-agent.mdx'),
-            makePage('preview/simulators/how-to/work-without-a-mac.mdx'),
-            makePage('preview/simulators/how-to/review-a-pull-request.mdx'),
-            makePage('preview/simulators/how-to/run-in-ci.mdx'),
-            makePage('preview/simulators/how-to/hand-off-a-session.mdx'),
-            makePage('preview/simulators/how-to/embed-a-session.mdx'),
-          ],
-          { expanded: false }
-        ),
-        makeGroup(
-          'Works with',
-          [
-            makePage('preview/simulators/works-with/overview.mdx'),
-            makePage('preview/simulators/works-with/expo-and-react-native.mdx'),
-            makePage('preview/simulators/works-with/expo-go.mdx'),
-            makePage('preview/simulators/works-with/native-ios-and-android.mdx'),
-            makePage('preview/simulators/works-with/flutter.mdx'),
-            makePage('preview/simulators/works-with/unity-and-hybrid.mdx'),
-            makePage('preview/simulators/works-with/appium.mdx'),
-            makePage('preview/simulators/works-with/maestro.mdx'),
-          ],
-          { expanded: false }
-        ),
-        makeGroup(
-          'Reference',
-          [
-            makePage('preview/simulators/reference/session-types.mdx'),
-            makePage('preview/simulators/reference/cli.mdx'),
-            makePage('preview/simulators/reference/rest-api.mdx'),
-            makePage('preview/simulators/reference/devices.mdx'),
-            makePage('preview/simulators/reference/usage-and-billing.mdx'),
-            makePage('preview/simulators/reference/security-and-data.mdx'),
-          ],
-          { expanded: false }
-        ),
-        makeGroup(
-          'How it works',
-          [
-            makePage('preview/simulators/how-it-works/sessions.mdx'),
-            makePage('preview/simulators/how-it-works/security-model.mdx'),
-            makePage('preview/simulators/how-it-works/network-inspection.mdx'),
-            makePage('preview/simulators/how-it-works/builds-and-bundles.mdx'),
-            makePage('preview/simulators/how-it-works/agent-targeting.mdx'),
-            makePage('preview/simulators/how-it-works/devices-compared.mdx'),
-            makePage('preview/simulators/how-it-works/session-lifetime.mdx'),
-          ],
-          { expanded: false }
-        ),
-        makePage('preview/simulators/troubleshooting.mdx'),
-        makePage('preview/simulators/limitations.mdx'),
-      ],
-      { expanded: true }
-    ),
-  ]),
-];
+const preview = [makeSection('Preview', [makePage('preview/introduction.mdx')])];
 
 const archive = [
   makeSection('More', [

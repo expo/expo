@@ -2547,6 +2547,12 @@ importers:
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.12
+      '@types/jest':
+        specifier: ^30.0.0
+        version: 30.0.0
+      '@types/node':
+        specifier: ^22.14.0
+        version: 22.20.1
       memfs:
         specifier: ^3.6.0
         version: 3.6.0
@@ -3819,9 +3825,6 @@ importers:
       '@expo/metro-config':
         specifier: workspace:~
         version: link:../@expo/metro-config
-      '@ungap/structured-clone':
-        specifier: ^1.3.0
-        version: 1.3.0
       babel-preset-expo:
         specifier: workspace:~
         version: link:../babel-preset-expo

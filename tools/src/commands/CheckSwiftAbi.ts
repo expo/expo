@@ -192,11 +192,10 @@ async function checkModuleAsync(
       skipped: `${module.packageName}@${version} on npm has no ABI file. The first release with \`publishAbiDescriptor\` adds it.`,
     };
   }
-  const findings = parseDigesterReport(await runDigesterAsync(baseline.path, current)).filter(
-    isBreakingFinding
-  );
+  const report = parseDigesterReport(await runDigesterAsync(baseline.path, current));
+  const findings = report.filter(isBreakingFinding);
   logger.info(
-    `${module.productName}: compared with ${module.packageName}@${version}, ${findings.length} finding(s).`
+    `${module.productName}: compared with ${module.packageName}@${version}, ${findings.length} breaking finding(s), ${report.length - findings.length} additive change(s).`
   );
   return { findings };
 }

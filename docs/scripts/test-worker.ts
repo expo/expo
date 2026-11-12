@@ -194,7 +194,7 @@ async function testDirectMarkdownAccessAsync(): Promise<void> {
     throw new Error('Direct .md request did not return markdown content');
   }
   if (
-    response.headers.get('Link') !== '</llms.txt>; rel="llms-txt"' ||
+    response.headers.get('Link') !== '</llms.txt>; rel="llms-txt", </sitemap.xml>; rel="sitemap"' ||
     response.headers.get('X-Llms-Txt') !== '/llms.txt'
   ) {
     throw new Error('Direct .md response lost the asset discovery headers');
@@ -350,6 +350,55 @@ async function testAcceptQualityValuesAsync(): Promise<void> {
     );
   }
   console.log('✓ Markdown with the higher q is served');
+}
+
+async function testAiUserAgentMarkdownAsync(): Promise<void> {
+  console.log('\n--- Testing markdown for AI user agents ---');
+
+  const aiUserAgents = [
+    'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; ChatGPT-User/1.0; +https://openai.com/bot',
+    'Claude-User/1.0',
+    'Perplexity-User/1.0',
+  ];
+
+  for (const userAgent of aiUserAgents) {
+    const response = await fetch(`${BASE_URL}/test-page`, {
+      headers: { 'User-Agent': userAgent, Accept: 'text/html' },
+    });
+    const contentType = response.headers.get('content-type') ?? '';
+    const body = await response.text();
+
+    if (!contentType.includes('text/markdown') || !body.includes('Test Markdown Content')) {
+      throw new Error(`Expected markdown for "${userAgent}", got: ${contentType}`);
+    }
+    if (!varyTokens(response).includes('user-agent')) {
+      throw new Error(
+        `Expected Vary header listing User-Agent, got: ${response.headers.get('vary') ?? '(absent)'}`
+      );
+    }
+    console.log(`✓ ${userAgent.match(/[\w-]+-User/)?.[0]} gets markdown when it requests HTML`);
+  }
+
+  const expectations = [
+    { route: '/html-only-page', userAgent: 'Claude-User/1.0', status: 200 },
+    { route: '/nonexistent-page', userAgent: 'Claude-User/1.0', status: 404 },
+    { route: '/test-page', userAgent: 'ClaudeBot/1.0', status: 200 },
+    { route: '/test-page', userAgent: 'Mozilla/5.0 (Macintosh) Chrome/157.0', status: 200 },
+  ];
+
+  for (const { route, userAgent, status } of expectations) {
+    const response = await fetch(`${BASE_URL}${route}`, {
+      headers: { 'User-Agent': userAgent, Accept: 'text/html' },
+    });
+    const contentType = response.headers.get('content-type') ?? '';
+
+    if (response.status !== status || !contentType.includes('text/html')) {
+      throw new Error(
+        `Expected an HTML ${status} for ${route} with "${userAgent}", got: HTTP ${response.status} ${contentType}`
+      );
+    }
+    console.log(`✓ ${route} with "${userAgent}" returns an HTML ${status}`);
+  }
 }
 
 async function testUpgradePairNegotiationAsync(): Promise<void> {
@@ -664,6 +713,7 @@ async function mainAsync(): Promise<void> {
     await testMarkdownContentNegotiationAsync();
     await testMarkdownNotFoundAsync();
     await testAcceptQualityValuesAsync();
+    await testAiUserAgentMarkdownAsync();
     await testUpgradePairNegotiationAsync();
     await testDeletedPageRedirectsAsync();
     await testRemovedSdkRedirectsAsync();

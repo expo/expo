@@ -54,16 +54,23 @@ export type PrintOptions = {
    */
   margins?: PageMargins;
   /**
-   * Paper size, in points (1/72 inch), that the print job prefers. The job selects the printer's
-   * paper that best fits this size, with
+   * Paper size, in points (1/72 inch), that the print job prefers. For example,
+   * `{ width: 432, height: 288 }` selects 4 x 6 inch paper on a printer that reports it. The order
+   * of `width` and `height` does not matter. The page still scales to fit the selected paper. The
+   * user can still select a different paper.
+   *
+   * On iOS, the job selects the printer's paper that best fits this size, with
    * [`UIPrintPaper.bestPaper(forPageSize:withPapersFrom:)`](https://developer.apple.com/documentation/uikit/uiprintpaper/bestpaper(forpagesize:withpapersfrom:)).
    * In the print dialog, this happens when the user selects a printer. With `printerUrl`, the job
-   * prints on that paper without the dialog.
-   * For example, `{ width: 432, height: 288 }` selects 4 x 6 inch paper on a printer that reports
-   * it. The order of `width` and `height` does not matter. The page still scales to fit the
-   * selected paper. The user can still select a different paper. The system selects the paper
-   * before the user selects a printer, after the user switches to another printer, or when this
-   * option is not set.
+   * prints on that paper without the dialog. The system selects the paper before the user selects
+   * a printer, after the user switches to another printer, or when this option is not set.
+   *
+   * On Android, the option selects the
+   * [standard paper size](https://developer.android.com/reference/android/print/PrintAttributes.MediaSize)
+   * that best fits this size. That is the paper within one point of this size, such as A4 for
+   * `{ width: 595, height: 842 }`, or else the smallest paper that contains this size. If the
+   * printer does not have that paper, the print dialog selects the printer's default paper.
+   * @platform android
    * @platform ios
    */
   preferredPaperSize?: PaperSize;

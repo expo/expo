@@ -156,7 +156,8 @@ const WILDCARD_RENAMES: { pattern: RegExp; replacement: string }[] = [
   { pattern: /^\/eas\/submit\/(.*)$/, replacement: '/submit/$1' },
   { pattern: /^\/eas\/update\/(.*)$/, replacement: '/eas-update/$1' },
   { pattern: /^\/eas\/insights\/(.*)$/, replacement: '/eas-insights/$1' },
-  { pattern: /^\/preview\/eas-simulator\/(.*)$/, replacement: '/preview/simulators/$1' },
+  { pattern: /^\/preview\/eas-simulator\/(.*)$/, replacement: '/eas/simulators/$1' },
+  { pattern: /^\/preview\/simulators\/(.*)$/, replacement: '/eas/simulators/$1' },
 ];
 
 // Simple remapping of renamed pages, similar to public/_redirects but in some cases,
@@ -658,6 +659,9 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After removing the Vexo guide
   '/guides/using-vexo/': '/guides/using-analytics/',
+
+  // After moving Expo Simulators out of the preview section
+  '/preview/simulators/': '/eas/simulators/introduction/',
 
   // After merging Handle platform differences into Take a screenshot
   '/tutorial/platform-differences/': '/tutorial/screenshot/#save-the-screenshot-on-the-web',

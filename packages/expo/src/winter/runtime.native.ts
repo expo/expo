@@ -16,15 +16,10 @@ install('TextEncoderStream', () => require('./TextDecoderStream').TextEncoderStr
 install('URL', () => require('./url').URL);
 // https://url.spec.whatwg.org/#urlsearchparams
 install('URLSearchParams', () => require('./url').URLSearchParams);
-// https://webidl.spec.whatwg.org/#idl-DOMException
-install('DOMException', () => require('./DOMException').DOMException);
 // https://streams.spec.whatwg.org/#rs
 // ReadableStream is injected by Metro as a global
 
 install('__ExpoImportMetaRegistry', () => require('./ImportMetaRegistry').ImportMetaRegistry);
-
-// https://html.spec.whatwg.org/multipage/structured-data.html#structuredclone
-install('structuredClone', () => require('@ungap/structured-clone').default);
 
 installFormDataPatch(FormData);
 

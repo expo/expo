@@ -5,7 +5,13 @@ import semver from 'semver';
 
 import { EXPO_DIR } from '../Constants';
 import { runTurboTasksAsync } from '../Turbo';
-import { getReleaseTagAsync, packChangesetsAsync, runChangesetsAsync } from './Changesets';
+import { spawnAsync } from '../Utils';
+import {
+  getReleasePublishEnv,
+  getReleaseTagAsync,
+  packChangesetsAsync,
+  runChangesetsAsync,
+} from './Changesets';
 import {
   refreshPnpmLockfileAsync,
   updateVersionDerivedFilesAsync,
@@ -52,7 +58,11 @@ export async function runCanaryAsync(options: CanaryOptions): Promise<void> {
     await packChangesetsAsync('expo-canary-pack-');
   } else {
     const tag = await getReleaseTagAsync(options.branchName, 'canary');
-    await runChangesetsAsync(['publish', '--tag', tag, '--no-git-tag']);
+    await runChangesetsAsync(
+      ['publish', '--tag', tag, '--no-git-tag'],
+      spawnAsync,
+      getReleasePublishEnv()
+    );
   }
 }
 

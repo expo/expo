@@ -58,8 +58,8 @@ export function buildTechArticleSchema({
     ...(description ? { description } : {}),
     ...(dateModified ? { dateModified } : {}),
     ...(image ? { image } : {}),
-    author: websiteSchema.publisher,
-    publisher: websiteSchema.publisher,
+    author: organizationSchema,
+    publisher: organizationSchema,
     url,
   };
 }
@@ -82,46 +82,52 @@ export function buildFAQPageSchema(items: FAQItem[]) {
   };
 }
 
-export const websiteSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'WebSite',
-  name: 'Expo documentation',
+export const organizationSchema = {
+  '@type': 'Organization',
+  '@id': 'https://expo.dev/#organization',
+  name: 'Expo',
+  legalName: '650 Industries, Inc.',
   description: BASE_DESCRIPTIONS.en,
-  url: 'https://docs.expo.dev',
-  publisher: {
-    '@type': 'Organization',
-    name: 'Expo',
-    legalName: '650 Industries, Inc.',
-    description: BASE_DESCRIPTIONS.en,
-    url: 'https://expo.dev',
-    contactPoint: {
-      '@type': 'ContactPoint',
-      contactType: 'customer support',
-      email: 'support@expo.dev',
-    },
-    address: {
-      '@type': 'PostalAddress',
-      streetAddress: '624 University Ave, FL1',
-      addressLocality: 'Palo Alto',
-      addressRegion: 'CA',
-      postalCode: '94301',
-      addressCountry: 'US',
-    },
-    logo: {
-      '@type': 'ImageObject',
-      url: 'https://docs.expo.dev/static/images/expo-logo.svg',
-    },
-    sameAs: [
-      'https://github.com/expo',
-      'https://www.npmjs.com/org/expo',
-      'https://x.com/expo',
-      'https://bsky.app/profile/expo.dev',
-      'https://www.linkedin.com/company/expo-dev/',
-      'https://www.youtube.com/@expodevelopers',
-    ],
+  url: 'https://expo.dev',
+  contactPoint: {
+    '@type': 'ContactPoint',
+    contactType: 'customer support',
+    email: 'support@expo.dev',
   },
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: '624 University Ave, FL1',
+    addressLocality: 'Palo Alto',
+    addressRegion: 'CA',
+    postalCode: '94301',
+    addressCountry: 'US',
+  },
+  logo: {
+    '@type': 'ImageObject',
+    url: 'https://docs.expo.dev/static/images/expo-logo.svg',
+  },
+  sameAs: [
+    'https://github.com/expo',
+    'https://www.npmjs.com/org/expo',
+    'https://x.com/expo',
+    'https://bsky.app/profile/expo.dev',
+    'https://www.linkedin.com/company/expo-dev/',
+    'https://www.youtube.com/@expodevelopers',
+  ],
 };
 
 export function buildWebsiteSchema(locale: SupportedLocale) {
-  return { ...websiteSchema, name: SITE_NAMES[locale], description: BASE_DESCRIPTIONS[locale] };
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      organizationSchema,
+      {
+        '@type': 'WebSite',
+        name: SITE_NAMES[locale],
+        description: BASE_DESCRIPTIONS[locale],
+        url: 'https://docs.expo.dev',
+        publisher: { '@id': organizationSchema['@id'] },
+      },
+    ],
+  };
 }
