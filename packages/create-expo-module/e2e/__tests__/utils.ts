@@ -148,10 +148,16 @@ export async function createLocalTemplateAsync(targetRoot: string): Promise<stri
   });
   const packageJsonPath = path.join(templatePath, '$package.json');
   const packageJson = fs.readFileSync(packageJsonPath, { encoding: 'utf8' });
-  fs.writeFileSync(
-    packageJsonPath,
-    packageJson.replace(/"jest-expo": "[^"]*"/, `"jest-expo": "file:${jestExpoTarball}"`)
+  const localPackageJson = packageJson.replace(
+    /"jest-expo": "[^"]*"/,
+    `"jest-expo": "file:${jestExpoTarball}"`
   );
+  if (localPackageJson === packageJson) {
+    throw new Error(
+      `Could not find the jest-expo dependency in ${packageJsonPath}. Update the pattern in createLocalTemplateAsync to match the template.`
+    );
+  }
+  fs.writeFileSync(packageJsonPath, localPackageJson);
   return templatePath;
 }
 
