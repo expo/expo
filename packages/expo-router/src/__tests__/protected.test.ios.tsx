@@ -1118,3 +1118,70 @@ describe('routes without /index suffix', () => {
     });
   });
 });
+
+describe('group route without a layout', () => {
+  // NOTE: Regression test for https://github.com/expo/expo/issues/37305
+  it('guards a group index route without a _layout by the group name', async () => {
+    const SessionContext = createContext<[boolean, Dispatch<SetStateAction<boolean>>]>([
+      false,
+      () => {},
+    ]);
+
+    await renderRouter({
+      _layout: function Layout() {
+        const sessionState = useState(false);
+        const [session] = sessionState;
+        return (
+          <SessionContext value={sessionState}>
+            <Stack id={undefined}>
+              <Stack.Protected guard={session}>
+                <Stack.Screen name="(app)" />
+              </Stack.Protected>
+              <Stack.Protected guard={!session}>
+                <Stack.Screen name="sign-in" />
+              </Stack.Protected>
+            </Stack>
+          </SessionContext>
+        );
+      },
+      '(app)/index': function Index() {
+        const [, setSession] = use(SessionContext);
+        return (
+          <Text testID="index" onPress={() => setSession(false)}>
+            Sign out
+          </Text>
+        );
+      },
+      'sign-in': function SignIn() {
+        const [, setSession] = use(SessionContext);
+        return (
+          <Text
+            testID="sign-in"
+            onPress={() => {
+              setSession(true);
+              router.replace('/');
+            }}>
+            Sign in
+          </Text>
+        );
+      },
+    });
+
+    // Signed out on launch: the guarded group index must not render.
+    expect(screen.queryByTestId('index')).toBeNull();
+    expect(screen.getByTestId('sign-in')).toBeVisible();
+    expect(screen).toHavePathname('/sign-in');
+
+    await fireEvent.press(screen.getByTestId('sign-in'));
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen).toHavePathname('/');
+
+    // Signing out must move away from the now guarded group index.
+    await fireEvent.press(screen.getByTestId('index'));
+
+    expect(screen.queryByTestId('index')).toBeNull();
+    expect(screen.getByTestId('sign-in')).toBeVisible();
+    expect(screen).toHavePathname('/sign-in');
+  });
+});
