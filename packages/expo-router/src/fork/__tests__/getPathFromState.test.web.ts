@@ -1,4 +1,5 @@
 import { INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME } from '../../navigationParams';
+import { getMockConfig } from '../../testing-library/mock-config';
 import { getPathFromState, getPathDataFromState, type Options } from '../getPathFromState';
 import { appendQueryAndHash } from '../getPathFromState-forks';
 import { getStateFromPath } from '../getStateFromPath';
@@ -206,6 +207,13 @@ it(`handles url search params params`, () => {
   };
 
   expect(getPathFromState(state, config)).toBe('/?test=true&hello=world&array=1&array=2');
+});
+
+it('puts no slash before the query of an index route in a group', () => {
+  const config = getMockConfig(['foo/(group)/_layout', 'foo/(group)/index']);
+  const state = getStateFromPath('/foo?q=2', config)!;
+
+  expect(getPathFromState(state, config)).toBe('/foo?q=2');
 });
 
 describe('state mutation safety', () => {
