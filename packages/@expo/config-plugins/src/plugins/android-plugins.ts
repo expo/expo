@@ -206,7 +206,7 @@ export const withSettingsGradle: ConfigPlugin<Mod<Paths.GradleProjectFile>> = (c
  * @param config
  * @param action
  */
-export const withGradleProperties: ConfigPlugin<Mod<Properties.PropertiesItem[]>> = (
+export const withGradleProperties: ConfigPlugin<Mod<readonly Properties.PropertiesItem[]>> = (
   config,
   action
 ) => {
