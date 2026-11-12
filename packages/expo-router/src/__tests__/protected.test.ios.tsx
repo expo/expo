@@ -11,16 +11,28 @@ import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
 
-it('does not dispatch an unhandled removal when a mount effect replaces the stack', async () => {
-  const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
-  try {
+describe('stack unmounted by a mount effect', () => {
+  let consoleErrorSpy: jest.SpyInstance<void, Parameters<typeof console.error>>;
+  let consoleWarnSpy: jest.SpyInstance<void, Parameters<typeof console.warn>>;
+
+  beforeEach(() => {
+    consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleErrorSpy.mockRestore();
+    consoleWarnSpy.mockRestore();
+  });
+
+  it('does not dispatch an unhandled removal when a mount effect replaces the stack', async () => {
     await renderRouter({
       _layout: function RootLayout() {
         const [loading, setLoading] = useState(false);
         useEffect(() => setLoading(true), []);
         if (loading) {
           return (
-            <View>
+            <View testID="loading">
               <Text>Restoring account data</Text>
             </View>
           );
@@ -37,23 +49,19 @@ it('does not dispatch an unhandled removal when a mount effect replaces the stac
       index: () => <Text>Public</Text>,
       private: () => <Text>Private</Text>,
     });
-    expect(screen.getByText('Restoring account data')).toBeVisible();
-    expect(consoleError).not.toHaveBeenCalled();
-  } finally {
-    consoleError.mockRestore();
-  }
-});
+    expect(screen.getByTestId('loading')).toBeVisible();
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    expect(consoleWarnSpy).not.toHaveBeenCalled();
+  });
 
-it('does not dispatch an unhandled removal when a mount effect replaces the JS stack', async () => {
-  const consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
-  try {
+  it('does not dispatch an unhandled removal when a mount effect replaces the JS stack', async () => {
     await renderRouter({
       _layout: function RootLayout() {
         const [loading, setLoading] = useState(false);
         useEffect(() => setLoading(true), []);
         if (loading) {
           return (
-            <View>
+            <View testID="loading">
               <Text>Restoring account data</Text>
             </View>
           );
@@ -70,11 +78,10 @@ it('does not dispatch an unhandled removal when a mount effect replaces the JS s
       index: () => <Text>Public</Text>,
       private: () => <Text>Private</Text>,
     });
-    expect(screen.getByText('Restoring account data')).toBeVisible();
-    expect(consoleError).not.toHaveBeenCalled();
-  } finally {
-    consoleError.mockRestore();
-  }
+    expect(screen.getByTestId('loading')).toBeVisible();
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    expect(consoleWarnSpy).not.toHaveBeenCalled();
+  });
 });
 
 it('settles a queued push and prunes guarded history when a guard flips in the stack', async () => {
