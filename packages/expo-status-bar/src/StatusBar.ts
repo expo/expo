@@ -9,6 +9,7 @@ export type {
   StatusBarStyle,
   StatusBarAnimation,
   StatusBarProps,
+  StatusBarStackEntry,
   VerticalBarBehaviorIOS,
   VerticalBarEdgeIOS,
 } from './types';
