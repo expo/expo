@@ -44,6 +44,13 @@ export type {
   ObserveAttributes,
   ObserveConfig,
   ObserveEventName,
+  ObserveIntegration,
+  ObserveIntegrationErrorReport,
+  ObserveIntegrationFilterConfig,
+  ObserveIntegrationRegistry,
+  ObserveIntegrationReporter,
+  ObserveIntegrationReportOptions,
+  ObserveIntegrationWarningReport,
   ObserveIntegrationsConfig,
   ObserveModule,
   ObserveModuleEvents,
@@ -52,4 +59,8 @@ export type {
   ObserveNetworkTracesConfig,
   ObserveReanimatedIntegrationConfig,
 } from './types';
+export {
+  OBSERVE_INTEGRATION_REGISTRY_KEY,
+  registerObserveIntegration,
+} from './integrations/registry';
 export { useObserve } from './useObserve';

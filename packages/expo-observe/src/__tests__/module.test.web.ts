@@ -28,4 +28,17 @@ describe('web module', () => {
     const Observe = loadWebModule();
     expect(Observe.clientId).toBeNull();
   });
+
+  test('passes the original integrations object to library integrations', () => {
+    const Observe = loadWebModule();
+    const { registerObserveIntegration } =
+      require('../integrations/registry') as typeof import('../integrations/registry');
+    const configure = jest.fn();
+    registerObserveIntegration({ name: 'test-library', configure });
+    const shouldReport = () => true;
+
+    Observe.configure({ integrations: { 'test-library': { shouldReport } } as never });
+
+    expect(configure).toHaveBeenCalledWith({ shouldReport }, expect.any(Object));
+  });
 });
