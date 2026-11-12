@@ -156,6 +156,20 @@ export default function CommunityBottomSheetScreen() {
             </BottomSheetView>
           </BottomSheetModal>
 
+          {/* Sheet 5: the modifiers prop, applied to the sheet content on iOS */}
+          <BottomSheetModal
+            ref={edgeToEdgeRef}
+            modifiers={
+              Platform.OS === 'ios' ? [ignoreSafeArea({ edges: 'horizontal' })] : undefined
+            }
+            enablePanDownToClose>
+            <BottomSheetView style={styles.edgeToEdge}>
+              <Text style={styles.sheetTitle}>Edge to edge</Text>
+              <Text style={styles.hint}>This view fills the sheet's width</Text>
+              <SheetControls />
+            </BottomSheetView>
+          </BottomSheetModal>
+
           <Modal visible={isModalVisible} transparent animationType="fade">
             <View style={styles.modalBackdrop}>
               <View style={styles.modalCard}>
