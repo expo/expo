@@ -51,6 +51,7 @@
     "@expo/styleguide-cookie-consent": "4.0.0",
     "@expo/styleguide-icons": "^5.0.1",
     "@expo/styleguide-search-ui": "^10.0.3",
+    "@floating-ui/dom": "^1.7.6",
     "@kapaai/react-sdk": "^0.9.6",
     "@mdx-js/loader": "^3.1.1",
     "@mdx-js/mdx": "^3.1.1",
@@ -89,7 +90,6 @@
     "remark-mdx-disable-explicit-jsx": "^0.1.0",
     "remark-mdx-frontmatter": "^5.2.0",
     "svgo": "^4.1.0",
-    "tippy.js": "^6.3.7",
     "yet-another-react-lightbox": "^3.30.1"
   },
   "devDependencies": {

@@ -156,28 +156,73 @@ details > summary::-webkit-details-marker {
   position: absolute;
 }
 
-/* Tippy */
+/* Code annotation tooltip */
 
-div.tippy-box {
-  @apply rounded-lg;
+.code-annotation-tooltip {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9999;
+  width: max-content;
+  max-width: min(350px, calc(100vw - 10px));
+  visibility: hidden;
+  pointer-events: none;
+  transition: visibility 250ms;
+}
+
+.code-annotation-tooltip[data-state='visible'] {
+  visibility: visible;
+  pointer-events: auto;
+  transition-duration: 300ms;
+}
+
+.code-annotation-tooltip[data-reference-hidden='true'] {
+  visibility: hidden;
+}
+
+.code-annotation-tooltip-box {
+  position: relative;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition-property: opacity, transform;
+  transition-duration: 250ms;
+}
+
+.code-annotation-tooltip[data-placement^='bottom'] .code-annotation-tooltip-box {
   transform: translateY(6px);
 }
 
-.tippy-box svg {
-  transform: rotate(180deg);
+.code-annotation-tooltip[data-state='visible'] .code-annotation-tooltip-box {
+  opacity: 1;
+  transform: none;
+  transition-duration: 300ms;
 }
 
-.tippy-box[data-theme~='expo'] .tippy-content {
+.code-annotation-tooltip-content {
   @apply bg-palette-black text-palette-white rounded-lg px-4 py-3 text-sm;
   line-height: 1.525;
 }
 
-.tippy-box[data-state='visible'] {
-  transform: translateY(12px);
+.code-annotation-tooltip-arrow {
+  position: absolute;
+  top: 100%;
+  width: 16px;
+  height: 6px;
+  line-height: 0;
 }
 
-.tippy-content a {
-  @apply text-palette-white;
+.code-annotation-tooltip-arrow svg {
+  @apply fill-palette-black;
+  transform: rotate(180deg);
+}
+
+.code-annotation-tooltip[data-placement^='bottom'] .code-annotation-tooltip-arrow {
+  top: auto;
+  bottom: 100%;
+}
+
+.code-annotation-tooltip[data-placement^='bottom'] .code-annotation-tooltip-arrow svg {
+  transform: none;
 }
 
 /* Cookie banner */
