@@ -290,6 +290,19 @@ enum MapColorScheme: String, Enumerable {
   }
 }
 
+enum CameraUpdateFrequency: String, Enumerable {
+  case onEnd = "ON_END"
+  case continuous = "CONTINUOUS"
+
+  @available(iOS 17.0, *)
+  func toMapCameraUpdateFrequency() -> MapCameraUpdateFrequency {
+    return switch self {
+    case .onEnd: .onEnd
+    case .continuous: .continuous
+    }
+  }
+}
+
 enum MapType: String, Enumerable {
   case standard = "STANDARD"
   case hybrid = "HYBRID"
