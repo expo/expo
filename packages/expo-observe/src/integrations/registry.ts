@@ -63,6 +63,16 @@ export type IntegrationValueStore = {
   setIntegrationValue(integration: string, key: string, value: string | null): Promise<void>;
 };
 
+// Library integrations that register through the registry, by config key, with the package that
+// registers each one when the app imports it.
+const LIBRARY_INTEGRATION_PACKAGES: Readonly<Record<string, string>> = {
+  'expo-updates': 'expo-updates',
+};
+// A library can register after `configure`, for example when a screen that imports it loads, so
+// the warning about a missing integration waits this long.
+const UNREGISTERED_WARNING_DELAY_MS = 5000;
+const warnedUnregistered = new Set<string>();
+
 // Only one `expo-observe` copy configures the registry, so this state is per module instance.
 const active = new Map<ObserveIntegration, ActiveIntegration>();
 let latestIntegrations: ObserveIntegrationsConfig | null = null;
@@ -228,5 +238,26 @@ export function configureRegisteredIntegrations(
   };
   for (const integration of registry.integrations) {
     apply(activate(integration), integrations);
+  }
+  setTimeout(warnAboutUnregisteredIntegrations, UNREGISTERED_WARNING_DELAY_MS);
+}
+
+/**
+ * Warns once for each enabled library integration whose package has not registered it, which
+ * happens when the app never imports the package.
+ */
+function warnAboutUnregisteredIntegrations(): void {
+  const registered = new Set(getIntegrationRegistry().integrations.map(({ name }) => name));
+  for (const [name, packageName] of Object.entries(LIBRARY_INTEGRATION_PACKAGES)) {
+    const enabled = !!(latestIntegrations as Record<string, unknown> | null)?.[name];
+    if (!enabled || registered.has(name) || warnedUnregistered.has(name)) {
+      continue;
+    }
+    warnedUnregistered.add(name);
+    console.warn(
+      `[expo-observe] \`integrations: { '${name}': ... }\` was set, but \`${packageName}\` has not ` +
+        `registered its integration. Import \`${packageName}\` in your app, for example in the root ` +
+        'layout. The integration will not initialize.'
+    );
   }
 }

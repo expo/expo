@@ -309,3 +309,54 @@ describe('storage', () => {
     expect(await reporter().storage.getItem('cursor')).toBeNull();
   });
 });
+
+describe('unregistered library integrations', () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  function unregisteredWarnings() {
+    return warnSpy.mock.calls.filter(([message]) =>
+      String(message).includes('has not registered its integration')
+    );
+  }
+
+  test('warns once when expo-updates is enabled but never registers', () => {
+    registry.configureRegisteredIntegrations({ 'expo-updates': true } as never);
+    registry.configureRegisteredIntegrations({ 'expo-updates': true } as never);
+
+    jest.advanceTimersByTime(5000);
+
+    expect(unregisteredWarnings()).toHaveLength(1);
+    expect(unregisteredWarnings()[0]![0]).toContain('Import `expo-updates` in your app');
+  });
+
+  test('does not warn when the integration registers after configure', () => {
+    registry.configureRegisteredIntegrations({ 'expo-updates': true } as never);
+    registry.registerObserveIntegration(createIntegration('expo-updates').integration);
+
+    jest.advanceTimersByTime(5000);
+
+    expect(unregisteredWarnings()).toHaveLength(0);
+  });
+
+  test('does not warn when the integration is not enabled', () => {
+    registry.configureRegisteredIntegrations({ 'expo-updates': false } as never);
+
+    jest.advanceTimersByTime(5000);
+
+    expect(unregisteredWarnings()).toHaveLength(0);
+  });
+
+  test('waits before it warns', () => {
+    registry.configureRegisteredIntegrations({ 'expo-updates': true } as never);
+
+    jest.advanceTimersByTime(4999);
+
+    expect(unregisteredWarnings()).toHaveLength(0);
+  });
+});

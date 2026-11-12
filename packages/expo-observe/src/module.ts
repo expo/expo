@@ -65,6 +65,29 @@ function warnIfErrorSampleRateIsLower({ sampleRate, errorSampleRate }: ObserveCo
   }
 }
 
+/**
+ * Removes function options, such as the `expo-updates` integration's `shouldReport`, from each
+ * integration's config before the config goes to the native module, which stores it and sends it
+ * back in `configure` events. Functions run only in JS, where library integrations get the original
+ * config.
+ */
+function configForNative(config: ObserveConfig): ObserveConfig {
+  if (!config.integrations) {
+    return config;
+  }
+  const integrations = Object.fromEntries(
+    Object.entries(config.integrations).map(([name, value]) => [
+      name,
+      typeof value === 'object' && value !== null
+        ? Object.fromEntries(
+            Object.entries(value).filter(([, option]) => typeof option !== 'function')
+          )
+        : value,
+    ])
+  );
+  return { ...config, integrations };
+}
+
 const native = requireNativeModule<ObserveModule>('ExpoObserve');
 
 const Observe: ObserveModule = new Proxy(native, {
@@ -117,7 +140,7 @@ const Observe: ObserveModule = new Proxy(native, {
           disableReanimatedIntegration();
         }
         warnIfErrorSampleRateIsLower(config);
-        const result = target.configure(config);
+        const result = target.configure(configForNative(config));
         // After the native configure, so a library integration that reads `getIntegrations()` sees
         // the new config.
         // The native module implements the integration value functions, which are not public API.
