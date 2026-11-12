@@ -51,6 +51,21 @@ function buildTooltipContent(raw: string): HTMLSpanElement {
   return wrapper;
 }
 
+function fitWidthToText(content: HTMLElement) {
+  content.style.width = '';
+  const range = document.createRange();
+  range.selectNodeContents(content);
+  const rects = [...range.getClientRects()];
+  if (rects.length === 0) {
+    return;
+  }
+  const textWidth =
+    Math.max(...rects.map(rect => rect.right)) - Math.min(...rects.map(rect => rect.left));
+  const style = getComputedStyle(content);
+  const padding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+  content.style.width = `${Math.ceil(textWidth + padding)}px`;
+}
+
 function roundToDevicePixel(value: number) {
   const ratio = window.devicePixelRatio || 1;
   return Math.round(value * ratio) / ratio;
@@ -134,6 +149,7 @@ function addTooltip() {
     annotation = target;
     annotation.setAttribute('aria-describedby', TOOLTIP_ID);
     content.replaceChildren(buildTooltipContent(target.dataset.tooltip ?? ''));
+    fitWidthToText(content);
     stopAutoUpdate = autoUpdate(target, tooltip, () => void updatePositionAsync(target));
   }
 

@@ -200,6 +200,7 @@ details > summary::-webkit-details-marker {
 
 .code-annotation-tooltip-content {
   @apply bg-palette-black text-palette-white rounded-lg px-4 py-3 text-sm;
+  max-width: 100%;
   line-height: 1.525;
 }
 
