@@ -9,7 +9,7 @@ export interface <%- project.composeViewName %>Props extends PrimitiveBaseProps 
 }
 
 const Native<%- project.composeViewName %> = requireNativeView<<%- project.composeViewName %>Props>(
-  '<%- project.name %>',
+  '<%- project.viewsModule?.name ?? project.name %>',
   '<%- project.composeViewName %>'
 );
 
