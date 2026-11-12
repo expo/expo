@@ -15,6 +15,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.updates.events.IUpdatesEventManagerObserver
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
+import expo.modules.updates.logging.UpdatesLogEntryForwarder
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.reloadscreen.ReloadScreenOptions
@@ -27,6 +28,7 @@ import java.util.Date
 import expo.modules.kotlin.types.OptimizedRecord
 
 private const val UpdatesStateChangeEvent = "Expo.nativeUpdatesStateChangeEvent"
+private const val UpdatesLogEntryEvent = "Expo.updatesLogEntry"
 
 /**
  * Exported module which provides to the JS runtime information about the currently running update
@@ -40,10 +42,14 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
+  private val logEntryForwarder = UpdatesLogEntryForwarder { entry ->
+    sendEvent(UpdatesLogEntryEvent, entry)
+  }
+
   override fun definition() = ModuleDefinition {
     Name("ExpoUpdates")
 
-    Events(UpdatesStateChangeEvent)
+    Events(UpdatesStateChangeEvent, UpdatesLogEntryEvent)
 
     Constants {
       UpdatesLogger(context.filesDir).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
@@ -58,8 +64,17 @@ class UpdatesModule : Module(), IUpdatesEventManagerObserver {
       UpdatesController.removeUpdatesEventManagerObserver()
     }
 
+    OnStartObserving(UpdatesLogEntryEvent) {
+      logEntryForwarder.setEnabled(true)
+    }
+
+    OnStopObserving(UpdatesLogEntryEvent) {
+      logEntryForwarder.setEnabled(false)
+    }
+
     OnDestroy {
       UpdatesController.removeUpdatesEventManagerObserver()
+      logEntryForwarder.setEnabled(false)
     }
 
     AsyncFunction("reload") Coroutine { options: ReloadScreenOptions? ->

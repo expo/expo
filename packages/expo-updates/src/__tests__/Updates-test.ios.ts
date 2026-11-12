@@ -104,3 +104,15 @@ it('returns the proper object when logs returned from readLogEntriesAsync', asyn
   expect(actual[1]?.code).toEqual('JSRuntimeError');
   expect(actual[1]?.stacktrace?.length).toEqual(3);
 });
+
+it('passes each log entry event to the listener until the subscription is removed', () => {
+  const remove = jest.fn();
+  jest.mocked(ExpoUpdates.addListener).mockReturnValueOnce({ remove });
+  const listener = jest.fn();
+
+  const subscription = Updates.addLogEntryListener(listener);
+
+  expect(ExpoUpdates.addListener).toHaveBeenCalledWith('Expo.updatesLogEntry', listener);
+  subscription.remove();
+  expect(remove).toHaveBeenCalledTimes(1);
+});
