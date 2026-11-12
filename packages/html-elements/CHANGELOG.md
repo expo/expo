@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### 🐛 Bug fixes
+
+- Use `rem` for heading font sizes on web so a heading keeps the root font size when a parent sets a smaller font. (by [@itisrmk](https://github.com/itisrmk))
+
 ## 58.0.3
 
 ### Patch Changes
