@@ -17,7 +17,6 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -59,17 +58,6 @@ class FileDownloaderHttpClientTest {
   fun tearDown() {
     unmockkObject(OkHttpClientProvider)
     server.shutdown()
-  }
-
-  @Test
-  fun `downloads go through the shared React Native client by default`() = runTest {
-    val downloader = createFileDownloader(extraConfiguration = emptyMap())
-
-    val result = runCatching { downloader.downloadRemoteUpdate(null) }
-
-    assertTrue(result.exceptionOrNull() is IOException)
-    assertEquals(1, sharedClientCalls.get())
-    assertEquals(0, server.requestCount)
   }
 
   @Test

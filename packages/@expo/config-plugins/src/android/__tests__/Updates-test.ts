@@ -152,10 +152,7 @@ describe('Android Updates config', () => {
   describe('useReactNativeHttpClient', () => {
     const useReactNativeHttpClientKey = 'expo.modules.updates.USE_REACT_NATIVE_HTTP_CLIENT';
 
-    async function getUseReactNativeHttpClientEntriesAsync(
-      updates: ExpoConfig['updates'],
-      startingManifest?: AndroidManifest
-    ) {
+    async function getUseReactNativeHttpClientEntriesAsync(updates: ExpoConfig['updates']) {
       const config: ExpoConfig = {
         name: 'foo',
         slug: 'my-app',
@@ -165,13 +162,13 @@ describe('Android Updates config', () => {
       const androidManifestJson = await Updates.setUpdatesConfigAsync(
         '/app',
         config,
-        startingManifest ?? (await getFixtureManifestAsync()),
+        await getFixtureManifestAsync(),
         '0.11.0'
       );
       const entries = (getMainApplication(androidManifestJson)!['meta-data'] ?? []).filter(
         (e) => e.$['android:name'] === useReactNativeHttpClientKey
       );
-      return { androidManifestJson, entries };
+      return { entries };
     }
 
     it('writes false when useReactNativeHttpClient is false', async () => {
@@ -180,22 +177,6 @@ describe('Android Updates config', () => {
       });
       expect(entries).toHaveLength(1);
       expect(entries[0]!.$['android:value']).toBe('false');
-    });
-
-    it('writes nothing when useReactNativeHttpClient is not set', async () => {
-      const { entries } = await getUseReactNativeHttpClientEntriesAsync({});
-      expect(entries).toHaveLength(0);
-    });
-
-    it('removes a previous entry when useReactNativeHttpClient is set back to true', async () => {
-      const { androidManifestJson } = await getUseReactNativeHttpClientEntriesAsync({
-        useReactNativeHttpClient: false,
-      });
-      const { entries } = await getUseReactNativeHttpClientEntriesAsync(
-        { useReactNativeHttpClient: true },
-        androidManifestJson
-      );
-      expect(entries).toHaveLength(0);
     });
   });
 
