@@ -4,12 +4,32 @@ import { TextDecoder, TextEncoder } from 'util';
 const {
   invokeWorkerAsync,
   invokeWorkerSync,
+  markSQLiteWebWorkerReady,
   sendWorkerResult,
   workerMessageHandler,
 } = require('../../web/WorkerChannel');
 
 // jsdom has no TextEncoder.
 Object.assign(globalThis, { TextEncoder, TextDecoder });
+
+function withAtomicsPause(pause: (() => void) | undefined, run: () => void) {
+  const atomics = Atomics as unknown as { pause?: (n?: number) => void };
+  const originalPause = atomics.pause;
+  atomics.pause = pause;
+  try {
+    run();
+  } finally {
+    atomics.pause = originalPause;
+  }
+}
+
+function pendingWorker(): Worker {
+  return {
+    postMessage() {
+      // Leave the lock pending so the caller waits out the deadline.
+    },
+  } as unknown as Worker;
+}
 
 function createWorkerReplyingWith({
   result = null,
@@ -28,6 +48,7 @@ function createWorkerReplyingWith({
 
 describe('Invoking the worker', () => {
   beforeEach(() => {
+    markSQLiteWebWorkerReady('ready');
     jest.spyOn(console, 'warn').mockImplementation(() => {});
     // The worker side posts async results through `self`.
     Object.defineProperty(globalThis, 'self', {
@@ -83,5 +104,80 @@ describe('Invoking the worker', () => {
     const message = 'x'.repeat(300);
     const worker = createWorkerReplyingWith({ error: new Error(message) });
     expect(() => invokeWorkerSync(worker, 'close', { nativeDatabaseId: 0 })).toThrow(message);
+  });
+
+  it('should throw before posting when the worker is still loading', () => {
+    markSQLiteWebWorkerReady('loading');
+    const worker = pendingWorker();
+    const postMessage = jest.spyOn(worker, 'postMessage');
+
+    expect(() => invokeWorkerSync(worker, 'close', { nativeDatabaseId: 0 })).toThrow(
+      /has not finished loading/
+    );
+    expect(postMessage).not.toHaveBeenCalled();
+  });
+
+  it('should throw the worker load error when loading failed', () => {
+    markSQLiteWebWorkerReady({ error: 'Failed to initialize wa-sqlite' });
+
+    expect(() => invokeWorkerSync(pendingWorker(), 'close', { nativeDatabaseId: 0 })).toThrow(
+      'Failed to initialize wa-sqlite'
+    );
+  });
+
+  it('should time out a pending sync call at a wall-clock deadline when Atomics.pause exists', () => {
+    // One pause stands in for 1µs, so a million pauses are 1s.
+    // The clock stays under the deadline until that budget is spent, then jumps to it.
+    const deadlineMs = 15_000;
+    let pauses = 0;
+    let now = 0;
+    const nowSpy = jest.spyOn(performance, 'now').mockImplementation(() => {
+      if (pauses > 1_000_000) {
+        now = deadlineMs;
+      }
+      return now;
+    });
+
+    try {
+      withAtomicsPause(
+        () => {
+          pauses += 1;
+          if (pauses <= 1_000_000) {
+            now = pauses * 0.001;
+          }
+        },
+        () => {
+          expect(() => invokeWorkerSync(pendingWorker(), 'close', { nativeDatabaseId: 0 })).toThrow(
+            new Error('Sync operation timeout')
+          );
+          expect(now).toBeGreaterThanOrEqual(deadlineMs);
+          expect(now).toBeLessThan(deadlineMs + 20);
+        }
+      );
+    } finally {
+      nowSpy.mockRestore();
+    }
+  });
+
+  it('should time out a pending sync call at the same wall-clock deadline without Atomics.pause', () => {
+    const deadlineMs = 15_000;
+    let reads = 0;
+    const nowSpy = jest.spyOn(performance, 'now').mockImplementation(() => {
+      reads += 1;
+      // The first read anchors the deadline. The next read is at the deadline.
+      return reads === 1 ? 0 : deadlineMs;
+    });
+
+    try {
+      withAtomicsPause(undefined, () => {
+        expect(() => invokeWorkerSync(pendingWorker(), 'close', { nativeDatabaseId: 0 })).toThrow(
+          new Error('Sync operation timeout')
+        );
+        expect(reads).toBeGreaterThan(1);
+        expect(reads).toBeLessThan(10);
+      });
+    } finally {
+      nowSpy.mockRestore();
+    }
   });
 });
