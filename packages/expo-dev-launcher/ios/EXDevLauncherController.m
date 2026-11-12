@@ -445,6 +445,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:expoUrl];
 
   [[DevMenuManager shared] applyLaunchParamsFromURL:url];
+  [EXDevLauncherURLHelper applyDevMenuPreferencesIfNeeded:url];
 
   NSString *runtimeVersion = @"";
   if (_updatesInterface) {
