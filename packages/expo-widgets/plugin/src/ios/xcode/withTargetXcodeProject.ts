@@ -1,9 +1,11 @@
+import type { ExpoConfig } from 'expo/config';
 import { ConfigPlugin, withXcodeProject, type XcodeProject } from 'expo/config-plugins';
 import * as path from 'path';
 
 import { addBuildPhases } from './addBuildPhases';
 import { addPbxGroup } from './addPbxGroup';
 import { addProductFile } from './addProductFile';
+import { addSwiftPackageManagerLinking } from './addSwiftPackageManagerLinking';
 import { addTargetDependency } from './addTargetDependency';
 import { addToPbxNativeTargetSection } from './addToPbxNativeTargetSection';
 import { addToPbxProjectSection } from './addToPbxProjectSection';
@@ -46,6 +48,14 @@ export function getLocalizableStringsFileRefs(
     const file = localeGroup?.children.find(({ comment }) => comment === 'Localizable.strings');
     return file ? [file.value] : [];
   });
+}
+
+// The same rule as `isSwiftPMEnabled` in @expo/cli, which runs the SwiftPM setup after prebuild.
+function isSwiftPackageManagerEnabled(config: ExpoConfig): boolean {
+  return (
+    (config.experiments as { swiftPackageManager?: boolean } | undefined)?.swiftPackageManager ===
+    true
+  );
 }
 
 const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
@@ -106,6 +116,10 @@ const withTargetXcodeProject: ConfigPlugin<TargetXcodeProjectProps> = (
       targetName,
       widgetFiles: relativePaths,
     });
+
+    if (isSwiftPackageManagerEnabled(config)) {
+      addSwiftPackageManagerLinking(xcodeProject, { targetUuid: target.uuid });
+    }
 
     return config;
   });

@@ -23,7 +23,9 @@
   "publishConfig": {
     "executableFiles": [
       "./scripts/with-node.sh",
-      "./scripts/xcode-build-bundle.sh"
+      "./scripts/xcode-build-bundle.sh",
+      "./scripts/xcode-swiftpm-build-bundle.sh",
+      "./scripts/xcode-swiftpm-build-expo-modules-jsi.sh"
     ]
   },
   "scripts": {
