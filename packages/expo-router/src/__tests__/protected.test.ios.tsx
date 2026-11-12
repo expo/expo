@@ -9,6 +9,7 @@ import { router } from '../imperative-api';
 import JSStack from '../layouts/JSStack';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
+import { ExperimentalStack } from '../layouts/experimental-stack';
 import { renderRouter } from '../testing-library';
 
 describe('stack unmounted by a mount effect', () => {
@@ -73,6 +74,35 @@ describe('stack unmounted by a mount effect', () => {
               <JSStack.Screen name="private" />
             </JSStack.Protected>
           </JSStack>
+        );
+      },
+      index: () => <Text>Public</Text>,
+      private: () => <Text>Private</Text>,
+    });
+    expect(screen.getByTestId('loading')).toBeVisible();
+    expect(consoleErrorSpy).not.toHaveBeenCalled();
+    expect(consoleWarnSpy).not.toHaveBeenCalled();
+  });
+
+  it('does not dispatch an unhandled removal when a mount effect replaces the experimental stack', async () => {
+    await renderRouter({
+      _layout: function RootLayout() {
+        const [loading, setLoading] = useState(false);
+        useEffect(() => setLoading(true), []);
+        if (loading) {
+          return (
+            <View testID="loading">
+              <Text>Restoring account data</Text>
+            </View>
+          );
+        }
+        return (
+          <ExperimentalStack>
+            <ExperimentalStack.Screen name="index" />
+            <ExperimentalStack.Protected guard={false}>
+              <ExperimentalStack.Screen name="private" />
+            </ExperimentalStack.Protected>
+          </ExperimentalStack>
         );
       },
       index: () => <Text>Public</Text>,

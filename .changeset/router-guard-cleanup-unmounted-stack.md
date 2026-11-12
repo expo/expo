@@ -2,4 +2,4 @@
 'expo-router': patch
 ---
 
-Fix an unhandled `REMOVE_ROUTES` warning when a mount `useEffect` update unmounts a stack with `Stack.Protected` routes.
+Fix unhandled `REMOVE_ROUTES` warning when a stack with `Stack.Protected` unmounts during startup.
