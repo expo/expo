@@ -299,6 +299,14 @@ export type ImagePickerAsset = {
    */
   exif?: Record<string, any> | null;
   /**
+   * The time the image or video was taken, in milliseconds since the Unix epoch, as the system media
+   * library reports it. It can be set for images that have no EXIF date. This might be `null` when the
+   * system does not provide it, for example when the user selects a file by browsing the file system.
+   *
+   * @platform android
+   */
+  creationTime?: number | null;
+  /**
    * When the `base64` option is truthy, it is a Base64-encoded string of the selected image's JPEG data, otherwise `null`.
    * If you prepend this with `'data:image/jpeg;base64,'` to create a data URI,
    * you can use it as the source of an `Image` element; for example:
