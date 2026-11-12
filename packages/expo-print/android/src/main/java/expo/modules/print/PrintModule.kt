@@ -156,7 +156,13 @@ class PrintModule : Module() {
     val isLandscape = ORIENTATION_LANDSCAPE == orientation
     val paperSize = options.preferredPaperSize?.toPortraitMediaSize()
     if (paperSize != null) {
-      builder.setMediaSize(if (isLandscape) paperSize.asLandscape() else paperSize)
+      builder.setMediaSize(
+        if (isLandscape) {
+          paperSize.asLandscape()
+        } else {
+          paperSize
+        }
+      )
     } else if (isLandscape) {
       builder.setMediaSize(PrintAttributes.MediaSize.UNKNOWN_LANDSCAPE)
     } else {
