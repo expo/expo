@@ -457,10 +457,9 @@ export function createMetroDependencyPlugin(
           const requireRuntime = nativeRequire(worker.context, state, runtime.index, runtimeName);
           const resolved = `${requireRuntime}.unstable_resolve(${state.dependencyMapName}[${target.index}], ${state.dependencyMapName}.paths)`;
           const rewritten = source
-            .replace(
-              /^new\s+(?:Worker|SharedWorker)/,
-              `new (${requireRuntime}.unstable_createWorker)`
-            )
+            // A shared worker is keyed by its script URL, and a per-document Object URL would give
+            // every document its own worker, so `new SharedWorker` keeps its constructor
+            .replace(/^new\s+Worker\b/, `new (${requireRuntime}.unstable_createWorker)`)
             .replace(`${match[2]}${name}${match[2]}`, resolved);
           worker.replaceWith({
             code: rewritten,

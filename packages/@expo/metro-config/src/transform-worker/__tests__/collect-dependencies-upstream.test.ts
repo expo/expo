@@ -793,7 +793,7 @@ describe(`Worker`, () => {
     ]);
     expect(codeFromAst(ast)).toEqual(
       comparableCode(`
-      const a = new (require(_dependencyMap[1], "asyncRequire").unstable_createWorker)(new URL(require(_dependencyMap[1], "asyncRequire").unstable_resolve(_dependencyMap[0], _dependencyMap.paths), import.meta.url));
+      const a = new SharedWorker(new URL(require(_dependencyMap[1], "asyncRequire").unstable_resolve(_dependencyMap[0], _dependencyMap.paths), import.meta.url));
     `)
     );
   });
