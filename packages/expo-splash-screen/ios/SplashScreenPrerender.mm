@@ -7,12 +7,21 @@
 #import <objc/runtime.h>
 
 #import <React/RCTComponentViewFactory.h>
+#import <React/RCTComponentViewRegistry.h>
 #import <React/RCTMountingManager.h>
 #import <React/RCTParagraphComponentView.h>
 #import <React/RCTSafeAreaViewComponentView.h>
+#import <React/RCTScheduler.h>
 #import <React/RCTScrollViewComponentView.h>
+#import <React/RCTSurfaceHostingProxyRootView.h>
+#import <React/RCTSurfacePresenter.h>
+#import <React/RCTSurfaceProtocol.h>
 #import <React/RCTViewComponentView.h>
 #import <React/RCTUtils.h>
+
+#import <react/renderer/mounting/MountingOverrideDelegate.h>
+#import <react/renderer/mounting/MountingTransaction.h>
+#import <react/renderer/uimanager/UIManager.h>
 
 #import <react/renderer/attributedstring/conversions.h>
 #import <react/renderer/components/text/BaseTextProps.h>
@@ -40,6 +49,10 @@
 #import <react/utils/FollyConvert.h>
 
 #import <folly/dynamic.h>
+
+#import <cstring>
+#import <unordered_map>
+#import <unordered_set>
 
 using namespace facebook::react;
 
@@ -148,6 +161,242 @@ class MountingTreeDelegate : public ShadowTreeDelegate {
 
  private:
   RCTMountingManager *mountingManager_;
+};
+
+/**
+ Hydration at the mounting layer. After the snapshot is committed into the app's surface, React
+ builds its tree over several commits. Instead of letting those commits delete the prerendered views,
+ the deletes are held back; when React later creates a node with the same tag and component, the
+ `Create` becomes an `Update` of the prerendered view (adoption). Whatever React never claims is
+ removed directly from the view hierarchy once the app has hidden the splash screen and React has
+ settled; replaying the held mutations later would confuse other mounting delegates that mirror the
+ stream (Reanimated's layout animations). Mutations otherwise pass through untouched. Runs on the
+ mounting thread (main).
+ */
+class TransactionWatcher : public MountingOverrideDelegate {
+ public:
+  struct Stats {
+    int number{}, create{}, insert{}, update{}, remove{}, del{}, adopted{}, held{};
+    bool isHydrationCommit{};
+  };
+
+  TransactionWatcher(std::unordered_set<Tag> prerendered, std::function<void(Stats)> onTransaction)
+      : prerendered_(std::move(prerendered)), onTransaction_(std::move(onTransaction))
+  {
+  }
+
+  bool isActive() const { return active_; }
+  std::vector<Tag> heldTags() const
+  {
+    std::vector<Tag> tags;
+    for (const auto &entry : heldDeletes_) tags.push_back(entry.first);
+    return tags;
+  }
+  void deactivate() { active_ = false; heldDeletes_.clear(); heldRemoves_.clear(); }
+
+  bool shouldOverridePullTransaction() const override { return true; }
+
+  std::optional<MountingTransaction> pullTransaction(
+      SurfaceId surfaceId,
+      MountingTransaction::Number number,
+      const TransactionTelemetry &telemetry,
+      ShadowViewMutationList mutations) const override
+  {
+    Stats stats;
+    stats.number = (int)number;
+    // The first transaction this watcher sees is the hydration commit itself.
+    stats.isHydrationCommit = !sawFirst_;
+    sawFirst_ = true;
+    ShadowViewMutationList out;
+    out.reserve(mutations.size());
+    for (auto &mutation : mutations) {
+      if (active_) {
+        Tag tag = mutation.type == ShadowViewMutation::Create || mutation.type == ShadowViewMutation::Insert || mutation.type == ShadowViewMutation::Update
+            ? mutation.newChildShadowView.tag
+            : mutation.oldChildShadowView.tag;
+        if (mutation.type == ShadowViewMutation::Remove && isHeldCandidate(tag)) {
+          heldRemoves_.insert_or_assign(tag, mutation);
+          continue;
+        }
+        if (mutation.type == ShadowViewMutation::Delete && isHeldCandidate(tag)) {
+          heldDeletes_.insert_or_assign(tag, mutation);
+          continue;
+        }
+        if (mutation.type == ShadowViewMutation::Create) {
+          auto held = heldDeletes_.find(tag);
+          if (held != heldDeletes_.end()) {
+            const ShadowView &old = held->second.oldChildShadowView;
+            auto removed = heldRemoves_.find(tag);
+            if (std::strcmp(old.componentName, mutation.newChildShadowView.componentName) == 0) {
+              out.push_back(ShadowViewMutation::UpdateMutation(
+                  old, mutation.newChildShadowView, removed != heldRemoves_.end() ? removed->second.parentTag : -1));
+              adopted_.insert(tag);
+              heldDeletes_.erase(held);
+              if (removed != heldRemoves_.end()) heldRemoves_.erase(removed);
+              stats.adopted++;
+              continue;
+            }
+            // Same tag, different component: the prerendered view goes first.
+            if (removed != heldRemoves_.end()) {
+              out.push_back(removed->second);
+              heldRemoves_.erase(removed);
+            }
+            out.push_back(held->second);
+            heldDeletes_.erase(held);
+          }
+        }
+      }
+      out.push_back(mutation);
+    }
+    for (const auto &mutation : out) {
+      switch (mutation.type) {
+        case ShadowViewMutation::Create: stats.create++; break;
+        case ShadowViewMutation::Insert: stats.insert++; break;
+        case ShadowViewMutation::Update: stats.update++; break;
+        case ShadowViewMutation::Remove: stats.remove++; break;
+        case ShadowViewMutation::Delete: stats.del++; break;
+        default: break;
+      }
+    }
+    stats.held = (int)heldDeletes_.size();
+    onTransaction_(stats);
+    return MountingTransaction{surfaceId, number, std::move(out), telemetry};
+  }
+
+ private:
+  bool isHeldCandidate(Tag tag) const { return prerendered_.count(tag) != 0 && adopted_.count(tag) == 0; }
+
+  std::unordered_set<Tag> prerendered_;
+  std::function<void(Stats)> onTransaction_;
+  mutable bool active_ = true;
+  mutable bool sawFirst_ = false;
+  mutable std::unordered_set<Tag> adopted_;
+  mutable std::unordered_map<Tag, ShadowViewMutation> heldDeletes_;
+  mutable std::unordered_map<Tag, ShadowViewMutation> heldRemoves_;
+};
+
+/**
+ Builds the snapshot into the app's own surface through its UIManager, the way JS does
+ (`createNode` / `appendChild`), with the components and tags React used when the snapshot was taken.
+ The snapshot is a view hierarchy: UIKit views between two Fabric views (a navigation controller's
+ containers, a scroll view's content view) belong to the native components, not to React, so a node's
+ React children are the tagged descendants reachable without crossing another tagged node. Text runs
+ under a paragraph are kept. Views without a React tag (UIKit chrome) are left to the overlay.
+ */
+class HydrationBuilder {
+ public:
+  HydrationBuilder(const UIManager &uiManager, SurfaceId surfaceId) : uiManager_(uiManager), surfaceId_(surfaceId) {}
+
+  /**
+   Native containers that drive UIKit controllers (react-native-screens stacks, tabs, headers) cannot
+   be instantiated from a props subset without React: UIKit asserts on their half-configured state.
+   They are drawn as plain views with fresh tags; React creates the real ones and the prerendered
+   children (which keep their tags) are adopted into them.
+   */
+  static bool isNativeController(const std::string &component)
+  {
+    return component.rfind("RNS", 0) == 0;
+  }
+
+  /**
+   Nodes created here have event targets with no React instance behind them, and the first event a
+   native view emits on its own (`onInsetsChange` from a safe-area provider, scroll and layout
+   events) would crash in `UIManagerBinding::dispatchEvent`. Only components that never emit events
+   without a prop asking for it keep React's tag and component; the rest are plain views with fresh
+   tags, and React creates the real ones (their prerendered children still get adopted).
+   */
+  static bool emitsNoEventsOnItsOwn(const std::string &component)
+  {
+    return component == "View" || component == "Paragraph" || component.find("SplashScreenExcludeView") != std::string::npos;
+  }
+
+  std::shared_ptr<const ShadowNode> buildTagged(const folly::dynamic &node)
+  {
+    Tag tag = (Tag)node["tag"].asInt();
+    std::string component = node.count("component") != 0 && node["component"].isString() ? node["component"].asString() : node["name"].asString();
+    folly::dynamic props = node.count("props") != 0 && node["props"].isObject() ? node["props"] : folly::dynamic::object();
+    std::shared_ptr<ShadowNode> shadowNode;
+    if (!isNativeController(component) && emitsNoEventsOnItsOwn(component)) {
+      try {
+        shadowNode = uiManager_.createNode(tag, component, surfaceId_, RawProps(props), nullptr);
+        reused_++;
+      } catch (const std::exception &) {
+        shadowNode = nullptr;
+      }
+    }
+    if (!shadowNode) {
+      tag = allocateTag();
+      shadowNode = uiManager_.createNode(tag, node["name"].asString(), surfaceId_, RawProps(props), nullptr);
+    }
+    prerendered_.insert(tag);
+    created_++;
+    std::vector<std::shared_ptr<const ShadowNode>> children;
+    collectChildren(node, children);
+    for (const auto &child : children) {
+      uiManager_.appendChild(shadowNode, child);
+    }
+    return shadowNode;
+  }
+
+  /// Root children: the tagged nodes right below React's root view.
+  void buildRootChildren(const folly::dynamic &rootNode, std::vector<std::shared_ptr<const ShadowNode>> &out) { collectChildren(rootNode, out); }
+
+  const std::unordered_set<Tag> &prerenderedTags() const { return prerendered_; }
+  int created() const { return created_; }
+  int reused() const { return reused_; }
+
+ private:
+  void collectChildren(const folly::dynamic &node, std::vector<std::shared_ptr<const ShadowNode>> &out)
+  {
+    if (node.count("children") == 0 || !node["children"].isArray()) {
+      return;
+    }
+    for (const auto &child : node["children"]) {
+      const std::string name = child["name"].asString();
+      if (child.count("tag") != 0 && child["tag"].isInt()) {
+        out.push_back(buildTagged(child));
+      } else if (name == "Text" || name == "RawText") {
+        out.push_back(buildText(child));
+      } else if (name == "Paragraph") {
+        // A UIKit label (navigation title, tab label): not React's, the overlay draws it.
+      } else {
+        collectChildren(child, out); // a UIKit view: hoist whatever React owns below it
+      }
+    }
+  }
+
+  std::shared_ptr<const ShadowNode> buildText(const folly::dynamic &node)
+  {
+    Tag tag = allocateTag();
+    folly::dynamic props = node.count("props") != 0 && node["props"].isObject() ? node["props"] : folly::dynamic::object();
+    auto shadowNode = uiManager_.createNode(tag, node["name"].asString(), surfaceId_, RawProps(props), nullptr);
+    prerendered_.insert(tag);
+    created_++;
+    if (node.count("children") != 0 && node["children"].isArray()) {
+      for (const auto &child : node["children"]) {
+        uiManager_.appendChild(shadowNode, buildText(child));
+      }
+    }
+    return shadowNode;
+  }
+
+  // Odd tags: React allocates even ones, roots end in 1.
+  Tag allocateTag()
+  {
+    Tag tag = nextTag_;
+    nextTag_ += 2;
+    if (nextTag_ % 10 == 1) {
+      nextTag_ += 2;
+    }
+    return tag;
+  }
+
+  const UIManager &uiManager_;
+  SurfaceId surfaceId_;
+  std::unordered_set<Tag> prerendered_;
+  Tag nextTag_ = 1000003;
+  int created_ = 0;
+  int reused_ = 0;
 };
 
 #pragma mark - Snapshot of the screen
@@ -408,6 +657,9 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
   if ([view isKindOfClass:[RCTViewComponentView class]]) {
     auto *componentView = (RCTViewComponentView *)view;
     const auto &metrics = layoutMetricsOf(componentView);
+    // React's tag and component name, for the next launch to hand these views back to React.
+    props["_tag"] = (int64_t)view.tag;
+    props["_component"] = [[view class] componentDescriptorProvider].name;
     if (const auto *viewProps = std::dynamic_pointer_cast<const ViewProps>([componentView props]).get()) {
       serializeViewProps(*viewProps, metrics, props);
     }
@@ -493,6 +745,18 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
   NSTimeInterval _processStart;
   NSString *_templateSource;
   NSDictionary<NSString *, NSString *> *_snapshotFonts;
+  NSInteger _snapshotRootTag;
+  folly::dynamic _snapshotTemplate;
+  std::shared_ptr<TransactionWatcher> _transactionWatcher;
+  BOOL _hydrated;
+  BOOL _awaitingReactTransaction;
+  BOOL _reactCommitted;
+  BOOL _flushPending;
+  BOOL _dismissPending;
+  NSTimeInterval _pendingDismissFade;
+  int _adoptedTotal;
+  NSTimeInterval _lastTransactionTime;
+  NSTimeInterval _pendingCaptureDelay;
   __weak UIView *_appRootView;
 }
 
@@ -694,6 +958,8 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
         [snapshot[@"template"] isKindOfClass:[NSDictionary class]]) {
       _templateSource = @"snapshot";
       _snapshotFonts = [snapshot[@"fonts"] isKindOfClass:[NSDictionary class]] ? snapshot[@"fonts"] : nil;
+      _snapshotRootTag = [snapshot[@"rootTag"] respondsToSelector:@selector(integerValue)] ? [snapshot[@"rootTag"] integerValue] : 0;
+      _snapshotTemplate = convertIdToFollyDynamic(snapshot[@"template"]);
       return snapshot[@"template"];
     }
     [self log:@"snapshot does not match this environment, using the bundled template"];
@@ -714,6 +980,11 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
 
 - (void)captureLaunchScreenAfterDelay:(NSTimeInterval)delay
 {
+  if (_hydrated && !_reactCommitted) {
+    // The screen on display is still the prerender; capture once React has taken over.
+    _pendingCaptureDelay = MAX(delay, 0.5);
+    return;
+  }
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
     [self saveLaunchScreen];
   });
@@ -736,12 +1007,34 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
   templateDynamic["props"].erase("position");
   templateDynamic["props"].erase("left");
   templateDynamic["props"].erase("top");
+  // `_tag` / `_component` were collected as props for convenience; they are node fields.
+  std::function<void(folly::dynamic &)> hoist = [&](folly::dynamic &n) {
+    auto &p = n["props"];
+    if (p.count("_tag") != 0) {
+      n["tag"] = p["_tag"];
+      n["component"] = p["_component"];
+      p.erase("_tag");
+      p.erase("_component");
+    }
+    for (auto &child : n["children"]) {
+      hoist(child);
+    }
+  };
+  hoist(templateDynamic);
+  NSInteger rootTag = [rootView isKindOfClass:[RCTSurfaceHostingProxyRootView class]]
+      ? ((RCTSurfaceHostingProxyRootView *)rootView).surface.rootTag
+      : 0;
   NSDictionary *environment = [self environmentKeyForTraits:rootView.traitCollection
                                                      bounds:UIScreen.mainScreen.bounds
                                                       scale:UIScreen.mainScreen.scale];
   NSURL *url = [self snapshotURL];
   NSDictionary *fonts = [[self class] fontFilesForFamilies:[[self class] fontFamiliesUsedByTemplate:templateDynamic]];
-  NSDictionary *snapshot = @{@"environment" : environment, @"fonts" : fonts, @"template" : convertFollyDynamicToId(templateDynamic)};
+  NSDictionary *snapshot = @{
+    @"environment" : environment,
+    @"fonts" : fonts,
+    @"rootTag" : @(rootTag),
+    @"template" : convertFollyDynamicToId(templateDynamic)
+  };
   [self log:[NSString stringWithFormat:@"snapshot serialized (%d views)", 5000 - budget]];
   dispatch_async(dispatch_get_global_queue(QOS_CLASS_UTILITY, 0), ^{
     NSData *data = [NSJSONSerialization dataWithJSONObject:snapshot options:0 error:nil];
@@ -843,6 +1136,201 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
   }
 }
 
+#pragma mark - Hydration (snapshot committed into the app's surface)
+
+/// Experimental, off by default: `ExpoSplashScreenPrerenderHydrate` in Info.plist or as a launch argument.
+- (BOOL)isHydrationEnabled
+{
+  id launchArgument = [[NSUserDefaults standardUserDefaults] objectForKey:@"ExpoSplashScreenPrerenderHydrate"];
+  if (launchArgument != nil) {
+    return [launchArgument boolValue];
+  }
+  return [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"ExpoSplashScreenPrerenderHydrate"] boolValue];
+}
+
+/**
+ Main thread. Once the app's surface has a shadow tree (its scheduler exists, before the bundle has
+ run), commits the snapshot into it with the recorded tags and mounts synchronously. React's first
+ commit then updates these views in place. Polls briefly because the surface starts asynchronously.
+ */
+- (void)hydrateAppSurfaceWhenReady
+{
+  RCTAssertMainQueue();
+  if (!_isSnapshotEnabled || ![self isHydrationEnabled] || _snapshotRootTag == 0 || _snapshotTemplate.isNull()) {
+    return;
+  }
+  NSTimeInterval deadline = [[NSProcessInfo processInfo] systemUptime] + 3.0;
+  [self log:@"hydration: waiting for the app surface"];
+  [self tryHydrateUntil:deadline];
+}
+
+- (void)tryHydrateUntil:(NSTimeInterval)deadline
+{
+  UIView *rootView = _appRootView;
+  if (_hydrated || !rootView || ![rootView isKindOfClass:[RCTSurfaceHostingProxyRootView class]]) {
+    return;
+  }
+  id<RCTSurfaceProtocol> surface = ((RCTSurfaceHostingProxyRootView *)rootView).surface;
+  RCTSurfacePresenter *presenter = [(NSObject *)surface valueForKey:@"surfacePresenter"];
+  std::shared_ptr<UIManager> uiManager = presenter.scheduler.uiManager;
+  SurfaceId surfaceId = (SurfaceId)surface.rootTag;
+  bool found = false;
+  bool empty = false;
+  std::shared_ptr<const MountingCoordinator> coordinator;
+  if (uiManager) {
+    uiManager->getShadowTreeRegistry().visit(surfaceId, [&](const ShadowTree &tree) {
+      found = true;
+      empty = tree.getCurrentRevision().rootShadowNode->getChildren().empty();
+      coordinator = tree.getMountingCoordinator();
+    });
+  }
+  if (!found) {
+    // The host starts the surface only after the bundle has loaded; its shadow tree appears on the
+    // JS thread right before React's first render, so this polls fast and commits in that window.
+    // (Starting the surface earlier ourselves runs `startSurface` in JS before the bundle installed
+    // `RN$AppRegistry` and crashes; an empty-surface start would need the host's cooperation.)
+    if ([[NSProcessInfo processInfo] systemUptime] < deadline) {
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+        [self tryHydrateUntil:deadline];
+      });
+    } else {
+      [self log:@"hydration: app surface did not appear in time"];
+    }
+    return;
+  }
+  if (!empty) {
+    [self log:@"hydration: React already committed, skipping"];
+    return;
+  }
+  if (surfaceId != _snapshotRootTag) {
+    [self log:[NSString stringWithFormat:@"hydration: surface %d but snapshot was taken on %ld, skipping", surfaceId, (long)_snapshotRootTag]];
+    return;
+  }
+
+  // The snapshot's structure above React's root component view (the hosting view, the surface
+  // view) is UIKit; React's children hang directly off the surface's root node.
+  const folly::dynamic *reactRoot = nullptr;
+  std::function<void(const folly::dynamic &)> findRoot = [&](const folly::dynamic &n) {
+    if (reactRoot) return;
+    if (n.count("tag") != 0 && n["tag"].isInt() && n["tag"].asInt() == surfaceId) {
+      reactRoot = &n;
+      return;
+    }
+    if (n.count("children") != 0) {
+      for (const auto &child : n["children"]) findRoot(child);
+    }
+  };
+  findRoot(_snapshotTemplate);
+  if (!reactRoot) {
+    [self log:@"hydration: snapshot has no React root view, skipping"];
+    return;
+  }
+  // Touches would reach views whose event emitters have no React instance behind them yet.
+  rootView.userInteractionEnabled = NO;
+  try {
+    HydrationBuilder builder(*uiManager, surfaceId);
+    auto children = std::make_shared<std::vector<std::shared_ptr<const ShadowNode>>>();
+    builder.buildRootChildren(*reactRoot, *children);
+    // Watch the transactions that follow: hold React's deletes of these nodes, adopt on matching creates.
+    __weak SplashScreenPrerender *weakSelf = self;
+    _transactionWatcher = std::make_shared<TransactionWatcher>(builder.prerenderedTags(), [weakSelf](TransactionWatcher::Stats stats) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [weakSelf didObserveTransaction:stats];
+      });
+    });
+    coordinator->setMountingOverrideDelegate(_transactionWatcher);
+    uiManager->completeSurface(surfaceId, children, ShadowTree::CommitOptions{.mountSynchronously = true});
+    _hydrated = YES;
+    _awaitingReactTransaction = YES;
+    [self log:[NSString stringWithFormat:@"hydration: committed %d nodes into surface %d, %d with React's tags and components", builder.created(), surfaceId, builder.reused()]];
+  } catch (const std::exception &e) {
+    rootView.userInteractionEnabled = YES;
+    NSLog(@"[expo-splash-screen] prerender: hydration failed: %s", e.what());
+  }
+}
+
+- (void)didObserveTransaction:(TransactionWatcher::Stats)stats
+{
+  _lastTransactionTime = [[NSProcessInfo processInfo] systemUptime];
+  _adoptedTotal += stats.adopted;
+  if (stats.create + stats.insert + stats.update + stats.remove + stats.del > 0) {
+    [self log:[NSString stringWithFormat:@"transaction #%d: %d create, %d insert, %d update (%d adopted prerendered views), %d remove, %d delete, %d prerendered views still held",
+                                         stats.number, stats.create, stats.insert, stats.update, stats.adopted, stats.remove, stats.del, stats.held]];
+  }
+  if (!_awaitingReactTransaction || stats.isHydrationCommit || stats.create + stats.insert + stats.update + stats.remove + stats.del == 0) {
+    return;
+  }
+  _awaitingReactTransaction = NO;
+  _reactCommitted = YES;
+  _appRootView.userInteractionEnabled = YES;
+  [self log:@"hydration: React's first commit landed, interaction enabled"];
+  // The hosting view already reported "content did appear" for the hydration mount (ignored by the
+  // splash screen manager); React's own first content is what the app is waiting for.
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"RCTContentDidAppearNotification" object:_appRootView];
+  if (_pendingCaptureDelay > 0) {
+    NSTimeInterval delay = _pendingCaptureDelay;
+    _pendingCaptureDelay = 0;
+    [self captureLaunchScreenAfterDelay:delay];
+  }
+}
+
+- (BOOL)shouldIgnoreContentDidAppear
+{
+  return _hydrated && !_reactCommitted;
+}
+
+/// The app hid the splash screen: its first screen is up. Once React has been quiet for a moment,
+/// the prerendered views it did not adopt are removed.
+- (void)finishHydration
+{
+  if (!_transactionWatcher || !_transactionWatcher->isActive() || _flushPending) {
+    return;
+  }
+  _flushPending = YES;
+  [self log:[NSString stringWithFormat:@"hydration: splash hidden, %lu prerendered views still held, waiting for React to settle", (unsigned long)_transactionWatcher->heldTags().size()]];
+  [self flushHydrationIfSettled];
+}
+
+- (void)flushHydrationIfSettled
+{
+  if (!_flushPending || !_transactionWatcher || !_transactionWatcher->isActive()) {
+    return;
+  }
+  NSTimeInterval quietFor = [[NSProcessInfo processInfo] systemUptime] - _lastTransactionTime;
+  if (quietFor < 0.25) {
+    __weak SplashScreenPrerender *weakSelf = self;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)((0.25 - quietFor) * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+      [weakSelf flushHydrationIfSettled];
+    });
+    return;
+  }
+  _flushPending = NO;
+  UIView *rootView = _appRootView;
+  id<RCTSurfaceProtocol> surface = [rootView isKindOfClass:[RCTSurfaceHostingProxyRootView class]] ? ((RCTSurfaceHostingProxyRootView *)rootView).surface : nil;
+  RCTSurfacePresenter *presenter = surface ? [(NSObject *)surface valueForKey:@"surfacePresenter"] : nil;
+  RCTComponentViewRegistry *registry = presenter.mountingManager.componentViewRegistry;
+  auto held = _transactionWatcher->heldTags();
+  int removed = 0;
+  for (Tag tag : held) {
+    UIView<RCTComponentViewProtocol> *view = [registry findComponentViewWithTag:tag];
+    if (!view) {
+      continue;
+    }
+    [view removeFromSuperview];
+    if ([view isKindOfClass:[RCTViewComponentView class]]) {
+      RCTComponentViewDescriptor descriptor = [registry componentViewDescriptorWithTag:tag];
+      [registry enqueueComponentViewWithComponentHandle:[[view class] componentDescriptorProvider].handle tag:tag componentViewDescriptor:descriptor];
+    }
+    removed++;
+  }
+  _transactionWatcher->deactivate();
+  [self log:[NSString stringWithFormat:@"hydration: done, React adopted %d prerendered views, %d removed", _adoptedTotal, removed]];
+  if (_dismissPending) {
+    _dismissPending = NO;
+    [self dismissWithFadeDuration:_pendingDismissFade];
+  }
+}
+
 #pragma mark - Main thread
 
 - (BOOL)hasTemplate
@@ -907,6 +1395,14 @@ folly::dynamic serializeView(UIView *view, UIView *root, CGRect parentFrame, int
     dispatch_async(dispatch_get_main_queue(), ^{
       [self dismissWithFadeDuration:duration];
     });
+    return;
+  }
+  if (_transactionWatcher && _transactionWatcher->isActive()) {
+    // React is still building its tree out of (and around) the prerendered views; the overlay
+    // keeps covering until it has settled, then the leftovers go and the overlay fades.
+    _pendingDismissFade = duration;
+    _dismissPending = YES;
+    [self finishHydration];
     return;
   }
   UIView *container = _containerView;

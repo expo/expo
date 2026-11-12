@@ -75,6 +75,16 @@ NS_ASSUME_NONNULL_BEGIN
 /** Removes the stored snapshot; the next launch uses the bundled template. */
 - (void)clearLaunchScreen;
 
+/**
+ Main thread. With a snapshot loaded, commits it into the app's own surface (with the tags React
+ used when it was taken) as soon as that surface has a shadow tree, so React's first commit updates
+ the prerendered views in place instead of replacing them. Touches are blocked until then.
+ */
+- (void)hydrateAppSurfaceWhenReady;
+
+/** Whether a "content did appear" notification right now comes from the hydration mount, not from React. */
+- (BOOL)shouldIgnoreContentDidAppear;
+
 @end
 
 NS_ASSUME_NONNULL_END
