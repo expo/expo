@@ -112,3 +112,23 @@ struct UpdatesLogEntryListenerTests {
     #expect(listener.entries(containing: marker).count == 100)
   }
 }
+
+@Suite("UpdatesLogEntryForwarder")
+struct UpdatesLogEntryForwarderTests {
+  private let marker = UUID().uuidString
+
+  @Test
+  func `sends registry entries only while it is enabled`() {
+    let sent = RecordingListener()
+    let forwarder = UpdatesLogEntryForwarder { entry in sent.updatesLogEntryWasLogged(entry) }
+
+    UpdatesLogEntryListenerRegistry.sharedInstance.notify(["message": "before \(marker)"])
+    forwarder.setEnabled(true)
+    UpdatesLogEntryListenerRegistry.sharedInstance.notify(["message": "enabled \(marker)"])
+    forwarder.setEnabled(false)
+    UpdatesLogEntryListenerRegistry.sharedInstance.notify(["message": "after \(marker)"])
+
+    let messages = sent.entries(containing: marker).compactMap { $0["message"] as? String }
+    #expect(messages == ["enabled \(marker)"])
+  }
+}

@@ -1,5 +1,6 @@
 // Copyright 2019 650 Industries. All rights reserved.
 
+import EXUpdatesInterface
 import ExpoModulesCore
 
 /**
@@ -12,11 +13,16 @@ import ExpoModulesCore
  * by EXUpdatesBinding, a scoped module, in Expo Go.
  */
 public final class UpdatesModule: Module, UpdatesEventManagerObserver {
+  private lazy var logEntryForwarder = UpdatesLogEntryForwarder { [weak self] entry in
+    self?.sendEvent(EXUpdatesLogEntryEventName, entry)
+  }
+
   public func definition() -> ModuleDefinition {
     Name("ExpoUpdates")
 
     Events(
-      EXUpdatesStateChangeEventName
+      EXUpdatesStateChangeEventName,
+      EXUpdatesLogEntryEventName
     )
 
     Constants {
@@ -31,8 +37,17 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
       AppController.removeUpdatesEventManagerObserver()
     }
 
+    OnStartObserving(EXUpdatesLogEntryEventName) {
+      self.logEntryForwarder.setEnabled(true)
+    }
+
+    OnStopObserving(EXUpdatesLogEntryEventName) {
+      self.logEntryForwarder.setEnabled(false)
+    }
+
     OnDestroy {
       AppController.removeUpdatesEventManagerObserver()
+      self.logEntryForwarder.setEnabled(false)
     }
 
     AsyncFunction("reload") { (options: ReloadScreenOptions?, promise: Promise) in
@@ -184,5 +199,27 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
         requestHeaders: requestHeaders
       )
     }
+  }
+}
+
+/// Sends the log entries from `UpdatesLogEntryListenerRegistry` to `send` while it is enabled.
+/// `UpdatesModule` enables it while JS listens for log entries.
+internal final class UpdatesLogEntryForwarder: UpdatesLogEntryListener {
+  private let send: ([String: Any]) -> Void
+
+  init(send: @escaping ([String: Any]) -> Void) {
+    self.send = send
+  }
+
+  func setEnabled(_ enabled: Bool) {
+    if enabled {
+      UpdatesLogEntryListenerRegistry.sharedInstance.add(self)
+    } else {
+      UpdatesLogEntryListenerRegistry.sharedInstance.remove(self)
+    }
+  }
+
+  func updatesLogEntryWasLogged(_ entry: [String: Any]) {
+    send(entry)
   }
 }
