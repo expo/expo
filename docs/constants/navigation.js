@@ -649,6 +649,7 @@ export const eas = [
       makePage('eas/observe/integrations/react-navigation.mdx'),
       makePage('eas/observe/integrations/expo-image.mdx'),
       makePage('eas/observe/integrations/react-native-reanimated.mdx'),
+      makePage('eas/observe/integrations/expo-updates.mdx'),
       makePage('eas/observe/integrations/third-party.mdx'),
     ]),
     makeGroup('Reference', [
