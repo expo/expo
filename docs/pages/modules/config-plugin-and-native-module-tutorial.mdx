@@ -40,20 +40,17 @@ This guide uses the name `expo-native-configuration`/`ExpoNativeConfiguration` f
 
 ## Set up workspace
 
-In this example, you don't need the view module included by `create-expo-module`. Clean up the default module with the following command:
+In this example, you don't need the types file and the web module included by `create-expo-module`. Clean up the default module with the following command:
 
 <Terminal
-  cmdCopy="cd expo-native-configuration && rm ios/ExpoNativeConfigurationView.swift && rm android/src/main/java/expo/modules/nativeconfiguration/ExpoNativeConfigurationView.kt && rm src/ExpoNativeConfigurationView.tsx src/ExpoNativeConfiguration.types.ts && rm src/ExpoNativeConfigurationView.web.tsx src/ExpoNativeConfigurationModule.web.ts"
+  cmdCopy="cd expo-native-configuration && rm src/ExpoNativeConfiguration.types.ts src/ExpoNativeConfigurationModule.web.ts"
   cmd={[
     '$ cd expo-native-configuration',
-    '$ rm android/src/main/java/expo/modules/nativeconfiguration/ExpoNativeConfigurationView.kt',
-    '$ rm ios/ExpoNativeConfigurationView.swift',
-    '$ rm src/ExpoNativeConfigurationView.tsx src/ExpoNativeConfiguration.types.ts',
-    '$ rm src/ExpoNativeConfigurationView.web.tsx src/ExpoNativeConfigurationModule.web.ts',
+    '$ rm src/ExpoNativeConfiguration.types.ts src/ExpoNativeConfigurationModule.web.ts',
   ]}
 />
 
-Locate the following files and replace them with the provided minimal boilerplate:
+Locate the following files and replace them with the provided minimal boilerplate. The native module uses the Expo Modules API 2.0: the `@ExpoModule` attribute registers the class as a module, and the `@JS` attribute exposes a function to JavaScript.
 
 - **android/src/main/java/expo/modules/nativeconfiguration/ExpoNativeConfigurationModule.kt**
 - **ios/ExpoNativeConfigurationModule.swift**
@@ -65,16 +62,15 @@ Locate the following files and replace them with the provided minimal boilerplat
 ```kotlin android/src/main/java/expo/modules/nativeconfiguration/ExpoNativeConfigurationModule.kt
 package expo.modules.nativeconfiguration
 
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
 
+@ExpoModule("ExpoNativeConfiguration")
 class ExpoNativeConfigurationModule : Module() {
-  override fun definition() = ModuleDefinition {
-    Name("ExpoNativeConfiguration")
-
-    Function("getApiKey") {
-      return@Function "api-key"
-    }
+  @JS
+  fun getApiKey(): String {
+    return "api-key"
   }
 }
 ```
@@ -82,13 +78,11 @@ class ExpoNativeConfigurationModule : Module() {
 ```swift ios/ExpoNativeConfigurationModule.swift
 import ExpoModulesCore
 
+@ExpoModule("ExpoNativeConfiguration")
 public class ExpoNativeConfigurationModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoNativeConfiguration")
-
-    Function("getApiKey") { () -> String in
-      "api-key"
-    }
+  @JS
+  func getApiKey() -> String {
+    return "api-key"
   }
 }
 ```
@@ -404,19 +398,19 @@ On Android, access metadata information from the **AndroidManifest.xml** file us
 ```kotlin android/src/main/java/expo/modules/nativeconfiguration/ExpoNativeConfigurationModule.kt
 package expo.modules.nativeconfiguration
 
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
 import android.content.pm.PackageManager
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContext
 
-class ExpoNativeConfigurationModule() : Module() {
-  override fun definition() = ModuleDefinition {
-    Name("ExpoNativeConfiguration")
+@ExpoModule("ExpoNativeConfiguration")
+class ExpoNativeConfigurationModule : Module() {
+  @JS
+  fun getApiKey(): String? {
+    val applicationInfo = androidContext.packageManager.getApplicationInfo(androidContext.packageName, PackageManager.GET_META_DATA)
 
-    Function("getApiKey") {
-      val applicationInfo = appContext?.reactContext?.packageManager?.getApplicationInfo(appContext?.reactContext?.packageName.toString(), PackageManager.GET_META_DATA)
-
-      return@Function applicationInfo?.metaData?.getString("MY_CUSTOM_API_KEY")
-    }
+    return applicationInfo.metaData?.getString("MY_CUSTOM_API_KEY")
   }
 }
 ```
@@ -426,13 +420,11 @@ On iOS, you can read the content of an **Info.plist** property using the `Bundle
 ```swift ios/ExpoNativeConfigurationModule.swift
 import ExpoModulesCore
 
+@ExpoModule("ExpoNativeConfiguration")
 public class ExpoNativeConfigurationModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("ExpoNativeConfiguration")
-
-    Function("getApiKey") {
-     return Bundle.main.object(forInfoDictionaryKey: "MY_CUSTOM_API_KEY") as? String
-    }
+  @JS
+  func getApiKey() -> String? {
+    return Bundle.main.object(forInfoDictionaryKey: "MY_CUSTOM_API_KEY") as? String
   }
 }
 ```

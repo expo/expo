@@ -39,54 +39,27 @@ This guide explains how to use the [Expo Modules API](/modules/overview/) to cre
 
 <Step label="1">
 
-Create a local Expo module in your project:
+Create a local Expo module with the `ComposeView` feature example in your project:
 
-<Terminal cmd={['$ npx create-expo-module@latest --local my-ui']} />
+<Terminal
+  cmd={[
+    '$ npx create-expo-module@latest --local my-ui --features ComposeView',
+  ]}
+/>
+
+The `ComposeView` feature enables Jetpack Compose in the module's **android/build.gradle**, adds `expo-ui` and the Compose libraries as dependencies, and creates a views module, `MyUiViewsModule`, with the JavaScript name `MyUiViews`. The Expo Modules API 2.0 doesn't support views yet, so the views module registers views with the Module DSL.
 
 </Step>
 
 <Step label="2">
 
-Update your module's **android/build.gradle** to enable Jetpack Compose and depend on `expo-ui`. Comments in the following snippet mark the lines you add to the default scaffold:
+Delete the example view, because you replace it with your own view in the next steps:
 
-```groovy modules/my-ui/android/build.gradle
-// Pull in the Kotlin Compose compiler plugin classpath.
-buildscript {
-  repositories {
-    mavenCentral()
-  }
-  dependencies {
-    classpath("org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:${kotlinVersion}")
-  }
-}
-
-apply plugin: 'com.android.library'
-apply plugin: 'expo-module-gradle-plugin'
-apply plugin: 'org.jetbrains.kotlin.plugin.compose' // Apply the Compose compiler plugin.
-
-// ... group / version
-
-android {
-  // ... namespace, defaultConfig
-
-  // Turn on Jetpack Compose for this module.
-  buildFeatures {
-    compose true
-  }
-}
-
-// Depend on `expo-ui` plus the Compose libraries you use.
-dependencies {
-  if (findProject(':expo-ui') != null) {
-    implementation project(':expo-ui')
-  } else {
-    implementation 'expo.modules.ui:expo.modules.ui:+'
-  }
-  implementation 'androidx.compose.foundation:foundation-android:1.10.6'
-  implementation 'androidx.compose.ui:ui-android:1.10.6'
-  implementation 'androidx.compose.material3:material3:1.5.0-alpha17'
-}
-```
+<Terminal
+  cmd={[
+    '$ rm modules/my-ui/android/src/main/java/expo/modules/myui/MyUiComposeView.kt modules/my-ui/src/MyUiComposeView.tsx',
+  ]}
+/>
 
 </Step>
 
@@ -139,18 +112,18 @@ fun FunctionalComposableScope.MyCustomViewContent(props: MyCustomViewProps) {
 
 <Step label="4">
 
-Register the view in your module using `ExpoUIView`. This wires your `@Composable` content into the Expo modules view system and makes it available to JavaScript:
+Register the view in the views module using `ExpoUIView`. This wires your `@Composable` content into the Expo modules view system and makes it available to JavaScript:
 
-```kotlin modules/my-ui/android/src/main/java/expo/modules/myui/MyUiModule.kt
+```kotlin modules/my-ui/android/src/main/java/expo/modules/myui/MyUiViewsModule.kt
 package expo.modules.myui
 
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.ui.ExpoUIView
 
-class MyUiModule : Module() {
+class MyUiViewsModule : Module() {
   override fun definition() = ModuleDefinition {
-    Name("MyUi")
+    Name("MyUiViews")
 
     ExpoUIView<MyCustomViewProps>("MyCustomView") {
       Content { props ->
@@ -178,7 +151,7 @@ export interface MyCustomViewProps extends PrimitiveBaseProps {
 }
 
 const NativeMyCustomView = requireNativeView<MyCustomViewProps>(
-  'MyUi',
+  'MyUiViews',
   'MyCustomView'
 );
 
@@ -290,9 +263,9 @@ fun customBorderModifier(params: CustomBorderParams): Modifier {
 
 <Step label="2">
 
-Register your modifier with `ModifierRegistry` in your module definition. Use `OnCreate` to register and `OnDestroy` to unregister so the factory does not leak across module reloads:
+Register your modifier with `ModifierRegistry` in the views module definition. Use `OnCreate` to register and `OnDestroy` to unregister so the factory does not leak across module reloads:
 
-```kotlin modules/my-ui/android/src/main/java/expo/modules/myui/MyUiModule.kt
+```kotlin modules/my-ui/android/src/main/java/expo/modules/myui/MyUiViewsModule.kt
 package expo.modules.myui
 
 import expo.modules.kotlin.modules.Module
@@ -301,9 +274,9 @@ import expo.modules.kotlin.records.recordFromMap
 import expo.modules.ui.ExpoUIView
 import expo.modules.ui.ModifierRegistry
 
-class MyUiModule : Module() {
+class MyUiViewsModule : Module() {
   override fun definition() = ModuleDefinition {
-    Name("MyUi")
+    Name("MyUiViews")
 
     OnCreate {
       ModifierRegistry.register("customBorder") { map, _, converterContext, _ ->

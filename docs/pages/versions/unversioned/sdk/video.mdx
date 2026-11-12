@@ -411,7 +411,7 @@ A typical setup looks as follows:
 
 1. Create an Expo module with [`create-expo-module`](/modules/get-started/).
 2. Add a class that conforms to `VideoAssetTransportProvider`.
-3. Register the provider in the module's `OnCreate` block.
+3. Register the provider in the module's `didCreate()` method.
 4. Build the app so the native module is compiled into your project.
 
 If you only need the provider in a single app, use the [local Expo module](/modules/get-started/#add-a-new-module-to-an-existing-application) flow.
@@ -446,25 +446,22 @@ final class ExampleVideoTransportProvider: VideoAssetTransportProvider {
 }
 ```
 
-2. To register the provider, the recommended place to register a provider is an Expo module's `OnCreate` block. This ensures the provider is available before videos start loading.
+2. To register the provider, the recommended place to register a provider is an Expo module's `didCreate()` method. This ensures the provider is available before videos start loading.
 
 ```swift
 import ExpoModulesCore
 import ExpoVideo
 
+@ExpoModule("CustomVideoTransport")
 public final class CustomVideoTransportModule: Module {
-  public func definition() -> ModuleDefinition {
-    Name("CustomVideoTransport")
+  public override func didCreate() {
+    VideoAssetTransportRegistry.registerProvider(ExampleVideoTransportProvider())
+  }
 
-    OnCreate {
-      VideoAssetTransportRegistry.registerProvider(ExampleVideoTransportProvider())
-    }
-
-    OnDestroy {
-      VideoAssetTransportRegistry.unregisterProvider(
-        withId: ExampleVideoTransportProvider.providerIdentifier
-      )
-    }
+  public override func willDestroy() {
+    VideoAssetTransportRegistry.unregisterProvider(
+      withId: ExampleVideoTransportProvider.providerIdentifier
+    )
   }
 }
 ```
