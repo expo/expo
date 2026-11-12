@@ -23,6 +23,9 @@ Pod::Spec.new do |s|
   # JavaScript thread (see `Runtime`).
   s.source_files   = '{Benchmarks,Runtime}/**/*.swift'
   s.dependency 'ExpoModulesCore'
+  # Test bundles link the C++ code of the static ExpoModulesCore library, but they do not inherit
+  # its user_target_xcconfig (-lc++).
+  s.libraries      = 'c++'
 
   # react_native_pods.rb will add the ENV['USE_HERMES'],
   # we could use this to check current js runtime.
