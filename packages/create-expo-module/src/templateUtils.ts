@@ -40,7 +40,6 @@ export const IGNORES_PATHS = [
 export const LOCAL_EXCLUDED_FILES = new Set([
   '$package.json',
   '$CHANGELOG.md',
-  '$.gitignore',
   '$.npmignore',
   '$.prettierrc',
   'babel.config.js',
