@@ -32,38 +32,91 @@ export type MiddlewareNode = {
   loadRoute: () => Partial<LoadedMiddleware>;
 };
 
-export type RouteNode = {
-  /** The type of RouteNode */
-  type: 'route' | 'api' | 'layout' | 'redirect' | 'rewrite';
+/** Fields shared by every kind of route node. */
+export type RouteNodeBase = {
   /** Load a route into memory. Returns the exports from a route. */
   loadRoute: () => LoadedRoute;
-  /** Last group in the layout path. Selects group-specific `unstable_settings` and the default anchor. */
-  groupName?: string;
-  /** Nested routes */
-  children: RouteNode[];
   /** Is the route a dynamic path */
   dynamic: null | DynamicConvention[];
   /** `index`, `error-boundary`, etc. Relative to the nearest `_layout.tsx` */
   route: string;
   /** Context Module ID, used for matching children. */
   contextKey: string;
-  /** Redirect Context Module ID, used for matching children. */
-  destinationContextKey?: string;
-  /** Parent Context Module ID, used for matching static routes to their parent dynamic route. */
-  parentContextKey?: string;
-  /** Is the redirect permanent. */
-  permanent?: boolean;
   /** Added in-memory */
   generated?: boolean;
+};
+
+/** A `_layout` file. The only node that holds children. */
+export type LayoutRouteNode = RouteNodeBase & {
+  type: 'layout';
+  /** Nested routes */
+  children: RouteNode[];
+  /** Last group in the layout path. Selects group-specific `unstable_settings` and the default anchor. */
+  groupName?: string;
+  /** Middleware function for server-side request processing. Only present on the root route node. */
+  middleware?: MiddlewareNode;
+};
+
+/** A page. */
+export type PageRouteNode = RouteNodeBase & {
+  type: 'route';
+  /** Parent Context Module ID, used for matching static routes to their parent dynamic route. */
+  parentContextKey?: string;
   /** Internal screens like the directory or the auto 404 should be marked as internal. */
   internal?: boolean;
   /** File paths for async entry modules that should be included in the initial chunk request to ensure the runtime JavaScript matches the statically rendered HTML representation. */
   entryPoints?: string[];
+};
+
+/** A `+api` file. Server only, so it carries none of the screen fields. */
+export type ApiRouteNode = RouteNodeBase & {
+  type: 'api';
+};
+
+/** A redirect declared in the config plugin options. */
+export type RedirectRouteNode = RouteNodeBase & {
+  type: 'redirect';
+  /** Redirect Context Module ID, used for matching children. */
+  destinationContextKey: string;
+  /** Is the redirect permanent. */
+  permanent: boolean;
   /** HTTP methods for this route. If undefined, assumed to be ['GET'] */
   methods?: string[];
-  /** Middleware function for server-side request processing. Only present on the root route node. */
-  middleware?: MiddlewareNode;
+  /** File paths for async entry modules that should be included in the initial chunk request to ensure the runtime JavaScript matches the statically rendered HTML representation. */
+  entryPoints?: string[];
 };
+
+/** A rewrite declared in the config plugin options. Server only. */
+export type RewriteRouteNode = RouteNodeBase & {
+  type: 'rewrite';
+  /** Rewrite Context Module ID, used for matching children. */
+  destinationContextKey: string;
+  /** HTTP methods for this route. If undefined, assumed to be ['GET'] */
+  methods?: string[];
+};
+
+export type RouteNode =
+  | LayoutRouteNode
+  | PageRouteNode
+  | ApiRouteNode
+  | RedirectRouteNode
+  | RewriteRouteNode;
+
+export const isLayoutRouteNode = (node: RouteNode | null | undefined): node is LayoutRouteNode =>
+  node?.type === 'layout';
+
+export const isPageRouteNode = (node: RouteNode | null | undefined): node is PageRouteNode =>
+  node?.type === 'route';
+
+export const isApiRouteNode = (node: RouteNode | null | undefined): node is ApiRouteNode =>
+  node?.type === 'api';
+
+export const isRedirectRouteNode = (
+  node: RouteNode | null | undefined
+): node is RedirectRouteNode => node?.type === 'redirect';
+
+export const isRewriteRouteNode = (node: RouteNode | null | undefined): node is RewriteRouteNode =>
+  node?.type === 'rewrite';
 
 const CurrentRouteContext = createContext<RouteNode | null>(null);
 /** This context allows a `_layout.tsx` to provide a Suspense fallback for its child routes. */

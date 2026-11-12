@@ -259,7 +259,6 @@ describe('integrateWithRouter / createStandardRouterNavigator', () => {
         type: 'route',
         route: 'index',
         contextKey: './index.tsx',
-        children: [],
         dynamic: null,
         generated: true,
         loadRoute: () => ({

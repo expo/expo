@@ -89,12 +89,16 @@ export function serialAssetsToStaticContentAssets(
     return { css, js: [bundleUrl], favicon };
   }
 
+  // Checks `type` directly, as importing the `expo-router` guards fails without the optional peer.
+  const entryPoints =
+    route?.type === 'route' || route?.type === 'redirect' ? (route.entryPoints ?? []) : [];
+
   if (
     assets.some((asset) => asset.type === 'js' && asset.metadata.chunkingStrategy === 'granular')
   ) {
     return {
       css,
-      js: getGranularAssetsForRoute(assets, route?.entryPoints).map((asset) =>
+      js: getGranularAssetsForRoute(assets, entryPoints).map((asset) =>
         getChunkUrl(baseUrl, asset.filename)
       ),
       favicon,
@@ -103,11 +107,11 @@ export function serialAssetsToStaticContentAssets(
 
   let orderedJsAssets = assetsRequiresSort(assets.filter((asset) => asset.type === 'js'));
 
-  if (route?.entryPoints && Array.isArray(route.entryPoints)) {
+  if (entryPoints.length) {
     const syncAssets = orderedJsAssets.filter((a) => !a.metadata.isAsync);
     const sortedAsync = sortMatchedAssetsByEntryPoints(
       orderedJsAssets.filter((a) => a.metadata.isAsync),
-      route.entryPoints
+      entryPoints
     );
     const runtimeAssets = syncAssets.filter((a) => !a.metadata.requires?.length);
     const entryAssets = syncAssets.filter((a) => !!a.metadata.requires?.length);
@@ -125,12 +129,8 @@ export function serialAssetsToStaticContentAssets(
       // are left for the runtime to fetch on-demand.
       // TODO: Mark dependencies of the HTML and include them to prevent waterfalls.
       // TODO: Handle module IDs like `expo-router/build/views/Unmatched.js`
-      if (
-        route?.entryPoints &&
-        Array.isArray(route.entryPoints) &&
-        Array.isArray(asset.metadata.modulePaths)
-      ) {
-        const matches = route.entryPoints.some((entryPoint) =>
+      if (route && entryPoints.length && Array.isArray(asset.metadata.modulePaths)) {
+        const matches = entryPoints.some((entryPoint) =>
           (asset.metadata.modulePaths as string[]).includes(entryPoint)
         );
         if (matches) {

@@ -16,5 +16,20 @@ export {
   removeSupportedExtensions,
   stripGroupSegmentsFromPath,
 } from '../matchers';
-export type { DynamicConvention, RouteNode } from '../Route';
+export {
+  isApiRouteNode,
+  isLayoutRouteNode,
+  isRedirectRouteNode,
+  isRewriteRouteNode,
+  isPageRouteNode,
+} from '../Route';
+export type {
+  ApiRouteNode,
+  DynamicConvention,
+  LayoutRouteNode,
+  RedirectRouteNode,
+  RewriteRouteNode,
+  RouteNode,
+  PageRouteNode,
+} from '../Route';
 export { sortRoutes } from '../sortRoutes';
