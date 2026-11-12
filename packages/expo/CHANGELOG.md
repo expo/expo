@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.25
+
+### Patch Changes
+
+- Fix the error-level `Invalid state` log on iOS, and the same warning on Android, when `expo/fetch` cancels a response body. Cancelling before the first read now sets `bodyUsed`. ([#53282](https://github.com/expo/expo/pull/53282) by [@Kudo](https://github.com/Kudo))
+
 ## 58.0.24
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.7
+
+### Patch Changes
+
+- [Android] Add `getExtendedProperties()`, `setExtendedProperty()` and `deleteExtendedProperty()` to `ExpoCalendarEvent`, so an app can recognize the events it created. Android events have no `url` field to mark them with, and `CalendarContract.ExtendedProperties`, the mechanism meant for it, was not exposed. ([#49428](https://github.com/expo/expo/pull/49428) by [@MoOx](https://github.com/MoOx))
+- [iOS] Fix `daysOfTheWeek` in recurrence rules being stored one weekday late. The native `DayOfTheWeek` mapping started at Monday while the JS enum, the docs and `EKWeekday` start at Sunday. ([#52363](https://github.com/expo/expo/pull/52363) by [@dileepapeiris](https://github.com/dileepapeiris))
+
 ## 58.0.6
 
 ### Patch Changes

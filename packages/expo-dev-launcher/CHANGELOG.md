@@ -1,5 +1,21 @@
 # Changelog
 
+## 58.0.20
+
+### Patch Changes
+
+- [iOS] Open the account sheet at half height when signed in. ([#52530](https://github.com/expo/expo/pull/52530) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix the launcher losing its safe area and layout margins because its view controller was not in the view controller hierarchy. ([#52536](https://github.com/expo/expo/pull/52536) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Show the app icon and "Development Build" in the Home tab navigation bar. ([#52600](https://github.com/expo/expo/pull/52600) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Limit the launcher tab content to a centered 600 pt column on wide displays. ([#52532](https://github.com/expo/expo/pull/52532) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix filled buttons blending into the background in dark mode. ([#52534](https://github.com/expo/expo/pull/52534) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Stop the launcher from re-rendering on every dev server discovery refresh when the server list did not change. ([#52533](https://github.com/expo/expo/pull/52533) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix the EAS Update not configured message not showing on the Updates tab. ([#52534](https://github.com/expo/expo/pull/52534) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Show the loading spinner only on the dev server row that is loading. ([#52534](https://github.com/expo/expo/pull/52534) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Show a large navigation title on each launcher tab. ([#52530](https://github.com/expo/expo/pull/52530) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Move the account button and the account sheet close button into the navigation toolbar. ([#52531](https://github.com/expo/expo/pull/52531) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix the Updates tab sort order and the Default Page Size setting so the list shows that many of the newest updates. ([#52534](https://github.com/expo/expo/pull/52534) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 58.0.19
 
 ### Patch Changes
