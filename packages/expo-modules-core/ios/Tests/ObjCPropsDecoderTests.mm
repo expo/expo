@@ -17,8 +17,8 @@ namespace jsi = facebook::jsi;
 namespace views = expo::views;
 
 /**
- Records the calls, and returns `nil` when `returnsNil` is set, `previous` when `returnsPrevious` is set,
- or a new object otherwise.
+ Records the calls, and returns `NULL` when `returnsNil` is set, `previous` (retained) when
+ `returnsPrevious` is set, or a new retained object otherwise.
  */
 @interface RecordingViewPropsDecoder : NSObject <EXViewPropsDecoding>
 @property (nonatomic) BOOL returnsPrevious;
@@ -33,15 +33,23 @@ namespace views = expo::views;
 
 @implementation RecordingViewPropsDecoder
 
-- (nullable id)decodeProps:(const void *)props runtime:(const void *)runtime previous:(nullable id)previous
+- (nullable const void *)decodeProps:(const void *)props
+                             runtime:(const void *)runtime
+                            previous:(nullable const void *)previous
 {
   self.lastProps = props;
   self.lastRuntime = runtime;
-  self.lastPrevious = previous;
+  self.lastPrevious = (__bridge id)previous;
+  return [self resultWithPrevious:previous];
+}
+
+- (nullable const void *)resultWithPrevious:(nullable const void *)previous
+{
   if (self.returnsNil) {
-    return nil;
+    return nullptr;
   }
-  return self.returnsPrevious ? previous : [NSObject new];
+  id result = self.returnsPrevious ? (__bridge id)previous : [NSObject new];
+  return (__bridge_retained const void *)result;
 }
 
 - (NSArray<NSString *> *)propNames
@@ -49,11 +57,11 @@ namespace views = expo::views;
   return @[ @"title", @"radius" ];
 }
 
-- (nullable id)decodeValues:(const void *const _Nonnull *)values
-                    indexes:(const NSInteger *)indexes
-                      count:(NSInteger)count
-                    runtime:(const void *)runtime
-                   previous:(nullable id)previous
+- (nullable const void *)decodeValues:(const void *const _Nonnull *)values
+                              indexes:(const NSInteger *)indexes
+                                count:(NSInteger)count
+                              runtime:(const void *)runtime
+                             previous:(nullable const void *)previous
 {
   NSMutableArray<NSNumber *> *recordedIndexes = [NSMutableArray array];
   std::vector<const void *> recordedValues;
@@ -64,11 +72,8 @@ namespace views = expo::views;
   self.lastIndexes = recordedIndexes;
   self.lastValues = recordedValues;
   self.lastRuntime = runtime;
-  self.lastPrevious = previous;
-  if (self.returnsNil) {
-    return nil;
-  }
-  return self.returnsPrevious ? previous : [NSObject new];
+  self.lastPrevious = (__bridge id)previous;
+  return [self resultWithPrevious:previous];
 }
 
 - (void)didSkipProps:(NSArray<NSString *> *)propNames

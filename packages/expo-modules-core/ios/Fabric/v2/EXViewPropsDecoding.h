@@ -14,10 +14,15 @@ NS_SWIFT_NAME(ViewPropsDecoding)
 
 /**
  Decodes the JavaScript props object at `props`, a `facebook::jsi::Value` of the `facebook::jsi::Runtime`
- at `runtime`, into a copy of `previous`. Returns the decoded props, or `previous` when no prop changed.
- `nil` also keeps `previous`.
+ at `runtime`, into a copy of `previous`.
+
+ The decoded props cross as raw pointers, which Swift doesn't bridge: `previous` is the unretained
+ previous decoded props, or `NULL` before the first decode. Returns new decoded props that the caller
+ owns (retained once), or `NULL` when no prop changed and `previous` stays.
  */
-- (nullable id)decodeProps:(const void *)props runtime:(const void *)runtime previous:(nullable id)previous
+- (nullable const void *)decodeProps:(const void *)props
+                             runtime:(const void *)runtime
+                            previous:(nullable const void *)previous
     NS_SWIFT_NAME(decode(propsPointer:runtimePointer:previous:));
 
 /**
@@ -29,14 +34,13 @@ NS_SWIFT_NAME(ViewPropsDecoding)
 /**
  Decodes `count` values of the view's props into a copy of `previous`. `values[i]` points to a
  `facebook::jsi::Value` of the `facebook::jsi::Runtime` at `runtime`, and `indexes[i]` is the index of its
- prop name in `propNames`. Returns the decoded props, or `previous` when no prop changed. `nil` also keeps
- `previous`.
+ prop name in `propNames`. The decoded props cross as in `decodeProps:runtime:previous:`.
  */
-- (nullable id)decodeValues:(const void *const _Nonnull *)values
-                    indexes:(const NSInteger *)indexes
-                      count:(NSInteger)count
-                    runtime:(const void *)runtime
-                   previous:(nullable id)previous
+- (nullable const void *)decodeValues:(const void *const _Nonnull *)values
+                              indexes:(const NSInteger *)indexes
+                                count:(NSInteger)count
+                              runtime:(const void *)runtime
+                             previous:(nullable const void *)previous
     NS_SWIFT_NAME(decode(valuePointers:indexes:count:runtimePointer:previous:));
 
 /**
