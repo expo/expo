@@ -9,7 +9,7 @@ import {
   useCompositionRegistry,
 } from '../../fork/native-stack/composition-options';
 import type { NavigatorContentProps } from '../../standard-navigation';
-import { useClearGuardedRoutes } from '../useClearGuardedRoutes';
+import { GuardedRoutesCleanupContext, useClearGuardedRoutes } from '../useClearGuardedRoutes';
 import { ExperimentalStackView } from './ExperimentalStackView';
 import type {
   ExperimentalStackNavigationEventMap,
@@ -20,7 +20,7 @@ export interface ExperimentalStackNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
   isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
-  removeRoutes: (routeNames: string[]) => void;
+  removeRoutes: (routeNames: string[], fallback?: { name: string; params?: object }) => void;
   subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
 }
 
@@ -54,20 +54,22 @@ function ExperimentalStackNavigatorContent({
     [descriptors, registry, state]
   );
 
-  useClearGuardedRoutes(removeRoutes);
+  const cleanupNavigatorId = useClearGuardedRoutes(state, removeRoutes);
   React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
 
   return (
-    <CompositionContext value={contextValue}>
-      <ExperimentalStackView
-        state={state}
-        emit={emitter.emit}
-        isPreloaded={isPreloaded}
-        isRemovalPrevented={isRemovalPrevented}
-        pop={pop}
-        descriptors={mergedDescriptors}
-      />
-    </CompositionContext>
+    <GuardedRoutesCleanupContext value={cleanupNavigatorId}>
+      <CompositionContext value={contextValue}>
+        <ExperimentalStackView
+          state={state}
+          emit={emitter.emit}
+          isPreloaded={isPreloaded}
+          isRemovalPrevented={isRemovalPrevented}
+          pop={pop}
+          descriptors={mergedDescriptors}
+        />
+      </CompositionContext>
+    </GuardedRoutesCleanupContext>
   );
 }
 

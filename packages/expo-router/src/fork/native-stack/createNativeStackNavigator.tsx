@@ -2,7 +2,10 @@ import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import * as React from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 
-import { useClearGuardedRoutes } from '../../layouts/useClearGuardedRoutes';
+import {
+  GuardedRoutesCleanupContext,
+  useClearGuardedRoutes,
+} from '../../layouts/useClearGuardedRoutes';
 import {
   INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME,
   type InternalNavigationOptions,
@@ -28,7 +31,7 @@ export interface NativeStackNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
   isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
-  removeRoutes: (routeNames: string[]) => void;
+  removeRoutes: (routeNames: string[], fallback?: { name: string; params?: object }) => void;
   /** Registers pop-to-top on parent tab press, or returns undefined without a tab parent. */
   subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
 }
@@ -65,7 +68,7 @@ function NativeStackNavigatorContent({
     isPreloaded: isComputedRoutePreloaded,
   } = usePreviewTransition(state, emitter.emit, isPreloaded);
 
-  useClearGuardedRoutes(removeRoutes);
+  const cleanupNavigatorId = useClearGuardedRoutes(state, removeRoutes);
   React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
 
   // Map internal gesture option to React Navigation's gestureEnabled option
@@ -126,19 +129,21 @@ function NativeStackNavigatorContent({
   }, [mergedDescriptors, computedState, isComputedRoutePreloaded]);
 
   return (
-    <DescriptorsContext value={fullDescriptors}>
-      <CompositionContext value={contextValue}>
-        <NativeStackView
-          state={computedState}
-          descriptors={stackDescriptors}
-          emit={emit}
-          isPreloaded={isComputedRoutePreloaded}
-          isRemovalPrevented={isRemovalPrevented}
-          pop={pop}
-          unstable_nativeProps={unstable_nativeProps}
-        />
-      </CompositionContext>
-    </DescriptorsContext>
+    <GuardedRoutesCleanupContext value={cleanupNavigatorId}>
+      <DescriptorsContext value={fullDescriptors}>
+        <CompositionContext value={contextValue}>
+          <NativeStackView
+            state={computedState}
+            descriptors={stackDescriptors}
+            emit={emit}
+            isPreloaded={isComputedRoutePreloaded}
+            isRemovalPrevented={isRemovalPrevented}
+            pop={pop}
+            unstable_nativeProps={unstable_nativeProps}
+          />
+        </CompositionContext>
+      </DescriptorsContext>
+    </GuardedRoutesCleanupContext>
   );
 }
 

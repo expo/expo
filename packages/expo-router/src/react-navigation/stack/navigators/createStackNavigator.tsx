@@ -2,7 +2,10 @@
 import * as React from 'react';
 import { createStandardNavigator } from 'standard-navigation';
 
-import { useClearGuardedRoutes } from '../../../layouts/useClearGuardedRoutes';
+import {
+  GuardedRoutesCleanupContext,
+  useClearGuardedRoutes,
+} from '../../../layouts/useClearGuardedRoutes';
 import type { NavigatorContentProps } from '../../../standard-navigation';
 import { type Route, useLocale } from '../../native';
 import type {
@@ -16,7 +19,7 @@ export interface StackNavigatorCreateProps {
   isPreloaded: (key: string) => boolean;
   isRemovalPrevented: (key: string) => boolean;
   pop: (count: number, sourceRouteKey: string) => void;
-  removeRoutes: (routeNames: string[]) => void;
+  removeRoutes: (routeNames: string[], fallback?: { name: string; params?: object }) => void;
   restoreRoute: (route: Route<string>) => boolean;
   subscribePopToTopOnParentTabPress: () => (() => void) | undefined;
 }
@@ -48,7 +51,7 @@ function StackNavigatorContent({
 }: StackNavigatorContentProps) {
   const { direction } = useLocale();
 
-  useClearGuardedRoutes(removeRoutes);
+  const cleanupNavigatorId = useClearGuardedRoutes(state, removeRoutes);
   React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
 
   if (state.routes.length === 0) {
@@ -56,16 +59,18 @@ function StackNavigatorContent({
   }
 
   return (
-    <StackView
-      {...rest}
-      direction={direction}
-      state={state}
-      descriptors={descriptors}
-      emit={emitter.emit}
-      isPreloaded={isPreloaded}
-      pop={pop}
-      restoreRoute={restoreRoute}
-    />
+    <GuardedRoutesCleanupContext value={cleanupNavigatorId}>
+      <StackView
+        {...rest}
+        direction={direction}
+        state={state}
+        descriptors={descriptors}
+        emit={emitter.emit}
+        isPreloaded={isPreloaded}
+        pop={pop}
+        restoreRoute={restoreRoute}
+      />
+    </GuardedRoutesCleanupContext>
   );
 }
 

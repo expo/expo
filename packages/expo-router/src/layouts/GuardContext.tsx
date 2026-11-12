@@ -77,7 +77,14 @@ function computeGuardState(
 
 export function useResolvedGuard(routeName: string): ResolvedGuard | undefined {
   const guards = use(GuardContext);
-  return guards?.get(routeName) ?? guards?.get(normalizeRouteName(routeName));
+  return guards ? getResolvedGuard(guards, routeName) : undefined;
+}
+
+export function getResolvedGuard(
+  guards: ResolvedGuards,
+  routeName: string
+): ResolvedGuard | undefined {
+  return guards.get(routeName) ?? guards.get(normalizeRouteName(routeName));
 }
 
 // Replaces by route name, not by URL, because a guarded group can share its URL with the fallback.

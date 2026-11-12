@@ -43,7 +43,8 @@ export function createJSStackProps(
 ): StackNavigatorCreateProps {
   return {
     ...createBaseStackProps(args),
-    removeRoutes: (routeNames) => args.dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
+    removeRoutes: (routeNames, fallback) =>
+      args.dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames, fallback } }),
     restoreRoute: makeRestoreRouteAction(args.dispatchSync, args.state),
   };
 }

@@ -21,6 +21,7 @@ import {
   type GuardFallback,
   type ResolvedGuard,
 } from './layouts/GuardContext';
+import { GuardedRoutesCleanupContext } from './layouts/useClearGuardedRoutes';
 import { Redirect } from './link/Redirect';
 import { useIsPreview } from './link/preview/PreviewRouteContext';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
@@ -471,12 +472,14 @@ function createFailedScreen(error: unknown, reset: () => void) {
   };
 }
 
+type GuardNavigation = Pick<NavigationProp<ParamListBase>, 'getParent' | 'getId'>;
+
 function GuardedRouteRedirect({
   guard,
   navigation,
 }: {
   guard: ResolvedGuard;
-  navigation: Pick<NavigationProp<ParamListBase>, 'getParent'>;
+  navigation: GuardNavigation;
 }) {
   if (guard.redirectTo !== undefined) {
     return <Redirect href={guard.redirectTo} />;
@@ -493,16 +496,20 @@ function GuardFallbackReplace({
   navigation,
   fallback,
 }: {
-  navigation: Pick<NavigationProp<ParamListBase>, 'getParent'>;
+  navigation: GuardNavigation;
   fallback: GuardFallback;
 }) {
   const isFocused = useIsFocused();
   const isPreview = useIsPreview();
+  const cleanupNavigatorId = use(GuardedRoutesCleanupContext);
   useEffect(() => {
-    if (isFocused && !isPreview) {
+    // A stack that removes its blocked routes opens its own fallback in the same state change.
+    const isOpenedByStack =
+      cleanupNavigatorId === fallback.navigatorId && navigation.getId() === fallback.navigatorId;
+    if (isFocused && !isPreview && !isOpenedByStack) {
       replaceWithGuardFallback(navigation, fallback);
     }
-  }, [fallback, isFocused, isPreview, navigation]);
+  }, [cleanupNavigatorId, fallback, isFocused, isPreview, navigation]);
   return null;
 }
 
@@ -512,7 +519,9 @@ function AllRoutesProtectedWarning() {
   useEffect(() => {
     if (__DEV__ && isFocused) {
       console.warn(
-        'All routes in this navigator are protected. Ensure at least one route is accessible.'
+        'Expo Router shows an empty screen because every route in this navigator is protected. An app must not protect all routes. ' +
+          'Make at least one route accessible, or set `redirectTo` on the `Protected` component. ' +
+          'A future version of Expo Router can throw an error instead of showing an empty screen.'
       );
     }
   }, [isFocused]);

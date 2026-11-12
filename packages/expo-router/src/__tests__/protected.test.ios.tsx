@@ -8,6 +8,8 @@ import { router } from '../imperative-api';
 import JSStack from '../layouts/JSStack';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
+import { StackRouter } from '../react-navigation/native';
+import { createStandardRouterNavigator, type NavigatorContentProps } from '../standard-navigation';
 import { renderRouter } from '../testing-library';
 
 it('redirects a guarded route to the anchor default during the initial load', async () => {
@@ -723,6 +725,197 @@ it('replaces a fully guarded nested navigator with the parent fallback when they
   expect(screen).toHaveSegments([]);
 });
 
+it('removes a blocked focused route and focuses the last accessible route with its state', async () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter({
+    _layout: function Layout() {
+      const [guard, setState] = useState(true);
+      setGuard = setState;
+      return (
+        <Stack>
+          <Stack.Protected guard={guard}>
+            <Stack.Screen name="login" />
+          </Stack.Protected>
+        </Stack>
+      );
+    },
+    index: () => <Text testID="home">home</Text>,
+    settings: () => <Text testID="settings">settings</Text>,
+    login: () => <Text testID="login">login</Text>,
+  });
+
+  await act(() => router.push('/settings'));
+  await act(() => router.push('/login'));
+  const settingsKey = navigationRef.getRootState().routes[0]!.state!.routes[1]!.key;
+
+  await act(() => setGuard(false));
+
+  expect(screen.getByTestId('settings')).toBeVisible();
+  expect(screen).toHavePathname('/settings');
+  const state = navigationRef.getRootState().routes[0]!.state!;
+  expect(state.routes.map((route) => route.name)).toEqual(['index', 'settings']);
+  expect(state.routes[1]!.key).toBe(settingsKey);
+});
+
+it('replaces a blocked focused route with the fallback in a custom stack navigator', async () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+  const CustomStack = createStandardRouterNavigator(
+    ({ state, descriptors }: NavigatorContentProps<object>) =>
+      descriptors[state.routes[state.index]!.key]!.render(),
+    StackRouter
+  );
+
+  await renderRouter({
+    _layout: function Layout() {
+      const [guard, setState] = useState(true);
+      setGuard = setState;
+      return (
+        <CustomStack>
+          <CustomStack.Protected guard={guard}>
+            <CustomStack.Screen name="login" />
+          </CustomStack.Protected>
+        </CustomStack>
+      );
+    },
+    index: () => <Text testID="home">home</Text>,
+    login: () => <Text testID="login">login</Text>,
+  });
+
+  await act(() => router.push('/login'));
+  expect(screen.getByTestId('login')).toBeVisible();
+
+  await act(() => setGuard(false));
+
+  expect(screen.getByTestId('home')).toBeVisible();
+  expect(screen).toHavePathname('/');
+});
+
+it('replaces every blocked route with the fallback in one state change when no route survives', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter(
+    {
+      _layout: function Layout() {
+        const [signedIn, setState] = useState(false);
+        setSignedIn = setState;
+        return (
+          <Stack>
+            <Stack.Protected guard={!signedIn}>
+              <Stack.Screen name="login" />
+              <Stack.Screen name="reset" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="home">home</Text>,
+      login: () => <Text testID="login">login</Text>,
+      reset: () => <Text testID="reset">reset</Text>,
+    },
+    { initialUrl: '/login' }
+  );
+
+  await act(() => router.push('/reset'));
+  expect(navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+    'login',
+    'reset',
+  ]);
+
+  const committedRouteNames: string[][] = [];
+  const unsubscribe = navigationRef.addListener('state', () => {
+    committedRouteNames.push(
+      navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+    );
+  });
+  try {
+    await act(() => setSignedIn(true));
+  } finally {
+    unsubscribe();
+  }
+
+  // A hidden `login` state between the removal and the replace would render an empty screen.
+  expect(committedRouteNames).toEqual([['index']]);
+  expect(screen.getByTestId('home')).toBeVisible();
+  expect(screen).toHavePathname('/');
+  expect(router.canGoBack()).toBe(false);
+});
+
+it('keeps a blocked focused route with redirectTo and redirects it', async () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter({
+    _layout: function Layout() {
+      const [guard, setState] = useState(true);
+      setGuard = setState;
+      return (
+        <Stack>
+          <Stack.Protected guard={guard} redirectTo="/">
+            <Stack.Screen name="login" />
+          </Stack.Protected>
+        </Stack>
+      );
+    },
+    index: () => <Text testID="home">home</Text>,
+    settings: () => <Text testID="settings">settings</Text>,
+    login: () => <Text testID="login">login</Text>,
+  });
+
+  await act(() => router.push('/settings'));
+  await act(() => router.push('/login'));
+
+  await act(() => setGuard(false));
+
+  expect(screen.getByTestId('home')).toBeVisible();
+  expect(screen).toHavePathname('/');
+  const state = navigationRef.getRootState().routes[0]!.state!;
+  expect(state.routes.map((route) => route.name)).toEqual(['index', 'settings', 'index']);
+  expect(state.routes[2]!.key).not.toBe(state.routes[0]!.key);
+});
+
+it('adds no screens when the guards change repeatedly', async () => {
+  let setSignedIn: Dispatch<SetStateAction<boolean>>;
+
+  await renderRouter({
+    _layout: function Layout() {
+      const [signedIn, setState] = useState(false);
+      setSignedIn = setState;
+      return (
+        <Stack>
+          <Stack.Protected guard={signedIn}>
+            <Stack.Screen name="profile" />
+          </Stack.Protected>
+          <Stack.Protected guard={!signedIn}>
+            <Stack.Screen name="login" />
+          </Stack.Protected>
+        </Stack>
+      );
+    },
+    index: () => <Text testID="home">home</Text>,
+    profile: () => <Text testID="profile">profile</Text>,
+    login: () => <Text testID="login">login</Text>,
+  });
+
+  await act(() => router.push('/login'));
+  await act(() => setSignedIn(true));
+  expect(navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+    'index',
+  ]);
+
+  await act(() => router.push('/profile'));
+  await act(() => setSignedIn(false));
+  expect(navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+    'index',
+  ]);
+
+  await act(() => router.push('/login'));
+  await act(() => setSignedIn(true));
+  expect(navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)).toEqual([
+    'index',
+  ]);
+  expect(screen.getByTestId('home')).toBeVisible();
+  expect(router.canGoBack()).toBe(false);
+});
+
 describe('all routes guarded', () => {
   let consoleWarnSpy: jest.SpyInstance<void, Parameters<typeof console.warn>>;
 
@@ -757,14 +950,14 @@ describe('all routes guarded', () => {
     expect(screen.queryByTestId('index')).toBeNull();
     expect(screen.queryByTestId('second')).toBeNull();
     expect(consoleWarnSpy).toHaveBeenCalledWith(
-      'All routes in this navigator are protected. Ensure at least one route is accessible.'
+      'Expo Router shows an empty screen because every route in this navigator is protected. An app must not protect all routes. Make at least one route accessible, or set `redirectTo` on the `Protected` component. A future version of Expo Router can throw an error instead of showing an empty screen.'
     );
     // The navigator itself stays mounted (previously it rendered null when all
     // its routes were guarded).
     expect(JSON.stringify(screen.toJSON())).toContain('RNSScreenStack');
   });
 
-  it('keeps navigation state when all guards flip false and back to true', async () => {
+  it('keeps only the first route when all guards flip false and shows it when they flip back to true', async () => {
     let setGuard: Dispatch<SetStateAction<boolean>>;
 
     await renderRouter({
@@ -788,8 +981,7 @@ describe('all routes guarded', () => {
     expect(screen.getByTestId('second')).toBeVisible();
     expect(screen).toHavePathname('/second');
 
-    const stateBefore = navigationRef.getRootState().routes[0]!.state!;
-    const focusedKeyBefore = stateBefore.routes[stateBefore.index!]!.key;
+    const firstKeyBefore = navigationRef.getRootState().routes[0]!.state!.routes[0]!.key;
 
     // Guard everything: content hides but the navigator must stay mounted.
     await act(() => {
@@ -798,19 +990,19 @@ describe('all routes guarded', () => {
 
     expect(screen.queryByTestId('index')).toBeNull();
     expect(screen.queryByTestId('second')).toBeNull();
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'Expo Router shows an empty screen because every route in this navigator is protected. An app must not protect all routes. Make at least one route accessible, or set `redirectTo` on the `Protected` component. A future version of Expo Router can throw an error instead of showing an empty screen.'
+    );
 
-    // Restore access: the same navigation state is still there, not reinitialized.
     await act(() => {
       setGuard(true);
     });
 
-    expect(screen.getByTestId('second')).toBeVisible();
-    expect(screen).toHavePathname('/second');
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen).toHavePathname('/');
     const stateAfter = navigationRef.getRootState().routes[0]!.state!;
-    expect(stateAfter.routes[stateAfter.index!]!.key).toBe(focusedKeyBefore);
-    // Non-focused guarded history entries are pruned while the guard is down,
-    // so only the focused route survives the flip.
     expect(stateAfter.routes).toHaveLength(1);
+    expect(stateAfter.routes[0]!.key).toBe(firstKeyBefore);
   });
 
   it('redirects to the parent anchor when all nested guards flip false', async () => {
@@ -874,7 +1066,7 @@ describe('all routes guarded', () => {
     expect(screen.queryByTestId('nested-index')).toBeNull();
     expect(screen).toHavePathname('/nested');
     expect(consoleWarnSpy).toHaveBeenCalledWith(
-      'All routes in this navigator are protected. Ensure at least one route is accessible.'
+      'Expo Router shows an empty screen because every route in this navigator is protected. An app must not protect all routes. Make at least one route accessible, or set `redirectTo` on the `Protected` component. A future version of Expo Router can throw an error instead of showing an empty screen.'
     );
   });
 

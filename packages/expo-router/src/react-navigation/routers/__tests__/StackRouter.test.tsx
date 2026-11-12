@@ -3172,7 +3172,7 @@ test('attaches trusted state to a preloaded route without changing focus', () =>
   });
 });
 
-test('removes routes by name while preserving the focused route instance', () => {
+test('removes routes by name, including the focused route', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['index', 'secret', 'other'],
@@ -3205,46 +3205,180 @@ test('removes routes by name while preserving the focused route instance', () =>
     routeKeySeq: 0,
     type: 'stack',
     key: 'navigator:root',
-    index: 1,
+    index: 0,
     routeNames: ['index', 'secret', 'other'],
-    routes: [
-      { key: 'index', name: 'index' },
-      { key: 'secret-current', name: 'secret' },
-    ],
+    routes: [{ key: 'index', name: 'index' }],
   });
 });
 
-test.each(['secret', 'nonExisting'])(
-  'handles route %p removal without changing state when no history entries match',
-  (name: string) => {
-    const router = StackRouter({});
-    const state = {
-      stale: false as const,
-      routeKeySeq: 0,
-      type: 'stack' as const,
-      key: 'navigator:root',
-      index: 1,
-      routeNames: ['index', 'secret'],
-      routes: [
-        { key: 'index', name: 'index' },
-        { key: 'secret', name: 'secret' },
-      ],
-    };
+test('keeps the first route when every route is removed without a fallback', () => {
+  const router = StackRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['index', 'second'],
+    routeGetIdList: {},
+  };
 
-    expect(
-      expectHandled(
-        router.getStateForAction(
-          state,
-          { type: 'REMOVE_ROUTES', payload: { routeNames: [name] } },
-          {
-            routeNames: state.routeNames,
-            routeGetIdList: {},
-          }
-        )
-      ).state
-    ).toBe(state);
-  }
-);
+  expect(
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['index', 'second'],
+          routes: [
+            { key: 'index', name: 'index' },
+            { key: 'second', name: 'second' },
+          ],
+        },
+        { type: 'REMOVE_ROUTES', payload: { routeNames: ['index', 'second'] } },
+        options
+      )
+    ).state
+  ).toEqual({
+    stale: false,
+    routeKeySeq: 0,
+    type: 'stack',
+    key: 'navigator:root',
+    index: 0,
+    routeNames: ['index', 'second'],
+    routes: [{ key: 'index', name: 'index' }],
+  });
+});
+
+test('replaces every route with the fallback when every route is removed', () => {
+  const router = StackRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['home', 'login', 'reset'],
+    routeGetIdList: {},
+  };
+
+  expect(
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['home', 'login', 'reset'],
+          routes: [
+            { key: 'login', name: 'login' },
+            { key: 'reset', name: 'reset' },
+          ],
+        },
+        {
+          type: 'REMOVE_ROUTES',
+          payload: {
+            routeNames: ['login', 'reset'],
+            fallback: { name: 'home', params: { id: '1' } },
+          },
+        },
+        options
+      )
+    ).state
+  ).toEqual({
+    stale: false,
+    routeKeySeq: 1,
+    type: 'stack',
+    key: 'navigator:root',
+    index: 0,
+    routeNames: ['home', 'login', 'reset'],
+    routes: [{ key: 'home:0', name: 'home', params: { id: '1' } }],
+  });
+});
+
+test('ignores the fallback when a route survives the removal', () => {
+  const router = StackRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['home', 'login'],
+    routeGetIdList: {},
+  };
+
+  expect(
+    expectHandled(
+      router.getStateForAction(
+        {
+          stale: false,
+          routeKeySeq: 0,
+          type: 'stack',
+          key: 'navigator:root',
+          index: 1,
+          routeNames: ['home', 'login'],
+          routes: [
+            { key: 'home', name: 'home' },
+            { key: 'login', name: 'login' },
+          ],
+        },
+        {
+          type: 'REMOVE_ROUTES',
+          payload: { routeNames: ['login'], fallback: { name: 'home' } },
+        },
+        options
+      )
+    ).state
+  ).toEqual({
+    stale: false,
+    routeKeySeq: 0,
+    type: 'stack',
+    key: 'navigator:root',
+    index: 0,
+    routeNames: ['home', 'login'],
+    routes: [{ key: 'home', name: 'home' }],
+  });
+});
+
+test('returns the same state when no route matches the removed names', () => {
+  const router = StackRouter({});
+  const state = {
+    stale: false as const,
+    routeKeySeq: 0,
+    type: 'stack' as const,
+    key: 'navigator:root',
+    index: 1,
+    routeNames: ['index', 'secret'],
+    routes: [
+      { key: 'index', name: 'index' },
+      { key: 'secret', name: 'secret' },
+    ],
+  };
+
+  expect(
+    expectHandled(
+      router.getStateForAction(
+        state,
+        { type: 'REMOVE_ROUTES', payload: { routeNames: ['nonExisting'] } },
+        { routeNames: state.routeNames, routeGetIdList: {} }
+      )
+    ).state
+  ).toBe(state);
+});
+
+test('returns the same state when only the first route is left and it is removed without a fallback', () => {
+  const router = StackRouter({});
+  const state = {
+    stale: false as const,
+    routeKeySeq: 0,
+    type: 'stack' as const,
+    key: 'navigator:root',
+    index: 0,
+    routeNames: ['index', 'secret'],
+    routes: [{ key: 'index', name: 'index' }],
+  };
+
+  expect(
+    expectHandled(
+      router.getStateForAction(
+        state,
+        { type: 'REMOVE_ROUTES', payload: { routeNames: ['index'] } },
+        { routeNames: state.routeNames, routeGetIdList: {} }
+      )
+    ).state
+  ).toBe(state);
+});
 
 test('getStateForDeclaredRoutes focuses the surviving top of the stack', () => {
   const router = StackRouter({});

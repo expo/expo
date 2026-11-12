@@ -55,7 +55,11 @@ export type StackActionType =
     }
   | {
       type: 'REMOVE_ROUTES';
-      payload: { routeNames: string[] };
+      payload: {
+        routeNames: string[];
+        // Replaces the stack when no route survives. Without it, the first route stays.
+        fallback?: { name: string; params?: object };
+      };
     };
 
 export type StackRouterOptions = DefaultRouterOptions;
@@ -502,25 +506,29 @@ function stackRouterExtension({
         }
 
         case 'REMOVE_ROUTES': {
-          const focusedRoute = activeRoutes[state.index]!;
-          const routes = activeRoutes.filter(
-            (route) =>
-              route.key === focusedRoute.key || !action.payload.routeNames.includes(route.name)
-          );
+          const { routeNames, fallback } = action.payload;
+          const survivingRoutes = activeRoutes.filter((route) => !routeNames.includes(route.name));
           const nextPreloadedRoutes = preloadedRoutes.filter(
-            (route) => !action.payload.routeNames.includes(route.name)
+            (route) => !routeNames.includes(route.name)
           );
+          // The stack is never empty.
+          const routes = survivingRoutes.length
+            ? survivingRoutes
+            : fallback
+              ? [{ key: nextKey(fallback.name), name: fallback.name, params: fallback.params }]
+              : activeRoutes.slice(0, 1);
 
           if (
             routes.length === activeRoutes.length &&
+            routes.every((route, index) => route === activeRoutes[index]) &&
             nextPreloadedRoutes.length === preloadedRoutes.length
           ) {
-            return { state, affectedRouteKey: focusedRoute.key };
+            return { state, affectedRouteKey: activeRoutes[state.index]!.key };
           }
 
           return {
             state: reconcileStackRoutes(state, routes, nextPreloadedRoutes),
-            affectedRouteKey: focusedRoute.key,
+            affectedRouteKey: routes[routes.length - 1]!.key,
           };
         }
 
