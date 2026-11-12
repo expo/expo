@@ -27,7 +27,7 @@ public class ExpoPrintToFile {
         return
       }
 
-      guard let filePath = self.generatePath() else {
+      guard let filePath = self.generatePath(options.fileName) else {
         promise.reject(PdfSavingException())
         return
       }
@@ -39,7 +39,11 @@ public class ExpoPrintToFile {
         return
       }
       do {
-        try data.write(to: uri)
+        if options.fileName == nil {
+          try data.write(to: uri)
+        } else {
+          try data.write(to: uri, options: .withoutOverwriting)
+        }
         let base64Data = options.base64 ? data.base64EncodedString(options: Data.Base64EncodingOptions.endLineWithLineFeed) : nil
         let result = FilePrintResult(uri: uri.absoluteString, numberOfPages: pagesNumber, base64: base64Data)
         promise.resolve(result)
@@ -92,10 +96,19 @@ public class ExpoPrintToFile {
     onFinished(data as Data, renderer.numberOfPages, nil, nil)
   }
 
-  private func generatePath() -> String? {
+  private func generatePath(_ fileName: String?) -> String? {
     guard let fileSystem = appContext?.fileSystem else {
       return nil
     }
+
+    if let fileName = fileName {
+      guard fileName.range(of: "^[A-Za-z0-9_-]+\\.pdf\\z", options: .regularExpression) != nil else {
+        return nil
+      }
+
+      return fileSystem.cachesDirectory + "/" + fileName
+    }
+
     let fileManager = FileManager()
     let directory = fileSystem.cachesDirectory + "/Print/"
 

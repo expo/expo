@@ -10,5 +10,6 @@ internal data class PrintOptions(
   val height: Int? = null,
   val orientation: String? = null,
   val textZoom: Int? = null,
-  val base64: Boolean = false
+  val base64: Boolean = false,
+  val fileName: String? = null
 )

@@ -15,6 +15,9 @@ internal struct PaperSize: Record {
 
 internal struct PrintOptions: Record {
   @Field
+  var fileName: String?
+
+  @Field
   var html: String?
 
   @Field
