@@ -197,6 +197,7 @@ internal class DomWebView(context: Context, appContext: AppContext) : ExpoView(c
     return WebView(context).apply {
       setBackgroundColor(Color.TRANSPARENT)
       settings.javaScriptEnabled = true
+      settings.domStorageEnabled = true
       // API 30+ default disables file access; DOM bundles need it for sibling assets.
       settings.allowFileAccess = true
       settings.allowFileAccessFromFileURLs = true
