@@ -1,5 +1,3 @@
-import { Platform, UnavailabilityError } from 'expo';
-
 import { NativeGeofencingHandle } from '../native';
 import type { NativeGeofencingHandleClass } from '../native';
 import type { GeofencingRegion, GeofencingEvent, GeofencingTaskOptions } from '../types';
@@ -12,8 +10,6 @@ const DEFAULT_GEOFENCING_TASK_NAME = 'ExpoLocationGeofencing';
  * The monitoring is registered with the system, so it outlives the JS context and the app process.
  *
  * Requires the background permission.
- *
- * @platform ios
  */
 export class GeofencingHandle {
   private readonly nativeHandle: NativeGeofencingHandleClass;
@@ -23,9 +19,6 @@ export class GeofencingHandle {
    * `defineGeofencingTask`; both default to the same name. ASCII letters and digits only.
    */
   constructor(taskName: string = DEFAULT_GEOFENCING_TASK_NAME) {
-    if (Platform.OS !== 'ios') {
-      throw new UnavailabilityError('expo-location', 'GeofencingHandle');
-    }
     this.nativeHandle = new NativeGeofencingHandle(taskName);
   }
 
