@@ -129,6 +129,18 @@ export function createFakeProject(name?: string): string {
   return projectPath;
 }
 
+/** Creates a fake Expo project, like `createFakeProject`, with the given Expo SDK installed. */
+export function createFakeApp(name: string, sdkVersion: number): string {
+  const app = createFakeProject(name);
+  const expoDir = path.join(app, 'node_modules', 'expo');
+  fs.mkdirSync(expoDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(expoDir, 'package.json'),
+    JSON.stringify({ version: `${sdkVersion}.0.0` })
+  );
+  return app;
+}
+
 /** Read and parse a JSON file from the test project */
 export function readJson(projectName: string, ...filePath: string[]) {
   const targetPath = getTestPath(projectName, ...filePath);

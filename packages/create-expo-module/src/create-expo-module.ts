@@ -11,6 +11,7 @@ import { ensureSafeModuleName } from './appleFrameworks';
 import { createExampleApp } from './createExampleApp';
 import { ALL_FEATURES, filterFeaturesByPlatforms, resolveFeatures } from './features';
 import { assertSupportedLocalSdk, getLocalSdkMajorVersion } from './localSdk';
+import { MODULES_API_VERSIONS, resolveModulesApi, type ModulesApi } from './modulesApi';
 import {
   PACKAGE_MANAGERS,
   installDependencies,
@@ -337,10 +338,18 @@ async function main(target: string | undefined, options: CommandOptions) {
     },
     async (templatePath) => {
       await logEventAsync(eventCreateExpoModule(packageManager, options));
+      const modulesApi = resolveModulesApi(options.modulesApi, templatePath, sdkVersion);
 
       await withFileRollback(async (writeFile) => {
         await newStep('Creating the module from template files', async (step) => {
-          await createModuleFromTemplate(templatePath, targetDir, data, packageManager, writeFile);
+          await createModuleFromTemplate(
+            templatePath,
+            targetDir,
+            data,
+            modulesApi,
+            packageManager,
+            writeFile
+          );
           step.succeed('Created the module from template files');
         });
         if (options.local && options.barrel) {
@@ -449,11 +458,12 @@ async function createModuleFromTemplate(
   templatePath: string,
   targetPath: string,
   data: SubstitutionData | LocalSubstitutionData,
+  modulesApi: ModulesApi,
   packageManager: PackageManagerName,
   writeFile: WriteFile
 ) {
   const snippetsDir = path.join(templatePath, 'snippets');
-  const augmentedData = await buildAugmentedData(snippetsDir, data);
+  const augmentedData = await buildAugmentedData(snippetsDir, data, modulesApi);
   await copyTemplateFiles(
     templatePath,
     targetPath,
@@ -465,7 +475,7 @@ async function createModuleFromTemplate(
     },
     writeFile
   );
-  await copyFileSnippets(snippetsDir, data.project.features, data, targetPath, writeFile);
+  await copyFileSnippets(snippetsDir, data.project.features, augmentedData, targetPath, writeFile);
   if (data.type === 'standalone' && shouldCreatePnpmWorkspace(packageManager, targetPath)) {
     await copyPnpmWorkspaceFiles(templatePath, targetPath, writeFile);
   }
@@ -889,6 +899,12 @@ program
     `Feature examples to include in the module. Use "all" to include all features, or specify any of: ${ALL_FEATURES.join(', ')}.`
   )
   .option('--full-example', 'Include all available feature examples.', false)
+  .addOption(
+    new Option(
+      '--modules-api <version>',
+      'Version of the Expo Modules API to use in the native code. Defaults to v2, or to v1 when the template or the Expo SDK of the project does not support v2.'
+    ).choices([...MODULES_API_VERSIONS])
+  )
   .addOption(
     new Option(
       '--package-manager <manager>',

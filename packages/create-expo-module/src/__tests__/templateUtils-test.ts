@@ -124,11 +124,13 @@ describe('updateWebStub', () => {
     await fs.promises.rm(tmpDir, { recursive: true, force: true });
   });
 
+  const renderData = () => buildAugmentedData(path.join(templateDir, 'snippets'), mockData, 'v1');
+
   it('refuses to overwrite a custom web implementation', async () => {
     const webFile = path.join(targetDir, 'src', 'MyModuleModule.web.ts');
     await fs.promises.writeFile(webFile, 'export default class CustomWebModule {}\n');
 
-    await expect(updateWebStub(templateDir, targetDir, mockData)).rejects.toThrow(
+    await expect(updateWebStub(templateDir, targetDir, await renderData())).rejects.toThrow(
       'does not look like the generated web stub'
     );
   });
@@ -140,7 +142,7 @@ describe('updateWebStub', () => {
       `// ${getGeneratedWebStubSentinel(mockData.project.moduleName)}.\n`
     );
 
-    await updateWebStub(templateDir, targetDir, mockData);
+    await updateWebStub(templateDir, targetDir, await renderData());
 
     await expect(fs.promises.readFile(webFile, 'utf8')).resolves.toBe(
       'export default class MyModuleModule {}\n'
@@ -159,7 +161,7 @@ describe('podspec module metadata', () => {
   it.each(['standalone', 'remote'])(
     'uses package metadata for the %s module type',
     async (type) => {
-      const data = await buildAugmentedData(SNIPPETS_DIR, mockData);
+      const data = await buildAugmentedData(SNIPPETS_DIR, mockData, 'v1');
       const podspec = await renderTemplateFile('ios/{%- project.name %}.podspec', {
         ...data,
         type,
@@ -171,7 +173,7 @@ describe('podspec module metadata', () => {
   );
 
   it('renders local metadata without a repository or package.json', async () => {
-    const data = await buildAugmentedData(SNIPPETS_DIR, mockData);
+    const data = await buildAugmentedData(SNIPPETS_DIR, mockData, 'v1');
     const podspec = await renderTemplateFile('ios/{%- project.name %}.podspec', {
       ...data,
       type: 'local',
@@ -187,10 +189,11 @@ describe('Android module metadata', () => {
     ['remote', '1.2.3'],
     ['local', '0.1.0'],
   ])('uses the correct version for the %s module type', async (type, version) => {
-    const data = await buildAugmentedData(SNIPPETS_DIR, {
-      ...mockData,
-      project: { ...mockData.project, version: '1.2.3' },
-    });
+    const data = await buildAugmentedData(
+      SNIPPETS_DIR,
+      { ...mockData, project: { ...mockData.project, version: '1.2.3' } },
+      'v1'
+    );
     const gradle = await renderTemplateFile('android/build.gradle', { ...data, type });
     expect(gradle).toContain(`version = '${version}'`);
     expect(gradle).toContain(`versionName "${version}"`);

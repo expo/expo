@@ -1,5 +1,7 @@
 import chalk from 'chalk';
 
+import type { NativePlatform } from './prompts';
+
 export const ALL_FEATURES = [
   'Constant',
   'Function',
@@ -33,6 +35,46 @@ const FULL_EXAMPLE_FEATURES: readonly Feature[] = [
   'ViewEvent',
   'SharedObject',
 ];
+
+/**
+ * Features that the Expo Modules API 2.0 doesn't support yet. An Expo Modules API 2.0 module
+ * defines them with the Module DSL in a separate views module.
+ */
+export const VIEWS_MODULE_FEATURES: readonly Feature[] = [
+  'View',
+  'ViewEvent',
+  'SwiftUIView',
+  'SwiftUIModifier',
+  'ComposeView',
+  'ComposeModifier',
+];
+
+export function isViewsModuleFeature(feature: Feature): boolean {
+  return VIEWS_MODULE_FEATURES.includes(feature);
+}
+
+/**
+ * Gets the platforms whose native code implements any of the features that the views module of an
+ * Expo Modules API 2.0 module defines.
+ */
+export function getViewsModulePlatforms(
+  features: readonly Feature[],
+  platforms: readonly NativePlatform[]
+): NativePlatform[] {
+  return platforms.filter((platform) =>
+    features.some(
+      (feature) => isViewsModuleFeature(feature) && isNativeFeatureOf(feature, platform)
+    )
+  );
+}
+
+/**
+ * Whether the native code of the platform implements the feature. SwiftUI features are only on
+ * Apple platforms, and Compose features are only on Android.
+ */
+function isNativeFeatureOf(feature: Feature, platform: NativePlatform): boolean {
+  return platform === 'apple' ? !isComposeFeature(feature) : !isSwiftUIFeature(feature);
+}
 
 export function isSwiftUIFeature(feature: Feature): boolean {
   return SWIFTUI_FEATURES.includes(feature);
