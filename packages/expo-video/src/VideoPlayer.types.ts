@@ -419,6 +419,17 @@ export type VideoSourceObject = {
    * @platform ios
    */
   contentType?: ContentType;
+
+  /**
+   * Android-only flags passed to Media3's `DefaultExtractorsFactory.setTsExtractorFlags`.
+   * Only applies to progressive (non-HLS) MPEG-TS streams.
+   *
+   * For example, can be set to `1` (`DefaultTsPayloadReaderFactory.FLAG_ALLOW_NON_IDR_KEYFRAMES`)
+   * to treat H.264 non-IDR I-frames as keyframes and allow faster playback startup.
+   * @default 0
+   * @platform android
+   */
+  tsExtractorFlags?: number;
 };
 
 /**
