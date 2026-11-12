@@ -54,6 +54,12 @@ export default function ColumnAlignmentExample() {
 }
 ```
 
+### Size
+
+`style.width` and `style.height` take a fixed size in density-independent pixels, such as `120`.
+
+> **warning** Do not use a percentage, such as `'50%'`. The `style` type accepts a percentage string, but the Android size modifier takes a number, and the app throws an error at runtime. This does not apply to `Host`, which takes a React Native view style. Percentage sizes are available in SDK 58 and later.
+
 ## API
 
 ```tsx
