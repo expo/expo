@@ -8,6 +8,7 @@ import type {
   ObserveIntegrationRegistry,
   ObserveIntegrationReporter,
   ObserveIntegrationReportOptions,
+  ObserveIntegrationStorage,
   ObserveIntegrationWarningReport,
   ObserveIntegrationsConfig,
 } from '../types';
@@ -54,9 +55,29 @@ export function registerObserveIntegration(integration: ObserveIntegration): voi
   registry.onRegister?.(integration);
 }
 
+/**
+ * The native functions that keep each integration's strings, which are not public API.
+ */
+export type IntegrationValueStore = {
+  getIntegrationValue(integration: string, key: string): Promise<string | null>;
+  setIntegrationValue(integration: string, key: string, value: string | null): Promise<void>;
+};
+
 // Only one `expo-observe` copy configures the registry, so this state is per module instance.
 const active = new Map<ObserveIntegration, ActiveIntegration>();
 let latestIntegrations: ObserveIntegrationsConfig | null = null;
+let valueStore: IntegrationValueStore | null = null;
+
+function createStorage(name: string): ObserveIntegrationStorage {
+  return {
+    async getItem(key) {
+      return valueStore ? ((await valueStore.getIntegrationValue(name, key)) ?? null) : null;
+    },
+    async setItem(key, value) {
+      await valueStore?.setIntegrationValue(name, key, value);
+    },
+  };
+}
 
 function filterConfigOf(config: unknown): ObserveIntegrationFilterConfig {
   return typeof config === 'object' && config !== null
@@ -108,6 +129,7 @@ function createReporter(name: string, getConfig: () => unknown): ObserveIntegrat
   }
 
   return {
+    storage: createStorage(name),
     reportError(report: ObserveIntegrationErrorReport, options?: ObserveIntegrationReportOptions) {
       if (getConfig() === undefined || !passesFilter(report.code, report, options)) {
         return false;
@@ -189,10 +211,15 @@ function activate(integration: ObserveIntegration): ActiveIntegration {
 
 /**
  * Passes the `integrations` object of a `configure` call to every registered library integration,
- * and to each integration that registers later.
+ * and to each integration that registers later. `store` keeps the integrations' strings; without
+ * it, as on web, nothing is stored.
  */
-export function configureRegisteredIntegrations(integrations: ObserveIntegrationsConfig): void {
+export function configureRegisteredIntegrations(
+  integrations: ObserveIntegrationsConfig,
+  store: IntegrationValueStore | null = null
+): void {
   latestIntegrations = integrations;
+  valueStore = store;
   const registry = getIntegrationRegistry();
   registry.onRegister = (integration) => {
     if (latestIntegrations) {

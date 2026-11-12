@@ -79,4 +79,24 @@ object ObservePreferences {
       putLong(KEY_LAST_DISPATCHED_LOG_ID, id)
     }
   }
+
+  /**
+   * A string that a library integration stores, under a key that starts with the integration's
+   * name. Setting `null` removes it.
+   */
+  fun getIntegrationValue(context: Context, integration: String, key: String): String? =
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+      .getString(integrationKey(integration, key), null)
+
+  fun setIntegrationValue(context: Context, integration: String, key: String, value: String?) {
+    context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE).edit(commit = true) {
+      if (value == null) {
+        remove(integrationKey(integration, key))
+      } else {
+        putString(integrationKey(integration, key), value)
+      }
+    }
+  }
+
+  private fun integrationKey(integration: String, key: String) = "integration.$integration.$key"
 }
