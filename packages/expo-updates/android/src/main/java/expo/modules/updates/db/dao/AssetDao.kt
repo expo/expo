@@ -145,6 +145,13 @@ abstract class AssetDao {
   ): Boolean {
     val existingAssetEntry = loadAssetWithKey(asset.key) ?: return false
     val assetId = existingAssetEntry.id
+    val relativePath = asset.relativePath
+    if (relativePath != null && relativePath != existingAssetEntry.relativePath) {
+      existingAssetEntry.relativePath = relativePath
+      asset.hash?.let { existingAssetEntry.hash = it }
+      asset.downloadTime?.let { existingAssetEntry.downloadTime = it }
+      updateAsset(existingAssetEntry)
+    }
     insertUpdateAssetInternal(UpdateAssetEntity(update.id, assetId))
     if (isLaunchAsset) {
       setUpdateLaunchAssetInternal(assetId, update.id)
