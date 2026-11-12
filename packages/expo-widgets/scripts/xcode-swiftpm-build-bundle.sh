@@ -8,6 +8,13 @@ if [ -n "${PODS_ROOT:-}" ]; then
   exit 0
 fi
 
+for name in SRCROOT TARGET_BUILD_DIR UNLOCALIZED_RESOURCES_FOLDER_PATH; do
+  if [ -z "${!name:-}" ]; then
+    echo "error: $(basename "$0") cannot run because $name is not set. Xcode sets it for build phases. Run this script only from a build phase of the widget extension target." >&2
+    exit 1
+  fi
+done
+
 EXPO_WIDGETS_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 PROJECT_ROOT="${PROJECT_ROOT:-$SRCROOT/..}"
 
