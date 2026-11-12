@@ -542,13 +542,15 @@ function resolveHeadersStandIn({ packageName, productName }, precompiled, cacheD
     lastKind: builtLocally ? binarySource.kind : undefined,
   });
   if (builtLocally && (headers == null || lookupRank(headers.source) > lookupRank(binarySource))) {
-    const prebuild = '`node tools/bin/expotools.js prebuild expo-modules-core expo-modules-jsi`';
+    const prebuildPackages =
+      packageName === CORE_PACKAGE ? ['expo-modules-core', 'expo-modules-jsi'] : [packageName];
+    const prebuild = `\`node tools/bin/expotools.js prebuild ${prebuildPackages.join(' ')}\``;
     throw pluginError({
       what: `${productName}Headers.xcframework is missing under ${binarySource.dir}, where ${productName} comes from (${SOURCE_LABELS[binarySource.kind]}).`,
       why: `Expo modules built from their own Package.swift compile against these headers, and the headers must come from the same build as ${productName}. That build did not produce them.`,
       how:
         binarySource.kind === 'env'
-          ? `Unset EXPO_PRECOMPILED_MODULES_PATH, or point it at a directory that holds a complete prebuild of expo-modules-core and expo-modules-jsi, including their headers. ${rerunSpmUpdate()}`
+          ? `Unset EXPO_PRECOMPILED_MODULES_PATH, or point it at a directory that holds a complete prebuild of ${prebuildPackages.join(' and ')}, including their headers. ${rerunSpmUpdate()}`
           : `From the Expo repository root, run ${prebuild}. ${rerunSpmUpdate()}`,
     });
   }
@@ -574,7 +576,8 @@ function resolveHeadersStandIn({ packageName, productName }, precompiled, cacheD
  * set), else that manifest mirrored, or else one Swift target over its sources. A
  * pure-Swift module is refused when its podspec declares linkage, because the
  * emitted package would link less than the podspec does. Returns null for a module
- * with no sources: the pod's own `no-apple-sources` report covers it.
+ * with no sources: the pod's own `no-apple-sources` report covers it. Returns null too
+ * for a direct module whose headers a later round provides.
  *
  * @param dumpManifest `dumpModuleManifest`, run at most once per real module root.
  */
@@ -587,13 +590,15 @@ function emitSourceModule(identity, hasManifest, emitContext, dumpManifest) {
     if (standIns.length === 0) {
       return emitSourceManifestPackage(moduleRoot, emitContext, json);
     }
+    const headersXCFrameworks = Object.fromEntries(
+      standIns.map((standIn) => [standIn, emitContext.headersXCFramework(standIn)])
+    );
+    if (Object.values(headersXCFrameworks).includes(null)) return null;
     const emission = emitDirectPackage({
       moduleRoot,
       packageName,
       outDir: emitContext.outDir,
-      headersXCFrameworks: Object.fromEntries(
-        standIns.map((standIn) => [standIn, emitContext.headersXCFramework(standIn)])
-      ),
+      headersXCFrameworks,
       jsiHeadersPkgPath: emitContext.jsiHeadersPkgPath,
       macrosPackageRoot: emitContext.macrosPackageRoot,
       manifest,
@@ -760,6 +765,7 @@ function linkPasses(
 
   const core = coreRecord?.identity ?? null;
   const coreAvailable = core != null && frameworkSearchPath != null;
+  const standInFallbacks = new Map();
   let sourceModules = { emitted: [], refusals: new Map() };
   if (coreAvailable) {
     let resolvedMacroFlags = null;
@@ -781,13 +787,21 @@ function linkPasses(
         get macrosPackageRoot() {
           return macrosPackageRoot(core.moduleRoot);
         },
-        // Lazy: only a direct module needs headers, and only then must they exist.
+        // Lazy: only a direct module needs headers, and only then must they exist. Null for
+        // headers whose product a pattern matches: the next round links it precompiled.
         headersXCFramework(standIn) {
           if (!resolvedHeadersXCFrameworks.has(standIn)) {
-            resolvedHeadersXCFrameworks.set(
-              standIn,
-              resolveHeadersStandIn(HEADERS_STAND_INS[standIn], precompiled, cacheDir)
-            );
+            const { packageName, productName } = HEADERS_STAND_INS[standIn];
+            const match = matchBuildFromSource({ podName: productName, packageName });
+            if (match?.exact === false && !fallbackPods.has(productName)) {
+              standInFallbacks.set(productName, match.entry);
+              resolvedHeadersXCFrameworks.set(standIn, null);
+            } else {
+              resolvedHeadersXCFrameworks.set(
+                standIn,
+                resolveHeadersStandIn(HEADERS_STAND_INS[standIn], precompiled, cacheDir)
+              );
+            }
           }
           return resolvedHeadersXCFrameworks.get(standIn);
         },
@@ -804,6 +818,7 @@ function linkPasses(
     satisfiedDependencies,
     coreAvailable,
     sourceModules,
+    standInFallbacks,
   };
 }
 
@@ -1082,29 +1097,26 @@ module.exports = function expoSpmPlugin(context) {
   const fallbackEntries = new Map();
   const coreMatch = matchBuildFromSource({ podName: CORE_POD, packageName: CORE_PACKAGE });
   if (coreMatch != null) fallbackEntries.set(CORE_POD, coreMatch.entry);
-  // A direct module checks its headers against the binary of their product in the first round,
-  // so a product a pattern matches must be linked precompiled from the start.
-  for (const { packageName, productName } of Object.values(HEADERS_STAND_INS)) {
-    const match = matchBuildFromSource({ podName: productName, packageName });
-    if (match?.exact === false && !fallbackEntries.has(productName)) {
-      fallbackEntries.set(productName, match.entry);
-    }
-  }
   const emittedByRound = [];
   let passes;
   let fallingBack;
   do {
     passes = linkPasses(fallbackEntries, passOptions);
     emittedByRound.push(passes.sourceModules.emitted);
-    fallingBack = [...passes.records.values()].filter(
-      (r) =>
-        r.linkedAs == null &&
-        r.buildFromSource?.exact === false &&
-        !fallbackEntries.has(r.identity.podName)
-    );
-    for (const { identity, buildFromSource } of fallingBack) {
-      fallbackEntries.set(identity.podName, buildFromSource.entry);
-    }
+    // A round that left out a direct module waiting for headers decided the other routes
+    // without it, so only the products of those headers fall back before the next.
+    fallingBack =
+      passes.standInFallbacks.size > 0
+        ? [...passes.standInFallbacks]
+        : [...passes.records.values()]
+            .filter(
+              (r) =>
+                r.linkedAs == null &&
+                r.buildFromSource?.exact === false &&
+                !fallbackEntries.has(r.identity.podName)
+            )
+            .map(({ identity, buildFromSource }) => [identity.podName, buildFromSource.entry]);
+    for (const [podName, entry] of fallingBack) fallbackEntries.set(podName, entry);
   } while (fallingBack.length > 0);
   removeDiscardedEmissions(emittedByRound);
   const {

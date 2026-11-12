@@ -51,6 +51,12 @@ const HEADERS_STAND_INS = {
     standIns: ['ExpoModulesCoreHeaders'],
     packages: [],
   },
+  ExpoUIHeaders: {
+    packageName: '@expo/ui',
+    productName: 'ExpoUI',
+    standIns: ['ExpoModulesCoreHeaders', 'ExpoModulesWorkletsHeaders'],
+    packages: [],
+  },
 };
 
 /**
