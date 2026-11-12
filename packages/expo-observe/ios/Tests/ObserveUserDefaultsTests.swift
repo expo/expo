@@ -12,6 +12,17 @@ struct ObserveUserDefaultsTests {
   }
 
   @Test
+  func `integration values are kept per integration and removed by nil`() {
+    #expect(ObserveUserDefaults.integrationValue(integration: "a", key: "cursor") == nil)
+    ObserveUserDefaults.setIntegrationValue("1", integration: "a", key: "cursor")
+    ObserveUserDefaults.setIntegrationValue("2", integration: "b", key: "cursor")
+    #expect(ObserveUserDefaults.integrationValue(integration: "a", key: "cursor") == "1")
+    #expect(ObserveUserDefaults.integrationValue(integration: "b", key: "cursor") == "2")
+    ObserveUserDefaults.setIntegrationValue(nil, integration: "a", key: "cursor")
+    #expect(ObserveUserDefaults.integrationValue(integration: "a", key: "cursor") == nil)
+  }
+
+  @Test
   func `config defaults to nil`() {
     #expect(ObserveUserDefaults.config == nil)
   }

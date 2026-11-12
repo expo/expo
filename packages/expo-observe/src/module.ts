@@ -17,6 +17,7 @@ import { isReactNavigationInstalled } from './integrations/react-navigation/reac
 import {
   configureRegisteredIntegrations,
   createIntegrationReporter,
+  type IntegrationValueStore,
 } from './integrations/registry';
 import { reportCaughtError } from './reportCaughtError';
 import { reportFeedback } from './reportFeedback';
@@ -127,7 +128,11 @@ const Observe: ObserveModule = new Proxy(native, {
         const result = target.configure(config);
         // After the native configure, so a library integration that reads `getIntegrations()` sees
         // the new config.
-        configureRegisteredIntegrations(config.integrations ?? {});
+        // The native module implements the integration value functions, which are not public API.
+        configureRegisteredIntegrations(
+          config.integrations ?? {},
+          target as unknown as IntegrationValueStore
+        );
         return result;
       };
     }
