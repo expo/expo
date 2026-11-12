@@ -20,7 +20,7 @@ import {
 import type { NavigationTransitionMode } from './types';
 
 const EMPTY: QueuedRoutingIntent[] = [];
-let boundBridges = 0;
+let boundRouter: object | undefined;
 const throwMissingRoutingQueue = () => {
   throw new Error(
     'Attempted to navigate from a component rendered outside the Expo Router root. Render the component inside `ExpoRoot`. If this happened inside `ExpoRoot`, please report a bug at https://github.com/expo/expo/issues.'
@@ -95,23 +95,23 @@ export function ImperativeRoutingQueueBridge({
   setTransitionMode,
 }: Pick<RoutingQueueApi, 'enqueue' | 'setTransitionMode'>) {
   useClientLayoutEffect(() => {
-    if (__DEV__ && boundBridges > 0) {
-      console.error(
-        [
-          'Looks like you have multiple navigation containers consuming the shared imperative routing queue. Only one container will receive queued actions. Make sure that:',
-          "- You don't have multiple NavigationContainers in the app",
-          '- Only a single instance of the root component is rendered',
-        ].join('\n')
+    if (__DEV__ && boundRouter) {
+      console.warn(
+        'Two Expo Router roots are mounted at the same time. This is expected for a moment during an Android Activity relaunch, and the newest root receives the `router` calls. At other times, make sure that the app renders only one root component.'
       );
     }
 
-    boundBridges++;
+    const imperativeRouter = createImperativeRouter(enqueue, setTransitionMode);
+    boundRouter = imperativeRouter;
     // The exported router identity must stay stable, so the bridge mutates it in place.
-    Object.assign(router, createImperativeRouter(enqueue, setTransitionMode));
+    Object.assign(router, imperativeRouter);
 
     return () => {
-      boundBridges--;
-      Object.assign(router, unboundRouter);
+      // A newer root may own `router` now. An Android Activity relaunch unmounts the old root last.
+      if (boundRouter === imperativeRouter) {
+        boundRouter = undefined;
+        Object.assign(router, unboundRouter);
+      }
     };
   }, [enqueue, setTransitionMode]);
 

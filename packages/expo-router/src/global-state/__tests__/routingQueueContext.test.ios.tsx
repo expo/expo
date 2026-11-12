@@ -102,7 +102,7 @@ it('restores the throwing router after the provider unmounts', async () => {
 });
 
 it('warns when a second root binds the imperative router', async () => {
-  const error = jest.spyOn(console, 'error').mockImplementation(() => {});
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
   const firstRoot = await render(
     <RoutingQueueProvider>
@@ -115,12 +115,14 @@ it('warns when a second root binds the imperative router', async () => {
     </RoutingQueueProvider>
   );
 
-  expect(error).toHaveBeenCalledTimes(1);
-  expect(error).toHaveBeenCalledWith(expect.stringContaining('multiple'));
+  expect(warn).toHaveBeenCalledTimes(1);
+  expect(warn).toHaveBeenCalledWith(
+    'Two Expo Router roots are mounted at the same time. This is expected for a moment during an Android Activity relaunch, and the newest root receives the `router` calls. At other times, make sure that the app renders only one root component.'
+  );
 
   await secondRoot.unmount();
   await firstRoot.unmount();
-  error.mockRestore();
+  warn.mockRestore();
 });
 
 it('preserves enqueue order and drains on the following render', async () => {

@@ -54,7 +54,8 @@ it('warns once when SplitView.Content is missing', async () => {
     ),
     index: () => <Text>Index</Text>,
   };
-  await renderRouter(routes, { initialUrl: '/' });
+  const firstRoot = await renderRouter(routes, { initialUrl: '/' });
+  await firstRoot.unmount();
   await renderRouter(routes, { initialUrl: '/' });
 
   expect(warn).toHaveBeenCalledTimes(1);
