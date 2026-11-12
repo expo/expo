@@ -20,6 +20,7 @@ const mockAppMetrics = {
   markInteractive: jest.fn(),
   setGlobalAttributes: jest.fn(),
   reportError: jest.fn(),
+  reportFeedback: jest.fn(),
   setNetworkTracesConfig: jest.fn(),
 };
 
@@ -665,6 +666,85 @@ describe('module Proxy', () => {
       throw new Error('native rejected the payload');
     });
     expect(() => Observe.reportError(new Error('boom'))).not.toThrow();
+    expect(warnSpy).toHaveBeenCalled();
+  });
+
+  it('forwards valid feedback to AppMetrics', () => {
+    const Observe = loadModule();
+    const feedback = { id: 'checkout', message: 'Great', rating: 10, attributes: { plan: 'pro' } };
+    Observe.reportFeedback(feedback);
+    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith(feedback);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it.each([
+    { id: 'checkout', message: 'Great' },
+    { id: 'checkout', rating: 0 },
+  ])('accepts feedback with only a message or only a rating: %o', (feedback) => {
+    const Observe = loadModule();
+    Observe.reportFeedback(feedback);
+    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith(feedback);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  const idReason = '`id` must be a non-empty string';
+  const messageReason = '`message` must be a string';
+  const ratingReason = '`rating` must be a whole number from 0 to 10';
+  const emptyReason = 'set `message` or `rating`';
+
+  it.each([
+    [{ id: 'checkout' }, emptyReason],
+    [{ id: 42, message: 'Great' }, idReason],
+    [{ id: 'checkout', message: 42 }, messageReason],
+    [{ id: 'checkout', rating: 4.5 }, ratingReason],
+    [{ id: 'checkout', rating: -1 }, ratingReason],
+    [{ id: 'checkout', rating: 11 }, ratingReason],
+    [{ id: 'checkout', rating: NaN }, ratingReason],
+    [{ id: 'checkout', rating: Infinity }, ratingReason],
+    [{ id: 'checkout', rating: '5' }, ratingReason],
+    [{ id: 'checkout', message: 'Great', rating: 4.5 }, ratingReason],
+    [{ id: '', message: 'Great' }, idReason],
+    [{ id: '  ', message: 'Great' }, idReason],
+    [{ id: 'checkout', message: '' }, emptyReason],
+    [{ id: 'checkout', message: '  ' }, emptyReason],
+  ])('drops feedback with a warning: %o', (feedback, reason) => {
+    const Observe = loadModule();
+    // The cases pass wrong types on purpose, the way an untyped caller can.
+    Observe.reportFeedback(feedback as Parameters<typeof Observe.reportFeedback>[0]);
+    expect(mockAppMetrics.reportFeedback).not.toHaveBeenCalled();
+    expect(warnSpy).toHaveBeenCalledTimes(1);
+    expect(warnSpy).toHaveBeenCalledWith(
+      `[expo-observe] \`reportFeedback\` dropped the report: ${reason}.`
+    );
+  });
+
+  it.each([null, undefined, 'Great'])(
+    'drops a non-object feedback argument with a warning: %p',
+    (feedback) => {
+      const Observe = loadModule();
+      // The cases pass wrong types on purpose, the way an untyped caller can.
+      Observe.reportFeedback(feedback as unknown as Parameters<typeof Observe.reportFeedback>[0]);
+      expect(mockAppMetrics.reportFeedback).not.toHaveBeenCalled();
+      expect(warnSpy).toHaveBeenCalledWith(
+        '[expo-observe] `reportFeedback` dropped the report: the argument must be an object.'
+      );
+    }
+  );
+
+  it('omits an empty message when a rating is set', () => {
+    const Observe = loadModule();
+    Observe.reportFeedback({ id: 'checkout', message: '  ', rating: 5 });
+    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith({ id: 'checkout', rating: 5 });
+    expect(mockAppMetrics.reportFeedback.mock.calls[0][0]).not.toHaveProperty('message');
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('never throws when the native reportFeedback call throws', () => {
+    const Observe = loadModule();
+    mockAppMetrics.reportFeedback.mockImplementationOnce(() => {
+      throw new Error('native rejected the payload');
+    });
+    expect(() => Observe.reportFeedback({ id: 'checkout', rating: 5 })).not.toThrow();
     expect(warnSpy).toHaveBeenCalled();
   });
 });

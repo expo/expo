@@ -9,7 +9,7 @@ private let maxEventBodyLength = 4096
 /// Truncates a caller-provided log event body to `maxEventBodyLength` characters,
 /// logging a warning when truncation happens. Returns `nil` for `nil` input so
 /// the call site can pass the result through unchanged.
-func validateEventBody(_ body: String?) -> String? {
+func validateEventBody(_ body: String?, source: String = "logEvent") -> String? {
   guard let body else {
     return nil
   }
@@ -17,7 +17,7 @@ func validateEventBody(_ body: String?) -> String? {
     body,
     maxLength: maxEventBodyLength,
     warningMessage:
-      "[AppMetrics] logEvent truncated body from \(body.count) characters "
+      "[AppMetrics] \(source) truncated body from \(body.count) characters "
       + "to the \(maxEventBodyLength)-character limit."
   )
 }

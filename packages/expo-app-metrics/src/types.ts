@@ -691,6 +691,17 @@ export interface ExpoAppMetricsModuleType {
   }): void;
 
   /**
+   * Records user feedback as an `expo.feedback` log event. `expo-observe` validates the feedback
+   * before it calls this function.
+   */
+  reportFeedback(feedback: {
+    id: string;
+    message?: string;
+    rating?: number;
+    attributes?: Record<string, LogAttributeValue>;
+  }): void;
+
+  /**
    * Returns the main session — the per-launch session that tracks the entire
    * app process — as a shared object built from in-memory state, so the call
    * is synchronous and never returns `null`. Metrics and logs are fetched

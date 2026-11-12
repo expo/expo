@@ -12,6 +12,7 @@ import expo.modules.appmetrics.crashreporting.ExitInfoProviderImpl
 import expo.modules.appmetrics.crashreporting.JvmCrashHandler
 import expo.modules.appmetrics.crashreporting.PreferencesLastProcessedExitStore
 import expo.modules.appmetrics.crashreporting.attributeAndStoreCrashReport
+import expo.modules.appmetrics.logevents.FeedbackReport
 import expo.modules.appmetrics.logevents.LogEventOptions
 import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
 import expo.modules.appmetrics.networkrequests.NetworkRequestMonitor
@@ -405,6 +406,13 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           scope.launch {
             mainSession.addLogs(listOf(report.toLogRecord(mainSession.sessionId)))
           }
+        }
+      }
+
+      Function("reportFeedback") { report: FeedbackReport ->
+        val record = report.toLogRecord(mainSession.sessionId)
+        scope.launch {
+          mainSession.addLogs(listOf(record))
         }
       }
 
