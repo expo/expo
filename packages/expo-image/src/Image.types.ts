@@ -464,6 +464,7 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * However, it would result in smoother image resizing, and end-users would always have access to the highest possible asset quality.
    *
    * Downscaling is never used when the `contentFit` prop is set to `none` or `fill`.
+   * On Android, images that are too large to be drawn are still downscaled to fit the hardware bitmap size limit, even when this prop is `false`.
    * @default true
    */
   allowDownscaling?: boolean;
