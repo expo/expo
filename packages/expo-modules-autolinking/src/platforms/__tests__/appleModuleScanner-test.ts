@@ -50,6 +50,28 @@ describe(scanExpoModulesAsync, () => {
     );
   });
 
+  it('scans with the timeout set in EXPO_MODULES_SCAN_TIMEOUT_MS', async () => {
+    jest.replaceProperty(process, 'env', { ...process.env, EXPO_MODULES_SCAN_TIMEOUT_MS: '20000' });
+    const scanner = mockScanner(scannerOutput({}));
+
+    await scanExpoModulesAsync(scanner, packageRoots);
+
+    expect(scanner.scanModules).toHaveBeenCalledWith(expect.any(Array), { timeout: 20000 });
+  });
+
+  it('warns and keeps the default timeout when EXPO_MODULES_SCAN_TIMEOUT_MS is not a positive integer', async () => {
+    jest.replaceProperty(process, 'env', { ...process.env, EXPO_MODULES_SCAN_TIMEOUT_MS: '20s' });
+    const warn = jest.spyOn(console, 'warn').mockImplementation();
+    const scanner = mockScanner(scannerOutput({}));
+
+    await scanExpoModulesAsync(scanner, packageRoots);
+
+    expect(scanner.scanModules).toHaveBeenCalledWith(expect.any(Array), { timeout: 5000 });
+    expect(warn).toHaveBeenCalledWith(
+      expect.stringMatching(/^warning: .*EXPO_MODULES_SCAN_TIMEOUT_MS.*"20s"/)
+    );
+  });
+
   it('never writes to stdout, which must stay parseable for resolve --json', async () => {
     const log = jest.spyOn(console, 'log').mockImplementation();
     jest.spyOn(console, 'warn').mockImplementation();
