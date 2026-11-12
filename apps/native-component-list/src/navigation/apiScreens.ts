@@ -1,4 +1,5 @@
 import { isRunningInExpoGo } from 'expo';
+import { Platform } from 'react-native';
 
 import { apiScreensToListElements } from '../screens/ComponentListScreen';
 import { type ScreenConfig } from '../types/ScreenConfig';
@@ -44,6 +45,17 @@ const WorkletsScreens: ScreenConfig[] = optionalScreens(
 );
 
 export const ScreensList: ScreenConfig[] = [
+  ...(isRunningInExpoGo() || (Platform.OS !== 'ios' && Platform.OS !== 'android')
+    ? []
+    : [
+        {
+          getComponent() {
+            return optionalRequire(() => require('../screens/DevMenuScreen'));
+          },
+          name: 'DevMenu',
+          options: { title: 'Dev Menu' },
+        } satisfies ScreenConfig,
+      ]),
   {
     getComponent() {
       return optionalRequire(() => require('../screens/CameraPermissions/CameraPermissionsScreen'));
