@@ -53,7 +53,14 @@ export class AccessHandlePoolVFS extends FacadeVFS {
 
   static async create(name, module) {
     const vfs = new AccessHandlePoolVFS(name, module);
-    await vfs.isReady();
+    try {
+      await vfs.isReady();
+    } catch (error) {
+      // isReady() can open sync access handles and then throw.
+      // Close them so a later create() can take the files.
+      await vfs.close();
+      throw error;
+    }
     return vfs;
   }
 
@@ -303,19 +310,42 @@ export class AccessHandlePoolVFS extends FacadeVFS {
       }
     }
 
-    // Open access handles in parallel, separating associated and unassociated.
-    await Promise.all(
+    // Store a handle only after every open has settled.
+    // Otherwise a later success can run after close() has cleared the map.
+    const opened = await Promise.allSettled(
       files.map(async ([name, handle]) => {
         const accessHandle = await handle.createSyncAccessHandle();
-        this.#mapAccessHandleToName.set(accessHandle, name);
-        const path = this.#getAssociatedPath(accessHandle);
-        if (path) {
-          this.#mapPathToAccessHandle.set(path, accessHandle);
-        } else {
-          this.#availableAccessHandles.add(accessHandle);
-        }
+        return [name, accessHandle];
       })
     );
+    const handles = [];
+    let failure = null;
+    for (const result of opened) {
+      if (result.status === 'fulfilled') {
+        handles.push(result.value);
+      } else if (failure == null) {
+        failure = result.reason;
+      }
+    }
+    if (failure != null) {
+      for (const [, accessHandle] of handles) {
+        accessHandle.close();
+      }
+      throw failure;
+    }
+
+    for (const [name, accessHandle] of handles) {
+      this.#mapAccessHandleToName.set(accessHandle, name);
+    }
+    // Header reads run after the handles are stored, so a throw here still closes them.
+    for (const [, accessHandle] of handles) {
+      const path = this.#getAssociatedPath(accessHandle);
+      if (path) {
+        this.#mapPathToAccessHandle.set(path, accessHandle);
+      } else {
+        this.#availableAccessHandles.add(accessHandle);
+      }
+    }
   }
 
   #releaseAccessHandles() {
