@@ -108,6 +108,10 @@ The `create-expo-app` CLI adds **AGENTS.md** to a new project's root. When Claud
 
 Add shared project instructions to **AGENTS.md** so Claude Code, Codex, and Cursor read the same context.
 
+## Search the documentation locally
+
+Run `npx @expo/agent-cli docs:sync` in your project to download the documentation for its Expo SDK as Markdown files. The command prints the directories, so an agent can search them with its own tools, such as grep. `npx @expo/agent-cli docs:search <query>` returns ranked pages with file paths and line numbers.
+
 ## Set up an existing project
 
 `create-expo-app` writes the project context files only when it creates a new project. For an existing project, add the same files at the project root yourself.
