@@ -19,3 +19,14 @@ describe('findSharpInstanceAsync', () => {
     );
   });
 });
+
+describe('isAvailableAsync with sharp-cli installed', () => {
+  it(`detects the sharp instance resolved from the sharp-cli package`, async () => {
+    jest.resetModules();
+    const { isAvailableAsync, findSharpInstanceAsync } = require('../sharp');
+
+    expect(await isAvailableAsync()).toBe(true);
+    const sharp = await findSharpInstanceAsync();
+    expect(typeof sharp.versions.vips).toBe('string');
+  });
+});

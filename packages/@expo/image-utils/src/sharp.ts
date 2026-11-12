@@ -142,7 +142,7 @@ async function findSharpBinAsync(): Promise<string> {
       sharpCliPackagePath &&
       semver.satisfies(sharpCliPackage.version, SHARP_REQUIRED_VERSION) &&
       typeof sharpCliPackage.bin.sharp === 'string' &&
-      typeof _sharpInstance?.versions?.vips === 'string'
+      typeof sharpInstance?.versions?.vips === 'string'
     ) {
       _sharpBin = path.join(path.dirname(sharpCliPackagePath), sharpCliPackage.bin.sharp);
       _sharpInstance = sharpInstance;
