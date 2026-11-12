@@ -2,7 +2,13 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { detectFeaturesFromContent, findModuleDefinitionFile } from '../featureDetection';
+import {
+  detectExpoModuleFromContent,
+  detectFeaturesFromContent,
+  detectV2FeaturesFromContent,
+  findExpoModuleFile,
+  findModuleDefinitionFile,
+} from '../featureDetection';
 
 describe('detectFeaturesFromContent', () => {
   it('detects Constant', () => {
@@ -194,7 +200,7 @@ describe('detectFeaturesFromContent', () => {
   });
 });
 
-describe('findModuleDefinitionFile', () => {
+describe('native module file search', () => {
   let tmpDir: string;
 
   beforeEach(async () => {
@@ -249,5 +255,173 @@ describe('findModuleDefinitionFile', () => {
 
     const result = await findModuleDefinitionFile(tmpDir, 'apple');
     expect(result).toBeNull();
+  });
+
+  it('finds the @ExpoModule file next to the views module', async () => {
+    const iosDir = path.join(tmpDir, 'ios');
+    await fs.promises.mkdir(iosDir);
+    await fs.promises.writeFile(
+      path.join(iosDir, 'FooViewsModule.swift'),
+      'public func definition() -> ModuleDefinition { Name("FooViews") }'
+    );
+    await fs.promises.writeFile(
+      path.join(iosDir, 'FooModule.swift'),
+      '@ExpoModule("Foo")\npublic class FooModule: Module {}'
+    );
+
+    expect(await findExpoModuleFile(tmpDir, 'apple')).toBe(path.join(iosDir, 'FooModule.swift'));
+    expect(await findModuleDefinitionFile(tmpDir, 'apple')).toBe(
+      path.join(iosDir, 'FooViewsModule.swift')
+    );
+  });
+
+  it('ignores an @ExpoModule attribute in a comment', async () => {
+    const iosDir = path.join(tmpDir, 'ios');
+    await fs.promises.mkdir(iosDir);
+    await fs.promises.writeFile(
+      path.join(iosDir, 'FooModule.swift'),
+      '/// Unlike an `@ExpoModule` class, this module uses the Module DSL.\npublic class FooModule: Module {}'
+    );
+
+    expect(await findExpoModuleFile(tmpDir, 'apple')).toBeNull();
+  });
+
+  it('ignores an @ExpoModule attribute in a block comment', async () => {
+    const srcDir = path.join(tmpDir, 'android', 'src');
+    await fs.promises.mkdir(srcDir, { recursive: true });
+    await fs.promises.writeFile(
+      path.join(srcDir, 'FooModule.kt'),
+      '/**\n * Migrate this to an `@ExpoModule` class later.\n */\nclass FooModule : Module() {}'
+    );
+
+    expect(await findExpoModuleFile(tmpDir, 'android')).toBeNull();
+  });
+});
+
+describe('detectV2FeaturesFromContent', () => {
+  it('detects Swift members with attributes and modifiers on separate lines', () => {
+    const { features } = detectV2FeaturesFromContent(`
+      @ExpoModule("ExpoHaptics")
+      public class HapticsModule: Module {
+        @JS
+        @MainActor
+        func impactAsync(style: ImpactStyle) async {}
+
+        @JS(.concurrent)
+        nonisolated func digestAsync(
+          algorithm: String,
+          data: String
+        ) async throws -> String {}
+
+        @JS
+        func setValueAsync(value: String = "") async {}
+      }
+    `);
+    expect(features).toEqual(['AsyncFunction']);
+  });
+
+  it('detects Swift constants, functions and events', () => {
+    const { features } = detectV2FeaturesFromContent(`
+      @JS
+      let PI: Double = .pi
+
+      @JS("renamed")
+      public func hello() -> String { "Hello" }
+
+      @Event("onChange")
+      var onChange: (ChangeEventPayload) -> Void
+    `);
+    expect(features.sort()).toEqual(['Constant', 'Event', 'Function']);
+  });
+
+  it('detects Kotlin constants, functions, suspend functions and events', () => {
+    const { features } = detectV2FeaturesFromContent(`
+      @JS
+      @Constant
+      val isSupported: Boolean
+        get() = true
+
+      @JS
+      fun hello() = "Hello"
+
+      @JS
+      private suspend fun setValueAsync(value: String) {}
+
+      @Event(name = "onChange")
+      private val onChange = event<ChangeEventPayload>()
+    `);
+    expect(features.sort()).toEqual(['AsyncFunction', 'Constant', 'Event', 'Function']);
+  });
+
+  it.each([
+    ['Swift', '@ExpoModule("Foo", classes: [FooObject.self, BarObject.self])'],
+    ['Kotlin', '@ExpoModule(name = "Foo", classes = [FooObject::class])'],
+  ])('detects the first shared object class of the %s module', (_language, annotation) => {
+    expect(detectV2FeaturesFromContent(annotation)).toEqual({
+      features: ['SharedObject'],
+      sharedObjectName: 'FooObject',
+    });
+  });
+
+  it('reads the shared object classes only from the @ExpoModule arguments', () => {
+    expect(
+      detectV2FeaturesFromContent(`
+        @ExpoModule("Foo")
+        public class FooModule: Module {
+          let classes = [Bar.self]
+        }
+      `)
+    ).toEqual({ features: [], sharedObjectName: null });
+  });
+
+  it('keeps the members after comment markers in string literals', () => {
+    const { features } = detectV2FeaturesFromContent(`
+      @JS
+      let mimeTypes: [String] = ["image/*"]
+
+      @JS
+      func hello() -> String { "Hello" }
+
+      /** Loads the value. */
+      @JS
+      func loadAsync() async {}
+    `);
+    expect(features.sort()).toEqual(['AsyncFunction', 'Constant', 'Function']);
+  });
+
+  it('ignores commented-out members', () => {
+    const { features } = detectV2FeaturesFromContent(`
+      // @JS func hello() -> String
+      // @Event var onChange: () -> Void
+    `);
+    expect(features).toEqual([]);
+  });
+});
+
+describe('detectExpoModuleFromContent', () => {
+  it.each([
+    ['a Swift JS name', '@ExpoModule("ExpoFoo")\npublic class FooModule: Module {}', 'ExpoFoo'],
+    [
+      'a Swift class with shared objects',
+      '@ExpoModule(classes: [Foo.self])\npublic final class FooModule {}',
+      'FooModule',
+    ],
+    [
+      'a named Kotlin argument',
+      '@ExpoModule(name = "ExpoFoo")\nclass FooModule : Module()',
+      'ExpoFoo',
+    ],
+    [
+      'a named Kotlin argument after the classes',
+      '@ExpoModule(classes = [FooObject::class], name = "ExpoFoo")\nclass FooModule : Module()',
+      'ExpoFoo',
+    ],
+    ['no arguments', '@ExpoModule\npublic class FooModule: Module {}', 'FooModule'],
+  ])('reads the names with %s', (_label, content, name) => {
+    expect(detectExpoModuleFromContent(content)).toEqual({ name, moduleName: 'FooModule' });
+  });
+
+  it('returns null without an @ExpoModule class', () => {
+    expect(detectExpoModuleFromContent('public class FooModule: Module {}')).toBeNull();
   });
 });

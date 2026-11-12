@@ -837,7 +837,7 @@ export default requireNativeModule<NativeModuleShape>('ExpoImage');
       path.join(modulePath, 'ios', 'ApsNameFallbackModule.swift'),
       'utf-8'
     );
-    expect(swiftContent).toContain('Name("ExpoImage")');
+    expect(swiftContent).toContain('@ExpoModule("ExpoImage")');
   });
 
   it('aborts when the requested platform is already supported', async () => {

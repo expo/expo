@@ -933,6 +933,12 @@ program
     '--features <features...>',
     `Override best-effort feature detection. Values: ${ALL_FEATURES.join(', ')}.`
   )
+  .addOption(
+    new Option(
+      '--modules-api <version>',
+      'Version of the Expo Modules API to use in the new native code. Defaults to the version of the existing native code.'
+    ).choices([...MODULES_API_VERSIONS])
+  )
   .option(
     '-s, --source <source_dir>',
     'Local path to the template. By default it downloads `expo-module-template` from NPM.'
