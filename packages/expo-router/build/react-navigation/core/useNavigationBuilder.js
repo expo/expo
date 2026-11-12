@@ -185,8 +185,9 @@ const getRouteConfigsFromChildren = (children, groupKey, groupOptions, groupLayo
     }
     return configs;
 };
+const isNavigationState = (state) => state != null && typeof state === 'object' && 'routes' in state && Array.isArray(state.routes);
 const getStateFromParams = (params) => {
-    if (params?.state != null) {
+    if (isNavigationState(params?.state)) {
         return params.state;
     }
     else if (typeof params?.screen === 'string' && params?.initial !== false) {
