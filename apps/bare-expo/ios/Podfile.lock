@@ -4446,7 +4446,7 @@ SPEC CHECKSUMS:
   ExpoMeshGradient: 778fd9893abcff50f3861e13c8768c8442e6cb78
   ExpoModulesCore: dea525199a777da084083dd0bef9e548fd757dcc
   ExpoModulesJSI: d9f7f7a1625c1a29cb116a6c264f1752230d4783
-  ExpoModulesTestCore: ed72b7c5bffe2d5d16cf128c6322c2d1191c1734
+  ExpoModulesTestCore: 6a0e96b5e20076c1a5f4d18863474bb98853c6d9
   ExpoModulesWorklets: 208e6112a0467df1cc21530e280d650a3adf6261
   ExpoModulesWorkletsAdapter: 893a97c0f76a086a0fdf883545629b0b205e167a
   ExpoNetwork: 1f6c118baf2856c389fbb106a89e2acab185ce33
