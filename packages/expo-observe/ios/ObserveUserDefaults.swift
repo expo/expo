@@ -99,6 +99,20 @@ internal final class ObserveUserDefaults: UserDefaults {
     defaults.set(data, forKey: Keys.bundleDefaults.rawValue)
   }
 
+  /// A string that a library integration stores, under a key that starts with the integration's
+  /// name. Setting `nil` removes it.
+  static func integrationValue(integration: String, key: String) -> String? {
+    return defaults.string(forKey: integrationKey(integration: integration, key: key))
+  }
+
+  static func setIntegrationValue(_ value: String?, integration: String, key: String) {
+    defaults.set(value, forKey: integrationKey(integration: integration, key: key))
+  }
+
+  private static func integrationKey(integration: String, key: String) -> String {
+    return "integration.\(integration).\(key)"
+  }
+
   // MARK: - Legacy keys
 
   /// Keys that older versions wrote and nothing reads anymore.

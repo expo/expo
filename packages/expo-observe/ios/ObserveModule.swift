@@ -80,6 +80,18 @@ public final class ObserveModule: Module {
       return hasUserContentEntry(privacyManifest: url.flatMap { try? Data(contentsOf: $0) })
     }
 
+    AsyncFunction("getIntegrationValue") { (integration: String, key: String) async throws -> String? in
+      return try await AppMetricsActor.isolated {
+        return ObserveUserDefaults.integrationValue(integration: integration, key: key)
+      }
+    }
+
+    AsyncFunction("setIntegrationValue") { (integration: String, key: String, value: String?) async throws in
+      try await AppMetricsActor.isolated {
+        ObserveUserDefaults.setIntegrationValue(value, integration: integration, key: key)
+      }
+    }
+
     Function("setBundleDefaults") { (defaults: BundleDefaults) in
       guard !defaults.environment.isEmpty else {
         observeLogger.warn(
