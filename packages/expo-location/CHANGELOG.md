@@ -1,5 +1,12 @@
 # Changelog
 
+## 58.0.22
+
+### Patch Changes
+
+- [Android] Add `geocode` and `reverseGeocode` to the `expo-location/next` API. ([#52444](https://github.com/expo/expo/pull/52444) by [@HubertBer](https://github.com/HubertBer))
+- [next] Add `geocode` and `reverseGeocode` with a `locale` option. ([#52024](https://github.com/expo/expo/pull/52024) by [@Wenszel](https://github.com/Wenszel))
+
 ## 58.0.21
 
 ### Patch Changes
