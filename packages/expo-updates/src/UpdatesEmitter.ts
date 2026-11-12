@@ -1,3 +1,5 @@
+import { Platform } from 'expo-modules-core';
+
 import ExpoUpdatesModule from './ExpoUpdates';
 import type {
   UpdatesNativeStateChangeEvent,
@@ -6,7 +8,14 @@ import type {
 
 export let latestContext = transformNativeStateMachineContext(ExpoUpdatesModule.initialContext);
 
-ExpoUpdatesModule.addListener('Expo.nativeUpdatesStateChangeEvent', _handleNativeStateChangeEvent);
+const isWebServerRender = Platform.OS === 'web' && typeof window === 'undefined';
+
+if (!isWebServerRender) {
+  ExpoUpdatesModule.addListener(
+    'Expo.nativeUpdatesStateChangeEvent',
+    _handleNativeStateChangeEvent
+  );
+}
 
 interface UpdatesStateChangeSubscription {
   remove(): void;
