@@ -81,6 +81,15 @@ export default function CommunityBottomSheetScreen() {
             <Button title="Open" onPress={() => modalFromDismissRef.current?.present()} />
           </View>
 
+          {/* 5. Content up to the sheet's edges through the modifiers prop */}
+          <BodyText style={styles.heading}>Edge-to-edge content (modifiers)</BodyText>
+          <BodyText style={styles.hint}>
+            iOS: ignoreSafeArea(horizontal) lets the content fill the sheet on a folded iPhone Duo
+          </BodyText>
+          <View style={styles.buttonRow}>
+            <Button title="Open" onPress={() => edgeToEdgeRef.current?.present()} />
+          </View>
+
           {/* Event log */}
           <View style={styles.log}>
             <Text style={styles.logTitle}>Events</Text>
