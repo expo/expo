@@ -1154,11 +1154,11 @@ it('transforms an es module with asyncToGenerator', async () => {
   const trace = toTraceMap(result.output[0]!, contents);
 
   expect(generatedPositionFor(trace, { source: '', line: 1, column: 12 })).toMatchObject({
-    line: 11,
+    line: 12,
     column: 0,
   });
 
-  expect(originalPositionFor(trace, { line: 11, column: 9 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 12, column: 9 })).toMatchObject({
     line: 1,
     column: 22,
     name: null,
@@ -1208,6 +1208,7 @@ it('transforms import/export syntax when experimental flag is on', async () => {
   expect(result.output[0]!.data.code).toBe(
     [
       HEADER_DEV,
+      '"use strict";',
       'function _interopDefault(e) {',
       '  return e && e.__esModule ? e : { default: e };',
       '}',
@@ -1223,7 +1224,7 @@ it('transforms import/export syntax when experimental flag is on', async () => {
 
   const trace = toTraceMap(result.output[0]!, contents);
 
-  expect(originalPositionFor(trace, { line: 9, column: 5 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 10, column: 5 })).toMatchObject({
     line: 1,
     column: 26,
     name: null,
