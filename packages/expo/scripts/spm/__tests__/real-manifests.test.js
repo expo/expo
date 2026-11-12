@@ -34,6 +34,11 @@ const CORE_ONLY = ['ExpoModulesCoreHeaders'];
 const DIRECT_MANIFESTS = [
   ['@expo/ui', 'ExpoUI', ['ExpoModulesCoreHeaders', 'ExpoModulesWorkletsHeaders']],
   ['expo-age-range', 'ExpoAgeRange', CORE_ONLY],
+  [
+    'expo-app-intents',
+    'ExpoAppIntents',
+    ['ExpoModulesCoreHeaders', 'ExpoModulesWorkletsHeaders', 'ExpoUIHeaders'],
+  ],
   ['expo-apple-authentication', 'ExpoAppleAuthentication', CORE_ONLY],
   ['expo-asset', 'ExpoAsset', CORE_ONLY],
   ['expo-background-fetch', 'ExpoBackgroundFetch', CORE_ONLY],
