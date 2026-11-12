@@ -70,12 +70,20 @@ export function BaseExpoRouterLink({
     );
   }
 
+  const forwardedProps = { ...props, ...hrefAttrs, ...rest };
+  // React DOM warns about `onPress` on a DOM element. On web, `onClick` below calls it.
+  // Other children keep `onPress`: React Native Web's `Pressable` replaces `onClick` with its own handler.
+  const { onPress: _onPress, ...domProps } = forwardedProps;
+  const isDomChild =
+    Platform.OS === 'web' &&
+    asChild &&
+    React.isValidElement(rest.children) &&
+    typeof rest.children.type === 'string';
+
   // Avoid using createElement directly, favoring JSX, to allow tools like NativeWind to perform custom JSX handling on native.
   const element = (
     <Component
-      {...props}
-      {...hrefAttrs}
-      {...rest}
+      {...(isDomChild ? domProps : forwardedProps)}
       style={style}
       {...Platform.select({
         web: {
