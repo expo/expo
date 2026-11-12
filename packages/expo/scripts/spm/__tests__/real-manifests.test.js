@@ -68,6 +68,11 @@ const DIRECT_MANIFESTS = [
   ['expo-symbols', 'ExpoSymbols', CORE_ONLY],
   ['expo-video-thumbnails', 'ExpoVideoThumbnails', CORE_ONLY],
   ['expo-web-browser', 'ExpoWebBrowser', CORE_ONLY],
+  [
+    'expo-widgets',
+    'ExpoWidgets',
+    ['ExpoModulesCoreHeaders', 'ExpoModulesWorkletsHeaders', 'ExpoUIHeaders'],
+  ],
 ];
 
 // expo-dev-menu-interface depends on nothing, so the plugin builds it through the generated
