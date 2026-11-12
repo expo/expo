@@ -9,7 +9,9 @@ class ExpoCameraZXingProvider: NSObject, ExpoBarcodeScannerProvider {
   override init() {
     super.init()
     readers[AVMetadataObject.ObjectType.pdf417.rawValue] = ZXPDF417Reader()
-    readers[AVMetadataObject.ObjectType.code39.rawValue] = ZXCode39Reader()
+    // code39 is left to AVCaptureMetadataOutput: ZXing runs on whole frames at a few frames per
+    // second, returns a single code per frame and no corner points, while the built-in detector
+    // runs at the camera frame rate, reports every code in the frame and their geometry.
     if #available(iOS 15.4, *) {
       readers[AVMetadataObject.ObjectType.codabar.rawValue] = ZXCodaBarReader()
     }
