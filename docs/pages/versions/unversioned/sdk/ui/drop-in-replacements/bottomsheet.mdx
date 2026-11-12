@@ -281,6 +281,24 @@ This difference is intentional. `@gorhom/bottom-sheet` owns the gesture and anim
 - Animation, over-drag, content panning, handle panning, keyboard behavior, custom backdrop, custom background, custom footer, animated value, and detached props are accepted for API compatibility but do not change behavior.
 - `modifiers` is an addition to the `@gorhom/bottom-sheet` API. It takes modifier configs from `@expo/ui/swift-ui/modifiers` or `@expo/ui/jetpack-compose/modifiers` and applies them to the native sheet's content on iOS and to the `ModalBottomSheet` on Android. It is ignored on web.
 
+## Platform-specific modifiers
+
+On iOS, SwiftUI applies the window's safe area inside the sheet. On a window with a horizontal inset, such as the side rail of a folded iPhone Duo, the sheet's content then stops short of the sheet's edge. Pass `ignoreSafeArea` through `modifiers` to let the content fill the sheet. The content is then responsible for its own insets, which `react-native-safe-area-context` reports inside the sheet.
+
+```tsx
+import { View } from 'react-native';
+import BottomSheet from '@expo/ui/community/bottom-sheet';
+import { ignoreSafeArea } from '@expo/ui/swift-ui/modifiers';
+
+export default function EdgeToEdgeSheet() {
+  return (
+    <BottomSheet modifiers={[ignoreSafeArea({ edges: 'horizontal' })]}>
+      <View style={{ height: 200, backgroundColor: 'tomato' }} />
+    </BottomSheet>
+  );
+}
+```
+
 ## API
 
 ```tsx
