@@ -24,7 +24,7 @@ extension Benchmarks {
       benchmark("native view: update 1 of 7 props", runtime: nil) { iterations in
         MainActor.assumeIsolated {
           for _ in 0..<iterations {
-            update(view, selector, chain[index])
+            update(view, selector, Unmanaged.passUnretained(chain[index]).toOpaque())
             index = (index + 1) & (chain.count - 1)
           }
         }
@@ -34,7 +34,7 @@ extension Benchmarks {
   }
 }
 
-private typealias UpdateDecodedPropsIMP = @convention(c) (AnyObject, Selector, AnyObject?) -> Void
+private typealias UpdateDecodedPropsIMP = @convention(c) (AnyObject, Selector, UnsafeRawPointer?) -> Void
 
 /// Decoded props in which each decode changes one prop, `title` every 7th time.
 private func decodedPropsChain(count: Int) -> [DecodedViewProps<UpdateBenchmarkProps>] {

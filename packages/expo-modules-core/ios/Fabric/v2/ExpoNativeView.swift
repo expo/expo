@@ -19,8 +19,12 @@ open class ExpoNativeView: ExpoNativeViewObjC {
   /// The app context that the view belongs to.
   public private(set) weak var appContext: AppContext?
 
-  /// The `DecodedViewProps` of the mounted props, or `nil` before the first props are applied.
-  internal var decodedProps: AnyObject?
+  /// The `DecodedViewProps` of the mounted props, or `nil` before the first props are applied. `final` and
+  /// without exclusivity checks, because it's read and written on each props update, only on the main
+  /// thread and never during another access.
+  @usableFromInline
+  @exclusivity(unchecked)
+  internal final var decodedProps: AnyObject?
 
   public override init(frame: CGRect) {
     self.appContext = AppContext.appContextForNewViews
@@ -32,14 +36,29 @@ open class ExpoNativeView: ExpoNativeViewObjC {
     fatalError("init(coder:) has not been implemented")
   }
 
-  public final override func updateDecodedProps(_ decodedProps: Any?) {
-    guard let view = self as? any AnyNativeView else {
+  /// The view's type as an `AnyNativeView`, found on the first props update, so later updates skip the
+  /// conformance check. Accessed only on the main thread, in `updateDecodedProps(_:)`.
+  @exclusivity(unchecked)
+  nonisolated(unsafe) private var nativeViewType: (any AnyNativeView.Type)?
+
+  public nonisolated final override func updateDecodedProps(_ decodedProps: UnsafeRawPointer?) {
+    assert(Thread.isMainThread, "Fabric mounts the props of a view on the main thread")
+    guard let viewType = nativeViewType ?? findNativeViewType() else {
+      return
+    }
+    let object = decodedProps.map { Unmanaged<AnyObject>.fromOpaque($0).takeUnretainedValue() }
+    viewType._applyDecodedProps(object, to: self)
+  }
+
+  private nonisolated func findNativeViewType() -> (any AnyNativeView.Type)? {
+    guard let viewType = type(of: self) as? any AnyNativeView.Type else {
       log.error(
         "The view '\(type(of: self))' doesn't conform to AnyNativeView, so its props aren't applied. Add @ExpoView<Props> to the class"
       )
-      return
+      return nil
     }
-    view.applyDecodedProps(decodedProps.map { $0 as AnyObject })
+    nativeViewType = viewType
+    return viewType
   }
 
   // MARK: - Registration

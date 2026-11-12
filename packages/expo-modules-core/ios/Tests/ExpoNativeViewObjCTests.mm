@@ -28,10 +28,10 @@ namespace views = expo::views;
 
 @implementation RecordingNativeViewObjC
 
-- (void)updateDecodedProps:(nullable id)decodedProps
+- (void)updateDecodedProps:(nullable const void *)decodedProps
 {
   self.updateCount++;
-  self.lastDecodedProps = decodedProps;
+  self.lastDecodedProps = (__bridge id)decodedProps;
 }
 
 @end
