@@ -1400,6 +1400,95 @@ struct NetworkRequestTaskSwizzlingTests {
     #expect(installed?.forwardingTarget(for: NSSelectorFromString("setFetcher:forTask:")) == nil)
   }
 
+  @Test
+  func `implements the completion callbacks at the class level`() throws {
+    let session = URLSession(configuration: .ephemeral, delegate: FakeSessionDelegate(), delegateQueue: nil)
+    defer { session.invalidateAndCancel() }
+
+    let proxyClass: AnyClass = try #require(object_getClass(session.delegate))
+    let implementsDidComplete = proxyClass.instancesRespond(to: didCompleteSelector)
+    let implementsDidReceiveResponse = proxyClass.instancesRespond(to: didReceiveResponseSelector)
+    #expect(implementsDidComplete)
+    #expect(implementsDidReceiveResponse)
+  }
+
+  /// Calls the proxy class's own implementations, the way a subclass's `super` call reaches them.
+  @Test
+  func `forwards the completion callbacks to a delegate that does not declare the protocol`() throws {
+    let delegate = UndeclaredTaskDelegate()
+    let session = URLSession(configuration: .ephemeral, delegate: delegate, delegateQueue: nil)
+    defer { session.invalidateAndCancel() }
+    let installed = try #require(session.delegate as? NSObject)
+    #expect(installed !== delegate)
+    let task = session.dataTask(with: URL(string: "https://fake.test/undeclared")!)
+
+    var disposition: URLSession.ResponseDisposition?
+    try callDidReceiveResponse(on: installed, session: session, task: task) { disposition = $0 }
+    try callDidComplete(on: installed, session: session, task: task, error: NSError(domain: "test", code: 7))
+
+    #expect(delegate.responses == 1)
+    #expect(disposition == .cancel)
+    #expect(delegate.completedError?.code == 7)
+  }
+
+  @Test
+  func `allows the response when it wraps a nil delegate`() throws {
+    let session = URLSession(configuration: .ephemeral, delegate: nil, delegateQueue: nil)
+    defer { session.invalidateAndCancel() }
+    let installed = try #require(session.delegate as? NSObject)
+    let task = session.dataTask(with: URL(string: "https://fake.test/nil-delegate")!)
+
+    var disposition: URLSession.ResponseDisposition?
+    try callDidReceiveResponse(on: installed, session: session, task: task) { disposition = $0 }
+    try callDidComplete(on: installed, session: session, task: task, error: nil)
+
+    #expect(disposition == .allow)
+  }
+
+  private let didCompleteSelector = NSSelectorFromString("URLSession:task:didCompleteWithError:")
+  private let didReceiveResponseSelector = NSSelectorFromString(
+    "URLSession:dataTask:didReceiveResponse:completionHandler:"
+  )
+
+  private func callDidComplete(on proxy: NSObject, session: URLSession, task: URLSessionTask, error: NSError?) throws {
+    typealias DidComplete = @convention(c) (AnyObject, Selector, URLSession, URLSessionTask, NSError?) -> Void
+    let proxyClass: AnyClass = try #require(object_getClass(proxy))
+    let method = try #require(class_getInstanceMethod(proxyClass, didCompleteSelector))
+    unsafeBitCast(method_getImplementation(method), to: DidComplete.self)(
+      proxy,
+      didCompleteSelector,
+      session,
+      task,
+      error
+    )
+  }
+
+  private func callDidReceiveResponse(
+    on proxy: NSObject,
+    session: URLSession,
+    task: URLSessionDataTask,
+    completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
+  ) throws {
+    typealias DidReceiveResponse =
+      @convention(c) (
+        AnyObject,
+        Selector,
+        URLSession,
+        URLSessionDataTask,
+        URLResponse,
+        @escaping @convention(block) (URLSession.ResponseDisposition) -> Void
+      ) -> Void
+    let proxyClass: AnyClass = try #require(object_getClass(proxy))
+    let method = try #require(class_getInstanceMethod(proxyClass, didReceiveResponseSelector))
+    unsafeBitCast(method_getImplementation(method), to: DidReceiveResponse.self)(
+      proxy,
+      didReceiveResponseSelector,
+      session,
+      task,
+      URLResponse()
+    ) { completionHandler($0) }
+  }
+
   private func waitForRecorded(matching url: URL, attempts: Int = 50) async -> NetworkRequest? {
     for _ in 0..<attempts {
       let found = try? await AppMetricsActor.isolated {
@@ -1663,6 +1752,29 @@ private final class FilteringDelegate: NetworkRequestObserverDelegate, @unchecke
 /// tell a selector it handles apart from one it doesn't.
 private final class FakeSessionDelegate: NSObject, URLSessionDataDelegate {
   func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {}
+}
+
+/// Implements the task callbacks while declaring only `URLSessionDelegate`, like expo-file-system's
+/// `EXSessionTaskDispatcher`.
+private final class UndeclaredTaskDelegate: NSObject, URLSessionDelegate {
+  var responses = 0
+  var completedError: NSError?
+
+  @objc(URLSession:dataTask:didReceiveResponse:completionHandler:)
+  func receive(
+    _ session: URLSession,
+    dataTask: URLSessionDataTask,
+    response: URLResponse,
+    completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
+  ) {
+    responses += 1
+    completionHandler(.cancel)
+  }
+
+  @objc(URLSession:task:didCompleteWithError:)
+  func complete(_ session: URLSession, task: URLSessionTask, error: NSError?) {
+    completedError = error
+  }
 }
 
 /// A trivial `URLProtocol` that pretends to be a server. Routes by URL path:
