@@ -15,6 +15,7 @@ import type {
 
 export type UpdatesEvents = {
   'Expo.nativeUpdatesStateChangeEvent': (params: any) => void;
+  'Expo.updatesLogEntry': (entry: UpdatesLogEntry) => void;
 };
 
 export type UpdatesCheckAutomaticallyNativeValue =

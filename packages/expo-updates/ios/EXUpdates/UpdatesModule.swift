@@ -12,11 +12,16 @@ import ExpoModulesCore
  * by EXUpdatesBinding, a scoped module, in Expo Go.
  */
 public final class UpdatesModule: Module, UpdatesEventManagerObserver {
+  private lazy var logEntryForwarder = UpdatesLogEntryForwarder { [weak self] entry in
+    self?.sendEvent(EXUpdatesLogEntryEventName, entry)
+  }
+
   public func definition() -> ModuleDefinition {
     Name("ExpoUpdates")
 
     Events(
-      EXUpdatesStateChangeEventName
+      EXUpdatesStateChangeEventName,
+      EXUpdatesLogEntryEventName
     )
 
     Constants {
@@ -31,8 +36,17 @@ public final class UpdatesModule: Module, UpdatesEventManagerObserver {
       AppController.removeUpdatesEventManagerObserver()
     }
 
+    OnStartObserving(EXUpdatesLogEntryEventName) {
+      self.logEntryForwarder.setEnabled(true)
+    }
+
+    OnStopObserving(EXUpdatesLogEntryEventName) {
+      self.logEntryForwarder.setEnabled(false)
+    }
+
     OnDestroy {
       AppController.removeUpdatesEventManagerObserver()
+      self.logEntryForwarder.setEnabled(false)
     }
 
     AsyncFunction("reload") { (options: ReloadScreenOptions?, promise: Promise) in
