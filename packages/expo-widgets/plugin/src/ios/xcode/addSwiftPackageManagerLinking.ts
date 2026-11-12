@@ -1,7 +1,45 @@
 import type { XcodeProject } from 'expo/config-plugins';
 
-type PbxObject = Record<string, any>;
 type PbxArrayMember = { value: string; comment: string };
+
+interface PbxProject {
+  packageReferences?: PbxArrayMember[];
+}
+interface PbxNativeTarget {
+  buildConfigurationList: string;
+  buildPhases: PbxArrayMember[];
+  packageProductDependencies?: PbxArrayMember[];
+}
+interface PbxBuildPhase {
+  files: PbxArrayMember[];
+}
+interface PbxShellScriptBuildPhase extends PbxBuildPhase {
+  shellScript: string;
+}
+interface PbxBuildFile {
+  productRef?: string;
+}
+interface PbxFileReference {
+  path?: string;
+}
+interface XCConfigurationList {
+  buildConfigurations: PbxArrayMember[];
+}
+interface XCBuildConfiguration {
+  baseConfigurationReference?: string;
+  baseConfigurationReference_comment?: string;
+  buildSettings: Record<string, unknown>;
+}
+interface XCLocalSwiftPackageReference {
+  relativePath: string;
+}
+interface XCSwiftPackageProductDependency {
+  package: string;
+  productName: string;
+}
+
+/** The `isa` and the other keys that the pbxproj writes but this file never reads back. */
+type PbxObjectFields = { isa: string } & Record<string, unknown>;
 
 const WIDGETS_PACKAGE_PATH = 'build/generated/autolinking/expo/direct/expo-widgets';
 const WIDGETS_PRODUCT_NAME = 'ExpoWidgets';
@@ -9,6 +47,10 @@ const REACT_NATIVE_XCCONFIG_PATH = 'ReactNativeSPM/ReactNativeSPM.xcconfig';
 const REACT_NATIVE_XCCONFIG_NAME = 'ReactNativeSPM.xcconfig';
 
 const runWidgetsScript = (script: string) => `set -eo pipefail
+
+if [ -n "\${PODS_ROOT:-}" ]; then
+  exit 0
+fi
 
 if [ -z "\${NODE_BINARY:-}" ]; then
   set +e
@@ -23,8 +65,7 @@ if [ -z "$NODE_BINARY" ]; then
 fi
 export PROJECT_ROOT="\${PROJECT_ROOT:-$(cd "$SRCROOT/.." && pwd)}"
 
-EXPO_WIDGETS_DIR="$("$NODE_BINARY" --print "require('path').dirname(require.resolve('expo-widgets/package.json', { paths: [process.argv[1]] }))" "$PROJECT_ROOT" 2>/dev/null || true)"
-if [ -z "$EXPO_WIDGETS_DIR" ]; then
+if ! EXPO_WIDGETS_DIR="$("$NODE_BINARY" --print "require('path').dirname(require.resolve('expo-widgets/package.json', { paths: [process.argv[1]] }))" "$PROJECT_ROOT")"; then
   echo "error: expo-widgets could not be resolved from $PROJECT_ROOT. Install the app's dependencies, then build again." >&2
   exit 1
 fi
@@ -40,7 +81,7 @@ export function addSwiftPackageManagerLinking(
   xcodeProject: XcodeProject,
   { targetUuid }: { targetUuid: string }
 ) {
-  const target = objectSection(xcodeProject, 'PBXNativeTarget')[targetUuid]!;
+  const target = objectSection<PbxNativeTarget>(xcodeProject, 'PBXNativeTarget')[targetUuid]!;
 
   const productDependencyUuid = addWidgetsProductDependency(xcodeProject, target);
   addProductToFrameworksPhase(xcodeProject, target, productDependencyUuid);
@@ -69,9 +110,13 @@ export function addSwiftPackageManagerLinking(
   });
 }
 
-function addWidgetsProductDependency(xcodeProject: XcodeProject, target: PbxObject): string {
-  const project: PbxObject = xcodeProject.getFirstProject().firstProject;
-  const references = objectSection(xcodeProject, 'XCLocalSwiftPackageReference');
+function addWidgetsProductDependency(xcodeProject: XcodeProject, target: PbxNativeTarget): string {
+  const { firstProject } = xcodeProject.getFirstProject();
+  const project: typeof firstProject & PbxProject = firstProject;
+  const references = objectSection<XCLocalSwiftPackageReference>(
+    xcodeProject,
+    'XCLocalSwiftPackageReference'
+  );
   const referenceComment = `XCLocalSwiftPackageReference "${WIDGETS_PACKAGE_PATH}"`;
   const referenceUuid = findOrAddObject(
     xcodeProject,
@@ -87,7 +132,10 @@ function addWidgetsProductDependency(xcodeProject: XcodeProject, target: PbxObje
     comment: referenceComment,
   });
 
-  const dependencies = objectSection(xcodeProject, 'XCSwiftPackageProductDependency');
+  const dependencies = objectSection<XCSwiftPackageProductDependency>(
+    xcodeProject,
+    'XCSwiftPackageProductDependency'
+  );
   const dependencyUuid = findOrAddObject(
     xcodeProject,
     dependencies,
@@ -112,16 +160,14 @@ function addWidgetsProductDependency(xcodeProject: XcodeProject, target: PbxObje
 
 function addProductToFrameworksPhase(
   xcodeProject: XcodeProject,
-  target: PbxObject,
+  target: PbxNativeTarget,
   productDependencyUuid: string
 ) {
-  const frameworksPhases = objectSection(xcodeProject, 'PBXFrameworksBuildPhase');
-  const phase = target.buildPhases
-    .map(({ value }: PbxArrayMember) => frameworksPhases[value])
-    .find(Boolean);
-  const buildFiles = objectSection(xcodeProject, 'PBXBuildFile');
+  const frameworksPhases = objectSection<PbxBuildPhase>(xcodeProject, 'PBXFrameworksBuildPhase');
+  const phase = target.buildPhases.map(({ value }) => frameworksPhases[value]).find(Boolean)!;
+  const buildFiles = objectSection<PbxBuildFile>(xcodeProject, 'PBXBuildFile');
   const isLinked = phase.files.some(
-    ({ value }: PbxArrayMember) => buildFiles[value]?.productRef === productDependencyUuid
+    ({ value }) => buildFiles[value]?.productRef === productDependencyUuid
   );
   if (isLinked) {
     return;
@@ -141,7 +187,7 @@ function addProductToFrameworksPhase(
 function findOrAddReactNativeXcconfig(xcodeProject: XcodeProject): string {
   return findOrAddObject(
     xcodeProject,
-    objectSection(xcodeProject, 'PBXFileReference'),
+    objectSection<PbxFileReference>(xcodeProject, 'PBXFileReference'),
     (fileReference) => unquote(fileReference.path ?? '') === REACT_NATIVE_XCCONFIG_PATH,
     {
       object: {
@@ -156,10 +202,15 @@ function findOrAddReactNativeXcconfig(xcodeProject: XcodeProject): string {
   );
 }
 
-function targetConfigurations(xcodeProject: XcodeProject, target: PbxObject): PbxObject[] {
-  const list = objectSection(xcodeProject, 'XCConfigurationList')[target.buildConfigurationList]!;
-  const configurations = objectSection(xcodeProject, 'XCBuildConfiguration');
-  return list.buildConfigurations.map(({ value }: PbxArrayMember) => configurations[value]!);
+function targetConfigurations(
+  xcodeProject: XcodeProject,
+  target: PbxNativeTarget
+): XCBuildConfiguration[] {
+  const list = objectSection<XCConfigurationList>(xcodeProject, 'XCConfigurationList')[
+    target.buildConfigurationList
+  ]!;
+  const configurations = objectSection<XCBuildConfiguration>(xcodeProject, 'XCBuildConfiguration');
+  return list.buildConfigurations.map(({ value }) => configurations[value]!);
 }
 
 /**
@@ -168,13 +219,13 @@ function targetConfigurations(xcodeProject: XcodeProject, target: PbxObject): Pb
  */
 function setShellScriptPhase(
   xcodeProject: XcodeProject,
-  target: PbxObject,
+  target: PbxNativeTarget,
   { name, before, script }: { name: string; before: string; script: string }
 ) {
-  const phases = objectSection(xcodeProject, 'PBXShellScriptBuildPhase');
+  const phases = objectSection<PbxShellScriptBuildPhase>(xcodeProject, 'PBXShellScriptBuildPhase');
   const shellScript = quote(script);
   const existing = target.buildPhases.find(
-    ({ value, comment }: PbxArrayMember) => comment === name && phases[value]
+    ({ value, comment }) => comment === name && phases[value]
   );
   if (existing) {
     phases[existing.value]!.shellScript = shellScript;
@@ -199,9 +250,7 @@ function setShellScriptPhase(
     comment: name,
   });
 
-  const beforeIndex = target.buildPhases.findIndex(
-    ({ comment }: PbxArrayMember) => comment === before
-  );
+  const beforeIndex = target.buildPhases.findIndex(({ comment }) => comment === before);
   target.buildPhases.splice(beforeIndex === -1 ? target.buildPhases.length : beforeIndex, 0, {
     value: uuid,
     comment: name,
@@ -209,16 +258,18 @@ function setShellScriptPhase(
 }
 
 /** An `objects` section of the pbxproj. Its `<uuid>_comment` keys hold strings, not objects. */
-function objectSection(xcodeProject: XcodeProject, isa: string): Record<string, PbxObject> {
-  const objects: Record<string, Record<string, PbxObject>> = xcodeProject.hash.project.objects;
-  objects[isa] ??= {};
-  return objects[isa];
+function objectSection<T>(xcodeProject: XcodeProject, isa: string): Record<string, T> {
+  const objects = xcodeProject.hash.project.objects as unknown as Record<
+    string,
+    Record<string, T> | undefined
+  >;
+  return (objects[isa] ??= {});
 }
 
-function addObject(
+function addObject<T>(
   xcodeProject: XcodeProject,
-  section: Record<string, PbxObject>,
-  { object, comment }: { object: PbxObject; comment: string }
+  section: Record<string, T>,
+  { object, comment }: { object: T & PbxObjectFields; comment: string }
 ): string {
   const uuid = xcodeProject.generateUuid();
   section[uuid] = object;
@@ -226,11 +277,11 @@ function addObject(
   return uuid;
 }
 
-function findOrAddObject(
+function findOrAddObject<T>(
   xcodeProject: XcodeProject,
-  section: Record<string, PbxObject>,
-  matches: (object: PbxObject) => boolean,
-  entry: { object: PbxObject; comment: string }
+  section: Record<string, T>,
+  matches: (object: T) => boolean,
+  entry: { object: T & PbxObjectFields; comment: string }
 ): string {
   const existing = Object.keys(section).find(
     (key) => !key.endsWith('_comment') && matches(section[key]!)

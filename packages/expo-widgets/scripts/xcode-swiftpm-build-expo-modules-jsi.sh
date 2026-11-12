@@ -9,6 +9,13 @@ if [ -n "${PODS_ROOT:-}" ]; then
   exit 0
 fi
 
+for name in SRCROOT DERIVED_FILE_DIR; do
+  if [ -z "${!name:-}" ]; then
+    echo "error: $(basename "$0") cannot run because $name is not set. Xcode sets it for build phases. Run this script only from a build phase of the widget extension target." >&2
+    exit 1
+  fi
+done
+
 NODE_BINARY="${NODE_BINARY:-$(command -v node || true)}"
 PROJECT_ROOT="${PROJECT_ROOT:-$(cd "$SRCROOT/.." && pwd)}"
 

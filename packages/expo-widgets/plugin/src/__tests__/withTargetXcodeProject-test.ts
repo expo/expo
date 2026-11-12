@@ -1,5 +1,8 @@
+import { spawnSync } from 'child_process';
 import type { ExpoConfig } from 'expo/config';
 import { IOSConfig, withXcodeProject, type XcodeProject } from 'expo/config-plugins';
+import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 
 import withTargetXcodeProject from '../ios/xcode/withTargetXcodeProject';
@@ -17,7 +20,24 @@ const templateRoot = path.resolve(__dirname, '../../../../../templates/expo-temp
 const targetName = 'ExpoWidgetsTarget';
 const widgetsPackagePath = 'build/generated/autolinking/expo/direct/expo-widgets';
 
-type PbxObject = Record<string, any>;
+type PbxArrayMember = { value: string; comment: string };
+
+interface PbxObject {
+  buildConfigurationList: string;
+  buildConfigurations: PbxArrayMember[];
+  buildPhases: PbxArrayMember[];
+  packageReferences: PbxArrayMember[];
+  packageProductDependencies?: PbxArrayMember[];
+  files: PbxArrayMember[];
+  productRef: string;
+  path: string;
+  relativePath: string;
+  package: string;
+  productName: string;
+  shellScript: string;
+  baseConfigurationReference?: string;
+  buildSettings: Record<string, unknown>;
+}
 type PbxSection = Record<string, PbxObject>;
 
 function applyPlugin(xcodeProject: XcodeProject, experiments?: Record<string, unknown>) {
@@ -37,7 +57,10 @@ function applyPlugin(xcodeProject: XcodeProject, experiments?: Record<string, un
 }
 
 function objects(xcodeProject: XcodeProject, isa: string): PbxSection {
-  const sections: Record<string, PbxSection | undefined> = xcodeProject.hash.project.objects;
+  const sections = xcodeProject.hash.project.objects as unknown as Record<
+    string,
+    PbxSection | undefined
+  >;
   return sections[isa] ?? {};
 }
 
@@ -63,15 +86,16 @@ function widgetsTarget(xcodeProject: XcodeProject): PbxObject {
 }
 
 function targetPhases(xcodeProject: XcodeProject): { uuid: string; name: string }[] {
-  return widgetsTarget(xcodeProject).buildPhases.map(
-    ({ value, comment }: { value: string; comment: string }) => ({ uuid: value, name: comment })
-  );
+  return widgetsTarget(xcodeProject).buildPhases.map(({ value, comment }) => ({
+    uuid: value,
+    name: comment,
+  }));
 }
 
 function targetConfigurations(xcodeProject: XcodeProject): PbxObject[] {
   const listUuid = widgetsTarget(xcodeProject).buildConfigurationList;
   return object(xcodeProject, 'XCConfigurationList', listUuid).buildConfigurations.map(
-    ({ value }: { value: string }) => object(xcodeProject, 'XCBuildConfiguration', value)
+    ({ value }) => object(xcodeProject, 'XCBuildConfiguration', value)
   );
 }
 
@@ -108,9 +132,7 @@ describe(withTargetXcodeProject, () => {
     it('references the expo-widgets Swift package from the project', () => {
       const [referenceUuid] = only(widgetsPackageReferences(xcodeProject));
       const project = object(xcodeProject, 'PBXProject', xcodeProject.getFirstProject().uuid);
-      expect(project.packageReferences.map(({ value }: { value: string }) => value)).toEqual([
-        referenceUuid,
-      ]);
+      expect(project.packageReferences.map(({ value }) => value)).toEqual([referenceUuid]);
     });
 
     it('links the ExpoWidgets product into the extension target', () => {
@@ -119,18 +141,18 @@ describe(withTargetXcodeProject, () => {
       expect(dependency.package).toBe(referenceUuid);
 
       const target = widgetsTarget(xcodeProject);
-      expect(
-        target.packageProductDependencies.map(({ value }: { value: string }) => value)
-      ).toEqual([dependencyUuid]);
+      expect(target.packageProductDependencies!.map(({ value }) => value)).toEqual([
+        dependencyUuid,
+      ]);
 
       const frameworksPhase = targetPhases(xcodeProject).find(({ name }) => name === 'Frameworks')!;
       const frameworkFiles = object(
         xcodeProject,
         'PBXFrameworksBuildPhase',
         frameworksPhase.uuid
-      ).files.map(({ value }: { value: string }) => value);
+      ).files.map(({ value }) => value);
       expect(
-        frameworkFiles.map((uuid: string) => object(xcodeProject, 'PBXBuildFile', uuid).productRef)
+        frameworkFiles.map((uuid) => object(xcodeProject, 'PBXBuildFile', uuid).productRef)
       ).toEqual([dependencyUuid]);
     });
 
@@ -139,7 +161,7 @@ describe(withTargetXcodeProject, () => {
         const fileReference = object(
           xcodeProject,
           'PBXFileReference',
-          configuration.baseConfigurationReference
+          configuration.baseConfigurationReference!
         );
         expect(unquote(fileReference.path)).toBe('ReactNativeSPM/ReactNativeSPM.xcconfig');
       }
@@ -172,6 +194,40 @@ describe(withTargetXcodeProject, () => {
       }
       expect(bundleScript).toContain('scripts/xcode-swiftpm-build-bundle.sh');
       expect(jsiScript).toContain('scripts/xcode-swiftpm-build-expo-modules-jsi.sh');
+    });
+
+    describe('when expo-widgets cannot be resolved from the app', () => {
+      let srcRoot: string;
+
+      beforeEach(() => {
+        srcRoot = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'expo-widgets-')), 'ios');
+        fs.mkdirSync(srcRoot);
+      });
+
+      afterEach(() => {
+        fs.rmSync(path.dirname(srcRoot), { recursive: true, force: true });
+      });
+
+      function runBundlePhase(env: Record<string, string> = {}) {
+        const script = JSON.parse(shellPhase(xcodeProject, 'Build ExpoWidgets Bundle').shellScript);
+        return spawnSync('/bin/bash', ['-c', script], {
+          encoding: 'utf8',
+          env: { PATH: process.env.PATH, NODE_BINARY: process.execPath, SRCROOT: srcRoot, ...env },
+        });
+      }
+
+      it('fails the phase and shows the node error', () => {
+        const { status, stderr } = runBundlePhase();
+        expect(status).not.toBe(0);
+        expect(stderr).toContain("Cannot find module 'expo-widgets/package.json'");
+        expect(stderr).toContain('error: expo-widgets could not be resolved');
+      });
+
+      it('does nothing under CocoaPods', () => {
+        const { status, stderr } = runBundlePhase({ PODS_ROOT: path.join(srcRoot, 'Pods') });
+        expect(status).toBe(0);
+        expect(stderr).toBe('');
+      });
     });
 
     it('adds nothing twice when it runs again', () => {
