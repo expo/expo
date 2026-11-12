@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.os.PersistableBundle
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.records.Required
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.location.next.locationProviders.BackgroundUpdatesParameters
@@ -126,8 +127,8 @@ class GetPositionOptions(
 
 @OptimizedRecord
 class Coordinates(
-  @Field val latitude: Double,
-  @Field val longitude: Double
+  @Field @Required val latitude: Double,
+  @Field @Required val longitude: Double
 ) : Record {
   private fun BaseBundle.putCoordinateFields() {
     putDouble("latitude", latitude)
@@ -138,6 +139,9 @@ class Coordinates(
 
   fun toBundle() = Bundle().apply { putCoordinateFields() }
 }
+
+fun Coordinates.areValid(): Boolean =
+  latitude in -90.0..90.0 && longitude in -180.0..180.0
 
 fun PersistableBundle.toCoordinates(): Coordinates = Coordinates(
   getDouble("latitude"),
