@@ -1,4 +1,5 @@
 import {
+  BasicTextField,
   Card,
   Checkbox,
   Column,
@@ -8,8 +9,16 @@ import {
   LazyColumn,
   Row,
   Text as ComposeText,
+  useNativeState,
 } from '@expo/ui/jetpack-compose';
-import { background, fillMaxWidth, padding, size } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  background,
+  border,
+  fillMaxWidth,
+  padding,
+  semantics,
+  size,
+} from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
 
 function SmallControls() {
@@ -21,6 +30,27 @@ function SmallControls() {
       </IconButton>
       <Checkbox value={checked} onCheckedChange={setChecked} />
     </Row>
+  );
+}
+
+function SignInFields() {
+  const username = useNativeState('');
+  const password = useNativeState('');
+  const fieldModifiers = [fillMaxWidth(), border(1, '#9CA3AF'), padding(12, 12, 12, 12)];
+  return (
+    <Column verticalArrangement={{ spacedBy: 8 }}>
+      <BasicTextField
+        value={username}
+        singleLine
+        modifiers={[...fieldModifiers, semantics({ contentType: 'username' })]}
+      />
+      <BasicTextField
+        value={password}
+        singleLine
+        visualTransformation="password"
+        modifiers={[...fieldModifiers, semantics({ contentType: 'password' })]}
+      />
+    </Column>
   );
 }
 
@@ -46,6 +76,22 @@ export default function CompositionLocalProviderScreen() {
                 <SmallControls />
               </CompositionLocalProvider>
             </Column>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Default autofill highlight</ComposeText>
+            <ComposeText>Fill these from a saved login to see the yellow highlight.</ComposeText>
+            <SignInFields />
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>autofillHighlightColor: transparent</ComposeText>
+            <ComposeText>The filled fields keep their own background.</ComposeText>
+            <CompositionLocalProvider values={{ autofillHighlightColor: 'transparent' }}>
+              <SignInFields />
+            </CompositionLocalProvider>
           </Column>
         </Card>
       </LazyColumn>
