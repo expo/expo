@@ -26,8 +26,18 @@ internal class ExpoWidgetsPeekWidget(
       ?: return createErrorRoot("No layout found for $widgetName")
     val props = WidgetsLayoutRegistry.props(appContext, widgetName)
     val environment = getWidgetEnvironment(appContext)
-    val node = evaluateLayout(appContext, layout, props, environment)
+    // Rendered for both schemes: the launcher does not ask for the widget again when the system theme
+    // changes, so the tree has to carry the colors for both.
+    val light = evaluateLayout(appContext, layout, props, environment + ("colorScheme" to "light"))
+    val dark = evaluateLayout(appContext, layout, props, environment + ("colorScheme" to "dark"))
 
-    return node.toPeekRoot(appContext, InteractionSource.Widget(widgetName), size)
+    return toDayNightPeekRoot(
+      appContext,
+      light = light,
+      dark = dark,
+      isNight = environment["colorScheme"] == "dark",
+      source = InteractionSource.Widget(widgetName),
+      size = size
+    )
   }
 }
