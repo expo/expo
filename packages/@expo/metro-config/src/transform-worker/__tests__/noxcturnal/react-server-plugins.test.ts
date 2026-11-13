@@ -789,7 +789,7 @@ it.each([false, true])("matches Babel's native DOM component proxy in dev=%s", a
   expect(native.result.metadata.expoDomComponentReference).toBe(
     babelMetadata?.expoDomComponentReference
   );
-  expect(native.result.code).toContain('expo/dom/internal');
+  expect(native.dependencies.map(({ name }) => name)).toContain('expo/dom/internal');
   if (dev) expect(native.result.code).toContain('DOM(Card)');
   expect(native.result.code).toContain(dev ? 'Card.tsx?file=' : '.html');
   expect(native.result.code).not.toContain('<main>');
