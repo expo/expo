@@ -6,7 +6,8 @@ import PhotosUI
  Protocol that describes scenarios we care about while the user is picking media.
  */
 protocol OnMediaPickingResultHandler {
-  func didPickMultipleMedia(selection: [PHPickerResult])
+  /// `dismissPicker` closes the picker and runs its argument once it is gone. It must be called exactly once.
+  func didPickMultipleMedia(selection: [PHPickerResult], dismissPicker: @escaping (@escaping () -> Void) -> Void)
   func didPickMedia(mediaInfo: MediaInfo)
   func didCancelPicking()
 }
@@ -39,9 +40,39 @@ internal class ImagePickerHandler: NSObject,
     onMediaPickingResultHandler.didPickMedia(mediaInfo: mediaInfo)
   }
 
-  private func handlePickedMedia(selection: [PHPickerResult]) {
+  private func handlePickedMedia(selection: [PHPickerResult], picker: PHPickerViewController) {
     statusBarVisibilityController.maybeRestoreStatusBarVisibility()
-    onMediaPickingResultHandler.didPickMultipleMedia(selection: selection)
+    onMediaPickingResultHandler.didPickMultipleMedia(selection: selection) { completion in
+      DispatchQueue.main.async {
+        picker.dismiss(animated: true, completion: completion)
+      }
+    }
+  }
+
+  /**
+   Covers the picker with a spinner and blocks input while the selection loads. A photo that lives
+   only in iCloud is downloaded at this point, which can take seconds; without this the picker
+   closed immediately and the app showed nothing until the download finished.
+   */
+  private func showLoadingOverlay(on picker: PHPickerViewController) {
+    // Swipe-to-dismiss would otherwise close the picker mid-download.
+    picker.isModalInPresentation = true
+
+    let overlay = UIView(frame: picker.view.bounds)
+    overlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    overlay.backgroundColor = UIColor.black.withAlphaComponent(0.4)
+
+    let spinner = UIActivityIndicatorView(style: .large)
+    spinner.color = .white
+    spinner.translatesAutoresizingMaskIntoConstraints = false
+    spinner.startAnimating()
+    overlay.addSubview(spinner)
+    NSLayoutConstraint.activate([
+      spinner.centerXAnchor.constraint(equalTo: overlay.centerXAnchor),
+      spinner.centerYAnchor.constraint(equalTo: overlay.centerYAnchor)
+    ])
+
+    picker.view.addSubview(overlay)
   }
 
   private func handlePickingCancellation() {
@@ -67,10 +98,13 @@ internal class ImagePickerHandler: NSObject,
     // The PHPickerViewController returns empty collection when canceled
     if results.isEmpty {
       handlePickingCancellation()
-    } else {
-      handlePickedMedia(selection: results)
+      picker.dismiss(animated: true)
+      return
     }
-    picker.dismiss(animated: true)
+    // The picker stays open until the selection has loaded; the handler dismisses it, and the
+    // promise is settled only after the dismissal, so the app never presents over a closing picker.
+    showLoadingOverlay(on: picker)
+    handlePickedMedia(selection: results, picker: picker)
   }
 
   // MARK: - UIAdaptivePresentationControllerDelegate
