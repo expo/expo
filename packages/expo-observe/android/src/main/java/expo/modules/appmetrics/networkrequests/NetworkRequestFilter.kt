@@ -2,9 +2,6 @@
 
 package expo.modules.appmetrics.networkrequests
 
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.OptimizedRecord
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 
 /**
@@ -21,17 +18,16 @@ import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
  * nothing through it (an empty allow-list matches no value), so any empty field drops every
  * request. A filter with no fields set matches every request, matching the no-filter default.
  */
-@OptimizedRecord
 internal data class NetworkRequestFilter(
   /**
    * Exact host matches, compared case-insensitively against the request URL's host.
    */
-  @Field val hosts: List<String>? = null,
+  val hosts: List<String>? = null,
   /**
    * Allowed HTTP methods (`GET`, `POST`, …), compared case-insensitively.
    */
-  @Field val methods: List<String>? = null
-) : Record {
+  val methods: List<String>? = null
+) {
   /**
    * Returns whether a request with the given URL and method passes this filter. Host and method
    * comparisons are case-insensitive. An unset (`null`) field places no constraint on its
