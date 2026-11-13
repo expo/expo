@@ -1,7 +1,6 @@
+import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import connect from 'connect';
-import { createRequestHandler } from 'expo-server/adapter/http';
-import fs from 'node:fs/promises';
 import http from 'node:http';
 import path from 'node:path';
 import send from 'send';
@@ -12,6 +11,7 @@ import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { loadEnvFiles } from '../utils/nodeEnv';
 import { resolveMetroPortAsync } from '../utils/port';
+import { createRequestHandler } from './adapter';
 import { applyStaticHeaders, loadStaticManifestAsync, resolveStaticHeaders } from './static';
 
 type Options = {
@@ -184,9 +184,7 @@ function canParseURL(url: string): boolean {
 }
 
 async function isDevelopmentExportAsync(dist: string): Promise<boolean> {
-  const manifest = JSON.parse(
-    await fs.readFile(path.join(dist, 'server/_expo/routes.json'), 'utf8')
-  );
+  const manifest = await JsonFile.readAsync(path.join(dist, 'server/_expo/routes.json'));
   return manifest.mode === 'development';
 }
 
