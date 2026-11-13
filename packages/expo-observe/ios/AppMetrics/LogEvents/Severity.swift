@@ -1,10 +1,8 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
-
 /// Severity of a log event. Each case carries its OpenTelemetry severity number
 /// via `severityNumber` and is sent as `severityText` (uppercased) on the wire.
-enum Severity: String, Codable, Sendable, Enumerable {
+enum Severity: String, Codable, Sendable, CaseIterable {
   case trace, debug, info, warn, error, fatal
 
   /// OpenTelemetry severity number that matches this case.
