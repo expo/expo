@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-open class MetricReporter {
+class MetricReporter {
   var receivers: [any MetricsReceiver] = []
 
   func addReceiver(_ receiver: MetricsReceiver) {

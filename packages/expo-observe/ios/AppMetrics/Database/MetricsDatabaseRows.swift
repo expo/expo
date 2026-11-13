@@ -13,35 +13,35 @@ struct SessionWithChildren: Sendable {
 
 /// Persistence-layer representation of a session row. Mirrors the columns of the `sessions` table
 /// and is intentionally decoupled from the in-memory `Session` class hierarchy.
-public struct SessionRow: Sendable {
-  public let id: String
-  public let type: String
-  public let startTimestamp: String
-  public let endTimestamp: String?
-  public let isActive: Bool
-  public let environment: String?
+struct SessionRow: Sendable {
+  let id: String
+  let type: String
+  let startTimestamp: String
+  let endTimestamp: String?
+  let isActive: Bool
+  let environment: String?
 
-  public let appName: String?
-  public let appIdentifier: String?
-  public let appVersion: String?
-  public let appBuildNumber: String?
-  public let appUpdateId: String?
-  public let appUpdateRuntimeVersion: String?
-  public let appUpdateRequestHeaders: String?
-  public let appEasBuildId: String?
+  let appName: String?
+  let appIdentifier: String?
+  let appVersion: String?
+  let appBuildNumber: String?
+  let appUpdateId: String?
+  let appUpdateRuntimeVersion: String?
+  let appUpdateRequestHeaders: String?
+  let appEasBuildId: String?
 
-  public let deviceOs: String?
-  public let deviceOsVersion: String?
-  public let deviceModel: String?
-  public let deviceName: String?
+  let deviceOs: String?
+  let deviceOsVersion: String?
+  let deviceModel: String?
+  let deviceName: String?
 
-  public let expoSdkVersion: String?
-  public let reactNativeVersion: String?
-  public let clientVersion: String?
+  let expoSdkVersion: String?
+  let reactNativeVersion: String?
+  let clientVersion: String?
 
-  public let languageTag: String?
+  let languageTag: String?
 
-  public init(
+  init(
     id: String,
     type: String,
     startTimestamp: String,
@@ -121,19 +121,19 @@ extension SessionRow {
 
 /// Persistence-layer representation of a metric row. `id` is `nil` for rows that have not yet been
 /// inserted; assigned by SQLite on insert.
-public struct MetricRow: Sendable {
-  public let id: Int64?
-  public let sessionId: String
-  public let timestamp: String
-  public let category: String?
-  public let name: String
-  public let value: Double
-  public let routeName: String?
-  public let updateId: String?
+struct MetricRow: Sendable {
+  let id: Int64?
+  let sessionId: String
+  let timestamp: String
+  let category: String?
+  let name: String
+  let value: Double
+  let routeName: String?
+  let updateId: String?
   /// JSON-encoded blob for free-form parameters. The persistence layer doesn't interpret the contents.
-  public let params: String?
+  let params: String?
 
-  public init(
+  init(
     id: Int64? = nil,
     sessionId: String,
     timestamp: String,
@@ -173,18 +173,18 @@ extension MetricRow {
 }
 
 /// Persistence-layer representation of a log row.
-public struct LogRow: Sendable {
-  public let id: Int64?
-  public let sessionId: String
-  public let timestamp: String
-  public let severity: String
-  public let name: String
-  public let body: String?
+struct LogRow: Sendable {
+  let id: Int64?
+  let sessionId: String
+  let timestamp: String
+  let severity: String
+  let name: String
+  let body: String?
   /// JSON-encoded attributes blob. The persistence layer doesn't interpret the contents.
-  public let attributes: String?
-  public let droppedAttributesCount: Int
+  let attributes: String?
+  let droppedAttributesCount: Int
 
-  public init(
+  init(
     id: Int64? = nil,
     sessionId: String,
     timestamp: String,
@@ -225,57 +225,57 @@ extension LogRow {
 /// any producer (network requests today, navigation or custom spans later) converts its domain
 /// event into a `SpanRow` at record time, and `expo-observe` exports rows past a cursor to the
 /// OTLP traces endpoint without knowing what produced them.
-public struct SpanRow: Sendable {
+struct SpanRow: Sendable {
   /// `SpanKind` values from the OTLP proto, for producers picking a `kind`.
-  public static let internalKind = 1
-  public static let clientKind = 3
+  static let internalKind = 1
+  static let clientKind = 3
 
   /// `Status.code` values from the OTLP proto. UNSET is expressed by a `nil` `statusCode`.
-  public static let statusOk = 1
-  public static let statusError = 2
+  static let statusOk = 1
+  static let statusError = 2
 
-  public let id: Int64?
-  public let sessionId: String
+  let id: Int64?
+  let sessionId: String
 
   /// W3C trace/span identifiers as lowercase hex (32 and 16 characters). Generated once at
   /// record time and persisted, so a redelivered row (export is at-least-once) reaches the
   /// server byte-identical instead of becoming an untraceable duplicate.
-  public let traceId: String
-  public let spanId: String
+  let traceId: String
+  let spanId: String
 
   /// Parent span id for in-app hierarchies, or `nil` for a root span. Set by `SpanRecorder` when
   /// a custom span is started with a parent; the network producer always writes root spans.
-  public let parentSpanId: String?
+  let parentSpanId: String?
 
   /// Span name per the semantic conventions of the producer (the HTTP method for network
   /// request spans).
-  public let name: String
+  let name: String
 
   /// `SpanKind` per the OTLP proto (`clientKind` for network requests).
-  public let kind: Int
+  let kind: Int
 
   /// Unix-epoch milliseconds. Stored as integers rather than the ISO strings the other tables use:
   /// a span's duration is routinely sub-second, and the house ISO format carries no fractional
   /// seconds, so a string timestamp would collapse every fast span to zero length. Milliseconds
   /// is the OTel spec's minimal timestamp precision; the exporter converts to the wire format's
   /// `timeUnixNano`.
-  public let startTimestampMs: Int64
-  public let endTimestampMs: Int64
+  let startTimestampMs: Int64
+  let endTimestampMs: Int64
 
   /// OTLP status code (`statusError`), or `nil` when the span completed without one (UNSET).
-  public let statusCode: Int?
-  public let statusMessage: String?
+  let statusCode: Int?
+  let statusMessage: String?
 
   /// JSON object of span attributes, keyed per the producer's semantic conventions. Stored as an
   /// opaque blob: nothing queries individual attributes locally, and the export layer converts
   /// them generically to the OTLP wire shape.
-  public let attributes: String?
+  let attributes: String?
 
   /// JSON array of span events (`[{name, timeMs?, attributes}]`). Stored as an opaque blob for
   /// the same reason as `attributes`.
-  public let events: String?
+  let events: String?
 
-  public init(
+  init(
     id: Int64? = nil,
     sessionId: String,
     traceId: String = SpanRow.generateTraceId(),
@@ -308,12 +308,12 @@ public struct SpanRow: Sendable {
   /// A new random 16-byte trace id as 32 lowercase hex characters. Called for a root span only:
   /// a child reuses its parent's trace id. There is no cross-process trace-context propagation,
   /// so a trace never extends beyond this app.
-  public static func generateTraceId() -> String {
+  static func generateTraceId() -> String {
     return generateHexId(words: 2)
   }
 
   /// A new random 8-byte span id as 16 lowercase hex characters.
-  public static func generateSpanId() -> String {
+  static func generateSpanId() -> String {
     return generateHexId(words: 1)
   }
 

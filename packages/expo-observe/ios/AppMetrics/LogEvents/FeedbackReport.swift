@@ -2,7 +2,7 @@
 
 import ExpoModulesCore
 
-public let feedbackLogName = "expo.feedback"
+let feedbackLogName = "expo.feedback"
 
 /// User feedback from `Observe.reportFeedback`. The JS layer validates it and adds the scale to every rating.
 struct FeedbackReport: Record {

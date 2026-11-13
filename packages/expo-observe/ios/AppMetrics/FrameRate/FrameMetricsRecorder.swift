@@ -4,18 +4,18 @@
 /// Multiple recorders can be active simultaneously (e.g., one for the main session, one per screen),
 /// each tracking its own metrics. Call `start()` to begin recording and `stop()` to finish
 /// and retrieve the accumulated metrics.
-public final class FrameMetricsRecorder: Sendable {
+final class FrameMetricsRecorder: Sendable {
   @AppMetricsActor
-  public private(set) var metrics: FrameRateMetrics = .zero
+  private(set) var metrics: FrameRateMetrics = .zero
 
   @AppMetricsActor
   private var previousFrame: Frame = .zero
 
-  public init() {}
+  init() {}
 
   /// Starts recording frame metrics from the shared display link.
   @AppMetricsActor
-  public func start() {
+  func start() {
     FrameRateMonitor.shared.addRecorder(self)
   }
 
@@ -23,7 +23,7 @@ public final class FrameMetricsRecorder: Sendable {
   /// Resets the state so the recorder can be reused for a new recording session.
   @AppMetricsActor
   @discardableResult
-  public func stop() -> FrameRateMetrics {
+  func stop() -> FrameRateMetrics {
     FrameRateMonitor.shared.removeRecorder(self)
     defer {
       metrics = .zero
