@@ -68,7 +68,7 @@ export function useLinking(
 
     if (linkingHandlers.length) {
       console.warn(
-        'Two Expo Router roots handle deep links at the same time. This is expected for a moment during an Android Activity relaunch. At other times, make sure that the app renders only one root component.'
+        'Your app mounted a second time while the first instance was still handling deep links. This can happen during an Android Activity relaunch when a configuration change is not listed in `android:configChanges`. Expo Router keeps working, but the app state may reset.'
       );
     }
 

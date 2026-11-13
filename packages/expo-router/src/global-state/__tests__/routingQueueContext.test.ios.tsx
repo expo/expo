@@ -117,7 +117,7 @@ it('warns when a second root binds the imperative router', async () => {
 
   expect(warn).toHaveBeenCalledTimes(1);
   expect(warn).toHaveBeenCalledWith(
-    'Two Expo Router roots are mounted at the same time. This is expected for a moment during an Android Activity relaunch, and the newest root receives the `router` calls. At other times, make sure that the app renders only one root component.'
+    'Your app mounted a second time while the first instance was still running. This can happen during an Android Activity relaunch when a configuration change is not listed in `android:configChanges`. Expo Router keeps working, but the app state may reset.'
   );
 
   await secondRoot.unmount();

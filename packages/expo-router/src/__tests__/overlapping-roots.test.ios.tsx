@@ -89,11 +89,11 @@ it('warns in development when a second root mounts', async () => {
   // The router bridge uses a layout effect, so its warning comes before the linking warning.
   expect(warn).toHaveBeenNthCalledWith(
     1,
-    'Two Expo Router roots are mounted at the same time. This is expected for a moment during an Android Activity relaunch, and the newest root receives the `router` calls. At other times, make sure that the app renders only one root component.'
+    'Your app mounted a second time while the first instance was still running. This can happen during an Android Activity relaunch when a configuration change is not listed in `android:configChanges`. Expo Router keeps working, but the app state may reset.'
   );
   expect(warn).toHaveBeenNthCalledWith(
     2,
-    'Two Expo Router roots handle deep links at the same time. This is expected for a moment during an Android Activity relaunch. At other times, make sure that the app renders only one root component.'
+    'Your app mounted a second time while the first instance was still handling deep links. This can happen during an Android Activity relaunch when a configuration change is not listed in `android:configChanges`. Expo Router keeps working, but the app state may reset.'
   );
   expect(error).not.toHaveBeenCalled();
 });

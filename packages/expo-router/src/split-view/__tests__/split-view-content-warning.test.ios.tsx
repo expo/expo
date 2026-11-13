@@ -55,6 +55,7 @@ it('warns once when SplitView.Content is missing', async () => {
     index: () => <Text>Index</Text>,
   };
   const firstRoot = await renderRouter(routes, { initialUrl: '/' });
+  // Two mounted roots log their own `console.warn`. Unmount first so the spy counts only the SplitView warning.
   await firstRoot.unmount();
   await renderRouter(routes, { initialUrl: '/' });
 
