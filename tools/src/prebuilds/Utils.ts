@@ -251,9 +251,7 @@ export const validatePodNamesAsync = async (
     }
 
     // Look for matching podspec
-    const foundPodspecs = await Array.fromAsync(
-      glob(podspecPattern, { cwd: searchPath })
-    );
+    const foundPodspecs = await Array.fromAsync(glob(podspecPattern, { cwd: searchPath }));
 
     if (foundPodspecs.length === 0) {
       // Find all podspecs in the package to help debug

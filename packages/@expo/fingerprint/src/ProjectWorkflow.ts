@@ -7,6 +7,7 @@ import path from 'path';
 
 import { resolveExpoConfigPluginsPackagePath } from './ExpoResolver';
 import type { Platform, ProjectWorkflow } from './Fingerprint.types';
+import { collator } from './utils/Collator';
 import { isIgnoredPathWithMatchObjects, pathExistsAsync, toPosixPath } from './utils/Path';
 
 /**
@@ -160,7 +161,7 @@ class Ignore {
   public async initIgnoreAsync(): Promise<void> {
     const ignoreFilePaths = await findIgnoreFilesAsync(this.rootDir);
     // ensure that parent dir is before child directories
-    ignoreFilePaths.sort((a, b) => a.length - b.length || a.localeCompare(b));
+    ignoreFilePaths.sort((a, b) => a.length - b.length || collator.compare(a, b));
 
     const ignoreMapping = await Promise.all(
       ignoreFilePaths.map(async (filePath) => {
