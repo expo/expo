@@ -2,8 +2,6 @@ import EXUpdatesInterface
 import ExpoModulesCore
 import Foundation
 
-internal let logger = Logger(logHandlers: [createOSLogHandler(category: Logger.EXPO_LOG_CATEGORY)])
-
 @ExpoModule("ExpoAppMetrics", classes: [SpanHandle.self])
 public final class AppMetricsModule: Module, UpdatesStateChangeListener {
   var subscription: UpdatesStateChangeSubscription?
