@@ -5,7 +5,7 @@ import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.appstartup.StartupState
 import expo.modules.core.interfaces.ReactActivityLifecycleListener
 
-class AppMetricsActivityLifecycleListeners : ReactActivityLifecycleListener {
+internal class AppMetricsActivityLifecycleListeners : ReactActivityLifecycleListener {
   override fun onResume(activity: Activity) {
     super.onResume(activity)
     // Native loading should be finished by this time

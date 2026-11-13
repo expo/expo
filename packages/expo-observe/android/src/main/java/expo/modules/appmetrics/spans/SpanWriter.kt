@@ -18,7 +18,7 @@ private const val TAG = "ExpoAppMetrics"
  * thread, the session-FK ordering, the row cap applied by the insert, and failure swallowing:
  * recording telemetry must never break a producer. Mirrors the iOS `SpanWriter`.
  */
-class SpanWriter(
+internal class SpanWriter(
   private val database: MetricsDatabase,
   private val scope: CoroutineScope,
   /**

@@ -8,7 +8,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
-class SessionSharedObject(
+internal class SessionSharedObject(
   private val sessionManager: SessionManager,
   private val scope: CoroutineScope,
   val type: String,

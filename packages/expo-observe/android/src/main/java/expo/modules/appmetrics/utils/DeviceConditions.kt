@@ -9,7 +9,7 @@ import android.os.BatteryManager
 import android.os.Build
 import android.os.PowerManager
 
-enum class ThermalState {
+internal enum class ThermalState {
   NOMINAL,
   FAIR,
   SERIOUS,
@@ -17,7 +17,7 @@ enum class ThermalState {
   UNKNOWN
 }
 
-enum class NetworkTransport {
+internal enum class NetworkTransport {
   WIFI,
   CELLULAR,
   ETHERNET,
@@ -31,7 +31,7 @@ enum class NetworkTransport {
  * Fields may be `null` when Android does not provide the data,
  * such as on older OS versions or before battery info is available.
  */
-data class DeviceState(
+internal data class DeviceState(
   val lowPowerMode: Boolean? = null,
   val thermalState: ThermalState? = null,
   val batteryLevel: Double? = null,
@@ -43,7 +43,7 @@ data class DeviceState(
  * and `transport` is `NONE` when no `ConnectivityManager` service is
  * available or the active network has no capabilities.
  */
-data class NetworkState(
+internal data class NetworkState(
   val connected: Boolean,
   val transport: NetworkTransport,
   /**
@@ -74,7 +74,7 @@ data class NetworkState(
  * into typed `DeviceState` / `NetworkState` snapshots. The wire-format
  * conversion to `expo.*` keys lives in `MetricParamsBuilder`.
  */
-object DeviceConditions {
+internal object DeviceConditions {
   fun deviceState(context: Context): DeviceState {
     val powerManager = context.getSystemService(Context.POWER_SERVICE) as? PowerManager
     val lowPowerMode = powerManager?.isPowerSaveMode

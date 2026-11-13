@@ -10,7 +10,7 @@ import expo.modules.kotlin.types.Enumerable
  * (https://opentelemetry.io/docs/specs/otel/logs/data-model/#field-severitynumber)
  * is exposed via the `severityNumber` extension property below.
  */
-enum class Severity(val rawValue: String) : Enumerable {
+internal enum class Severity(val rawValue: String) : Enumerable {
   TRACE("trace"),
   DEBUG("debug"),
   INFO("info"),
