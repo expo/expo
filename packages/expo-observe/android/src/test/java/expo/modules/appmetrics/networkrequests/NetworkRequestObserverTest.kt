@@ -1,7 +1,5 @@
 package expo.modules.appmetrics.networkrequests
 
-import expo.modules.kotlin.AppContext
-import io.mockk.mockk
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -12,28 +10,26 @@ import java.util.Date
 import java.util.UUID
 
 /**
- * The JS-facing observer mostly forwards to `NetworkRequestMonitor`. What's specific to the
- * observer is the payload shape — the map it hands to `emit()` is the wire format JS consumers
+ * The observer mostly forwards to `NetworkRequestMonitor`. What's specific to the
+ * observer is the payload shape — the map it hands to `onEvent` is the wire format JS consumers
  * see. These tests pin that shape down so renames require a deliberate change.
  */
 class NetworkRequestObserverTest {
   @Test
   fun `registers with the monitor on construction, regardless of JS listeners`() {
-    val appContext = mockk<AppContext>(relaxed = true)
     val monitor = NetworkRequestMonitor()
-    val observer = NetworkRequestObserver.forTesting(appContext, monitor)
+    val observer = NetworkRequestObserver.forTesting(monitor)
 
     assertEquals(1, monitor.delegateCount)
     assertTrue(observer.shouldObserveRequest("https://expo.dev", "GET"))
   }
 
   @Test
-  fun `release unregisters the observer`() {
-    val appContext = mockk<AppContext>(relaxed = true)
+  fun `stop unregisters the observer`() {
     val monitor = NetworkRequestMonitor()
-    val observer = NetworkRequestObserver.forTesting(appContext, monitor)
+    val observer = NetworkRequestObserver.forTesting(monitor)
 
-    observer.sharedObjectDidRelease()
+    observer.stop()
 
     assertEquals(0, monitor.delegateCount)
     assertFalse(observer.shouldObserveRequest("https://expo.dev", "GET"))

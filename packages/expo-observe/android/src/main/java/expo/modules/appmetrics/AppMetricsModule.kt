@@ -18,7 +18,7 @@ import expo.modules.appmetrics.logevents.FeedbackScale
 import expo.modules.appmetrics.logevents.LogEventOptions
 import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
 import expo.modules.appmetrics.networkrequests.NetworkRequestMonitor
-import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
+import expo.modules.appmetrics.networkrequests.NetworkRequestObserverObject
 import expo.modules.appmetrics.networkrequests.NetworkRequestPersistence
 import expo.modules.appmetrics.networkrequests.NetworkTracesConfiguration
 import expo.modules.appmetrics.spans.SpanHandle
@@ -436,13 +436,14 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         null as SessionObject?
       }
 
-      Class(NetworkRequestObserver::class) {
-        Constructor { filter: NetworkRequestFilter? ->
-          NetworkRequestObserver(appContext, filter)
+      // The JS class name must be given: the default is the Kotlin class name.
+      Class("NetworkRequestObserver", NetworkRequestObserverObject::class) {
+        Constructor { filter: JsNetworkRequestFilter? ->
+          NetworkRequestObserverObject(appContext, filter?.toFilter())
         }
 
-        Function("setFilter") { observer: NetworkRequestObserver, filter: NetworkRequestFilter? ->
-          observer.setFilter(filter)
+        Function("setFilter") { ref: NetworkRequestObserverObject, filter: JsNetworkRequestFilter? ->
+          ref.observer.setFilter(filter?.toFilter())
         }
       }
 
@@ -524,8 +525,16 @@ internal data class MetricAttributes(
 @OptimizedRecord
 internal data class NetworkTracesConfigParam(
   @Field val enabled: Boolean = true,
-  @Field val filter: NetworkRequestFilter? = null
+  @Field val filter: JsNetworkRequestFilter? = null
 ) : Record
+
+@OptimizedRecord
+internal data class JsNetworkRequestFilter(
+  @Field val hosts: List<String>? = null,
+  @Field val methods: List<String>? = null
+) : Record {
+  fun toFilter() = NetworkRequestFilter(hosts = hosts, methods = methods)
+}
 
 @OptimizedRecord
 internal data class JsErrorReport(
