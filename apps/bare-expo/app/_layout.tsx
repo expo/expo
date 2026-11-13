@@ -100,7 +100,8 @@ function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
+        {/* `/` redirects here on launch; without this the first screen slides in as a push. */}
+        <Stack.Screen name="(tabs)" options={{ animation: 'none' }} />
         <Stack.Screen name="redirect" />
         <Stack.Screen name="search" options={getSearchScreenOptions?.(theme)} />
       </Stack>

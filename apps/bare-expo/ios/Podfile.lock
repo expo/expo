@@ -717,6 +717,29 @@ PODS:
     - ExpoModulesCore
   - ExpoSplashScreen (58.0.11):
     - ExpoModulesCore
+    - hermes-engine
+    - RCTRequired
+    - RCTTypeSafety
+    - React-bridging
+    - React-Core
+    - React-Core-prebuilt
+    - React-cxxstableapi
+    - React-debug
+    - React-Fabric
+    - React-FabricComponents
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/core
+    - ReactNativeDependencies
+    - Yoga
   - ExpoSQLite (58.0.14):
     - ExpoModulesCore
   - ExpoSQLite/Benchmarks (58.0.14):
@@ -4469,7 +4492,7 @@ SPEC CHECKSUMS:
   ExpoSharing: 3287d1b7e0382c59f346df0c0b80da9acb899cb1
   ExpoSMS: c8b282d16f6ed0846beeec28f59bdf9218199d91
   ExpoSpeech: c5197a19bf647a5f0d5766fa76fa597cc3139414
-  ExpoSplashScreen: 4a16996856aeceb61b1c253c5fc9b43208705fa5
+  ExpoSplashScreen: 862bf2b94c2e8f3609c46c6296d7227aea75f6e6
   ExpoSQLite: df5b2414b02832b9ea101f04e7464131d85361ff
   ExpoStatusBar: 56aa9746e1bee4d8adbab12f4d7efc97000ac49f
   ExpoStoreReview: baec43b9560cbe6e03171afb26a011ffdd68cad5
