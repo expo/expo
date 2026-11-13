@@ -5,8 +5,8 @@ import os
 
 /// Whether the user consented to Observe collecting data. While not granted, app metrics stores
 /// nothing and Observe sends nothing.
-public enum ObserveConsent {
-  public enum State: Sendable {
+enum ObserveConsent {
+  enum State: Sendable {
     case granted
     case notGranted
   }
@@ -112,11 +112,11 @@ public enum ObserveConsent {
   static let startTimeKey = "dev.expo.app-metrics.observe-consent-start"
   static let savedValueKey = "dev.expo.app-metrics.observe-consent"
 
-  public static var isGranted: Bool {
+  static var isGranted: Bool {
     return state == .granted
   }
 
-  public static var state: State {
+  static var state: State {
     return shared.state
   }
 
@@ -157,7 +157,7 @@ public enum ObserveConsent {
 }
 
 /// A settings suite that saves nothing while consent is not granted.
-public final class ConsentGatedDefaults: @unchecked Sendable {
+final class ConsentGatedDefaults: @unchecked Sendable {
   // `UserDefaults` is thread-safe, and the in-memory values are behind a mutex.
   private let defaults: UserDefaults
   private let isGranted: @Sendable () -> Bool
@@ -165,7 +165,7 @@ public final class ConsentGatedDefaults: @unchecked Sendable {
   // consent. The first grant saves these values, so Observe does not send with the defaults.
   private let unsavedValues = Mutex<[String: Any]>([:])
 
-  public convenience init(_ defaults: UserDefaults) {
+  convenience init(_ defaults: UserDefaults) {
     self.init(defaults, isGranted: { ObserveConsent.isGranted })
   }
 
@@ -195,7 +195,7 @@ public final class ConsentGatedDefaults: @unchecked Sendable {
     }
   }
 
-  public func object(forKey key: String) -> Any? {
+  func object(forKey key: String) -> Any? {
     var value: Any?
     if whileNotGranted({ value = unsavedValues.withLock { $0[key] } }) {
       return value
@@ -205,7 +205,7 @@ public final class ConsentGatedDefaults: @unchecked Sendable {
 
   // `ObserveConsent.update` changes the gate under the same lock. So a write cannot land in memory
   // after the first grant saved those values, or in the suite after a revoke closed the gate.
-  public func set(_ value: Any?, forKey key: String) {
+  func set(_ value: Any?, forKey key: String) {
     Self.transitionLock.withLockUnchecked {
       if isGranted() {
         defaults.set(value, forKey: key)

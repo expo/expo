@@ -5,7 +5,7 @@ import Foundation
 
 /// Collects the attributes and events of one in-flight span and builds its `SpanRow` when the
 /// span ends. Nothing is written to the database before `end`.
-public final class SpanRecorder: Sendable {
+final class SpanRecorder: Sendable {
   /// Upper bound on buffered events. The exporter truncates to the server's 32-event limit at
   /// dispatch and reports the overflow as dropped; buffering somewhat beyond that keeps the
   /// dropped count honest while bounding what a runaway caller can accumulate.

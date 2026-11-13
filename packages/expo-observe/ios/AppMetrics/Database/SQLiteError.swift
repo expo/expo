@@ -3,11 +3,11 @@
 import Foundation
 import SQLite3
 
-public struct SQLiteError: Error, LocalizedError, Sendable {
-  public let code: Int32
-  public let message: String
+struct SQLiteError: Error, LocalizedError, Sendable {
+  let code: Int32
+  let message: String
 
-  public var errorDescription: String? {
+  var errorDescription: String? {
     return "SQLite error \(code): \(message)"
   }
 

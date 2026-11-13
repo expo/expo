@@ -1,5 +1,5 @@
 /// Class that manages a custom `UserDefaults` database with `"dev.expo.app-metrics"` suite name.
-public final class AppMetricsUserDefaults: UserDefaults {
+final class AppMetricsUserDefaults: UserDefaults {
   private static let suiteName = "dev.expo.app-metrics"
 
   /// Singleton instance of the user defaults for AppMetrics.
@@ -18,7 +18,7 @@ public final class AppMetricsUserDefaults: UserDefaults {
     super.init(suiteName: Self.suiteName)!
   }
 
-  public static var environment: String? {
+  static var environment: String? {
     get {
       return defaults.object(forKey: Keys.environment.rawValue) as? String
     }
@@ -27,7 +27,7 @@ public final class AppMetricsUserDefaults: UserDefaults {
     }
   }
 
-  public nonisolated static func getDefaultEnvironment() -> String? {
+  nonisolated static func getDefaultEnvironment() -> String? {
     #if DEBUG
     return "development"
     #else
