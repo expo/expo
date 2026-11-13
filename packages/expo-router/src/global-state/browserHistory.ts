@@ -1,4 +1,8 @@
-import type { NavigationState, RouterBrowserHistoryAction } from '../react-navigation/routers';
+import type {
+  NavigationAction,
+  NavigationState,
+  RouterBrowserHistoryAction,
+} from '../react-navigation/routers';
 import { ROOT_CHAIN } from '../react-navigation/routers/stateKeys';
 import type {
   BrowserHistory,
@@ -18,6 +22,11 @@ import { getRootStackRouteNames } from './utils';
 type Reduce<Result> = (result: Result, intent: ReducibleIntent) => Result;
 type PopAction = Extract<RouterBrowserHistoryAction, { type: 'pop' }>;
 type PopTarget = NonNullable<PopAction['target']>;
+/**
+ * The `RESET` that restores a tracked entry carries that entry's ID. When a screen prevents the
+ * restore, `usePreventRemove` hands this action to its callback and `repeat()` dispatches it again.
+ */
+type RestoreAction = NavigationAction & { browserHistoryEntryId: string };
 
 // These functions calculate history state and commands. The adapter runs the commands after commit.
 
@@ -114,8 +123,9 @@ function selectAndUpdateHistoryEntry(
   const updatedHistory = updateHistoryEntry(history, index, state, path);
   const events: BrowserHistoryEvent[] = [];
   if (index !== history.index) {
-    // A router pop selected an earlier entry. Move the browser there before updating its URL;
-    // replacing the current entry alone would leave the browser's Back/Forward position unchanged.
+    // A router pop or a replayed restore selected another entry. Move the browser there before
+    // updating its URL; replacing the current entry alone would leave the browser's Back/Forward
+    // position unchanged.
     events.push({ type: 'browser-history', op: 'go', delta: index - history.index });
   }
   events.push(createReplaceEvent(updatedHistory.entries[index]!.id, path));
@@ -180,7 +190,7 @@ function restoreTrackedEntry<Result extends { state: NavigationState }>(
   const trackedIndex = history.entries.indexOf(trackedEntry);
   const reduced =
     trackedEntry.path === change.path
-      ? reduce(result, createResetIntent(trackedEntry.state))
+      ? reduce(result, createResetIntent(trackedEntry.state, trackedEntry.id))
       : navigateToBrowserPath(history, trackedEntry.path, result, change.path, config, reduce);
   if (reduced.state === result.state) {
     // The restore was prevented, so move the browser back to the entry that matches the UI.
@@ -201,11 +211,49 @@ function restoreTrackedEntry<Result extends { state: NavigationState }>(
   };
 }
 
-function createResetIntent(state: NavigationState): ReducibleIntent {
-  return {
-    type: 'ACTION',
-    payload: { action: { type: 'RESET', payload: state, target: state.key } },
-  };
+function createResetIntent(state: NavigationState, restoredEntryId?: string): ReducibleIntent {
+  const action: NavigationAction | RestoreAction =
+    restoredEntryId === undefined
+      ? { type: 'RESET', payload: state, target: state.key }
+      : {
+          type: 'RESET',
+          payload: state,
+          target: state.key,
+          browserHistoryEntryId: restoredEntryId,
+        };
+  return { type: 'ACTION', payload: { action } };
+}
+
+function isRestoreAction(action: NavigationAction): action is RestoreAction {
+  return (
+    action.type === 'RESET' &&
+    typeof (action as Partial<RestoreAction>).browserHistoryEntryId === 'string'
+  );
+}
+
+/**
+ * Projects a replayed restore, for example `repeat()` from `usePreventRemove` after a prevented
+ * browser Back. The prevented restore moved the browser back to the entry that matched the UI, so
+ * the replay moves it to the restored entry again instead of replacing the current one. The
+ * `RESET` targets the root navigator, whose router reports no traversal when only a nested
+ * navigator's index changes. Returns `undefined` for other actions and for a restored entry that
+ * navigating after the prevented restore has discarded.
+ */
+export function applyReplayedRestore(
+  history: BrowserHistory,
+  nextState: NavigationState,
+  config: BrowserHistoryConfig,
+  action: NavigationAction
+): BrowserHistoryProjection | undefined {
+  if (!isRestoreAction(action)) {
+    return undefined;
+  }
+  const index = history.entries.findIndex((entry) => entry.id === action.browserHistoryEntryId);
+  if (index === -1) {
+    return undefined;
+  }
+  const path = getPathForState(nextState, config.linking);
+  return selectAndUpdateHistoryEntry(history, index, nextState, path);
 }
 
 /** Navigates to a browser URL, preserving route state for hash-only changes. */
