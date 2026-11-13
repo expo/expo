@@ -1,5 +1,6 @@
 package expo.modules.location.next
 
+import android.Manifest
 import android.content.Context
 import android.location.LocationManager
 import android.os.Build
@@ -20,6 +21,12 @@ import expo.modules.location.next.geocoding.GeocodingQuery
 import expo.modules.location.next.geocoding.InvalidCoordinatesException
 import expo.modules.location.next.geocoding.geocode
 import expo.modules.location.next.geocoding.ReverseGeocodeOptions
+import expo.modules.location.next.geofencing.GeofencingHandle
+import expo.modules.location.next.geofencing.GeofencingPreciseLocationNotGranted
+import expo.modules.location.next.geofencing.GeofencingRegion
+import expo.modules.location.next.geofencing.GeofencingUnsupported
+import expo.modules.location.next.geofencing.getExistingOrNewGeofencingTaskConsumer
+import expo.modules.location.next.geofencing.toTaskOptions
 import expo.modules.location.next.locationForegroundService.BackgroundSessionOptions
 import expo.modules.location.next.locationForegroundService.BackgroundSessionState
 import expo.modules.location.next.locationForegroundService.LocationForegroundService
@@ -52,6 +59,8 @@ private const val MISSING_NOTIFICATION_PERMISSION_WARNING =
     "permission. The service runs and location updates are not throttled, but its notification " +
     "does not appear in the notification drawer."
 class TaskManagerNotFoundException : CodedException("TaskManager module not found")
+class LocationServicesDisabledException :
+  CodedException("Location services are disabled on this device. Call enableLocationServices() or turn them on in the system settings, then try again")
 
 class LocationModuleNext : Module() {
   private val context: Context
@@ -241,6 +250,43 @@ class LocationModuleNext : Module() {
       Function("status") { handle: LocationUpdatesHandle ->
         val registeredConsumer = handle.locationProvider.getRegisteredTaskConsumerClass(taskManager, handle.taskName)
         return@Function LocationTaskConsumer.statusOf(handle.taskName, registeredConsumer is ProviderResult.Available)
+      }
+    }
+
+    Class(GeofencingHandle::class) {
+      Constructor { taskName: String ->
+        GeofencingHandle(taskName, currentLocationProvider)
+      }
+
+      AsyncFunction("start") { handle: GeofencingHandle, regions: List<GeofencingRegion> ->
+        handle.validate(regions)
+        if (!hasLocationServicesEnabled()) {
+          throw LocationServicesDisabledException()
+        }
+        permissionsManager.ensureBackgroundPermissions()
+        if (!permissionsManager.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION)) {
+          throw GeofencingPreciseLocationNotGranted()
+        }
+
+        val geofencingTaskConsumer = when (val consumer = getExistingOrNewGeofencingTaskConsumer(handle, taskManager)) {
+          is ProviderResult.Available -> consumer.value
+          else -> throw GeofencingUnsupported()
+        }
+
+        val optionsMap = regions.toTaskOptions()
+        taskManager.registerTask(handle.taskName, geofencingTaskConsumer, optionsMap)
+      }
+
+      AsyncFunction("stop") { handle: GeofencingHandle ->
+        val registeredConsumer = handle.locationProvider.getRegisteredGeofencingTaskConsumerClass(taskManager, handle.taskName)
+        if (registeredConsumer is ProviderResult.Available) {
+          taskManager.unregisterTask(handle.taskName, registeredConsumer.value)
+        }
+      }
+
+      AsyncFunction("hasStarted") { handle: GeofencingHandle ->
+        val registeredConsumer = handle.locationProvider.getRegisteredGeofencingTaskConsumerClass(taskManager, handle.taskName)
+        return@AsyncFunction registeredConsumer is ProviderResult.Available
       }
     }
 

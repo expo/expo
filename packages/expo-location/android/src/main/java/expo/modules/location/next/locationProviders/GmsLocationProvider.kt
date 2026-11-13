@@ -27,6 +27,7 @@ import expo.modules.location.next.BatchedPositions
 import expo.modules.location.next.LocationTaskConsumer
 import expo.modules.location.next.Position
 import expo.modules.location.next.SETTINGS_REQUEST_CODE
+import expo.modules.location.next.geofencing.GmsGeofencingTaskConsumer
 import expo.modules.location.next.toPosition
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -145,6 +146,20 @@ class GmsLocationProvider(
       return ProviderResult.Unavailable
     }
     return ProviderResult.Available(GmsLocationTaskConsumer::class.java)
+  }
+
+  override fun getGeofencingTaskConsumerClass(): ProviderResult<Class<out TaskConsumer>> {
+    if (!isServiceAvailable()) {
+      return ProviderResult.Unsupported
+    }
+    return ProviderResult.Available(GmsGeofencingTaskConsumer::class.java)
+  }
+
+  override fun getRegisteredGeofencingTaskConsumerClass(taskManager: TaskManagerInterface, taskName: String): ProviderResult<Class<out TaskConsumer>> {
+    if (!taskManager.taskHasConsumerOfClass(taskName, GmsGeofencingTaskConsumer::class.java)) {
+      return ProviderResult.Unavailable
+    }
+    return ProviderResult.Available(GmsGeofencingTaskConsumer::class.java)
   }
 }
 
