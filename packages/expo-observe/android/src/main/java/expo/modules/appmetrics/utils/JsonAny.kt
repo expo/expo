@@ -21,7 +21,7 @@ import kotlinx.serialization.json.longOrNull
  * `null`, and the dispatch-time encoder folds them into
  * `droppedAttributesCount`.
  */
-object JsonAny {
+internal object JsonAny {
   fun toElement(value: Any?): JsonElement {
     return when (value) {
       null -> JsonNull

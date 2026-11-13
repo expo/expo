@@ -10,7 +10,7 @@ private const val KEY_ENVIRONMENT = "environment"
 private const val KEY_LAST_PROCESSED_EXIT_MILLIS = "lastProcessedExitMillis"
 private const val KEY_NETWORK_TRACES_CONFIGURATION = "networkTracesConfiguration"
 
-object AppMetricsPreferences {
+internal object AppMetricsPreferences {
   /**
    * Timestamp (epoch millis) of the newest `ApplicationExitInfo` record already
    * turned into a crash report. `0` (the default) means none processed yet.

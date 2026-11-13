@@ -23,11 +23,11 @@ import org.json.JSONObject
 import java.util.Date
 import java.util.concurrent.CopyOnWriteArrayList
 
-enum class AppStartType { COLD, WARM }
+internal enum class AppStartType { COLD, WARM }
 
-enum class StartupState { LAUNCHING, LAUNCHED, INTERRUPTED }
+internal enum class StartupState { LAUNCHING, LAUNCHED, INTERRUPTED }
 
-data class EASObserveAppStartupInfo(
+internal data class EASObserveAppStartupInfo(
   val startType: AppStartType,
   // The timestamp of the Application.onCreate
   // Use for the edge case when background process started long before activity creation
@@ -37,7 +37,7 @@ data class EASObserveAppStartupInfo(
   val activityCreateTimestamp: Long? = null
 )
 
-object AppStartupManager {
+internal object AppStartupManager {
   private const val BACKGROUND_THRESHOLD_MS = 60_000L
 
   // CopyOnWriteArrayList: writes (addMetric) happen on the React/JS/main threads;

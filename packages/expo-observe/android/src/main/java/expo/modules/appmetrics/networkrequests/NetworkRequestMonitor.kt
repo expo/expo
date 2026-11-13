@@ -11,7 +11,7 @@ import java.util.UUID
  * methods default to no-ops so delegates can opt into either start- or complete-time
  * notifications without implementing the other.
  */
-interface NetworkRequestObserverDelegate {
+internal interface NetworkRequestObserverDelegate {
   fun onNetworkRequestStarted(request: NetworkRequestStarted) {}
   fun onNetworkRequestCompleted(request: NetworkRequest) {}
 
@@ -34,7 +34,7 @@ interface NetworkRequestObserverDelegate {
  * code). All shared state is guarded by a single intrinsic lock - the work inside is small and
  * synchronous, so contention is negligible.
  */
-class NetworkRequestMonitor internal constructor(
+internal class NetworkRequestMonitor internal constructor(
   /** Maximum number of completed requests retained for debug surfaces. */
   private val recentCapacity: Int = 200
 ) {

@@ -7,11 +7,11 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.OptimizedRecord
 
-const val FEEDBACK_LOG_NAME = "expo.feedback"
+internal const val FEEDBACK_LOG_NAME = "expo.feedback"
 
 /** User feedback from `Observe.reportFeedback`. The JS layer validates it and adds the scale to every rating. */
 @OptimizedRecord
-data class FeedbackReport(
+internal data class FeedbackReport(
   @Field val id: String = "",
   @Field val message: String? = null,
   @Field val rating: Long? = null,
@@ -43,7 +43,7 @@ data class FeedbackReport(
 }
 
 @OptimizedRecord
-data class FeedbackScale(
+internal data class FeedbackScale(
   @Field val min: Long = 0,
   @Field val max: Long = 0
 ) : Record

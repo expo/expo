@@ -10,7 +10,7 @@ import expo.modules.kotlin.types.OptimizedRecord
  * record.
  */
 @OptimizedRecord
-data class LogEventOptions(
+internal data class LogEventOptions(
   @Field val displayName: String? = null,
   @Field val body: String? = null,
   @Field val attributes: Map<String, Any?>? = null,

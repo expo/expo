@@ -12,7 +12,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.OptimizedRecord
 import kotlinx.serialization.Serializable
 
-class MemoryMetricsManager(
+internal class MemoryMetricsManager(
   val context: Context,
   val sessionManager: SessionManager
 ) {
@@ -44,7 +44,7 @@ class MemoryMetricsManager(
 
 @Serializable
 @OptimizedRecord
-data class MemoryUsageSnapshot(
+internal data class MemoryUsageSnapshot(
   /**
    * Physical memory in bytes pages currently in use (resident size).
    */
