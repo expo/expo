@@ -2,7 +2,7 @@ import type { SplitViewHeader, SplitViewToolbarItem } from './elements';
 import { SplitViewNativeHeader } from './native';
 import type { SplitViewNativeToolbarItem } from './native.types';
 
-export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
+export function SplitViewColumnHeader({ header = {} }: { header?: SplitViewHeader }) {
   const {
     title,
     subtitle,
@@ -14,6 +14,7 @@ export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
     searchBar,
     backTitle,
     backVisible,
+    hidden,
   } = header;
   return (
     <SplitViewNativeHeader
@@ -38,6 +39,7 @@ export function SplitViewColumnHeader({ header }: { header: SplitViewHeader }) {
       onSearchBarSearchButtonPress={searchBar?.onSearchButtonPress}
       backTitle={backTitle}
       backVisible={backVisible}
+      hidden={hidden}
     />
   );
 }
