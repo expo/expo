@@ -1,7 +1,5 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoAppMetrics
-
 /// Runs dispatch passes one at a time, so a later caller waits for the pass ahead of it instead
 /// of overlapping with it.
 ///

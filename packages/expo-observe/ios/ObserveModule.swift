@@ -1,7 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 import EASClient
-import ExpoAppMetrics
 import ExpoModulesCore
 
 internal let observeLogger = Logger(logHandlers: [createOSLogHandler(category: Logger.EXPO_LOG_CATEGORY)])

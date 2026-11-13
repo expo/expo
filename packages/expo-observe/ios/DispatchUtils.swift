@@ -1,6 +1,5 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoAppMetrics
 import ExpoModulesCore
 
 /// Outcome of a single dispatch attempt to the OTLP endpoint, modeled after the
