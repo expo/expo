@@ -1,5 +1,5 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
-import ExpoModulesCore
+import Foundation
 
 #if !os(tvOS)
 import MetricKit
