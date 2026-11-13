@@ -9,6 +9,10 @@ import ExpoModulesJSI
  The async variant creates a JS Promise and dispatches the block invocation to a background queue.
  */
 public struct OptimizedAsyncFunctionDefinition: AnyAsyncFunctionDefinition, @unchecked Sendable {
+  public var _definitionClassification: DefinitionClassification {
+    return DefinitionClassification(kind: .function(self))
+  }
+
   public let name: String
   public let typeEncoding: String
   public let argsCount: Int
@@ -42,7 +46,7 @@ public struct OptimizedAsyncFunctionDefinition: AnyAsyncFunctionDefinition, @unc
 
   public var takesOwner: Bool = false
 
-  public func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
+  public func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (consuming FunctionCallResult) -> ()) {
     callback(.failure(GenericException("OptimizedAsyncFunctionDefinition cannot be called from native code")))
   }
 

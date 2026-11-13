@@ -63,6 +63,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
       OPEN_PAGE_OPTS
     );
     expect(messages.socket).toBeDefined();
+    await waitForHydration(page);
 
     await expect(page.locator('[data-testid="loader-result"]')).toContainText(
       ORIGINAL_LOADER_VALUE
@@ -109,6 +110,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
       OPEN_PAGE_OPTS
     );
     expect(messages.socket).toBeDefined();
+    await waitForHydration(page);
 
     await expect(page.locator('[data-testid="loader-result"]')).toContainText(
       ORIGINAL_LOADER_VALUE
@@ -143,6 +145,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
       OPEN_PAGE_OPTS
     );
     expect(messages.socket).toBeDefined();
+    await waitForHydration(page);
 
     await expect(page.locator('[data-testid="loader-result"]')).toContainText(
       ORIGINAL_LOADER_VALUE
@@ -177,6 +180,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
       OPEN_PAGE_OPTS
     );
     expect(messages.socket).toBeDefined();
+    await waitForHydration(page);
 
     await page.click('a[href="/posts/static-post-1"]');
     await page.waitForSelector('[data-testid="loader-result"]', { timeout: 30_000 });
@@ -219,6 +223,7 @@ test.describe('server-loader HMR in streaming SSR', () => {
       OPEN_PAGE_OPTS
     );
     expect(messages.socket).toBeDefined();
+    await waitForHydration(page);
 
     const editedLabel = `Pathname edited-${Date.now()}`;
     await mutateFile(noLoaderFile, (contents) =>
@@ -248,6 +253,11 @@ const resetNoLoaderFile = () =>
   mutateFile(noLoaderFile, (contents) =>
     contents.replace(/label="Pathname(?: edited-[\w\d]+)?"/g, 'label="Pathname"')
   );
+
+// Route bundles load during hydration. Metro sends HMR updates only for bundles that loaded before the edit.
+async function waitForHydration(page: Page) {
+  await page.getByTestId('site-links-mounted').waitFor({ state: 'attached' });
+}
 
 const resetAllFixtures = async () => {
   await resetIndexLoader();

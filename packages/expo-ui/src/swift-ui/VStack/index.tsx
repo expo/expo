@@ -13,6 +13,12 @@ export interface VStackProps extends CommonViewModifierProps {
    * The spacing between children.
    */
   spacing?: number;
+  /**
+   * When `true`, a child percentage is a fraction of this stack.
+   * Universal `Column` sets this. Leave it unset to keep the SwiftUI `VStack`.
+   * @hidden
+   */
+  resolvesChildPercentages?: boolean;
 }
 
 const VStackNativeView: React.ComponentType<VStackProps> = requireNativeView(

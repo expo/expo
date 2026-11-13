@@ -3,9 +3,9 @@ import { convertRequest, respond } from 'expo-server/adapter/http';
 import type * as http from 'http';
 import send from 'send';
 
-import type { DevToolsPlugin } from '../DevToolsPlugin';
-import type DevToolsPluginManager from '../DevToolsPluginManager';
-import { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
+import type { DevToolsPlugin } from '../devtools/DevToolsPlugin';
+import type DevToolsPluginManager from '../devtools/DevToolsPluginManager';
+import { DevToolsPluginEndpoint } from '../devtools/DevToolsPluginManager';
 import { debugEvent } from '../devtoolsEvents';
 import { ExpoMiddleware } from './ExpoMiddleware';
 import type { ServerRequest, ServerResponse } from './server.types';

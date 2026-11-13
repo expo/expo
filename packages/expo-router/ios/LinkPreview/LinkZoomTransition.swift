@@ -309,19 +309,24 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
     if let controller = self.findViewController() {
       if #available(iOS 18.0, *) {
         let options = UIViewController.Transition.ZoomOptions()
+        // The providers must not depend on `self`. When JS pops the screen (for example with `router.back()`),
+        // React unmounts this view before UIKit asks for the source view of the dismiss transition.
+        let identifier = self.zoomTransitionSourceIdentifier
+        let sourceRepository = self.sourceRepository
+        let alignmentViewRepository = self.alignmentViewRepository
+        let logger = self.logger
 
-        options.alignmentRectProvider = { [weak self] context in
-          guard let self else { return nil }
+        options.alignmentRectProvider = { context in
           guard
-            let sourceInfo = self.sourceRepository?.getSource(
-              identifier: self.zoomTransitionSourceIdentifier
+            let sourceInfo = sourceRepository?.getSource(
+              identifier: identifier
             )
           else {
             return nil
           }
           guard
-            let alignmentView = self.alignmentViewRepository?.get(
-              identifier: self.zoomTransitionSourceIdentifier
+            let alignmentView = alignmentViewRepository?.get(
+              identifier: identifier
             )
           else {
             return sourceInfo.alignment
@@ -334,7 +339,7 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
           if sourceInfo.animateAspectRatioChange,
             let sourceView = sourceInfo.view
           {
-            return self.calculateAdjustedRect(rect, toMatch: sourceView.bounds.size)
+            return Self.calculateAdjustedRect(rect, toMatch: sourceView.bounds.size)
           }
           return rect
         }
@@ -351,18 +356,17 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
             return true
           }
         }
-        controller.preferredTransition = .zoom(options: options) { [weak self] _ in
-          guard let self else { return nil }
-          let sourceInfo = self.sourceRepository?.getSource(
-            identifier: self.zoomTransitionSourceIdentifier
+        controller.preferredTransition = .zoom(options: options) { [weak logger] _ in
+          let sourceInfo = sourceRepository?.getSource(
+            identifier: identifier
           )
           var view: UIView? = sourceInfo?.view
           if let linkPreviewView = view as? NativeLinkPreviewView {
             view = linkPreviewView.directChild
           }
           guard let view else {
-            self.logger?.warn(
-              "[expo-router] No source view found for identifier \(self.zoomTransitionSourceIdentifier) to enable zoom transition. This is most likely a bug in expo-router."
+            logger?.warn(
+              "[expo-router] No source view found for identifier \(identifier) to enable zoom transition. This is most likely a bug in expo-router."
             )
             return nil
           }
@@ -377,7 +381,7 @@ class LinkZoomTransitionEnabler: LinkZoomExpoView {
     }
   }
 
-  private func calculateAdjustedRect(
+  private static func calculateAdjustedRect(
     _ rect: CGRect,
     toMatch sourceSize: CGSize
   ) -> CGRect {

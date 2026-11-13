@@ -4,6 +4,7 @@ import type { Code, DefinedNativePlugin } from 'noxcturnal';
 
 import {
   expoPluginInput,
+  resolveInputFilename,
   serverBoundary,
   sortedUniqueCaptureNames,
   type Noxcturnal,
@@ -34,6 +35,7 @@ export function createReactServerModuleActionsPlugin(
     name: 'expo-react-server-module-actions',
     editEffect: 'bindings',
     contract: {
+      queries: [{ captures: [{ functionId: 0 }] }],
       metadata: { writes: ['reactServerActions', 'reactServerReference'] },
     },
     createState: (context) => {
@@ -42,7 +44,9 @@ export function createReactServerModuleActionsPlugin(
         input,
         boundary: serverBoundary(context),
         enabled: false,
-        moduleId: './' + path.relative(input.projectRoot, input.filename).split(path.sep).join('/'),
+        moduleId:
+          './' +
+          path.relative(input.projectRoot, resolveInputFilename(input)).split(path.sep).join('/'),
         registerBinding: '',
         wrapperBinding: '',
         usesCapturedArgs: false,
@@ -141,7 +145,15 @@ export function createReactServerModuleActionsPlugin(
         {
           fields: ['async', 'generator', 'name', 'bodyEnd'],
           scope: true,
-          ancestry: { mode: 'programParent' },
+          ancestry: {
+            mode: 'parent',
+            routes: {
+              ObjectProperty: {
+                fields: ['computed', 'method'],
+                children: { key: { route: 'Expression' } },
+              },
+            },
+          },
           children: {
             body: {
               route: 'FunctionBody',
@@ -189,11 +201,20 @@ export function createReactServerModuleActionsPlugin(
             state,
             `export var ${actionId} = ${state.registerBinding}(async function${name}(${extractedParameters}) {${closureInit}${bodySource}}, ${JSON.stringify(state.moduleId)}, ${JSON.stringify(actionId)});`
           );
-          fn.replaceWith(
-            closureParameter
-              ? `${actionId}.bind(null, ${state.wrapperBinding}(() => [${capturedNames.join(', ')}]))`
-              : actionId
-          );
+          const replacement = closureParameter
+            ? `${actionId}.bind(null, ${state.wrapperBinding}(() => [${capturedNames.join(', ')}]))`
+            : actionId;
+          const property = fn.parentPath;
+          if (property?.node.type === 'ObjectProperty' && property.node.method === true) {
+            const key = property.getChild('key')!;
+            property.replaceWith(
+              property.node.computed
+                ? property.context.code.template`[${key.getSource()}]: ${replacement}`
+                : property.context.code.template`${key.getSource()}: ${replacement}`
+            );
+          } else {
+            fn.replaceWith(replacement);
+          }
           if (closureParameter) state.usesCapturedArgs = true;
           state.boundary.handledDirectives.add(directive.id);
           state.actions.push({ exportedName: actionId });
@@ -451,7 +472,10 @@ export { ${name} as default };`);
         }${state.hoists.length > 0 ? `${state.hoists.join('\n')}\n` : ''}`
       );
       context.metadata.set('reactServerActions', payload);
-      context.metadata.set('reactServerReference', pathToFileURL(state.input.filename).href);
+      context.metadata.set(
+        'reactServerReference',
+        pathToFileURL(resolveInputFilename(state.input)).href
+      );
     },
   });
 }

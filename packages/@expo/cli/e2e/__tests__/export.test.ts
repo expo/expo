@@ -1,7 +1,7 @@
 import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
-import { sync as globSync } from 'glob';
 import path from 'path';
+import { globSync } from 'tinyglobby';
 
 import { executeExpoAsync } from '../utils/expo';
 import {

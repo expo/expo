@@ -3,7 +3,7 @@ import AppIntents
 /// Schema entities must be resolvable by the system, which means the default query has to be an
 /// `EntityStringQuery` (or the entity has to be indexed). A plain `EntityQuery` is rejected by the
 /// App Intents metadata extractor at build time.
-@available(iOS 18.0, *)
+@available(iOS 18.0, macOS 15.0, *)
 struct MailAccountEntityQuery: EntityStringQuery {
   func entities(for identifiers: [String]) async throws -> [MailAccountEntity] {
     return try await suggestedEntities().filter { identifiers.contains($0.id) }

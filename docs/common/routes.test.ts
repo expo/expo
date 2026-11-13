@@ -149,15 +149,18 @@ describe(getBreadcrumbTrail, () => {
   it('returns 2-item trail for page directly under a section', () => {
     const trail = getBreadcrumbTrail(mockRoutes, '/develop/tools');
 
-    expect(trail).toEqual([{ name: 'Develop', url: 'https://docs.expo.dev' }, { name: 'Tools' }]);
+    expect(trail).toEqual([
+      { name: 'Develop', url: 'https://docs.expo.dev/develop/tools/' },
+      { name: 'Tools' },
+    ]);
   });
 
   it('returns 3-item trail for page nested in a group', () => {
     const trail = getBreadcrumbTrail(mockRoutes, '/develop/user-interface/fonts');
 
     expect(trail).toEqual([
-      { name: 'Develop', url: 'https://docs.expo.dev' },
-      { name: 'User interface', url: 'https://docs.expo.dev' },
+      { name: 'Develop', url: 'https://docs.expo.dev/develop/tools/' },
+      { name: 'User interface', url: 'https://docs.expo.dev/develop/user-interface/fonts/' },
       { name: 'Fonts' },
     ]);
   });
@@ -219,7 +222,10 @@ describe(getBreadcrumbTrail, () => {
     ] as unknown as NavigationRoute[];
 
     const trail = getBreadcrumbTrail(routes, '/section/page');
-    expect(trail).toEqual([{ name: 'Section', url: 'https://docs.expo.dev' }, { name: 'Page' }]);
+    expect(trail).toEqual([
+      { name: 'Section', url: 'https://docs.expo.dev/section/page/' },
+      { name: 'Page' },
+    ]);
   });
 
   it('filters out empty-name ancestors', () => {
@@ -236,7 +242,7 @@ describe(getBreadcrumbTrail, () => {
     expect(trail).toEqual([{ name: 'Overview' }]);
   });
 
-  it('falls back to docs root for sections without an index page', () => {
+  it('uses the first page for sections without an index page', () => {
     const routes: NavigationRoute[] = [
       {
         type: 'section',
@@ -249,7 +255,7 @@ describe(getBreadcrumbTrail, () => {
     const trail = getBreadcrumbTrail(routes, '/app-signing/app-credentials');
     expect(trail[0]).toEqual({
       name: 'App signing',
-      url: 'https://docs.expo.dev',
+      url: 'https://docs.expo.dev/app-signing/app-credentials/',
     });
   });
 
@@ -281,7 +287,7 @@ describe(getBreadcrumbTrail, () => {
     const trail = getBreadcrumbTrail(routes, '/eas/environment-variables/manage');
     expect(trail[1]).toEqual({
       name: 'Environment variables',
-      url: 'https://docs.expo.dev/eas/environment-variables',
+      url: 'https://docs.expo.dev/eas/environment-variables/',
     });
   });
 });

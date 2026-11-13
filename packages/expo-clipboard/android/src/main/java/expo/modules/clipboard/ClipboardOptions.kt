@@ -1,41 +1,32 @@
 package expo.modules.clipboard
 
 import android.graphics.Bitmap
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.types.OptimizedRecord
+import io.github.expo.modules.v2.Enumerable
+import io.github.expo.modules.v2.Record
 
-@OptimizedRecord
-internal class GetImageOptions : Record {
-  @Field(key = "format")
-  var imageFormat: ImageFormat = ImageFormat.JPG
+@Record
+data class GetImageOptions(
+  val format: ImageFormat = ImageFormat.JPG,
+  val jpegQuality: Double = 1.0
+)
 
-  @Field
-  var jpegQuality: Double = 1.0
-}
+@Record
+data class GetStringOptions(
+  val preferredFormat: StringFormat = StringFormat.PLAIN
+)
 
-@OptimizedRecord
-internal class GetStringOptions : Record {
-  @Field
-  var preferredFormat: StringFormat = StringFormat.PLAIN
-}
+@Record
+data class SetStringOptions(
+  val inputFormat: StringFormat = StringFormat.PLAIN,
+  val isSensitive: Boolean = false
+)
 
-@OptimizedRecord
-internal class SetStringOptions : Record {
-  @Field
-  var inputFormat: StringFormat = StringFormat.PLAIN
+@Record
+data class SetImageOptions(
+  val isSensitive: Boolean = false
+)
 
-  @Field
-  var isSensitive: Boolean = false
-}
-
-internal class SetImageOptions : Record {
-  @Field
-  var isSensitive: Boolean = false
-}
-
-internal enum class ImageFormat(val jsName: String) : Enumerable {
+enum class ImageFormat(val jsName: String) : Enumerable {
   JPG("jpeg"),
   PNG("png");
 
@@ -52,7 +43,7 @@ internal enum class ImageFormat(val jsName: String) : Enumerable {
     }
 }
 
-internal enum class StringFormat(val jsValue: String) : Enumerable {
+enum class StringFormat(val jsValue: String) : Enumerable {
   PLAIN("plainText"),
   HTML("html")
 }

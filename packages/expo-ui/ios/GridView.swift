@@ -41,6 +41,7 @@ public struct GridRowView: ExpoSwiftUI.View {
     if #available(iOS 16.0, macOS 13.0, tvOS 16.0, *) {
       GridRow {
         Children()
+          .publishZeroContentOrigin(props.shadowNodeProxy)
       }
     } else {
       EmptyView()

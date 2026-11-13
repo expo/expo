@@ -104,6 +104,7 @@ class FileDownloaderTests {
   var testUpdatesDir: URL
   var db: UpdatesDatabase
   var logger: UpdatesLogger
+  var logReader: UpdatesLogReader
   var updatesDirectory: URL
 
   init() throws {
@@ -123,7 +124,11 @@ class FileDownloaderTests {
 
     db = UpdatesDatabase()
 
-    logger = UpdatesLogger()
+    // A unique category keeps this suite's entries out of the production log file, as
+    // `UpdatesLogReaderTests` does.
+    let logCategory = "expo-updates-tests-\(UUID().uuidString)"
+    logger = UpdatesLogger(category: logCategory)
+    logReader = UpdatesLogReader(category: logCategory)
     updatesDirectory = testUpdatesDir
 
     db.databaseQueue.sync {
@@ -436,6 +441,164 @@ class FileDownloaderTests {
     #expect(actual.value(forHTTPHeaderField: "expo-boolean") == "true")
     #expect(actual.value(forHTTPHeaderField: "expo-null") == "null")
     #expect(actual.value(forHTTPHeaderField: "expo-nsnull") == "null")
+  }
+
+  // MARK: - error response bodies
+
+  private func makeDownloaderForErrorResponse(
+    statusCode: Int,
+    body: String,
+    updateUrl: String
+  ) throws -> (FileDownloader, UpdatesConfig) {
+    let config = try UpdatesConfig.config(fromDictionary: [
+      UpdatesConfig.EXUpdatesConfigUpdateUrlKey: updateUrl,
+      UpdatesConfig.EXUpdatesConfigRuntimeVersionKey: "1.0.0",
+      UpdatesConfig.EXUpdatesConfigScopeKeyKey: "test-scope"
+    ])
+
+    let sessionConfiguration = URLSessionConfiguration.ephemeral
+    sessionConfiguration.protocolClasses = [TestURLProtocol.self]
+
+    TestURLProtocol.requestHandler = { request in
+      let response = HTTPURLResponse(
+        url: request.url!,
+        statusCode: statusCode,
+        httpVersion: nil,
+        headerFields: ["Content-Type": "text/html; charset=utf-8"]
+      )!
+      return (response, body.data(using: .utf8))
+    }
+
+    let downloader = FileDownloader(
+      config: config,
+      urlSessionConfiguration: sessionConfiguration,
+      logger: logger,
+      updatesDirectory: updatesDirectory,
+      database: db
+    )
+
+    return (downloader, config)
+  }
+
+  private func remoteUpdateError(downloader: FileDownloader, config: UpdatesConfig) async -> UpdatesError? {
+    await withCheckedContinuation { (continuation: CheckedContinuation<UpdatesError?, Never>) in
+      downloader.downloadRemoteUpdate(
+        fromURL: config.updateUrl,
+        withDatabase: db,
+        extraHeaders: nil
+      ) { _ in
+        continuation.resume(returning: nil)
+      } errorBlock: { error in
+        continuation.resume(returning: error)
+      }
+    }
+  }
+
+  @Test
+  func `truncates a large error response body`() async throws {
+    TestURLProtocol.reset()
+
+    let (downloader, config) = try makeDownloaderForErrorResponse(
+      statusCode: 502,
+      body: String(repeating: "x", count: 10000),
+      updateUrl: "https://u.expo.dev/33333333-3333-3333-3333-333333333333"
+    )
+
+    guard let error = await remoteUpdateError(downloader: downloader, config: config) else {
+      Issue.record("Expected the remote update download to fail")
+      return
+    }
+
+    let message = error.localizedDescription
+    #expect(message.contains("HTTP response error 502"))
+    #expect(message.contains("truncated"))
+    #expect(message.count < 1000, "Expected a bounded message, got \(message.count) characters")
+  }
+
+  @Test
+  func `keeps a small error response body intact`() async throws {
+    TestURLProtocol.reset()
+
+    let (downloader, config) = try makeDownloaderForErrorResponse(
+      statusCode: 500,
+      body: "upstream unavailable",
+      updateUrl: "https://u.expo.dev/44444444-4444-4444-4444-444444444444"
+    )
+
+    guard let error = await remoteUpdateError(downloader: downloader, config: config) else {
+      Issue.record("Expected the remote update download to fail")
+      return
+    }
+
+    let message = error.localizedDescription
+    #expect(message.contains("HTTP response error 500"))
+    #expect(message.contains("upstream unavailable"))
+    #expect(!message.contains("truncated"))
+  }
+
+  @Test
+  func `leaves logging a failed remote update download to the caller`() async throws {
+    TestURLProtocol.reset()
+    let since = Date()
+
+    let (downloader, config) = try makeDownloaderForErrorResponse(
+      statusCode: 500,
+      body: "upstream unavailable",
+      updateUrl: "https://u.expo.dev/55555555-5555-5555-5555-555555555555"
+    )
+
+    guard await remoteUpdateError(downloader: downloader, config: config) != nil else {
+      Issue.record("Expected the remote update download to fail")
+      return
+    }
+
+    let errors = try await errorLogEntries(newerThan: since)
+    #expect(errors.isEmpty, "Expected no error entries, got: \(errors)")
+  }
+
+  @Test
+  func `leaves logging a failed asset download to the caller`() async throws {
+    TestURLProtocol.reset()
+    let since = Date()
+
+    let (downloader, _) = try makeDownloaderForErrorResponse(
+      statusCode: 500,
+      body: "upstream unavailable",
+      updateUrl: "https://u.expo.dev/66666666-6666-6666-6666-666666666666"
+    )
+    let assetUrl = try #require(URL(string: "https://example.com/asset.png"))
+    let asset = UpdateAsset(key: "asset-key", type: "png")
+    asset.url = assetUrl
+
+    let error: UpdatesError? = await withCheckedContinuation { continuation in
+      downloader.downloadAsset(
+        asset: asset,
+        fromURL: assetUrl,
+        verifyingHash: nil,
+        toPath: updatesDirectory.appendingPathComponent("asset.png").path,
+        extraHeaders: [:],
+        progressBlock: nil,
+        successBlock: { _, _, _ in
+          continuation.resume(returning: nil)
+        },
+        errorBlock: { error in
+          continuation.resume(returning: error)
+        }
+      )
+    }
+
+    #expect(error != nil)
+    let errors = try await errorLogEntries(newerThan: since)
+    #expect(errors.isEmpty, "Expected no error entries, got: \(errors)")
+  }
+
+  /// The log handler writes asynchronously, so wait before reading.
+  private func errorLogEntries(newerThan since: Date) async throws -> [String] {
+    try await Task.sleep(for: .milliseconds(500))
+    let entries: [String] = logReader.getLogEntries(newerThan: since)
+    return entries.filter { entry in
+      UpdatesLogEntry.create(from: entry)?.level == "error"
+    }
   }
 
   // MARK: - patch negotiation headers

@@ -4,16 +4,16 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '58.0.1'
+version = '58.0.6'
 
 android {
   namespace "expo.modules.screencapture"
   defaultConfig {
     versionCode 7
-    versionName '58.0.1'
+    versionName '58.0.6'
   }
 }
 
 dependencies {
-  implementation 'androidx.appcompat:appcompat:1.7.1'
+  implementation 'androidx.core:core:1.17.0'
 }

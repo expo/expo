@@ -1,0 +1,5 @@
+@import url('https://expo-css.test/b.css');
+
+.cascade-bundled {
+  color: green;
+}

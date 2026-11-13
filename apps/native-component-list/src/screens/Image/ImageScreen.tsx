@@ -142,6 +142,13 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Large SVG view (Android software layer)',
+    route: 'image/svg-large-view',
+    getComponent() {
+      return optionalRequire(() => require('./ImageSvgLargeViewScreen'));
+    },
+  },
+  {
     name: 'SVG variables',
     route: 'image/svg-variables',
     getComponent() {

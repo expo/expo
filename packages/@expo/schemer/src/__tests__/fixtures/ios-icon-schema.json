@@ -1,0 +1,74 @@
+{
+  "$comment": "The ios.icon field of the SDK 58 app config schema, copied from docs/public/static/schemas/v58.0.0/app-config-schema.json.",
+  "type": "object",
+  "properties": {
+    "ios": {
+      "type": "object",
+      "properties": {
+        "icon": {
+          "description": "Local path or remote URL to an image to use for your app's icon on iOS. Alternatively, an object specifying different icons for various system appearances (e.g., dark, tinted) can be provided. You can also provide a path to a .icon directory. If specified, this overrides the top-level `icon` key. Use a 1024x1024 icon which follows Apple's interface guidelines for icons, including color profile and transparency.\n\nExpo will generate the other required sizes. This icon will appear on the home screen and within the Expo Go app.",
+          "oneOf": [
+            {
+              "type": "string",
+              "pattern": "\\.icon$",
+              "meta": {
+                "asset": true,
+                "contentTypePattern": "directory",
+                "contentTypeHuman": "a .icon directory"
+              }
+            },
+            {
+              "type": "string",
+              "not": {
+                "pattern": "\\.icon$"
+              },
+              "meta": {
+                "asset": true,
+                "contentTypePattern": "^image/png$",
+                "contentTypeHuman": ".png image",
+                "square": true
+              }
+            },
+            {
+              "description": "Configuration that is specific to the iOS platform icons.",
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "light": {
+                  "description": "The light icon. It will appear when neither dark nor tinted icons are used, or if they are not provided.",
+                  "type": "string",
+                  "meta": {
+                    "asset": true,
+                    "contentTypePattern": "^image/png$",
+                    "contentTypeHuman": ".png image",
+                    "square": true
+                  }
+                },
+                "dark": {
+                  "description": "The dark icon. It will appear for the app when the user's system appearance is dark. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.",
+                  "type": "string",
+                  "meta": {
+                    "asset": true,
+                    "contentTypePattern": "^image/png$",
+                    "contentTypeHuman": ".png image",
+                    "square": true
+                  }
+                },
+                "tinted": {
+                  "description": "The tinted icon. It will appear for the app when the user's system appearance is tinted. See Apple's [Human Interface Guidelines](https://developer.apple.com/design/human-interface-guidelines/app-icons#iOS-iPadOS) for more information.",
+                  "type": "string",
+                  "meta": {
+                    "asset": true,
+                    "contentTypePattern": "^image/png$",
+                    "contentTypeHuman": ".png image",
+                    "square": true
+                  }
+                }
+              }
+            }
+          ]
+        }
+      }
+    }
+  }
+}

@@ -1,12 +1,12 @@
 ---
-title: Configure EAS Observe
+title: Configure Expo Observe
 sidebar_title: Configuration
-description: Control how EAS Observe collects and dispatches metrics, including environment settings, development mode, custom endpoints, and data ingestion.
+description: Control how Expo Observe collects and dispatches metrics, including environment settings, development mode, custom endpoints, and data ingestion.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
-Configure EAS Observe at runtime to fit your app's build setup, environment, and data routing. This page covers enabling metrics in development, sampling, using a custom endpoint, separating data by environment, and turning off data ingestion from the dashboard. For the runtime methods themselves, see the [`configure()`](/versions/latest/sdk/observe/#configureconfig) and [`dispatchEvents()`](/versions/latest/sdk/observe/#dispatchevents) API references.
+Configure Expo Observe at runtime to fit your app's build setup, environment, and data routing. This page covers enabling metrics in development, sampling, ignoring selected metrics and events, using a custom endpoint, separating data by environment, and turning off data ingestion from the dashboard. For the runtime methods themselves, see the [`configure()`](/versions/latest/sdk/observe/#configureconfig) and [`dispatchEvents()`](/versions/latest/sdk/observe/#dispatchevents) API references.
 
 ## Sampling
 
@@ -29,9 +29,40 @@ A few details worth knowing:
 - Out-of-sample devices drop pending metrics rather than accumulating them. Lowering the rate later does not retroactively send earlier sessions.
 - Sampling depends on [`dispatchingEnabled`](/versions/latest/sdk/observe/#observeconfig). If `dispatchingEnabled` is `false`, nothing is dispatched regardless of `sampleRate`.
 
+### Sample errors separately
+
+To keep more errors than other events, set `errorSampleRate`. Errors include unhandled JavaScript errors, errors from `reportError` and `ObserveErrorBoundary`, and native crash reports. All other events follow `sampleRate`:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+// Dispatch metrics from ~3% of installations, and errors from all installations.
+Observe.configure({
+  sampleRate: 0.03,
+  errorSampleRate: 1,
+});
+```
+
+`errorSampleRate` is a minimum. Installations in-sample for `sampleRate` always send errors. A lower value has no effect, and `configure()` prints a warning. An unset `sampleRate` counts as `1`.
+
+## Ignore metrics and events
+
+If you don't use some metrics or events, skip them with `ignoredMetrics` and `ignoredEvents` to send less data:
+
+```tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  ignoredMetrics: ['expo.app_startup.tti'],
+  ignoredEvents: ['reanimated.warning', 'checkout.completed'],
+});
+```
+
+`ignoredMetrics` matches metric names such as `expo.app_startup.tti`. `ignoredEvents` matches event names, including custom names passed to [`Observe.logEvent`](/eas/observe/events/). Ignored data is still recorded on the device but never sent.
+
 ## Enable metrics in development
 
-By default, metrics collected from debug builds are not dispatched. To dispatch them anyway (for example, while testing your EAS Observe integration), set `dispatchInDebug` to `true` when calling `configure()`:
+By default, metrics collected from debug builds are not dispatched. To dispatch them anyway (for example, while testing your Expo Observe integration), set `dispatchInDebug` to `true` when calling `configure()`:
 
 ```tsx
 import { Observe } from 'expo-observe';
@@ -43,13 +74,13 @@ Observe.configure({
 
 A build is treated as a debug build if either the native app is a debug build or the JS bundle is a development bundle (`__DEV__` is `true`). This detection is independent of the `environment` value (see [Environments](#environments)).
 
-`dispatchInDebug` has no effect on release builds, which always dispatch (subject to [`dispatchingEnabled`](/versions/latest/sdk/observe/#observeconfig) and [`sampleRate`](#sampling)). If `dispatchingEnabled` is `false` or this installation is out-of-sample, nothing dispatches regardless of `dispatchInDebug`.
+`dispatchInDebug` has no effect on release builds, which always dispatch (subject to [`dispatchingEnabled`](/versions/latest/sdk/observe/#observeconfig) and [`sampleRate`](#sampling)). If `dispatchingEnabled` is `false`, nothing dispatches regardless of `dispatchInDebug`. `sampleRate` and `errorSampleRate` also apply in debug builds.
 
-> **warning** Enable this only when testing your EAS Observe integration. Development/debug performance differs significantly from production, so collecting development/debug metrics may distort the results shown in your dashboard.
+> **warning** Enable this only when testing your Expo Observe integration. Development/debug performance differs significantly from production, so collecting development/debug metrics may distort the results shown in your dashboard.
 
 ## Custom endpoint
 
-EAS Observe sends data using the OpenTelemetry Protocol (OTLP) over HTTP with a JSON payload. It posts metrics to `<endpointUrl>/<project-id>/v1/metrics` and logs to `<endpointUrl>/<project-id>/v1/logs`, where `<project-id>` is your EAS project ID. This means you can set `endpointUrl` to an OpenTelemetry-compatible backend or an OpenTelemetry Collector to route your observability data there.
+Expo Observe sends data using the OpenTelemetry Protocol (OTLP) over HTTP with a JSON payload. It posts metrics to `<endpointUrl>/<project-id>/v1/metrics` and logs to `<endpointUrl>/<project-id>/v1/logs`, where `<project-id>` is your Expo Services project ID. This means you can set `endpointUrl` to an OpenTelemetry-compatible backend or an OpenTelemetry Collector to route your observability data there.
 
 To change the endpoint, set the `endpointUrl` value in your **app config**:
 
@@ -107,15 +138,15 @@ URLs are redacted before they are stored. A username and password in the URL are
 
 ## Turn off data ingestion
 
-The options above control what your app sends. You can also stop EAS Observe from accepting data on the server side, without shipping an app update, using the **Observe data ingestion** toggle in the EAS dashboard:
+The options above control what your app sends. You can also stop Expo Observe from accepting data on the server side, without shipping an app update, using the **Observe data ingestion** toggle in the Expo dashboard:
 
 - **Account level**: open [Account settings](https://expo.dev/accounts/[account]/settings) and turn off **Observe data ingestion**. This pauses ingestion for all projects in the account.
 - **Project level**: open [Project settings](https://expo.dev/accounts/[account]/projects/[project]/settings) and turn off **Observe data ingestion**. This pauses ingestion for that project only.
 
 <ContentSpotlight
-  alt="The Observe data ingestion toggle in the EAS dashboard account settings."
+  alt="The Observe data ingestion toggle in the Expo dashboard account settings."
   src="/static/images/expo-observe/observe-data-ingestion-light.webp"
   darkSrc="/static/images/expo-observe/observe-data-ingestion-dark.webp"
 />
 
-While ingestion is paused, EAS Observe does not accept events, metrics, or logs sent by your apps. Data that was already ingested stays available in the dashboard and the CLI. Turn the toggle back on to resume ingestion.
+While ingestion is paused, Expo Observe does not accept events, metrics, or logs sent by your apps. Data that was already ingested stays available in the dashboard and the CLI. Turn the toggle back on to resume ingestion.

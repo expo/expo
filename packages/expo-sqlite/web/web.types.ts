@@ -8,6 +8,7 @@ import {
   type SQLiteColumnNames,
   type SQLiteColumnValues,
 } from '../src/NativeStatement';
+import { type SQLiteWebOptions } from '../src/WebConfiguration';
 import { type SQLAction } from './SQLAction';
 
 export interface SyncWorkerMessage {
@@ -249,6 +250,19 @@ type SessionInvertChangesetMessage = BaseWorkerMessage & {
     changeset: Changeset;
   };
 };
+
+export interface ConfigureWorkerMessage {
+  type: 'configure';
+  data: SQLiteWebOptions;
+}
+
+export interface InitWorkerMessage {
+  type: 'init';
+}
+
+export interface ShutdownWorkerMessage {
+  type: 'shutdown';
+}
 
 //#endregion Request messages
 

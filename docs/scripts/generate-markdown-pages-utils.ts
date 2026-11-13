@@ -100,7 +100,8 @@ function createTurndownService(): TurndownService {
         node.getAttribute('data-md-lang') ?? code.className?.match(/language-(\w+)/)?.[1] ?? '';
       const text = code.textContent ?? '';
       const info = [lang, node.getAttribute('data-md-label')].filter(Boolean).join(' ');
-      return `\n\n\`\`\`${info}\n${text.trim()}\n\`\`\`\n\n`;
+      const body = lang === 'diff' ? text.replace(/^\n+/, '').trimEnd() : text.trim();
+      return `\n\n\`\`\`${info}\n${body}\n\`\`\`\n\n`;
     },
   });
 
@@ -574,6 +575,16 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     }
   });
 
+  main.find('[data-md="package-version"]').each((_, el) => {
+    const $el = $(el);
+    const versionRange = $el.attr('data-md-version');
+    if (versionRange) {
+      $el.replaceWith(`<p>Recommended version: ${escapeHtml(versionRange)}</p>`);
+    } else {
+      $el.remove();
+    }
+  });
+
   // Extract platform text from badge elements BEFORE removing skip/select-none elements.
   // data-md="platform-badge" is the stable marker; fallback matches .select-none.rounded-full.border.
   main.find('[data-md="platform-badge"]').each((_, el) => {
@@ -651,9 +662,9 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
     const $header = $(el);
     if ($header.closest('[data-md="terminal"]').length === 0) {
       const label = $header.text().trim();
-      const $pre = $header.parent().find('pre').first();
-      if (label && $pre.length > 0) {
-        $pre.attr('data-md-label', label);
+      const $block = $header.parent().find('pre, table.diff').first();
+      if (label && $block.length > 0) {
+        $block.attr('data-md-label', label);
       }
     }
     $header.remove();
@@ -892,13 +903,29 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   main.find('[data-md="diff"] table, table.diff').each((_, el) => {
     const $table = $(el);
     const lines: string[] = [];
+    const hunkCount = $table.find('tbody.diff-hunk').length;
+    let currentHunk: AnyNode | undefined;
     $table.find('tr').each((_, row) => {
       const $row = $(row);
       const codeCell = $row.find('td').last();
-      const text = codeCell.text().trim();
-      if (!text) {
+      if (codeCell.length === 0) {
         return;
       }
+      const hunk = $row.closest('tbody.diff-hunk').get(0);
+      if (hunkCount > 1 && hunk && hunk !== currentHunk) {
+        currentHunk = hunk;
+        const lineNumbers = (column: number) =>
+          $(hunk)
+            .find('tr')
+            .map((_, hunkRow) => Number($(hunkRow).find('td').eq(column).text()))
+            .get()
+            .filter(Boolean);
+        const [oldLines, newLines] = [lineNumbers(0), lineNumbers(1)];
+        lines.push(
+          `@@ -${oldLines[0] ?? 0},${oldLines.length} +${newLines[0] ?? 0},${newLines.length} @@`
+        );
+      }
+      const text = codeCell.text().trimEnd();
       // Determine diff marker from CSS class on gutter/code cells or the row itself
       const rowCls = $row.attr('class') ?? '';
       const codeCls = codeCell.attr('class') ?? '';
@@ -913,7 +940,7 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       if (/^[+-]\s/.test(text)) {
         lines.push(text);
       } else {
-        lines.push(marker + ' ' + text);
+        lines.push((marker + ' ' + text).trimEnd());
       }
     });
     if (lines.length > 0) {
@@ -921,6 +948,10 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       const $code = $('<code class="language-diff"></code>');
       $code.text(lines.join('\n'));
       $pre.append($code);
+      const label = $table.attr('data-md-label');
+      if (label) {
+        $pre.attr('data-md-label', label);
+      }
       $table.replaceWith($pre);
     }
   });
@@ -984,6 +1015,14 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
       $pre.append($code);
       $el.replaceWith($pre);
     }
+  });
+}
+
+function resolveSamePageLinks($: CheerioAPI, main: Cheerio<AnyNode>, pagePath: string): void {
+  main.find('a[href^="#"]').each((_, el) => {
+    const $link = $(el);
+    const href = $link.attr('href');
+    $link.attr('href', `${pagePath}${href}`);
   });
 }
 
@@ -1211,7 +1250,7 @@ const NO_CONTENT_FALLBACK =
  * Always returns a string so every page gets a .md file.
  * For redirect pages (meta refresh), returns a pointer to the redirect target.
  */
-export function convertHtmlToMarkdown(html: string): string {
+export function convertHtmlToMarkdown(html: string, pagePath?: string): string {
   const $ = cheerio.load(html);
 
   // Detect redirect pages via <meta http-equiv="refresh" content="0; url=/path/">
@@ -1234,6 +1273,9 @@ export function convertHtmlToMarkdown(html: string): string {
   }
 
   cleanHtml($, main);
+  if (pagePath) {
+    resolveSamePageLinks($, main, pagePath);
+  }
 
   const mainHtml = main.html();
   if (!mainHtml) {

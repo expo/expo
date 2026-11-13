@@ -1,5 +1,30 @@
-import { alpha, background, clickable, paddingAll } from '../../jetpack-compose/modifiers';
+import {
+  alpha,
+  background,
+  clickable,
+  height,
+  paddingAll,
+  size,
+  weight,
+  width,
+} from '../../jetpack-compose/modifiers';
 import { transformToModifiers } from '../transformStyle';
+
+function universalLayout(dimensions: {
+  widthPoints?: number;
+  widthFraction?: number;
+  heightPoints?: number;
+  heightFraction?: number;
+}) {
+  return {
+    $type: 'universalLayout',
+    widthPoints: undefined,
+    widthFraction: undefined,
+    heightPoints: undefined,
+    heightFraction: undefined,
+    ...dimensions,
+  };
+}
 
 describe('transformToModifiers (Android)', () => {
   it('drops a style-derived modifier when the user supplies the same type', () => {
@@ -25,6 +50,34 @@ describe('transformToModifiers (Android)', () => {
     expect(transformToModifiers(undefined, { onPress }, [userClick])).toEqual([
       clickable(onPress),
       userClick,
+    ]);
+  });
+
+  it('emits a fixed size as size() and as parent data', () => {
+    expect(transformToModifiers({ width: 12, height: 8 }, {})).toEqual([
+      universalLayout({ widthPoints: 12, heightPoints: 8 }),
+      size(12, 8),
+    ]);
+  });
+
+  it('emits a percentage as parent data without a width modifier', () => {
+    expect(transformToModifiers({ width: '50%' }, {})).toEqual([
+      universalLayout({ widthFraction: 0.5 }),
+    ]);
+  });
+
+  it('lets a user width replace the style width and keeps the style height', () => {
+    expect(transformToModifiers({ width: '50%', height: 10 }, {}, [width(4)])).toEqual([
+      universalLayout({ heightPoints: 10 }),
+      height(10),
+      width(4),
+    ]);
+  });
+
+  it('keeps a percentage when the user modifier is weight', () => {
+    expect(transformToModifiers({ height: '100%' }, {}, [weight(1)])).toEqual([
+      universalLayout({ heightFraction: 1 }),
+      weight(1),
     ]);
   });
 });

@@ -17,7 +17,7 @@ import { Step } from '~/ui/components/Step';
 
 ## ステータスバーを直す
 
-アプリの一番上を見てください。時計とバッテリーのアイコンが濃い色になっていて、暗い背景の上では読みづらくなっています。次のプロンプトをエージェントに貼り付けてください。
+アプリの一番上を見てください。スマートフォンがライトモードの場合、時計とバッテリーのアイコンが濃い色になっていて、暗い背景の上では読みづらくなっています。次のプロンプトをエージェントに貼り付けてください。
 
 ```text プロンプト|wrap
 スマートフォンのステータスバー（画面上部の時計とバッテリーのアイコン）が、暗い背景の上で読みづらいです。expo-status-bar ライブラリを使って、すべての画面でステータスバーの文字を明るい色にして。
@@ -45,23 +45,23 @@ The phone's status bar (the clock and battery icons at the top of the screen) is
 
 ## アプリアイコンとスプラッシュスクリーンを設定する
 
-前に取得したアセットパックには、アプリアイコンとスプラッシュスクリーンの画像も含まれています。次のプロンプトをエージェントに貼り付けてください。
+前に取得したアセットパックには、アプリアイコン、Android のアダプティブアイコンのレイヤー、スプラッシュスクリーンの画像も含まれています。次のプロンプトをエージェントに貼り付けてください。
 
 ```text プロンプト|wrap
-アプリのアイコンを assets/images/icon.png に設定して。そして expo-splash-screen の config プラグインを使って、Android・iOS・web で assets/images/splash-icon.png を #25292e の背景の中央に表示するスプラッシュスクリーンを設定して。
+アプリのアイコンを assets/images/icon.png に設定して。app.json では "ios.icon" プロパティを削除して、iOS がデフォルトの Expo アイコンではなく icon.png を使うようにして。android-icon-foreground.png、android-icon-background.png、android-icon-monochrome.png を使う Android のアダプティブアイコンはそのまま残して。そのうえで expo-splash-screen の config プラグインを使って、Android・iOS・web で assets/images/splash-icon.png を #25292e の背景の中央に表示するスプラッシュスクリーンを設定して。
 ```
 
 <Collapsible summary="英語の原文プロンプト">
 
 ```text Prompt|wrap
-Set the app's icon to assets/images/icon.png, and configure the splash screen using the expo-splash-screen config plugin so it shows assets/images/splash-icon.png centered on a #25292e background on Android, iOS, and web.
+Set the app's icon to assets/images/icon.png. In app.json, remove the "ios.icon" property, so iOS uses icon.png instead of the default Expo icon, and keep the Android adaptive icon that uses the android-icon-foreground.png, android-icon-background.png, and android-icon-monochrome.png files. Then configure the splash screen using the expo-splash-screen config plugin so it shows assets/images/splash-icon.png centered on a #25292e background on Android, iOS, and web.
 ```
 
 </Collapsible>
 
-**表示されるもの**: これらの設定はアプリの設定ファイルに書き込まれるため、反映するには開発サーバーを再起動します。ターミナルで <kbd>Ctrl</kbd> + <kbd>C</kbd> を押し、`npx expo start` をもう一度実行して、Expo Go からアプリを開き直してください。プロジェクトの読み込み中、一瞬スプラッシュスクリーンが表示されます。
+**表示されるもの**: これらの設定はアプリの設定ファイルに書き込まれるため、反映するには開発サーバーを再起動します。ターミナルで <kbd>Ctrl</kbd> + <kbd>C</kbd> を押し、`npx expo start` をもう一度実行して、Expo Go からアプリを開き直してください。
 
-1 つ注意点があります。ホーム画面上のアプリアイコンは変わりません。いま実行しているのは Expo Go というアプリの中であり、Expo Go 自身のアイコンを使っているためです。自分のアイコンが使われるのは、アプリのスタンドアロンビルドを作成したときです。その段階に進む準備ができたら、[開発ビルド](/develop/development-builds/introduction/)を参照してください。
+1 つ注意点があります。アプリアイコンとスプラッシュスクリーンはまだ表示されません。いま実行しているのは Expo Go というアプリの中であり、Expo Go 自身のアイコンを使っているためです。自分のアイコンはアプリのビルドを作成したときに使われ、スプラッシュスクリーンはプレビュービルドまたはプロダクションビルドで表示されます。その段階に進む準備ができたら、[内部配布](/ja/tutorial/eas/internal-distribution-builds/)を参照してください。
 
 </Step>
 

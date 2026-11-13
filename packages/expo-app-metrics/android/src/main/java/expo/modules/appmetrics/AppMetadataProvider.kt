@@ -85,7 +85,11 @@ fun getAppUpdatesInfo(): AppUpdatesInfo {
   val launchedUpdateId = controller.launchedUpdateId
   val embeddedUpdateId = controller.embeddedUpdateId
   // Ignore embedded launches – they are not available on the website anyway.
-  val updateId = if (launchedUpdateId == embeddedUpdateId) null else launchedUpdateId?.toString()
+  val updateId = if (launchedUpdateId == embeddedUpdateId) {
+    null
+  } else {
+    launchedUpdateId?.toString()
+  }
   return AppUpdatesInfo(
     updateId = updateId,
     runtimeVersion = controller.runtimeVersion,

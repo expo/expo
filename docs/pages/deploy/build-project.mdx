@@ -1,6 +1,6 @@
 ---
 title: Build your project for app stores
-description: Learn how to create a production build for your app that is ready to be submitted to app stores from the command line using EAS Build.
+description: Learn how to create a production build for your app that is ready to be submitted to app stores from the command line using Expo Build.
 sidebar_title: Build project for app stores
 ---
 
@@ -12,11 +12,11 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-Whether you have built a native app binary using [EAS](/build/setup/) or [locally](/guides/local-app-development/), the next step in your app development journey is to submit your app to the stores. To do so, you need to create a **production build**.
+Whether you have built a native app binary using [Expo Build](/build/setup/) or [locally](/guides/local-app-development/), the next step in your app development journey is to submit your app to the stores. To do so, you need to create a **production build**.
 
-Production builds are submitted to app stores for release to the general public or as part of a store-facilitated testing process such as TestFlight. This guide explains how to create production builds with [EAS](#production-builds-using-eas) and [locally](#release-builds-locally). It is also possible to create production builds for Expo apps with any CI service capable of compiling Android and iOS apps.
+Production builds are submitted to app stores for release to the general public or as part of a store-facilitated testing process such as TestFlight. This guide explains how to create production builds with [Expo Build](#production-builds-using-expo-build) and [locally](#release-builds-locally). It is also possible to create production builds for Expo apps with any CI service capable of compiling Android and iOS apps.
 
-## Production builds using EAS
+## Production builds using Expo Build
 
 Production builds must be installed through their respective app stores. You cannot install them directly on your Android Emulator, iOS Emulator, or device. The only exception to this is if you explicitly set `"buildType": "apk"` for Android on your build profile. However, it is recommended to use **aab** when submitting to stores, and this is the default configuration.
 
@@ -48,7 +48,7 @@ To create a production build, run the following command for a platform:
   </Tab>
 </Tabs>
 
-You can attach a message to the build by passing `--message` to the build command, for example, `eas build --platform ios --message "Some message"`. The message will appear on the EAS dashboard. It comes in handy when you want to specify the purpose of the build for your team.
+You can attach a message to the build by passing `--message` to the build command, for example, `eas build --platform ios --message "Some message"`. The message will appear on the Expo dashboard. It comes in handy when you want to specify the purpose of the build for your team.
 
 Alternatively, you can use `--platform all` option to build for Android and iOS at the same time:
 
@@ -60,13 +60,13 @@ You will need to have a developer account for the app store you want to submit y
 
 <Collapsible summary="Google Play Developer membership is required to distribute to the Google Play Store.">
 
-You can build and sign your app using EAS Build, but you can't upload it to the Google Play Store unless you have a membership, a one-time $25 USD fee.
+You can build and sign your app using Expo Build, but you can't upload it to the Google Play Store unless you have a membership, a one-time $25 USD fee.
 
 </Collapsible>
 
 <Collapsible summary="Apple Developer Program membership is required to build for the Apple App Store.">
 
-If you are going to use EAS Build to create production builds for the Apple App Store, you need access to an account with a $99 USD [Apple Developer Program](https://developer.apple.com/programs) membership.
+If you are going to use Expo Build to create production builds for the Apple App Store, you need access to an account with a $99 USD [Apple Developer Program](https://developer.apple.com/programs) membership.
 
 </Collapsible>
 
@@ -78,7 +78,7 @@ Whether you have experience with generating app signing credentials or not, EAS 
 
 ### Android app signing credentials
 
-- If you have not yet generated a keystore for your app, use EAS CLI by selecting `Generate new keystore`, and then you are done. The keystore is stored securely on EAS servers.
+- If you have not yet generated a keystore for your app, use EAS CLI by selecting `Generate new keystore`, and then you are done. The keystore is stored securely on Expo servers.
 - If you want to manually generate your keystore, see the [manual Android credentials guide](/app-signing/local-credentials#android-credentials) for more information.
 
 ### iOS app signing credentials
@@ -96,7 +96,7 @@ If you are a member of an organization and your build is on its behalf, you will
 
 ## Create builds automatically
 
-You can automatically create builds on commits to specific branches with [EAS Workflows](/eas/workflows/introduction/). First, you'll need to [configure your project](/eas/workflows/get-started/), add a file named **.eas/workflows/create-builds.yml** at the root of your project, then add the following workflow configuration:
+You can automatically create builds on commits to specific branches with [Expo Workflows](/eas/workflows/introduction/). First, you'll need to [configure your project](/eas/workflows/get-started/), add a file named **.eas/workflows/create-builds.yml** at the root of your project, then add the following workflow configuration:
 
 ```yaml .eas/workflows/create-builds.yml
 name: Create builds

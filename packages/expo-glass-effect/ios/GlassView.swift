@@ -291,6 +291,15 @@ public final class GlassView: ExpoView {
     }
   }
   
+  public override func willMove(toWindow newWindow: UIWindow?) {
+    super.willMove(toWindow: newWindow)
+    // A glass removed while its effect is live leaves state on its superview that stops
+    // a later glass from rendering when that view is recycled into its content.
+    if newWindow == nil {
+      glassEffectView.effect = UIVisualEffect()
+    }
+  }
+
   public override func didMoveToWindow() {
     super.didMoveToWindow()
     if (self.window == nil) {

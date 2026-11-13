@@ -1,4 +1,4 @@
-import { boolish, int, string } from 'getenv';
+import { boolish, int, string } from '@expo/env';
 
 class Env {
   /** Directory containing transforms restored from a previous build. Used when EXPO_METRO_CACHE_OUTPUT_DIR is also set. */

@@ -24,23 +24,36 @@ function validateOptions(input) {
     ...input,
   };
   const errors = [];
-  if ('width' in options && (typeof options.width !== 'number' || options.width <= 0)) {
+  if (
+    'width' in options &&
+    (typeof options.width !== 'number' || !Number.isFinite(options.width) || options.width <= 0)
+  ) {
     errors.push('option width should be a positive number');
     delete options.width;
   }
-  if ('height' in options && (typeof options.height !== 'number' || options.height <= 0)) {
+  if (
+    'height' in options &&
+    (typeof options.height !== 'number' || !Number.isFinite(options.height) || options.height <= 0)
+  ) {
     errors.push('option height should be a positive number');
     delete options.height;
   }
-  if (typeof options.quality !== 'number' || options.quality < 0 || options.quality > 1) {
+  if (
+    typeof options.quality !== 'number' ||
+    !Number.isFinite(options.quality) ||
+    options.quality < 0 ||
+    options.quality > 1
+  ) {
     errors.push('option quality should be a number between 0.0 and 1.0');
     options.quality = defaultOptions.quality;
   }
   if (typeof options.snapshotContentContainer !== 'boolean') {
     errors.push('option snapshotContentContainer should be a boolean');
+    options.snapshotContentContainer = defaultOptions.snapshotContentContainer;
   }
   if (typeof options.handleGLSurfaceViewOnAndroid !== 'boolean') {
     errors.push('option handleGLSurfaceViewOnAndroid should be a boolean');
+    options.handleGLSurfaceViewOnAndroid = defaultOptions.handleGLSurfaceViewOnAndroid;
   }
   if (acceptedFormats.indexOf(options.format || '') === -1) {
     const badFormat = options.format;

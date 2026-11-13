@@ -20,6 +20,8 @@ export enum MediaSubtype {
   TIME_LAPSE = 'timelapse',
   SPATIAL_MEDIA = 'spatialMedia',
   VIDEO_CINEMATIC = 'videoCinematic',
+  ANIMATION = 'animation',
+  SCREEN_RECORDING = 'screenRecording',
 }
 
 /**
@@ -70,6 +72,10 @@ export type AssetInfo = {
   creationTime: number | null;
   modificationTime: number | null;
   isFavorite?: boolean;
+  /**
+   * @platform ios
+   */
+  mediaSubtypes?: MediaSubtype[];
 };
 
 /**
@@ -90,4 +96,8 @@ export type AssetMetadata = {
   creationTime: number | null;
   modificationTime: number | null;
   isFavorite: boolean;
+  /**
+   * @platform ios
+   */
+  mediaSubtypes?: MediaSubtype[];
 };

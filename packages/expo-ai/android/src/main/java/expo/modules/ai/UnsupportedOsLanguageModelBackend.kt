@@ -10,7 +10,11 @@ internal fun defaultLanguageModelBackend(
   osVersion: Int,
   supported: () -> LanguageModelBackend = { MlKitLanguageModelBackend() }
 ): LanguageModelBackend =
-  if (mlKitRequiresNewerOs(osVersion)) UnsupportedOsLanguageModelBackend else supported()
+  if (mlKitRequiresNewerOs(osVersion)) {
+    UnsupportedOsLanguageModelBackend
+  } else {
+    supported()
+  }
 
 internal fun unavailableSessionMessage(backend: LanguageModelBackend): String =
   backend.unavailableMessage ?: "ML Kit is not available on this device."

@@ -31,6 +31,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
   private let deviceDiscovery = DeviceDiscovery()
 
   private var captureDeviceInput: AVCaptureDeviceInput?
+  private var minZoomFactor: CGFloat = 1.0
   private var photoOutput: AVCapturePhotoOutput?
   private var videoFileOutput: AVCaptureMovieFileOutput?
   private var runtimeErrorTask: Task<Void, Never>?
@@ -99,7 +100,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
       : deviceDiscovery.defaultFrontCamera
 
       if let device {
-        addDevice(device)
+        addDevice(device, minZoomFactor: wideLensZoomFactor(device))
       }
     }
   }
@@ -217,8 +218,7 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
     do {
       try device.lockForConfiguration()
       defer { device.unlockForConfiguration() }
-      let minZoom = 1.0
-      device.videoZoomFactor = minZoom * pow(device.activeFormat.videoMaxZoomFactor / minZoom, delegate.zoom)
+      device.videoZoomFactor = minZoomFactor * pow(device.activeFormat.videoMaxZoomFactor / minZoomFactor, delegate.zoom)
     } catch {
       log.info("\(#function): \(error.localizedDescription)")
     }
@@ -331,12 +331,24 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
 
   var currentDevice: AVCaptureDevice? { captureDeviceInput?.device }
 
-  private func addDevice(_ device: AVCaptureDevice) {
+  // On a virtual device with an ultra-wide, zoom factor 1 is the ultra-wide. The wide lens takes over
+  // at the first switch-over factor.
+  private func wideLensZoomFactor(_ device: AVCaptureDevice) -> CGFloat {
+    guard device.constituentDevices.contains(where: { $0.deviceType == .builtInUltraWideCamera }),
+      let switchOver = device.virtualDeviceSwitchOverVideoZoomFactors.first else {
+      return 1.0
+    }
+    return CGFloat(truncating: switchOver)
+  }
+
+  private func addDevice(_ device: AVCaptureDevice, minZoomFactor: CGFloat = 1.0) {
     guard let delegate else {
       return
     }
 
+    self.minZoomFactor = minZoomFactor
     if captureDeviceInput?.device.uniqueID == device.uniqueID {
+      updateZoom()
       return
     }
 

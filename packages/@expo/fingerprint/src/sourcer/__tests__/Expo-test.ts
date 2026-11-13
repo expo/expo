@@ -1,6 +1,5 @@
 import { getConfig, type ExpoConfig } from '@expo/config';
 import spawnAsync from '@expo/spawn-async';
-import fs from 'fs';
 import { vol, fs as volFS } from 'memfs';
 import path from 'path';
 import requireString from 'require-from-string';
@@ -35,8 +34,10 @@ function mockConfigFile(filePath: string, factory: () => any) {
   jest.doMock(filePath, factory, { virtual: true });
 }
 
-// NOTE(cedric): this is a workaround to also mock `node:fs`
+// Mock `node:fs` with memfs. Jest 30 treats `node:fs` and `fs` as the same module, so this also
+// applies to `fs`; read the test fixtures from the real filesystem explicitly.
 jest.mock('node:fs', () => require('memfs').fs);
+const realFs = jest.requireActual<typeof import('fs')>('fs');
 
 /** Make the next ExpoConfigLoader spawn return the given config and loaded modules. */
 function mockLoadedModules(config: unknown, loadedModules: unknown[]) {
@@ -141,11 +142,11 @@ describe(getEasBuildSourcesAsync, () => {
 describe('getExpoAutolinkingSourcesAsync', () => {
   beforeEach(() => {
     const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
-    const fixtureAndroid = fs.readFileSync(
+    const fixtureAndroid = realFs.readFileSync(
       path.join(__dirname, 'fixtures', 'ExpoAutolinkingAndroid.json'),
       'utf8'
     );
-    const fixtureIos = fs.readFileSync(
+    const fixtureIos = realFs.readFileSync(
       path.join(__dirname, 'fixtures', 'ExpoAutolinkingIos.json'),
       'utf8'
     );
@@ -257,6 +258,49 @@ describe('getExpoAutolinkingSourcesAsync', () => {
     }
     expect(iosConfig.contents).toContain('expo-modules-core');
     expect(iosConfig.contents).not.toContain('node_modules');
+  });
+
+  it('should keep android module sources when a gradle plugin has no sourceDir', async () => {
+    const fixture = JSON.parse(
+      realFs.readFileSync(path.join(__dirname, 'fixtures', 'ExpoAutolinkingAndroid.json'), 'utf8')
+    );
+    fixture.modules.push({
+      packageName: 'expo-widgets',
+      packageVersion: '1.0.0',
+      projects: [{ name: 'expo-widgets', sourceDir: '/app/node_modules/expo-widgets/android' }],
+      plugins: [{ id: 'com.example.gradle-plugin', group: 'com.example', version: '1.2.3' }],
+      modules: [],
+    });
+    const stdout = JSON.stringify(fixture);
+    const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
+    mockSpawnAsync.mockReset();
+    mockSpawnAsync.mockResolvedValueOnce({
+      stdout,
+      stderr: '',
+      status: 0,
+      signal: null,
+      output: [stdout, ''],
+    });
+
+    const sources = await getExpoAutolinkingAndroidSourcesAsync(
+      '/app',
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.None }),
+      expoAutolinkingVersion
+    );
+    expect(sources).toContainEqual(
+      expect.objectContaining({ type: 'dir', filePath: 'node_modules/expo-modules-core/android' })
+    );
+    expect(sources).toContainEqual(
+      expect.objectContaining({ type: 'dir', filePath: 'node_modules/expo-widgets/android' })
+    );
+    const androidConfig = sources.find(
+      (source) => source.type === 'contents' && source.id === 'expoAutolinkingConfig:android'
+    );
+    if (androidConfig?.type !== 'contents') {
+      throw new Error('expected expoAutolinkingConfig:android contents source');
+    }
+    expect(androidConfig.contents).toContain('com.example.gradle-plugin');
+    expect(androidConfig.contents).toContain('1.2.3');
   });
 });
 

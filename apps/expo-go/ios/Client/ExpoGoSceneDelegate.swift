@@ -68,11 +68,17 @@ class ExpoGoSceneDelegate: UIResponder, UIWindowSceneDelegate {
   private func handle(urlContexts: Set<UIOpenURLContext>) {
     let linkingManager = EXKernel.sharedInstance().serviceRegistry.linkingManager
     for context in urlContexts {
+      _ = ExpoAppDelegateSubscriberManager.application(UIApplication.shared, open: context.url, options: [:])
       _ = linkingManager?.application(UIApplication.shared, open: context.url, options: [:])
     }
   }
 
   private func handle(userActivity: NSUserActivity) {
+    _ = ExpoAppDelegateSubscriberManager.application(
+      UIApplication.shared,
+      continue: userActivity,
+      restorationHandler: { _ in }
+    )
     _ = EXKernelLinkingManager.application(
       UIApplication.shared,
       continue: userActivity,

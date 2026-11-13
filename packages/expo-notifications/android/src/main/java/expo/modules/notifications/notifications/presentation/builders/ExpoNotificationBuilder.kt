@@ -114,6 +114,11 @@ open class ExpoNotificationBuilder(
 
     applySoundsAndVibrations(content, builder)
 
+    content.group?.let {
+      builder.setGroup(it)
+      builder.setDeleteIntent(NotificationsService.createGroupedNotificationDeletedIntent(context, notification))
+    }
+
     if (content.body != null) {
       // Add body - JSON data - to extras
       val extras = builder.extras

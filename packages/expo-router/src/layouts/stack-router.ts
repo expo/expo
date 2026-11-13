@@ -1,7 +1,6 @@
 import {
   getInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
-  INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
   type InternalExpoRouterParams,
@@ -14,6 +13,7 @@ import {
   type PartialRoute,
   type PartialState,
   type Route,
+  RouterActionHandling,
   type RouterConfigOptions,
   type StackActionType,
   type StackNavigationState,
@@ -24,8 +24,14 @@ import { getStackBrowserHistoryAction } from '../react-navigation/routers/StackR
 import { attachRouteState } from '../react-navigation/routers/attachRouteState';
 import { ensureStateType } from '../react-navigation/routers/ensureStateType';
 import { createRouteKeyMinter } from '../react-navigation/routers/stateKeys';
+import { isActionHandled } from '../react-navigation/routers/utils';
 import type { SingularOptions } from '../useScreens';
 import { getSingularId } from '../utils/getSingularId';
+import {
+  insertRequiredRoutes,
+  SYNC_REQUIRED_SCREENS,
+  type SyncRequiredScreensPayload,
+} from './stack-utils/requiredScreensBelow';
 
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
@@ -85,11 +91,27 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
   original
 ) => {
   return {
+    // The sync is not a new visit, so it updates the current browser entry.
+    getBrowserHistoryForAction: (previous, next, action) =>
+      action.type === SYNC_REQUIRED_SCREENS
+        ? undefined
+        : original.getBrowserHistoryForAction?.(previous, next, action),
     getStateForAction: (state, action, options) => {
       state = ensureStateType(state, 'stack');
 
       if (action.target && action.target !== state.key) {
-        return null;
+        return RouterActionHandling.Unhandled;
+      }
+      if (action.type === SYNC_REQUIRED_SCREENS) {
+        // Only the stack sends this action, with this payload.
+        const { routeKey, ...required } = action.payload as SyncRequiredScreensPayload;
+        return {
+          state:
+            state.routes[state.index]?.key === routeKey
+              ? insertRequiredRoutes(state, required)
+              : state,
+          affectedRouteKey: undefined,
+        };
       }
       if (!isStackAction(action)) {
         return original.getStateForAction(state, action, options);
@@ -127,7 +149,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
         case 'PUSH':
         case 'NAVIGATE': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
 
           const getId = getIdFunction();
@@ -170,7 +192,6 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
                     : {}),
                   ...action.payload.params,
                   [INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME]: true,
-                  [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
                 },
               },
               action
@@ -216,7 +237,7 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
               routeGetIdList,
             });
           }
-          if (!actionResult) {
+          if (!isActionHandled(actionResult)) {
             return actionResult;
           }
 
@@ -257,10 +278,10 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
         }
         case 'PRELOAD': {
           if (!state.routeNames.includes(action.payload.name)) {
-            return null;
+            return RouterActionHandling.Unhandled;
           }
           const actionResult = original.getStateForAction(state, action, options);
-          if (!actionResult) {
+          if (!isActionHandled(actionResult)) {
             return actionResult;
           }
           const affectedRouteKey = actionResult.affectedRouteKey;

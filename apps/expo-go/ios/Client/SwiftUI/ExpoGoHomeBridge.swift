@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
+import SwiftUI
 import UIKit
 
 @objc public class ExpoGoHomeBridge: NSObject {
@@ -63,9 +64,9 @@ import UIKit
       let icon = Self.makeLoadingIcon(sfSymbol: sfSymbol)
       let fixedDelay = snackParams?["loadingFixedDelay"] as? Double ?? 0
       let minDuration = fixedDelay > 0 ? 0 : 0.5  // Use minimum display duration unless a fixed delay is set
-      EXKernel.sharedInstance().browserController.showAppLoadingOverlay(withStatusText: "Preparing playground...", iconImage: icon, dismissDelay: minDuration, fixedDismissDelay: fixedDelay)
+      EXKernel.sharedInstance().browserController?.showAppLoadingOverlay(withStatusText: "Preparing playground...", iconImage: icon, dismissDelay: minDuration, fixedDismissDelay: fixedDelay)
     } else {
-      EXKernel.sharedInstance().browserController.showAppLoadingOverlay(withStatusText: "Opening project...")
+      EXKernel.sharedInstance().browserController?.showAppLoadingOverlay(withStatusText: "Opening project...")
     }
 
     // For non-snack apps, open synchronously to avoid timing issues with native module registration.
@@ -90,7 +91,7 @@ import UIKit
     if params["code"] == nil {
       // Not an embedded snack — require login at minimum
       guard let currentUser = authenticatedUsername() else {
-        EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
+        EXKernel.sharedInstance().browserController?.hideAppLoadingOverlay()
         showError("Sign in to Expo Go to open your Snack playgrounds.")
         completion(false, nil)
         return
@@ -100,7 +101,7 @@ import UIKit
       if let snackId = params["snackId"] as? String,
          let owner = ownerUsername(fromSnackId: snackId),
          owner != currentUser {
-        EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
+        EXKernel.sharedInstance().browserController?.hideAppLoadingOverlay()
         showError("This playground belongs to @\(owner). Sign in as @\(owner) to open it, or open one of your own.")
         completion(false, nil)
         return
@@ -170,7 +171,7 @@ import UIKit
     guard let message = sessionExpiredMessage() else {
       return nil
     }
-    AuthenticationService.clearSession()
+    AuthenticationService.deactivateExpiredSession()
     return message
   }
 
@@ -289,6 +290,60 @@ import UIKit
     AuthenticationService.currentUsername != nil
   }
 
+  func accountMismatchActionTitle(forUsername username: String) -> String? {
+    let store = SessionStore.shared
+    return AccountMismatchAction
+      .resolve(username: username, sessions: store.sessions, activeSessionId: store.activeSession?.id)?
+      .title(for: username)
+  }
+
+  @MainActor
+  func resolveAccountMismatch(forUsername username: String, from presenter: UIViewController?) async -> Bool {
+    guard let homeViewModel else {
+      return false
+    }
+    let store = SessionStore.shared
+    switch AccountMismatchAction.resolve(username: username, sessions: store.sessions, activeSessionId: store.activeSession?.id) {
+    case .switchTo(let sessionId):
+      await homeViewModel.switchToSession(id: sessionId)
+      return true
+    case .signIn:
+      guard let presenter else {
+        return false
+      }
+      return await presentAccountMismatchSignIn(username: username, viewModel: homeViewModel, from: presenter)
+    case nil:
+      return false
+    }
+  }
+
+  @MainActor
+  private func presentAccountMismatchSignIn(
+    username: String,
+    viewModel: HomeViewModel,
+    from presenter: UIViewController
+  ) async -> Bool {
+    guard presenter.presentedViewController == nil else {
+      return false
+    }
+    return await withCheckedContinuation { continuation in
+      weak var presented: UIViewController?
+      let signIn = AccountMismatchSignInView(
+        username: username,
+        viewModel: viewModel,
+        completion: DeviceLoginCompletion { signedIn in
+          continuation.resume(returning: signedIn)
+        },
+        onFinish: {
+          presented?.dismiss(animated: true)
+        }
+      )
+      let controller = UIHostingController(rootView: signIn)
+      presented = controller
+      presenter.present(controller, animated: true)
+    }
+  }
+
   @objc public func authenticatedUsername() -> String? {
     AuthenticationService.currentUsername
   }
@@ -307,7 +362,7 @@ extension HomeViewModel {
       DispatchQueue.main.async {
         self?.isLoadingApp = false
         if !success, let error {
-          EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
+          EXKernel.sharedInstance().browserController?.hideAppLoadingOverlay()
           self?.showError(error)
         }
       }
@@ -320,7 +375,7 @@ extension HomeViewModel {
       DispatchQueue.main.async {
         self?.isLoadingApp = false
         if !success, let error {
-          EXKernel.sharedInstance().browserController.hideAppLoadingOverlay()
+          EXKernel.sharedInstance().browserController?.hideAppLoadingOverlay()
           self?.showError(error)
         }
       }

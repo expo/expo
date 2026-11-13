@@ -1,8 +1,11 @@
 package expo.modules.medialibrary.next.permissions
 
 import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Process
 import androidx.annotation.RequiresApi
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
@@ -11,6 +14,7 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.providers.AppContextProvider
 import expo.modules.medialibrary.ERROR_USER_DID_NOT_GRANT_WRITE_PERMISSIONS_MESSAGE
 import expo.modules.medialibrary.PermissionsException
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetOwnerPackageName
 import expo.modules.medialibrary.next.permissions.contracts.DeleteContract
 import expo.modules.medialibrary.next.permissions.contracts.DeleteContractInput
 import expo.modules.medialibrary.next.permissions.contracts.WriteContract
@@ -53,9 +57,18 @@ class MediaStorePermissionsDelegate(val appContext: AppContext) {
     writeLauncher = registerForActivityResult(WriteContract(appContextProvider))
   }
 
-  private fun hasWritePermissionForUri(uri: Uri): Boolean =
-    runCatching {
-      context.contentResolver.openOutputStream(uri, "rw")?.close()
-      return true
-    }.getOrDefault(false)
+  // An app can write to an asset it owns, or to one the user granted it write access to.
+  // `checkUriPermission` only reports the explicit grants, so the ownership has to be
+  // checked separately.
+  @RequiresApi(Build.VERSION_CODES.R)
+  private suspend fun hasWritePermissionForUri(uri: Uri): Boolean {
+    val isOwnedByApp = context.contentResolver.queryAssetOwnerPackageName(uri) == context.packageName
+    val hasGrantedUriPermissions = context.checkUriPermission(
+      uri,
+      Process.myPid(),
+      Process.myUid(),
+      Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+    ) == PackageManager.PERMISSION_GRANTED
+    return isOwnedByApp || hasGrantedUriPermissions
+  }
 }

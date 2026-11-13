@@ -1,9 +1,9 @@
 import fs from 'fs-extra';
-import { glob } from 'glob';
 import assert from 'node:assert/strict';
 import os from 'node:os';
 import { describe, it } from 'node:test';
 import path from 'path';
+import { glob } from 'tinyglobby';
 
 import { getExpoRepositoryRootDir } from '../Directories';
 import type { SPMConfig } from './SPMConfig.types';
@@ -56,8 +56,13 @@ describe('expo-camera source selection', () => {
       !(target.exclude ?? []).includes('Tests/**'),
       'this regression test is pointless once the config excludes tests itself'
     );
+    assert.ok(
+      target.path,
+      'expo-camera builds from spm.config.json, so its Swift target must declare a path'
+    );
 
     const files = await glob(target.pattern ?? '**/*.swift', {
+      expandDirectories: false,
       cwd: path.join(packagePath, target.path),
       ignore: getTargetExcludePatterns(target),
     });
@@ -67,5 +72,29 @@ describe('expo-camera source selection', () => {
       []
     );
     assert.ok(files.length > 0, 'expo-camera must still contribute Swift sources');
+  });
+});
+
+describe('expo-sqlite source selection', () => {
+  it('keeps the Benchmarks test spec out of the framework sources', async () => {
+    const packagePath = path.join(getExpoRepositoryRootDir(), 'packages/expo-sqlite');
+    const config: SPMConfig = await fs.readJson(path.join(packagePath, 'spm.config.json'));
+    const product = config.products.find(({ name }) => name === 'ExpoSQLite');
+    assert.ok(product, 'expo-sqlite must declare an ExpoSQLite product');
+    const target = product.targets.find((candidate) => candidate.type === 'swift');
+    assert.ok(target, 'expo-sqlite must declare a Swift target');
+    assert.ok(target.path, 'expo-sqlite Swift target must declare a path');
+
+    const files = await glob(target.pattern ?? '**/*.swift', {
+      expandDirectories: false,
+      cwd: path.join(packagePath, target.path),
+      ignore: getTargetExcludePatterns(target),
+    });
+
+    assert.deepEqual(
+      files.filter((file) => file.startsWith('Benchmarks/')),
+      []
+    );
+    assert.ok(files.length > 0, 'expo-sqlite must still contribute Swift sources');
   });
 });

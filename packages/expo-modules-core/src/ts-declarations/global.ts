@@ -14,7 +14,6 @@ export interface ExpoProcessEnv {
   EXPO_DEV_SERVER_ORIGIN?: string;
 
   EXPO_ROUTER_IMPORT_MODE?: string;
-  EXPO_ROUTER_ABS_APP_ROOT?: string;
   EXPO_ROUTER_APP_ROOT?: string;
 
   /** Maps to the `experiments.baseUrl` property in the project Expo config. This is injected by `babel-preset-expo` and supports automatic cache invalidation. */
@@ -77,6 +76,11 @@ declare namespace ExpoGlobal {
    * @platform ios
    */
   export const documentsDir: undefined | string;
+
+  /**
+   * Whether the app is running on a Meta Quest device. Always `false` on iOS and web.
+   */
+  export const isRunningOnQuest: boolean;
 
   // Utils
 

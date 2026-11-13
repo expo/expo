@@ -11,29 +11,16 @@
         "Hermes",
         "expo-modules-core/ExpoModulesCore"
       ],
+      "swiftLanguageVersions": ["5"],
       "targets": [
-        {
-          "type": "objc",
-          "name": "ExpoSensors_ios_objc",
-          "moduleName": "ExpoSensors",
-          "path": "ios",
-          "pattern": "**/*.m",
-          "headerPattern": "**/*.h",
-          "dependencies": ["ReactNativeDependencies", "React", "Hermes"],
-          "linkedFrameworks": ["Foundation", "UIKit"],
-          "includeDirectories": ["."]
-        },
         {
           "type": "swift",
           "name": "ExpoSensors",
-          "path": "ios",
-          "pattern": "**/*.swift",
           "dependencies": [
             "ReactNativeDependencies",
             "React",
             "Hermes",
-            "expo-modules-core/ExpoModulesCore",
-            "ExpoSensors_ios_objc"
+            "expo-modules-core/ExpoModulesCore"
           ],
           "linkedFrameworks": ["Foundation", "UIKit"]
         }

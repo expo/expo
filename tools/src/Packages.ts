@@ -1,6 +1,7 @@
 import fs from 'fs-extra';
-import { glob } from 'glob';
+import { globSync as nativeGlobSync } from 'node:fs';
 import path from 'path';
+import { glob, globSync } from 'tinyglobby';
 
 import { Podspec, readPodspecAsync } from './CocoaPods';
 import * as Directories from './Directories';
@@ -175,14 +176,13 @@ export class Package {
     }
 
     // Look for podspecs in the package root and both iOS-style subdirectories.
-    const [podspecPath] = glob.sync(
-      `{*,${this.iosSubdirectory}/*,${this.appleSubdirectory}/*}.podspec`,
-      {
-        cwd: this.path,
-      }
-    );
-
-    return podspecPath || null;
+    for (const directory of ['.', this.iosSubdirectory, this.appleSubdirectory]) {
+      const [podspecPath] = nativeGlobSync(`${directory}/*.podspec`, { cwd: this.path })
+        .sort()
+        .reverse();
+      if (podspecPath) return podspecPath;
+    }
+    return null;
   }
 
   /**
@@ -413,10 +413,12 @@ export class Package {
    */
   async hasNativeTestsAsync(platform: Platform): Promise<boolean> {
     if (platform === 'android') {
-      return (
-        fs.pathExists(path.join(this.path, this.androidSubdirectory, 'src/test')) ||
-        fs.pathExists(path.join(this.path, this.androidSubdirectory, 'src/androidTest'))
+      const results = await Promise.all(
+        ['src/test', 'src/testDebug', 'src/androidTest'].map((dir) =>
+          fs.pathExists(path.join(this.path, this.androidSubdirectory, dir))
+        )
       );
+      return results.some(Boolean);
     }
     if (platform === 'ios') {
       return (
@@ -475,10 +477,12 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
     const paths = await glob(PACKAGE_JSON_GLOB, {
       cwd: PACKAGES_DIR,
       ignore: PACKAGE_GLOB_IGNORE,
+      followSymbolicLinks: false,
     });
     const templatesPaths = await glob(PACKAGE_JSON_GLOB, {
       cwd: TEMPLATES_DIR,
       ignore: TEMPLATE_GLOB_IGNORE,
+      followSymbolicLinks: false,
     });
     cachedPackages = createPackagesFromPaths(PACKAGES_DIR, paths).concat(
       createPackagesFromPaths(TEMPLATES_DIR, templatesPaths)
@@ -488,13 +492,15 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
 }
 
 function getListOfPackagesSync(): Package[] {
-  const paths = glob.sync(PACKAGE_JSON_GLOB, {
+  const paths = globSync(PACKAGE_JSON_GLOB, {
     cwd: PACKAGES_DIR,
     ignore: PACKAGE_GLOB_IGNORE,
+    followSymbolicLinks: false,
   });
-  const templatesPaths = glob.sync(PACKAGE_JSON_GLOB, {
+  const templatesPaths = globSync(PACKAGE_JSON_GLOB, {
     cwd: TEMPLATES_DIR,
     ignore: TEMPLATE_GLOB_IGNORE,
+    followSymbolicLinks: false,
   });
   return createPackagesFromPaths(PACKAGES_DIR, paths).concat(
     createPackagesFromPaths(TEMPLATES_DIR, templatesPaths)

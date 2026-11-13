@@ -6,11 +6,19 @@ interface Window {
 
   __sidebarScroll: number;
   sidebarState: Record<string, boolean>;
+
+  cometlyDomainOverrides?: string[];
+  cometToken?: () => string;
+}
+
+interface ImportMeta {
+  webpackHot?: {
+    decline: (dependency: string) => void;
+  };
 }
 
 declare module NodeJS {
   interface Global {
-    tippy: any;
     __NEXT_DATA__: any;
   }
 }

@@ -26,6 +26,10 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
 
   let forwarder = SceneEventForwarder()
 
+  open var initialProperties: [AnyHashable: Any]? {
+    return nil
+  }
+
   open func scene(
     _ scene: UIScene,
     willConnectTo session: UISceneSession,
@@ -62,6 +66,7 @@ open class ExpoAppSceneDelegate: UIResponder, UIWindowSceneDelegate {
     factory.startReactNative(
       withModuleName: provider.reactNativeFactoryModuleName,
       in: window,
+      initialProperties: initialProperties,
       launchOptions: Self.launchOptions(
         url: connectionOptions.urlContexts.first?.url,
         userActivity: browsingWebActivity

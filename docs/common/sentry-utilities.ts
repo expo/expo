@@ -15,6 +15,8 @@ const ERRORS_TO_DISCARD = new Set([
   "undefined is not an object (evaluating 'window.__pad.performLoop')",
   // This error appears in Firefox related to local storage and flooded our Sentry bandwidth
   'SecurityError: The operation is insecure.',
+  // The Cometly pixel beacon is blocked by some ad blockers and privacy extensions
+  'NetworkError when attempting to fetch resource. (comet-serve.com)',
 ]);
 
 const REPORTED_ERRORS_KEY = 'sentry:reportedErrors';

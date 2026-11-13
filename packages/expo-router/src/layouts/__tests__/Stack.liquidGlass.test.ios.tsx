@@ -22,8 +22,8 @@ const { ScreenStackItem } = jest.requireMock(
 ) as typeof import('react-native-screens');
 const MockedScreenStackItem = ScreenStackItem as jest.MockedFunction<typeof ScreenStackItem>;
 
-it('applies Liquid Glass defaults to form sheets without overriding explicit options', () => {
-  renderRouter({
+it('applies Liquid Glass defaults to form sheets without overriding explicit options', async () => {
+  await renderRouter({
     _layout: () => (
       <Stack>
         <Stack.Screen

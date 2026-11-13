@@ -5,6 +5,9 @@ import { warn } from '../../log';
 import { installExitHooks, ensureProcessExitsAfterDelay } from '../exit';
 
 jest.mock('../../log');
+// `jest.setup.ts` mocks `child_process`, which also covers `node:child_process` on Jest 30. These
+// tests spawn a real child process to inspect the live process handles, so use the actual module.
+jest.unmock('child_process');
 
 it('attaches and removes process listeners', () => {
   jest.spyOn(process, 'on');

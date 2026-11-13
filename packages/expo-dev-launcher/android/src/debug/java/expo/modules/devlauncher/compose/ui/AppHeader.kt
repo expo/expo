@@ -100,7 +100,7 @@ fun AppHeader(
           modifier = Modifier.size(44.dp),
           contentAlignment = Alignment.Center
         ) {
-          val profilePhoto = currentAccount?.ownerUserActor?.profilePhoto
+          val profilePhoto = currentAccount?.ownerUserActor?.primaryAccountProfileImageUrl
 
           if (profilePhoto != null) {
             AsyncImage(

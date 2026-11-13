@@ -2,6 +2,7 @@ package expo.modules.updates.loader
 
 import androidx.annotation.VisibleForTesting
 import com.facebook.react.modules.network.OkHttpClientProvider
+import expo.modules.core.logging.localizedMessageWithCauseLocalizedMessage
 import expo.modules.jsonutils.require
 import expo.modules.structuredheaders.Dictionary
 import expo.modules.structuredheaders.OuterList
@@ -16,6 +17,8 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.NoDatabaseLauncher
 import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.LoggedException
+import expo.modules.updates.logging.LoadFailures
 import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.ResponseHeaderData
@@ -24,6 +27,7 @@ import expo.modules.updates.manifest.ResponsePartInfo
 import expo.modules.updates.manifest.UpdateFactory
 import expo.modules.updates.selectionpolicy.SelectionPolicies
 import expo.modules.updates.utils.AndroidResourceAssetUtils
+import expo.modules.updatesinterface.UpdatesLogMessage
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Cache
 import okhttp3.Headers
@@ -99,6 +103,8 @@ class FileDownloader(
 
   data class FileDownloadResult(val file: File, val hash: ByteArray)
   data class AssetDownloadResult(val assetEntity: AssetEntity, val isNew: Boolean)
+  class AssetHttpResponseException(val statusCode: Int, body: String) :
+    IOException("HTTP response error $statusCode: $body")
 
   @VisibleForTesting
   internal suspend fun downloadAssetAndVerifyHashAndWriteToPath(
@@ -118,10 +124,10 @@ class FileDownloader(
       val response = downloadData(request, progressListener)
       val hash = response.use { resp ->
         if (!resp.isSuccessful) {
-          val message = "Asset download request not successful"
-          val cause = IOException(resp.body?.string() ?: "Unknown error")
-          logger.error(message, cause, UpdatesErrorCode.AssetsFailedToLoad)
-          throw IOException(message, cause)
+          throw IOException(
+            "Asset download request not successful",
+            AssetHttpResponseException(resp.code, truncateForErrorMessage(resp.body?.string() ?: "Unknown error"))
+          )
         }
 
         val responseBody = resp.body
@@ -143,10 +149,10 @@ class FileDownloader(
 
             if (!shouldAttemptPatch) {
               logger.warn(
-                "Received patch response even though patch application is disabled; retrying with full asset download",
-                UpdatesErrorCode.AssetsFailedToLoad,
-                requestedUpdateId,
-                asset.key
+                UpdatesLogMessage.RemotePatchFallback,
+                values = mapOf("assetKey" to UpdatesLogger.assetKeyValue(asset.key), "reason" to "patchDisabled"),
+                updateId = requestedUpdateId,
+                assetId = asset.key
               )
               return@use fallbackBundleDownload(
                 asset = asset,
@@ -159,10 +165,10 @@ class FileDownloader(
 
             if (!validatePatchResponseMetadata(patchMetadata, launchedUpdate)) {
               logger.warn(
-                "Patch response missing required headers or had mismatched identifiers; retrying with full asset download",
-                UpdatesErrorCode.AssetsFailedToLoad,
-                requestedUpdateId,
-                asset.key
+                UpdatesLogMessage.RemotePatchFallback,
+                values = mapOf("assetKey" to UpdatesLogger.assetKeyValue(asset.key), "reason" to "invalidHeaders"),
+                updateId = requestedUpdateId,
+                assetId = asset.key
               )
               return@use fallbackBundleDownload(
                 asset = asset,
@@ -184,12 +190,12 @@ class FileDownloader(
                 expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash,
                 embeddedAssetExtractor = embeddedAssetExtractor
               )
-            }.getOrElse {
+            }.getOrElse { e ->
               logger.warn(
-                "Patch application failed for asset ${asset.key}; retrying with full asset download",
-                UpdatesErrorCode.AssetsFailedToLoad,
-                requestedUpdateId,
-                asset.key
+                UpdatesLogMessage.RemotePatchFallback,
+                values = mapOf("assetKey" to UpdatesLogger.assetKeyValue(asset.key), "reason" to "applyFailed", "cause" to e.localizedMessageWithCauseLocalizedMessage()),
+                updateId = requestedUpdateId,
+                assetId = asset.key
               )
               fallbackBundleDownload(
                 asset = asset,
@@ -204,9 +210,7 @@ class FileDownloader(
       }
       return FileDownloadResult(destination, hash)
     } catch (e: IOException) {
-      val message = "Failed to download asset from URL ${request.url}"
-      logger.error(message, e, UpdatesErrorCode.AssetsFailedToLoad)
-      throw IOException(message, e)
+      throw IOException("Failed to download asset from URL ${request.url}", e)
     }
   }
 
@@ -231,7 +235,10 @@ class FileDownloader(
 
       fallbackBody.use { body ->
         if (!fallbackResp.isSuccessful) {
-          throw IOException(body.string())
+          throw IOException(
+            "Fallback asset download request not successful",
+            AssetHttpResponseException(fallbackResp.code, truncateForErrorMessage(body.string()))
+          )
         }
 
         body.byteStream().use { inputStream ->
@@ -389,12 +396,6 @@ class FileDownloader(
         null
       }
       if (actualBaseHash != null && expectedBaseHash != actualBaseHash) {
-        logger.warn(
-          "Asset hash mismatch for update $currentUpdateId; expected=$expectedBaseHash actual=$actualBaseHash",
-          UpdatesErrorCode.AssetsFailedToLoad,
-          currentUpdateId.toString(),
-          asset.key
-        )
         if (isEmbeddedLaunchAsset) {
           baseFile.delete()
         }
@@ -476,13 +477,7 @@ class FileDownloader(
         return result
       }
     } catch (e: Exception) {
-      val ioException = e as? IOException ?: IOException("Failed to apply patch", e)
-      logger.error(
-        "Failed to apply patch for asset ${asset.key}",
-        ioException,
-        UpdatesErrorCode.AssetsFailedToLoad
-      )
-      throw ioException
+      throw e as? IOException ?: IOException("Failed to apply patch", e)
     } finally {
       if (patchFile.exists()) {
         patchFile.delete()
@@ -513,10 +508,7 @@ class FileDownloader(
         )
       }
 
-      val message = "Invalid update response"
-      val cause = IOException("Empty body")
-      logger.error(message, cause, UpdatesErrorCode.UpdateFailedToLoad)
-      throw IOException(message, cause)
+      throw IOException("Invalid update response", IOException("Empty body"))
     }
 
     val isMultipart = responseBody.contentType()?.type == "multipart"
@@ -578,26 +570,20 @@ class FileDownloader(
         }
       } catch (e: Exception) {
         // okhttp multipart reader doesn't support empty multipart bodies, but our spec does
-        val message = "Error while reading multipart remote update response"
-        logger.error(message, e, UpdatesErrorCode.UpdateFailedToLoad)
-        throw IOException(message, e)
+        throw IOException("Error while reading multipart remote update response", e)
       }
     }
 
     val extensions = try {
       extensionsBody?.let { JSONObject(it) }
     } catch (e: Exception) {
-      val message = "Failed to parse multipart remote update extensions part"
-      logger.error(message, e, UpdatesErrorCode.UpdateFailedToLoad)
-      throw IOException(message, e)
+      throw IOException("Failed to parse multipart remote update extensions part", e)
     }
 
     // in v0 compatibility mode require a manifest
     if (configuration.enableExpoUpdatesProtocolV0CompatibilityMode && manifestPartBodyAndHeaders == null) {
-      val message = "Invalid update response"
       val cause = IOException("Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the response being for a different protocol version.")
-      logger.error(message, cause, UpdatesErrorCode.UpdateFailedToLoad)
-      throw IOException(message, cause)
+      throw IOException("Invalid update response", cause)
     }
 
     val manifestResponseInfo = manifestPartBodyAndHeaders?.let {
@@ -651,32 +637,34 @@ class FileDownloader(
     //    has the correct info for code signing. If the code signing certificate doesn't specify a particular
     //    project, it is assumed to be valid for all projects
     // 3. consider the directive verified if both of these pass
-    try {
-      configuration.codeSigningConfiguration?.let { codeSigningConfiguration ->
-        val signatureValidationResult = codeSigningConfiguration.validateSignature(
+    configuration.codeSigningConfiguration?.let { codeSigningConfiguration ->
+      val signatureValidationResult = try {
+        codeSigningConfiguration.validateSignature(
           directiveResponsePartInfo.responsePartHeaderData.signature,
           body.toByteArray(),
-          certificateChainFromManifestResponse
+          certificateChainFromManifestResponse,
+          logger
         )
-        if (signatureValidationResult.validationResult == ValidationResult.INVALID) {
-          throw IOException("Incorrect signature")
-        }
+      } catch (e: Exception) {
+        throw codeSigningFailure("directive", e)
+      }
+      if (signatureValidationResult.validationResult == ValidationResult.INVALID) {
+        throw codeSigningFailure("directive", IOException("Incorrect signature"))
+      }
 
-        if (signatureValidationResult.validationResult != ValidationResult.SKIPPED) {
-          val directiveForProjectInformation = UpdateDirective.fromJSONString(body)
-          signatureValidationResult.expoProjectInformation?.let { expoProjectInformation ->
-            if (expoProjectInformation.projectId != directiveForProjectInformation.signingInfo?.easProjectId ||
-              expoProjectInformation.scopeKey != directiveForProjectInformation.signingInfo.scopeKey
-            ) {
-              throw CertificateException("Code signing certificate project ID or scope key does not match project ID or scope key in response part")
-            }
+      if (signatureValidationResult.validationResult != ValidationResult.SKIPPED) {
+        val directiveForProjectInformation = UpdateDirective.fromJSONString(body)
+        signatureValidationResult.expoProjectInformation?.let { expoProjectInformation ->
+          if (expoProjectInformation.projectId != directiveForProjectInformation.signingInfo?.easProjectId ||
+            expoProjectInformation.scopeKey != directiveForProjectInformation.signingInfo.scopeKey
+          ) {
+            throw codeSigningFailure(
+              "directive",
+              CertificateException("Code signing certificate project ID or scope key does not match project ID or scope key in response part")
+            )
           }
         }
       }
-    } catch (e: Exception) {
-      val message = "Code signing verification failed for directive"
-      logger.error(message, e, UpdatesErrorCode.UpdateCodeSigningError)
-      throw IOException(message, e)
     }
 
     return UpdateResponsePart.DirectiveUpdateResponsePart(UpdateDirective.fromJSONString(body))
@@ -699,6 +687,30 @@ class FileDownloader(
     )
   }
 
+  /**
+   * Summarizes an unsuccessful response for use as an error message. The status code is included
+   * because the body alone is often an opaque HTML page, and the body is truncated because it ends
+   * up in the error that `checkForUpdateAsync` and `fetchUpdateAsync` reject with.
+   */
+  private fun describeUnsuccessfulResponse(response: Response): String {
+    val body = try {
+      response.body?.string()
+    } catch (e: IOException) {
+      logger.info("Could not read body of unsuccessful remote update response: ${e.localizedMessageWithCauseLocalizedMessage()}", UpdatesErrorCode.UpdateFailedToLoad)
+      null
+    }
+    val summary = body?.takeIf { it.isNotBlank() }?.let { truncateForErrorMessage(it) } ?: "Unknown error"
+    return "HTTP ${response.code}: $summary"
+  }
+
+  private fun truncateForErrorMessage(body: String): String {
+    return if (body.length <= MAX_ERROR_BODY_LENGTH) {
+      body
+    } else {
+      "${body.take(MAX_ERROR_BODY_LENGTH)}… (truncated, ${body.length} characters total)"
+    }
+  }
+
   suspend fun downloadRemoteUpdate(
     extraHeaders: JSONObject?
   ): UpdateResponse {
@@ -708,17 +720,12 @@ class FileDownloader(
       )
 
       if (!response.isSuccessful) {
-        val message = "Remote update request not successful"
-        val underlyingError = IOException(response.body?.string() ?: "Unknown error")
-        logger.error(message, underlyingError, UpdatesErrorCode.UpdateFailedToLoad)
-        throw IOException(message, underlyingError)
+        throw IOException("Remote update request not successful", IOException(describeUnsuccessfulResponse(response)))
       }
 
       return parseRemoteUpdateResponse(response)
     } catch (e: Exception) {
-      val message = "Failed to download remote update"
-      logger.error(message, e, UpdatesErrorCode.UpdateFailedToLoad)
-      throw IOException(message, e)
+      throw IOException("Failed to download remote update", e)
     }
   }
 
@@ -732,61 +739,108 @@ class FileDownloader(
     embeddedAssetExtractor: EmbeddedAssetExtractor? = null
   ): AssetDownloadResult {
     if (asset.url == null) {
-      val message = "Failed to download asset ${asset.key}"
-      val error = Exception("Asset missing URL")
-      logger.error(message, error, UpdatesErrorCode.AssetsFailedToLoad)
-      throw IOException(message, error)
+      throw logAssetDownloadFailure(asset, requestedUpdate, Exception("Asset missing URL"))
     }
 
     val filename = UpdatesUtils.createFilenameForAsset(asset)
     if (!UpdatesUtils.isSafeFilename(filename)) {
-      val message = "Failed to download asset ${asset.key}"
-      val error = IOException("Asset filename \"$filename\" would resolve outside the updates directory")
-      logger.error(message, error, UpdatesErrorCode.AssetsFailedToLoad)
-      throw IOException(message, error)
+      throw logAssetDownloadFailure(
+        asset,
+        requestedUpdate,
+        IOException("Asset filename \"$filename\" would resolve outside the updates directory")
+      )
     }
     val path = File(destinationDirectory, filename)
 
     if (path.exists()) {
-      asset.relativePath = filename
-      return AssetDownloadResult(asset, false)
-    } else {
-      val canApplyPatch =
-        asset.isLaunchAsset &&
-          launchedUpdate != null &&
-          requestedUpdate != null &&
-          launchedUpdate.id != requestedUpdate.id
+      if (isExistingAssetFileValid(path, asset, requestedUpdate)) {
+        asset.relativePath = filename
+        return AssetDownloadResult(asset, false)
+      }
+      // the file on disk is not the asset we expect (for example, it was truncated when a previous
+      // process was killed); throw it away and download again
+      path.delete()
+    }
 
-      try {
-        val downloadResult = downloadAssetAndVerifyHashAndWriteToPath(
+    val canApplyPatch =
+      asset.isLaunchAsset &&
+        launchedUpdate != null &&
+        requestedUpdate != null &&
+        launchedUpdate.id != requestedUpdate.id
+
+    try {
+      val downloadResult = downloadAssetAndVerifyHashAndWriteToPath(
+        asset,
+        extraHeaders,
+        createRequestForAsset(
           asset,
           extraHeaders,
-          createRequestForAsset(
-            asset,
-            extraHeaders,
-            configuration,
-            allowPatch = canApplyPatch
-          ),
-          asset.expectedHash,
-          path,
-          destinationDirectory,
-          assetLoadProgressListener?.let { listener -> { listener.invoke(it) } },
-          allowPatch = canApplyPatch,
-          launchedUpdate = launchedUpdate,
-          requestedUpdate = requestedUpdate,
-          embeddedAssetExtractor = embeddedAssetExtractor
-        )
+          configuration,
+          allowPatch = canApplyPatch
+        ),
+        asset.expectedHash,
+        path,
+        destinationDirectory,
+        assetLoadProgressListener?.let { listener -> { listener.invoke(it) } },
+        allowPatch = canApplyPatch,
+        launchedUpdate = launchedUpdate,
+        requestedUpdate = requestedUpdate,
+        embeddedAssetExtractor = embeddedAssetExtractor
+      )
 
-        asset.downloadTime = Date()
-        asset.relativePath = filename
-        asset.hash = downloadResult.hash
-        return AssetDownloadResult(asset, true)
-      } catch (e: Exception) {
-        val message = "Failed to download asset ${asset.key}"
-        logger.error(message, e, UpdatesErrorCode.AssetsFailedToLoad)
-        throw IOException(message, e)
-      }
+      asset.downloadTime = Date()
+      asset.relativePath = filename
+      asset.hash = downloadResult.hash
+      return AssetDownloadResult(asset, true)
+    } catch (e: Exception) {
+      throw logAssetDownloadFailure(asset, requestedUpdate, e)
     }
+  }
+
+  /**
+   * An asset file that already exists on disk is only reused when its contents match the hash the
+   * manifest declares for the asset. Trusting the file because it exists is unsafe: a process
+   * killed while the file was being written leaves a truncated file behind, and the launch asset
+   * then fails to load with a Hermes `Buffer is smaller than the size stated in the file header`
+   * error. When the manifest has no hash for the asset there is nothing to verify against, so the
+   * file is reused as before.
+   */
+  private fun isExistingAssetFileValid(path: File, asset: AssetEntity, requestedUpdate: UpdateEntity?): Boolean {
+    val expectedHash = asset.expectedHash ?: return true
+    val actualHash = try {
+      UpdatesUtils.toBase64Url(UpdatesUtils.sha256(path))
+    } catch (e: Exception) {
+      logger.warn(
+        UpdatesLogMessage.LocalAssetFileInvalid,
+        e,
+        mapOf("assetKey" to UpdatesLogger.assetKeyValue(asset.key), "reason" to "hashFailed"),
+        requestedUpdate?.loggingId,
+        asset.key
+      )
+      return false
+    }
+    if (actualHash == expectedHash) {
+      return true
+    }
+    logger.warn(
+      UpdatesLogMessage.LocalAssetFileInvalid,
+      values = mapOf("assetKey" to UpdatesLogger.assetKeyValue(asset.key), "reason" to "hashMismatch", "size" to path.length().toString()),
+      updateId = requestedUpdate?.loggingId,
+      assetId = asset.key
+    )
+    return false
+  }
+
+  private fun logAssetDownloadFailure(asset: AssetEntity, requestedUpdate: UpdateEntity?, cause: Exception): IOException {
+    val error = IOException("Failed to download asset ${asset.key}", cause)
+    logger.warn(
+      LoadFailures.message(cause, UpdatesLogMessage.RemoteAssetDownloadFailed, UpdatesLogMessage.RemoteAssetDownloadUnreachable),
+      cause,
+      mapOf("assetKey" to UpdatesLogger.assetKeyValue(asset.key)),
+      requestedUpdate?.loggingId,
+      asset.key
+    )
+    return error
   }
 
   private suspend fun downloadData(request: Request, progressListener: FileDownloadProgressListener? = null): Response =
@@ -880,40 +934,42 @@ class FileDownloader(
     //    has the correct info for code signing. If the code signing certificate doesn't specify a particular
     //    project, it is assumed to be valid for all projects
     // 3. mark the manifest as verified if both of these pass
-    try {
-      configuration.codeSigningConfiguration?.let { codeSigningConfiguration ->
-        val signatureValidationResult = codeSigningConfiguration.validateSignature(
+    configuration.codeSigningConfiguration?.let { codeSigningConfiguration ->
+      val signatureValidationResult = try {
+        codeSigningConfiguration.validateSignature(
           responsePartHeaderData.signature,
           bodyString.toByteArray(),
-          certificateChainFromManifestResponse
+          certificateChainFromManifestResponse,
+          logger
         )
-        if (signatureValidationResult.validationResult == ValidationResult.INVALID) {
-          throw IOException("Incorrect signature")
-        }
-
-        if (signatureValidationResult.validationResult != ValidationResult.SKIPPED) {
-          val manifestForProjectInformation = UpdateFactory.getUpdate(
-            preManifest,
-            responseHeaderData,
-            extensions,
-            configuration
-          ).manifest
-          signatureValidationResult.expoProjectInformation?.let { expoProjectInformation ->
-            if (expoProjectInformation.projectId != manifestForProjectInformation.getEASProjectID() ||
-              expoProjectInformation.scopeKey != manifestForProjectInformation.getScopeKey()
-            ) {
-              throw CertificateException("Code signing certificate project ID or scope key does not match project ID or scope key in response")
-            }
-          }
-
-          logger.info("Manifest code signing signature verified successfully")
-          preManifest.put("isVerified", true)
-        }
+      } catch (e: Exception) {
+        throw codeSigningFailure("manifest", e)
       }
-    } catch (e: Exception) {
-      val message = "Code signing verification failed for manifest"
-      logger.error(message, e, UpdatesErrorCode.UpdateCodeSigningError)
-      throw IOException(message, e)
+      if (signatureValidationResult.validationResult == ValidationResult.INVALID) {
+        throw codeSigningFailure("manifest", IOException("Incorrect signature"))
+      }
+
+      if (signatureValidationResult.validationResult != ValidationResult.SKIPPED) {
+        val manifestForProjectInformation = UpdateFactory.getUpdate(
+          preManifest,
+          responseHeaderData,
+          extensions,
+          configuration
+        ).manifest
+        signatureValidationResult.expoProjectInformation?.let { expoProjectInformation ->
+          if (expoProjectInformation.projectId != manifestForProjectInformation.getEASProjectID() ||
+            expoProjectInformation.scopeKey != manifestForProjectInformation.getScopeKey()
+          ) {
+            throw codeSigningFailure(
+              "manifest",
+              CertificateException("Code signing certificate project ID or scope key does not match project ID or scope key in response")
+            )
+          }
+        }
+
+        logger.info("Manifest code signing signature verified successfully")
+        preManifest.put("isVerified", true)
+      }
     }
 
     val update = UpdateFactory.getUpdate(preManifest, responseHeaderData, extensions, configuration)
@@ -922,6 +978,16 @@ class FileDownloader(
     } else {
       return UpdateResponsePart.ManifestUpdateResponsePart(update)
     }
+  }
+
+  /**
+   * Logs a code signing failure and returns the exception to throw, which [UpdatesLogger.errorForLoadFailure]
+   * does not log again. Manifest and directive parse errors are not code signing failures and must not
+   * come here.
+   */
+  private fun codeSigningFailure(kind: String, cause: Exception): LoggedException {
+    logger.error(UpdatesLogMessage.SystemCodeSigningVerificationFailed, cause, mapOf("kind" to kind))
+    return LoggedException("Code signing verification failed for $kind", cause)
   }
 
   private fun Request.Builder.addHeadersFromJSONObject(headers: JSONObject?): Request.Builder {
@@ -983,16 +1049,19 @@ class FileDownloader(
   }
 
   companion object {
+    private const val MAX_ERROR_BODY_LENGTH = 512
+
     fun getExtraHeadersForRemoteUpdateRequest(
       database: UpdatesDatabase,
       configuration: UpdatesConfiguration,
       launchedUpdate: UpdateEntity?,
-      embeddedUpdate: UpdateEntity?
+      embeddedUpdate: UpdateEntity?,
+      logger: UpdatesLogger
     ): JSONObject {
       val extraHeaders =
-        ManifestMetadata.getServerDefinedHeaders(database, configuration) ?: JSONObject()
+        ManifestMetadata.getServerDefinedHeaders(database, configuration, logger) ?: JSONObject()
 
-      ManifestMetadata.getExtraParams(database, configuration)?.let {
+      ManifestMetadata.getExtraParams(database, configuration, logger)?.let {
         extraHeaders.put("Expo-Extra-Params", Dictionary.valueOf(it.mapValues { elem -> StringItem.valueOf(elem.value) }).serialize())
       }
 
@@ -1068,7 +1137,11 @@ private class FileDownloadProgressResponseBody(
 
       override fun read(sink: Buffer, byteCount: Long): Long {
         val bytesRead = super.read(sink, byteCount)
-        totalBytesRead += if (bytesRead != -1L) bytesRead else 0
+        totalBytesRead += if (bytesRead != -1L) {
+          bytesRead
+        } else {
+          0
+        }
         progressListener.update(totalBytesRead, responseBody.contentLength())
         return bytesRead
       }

@@ -3,42 +3,42 @@ import { render } from '@testing-library/react-native';
 
 import { Table, THead, TBody, TFoot, TR, TH, TD, Caption } from '../Table';
 
-it('renders Table', () => {
-  const { toJSON } = render(<Table />);
+it('renders Table', async () => {
+  const { toJSON } = await render(<Table />);
   expect(toJSON()).toMatchSnapshot();
 });
 
-it('renders THead', () => {
-  const { toJSON } = render(<THead />);
+it('renders THead', async () => {
+  const { toJSON } = await render(<THead />);
   expect(toJSON()).toMatchSnapshot();
 });
 
-it('renders TBody', () => {
-  const { toJSON } = render(<TBody />);
+it('renders TBody', async () => {
+  const { toJSON } = await render(<TBody />);
   expect(toJSON()).toMatchSnapshot();
 });
 
-it('renders TFoot', () => {
-  const { toJSON } = render(<TFoot />);
+it('renders TFoot', async () => {
+  const { toJSON } = await render(<TFoot />);
   expect(toJSON()).toMatchSnapshot();
 });
 
-it('renders TH', () => {
-  const { toJSON } = render(<TH>Header</TH>);
+it('renders TH', async () => {
+  const { toJSON } = await render(<TH>Header</TH>);
   expect(toJSON()).toMatchSnapshot();
 });
 
-it('renders TR', () => {
-  const { toJSON } = render(<TR />);
+it('renders TR', async () => {
+  const { toJSON } = await render(<TR />);
   expect(toJSON()).toMatchSnapshot();
 });
 
-it('renders TD', () => {
-  const { toJSON } = render(<TD>Column</TD>);
+it('renders TD', async () => {
+  const { toJSON } = await render(<TD>Column</TD>);
   expect(toJSON()).toMatchSnapshot();
 });
 
-it('renders Caption', () => {
-  const { toJSON } = render(<Caption>Caption</Caption>);
+it('renders Caption', async () => {
+  const { toJSON } = await render(<Caption>Caption</Caption>);
   expect(toJSON()).toMatchSnapshot();
 });

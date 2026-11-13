@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
-import minimatch from 'minimatch';
 import path from 'path';
+import picomatch from 'picomatch';
 
 import { printDiff } from './Diff';
 import {
@@ -67,7 +67,10 @@ async function applyTransformsOnFileContentAsync(
 function getFilteredContentTransforms(transforms: FileTransform[], filePath: string) {
   return transforms.filter(
     ({ paths }) =>
-      !paths || arrayize(paths).some((pattern) => minimatch(filePath, pattern, { matchBase: true }))
+      !paths ||
+      arrayize(paths).some((pattern) =>
+        picomatch.isMatch(filePath, pattern, { basename: !pattern.includes('/') })
+      )
   );
 }
 

@@ -13,6 +13,18 @@ type HeadProps = PropsWithChildren<{
 
 const BASE_OG_URL = 'https://og.expo.dev/?theme=docs';
 
+export function getOGImageURL({
+  title,
+  description,
+  locale = 'en',
+}: Pick<HeadProps, 'title' | 'description' | 'locale'>) {
+  const ogImageContent = {
+    title: title ?? SITE_NAMES[locale],
+    description: description ?? BASE_DESCRIPTIONS[locale],
+  };
+  return `${BASE_OG_URL}&title=${encodeURIComponent(ogImageContent.title)}&description=${encodeURIComponent(ogImageContent.description)}`;
+}
+
 const DocumentationHead = ({
   title,
   description,
@@ -24,11 +36,7 @@ const DocumentationHead = ({
   const siteName = SITE_NAMES[locale];
   const baseDescription = BASE_DESCRIPTIONS[locale];
   const resolvedDescription = description === '' ? baseDescription : description;
-  const ogImageContent = {
-    title: title ?? siteName,
-    description: description ?? baseDescription,
-  };
-  const OGImageURL = `${BASE_OG_URL}&title=${encodeURIComponent(ogImageContent.title)}&description=${encodeURIComponent(ogImageContent.description)}`;
+  const OGImageURL = getOGImageURL({ title, description, locale });
 
   return (
     <NextHead>

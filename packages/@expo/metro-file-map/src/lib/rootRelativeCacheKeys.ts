@@ -37,8 +37,6 @@ export default function rootRelativeCacheKeys(buildParameters: BuildParameters):
           return buildParameters[key] ?? null;
         case 'ignorePattern':
           return buildParameters[key]?.toString() ?? null;
-        case 'forceNodeFilesystemAPI':
-          return null;
         default:
           key satisfies never;
           throw new Error('Unrecognised key in build parameters: ' + key);

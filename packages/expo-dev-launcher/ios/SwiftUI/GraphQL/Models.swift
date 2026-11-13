@@ -6,7 +6,6 @@ struct User: Codable {
   let id: String
   let appCount: Int?
   let username: String
-  let profilePhoto: String?
   let accounts: [UserAccount]
   let isExpoAdmin: Bool
 }
@@ -20,7 +19,7 @@ struct UserAccount: Codable {
 struct OwnerUserActor: Codable {
   let username: String
   let fullName: String?
-  let profilePhoto: String?
+  let primaryAccountProfileImageUrl: String?
 }
 
 struct MeUserActorResponse: Codable {
@@ -90,9 +89,17 @@ struct UpdateBranch: Codable {
 struct Update: Codable {
   let id: String
   let message: String
-  let runtimeVersion: String
+  let runtime: UpdateRuntime
   let createdAt: String
   let manifestPermalink: String
+
+  var runtimeVersion: String {
+    runtime.version
+  }
+}
+
+struct UpdateRuntime: Codable {
+  let version: String
 }
 
 struct UpdatesResponse: Codable {

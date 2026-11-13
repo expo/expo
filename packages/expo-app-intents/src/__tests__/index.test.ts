@@ -25,6 +25,18 @@ describe('expo-app-intents on unsupported platforms', () => {
     await expect(AppIntents.reindexEntitiesAsync()).resolves.toBeUndefined();
   });
 
+  it('donates nothing', async () => {
+    await expect(
+      AppIntents.donateIntentAsync('increaseCounter', { amount: 1 })
+    ).resolves.toBeNull();
+  });
+
+  it('deletes no donations', async () => {
+    await expect(AppIntents.deleteDonationsAsync({ intent: 'increaseCounter' })).resolves.toEqual(
+      []
+    );
+  });
+
   it('rejects refreshShortcutsAsync with UnavailabilityError', async () => {
     await expect(AppIntents.refreshShortcutsAsync()).rejects.toThrow(/not available/);
   });

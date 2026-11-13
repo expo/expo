@@ -11,7 +11,7 @@ object SelectionPolicyFactory {
     return SelectionPolicy(
       LauncherSelectionPolicyFilterAware(runtimeVersion, config),
       LoaderSelectionPolicyFilterAware(config),
-      ReaperSelectionPolicyFilterAware()
+      ReaperSelectionPolicyFilterAware(config.maxUpdatesToKeep)
     )
   }
 }

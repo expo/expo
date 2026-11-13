@@ -42,8 +42,8 @@ afterEach(() => {
   warnSpy.mockRestore();
 });
 
-test('renders a drawer navigator and navigates between screens', () => {
-  renderRouter({
+test('renders a drawer navigator and navigates between screens', async () => {
+  await renderRouter({
     _layout: () => (
       <Drawer>
         <Drawer.Screen name="index" />
@@ -57,14 +57,14 @@ test('renders a drawer navigator and navigates between screens', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.queryByTestId('second')).toBeNull();
 
-  act(() => router.navigate('/second'));
+  await act(() => router.navigate('/second'));
 
   expect(screen.getByTestId('second')).toBeVisible();
   expect(screen).toHavePathname('/second');
 });
 
-test('renders only declared drawer items and redirects from unavailable routes', () => {
-  renderRouter({
+test('renders only declared drawer items and redirects from unavailable routes', async () => {
+  await renderRouter({
     _layout: () => (
       <Drawer>
         <Drawer.Screen name="index" />
@@ -80,14 +80,31 @@ test('renders only declared drawer items and redirects from unavailable routes',
   expect(screen.queryByText('hidden')).toBeNull();
   expect(screen.queryByText('undeclared')).toBeNull();
 
-  act(() => router.push('/undeclared'));
+  await act(() => router.push('/undeclared'));
 
   expect(screen).toHavePathname('/');
   expect(screen.getByTestId('index')).toBeVisible();
 });
 
-test('renders no drawer UI when no screens are declared in the layout', () => {
-  renderRouter({
+test('redirects an undeclared root route to the first screen in a group drawer item', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Drawer>
+        <Drawer.Screen name="(feed)" />
+      </Drawer>
+    ),
+    index: () => <View testID="undeclared-root" />,
+    '(feed)/_layout': () => <Stack />,
+    '(feed)/feed': () => <View testID="feed" />,
+  });
+
+  expect(screen.getByTestId('feed')).toBeVisible();
+  expect(screen).toHavePathname('/feed');
+  expect(screen.queryByTestId('undeclared-root')).toBeNull();
+});
+
+test('renders no drawer UI when no screens are declared in the layout', async () => {
+  await renderRouter({
     _layout: () => <Drawer />,
     index: () => <View testID="index" />,
   });
@@ -97,7 +114,7 @@ test('renders no drawer UI when no screens are declared in the layout', () => {
   expect(warnSpy.mock.calls).toMatchSnapshot();
 });
 
-test('renders drawer items in route names order while preserving focus', () => {
+test('renders drawer items in route names order while preserving focus', async () => {
   let reverse!: () => void;
 
   function Layout() {
@@ -110,7 +127,7 @@ test('renders drawer items in route names order while preserving focus', () => {
     return <Drawer>{reversed ? screens.reverse() : screens}</Drawer>;
   }
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: Layout,
       index: () => null,
@@ -119,7 +136,7 @@ test('renders drawer items in route names order while preserving focus', () => {
     { initialUrl: '/second' }
   );
 
-  act(reverse);
+  await act(reverse);
 
   const items = screen.getAllByRole('button', { name: /item/ });
   expect(items[0]!.props.accessibilityState).toEqual({ selected: true });
@@ -150,7 +167,7 @@ test('handles drawer actions and preventable item presses', async () => {
     );
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Drawer>
         <Drawer.Screen name="index" />
@@ -176,7 +193,7 @@ test('preloads screens', async () => {
     return <Button testID="preload" title="Preload" onPress={() => navigation.preload('second')} />;
   }
 
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Drawer>
         <Drawer.Screen name="index" />
@@ -194,8 +211,8 @@ test('preloads screens', async () => {
   expect(screen.queryByText('Second screen', { includeHiddenElements: true })).not.toBeNull();
 });
 
-test('preloads a non-lazy screen after mount', () => {
-  renderRouter({
+test('preloads a non-lazy screen after mount', async () => {
+  await renderRouter({
     _layout: () => (
       <Drawer>
         <Drawer.Screen name="index" />
@@ -210,7 +227,7 @@ test('preloads a non-lazy screen after mount', () => {
 });
 
 test('renders drawer items for unvisited routes and navigates on press', async () => {
-  renderRouter({
+  await renderRouter({
     _layout: () => (
       <Drawer>
         <Drawer.Screen name="index" />
@@ -228,7 +245,7 @@ test('renders drawer items for unvisited routes and navigates on press', async (
 });
 
 test('resets a nested stack when its drawer screen loses focus with popToTopOnBlur', async () => {
-  renderRouter(
+  await renderRouter(
     {
       _layout: () => (
         <Drawer>
@@ -244,11 +261,11 @@ test('resets a nested stack when its drawer screen loses focus with popToTopOnBl
     { initialUrl: '/one' }
   );
 
-  act(() => router.push('/one/details'));
+  await act(() => router.push('/one/details'));
 
   expect(screen.getByTestId('one-details')).toBeVisible();
 
-  act(() => router.navigate('/two'));
+  await act(() => router.navigate('/two'));
 
   expect(screen.getByTestId('two')).toBeVisible();
 
@@ -257,4 +274,27 @@ test('resets a nested stack when its drawer screen loses focus with popToTopOnBl
   // Without `popToTopOnBlur`, the details screen would still be active.
   expect(screen.getByTestId('one-index')).toBeVisible();
   expect(screen.queryByTestId('one-details')).toBeNull();
+});
+
+test('warns when a drawer layout uses an anchor', async () => {
+  await renderRouter(
+    {
+      _layout: {
+        unstable_settings: { anchor: 'a' },
+        default: () => (
+          <Drawer>
+            <Drawer.Screen name="a" />
+            <Drawer.Screen name="b" />
+          </Drawer>
+        ),
+      },
+      a: () => null,
+      b: () => null,
+    },
+    { initialUrl: '/b' }
+  );
+
+  expect(warnSpy).toHaveBeenCalledWith(
+    'The navigator at "./_layout.js" sets the anchor "a", but its `backBehavior` is "firstRoute". Non-stack navigators go back to the anchor only when `backBehavior` is "initialRoute". Set `backBehavior` to "initialRoute", or remove the anchor.'
+  );
 });

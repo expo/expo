@@ -6,7 +6,7 @@ import { createBaseStackProps } from './stack-utils/createBaseStackProps';
 /**
  * Creates the props required to integrate Expo Router's native stack navigator.
  *
- * @param dependencies The navigation state and dispatch functions provided to a `createProps`
+ * @param args The navigation state and dispatch functions provided to a `createProps`
  * factory.
  * @returns The native stack navigator props.
  *
@@ -29,6 +29,7 @@ export function createNativeStackProps(
 ): NativeStackNavigatorCreateProps {
   return {
     ...createBaseStackProps(args),
-    removeRoutes: (routeNames) => args.dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
+    removeRoutes: (routeNames) =>
+      args.dispatchSync({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
   };
 }

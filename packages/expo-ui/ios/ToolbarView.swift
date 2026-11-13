@@ -15,7 +15,8 @@ private struct ToolbarContentView: View {
     let children = props.children ?? []
 
     if children.contains(where: isItem) {
-      children.reduce(base) { view, child in
+      // The content slot's own body does not run here, so publish its zero content origin on the base.
+      children.reduce(AnyView(base.publishZeroContentOrigin(props.shadowNodeProxy))) { view, child in
         let childView: any View = child.childView
 
         guard let slot = child.childView as? SlotView, slot.props.name == "item" else {

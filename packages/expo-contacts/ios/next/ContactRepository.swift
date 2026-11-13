@@ -29,13 +29,13 @@ class ContactRepository {
     try store.execute(saveRequest)
   }
 
-  func getById(id: String, keysToFetch: [CNKeyDescriptor]) -> CNContact? {
-    let safeKeys = getSafeKeys(keysToFetch: keysToFetch)
-    return try? store.unifiedContact(withIdentifier: id, keysToFetch: safeKeys)
+  func getById(id: String, keysToFetch: [CNKeyDescriptor]) throws -> CNContact? {
+    try keysToFetch.forEach(ensureAccessible)
+    return try? store.unifiedContact(withIdentifier: id, keysToFetch: keysToFetch)
   }
 
   func getMutableById(id: String, keysToFetch: [CNKeyDescriptor]) throws -> CNMutableContact {
-    let contact = getById(id: id, keysToFetch: getSafeKeys(keysToFetch: keysToFetch))
+    let contact = try getById(id: id, keysToFetch: keysToFetch)
     guard let mutableContact = contact?.mutableCopy() as? CNMutableContact else {
       throw FailedToGetMutableContact()
     }
@@ -51,7 +51,8 @@ class ContactRepository {
     sortOrder: CNContactSortOrder? = CNContactSortOrder.userDefault,
     unifyResults: Bool
   ) throws -> [CNContact] {
-    let request = CNContactFetchRequest(keysToFetch: getSafeKeys(keysToFetch: keysToFetch))
+    try keysToFetch.forEach(ensureAccessible)
+    let request = CNContactFetchRequest(keysToFetch: keysToFetch)
     request.unifyResults = unifyResults
     request.predicate = predicate
     request.sortOrder = sortOrder ?? CNContactSortOrder.userDefault
@@ -76,17 +77,6 @@ class ContactRepository {
     return contacts
   }
 
-  func getAll(keysToFetch: [CNKeyDescriptor]) throws -> [CNContact] {
-    let request = CNContactFetchRequest(keysToFetch: getSafeKeys(keysToFetch: keysToFetch))
-    var contacts: [CNContact] = []
-
-    try store.enumerateContacts(with: request) { contact, _ in
-      contacts.append(contact)
-    }
-
-    return contacts
-  }
-
   func getCount() throws -> Int {
     let request = CNContactFetchRequest(keysToFetch: [])
     var count = 0
@@ -106,12 +96,16 @@ class ContactRepository {
     return result
   }
 
-  private func getSafeKeys(keysToFetch: [CNKeyDescriptor]) -> [CNKeyDescriptor] {
-    return keysToFetch.filter { key in
-      if let keyString = key as? String, keyString == CNContactNoteKey {
-        return canAccessNotesField()
-      }
-      return true
+  func isAccessible(_ key: CNKeyDescriptor) -> Bool {
+    if let keyString = key as? String, keyString == CNContactNoteKey {
+      return canAccessNotesField()
+    }
+    return true
+  }
+
+  private func ensureAccessible(_ key: CNKeyDescriptor) throws {
+    guard isAccessible(key) else {
+      throw ContactNotesNotAccessibleException()
     }
   }
 

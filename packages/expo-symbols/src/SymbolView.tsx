@@ -10,12 +10,23 @@ import { getFont } from './utils';
 const DEFAULT_SYMBOL_COLOR =
   Platform.OS === 'android' ? PlatformColor('@android:color/system_primary_dark') : '#7d9bd4';
 
-export function SymbolView(props: SymbolViewProps): JSX.Element {
-  const font = useMemo(() => getFont(props.weight), [props.weight]);
+export function SymbolView({
+  name: nameProp,
+  fallback,
+  type,
+  scale,
+  weight,
+  colors,
+  size: sizeProp,
+  tintColor,
+  resizeMode,
+  animationSpec,
+  style: styleProp,
+  ...viewProps
+}: SymbolViewProps): JSX.Element {
+  const font = useMemo(() => getFont(weight), [weight]);
   const name =
-    typeof props.name === 'object'
-      ? props.name[Platform.OS === 'android' ? 'android' : 'web']
-      : null;
+    typeof nameProp === 'object' ? nameProp[Platform.OS === 'android' ? 'android' : 'web'] : null;
   const [loaded, setLoaded] = useState(false);
   useEffect(() => {
     loadAsync({
@@ -29,19 +40,20 @@ export function SymbolView(props: SymbolViewProps): JSX.Element {
       });
   }, []);
   if (!name) {
-    return <>{props.fallback}</>;
+    return <>{fallback}</>;
   }
-  const size = props.size ?? 24;
-  const style = [{ width: size, height: size }, props.style];
+  const size = sizeProp ?? 24;
+  const style = [{ width: size, height: size }, styleProp];
   if (!loaded) {
-    return <View style={style} />;
+    return <View collapsable={false} {...viewProps} style={style} />;
   }
   return (
-    <View style={style}>
+    <View collapsable={false} {...viewProps} style={style}>
       <Text
+        aria-hidden
         style={{
           fontFamily: font.name,
-          color: props.tintColor ?? DEFAULT_SYMBOL_COLOR,
+          color: tintColor ?? DEFAULT_SYMBOL_COLOR,
           fontSize: size,
           lineHeight: size,
         }}>

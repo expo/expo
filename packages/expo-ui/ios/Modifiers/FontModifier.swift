@@ -29,6 +29,20 @@ internal enum FontWeight: String, Enumerable {
   }
 }
 
+internal enum FontLeading: String, Enumerable {
+  case standard
+  case tight
+  case loose
+
+  func toSwiftUI() -> Font.Leading {
+    switch self {
+    case .standard: .standard
+    case .tight: .tight
+    case .loose: .loose
+    }
+  }
+}
+
 internal enum FontDesign: String, Enumerable {
   case `default`
   case rounded
@@ -81,6 +95,8 @@ internal struct FontModifier: ViewModifier, Record {
   @Field var weight: FontWeight?
   @Field var design: FontDesign?
   @Field var textStyle: FontTextStyle?
+  @Field var smallCaps: Bool = false
+  @Field var leading: FontLeading?
 
   func body(content: Content) -> some View {
     content.font(resolveFont())
@@ -90,6 +106,17 @@ internal struct FontModifier: ViewModifier, Record {
   // same `Font` as the view path, instead of a fixed-size `Font.custom` that
   // drops `relativeTo` (Dynamic Type) and `weight`.
   func resolveFont() -> Font {
+    var font = resolveBaseFont()
+    if smallCaps {
+      font = font.smallCaps()
+    }
+    if let leading {
+      font = font.leading(leading.toSwiftUI())
+    }
+    return font
+  }
+
+  private func resolveBaseFont() -> Font {
     if let family = family {
       let baseSize = size ?? 17
       var font: Font = if let textStyle = textStyle {

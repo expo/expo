@@ -10,8 +10,9 @@ import {
   emitDomSetParams,
 } from '../domComponents/emitDomEvent';
 import { resolveHref } from '../link/href';
+import { getCanDismiss } from '../react-navigation/core/CanDismissContext';
+import { withWarnOnceIfCalledDuringRender } from '../react-navigation/core/isRenderingComponent';
 import type { Href, RoutePath, RouteInputParams } from '../types';
-import { getHistoryLength } from '../utils/stack';
 import { shouldLinkExternally } from '../utils/url';
 import { navigationRef } from './navigationRef';
 import type { RoutingIntent } from './routingQueue';
@@ -138,21 +139,7 @@ export function canDismiss(): boolean {
     return false;
   }
   // TODO(@ubax): check whether this is still needed
-  let state = navigationRef.getRootState();
-
-  // Keep traversing down the state tree until we find a stack navigator that we can pop
-  while (state) {
-    // TODO(ENG-22019): Detect typeless stacks, including anchor/initialRouteName states that start
-    // with multiple routes.
-    if (state.type === 'stack' && getHistoryLength(state) > 1) {
-      return true;
-    }
-    if (state.index === undefined) return false;
-
-    state = state.routes?.[state.index]?.state as any;
-  }
-
-  return false;
+  return getCanDismiss(navigationRef.getRootState());
 }
 
 export function setParams(
@@ -256,11 +243,8 @@ export type ImperativeRouter = {
    */
   dismissTo: (href: Href, options?: NavigationOptions) => void;
   /**
-   * Returns to the first screen of the closest stack — equivalent to a stack
-   * `popToTop` action.
-   *
-   * @see React Navigation's [`popToTop`](https://reactnavigation.org/docs/stack-actions/#poptotop)
-   * stack action for the underlying behavior.
+   * Returns to the first screen of the closest stack, dismissing all screens
+   * above it.
    */
   dismissAll: (options?: TransitionOptions) => void;
   /**
@@ -309,11 +293,17 @@ export function createImperativeRouter(
     dismiss: (count, options) => dismissImpl(enqueue, count, options),
     dismissAll: (options) => dismissAllImpl(enqueue, options),
     dismissTo: (href, options) => dismissToImpl(enqueue, href, options),
-    canDismiss,
+    canDismiss: withWarnOnceIfCalledDuringRender(
+      canDismiss,
+      'router.canDismiss() was called during render, which can return a stale value. Use the useCanDismiss() hook to read it during render, or call router.canDismiss() in an effect or event handler.'
+    ),
     replace: (href, options) => replaceImpl(enqueue, href, options),
     back: (options) => goBackImpl(enqueue, options),
     goBack: (options) => goBackImpl(enqueue, options),
-    canGoBack,
+    canGoBack: withWarnOnceIfCalledDuringRender(
+      canGoBack,
+      'router.canGoBack() was called during render, which can return a stale value. Use the useCanGoBack() hook to read it during render, or call router.canGoBack() in an effect or event handler.'
+    ),
     reload,
     prefetch: (href, options) => prefetchImpl(enqueue, href, options),
     setTransitionMode: (mode) => {

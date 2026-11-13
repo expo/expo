@@ -95,7 +95,7 @@ class ExpoCalendarEventMapperTest {
       result.recurrenceRule
     )
     Assert.assertEquals(1, result.alarms.size)
-    Assert.assertEquals(15, result.alarms[0].relativeOffset)
+    Assert.assertEquals(-15, result.alarms[0].relativeOffset)
     Assert.assertEquals(AlarmMethod.EMAIL, result.alarms[0].method)
   }
 
@@ -220,7 +220,7 @@ class ExpoCalendarEventMapperTest {
       result.recurrenceRule
     )
     Assert.assertEquals(1, result.alarms.size)
-    Assert.assertEquals(15, result.alarms[0].relativeOffset)
+    Assert.assertEquals(-15, result.alarms[0].relativeOffset)
     Assert.assertEquals(AlarmMethod.EMAIL, result.alarms[0].method)
   }
 

@@ -2,11 +2,13 @@ import { CameraView } from 'expo-camera';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useRef, useState } from 'react';
 import { View, StyleSheet, Button, Dimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
 
 export default function CameraScreenPauseRecording() {
   const camera = useRef<CameraView>(null);
+  const insets = useSafeAreaInsets();
   const player = useVideoPlayer(null);
 
   const [recording, setRecording] = useState(false);
@@ -43,7 +45,7 @@ export default function CameraScreenPauseRecording() {
             videoQuality="2160p"
             pictureSize="1920x1080"
           />
-          <View style={styles.controls}>
+          <View style={[styles.controls, { bottom: insets.bottom + 10 }]}>
             <Button title={`${recording ? 'Stop' : 'Start'} Recording`} onPress={recordAsync} />
             {uri && <Button title="Clear Recording" onPress={() => setUri('')} />}
             {recording && (
@@ -73,7 +75,6 @@ const styles = StyleSheet.create({
   controls: {
     position: 'absolute',
     width: '100%',
-    bottom: 10,
     left: 0,
   },
 });

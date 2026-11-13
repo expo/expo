@@ -12,6 +12,7 @@ import {
   Alert,
   Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ToggleRow } from '../components/ToggleRow';
 import { searchIcon, micIcon, moreVertIcon, sendIcon, deleteIcon } from './icons';
@@ -97,161 +98,160 @@ export default function ToolbarScreen() {
         }}
       />
       <Stack.SearchBar />
-      <ScrollView
-        style={styles.container}
-        contentContainerStyle={styles.contentContainer}
-        contentInsetAdjustmentBehavior="automatic">
-        <Text style={styles.title}>Toolbar E2E Test Screen</Text>
-        <Stack.Toolbar placement="right">
-          <Stack.Toolbar.Button icon="safari" />
-        </Stack.Toolbar>
+      <ScrollView style={styles.container} contentInsetAdjustmentBehavior="automatic">
+        <SafeAreaView edges={['left', 'right']} style={styles.contentContainer}>
+          <Text style={styles.title}>Toolbar E2E Test Screen</Text>
+          <Stack.Toolbar placement="right">
+            <Stack.Toolbar.Button icon="safari" />
+          </Stack.Toolbar>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Toolbar Items Visibility</Text>
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Toolbar Items Visibility</Text>
 
-          <ToggleRow
-            label="Show Search Bar"
-            testID="toggle-search-bar"
-            value={showSearchBar}
-            onValueChange={setShowSearchBar}
-          />
+            <ToggleRow
+              label="Show Search Bar"
+              testID="toggle-search-bar"
+              value={showSearchBar}
+              onValueChange={setShowSearchBar}
+            />
 
-          {showSearchBar && (
-            <>
-              <ToggleRow
-                label="Search Bar Shares Background"
-                testID="toggle-search-bar-share-background"
-                value={sharesBackgroundSearchBar}
-                onValueChange={setSharesBackgroundSearchBar}
-              />
-
-              <ToggleRow
-                label="Search Bar Hides Shared Background"
-                testID="toggle-search-bar-hide-shared-background"
-                value={hidesSharedBackgroundSearchBar}
-                onValueChange={setHidesSharedBackgroundSearchBar}
-              />
-            </>
-          )}
-
-          <ToggleRow
-            label="Show Search Button"
-            testID="toggle-search-button"
-            value={showSearchButton}
-            onValueChange={setShowSearchButton}
-          />
-
-          {showSearchButton && (
-            <>
-              <ToggleRow
-                label="Search Shares Background"
-                testID="toggle-search-button-share-background"
-                value={sharesBackgroundSearchButton}
-                onValueChange={setSharesBackgroundSearchButton}
-              />
-
-              <ToggleRow
-                label="Search Hides Shared Background"
-                testID="toggle-search-button-hide-shared-background"
-                value={hidesSharedBackgroundSearchButton}
-                onValueChange={setHidesSharedBackgroundSearchButton}
-              />
-            </>
-          )}
-
-          <ToggleRow
-            label="Show Mic Button"
-            testID="toggle-mic-button"
-            value={showMicButton}
-            onValueChange={setShowMicButton}
-          />
-
-          <ToggleRow
-            label="Show Custom View"
-            testID="toggle-custom-view"
-            value={showCustomView}
-            onValueChange={setShowCustomView}
-          />
-
-          <ToggleRow
-            label="Show Menu"
-            testID="toggle-menu"
-            value={showMenu}
-            onValueChange={setShowMenu}
-          />
-
-          <ToggleRow
-            label="Show Xcasset Button"
-            testID="toggle-xcasset-button"
-            value={showXcassetButton}
-            onValueChange={setShowXcassetButton}
-          />
-
-          <ToggleRow
-            label="Show Xcasset Menu"
-            testID="toggle-xcasset-menu"
-            value={showXcassetMenu}
-            onValueChange={setShowXcassetMenu}
-          />
-
-          <ToggleRow
-            label="Show Fixed Spacer (20pt)"
-            testID="toggle-fixed-spacer"
-            value={showFixedSpacer}
-            onValueChange={setShowFixedSpacer}
-          />
-
-          {showFixedSpacer && (
-            <>
-              <ToggleRow
-                label="Fixed Spacer Shares Background"
-                testID="toggle-fixed-spacer-share-background"
-                value={fixedSpacerShareBackground}
-                onValueChange={setFixedSpacerShareBackground}
-              />
-
-              <View style={styles.switchRow}>
-                <Text style={styles.label}>Fixed Spacer Width (pt)</Text>
-                <TextInput
-                  testID="input-fixed-spacer-width"
-                  style={{ borderWidth: 1, borderColor: '#ccc', padding: 4, width: 60 }}
-                  keyboardType="numeric"
-                  value={fixedSpacerWidth.toString()}
-                  onChangeText={(text) => {
-                    const width = parseInt(text, 10);
-                    if (!isNaN(width)) {
-                      setFixedSpacerWidth(width);
-                    }
-                  }}
+            {showSearchBar && (
+              <>
+                <ToggleRow
+                  label="Search Bar Shares Background"
+                  testID="toggle-search-bar-share-background"
+                  value={sharesBackgroundSearchBar}
+                  onValueChange={setSharesBackgroundSearchBar}
                 />
-              </View>
-            </>
-          )}
-        </View>
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Current State</Text>
-          <Text style={styles.stateText}>Search Text: "{searchText}"</Text>
-          <Text style={styles.stateText}>Search Focused: {isSearchFocused ? 'Yes' : 'No'}</Text>
-          <Text style={styles.stateText}>Emails Archived: {emailsArchived ? 'Yes' : 'No'}</Text>
-          <Text style={styles.stateText}>
-            Notifications: {notificationsEnabled ? 'Enabled' : 'Disabled'}
-          </Text>
-          <Text style={styles.stateText}>Favorite Colors: {favoriteColors.join(', ')}</Text>
-        </View>
+                <ToggleRow
+                  label="Search Bar Hides Shared Background"
+                  testID="toggle-search-bar-hide-shared-background"
+                  value={hidesSharedBackgroundSearchBar}
+                  onValueChange={setHidesSharedBackgroundSearchBar}
+                />
+              </>
+            )}
 
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Instructions</Text>
-          <Text style={styles.instruction}>
-            1. Toggle switches above to show/hide toolbar items
-          </Text>
-          <Text style={styles.instruction}>2. Tap search button to activate search input</Text>
-          <Text style={styles.instruction}>3. Tap mic button to trigger voice input</Text>
-          <Text style={styles.instruction}>4. Use menu to test nested actions</Text>
-          <Text style={styles.instruction}>
-            5. Observe menu items change based on state (e.g., Archive toggle)
-          </Text>
-        </View>
+            <ToggleRow
+              label="Show Search Button"
+              testID="toggle-search-button"
+              value={showSearchButton}
+              onValueChange={setShowSearchButton}
+            />
+
+            {showSearchButton && (
+              <>
+                <ToggleRow
+                  label="Search Shares Background"
+                  testID="toggle-search-button-share-background"
+                  value={sharesBackgroundSearchButton}
+                  onValueChange={setSharesBackgroundSearchButton}
+                />
+
+                <ToggleRow
+                  label="Search Hides Shared Background"
+                  testID="toggle-search-button-hide-shared-background"
+                  value={hidesSharedBackgroundSearchButton}
+                  onValueChange={setHidesSharedBackgroundSearchButton}
+                />
+              </>
+            )}
+
+            <ToggleRow
+              label="Show Mic Button"
+              testID="toggle-mic-button"
+              value={showMicButton}
+              onValueChange={setShowMicButton}
+            />
+
+            <ToggleRow
+              label="Show Custom View"
+              testID="toggle-custom-view"
+              value={showCustomView}
+              onValueChange={setShowCustomView}
+            />
+
+            <ToggleRow
+              label="Show Menu"
+              testID="toggle-menu"
+              value={showMenu}
+              onValueChange={setShowMenu}
+            />
+
+            <ToggleRow
+              label="Show Xcasset Button"
+              testID="toggle-xcasset-button"
+              value={showXcassetButton}
+              onValueChange={setShowXcassetButton}
+            />
+
+            <ToggleRow
+              label="Show Xcasset Menu"
+              testID="toggle-xcasset-menu"
+              value={showXcassetMenu}
+              onValueChange={setShowXcassetMenu}
+            />
+
+            <ToggleRow
+              label="Show Fixed Spacer (20pt)"
+              testID="toggle-fixed-spacer"
+              value={showFixedSpacer}
+              onValueChange={setShowFixedSpacer}
+            />
+
+            {showFixedSpacer && (
+              <>
+                <ToggleRow
+                  label="Fixed Spacer Shares Background"
+                  testID="toggle-fixed-spacer-share-background"
+                  value={fixedSpacerShareBackground}
+                  onValueChange={setFixedSpacerShareBackground}
+                />
+
+                <View style={styles.switchRow}>
+                  <Text style={styles.label}>Fixed Spacer Width (pt)</Text>
+                  <TextInput
+                    testID="input-fixed-spacer-width"
+                    style={{ borderWidth: 1, borderColor: '#ccc', padding: 4, width: 60 }}
+                    keyboardType="numeric"
+                    value={fixedSpacerWidth.toString()}
+                    onChangeText={(text) => {
+                      const width = parseInt(text, 10);
+                      if (!isNaN(width)) {
+                        setFixedSpacerWidth(width);
+                      }
+                    }}
+                  />
+                </View>
+              </>
+            )}
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Current State</Text>
+            <Text style={styles.stateText}>Search Text: "{searchText}"</Text>
+            <Text style={styles.stateText}>Search Focused: {isSearchFocused ? 'Yes' : 'No'}</Text>
+            <Text style={styles.stateText}>Emails Archived: {emailsArchived ? 'Yes' : 'No'}</Text>
+            <Text style={styles.stateText}>
+              Notifications: {notificationsEnabled ? 'Enabled' : 'Disabled'}
+            </Text>
+            <Text style={styles.stateText}>Favorite Colors: {favoriteColors.join(', ')}</Text>
+          </View>
+
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Instructions</Text>
+            <Text style={styles.instruction}>
+              1. Toggle switches above to show/hide toolbar items
+            </Text>
+            <Text style={styles.instruction}>2. Tap search button to activate search input</Text>
+            <Text style={styles.instruction}>3. Tap mic button to trigger voice input</Text>
+            <Text style={styles.instruction}>4. Use menu to test nested actions</Text>
+            <Text style={styles.instruction}>
+              5. Observe menu items change based on state (e.g., Archive toggle)
+            </Text>
+          </View>
+        </SafeAreaView>
       </ScrollView>
 
       <Stack.Toolbar backgroundColor="red" tintColor="blue">

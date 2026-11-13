@@ -1,3 +1,4 @@
+import type { PermissionResponse } from 'expo';
 import type { ProxyNativeModule } from 'expo-modules-core';
 
 import type {
@@ -10,4 +11,6 @@ export interface NotificationPermissionsModule extends ProxyNativeModule {
   requestPermissionsAsync?: (
     request: NativeNotificationPermissionsRequest
   ) => Promise<NotificationPermissionsStatus>;
+  getExactAlarmPermissionsAsync?: () => Promise<PermissionResponse>;
+  requestExactAlarmPermissionsAsync?: () => Promise<PermissionResponse>;
 }

@@ -1,8 +1,17 @@
 import { requireNativeModule } from 'expo';
-import AppMetrics, { setErrorHandlerEnabled } from 'expo-app-metrics';
+import AppMetrics, {
+  recordSpan,
+  setErrorHandlerEnabled,
+  startSpan,
+  withSpan,
+} from 'expo-app-metrics';
 
 import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
+import {
+  disableReanimatedIntegration,
+  initReanimatedIntegration,
+} from './integrations/react-native-reanimated/init';
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
 import { reportCaughtError } from './reportCaughtError';
@@ -33,6 +42,23 @@ function networkTracesConfigFromOption(networkTraces: ObserveConfig['networkTrac
   // only has to be spelled out to turn recording off while keeping the filter configured.
   const enabled = option.enabled ?? true;
   return option.filter != null ? { enabled, filter: option.filter } : { enabled };
+}
+
+function warnIfErrorSampleRateIsLower({ sampleRate, errorSampleRate }: ObserveConfig) {
+  if (errorSampleRate == null) {
+    return;
+  }
+  // Native code clamps both rates and treats an unset `sampleRate` as 1.
+  const clamp = (rate: number) => Math.min(Math.max(rate, 0), 1);
+  const errorRate = clamp(errorSampleRate);
+  const overallRate = clamp(sampleRate ?? 1);
+  if (errorRate < overallRate) {
+    console.warn(
+      `[expo-observe] \`errorSampleRate\` (${errorRate}) is lower than \`sampleRate\` (${overallRate}) and has no effect. ` +
+        'Errors are sent from every installation in the `sampleRate` sample. ' +
+        'Set `errorSampleRate` to at least `sampleRate`.'
+    );
+  }
 }
 
 const native = requireNativeModule<ObserveModule>('ExpoObserve');
@@ -80,12 +106,32 @@ const Observe: ObserveModule = new Proxy(native, {
         } else if (shouldInitReactNavigationIntegration) {
           initReactNavigationIntegration(config.integrations?.['react-navigation']);
         }
+        const reanimatedConfig = config.integrations?.['react-native-reanimated'];
+        if (reanimatedConfig) {
+          initReanimatedIntegration(reanimatedConfig);
+        } else {
+          disableReanimatedIntegration();
+        }
+        warnIfErrorSampleRateIsLower(config);
         return target.configure(config);
       };
     }
 
     if (prop === 'reportError') {
       return (error: unknown) => reportCaughtError(error);
+    }
+
+    // The span wrappers add JS-side behavior over the raw native functions (`parent` folding,
+    // `withSpan`'s auto-end), so forward them explicitly instead of letting the fallback below
+    // reach the native members with the same names.
+    if (prop === 'startSpan') {
+      return startSpan;
+    }
+    if (prop === 'withSpan') {
+      return withSpan;
+    }
+    if (prop === 'recordSpan') {
+      return recordSpan;
     }
 
     if (prop === 'registerIntegration') {

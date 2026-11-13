@@ -296,3 +296,50 @@ test.describe(inputDir, () => {
     expect(pageErrors.all).toEqual([]);
   });
 });
+
+// In development, server output HTML does not preload the lazy layout chunks, so the client
+// can start before the layout `anchor` loads.
+// https://github.com/expo/expo/issues/50641
+test.describe(`${inputDir} with server output`, () => {
+  const expoStart = createExpoStart({
+    cwd: projectRoot,
+    env: {
+      NODE_ENV: 'development',
+      EXPO_USE_STATIC: 'server',
+      E2E_ROUTER_SRC: inputDir,
+      E2E_ROUTER_ASYNC: 'development',
+      CI: '0',
+    },
+  });
+
+  test.beforeAll(async () => {
+    await expoStart.startAsync();
+  });
+
+  test.afterAll(async () => {
+    await expoStart.stopAsync();
+  });
+
+  test('keeps the anchor below the screen after a reload', async ({ page }) => {
+    const pageErrors = pageCollectErrors(page);
+
+    await page.goto(`${expoStart.url}`);
+    await page.locator('[data-testid="go-anchored-details"]').click();
+    await expect(page.locator('[data-testid="anchored-details-content"]')).toHaveText(
+      '/anchored/details'
+    );
+
+    await page.reload();
+    await expect(page.locator('[data-testid="anchored-details-content"]')).toHaveText(
+      '/anchored/details'
+    );
+    // React drops a click that arrives before hydration finishes.
+    await page.locator('[data-testid="anchored-details-mounted"]').waitFor({ state: 'attached' });
+
+    await page.locator('[data-testid="anchored-back"]').click();
+    await expect(page.locator('[data-testid="anchored-content"]')).toHaveText('/anchored');
+    await expect(page).toHaveURL(/\/anchored$/);
+
+    expect(pageErrors.all).toEqual([]);
+  });
+});

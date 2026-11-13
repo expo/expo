@@ -4,53 +4,57 @@ link: 'https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writ
 level: error
 ignorecase: true
 scope: ~text.frontmatter
+# "[ ]" matches a space only. Since Vale 3.25.1, a plain space in a key also matches a line
+# break, and the rule then reports a correct phrase that wraps across two lines.
 swap:
   '\b & \b': and
-  amazon appstore: Amazon Appstore
-  android emulator: Android Emulator
-  apple developer: Apple Developer
+  'amazon[ ]appstore': Amazon Appstore
+  'android[ ]emulator': Android Emulator
+  'apple[ ]developer': Apple Developer
   cancelation: cancellation
   cancelled: canceled
   cancelling: canceling
   cocoapods: CocoaPods
   devops: DevOps
   eas: EAS
-  eas build: EAS Build
-  eas cli: EAS CLI
-  eas metadata: EAS Metadata
-  eas submit: EAS Submit
-  eas update: EAS Update
-  expo cli: Expo CLI
-  expo go: Expo Go
-  expo sdk: Expo SDK
+  'eas[ ]cli': EAS CLI
+  'expo[ ]build': Expo Build
+  'expo[ ]cli': Expo CLI
+  'expo[ ]go': Expo Go
+  'expo[ ]metadata': Expo Metadata
+  'expo[ ]observe': Expo Observe
+  'expo[ ]sdk': Expo SDK
+  'expo[ ]simulators': Expo Simulators
+  'expo[ ]submit': Expo Submit
+  'expo[ ]update': Expo Update
   github: GitHub
   Github: GitHub
   gitlab: GitLab
-  ios simulator: iOS Simulator
+  'ios[ ]simulator': iOS Simulator
   icloud: iCloud
   IPhone: iPhone
   javascript: JavaScript
-  javascript core: JavaScriptCore
-  mac os: macOS
+  'javascript[ ]core': JavaScriptCore
+  'mac[ ]os': macOS
   macos: macOS
   MacOS: macOS
   NPM: npm
   nodejs: Node.js
   Nodejs: Node.js
   openjdk: OpenJDK
-  objective c: Objective-C
-  react native: React Native
-  react navigation: React Navigation
-  stack overflow: Stack Overflow
+  'objective[ ]c': Objective-C
+  'react[ ]native': React Native
+  'react[ ]navigation': React Navigation
+  'stack[ ]overflow': Stack Overflow
   storybook: Storybook
   sql: SQL
-  tailwind css: Tailwind CSS
+  'tailwind[ ]css': Tailwind CSS
   tailwindcss: Tailwind CSS
-  transfer windows: transfer windows
-  turtle cli: Turtle CLI
+  'transfer[ ]windows': transfer windows
+  'turtle[ ]cli': Turtle CLI
   typescript: TypeScript
   unix: Unix
-  vs code: VS Code
+  'vs[ ]code': VS Code
   vscode: VS Code
   VSCode: VS Code
   wifi: Wi-Fi

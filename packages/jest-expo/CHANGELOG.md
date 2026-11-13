@@ -1,14 +1,59 @@
 # Changelog
 
-## Unpublished
+## 58.0.12
 
-### 🛠 Breaking changes
+### Patch Changes
 
-### 🎉 New features
+- Skip Jest's own stack frames when looking up native module mocks. On Jest 30 this lookup reread Jest's runtime source for every native module and slowed down test runs. ([#51778](https://github.com/expo/expo/pull/51778) by [@expo-bot](https://github.com/expo-bot))
 
-### 🐛 Bug fixes
+## 58.0.11
 
-### 💡 Others
+### Patch Changes
+
+- Upgrade React Native to 0.88.0. ([#51613](https://github.com/expo/expo/pull/51613) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 58.0.10
+
+### Patch Changes
+
+- Accept `jest@^29` again as a peer dependency. ([#51462](https://github.com/expo/expo/pull/51462) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.9
+
+### Patch Changes
+
+- Remove the internal-only `expo-source` export condition. ([#51215](https://github.com/expo/expo/pull/51215) by [@kitten](https://github.com/kitten))
+- Remapped `import.meta.url` under Jest to the module's `file://` URL. `jest-expo` now reports `bundler: 'jest'` to Babel. ([#51110](https://github.com/expo/expo/pull/51110) by [@abappi19](https://github.com/abappi19))
+
+## 58.0.8
+
+### Patch Changes
+
+- [Internal] Import React Native internals from `react-native/unstable-internals-do-not-use`. ([#50860](https://github.com/expo/expo/pull/50860) by [@huntie](https://github.com/huntie))
+
+## 58.0.7
+
+### Patch Changes
+
+- Upgrade to Jest 30 and declare `jest@^30` as a peer dependency. ([#50427](https://github.com/expo/expo/pull/50427) by [@hassankhan](https://github.com/hassankhan))
+- Preserve the base preset's `moduleNameMapper` entries in web and Node presets. ([#50444](https://github.com/expo/expo/pull/50444) by [@joernroeder](https://github.com/joernroeder))
+- Bump `lodash` to `^4.18.1`. ([#50391](https://github.com/expo/expo/pull/50391) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.6
+
+### Patch Changes
+
+- [Internal] Replace `react-test-renderer` with `test-renderer` for `@testing-library/react-native` v14 compatibility. ([#50686](https://github.com/expo/expo/pull/50686) by [@hassankhan](https://github.com/hassankhan))
+
+## 58.0.5
+
+### Patch Changes
+
+- Force-bump all packages, due to migration to changesets. ([#50762](https://github.com/expo/expo/pull/50762) by [@kitten](https://github.com/kitten))
+
+## 58.0.4 — 2026-09-28
+
+_This version does not introduce any user-facing changes._
 
 ## 58.0.3 — 2026-09-21
 

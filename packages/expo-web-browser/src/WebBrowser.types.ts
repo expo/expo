@@ -206,6 +206,7 @@ export enum WebBrowserPresentationStyle {
   OVER_CURRENT_CONTEXT = 'overCurrentContext',
   /**
    * A presentation style where the browser is displayed in a popover view.
+   * On iPadOS 27 and later, the browser uses `FORM_SHEET` instead, because the system browser does not load the page inside a popover.
    */
   POPOVER = 'popover',
   /**

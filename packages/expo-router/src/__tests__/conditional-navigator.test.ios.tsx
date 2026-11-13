@@ -64,13 +64,13 @@ function makeRoutes(kind: NavigatorKind, nextKind: NavigatorKind) {
   };
 }
 
-function getNavigatorState(result: ReturnType<typeof renderRouter>) {
+function getNavigatorState(result: Awaited<ReturnType<typeof renderRouter>>) {
   return result.getRouterState()!.routes[0]!.state!;
 }
 
 it('reconciles state when a stack layout becomes tabs after navigation', async () => {
-  const result = renderRouter(makeRoutes('stack', 'tabs'), { initialUrl: '/' });
-  act(() => router.push('/second'));
+  const result = await renderRouter(makeRoutes('stack', 'tabs'), { initialUrl: '/' });
+  await act(() => router.push('/second'));
   expect(getNavigatorState(result).type).toBe('stack');
 
   await userEvent.press(screen.getByTestId('toggle'));
@@ -85,8 +85,8 @@ it('reconciles state when a stack layout becomes tabs after navigation', async (
 });
 
 it('reconciles state when a tabs layout becomes a stack after navigation', async () => {
-  const result = renderRouter(makeRoutes('tabs', 'stack'), { initialUrl: '/' });
-  act(() => router.push('/second'));
+  const result = await renderRouter(makeRoutes('tabs', 'stack'), { initialUrl: '/' });
+  await act(() => router.push('/second'));
   expect(getNavigatorState(result).type).toBe('tab');
 
   await userEvent.press(screen.getByTestId('toggle'));
@@ -102,8 +102,8 @@ it('reconciles state when a tabs layout becomes a stack after navigation', async
 });
 
 it('reconciles state when a stack layout becomes a drawer after navigation', async () => {
-  const result = renderRouter(makeRoutes('stack', 'drawer'), { initialUrl: '/' });
-  act(() => router.push('/second'));
+  const result = await renderRouter(makeRoutes('stack', 'drawer'), { initialUrl: '/' });
+  await act(() => router.push('/second'));
   expect(getNavigatorState(result).type).toBe('stack');
 
   await userEvent.press(screen.getByTestId('toggle'));
@@ -119,7 +119,7 @@ it('reconciles state when a stack layout becomes a drawer after navigation', asy
 
 // Control: without a navigation the seeded state carries no `type`, so any router accepts it.
 it('reconciles state when a stack layout becomes tabs before any navigation', async () => {
-  renderRouter(makeRoutes('stack', 'tabs'), { initialUrl: '/' });
+  await renderRouter(makeRoutes('stack', 'tabs'), { initialUrl: '/' });
   expect(screen.getByTestId('index')).toBeVisible();
 
   await userEvent.press(screen.getByTestId('toggle'));

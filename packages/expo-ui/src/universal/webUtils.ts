@@ -132,6 +132,10 @@ export const globalCss = css`
     }
   }
 
+  [data-theme='light'] {
+    ${lightVariables}
+  }
+
   [data-theme='dark'] {
     ${darkVariables}
   }

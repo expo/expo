@@ -10,23 +10,16 @@ jest.mock('../../global-state/utils', () => ({
 }));
 
 const mockRouteNode = node('root');
-const locationDescriptor = Object.getOwnPropertyDescriptor(globalThis, 'location');
 
 beforeEach(() => {
   setNavigationState(undefined);
   setRouteNode(mockRouteNode);
-  Object.defineProperty(globalThis, 'location', {
-    configurable: true,
-    value: { pathname: '/home', search: '', hash: '' },
-  });
+  // `window.location` is unforgeable in jsdom 26+ (Jest 30), so navigate instead of redefining it.
+  window.history.replaceState(null, '', '/home');
 });
 
 afterEach(() => {
-  if (locationDescriptor) {
-    Object.defineProperty(globalThis, 'location', locationDescriptor);
-  } else {
-    Reflect.deleteProperty(globalThis, 'location');
-  }
+  window.history.replaceState(null, '', '/');
   jest.restoreAllMocks();
 });
 
@@ -53,7 +46,7 @@ test('parses the initial URL instead of returning existing navigation state', as
     return null;
   }
 
-  render(<Sample />);
+  await render(<Sample />);
 
   const state = await getInitialState?.();
   expect(getStateFromPath).toHaveBeenCalledWith('/home', undefined);
@@ -83,9 +76,9 @@ test('getInitialState is computed once with first-render options', async () => {
     return null;
   }
 
-  const element = render(<Sample getStateFromPath={firstGetStateFromPath} />);
+  const element = await render(<Sample getStateFromPath={firstGetStateFromPath} />);
   const firstGetInitialState = getInitialState;
-  element.rerender(<Sample getStateFromPath={secondGetStateFromPath} />);
+  await element.rerender(<Sample getStateFromPath={secondGetStateFromPath} />);
   await firstGetInitialState?.();
 
   expect(firstGetStateFromPath).toHaveBeenCalledWith('/home', undefined);

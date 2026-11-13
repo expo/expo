@@ -2,6 +2,7 @@
 
 package expo.modules.ui
 
+import android.os.Handler
 import android.os.Looper
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SwitchDefaults
@@ -32,6 +33,10 @@ import expo.modules.ui.graphics.ImageLoader
 import expo.modules.ui.icon.IconView
 import expo.modules.ui.image.ImageView
 import expo.modules.ui.menu.DropdownMenuContent
+import expo.modules.ui.menu.DropdownMenuGroupContent
+import expo.modules.ui.menu.DropdownMenuGroupProps
+import expo.modules.ui.menu.DropdownMenuPopupContent
+import expo.modules.ui.menu.DropdownMenuPopupProps
 import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
 import expo.modules.ui.menu.DropdownMenuItemProps
@@ -52,6 +57,8 @@ import expo.modules.ui.menu.ExposedDropdownMenuBoxContent
 import expo.modules.ui.menu.ExposedDropdownMenuBoxProps
 import expo.modules.ui.menu.ExposedDropdownMenuContent
 import expo.modules.ui.menu.ExposedDropdownMenuProps
+import expo.modules.ui.menu.SelectableDropdownMenuItemContent
+import expo.modules.ui.menu.SelectableDropdownMenuItemProps
 import kotlinx.coroutines.launch
 import okhttp3.OkHttpClient
 
@@ -77,6 +84,8 @@ class ExpoUIModule : Module() {
       // Tags restart in the next app context, so an entry whose view was never torn down would be
       // read by an unrelated view after a reload.
       NativeStatePropsGetter().clearAllContentOrigins()
+      // React Native destroys modules on a background thread, but `ZeroContentOrigins` is UI-thread only.
+      Handler(Looper.getMainLooper()).post { ZeroContentOrigins.clear() }
 
       imageLoader?.close()
       imageLoader = null
@@ -167,7 +176,11 @@ class ExpoUIModule : Module() {
         ?: appContext.reactContext
         ?: throw Exceptions.ReactContextLost()
       val resolvedScheme = options?.scheme
-        ?: if (context.isSystemInDarkTheme()) ExpoColorScheme.DARK else ExpoColorScheme.LIGHT
+        ?: if (context.isSystemInDarkTheme()) {
+          ExpoColorScheme.DARK
+        } else {
+          ExpoColorScheme.LIGHT
+        }
       val isDark = resolvedScheme == ExpoColorScheme.DARK
       val seedArgb = options?.seedColor?.composeOrNull?.toArgb()
       val colorScheme = if (seedArgb != null) {
@@ -203,6 +216,15 @@ class ExpoUIModule : Module() {
     }
     View(LazyColumnView::class)
     View(LazyRowView::class)
+    View(LazyItemsView::class) {
+      Events("onWindowChange")
+
+      OnViewDestroys { view: LazyItemsView ->
+        view.cancelPendingWindowChange()
+      }
+    }
+    View(LazyItemsPoolView::class)
+    View(LazyItemsSlotView::class)
 
     // Class-based views so TooltipBoxView can detect them by type via findChildOfType
     View(PlainTooltipView::class)
@@ -343,18 +365,29 @@ class ExpoUIModule : Module() {
     }
 
     ExpoUIView<SliderProps>("SliderView") {
-      Events("onValueChange", "onValueChangeFinished")
+      val onValueChange by Event<SliderValueChangedEvent>()
+      val onValueChangeFinished by Event<Unit>()
 
       Content { props ->
-        SliderContent(props)
+        SliderContent(props, { onValueChange(it) }, { onValueChangeFinished(it) })
+      }
+    }
+
+    ExpoUIView<RangeSliderProps>("RangeSliderView") {
+      val onValueChange by Event<RangeSliderRange>()
+      val onValueChangeFinished by Event<Unit>()
+
+      Content { props ->
+        RangeSliderContent(props, { onValueChange(it) }, { onValueChangeFinished(it) })
       }
     }
 
     ExpoUIView<VerticalSliderProps>("VerticalSliderView") {
-      Events("onValueChange", "onValueChangeFinished")
+      val onValueChange by Event<SliderValueChangedEvent>()
+      val onValueChangeFinished by Event<Unit>()
 
       Content { props ->
-        VerticalSliderContent(props)
+        VerticalSliderContent(props, { onValueChange(it) }, { onValueChangeFinished(it) })
       }
     }
 
@@ -427,11 +460,33 @@ class ExpoUIModule : Module() {
       }
     }
 
+    ExpoUIView<DropdownMenuPopupProps>("DropdownMenuPopupView") {
+      val onDismissRequest by Event<Unit>()
+
+      Content { props ->
+        DropdownMenuPopupContent(props) { onDismissRequest(Unit) }
+      }
+    }
+
+    ExpoUIView<DropdownMenuGroupProps>("DropdownMenuGroupView") {
+      Content { props ->
+        DropdownMenuGroupContent(props)
+      }
+    }
+
     ExpoUIView<DropdownMenuItemProps>("DropdownMenuItemView") {
       val onItemPressed by Event<Unit>()
 
       Content { props ->
         DropdownMenuItemContent(props) { onItemPressed(Unit) }
+      }
+    }
+
+    ExpoUIView<SelectableDropdownMenuItemProps>("SelectableDropdownMenuItemView") {
+      val onItemPressed by Event<Unit>()
+
+      Content { props ->
+        SelectableDropdownMenuItemContent(props) { onItemPressed(Unit) }
       }
     }
 
@@ -468,6 +523,12 @@ class ExpoUIModule : Module() {
     ExpoUIView<CircularWavyProgressIndicatorProps>("CircularWavyProgressIndicatorView") {
       Content { props ->
         CircularWavyProgressIndicatorContent(props)
+      }
+    }
+
+    ExpoUIView<CompositionLocalProviderProps>("CompositionLocalProviderView") {
+      Content { props ->
+        CompositionLocalProviderContent(props)
       }
     }
 
@@ -514,6 +575,34 @@ class ExpoUIModule : Module() {
 
       Content { props ->
         DockedSearchBarContent(props) { onQueryChange(it) }
+      }
+    }
+
+    ExpoUIView<SplitButtonLayoutProps>("SplitButtonLayoutView") {
+      Content { props ->
+        SplitButtonLayoutContent(props)
+      }
+    }
+
+    ExpoUIView<SplitButtonLeadingButtonProps>("SplitButtonLeadingButtonView") {
+      val onButtonPressed by Event<Unit>()
+
+      Content { props ->
+        SplitButtonLeadingButtonContent(props) { onButtonPressed(Unit) }
+      }
+    }
+
+    ExpoUIView<SplitButtonTrailingButtonProps>("SplitButtonTrailingButtonView") {
+      val onCheckedChange by Event<SplitButtonCheckedChangeEvent>()
+
+      Content { props ->
+        SplitButtonTrailingButtonContent(props) { onCheckedChange(it) }
+      }
+    }
+
+    ExpoUIView<TopAppBarProps>("TopAppBarView") {
+      Content { props ->
+        TopAppBarContent(props)
       }
     }
 

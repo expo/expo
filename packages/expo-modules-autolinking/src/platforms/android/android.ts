@@ -89,7 +89,12 @@ export async function resolveModuleAsync(
       };
     });
 
-    const { publication } = project;
+    const publication = project.publication
+      ? {
+          ...project.publication,
+          version: project.publication.version ?? revision.version,
+        }
+      : undefined;
     const shouldUsePublicationScriptPath = project.shouldUsePublicationScriptPath
       ? path.join(revision.path, project.shouldUsePublicationScriptPath)
       : undefined;

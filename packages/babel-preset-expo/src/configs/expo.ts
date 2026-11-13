@@ -34,7 +34,7 @@ export interface ExpoConfigOptions {
   isReactCompilerEnabled: boolean;
   isModernEngine: boolean;
   baseUrl: string;
-  bundler: 'metro' | 'webpack' | null;
+  bundler: 'metro' | 'webpack' | 'jest' | null;
   inlineEnvironmentVariables?: boolean;
   lazyDecorators: LazyDecoratorsOptions;
   reanimated: boolean | undefined;

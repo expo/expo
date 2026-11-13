@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`server-output express requests exported files has expected routes manifest entries 1`] = `
 {
@@ -94,7 +94,6 @@ exports[`server-output express requests exported files has expected routes manif
   ],
   "assets": {
     "css": [],
-    "externalCss": [],
     "js": [
       "/_expo/static/js/web/entry-[hash].js",
     ],
@@ -170,6 +169,7 @@ exports[`server-output express requests exported files has expected routes manif
       },
     },
   ],
+  "origin": "http://localhost:8081",
   "redirects": [],
   "rendering": {
     "file": "_expo/server/render.js",
@@ -273,7 +273,6 @@ exports[`server-output workerd requests exported files has expected routes manif
   ],
   "assets": {
     "css": [],
-    "externalCss": [],
     "js": [
       "/_expo/static/js/web/entry-[hash].js",
     ],
@@ -349,6 +348,7 @@ exports[`server-output workerd requests exported files has expected routes manif
       },
     },
   ],
+  "origin": "http://localhost:8081",
   "redirects": [],
   "rendering": {
     "file": "_expo/server/render.js",

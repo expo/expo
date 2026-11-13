@@ -1,4 +1,4 @@
-name: Close inactive issues
+name: Close inactive issues and stale pull requests
 on:
   workflow_dispatch:
   schedule:
@@ -12,11 +12,12 @@ jobs:
     # `issues: write` stated explicitly. It worked until now only because the repository
     # default was "read and write", which we are moving to read-only.
     #
-    # `pull-requests: write` is deliberately NOT granted: days-before-pr-stale and
-    # days-before-pr-close are both -1 below, which disables PR handling entirely. Grant
-    # it if those ever change.
+    # `pull-requests: write` lets it close PRs that carry the `stale` label. PRs are never
+    # marked stale automatically (days-before-pr-stale is -1). A maintainer adds the label
+    # by hand, and the PR is closed after days-before-pr-close days with no activity.
     permissions:
       issues: write
+      pull-requests: write
     steps:
       - uses: actions/stale@4391f3da665fdf50b6810c1a66712fb9ba21aa93 # v11.0.0
         with:
@@ -29,5 +30,7 @@ jobs:
           stale-issue-message: 'This issue is stale because it has been open for 90 days with no activity. If there is no activity in the next 7 days, the issue will be closed.'
           close-issue-message: 'This issue was closed because it has been inactive for 7 days since being marked as stale. Please open a new issue if you believe you are encountering a related problem.'
           days-before-pr-stale: -1
-          days-before-pr-close: -1
+          days-before-pr-close: 7
+          stale-pr-label: 'stale'
+          close-pr-message: 'This pull request was closed because it has been inactive for 7 days since being marked as stale. Please reopen it or open a new pull request if you want to continue this work.'
           enable-statistics: true

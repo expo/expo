@@ -53,8 +53,14 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
   }
 
   func cancelStreaming() {
-    if isInvalidState(.bodyStreamingStarted) {
+    if state == .bodyCompleted || state == .bodyStreamingCanceled || state == .errorReceived {
       return
+    }
+    if isInvalidState(.responseReceived, .bodyStreamingStarted) {
+      return
+    }
+    if state == .responseReceived {
+      sink.discard()
     }
     state = .bodyStreamingCanceled
   }

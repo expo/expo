@@ -227,6 +227,7 @@ export async function getLoadedModulesAsync(statement: string): Promise<string[]
   return loadedModules
     .map((value) => toPosixPath(path.relative(repoRoot, value)))
     .filter((value) => !value.includes('/ms-vscode.js-debug/')) // Ignore injected vscode debugger scripts
+    .filter((value) => !value.includes('/.pnpm/')) // Ignore injected vscode debugger scripts
     .sort();
 }
 

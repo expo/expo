@@ -9,7 +9,11 @@ public interface HeadlessAppLoader {
 
   boolean invalidateApp(String appScopeKey);
 
-  boolean isRunning(String appScopeKey);
+  /**
+   * Returns whether the app with the given appScopeKey is running in headless mode right now,
+   * which means it is loaded and no Activity is attached to it.
+   */
+  boolean isRunningInHeadlessMode(String appScopeKey);
 
   final class Params {
     private final String appScopeKey;

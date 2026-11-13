@@ -14,7 +14,7 @@ export interface RequestHandler<Env = unknown> {
 const STORE = new AsyncLocalStorage();
 
 /**
- * Returns a request handler for EAS Hosting deployments.
+ * Returns a request handler for Expo Hosting deployments.
  */
 export function createRequestHandler<Env = unknown>(
   params: { build?: string },
@@ -27,7 +27,11 @@ export function createRequestHandler<Env = unknown>(
   });
   const run = createRequestScope(STORE, makeRequestAPISetup);
   const common = createWorkerdEnv(params);
-  const onRequest = createExpoHandler({ ...common, ...setup });
+  const onRequest = createExpoHandler({
+    ...common,
+    ...setup,
+    checkOrigin: setup?.checkOrigin === false ? false : 'sec-only',
+  });
 
   function handler(request: Request, env: Env, ctx: ExecutionContext) {
     return run(onRequest, request, env, ctx);

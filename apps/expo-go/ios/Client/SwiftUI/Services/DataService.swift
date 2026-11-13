@@ -35,10 +35,11 @@ class DataService: ObservableObject {
     if !hasCompletedInitialFetch {
       isLoadingData = true
     }
-    dataError = nil
 
     defer {
-      isLoadingData = false
+      if isLoadingData {
+        isLoadingData = false
+      }
       hasCompletedInitialFetch = true
     }
 
@@ -65,7 +66,9 @@ class DataService: ObservableObject {
       if newSnacks != self.snacks {
         self.snacks = newSnacks
       }
-      self.totalProjectCount = accountData.appCount
+      if accountData.appCount != self.totalProjectCount {
+        self.totalProjectCount = accountData.appCount
+      }
       if self.dataError != nil {
         self.dataError = nil
       }

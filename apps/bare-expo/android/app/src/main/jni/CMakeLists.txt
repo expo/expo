@@ -4,7 +4,7 @@ project(appmodules)
 
 include(${REACT_ANDROID_DIR}/cmake-utils/ReactNative-application.cmake)
 
-set(PCH_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/pch.h")
+include("${CMAKE_CURRENT_SOURCE_DIR}/pch-ccache.cmake")
 
 add_library(appmodules_pch STATIC EXCLUDE_FROM_ALL "${CMAKE_CURRENT_SOURCE_DIR}/appmodules_pch_owner.cpp")
 
@@ -21,9 +21,13 @@ target_compile_options(appmodules_pch PRIVATE
   "$<$<COMPILE_LANGUAGE:CXX>:-Xclang;-fno-pch-timestamp>"
 )
 
+set(PCH_INCLUDE_OPTION "$<$<COMPILE_LANGUAGE:CXX>:-idirafter${CMAKE_CURRENT_SOURCE_DIR}>")
+target_compile_options(appmodules_pch PRIVATE ${PCH_INCLUDE_OPTION})
 target_precompile_headers(appmodules_pch PRIVATE
-  "$<$<COMPILE_LANGUAGE:CXX>:${PCH_HEADER}>"
+  "$<$<COMPILE_LANGUAGE:CXX>:<pch.h>>"
 )
+
+pch_ccache_owner(appmodules_pch)
 
 function(add_pch_if_eligible target)
   if (NOT TARGET ${target})
@@ -43,6 +47,7 @@ function(add_pch_if_eligible target)
   # Keep the flag consistent with the PCH owner - see the note above.
   target_compile_options(${target} PRIVATE
     "$<$<COMPILE_LANGUAGE:CXX>:-Xclang;-fno-pch-timestamp>"
+    ${PCH_INCLUDE_OPTION}
   )
 
   # clang rejects a PCH built with a different C++ dialect, so pin consumers
@@ -51,6 +56,7 @@ function(add_pch_if_eligible target)
   set_target_properties(${target} PROPERTIES CXX_STANDARD 20 CXX_EXTENSIONS OFF)
 
   target_precompile_headers(${target} REUSE_FROM appmodules_pch)
+  pch_ccache_consumer(${target} appmodules_pch)
 endfunction()
 
 if (DEFINED AUTOLINKED_LIBRARIES)

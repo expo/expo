@@ -1,10 +1,14 @@
 import { Image } from 'react-native';
-import type AssetSourceResolver from 'react-native/Libraries/Image/AssetSourceResolver';
+import type { AssetSourceResolver } from 'react-native/unstable-internals-do-not-use';
+
+type AssetResolver = AssetSourceResolver & {
+  asset: { type?: string };
+};
 
 // @ts-expect-error: addCustomSourceTransformer type is not exported
 if (typeof Image.resolveAssetSource.addCustomSourceTransformer === 'function') {
   // @ts-expect-error: addCustomSourceTransformer type is not exported
-  Image.resolveAssetSource.addCustomSourceTransformer((resolver: AssetSourceResolver) => {
+  Image.resolveAssetSource.addCustomSourceTransformer((resolver: AssetResolver) => {
     if (
       process.env.EXPO_OS === 'android' &&
       resolver.asset.type === 'xml' &&

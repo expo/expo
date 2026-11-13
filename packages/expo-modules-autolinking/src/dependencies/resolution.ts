@@ -115,7 +115,7 @@ export async function scanDependenciesRecursively(
     return {};
   }
 
-  const _visitedPackagePaths = new Set();
+  const _shallowestVisitDepths = new Map<string, number>();
   const getNodeModulePaths = createNodeModulePathsCreator();
   const maxDepth = limitDepth != null ? limitDepth : MAX_DEPTH;
 
@@ -124,8 +124,11 @@ export async function scanDependenciesRecursively(
     depth = 0
   ): Promise<ResolutionResult> => {
     const searchResults: ResolutionResult = Object.create(null);
-    const hasVisitedPath = _visitedPackagePaths.has(resolution.path);
-    _visitedPackagePaths.add(resolution.path);
+    const visitedDepth = _shallowestVisitDepths.get(resolution.path);
+    const hasVisitedPath = visitedDepth != null && visitedDepth <= depth;
+    if (!hasVisitedPath) {
+      _shallowestVisitDepths.set(resolution.path, depth);
+    }
     const [nodeModulePaths, packageJson] = await Promise.all([
       !hasVisitedPath ? getNodeModulePaths(resolution.path) : [],
       loadPackageJson(fastJoin(resolution.path, 'package.json')),

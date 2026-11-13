@@ -3,7 +3,12 @@ import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 
-import { annotate, runMaestroAsync } from './e2e-common';
+import {
+  annotate,
+  MaestroNoResultsError,
+  runCustomMaestroFlowsAsync,
+  runMaestroAsync,
+} from './e2e-common';
 
 // A stand-in `maestro` binary that mimics Maestro's failure modes: it optionally writes the
 // JUnit report passed via --output and then hangs forever, like Maestro 2.4.0 wedging on exit
@@ -130,7 +135,89 @@ describe(runMaestroAsync, () => {
         e2eDir: fixtureDir,
         reinstallDriver: true,
       })
-    ).rejects.toThrow();
+    ).rejects.toThrow(MaestroNoResultsError);
+  });
+});
+
+describe(runCustomMaestroFlowsAsync, () => {
+  let e2eDir: string;
+
+  beforeAll(async () => {
+    e2eDir = await fs.mkdtemp(path.join(os.tmpdir(), 'e2e-flows-'));
+    for (const flow of FLOWS) {
+      await fs.mkdir(path.join(e2eDir, path.dirname(flow)), { recursive: true });
+      await fs.writeFile(path.join(e2eDir, flow), '');
+    }
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterAll(async () => {
+    jest.restoreAllMocks();
+    await fs.rm(e2eDir, { recursive: true, force: true });
+  });
+
+  it('retries only the failed flows', async () => {
+    const calls: string[][] = [];
+    await runCustomMaestroFlowsAsync(
+      e2eDir,
+      'ios',
+      async (flows) => {
+        calls.push(flows);
+        return calls.length === 1 ? ['expo-video/playback-test.yaml'] : [];
+      },
+      0
+    );
+    expect(calls).toEqual([FLOWS, ['expo-video/playback-test.yaml']]);
+  });
+
+  it('retries all flows when maestro produces no results', async () => {
+    const calls: string[][] = [];
+    await runCustomMaestroFlowsAsync(
+      e2eDir,
+      'ios',
+      async (flows) => {
+        calls.push(flows);
+        if (calls.length === 1) {
+          throw new MaestroNoResultsError('iOS driver not ready in time');
+        }
+        return [];
+      },
+      0
+    );
+    expect(calls).toEqual([FLOWS, FLOWS]);
+  });
+
+  it('gives up when maestro keeps producing no results', async () => {
+    let calls = 0;
+    await expect(
+      runCustomMaestroFlowsAsync(
+        e2eDir,
+        'ios',
+        async () => {
+          calls++;
+          throw new MaestroNoResultsError('iOS driver not ready in time');
+        },
+        0
+      )
+    ).rejects.toThrow(MaestroNoResultsError);
+    expect(calls).toBe(3);
+  });
+
+  it('does not retry other errors', async () => {
+    let calls = 0;
+    await expect(
+      runCustomMaestroFlowsAsync(
+        e2eDir,
+        'ios',
+        async () => {
+          calls++;
+          throw new Error('The maestro binary was not found on PATH');
+        },
+        0
+      )
+    ).rejects.toThrow('not found on PATH');
+    expect(calls).toBe(1);
   });
 });
 

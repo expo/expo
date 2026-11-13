@@ -20,9 +20,9 @@ concurrency:
 
 jobs:
   validate-npm-owners:
-    # Fork PRs have no access to `NPM_TOKEN_READ_ONLY`, so the command could
-    # not authenticate and would always fail. Skip them.
-    if: github.repository == 'expo/expo' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == 'expo/expo')
+    # Fork PRs and Dependabot PRs have no access to `NPM_TOKEN_READ_ONLY`, so
+    # the command could not authenticate and would always fail. Skip them.
+    if: github.repository == 'expo/expo' && (github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == 'expo/expo' && github.actor != 'dependabot[bot]'))
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout

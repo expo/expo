@@ -40,7 +40,11 @@ class AppMetricsPreferencesTest {
 
   @Test
   fun `getEnvironment returns default environment when nothing saved`() {
-    val expected = if (BuildConfig.DEBUG) "development" else null
+    val expected = if (BuildConfig.DEBUG) {
+      "development"
+    } else {
+      null
+    }
     assertEquals(expected, AppMetricsPreferences.getEnvironment(context))
   }
 
@@ -58,7 +62,11 @@ class AppMetricsPreferencesTest {
 
   @Test
   fun `getDefaultEnvironment matches build variant`() {
-    val expected = if (BuildConfig.DEBUG) "development" else null
+    val expected = if (BuildConfig.DEBUG) {
+      "development"
+    } else {
+      null
+    }
     assertEquals(expected, AppMetricsPreferences.getDefaultEnvironment())
   }
 

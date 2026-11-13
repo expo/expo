@@ -40,8 +40,8 @@ beforeEach(() => {
   probeContent.mockClear();
 });
 
-it('marks layout-declared screens as layout and filesystem-only screens as filesystem', () => {
-  renderRouter(
+it('marks layout-declared screens as layout and filesystem-only screens as filesystem', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Probe>
@@ -58,8 +58,8 @@ it('marks layout-declared screens as layout and filesystem-only screens as files
   expect(descriptorByRouteName('b')?.routeSource).toBe('filesystem');
 });
 
-it('marks screens declared by name matching an index file as layout', () => {
-  renderRouter(
+it('marks screens declared by name matching an index file as layout', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Probe>
@@ -76,8 +76,8 @@ it('marks screens declared by name matching an index file as layout', () => {
   expect(descriptorByRouteName('d')?.routeSource).toBe('filesystem');
 });
 
-it('marks all screens as filesystem when the layout declares none', () => {
-  renderRouter(
+it('marks all screens as filesystem when the layout declares none', async () => {
+  await renderRouter(
     {
       _layout: () => <Probe />,
       a: () => <Text testID="a">A</Text>,
@@ -90,8 +90,8 @@ it('marks all screens as filesystem when the layout declares none', () => {
   expect(descriptorByRouteName('b')?.routeSource).toBe('filesystem');
 });
 
-it('keeps layout provenance when redirecting from a screen behind a failing guard', () => {
-  renderRouter(
+it('keeps layout provenance when redirecting from a screen behind a failing guard', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Probe>
@@ -112,8 +112,8 @@ it('keeps layout provenance when redirecting from a screen behind a failing guar
   expect(descriptorByRouteName('b')?.routeSource).toBe('filesystem');
 });
 
-it('marks screens declared with NativeTabs.Trigger as layout', () => {
-  renderRouter(
+it('marks screens declared with NativeTabs.Trigger as layout', async () => {
+  await renderRouter(
     {
       _layout: () => (
         <Probe>
@@ -130,7 +130,7 @@ it('marks screens declared with NativeTabs.Trigger as layout', () => {
   expect(descriptorByRouteName('b')?.routeSource).toBe('filesystem');
 });
 
-it('marks screens declared with headless TabTrigger as layout', () => {
+it('marks screens declared with headless TabTrigger as layout', async () => {
   const headlessTabsSpy = jest.fn(
     (_args: Pick<ReturnType<typeof useTabsWithChildren>, 'state' | 'descriptors'>) => undefined
   );
@@ -146,7 +146,7 @@ it('marks screens declared with headless TabTrigger as layout', () => {
     return <NavigationContent>{children}</NavigationContent>;
   }
 
-  renderRouter(
+  await renderRouter(
     {
       _layout: Layout,
       a: () => <Text testID="a">A</Text>,

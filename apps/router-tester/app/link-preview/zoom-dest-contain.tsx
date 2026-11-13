@@ -1,11 +1,14 @@
 import { Link, Stack } from 'expo-router';
 import { useState } from 'react';
 import { Button, Image, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ZoomDestScreen() {
   const [gesturesEnabled, setGesturesEnabled] = useState(true);
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+    <SafeAreaView
+      edges={['left', 'right']}
+      style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Stack.Screen options={{ gestureEnabled: gesturesEnabled }} />
       <View
         style={{
@@ -27,6 +30,6 @@ export default function ZoomDestScreen() {
           <Image source={require('@/assets/frog.jpg')} style={{ width: '100%', height: '100%' }} />
         </View>
       </Link.AppleZoomTarget>
-    </View>
+    </SafeAreaView>
   );
 }

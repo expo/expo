@@ -187,6 +187,17 @@ const digestLengths = {
   [CryptoDigestAlgorithm.MD5]: 16,
 };
 
+// The native `digest` functions accept only typed arrays, while `BufferSource` also allows
+// `ArrayBuffer` and `DataView`. Wrap those in a `Uint8Array` view over the same bytes.
+function toTypedArray(data: BufferSource): ArrayBufferView {
+  if (ArrayBuffer.isView(data)) {
+    return data instanceof DataView
+      ? new Uint8Array(data.buffer, data.byteOffset, data.byteLength)
+      : data;
+  }
+  return new Uint8Array(data);
+}
+
 /**
  * The `digest()` method of `Crypto` generates a digest of the supplied `TypedArray` of bytes `data` with the provided digest `algorithm`.
  * A digest is a short fixed-length value derived from some variable-length input. **Cryptographic digests** should exhibit _collision-resistance_,
@@ -210,7 +221,7 @@ export function digest(algorithm: CryptoDigestAlgorithm, data: BufferSource): Pr
         resolve(ExpoCrypto.digestAsync(algorithm, data));
       } else {
         const output = new Uint8Array(digestLengths[algorithm]);
-        ExpoCrypto.digest(algorithm, output, data);
+        ExpoCrypto.digest(algorithm, output, toTypedArray(data));
         resolve(output.buffer);
       }
     } catch (error) {

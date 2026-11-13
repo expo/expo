@@ -8,11 +8,6 @@ class CustomReactNativeFactoryDelegate: ExpoReactNativeFactoryDelegate {
   let packagerUrl = URL(string: "http://localhost:8081/index.bundle?platform=ios&dev=true")
   let bundledUrl = Bundle.main.url(forResource: "main", withExtension: "jsbundle")
 
-  override func sourceURL(for bridge: RCTBridge) -> URL? {
-    // needed to return the correct URL for expo-dev-client.
-    bridge.bundleURL ?? bundleURL()
-  }
-
   override func bundleURL() -> URL? {
     if AppDelegate.isRunningWithPackager() {
       return packagerUrl

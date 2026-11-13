@@ -8,9 +8,14 @@ export function createPlatformSelectPlugin(
 ): DefinedNativePlugin {
   return nox.defineNativePlugin({
     name: 'expo-minify-platform-select',
+    contract: { syntax: { anyOf: ['CallExpression'] } },
     visitors: [
       nox.defineVisitor(
-        'CallExpression',
+        {
+          route: 'CallExpression',
+          where: { calleePath: { equals: 'Platform.select' } },
+          children: { arguments: { route: 'ObjectExpression' } },
+        },
         {
           scope: true,
           children: {

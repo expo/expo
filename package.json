@@ -12,6 +12,7 @@
     }
   },
   "scripts": {
+    "changeset": "changeset",
     "setup:docs": "./scripts/download-dependencies.sh --docs",
     "setup:native": "./scripts/download-dependencies.sh --native && ./scripts/setup-react-android.sh",
     "install:react-native-lab": "(([ \"$(ls -A react-native-lab/react-native)\" ] && (yarn --cwd react-native-lab/react-native install --frozen-lockfile || true) && yarn --cwd react-native-lab/react-native/packages/react-native-codegen build) || echo \"Skipping installing Node modules in react-native-lab/react-native (directory empty)\")",
@@ -22,27 +23,27 @@
     "lint": "./bin/expo-turbo lint",
     "format": "./bin/expo-turbo format",
     "test": "./bin/expo-turbo test",
+    "prepare-precompile-android": "et prepare-precompile-android",
     "preprepare": "node scripts/prepare.js",
     "prepare": "./bin/expo-turbo build"
   },
-  "dependencies": {
-    "expo-asset": "workspace:*",
-    "expo-modules-core": "workspace:*",
-    "jest-expo": "workspace:*",
-    "jsc-android": "^250231.0.0"
-  },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
+    "@changesets/cli": "3.0.3",
+    "@changesets/get-github-info": "1.0.1",
+    "@expo/internal-scripts": "workspace:*",
+    "@types/jest": "^30.0.0",
     "@types/node": "^22.14.0",
     "@types/react": "~19.3.0",
     "@vercel/ncc": "^0.38.4",
-    "expo-module-scripts": "workspace:*",
+    "expo-asset": "workspace:*",
+    "expo-modules-core": "workspace:*",
     "expotools": "workspace:*",
-    "jest": "^29.7.0",
+    "jest": "^30.0.0",
+    "jest-expo": "workspace:*",
+    "jsc-android": "^250231.0.0",
     "lint-staged": "^17.0.8",
     "oxfmt": "^0.55.0",
     "oxlint": "^1.79.0",
-    "prettier": "~3.8.3",
     "ts-node": "^10.9.2",
     "turbo": "2.10.12",
     "typescript": "^6.0.2"

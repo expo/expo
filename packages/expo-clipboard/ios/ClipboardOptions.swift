@@ -32,6 +32,12 @@ internal struct GetStringOptions: Record {
 internal struct SetStringOptions: Record {
   @Field
   var inputFormat: StringFormat = .plainText
+
+  @Field
+  var localOnly: Bool = false
+
+  @Field
+  var expiresAt: Double?
 }
 
 internal struct SetImageOptions: Record {}

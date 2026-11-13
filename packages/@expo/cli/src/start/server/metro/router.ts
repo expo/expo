@@ -1,7 +1,7 @@
 import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import chalk from 'chalk';
 import type { MiddlewareMatcher } from 'expo-server';
-import { sync as globSync } from 'glob';
+import fs from 'node:fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -107,24 +107,48 @@ export function isApiRouteConvention(name: string): boolean {
   return /\+api\.[tj]sx?$/.test(name);
 }
 
-export function getApiRoutesForDirectory(cwd: string) {
-  return globSync('**/*+api.@(ts|tsx|js|jsx)', {
-    cwd,
-    absolute: true,
-    dot: true,
-  });
+async function listRouteFiles(
+  parentPath: string,
+  include: (name: string) => boolean,
+  recursive = true
+): Promise<string[]> {
+  const files: string[] = [];
+  const queue = [path.resolve(parentPath)];
+  let targetPath: string | undefined;
+  while ((targetPath = queue.shift()) != null) {
+    try {
+      const entries = (await fs.promises.readdir(targetPath, { withFileTypes: true })).sort(
+        (a, b) => b.name.localeCompare(a.name)
+      );
+      for (const entry of entries) {
+        const filePath = path.join(targetPath, entry.name);
+        if (entry.isDirectory()) {
+          if (recursive) queue.push(filePath);
+        } else if ((entry.isFile() || entry.isSymbolicLink()) && include(entry.name)) {
+          files.push(filePath);
+        }
+      }
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      if (code !== 'ENOENT' && code !== 'ENOTDIR') throw error;
+    }
+  }
+  return files;
+}
+
+export async function getApiRoutesForDirectory(cwd: string) {
+  return listRouteFiles(cwd, isApiRouteConvention);
 }
 
 /**
  * Gets the +middleware file for a given directory.
  * @param cwd
  */
-export function getMiddlewareForDirectory(cwd: string, mode: EnvironmentMode): string | null {
-  const files = globSync('+middleware.@(ts|tsx|js|jsx)', {
-    cwd,
-    absolute: true,
-    dot: true,
-  });
+export async function getMiddlewareForDirectory(
+  cwd: string,
+  mode: EnvironmentMode
+): Promise<string | null> {
+  const files = await listRouteFiles(cwd, (name) => /^\+middleware\.[tj]sx?$/.test(name), false);
 
   if (files.length === 0) return null;
 
@@ -142,15 +166,10 @@ export function getMiddlewareForDirectory(cwd: string, mode: EnvironmentMode): s
 }
 
 // Used to emulate a context module, but way faster. TODO: May need to adjust the extensions to stay in sync with Metro.
-export function getRoutePaths(cwd: string) {
-  return globSync('**/*.@(ts|tsx|js|jsx)', {
-    cwd,
-    dot: true,
-  }).map((p) => './' + normalizePaths(p));
-}
-
-function normalizePaths(p: string) {
-  return p.replace(/\\/g, '/');
+export async function getRoutePaths(cwd: string) {
+  return (await listRouteFiles(cwd, (name) => /\.[tj]sx?$/.test(name))).map(
+    (file) => './' + toPosixPath(path.relative(cwd, file))
+  );
 }
 
 let hasWarnedAboutApiRouteOutput = false;

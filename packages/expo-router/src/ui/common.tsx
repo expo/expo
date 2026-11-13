@@ -1,9 +1,4 @@
-import {
-  findRouteNodeByName,
-  getValidInitialRouteName,
-  sortRoutesWithInitial,
-  type RouteNode,
-} from '../Route';
+import { sortRoutesWithInitial, type RouteNode } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
 import type { UrlObject } from '../global-state/getRouteInfoFromState';
 import { resolveNavigationDestination } from '../global-state/resolveNavigationDestination';
@@ -16,6 +11,7 @@ import type {
   ParamListBase,
   PartialState,
 } from '../react-navigation/native';
+import { findRouteNodeByName, getValidInitialRouteName } from '../routeNode';
 import type { Href } from '../types';
 import { type ScreenProps, useSortedScreens } from '../useScreens';
 import { Slot } from './Slot';

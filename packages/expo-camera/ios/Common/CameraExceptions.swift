@@ -42,6 +42,12 @@ internal final class CameraRecordingFailedException: Exception, @unchecked Senda
   }
 }
 
+internal final class CameraAlreadyRecordingException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "The camera is already recording. Call `stopRecording()` and wait for the previous `recordAsync()` to resolve before starting a new recording"
+  }
+}
+
 internal final class CameraMetadataDecodingException: Exception, @unchecked Sendable {
   override var reason: String {
     "Could not decode image metadata"

@@ -15,6 +15,8 @@ A modal sheet that slides up from the bottom of the screen. The sheet's visibili
 
 > **info** On iOS, to show a bottom sheet on top of another, nest the second `BottomSheet` inside the first sheet's content rather than beside it. This is a limitation of the underlying SwiftUI [`sheet`](<https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:)>) modifier. See [how to present multiple sheets](https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-multiple-sheets) for more information.
 
+> **info** On Android with 3-button navigation, the system draws a translucent contrast scrim over the navigation bar. As a result, the navigation bar does not take the sheet's `containerColor`. To remove the scrim, set [`enforceContrast`](../../navigation-bar/#configuration-in-app-config) to `false` in the `expo-navigation-bar` config plugin. This setting applies to the whole app.
+
 <PlatformTabsGroup>
 
 <PlatformSpotlight

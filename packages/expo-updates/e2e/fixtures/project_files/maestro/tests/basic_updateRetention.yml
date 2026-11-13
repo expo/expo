@@ -1,0 +1,69 @@
+appId: dev.expo.updatese2e
+onFlowStart:
+  - runFlow:
+      file: beforeEach.yml
+---
+- launchApp
+- copyTextFrom:
+    id: updateID
+- evalScript: ${output.embeddedId = maestro.copiedText; output.downloadedIds = []}
+- evalScript: ${output.retentionLimit = null}
+- repeat:
+    times: 10
+    while:
+      true: ${output.retentionLimit == null}
+    commands:
+      - tapOn:
+          id: readCachedUpdateIds
+      - evalScript: ${output.api.delay(200)}
+      - runFlow:
+          when:
+            visible:
+              id: cachedUpdates
+          commands:
+            - copyTextFrom:
+                id: cachedUpdates
+            - evalScript: ${output.retentionLimit = JSON.parse(maestro.copiedText).maxUpdatesToKeep}
+- assertTrue: ${output.retentionLimit != null}
+# Ignore the current embedded ID so the comparison counts only downloaded updates.
+# Four distinct manifests share a bundle, so inspect database IDs rather than asset counts.
+- repeat:
+    times: 4
+    commands:
+      - stopApp
+      - evalScript: ${output.nextId = output.api.serveManifest('test-update-basic', MAESTRO_PLATFORM)}
+      - launchApp
+      - extendedWaitUntil:
+          visible:
+            id: state.downloadedManifest.id
+            text: ${output.nextId}
+          timeout: 30000
+      - stopApp
+      - launchApp
+      - extendedWaitUntil:
+          visible:
+            id: updateID
+            text: ${output.nextId}
+          timeout: 60000
+      - evalScript: ${output.downloadedIds.push(output.nextId); output.expectedIds = JSON.stringify(output.downloadedIds.slice(-output.retentionLimit).sort()); output.cachedIds = ''}
+      # Reaping runs asynchronously after launch. Poll a fresh database snapshot with a bound.
+      - repeat:
+          times: 10
+          while:
+            true: ${output.cachedIds != output.expectedIds}
+          commands:
+            - tapOn:
+                id: readCachedUpdateIds
+            - evalScript: ${output.api.delay(200)}
+            - runFlow:
+                when:
+                  visible:
+                    id: cachedUpdates
+                commands:
+                  - copyTextFrom:
+                      id: cachedUpdates
+                  - evalScript: ${output.snapshot = JSON.parse(maestro.copiedText); if (!output.snapshot.pending && !output.snapshot.error) { output.cachedIds = JSON.stringify(output.snapshot.updateIds.filter(function(id) { return id != output.embeddedId; }).sort()); }}
+      - assertTrue:
+          condition: ${output.cachedIds == output.expectedIds}
+          label: Only the newest configured downloaded updates remain
+- stopApp

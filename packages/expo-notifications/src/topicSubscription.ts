@@ -10,10 +10,10 @@ import { warnOfExpoGoPushUsage } from './warnOfExpoGoPushUsage';
  * @platform android
  */
 export async function subscribeToTopicAsync(topic: string): Promise<null> {
+  warnOfExpoGoPushUsage();
   if (!TopicSubscriptionModule.subscribeToTopicAsync) {
     throw new UnavailabilityError('ExpoNotifications', 'subscribeToTopicAsync');
   }
-  warnOfExpoGoPushUsage();
 
   return TopicSubscriptionModule.subscribeToTopicAsync(topic);
 }
@@ -25,10 +25,10 @@ export async function subscribeToTopicAsync(topic: string): Promise<null> {
  * @platform android
  */
 export async function unsubscribeFromTopicAsync(topic: string): Promise<null> {
+  warnOfExpoGoPushUsage();
   if (!TopicSubscriptionModule.unsubscribeFromTopicAsync) {
     throw new UnavailabilityError('ExpoNotifications', 'unsubscribeFromTopicAsync');
   }
-  warnOfExpoGoPushUsage();
 
   return TopicSubscriptionModule.unsubscribeFromTopicAsync(topic);
 }

@@ -38,10 +38,6 @@ class DevLauncherDevServerHelper(
     return controller?.manifest?.getBundleURL() ?: super.getDevServerBundleURL(jsModulePath)
   }
 
-  override fun getDevServerSplitBundleURL(jsModulePath: String): String {
-    return controller?.manifest?.getBundleURL() ?: super.getDevServerSplitBundleURL(jsModulePath)
-  }
-
   override fun getSourceUrl(mainModuleName: String): String {
     return controller?.manifest?.getBundleURL() ?: super.getSourceUrl(mainModuleName)
   }

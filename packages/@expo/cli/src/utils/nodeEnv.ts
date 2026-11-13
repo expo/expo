@@ -5,6 +5,7 @@ import path from 'node:path';
 import { env as cliEnv } from './env';
 import { CommandError } from './errors';
 import { shouldReduceLogs } from './interactive';
+import { updateProjectRootMetadata } from './metadata';
 
 type EnvOutput = Record<string, string | undefined>;
 
@@ -20,7 +21,6 @@ declare module '2g' {
   interface EventRegistry {
     'env:mode': {
       nodeEnv: EnvironmentMode;
-      babelEnv: string;
       mode: EnvironmentMode;
     };
     'env:load': {
@@ -40,12 +40,10 @@ function relativeFiles(files: string[]) {
 
 export function setNodeEnv(mode: EnvironmentMode) {
   env.setNodeEnv(mode);
-  process.env.BABEL_ENV = process.env.BABEL_ENV || mode;
   globalThis.__DEV__ = mode === 'development';
 
   event('mode', {
     nodeEnv: mode,
-    babelEnv: process.env.BABEL_ENV,
     mode,
   });
 }
@@ -72,6 +70,7 @@ let prevEnvKeys: Set<string> | undefined;
 
 /** Set the mode before loading env files. */
 export function loadEnvFiles(projectRoot: string, options: LoadEnvFilesOptions) {
+  updateProjectRootMetadata(projectRoot);
   setNodeEnv(options.mode);
 
   const params = {

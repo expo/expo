@@ -1,6 +1,6 @@
 import { act, renderHook } from '@testing-library/react-native';
 
-import { unstable_navigationEvents } from '../../../navigationEvents';
+import { internalNavigationEvents } from '../../../global-state/internalNavigationEvents';
 import type { StackNavigationState } from '../../../react-navigation';
 import { LinkPreviewContextProvider, useLinkPreviewContext } from '../LinkPreviewContext';
 
@@ -20,13 +20,13 @@ const state = (
 
 it.each(['missing', 'preloaded'])(
   'clears animation suppression after a %s preview falls back to ordinary navigation',
-  (kind) => {
-    const { result } = renderHook(useLinkPreviewContext, {
+  async (kind) => {
+    const { result } = await renderHook(useLinkPreviewContext, {
       wrapper: LinkPreviewContextProvider,
     });
-    act(() => result.current.setOpenPreviewKey('preview'));
-    act(() =>
-      unstable_navigationEvents.emit('actionDispatched', {
+    await act(() => result.current.setOpenPreviewKey('preview'));
+    await act(() =>
+      internalNavigationEvents.emit('actionDispatched', {
         actionType: 'NAVIGATE',
         payload: { __internal__PreviewKey: 'preview' },
         state: state(undefined, kind === 'preloaded' ? [route('preview')] : []),
@@ -37,13 +37,13 @@ it.each(['missing', 'preloaded'])(
   }
 );
 
-it('retains a promoted key in a nested owning stack until its transition ends', () => {
-  const { result } = renderHook(useLinkPreviewContext, {
+it('retains a promoted key in a nested owning stack until its transition ends', async () => {
+  const { result } = await renderHook(useLinkPreviewContext, {
     wrapper: LinkPreviewContextProvider,
   });
-  act(() => result.current.setOpenPreviewKey('preview'));
-  act(() =>
-    unstable_navigationEvents.emit('actionDispatched', {
+  await act(() => result.current.setOpenPreviewKey('preview'));
+  await act(() =>
+    internalNavigationEvents.emit('actionDispatched', {
       actionType: 'NAVIGATE',
       payload: { __internal__PreviewKey: 'preview' },
       state: {
@@ -55,13 +55,13 @@ it('retains a promoted key in a nested owning stack until its transition ends', 
   expect(result.current.openPreviewKey).toBe('preview');
 });
 
-it('does not let an earlier navigation report clear a newer preview', () => {
-  const { result } = renderHook(useLinkPreviewContext, {
+it('does not let an earlier navigation report clear a newer preview', async () => {
+  const { result } = await renderHook(useLinkPreviewContext, {
     wrapper: LinkPreviewContextProvider,
   });
-  act(() => result.current.setOpenPreviewKey('new-preview'));
-  act(() =>
-    unstable_navigationEvents.emit('actionDispatched', {
+  await act(() => result.current.setOpenPreviewKey('new-preview'));
+  await act(() =>
+    internalNavigationEvents.emit('actionDispatched', {
       actionType: 'NAVIGATE',
       payload: { __internal__PreviewKey: 'old-preview' },
       state: state(),

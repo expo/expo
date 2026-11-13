@@ -25,6 +25,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
+import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 
@@ -279,6 +280,155 @@ class BaseObservabilityManagerTest {
 
   // endregion
 
+  // region Error sample rate tests
+
+  @Test
+  fun `when only errors are in-sample, only exception logs are dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    stubLogDispatch(logs = listOf(log(1, "info"), log(2, "js.exception"), log(3, "native.exception")))
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(3, logCursor)
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(
+        match { events -> events.single().logs.map { it.name } == listOf("js.exception", "native.exception") }
+      )
+    }
+  }
+
+  @Test
+  fun `when in-sample for sampleRate, all logs are dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 1.0, errorSampleRate = 0.0)
+    stubLogDispatch(logs = listOf(log(1, "info"), log(2, "js.exception"), log(3, "native.exception")))
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(3, logCursor)
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(
+        match { events -> events.single().logs.map { it.name } == listOf("info", "js.exception", "native.exception") }
+      )
+    }
+  }
+
+  @Test
+  fun `when only errors are in-sample, logs are marked as not in the sampleRate sample`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    stubLogDispatch(logs = listOf(log(1, "js.exception"), log(2, "native.exception")))
+
+    createManager().dispatchUnsentLogs()
+
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(
+        match { events ->
+          events.single().logs.map { it.attributes?.get("expo.in_sample_rate") } ==
+            listOf(JsonPrimitive(false), JsonPrimitive(false))
+        }
+      )
+    }
+  }
+
+  @Test
+  fun `when in-sample for sampleRate, all logs are marked as in the sampleRate sample`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 1.0, errorSampleRate = 0.0)
+    stubLogDispatch(logs = listOf(log(1, "info"), log(2, "js.exception"), log(3, "native.exception")))
+
+    createManager().dispatchUnsentLogs()
+
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(
+        match { events ->
+          events.single().logs.map { it.attributes?.get("expo.in_sample_rate") } ==
+            listOf(JsonPrimitive(true), JsonPrimitive(true), JsonPrimitive(true))
+        }
+      )
+    }
+  }
+
+  @Test
+  fun `when errorSampleRate is null, exception logs follow sampleRate`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.5, errorSampleRate = null)
+    stubLogDispatch(logs = listOf(log(1, "js.exception")))
+
+    createManager(deterministicUniformValue = 0.8).dispatchUnsentLogs()
+
+    assertEquals(1, logCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatchLogs(any()) }
+  }
+
+  @Test
+  fun `when dispatchingEnabled is false, errorSampleRate has no effect`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns
+      PersistedConfig(dispatchingEnabled = false, errorSampleRate = 1.0)
+    stubLogDispatch(logs = listOf(log(1, "js.exception")))
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(1, logCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatchLogs(any()) }
+  }
+
+  @Test
+  fun `on a debug build without dispatchInDebug, errorSampleRate has no effect`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(errorSampleRate = 1.0)
+    stubLogDispatch(logs = listOf(log(1, "js.exception")))
+
+    createManager(isDebugBuild = true).dispatchUnsentLogs()
+
+    assertEquals(1, logCursor)
+    coVerify(exactly = 0) { eventDispatcher.dispatchLogs(any()) }
+  }
+
+  @Test
+  fun `a chunk with only out-of-sample logs is skipped and the next chunk is dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    coEvery { sessionManager.getMaxLogId() } returns 4
+    coEvery { sessionManager.getLogs(-1, 2) } returns listOf(log(1, "one"), log(2, "two"))
+    coEvery { sessionManager.getLogs(2, 2) } returns listOf(log(3, "js.exception"), log(4, "four"))
+    coEvery { sessionManager.getLogs(4, 2) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
+
+    createManager(chunkSize = 2).dispatchUnsentLogs()
+
+    assertEquals(4, logCursor)
+    coVerify(exactly = 1) {
+      eventDispatcher.dispatchLogs(match { events -> events.single().logs.map { it.name } == listOf("js.exception") })
+    }
+  }
+
+  @Test
+  fun `a retryable failure keeps the cursor before in-sample exception logs`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    stubLogDispatch(
+      logs = listOf(log(1, "info"), log(2, "js.exception")),
+      result = DispatchResult.RetryableFailure(60_000)
+    )
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(-1, logCursor)
+  }
+
+  @Test
+  fun `when only errors are in-sample, metrics and spans are not dispatched`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(sampleRate = 0.0, errorSampleRate = 1.0)
+    coEvery { sessionManager.getMaxMetricId() } returns 10
+    coEvery { sessionManager.getMaxSpanId() } returns 42
+    val manager = createManager()
+
+    manager.dispatchUnsentMetrics()
+    manager.dispatchUnsentSpans()
+
+    assertEquals(10, metricCursor)
+    coVerify(exactly = 1) { sessionManager.deleteSpansUpTo(42) }
+    coVerify(exactly = 0) { eventDispatcher.dispatch(any()) }
+    coVerify(exactly = 0) { eventDispatcher.dispatchSpans(any()) }
+  }
+
+  // endregion
+
   // region Fetching and dispatch tests
 
   @Test
@@ -371,7 +521,11 @@ class BaseObservabilityManagerTest {
     coEvery { sessionManager.getMetrics(2, 4) } returns metrics.drop(2)
     coEvery { sessionManager.getMetrics(4, 4) } returns emptyList()
     coEvery { sessionManager.getSessions(any()) } answers {
-      if ("valid-session" in firstArg<Collection<String>>()) listOf(session(id = "valid-session")) else emptyList()
+      if ("valid-session" in firstArg<Collection<String>>()) {
+        listOf(session(id = "valid-session"))
+      } else {
+        emptyList()
+      }
     }
     coEvery { eventDispatcher.dispatch(any()) } returnsMany listOf(
       DispatchResult.PayloadTooLarge,
@@ -534,7 +688,11 @@ class BaseObservabilityManagerTest {
     coEvery { sessionManager.getLogs(2, 4) } returns logs.drop(2)
     coEvery { sessionManager.getLogs(4, 4) } returns emptyList()
     coEvery { sessionManager.getSessions(any()) } answers {
-      if ("valid-session" in firstArg<Collection<String>>()) listOf(session(id = "valid-session")) else emptyList()
+      if ("valid-session" in firstArg<Collection<String>>()) {
+        listOf(session(id = "valid-session"))
+      } else {
+        emptyList()
+      }
     }
     coEvery { eventDispatcher.dispatchLogs(any()) } returnsMany listOf(
       DispatchResult.PayloadTooLarge,
@@ -799,6 +957,71 @@ class BaseObservabilityManagerTest {
 
   // endregion
 
+  // region Ignored names tests
+
+  @Test
+  fun `ignored metrics are consumed across mixed and all ignored chunks`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(
+      ignoredMetrics = listOf("expo.app_startup.tti")
+    )
+    val first = listOf(metric(1, "timeToInteractive", category = "appStartup"), metric(2, "visible"))
+    val second = listOf(metric(3, "timeToInteractive", category = "appStartup"))
+    coEvery { sessionManager.getMetrics(-1, 2) } returns first
+    coEvery { sessionManager.getMetrics(2, 2) } returns second
+    coEvery { sessionManager.getMetrics(3, 2) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatch(any()) } returns DispatchResult.Success
+
+    createManager(chunkSize = 2).dispatchUnsentMetrics()
+
+    assertEquals(3, metricCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatch(match { it.single().metrics.map { metric -> metric.name } == listOf("visible") }) }
+  }
+
+  @Test
+  fun `retryable mixed metrics keep ignored rows in the batch`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(ignoredMetrics = listOf("expo.app_startup.tti"))
+    stubMetricDispatch(metrics = listOf(metric(1, "timeToInteractive", category = "appStartup"), metric(2, "visible")), result = DispatchResult.RetryableFailure(null))
+
+    createManager().dispatchUnsentMetrics()
+
+    assertEquals(-1, metricCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatch(any()) }
+  }
+
+  @Test
+  fun `ignored events apply after error sampling and consume all ignored chunks`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(
+      sampleRate = 0.0, errorSampleRate = 1.0,
+      ignoredEvents = listOf("js.exception")
+    )
+    val first = listOf(log(1, "info"), log(2, "js.exception"), log(3, "native.exception"))
+    val second = listOf(log(4, "js.exception"))
+    coEvery { sessionManager.getLogs(-1, 3) } returns first
+    coEvery { sessionManager.getLogs(3, 3) } returns second
+    coEvery { sessionManager.getLogs(4, 3) } returns emptyList()
+    coEvery { sessionManager.getSessions(any()) } returns listOf(session())
+    coEvery { eventDispatcher.dispatchLogs(any()) } returns DispatchResult.Success
+
+    createManager(chunkSize = 3).dispatchUnsentLogs()
+
+    assertEquals(4, logCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatchLogs(match { it.single().logs.map { log -> log.name } == listOf("native.exception") }) }
+  }
+
+  @Test
+  fun `retryable mixed logs keep ignored rows in the batch`() = runTest {
+    every { ObservePreferences.getConfig(any()) } returns PersistedConfig(ignoredEvents = listOf("hidden"))
+    stubLogDispatch(logs = listOf(log(1, "hidden"), log(2, "visible")), result = DispatchResult.RetryableFailure(null))
+
+    createManager().dispatchUnsentLogs()
+
+    assertEquals(-1, logCursor)
+    coVerify(exactly = 1) { eventDispatcher.dispatchLogs(any()) }
+  }
+
+  // endregion
+
   // region Helper methods
 
   private fun stubMetricDispatch(
@@ -915,7 +1138,11 @@ class BaseObservabilityManagerTest {
     coEvery { eventDispatcher.dispatchSpans(any()) } answers {
       val batches = firstArg<List<SpanBatch>>()
       sentSizes.add(batches.sumOf { it.spans.size })
-      if (sentSizes.size == 1) DispatchResult.PayloadTooLarge else DispatchResult.Success
+      if (sentSizes.size == 1) {
+        DispatchResult.PayloadTooLarge
+      } else {
+        DispatchResult.Success
+      }
     }
 
     createManager().dispatchUnsentSpans()
@@ -1068,10 +1295,10 @@ class BaseObservabilityManagerTest {
     coEvery { eventDispatcher.dispatchSpans(any()) } returns result
   }
 
-  private fun metric(id: Long, name: String, sessionId: String = "session") = Metric(
+  private fun metric(id: Long, name: String, sessionId: String = "session", category: String = "test") = Metric(
     sessionId = sessionId,
     timestamp = "2025-01-01T00:00:00Z",
-    category = "test",
+    category = category,
     name = name,
     value = 1.0,
     id = id

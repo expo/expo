@@ -55,19 +55,17 @@ it('prefers native constraints without letting repair or step budgets weaken cat
   );
 });
 
-it('uses validated repair for browser schemas with numeric bounds', async () => {
+it('uses native constraints for browser schemas with numeric bounds', async () => {
   nativeModule.getAvailabilityAsync.mockResolvedValue(
     availableModel({ provider: 'browser-prompt-api', runtimeToolDeclarations: 'unsupported' })
   );
-  const [completion] = calls('3');
+  owner.generateAsync.mockResolvedValue(nativeResult('3'));
+  const bounded = schema.number({ minimum: 1, maximum: 5 });
   await expect(
-    generateAsync('pick a small number', {
-      schema: schema.number({ minimum: 1, maximum: 5 }),
-      maximumRetries: 0,
-    })
-  ).resolves.toMatchObject({ value: 3, format: 'validated' });
-  expect(owner.generateAsync).not.toHaveBeenCalled();
-  expect(JSON.parse(completion!.generateAsync.mock.calls[0]![2]).schema).toBeUndefined();
+    generateAsync('pick a small number', { schema: bounded, maximumRetries: 0 })
+  ).resolves.toMatchObject({ value: 3, format: 'constrained' });
+  expect(nativeModule.createSessionAsync).toHaveBeenCalledTimes(1);
+  expect(JSON.parse(owner.generateAsync.mock.calls[0]![2]).schema).toEqual(bounded);
 });
 
 it('keeps native tools and constraints together when both are available', async () => {

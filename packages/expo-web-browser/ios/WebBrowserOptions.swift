@@ -4,32 +4,26 @@ import SafariServices
 #endif
 import ExpoModulesCore
 
-struct WebBrowserOptions: Record {
-  @Field
+@Record
+struct WebBrowserOptions {
   var readerMode: Bool = false
 
-  @Field
   var enableBarCollapsing: Bool = false
 
-  @Field
   var dismissButtonStyle: DismissButtonStyle = .done
 
-  @Field
   var toolbarColor: UIColor?
 
-  @Field
   var controlsColor: UIColor?
 
   // Defaults to .overFullScreen to keep backwards compatibility
-  @Field
   var presentationStyle: PresentationStyle = .overFullScreen
 }
 
-struct AuthSessionOptions: Record {
-  @Field
+@Record
+struct AuthSessionOptions {
   var preferEphemeralSession: Bool = false
 
-  @Field
   var preferUniversalLinks: Bool = false
 }
 
@@ -79,6 +73,10 @@ internal enum PresentationStyle: String, Enumerable {
     case .overCurrentContext:
       return .overCurrentContext
     case .popover:
+      // On iPadOS 27, SFSafariViewController never loads the URL inside a popover.
+      if #available(iOS 27, *), UIDevice.current.userInterfaceIdiom == .pad {
+        return .formSheet
+      }
       return .popover
     case .none:
       return .none

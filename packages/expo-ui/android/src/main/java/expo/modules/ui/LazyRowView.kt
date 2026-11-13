@@ -58,7 +58,8 @@ class LazyRowView(context: Context, appContext: AppContext) :
     val padding = props.contentPadding.value
 
     LazyRow(
-      modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher),
+      modifier = ModifierRegistry.applyModifiers(props.modifiers.value, appContext, this@Content, globalEventDispatcher)
+        .lazyRecycledItemsCrossAxis(this@LazyRowView, isVertical = false),
       horizontalArrangement = horizontalArrangement,
       verticalAlignment = verticalAlignment,
       contentPadding = PaddingValues(
@@ -71,6 +72,10 @@ class LazyRowView(context: Context, appContext: AppContext) :
       val count = composableChildCount.intValue
       for (index in 0..<count) {
         val child = getChildAt(index) as? ExpoComposeView<*> ?: continue
+        if (child is LazyItemsView) {
+          lazyRecycledItems(child, this@Content, isVertical = false)
+          continue
+        }
         item {
           with(this@Content) {
             with(child) {

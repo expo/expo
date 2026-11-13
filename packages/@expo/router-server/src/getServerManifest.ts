@@ -46,7 +46,7 @@ type FlatNode = {
   route: RouteNode;
 };
 
-type GetServerManifestOptions = Pick<Options, 'headers' | 'pageHeaders'>;
+type GetServerManifestOptions = Pick<Options, 'origin' | 'headers' | 'pageHeaders'>;
 
 // Given a nested route tree, return a flattened array of all routes that can be matched.
 export function getServerManifest(
@@ -148,6 +148,15 @@ export function getServerManifest(
     manifest.middleware = {
       file: route.middleware.contextKey,
     };
+  }
+
+  if (typeof options?.origin === 'string') {
+    const origin = URL.canParse(options.origin)
+      ? new URL(options.origin).origin
+      : options.origin.trim();
+    if (origin && origin !== 'null') {
+      manifest.origin = origin;
+    }
   }
 
   if (options?.headers) {

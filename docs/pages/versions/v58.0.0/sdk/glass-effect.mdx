@@ -14,10 +14,6 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 React components that render native iOS liquid glass effect using [`UIVisualEffectView`](https://developer.apple.com/documentation/uikit/uivisualeffectview). Supports customizable glass styles and tint color.
 
-## Known issues
-
-- Setting `opacity` to `0` on `GlassView` or any of its parent views causes the glass effect to not render at all. To fade in/out the glass effect, use the built-in [`animate` and `animationDuration`](#animated-glass-effect-style) props in `glassEffectStyle` instead of changing opacity. If you still want to use `opacity`, see the [opacity animation workaround](#opacity-animation-workaround) example. For more details, see [Apple's documentation](https://developer.apple.com/documentation/uikit/uivisualeffectview#Set-the-correct-alpha-value) and [GitHub issue #41024](https://github.com/expo/expo/issues/41024).
-
 ## Installation
 
 <APIInstallSection />
@@ -239,7 +235,7 @@ const styles = StyleSheet.create({
 
 ### Opacity animation workaround
 
-Since setting `opacity` to `0` on `GlassView` or its parent views causes the glass effect to not render at all, you can use Reanimated to animate a wrapper view's opacity while toggling the `glassEffectStyle` between the desired style and `'none'`.
+Apple does not recommend `opacity` values below `1` on `GlassView` or its parent views, as described in [Set the correct alpha value](https://developer.apple.com/documentation/uikit/uivisualeffectview#Set-the-correct-alpha-value). At very low opacity, the glass effect does not render. To animate opacity anyway, use Reanimated to animate a wrapper view's opacity while toggling the `glassEffectStyle` between the desired style and `'none'`.
 
 <SnackInline label='Glass effect opacity animation workaround' dependencies={['expo-glass-effect', 'react-native-reanimated']} platforms={['ios']}>
 
@@ -259,7 +255,7 @@ export default function GlassOpacityAnimationExample() {
   const fadeOpacity = useSharedValue(0);
 
   const glassViewProps = useAnimatedProps(() => {
-    const glassEffectStyle = fadeOpacity.value > 0.01 ? 'regular' : 'none';
+    const glassEffectStyle = fadeOpacity.value > 0.02 ? 'regular' : 'none';
     return {
       glassEffectStyle,
       style: {

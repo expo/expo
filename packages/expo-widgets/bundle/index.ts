@@ -48,9 +48,16 @@ function normalizeWidgetTree(node: unknown, position: string | number = 0): unkn
     };
   }
   if (node && typeof node === 'object') {
-    // Live Activity layouts return a map of section names to roots.
+    // Live Activities and notifications return section maps. Native renderers need each root
+    // to be an element, even when a section returns an array of children.
     return Object.fromEntries(
-      Object.entries(node).map(([section, child]) => [section, normalizeWidgetTree(child, section)])
+      Object.entries(node).map(([section, child]) => [
+        section,
+        normalizeWidgetTree(
+          Array.isArray(child) ? jsxRuntime.jsx(React.Fragment, { children: child }) : child,
+          section
+        ),
+      ])
     );
   }
   return node;
@@ -77,6 +84,16 @@ const __expoWidgetHandlePress = function (
   const { target, ...renderEnvironment } = environment;
 
   function findAndCallOnPress(node?: Dictionary): Dictionary | undefined {
+    if (node && typeof node === 'object' && !('type' in node)) {
+      for (const section of Object.values(node)) {
+        const result = findAndCallOnPress(section as Dictionary);
+        if (result) {
+          return result;
+        }
+      }
+      return undefined;
+    }
+
     const props = node?.props as {
       onButtonPress?: () => Dictionary;
       onButtonPressed?: () => Dictionary;

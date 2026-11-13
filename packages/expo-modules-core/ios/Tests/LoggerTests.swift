@@ -56,6 +56,20 @@ struct LoggerTests {
 
     loggerHandler.clear()
   }
+
+  @Test
+  func `should skip logs below the minimum level`() {
+    let loggerHandler = TestLogHandler()
+    let logger = Logger(logHandlers: [loggerHandler])
+    logger.minLevel = .warn
+
+    logger.info("hello")
+    #expect(loggerHandler.logEntries.isEmpty)
+
+    logger.warn("hello")
+    #expect(loggerHandler.logEntries == [TestLogHandler.TestLogHandlerLogEntry(type: .warn, message: "hello")])
+    loggerHandler.clear()
+  }
 }
 
 // MARK: - Test Helpers

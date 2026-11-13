@@ -3,6 +3,7 @@ import type { ColorValue, ImageSourcePropType, StyleProp } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { NativeStackHeaderItemButton } from '../../../react-navigation/native-stack';
+import type { ToolbarAxisBehavior } from '../../../toolbar/axisBehavior';
 import { getFirstChildOfType } from '../../../utils/children';
 import { convertTextStyleToRNTextStyle, type BasicTextStyle } from '../../../utils/font';
 import { StackToolbarBadge, StackToolbarIcon, StackToolbarLabel } from './toolbar-primitives';
@@ -42,6 +43,21 @@ export interface StackHeaderItemSharedProps {
    * @default 'plain'
    */
   variant?: 'plain' | 'done' | 'prominent';
+  /**
+   * Controls whether this item can move into the vertical bar that iOS 27.1 shows on iPhone Duo.
+   * `automatic` lets the system decide from the item's content. `horizontalOnly` keeps the item in
+   * the horizontal bar and hides it when no horizontal bar is present. `verticalPreferred` prefers
+   * the vertical bar when both bars are present.
+   *
+   * Header items need a `react-native-screens` release that reads `axisBehavior`. Until then, they
+   * stay on `automatic`.
+   *
+   * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarbuttonitem/axisbehavior-swift.property) for more information.
+   *
+   * @default 'automatic'
+   * @platform ios 27.1+
+   */
+  axisBehavior?: ToolbarAxisBehavior;
 }
 
 // We need to pick these properties, as the SharedHeaderItem is not exported by React Navigation
@@ -56,6 +72,7 @@ type RNSharedHeaderItem = Pick<
   | 'width'
   | 'hidesSharedBackground'
   | 'sharesBackground'
+  | 'axisBehavior'
   | 'identifier'
   | 'badge'
   | 'accessibilityLabel'
@@ -84,6 +101,18 @@ export function extractIconRenderingMode(
     return iconComponentProps.renderingMode;
   }
   return undefined;
+}
+
+/**
+ * Warns in development that iOS header items ignore `image`. Only `placement="bottom"` supports it.
+ * @internal
+ */
+export function warnIfHeaderItemHasImage(componentName: string, image: unknown) {
+  if (process.env.NODE_ENV !== 'production' && image != null) {
+    console.warn(
+      `${componentName} does not support the image prop in header toolbars (placement="left" or "right") on iOS. Use the icon prop instead.`
+    );
+  }
 }
 
 const PRIMITIVE_TYPES = ['string', 'number'];

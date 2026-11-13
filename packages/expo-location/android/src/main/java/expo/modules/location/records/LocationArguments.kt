@@ -36,6 +36,11 @@ internal class LocationLastKnownOptions(
 ) : Record, Serializable
 
 @OptimizedRecord
+internal class HeadingOptions(
+  @Field var headingFilter: Double? = null
+) : Record, Serializable
+
+@OptimizedRecord
 internal open class LocationOptions(
   @Field var accuracy: Int = ACCURACY_BALANCED,
   @Field var distanceInterval: Int? = null,
@@ -98,6 +103,17 @@ internal class LocationTaskServiceOptions(
     "killServiceOnDestroy" to killServiceOnDestroy,
     "notificationColor" to notificationColor
   )
+}
+
+@OptimizedRecord
+internal class MotionActivityTaskOptions(
+  @Field var foregroundService: LocationTaskServiceOptions? = null
+) : Record, Serializable {
+  internal fun toMutableMap(): MutableMap<String, Any?> = mutableMapOf<String, Any?>().apply {
+    foregroundService?.let {
+      this["foregroundService"] = it.toMutableMap()
+    }
+  }
 }
 
 @OptimizedRecord

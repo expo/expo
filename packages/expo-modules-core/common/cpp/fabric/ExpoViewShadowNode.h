@@ -10,6 +10,7 @@
 #include <react/renderer/core/LayoutableShadowNode.h>
 
 #include <algorithm>
+#include <memory>
 
 #include "ContentOriginRegistry.h"
 #include "ExpoViewEventEmitter.h"
@@ -94,6 +95,18 @@ public:
     return it != viewProps->propsMap.end() && it->second.isBool() && it->second.getBool();
   }
 
+  // Set by `MenuView`'s `RNHostView`, whose `Host` is sized by Yoga instead of its content.
+  static bool boundedByHost(const react::Props::Shared &props) {
+    auto const *viewProps = dynamic_cast<const ExpoViewProps *>(props.get());
+
+    if (viewProps == nullptr) {
+      return false;
+    }
+
+    auto const it = viewProps->propsMap.find("expoInternalBoundedByHost");
+    return it != viewProps->propsMap.end() && it->second.isBool() && it->second.getBool();
+  }
+
   // Yoga calls this method for RNHostView when it has matchContents set
   react::Size measureContent(
     const react::LayoutContext &layoutContext,
@@ -104,13 +117,20 @@ public:
       return ConcreteViewShadowNode::measureContent(layoutContext, layoutConstraints);
     }
 
-    auto const *content = hostedContent();
+    auto const content = hostedContent();
 
     if (content == nullptr) {
       return {};
     }
 
-    return content->measure(layoutContext, hostedContentConstraints(*content));
+    auto constraints = hostedContentConstraints(*content);
+
+    if (boundedByHost(this->getProps())) {
+      // Like any Yoga child, the content can't be bigger than the space the `Host` offers.
+      constrainToMaximumSize(constraints, layoutConstraints.maximumSize);
+    }
+
+    return content->measure(layoutContext, constraints);
   }
 
   // We override this so RNHostView can lay out it's children
@@ -122,18 +142,21 @@ public:
       return;
     }
 
-    auto const *content = hostedContent();
+    auto const content = hostedContent();
 
     if (content == nullptr) {
       return;
     }
 
     // Use the same constraint that was used to measure the content, so that the layout is consistent with the measurement
+    auto constraints = hostedContentConstraints(*content);
+
+    if (boundedByHost(this->getProps())) {
+      constrainToMaximumSize(constraints, this->getLayoutMetrics().frame.size);
+    }
+
     auto const clonedContent = content->clone({});
-    static_cast<react::LayoutableShadowNode &>(*clonedContent).layoutTree(
-      layoutContext,
-      hostedContentConstraints(*content)
-    );
+    static_cast<react::LayoutableShadowNode &>(*clonedContent).layoutTree(layoutContext, constraints);
 
     this->replaceChild(*content, clonedContent, 0);
 
@@ -144,12 +167,22 @@ public:
   }
 
 private:
-  const react::LayoutableShadowNode *hostedContent() const {
+  static void constrainToMaximumSize(react::LayoutConstraints &constraints, react::Size maximumSize) {
+    constraints.maximumSize.width = std::min(constraints.maximumSize.width, maximumSize.width);
+    constraints.maximumSize.height = std::min(constraints.maximumSize.height, maximumSize.height);
+    constraints.minimumSize.width = std::min(constraints.minimumSize.width, constraints.maximumSize.width);
+    constraints.minimumSize.height = std::min(constraints.minimumSize.height, constraints.maximumSize.height);
+  }
+
+  // Owning on purpose: `layout()` calls `replaceChild()`, which overwrites this node's only strong
+  // reference to the content — `RNHostView` is a leaf Yoga node, so Yoga keeps no second one, and
+  // `YogaLayoutableShadowNode::replaceChild()` reads `oldChild` right after.
+  std::shared_ptr<const react::LayoutableShadowNode> hostedContent() const {
     auto const &children = this->getChildren();
 
     return children.empty()
       ? nullptr
-      : dynamic_cast<const react::LayoutableShadowNode *>(children.front().get());
+      : std::dynamic_pointer_cast<const react::LayoutableShadowNode>(children.front());
   }
 
   react::LayoutDirection resolvedLayoutDirection() const {
@@ -159,6 +192,20 @@ private:
   }
 
   react::LayoutConstraints hostedContentConstraints(const react::ShadowNode &content) const {
+    auto constraints = contentStyleConstraints(content);
+
+    // An unmatched axis has the size SwiftUI or Compose gave the host (from `setViewSize`), so lay
+    // the content out at exactly that size. This overrides the content's own min/max on that axis.
+    auto const &ownStyle = this->yogaNode_.style();
+    constrainExactlyToPoints(ownStyle.dimension(facebook::yoga::Dimension::Width),
+                             constraints.minimumSize.width, constraints.maximumSize.width);
+    constrainExactlyToPoints(ownStyle.dimension(facebook::yoga::Dimension::Height),
+                             constraints.minimumSize.height, constraints.maximumSize.height);
+
+    return constraints;
+  }
+
+  react::LayoutConstraints contentStyleConstraints(const react::ShadowNode &content) const {
     react::LayoutConstraints constraints{};
     constraints.layoutDirection = resolvedLayoutDirection();
 
@@ -180,6 +227,14 @@ private:
                       constraints.maximumSize.height);
 
     return constraints;
+  }
+
+  static void constrainExactlyToPoints(facebook::yoga::StyleSizeLength length,
+                                       react::Float &minimum,
+                                       react::Float &maximum) {
+    if (length.isPoints() && length.value().isDefined()) {
+      minimum = maximum = std::max<react::Float>(0, length.value().unwrap());
+    }
   }
 
   static void constrainToPoints(facebook::yoga::StyleSizeLength length, react::Float &constraint) {

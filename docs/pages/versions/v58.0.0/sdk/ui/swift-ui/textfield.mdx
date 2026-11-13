@@ -62,6 +62,8 @@ Pass an `onTextChange` worklet to transform or validate input and write the resu
 
 > **Note:** Worklets require installing [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/).
 
+> **warning** Without the `'worklet'` directive, `onTextChange` runs asynchronously on the JavaScript thread, and a write to `text.value` from the JavaScript thread reaches the UI thread later. Do not write the reported value back to `text`, for example from a `useEffect` that copies React state into the field. When the user types quickly, that write can arrive after newer keystrokes and remove them. From the JavaScript thread, write to `text` only to set a new value, such as from a preset button.
+
 <ComponentExample
   title="ControlledTextFieldExample.tsx"
   src="/static/images/expo-ui/examples/textfield-controlled-ios-light.webp"

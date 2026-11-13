@@ -81,6 +81,27 @@ After changing the setting, clear the Metro cache with `--clear` when starting o
   }}
 />
 
+## Granular bundle splitting
+
+In SDK 58 and later, you can opt into experimental granular bundle splitting for production web exports. By default, Expo collects dependencies shared by multiple async routes into a common chunk. Granular splitting groups shared dependencies by the routes that need them, so a route can download only the modules that it uses.
+
+Set `experiments.chunking.mode` to `granular` in your app config and keep async routes enabled on web:
+
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "chunking": { "mode": "granular" }
+    },
+    "plugins": [["expo-router", { "asyncRoutes": { "web": true } }]]
+  }
+}
+```
+
+Granular splitting applies only to production web client exports with bundle splitting enabled. Development bundles, native bundles, and DOM component bundles continue to use the legacy strategy. Projects that enable React Server Components use the legacy strategy for every bundle. If a web worker or one of its dependencies contains an asynchronous import, Expo falls back to legacy splitting for the entire bundle graph.
+
+Remove `experiments.chunking` or set its `mode` to `legacy` to restore the default strategy. This setting is separate from `asyncRoutes`: enabling async routes does not opt into granular splitting.
+
 ## Static rendering
 
 Static rendering is supported in production web apps by rendering all Suspense boundaries synchronously in Node.js, then linking all of async chunks together in the HTML based on all the selected routes for a given HTML file. This ensures you don't encounter a waterfall of loading states on server navigations. Subsequent navigations will recursively load any missing chunks.

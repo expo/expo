@@ -41,7 +41,11 @@ object AppMetricsPreferences {
   }
 
   fun getDefaultEnvironment(): String? {
-    return if (BuildConfig.DEBUG) "development" else null
+    return if (BuildConfig.DEBUG) {
+      "development"
+    } else {
+      null
+    }
   }
 
   /**

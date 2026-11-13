@@ -36,18 +36,12 @@ const defaultProps: Required<NavigationBarProps> = {
 
 // Merges the entries stack
 function mergeEntriesStack(entriesStack: NavigationBarProps[]) {
-  return entriesStack.reduce<{
-    style: NavigationBarStyle | undefined;
-    hidden: boolean | undefined;
-  }>(
+  return entriesStack.reduce<Required<NavigationBarProps>>(
     (prev, cur) => ({
       style: cur.style ?? prev.style,
       hidden: cur.hidden ?? prev.hidden,
     }),
-    {
-      style: undefined,
-      hidden: undefined,
-    }
+    { ...defaultProps }
   );
 }
 
@@ -70,9 +64,7 @@ const currentValues: {
   hidden: undefined,
 };
 
-export function setStyle(style: NavigationBarStyle) {
-  defaultProps.style = style;
-
+function applyStyle(style: NavigationBarStyle) {
   const resolvedStyle = resolveStyle(style);
 
   if (resolvedStyle !== currentValues.style) {
@@ -81,13 +73,21 @@ export function setStyle(style: NavigationBarStyle) {
   }
 }
 
-function setHidden(hidden: boolean) {
-  defaultProps.hidden = hidden;
-
+function applyHidden(hidden: boolean) {
   if (hidden !== currentValues.hidden) {
     currentValues.hidden = hidden;
     ExpoNavigationBar.setHidden(hidden).catch(() => {});
   }
+}
+
+export function setStyle(style: NavigationBarStyle) {
+  defaultProps.style = style;
+  applyStyle(style);
+}
+
+function setHidden(hidden: boolean) {
+  defaultProps.hidden = hidden;
+  applyHidden(hidden);
 }
 
 // Updates the native navigation bar with the entries from the stack
@@ -97,19 +97,10 @@ function updateEntriesStack() {
   }
 
   updateImmediate = setImmediate(() => {
-    if (entriesStack.length === 0) {
-      setStyle(defaultProps.style);
-      setHidden(defaultProps.hidden);
-    } else {
-      const { style, hidden } = mergeEntriesStack(entriesStack);
+    const { style, hidden } = mergeEntriesStack(entriesStack);
 
-      if (style != null) {
-        setStyle(style);
-      }
-      if (hidden != null) {
-        setHidden(hidden);
-      }
-    }
+    applyStyle(style);
+    applyHidden(hidden);
   });
 }
 

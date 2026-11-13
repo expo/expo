@@ -15,6 +15,10 @@ type PBXSourcesBuildPhase = Omit<PBXFrameworksBuildPhase, 'isa'> & {
 
 const SCENE_DELEGATE_FILE_NAME = 'SceneDelegate.swift';
 
+export function getSceneDelegatePath(appDelegatePath: string): string {
+  return path.join(path.dirname(appDelegatePath), SCENE_DELEGATE_FILE_NAME);
+}
+
 const SCENE_DELEGATE_CONTENTS = `internal import Expo
 
 @objc(SceneDelegate)
@@ -35,7 +39,7 @@ const withSceneDelegateFile: ConfigPlugin = (config) => {
     'ios',
     async (config) => {
       const appDelegatePath = IOSConfig.Paths.getAppDelegateFilePath(config.modRequest.projectRoot);
-      await writeSceneDelegateFileAsync(path.dirname(appDelegatePath));
+      await writeSceneDelegateFileAsync(getSceneDelegatePath(appDelegatePath));
       return config;
     },
   ]);
@@ -55,8 +59,7 @@ const withSceneManifest: ConfigPlugin = (config) => {
   });
 };
 
-export async function writeSceneDelegateFileAsync(directory: string): Promise<void> {
-  const filePath = path.join(directory, SCENE_DELEGATE_FILE_NAME);
+export async function writeSceneDelegateFileAsync(filePath: string): Promise<void> {
   if (fs.existsSync(filePath)) {
     return;
   }

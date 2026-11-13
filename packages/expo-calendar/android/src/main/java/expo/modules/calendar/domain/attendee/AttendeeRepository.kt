@@ -26,7 +26,11 @@ class AttendeeRepository(context: Context) {
 
     return@withContext cursor.use { cursor ->
       generateSequence {
-        if (cursor.moveToNext()) cursor.extractAttendee() else null
+        if (cursor.moveToNext()) {
+          cursor.extractAttendee()
+        } else {
+          null
+        }
       }.toList()
     }
   }

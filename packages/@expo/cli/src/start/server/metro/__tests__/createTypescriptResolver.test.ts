@@ -104,6 +104,14 @@ describe(_toResolveConfig, () => {
     expect(config!.prefixMap['@/']![0]!.mapping).toEqual(['/monorepo/src/*']);
   });
 
+  it('keeps absolute path targets absolute', () => {
+    const config = _toResolveConfig(
+      { paths: { '@/*': ['/project/src/*'] }, pathsBasePath: '/project/config' },
+      '/project'
+    );
+    expect(config!.prefixMap['@/']![0]!.mapping).toEqual(['/project/src/*']);
+  });
+
   it('prefers baseUrl over pathsBasePath', () => {
     const config = _toResolveConfig(
       { paths: { '@/*': ['./src/*'] }, baseUrl: '/custom', pathsBasePath: '/monorepo' },
@@ -396,6 +404,23 @@ describe(_loadTsConfigWithExtends, () => {
     expect(result!.baseUrl).toBe('/project/src');
   });
 
+  it('substitutes ${configDir} without a separator', () => {
+    vol.fromJSON(
+      {
+        'tsconfig.json': JSON.stringify({
+          compilerOptions: { paths: { '@/*': ['${configDir}src/*'] } },
+        }),
+      },
+      '/project'
+    );
+    const result = _loadTsConfigWithExtends(
+      '/project',
+      '/project/tsconfig.json',
+      createDepGraph('/project')
+    );
+    expect(result!.paths!['@/*']).toEqual(['/project/src/*']);
+  });
+
   it('substitutes ${configDir} in paths values', () => {
     vol.fromJSON(
       {
@@ -412,9 +437,7 @@ describe(_loadTsConfigWithExtends, () => {
       '/project/tsconfig.json',
       createDepGraph('/project')
     );
-    // substituteConfigDir replaces ${configDir} with './' so the raw value is './/src/*'
-    // path.join in toResolveConfig normalizes this when building the resolve config
-    expect(result!.paths!['@/*']).toEqual(['.//src/*']);
+    expect(result!.paths!['@/*']).toEqual(['/project/src/*']);
   });
 
   it('detects circular extends', () => {
@@ -556,7 +579,23 @@ describe(_loadTsConfigWithExtends, () => {
     expect(result!.paths!['@/*']).toEqual(['./src/*', './lib/*']);
   });
 
-  it('substitutes ${configDir} in paths from extended config using that config dir', () => {
+  it('resolves ${configDir} paths declared in an extended config against the root config', () => {
+    vol.fromJSON({
+      '/project/tsconfig.json': JSON.stringify({ extends: './config/tsconfig.base.json' }),
+      '/project/config/tsconfig.base.json': JSON.stringify({
+        compilerOptions: { paths: { '@/*': ['${configDir}/src/*'] } },
+      }),
+    });
+    const tsconfig = _loadTsConfigWithExtends(
+      '/project',
+      '/project/tsconfig.json',
+      createDepGraph('/project')
+    );
+    const config = _toResolveConfig(tsconfig, '/project');
+    expect(config!.prefixMap['@/']![0]!.mapping).toEqual(['/project/src/*']);
+  });
+
+  it('substitutes ${configDir} in paths from extended config using the root config dir', () => {
     vol.fromJSON({
       '/monorepo/packages/app/tsconfig.json': JSON.stringify({
         extends: '../../tsconfig.base.json',
@@ -572,6 +611,8 @@ describe(_loadTsConfigWithExtends, () => {
       '/monorepo/packages/app/tsconfig.json',
       createDepGraph('/monorepo')
     );
-    expect(result!.paths!['@shared/*']).toEqual(['.//packages/shared/src/*']);
+    // Like TypeScript, `${configDir}` is the directory of the config being compiled,
+    // not the directory of the config that declares `paths`
+    expect(result!.paths!['@shared/*']).toEqual(['/monorepo/packages/app/packages/shared/src/*']);
   });
 });

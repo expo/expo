@@ -3,10 +3,10 @@ import chalk from 'chalk';
 import { getConfig, type ExpoConfig } from 'expo/config';
 import { type ModPlatform } from 'expo/config-plugins';
 import fs from 'fs/promises';
-import { glob as globAsync } from 'glob';
 import path from 'path';
 
 import { addAllToGitIndexAsync, commitAsync, diffAsync, initializeGitRepoAsync } from '../gitPatch';
+import { getPatchFilesAsync } from '../patchFiles';
 import { moveAsync } from './dir';
 import { generateNativeProjectsAsync, platformSanityCheckAsync } from './generateNativeProjects';
 import * as logger from './logger';
@@ -152,7 +152,9 @@ async function patchProjectForPlatformAsync({
 }
 
 async function removePatchFilesAsync(patchRoot: string, platform: ModPlatform): Promise<void> {
-  const patchFiles = await globAsync(`${platform}*.patch`, { cwd: patchRoot, absolute: true });
+  const patchFiles = (await getPatchFilesAsync(patchRoot, platform)).map((file) =>
+    path.resolve(patchRoot, file)
+  );
   await Promise.all(
     patchFiles.map((file) => {
       logger.log(`Removing patch file: ${file}`);

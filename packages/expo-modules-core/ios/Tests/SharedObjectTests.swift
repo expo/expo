@@ -128,6 +128,25 @@ struct SharedObjectTests {
     #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
   }
 
+  @Test
+  func `releases the native object after removing a listener through its subscription`() throws {
+    let registrySizeBefore = appContext.sharedObjectRegistry.size
+    // Same shape as a React effect returning `() => subscription.remove()`: the listener's closure
+    // can reach the subscription, which must not keep the listener nor the shared object alive.
+    try runtime.eval(
+      """
+      (() => {
+        const sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample();
+        const subscription = sharedObject.addListener('test event', () => sharedObject);
+        const cleanup = () => subscription.remove();
+        cleanup();
+      })()
+      """
+    )
+    try runtime.collectGarbage { appContext.sharedObjectRegistry.size == registrySizeBefore }
+    #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
+  }
+
   // MARK: - Native object
 
   @Test
@@ -248,7 +267,7 @@ struct SharedObjectTests {
     // defensive branches in the public `emit` overloads should log and return cleanly.
     detached.emit(event: "ignored")
     detached.emit(event: "ignored", payload: ["key": "value"])
-    detached.emit(event: "ignored", payload: .undefined)
+    detached.emit(event: "ignored", payload: .undefined())
   }
 
   // MARK: - native(from:)
@@ -336,7 +355,7 @@ struct SharedObjectTests {
     let result = try resultValue.asObject()
     let dataProperty = result.getProperty("data")
 
-    #expect(dataProperty.isArrayBuffer())
+    #expect(dataProperty.isArrayBuffer() == true)
     #expect(try result.getProperty("length").asInt() == 16)
 
     let firstByte = try runtime.eval("new Uint8Array(result.data)[0]").asInt()

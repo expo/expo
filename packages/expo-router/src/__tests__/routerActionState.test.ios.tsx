@@ -34,34 +34,34 @@ it.each([
   ['dismissTo', () => router.dismissTo('/(tabs)/deep/1')],
   ['prefetch', () => router.prefetch('/(tabs)/deep/1')],
   ['Link press', () => fireEvent.press(screen.getByTestId('deep-link'))],
-])('root state has no marker after %s', (_, navigate) => {
-  renderRouter(routes);
+])('root state has no marker after %s', async (_, navigate) => {
+  await renderRouter(routes);
 
-  act(navigate);
+  await act(navigate);
 
   expectNoMarker(navigationRef.getRootState());
 });
 
-it('useRootNavigationState has no marker', () => {
-  const { result } = renderHook(
+it('useRootNavigationState has no marker', async () => {
+  const { result } = await renderHook(
     () => useRootNavigationState(),
     ['index', '(tabs)/_layout', '(tabs)/deep/_layout', '(tabs)/deep/[id]']
   );
 
-  act(() => router.navigate('/(tabs)/deep/1'));
+  await act(() => router.navigate('/(tabs)/deep/1'));
 
   expectNoMarker(result.current);
 });
 
-it('warns and ignores action state without the internal marker', () => {
+it('warns and ignores action state without the internal marker', async () => {
   const warning = jest.spyOn(console, 'warn').mockImplementation(() => {});
-  renderRouter({
+  await renderRouter({
     _layout: () => <Stack />,
     index: () => null,
     second: () => null,
   });
 
-  act(() =>
+  await act(() =>
     navigationRef.current!.dispatch({
       type: 'NAVIGATE',
       payload: { name: 'second', state: { routes: [{ name: 'nested' }] } },

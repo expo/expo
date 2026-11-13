@@ -28,6 +28,30 @@ struct AppContextTests {
     #expect(AppContext.from(runtime: bareRuntime) == nil)
   }
 
+  @Test
+  func `an app context with its own runtime is deallocated once released`() {
+    weak var weakAppContext: AppContext?
+    do {
+      let appContext = AppContext.create()
+      weakAppContext = appContext
+    }
+    #expect(weakAppContext == nil)
+  }
+
+  @Test
+  func `the native state pins an app context that does not own its runtime`() {
+    weak var weakAppContext: AppContext?
+    let runtime = JavaScriptRuntime()
+    do {
+      let appContext = AppContext()
+      weakAppContext = appContext
+      let coreObject = runtime.createObject()
+      coreObject.setNativeState(AppContext.NativeState(appContext: appContext, ownsLifecycle: false))
+      runtime.global().defineProperty(globalCoreObjectPropertyName, value: coreObject, options: [.enumerable])
+    }
+    #expect(weakAppContext != nil)
+  }
+
   // MARK: - moduleProviderClassNames
 
   @Test
@@ -84,6 +108,33 @@ struct AppContextTests {
       "123myapp.ExpoModulesProvider",
       "_23myapp.ExpoModulesProvider"
     ])
+  }
+
+  // MARK: - appIdentifier
+
+  @Test
+  func `app contexts get increasing indices`() {
+    let first = AppContext()
+    let second = AppContext()
+    #expect(second.appIndex > first.appIndex)
+  }
+
+  @Test
+  func `app contexts get distinct identifiers`() {
+    let first = AppContext()
+    let second = AppContext()
+    #expect(first.appIdentifier != second.appIdentifier)
+  }
+
+  @Test
+  func `the first app context has no identifier`() {
+    #expect(AppContext.appIdentifier(forIndex: 0) == nil)
+  }
+
+  @Test
+  func `later app contexts use their index as the identifier`() {
+    #expect(AppContext.appIdentifier(forIndex: 1) == "1")
+    #expect(AppContext.appIdentifier(forIndex: 42) == "42")
   }
 
   // MARK: - NativeState

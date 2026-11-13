@@ -80,9 +80,9 @@ class Asset: SharedObject {
     return assetMapper.mapMediaType(phAsset.mediaType)
   }
 
-  func getMediaSubtypes() async throws -> [String] {
+  func getMediaSubtypes() async throws -> [MediaSubtypeNext] {
     let phAsset = try await requirePHAsset()
-    return MediaSubtype.stringify(phAsset.mediaSubtypes)
+    return MediaSubtypeNext.from(phAsset.mediaSubtypes)
   }
 
   func getLivePhotoVideoUri() async throws -> String? {

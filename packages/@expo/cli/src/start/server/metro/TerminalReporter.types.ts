@@ -58,6 +58,8 @@ export type Reporter = { update(event: ReportableEvent): void };
 export interface SnippetError extends Error {
   code?: string;
   filename?: string;
+  lineNumber?: number;
+  column?: number;
   snippet?: string;
 
   /** Module that failed to load ex 'fs' */

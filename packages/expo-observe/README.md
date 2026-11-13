@@ -120,6 +120,17 @@ See [Custom endpoint](https://docs.expo.dev/eas/observe/configuration/#custom-en
 
 `Observe.configure()` sets the environment label, the sampling rate, dispatching behavior and integrations at runtime. `Observe.dispatchEvents()` flushes pending events manually.
 
+Use `ignoredMetrics` to skip exported metric names and `ignoredEvents` to skip event names, including custom names passed to `Observe.logEvent`:
+
+```ts
+Observe.configure({
+  ignoredMetrics: ['expo.app_startup.tti'],
+  ignoredEvents: ['reanimated.warning', 'checkout.completed'],
+});
+```
+
+The lists apply at dispatch time. They do nothing on web and do not affect network traces.
+
 See [Configuration](https://docs.expo.dev/eas/observe/configuration/).
 
 ## Command line and agents

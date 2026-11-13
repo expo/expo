@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`allows the constantFoldingPlugin to not remove used helpers when \`dev: false\` 1`] = `
 "__d(function (global, require, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
@@ -64,6 +64,7 @@ function _interopDefault(e) {
 exports.test = test;
 var _babelRuntimeHelpersAsyncToGenerator = require(_dependencyMap[0], "@babel/runtime/helpers/asyncToGenerator");
 var _asyncToGenerator = _interopDefault(_babelRuntimeHelpersAsyncToGenerator);
+;
 
 function test() {
 	return _test.apply(this, arguments);
@@ -95,6 +96,7 @@ function _interopDefault(e) {
 exports.test = test;
 var _babelRuntimeHelpersWrapAsyncGenerator = require(_dependencyMap[0], "@babel/runtime/helpers/wrapAsyncGenerator");
 var _wrapAsyncGenerator = _interopDefault(_babelRuntimeHelpersWrapAsyncGenerator);
+;
 
 function test() {
 	return _test.apply(this, arguments);

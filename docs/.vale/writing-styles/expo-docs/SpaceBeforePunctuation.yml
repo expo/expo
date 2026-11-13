@@ -1,0 +1,11 @@
+extends: existence
+message: "Remove the space before the punctuation."
+level: error
+scope: raw
+nonword: true
+tokens:
+  - '(?m)`[ \t]+[,.;!](?:[ \t]|$)'
+  - '(?m)`[ \t]+[:?](?:[ \t]+[^`''"\s]|[ \t]*$)'
+  - '(?m)\]\([^)\s]*\)[ \t]+[,.;:!?](?:[ \t]|$)'
+  - '(?m)[A-Za-z0-9*_][ \t]+,(?:[ \t]|$)'
+  - '(?m)[A-Za-z0-9*_][ \t]+\.(?:[ \t]+[A-Z]|[ \t]*$)'

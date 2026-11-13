@@ -1,0 +1,36 @@
+{
+  "specVersion": "1.0",
+  "entries": [
+    {
+      "identifier": "urn:air:expo.dev:mcp:expo",
+      "displayName": "Expo MCP Server",
+      "type": "application/mcp-server-card+json",
+      "data": {
+        "$schema": "https://static.modelcontextprotocol.io/schemas/v1/server-card.schema.json",
+        "name": "dev.expo/mcp",
+        "title": "Expo MCP Server",
+        "description": "Lets AI-assisted tools interact directly with your Expo projects.",
+        "version": "1.0.0",
+        "websiteUrl": "https://docs.expo.dev/mcp/",
+        "icons": [
+          {
+            "src": "https://docs.expo.dev/static/images/favicons/favicon-48x48.png",
+            "mimeType": "image/png",
+            "sizes": ["48x48"]
+          },
+          {
+            "src": "https://static.expo.dev/static/brand/app-icon-512x512.png",
+            "mimeType": "image/png",
+            "sizes": ["512x512"]
+          }
+        ],
+        "remotes": [
+          {
+            "type": "streamable-http",
+            "url": "https://mcp.expo.dev/mcp"
+          }
+        ]
+      }
+    }
+  ]
+}

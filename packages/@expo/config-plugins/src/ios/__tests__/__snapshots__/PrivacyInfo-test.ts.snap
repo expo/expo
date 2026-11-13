@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`withPrivacyInfo adds PrivacyInfo.xcprivacy file to the project and merges with existing file 1`] = `
 "<?xml version="1.0" encoding="UTF-8"?>

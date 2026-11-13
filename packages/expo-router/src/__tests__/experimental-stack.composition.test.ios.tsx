@@ -48,7 +48,7 @@ beforeEach(() => {
 });
 
 describe('ExperimentalStack — composition components inside pages', () => {
-  it('Stack.Screen.Title propagates title to HeaderConfig', () => {
+  it('Stack.Screen.Title propagates title to HeaderConfig', async () => {
     function PageA() {
       return (
         <>
@@ -58,7 +58,7 @@ describe('ExperimentalStack — composition components inside pages', () => {
       );
     }
 
-    renderRouter(
+    await renderRouter(
       {
         a: PageA,
         _layout: () => <ExperimentalStack />,
@@ -72,7 +72,7 @@ describe('ExperimentalStack — composition components inside pages', () => {
     expect(lastHeaderConfigProps().title).toBe('Hello');
   });
 
-  it('Stack.Header hidden propagates hidden:true to HeaderConfig', () => {
+  it('Stack.Header hidden propagates hidden:true to HeaderConfig', async () => {
     function PageA() {
       return (
         <>
@@ -82,7 +82,7 @@ describe('ExperimentalStack — composition components inside pages', () => {
       );
     }
 
-    renderRouter(
+    await renderRouter(
       {
         a: PageA,
         _layout: () => <ExperimentalStack />,
@@ -93,7 +93,7 @@ describe('ExperimentalStack — composition components inside pages', () => {
     expect(lastHeaderConfigProps().hidden).toBe(true);
   });
 
-  it('Stack.Header transparent propagates transparent:true and hidden:false', () => {
+  it('Stack.Header transparent propagates transparent:true and hidden:false', async () => {
     function PageA() {
       return (
         <>
@@ -103,7 +103,7 @@ describe('ExperimentalStack — composition components inside pages', () => {
       );
     }
 
-    renderRouter(
+    await renderRouter(
       {
         a: PageA,
         _layout: () => <ExperimentalStack />,
@@ -118,7 +118,7 @@ describe('ExperimentalStack — composition components inside pages', () => {
     expect(props.hidden).toBe(false);
   });
 
-  it('Stack.Screen.BackButton hidden propagates backButtonHidden:true', () => {
+  it('Stack.Screen.BackButton hidden propagates backButtonHidden:true', async () => {
     function PageA() {
       return (
         <>
@@ -128,7 +128,7 @@ describe('ExperimentalStack — composition components inside pages', () => {
       );
     }
 
-    renderRouter(
+    await renderRouter(
       {
         a: PageA,
         _layout: () => <ExperimentalStack />,
@@ -169,11 +169,11 @@ describe('ExperimentalStack — composition components inside pages', () => {
     ],
   ] as const)(
     'does not warn about unsupported screenOptions for %s inside a page',
-    (_label, PageA) => {
+    async (_label, PageA) => {
       const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
       try {
-        renderRouter(
+        await renderRouter(
           {
             a: PageA,
             _layout: () => <ExperimentalStack />,
@@ -193,7 +193,7 @@ describe('ExperimentalStack — composition components inside pages', () => {
     }
   );
 
-  it('combined Title + Header + BackButton land together on the final HeaderConfig call', () => {
+  it('combined Title + Header + BackButton land together on the final HeaderConfig call', async () => {
     function PageA() {
       return (
         <>
@@ -205,7 +205,7 @@ describe('ExperimentalStack — composition components inside pages', () => {
       );
     }
 
-    renderRouter(
+    await renderRouter(
       {
         a: PageA,
         _layout: () => <ExperimentalStack />,
@@ -220,7 +220,7 @@ describe('ExperimentalStack — composition components inside pages', () => {
     expect(props.backButtonHidden).toBe(true);
   });
 
-  it('page-level composition wins over layout-level screenOptions', () => {
+  it('page-level composition wins over layout-level screenOptions', async () => {
     function PageA() {
       return (
         <>
@@ -230,7 +230,7 @@ describe('ExperimentalStack — composition components inside pages', () => {
       );
     }
 
-    renderRouter(
+    await renderRouter(
       {
         a: PageA,
         _layout: () => <ExperimentalStack screenOptions={{ title: 'FromLayout' }} />,
@@ -241,7 +241,7 @@ describe('ExperimentalStack — composition components inside pages', () => {
     expect(lastHeaderConfigProps().title).toBe('FromPage');
   });
 
-  it('unmounting Stack.Screen.Title restores the previous title (route name fallback)', () => {
+  it('unmounting Stack.Screen.Title restores the previous title (route name fallback)', async () => {
     function PageA() {
       const [show, setShow] = useState(true);
       return (
@@ -253,7 +253,7 @@ describe('ExperimentalStack — composition components inside pages', () => {
       );
     }
 
-    renderRouter(
+    await renderRouter(
       {
         a: PageA,
         _layout: () => <ExperimentalStack />,
@@ -263,14 +263,14 @@ describe('ExperimentalStack — composition components inside pages', () => {
 
     expect(lastHeaderConfigProps().title).toBe('Custom');
 
-    act(() => {
-      fireEvent.press(screen.getByTestId('toggle'));
+    await act(async () => {
+      await fireEvent.press(screen.getByTestId('toggle'));
     });
 
     expect(lastHeaderConfigProps().title).not.toBe('Custom');
   });
 
-  it('isolates composition per route — push to a second route does not bleed title back', () => {
+  it('isolates composition per route — push to a second route does not bleed title back', async () => {
     function PageA() {
       return (
         <>
@@ -289,7 +289,7 @@ describe('ExperimentalStack — composition components inside pages', () => {
       );
     }
 
-    renderRouter(
+    await renderRouter(
       {
         a: PageA,
         b: PageB,
@@ -298,7 +298,7 @@ describe('ExperimentalStack — composition components inside pages', () => {
       { initialUrl: '/a' }
     );
 
-    act(() => router.push('/b'));
+    await act(() => router.push('/b'));
 
     // Each route's HeaderConfig should reflect only its own composition title.
     // Walk every HeaderConfig call and bucket by title — both routes' titles

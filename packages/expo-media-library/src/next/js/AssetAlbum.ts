@@ -3,6 +3,8 @@ import { Platform } from 'react-native';
 
 import { NativeAsset, NativeAlbum } from '../native';
 import type {
+  AlbumMetadata,
+  AlbumType,
   AssetInfo,
   AssetUriOptions,
   Location,
@@ -314,6 +316,37 @@ export class Album {
   }
 
   /**
+   * Gets the number of assets contained in the album, without materializing the assets.
+   * @returns A promise resolving to the album's asset count.
+   *
+   * @example
+   * ```ts
+   * const count = await album.getAssetCount();
+   * console.log(count); // 243
+   * ```
+   */
+  getAssetCount(): Promise<number> {
+    return this.nativeAlbum.getAssetCount();
+  }
+
+  /**
+   * Gets the album's type — whether it is a regular or a smart album.
+   * @returns A promise resolving to an [`AlbumType`](#albumtype).
+   * @platform ios
+   *
+   * @example
+   * ```ts
+   * const type = await album.getType(); // AlbumType.ALBUM
+   * ```
+   */
+  getType(): Promise<AlbumType> {
+    if (Platform.OS !== 'ios') {
+      throw new UnavailabilityError('MediaLibrary', 'getType is only available on iOS');
+    }
+    return this.nativeAlbum.getType();
+  }
+
+  /**
    * Permanently deletes the album from the device.
    * On Android, it deletes the album and all its assets.
    * On iOS, it deletes the album but keeps the assets in the main library.
@@ -439,7 +472,7 @@ export class Album {
   }
 
   /**
-   * A static function. Retrieves all albums on the device.
+   * A static function. Retrieves albums from the device library.
    * @returns A promise resolving to an array of [`Album`](#album) objects.
    *
    * @example
@@ -449,6 +482,43 @@ export class Album {
    */
   static async getAll(): Promise<Album[]> {
     const natives = await NativeAlbum.getAll();
+    return natives.map((a) => new Album(a.id));
+  }
+
+  /**
+   * A static function. Retrieves lightweight metadata for all albums in a single call.
+   *
+   * Returns fields that can be read cheaply from the media store, without instantiating an
+   * [`Album`](#album) per entry. Use an [`Album`](#album) instance when you need heavier data such as
+   * its assets or asset count.
+   *
+   * @returns A promise resolving to an array of [`AlbumMetadata`](#albummetadata) objects.
+   *
+   * @example
+   * ```ts
+   * const albums = await Album.getAlbumsMetadata();
+   * albums.forEach((album) => console.log(album.title));
+   * ```
+   */
+  static getAlbumsMetadata(): Promise<AlbumMetadata[]> {
+    return NativeAlbum.getAlbumsMetadata();
+  }
+
+  /**
+   * A static function. Retrieves system smart albums (for example Favorites, Videos, or Screenshots).
+   * @returns A promise resolving to an array of [`Album`](#album) objects.
+   *
+   * @example
+   * ```ts
+   * const smartAlbums = await Album.getSmartAlbums();
+   * ```
+   * @platform ios
+   */
+  static async getSmartAlbums(): Promise<Album[]> {
+    if (Platform.OS !== 'ios') {
+      throw new UnavailabilityError('MediaLibrary', 'getSmartAlbums');
+    }
+    const natives = await NativeAlbum.getSmartAlbums();
     return natives.map((a) => new Album(a.id));
   }
 }

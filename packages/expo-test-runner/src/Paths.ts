@@ -1,12 +1,12 @@
-import { mkdirSync } from 'fs';
+import { randomBytes } from 'crypto';
+import { mkdirSync, realpathSync } from 'fs';
+import { tmpdir } from 'os';
 import { join } from 'path';
-import tempDir from 'temp-dir';
-import uniqueString from 'unique-string';
 
 export const SelfPath = join(__dirname, '..');
 
 export function temporaryDirectory() {
-  const directory = join(tempDir, uniqueString());
+  const directory = join(realpathSync(tmpdir()), randomBytes(16).toString('hex'));
   mkdirSync(directory);
   return directory;
 }

@@ -49,6 +49,9 @@ public final class ImageView: ExpoView {
   /// Rebuilds the image from a substituted SVG document after the manager delivered the original.
   var pendingSVGVariablesTask: Task<Void, Never>?
 
+  /// Blurs an asset catalog image, which doesn't go through SDWebImage's transformers.
+  var pendingAssetCatalogBlurTask: Task<Void, Never>?
+
   var contentFit: ContentFit = .cover
 
   var contentPosition: ContentPosition = .center
@@ -446,6 +449,15 @@ public final class ImageView: ExpoView {
   }
 
   private func maybeRenderLocalAsset(from source: ImageSource) -> Bool {
+    if let image = assetCatalogImage(for: source.uri) {
+      onLoadStart([:])
+      if blurRadius > 0 {
+        blurAssetCatalogImage(image, imageUrl: source.uri)
+      } else {
+        didLoad(image, cacheType: .memory, imageUrl: source.uri)
+      }
+      return true
+    }
     if let local = localAssetImage(from: source) {
       // `UIImage(named:)` serves bundled assets from the system's in-memory cache, so report a
       // memory hit — this lets `transition.skipOnCacheHit` treat them as instantly available.
@@ -461,6 +473,28 @@ public final class ImageView: ExpoView {
       return nil
     }
     return UIImage(named: path)
+  }
+
+  /**
+   Applies `blurRadius` to an asset catalog image. These skip SDWebImage, which would otherwise run
+   the blur transformer on a background queue, so the blur runs off the main actor here.
+   */
+  private func blurAssetCatalogImage(_ image: UIImage, imageUrl: URL?) {
+    let radius = blurRadius
+
+    pendingAssetCatalogBlurTask = Task { [weak self] in
+      let result = await Task.detached(priority: .userInitiated) {
+        let blurred = SDImageBlurTransformer(radius: radius).transformedImage(with: image, forKey: "")
+        blurred?.sd_imageFormat = image.sd_imageFormat
+        return BlurredImage(image: blurred)
+      }.value
+      // A newer load may have superseded this one while blurring.
+      guard let self, !Task.isCancelled else {
+        return
+      }
+      self.pendingAssetCatalogBlurTask = nil
+      self.didLoad(result.image ?? image, cacheType: .memory, imageUrl: imageUrl)
+    }
   }
 
   // MARK: - Placeholder
@@ -515,7 +549,7 @@ public final class ImageView: ExpoView {
 
     // Asset catalog (xcassets) images aren't resolvable by SDWebImage, so try the
     // local lookup first — mirroring the proper source path in `maybeRenderLocalAsset`.
-    if let localImage = localAssetImage(from: placeholder) {
+    if let localImage = assetCatalogImage(for: placeholder.uri) ?? localAssetImage(from: placeholder) {
       placeholderImage = localImage
       displayPlaceholderIfNecessary()
       return
@@ -847,6 +881,8 @@ public final class ImageView: ExpoView {
     pendingOperation = nil
     pendingSVGVariablesTask?.cancel()
     pendingSVGVariablesTask = nil
+    pendingAssetCatalogBlurTask?.cancel()
+    pendingAssetCatalogBlurTask = nil
   }
 
   /**
@@ -978,5 +1014,9 @@ func localAssetName(from url: URL?) -> String? {
 /// Carries a freshly decoded image from the parsing task back to the main actor. Unchecked because
 /// `UIImage` isn't `Sendable`; the image is never touched again from the parsing side.
 private struct SubstitutedSVG: @unchecked Sendable {
+  let image: UIImage?
+}
+
+private struct BlurredImage: @unchecked Sendable {
   let image: UIImage?
 }

@@ -108,6 +108,25 @@ describe('createJsInspectorMiddleware', () => {
     expect(JsInspector.queryInspectorAppAsync).not.toHaveBeenCalled();
   });
 
+  it('should set Content-Length to the byte length of the response, not its UTF-16 string length', async () => {
+    const app = { ...METRO_INSPECTOR_RESPONSE_FIXTURE[0]!, deviceName: 'José’s iPhone 📱' };
+    const req = createRequest(`http://localhost:8081/inspector?applicationId=${app.description}`);
+    const res = createMockedResponse();
+    const next = jest.fn();
+    (
+      JsInspector.queryInspectorAppAsync as jest.MockedFunction<
+        typeof JsInspector.queryInspectorAppAsync
+      >
+    ).mockReturnValue(Promise.resolve(app));
+
+    const middlewareAsync = createJsInspectorMiddleware({ serverBaseUrl: 'http://localhost:8081' });
+    await middlewareAsync(req, res as ServerResponse, next);
+
+    const body = JSON.stringify(app);
+    const headers = res.writeHead.mock.calls[0][1];
+    expect(Number(headers['Content-Length'])).toBe(Buffer.byteLength(body, 'utf8'));
+  });
+
   it('should open browser for PUT request with given applicationId', async () => {
     const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0]!;
     const req = createRequest(

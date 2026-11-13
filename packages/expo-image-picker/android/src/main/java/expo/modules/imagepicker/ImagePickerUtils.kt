@@ -302,7 +302,11 @@ internal val Uri.isMediaStoreAssetUri
 internal fun Uri.getMediaStoreAssetId(): String? {
   if (isMediaStoreAssetUri) {
     val rawId = DocumentsContract.getDocumentId(this)
-    return if (rawId.contains(':')) rawId.split(':')[1] else rawId
+    return if (rawId.contains(':')) {
+      rawId.split(':')[1]
+    } else {
+      rawId
+    }
   }
   return null
 }

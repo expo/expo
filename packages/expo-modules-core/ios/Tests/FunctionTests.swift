@@ -1,5 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+import ExpoModulesTestCore
 import Testing
 
 @testable import ExpoModulesCore
@@ -71,7 +72,7 @@ struct FunctionTests {
     }
 
     init() {
-      appContext = AppContext.create()
+      appContext = TestAppContext()
 
       appContext.moduleRegistry.register(holder: mockModuleHolder(appContext) {
         Name("TestModule")
@@ -80,10 +81,6 @@ struct FunctionTests {
 
         Function("returnNull") { () -> Double? in
           return nil
-        }
-
-        Function("returnUndefined") { () -> JavaScriptValue in
-          return .undefined
         }
 
         Function("isArgNull") { (arg: Double?) -> Bool in
@@ -99,10 +96,6 @@ struct FunctionTests {
               return foo
             }
           }
-        }
-
-        Function("withFunction") { (fn: JavaScriptValue) throws -> String in
-          return try fn.asFunction().call(arguments: "foo", "bar").asString()
         }
 
         Function("withCGFloat") { (f: CGFloat) in
@@ -131,6 +124,10 @@ struct FunctionTests {
 
         Function("withOptionalRecord") { (f: TestRecord?) in
           return "\(f?.property ?? "no value")"
+        }
+
+        Function("returnsOptionalRecordWithNilField") { () -> SynthesizedMixedRecord? in
+          return SynthesizedMixedRecord(name: "present", count: 7, note: nil)
         }
 
         Function("withNullableValueOrUndefinded") { (record: NullableValueOfUndefinedRecord) in
@@ -236,7 +233,6 @@ struct FunctionTests {
     func `returns values`() throws {
       #expect(try runtime.eval("expo.modules.TestModule.returnPi()").asDouble() == Double.pi)
       #expect(try runtime.eval("expo.modules.TestModule.returnNull()").isNull() == true)
-      #expect(try runtime.eval("expo.modules.TestModule.returnUndefined()").isUndefined() == true)
     }
 
     @Test
@@ -257,14 +253,6 @@ struct FunctionTests {
 
       #expect(result.kind == .number)
       #expect(result.getInt() == initialValue + 1)
-    }
-
-    @Test
-    func `takes JavaScriptFunction argument`() throws {
-      let value = try runtime.eval("expo.modules.TestModule.withFunction((a, b) => a + b)")
-
-      #expect(value.kind == .string)
-      #expect(value.getString() == "foobar")
     }
 
     @Test
@@ -314,7 +302,7 @@ struct FunctionTests {
         guard let evalError = error as? ScriptEvaluationError else {
           return false
         }
-        return evalError.message.contains("FieldRequiredException: Value for field 'property' is required, got nil")
+        return evalError.message.contains("Value for field 'property' is required, got nil")
       }
     }
 
@@ -339,6 +327,15 @@ struct FunctionTests {
     @Test
     func `accepts optional record`() throws {
       #expect(try runtime.eval("expo.modules.TestModule.withOptionalRecord({property: \"123\"})").asString() == "123")
+    }
+
+    @Test
+    func `keeps a nil field as null when returning an optional record`() throws {
+      let object = try runtime.eval("expo.modules.TestModule.returnsOptionalRecordWithNilField()").asObject()
+
+      #expect(try object.getProperty("name").asString() == "present")
+      #expect(object.hasProperty("note") == true)
+      #expect(object.getProperty("note").isNull() == true)
     }
 
     @Test
@@ -377,8 +374,8 @@ struct FunctionTests {
     func `returns encodable struct`() throws {
       let result = try runtime.eval("expo.modules.TestModule.returnEncodable()")
       #expect(result.kind == .object)
-      #expect(result.getObject().getPropertyNames().contains("name"))
-      #expect(result.getObject().getPropertyNames().contains("version"))
+      #expect(result.getObject().getPropertyNames().contains("name") == true)
+      #expect(result.getObject().getPropertyNames().contains("version") == true)
       #expect(try result.getObject().getProperty("name").asString() == "Expo SDK")
       #expect(try result.getObject().getProperty("version").asInt() == 55)
     }
@@ -419,14 +416,9 @@ struct FunctionTests {
 
     @Test
     func `returns URL (async)`() async throws {
-      try runtime.eval("expo.modules.TestModule.withURLAsync().then((result) => { globalThis.result = result; })")
-      try await waitUntil(timeout: 2.0) {
-        safeBoolEval("!!globalThis.result")
-      }
-
-      let urlValue = try runtime.eval("url = globalThis.result")
-      #expect(urlValue.kind == .string)
-      #expect(urlValue.getString() == TestURLRecord.defaultURLString)
+      let urlValue = try await runtime.evalAsync("expo.modules.TestModule.withURLAsync()").ref()
+      // `evalAsync` resumes off the JavaScript thread, so the result is read on it.
+      #expect(try await runtime.execute { try urlValue.take().asString() } == TestURLRecord.defaultURLString)
     }
 
     @Test
@@ -444,20 +436,22 @@ struct FunctionTests {
 
     @Test
     func `returns value or undefined (async)`() async throws {
-      try runtime.eval("expo.modules.TestModule.withUndefinedAsync().then((result) => { globalThis.result = result; })")
-      try await waitUntil(timeout: 2.0) {
-        safeBoolEval("!!globalThis.result")
+      let object = try await runtime.evalAsync("expo.modules.TestModule.withUndefinedAsync()").ref()
+      let (hasA, a, hasB, isBUndefined) = try await runtime.execute {
+        let object = try object.take().asObject()
+        return (
+          object.hasProperty("a"),
+          try object.getProperty("a").asDouble(),
+          object.hasProperty("b"),
+          object.getProperty("b").isUndefined()
+        )
       }
 
-      let object = try runtime.eval("object = globalThis.result")
-      #expect(object.kind == .object)
+      #expect(hasA == true)
+      #expect(a == 1.0)
 
-      #expect(object.getObject().hasProperty("a") == true)
-      #expect(object.getObject().getProperty("a").kind == .number)
-      #expect(object.getObject().getProperty("a").getDouble() == 1.0)
-
-      #expect(object.getObject().hasProperty("b") == true)
-      #expect(object.getObject().getProperty("b").kind == .undefined)
+      #expect(hasB == true)
+      #expect(isBUndefined == true)
     }
 
     @Test
@@ -470,19 +464,14 @@ struct FunctionTests {
 
     @Test
     func `returns a record with url (async)`() async throws {
-      try runtime.eval("expo.modules.TestModule.withNestedURLAsync().then((result) => { globalThis.result = result; })")
-
-      try await waitUntil(timeout: 2.0) {
-        safeBoolEval("!!globalThis.result.url")
+      let object = try await runtime.evalAsync(
+        "expo.modules.TestModule.withNestedURLAsync().then((result) => (globalThis.object = result))"
+      ).ref()
+      let (hasURL, url) = try await runtime.execute {
+        (try object.take().asObject().hasProperty("url"), try runtime.eval("object.url").asString())
       }
-
-      let object = try runtime.eval("object = globalThis.result")
-      #expect(object.kind == .object)
-      #expect(object.getObject().hasProperty("url") == true)
-
-      let urlValue = try runtime.eval("object.url")
-      #expect(urlValue.kind == .string)
-      #expect(urlValue.getString() == TestURLRecord.defaultURLString)
+      #expect(hasURL == true)
+      #expect(url == TestURLRecord.defaultURLString)
     }
 
     @Test
@@ -496,67 +485,51 @@ struct FunctionTests {
 
     @Test
     func `returns a SharedObject (async)`() async throws {
-      try runtime
-        .eval(
-          "expo.modules.TestModule.withSharedObjectAsync().then((result) => { globalThis.result = result; })"
-        )
-
-      try await waitUntil(timeout: 4.0) {
-        safeBoolEval("globalThis.result != null")
+      let object = try await runtime.evalAsync(
+        "expo.modules.TestModule.withSharedObjectAsync().then((result) => (globalThis.object = result))"
+      ).ref()
+      let (hasValue, value) = try await runtime.execute {
+        (try object.take().asObject().hasProperty("value"), try runtime.eval("object.value").asString())
       }
-      let object = try runtime.eval("object = globalThis.result")
 
-      #expect(object.kind == .object)
-      #expect(object.getObject().hasProperty("value") == true)
-
-      let result = try runtime.eval("object.value")
-      #expect(result.kind == .string)
-      #expect(result.getString() == "Test")
+      #expect(hasValue == true)
+      #expect(value == "Test")
     }
 
     @Test
     func `returns an Array of SharedObjects (async)`() async throws {
-      try runtime
-        .eval(
-          "expo.modules.TestModule.withArrayOfSharedObjectsAsync().then((result) => { globalThis.resultArray = result; })"
-        )
-
-      try await waitUntil(timeout: 2.0) {
-        safeBoolEval("globalThis.resultArray != null")
+      let object = try await runtime.evalAsync(
+        "expo.modules.TestModule.withArrayOfSharedObjectsAsync().then((result) => (globalThis.object = result))"
+      ).ref()
+      let elements = try await runtime.execute {
+        var elements: [(hasValue: Bool, value: String)] = []
+        try object.take().asArray().forEachIndexed { index, element in
+          elements.append((
+            hasValue: try element.asObject().hasProperty("value"),
+            value: try runtime.eval("object[\(index)].value").asString()
+          ))
+        }
+        return elements
       }
-      let object = try runtime.eval("object = globalThis.resultArray")
 
-      #expect(object.kind == .object)
-      #expect(object.getObject().hasProperty("length") == true)
-
-      let result = object.getArray()
-      for (index, element) in result.enumerated() {
-        #expect(element.kind == .object)
-        #expect(element.getObject().hasProperty("value") == true)
-        let value = try runtime.eval("object[\(index)].value")
-        #expect(value.kind == .string)
-        #expect(value.getString() == "Test\(index + 1)")
+      #expect(!elements.isEmpty)
+      for (index, element) in elements.enumerated() {
+        #expect(element.hasValue == true)
+        #expect(element.value == "Test\(index + 1)")
       }
     }
 
     @Test
     func `returns a SharedObject with Promise`() async throws {
-      try runtime
-        .eval(
-          "expo.modules.TestModule.withSharedObjectPromise().then((result) => { globalThis.promiseResult = result; })"
-        )
-
-      try await waitUntil(timeout: 2.0) {
-        safeBoolEval("globalThis.promiseResult != null")
+      let object = try await runtime.evalAsync(
+        "expo.modules.TestModule.withSharedObjectPromise().then((result) => (globalThis.object = result))"
+      ).ref()
+      let (hasValue, value) = try await runtime.execute {
+        (try object.take().asObject().hasProperty("value"), try runtime.eval("object.value").asString())
       }
-      let object = try runtime.eval("object = globalThis.promiseResult")
 
-      #expect(object.kind == .object)
-      #expect(object.getObject().hasProperty("value") == true)
-
-      let result = try runtime.eval("object.value")
-      #expect(result.kind == .string)
-      #expect(result.getString() == "Test with Promise")
+      #expect(hasValue == true)
+      #expect(value == "Test with Promise")
     }
 
     @Test
@@ -613,38 +586,7 @@ struct FunctionTests {
       let result = try runtime.eval("expo.modules.TestModule.withRecordAndCustomKey({property: 'Hello'})")
       #expect(try result.asString() == "Hello")
     }
-
-    // MARK: - Helpers
-
-    private func safeBoolEval(_ js: String) -> Bool {
-      var result = false
-      do {
-        try EXUtilities.catchException {
-          guard let jsResult = try? self.runtime.eval(js) else {
-            return
-          }
-          result = jsResult.getBool()
-        }
-      } catch {
-        return false
-      }
-      return result
-    }
-
-    private func waitUntil(timeout: TimeInterval, condition: @escaping () -> Bool) async throws {
-      let start = Date()
-      while !condition() {
-        if Date().timeIntervalSince(start) > timeout {
-          throw TestError.timeout
-        }
-        try await Task.sleep(nanoseconds: 50_000_000) // 50ms
-      }
-    }
   }
-}
-
-private enum TestError: Error {
-  case timeout
 }
 
 private class SharedString: SharedRef<String> {

@@ -2,7 +2,8 @@ import {
   buildBreadcrumbListSchema,
   buildFAQPageSchema,
   buildTechArticleSchema,
-  websiteSchema,
+  buildWebsiteSchema,
+  organizationSchema,
 } from './structured-data';
 
 describe(buildTechArticleSchema, () => {
@@ -10,7 +11,8 @@ describe(buildTechArticleSchema, () => {
     const result = buildTechArticleSchema({
       title: 'Introduction to Expo Router',
       description: 'Expo Router is a file-based routing library.',
-      modificationDate: '2026-01-15',
+      modificationDate: 'January 15, 2026',
+      image: 'https://og.expo.dev/?theme=docs&title=Introduction%20to%20Expo%20Router',
       url: 'https://docs.expo.dev/router/introduction/',
     });
 
@@ -19,8 +21,10 @@ describe(buildTechArticleSchema, () => {
       '@type': 'TechArticle',
       headline: 'Introduction to Expo Router',
       description: 'Expo Router is a file-based routing library.',
-      dateModified: '2026-01-15',
-      publisher: websiteSchema.publisher,
+      dateModified: '2026-01-15T00:00:00Z',
+      image: 'https://og.expo.dev/?theme=docs&title=Introduction%20to%20Expo%20Router',
+      author: organizationSchema,
+      publisher: organizationSchema,
       url: 'https://docs.expo.dev/router/introduction/',
     });
   });
@@ -47,13 +51,32 @@ describe(buildTechArticleSchema, () => {
     expect(result).toHaveProperty('description', 'A description.');
   });
 
-  it('uses websiteSchema publisher', () => {
+  it('uses the organization as publisher', () => {
     const result = buildTechArticleSchema({
       title: 'Any page',
       url: 'https://docs.expo.dev/any/',
     });
 
-    expect(result.publisher).toBe(websiteSchema.publisher);
+    expect(result.publisher).toBe(organizationSchema);
+  });
+});
+
+describe(buildWebsiteSchema, () => {
+  it('puts the organization and its sameAs links at the top level of the graph', () => {
+    const graph = buildWebsiteSchema('en')['@graph'];
+
+    expect(graph).toContainEqual(
+      expect.objectContaining({
+        '@type': 'Organization',
+        sameAs: expect.arrayContaining(['https://github.com/expo']),
+      })
+    );
+    expect(graph).toContainEqual(
+      expect.objectContaining({
+        '@type': 'WebSite',
+        publisher: { '@id': organizationSchema['@id'] },
+      })
+    );
   });
 });
 

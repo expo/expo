@@ -23,7 +23,8 @@
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore"
           ],
-          "linkedFrameworks": ["Foundation"]
+          "linkedFrameworks": ["Foundation"],
+          "resources": [{ "path": "ios/PrivacyInfo.xcprivacy", "rule": "copy" }]
         }
       ]
     }

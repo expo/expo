@@ -136,7 +136,7 @@ The tab file named **index.tsx** is the default tab when the app loads. The seco
 
 ## Tab bar options
 
-The JavaScript tabs in Expo Router extend the [Bottom Tabs Navigator](https://reactnavigation.org/docs/bottom-tab-navigator) from React Navigation. The specific APIs available depend on your versions. For example, Expo Router v6 extends Bottom Tabs Navigator v7. Check your versions to ensure compatibility, then you can use the same configuration props to customize the bottom tab bar and individual tabs. For example:
+In SDK 56 and later, JavaScript tabs are bundled with Expo Router. Use the `screenOptions` prop to customize the tab bar for every tab, or set `options` on a `Tabs.Screen` to customize one tab. For example:
 
 ```tsx src/app/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router';
@@ -165,8 +165,6 @@ export default function TabLayout() {
 The supported tab bar options are listed below:
 
 <ReactNavigationOptions category="tabBar" />
-
-For additional details and navigator-specific examples, see [React Navigation's Bottom Tabs Navigator documentation](https://reactnavigation.org/docs/bottom-tab-navigator/#options).
 
 ## Advanced
 

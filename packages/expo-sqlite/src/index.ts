@@ -3,3 +3,4 @@ export * from './SQLiteSession';
 export * from './SQLiteStatement';
 export * from './SQLiteTaggedQuery';
 export * from './hooks';
+export { configureWeb, type SQLiteWebOptions } from './WebConfiguration';

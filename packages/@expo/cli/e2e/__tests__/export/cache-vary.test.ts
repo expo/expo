@@ -1,7 +1,7 @@
 /* eslint-env jest */
 import fs from 'fs';
-import { sync as globSync } from 'glob';
 import path from 'path';
+import { globSync } from 'tinyglobby';
 
 import { executeExpoAsync } from '../../utils/expo';
 import { getRouterE2ERoot } from '../utils';

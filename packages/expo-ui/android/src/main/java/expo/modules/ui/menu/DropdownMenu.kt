@@ -6,6 +6,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import expo.modules.kotlin.views.FunctionalComposableScope
 import expo.modules.ui.UIComposableScope
 import expo.modules.ui.ModifierRegistry
@@ -29,7 +30,13 @@ fun FunctionalComposableScope.DropdownMenuContent(
       shape = props.cornerRadius?.let { RoundedCornerShape(it.dp) } ?: MenuDefaults.shape,
       shadowElevation = props.shadowElevation?.dp ?: MenuDefaults.ShadowElevation,
       expanded = props.expanded,
-      onDismissRequest = onDismissRequest
+      onDismissRequest = onDismissRequest,
+      properties = PopupProperties(
+        focusable = props.properties.focusable,
+        dismissOnBackPress = props.properties.dismissOnBackPress,
+        dismissOnClickOutside = props.properties.dismissOnClickOutside,
+        clippingEnabled = props.properties.clippingEnabled
+      )
     ) {
       itemsSlotView?.let {
         with(UIComposableScope()) {

@@ -5,11 +5,11 @@ import {
   createSeededRootState,
 } from '../global-state/createSeededNavigationState';
 import { RouterConfigContext } from '../global-state/routerConfigContext';
+import { withLoadedLayouts } from '../layoutAnchor';
 import {
   type LinkingOptions,
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,
-  type NavigationState,
   type ParamListBase,
 } from '../react-navigation/native';
 import { ROOT_CHAIN } from '../react-navigation/routers/stateKeys';
@@ -60,7 +60,7 @@ export function useLinking(
     };
   }, []);
 
-  // `useThenable` only consumes this function from the first render, keeping initialization options consistent.
+  // `NavigationContainer` only consumes this function from the first render, keeping initialization options consistent.
   const getInitialState = () => {
     const getStateFromURL = (url: string | null | undefined) => {
       let path = url ? extractExpoPathFromURL(prefixes, url) : undefined;
@@ -70,11 +70,9 @@ export function useLinking(
 
       const parsedState = path ? getStateFromPath(path, config) : undefined;
       const routeNode = routerConfig?.routeNode;
-      const state = routeNode
-        ? createSeededRootState(parsedState, routeNode)
+      return routeNode
+        ? withLoadedLayouts(() => createSeededRootState(parsedState, routeNode))
         : completeParsedState(parsedState, ROOT_CHAIN);
-
-      return state;
     };
     const url = getInitialURL();
 
@@ -82,18 +80,7 @@ export function useLinking(
       return url.then(getStateFromURL);
     }
 
-    const state = getStateFromURL(url);
-
-    const thenable = {
-      then(onfulfilled?: (state: NavigationState | undefined) => void) {
-        return Promise.resolve(onfulfilled ? onfulfilled(state) : state);
-      },
-      catch() {
-        return thenable;
-      },
-    };
-
-    return thenable as PromiseLike<NavigationState | undefined>;
+    return getStateFromURL(url);
   };
 
   return {

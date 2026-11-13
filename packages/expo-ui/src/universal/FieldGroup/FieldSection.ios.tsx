@@ -27,7 +27,8 @@ export function FieldSection({
   const modifiers = transformToModifiers(
     style,
     { onAppear, onDisappear, disabled, hidden, testID },
-    extraModifiers
+    extraModifiers,
+    { componentName: 'FieldSection' }
   );
 
   return (

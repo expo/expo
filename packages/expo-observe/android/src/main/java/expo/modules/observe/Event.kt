@@ -8,6 +8,7 @@ import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 @Serializable
 data class Metadata(
@@ -122,20 +123,22 @@ data class LogEvent(
   val droppedAttributesCount: Int = 0
 ) {
   companion object {
-    fun fromLogRecord(log: LogRecord): LogEvent =
-      LogEvent(
+    fun fromLogRecord(log: LogRecord, inSampleRate: Boolean): LogEvent {
+      // Stored as a JSON string; parse defensively, falling back to no
+      // attributes if the blob is somehow malformed.
+      val attributes = log.attributes?.let {
+        runCatching { Json.decodeFromString<JsonObject>(it) }.getOrNull()
+      }
+      return LogEvent(
         sessionId = log.sessionId,
         timestamp = log.timestamp,
         name = log.name,
         body = log.body,
         severity = log.severity,
-        // Stored as a JSON string; parse defensively, falling back to no
-        // attributes if the blob is somehow malformed.
-        attributes = log.attributes?.let {
-          runCatching { Json.decodeFromString<JsonObject>(it) }.getOrNull()
-        },
+        attributes = JsonObject(attributes.orEmpty() + ("expo.in_sample_rate" to JsonPrimitive(inSampleRate))),
         droppedAttributesCount = log.droppedAttributesCount
       )
+    }
   }
 }
 

@@ -4,18 +4,17 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '58.0.0'
+version = '58.0.2'
 
 android {
   namespace "expo.modules.storereview"
   defaultConfig {
     versionCode 4
-    versionName "58.0.0"
+    versionName "58.0.2"
   }
 }
 
 dependencies {
   implementation "com.google.android.play:review:2.0.1"
-  implementation "com.google.android.play:review-ktx:2.0.0"
   api "com.google.android.gms:play-services-base:17.3.0"
 }

@@ -14,6 +14,7 @@
  */
 
 import { type FileDigestAlgorithm, FileMode } from '../src/File.types';
+import type { DownloadResponse } from '../src/NetworkTasks.types';
 
 export type URL = string;
 export type FileSystemPath = any;
@@ -810,19 +811,42 @@ export class FileSystemUploadTask extends SharedObject {
 }
 
 export class FileSystemDownloadTask extends SharedObject {
+  private cancelled = false;
+  private responseMetadata: DownloadResponse = { status: null, headers: {} };
+
+  get response(): DownloadResponse {
+    return { ...this.responseMetadata, headers: { ...this.responseMetadata.headers } };
+  }
+
+  private async completeDownload(): Promise<string> {
+    this.cancelled = false;
+    this.responseMetadata = { status: null, headers: {} };
+    await Promise.resolve();
+    if (!this.cancelled) {
+      this.responseMetadata = { status: 200, headers: {} };
+    }
+    return 'file:///mock/downloaded-file';
+  }
+
   start(_url: string, _to: any, _options?: any): Promise<string | null> {
-    return Promise.resolve('file:///mock/downloaded-file');
+    return this.completeDownload();
   }
   pause(): { resumeData: string } {
     return { resumeData: 'mock-resume-data' };
   }
   resume(_url: string, _to: any, _resumeData: string, _options?: any): Promise<string | null> {
-    return Promise.resolve('file:///mock/downloaded-file');
+    return this.completeDownload();
   }
   release(): void {
     super.release();
   }
-  cancel(): void {}
+  acknowledgeBackgroundCompletionAsync(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  cancel(): void {
+    this.cancelled = true;
+  }
 }
 
 function directChildren(dirUri: string): { uri: string; kind: 'file' | 'dir' }[] {
@@ -918,4 +942,26 @@ export async function pickFileAsync(options?: any): Promise<any> {
     return [{ uri: 'file:///mock/picked/file1.txt' }, { uri: 'file:///mock/picked/file2.txt' }];
   }
   return { uri: 'file:///mock/picked/file.txt' };
+}
+
+// Simulates the iOS collection bridge; public JS handles unsupported platforms.
+export async function canPreview(files: FileSystemFile[]): Promise<boolean> {
+  if (files.length === 0) {
+    throw new RangeError('At least one file is required for a preview.');
+  }
+  for (const file of files) {
+    if (!(await file.canPreview())) {
+      return false;
+    }
+  }
+  return true;
+}
+
+export async function preview(files: FileSystemFile[], initialIndex: number): Promise<void> {
+  if (!Number.isInteger(initialIndex) || initialIndex < 0 || initialIndex >= files.length) {
+    throw new RangeError('initialIndex must be an integer within the preview collection.');
+  }
+  if (!(await canPreview(files))) {
+    throw new Error('The preview collection contains an unavailable file.');
+  }
 }

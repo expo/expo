@@ -393,7 +393,7 @@ As a real-world example, introspection is used by `eas-cli` to determine what th
 
 ## Legacy plugins
 
-To make `eas build` work the same as the classic `expo build` service, we added support for "legacy plugins" which are applied automatically to a project when they're installed in the project.
+To work the same as the classic `expo build` service, `eas build` supports "legacy plugins" which are applied automatically to a project when they're installed in the project.
 
 For instance, say a project has `expo-camera` installed but doesn't have `plugins: ['expo-camera']` in their **app.json**.
 Expo CLI would automatically add `expo-camera` to the plugins to ensure that the required camera and microphone permissions are added to the project.
@@ -498,7 +498,7 @@ The Expo CLI `npx expo prebuild` command uses [`@expo/prebuild-config`](https://
 
 For example, say you wanted to add support for managing the `ios/*/AppDelegate.h` file, you could do this by adding a `ios.appDelegateHeader` modifier.
 
-> This example uses `tsx` for simple local TypeScript support, this isn't strictly necessary. See [using TypeScript with `app.config.js`](/guides/typescript/#appconfigjs).
+> This example uses `tsx` for simple local TypeScript support, but `tsx` isn't strictly necessary. See [using TypeScript with app config](/guides/typescript/#app-config).
 
 ```ts withAppDelegateHeaderBaseMod.ts
 import { ConfigPlugin, IOSConfig, Mod, withMod, BaseMods } from 'expo/config-plugins';

@@ -4,6 +4,11 @@
     "modules": ["TrackingTransparencyModule"]
   },
   "android": {
-    "modules": ["expo.modules.trackingtransparency.TrackingTransparencyModule"]
+    "modules": ["expo.modules.trackingtransparency.TrackingTransparencyModule"],
+    "publication": {
+      "groupId": "host.exp.exponent",
+      "artifactId": "expo.modules.trackingtransparency",
+      "repository": "local-maven-repo"
+    }
   }
 }

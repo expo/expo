@@ -16,35 +16,35 @@ describe('hooks', () => {
   });
 
   it('calls native methods once if mounted & unmounted', async () => {
-    const hook = renderHook(ScreenCapture.usePreventScreenCapture);
-    hook.rerender();
+    const hook = await renderHook(ScreenCapture.usePreventScreenCapture);
+    await hook.rerender();
     expect(preventScreenCapture).toHaveBeenCalledTimes(1);
 
-    hook.unmount();
+    await hook.unmount();
     expect(allowScreenCapture).toHaveBeenCalledTimes(1);
   });
 
   it('calls native methods once if mounted & unmounted', async () => {
-    const hook = renderHook(ScreenCapture.usePreventScreenCapture);
-    hook.rerender();
+    const hook = await renderHook(ScreenCapture.usePreventScreenCapture);
+    await hook.rerender();
     expect(preventScreenCapture).toHaveBeenCalledTimes(1);
 
-    hook.unmount();
+    await hook.unmount();
     expect(allowScreenCapture).toHaveBeenCalledTimes(1);
   });
 
   it('Re runs hook when tag changes', async () => {
-    const hook = renderHook(ScreenCapture.usePreventScreenCapture, { initialProps: 'foo' });
+    const hook = await renderHook(ScreenCapture.usePreventScreenCapture, { initialProps: 'foo' });
 
     // Rerender first with the same key
-    hook.rerender('foo');
+    await hook.rerender('foo');
     // Rerender secondly with a different key
-    hook.rerender('bar');
+    await hook.rerender('bar');
 
     expect(preventScreenCapture).toHaveBeenCalledTimes(2);
     expect(allowScreenCapture).toHaveBeenCalledTimes(1);
 
-    hook.unmount();
+    await hook.unmount();
     // Unmounting results in final allowScreenCapture native method call
     expect(allowScreenCapture).toHaveBeenCalledTimes(2);
   });
@@ -53,19 +53,19 @@ describe('hooks', () => {
     preventScreenCapture.mockRejectedValueOnce(new Error('no key window'));
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-    renderHook(ScreenCapture.usePreventScreenCapture);
+    await renderHook(ScreenCapture.usePreventScreenCapture);
 
     await waitFor(() => expect(errorSpy).toHaveBeenCalledTimes(1));
     errorSpy.mockRestore();
   });
 
   it('Unmounting one hook when two are active does not re-allow screen capturing', async () => {
-    const hook1 = renderHook(ScreenCapture.usePreventScreenCapture, { initialProps: 'foo' });
-    const hook2 = renderHook(ScreenCapture.usePreventScreenCapture, { initialProps: 'bar' });
+    const hook1 = await renderHook(ScreenCapture.usePreventScreenCapture, { initialProps: 'foo' });
+    const hook2 = await renderHook(ScreenCapture.usePreventScreenCapture, { initialProps: 'bar' });
 
     // Rerender hook1 with the same 'foo' key
-    hook1.rerender('foo');
-    hook2.unmount();
+    await hook1.rerender('foo');
+    await hook2.unmount();
 
     expect(preventScreenCapture).toHaveBeenCalledTimes(2);
     expect(allowScreenCapture).toHaveBeenCalledTimes(0);

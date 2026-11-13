@@ -1,5 +1,5 @@
 import { Platform } from 'expo-modules-core';
-import { getAssetByID } from 'react-native/asset-registry';
+import { AssetRegistry } from 'react-native';
 
 import { type AssetMetadata, selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
@@ -23,6 +23,25 @@ type DownloadPromiseCallbacks = {
   resolve: () => void;
   reject: (error: Error) => void;
 };
+
+/**
+ * The value of `require('path/to/file')` for an image on web and in server environments, when
+ * Metro can read the image dimensions.
+ */
+export interface VirtualAssetModule {
+  uri: string;
+  width: number;
+  height: number;
+}
+
+function isVirtualAsset(assetModule: unknown): assetModule is VirtualAssetModule {
+  return (
+    !!assetModule &&
+    typeof assetModule === 'object' &&
+    'uri' in assetModule &&
+    typeof assetModule.uri === 'string'
+  );
+}
 
 export type { AssetMetadata } from './AssetSources';
 
@@ -140,42 +159,36 @@ export class Asset {
   // @needsAudit
   /**
    * Returns the [`Asset`](#asset) instance representing an asset given its module or URL.
-   * @param virtualAssetModule The value of `require('path/to/file')` for the asset or external
+   * @param assetModule The value of `require('path/to/file')` for the asset or external
    * network URL
    * @return The [`Asset`](#asset) instance for the asset.
    */
-  static fromModule(
-    virtualAssetModule: number | string | { uri: string; width: number; height: number }
-  ): Asset {
-    if (typeof virtualAssetModule === 'string') {
-      return Asset.fromURI(virtualAssetModule);
+  static fromModule(assetModule: number | string | VirtualAssetModule): Asset {
+    if (typeof assetModule === 'string') {
+      return Asset.fromURI(assetModule);
     }
-    if (
-      typeof virtualAssetModule === 'object' &&
-      'uri' in virtualAssetModule &&
-      typeof virtualAssetModule.uri === 'string'
-    ) {
-      const extension = AssetUris.getFileExtension(virtualAssetModule.uri);
+    if (isVirtualAsset(assetModule)) {
+      const extension = AssetUris.getFileExtension(assetModule.uri);
       return new Asset({
         name: '',
         type: extension.startsWith('.') ? extension.substring(1) : extension,
         hash: null,
-        uri: virtualAssetModule.uri,
-        width: virtualAssetModule.width,
-        height: virtualAssetModule.height,
+        uri: assetModule.uri,
+        width: assetModule.width,
+        height: assetModule.height,
       });
     }
 
-    const meta = getAssetByID(virtualAssetModule);
+    const meta = AssetRegistry.getAssetByID(assetModule);
     if (!meta) {
-      throw new Error(`Module "${virtualAssetModule}" is missing from the asset registry`);
+      throw new Error(`Module "${assetModule}" is missing from the asset registry`);
     }
 
     // Outside of the managed env we need the moduleId to initialize the asset
     // because resolveAssetSource depends on it
     if (!IS_ENV_WITH_LOCAL_ASSETS) {
       // null-check is performed above with `getAssetByID`.
-      const { uri } = resolveAssetSource(virtualAssetModule)!;
+      const { uri } = resolveAssetSource(assetModule)!;
 
       const asset = new Asset({
         name: meta.name,

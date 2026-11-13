@@ -120,7 +120,7 @@ async function tryOpenInChromiumTabAsync(target: string): Promise<boolean> {
  * `BROWSER_ARGS` environment variables. On macOS, reuses an existing tab in a running
  * Chromium-based browser when possible.
  *
- * @returns `true` when a browser was launched, `false` when `BROWSER=none`.
+ * @returns Whether a browser was launched.
  */
 export async function openBrowserAsync(target: string): Promise<boolean> {
   const browserEnv = process.env.BROWSER?.trim();
@@ -151,18 +151,8 @@ export async function openBrowserAsync(target: string): Promise<boolean> {
     return true;
   }
 
-  if (process.platform === 'win32') {
-    await spawnWindowsStartAsync(target, browserApp, browserArgs);
-    return true;
-  }
-
-  // WSL: when the user hasn't overridden BROWSER, route through Windows `cmd.exe` so
-  // the URL opens in the user's Windows browser. Falls through to `xdg-open` otherwise.
-  if (!browserApp && isWsl()) {
-    await spawnAsync('/mnt/c/Windows/System32/cmd.exe', ['/c', 'start', '""', target], {
-      stdio: 'ignore',
-    });
-    return true;
+  if (process.platform === 'win32' || (!browserApp && isWsl())) {
+    return spawnWindowsBrowserAsync(target, browserArgs, browserApp);
   }
 
   const command = browserApp ?? 'xdg-open';
@@ -170,20 +160,54 @@ export async function openBrowserAsync(target: string): Promise<boolean> {
   return true;
 }
 
-async function spawnWindowsStartAsync(
+function quotePowerShellString(value: string): string {
+  // PowerShell treats typographic apostrophes as quotes too.
+  return `'${value.replace(/['‘’‚‛]/g, (quote) => quote + quote)}'`;
+}
+
+function quoteWindowsArgument(value: string): string {
+  let quoted = '"';
+  let backslashes = 0;
+  for (let i = 0; i < value.length; i++) {
+    const character = value[i]!;
+    if (character === '\\') {
+      backslashes++;
+    } else {
+      quoted += '\\'.repeat(character === '"' ? backslashes * 2 + 1 : backslashes) + character;
+      backslashes = 0;
+    }
+  }
+  return quoted + '\\'.repeat(backslashes * 2) + '"';
+}
+
+async function spawnWindowsBrowserAsync(
   target: string,
-  browserApp: string | undefined,
-  browserArgs: string[]
-): Promise<void> {
-  // Windows preserves env var case in Node, but the OS variable is `SystemRoot`.
+  browserArgs: string[],
+  browserApp?: string
+): Promise<boolean> {
   const systemRoot = process.env.SYSTEMROOT ?? process.env.SystemRoot ?? 'C:\\Windows';
-  const cmd = path.join(systemRoot, 'System32', 'cmd.exe');
-  // `start ""` — the empty quoted string is the window title, so the URL isn't
-  // interpreted as a title argument.
-  const startArgs = ['/c', 'start', '""'];
-  if (browserApp) startArgs.push(browserApp);
-  startArgs.push(target, ...browserArgs);
-  await spawnAsync(cmd, startArgs, { stdio: 'ignore' });
+  const windowsRoot = process.platform === 'win32' ? systemRoot : '/mnt/c/Windows';
+  const command = path.join(windowsRoot, 'System32', 'WindowsPowerShell', 'v1.0', 'powershell.exe');
+  const args = browserApp ? [...browserArgs, target] : browserArgs;
+  let script = `$ErrorActionPreference = 'Stop'; Start-Process -FilePath ${quotePowerShellString(browserApp ?? target)}`;
+  if (args.length > 0) {
+    // Start-Process joins ArgumentList into a command line.
+    const argumentList = args.map(quoteWindowsArgument).join(' ');
+    script += ` -ArgumentList ${quotePowerShellString(argumentList)}`;
+  }
+  const encodedCommand = Buffer.from(script, 'utf16le').toString('base64');
+  try {
+    await spawnAsync(
+      command,
+      ['-NoProfile', '-NonInteractive', '-EncodedCommand', encodedCommand],
+      {
+        stdio: 'ignore',
+      }
+    );
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function isWsl(): boolean {

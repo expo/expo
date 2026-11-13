@@ -41,9 +41,21 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
       // Render at maxWidth/maxHeight if provided (preserving aspect ratio), otherwise at the viewBox's natural size.
       val viewBox = svg.documentViewBox
       if (viewBox != null && viewBox.width() > 0 && viewBox.height() > 0) {
-        val scaleW = if (width > 0) width.toFloat() / viewBox.width() else Float.POSITIVE_INFINITY
-        val scaleH = if (height > 0) height.toFloat() / viewBox.height() else Float.POSITIVE_INFINITY
-        val scale = if (scaleW.isFinite() || scaleH.isFinite()) minOf(scaleW, scaleH) else 1f
+        val scaleW = if (width > 0) {
+          width.toFloat() / viewBox.width()
+        } else {
+          Float.POSITIVE_INFINITY
+        }
+        val scaleH = if (height > 0) {
+          height.toFloat() / viewBox.height()
+        } else {
+          Float.POSITIVE_INFINITY
+        }
+        val scale = if (scaleW.isFinite() || scaleH.isFinite()) {
+          minOf(scaleW, scaleH)
+        } else {
+          1f
+        }
         if (scale.isFinite() && scale > 0) {
           svg.documentWidth = viewBox.width() * scale
           svg.documentHeight = viewBox.height() * scale

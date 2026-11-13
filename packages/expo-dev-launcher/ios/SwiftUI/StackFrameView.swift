@@ -11,7 +11,7 @@ struct StackFrameView: View {
       Text(frame.methodName ?? "Unknown method")
         .font(.system(.caption, design: .monospaced))
         .fontWeight(.medium)
-        .foregroundColor(.primary)
+        .foregroundStyle(Color.primary)
 
       if let file = frame.file {
         VStack(alignment: .leading, spacing: 2) {
@@ -20,7 +20,7 @@ struct StackFrameView: View {
 
           Text("Line \(frame.lineNumber), Column \(frame.column)")
             .font(.system(.caption2, design: .monospaced))
-            .foregroundColor(.secondary)
+            .foregroundStyle(Color.secondary)
         }
       }
     }

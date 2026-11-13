@@ -26,18 +26,21 @@ extension Data {
     }
   }
 
-  func formatted(with format: DataFormat?) -> Any {
+  func formatted(with format: DataFormat?) -> BinaryOutput {
     switch format {
     case .bytes, nil:
-      return self
+      return .bytes(self)
     case .base64:
-      return self.base64EncodedString()
+      return .base64(self.base64EncodedString())
     }
   }
 }
 
 extension AES.GCM.Nonce {
   init(ofSize size: Int) throws {
+    guard size >= 0 else {
+      throw NonceGenerationFailedException(size)
+    }
     var data = Data(count: size)
     let status = try data.withUnsafeMutableBytes { (ptr: UnsafeMutableRawBufferPointer) in
       guard let baseAddress = ptr.baseAddress else {

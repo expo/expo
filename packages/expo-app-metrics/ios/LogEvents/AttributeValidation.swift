@@ -40,6 +40,24 @@ struct SanitizedLogAttributes {
   let droppedCount: Int
 }
 
+/// Strips non-finite numbers (NaN, infinity) from an attribute value at any depth, returning
+/// `nil` when the value itself is one. Arrays and dictionaries are rebuilt without them.
+private func withoutNonFiniteNumbers(_ value: Any) -> Any? {
+  // JSON can't represent these numbers, and `JSONSerialization` raises an Objective-C exception
+  // for them rather than throwing, so a nested one would terminate the app at serialization time.
+  // A boolean `NSNumber` also casts to `Double`, so a finite value is returned as it came in.
+  if let number = value as? Double {
+    return number.isFinite ? value : nil
+  }
+  if let array = value as? [Any] {
+    return array.compactMap { withoutNonFiniteNumbers($0) }
+  }
+  if let dictionary = value as? [String: Any] {
+    return dictionary.compactMapValues { withoutNonFiniteNumbers($0) }
+  }
+  return value
+}
+
 /// Filters caller-provided log-event attributes. Drops:
 ///
 /// - keys that are empty after trimming whitespace,
@@ -48,13 +66,17 @@ struct SanitizedLogAttributes {
 ///
 /// Each rule warns with its own message so the developer can tell at a glance
 /// which rule fired.
-func sanitizeLogEventAttributes(_ attributes: [String: Any]?) -> SanitizedLogAttributes {
+func sanitizeLogEventAttributes(
+  _ attributes: [String: Any]?,
+  source: String = "logEvent"
+) -> SanitizedLogAttributes {
   guard let attributes else {
     return SanitizedLogAttributes(attributes: nil, droppedCount: 0)
   }
   var sanitized: [String: Any] = [:]
   var emptyKeyDrops = 0
   var reservedKeyDrops: [String] = []
+  var nonFiniteDrops: [String] = []
 
   for (key, value) in attributes {
     let trimmedKey = key.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -66,7 +88,11 @@ func sanitizeLogEventAttributes(_ attributes: [String: Any]?) -> SanitizedLogAtt
       reservedKeyDrops.append(key)
       continue
     }
-    sanitized[trimmedKey] = value
+    guard let finiteValue = withoutNonFiniteNumbers(value) else {
+      nonFiniteDrops.append(key)
+      continue
+    }
+    sanitized[trimmedKey] = finiteValue
   }
 
   // Apply the per-record cap last so the count reflects every other rule first.
@@ -85,24 +111,30 @@ func sanitizeLogEventAttributes(_ attributes: [String: Any]?) -> SanitizedLogAtt
 
   if emptyKeyDrops > 0 {
     logger.warn(
-      "[AppMetrics] logEvent dropped \(emptyKeyDrops) attribute(s) with empty or whitespace-only keys."
+      "[AppMetrics] \(source) dropped \(emptyKeyDrops) attribute(s) with empty or whitespace-only keys."
     )
   }
   if !reservedKeyDrops.isEmpty {
     let formattedKeys = reservedKeyDrops.sorted().map { "`\($0)`" }.joined(separator: ", ")
     logger.warn(
-      "[AppMetrics] logEvent dropped attributes that overlap SDK-set keys or use the reserved `expo.` namespace: \(formattedKeys)."
+      "[AppMetrics] \(source) dropped attributes that overlap SDK-set keys or use the reserved `expo.` namespace: \(formattedKeys)."
+    )
+  }
+  if !nonFiniteDrops.isEmpty {
+    let formattedKeys = nonFiniteDrops.sorted().map { "`\($0)`" }.joined(separator: ", ")
+    logger.warn(
+      "[AppMetrics] \(source) dropped attributes whose values are not finite numbers (NaN or infinity), which JSON cannot represent: \(formattedKeys)."
     )
   }
   if overflowDrops > 0 {
     logger.warn(
-      "[AppMetrics] logEvent dropped \(overflowDrops) attribute(s) past the \(maxAttributeCount)-attribute per-record cap."
+      "[AppMetrics] \(source) dropped \(overflowDrops) attribute(s) past the \(maxAttributeCount)-attribute per-record cap."
     )
   }
 
   return SanitizedLogAttributes(
     attributes: sanitized.isEmpty ? nil : sanitized,
-    droppedCount: emptyKeyDrops + reservedKeyDrops.count + overflowDrops
+    droppedCount: emptyKeyDrops + reservedKeyDrops.count + nonFiniteDrops.count + overflowDrops
   )
 }
 

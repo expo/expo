@@ -28,7 +28,7 @@ const capabilities: ModelCapabilities = {
   execution: 'on-device',
   constrainedOutput: 'unsupported',
   runtimeToolDeclarations: 'unsupported',
-  images: 'unsupported',
+  images: 'unknown',
   contextTokens: null,
 };
 const availability = (status = 'available', extra = {}) =>
@@ -124,6 +124,15 @@ it('reports immutable Android capabilities and provider identity on text generat
   });
   expect(onUpdate).toHaveBeenCalledWith({ text: 'local' });
   expect(owner.release).toHaveBeenCalledTimes(1);
+});
+
+it('sends images to the device model when Android cannot confirm image support', async () => {
+  owner.generateAsync.mockResolvedValue(nativeResult('A receipt.'));
+  const images = [{ uri: 'file:///data/receipt.png', label: 'receipt' }];
+  await expect(generateAsync('Describe this.', { images })).resolves.toMatchObject({
+    value: 'A receipt.',
+  });
+  expect(JSON.parse(owner.generateAsync.mock.calls[0]![2]).images).toEqual(images);
 });
 
 it.each(['constrainedOutput', 'runtimeToolDeclarations', 'images'] as const)(

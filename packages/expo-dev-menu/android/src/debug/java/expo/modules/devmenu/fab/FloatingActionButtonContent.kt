@@ -42,17 +42,29 @@ fun FloatingActionButtonContent(
   showLabel: Boolean = true
 ) {
   val scale by animateFloatAsState(
-    targetValue = if (isPressed && !isDragging) 0.9f else 1f,
+    targetValue = if (isPressed && !isDragging) {
+      0.9f
+    } else {
+      1f
+    },
     label = "pressScale"
   )
 
   val idleAlpha by animateFloatAsState(
-    targetValue = if (isIdle) 0.5f else 1f,
+    targetValue = if (isIdle) {
+      0.5f
+    } else {
+      1f
+    },
     label = "idleAlpha"
   )
 
   val idleSaturation by animateFloatAsState(
-    targetValue = if (isIdle) 0f else 1f,
+    targetValue = if (isIdle) {
+      0f
+    } else {
+      1f
+    },
     label = "idleSaturation"
   )
 

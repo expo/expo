@@ -125,8 +125,9 @@ describe(writeSceneDelegateFileAsync, () => {
   });
 
   it('should write a SceneDelegate subclassing ExpoAppSceneDelegate', async () => {
-    await writeSceneDelegateFileAsync(dir);
-    const contents = await fs.promises.readFile(path.join(dir, 'SceneDelegate.swift'), 'utf8');
+    const filePath = path.join(dir, 'SceneDelegate.swift');
+    await writeSceneDelegateFileAsync(filePath);
+    const contents = await fs.promises.readFile(filePath, 'utf8');
     expect(contents).toBe(`internal import Expo
 
 @objc(SceneDelegate)
@@ -138,7 +139,7 @@ class SceneDelegate: ExpoAppSceneDelegate {
   it('should not overwrite an existing SceneDelegate.swift', async () => {
     const filePath = path.join(dir, 'SceneDelegate.swift');
     await fs.promises.writeFile(filePath, 'custom');
-    await writeSceneDelegateFileAsync(dir);
+    await writeSceneDelegateFileAsync(filePath);
     expect(await fs.promises.readFile(filePath, 'utf8')).toBe('custom');
   });
 });

@@ -64,7 +64,11 @@ export function getNavigateAction(
     registry: config.registry,
     action: {
       type: type ?? 'NAVIGATE',
-      payload: { singular, __internal__PreviewKey: previewKey },
+      payload: {
+        singular,
+        __internal__PreviewKey: previewKey,
+        ...(options.__internal__popToNavigator ? { pop: true } : undefined),
+      },
     },
     withAnchor,
     internalParams,

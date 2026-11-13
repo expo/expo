@@ -86,7 +86,7 @@ export default function StyledTextExample() {
 
 Nest `Text` components to style individual segments differently. This is useful for inline formatting, such as bold or colored words within a sentence.
 
-> **Note:** Nested text uses SwiftUI's [Text concatenation](https://developer.apple.com/documentation/swiftui/text), so only modifiers that return `Text` (such as `bold`, `italic`, `font`, `foregroundColor`, and `foregroundStyle` with color) will apply to nested segments.
+> **Note:** Nested text uses SwiftUI's [Text concatenation](https://developer.apple.com/documentation/swiftui/text), so only modifiers that return `Text` (such as `bold`, `italic`, `font`, `foregroundColor`, `foregroundStyle` with color, `underline`, and `strikethrough`) will apply to nested segments.
 
 <ComponentExample
   title="NestedTextExample.tsx"
@@ -392,6 +392,36 @@ export default function TimerIntervalExample() {
 </ComponentExample>
 
 > **Note:** `timerInterval`, `countsDown`, and `pauseTime` require iOS 16.0+ / tvOS 16.0+. On older versions, the timer interval will not render.
+
+### Timer width
+
+A timer fills the available width. To make it as wide as its text, put a hidden placeholder in an `Overlay` and show the timer in `Overlay.Content`. Apply `fixedSize` to the `Overlay`, not to the timer. In a Live Activity, `fixedSize` on the timer can hide it.
+
+```tsx
+import { HStack, Overlay, Text } from '@expo/ui/swift-ui';
+import {
+  fixedSize,
+  hidden,
+  monospacedDigit,
+} from '@expo/ui/swift-ui/modifiers';
+
+<HStack spacing={0}>
+  <Overlay
+    alignment="leading"
+    modifiers={[
+      monospacedDigit(),
+      fixedSize({ horizontal: true, vertical: false }),
+    ]}>
+    <Text modifiers={[hidden()]}>0:00</Text>
+    <Overlay.Content>
+      <Text timerInterval={{ lower, upper }} countsDown={false} />
+    </Overlay.Content>
+  </Overlay>
+  <Text>{' of 2:00'}</Text>
+</HStack>;
+```
+
+Set the placeholder to the longest value the timer can show, with every digit as `0`. Use `0:00` for less than 10 minutes, `00:00` for less than an hour, and `0:00:00` for an hour or more. `monospacedDigit` gives every digit the same width.
 
 ## API
 

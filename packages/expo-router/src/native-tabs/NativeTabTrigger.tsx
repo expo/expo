@@ -72,6 +72,13 @@ function NativeTabTriggerImpl(props: NativeTabTriggerProps) {
             `Trigger component can only be used in the tab screen. Current route: ${route.name}`
           );
         }
+        if (process.env.NODE_ENV !== 'production' && props.prominent) {
+          console.warn(
+            `NativeTabs ignores \`prominent\` on the \`NativeTabs.Trigger\` inside the "${route.name}" screen. ` +
+              'The prominent tab can be set only in the layout. ' +
+              `Set \`prominent\` on \`<NativeTabs.Trigger name="${route.name}">\` in the layout file.`
+          );
+        }
         const options = convertTabPropsToOptions(props, true);
         navigation.setOptions(options);
       }
@@ -93,6 +100,8 @@ export function convertTabPropsToOptions(
     hidden,
     children,
     role,
+    prominent,
+    disableAutomaticSearchActivation,
     disablePopToTop,
     disableScrollToTop,
     unstable_nativeProps,
@@ -113,6 +122,9 @@ export function convertTabPropsToOptions(
     ? {
         ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
         ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
+        ...(disableAutomaticSearchActivation !== undefined
+          ? { disableAutomaticSearchActivation }
+          : {}),
         ...(disabled !== undefined ? { disabled } : {}),
         ...(rippleColor !== undefined ? { rippleColor } : {}),
         ...(indicatorColor !== undefined ? { indicatorColor } : {}),
@@ -133,9 +145,13 @@ export function convertTabPropsToOptions(
         },
         contentStyle,
         role,
+        ...(prominent !== undefined ? { prominent } : {}),
         nativeProps: unstable_nativeProps,
         disableAutomaticContentInsets,
         ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
+        ...(disableAutomaticSearchActivation !== undefined
+          ? { disableAutomaticSearchActivation }
+          : {}),
         ...(disabled !== undefined ? { disabled } : {}),
         ...(rippleColor !== undefined ? { rippleColor } : {}),
         ...(indicatorColor !== undefined ? { indicatorColor } : {}),

@@ -81,8 +81,8 @@ jest.mock('../zoom/ZoomTransitionEnabler', () => {
   };
 });
 
-it('renders a Link', () => {
-  const { getByText } = render(<Link href="/foo">Foo</Link>);
+it('renders a Link', async () => {
+  const { getByText } = await render(<Link href="/foo">Foo</Link>);
   const node = getByText('Foo');
   expect(node).toBeDefined();
   expect(node.props.href).toBe('/foo');
@@ -94,8 +94,8 @@ it('renders a Link', () => {
   });
 });
 
-it('renders a Link with React Native array style prop when using asChild', () => {
-  const { getByTestId } = render(
+it('renders a Link with React Native array style prop when using asChild', async () => {
+  const { getByTestId } = await render(
     <Link asChild testID="link" href="/foo" style={[{ color: 'red' }, { backgroundColor: 'blue' }]}>
       <Pressable>
         <Text>Foo</Text>
@@ -110,22 +110,23 @@ it('renders a Link with React Native array style prop when using asChild', () =>
   });
 });
 
-it('renders a Link with a slot and array style', () => {
-  expect(() =>
-    render(
-      <Link asChild href="/foo">
-        <Pressable style={[{ padding: 10 }, { margin: 5 }]}>
-          <Text>Button</Text>
-        </Pressable>
-      </Link>
-    )
-  ).toThrow(
+it('renders a Link with a slot and array style', async () => {
+  await expect(
+    async () =>
+      await render(
+        <Link asChild href="/foo">
+          <Pressable style={[{ padding: 10 }, { margin: 5 }]}>
+            <Text>Button</Text>
+          </Pressable>
+        </Link>
+      )
+  ).rejects.toThrow(
     '[expo-router]: You are passing an array of styles to a child of <Slot>. Consider flattening the styles with StyleSheet.flatten before passing them to the child component.'
   );
 });
 
-xit('renders a Link with a slot', () => {
-  const { getByText, getByTestId } = render(
+xit('renders a Link with a slot', async () => {
+  const { getByText, getByTestId } = await render(
     <Link asChild href="/foo">
       <View testID="pressable">
         <Text testID="inner-text">Button</Text>
@@ -162,8 +163,8 @@ xit('renders a Link with a slot', () => {
   }
 });
 
-it('ignores className on native', () => {
-  const { getByTestId } = render(
+it('ignores className on native', async () => {
+  const { getByTestId } = await render(
     <Link href="/foo" testID="link" style={{ color: 'red' }} className="xxx">
       Hello
     </Link>
@@ -182,8 +183,8 @@ it('ignores className on native', () => {
   );
 });
 
-it('ignores className with slot on native', () => {
-  const { getByTestId } = render(
+it('ignores className with slot on native', async () => {
+  const { getByTestId } = await render(
     <Link asChild href="/foo" testID="link" style={{ color: 'red' }} className="xxx">
       <View />
     </Link>
@@ -202,21 +203,22 @@ it('ignores className with slot on native', () => {
   );
 });
 
-it('throws an error when using asChild with multiple children', () => {
-  expect(() =>
-    render(
-      <Link asChild href="/foo">
-        <Text>Foo</Text>
-        <Text>Bar</Text>
-      </Link>
-    )
-  ).toThrow(
+it('throws an error when using asChild with multiple children', async () => {
+  await expect(
+    async () =>
+      await render(
+        <Link asChild href="/foo">
+          <Text>Foo</Text>
+          <Text>Bar</Text>
+        </Link>
+      )
+  ).rejects.toThrow(
     'Link: When using `asChild`, you must pass a single child element that will emit the `onPress` event.'
   );
 });
 
-it('strips web-only href attributes', () => {
-  const { getByTestId } = render(
+it('strips web-only href attributes', async () => {
+  const { getByTestId } = await render(
     <Link
       href="/foo"
       testID="link"
@@ -240,8 +242,8 @@ it('strips web-only href attributes', () => {
   );
 });
 
-it('can preserve the initialRoute', () => {
-  renderRouter({
+it('can preserve the initialRoute', async () => {
+  await renderRouter({
     index: function MyIndexRoute() {
       return (
         <Link testID="link" withAnchor href="/fruit/banana">
@@ -261,16 +263,16 @@ it('can preserve the initialRoute', () => {
     '/fruit/banana': () => <Text testID="banana">Banana</Text>,
   });
 
-  act(() => fireEvent.press(screen.getByTestId('link')));
+  await act(() => fireEvent.press(screen.getByTestId('link')));
   expect(screen.getByTestId('banana')).toBeDefined();
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('apple')).toBeDefined();
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('link')).toBeDefined();
 });
 
-it('can preserve the initialRoute with shared groups', () => {
-  renderRouter({
+it('can preserve the initialRoute with shared groups', async () => {
+  await renderRouter({
     index: function MyIndexRoute() {
       return (
         <Link testID="link" withAnchor href="/(foo)/fruit/banana">
@@ -294,16 +296,16 @@ it('can preserve the initialRoute with shared groups', () => {
     '/(foo,bar)/fruit/banana': () => <Text testID="banana">Banana</Text>,
   });
 
-  act(() => fireEvent.press(screen.getByTestId('link')));
+  await act(() => fireEvent.press(screen.getByTestId('link')));
   expect(screen.getByTestId('banana')).toBeDefined();
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('orange')).toBeDefined();
-  act(() => router.back());
+  await act(() => router.back());
   expect(screen.getByTestId('link')).toBeDefined();
 });
 
-it('can preserve the anchor for every level in nested stack', () => {
-  renderRouter({
+it('can preserve the anchor for every level in nested stack', async () => {
+  await renderRouter({
     _layout: () => <Stack />,
     '(inner)/_layout': () => <Stack />,
     '(inner)/index': () => (
@@ -325,13 +327,13 @@ it('can preserve the anchor for every level in nested stack', () => {
 
   expect(screen.getByTestId('link-to-target')).toBeVisible();
 
-  act(() => {
-    fireEvent.press(screen.getByTestId('link-to-target'));
+  await act(async () => {
+    await fireEvent.press(screen.getByTestId('link-to-target'));
   });
 
   expect(screen.getByTestId('target')).toBeVisible();
 
-  act(() => {
+  await act(() => {
     router.back();
   });
 
@@ -339,8 +341,8 @@ it('can preserve the anchor for every level in nested stack', () => {
 });
 
 describe('singular', () => {
-  test('can dynamically route using singular', () => {
-    renderRouter(
+  test('can dynamically route using singular', async () => {
+    await renderRouter(
       {
         '[slug]': () => (
           <Link testID="link" href="/apple" dangerouslySingular>
@@ -353,9 +355,9 @@ describe('singular', () => {
       }
     );
 
-    act(() => router.push('/apple'));
-    act(() => router.push('/apple'));
-    act(() => router.push('/banana'));
+    await act(() => router.push('/apple'));
+    await act(() => router.push('/apple'));
+    await act(() => router.push('/banana'));
 
     expect(screen).toHaveRouterState({
       index: 0,
@@ -418,7 +420,7 @@ describe('singular', () => {
     });
 
     // Should push /apple and remove all previous instances of /apple
-    act(() => fireEvent.press(screen.getByTestId('link')));
+    await act(() => fireEvent.press(screen.getByTestId('link')));
 
     expect(screen).toHaveRouterState({
       index: 0,
@@ -466,8 +468,8 @@ describe('singular', () => {
   });
 });
 
-test('can dynamically route using singular function', () => {
-  renderRouter(
+test('can dynamically route using singular function', async () => {
+  await renderRouter(
     {
       '[slug]': () => (
         <Link
@@ -483,10 +485,10 @@ test('can dynamically route using singular function', () => {
     }
   );
 
-  act(() => router.push('/apple?id=1'));
-  act(() => router.push('/apple?id=1'));
-  act(() => router.push('/apple?id=2'));
-  act(() => router.push('/banana'));
+  await act(() => router.push('/apple?id=1'));
+  await act(() => router.push('/apple?id=1'));
+  await act(() => router.push('/apple?id=2'));
+  await act(() => router.push('/banana'));
 
   expect(screen).toHaveRouterState({
     index: 0,
@@ -560,7 +562,7 @@ test('can dynamically route using singular function', () => {
   });
 
   // Should push /apple and remove all previous instances of /apple
-  act(() => fireEvent.press(screen.getByTestId('link')));
+  await act(() => fireEvent.press(screen.getByTestId('link')));
 
   expect(screen).toHaveRouterState({
     index: 0,
@@ -626,8 +628,8 @@ test('can dynamically route using singular function', () => {
 });
 
 describe('prefetch', () => {
-  it('can prefetch the href', () => {
-    renderRouter({
+  it('can prefetch the href', async () => {
+    await renderRouter({
       index: () => {
         return <Link prefetch href="/test" />;
       },
@@ -670,8 +672,8 @@ describe('prefetch', () => {
     });
   });
 
-  it.each([false, true])('prefetches a protected route when guard is %s', (guard) => {
-    const result = renderRouter({
+  it.each([false, true])('prefetches a protected route when guard is %s', async (guard) => {
+    const result = await renderRouter({
       index: () => {
         return <Link prefetch href="/test" />;
       },
@@ -721,8 +723,8 @@ describe('Preview', () => {
       );
   });
 
-  it('when Link.Preview is not used, then does not render LinkNativeView, LinkNativePreview and LinkNativeTrigger', () => {
-    renderRouter({
+  it('when Link.Preview is not used, then does not render LinkNativeView, LinkNativePreview and LinkNativeTrigger', async () => {
+    await renderRouter({
       index: () => {
         return <Link prefetch href="/test" />;
       },
@@ -732,8 +734,8 @@ describe('Preview', () => {
     expect(screen.queryByTestId('link-preview-native-preview-view')).toBeNull();
     expect(screen.queryByTestId('link-preview-native-trigger-view')).toBeNull();
   });
-  it('when Link.Preview is used, renders LinkNativeView, LinkNativePreview and LinkNativeTrigger', () => {
-    renderRouter({
+  it('when Link.Preview is used, renders LinkNativeView, LinkNativePreview and LinkNativeTrigger', async () => {
+    await renderRouter({
       index: () => {
         return (
           <Link prefetch href="/test">
@@ -747,12 +749,12 @@ describe('Preview', () => {
     expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
     expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
   });
-  it('navigates with the preloaded screen id reported by native', () => {
+  it('navigates with the preloaded screen id reported by native', async () => {
     const emitters = require('../preview/native').__EVENTS__;
     const navigate = jest.fn();
     const mockUseRouter = jest.mocked(useRouter);
     mockUseRouter.mockReturnValue({ ...router, navigate, prefetch: jest.fn() });
-    renderRouter({
+    await renderRouter({
       index: () => (
         <Link href="/test">
           <Link.Trigger />
@@ -762,7 +764,7 @@ describe('Preview', () => {
       test: () => null,
     });
 
-    act(() =>
+    await act(() =>
       emitters['link-onPreviewTapped']({
         nativeEvent: { screenId: 'test-key' },
       })
@@ -772,12 +774,12 @@ describe('Preview', () => {
       __internal__PreviewKey: 'test-key',
     });
   });
-  it('navigates without a preview key when native reports no preloaded screen', () => {
+  it('navigates without a preview key when native reports no preloaded screen', async () => {
     const emitters = require('../preview/native').__EVENTS__;
     const navigate = jest.fn();
     const mockUseRouter = jest.mocked(useRouter);
     mockUseRouter.mockReturnValue({ ...router, navigate, prefetch: jest.fn() });
-    renderRouter({
+    await renderRouter({
       index: () => (
         <Link href="/test">
           <Link.Trigger />
@@ -787,28 +789,28 @@ describe('Preview', () => {
       test: () => null,
     });
 
-    act(() => emitters['link-onPreviewTapped']({ nativeEvent: {} }));
+    await act(() => emitters['link-onPreviewTapped']({ nativeEvent: {} }));
 
     expect(navigate).toHaveBeenCalledWith('/test', {
       __internal__PreviewKey: undefined,
     });
   });
-  it('when Link.Preview is used without Link.Trigger then exception is thrown', () => {
-    expect(() => {
-      renderRouter({
+  it('when Link.Preview is used without Link.Trigger then exception is thrown', async () => {
+    await expect(async () => {
+      await renderRouter({
         index: () => (
           <Link href="/foo">
             <Link.Preview />
           </Link>
         ),
       });
-    }).toThrow(
+    }).rejects.toThrow(
       'When you use Link.Preview, you must use Link.Trigger to specify the trigger element'
     );
   });
   describe('lazy loading', () => {
-    it('when using default preview, it is not visible on initial load', () => {
-      renderRouter({
+    it('when using default preview, it is not visible on initial load', async () => {
+      await renderRouter({
         index: () => {
           return (
             <Link prefetch href="/test">
@@ -822,8 +824,8 @@ describe('Preview', () => {
       expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
       expect(screen.queryByTestId('test-view')).toBeNull();
     });
-    it('when using custom preview, it is not visible on initial load', () => {
-      renderRouter({
+    it('when using custom preview, it is not visible on initial load', async () => {
+      await renderRouter({
         index: () => {
           return (
             <Link prefetch href="/test">
@@ -839,9 +841,9 @@ describe('Preview', () => {
       expect(screen.getByTestId('link-preview-native-preview-view')).toBeVisible();
       expect(screen.queryByTestId('preview')).toBeNull();
     });
-    it('when LinkNativeView emits onWillPreviewOpen, it loads the preview', () => {
+    it('when LinkNativeView emits onWillPreviewOpen, it loads the preview', async () => {
       const emitters = require('../preview/native').__EVENTS__;
-      renderRouter({
+      await renderRouter({
         index: () => {
           return (
             <Link prefetch href="/test">
@@ -855,12 +857,12 @@ describe('Preview', () => {
         test: () => <View testID="test-view" />,
       });
       expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
-      act(() => emitters['link-onWillPreviewOpen']());
+      await act(() => emitters['link-onWillPreviewOpen']());
       expect(screen.getByTestId('preview')).toBeVisible();
     });
-    it('when LinkNativeView emits onWillPreviewOpen, it loads the default preview', () => {
+    it('when LinkNativeView emits onWillPreviewOpen, it loads the default preview', async () => {
       const emitters = require('../preview/native').__EVENTS__;
-      renderRouter({
+      await renderRouter({
         index: () => {
           return (
             <Link prefetch href="/test">
@@ -872,14 +874,14 @@ describe('Preview', () => {
         test: () => <View testID="test-view" />,
       });
       expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
-      act(() => emitters['link-onWillPreviewOpen']());
+      await act(() => emitters['link-onWillPreviewOpen']());
       expect(screen.getByTestId('test-view')).toBeVisible();
     });
   });
   describe('Link.Menu', () => {
-    it('when Link.Menu items are passed, correct actions are passed to native', () => {
+    it('when Link.Menu items are passed, correct actions are passed to native', async () => {
       const NativeLinkPreviewAction = require('../preview/native').NativeLinkPreviewAction;
-      renderRouter({
+      await renderRouter({
         index: () => {
           return (
             <Link prefetch href="/test">
@@ -912,9 +914,9 @@ describe('Preview', () => {
       });
     });
     describe('multiple Link.Menus in single Link', () => {
-      it('when there are multiple Link.Menus, only the first one is rendered', () => {
+      it('when there are multiple Link.Menus, only the first one is rendered', async () => {
         const NativeLinkPreviewAction = require('../preview/native').NativeLinkPreviewAction;
-        renderRouter({
+        await renderRouter({
           index: () => {
             return (
               <Link prefetch href="/test">
@@ -955,14 +957,14 @@ describe('Preview', () => {
       });
     });
     describe('nested Link.Menus', () => {
-      it('correctly creates nested menu actions', () => {
+      it('correctly creates nested menu actions', async () => {
         const indexIos = require('../preview/native');
         const NativeLinkPreviewAction = indexIos.NativeLinkPreviewAction;
 
         const action1OnPress = () => {};
         const action2OnPress = () => {};
 
-        renderRouter({
+        await renderRouter({
           index: () => {
             return (
               <View>
@@ -1010,8 +1012,8 @@ describe('Preview', () => {
     });
   });
 
-  it('correctly passes props to child component with asChild, Preview and trigger', () => {
-    const { getByText, getByTestId } = renderRouter({
+  it('correctly passes props to child component with asChild, Preview and trigger', async () => {
+    const { getByText, getByTestId } = await renderRouter({
       index: () => (
         <Link asChild href="/foo">
           <Link.Preview />
@@ -1053,19 +1055,19 @@ describe('Preview', () => {
     }
   });
   describe('changing href', () => {
-    it('when preview is closed, href can change', () => {
-      renderRouter({
+    it('when preview is closed, href can change', async () => {
+      await renderRouter({
         index: () => <ComponentWithButtonAndPreview href={(counter) => `/test/${counter}`} />,
         '/test/[counter]': ComponentWithCounter,
       });
       const button = screen.getByTestId('change-counter-button');
       expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
-      act(() => fireEvent.press(button));
+      await act(() => fireEvent.press(button));
       expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
     });
 
-    it('when preview is closed, query params in href can change', () => {
-      renderRouter({
+    it('when preview is closed, query params in href can change', async () => {
+      await renderRouter({
         index: () => (
           <ComponentWithButtonAndPreview href={(counter) => `/foo?counter=${counter}`} />
         ),
@@ -1073,39 +1075,39 @@ describe('Preview', () => {
       });
       const button = screen.getByTestId('change-counter-button');
       expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
-      act(() => fireEvent.press(button));
+      await act(() => fireEvent.press(button));
       expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
     });
 
-    it('when preview is open, href cannot change', () => {
+    it('when preview is open, href cannot change', async () => {
       const emitters = require('../preview/native').__EVENTS__;
-      renderRouter({
+      await renderRouter({
         index: () => <ComponentWithButtonAndPreview href={(counter) => `/test/${counter}`} />,
         '/test/[counter]': ComponentWithCounter,
       });
-      act(() => emitters['link-onWillPreviewOpen']());
+      await act(() => emitters['link-onWillPreviewOpen']());
       const button = screen.getByTestId('change-counter-button');
       expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
       expect(screen.getByTestId('counter-text')).toBeVisible();
-      expect(() => act(() => fireEvent.press(button))).toThrow(
+      await expect(async () => await act(() => fireEvent.press(button))).rejects.toThrow(
         'Link does not support changing the href prop after the preview has been opened. Please ensure that the href prop is stable and does not change between renders.'
       );
     });
 
-    it('when preview is open, query params in href can change', () => {
+    it('when preview is open, query params in href can change', async () => {
       const emitters = require('../preview/native').__EVENTS__;
-      renderRouter({
+      await renderRouter({
         index: () => (
           <ComponentWithButtonAndPreview href={(counter) => `/foo?counter=${counter}`} />
         ),
         foo: ComponentWithCounter,
       });
-      act(() => emitters['link-onWillPreviewOpen']());
+      await act(() => emitters['link-onWillPreviewOpen']());
       const button = screen.getByTestId('change-counter-button');
       expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
       expect(screen.getByTestId('counter-text')).toBeVisible();
       expect(screen.getByTestId('counter-text')).toHaveTextContent('Counter: 0');
-      act(() => fireEvent.press(button));
+      await act(() => fireEvent.press(button));
       expect(screen.getByTestId('component-with-button-and-preview')).toBeVisible();
       expect(screen.getByTestId('counter-text')).toHaveTextContent('Counter: 1');
     });
@@ -1166,7 +1168,7 @@ describe('Preview', () => {
           </View>
         );
       }
-      renderRouter({
+      await renderRouter({
         index: Index,
         'slotA/_layout': () => <Slot />,
         'slotB/_layout': () => <Slot />,
@@ -1177,9 +1179,9 @@ describe('Preview', () => {
       });
       expect(screen.getByTestId('index')).toBeVisible();
       expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
-      act(() => fireEvent.press(screen.getByTestId('index')));
-      act(() => fireEvent.press(screen.getByText('Preload A and C')));
-      act(() => emitters['link-onWillPreviewOpen']());
+      await act(() => fireEvent.press(screen.getByTestId('index')));
+      await act(() => fireEvent.press(screen.getByText('Preload A and C')));
+      await act(() => emitters['link-onWillPreviewOpen']());
       expect(screen.getByTestId('slotB-test')).toBeVisible();
       await waitFor(() =>
         expect(
@@ -1217,7 +1219,7 @@ describe('Preview', () => {
           </View>
         );
       }
-      renderRouter({
+      await renderRouter({
         index: Index,
         'slotA/[xyz]/_layout': () => <Slot />,
         'slotB/[xyz]/_layout': () => <Slot />,
@@ -1228,9 +1230,9 @@ describe('Preview', () => {
       });
       expect(screen.getByTestId('index')).toBeVisible();
       expect(screen.getByTestId('link-preview-native-view')).toBeVisible();
-      act(() => fireEvent.press(screen.getByTestId('index')));
-      act(() => fireEvent.press(screen.getByText('Preload Other Routes')));
-      act(() => emitters['link-onWillPreviewOpen']());
+      await act(() => fireEvent.press(screen.getByTestId('index')));
+      await act(() => fireEvent.press(screen.getByText('Preload Other Routes')));
+      await act(() => emitters['link-onWillPreviewOpen']());
 
       expect(screen.getByTestId('slotB-test')).toBeVisible();
       await waitFor(() =>
@@ -1250,7 +1252,7 @@ describe('Preview', () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
       const emitters = require('../preview/native').__EVENTS__;
 
-      renderRouter({
+      await renderRouter({
         _layout: () => (
           <NativeTabs>
             <NativeTabs.Trigger name="index" />
@@ -1266,7 +1268,7 @@ describe('Preview', () => {
         second: () => <View testID="second" />,
       });
 
-      act(() => emitters['link-onWillPreviewOpen']());
+      await act(() => emitters['link-onWillPreviewOpen']());
       await waitFor(() =>
         expect(
           NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0]
@@ -1278,8 +1280,8 @@ describe('Preview', () => {
     });
   });
   describe('external links in preview', () => {
-    it('when link preview is used with external href and no context menu is added, then normal link is rendered', () => {
-      renderRouter({
+    it('when link preview is used with external href and no context menu is added, then normal link is rendered', async () => {
+      await renderRouter({
         index: () => (
           <Link href="https://expo.dev">
             <Link.Trigger>https://expo.dev</Link.Trigger>
@@ -1290,8 +1292,8 @@ describe('Preview', () => {
       expect(screen.getByText('https://expo.dev')).toBeVisible();
       expect(NativeLinkPreview).not.toHaveBeenCalled();
     });
-    it('when link preview is used with external href, no context menu, and asChild, then normal link is rendered', () => {
-      renderRouter({
+    it('when link preview is used with external href, no context menu, and asChild, then normal link is rendered', async () => {
+      await renderRouter({
         index: () => (
           <Link href="https://expo.dev" asChild>
             <Link.Trigger>
@@ -1304,8 +1306,8 @@ describe('Preview', () => {
       expect(screen.getByText('https://expo.dev')).toBeVisible();
       expect(NativeLinkPreview).not.toHaveBeenCalled();
     });
-    it('when link is used with external href and context menu, then native link is used', () => {
-      renderRouter({
+    it('when link is used with external href and context menu, then native link is used', async () => {
+      await renderRouter({
         index: () => (
           <Link href="https://expo.dev">
             <Link.Trigger>https://expo.dev</Link.Trigger>
@@ -1318,8 +1320,8 @@ describe('Preview', () => {
       expect(screen.getByText('https://expo.dev')).toBeVisible();
       expect(NativeLinkPreview).toHaveBeenCalled();
     });
-    it('when link preview is used with external href and context menu, then native link is used', () => {
-      renderRouter({
+    it('when link preview is used with external href and context menu, then native link is used', async () => {
+      await renderRouter({
         index: () => (
           <Link href="https://expo.dev">
             <Link.Trigger>https://expo.dev</Link.Trigger>
@@ -1337,8 +1339,8 @@ describe('Preview', () => {
 });
 
 describe('Link.Trigger', () => {
-  it('renders a Link.Trigger with single text child', () => {
-    renderRouter({
+  it('renders a Link.Trigger with single text child', async () => {
+    await renderRouter({
       index: () => (
         <Link href="/test">
           <Link.Trigger>Test</Link.Trigger>
@@ -1348,11 +1350,11 @@ describe('Link.Trigger', () => {
     });
     expect(screen.getByText('Test')).toBeVisible();
     const linkTrigger = screen.getByText('Test');
-    act(() => fireEvent.press(linkTrigger));
+    await act(() => fireEvent.press(linkTrigger));
     expect(screen.getByTestId('test-page')).toBeVisible();
   });
-  it('renders a Link.Trigger with single child', () => {
-    renderRouter({
+  it('renders a Link.Trigger with single child', async () => {
+    await renderRouter({
       index: () => (
         <Link href="/test">
           <Link.Trigger>
@@ -1366,11 +1368,11 @@ describe('Link.Trigger', () => {
     });
     expect(screen.getByText('Test')).toBeVisible();
     const linkTrigger = screen.getByText('Test');
-    act(() => fireEvent.press(linkTrigger));
+    await act(() => fireEvent.press(linkTrigger));
     expect(screen.getByTestId('test-page')).toBeVisible();
   });
-  it('renders a Link.Trigger with multiple children', () => {
-    renderRouter({
+  it('renders a Link.Trigger with multiple children', async () => {
+    await renderRouter({
       index: () => (
         <Link href="/test">
           <Link.Trigger>
@@ -1387,11 +1389,11 @@ describe('Link.Trigger', () => {
     });
     expect(screen.getByText('Test')).toBeVisible();
     const linkTrigger = screen.getByText('Test');
-    act(() => fireEvent.press(linkTrigger));
+    await act(() => fireEvent.press(linkTrigger));
     expect(screen.getByTestId('test-page')).toBeVisible();
   });
-  it('renders a Link.Trigger with single child in asChild', () => {
-    renderRouter({
+  it('renders a Link.Trigger with single child in asChild', async () => {
+    await renderRouter({
       index: () => (
         <Link href="/test">
           <Link.Trigger>
@@ -1405,39 +1407,41 @@ describe('Link.Trigger', () => {
     });
     expect(screen.getByText('Test')).toBeVisible();
     const linkTrigger = screen.getByText('Test');
-    act(() => fireEvent.press(linkTrigger));
+    await act(() => fireEvent.press(linkTrigger));
     expect(screen.getByTestId('test-page')).toBeVisible();
   });
-  it('throws an error when a Link.Trigger with multiple children is used in asChild', () => {
-    expect(() =>
-      renderRouter({
-        index: () => (
-          <Link href="/test" asChild>
-            <Link.Trigger>
-              <Pressable testID="pressable">
-                <Text>Test</Text>
-              </Pressable>
-              <Text>Another child</Text>
-            </Link.Trigger>
-          </Link>
-        ),
-        test: () => <View testID="test-page" />,
-      })
-    ).toThrow(
+  it('throws an error when a Link.Trigger with multiple children is used in asChild', async () => {
+    await expect(
+      async () =>
+        await renderRouter({
+          index: () => (
+            <Link href="/test" asChild>
+              <Link.Trigger>
+                <Pressable testID="pressable">
+                  <Text>Test</Text>
+                </Pressable>
+                <Text>Another child</Text>
+              </Link.Trigger>
+            </Link>
+          ),
+          test: () => <View testID="test-page" />,
+        })
+    ).rejects.toThrow(
       'When using Link.Trigger in an asChild Link, you must pass a single child element that will emit onPress event.'
     );
   });
-  it('throws an error when a Link.Trigger with text is used in asChild', () => {
-    expect(() =>
-      renderRouter({
-        index: () => (
-          <Link href="/test" asChild>
-            <Link.Trigger>Test</Link.Trigger>
-          </Link>
-        ),
-        test: () => <View testID="test-page" />,
-      })
-    ).toThrow(
+  it('throws an error when a Link.Trigger with text is used in asChild', async () => {
+    await expect(
+      async () =>
+        await renderRouter({
+          index: () => (
+            <Link href="/test" asChild>
+              <Link.Trigger>Test</Link.Trigger>
+            </Link>
+          ),
+          test: () => <View testID="test-page" />,
+        })
+    ).rejects.toThrow(
       'When using Link.Trigger in an asChild Link, you must pass a single child element that will emit onPress event.'
     );
   });
@@ -1451,22 +1455,25 @@ describe('Link with zoom transition', () => {
   afterEach(() => {
     consoleWarnMock.mockRestore();
   });
-  it('When Link.AppleZoom is used without asChild a warning is shown', () => {
-    expect(() =>
-      renderRouter({
-        index: () => (
-          <View testID="index-page">
-            <Link href="/test">
-              <Link.AppleZoom>Test</Link.AppleZoom>
-            </Link>
-          </View>
-        ),
-        test: () => <View testID="test-page" />,
-      })
-    ).toThrow('[expo-router] Link must be used with `asChild` prop to enable zoom transitions.');
+  it('When Link.AppleZoom is used without asChild a warning is shown', async () => {
+    await expect(
+      async () =>
+        await renderRouter({
+          index: () => (
+            <View testID="index-page">
+              <Link href="/test">
+                <Link.AppleZoom>Test</Link.AppleZoom>
+              </Link>
+            </View>
+          ),
+          test: () => <View testID="test-page" />,
+        })
+    ).rejects.toThrow(
+      '[expo-router] Link must be used with `asChild` prop to enable zoom transitions.'
+    );
   });
-  it('When multiple children are passed to Link.AppleZoom a warning is shown', () => {
-    renderRouter({
+  it('When multiple children are passed to Link.AppleZoom a warning is shown', async () => {
+    await renderRouter({
       index: () => (
         <View testID="index-page">
           <Link href="/test" asChild>
@@ -1485,70 +1492,73 @@ describe('Link with zoom transition', () => {
       '[expo-router] Link.ZoomTransitionSource only accepts a single child component. Please wrap multiple children in a View or another container component.'
     );
   });
-  it('When external link is used with Link.AppleZoom, a warning is shown', () => {
-    expect(() =>
-      renderRouter({
-        index: () => (
-          <View testID="index-page">
-            <Link href="http://example.com" asChild>
-              <Link.AppleZoom>
-                <Pressable />
-              </Link.AppleZoom>
-            </Link>
-          </View>
-        ),
-        test: () => <View testID="test-page" />,
-      })
-    ).toThrow('[expo-router] Zoom transitions can only be used with internal links.');
-  });
-
-  it('When multiple nested Link.AppleZoom components are used within same link an error is thrown', () => {
-    expect(() =>
-      renderRouter({
-        index: () => (
-          <View testID="index-page">
-            <Link href="/test" asChild>
-              <Link.AppleZoom>
+  it('When external link is used with Link.AppleZoom, a warning is shown', async () => {
+    await expect(
+      async () =>
+        await renderRouter({
+          index: () => (
+            <View testID="index-page">
+              <Link href="http://example.com" asChild>
                 <Link.AppleZoom>
                   <Pressable />
                 </Link.AppleZoom>
-              </Link.AppleZoom>
-            </Link>
-          </View>
-        ),
-        test: () => <View testID="test-page" />,
-      })
-    ).toThrow(
+              </Link>
+            </View>
+          ),
+          test: () => <View testID="test-page" />,
+        })
+    ).rejects.toThrow('[expo-router] Zoom transitions can only be used with internal links.');
+  });
+
+  it('When multiple nested Link.AppleZoom components are used within same link an error is thrown', async () => {
+    await expect(
+      async () =>
+        await renderRouter({
+          index: () => (
+            <View testID="index-page">
+              <Link href="/test" asChild>
+                <Link.AppleZoom>
+                  <Link.AppleZoom>
+                    <Pressable />
+                  </Link.AppleZoom>
+                </Link.AppleZoom>
+              </Link>
+            </View>
+          ),
+          test: () => <View testID="test-page" />,
+        })
+    ).rejects.toThrow(
       '[expo-router] Only one Link.ZoomTransitionSource can be used within a single Link component.'
     );
   });
 
-  it('When multiple Link.AppleZoom components are used within same link an error is thrown', () => {
-    expect(() =>
-      renderRouter({
-        index: () => (
-          <View testID="index-page">
-            <Link href="/test" asChild>
-              <Pressable>
-                <Link.AppleZoom>
-                  <Text>Test</Text>
-                </Link.AppleZoom>
-                <Link.AppleZoom>
-                  <Text>Test 2</Text>
-                </Link.AppleZoom>
-              </Pressable>
-            </Link>
-          </View>
-        ),
-        test: () => <View testID="test-page" />,
-      })
-    ).toThrow(
+  it('When multiple Link.AppleZoom components are used within same link an error is thrown', async () => {
+    await expect(
+      async () =>
+        await renderRouter({
+          index: () => (
+            <View testID="index-page">
+              <Link href="/test" asChild>
+                <Pressable>
+                  <Link.AppleZoom>
+                    <Text>Test</Text>
+                  </Link.AppleZoom>
+                  <Link.AppleZoom>
+                    <Text>Test 2</Text>
+                  </Link.AppleZoom>
+                </Pressable>
+              </Link>
+            </View>
+          ),
+          test: () => <View testID="test-page" />,
+        })
+    ).rejects.toThrow(
       '[expo-router] Only one Link.ZoomTransitionSource can be used within a single Link component.'
     );
   });
 
-  it('can use Link.AppleZoom', () => {
-    renderRouter({
+  it('can use Link.AppleZoom', async () => {
+    await renderRouter({
       index: () => (
         <Link href="/test" asChild>
           <Link.AppleZoom>
@@ -1560,13 +1570,13 @@ describe('Link with zoom transition', () => {
     });
     expect(screen.getByText('Test')).toBeVisible();
     const linkTrigger = screen.getByText('Test');
-    act(() => fireEvent.press(linkTrigger));
+    await act(() => fireEvent.press(linkTrigger));
     expect(screen.getByTestId('test-page')).toBeVisible();
     expect(consoleWarnMock).not.toHaveBeenCalled();
   });
 
-  it('can render Link.AppleZoom in preview', () => {
-    renderRouter({
+  it('can render Link.AppleZoom in preview', async () => {
+    await renderRouter({
       index: () => (
         <View testID="index-page">
           <HrefPreview href="/test" />

@@ -13,9 +13,9 @@ The `cache` field on build profiles in [eas.json](/build/eas-json) can be used t
 
 ## JavaScript dependencies
 
-EAS Build runs an npm cache server that can speed up downloading JavaScript dependencies for your build jobs. By default, projects using npm or Yarn 2+ will use the cache. However, Yarn 1 (Classic) requires that you apply this [workaround](/build-reference/npm-cache-with-yarn) to use the cache in your project's **package.json**.
+Expo Build runs an npm cache server that can speed up downloading JavaScript dependencies for your build jobs. By default, projects using npm or Yarn 2+ will use the cache. However, Yarn 1 (Classic) requires that you apply this [workaround](/build-reference/npm-cache-with-yarn) to use the cache in your project's **package.json**.
 
-To disable the npm cache server, set the `EAS_BUILD_DISABLE_NPM_CACHE` environment variable to `"1"` in **eas.json**. If you use EAS Workflows, set it in a job's [`env`](/eas/workflows/syntax/#jobsjob_idenv) instead.
+To disable the npm cache server, set the `EAS_BUILD_DISABLE_NPM_CACHE` environment variable to `"1"` in **eas.json**. If you use Expo Workflows, set it in a job's [`env`](/eas/workflows/syntax/#jobsjob_idenv) instead.
 
 {/* prettier-ignore */}
 ```json eas.json
@@ -40,7 +40,7 @@ By default, Node packages will be installed with your preferred package manager'
 
 ## Android dependencies
 
-EAS Build runs a Maven cache server that can speed up downloading Android dependencies for your build jobs.
+Expo Build runs a Maven cache server that can speed up downloading Android dependencies for your build jobs.
 
 Currently, we are caching:
 
@@ -48,7 +48,7 @@ Currently, we are caching:
 - `google` - [https://maven.google.com/](https://maven.google.com/)
 - `plugins` - [https://plugins.gradle.org/m2/](https://plugins.gradle.org/m2/)
 
-To disable the Maven cache server, set the `EAS_BUILD_DISABLE_MAVEN_CACHE` environment variable to `"1"` in **eas.json**. If you use EAS Workflows, set it in a job's [`env`](/eas/workflows/syntax/#jobsjob_idenv) instead.
+To disable the Maven cache server, set the `EAS_BUILD_DISABLE_MAVEN_CACHE` environment variable to `"1"` in **eas.json**. If you use Expo Workflows, set it in a job's [`env`](/eas/workflows/syntax/#jobsjob_idenv) instead.
 
 {/* prettier-ignore */}
 ```json eas.json
@@ -69,7 +69,7 @@ To disable the Maven cache server, set the `EAS_BUILD_DISABLE_MAVEN_CACHE` envir
 
 ## Caching C/C++ compilation artifacts with ccache
 
-[ccache](https://ccache.dev/) is a compiler cache that speeds up recompilation of native code by caching previous compilation results. EAS supports ccache configuration out of the box.
+[ccache](https://ccache.dev/) is a compiler cache that speeds up recompilation of native code by caching previous compilation results. Expo Build supports ccache configuration out of the box.
 
 You can configure builds to save and restore ccache cache automatically with these environment variables:
 
@@ -77,9 +77,9 @@ You can configure builds to save and restore ccache cache automatically with the
 - `EAS_RESTORE_CACHE`: Controls restoring the cache at the beginning of a build. Set to `1` to enable or `0` to disable. Overrides `EAS_USE_CACHE`.
 - `EAS_SAVE_CACHE`: Controls whether to save the build cache at the end of a build. Set to `1` to enable or `0` to disable. Overrides `EAS_USE_CACHE`.
 
-### EAS Workflows
+### Expo Workflows
 
-For EAS Workflows, use [`eas/restore_cache`](/eas/workflows/syntax/#easrestore_cache) and [`eas/save_cache`](/eas/workflows/syntax/#eassave_cache).
+For Expo Workflows, use [`eas/restore_cache`](/eas/workflows/syntax/#easrestore_cache) and [`eas/save_cache`](/eas/workflows/syntax/#eassave_cache).
 
 **Android example:**
 
@@ -234,9 +234,9 @@ jobs:
 
 ## iOS dependencies
 
-EAS Build serves most CocoaPods artifacts from a cache server. This improves the consistency of `pod install` times and generally improves speed. The cache will be bypassed automatically if you provide your own **.netrc** or **.curlrc** files.
+Expo Build serves most CocoaPods artifacts from a cache server. This improves the consistency of `pod install` times and generally improves speed. The cache will be bypassed automatically if you provide your own **.netrc** or **.curlrc** files.
 
-To disable the CocoaPods cache server, set the `EAS_BUILD_DISABLE_COCOAPODS_CACHE` environment variable to `"1"` in **eas.json**. If you use EAS Workflows, set it in a job's [`env`](/eas/workflows/syntax/#jobsjob_idenv) instead.
+To disable the CocoaPods cache server, set the `EAS_BUILD_DISABLE_COCOAPODS_CACHE` environment variable to `"1"` in **eas.json**. If you use Expo Workflows, set it in a job's [`env`](/eas/workflows/syntax/#jobsjob_idenv) instead.
 
 {/* prettier-ignore */}
 ```json eas.json

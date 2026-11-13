@@ -64,7 +64,7 @@ class Group: SharedObject {
       throw GroupNotFoundException(id)
     }
 
-    guard let cnContact = contactRepository.getById(id: contact.id, keysToFetch: [CNContactIdentifierKey as CNKeyDescriptor]) else {
+    guard let cnContact = try contactRepository.getById(id: contact.id, keysToFetch: [CNContactIdentifierKey as CNKeyDescriptor]) else {
       throw ContactNotFoundException(contact.id)
     }
 
@@ -76,7 +76,7 @@ class Group: SharedObject {
       throw GroupNotFoundException(id)
     }
 
-    guard let cnContact = contactRepository.getById(id: contact.id, keysToFetch: [CNContactIdentifierKey as CNKeyDescriptor]) else {
+    guard let cnContact = try contactRepository.getById(id: contact.id, keysToFetch: [CNContactIdentifierKey as CNKeyDescriptor]) else {
       throw ContactNotFoundException(contact.id)
     }
 

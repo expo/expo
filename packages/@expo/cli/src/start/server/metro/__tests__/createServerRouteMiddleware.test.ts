@@ -1,5 +1,6 @@
 import type { MiddlewareMatcher } from 'expo-server';
 import { createRequestHandler } from 'expo-server/adapter/http';
+import { ImmutableRequest } from 'expo-server/private';
 
 import { createRouteHandlerMiddleware } from '../createServerRouteMiddleware';
 import { fetchManifest } from '../fetchRouterManifest';
@@ -12,6 +13,55 @@ jest.mock('../router', () => ({
   ...jest.requireActual('../router'),
   warnInvalidWebOutput: jest.fn(),
 }));
+
+describe(createRouteHandlerMiddleware, () => {
+  beforeEach(() => jest.clearAllMocks());
+
+  it.each([
+    { output: 'static', expectedRequest: undefined },
+    { output: 'server', expectedRequest: ImmutableRequest },
+    { output: 'single', expectedRequest: undefined },
+  ])(
+    'passes the request to the renderer for $output output',
+    async ({ output, expectedRequest }) => {
+      const getStaticPageAsync = jest.fn(async () => ({ content: '<html />' }));
+      createRouteHandlerMiddleware('/', {
+        appDir: '/app',
+        routerRoot: 'app',
+        getStaticPageAsync,
+        bundleApiRoute: jest.fn(),
+        executeLoaderAsync: jest.fn(),
+        config: {
+          exp: {
+            name: 'test',
+            slug: 'test',
+            web: { output },
+          },
+          pkg: {},
+          rootConfig: {},
+          staticConfigPath: null,
+          dynamicConfigPath: null,
+        },
+        headers: {},
+      } as unknown as Parameters<typeof createRouteHandlerMiddleware>[1]);
+
+      const handlers = jest.mocked(createRequestHandler).mock.calls[0]![1]!;
+      const request = new Request('http://localhost:8081/posts/123');
+      await handlers.getHtml!(request, {
+        file: 'posts/[postId].tsx',
+        page: '/posts/[postId]',
+        namedRegex: /^\/posts\/([^/]+?)\/?$/,
+        routeKeys: { postId: 'postId' },
+      });
+
+      expect(getStaticPageAsync).toHaveBeenCalledWith(
+        'http://localhost:8081/posts/123',
+        expect.any(Object),
+        expectedRequest ? expect.any(expectedRequest) : undefined
+      );
+    }
+  );
+});
 
 describe(warnInvalidMiddlewareMatcherSettings, () => {
   const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});

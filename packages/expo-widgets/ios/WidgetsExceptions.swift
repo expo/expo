@@ -12,6 +12,12 @@ internal final class StartLiveActivityException: GenericException<String>, @unch
   }
 }
 
+internal final class ScheduledLiveActivitiesNotSupportedException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "Scheduling a Live Activity requires iOS 26 or later. Omit the schedule option to start it immediately."
+  }
+}
+
 internal final class LiveActivityNotFoundException: GenericException<String>, @unchecked Sendable {
   override var reason: String {
     "Can't find live activity with id: \(param)"

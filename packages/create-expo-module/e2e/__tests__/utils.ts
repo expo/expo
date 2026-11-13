@@ -46,6 +46,10 @@ export function execute(args: string[], { env = {}, cwd = projectRoot }: SpawnOp
       CI: '1',
       // Disable telemetry
       EXPO_NO_TELEMETRY: '1',
+      // Keep scaffolding independent of the runner's package manager and personal Git profile.
+      npm_config_user_agent: 'npm',
+      GIT_CONFIG_GLOBAL: os.devNull,
+      GIT_CONFIG_NOSYSTEM: '1',
       // Set INIT_CWD to ensure the CLI uses the correct working directory
       // (the CLI checks INIT_CWD first before process.cwd())
       INIT_CWD: cwdPath,
@@ -60,6 +64,23 @@ export async function executePassing(args: string[], options?: SpawnOptions) {
 
   try {
     result = await execute(args, options);
+  } catch (error: any) {
+    result = error;
+  }
+
+  return expectExecutePassing(result!);
+}
+
+/** Run a `package.json` script of a created project, and validate the status is `0` */
+export async function runScriptPassing(projectName: string, script: string) {
+  let result: SpawnResult | null = null;
+
+  try {
+    result = await spawnAsync('npm', ['run', script], {
+      cwd: getTestPath(projectName),
+      // Run scripts once, without the interactive watch mode
+      env: { ...process.env, CI: '1' },
+    });
   } catch (error: any) {
     result = error;
   }
@@ -106,6 +127,38 @@ export function createFakeProject(name?: string): string {
     JSON.stringify({ name: 'test-app', version: '1.0.0' })
   );
   return projectPath;
+}
+
+/** The published `jest-expo` can lag behind the React Native version on main. */
+export async function createLocalTemplateAsync(targetRoot: string): Promise<string> {
+  const packagesRoot = path.resolve(__dirname, '../../..');
+  const jestExpoRoot = path.join(packagesRoot, 'jest-expo');
+  const { version } = JSON.parse(
+    fs.readFileSync(path.join(jestExpoRoot, 'package.json'), { encoding: 'utf8' })
+  );
+
+  ensureFolderExists(targetRoot);
+  await spawnAsync('pnpm', ['pack', '--pack-destination', targetRoot], { cwd: jestExpoRoot });
+  const jestExpoTarball = path.join(targetRoot, `jest-expo-${version}.tgz`);
+
+  const templatePath = path.join(targetRoot, 'expo-module-template');
+  fs.cpSync(path.join(packagesRoot, 'expo-module-template'), templatePath, {
+    recursive: true,
+    filter: (source) => path.basename(source) !== 'node_modules',
+  });
+  const packageJsonPath = path.join(templatePath, '$package.json');
+  const packageJson = fs.readFileSync(packageJsonPath, { encoding: 'utf8' });
+  const localPackageJson = packageJson.replace(
+    /"jest-expo": "[^"]*"/,
+    `"jest-expo": "file:${jestExpoTarball}"`
+  );
+  if (localPackageJson === packageJson) {
+    throw new Error(
+      `Could not find the jest-expo dependency in ${packageJsonPath}. Update the pattern in createLocalTemplateAsync to match the template.`
+    );
+  }
+  fs.writeFileSync(packageJsonPath, localPackageJson);
+  return templatePath;
 }
 
 /** Read and parse a JSON file from the test project */

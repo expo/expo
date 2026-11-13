@@ -62,14 +62,17 @@ class ExpoLogBoxWebViewWrapper: NSObject, WKScriptMessageHandler {
     }
 
     func prepareWebView() -> WKWebView {
-        let initProps: [String: Any] = [
-            "names": ExpoLogBoxNativeActions.names,
-            "props": props
+        let injectedObject: [String: Any] = [
+            "EXPO_DOM_HOST_OS": "ios",
+            "initialProps": [
+                "names": ExpoLogBoxNativeActions.names,
+                "props": props
+            ]
         ]
 
-        guard let initPropsObject = try? JSONSerialization.data(withJSONObject: initProps, options: []),
-              let initPropsStringified = String(data: initPropsObject, encoding: .utf8) else {
-            fatalError("Failed to serialize initProps. This is an issue in ExpoLogBox. Please report it.")
+        guard let injectedObjectData = try? JSONSerialization.data(withJSONObject: injectedObject, options: []),
+              let injectedObjectStringified = String(data: injectedObjectData, encoding: .utf8) else {
+            fatalError("Failed to serialize the injected object. This is an issue in ExpoLogBox. Please report it.")
         }
 
         let devServerOriginJsValue: String = devServerOrigin.map { "'\($0)'" } ?? "undefined"
@@ -78,9 +81,8 @@ class ExpoLogBoxWebViewWrapper: NSObject, WKScriptMessageHandler {
             var process = globalThis.process || {};
             process.env = process.env || {};
             process.env.EXPO_DEV_SERVER_ORIGIN = \(devServerOriginJsValue);
-            window.$$EXPO_DOM_HOST_OS = 'ios';
-            window.$$EXPO_INITIAL_PROPS = \(initPropsStringified);
             window.ReactNativeWebView = {};
+            window.ReactNativeWebView.injectedObjectJson = () => JSON.stringify(\(injectedObjectStringified));
             window.ReactNativeWebView.postMessage = (message) => {
                 window.webkit.messageHandlers.\(nativeMessageHandlerName).postMessage(
                     JSON.parse(message)

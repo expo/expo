@@ -1,6 +1,6 @@
 ---
 title: TypeScript functions
-description: Learn how to create and use EAS Build functions in your custom build configurations.
+description: Learn how to create and use Expo Build functions in your custom build configurations.
 ---
 
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
@@ -10,13 +10,13 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
-EAS Build functions are a great way to extend the functionality of custom builds. You can use them to create reusable steps, and to write your logic in JavaScript, TypeScript, or Bash (more information in [`command` in the config schema](./schema.mdx#functionsfunction_namecommand)). This guide provides a walkthrough of creating a function in TypeScript.
+Expo Build functions are a great way to extend the functionality of custom builds. You can use them to create reusable steps, and to write your logic in JavaScript, TypeScript, or Bash (more information in [`command` in the config schema](./schema.mdx#functionsfunction_namecommand)). This guide provides a walkthrough of creating a function in TypeScript.
 
 <Step label="1">
 
-## Initialize an EAS Build function module
+## Initialize an Expo Build function module
 
-The easiest way to create an EAS Build function is to use the `create-eas-build-function` CLI tool. By running the following command from the same directory as your **eas.json** file, you can create a new custom TypeScript function:
+The easiest way to create an Expo Build function is to use the `create-eas-build-function` CLI tool. By running the following command from the same directory as your **eas.json** file, you can create a new custom TypeScript function:
 
 <Terminal
   cmd={{
@@ -94,7 +94,7 @@ This command triggers the `build` script placed in the **package.json** file of 
 }
 ```
 
-The `build` script generates **build/index.js**. This file must be uploaded to EAS Build as a part of your project archive, so that the builder can run your function. Ensure that the file is not excluded by a **.gitignore** file or **.easignore** file.
+The `build` script generates **build/index.js**. This file must be uploaded to Expo Build as a part of your project archive, so that the builder can run your function. Ensure that the file is not excluded by a **.gitignore** file or **.easignore** file.
 
 </Step>
 
@@ -275,15 +275,15 @@ export default myFunction;
 ## Summary
 
 - Writing functions is a great way to extend the functionality of custom builds with your own logic.
-- EAS Build functions are reusable — you can use them in multiple custom build configurations.
-- Using EAS Build functions is a great option for more advanced use cases that are not easy to do by writing shell scripts.
+- Expo Build functions are reusable — you can use them in multiple custom build configurations.
+- Using Expo Build functions is a great option for more advanced use cases that are not easy to do by writing shell scripts.
 - Most of the [built-in functions](/custom-builds/schema/#built-in-eas-functions) are open-source and can be forked or used as a reference for writing your own functions.
 
 Check out the **example repository** for more detailed examples:
 
 <BoxLink
   title="Custom build example repository"
-  description="A custom EAS Build example that includes examples for custom builds such as setting up functions, using environment variables, uploading artifacts, and more."
+  description="A custom Expo Build example that includes examples for custom builds such as setting up functions, using environment variables, uploading artifacts, and more."
   Icon={GithubIcon}
   href="https://github.com/expo/eas-custom-builds-example/tree/main"
 />

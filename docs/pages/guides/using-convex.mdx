@@ -11,19 +11,19 @@ import { Step } from '~/ui/components/Step';
 
 [Convex](https://www.convex.dev/) is a backend platform for building reactive apps with a realtime database, server functions, file storage, search, scheduling, and type-safe client libraries without the need for cluster management, SQL, or ORMs.
 
-The EAS CLI integration can create and connect the Convex project for you. It replaces the manual setup steps where you install the package, create a Convex team and project, copy deployment URLs, and configure EAS environment variables.
+The Expo Services integration can create and connect the Convex project for you via EAS CLI. It replaces the manual setup steps where you install the package, create a Convex team and project, copy deployment URLs, and configure Expo Services environment variables.
 
 <Prerequisites>
   <Requirement title="Expo account">
     Sign up for an [Expo account](https://expo.dev/signup).
   </Requirement>
   <Requirement title="EAS CLI">Install EAS CLI globally with `npm install -g eas-cli`.</Requirement>
-  <Requirement title="Expo project linked to EAS">
-    Create an Expo project and link it to EAS with `eas init`.
+  <Requirement title="Expo project linked to Expo Services">
+    Create an Expo project and link it to Expo Services with `eas init`.
   </Requirement>
 </Prerequisites>
 
-## Connect Convex with EAS
+## Connect Convex with Expo Services
 
 <Step label="1">
 
@@ -46,10 +46,10 @@ You can also pass values explicitly:
 The integration command:
 
 - Installs the `convex` package with `npx expo install convex`
-- Creates a Convex team connection for your EAS account, or reuses an existing one
+- Creates a Convex team connection for your Expo account, or reuses an existing one
 - Creates a Convex project and deployment for the current Expo app
 - Writes `CONVEX_DEPLOY_KEY` and `EXPO_PUBLIC_CONVEX_URL` to **.env.local**
-- Creates or updates the `EXPO_PUBLIC_CONVEX_URL` EAS project environment variable for the production, preview, and development environments
+- Creates or updates the `EXPO_PUBLIC_CONVEX_URL` Expo Services project environment variable for the production, preview, and development environments
 - Sends an invitation to your verified email so you can claim the Convex team and open the Convex dashboard
 
 </Step>
@@ -77,7 +77,7 @@ This creates the local **convex** directory if your project does not have one ye
 
 ### Add a Convex provider
 
-Create a Convex client with the deployment URL that the EAS integration wrote to **.env.local**, then wrap your app in `ConvexProvider`.
+Create a Convex client with the deployment URL that the Expo Services integration wrote to **.env.local**, then wrap your app in `ConvexProvider`.
 
 For an Expo Router project, update **src/app/\_layout.tsx**:
 
@@ -160,7 +160,7 @@ Use these commands to inspect or manage the Convex integration later:
   ]}
 />
 
-If you remove the link with `eas integrations:convex:project:delete` or `eas integrations:convex:team:delete`, EAS removes its integration metadata. These commands do not destroy resources on Convex.
+If you remove the link with `eas integrations:convex:project:delete` or `eas integrations:convex:team:delete`, Expo Services removes its integration metadata. These commands do not destroy resources on Convex.
 
 ## Troubleshooting
 
