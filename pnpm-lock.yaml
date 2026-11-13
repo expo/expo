@@ -237,9 +237,6 @@ importers:
       expo-app-intents:
         specifier: workspace:*
         version: link:../../packages/expo-app-intents
-      expo-app-metrics:
-        specifier: workspace:*
-        version: link:../../packages/expo-app-metrics
       expo-audio:
         specifier: workspace:*
         version: link:../../packages/expo-audio
@@ -988,9 +985,6 @@ importers:
       expo-app-intents:
         specifier: workspace:*
         version: link:../../packages/expo-app-intents
-      expo-app-metrics:
-        specifier: workspace:*
-        version: link:../../packages/expo-app-metrics
       expo-apple-authentication:
         specifier: workspace:*
         version: link:../../packages/expo-apple-authentication
@@ -1498,9 +1492,6 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
-      expo-app-metrics:
-        specifier: workspace:*
-        version: link:../../packages/expo-app-metrics
       expo-build-properties:
         specifier: workspace:*
         version: link:../../packages/expo-build-properties
@@ -1814,9 +1805,6 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
-      expo-app-metrics:
-        specifier: workspace:*
-        version: link:../../packages/expo-app-metrics
       expo-application:
         specifier: workspace:*
         version: link:../../packages/expo-application
