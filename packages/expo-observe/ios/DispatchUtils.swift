@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
+import Foundation
 
 /// Outcome of a single dispatch attempt to the OTLP endpoint, modeled after the
 /// OTLP retry guidance (see https://opentelemetry.io/docs/specs/otlp/#otlphttp-response):
