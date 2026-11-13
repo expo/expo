@@ -1,37 +1,31 @@
+import { getParentCommand, markAsParentCommand } from '../parentCommand';
+
 const originalEnv = process.env;
+
+beforeEach(() => {
+  process.env = { ...originalEnv };
+  delete process.env.__EXPO_PARENT_COMMAND;
+});
 
 afterEach(() => {
   process.env = originalEnv;
 });
 
-function loadParentCommand(inheritedCommand?: string) {
-  process.env = { ...originalEnv };
-  if (inheritedCommand === undefined) {
-    delete process.env.EXPO_PARENT_COMMAND;
-  } else {
-    process.env.EXPO_PARENT_COMMAND = inheritedCommand;
-  }
+it('reads the inherited parent command, then marks child processes', () => {
+  process.env.__EXPO_PARENT_COMMAND = 'eas build';
 
-  let parentCommand!: typeof import('../parentCommand');
-  jest.isolateModules(() => {
-    parentCommand = require('../parentCommand');
-  });
-  return parentCommand;
-}
+  expect(markAsParentCommand('expo prebuild')).toBe('eas build');
 
-it('reads the inherited parent command', () => {
-  expect(loadParentCommand('eas build').parentCommand).toBe('eas build');
+  expect(getParentCommand()).toBe('eas build');
+  expect(process.env.__EXPO_PARENT_COMMAND).toBe('expo prebuild');
 });
 
 it.each([undefined, ''])('has no parent command when the inherited value is %p', (value) => {
-  expect(loadParentCommand(value).parentCommand).toBeUndefined();
-});
+  if (value !== undefined) {
+    process.env.__EXPO_PARENT_COMMAND = value;
+  }
 
-it('keeps the inherited parent command after it marks child processes', () => {
-  const parentCommand = loadParentCommand('eas build');
+  markAsParentCommand('expo prebuild');
 
-  parentCommand.markAsParentCommand('expo prebuild');
-
-  expect(process.env.EXPO_PARENT_COMMAND).toBe('expo prebuild');
-  expect(parentCommand.parentCommand).toBe('eas build');
+  expect(getParentCommand()).toBeUndefined();
 });

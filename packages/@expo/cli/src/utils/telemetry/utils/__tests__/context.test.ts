@@ -5,7 +5,7 @@ import { createContext } from '../context';
 const originalVersion = process.env.__EXPO_VERSION;
 
 jest.mock('ci-info', () => ({ isCI: true, isPR: true, name: 'GitHub Actions' }));
-jest.mock('../../../parentCommand', () => ({ parentCommand: 'eas build' }));
+jest.mock('../../../parentCommand', () => ({ getParentCommand: () => 'eas build' }));
 
 beforeEach(() => {
   delete process.env.__EXPO_VERSION;
