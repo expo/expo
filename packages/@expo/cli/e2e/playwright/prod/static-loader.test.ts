@@ -148,7 +148,6 @@ test.describe('static loaders in production', () => {
     await page.goto(new URL('/', expoServe.url.href).href);
 
     await page.route('**/_expo/loaders/**', async (route) => {
-      // The fallback appears only once the lazy route chunks load, so a short delay can end first.
       await new Promise((resolve) => setTimeout(resolve, 2000));
       await route.continue();
     });

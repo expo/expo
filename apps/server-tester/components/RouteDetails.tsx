@@ -7,7 +7,6 @@ import { PanelGroup } from './PanelGroup';
 import { Section } from './Section';
 
 interface RouteDetailsProps {
-  /** Extra sections laid out with the route and params sections. */
   children?: ReactNode;
 }
 
