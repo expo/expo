@@ -37,7 +37,7 @@ import static android.opengl.GLES30.*;
 import static expo.modules.gl.cpp.EXGL.*;
 
 public class GLContext {
-  private int mEXGLCtxId = -1;
+  private volatile int mEXGLCtxId = -1;
 
   private final GLModule mManager;
   private GLThread mGLThread;
@@ -80,6 +80,7 @@ public class GLContext {
     mGLThread = new GLThread(surfaceTexture);
     mGLThread.start();
     mEXGLCtxId = EXGLContextCreate();
+    final int exglCtxId = mEXGLCtxId;
 
     // On JS thread, get JavaScriptCore context, create EXGL context, call JS callback
     final GLContext glContext = this;
@@ -89,17 +90,22 @@ public class GLContext {
     uiManager.runOnClientCodeQueueThread(new Runnable() {
       @Override
       public void run() {
+        // The surface can be destroyed before this runs. Then its context is gone, and
+        // onSurfaceCreate must not report it to JS.
+        if (mEXGLCtxId != exglCtxId) {
+          return;
+        }
         long jsContextRef = jsContextProvider.getJavaScriptContextRef();
         synchronized (uiManager) {
           if (jsContextRef != 0) {
-            EXGLContextPrepare(jsContextRef, mEXGLCtxId, glContext);
+            EXGLContextPrepare(jsContextRef, exglCtxId, glContext);
           }
         }
         if (enableExperimentalWorkletSupport) {
           uiManager.runOnUiQueueThread(new Runnable() {
             @Override
             public void run() {
-              EXGLContextPrepareWorklet(mEXGLCtxId);
+              EXGLContextPrepareWorklet(exglCtxId);
               mManager.saveContext(glContext);
               completionCallback.run();
             }
@@ -172,6 +178,7 @@ public class GLContext {
         Log.e("EXGL", "Can't interrupt GL thread.", e);
       }
       mGLThread = null;
+      mEXGLCtxId = -1;
     }
   }
 
