@@ -7,9 +7,6 @@ import expo.modules.appmetrics.MemoryMetric
 import expo.modules.appmetrics.storage.Metric
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.utils.TimeUtils
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.OptimizedRecord
 import kotlinx.serialization.Serializable
 
 internal class MemoryMetricsManager(
@@ -43,21 +40,20 @@ internal class MemoryMetricsManager(
 }
 
 @Serializable
-@OptimizedRecord
 internal data class MemoryUsageSnapshot(
   /**
    * Physical memory in bytes pages currently in use (resident size).
    */
-  @Field val physical: Long,
+  val physical: Long,
   /**
    * The amount of available memory in bytes that app can still allocate.
    */
-  @Field val available: Long,
+  val available: Long,
   /**
    * The amount of memory in bytes currently used by the Java heap.
    */
-  @Field val javaHeap: Long
-) : Record {
+  val javaHeap: Long
+) {
   fun toMetrics(sessionId: String): List<Metric> {
     val timestamp = TimeUtils.getCurrentTimestampInISOFormat()
     return listOf(
