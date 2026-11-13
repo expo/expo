@@ -13,6 +13,13 @@ open class AppDirectoriesService(
   private val context
     get() = requireNotNull(contextHolder.get())
 
+  /**
+   * The Android context for app storage, like shared preferences. Expo Go gives a context scoped to
+   * the running experience.
+   */
+  open val storageContext: Context
+    get() = context
+
   open val cacheDirectory: File
     get() = context.cacheDir
 
