@@ -81,8 +81,7 @@ open class ExpoModuleRegistryAdapter(
       with(appContext.registry) {
         register(
           ExpoGoModule(manifest),
-          ExpoGoUpdatesModule(experienceProperties),
-          ScopedSecureStoreModule(scopedContext)
+          ExpoGoUpdatesModule(experienceProperties)
         )
 
         // Notifications

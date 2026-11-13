@@ -8,13 +8,18 @@ import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.util.Log
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.functions.Coroutine
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.securestore.encryptors.AESEncryptor
 import expo.modules.securestore.encryptors.HybridAESEncryptor
 import expo.modules.securestore.encryptors.KeyBasedEncryptor
+import expo.modules.v2.legacyAppContext
+import io.github.expo.modules.v2.ExpoModule
+import io.github.expo.modules.v2.JS
+import io.github.expo.modules.v2.Module
+import io.github.expo.modules.v2.react.androidContextOrNull
+import io.github.expo.modules.v2.react.currentActivity
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.json.JSONException
 import org.json.JSONObject
 import java.security.GeneralSecurityException
@@ -23,41 +28,65 @@ import java.security.KeyStore.PrivateKeyEntry
 import java.security.KeyStore.SecretKeyEntry
 import javax.crypto.BadPaddingException
 
+@ExpoModule("ExpoSecureStore")
 open class SecureStoreModule : Module() {
   private val mAESEncryptor = AESEncryptor()
-  open val reactContext: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  private lateinit var keyStore: KeyStore
-  private lateinit var hybridAESEncryptor: HybridAESEncryptor
-  private lateinit var authenticationHelper: AuthenticationHelper
+  /**
+   * The context for the preferences and the helpers. In Expo Go, it is scoped to the running
+   * experience, so experiences cannot read each other's values. Every use goes through this getter.
+   */
+  private val storageContext: Context
+    get() {
+      androidContextOrNull ?: throw Exceptions.ReactContextLost()
+      return legacyAppContext.storageContext
+    }
 
-  override fun definition() = ModuleDefinition {
-    Name("ExpoSecureStore")
+  // The module has no context until it is registered, so these are created on first use.
+  private val keyStore: KeyStore by lazy {
+    KeyStore.getInstance(KEYSTORE_PROVIDER).apply { load(null) }
+  }
+  private val hybridAESEncryptor: HybridAESEncryptor by lazy {
+    HybridAESEncryptor(storageContext, mAESEncryptor)
+  }
+  private val authenticationHelper: AuthenticationHelper by lazy {
+    AuthenticationHelper(storageContext) { currentActivity }
+  }
 
-    AsyncFunction("setValueWithKeyAsync") Coroutine { value: String?, key: String?, options: SecureStoreOptions ->
+  // Async calls run one at a time, like on the single queue of the legacy API. Two concurrent writes
+  // would otherwise both create the KeyStore key, and the value encrypted with the first key could
+  // not be read anymore.
+  private val asyncDispatcher = Dispatchers.IO.limitedParallelism(1)
+
+  @JS
+  suspend fun setValueWithKeyAsync(value: String?, key: String?, options: SecureStoreOptions): Unit =
+    withContext(asyncDispatcher) {
       key ?: throw NullKeyException()
-      return@Coroutine setItemImpl(key, value, options, false)
+      setItemImpl(key, value, options, false)
     }
 
-    AsyncFunction("getValueWithKeyAsync") Coroutine { key: String, options: SecureStoreOptions ->
-      return@Coroutine getItemImpl(key, options)
+  @JS
+  suspend fun getValueWithKeyAsync(key: String, options: SecureStoreOptions): String? =
+    withContext(asyncDispatcher) {
+      getItemImpl(key, options)
     }
 
-    Function("setValueWithKeySync") { value: String?, key: String?, options: SecureStoreOptions ->
-      key ?: throw NullKeyException()
-      return@Function runBlocking {
-        return@runBlocking setItemImpl(key, value, options, keyIsInvalidated = false)
-      }
+  @JS
+  fun setValueWithKeySync(value: String?, key: String?, options: SecureStoreOptions) {
+    key ?: throw NullKeyException()
+    runBlocking {
+      setItemImpl(key, value, options, keyIsInvalidated = false)
     }
+  }
 
-    Function("getValueWithKeySync") { key: String, options: SecureStoreOptions ->
-      return@Function runBlocking {
-        return@runBlocking getItemImpl(key, options)
-      }
-    }
+  @JS
+  fun getValueWithKeySync(key: String, options: SecureStoreOptions): String? = runBlocking {
+    getItemImpl(key, options)
+  }
 
-    AsyncFunction("deleteValueWithKeyAsync") { key: String, options: SecureStoreOptions ->
+  @JS
+  suspend fun deleteValueWithKeyAsync(key: String, options: SecureStoreOptions): Unit =
+    withContext(asyncDispatcher) {
       try {
         deleteItemImpl(key, options)
       } catch (e: CodedException) {
@@ -67,28 +96,17 @@ open class SecureStoreModule : Module() {
       }
     }
 
-    Function("canUseBiometricAuthentication") {
-      return@Function try {
-        authenticationHelper.assertBiometricsSupport()
-        true
-      } catch (e: AuthenticationException) {
-        false
-      }
-    }
-
-    Function("canUseDeviceCredentialsAuthentication") {
-      Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && authenticationHelper.isDeviceSecure()
-    }
-
-    OnCreate {
-      authenticationHelper = AuthenticationHelper(reactContext, appContext.legacyModuleRegistry)
-      hybridAESEncryptor = HybridAESEncryptor(reactContext, mAESEncryptor)
-
-      val keyStore = KeyStore.getInstance(KEYSTORE_PROVIDER)
-      keyStore.load(null)
-      this@SecureStoreModule.keyStore = keyStore
-    }
+  @JS
+  fun canUseBiometricAuthentication(): Boolean = try {
+    authenticationHelper.assertBiometricsSupport()
+    true
+  } catch (e: AuthenticationException) {
+    false
   }
+
+  @JS
+  fun canUseDeviceCredentialsAuthentication(): Boolean =
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && authenticationHelper.isDeviceSecure()
 
   private suspend fun getItemImpl(key: String, options: SecureStoreOptions): String? {
     // We use a SecureStore-specific shared preferences file, which lets us do things like enumerate
@@ -236,7 +254,7 @@ open class SecureStoreModule : Module() {
   private fun deleteItemImpl(key: String, options: SecureStoreOptions) {
     val success = removeItem(
       getSharedPreferences(),
-      PreferenceManager.getDefaultSharedPreferences(reactContext),
+      PreferenceManager.getDefaultSharedPreferences(storageContext),
       key,
       createKeychainAwareKey(key, options.keychainService)
     )
@@ -358,7 +376,7 @@ open class SecureStoreModule : Module() {
   }
 
   fun getSharedPreferences(): SharedPreferences {
-    return reactContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
+    return storageContext.getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)
   }
 
   /**
