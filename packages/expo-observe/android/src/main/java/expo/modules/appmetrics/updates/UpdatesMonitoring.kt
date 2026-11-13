@@ -5,7 +5,7 @@ import expo.modules.appmetrics.AppUpdatesInfo
 import expo.modules.appmetrics.MetricCategory
 import expo.modules.appmetrics.TAG
 import expo.modules.appmetrics.storage.Metric
-import expo.modules.appmetrics.storage.SessionSharedObject
+import expo.modules.appmetrics.storage.SessionHandle
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesNativeInterfaceStateContext
@@ -16,7 +16,7 @@ import expo.modules.updatesinterface.UpdatesStateChangeSubscription
  * The subscription lifecycle and state change listening are managed by AppMetricsModule.
  */
 internal class UpdatesMonitoring(
-  private val session: SessionSharedObject
+  private val session: SessionHandle
 ) {
 
   /**
