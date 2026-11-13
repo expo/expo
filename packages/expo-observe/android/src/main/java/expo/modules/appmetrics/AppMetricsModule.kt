@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import expo.modules.appmetrics.appstartup.AppStartupManager
 import expo.modules.appmetrics.jserrors.ErrorReport
+import expo.modules.appmetrics.jserrors.ErrorSource
 import expo.modules.appmetrics.jserrors.PendingErrorStore
 import expo.modules.appmetrics.jserrors.toLogRecord
 import expo.modules.appmetrics.crashreporting.CrashFileReader
@@ -13,6 +14,7 @@ import expo.modules.appmetrics.crashreporting.JvmCrashHandler
 import expo.modules.appmetrics.crashreporting.PreferencesLastProcessedExitStore
 import expo.modules.appmetrics.crashreporting.attributeAndStoreCrashReport
 import expo.modules.appmetrics.logevents.FeedbackReport
+import expo.modules.appmetrics.logevents.FeedbackScale
 import expo.modules.appmetrics.logevents.LogEventOptions
 import expo.modules.appmetrics.networkrequests.NetworkRequestFilter
 import expo.modules.appmetrics.networkrequests.NetworkRequestMonitor
@@ -32,6 +34,7 @@ import expo.modules.appmetrics.logevents.validateEventBody
 import expo.modules.appmetrics.logevents.validateEventName
 import expo.modules.appmetrics.logevents.withDisplayNameAttribute
 import expo.modules.appmetrics.memory.MemoryMetricsManager
+import expo.modules.appmetrics.memory.MemoryUsageSnapshot
 import expo.modules.appmetrics.storage.JsDebugSession
 import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.JsLogRecord
@@ -52,6 +55,7 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.updatesinterface.UpdatesControllerRegistry
 import expo.modules.updatesinterface.UpdatesStateChangeListener
@@ -119,7 +123,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           sanitized.attributes,
           validateDisplayName(options?.displayName)
         )
-        val severity = options?.severity ?: Severity.INFO
+        val severity = options?.severity?.toSeverity() ?: Severity.INFO
 
         scope.launch {
           // Attach any pending startup metrics first so the session has them
@@ -383,7 +387,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       AsyncFunction("takeMemoryUsageSnapshotAsync") Coroutine { sessionId: String? ->
-        return@Coroutine memoryMetricsManager.takeMemorySnapshot(sessionId)
+        return@Coroutine JsMemoryUsageSnapshot.from(memoryMetricsManager.takeMemorySnapshot(sessionId))
       }
 
       AsyncFunction("clearStoredEntries") Coroutine { -> sessionManager.clearAllData() }
@@ -399,7 +403,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       // coroutine write race the shutdown. We write it to disk synchronously here (no coroutine, no
       // database) and ingest it on the next launch. Non-fatal errors aren't racing termination, so
       // they go through the normal async log path.
-      Function("reportError") { report: ErrorReport ->
+      Function("reportError") { record: JsErrorReport ->
+        val report = record.toErrorReport()
         if (report.isFatal) {
           PendingErrorStore.write(context, report.toPendingError(mainSession.sessionId))
         } else {
@@ -409,8 +414,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         }
       }
 
-      Function("reportFeedback") { report: FeedbackReport ->
-        val record = report.toLogRecord(mainSession.sessionId)
+      Function("reportFeedback") { report: JsFeedbackReport ->
+        val record = report.toFeedbackReport().toLogRecord(mainSession.sessionId)
         scope.launch {
           mainSession.addLogs(listOf(record))
         }
@@ -516,6 +521,68 @@ internal data class NetworkTracesConfigParam(
   @Field val enabled: Boolean = true,
   @Field val filter: NetworkRequestFilter? = null
 ) : Record
+
+@OptimizedRecord
+internal data class JsErrorReport(
+  @Field val source: JsErrorSource = JsErrorSource.GLOBAL,
+  @Field val type: String? = null,
+  @Field val message: String = "",
+  @Field val stacktrace: String? = null,
+  @Field val componentStack: String? = null,
+  @Field val isFatal: Boolean = false
+) : Record {
+  fun toErrorReport() = ErrorReport(
+    source = ErrorSource.valueOf(source.name),
+    type = type,
+    message = message,
+    stacktrace = stacktrace,
+    componentStack = componentStack,
+    isFatal = isFatal
+  )
+}
+
+// JS twin of `ErrorSource`, for the same reason as `JsSeverity`.
+internal enum class JsErrorSource(val rawValue: String) : Enumerable {
+  GLOBAL("global"),
+  ERROR_BOUNDARY("errorBoundary"),
+  REPORTED_BY_USER("reportedByUser"),
+  INTEGRATION("integration")
+}
+
+@OptimizedRecord
+internal data class JsFeedbackReport(
+  @Field val id: String = "",
+  @Field val message: String? = null,
+  @Field val rating: Long? = null,
+  @Field val scale: JsFeedbackScale? = null,
+  @Field val attributes: Map<String, Any?>? = null
+) : Record {
+  fun toFeedbackReport() = FeedbackReport(
+    id = id,
+    message = message,
+    rating = rating,
+    scale = scale?.let { FeedbackScale(min = it.min, max = it.max) },
+    attributes = attributes
+  )
+}
+
+@OptimizedRecord
+internal data class JsFeedbackScale(
+  @Field val min: Long = 0,
+  @Field val max: Long = 0
+) : Record
+
+@OptimizedRecord
+internal data class JsMemoryUsageSnapshot(
+  @Field val physical: Long,
+  @Field val available: Long,
+  @Field val javaHeap: Long
+) : Record {
+  companion object {
+    fun from(snapshot: MemoryUsageSnapshot) =
+      JsMemoryUsageSnapshot(physical = snapshot.physical, available = snapshot.available, javaHeap = snapshot.javaHeap)
+  }
+}
 
 @OptimizedRecord
 internal data class StartSpanOptions(
