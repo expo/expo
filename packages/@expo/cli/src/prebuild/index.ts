@@ -5,6 +5,7 @@ import type { Command } from '../index';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
 import { logCmdError } from '../utils/errors';
 import { getConfigEnvMode, loadEnvFiles } from '../utils/nodeEnv';
+import { reportProgramResult, withProgramStatus } from '../utils/programStatus';
 
 export const expoPrebuild: Command = async (argv) => {
   const args = assertArgs(
@@ -58,7 +59,7 @@ export const expoPrebuild: Command = async (argv) => {
       { resolvePlatformOption, resolvePackageManagerOptions, resolveSkipDependencyUpdate },
     ] = await Promise.all([import('./prebuildAsync.js'), import('./resolveOptions.js')]);
 
-    return prebuildAsync(projectRoot, {
+    const options = {
       clean: !args['--no-clean'],
 
       packageManager: resolvePackageManagerOptions(args),
@@ -67,6 +68,13 @@ export const expoPrebuild: Command = async (argv) => {
       // TODO: Parse
       skipDependencyUpdate: resolveSkipDependencyUpdate(args['--skip-dependency-update']),
       template: args['--template'],
-    });
+    };
+    const results = await withProgramStatus({ state: 'working', msg: 'Running prebuild' }, () =>
+      prebuildAsync(projectRoot, options)
+    );
+    if (results) {
+      reportProgramResult({ state: 'done', msg: 'Finished prebuild' });
+    }
+    return results;
   })().catch(logCmdError);
 };
