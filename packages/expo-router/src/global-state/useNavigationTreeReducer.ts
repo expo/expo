@@ -27,8 +27,9 @@ import {
   completeNavigationState,
   createSeededNavigationState,
 } from './createSeededNavigationState';
-import { getNavigateAction, MAX_REDIRECT_CHAIN_LENGTH } from './getNavigationAction';
+import { getNavigateAction } from './getNavigationAction';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
+import { MAX_REDIRECT_CHAIN_LENGTH } from './resolveGuardedNavigation';
 import type { RouterRegistry } from './routerRegistry';
 import { markActionEnqueuedAndReturnId, type QueuedRoutingIntent } from './routingQueue';
 import { findStateByKey, resetNavigatorState } from './stateUtils';

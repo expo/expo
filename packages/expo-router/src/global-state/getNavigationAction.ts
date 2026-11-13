@@ -1,17 +1,16 @@
 import type { RouteNode } from '../Route';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import { applyRedirects } from '../getRoutesRedirects';
-import type { ResolvedGuard } from '../layouts/GuardContext';
-import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
+import { resolveHrefStringWithSegments } from '../link/href';
 import {
   INTERNAL_EXPO_ROUTER_PREVIEW_ID_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import type { NavigationAction } from '../react-navigation/native';
-import type { NavigationState, PartialState } from '../react-navigation/routers';
+import type { NavigationState } from '../react-navigation/routers';
 import type { SingularOptions } from '../useScreens';
-import { shouldLinkExternally } from '../utils/url';
-import { getRouteInfoFromState, type UrlObject } from './getRouteInfoFromState';
+import { getRouteInfoFromState } from './getRouteInfoFromState';
+import { resolveGuardedNavigation, type GuardRedirect } from './resolveGuardedNavigation';
 import { resolveNavigationDestination } from './resolveNavigationDestination';
 import type { RouterRegistry } from './routerRegistry';
 import type { LinkToOptions, StoreRedirects } from './types';
@@ -21,9 +20,6 @@ export type NavigationResolution =
   | { status: 'invalid'; href: string }
   | { status: 'blocked' }
   | { status: 'redirect-loop'; hrefs: string[] };
-
-// A relative `redirectTo` can change params on every step, so a chain can grow without repeating.
-export const MAX_REDIRECT_CHAIN_LENGTH = 20;
 
 export type NavigateActionConfig = {
   registry: RouterRegistry;
@@ -41,8 +37,8 @@ export function getNavigateAction(
   singular: SingularOptions | undefined,
   previewKey: string | undefined,
   navigationState: NavigationState,
-  // Set when `baseHref` is the `redirectTo` of a blocked route. `chain` lists the blocked routes so far.
-  redirect?: { chain: { href: string; route: string }[]; from: UrlObject }
+  // Set when `baseHref` is the `redirectTo` of a blocked route.
+  redirect?: GuardRedirect
 ): NavigationResolution {
   if (!config.linking || !config.routeNode) {
     throw new Error('Attempted to link to route when no routes are present');
@@ -84,30 +80,21 @@ export function getNavigateAction(
     internalParams,
   });
 
-  const guard = findBlockingGuard(action, config.registry);
-  if (!guard) {
+  const guarded = resolveGuardedNavigation({
+    action,
+    href,
+    targetState: state,
+    registry: config.registry,
+    redirect,
+  });
+  if (guarded.status === 'allowed') {
     return { status: 'action', action };
   }
-  if (guard.redirectTo === undefined) {
-    return { status: 'blocked' };
-  }
-  const redirectHref = resolveHref(guard.redirectTo);
-  // The blocked screen's `Redirect` opens external URLs through the router.
-  if (shouldLinkExternally(redirectHref)) {
-    return { status: 'action', action };
-  }
-  const from = getRouteInfoFromState(state);
-  // Groups are part of the identity, because one href can open a route in another group.
-  const route = JSON.stringify([from.segments, from.params]);
-  const chain = [...(redirect?.chain ?? []), { href, route }];
-  if (
-    redirect?.chain.some((blocked) => blocked.route === route) ||
-    chain.length > MAX_REDIRECT_CHAIN_LENGTH
-  ) {
-    return { status: 'redirect-loop', hrefs: chain.map((blocked) => blocked.href) };
+  if (guarded.status !== 'redirect') {
+    return guarded;
   }
   return getNavigateAction(
-    redirectHref,
+    guarded.href,
     options,
     config,
     type,
@@ -115,28 +102,6 @@ export function getNavigateAction(
     singular,
     previewKey,
     navigationState,
-    { chain, from }
+    guarded.redirect
   );
-}
-
-// Checks the destination route in each mounted navigator, outermost first.
-// Guards of a navigator that is not mounted yet are unknown, so its routes are not checked.
-function findBlockingGuard(
-  action: ReturnType<typeof resolveNavigationDestination>,
-  registry: RouterRegistry
-): ResolvedGuard | undefined {
-  let navigatorKey = action.target;
-  let route:
-    | { name?: string; state?: NavigationState | PartialState<NavigationState> }
-    | undefined = action.payload;
-  while (navigatorKey !== undefined && route?.name !== undefined) {
-    const guard = registry.get(navigatorKey)?.getGuard?.(route.name);
-    if (guard) {
-      return guard;
-    }
-    const state: NavigationState | PartialState<NavigationState> | undefined = route.state;
-    navigatorKey = state?.key;
-    route = state?.routes[state.index ?? 0];
-  }
-  return undefined;
 }
