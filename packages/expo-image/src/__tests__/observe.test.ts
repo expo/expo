@@ -1,6 +1,5 @@
 import { requireOptionalNativeModule } from 'expo';
-import type { ExpoAppMetricsModuleType } from 'expo-app-metrics';
-import type { ObserveModule, ObserveModuleEvents } from 'expo-observe';
+import type { ExpoAppMetricsModuleType, ObserveModule, ObserveModuleEvents } from 'expo-observe';
 import { Dimensions, PixelRatio } from 'react-native';
 
 import type { ImageModuleEvents, ImageNativeModule } from '../Image.types';
