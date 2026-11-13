@@ -12,7 +12,6 @@ import type { ExpoConfig } from '@expo/config';
 import type { JSONObject } from '@expo/json-file';
 import JsonFile from '@expo/json-file';
 import { promises as fs } from 'fs';
-import type { pki as PKI } from 'node-forge';
 import path from 'path';
 import type { Dictionary } from 'structured-headers';
 import { parseDictionary } from 'structured-headers';
@@ -334,7 +333,7 @@ async function getProjectPrivateKeyAndCertificateFromFilePathsAsync({
   const privateKey = convertPrivateKeyPEMToPrivateKey(privateKeyPEM);
   const certificate = convertCertificatePEMToCertificate(codeSigningCertificatePEM);
   validateSelfSignedCertificate(certificate, {
-    publicKey: certificate.publicKey as PKI.rsa.PublicKey,
+    publicKey: certificate.publicKey as ReturnType<typeof generateKeyPair>['publicKey'],
     privateKey,
   });
 
