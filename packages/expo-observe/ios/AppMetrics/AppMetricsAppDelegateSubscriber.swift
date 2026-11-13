@@ -2,6 +2,8 @@ import ExpoModulesCore
 
 public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func appDelegateWillBeginInitialization() {
+    // Before the main session starts: its session row reads the update info.
+    AppMetrics.configure(AppMetricsHost(updatesInfo: expoUpdatesInfo))
     AppMetrics.mainSession.appStartupMonitor.markMain()
     // Install the URLSessionTask swizzles synchronously before any app code (RN included) issues
     // its first network request. Doing this on the `AppMetricsActor` would defer it past that

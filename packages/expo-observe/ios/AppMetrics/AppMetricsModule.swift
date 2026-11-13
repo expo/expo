@@ -243,7 +243,7 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     }
 
     if UpdatesStateEvent.fromDict(event)?.type ?? .restart == .downloadCompleteWithUpdate,
-      let metric = AppMetrics.mainSession.updatesMonitor.downloadTimeMetric(subscription)
+      let metric = updateDownloadTimeMetric(subscription)
     {
       Task { @AppMetricsActor in
         AppMetrics.mainSession.updatesMonitor.reportMetric(metric)
