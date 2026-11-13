@@ -171,6 +171,8 @@ export function AppLayout() {
 }
 ```
 
+When protected screens are nested, the outermost guard that fails decides the redirect. If that guard has no `redirectTo`, the router uses the [default redirect](#use-the-default-redirect), even if an inner guard has a `redirectTo`.
+
 ## Tabs and Drawer
 
 Protected routes are also available for [Tabs](/router/advanced/tabs/) and [Drawer](/router/advanced/drawer/) navigators.
