@@ -118,7 +118,7 @@ export default function DocumentationNestedScrollLayout({
       <div
         className={mergeClasses(
           'mx-auto flex h-[calc(100dvh-60px)] w-full items-center justify-between',
-          'lg:[reading-flow:grid-rows] lg:grid',
+          'lg:[reading-flow:grid-rows] lg:grid lg:grid-rows-1',
           isMounted
             ? 'lg:grid-cols-[auto_minmax(0,1fr)] xl:grid-cols-[auto_minmax(0,1fr)_auto]'
             : 'lg:grid-cols-[17.5rem_minmax(0,1fr)]',
