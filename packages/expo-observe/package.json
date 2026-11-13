@@ -32,6 +32,14 @@
       "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
+    "./debug": {
+      "types": {
+        "expo-source": "./src/debug.ts",
+        "default": "./build/debug.d.ts"
+      },
+      "expo-source": "./src/debug.ts",
+      "default": "./build/debug.js"
+    },
     "./integrations/react-navigation": {
       "types": {
         "expo-source": "./src/integrations/react-navigation/index.ts",
