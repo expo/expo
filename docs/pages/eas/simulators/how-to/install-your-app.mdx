@@ -13,13 +13,13 @@ A new Expo Simulators session starts with a blank device. To put your app on it,
 
 ## Choose an application source
 
-| Application source         | Start flag                        | Use it for                                                                                                                                 |
-| -------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| Expo Build ID              | `--build-id <id>`                 | One specific Expo Build.                                                                                                                   |
-| Expo Build fingerprint     | `--build-fingerprint <hash>`      | The most recent finished, non-expired build with the fingerprint hash that you pass.                                                       |
-| Application archive URL    | `--application-archive-url <url>` | A build that another system made and published to a URL.                                                                                   |
-| Expo Go                    | `--expo-go`                       | A project that you can test in Expo Go. See [Test your project in Expo Go on a remote simulator](/eas/simulators/works-with/expo-go/). |
-| Local build, after startup | No start flag                     | A **.app**, **.apk**, or **.tar.gz** of an iOS Simulator **.app** on your computer. See [Install a local build](#install-a-local-build).   |
+| Application source         | Start flag                        | Use it for                                                                                                                               |
+| -------------------------- | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Expo Build ID              | `--build-id <id>`                 | One specific Expo Build.                                                                                                                 |
+| Expo Build fingerprint     | `--build-fingerprint <hash>`      | The most recent finished, non-expired build with the fingerprint hash that you pass.                                                     |
+| Application archive URL    | `--application-archive-url <url>` | A build that another system made and published to a URL.                                                                                 |
+| Expo Go                    | `--expo-go`                       | A project that you can test in Expo Go. See [Test your project in Expo Go on a remote simulator](/eas/simulators/works-with/expo-go/).   |
+| Local build, after startup | No start flag                     | A **.app**, **.apk**, or **.tar.gz** of an iOS Simulator **.app** on your computer. See [Install a local build](#install-a-local-build). |
 
 The four start flags are mutually exclusive. Pass at most one of them. A session without an application source starts with a blank device.
 
@@ -173,7 +173,7 @@ A local upload takes longer for a large build. When the build is at a URL, the r
   ]}
 />
 
-In an iOS session, you can also install a **.tar.gz** file that contains an iOS Simulator **.app** with [`eas simulator:control app.install`](/eas/simulators/how-to/control-with-eas-cli/#install-an-app).
+In an iOS session, you can also install a **.app** folder, or a **.tar.gz** file that contains one, with [`eas simulator:control app.install`](/eas/simulators/how-to/control-with-eas-cli/#install-an-app).
 
 ## Find the app identifier
 
