@@ -18,7 +18,7 @@ import androidx.room.Transaction
 import java.util.UUID
 import kotlinx.serialization.Serializable
 
-object MetricsConstants {
+internal object MetricsConstants {
   const val SECONDS_TO_REMOVE_OLD_METRICS: Long = 7 * 24 * 60 * 60 // 7 days in seconds
 }
 
@@ -27,7 +27,7 @@ object MetricsConstants {
   version = 18,
   exportSchema = false
 )
-abstract class MetricsDatabase : RoomDatabase() {
+internal abstract class MetricsDatabase : RoomDatabase() {
   abstract fun metricDao(): MetricDao
 
   abstract fun logDao(): LogDao
@@ -64,7 +64,7 @@ abstract class MetricsDatabase : RoomDatabase() {
   tableName = "sessions"
 )
 @Serializable
-data class Session(
+internal data class Session(
   @PrimaryKey val id: String,
   val startTimestamp: String, // ISO 8601 date string
   val endTimestamp: String? = null, // ISO 8601 date string. `null` while the session is still active.
@@ -107,7 +107,7 @@ data class Session(
   ]
 )
 @Serializable
-data class Metric(
+internal data class Metric(
   @PrimaryKey(autoGenerate = true) val id: Long = 0,
   val sessionId: String,
   // ISO 8601 date string
@@ -121,7 +121,7 @@ data class Metric(
   val params: String? = null
 )
 
-data class SessionWithMetrics(
+internal data class SessionWithMetrics(
   @Embedded val session: Session,
   @Relation(
     parentColumn = "id",
@@ -149,7 +149,7 @@ data class SessionWithMetrics(
   ]
 )
 @Serializable
-data class LogRecord(
+internal data class LogRecord(
   @PrimaryKey(autoGenerate = true) val id: Long = 0,
   val sessionId: String,
   // ISO 8601 date string
@@ -175,7 +175,7 @@ data class LogRecord(
     )
   ]
 )
-data class CrashReportEntity(
+internal data class CrashReportEntity(
   /** unique id, so that orphaned crash reports can be identified */
   @PrimaryKey val id: String = UUID.randomUUID().toString(),
   /** Owning session id, or `null` for an orphan report. Unique among non-null values. */
@@ -189,7 +189,7 @@ data class CrashReportEntity(
   val createdAt: String
 )
 
-data class SessionWithChildren(
+internal data class SessionWithChildren(
   @Embedded val session: Session,
   @Relation(parentColumn = "id", entityColumn = "sessionId")
   val metrics: List<Metric>,
@@ -204,7 +204,7 @@ data class SessionWithChildren(
 }
 
 @Dao
-interface MetricDao {
+internal interface MetricDao {
   @Insert(onConflict = OnConflictStrategy.IGNORE)
   suspend fun insert(metric: Metric)
 
@@ -225,7 +225,7 @@ interface MetricDao {
 }
 
 @Dao
-interface LogDao {
+internal interface LogDao {
   @Insert(onConflict = OnConflictStrategy.IGNORE)
   suspend fun insertAll(logs: List<LogRecord>)
 
@@ -246,7 +246,7 @@ interface LogDao {
 }
 
 @Dao
-interface CrashReportDao {
+internal interface CrashReportDao {
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   suspend fun upsert(crashReport: CrashReportEntity)
 
@@ -269,7 +269,7 @@ interface CrashReportDao {
 }
 
 @Dao
-interface SessionDao {
+internal interface SessionDao {
   @Insert(onConflict = OnConflictStrategy.IGNORE)
   suspend fun insert(session: Session)
 

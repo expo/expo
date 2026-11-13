@@ -13,7 +13,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-class ObservabilityManager(
+internal class ObservabilityManager(
   // TODO(@lukmccall): Consider saving context as weak reference to avoid potential memory leaks
   private val context: Context,
   constants: ConstantsInterface?,
@@ -64,7 +64,7 @@ class ObservabilityManager(
   }
 }
 
-class BaseObservabilityManager(
+internal class BaseObservabilityManager(
   private val context: Context,
   private val sessionManager: SessionManager,
   val projectId: String,

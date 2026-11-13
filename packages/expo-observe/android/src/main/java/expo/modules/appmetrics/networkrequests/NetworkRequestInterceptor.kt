@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  * dispatcher sets it on outgoing telemetry so our own uploads don't recurse through the monitor.
  * Mirrors `NetworkRequestTaskSwizzling.internalHeaderName` on iOS — keep the literal in sync.
  */
-const val INTERNAL_HEADER_NAME = "Expo-AppMetrics-Skip"
+internal const val INTERNAL_HEADER_NAME = "Expo-AppMetrics-Skip"
 
 /**
  * Marker tag attached to requests that have already entered our application interceptor. Used by
@@ -480,7 +480,7 @@ class NetworkRequestEventListener : EventListener() {
    * `chain.proceed`, so a response body that breaks after the headers arrive is reported here and
    * nowhere else.
    */
-  data class PhaseTimings(
+  internal data class PhaseTimings(
     val fetchStart: Date?,
     val dnsStart: Date?,
     val dnsEnd: Date?,

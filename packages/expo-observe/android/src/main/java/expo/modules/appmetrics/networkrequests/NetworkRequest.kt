@@ -13,7 +13,7 @@ import java.util.UUID
  * (for example, query parameter tokens or auth headers) must be handled by downstream code
  * before the request is stored or reported.
  */
-data class NetworkRequest(
+internal data class NetworkRequest(
   /** Stable identifier for this observation. */
   val id: UUID,
 
@@ -196,7 +196,7 @@ data class NetworkRequest(
  * Shares its `id` with the corresponding completion-time `NetworkRequest`, so JS subscribers can
  * correlate the two events.
  */
-data class NetworkRequestStarted(
+internal data class NetworkRequestStarted(
   val id: UUID,
   val url: String,
   val method: String,

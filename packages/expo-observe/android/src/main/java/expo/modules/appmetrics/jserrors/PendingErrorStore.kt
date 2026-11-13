@@ -16,7 +16,7 @@ import kotlinx.serialization.json.Json
  * coroutine, no database) before React Native tears the app down. On the next launch the pending
  * files are drained into the regular log pipeline as `js.exception` events.
  */
-object PendingErrorStore {
+internal object PendingErrorStore {
   private const val TAG = "AppMetrics"
 
   /** Caps how many pending files are kept/ingested, so a crash-on-launch loop can't pile up files. */
