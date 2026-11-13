@@ -7,6 +7,7 @@ import chalk from 'chalk';
 import { Log } from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { env } from '../../utils/env';
+import { resetGatewayCache } from '../../utils/ip';
 import type { ProjectPrerequisite } from '../doctor/Prerequisite';
 import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
 import { printItem } from '../interface/commandsTable';
@@ -249,5 +250,6 @@ export class DevServerManager {
         })
       ),
     ]);
+    resetGatewayCache();
   }
 }

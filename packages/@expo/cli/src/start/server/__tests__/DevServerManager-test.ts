@@ -1,11 +1,22 @@
 import { updateEventLoggerMetadata } from '2g';
 import { getConfig } from '@expo/config';
+import { lanNetwork } from 'lan-network';
 
+import { getGatewayAsync, resetGatewayCache } from '../../../utils/ip';
 import type { BundlerStartOptions } from '../BundlerDevServer';
 import { DevServerManager } from '../DevServerManager';
 import { MetroBundlerDevServer } from '../metro/MetroBundlerDevServer';
 import { getPlatformBundlers } from '../platformBundlers';
 import { WebpackBundlerDevServer } from '../webpack/WebpackBundlerDevServer';
+
+jest.mock('lan-network', () => ({
+  lanNetwork: jest.fn(async () => ({
+    iname: null,
+    address: '127.0.0.1',
+    gateway: null,
+    internal: true,
+  })),
+}));
 
 jest.mock('2g', () => ({
   ...jest.requireActual('2g'),
@@ -158,4 +169,18 @@ describe('session metadata', () => {
     await manager.stopAsync();
     expect(updateEventLoggerMetadata).not.toHaveBeenCalled();
   });
+});
+
+it('discovers the network again after stopping the server session', async () => {
+  resetGatewayCache();
+  const discover = jest.mocked(lanNetwork).mockClear();
+  try {
+    await getGatewayAsync();
+    const manager = createManager();
+    await manager.stopAsync();
+    await getGatewayAsync();
+    expect(discover).toHaveBeenCalledTimes(2);
+  } finally {
+    resetGatewayCache();
+  }
 });

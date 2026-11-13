@@ -5,15 +5,25 @@ import { env } from './env';
 import { CommandError } from './errors';
 import { testPortAsync, freePortAsync } from './freeport';
 import { isInteractive } from './interactive';
+import { getIpAddressAsync } from './ip';
 
 /** Whether the port is in the usable range. Port 0 is valid and means "pick any available port". */
 export function isValidPort(port: number | undefined): port is number {
   return port != null && Number.isInteger(port) && port >= 0 && port <= 65_535;
 }
 
+async function getPortHostnamesAsync(host?: string): Promise<(string | null)[]> {
+  if (host) {
+    return [host];
+  }
+  const lanAddress = await getIpAddressAsync();
+  // Wildcard binds can succeed beside listeners on specific addresses.
+  return [...new Set([null, '0.0.0.0', '127.0.0.1', lanAddress])];
+}
+
 /** Get a free port or assert a CLI command error. */
-async function getFreePortAsync(rangeStart: number): Promise<number> {
-  const port = await freePortAsync(rangeStart, [null, 'localhost']);
+async function getFreePortAsync(rangeStart: number, host?: string): Promise<number> {
+  const port = await freePortAsync(rangeStart, await getPortHostnamesAsync(host));
   if (!port) {
     throw new CommandError('NO_PORT_FOUND', 'No available port found');
   }
@@ -26,8 +36,7 @@ export async function ensurePortAvailabilityAsync(
   projectRoot: string,
   { port }: { port: number }
 ): Promise<boolean> {
-  const isFreePort = await testPortAsync(port, [null]);
-  // Check if port has become busy during the build.
+  const isFreePort = await testPortAsync(port, await getPortHostnamesAsync());
   if (isFreePort) {
     return true;
   }
@@ -86,7 +95,7 @@ export async function choosePortAsync(
   }
 ): Promise<number | null> {
   try {
-    const port = await freePortAsync(defaultPort, [host ?? null]);
+    const port = await freePortAsync(defaultPort, await getPortHostnamesAsync(host));
     if (port === defaultPort || defaultPort === 0) {
       return port;
     }
@@ -155,6 +164,7 @@ export async function _resolvePortAsync(
   {
     /** Should opt to reuse a port that is running the same project in another window. */
     reuseExistingPort,
+    host,
     /** Requested port, e.g. from `--port`. */
     defaultPort,
     /** Port to use when no valid port is requested, and the port to scan from when `--port 0` is used. */
@@ -163,6 +173,7 @@ export async function _resolvePortAsync(
     isPreferredPortExplicit,
   }: {
     reuseExistingPort?: boolean;
+    host?: string;
     defaultPort?: number;
     preferredPort: number;
     isPreferredPortExplicit?: boolean;
@@ -173,12 +184,13 @@ export async function _resolvePortAsync(
 
   // Port 0 means "pick any available port"
   if (port === 0) {
-    return getFreePortAsync(preferredPort);
+    return getFreePortAsync(preferredPort, host);
   }
 
   // Only check the port when the bundler is running.
   const resolvedPort = await choosePortAsync(projectRoot, {
     defaultPort: port,
+    host,
     reuseExistingPort,
     explicitPort: isRequestedPortValid || !!isPreferredPortExplicit,
   });
@@ -198,11 +210,13 @@ export async function resolveMetroPortAsync(
   projectRoot: string,
   {
     reuseExistingPort,
+    host,
     defaultPort,
     /** Backup port for when neither `--port` nor `RCT_METRO_PORT` gives a valid port. */
     fallbackPort,
   }: {
     reuseExistingPort?: boolean;
+    host?: string;
     defaultPort?: number;
     fallbackPort?: number;
   } = {}
@@ -213,6 +227,7 @@ export async function resolveMetroPortAsync(
   const requestedMetroPort = isValidPort(metroPort) ? metroPort : 0;
   const resolvedPort = await _resolvePortAsync(projectRoot, {
     reuseExistingPort,
+    host,
     defaultPort,
     preferredPort: requestedMetroPort || fallbackPort || 8081,
     isPreferredPortExplicit: !!requestedMetroPort,
