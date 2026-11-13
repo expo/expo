@@ -171,7 +171,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
     let currentDeviceOrientation = UIDevice.current.orientation.toInterfaceOrientation()
     let currentOrientationMask = self.rootViewController?.supportedInterfaceOrientations ?? []
 
-    var newScreenOrientation = UIInterfaceOrientation.unknown
+    var newScreenOrientation = orientation
 
     // We need to deduce what is the new screen orientation based on currentOrientationMask and new dimensions of the view
     if orientation.isPortrait {
