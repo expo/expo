@@ -17,7 +17,7 @@ import expo.modules.kotlin.types.OptimizedRecord
 import kotlinx.coroutines.CancellationException
 
 @OptimizedRecord
-class Config(
+internal class Config(
   @Field val environment: String? = null,
   @Field val dispatchingEnabled: Boolean? = null,
   @Field val dispatchInDebug: Boolean? = null,
@@ -29,7 +29,7 @@ class Config(
 ) : Record
 
 @OptimizedRecord
-class BundleDefaults(
+internal class BundleDefaults(
   @Field val environment: String = "",
   @Field val isJsDev: Boolean = false
 ) : Record

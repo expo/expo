@@ -8,7 +8,7 @@ import expo.modules.appmetrics.storage.SessionManager
  * Attributes a crash report to a session and persists it. Failures are logged and
  * swallowed so a bad report can't crash the next launch.
  */
-suspend fun attributeAndStoreCrashReport(
+internal suspend fun attributeAndStoreCrashReport(
   sessionManager: SessionManager,
   currentSessionId: String?,
   sessionId: String?,

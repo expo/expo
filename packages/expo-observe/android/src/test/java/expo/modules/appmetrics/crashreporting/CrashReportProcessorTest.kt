@@ -48,7 +48,7 @@ class CrashReportProcessorTest {
     }
   }
 
-  data class StoreCall(
+  private data class StoreCall(
     val sessionId: String?,
     val origin: CrashOrigin,
     val report: CrashReport,

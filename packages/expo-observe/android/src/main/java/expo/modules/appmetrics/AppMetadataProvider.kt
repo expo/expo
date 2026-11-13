@@ -15,7 +15,7 @@ import java.util.Locale
 /**
  * Provides app and device metadata from the Expo manifest for tagging sessions.
  */
-public object AppMetadataProvider {
+internal object AppMetadataProvider {
   fun getAppMetadata(constants: ConstantsInterface?, context: Context): AppMetadata? {
     val manifest = getManifest(constants) ?: return null
     return createMetadata(manifest, context)
@@ -61,7 +61,7 @@ public object AppMetadataProvider {
   }
 }
 
-fun getPackageInfo(context: Context): PackageInfo {
+internal fun getPackageInfo(context: Context): PackageInfo {
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
     return context.packageManager.getPackageInfo(
       context.packageName,
@@ -72,7 +72,7 @@ fun getPackageInfo(context: Context): PackageInfo {
   return context.packageManager.getPackageInfo(context.packageName, 0)
 }
 
-fun getAppBuildNumber(packageInfo: PackageInfo): String =
+internal fun getAppBuildNumber(packageInfo: PackageInfo): String =
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
     packageInfo.longVersionCode.toString()
   } else {
@@ -80,7 +80,7 @@ fun getAppBuildNumber(packageInfo: PackageInfo): String =
     packageInfo.versionCode.toString()
   }
 
-fun getAppUpdatesInfo(): AppUpdatesInfo {
+internal fun getAppUpdatesInfo(): AppUpdatesInfo {
   val controller = UpdatesControllerRegistry.controller?.get()
     ?: return AppUpdatesInfo(updateId = null, runtimeVersion = null, requestHeaders = null)
   val launchedUpdateId = controller.launchedUpdateId
@@ -98,7 +98,7 @@ fun getAppUpdatesInfo(): AppUpdatesInfo {
   )
 }
 
-fun getModelName(): String {
+internal fun getModelName(): String {
   val manufacturer = Build.MANUFACTURER
   val model = Build.MODEL
   return if (model.startsWith(manufacturer)) {
@@ -108,7 +108,7 @@ fun getModelName(): String {
   }
 }
 
-fun Locale.getLanguageTag(): String =
+internal fun Locale.getLanguageTag(): String =
   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
     stripExtensions().toLanguageTag()
   } else {

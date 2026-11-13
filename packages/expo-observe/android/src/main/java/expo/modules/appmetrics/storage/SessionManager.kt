@@ -14,7 +14,7 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import java.util.UUID
 
-class SessionManager(
+internal class SessionManager(
   private val context: Context,
   private val injectedDatabase: MetricsDatabase? = null
 ) {

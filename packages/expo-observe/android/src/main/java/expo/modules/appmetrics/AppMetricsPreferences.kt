@@ -11,7 +11,7 @@ private const val KEY_LAST_PROCESSED_EXIT_MILLIS = "lastProcessedExitMillis"
 private const val KEY_NETWORK_TRACES_CONFIGURATION = "networkTracesConfiguration"
 private const val KEY_OBSERVE_CONSENT = "observeConsent"
 
-object AppMetricsPreferences {
+internal object AppMetricsPreferences {
   private val preferences = ConsentGatedPreferences(PREFS_NAME)
 
   /**

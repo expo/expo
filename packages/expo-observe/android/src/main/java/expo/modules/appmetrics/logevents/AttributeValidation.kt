@@ -45,7 +45,7 @@ private const val MAX_ATTRIBUTE_COUNT = 128
  *   Surfaced on the OTel wire as `droppedAttributesCount` so backends know the
  *   record was filtered.
  */
-data class SanitizedLogAttributes(
+internal data class SanitizedLogAttributes(
   val attributes: Map<String, Any?>?,
   val droppedCount: Int
 )

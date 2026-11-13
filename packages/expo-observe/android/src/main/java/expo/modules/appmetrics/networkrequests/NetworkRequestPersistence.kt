@@ -14,7 +14,7 @@ import java.net.URLDecoder
  *
  * Mirrors the iOS `NetworkRequestPersistence`.
  */
-class NetworkRequestPersistence(
+internal class NetworkRequestPersistence(
   private val writer: SpanWriter,
   initialConfiguration: NetworkTracesConfiguration = NetworkTracesConfiguration(),
   // A plain value rather than a provider: the id is constant for an instance, and resolving it

@@ -8,10 +8,10 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-const val NATIVE_EXCEPTION_LOG_NAME = "native.exception"
+internal const val NATIVE_EXCEPTION_LOG_NAME = "native.exception"
 
 @Serializable
-data class CrashReport(
+internal data class CrashReport(
   /** Unix signal number (e.g. SIGSEGV = 11), from `ApplicationExitInfo.getStatus()` for native crashes. */
   val signal: Int? = null,
   /** Human-readable description of the termination, from `ApplicationExitInfo.getDescription()`. */
@@ -164,7 +164,7 @@ data class CrashReport(
   }
 }
 
-data class CrashLogDetails(
+internal data class CrashLogDetails(
   val exceptionType: String? = null,
   val stackFrames: List<String>? = null
 )

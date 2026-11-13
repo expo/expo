@@ -19,7 +19,7 @@ import kotlin.concurrent.withLock
  * Whether the user consented to Observe collecting data. While not granted, app metrics stores
  * nothing and Observe sends nothing.
  */
-object ObserveConsent {
+internal object ObserveConsent {
   // Null until the application start hook calls `load`. Not granted while null, so nothing is
   // collected if the hook never runs.
   @Volatile
@@ -177,7 +177,7 @@ internal fun deleteStoredData(context: Context) {
 }
 
 /** Shared preferences that save nothing while consent is not granted. */
-class ConsentGatedPreferences(private val name: String) {
+internal class ConsentGatedPreferences(private val name: String) {
   // Values set without consent. The app sends its config at startup, before the user can grant
   // consent. The first grant saves these values, so Observe does not send with the defaults.
   private val unsavedValues = ConcurrentHashMap<String, Any>()

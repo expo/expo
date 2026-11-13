@@ -12,7 +12,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import kotlin.coroutines.resume
 
 // TODO: Make this safe for concurrent usage
-class EventDispatcher(
+internal class EventDispatcher(
   val context: Context,
   val projectId: String,
   val baseUrl: String,
