@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
+import Foundation
 
 /// The single sink for completed span rows. Every producer (the network request producer, the
 /// JS spans API, future navigation spans) hands finished rows here instead of talking to the
