@@ -40,8 +40,7 @@
     "prepack": "expo-module prepack",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
-    "typecheck": "tsc -p tsconfig.json",
-    "typegen": "expo-modules typegen"
+    "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {
     "@expo/internal-scripts": "workspace:*",

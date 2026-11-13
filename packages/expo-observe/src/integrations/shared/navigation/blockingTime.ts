@@ -1,5 +1,6 @@
-import type { MetricInput } from 'expo-app-metrics';
 import { AppState } from 'react-native';
+
+import type { MetricInput } from '../../../app-metrics';
 
 // Navigation Total Blocking Time follows Coinbase's Performance Vitals definition: blocking time
 // in the 2 seconds after a user navigates.

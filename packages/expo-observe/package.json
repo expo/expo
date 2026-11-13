@@ -61,10 +61,10 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
     "typecheck": "tsc -p tsconfig.json",
-    "prepack": "expo-module prepack"
+    "prepack": "expo-module prepack",
+    "typegen": "expo-modules typegen --out src/app-metrics/native.types.ts"
   },
   "dependencies": {
-    "expo-app-metrics": "workspace:~",
     "expo-eas-client": "workspace:~",
     "expo-updates-interface": "workspace:~"
   },

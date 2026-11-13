@@ -1,5 +1,4 @@
-import AppMetrics from 'expo-app-metrics';
-
+import AppMetrics from '../../../app-metrics';
 import { createStateChangeHandler } from '../handleStateChange';
 import {
   createReactNavigationIntegrationStorage,
@@ -7,7 +6,7 @@ import {
 } from '../storage';
 import type { NavigationStateLike } from '../types';
 
-jest.mock('expo-app-metrics', () => {
+jest.mock('../../../app-metrics', () => {
   const mainSession = {
     id: 'session-1',
     type: 'main',

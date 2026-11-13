@@ -1,5 +1,5 @@
 ---
-'expo-app-metrics': patch
+'expo-observe': patch
 ---
 
 [Internal] Export the `js.exception` and `native.exception` log names as constants.

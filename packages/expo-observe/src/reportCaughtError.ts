@@ -1,4 +1,4 @@
-import AppMetrics from 'expo-app-metrics';
+import AppMetrics from './app-metrics';
 
 /**
  * The `reportError` payload shape sent to the native AppMetrics module. The native record types

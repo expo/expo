@@ -1,5 +1,5 @@
 ---
-'expo-app-metrics': patch
+'expo-observe': patch
 ---
 
 [iOS] Fix a crash when a frame duration is zero, negative, infinite or NaN.

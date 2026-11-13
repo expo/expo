@@ -1,5 +1,4 @@
-import AppMetrics from 'expo-app-metrics';
-
+import AppMetrics from '../../app-metrics';
 import { reportCaughtError } from '../../reportCaughtError';
 import type { ObserveIntegrationsConfig } from '../../types';
 import { loadReanimated, type ReanimatedLogData } from './reanimated';

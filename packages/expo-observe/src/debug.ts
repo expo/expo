@@ -1,5 +1,5 @@
 // Debug-only API for test and debug apps. It reads the data that the library stores on the device.
-export { useNetworkRequestObserver } from 'expo-app-metrics';
+export { useNetworkRequestObserver } from './app-metrics';
 export type {
   CallStackFrame,
   CallStackTree,
@@ -14,4 +14,4 @@ export type {
   NetworkRequestStartedEvent,
   Session,
   SessionType,
-} from 'expo-app-metrics';
+} from './app-metrics';

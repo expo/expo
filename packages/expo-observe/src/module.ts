@@ -1,11 +1,6 @@
 import { requireNativeModule } from 'expo';
-import AppMetrics, {
-  recordSpan,
-  setErrorHandlerEnabled,
-  startSpan,
-  withSpan,
-} from 'expo-app-metrics';
 
+import AppMetrics, { recordSpan, setErrorHandlerEnabled, startSpan, withSpan } from './app-metrics';
 import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
 import {

@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { renderHook, act } from '@testing-library/react-native';
-import AppMetrics from 'expo-app-metrics';
 import { type ReactNode } from 'react';
 
+import AppMetrics from '../../../app-metrics';
 import { ObserveRouterIntegrationContext } from '../ObserveRouterIntegrationProvider';
 import * as routerModule from '../router';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
 import { useObserveForRouter } from '../useObserveForRouter';
 
-jest.mock('expo-app-metrics', () => {
+jest.mock('../../../app-metrics', () => {
   const mainSession = {
     id: 'session-1',
     type: 'main',
