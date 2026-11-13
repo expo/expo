@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import EXUpdatesInterface
+import Foundation
 
 /// Provides some basic information about the app.
 struct AppInfo: Codable, Equatable, Sendable {
@@ -62,7 +62,7 @@ struct AppInfo: Codable, Equatable, Sendable {
       appName: (infoPlist["CFBundleDisplayName"] ?? infoPlist["CFBundleName"]) as? String,
       appVersion: infoPlist["CFBundleShortVersionString"] as? String,
       buildNumber: infoPlist["CFBundleVersion"] as? String,
-      updatesInfo: UpdatesMonitoring.getUpdatesMetricsInfo()
+      updatesInfo: AppMetrics.host.updatesInfo()
     )
   }()
 
