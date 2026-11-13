@@ -148,7 +148,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
   }
 
   /// Prefix of the component names. It tells apart the components backed by Expo modules.
-  internal static let componentNamePrefix = "ViewManagerAdapter_"
+  nonisolated internal static let componentNamePrefix = "ViewManagerAdapter_"
 
   /// View classes registered in `RCTComponentViewFactory`, keyed by the component name.
   @MainActor
@@ -160,7 +160,7 @@ open class ExpoFabricView: ExpoFabricViewObjC, AnyExpoView {
 
   /// Returns the name under which the view of the given module is registered in React Native.
   /// It must stay in sync with `requireNativeComponent` in `NativeViewManagerAdapter.native.tsx`.
-  internal static func componentName(moduleName: String, viewName: String) -> String {
+  nonisolated internal static func componentName(moduleName: String, viewName: String) -> String {
     if viewName == DEFAULT_MODULE_VIEW {
       return "\(componentNamePrefix)\(moduleName)"
     }
