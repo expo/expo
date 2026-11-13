@@ -2,7 +2,7 @@ import EXUpdatesInterface
 import ExpoModulesCore
 import Foundation
 
-@ExpoModule("ExpoAppMetrics", classes: [SpanHandle.self])
+@ExpoModule("ExpoAppMetrics", classes: [SpanObject.self])
 public final class AppMetricsModule: Module, UpdatesStateChangeListener {
   var subscription: UpdatesStateChangeSubscription?
 
@@ -189,13 +189,13 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
     }
 
-    Function("startSpan") { (name: String, options: StartSpanOptions?, parent: SpanHandle?) -> SpanHandle in
+    Function("startSpan") { (name: String, options: StartSpanOptions?, parent: SpanObject?) -> SpanObject in
       let validatedName = validatedSpanName(name)
       let recorder = SpanRecorder(
         name: validatedName ?? name,
         sessionId: AppMetrics.mainSession.id,
-        parentTraceId: parent?.recorder.traceId,
-        parentSpanId: parent?.recorder.spanId,
+        parentTraceId: parent?.handle.recorder.traceId,
+        parentSpanId: parent?.handle.recorder.spanId,
         attributes: options?.attributes,
         startTimestampMs: resolvedTimestamp(options?.startTime, field: "startTime")
       )
@@ -207,10 +207,10 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       } else {
         onEnd = AppMetrics.spanWriter.schedule
       }
-      return SpanHandle(recorder: recorder, onEnd: onEnd)
+      return SpanObject(SpanHandle(recorder: recorder, onEnd: onEnd))
     }
 
-    Function("recordSpan") { (name: String, options: RecordSpanOptions, parent: SpanHandle?) in
+    Function("recordSpan") { (name: String, options: RecordSpanOptions, parent: SpanObject?) in
       guard let validatedName = validatedSpanName(name),
         let window = recordedSpanWindow(startTime: options.startTime, endTime: options.endTime)
       else {
@@ -221,8 +221,8 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       let recorder = SpanRecorder(
         name: validatedName,
         sessionId: AppMetrics.mainSession.id,
-        parentTraceId: parent?.recorder.traceId,
-        parentSpanId: parent?.recorder.spanId,
+        parentTraceId: parent?.handle.recorder.traceId,
+        parentSpanId: parent?.handle.recorder.spanId,
         attributes: options.attributes,
         startTimestampMs: window.start,
         attributeSource: "recordSpan"

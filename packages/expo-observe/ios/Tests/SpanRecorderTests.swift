@@ -230,18 +230,20 @@ struct SpanRecorderDatabaseTests {
   }
 }
 
-@Suite("SpanHandle")
+@Suite("SpanObject")
 @JavaScriptActor
-struct SpanHandleTests {
+struct SpanObjectTests {
   @Test
   func `ending with an unknown status records the span with an unset status`() {
     let rows = ExpoObserve.Mutex<[SpanRow]>([])
-    let handle = SpanHandle(recorder: makeRecorder()) { row in
-      rows.withLock { $0.append(row) }
-    }
+    let object = SpanObject(
+      SpanHandle(recorder: makeRecorder()) { row in
+        rows.withLock { $0.append(row) }
+      }
+    )
     var options = SpanEndOptions()
     options.status = "cancelled"
-    handle.end(options)
+    object.end(options)
     let ended = rows.withLock { $0 }
     #expect(ended.count == 1)
     #expect(ended.first?.statusCode == nil)
