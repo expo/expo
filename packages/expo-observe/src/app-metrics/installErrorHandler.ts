@@ -28,7 +28,7 @@ export function setErrorHandlerEnabled(value: boolean): void {
  * previously-installed handler runs so React Native's default behavior (red box in development,
  * fatal termination in production) is unchanged.
  *
- * Idempotent: only the first call installs. Called automatically when `expo-app-metrics` is
+ * Idempotent: only the first call installs. Called automatically when `expo-observe` is
  * imported, so capture is live as early as the app pulls the module in. Nothing else needs to call
  * it, which is why it isn't part of the package's exports.
  *

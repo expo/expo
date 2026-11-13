@@ -84,9 +84,9 @@ enum NetworkRequestTaskSwizzling {
   /// on requests to endpoints we control (o.expo.dev); setting it on a request to a third party
   /// leaks `Expo-AppMetrics-Skip: 1` to that host.
   ///
-  /// No `X-` prefix per RFC 6648. Callers that can't import this constant (expo-observe must not
-  /// depend on app-metrics internals) hardcode the same literal — keep the two in sync if this
-  /// ever changes.
+  /// No `X-` prefix per RFC 6648. `DispatchUtils.swift` and the Android
+  /// `NetworkRequestInterceptor.kt` hardcode the same literal — keep them in sync if this ever
+  /// changes.
   static let internalHeaderName = "Expo-AppMetrics-Skip"
 
   /// Property key that expo-dev-launcher's `ExpoRequestInterceptorProtocol` stamps on the inner

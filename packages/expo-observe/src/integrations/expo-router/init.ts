@@ -13,9 +13,9 @@ import {
 import { type RouterIntegrationStorage } from './storage';
 
 // TODO(@ubax): split this module into `.native.ts` / `.web.ts` variants so the
-// web bundle doesn't pull in `expo-app-metrics`' native bridge calls. The web
+// web bundle doesn't pull in `app-metrics`' native bridge calls. The web
 // version should be an explicit no-op (return a noop cleanup) rather than
-// relying on the web stubs in `expo-app-metrics/module.web.ts`.
+// relying on the web stubs in `app-metrics/module.web.ts`.
 
 const MAX_ENQUEUE_TIMES = 100;
 
