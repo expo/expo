@@ -1,4 +1,3 @@
-import ExpoAppMetrics
 import Foundation
 
 // MARK: -- Open Telemetry data classes
