@@ -241,39 +241,10 @@ struct DownloadTaskOptions: Record {
  * A SharedObject that handles file downloads with pause/resume support and progress tracking.
  */
 class FileSystemDownloadTask: SharedObject {
-  // `downloadTask` and `delegateKey` are cleared from the URLSession delegate queue (`didCompleteWithError`
-  // → `finishTask` → `cleanup`) and touched from the JS thread (`cancel`, `pause`, and
-  // `sharedObjectWillRelease`, which the Hermes GC finalizer calls as soon as the JS counterpart is
-  // collected). The JS side typically drops the task right as its promise settles, so those two overlap; an
-  // unguarded optional then tears and `cancel()` is sent to a freed `NSURLSessionTask` (objc_msgSend crash
-  // on the JS thread). Both fields live behind one lock.
-  private let stateLock = NSLock()
-  private var unsafeDownloadTask: URLSessionDownloadTask?
-  private var unsafeDelegateKey: String?
-  private var downloadTask: URLSessionDownloadTask? {
-    get {
-      stateLock.lock()
-      defer { stateLock.unlock() }
-      return unsafeDownloadTask
-    }
-    set {
-      stateLock.lock()
-      defer { stateLock.unlock() }
-      unsafeDownloadTask = newValue
-    }
-  }
-  private var delegateKey: String? {
-    get {
-      stateLock.lock()
-      defer { stateLock.unlock() }
-      return unsafeDelegateKey
-    }
-    set {
-      stateLock.lock()
-      defer { stateLock.unlock() }
-      unsafeDelegateKey = newValue
-    }
-  }
+  // The main queue sets and clears the task (`start`, `resume`, `finishTask`, the release hook), while
+  // `cancel()` runs on the JS thread and `pause()` on a background executor. An unguarded optional lets
+  // one of them retain a task that the main queue is releasing, so `cancel()` reaches freed memory.
+  private let downloadTask = Mutex<URLSessionDownloadTask?>(nil)
   private var sessionType: NetworkTaskSessionType = .background
   private(set) var isPausing = false
   private var backgroundSessionHandler: FileSystemBackgroundSessionHandler?
@@ -311,7 +282,7 @@ class FileSystemDownloadTask: SharedObject {
   }
 
   func acknowledgeBackgroundCompletion() throws {
-    guard downloadTask == nil else { throw BackgroundDownloadNotFinishedException() }
+    guard downloadTask.withLock({ $0 == nil }) else { throw BackgroundDownloadNotFinishedException() }
     backgroundSessionHandler?.acknowledgeDownload(self)
     backgroundSessionHandler = nil
   }
@@ -332,19 +303,19 @@ class FileSystemDownloadTask: SharedObject {
     }
 
     let task = session.downloadTask(with: request)
-    downloadTask = task
+    downloadTask.withLock { $0 = task }
     registerBackgroundCompletion(in: session, options: options)
-    delegateKey = NetworkTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
+    _ = NetworkTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
     task.resume()
   }
 
   func pause() async -> [String: String?] {
     isPausing = true
-    guard let downloadTask else {
+    guard let task = downloadTask.withLock({ $0 }) else {
       return ["resumeData": nil]
     }
 
-    let resumeData = await downloadTask.cancelByProducingResumeData()
+    let resumeData = await task.cancelByProducingResumeData()
     return ["resumeData": resumeData?.base64EncodedString()]
   }
 
@@ -368,9 +339,9 @@ class FileSystemDownloadTask: SharedObject {
     let delegate = DownloadTaskDelegate(sharedObject: self, destination: to, promise: promise)
     let task = session.downloadTask(withResumeData: data)
 
-    downloadTask = task
+    downloadTask.withLock { $0 = task }
     registerBackgroundCompletion(in: session, options: options)
-    delegateKey = NetworkTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
+    _ = NetworkTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
     task.resume()
   }
 
@@ -379,13 +350,12 @@ class FileSystemDownloadTask: SharedObject {
     let task = takeDownloadTask()
     recordResponse(task?.response)
     task?.cancel()
-    cleanup(unregisterDelegate: false)
   }
 
   func finishTask(succeeded: Bool) {
     backgroundSessionHandler?.finishDownload(self, succeeded: succeeded)
     // Delegate is unregistered by NetworkTaskSessionDispatcher after didCompleteWithError returns.
-    cleanup(unregisterDelegate: false)
+    downloadTask.withLock { $0 = nil }
   }
 
   override func sharedObjectWillRelease() {
@@ -394,30 +364,17 @@ class FileSystemDownloadTask: SharedObject {
       self.backgroundSessionHandler?.discardDownload(self)
       self.backgroundSessionHandler = nil
       self.takeDownloadTask()?.cancel()
-      self.cleanup(unregisterDelegate: false)
     }
   }
 
   /**
-   Atomically detaches the underlying task so exactly one caller gets to cancel it, even when the
-   delegate queue is clearing it at the same moment.
+   Takes the task out of its slot, so that only one caller can cancel it.
    */
   private func takeDownloadTask() -> URLSessionDownloadTask? {
-    stateLock.lock()
-    defer { stateLock.unlock() }
-    let task = unsafeDownloadTask
-    unsafeDownloadTask = nil
-    return task
-  }
-
-  private func cleanup(unregisterDelegate: Bool) {
-    stateLock.lock()
-    let key = unsafeDelegateKey
-    unsafeDelegateKey = nil
-    unsafeDownloadTask = nil
-    stateLock.unlock()
-    if unregisterDelegate {
-      NetworkTaskSessionManager.shared.unregister(key: key)
+    return downloadTask.withLock { task in
+      let result = task
+      task = nil
+      return result
     }
   }
 }

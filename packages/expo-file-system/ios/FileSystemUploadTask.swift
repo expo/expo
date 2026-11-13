@@ -34,23 +34,9 @@ struct UploadTaskResult: Record {
  * A SharedObject that handles file uploads with progress tracking.
  */
 class FileSystemUploadTask: SharedObject {
-  // Same cross-thread hazard as `FileSystemDownloadTask.downloadTask`: cleared on the URLSession delegate
-  // queue when the upload completes, cancelled from the JS thread (including from the GC finalizer via
-  // `sharedObjectWillRelease`), so the optional is guarded by a lock and detached atomically for cancel.
-  private let stateLock = NSLock()
-  private var unsafeUploadTask: URLSessionUploadTask?
-  private var uploadTask: URLSessionUploadTask? {
-    get {
-      stateLock.lock()
-      defer { stateLock.unlock() }
-      return unsafeUploadTask
-    }
-    set {
-      stateLock.lock()
-      defer { stateLock.unlock() }
-      unsafeUploadTask = newValue
-    }
-  }
+  // The main queue clears the task when the upload completes, while `cancel()` and the release hook
+  // run on the JS thread. See `FileSystemDownloadTask.downloadTask`.
+  private let uploadTask = Mutex<URLSessionUploadTask?>(nil)
   private var delegateKey: String?
   private var sessionType: NetworkTaskSessionType = .background
   private var sourceAccess: FileSystemScopedAccess?
@@ -78,6 +64,7 @@ class FileSystemUploadTask: SharedObject {
         }
       }
 
+      let task: URLSessionUploadTask
       if options.uploadType == .multipart {
         let boundaryString = UUID().uuidString
         let bodyFileURL = try createMultipartBody(boundary: boundaryString, sourceUrl: sourceUrl, options: options)
@@ -85,21 +72,16 @@ class FileSystemUploadTask: SharedObject {
         request.setValue("multipart/form-data; boundary=\(boundaryString)", forHTTPHeaderField: "Content-Type")
         tempFileURL = bodyFileURL
 
-        uploadTask = session.uploadTask(with: request, fromFile: bodyFileURL)
+        task = session.uploadTask(with: request, fromFile: bodyFileURL)
       } else {
-        uploadTask = session.uploadTask(with: request, fromFile: sourceUrl)
+        task = session.uploadTask(with: request, fromFile: sourceUrl)
       }
-
-      guard let uploadTask else {
-        promise.reject(UnableToUploadException("Failed to create upload task"))
-        cleanup()
-        return
-      }
+      uploadTask.withLock { $0 = task }
 
       let delegate = UploadTaskDelegate(sharedObject: self, promise: promise) {
         self.finishTask()
       }
-      delegateKey = NetworkTaskSessionManager.shared.register(delegate: delegate, for: uploadTask, in: session)
+      delegateKey = NetworkTaskSessionManager.shared.register(delegate: delegate, for: task, in: session)
 
       guard !cancelled else {
         NetworkTaskSessionManager.shared.unregister(key: delegateKey)
@@ -108,7 +90,7 @@ class FileSystemUploadTask: SharedObject {
         return
       }
 
-      uploadTask.resume()
+      task.resume()
     } catch {
       promise.reject(UnableToUploadException(error.localizedDescription))
       cleanup(unregisterDelegate: true)
@@ -125,15 +107,14 @@ class FileSystemUploadTask: SharedObject {
   }
 
   /**
-   Atomically detaches the underlying task so exactly one caller gets to cancel it, even when the
-   delegate queue is clearing it at the same moment.
+   Takes the task out of its slot, so that only one caller can cancel it.
    */
   private func takeUploadTask() -> URLSessionUploadTask? {
-    stateLock.lock()
-    defer { stateLock.unlock() }
-    let task = unsafeUploadTask
-    unsafeUploadTask = nil
-    return task
+    return uploadTask.withLock { task in
+      let result = task
+      task = nil
+      return result
+    }
   }
 
   fileprivate func emitProgress(bytesSent: Int64, totalBytes: Int64) {
@@ -149,8 +130,7 @@ class FileSystemUploadTask: SharedObject {
     }
   }
 
-  // Internal (not fileprivate) to mirror `FileSystemDownloadTask.finishTask`.
-  func finishTask() {
+  fileprivate func finishTask() {
     cleanup()
   }
 
@@ -159,7 +139,7 @@ class FileSystemUploadTask: SharedObject {
       NetworkTaskSessionManager.shared.unregister(key: delegateKey)
     }
     delegateKey = nil
-    uploadTask = nil
+    uploadTask.withLock { $0 = nil }
     sourceAccess = nil
     if let tempFileURL = tempFileURL {
       try? FileManager.default.removeItem(at: tempFileURL)
