@@ -470,7 +470,6 @@ export declare class M extends NativeModule {
           properties: [
             {
               name: 'tag',
-              jsName: 'Symbol.toStringTag',
               symbol: { kind: 'wellKnown', name: 'toStringTag' },
               type: Str,
               readonly: true,
@@ -480,7 +479,6 @@ export declare class M extends NativeModule {
           functions: [
             {
               name: 'makeIterator',
-              jsName: 'Symbol.iterator',
               symbol: { kind: 'wellKnown', name: 'iterator' },
               parameters: [],
               returns: Int,
@@ -490,7 +488,6 @@ export declare class M extends NativeModule {
             },
             {
               name: 'isCache',
-              jsName: 'Symbol.hasInstance',
               symbol: { kind: 'wellKnown', name: 'hasInstance' },
               parameters: [{ label: '_', name: 'value', type: Int, optional: false }],
               returns: Bool,
@@ -519,6 +516,93 @@ export declare class M extends NativeModule {
     expect(result.source).toContain('  iterator(): number;');
   });
 
+  it('types a symbol iterator that returns a JavaScript value as an iterator', () => {
+    const JSValue: TypeNode = { kind: 'ref', name: 'JavaScriptValue', typeof: 'object' };
+    const JSObject: TypeNode = { kind: 'ref', name: 'JavaScriptObject', typeof: 'object' };
+    const iterator = (name: string, symbol: string, returns: TypeNode, isStatic = false) => ({
+      name,
+      symbol: { kind: 'wellKnown' as const, name: symbol },
+      parameters: [],
+      returns,
+      async: false,
+      throws: false,
+      static: isStatic,
+    });
+    const result = render({
+      ...emptySurface,
+      sharedObjects: [
+        {
+          name: 'List',
+          jsName: 'List',
+          file: FILE,
+          events: [],
+          properties: [],
+          functions: [
+            iterator('makeIterator', 'iterator', JSValue),
+            iterator('makeAsyncIterator', 'asyncIterator', JSObject),
+            // Another symbol keeps its rendered return type.
+            iterator('primitive', 'toPrimitive', JSValue),
+          ],
+        },
+      ],
+    });
+    expect(result.source).toContain('[Symbol.iterator](): Iterator<unknown>;');
+    expect(result.source).toContain('[Symbol.asyncIterator](): AsyncIterator<unknown>;');
+    expect(result.source).toContain('[Symbol.toPrimitive](): unknown;');
+    expect(result.warnings).toEqual([
+      {
+        kind: 'unknown',
+        file: FILE,
+        location: 'List.primitive()',
+        message: "unresolved type 'JavaScriptValue' rendered as unknown",
+      },
+    ]);
+  });
+
+  it('skips a member under a symbol that a member before it already uses and warns', () => {
+    const fn = (name: string) => ({
+      name,
+      symbol: { kind: 'wellKnown' as const, name: 'iterator' },
+      parameters: [],
+      returns: Int,
+      async: false,
+      throws: false,
+      static: false,
+    });
+    const result = render({
+      ...emptySurface,
+      sharedObjects: [
+        {
+          name: 'List',
+          jsName: 'List',
+          file: FILE,
+          events: [],
+          properties: [
+            {
+              name: 'iterator',
+              symbol: { kind: 'wellKnown', name: 'iterator' },
+              type: Int,
+              readonly: true,
+              static: false,
+            },
+          ],
+          functions: [fn('makeIterator')],
+        },
+      ],
+    });
+    expect(result.source).toContain('readonly [Symbol.iterator]: number;');
+    expect(result.source).not.toContain('[Symbol.iterator](): number;');
+    expect(result.warnings).toEqual([
+      {
+        kind: 'skipped',
+        file: FILE,
+        location: 'List.makeIterator',
+        message:
+          "another member already uses the symbol 'Symbol.iterator', so this one was skipped",
+      },
+    ]);
+  });
+
   it('skips a member bound under a registered symbol and warns', () => {
     const result = render({
       ...emptySurface,
@@ -532,7 +616,6 @@ export declare class M extends NativeModule {
           functions: [
             {
               name: 'id',
-              jsName: 'Symbol.for("app.id")',
               symbol: { kind: 'registered', name: 'app.id' },
               parameters: [],
               returns: Str,

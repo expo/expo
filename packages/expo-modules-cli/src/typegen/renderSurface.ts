@@ -87,8 +87,9 @@ class MemberNames {
   }
 }
 
-function memberTakenWarning(name: string): string {
-  return `another member already uses the JS name '${name}', so this one was skipped`;
+/** The warning for a member whose key is taken. `label` names the key, such as `JS name 'value'`. */
+function memberTakenWarning(label: string): string {
+  return `another member already uses the ${label}, so this one was skipped`;
 }
 
 /**
@@ -428,7 +429,7 @@ function renderRecord(record: ExportedRecord, makeContext: ContextFactory): stri
   for (const property of record.properties) {
     const ctx = makeContext(record.file, `${record.name}.${property.name}`);
     if (!names.claimProperty(property.name)) {
-      ctx.warn('skipped', memberTakenWarning(property.name));
+      ctx.warn('skipped', memberTakenWarning(`JS name '${property.name}'`));
       continue;
     }
     const type = renderType(property.type, ctx);
@@ -575,12 +576,12 @@ function renderProperty(
   { includeStatic }: MemberOptions
 ): string | null {
   const ctx = makeContext(owner.file, `${owner.name}.${property.name}`);
-  const name = symbolMemberName(property, ctx);
+  const name = memberKeyName(property, ctx);
   if (name === null) {
     return null;
   }
-  if (!names.claimProperty(memberKey(property.jsName, includeStatic && property.static))) {
-    ctx.warn('skipped', memberTakenWarning(property.jsName));
+  if (!names.claimProperty(memberKey(name.key, includeStatic && property.static))) {
+    ctx.warn('skipped', memberTakenWarning(name.label));
     return null;
   }
   let type: string;
@@ -591,7 +592,7 @@ function renderProperty(
     type = 'unknown';
   }
   const modifiers = `${includeStatic && property.static ? 'static ' : ''}${property.readonly ? 'readonly ' : ''}`;
-  return `${modifiers}${name}: ${type};`;
+  return `${modifiers}${name.declared}: ${type};`;
 }
 
 /** Renders one function, or `null` when a property already owns its name in the body. */
@@ -603,38 +604,88 @@ function renderFunction(
   { includeStatic }: MemberOptions
 ): string | null {
   const location = `${owner.name}.${fn.name}`;
-  const name = symbolMemberName(fn, makeContext(owner.file, location));
+  const name = memberKeyName(fn, makeContext(owner.file, location));
   if (name === null) {
     return null;
   }
-  if (!names.claimFunction(memberKey(fn.jsName, includeStatic && fn.static))) {
-    makeContext(owner.file, location).warn('skipped', memberTakenWarning(fn.jsName));
+  if (!names.claimFunction(memberKey(name.key, includeStatic && fn.static))) {
+    makeContext(owner.file, location).warn('skipped', memberTakenWarning(name.label));
     return null;
   }
   const parameters = renderParameters(fn.parameters, owner.file, location, makeContext);
-  const returns = renderReturnType(fn.returns, fn.async, makeContext(owner.file, `${location}()`));
-  return `${includeStatic && fn.static ? 'static ' : ''}${name}(${parameters}): ${returns};`;
+  const returns =
+    iteratorReturnType(fn) ??
+    renderReturnType(fn.returns, fn.async, makeContext(owner.file, `${location}()`));
+  return `${includeStatic && fn.static ? 'static ' : ''}${name.declared}(${parameters}): ${returns};`;
 }
 
 /**
- * The name a function or property is declared under: its JS name, or for a member bound under a
- * well-known symbol, the computed name `[Symbol.iterator]`. `null` for a member bound under a
- * registered symbol, which TypeScript can't declare in a class: a computed member name needs a
+ * The JavaScript value types that a native function returns unconverted. `renderType` can't resolve
+ * them, so they render as `unknown`.
+ */
+const JAVASCRIPT_VALUE_TYPES = new Set(['JavaScriptValue', 'JavaScriptObject']);
+
+/**
+ * The return type of a synchronous `[Symbol.iterator]` or `[Symbol.asyncIterator]` method that
+ * returns a JavaScript value: `Iterator<unknown>` or `AsyncIterator<unknown>`, so that TypeScript
+ * accepts the class in `for...of`, spread and `for await...of`. The element type isn't known. `null`
+ * for any other function.
+ */
+function iteratorReturnType(fn: ExportedFunction): string | null {
+  if (
+    fn.symbol?.kind !== 'wellKnown' ||
+    fn.async ||
+    fn.returns?.kind !== 'ref' ||
+    !JAVASCRIPT_VALUE_TYPES.has(fn.returns.name)
+  ) {
+    return null;
+  }
+  switch (fn.symbol.name) {
+    case 'iterator':
+      return 'Iterator<unknown>';
+    case 'asyncIterator':
+      return 'AsyncIterator<unknown>';
+    default:
+      return null;
+  }
+}
+
+/** How a function or property is declared, and the key it claims in its body. */
+type MemberKeyName = {
+  /** The member name as declared: the JS name, or a computed name such as `[Symbol.iterator]`. */
+  declared: string;
+  /** The key the member claims, which a JS name and a symbol never share. */
+  key: string;
+  /** How a warning names the key. */
+  label: string;
+};
+
+/**
+ * The declared name and the key of a function or property: its JS name, or for a member bound
+ * under a well-known symbol, the computed name `[Symbol.iterator]`. `null` for a member bound under
+ * a registered symbol, which TypeScript can't declare in a class: a computed member name needs a
  * `unique symbol` type, and `Symbol.for()` returns `symbol`.
  */
-function symbolMemberName(
+function memberKeyName(
   member: ExportedFunction | ExportedProperty,
   ctx: RenderContext
-): string | null {
-  if (!member.symbol) {
-    return memberName(member.jsName);
+): MemberKeyName | null {
+  const { jsName, symbol } = member;
+  if (jsName !== undefined) {
+    return { declared: memberName(jsName), key: `name ${jsName}`, label: `JS name '${jsName}'` };
   }
-  if (member.symbol.kind === 'wellKnown') {
-    return `[Symbol.${member.symbol.name}]`;
+  if (symbol?.kind === 'wellKnown') {
+    const expression = `Symbol.${symbol.name}`;
+    return {
+      declared: `[${expression}]`,
+      key: `symbol ${expression}`,
+      label: `symbol '${expression}'`,
+    };
   }
+  const expression = symbol ? `Symbol.for(${JSON.stringify(symbol.name)})` : 'an unknown key';
   ctx.warn(
     'skipped',
-    `TypeScript can't declare a class member under '${member.jsName}', so this one was skipped`
+    `TypeScript can't declare a class member under '${expression}', so this one was skipped`
   );
   return null;
 }
@@ -695,13 +746,13 @@ function withoutBackticks(surface: ExportedSurface): ExportedSurface {
   const fn = (f: ExportedFunction): ExportedFunction => ({
     ...f,
     name: stripBackticks(f.name),
-    jsName: stripBackticks(f.jsName),
+    jsName: f.jsName && stripBackticks(f.jsName),
     parameters: f.parameters.map(parameter),
   });
   const property = (p: ExportedProperty): ExportedProperty => ({
     ...p,
     name: stripBackticks(p.name),
-    jsName: stripBackticks(p.jsName),
+    jsName: p.jsName && stripBackticks(p.jsName),
   });
   const event = (e: ExportedEvent): ExportedEvent => ({
     ...e,
