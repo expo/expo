@@ -67,7 +67,7 @@ internal enum DispatchUtils {
     }
 
     #if DEBUG
-    observeLogger.debug("[EAS Observe] Sending the request to \(endpointUrl) with body:")
+    logger.debug("[EAS Observe] Sending the request to \(endpointUrl) with body:")
     // Use `print` so the JSON can be copied without including the log level emojis. Wrapped in
     // `#if DEBUG` so release builds don't pay for a second pretty-printed encode of the payload.
     if let prettyBody = try? body.toJSONString(.prettyPrinted) {
@@ -80,7 +80,7 @@ internal enum DispatchUtils {
     do {
       (responseData, urlResponse) = try await URLSession.shared.data(for: request)
     } catch {
-      observeLogger.warn(
+      logger.warn(
         "[EAS Observe] Transport error talking to \(endpointUrl): \(error.localizedDescription)"
       )
       return .retryableFailure(retryAfter: nil)
@@ -103,27 +103,27 @@ internal enum DispatchUtils {
 
     switch result {
     case .success:
-      observeLogger.debug(
+      logger.debug(
         "[EAS Observe] Server responded successfully with \(urlResponse.statusCode) and data: "
           + "\(String(data: responseData, encoding: .utf8) ?? "<unreadable>")"
       )
     case .partialSuccess(let partial):
-      observeLogger.warn(
+      logger.warn(
         "[EAS Observe] Server responded with \(urlResponse.statusCode) (partial success, "
           + "rejected \(partial.rejectedCount): \(partial.errorMessage ?? "no error message")) "
           + "and data: \(String(data: responseData, encoding: .utf8) ?? "<unreadable>")"
       )
     case .retryableFailure:
-      observeLogger.warn(
+      logger.warn(
         "[EAS Observe] Server responded with \(urlResponse.statusCode) (retryable) and data: "
           + "\(String(data: responseData, encoding: .utf8) ?? "<unreadable>")"
       )
     case .payloadTooLarge:
-      observeLogger.warn(
+      logger.warn(
         "[EAS Observe] Server responded with 413 (payload too large); retrying a smaller batch"
       )
     case .nonRetryableFailure(let reason):
-      observeLogger.warn(
+      logger.warn(
         "[EAS Observe] Server responded with \(urlResponse.statusCode) (non-retryable, "
           + "\(reason)) and data: \(String(data: responseData, encoding: .utf8) ?? "<unreadable>")"
       )

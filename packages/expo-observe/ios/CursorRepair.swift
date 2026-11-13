@@ -21,13 +21,13 @@ internal func repairCursorIfStale(
   do {
     maxId = try readMaxId()
   } catch {
-    observeLogger.warn(
+    logger.warn(
       "[Observe] Failed to read max \(signalName) id while repairing cursor: \(error.localizedDescription)"
     )
     return
   }
   if cursor > (maxId ?? -1) {
-    observeLogger.info(
+    logger.info(
       "[Observe] Resetting stale \(signalName) dispatch cursor (was \(cursor), max id is \(maxId.map(String.init) ?? "<empty>"))"
     )
     writeCursor(-1)

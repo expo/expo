@@ -44,7 +44,7 @@ internal enum SpanDispatchLoop {
         do {
           nextChunk = try fetchChunk(readCursor, chunkSize)
         } catch {
-          observeLogger.warn("[EAS Observe] Failed to read pending spans: \(error.localizedDescription)")
+          logger.warn("[EAS Observe] Failed to read pending spans: \(error.localizedDescription)")
           return
         }
         guard !nextChunk.isEmpty else {
@@ -53,7 +53,7 @@ internal enum SpanDispatchLoop {
         // A row with no id cannot advance the cursor, and re-reading from the same place would
         // loop on it forever.
         guard let lastId = nextChunk.last?.id, lastId > readCursor else {
-          observeLogger.warn("[EAS Observe] Pending spans carry no usable id; stopping")
+          logger.warn("[EAS Observe] Pending spans carry no usable id; stopping")
           return
         }
         readCursor = lastId
@@ -69,7 +69,7 @@ internal enum SpanDispatchLoop {
         // error must not cost them. Kept for the next dispatch, as in `DispatchLoop` and on
         // Android. The insert-time cap bounds how long a persistently failing chunk can pin the
         // queue.
-        observeLogger.warn(
+        logger.warn(
           "[EAS Observe] Failed to assemble trace events: \(error.localizedDescription)"
         )
         return
