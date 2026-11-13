@@ -1,7 +1,7 @@
 {
   "name": "expo-app-metrics",
   "version": "58.0.14",
-  "description": "Expo module that collects app startup, frame rate, memory, and session metrics",
+  "description": "Replaced by expo-observe. Importing this package throws an error with the migration steps.",
   "keywords": [
     "ExpoAppMetrics",
     "expo",
@@ -17,7 +17,6 @@
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-app-metrics"
   },
-  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
@@ -43,15 +42,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "devDependencies": {
-    "@expo/internal-scripts": "workspace:*",
-    "@testing-library/react-native": "^14.0.1",
-    "@types/react": "~19.3.0",
-    "expo": "workspace:*"
-  },
-  "peerDependencies": {
-    "expo": "*",
-    "react": "*",
-    "react-native": "*"
+    "@expo/internal-scripts": "workspace:*"
   },
   "title": "Expo App Metrics"
 }
