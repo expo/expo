@@ -1,5 +1,4 @@
-import AppMetrics from 'expo-app-metrics';
-
+import AppMetrics from '../../app-metrics';
 import type { ObserveIntegrationsConfig } from '../../types';
 import { getNavigationMetricParams, isTotalBlockingTimeEnabled } from '../navigationConfig';
 import { createNavigationBlockingTime } from '../shared/navigation/blockingTime';

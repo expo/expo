@@ -9,7 +9,7 @@ jest.mock('expo', () => ({
   requireNativeModule: () => mockNative,
 }));
 
-jest.mock('expo-app-metrics', () => ({
+jest.mock('../app-metrics', () => ({
   __esModule: true,
   default: { reportFeedback: mockReportFeedback },
 }));
