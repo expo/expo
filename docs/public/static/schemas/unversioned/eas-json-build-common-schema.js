@@ -188,6 +188,27 @@ export default [
     ],
   },
   {
+    name: 'permissions',
+    type: 'object',
+    description: [
+      "The [role](/accounts/account-types/#manage-access) that the build acts with on the account. The role limits what the build's `EXPO_TOKEN` can do. If the role is lower than Release Manager and the build's environment has [protected environment variables](/eas/protected-resources/), the build fails. The person or robot that starts the build must have this role or a higher one in the [role hierarchy](/accounts/account-types/#manage-access), or the build fails. Without this field, the build acts with the role of the person or robot that starts it, up to Release Manager. When a build triggered from GitHub submits the app automatically, the submission also uses this role. In an Expo Workflows `build` job, the job's [`permissions`](/eas/workflows/syntax/#permissions) take precedence. Requires EAS CLI 26.0.0 or later. Older versions report **eas.json** as invalid.",
+    ],
+    properties: [
+      {
+        name: 'account',
+        type: 'object',
+        description: ['Permissions on the account that owns the project.'],
+        properties: [
+          {
+            name: 'role',
+            enum: ['runner', 'developer', 'release_manager'],
+            description: ['The role that the build acts with.'],
+          },
+        ],
+      },
+    ],
+  },
+  {
     name: 'environment',
     enum: ['development', 'preview', 'production'],
     description: [

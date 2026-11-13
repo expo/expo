@@ -618,6 +618,28 @@ jobs:
     # @end #
 ```
 
+### `jobs.<job_id>.permissions`
+
+Sets the [role](/accounts/account-types/#manage-access) that the job acts with. It overrides the workflow's [`permissions`](#permissions). See [`permissions`](#permissions) for the possible values and requirements.
+
+The role controls two things:
+
+- **The job's `EXPO_TOKEN`.** In jobs that run on a VM (see [`jobs.<job_id>.env`](#jobsjob_idenv)), commands and scripts such as `eas update` use this token to call Expo Services, and the role limits what they can do.
+- **Access to environment variables.** If the role is lower than Release Manager and the job's [environment](#jobsjob_idenvironment) has [protected environment variables](/eas/protected-resources/), the job fails when it loads its variables. Jobs that run on a VM always load them.
+
+```yaml
+jobs:
+  publish_update:
+    type: update
+    # @info #
+    permissions:
+      account:
+        role: release_manager
+    # @end #
+    params:
+      channel: production
+```
+
 ### `jobs.<job_id>.hooks`
 
 The following pre-packaged jobs support hooks to run additional steps before or after the main job action: `build`, `deploy`, `fingerprint`, `maestro`, `maestro-cloud`, `repack`, `submit`, `testflight`, and `update`. Hook names are job-specific. See the job's documentation for the available hook keys. To set default hooks for all jobs in the workflow, use [`defaults.hooks`](#defaultshooks). Hook steps can call [custom functions](/eas/workflows/custom-functions/) just as job steps can.
@@ -735,6 +757,28 @@ jobs:
       - name: Check Yarn version
         run: yarn --version # should print a concrete version, like 2.4.3
 ```
+
+## `permissions`
+
+Sets the [role](/accounts/account-types/#manage-access) that jobs in the workflow act with on the account that owns the project. A job can override it with [`jobs.<job_id>.permissions`](#jobsjob_idpermissions).
+
+```yaml
+# @info #
+permissions:
+  account:
+    role: release_manager
+# @end #
+```
+
+`permissions.account.role` can be one of these values:
+
+- `runner`
+- `developer`
+- `release_manager`
+
+The person or robot that starts the run must have the requested role or a higher one in the [role hierarchy](/accounts/account-types/#manage-access). Otherwise, the job fails.
+
+Without `permissions`, jobs act with the role of the person or robot that starts the run, up to Release Manager.
 
 ## `concurrency`
 
