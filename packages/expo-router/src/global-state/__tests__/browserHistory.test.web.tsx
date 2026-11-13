@@ -3,6 +3,7 @@ import type { NavigationState } from '../../react-navigation/routers';
 import { ROOT_CHAIN } from '../../react-navigation/routers/stateKeys';
 import { getMockConfig } from '../../testing-library/mock-config';
 import {
+  applyReplayedRestore,
   applyRouterHistoryAction,
   createBrowserHistory,
   restoreNavigationFromBrowser,
@@ -66,9 +67,17 @@ function history(states: NavigationState[], index = states.length - 1): BrowserH
   };
 }
 
-const reset = (state: NavigationState): ReducibleIntent => ({
+// A restore of a tracked entry carries the entry ID so `usePreventRemove` can replay it.
+const reset = (state: NavigationState, restoredEntryId?: string): ReducibleIntent => ({
   type: 'ACTION',
-  payload: { action: { type: 'RESET', payload: state, target: state.key } },
+  payload: {
+    action: {
+      type: 'RESET',
+      payload: state,
+      target: state.key,
+      ...(restoredEntryId !== undefined && { browserHistoryEntryId: restoredEntryId }),
+    },
+  },
 });
 
 // Applies resets like the real reducer does: the payload becomes the state.
@@ -215,7 +224,7 @@ describe('restore', () => {
       reduceResets
     );
 
-    expect(reduceResets).toHaveBeenCalledWith({ state: second }, reset(first));
+    expect(reduceResets).toHaveBeenCalledWith({ state: second }, reset(first, 'p:0'));
     expect(restored.result.state).toBe(first);
     expect(restored.history).toEqual({
       ...current,
@@ -279,6 +288,55 @@ describe('restore', () => {
     );
 
     expect(restored).toEqual({ result, history: current, events: [] });
+  });
+
+  test('replays a prevented restore by moving the browser to the restored entry', () => {
+    const first = stack(['a']);
+    const second = stack(['a', 'b']);
+    const current = history([first, second]);
+    const result = { state: second };
+    const reduce = jest.fn(
+      (_result: { state: NavigationState }, _intent: ReducibleIntent) => result
+    );
+    restoreNavigationFromBrowser(current, result, { id: 'p:0', path: '/a' }, config, reduce);
+    const intent = reduce.mock.calls[0]![1] as Extract<ReducibleIntent, { type: 'ACTION' }>;
+
+    // `repeat()` dispatches the prevented action; the root router reports no traversal for it.
+    const replayed = applyReplayedRestore(current, first, config, intent.payload.action);
+
+    expect(replayed?.history?.index).toBe(0);
+    expect(replayed?.history?.entries[0]).toEqual({ id: 'p:0', path: '/a', state: first });
+    expect(replayed?.events).toEqual([
+      { type: 'browser-history', op: 'go', delta: -1 },
+      { type: 'browser-history', op: 'replace', entryId: 'p:0', path: '/a' },
+    ]);
+  });
+
+  test('leaves a replayed restore to the router when its entry is no longer tracked', () => {
+    const first = stack(['a']);
+    const second = stack(['a', 'b']);
+    const current = history([first, second]);
+    const action = {
+      type: 'RESET',
+      payload: first,
+      target: 'root',
+      browserHistoryEntryId: 'p:7',
+    };
+
+    expect(applyReplayedRestore(current, first, config, action)).toBeUndefined();
+  });
+
+  test('leaves a reset that is not a browser restore to the router', () => {
+    const first = stack(['a']);
+    const current = history([first, stack(['a', 'b'])]);
+
+    expect(
+      applyReplayedRestore(current, first, config, {
+        type: 'RESET',
+        payload: first,
+        target: 'root',
+      })
+    ).toBeUndefined();
   });
 
   test('keeps the tracked entries when a tracked entry has another browser path', () => {
