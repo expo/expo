@@ -17,16 +17,14 @@ import org.robolectric.annotation.Config
 
 /**
  * Exercises the lifecycle logic folded out of the old `SessionCoordinator` and
- * into [SessionSharedObject]: the ENG-21739 ordering guarantee (the session row
+ * into [SessionHandle]: the ENG-21739 ordering guarantee (the session row
  * is INSERTed before any metric/log write touches it), and `stop()`.
  *
- * Uses the same Robolectric + in-memory Room harness as [SessionManagerTest],
- * constructing the object with no runtime (the default) so it stays unlinked
- * from any JS runtime.
+ * Uses the same Robolectric + in-memory Room harness as [SessionManagerTest].
  */
 @RunWith(RobolectricTestRunner::class)
 @Config(manifest = Config.NONE, sdk = [28])
-class SessionSharedObjectTest {
+class SessionHandleTest {
   private lateinit var database: MetricsDatabase
   private lateinit var sessionManager: SessionManager
 
@@ -49,7 +47,7 @@ class SessionSharedObjectTest {
   fun `addMetrics persists the session row before writing the metric`() =
     runTest {
       // Arrange — a fresh session that has NOT been awaited yet.
-      val session = SessionSharedObject(
+      val session = SessionHandle(
         sessionManager = sessionManager,
         scope = this,
         type = "main",
@@ -72,7 +70,7 @@ class SessionSharedObjectTest {
   @Test
   fun `addLogs persists the session row before writing the log`() =
     runTest {
-      val session = SessionSharedObject(
+      val session = SessionHandle(
         sessionManager = sessionManager,
         scope = this,
         type = "main",
@@ -93,7 +91,7 @@ class SessionSharedObjectTest {
   fun `startTimestamp defaults to construction time when omitted`() =
     runTest {
       // No startTimestamp passed — the object stamps it from the constructor.
-      val session = SessionSharedObject(
+      val session = SessionHandle(
         sessionManager = sessionManager,
         scope = this,
         type = "custom"
@@ -117,7 +115,7 @@ class SessionSharedObjectTest {
       // session inserts use OnConflictStrategy.IGNORE, so a duplicate run would
       // be silently swallowed and leave exactly one row regardless.
       val spy = spyk(sessionManager)
-      val session = SessionSharedObject(
+      val session = SessionHandle(
         sessionManager = spy,
         scope = this,
         type = "main",
@@ -139,7 +137,7 @@ class SessionSharedObjectTest {
   @Test
   fun `stop awaits the start job then stamps the end timestamp`() =
     runTest {
-      val session = SessionSharedObject(
+      val session = SessionHandle(
         sessionManager = sessionManager,
         scope = this,
         type = "main",
@@ -157,7 +155,7 @@ class SessionSharedObjectTest {
   @Test
   fun `isActive and getEndDate reflect the persisted row across stop`() =
     runTest {
-      val session = SessionSharedObject(
+      val session = SessionHandle(
         sessionManager = sessionManager,
         scope = this,
         type = "main",
@@ -179,7 +177,7 @@ class SessionSharedObjectTest {
     runTest {
       // Never awaited, so the start job hasn't inserted the row yet — the read
       // is optimistic rather than blocking.
-      val session = SessionSharedObject(
+      val session = SessionHandle(
         sessionManager = sessionManager,
         scope = this,
         type = "main",
@@ -196,7 +194,7 @@ class SessionSharedObjectTest {
     runTest {
       // Never awaited — no row, no entries. The optimistic read returns empty
       // collections rather than blocking on the start job.
-      val session = SessionSharedObject(
+      val session = SessionHandle(
         sessionManager = sessionManager,
         scope = this,
         type = "main",
@@ -210,7 +208,7 @@ class SessionSharedObjectTest {
   @Test
   fun `a freshly persisted session reads as active with no metrics or logs`() =
     runTest {
-      val session = SessionSharedObject(
+      val session = SessionHandle(
         sessionManager = sessionManager,
         scope = this,
         type = "main",
@@ -228,7 +226,7 @@ class SessionSharedObjectTest {
   @Test
   fun `getMetrics and getLogs return this session's persisted entries`() =
     runTest {
-      val session = SessionSharedObject(
+      val session = SessionHandle(
         sessionManager = sessionManager,
         scope = this,
         type = "main",
@@ -248,7 +246,7 @@ class SessionSharedObjectTest {
       // Reads are intentionally NOT gated on awaitSessionPersisted(): they read
       // through optimistically and must never kick off the lazy start job.
       val spy = spyk(sessionManager)
-      val session = SessionSharedObject(
+      val session = SessionHandle(
         sessionManager = spy,
         scope = this,
         type = "main",
