@@ -36,6 +36,7 @@ class GlideUrlWrapperLoader(
           }
         )
         .build()
+        .withSharedCookies()
     )
 
     return loader.buildLoadData(model.glideUrl, width, height, options)
