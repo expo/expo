@@ -50,7 +50,7 @@ export function AppLayout() {
 }
 ```
 
-In this example, the `/private` route is inaccessible because the `guard` is false. When a user attempts to access `/private`, they are redirected to the anchor route, which is the **index** screen.
+In this example, the `/private` route is inaccessible because the `guard` is false. When a user opens the app at `/private`, they are redirected to the anchor route, which is the **index** screen. When a user navigates to `/private` while its stack is mounted, the navigation does nothing.
 
 Additionally, if the user is on `/private/page` and the `guard` condition changes to **false**, they will be redirected automatically.
 
@@ -170,6 +170,8 @@ export function AppLayout() {
   );
 }
 ```
+
+When a user navigates to a protected route with `redirectTo`, the router opens the `redirectTo` route instead. A push stays a push and a replace stays a replace. If the `redirectTo` routes form a loop or a chain longer than 20 routes, the router throws an error.
 
 When protected screens are nested, the outermost guard that fails decides the redirect. If that guard has no `redirectTo`, the router uses the [default redirect](#use-the-default-redirect), even if an inner guard has a `redirectTo`.
 

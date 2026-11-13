@@ -5,7 +5,8 @@ import { createContext, use, useMemo, type ReactNode } from 'react';
 import type { RouteNode } from '../Route';
 import { LocalRouteParamsContext, sortRoutesWithInitial } from '../Route';
 import { getContextKey } from '../matchers';
-import { type NavigationProp, type ParamListBase, StackActions } from '../react-navigation/native';
+import type { NavigationProp, ParamListBase } from '../react-navigation/native';
+import { StackActions } from '../react-navigation/routers';
 import { getValidInitialRoute } from '../routeNode';
 import type { Href } from '../types';
 
@@ -30,6 +31,8 @@ export type ResolvedGuard =
 export type ResolvedGuards = Map<string, ResolvedGuard>;
 
 export const GuardContext = createContext<ResolvedGuards | null>(null);
+// The navigator route whose guards `GuardContext` holds.
+export const GuardOwnerContext = createContext<RouteNode | null>(null);
 const GuardFallbackContext = createContext<GuardFallback[]>([]);
 
 export function GuardContextProvider({
@@ -51,7 +54,9 @@ export function GuardContextProvider({
 
   return (
     <GuardFallbackContext value={fallbacks}>
-      <GuardContext value={resolvedGuards}>{children}</GuardContext>
+      <GuardOwnerContext value={node}>
+        <GuardContext value={resolvedGuards}>{children}</GuardContext>
+      </GuardOwnerContext>
     </GuardFallbackContext>
   );
 }
@@ -107,6 +112,13 @@ export function useResolvedGuard({
     return undefined;
   }
 
+  return getResolvedGuard(guards, routeName);
+}
+
+export function getResolvedGuard(
+  guards: ResolvedGuards,
+  routeName: string
+): ResolvedGuard | undefined {
   if (guards.has(routeName)) {
     return guards.get(routeName);
   }
