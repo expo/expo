@@ -3,6 +3,8 @@ package expo.modules.asset
 import android.net.Uri
 import android.util.Log
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.services.FilePermissionService
+import expo.modules.v2.legacyAppContext
 import io.github.expo.modules.v2.ExpoModule
 import io.github.expo.modules.v2.JS
 import io.github.expo.modules.v2.Module
@@ -30,9 +32,8 @@ class AssetModule : Module() {
       }
 
       val cacheFileId = md5Hash ?: getMD5HashOfFilePath(uri)
-      val cacheDirectory = androidContext.cacheDir
 
-      val localUrl = File("$cacheDirectory/ExponentAsset-$cacheFileId.$type")
+      val localUrl = File("${legacyAppContext.cacheDirectory}/ExponentAsset-$cacheFileId.$type")
 
       if (!localUrl.exists()) {
         return@withContext downloadAsset(uri, localUrl)
@@ -51,6 +52,14 @@ class AssetModule : Module() {
   }
 
   private suspend fun downloadAsset(uri: URI, localUrl: File): String {
+    // Checked before any write. In Expo Go, it keeps a crafted `type` or `md5Hash` inside the
+    // directories of the experience.
+    if (!legacyAppContext.filePermission.getPathPermissions(androidContext, requireNotNull(localUrl.parent))
+        .contains(FilePermissionService.Permission.WRITE)
+    ) {
+      throw UnableToDownloadAssetException(uri.toString())
+    }
+
     if (localUrl.parentFile?.exists() != true) {
       localUrl.mkdirs()
     }
