@@ -5,6 +5,7 @@ import Debug from 'debug';
 import { boolish } from 'getenv';
 
 import { installEventLogger } from '../src/events';
+import { markAsParentCommand } from '../src/utils/parentCommand';
 
 // Setup event logger output
 // NOTE: Done before any console output
@@ -221,6 +222,9 @@ if (args['--help']) {
 // Install exit hooks
 process.on('SIGINT', () => process.exit(0));
 process.on('SIGTERM', () => process.exit(0));
+
+// Child CLI invocations inherit this command, including those launched through build tools.
+markAsParentCommand(`expo ${command}`);
 
 commands[command]!().then((exec) => {
   exec(commandArgs);
