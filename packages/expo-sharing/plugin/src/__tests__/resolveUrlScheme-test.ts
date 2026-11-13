@@ -22,4 +22,11 @@ describe(resolveUrlScheme, () => {
     expect(resolveUrlScheme(['first', 'second'])).toBe('first');
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('"first"'));
   });
+
+  it('warns only once for the same schemes', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    resolveUrlScheme(['repeated', 'again']);
+    resolveUrlScheme(['repeated', 'again']);
+    expect(warn).toHaveBeenCalledTimes(1);
+  });
 });
