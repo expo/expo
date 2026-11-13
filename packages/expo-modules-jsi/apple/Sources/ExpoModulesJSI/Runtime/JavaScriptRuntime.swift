@@ -534,8 +534,8 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   /// rather than an owning ``JavaScriptValue``. The borrowed value carries the raw `facebook.jsi.IRuntime`
   /// and points straight at the `this` slot the C++ caller owns, so the trampoline neither allocates an
   /// owning value nor forms the `weak` runtime reference that profiling showed on every host call. Use it
-  /// when the callee usually ignores `this` (e.g. module-level `@JS` functions); the closure can still
-  /// promote it with ``JavaScriptUnownedValue/copied(in:)`` on the paths that need an owning value.
+  /// when the callee usually ignores `this`; the closure can still promote it with
+  /// ``JavaScriptUnownedValue/copied(in:)`` on the paths that need an owning value.
   public typealias UnownedThisSyncFunctionClosure =
     @JavaScriptActor (
       _ this: borrowing JavaScriptUnownedValue,
@@ -547,9 +547,9 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
   ///
   /// `@_disfavoredOverload` so a closure that leaves `this` untyped (the common `_,` or `this,` form)
   /// still resolves to the owning-``JavaScriptValue`` overload; only a closure that *explicitly* types
-  /// its first parameter as `borrowing JavaScriptUnownedValue` (as the `@JS` macro emits) selects this
-  /// one, since an exact type match outranks the disfavored status. Without it, an untyped closure
-  /// matches both overloads and the call is ambiguous.
+  /// its first parameter as `borrowing JavaScriptUnownedValue` selects this one, since an exact type
+  /// match outranks the disfavored status. Without it, an untyped closure matches both overloads and
+  /// the call is ambiguous.
   /// - Returns: A JavaScript function represented as a `JavaScriptFunction`.
   @_disfavoredOverload
   @JavaScriptActor

@@ -113,8 +113,49 @@ private final class MacroUnconstructableCounter: SharedObject {
   }
 }
 
+/// Binds members under symbols with `@JS(symbol:)`.
+@SharedObject
+private final class MacroSymbolList: SharedObject {
+  private let items: [Int]
+
+  @JS
+  init(items: [Int]) {
+    self.items = items
+  }
+
+  // Makes an instance iterable with `for...of` and spread.
+  @JS(symbol: .iterator)
+  func makeIterator(in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    let array = try [Int].encode(items, in: runtime)
+    return try array.getObject().callFunction("values")
+  }
+
+  @JS(symbol: .toStringTag)
+  var tag: String {
+    return "SymbolList(\(items.count))"
+  }
+
+  @JS(symbol: "macro.count")
+  var count: Int {
+    return items.count
+  }
+
+  // Shares its text with the symbol above, but a name never collides with a symbol.
+  @JS
+  func iterator() -> String {
+    return "named"
+  }
+
+  // `Function.prototype[Symbol.hasInstance]` is read-only, so this binding replaces an inherited
+  // read-only property.
+  @JS(symbol: .hasInstance)
+  static func hasInstance(_ value: borrowing JavaScriptValue) -> Bool {
+    return value.isNumber()
+  }
+}
+
 @ExpoModule(
-  classes: [MacroCounter.self, MacroNamedCounter.self, MacroUnconstructableCounter.self])
+  classes: [MacroCounter.self, MacroNamedCounter.self, MacroUnconstructableCounter.self, MacroSymbolList.self])
 private final class MacroSharedObjectModule: Module {}
 
 @Suite("Macro shared object")
@@ -171,6 +212,51 @@ private struct MacroSharedObjectTests {
       Object.prototype.toString.call(new JSCounter(1))
       """)
     #expect(try tag.asString() == "[object JSCounter]")
+  }
+
+  // MARK: - Symbols
+
+  @Test
+  func `binds a @JS(symbol:) method under a well-known symbol`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let value = try runtime.eval(
+      """
+      (() => {
+        const list = new expo.modules.MacroSharedObjectModule.MacroSymbolList([1, 2, 3])
+        return [[...list].join(','), list[Symbol.iterator].name, list.iterator()]
+      })()
+      """)
+    let result = try value.asArray()
+    #expect(try result[0].asString() == "1,2,3")
+    #expect(try result[1].asString() == "[Symbol.iterator]")
+    #expect(try result[2].asString() == "named")
+  }
+
+  @Test
+  func `binds a @JS(symbol:) property under well-known and registered symbols`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let value = try runtime.eval(
+      """
+      (() => {
+        const list = new expo.modules.MacroSharedObjectModule.MacroSymbolList([1, 2])
+        return [Object.prototype.toString.call(list), list[Symbol.for('macro.count')]]
+      })()
+      """)
+    let result = try value.asArray()
+    #expect(try result[0].asString() == "[object SymbolList(2)]")
+    #expect(try result[1].asInt() == 2)
+  }
+
+  @Test
+  func `binds a static @JS(symbol:) method over a read-only inherited one`() throws {
+    register(MacroSharedObjectModule(appContext: appContext))
+    let value = try runtime.eval(
+      """
+      [1 instanceof expo.modules.MacroSharedObjectModule.MacroSymbolList, 'a' instanceof expo.modules.MacroSharedObjectModule.MacroSymbolList]
+      """)
+    let result = try value.asArray()
+    #expect(try result[0].asBool() == true)
+    #expect(try result[1].asBool() == false)
   }
 
   // MARK: - Construction
