@@ -35,4 +35,34 @@ describe(parsePropertiesFile, () => {
       { type: 'property', key: 'd', value: '4' },
     ]);
   });
+
+  it('joins a key that continues on the next line', () => {
+    const props = parsePropertiesFile(['my\\=key\\', '    value', 'next=1'].join('\n'));
+
+    expect(props).toEqual([
+      { type: 'property', key: 'my\\=keyvalue', value: '' },
+      { type: 'property', key: 'next', value: '1' },
+    ]);
+    expect(parsePropertiesFile(propertiesListToString(props))).toEqual(props);
+  });
+
+  it('drops a continuation backslash at the end of the file', () => {
+    expect(parsePropertiesFile('key\\=value\\')).toEqual([
+      { type: 'property', key: 'key\\=value', value: '' },
+    ]);
+    expect(parsePropertiesFile('foo\\')).toEqual([{ type: 'property', key: 'foo', value: '' }]);
+  });
+
+  it('splits only at space, tab, or form feed', () => {
+    expect(parsePropertiesFile(['key =value', 'key\u000bvalue'].join('\n'))).toEqual([
+      { type: 'property', key: 'key ', value: 'value' },
+      { type: 'property', key: 'key\u000bvalue', value: '' },
+    ]);
+  });
+
+  it('reads a line that starts with `!` as a comment', () => {
+    expect(parsePropertiesFile('! this is a comment')).toEqual([
+      { type: 'comment', value: 'this is a comment' },
+    ]);
+  });
 });
