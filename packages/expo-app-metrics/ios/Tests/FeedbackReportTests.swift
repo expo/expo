@@ -10,12 +10,16 @@ struct FeedbackReportTests {
     id: String = "checkout",
     message: String? = nil,
     rating: Int? = nil,
+    scaleMin: Int? = nil,
+    scaleMax: Int? = nil,
     attributes: [String: Any]? = nil
   ) -> FeedbackReport {
     var report = FeedbackReport()
     report.id = id
     report.message = message
     report.rating = rating
+    report.scaleMin = scaleMin
+    report.scaleMax = scaleMax
     report.attributes = attributes
     return report
   }
@@ -34,24 +38,45 @@ struct FeedbackReportTests {
   }
 
   @Test
+  func `records the rating scale`() throws {
+    let record = report(rating: 4, scaleMin: 1, scaleMax: 5).toLogRecord()
+
+    let attributes = try #require(record.attributes?.value as? [String: Any])
+    #expect(attributes["expo.feedback.rating"] as? Int == 4)
+    #expect(attributes["expo.feedback.scale.min"] as? Int == 1)
+    #expect(attributes["expo.feedback.scale.max"] as? Int == 5)
+  }
+
+  @Test
   func `user attributes cannot overwrite the feedback attributes`() throws {
     let record = report(
       rating: 3,
-      attributes: ["expo.feedback.id": "spoofed", "expo.feedback.rating": 10]
+      scaleMin: 0,
+      scaleMax: 10,
+      attributes: [
+        "expo.feedback.id": "spoofed",
+        "expo.feedback.rating": 10,
+        "expo.feedback.scale.min": 5,
+        "expo.feedback.scale.max": 5,
+      ]
     ).toLogRecord()
 
     let attributes = try #require(record.attributes?.value as? [String: Any])
     #expect(attributes["expo.feedback.id"] as? String == "checkout")
     #expect(attributes["expo.feedback.rating"] as? Int == 3)
-    #expect(record.droppedAttributesCount == 2)
+    #expect(attributes["expo.feedback.scale.min"] as? Int == 0)
+    #expect(attributes["expo.feedback.scale.max"] as? Int == 10)
+    #expect(record.droppedAttributesCount == 4)
   }
 
   @Test
-  func `omits the rating attribute when no rating is set`() throws {
+  func `omits the rating and scale attributes when no rating is set`() throws {
     let record = report(message: "Great").toLogRecord()
 
     let attributes = try #require(record.attributes?.value as? [String: Any])
     #expect(attributes.keys.contains("expo.feedback.rating") == false)
+    #expect(attributes.keys.contains("expo.feedback.scale.min") == false)
+    #expect(attributes.keys.contains("expo.feedback.scale.max") == false)
   }
 
   @Test

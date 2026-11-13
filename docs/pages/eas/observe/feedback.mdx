@@ -27,18 +27,24 @@ Observe.reportFeedback({
 });
 ```
 
-| Field        | Description                                                                                                                    |
-| ------------ | ------------------------------------------------------------------------------------------------------------------------------ |
-| `id`         | Where your app collects the feedback, for example, `checkout`. Many reports can use the same `id`. Sent as `expo.feedback.id`. |
-| `message`    | Text that the user wrote. Sent as the event body. Text longer than 4096 characters is cut.                                     |
-| `rating`     | A whole number from 0 to 10. Sent as `expo.feedback.rating`.                                                                   |
-| `attributes` | Extra context. The same rules as [`logEvent` attributes](/eas/observe/events/#attach-attributes) apply.                        |
+| Field        | Description                                                                                                                                                                                      |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `id`         | Where your app collects the feedback, for example, `checkout`. Many reports can use the same `id`. Sent as `expo.feedback.id`.                                                                   |
+| `message`    | Text that the user wrote. Sent as the event body. Text longer than 4096 characters is cut.                                                                                                       |
+| `rating`     | A whole number from `scale.min` to `scale.max`. Sent as `expo.feedback.rating`.                                                                                                                  |
+| `scale`      | The lowest and the highest rating that your UI allows, for example, `{ min: 1, max: 5 }`. The default is `{ min: 0, max: 10 }`. Sent as `expo.feedback.scale.min` and `expo.feedback.scale.max`. |
+| `attributes` | Extra context. The same rules as [`logEvent` attributes](/eas/observe/events/#attach-attributes) apply.                                                                                          |
+
+The dashboard uses the scale to compare ratings from different scales. Set `scale` to match your UI, and send the value that the user selected as the `rating`.
 
 `reportFeedback` drops the report and prints a warning in development when:
 
 - The `id` is empty.
 - The report has no `message` and no `rating`. An empty `message` counts as no message.
-- The `rating` is not a whole number from 0 to 10.
+- The `rating` is not a whole number.
+- The `scale.min` or `scale.max` is not a whole number, or `scale.min` is not less than `scale.max`.
+- The `rating` is less than `scale.min` or more than `scale.max`.
+- The report has a `scale` and no `rating`.
 - An argument has the wrong type.
 
 `reportFeedback` returns nothing. To tell the user that a report is not valid, check the input before you call it, as the [Expo Router example](#feedback-screen-with-expo-router) below does.
@@ -55,7 +61,7 @@ Other options apply to feedback the same way as to other events:
 
 ## Feedback UI examples
 
-Each example sends a `rating` from 0 to 10. If your UI uses a smaller scale, convert it to 0 to 10 before you send it.
+Each example sets the `scale` that its UI shows. The form uses the default scale from 0 to 10.
 
 <Collapsible summary="Feedback screen with Expo Router">
 
@@ -268,7 +274,7 @@ Register a `Feedback` screen with `presentation: 'formSheet'` in your stack. In 
 
 <Collapsible summary="Thumbs up or down">
 
-This example asks one yes-or-no question. Thumbs down sends a rating of 0. Thumbs up sends a rating of 10.
+This example asks one yes-or-no question. The scale is from 0 to 1. Thumbs down sends a rating of 0. Thumbs up sends a rating of 1.
 
 <FileTree files={[['src/components/ThumbsFeedback.tsx', 'Thumbs up and down buttons']]} />
 
@@ -278,13 +284,13 @@ import { Button, View } from 'react-native';
 
 export function ThumbsFeedback() {
   function send(rating: number) {
-    Observe.reportFeedback({ id: 'article-helpful', rating });
+    Observe.reportFeedback({ id: 'article-helpful', rating, scale: { min: 0, max: 1 } });
   }
 
   return (
     <View style={{ flexDirection: 'row', gap: 12 }}>
       <Button title="Thumbs down" onPress={() => send(0)} />
-      <Button title="Thumbs up" onPress={() => send(10)} />
+      <Button title="Thumbs up" onPress={() => send(1)} />
     </View>
   );
 }
@@ -294,7 +300,7 @@ export function ThumbsFeedback() {
 
 <Collapsible summary="Five-star rating">
 
-This example shows five stars. The rating is the number of stars multiplied by 2, so five stars sends a rating of 10.
+This example shows five stars. The scale is from 1 to 5, and the rating is the number of stars.
 
 <FileTree files={[['src/components/StarFeedback.tsx', 'Five-star rating buttons']]} />
 
@@ -306,7 +312,7 @@ const STARS = [1, 2, 3, 4, 5];
 
 export function StarFeedback() {
   function send(stars: number) {
-    Observe.reportFeedback({ id: 'order-rating', rating: stars * 2 });
+    Observe.reportFeedback({ id: 'order-rating', rating: stars, scale: { min: 1, max: 5 } });
   }
 
   return (
@@ -327,13 +333,13 @@ export function StarFeedback() {
 
 The [**Observe > Feedback**](https://expo.dev/accounts/[account]/projects/[project]/observe/feedback) page of the dashboard lists your feedback by `id`. For each `id`, the page shows how your users rate it.
 
-Select an `id` to see its totals, the spread of ratings from 0 to 10, and its reports. Select a report to see the full message, the rating, and the device and app details. You can also open a report as its own page.
+Select an `id` to see its totals, the spread of its ratings, and its reports. Select a report to see the full message, the rating, and the device and app details. You can also open a report as its own page.
 
 From the CLI:
 
 <Terminal cmd={['$ eas observe:events expo.feedback']} />
 
-Each event shows the message as its body, and `expo.feedback.id`, `expo.feedback.rating`, and your attributes. See [Querying with EAS CLI](/eas/observe/eas-cli/) for more `eas observe` commands.
+Each event shows the message as its body, and `expo.feedback.id`, `expo.feedback.rating`, `expo.feedback.scale.min`, `expo.feedback.scale.max`, and your attributes. See [Querying with EAS CLI](/eas/observe/eas-cli/) for more `eas observe` commands.
 
 ## Privacy
 

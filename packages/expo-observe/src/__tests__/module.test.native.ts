@@ -669,27 +669,62 @@ describe('module Proxy', () => {
     expect(warnSpy).toHaveBeenCalled();
   });
 
-  it('forwards valid feedback to AppMetrics', () => {
+  it('forwards valid feedback to AppMetrics with the default scale', () => {
     const Observe = loadModule();
     const feedback = { id: 'checkout', message: 'Great', rating: 10, attributes: { plan: 'pro' } };
     Observe.reportFeedback(feedback);
-    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith(feedback);
+    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith({
+      ...feedback,
+      scaleMin: 0,
+      scaleMax: 10,
+    });
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('forwards feedback with only a message', () => {
+    const Observe = loadModule();
+    Observe.reportFeedback({ id: 'checkout', message: 'Great' });
+    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith({
+      id: 'checkout',
+      message: 'Great',
+    });
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
   it.each([
-    { id: 'checkout', message: 'Great' },
-    { id: 'checkout', rating: 0 },
-  ])('accepts feedback with only a message or only a rating: %o', (feedback) => {
+    [
+      { id: 'checkout', rating: 0 },
+      { id: 'checkout', rating: 0, scaleMin: 0, scaleMax: 10 },
+    ],
+    [
+      { id: 'checkout', rating: 1, scale: { min: 1, max: 5 } },
+      { id: 'checkout', rating: 1, scaleMin: 1, scaleMax: 5 },
+    ],
+    [
+      { id: 'checkout', rating: 5, scale: { min: 1, max: 5 } },
+      { id: 'checkout', rating: 5, scaleMin: 1, scaleMax: 5 },
+    ],
+    [
+      { id: 'checkout', rating: -3, scale: { min: -5, max: 5 } },
+      { id: 'checkout', rating: -3, scaleMin: -5, scaleMax: 5 },
+    ],
+    [
+      { id: 'checkout', rating: 750, scale: { min: 0, max: 1000 } },
+      { id: 'checkout', rating: 750, scaleMin: 0, scaleMax: 1000 },
+    ],
+  ])('forwards a rating with its scale: %o', (feedback, expected) => {
     const Observe = loadModule();
     Observe.reportFeedback(feedback);
-    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith(feedback);
+    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith(expected);
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
   const idReason = '`id` must be a non-empty string';
   const messageReason = '`message` must be a string';
-  const ratingReason = '`rating` must be a whole number from 0 to 10';
+  const ratingReason = '`rating` must be a whole number';
+  const scaleReason = '`scale.min` and `scale.max` must be whole numbers';
+  const scaleOrderReason = '`scale.min` must be less than `scale.max`';
+  const scaleWithoutRatingReason = 'set `rating` when you set `scale`';
   const emptyReason = 'set `message` or `rating`';
 
   it.each([
@@ -697,12 +732,22 @@ describe('module Proxy', () => {
     [{ id: 42, message: 'Great' }, idReason],
     [{ id: 'checkout', message: 42 }, messageReason],
     [{ id: 'checkout', rating: 4.5 }, ratingReason],
-    [{ id: 'checkout', rating: -1 }, ratingReason],
-    [{ id: 'checkout', rating: 11 }, ratingReason],
     [{ id: 'checkout', rating: NaN }, ratingReason],
     [{ id: 'checkout', rating: Infinity }, ratingReason],
     [{ id: 'checkout', rating: '5' }, ratingReason],
+    [{ id: 'checkout', rating: 2 ** 53 }, ratingReason],
     [{ id: 'checkout', message: 'Great', rating: 4.5 }, ratingReason],
+    [{ id: 'checkout', rating: -1 }, '`rating` must be from 0 to 10'],
+    [{ id: 'checkout', rating: 11 }, '`rating` must be from 0 to 10'],
+    [{ id: 'checkout', rating: 0, scale: { min: 1, max: 5 } }, '`rating` must be from 1 to 5'],
+    [{ id: 'checkout', rating: 6, scale: { min: 1, max: 5 } }, '`rating` must be from 1 to 5'],
+    [{ id: 'checkout', rating: 1, scale: { min: 0, max: 1.5 } }, scaleReason],
+    [{ id: 'checkout', rating: 1, scale: { min: '0', max: 1 } }, scaleReason],
+    [{ id: 'checkout', rating: 1, scale: { min: 0 } }, scaleReason],
+    [{ id: 'checkout', rating: 1, scale: 'stars' }, scaleReason],
+    [{ id: 'checkout', rating: 1, scale: { min: 1, max: 1 } }, scaleOrderReason],
+    [{ id: 'checkout', rating: 1, scale: { min: 5, max: 1 } }, scaleOrderReason],
+    [{ id: 'checkout', message: 'Great', scale: { min: 1, max: 5 } }, scaleWithoutRatingReason],
     [{ id: '', message: 'Great' }, idReason],
     [{ id: '  ', message: 'Great' }, idReason],
     [{ id: 'checkout', message: '' }, emptyReason],
@@ -734,7 +779,12 @@ describe('module Proxy', () => {
   it('omits an empty message when a rating is set', () => {
     const Observe = loadModule();
     Observe.reportFeedback({ id: 'checkout', message: '  ', rating: 5 });
-    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith({ id: 'checkout', rating: 5 });
+    expect(mockAppMetrics.reportFeedback).toHaveBeenCalledWith({
+      id: 'checkout',
+      rating: 5,
+      scaleMin: 0,
+      scaleMax: 10,
+    });
     expect(mockAppMetrics.reportFeedback.mock.calls[0][0]).not.toHaveProperty('message');
     expect(warnSpy).not.toHaveBeenCalled();
   });

@@ -60,9 +60,17 @@ export type ObserveFeedback = {
    */
   message?: string;
   /**
-   * A whole number from 0 to 10. Sent as the `expo.feedback.rating` attribute.
+   * A whole number from `scale.min` to `scale.max`. Sent as the `expo.feedback.rating` attribute.
    */
   rating?: number;
+  /**
+   * The lowest and the highest `rating` your UI allows, as whole numbers. `min` must be less than
+   * `max`. Set it only with a `rating`. Sent as the `expo.feedback.scale.min` and
+   * `expo.feedback.scale.max` attributes. The dashboard uses the scale to compare ratings.
+   *
+   * @default { min: 0, max: 10 }
+   */
+  scale?: { min: number; max: number };
   /**
    * Attributes attached to the event. They follow the same rules as `logEvent` attributes.
    */
@@ -436,7 +444,8 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    *
    * `reportFeedback` drops the report and prints a warning in development when `id` is empty, when
    * the report has neither `message` nor `rating` (an empty `message` counts as none), when
-   * `rating` is not a whole number from 0 to 10, or when an argument has the wrong type.
+   * `rating` is not a whole number within `scale`, when `scale` is not valid or has no `rating`,
+   * or when an argument has the wrong type.
    *
    * @param feedback The feedback to report.
    *
