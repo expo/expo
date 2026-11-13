@@ -14,8 +14,8 @@ import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
 import {
+  dispatchReplaceWithGuardFallback,
   isRouteGuarded,
-  replaceWithGuardFallback,
   useResolvedGuard,
   type GuardedRedirects,
   type GuardFallback,
@@ -500,7 +500,7 @@ function GuardFallbackReplace({
   const isPreview = useIsPreview();
   useEffect(() => {
     if (isFocused && !isPreview) {
-      replaceWithGuardFallback(navigation, fallback);
+      dispatchReplaceWithGuardFallback(navigation, fallback);
     }
   }, [fallback, isFocused, isPreview, navigation]);
   return null;

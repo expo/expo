@@ -4,7 +4,7 @@ import { useRouteNode } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
 import { useEnqueueRoutingIntent } from '../global-state/routingQueueContext';
 import { useRouterActions } from '../global-state/useRouterActions';
-import { replaceWithGuardFallback, useResolvedGuard } from '../layouts/GuardContext';
+import { dispatchReplaceWithGuardFallback, useResolvedGuard } from '../layouts/GuardContext';
 import { useIsPreview } from '../link/preview/PreviewRouteContext';
 import { NavigatorStateContext } from '../react-navigation/core/useNavigationState';
 import {
@@ -111,6 +111,7 @@ export function useVisibleTabsWithRedirect<
       if (guard?.redirectTo !== undefined) {
         router.replace(guard.redirectTo);
       } else if (redirectRoute) {
+        // TODO(@ubax): Investigate if this should use `dispatchSync` instead of `enqueue` (ENG-29147).
         enqueue({
           type: 'ACTION',
           payload: {
@@ -123,7 +124,7 @@ export function useVisibleTabsWithRedirect<
         });
       } else if (guard?.fallback && parentNavigation) {
         // No tab is visible, so an ancestor navigator owns the fallback.
-        replaceWithGuardFallback(parentNavigation, guard.fallback);
+        dispatchReplaceWithGuardFallback(parentNavigation, guard.fallback);
       }
     }
   }, [
