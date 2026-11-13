@@ -26,4 +26,13 @@ describe(parsePropertiesFile, () => {
       { type: 'property', key: 'android.enableJetifier', value: '' },
     ]);
   });
+
+  it('splits the key from the value at `:` or whitespace', () => {
+    expect(parsePropertiesFile(['a:1', 'b 2', 'c = 3', 'd : 4'].join('\n'))).toEqual([
+      { type: 'property', key: 'a', value: '1' },
+      { type: 'property', key: 'b', value: '2' },
+      { type: 'property', key: 'c', value: '3' },
+      { type: 'property', key: 'd', value: '4' },
+    ]);
+  });
 });

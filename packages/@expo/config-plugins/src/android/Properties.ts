@@ -22,9 +22,12 @@ export function parsePropertiesFile(contents: string): PropertiesItem[] {
     } else if (line.startsWith('#')) {
       propertiesList.push({ type: 'comment', value: line.substring(1).trimStart() });
     } else {
-      const eok = line.indexOf('=');
-      const key = eok === -1 ? line : line.slice(0, eok);
-      let value = eok === -1 ? '' : line.slice(eok + 1, line.length);
+      let eok = 0;
+      while (eok < line.length && !/[=:\s]/.test(line[eok]!)) {
+        eok += line[eok] === '\\' ? 2 : 1;
+      }
+      const key = line.slice(0, eok);
+      let value = line.slice(eok).replace(/^\s*[=:]?\s*/, '');
       // An odd number of trailing backslashes continues the value on the next line.
       while (value.match(/\\*$/)![0].length % 2 === 1 && i + 1 < lines.length) {
         i++;
