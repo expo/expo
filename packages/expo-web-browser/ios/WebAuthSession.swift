@@ -59,11 +59,17 @@ final internal class WebAuthSession {
   func open() async throws -> [String: String?] {
     authSession?.presentationContextProvider = presentationContextProvider
     return try await withCheckedThrowingContinuation { continuation in
-      guard authSession?.start() == true else {
-        continuation.resume(throwing: WebAuthSessionFailedToStartException())
-        return
-      }
       self.continuation = continuation
+      afterDismissalInFlight {
+        // `dismiss()` settles a session that still waits here.
+        guard let continuation = self.continuation else {
+          return
+        }
+        if self.authSession?.start() != true {
+          self.continuation = nil
+          continuation.resume(throwing: WebAuthSessionFailedToStartException())
+        }
+      }
     }
   }
 
@@ -81,6 +87,25 @@ final internal class WebAuthSession {
   }
 
   // MARK: - Private
+
+  // UIKit drops a presentation that starts while the top view controller is being dismissed.
+  // `start()` still returns `true` then, and the completion handler never runs.
+  @MainActor
+  private func afterDismissalInFlight(_ start: @escaping @MainActor () -> Void) {
+    #if os(iOS)
+    var topViewController = SceneGeometry.keyWindow()?.rootViewController
+    while let presentedViewController = topViewController?.presentedViewController {
+      topViewController = presentedViewController
+    }
+    if let topViewController,
+       topViewController.isBeingDismissed,
+       let transitionCoordinator = topViewController.transitionCoordinator,
+       transitionCoordinator.animate(alongsideTransition: nil, completion: { _ in start() }) {
+      return
+    }
+    #endif
+    start()
+  }
 
   private func finish(with result: [String: String?]) {
     continuation?.resume(returning: result)
