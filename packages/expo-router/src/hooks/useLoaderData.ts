@@ -95,8 +95,8 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   const result = readLoaderData<LoaderFunctionResult<T>>(ctx, resolvedPath, fetchLoader);
   // React can replay a suspended render once its promise settles. The store then holds the
   // settled value, so the replay must still call `use()`, or React throws "Update hook called
-  // on initial render" for every hook after this one. A fulfilled thenable makes React reuse
-  // the original promise without suspending.
+  // on initial render" for every hook after this one. A tracked read returns the promise React
+  // already saw; an untracked one gets a fulfilled thenable so React does not suspend again.
   return use(result instanceof Promise ? result : fulfilled(result));
 }
 
