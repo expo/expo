@@ -114,6 +114,27 @@ export function reportEasTutorialCompleted() {
   }
 }
 
+type HomeClickParams = {
+  section: string;
+  link_text: string;
+  link_url?: string;
+};
+
+export function reportHomeClick(params: HomeClickParams) {
+  if (isAnalyticsConsented()) {
+    window?.gtag?.('event', 'home_click', params);
+    return;
+  }
+
+  if (getAnalyticsConsentStatus() === 'pending') {
+    enqueueAnalyticsEvent({
+      type: 'track',
+      args: ['home_click', params],
+      timestamp: Date.now(),
+    });
+  }
+}
+
 // Register the replay function so queued events are dispatched when consent is granted.
 setAnalyticsReplayFn((events: QueuedEvent[]) => {
   for (const event of events) {
@@ -146,6 +167,11 @@ setAnalyticsReplayFn((events: QueuedEvent[]) => {
       case 'eas_tutorial': {
         const payload = data as Record<string, unknown>;
         window?.gtag?.('event', 'eas_tutorial', payload);
+        break;
+      }
+      case 'home_click': {
+        const params = data as Record<string, unknown>;
+        window?.gtag?.('event', 'home_click', params);
         break;
       }
     }
