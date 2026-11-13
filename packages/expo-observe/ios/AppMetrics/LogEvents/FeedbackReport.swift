@@ -1,16 +1,16 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
+import Foundation
 
 let feedbackLogName = "expo.feedback"
 
 /// User feedback from `Observe.reportFeedback`. The JS layer validates it and adds the scale to every rating.
-struct FeedbackReport: Record {
-  @Field var id: String = ""
-  @Field var message: String?
-  @Field var rating: Int?
-  @Field var scale: FeedbackScale?
-  @Field var attributes: [String: Any]?
+struct FeedbackReport {
+  var id: String = ""
+  var message: String?
+  var rating: Int?
+  var scale: FeedbackScale?
+  var attributes: [String: Any]?
 
   func toLogRecord() -> LogRecord {
     let sanitized = sanitizeLogEventAttributes(attributes, source: "reportFeedback")
@@ -33,7 +33,7 @@ struct FeedbackReport: Record {
   }
 }
 
-struct FeedbackScale: Record {
-  @Field var min: Int = 0
-  @Field var max: Int = 0
+struct FeedbackScale {
+  var min: Int = 0
+  var max: Int = 0
 }
