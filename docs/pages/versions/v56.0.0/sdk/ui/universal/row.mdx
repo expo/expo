@@ -74,6 +74,12 @@ export default function RowSpacerExample() {
 }
 ```
 
+### Size
+
+`style.width` and `style.height` take a fixed size in density-independent pixels, such as `120`.
+
+> **warning** Do not use a percentage, such as `'50%'`. The `style` type accepts a percentage string, but the native size modifiers take a number. On Android, the app throws an error at runtime. On iOS, the component ignores both `width` and `height`. This does not apply to `Host`, which takes a React Native view style. Percentage sizes are available in `@expo/ui` 58.0.23 and later (SDK 58).
+
 ## API
 
 ```tsx
