@@ -2,15 +2,15 @@ import ExpoModulesCore
 import Foundation
 
 /// Session is a time frame during the app's lifetime that tracks various metrics from its start till its end.
-public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
+class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
   /// Unique ID of the session in UUID v4 format.
-  public let id: String
+  let id: String
 
   /// Type of the session. It is one of: `main`, `foreground`, `screen`, `custom` or `unknown`.
-  public let type: SessionType
+  let type: SessionType
 
   /// Date on which the session was created and started.
-  public let startDate: Date
+  let startDate: Date
 
   /// Date on which the `stop()` function was called to end the session, or `nil` if the session is still active.
   private(set) var endDate: Date?
@@ -86,7 +86,7 @@ public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
 
   // MARK: - Session type
 
-  public enum SessionType: String, Codable, Sendable {
+  enum SessionType: String, Codable, Sendable {
     /// The main session that tracks metrics for the entire app process lifecycle.
     case main
 
@@ -139,7 +139,7 @@ public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
   // MARK: - MetricsReceiver
 
   @AppMetricsActor
-  public func receiveMetric(_ metric: Metric) {
+  func receiveMetric(_ metric: Metric) {
     do {
       try insert(metric)
     } catch {
@@ -150,7 +150,7 @@ public class Session: SharedObject, MetricsReceiver, @unchecked Sendable {
   }
 
   @AppMetricsActor
-  public func receiveLog(_ log: LogRecord) {
+  func receiveLog(_ log: LogRecord) {
     do {
       try AppMetrics.database?.insert(log: LogRow.from(log: log, sessionId: self.id))
     } catch {

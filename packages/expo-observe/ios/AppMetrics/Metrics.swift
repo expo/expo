@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
 /// Protocol for objects containing metrics of a specific category.
-public protocol Metrics: Codable, Sendable {
+protocol Metrics: Codable, Sendable {
   /// Type requirement for the `MetricKeys` enum. All keys must have a raw value and the enum must be iterable.
   typealias MetricKey = RawRepresentable & CaseIterable
 
@@ -17,12 +17,12 @@ public protocol Metrics: Codable, Sendable {
 
 extension Metrics {
   // Metrics don't have to be associated with any category (but they should).
-  public static var category: Metric.Category? {
+  static var category: Metric.Category? {
     return nil
   }
 
   // The default implementation captures metric values from each property specified in the `MetricKeys` enum.
-  public func toValues() -> [Metric] {
+  func toValues() -> [Metric] {
     let mirror = Mirror(reflecting: self)
     let allCases = Self.MetricKeys.allCases
 

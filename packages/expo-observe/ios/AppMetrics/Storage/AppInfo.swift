@@ -3,40 +3,40 @@
 import EXUpdatesInterface
 
 /// Provides some basic information about the app.
-public struct AppInfo: Codable, Equatable, Sendable {
-  public let appId: String?
-  public let appName: String?
-  public let appVersion: String?
-  public let buildNumber: String?
-  public let updatesInfo: UpdatesInfo?
-  public let easBuildId: String?
-  public let clientVersion: String
-  public let reactNativeVersion: String
-  public let expoSdkVersion: String
+struct AppInfo: Codable, Equatable, Sendable {
+  let appId: String?
+  let appName: String?
+  let appVersion: String?
+  let buildNumber: String?
+  let updatesInfo: UpdatesInfo?
+  let easBuildId: String?
+  let clientVersion: String
+  let reactNativeVersion: String
+  let expoSdkVersion: String
 
-  public struct UpdatesInfo: Codable, Equatable, Sendable {
-    public let updateId: String?
-    public let runtimeVersion: String?
-    public let requestHeaders: [String: String]?
-    public var channel: String? {
+  struct UpdatesInfo: Codable, Equatable, Sendable {
+    let updateId: String?
+    let runtimeVersion: String?
+    let requestHeaders: [String: String]?
+    var channel: String? {
       return requestHeaders?["expo-channel-name"]
     }
 
     /// True when none of the carried fields are populated. Lets callers omit the whole struct from
     /// wire payloads instead of sending `{ updateId: null, runtimeVersion: null, requestHeaders: null }`,
     /// matching the pre-SQLite shape where `AppInfo.updatesInfo` was itself optional.
-    public var isEmpty: Bool {
+    var isEmpty: Bool {
       return updateId == nil && runtimeVersion == nil && requestHeaders == nil
     }
 
-    public init(updateId: String?, runtimeVersion: String?, requestHeaders: [String: String]?) {
+    init(updateId: String?, runtimeVersion: String?, requestHeaders: [String: String]?) {
       self.updateId = updateId
       self.runtimeVersion = runtimeVersion
       self.requestHeaders = requestHeaders
     }
   }
 
-  public init(
+  init(
     appId: String?,
     appName: String?,
     appVersion: String?,
@@ -54,7 +54,7 @@ public struct AppInfo: Codable, Equatable, Sendable {
     self.expoSdkVersion = AppMetricsVersions.expoSdkVersion
   }
 
-  public nonisolated(unsafe) static var current: AppInfo = {
+  nonisolated(unsafe) static var current: AppInfo = {
     let bundle = Bundle.main
     let infoPlist = bundle.infoDictionary ?? [:]
     return AppInfo(

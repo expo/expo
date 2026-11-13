@@ -2,8 +2,8 @@
 
 /// A struct that represents a single metric which consists of a category, name, value and its creation timestamp.
 /// Metrics stored in the local storage are of this form.
-public struct Metric: Codable, Sendable {
-  public enum Category: String, Codable, CaseIterable, Sendable {
+struct Metric: Codable, Sendable {
+  enum Category: String, Codable, CaseIterable, Sendable {
     case appStartup
     case frameRate
     case memory
@@ -15,17 +15,17 @@ public struct Metric: Codable, Sendable {
     // doesn't match a case here.
   }
 
-  public let category: Metric.Category?
-  public let name: String
-  public let value: Double
-  public var timestamp: String = Date.now.ISO8601Format()
-  public var routeName: String? = nil
-  public var updateId: String? = nil
-  public var params: AnyCodable? = nil
+  let category: Metric.Category?
+  let name: String
+  let value: Double
+  var timestamp: String = Date.now.ISO8601Format()
+  var routeName: String? = nil
+  var updateId: String? = nil
+  var params: AnyCodable? = nil
   /// ID of the session this metric is attached to. `nil` until the metric is handed to a session
   /// (`Session.receiveMetric`) or hydrated from the database — at every JS-observable read path the
   /// field is populated, so consumers can rely on it.
-  public var sessionId: String? = nil
+  var sessionId: String? = nil
 
   init(
     category: Metric.Category?,

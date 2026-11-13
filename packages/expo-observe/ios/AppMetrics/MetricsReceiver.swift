@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-public protocol MetricsReceiver {
+protocol MetricsReceiver {
   /// Receives a group of metrics.
   @AppMetricsActor
   func receiveMetrics<MetricsType: Metrics>(_ metrics: MetricsType)
@@ -16,11 +16,11 @@ public protocol MetricsReceiver {
 
 extension MetricsReceiver {
   @AppMetricsActor
-  public func receiveMetrics<MetricsType: Metrics>(_ metrics: MetricsType) {}
+  func receiveMetrics<MetricsType: Metrics>(_ metrics: MetricsType) {}
 
   @AppMetricsActor
-  public func receiveMetric(_ metric: Metric) {}
+  func receiveMetric(_ metric: Metric) {}
 
   @AppMetricsActor
-  public func receiveLog(_ log: LogRecord) {}
+  func receiveLog(_ log: LogRecord) {}
 }

@@ -41,7 +41,7 @@ internal class UpdatesMonitoring: MetricReporter {
     }
   }
 
-  nonisolated public static func getUpdatesMetricsInfo() -> AppInfo.UpdatesInfo {
+  nonisolated static func getUpdatesMetricsInfo() -> AppInfo.UpdatesInfo {
     guard let updatesController = UpdatesControllerRegistry.sharedInstance.controller else {
       return AppInfo.UpdatesInfo(
         updateId: nil,

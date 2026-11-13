@@ -6,18 +6,18 @@ import Foundation
 /// batch and composed from the same domain types (`AppInfo`, `DeviceInfo`, `Metric`, `LogRecord`,
 /// `CrashReport`) that the rest of the module already exposes — so consumers see one consistent
 /// vocabulary instead of separate row and domain shapes.
-public struct StoredSession: Codable, Sendable {
-  public let id: String
-  public let type: Session.SessionType
-  public let startDate: String
-  public let endDate: String?
-  public let environment: String?
-  public let app: AppInfo
-  public let device: DeviceInfo
-  public let languageTag: String?
-  public let metrics: [Metric]
-  public let logs: [LogRecord]
-  public let crashReport: CrashReport?
+struct StoredSession: Codable, Sendable {
+  let id: String
+  let type: Session.SessionType
+  let startDate: String
+  let endDate: String?
+  let environment: String?
+  let app: AppInfo
+  let device: DeviceInfo
+  let languageTag: String?
+  let metrics: [Metric]
+  let logs: [LogRecord]
+  let crashReport: CrashReport?
 
   /// Projects a row + child batch from the database into the public `StoredSession` shape. JSON-encoded
   /// blobs (request headers, metric params, log attributes, crash report payload) are decoded back into

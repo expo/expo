@@ -2,16 +2,16 @@ import CoreFoundation
 import Foundation
 
 /// Type-erased struct that is used to encode/decode types that use `Any` which itself is not conforming to `Encodable` nor `Decodable`.
-public struct AnyCodable: Codable, Sendable {
+struct AnyCodable: Codable, Sendable {
   // Similarly, `Any` does not conform to `Sendable`, but it is safe
   // to send it over different isolation domains as it is immutable.
-  public nonisolated(unsafe) let value: Any?
+  nonisolated(unsafe) let value: Any?
 
   init<T>(_ value: T) {
     self.value = value
   }
 
-  public init(from decoder: Decoder) throws {
+  init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
 
     if let value = try? container.decode(Int.self) {
@@ -33,7 +33,7 @@ public struct AnyCodable: Codable, Sendable {
     }
   }
 
-  public func encode(to encoder: Encoder) throws {
+  func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
 
     // `Bool` must come before the integer cases. Swift bridges `Bool` and the numeric types

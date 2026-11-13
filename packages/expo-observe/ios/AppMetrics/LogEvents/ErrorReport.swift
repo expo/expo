@@ -2,7 +2,7 @@
 
 import ExpoModulesCore
 
-public let jsExceptionLogName = "js.exception"
+let jsExceptionLogName = "js.exception"
 
 /// An unhandled JavaScript error forwarded from the JS-side `global.ErrorUtils` handler. Recorded as
 /// a `js.exception` log event following OpenTelemetry's exception conventions.
