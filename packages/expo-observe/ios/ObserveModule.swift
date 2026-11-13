@@ -3,8 +3,6 @@
 import EASClient
 import ExpoModulesCore
 
-internal let observeLogger = Logger(logHandlers: [createOSLogHandler(category: Logger.EXPO_LOG_CATEGORY)])
-
 internal struct Config: Record {
   @Field var environment: String?
   @Field var dispatchingEnabled: Bool?
@@ -95,7 +93,7 @@ public final class ObserveModule: Module {
 
     Function("setBundleDefaults") { (defaults: BundleDefaults) in
       guard !defaults.environment.isEmpty else {
-        observeLogger.warn(
+        logger.warn(
           "[EAS Observe] setBundleDefaults received empty environment; skipping. "
             + "This is a bug in the JS layer — `process.env.NODE_ENV` should always resolve."
         )
@@ -113,7 +111,7 @@ public final class ObserveModule: Module {
 
 private func getManifest(_ appContext: AppContext?) -> [String: Any]? {
   guard let manifest = appContext?.constants?.constants()["manifest"] as? [String: Any] else {
-    observeLogger.warn("[EAS Observe] Unable to read the manifest")
+    logger.warn("[EAS Observe] Unable to read the manifest")
     return nil
   }
   return manifest
@@ -122,7 +120,7 @@ private func getManifest(_ appContext: AppContext?) -> [String: Any]? {
 private func getProjectId(manifest: [String: Any]) -> String? {
   let value = getManifestProperty("extra.eas.projectId", manifest)
   guard let projectId = value as? String else {
-    observeLogger.warn("[EAS Observe] Unable to get the project ID")
+    logger.warn("[EAS Observe] Unable to get the project ID")
     return nil
   }
   return projectId
