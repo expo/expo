@@ -3,10 +3,9 @@
 package expo.modules.appmetrics.spans
 
 import expo.modules.appmetrics.storage.Span
-import expo.modules.kotlin.sharedobjects.SharedObject
 
 /**
- * The native side of the JS `Span` object returned by `startSpan`. A thin shell around
+ * The native span returned by `startSpan`. A thin shell around
  * `SpanRecorder`: JS mutators forward to the recorder, and `end` hands the completed row to
  * `onEnd` (the module wires this to the database insert). Mirrors the iOS `SpanHandle`.
  *
@@ -18,7 +17,7 @@ import expo.modules.kotlin.sharedobjects.SharedObject
 internal class SpanHandle(
   val recorder: SpanRecorder,
   private val onEnd: (Span) -> Unit
-) : SharedObject() {
+) {
   /**
    * Ends the underlying recorder; the second and later calls are ignored there, so `onEnd`
    * fires at most once.
