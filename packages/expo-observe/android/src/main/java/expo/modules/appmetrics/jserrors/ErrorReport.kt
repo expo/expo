@@ -4,10 +4,6 @@ import expo.modules.appmetrics.logevents.Severity
 import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.utils.JsonAny
 import expo.modules.appmetrics.utils.TimeUtils
-import expo.modules.kotlin.records.Field
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.Enumerable
-import expo.modules.kotlin.types.OptimizedRecord
 
 internal const val JS_EXCEPTION_LOG_NAME = "js.exception"
 
@@ -15,15 +11,14 @@ internal const val JS_EXCEPTION_LOG_NAME = "js.exception"
  * An unhandled JavaScript error forwarded from the JS-side `global.ErrorUtils` handler. Recorded as
  * a `js.exception` log event following OpenTelemetry's exception conventions.
  */
-@OptimizedRecord
 internal data class ErrorReport(
-  @Field val source: ErrorSource = ErrorSource.GLOBAL,
-  @Field val type: String? = null,
-  @Field val message: String = "",
-  @Field val stacktrace: String? = null,
-  @Field val componentStack: String? = null,
-  @Field val isFatal: Boolean = false
-) : Record {
+  val source: ErrorSource = ErrorSource.GLOBAL,
+  val type: String? = null,
+  val message: String = "",
+  val stacktrace: String? = null,
+  val componentStack: String? = null,
+  val isFatal: Boolean = false
+) {
   /** Builds the `js.exception` log event for the live path. */
   fun toLogRecord(sessionId: String): LogRecord =
     makeExceptionLogRecord(
@@ -55,7 +50,7 @@ internal data class ErrorReport(
 }
 
 /** How the error was captured. A closed set so the `expo.error.source` attribute stays consistent. */
-internal enum class ErrorSource(val rawValue: String) : Enumerable {
+internal enum class ErrorSource(val rawValue: String) {
   GLOBAL("global"),
   ERROR_BOUNDARY("errorBoundary"),
   REPORTED_BY_USER("reportedByUser"),
