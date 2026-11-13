@@ -2834,3 +2834,166 @@ it('preserves native script function maps and compact output behavior', async ()
   new Function('globalThis', compact.result.code)(runtimeGlobal);
   expect(runtimeGlobal.value).toBe(1);
 });
+
+it.each(
+  ['react-native', 'expo-modules-core', 'react-native-web'].flatMap((sourceModule) =>
+    ['ios', 'android', 'web'].map((platform) => ({ sourceModule, platform }))
+  )
+)(
+  'folds imported Platform branches from $sourceModule for $platform',
+  async ({ sourceModule, platform }) => {
+    const input = {
+      filename: workspaceFilename,
+      projectRoot: '/app',
+      source: `import { Platform } from '${sourceModule}';
+      module.exports = [
+        Platform.OS === '${platform}' ? require('winner') : require('loser'),
+        Platform.select({ ${platform}: require('selected'), native: require('native'), default: require('fallback') })
+      ];
+      module.exports.shadow = function(Platform) { return [Platform.OS, Platform.select({ ios: require('shadowed') })]; };
+      module.exports.fallback = Platform.select({ native: require('native-fallback'), default: require('default-fallback') });`,
+      options: options({ platform, minify: true }),
+      isDefaultExpoTransformer: true,
+      config: fullConfig(),
+    };
+    const result = await transformFileFullyWithNoxcturnal(input);
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.result.code).toContain('Platform.OS');
+    expect(result.dependencies.map(({ name }) => name)).toEqual([
+      platform === 'web' && sourceModule !== 'expo-modules-core'
+        ? 'react-native-web/dist/exports/Platform'
+        : sourceModule,
+      'winner',
+      'selected',
+      'shadowed',
+      platform === 'web' ? 'default-fallback' : 'native-fallback',
+    ]);
+    const dev = await transformFileFullyWithNoxcturnal({
+      ...input,
+      options: options({ platform, dev: true }),
+    });
+    expect(dev.status).toBe('complete');
+    if (dev.status !== 'complete') return;
+    expect(dev.dependencies.map(({ name }) => name)).toContain('loser');
+  }
+);
+
+it.each(["ios() { return 'ios'; }", "get ios() { return 'ios'; }"])(
+  'preserves Platform.select objects with %s',
+  async (property) => {
+    const source = `import { Platform } from 'react-native';
+    module.exports = Platform.select({ ${property}, default: 'default' });`;
+    const result = await transformNodeModuleWithNoxcturnal({
+      filename,
+      projectRoot: '/app',
+      source,
+      options: options(),
+      isDefaultExpoTransformer: true,
+    });
+    expect(result.status).toBe('complete');
+    if (result.status !== 'complete') return;
+    expect(result.result.code).toContain('Platform.select');
+  }
+);
+
+it.each([
+  "Platform.select({ ios: () => 'ios' })()",
+  'Platform.select({ ios: 1 + 2 }) * 3',
+  "Platform.select({ ios: true ? 'ios' : 'android' }).length",
+  'Platform.select({ ios: 1 }).toString()',
+])('matches Babel when replacing %s', async (expression) => {
+  const source = `module.exports = ${expression};`;
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+  });
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  const babelCode = transformWithBabelPlugin(
+    source,
+    path.join(
+      __dirname,
+      '../../../../../../babel-preset-expo/src/plugins/minify-platform-select-plugin'
+    ),
+    { platform: 'ios' }
+  );
+  const evaluate = (code: string) => {
+    const module = { exports: undefined as unknown };
+    new Function('module', code)(module);
+    return module.exports;
+  };
+  expect(evaluate(result.result.code)).toEqual(evaluate(babelCode));
+});
+
+it.each(['ios', 'android', 'web'])(
+  'composes defines with discarded Platform.select values on %s',
+  async (platform) => {
+    for (const losingKey of ['default', 'native', platform === 'ios' ? 'android' : 'ios']) {
+      for (const losingValue of [
+        'Platform.OS',
+        'process.env.NODE_ENV',
+        'Platform.select({ default: Platform.OS })',
+      ]) {
+        const result = await transformFileFullyWithNoxcturnal({
+          filename: workspaceFilename,
+          projectRoot: '/app',
+          source: `import { Platform } from 'react-native';
+            module.exports = Platform.select({
+              ${platform}: [Platform.OS, Platform.select({ ${platform}: Platform.OS }), require('winner')],
+              ${losingKey}: [${losingValue}, require('loser')]
+            });`,
+          options: options({ platform }),
+          isDefaultExpoTransformer: true,
+          config: fullConfig(),
+        });
+        expect(result.status).toBe('complete');
+        if (result.status !== 'complete') return;
+        expect(result.dependencies.map(({ name }) => name)).toEqual([
+          platform === 'web' ? 'react-native-web/dist/exports/Platform' : 'react-native',
+          'winner',
+        ]);
+      }
+    }
+  }
+);
+
+it.each([
+  'Platform.select({ ios: 1 + 2 })',
+  'Platform.select({ ios: { a: 1 } })',
+  'Platform.select({ ios: [1, 2] })',
+  "Platform.select({ ios: function() { events.push('selected'); } })()",
+])('preserves semicolon-less statement boundaries for %s', async (expression) => {
+  const source = `var events = []; function foo() { events.push('foo'); return 'value'; }
+    foo()
+    if (false) ${expression}
+    foo()
+    ${expression}
+    module.exports = events;`;
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: options(),
+    isDefaultExpoTransformer: true,
+  });
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  const babelCode = transformWithBabelPlugin(
+    source,
+    path.join(
+      __dirname,
+      '../../../../../../babel-preset-expo/src/plugins/minify-platform-select-plugin'
+    ),
+    { platform: 'ios' }
+  );
+  const evaluate = (code: string) => {
+    const module = { exports: undefined as unknown };
+    new Function('module', code)(module);
+    return module.exports;
+  };
+  expect(evaluate(result.result.code)).toEqual(evaluate(babelCode));
+});
