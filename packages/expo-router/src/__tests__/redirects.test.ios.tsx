@@ -407,6 +407,24 @@ it('redirect to external URL', async () => {
   expect(mockOpenURL).toHaveBeenCalledWith('https://example.com');
 });
 
+it('opens an external redirectTo of a protected route', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Protected guard={false} redirectTo="https://example.com/login">
+          <Stack.Screen name="secret" />
+        </Stack.Protected>
+      </Stack>
+    ),
+    index: () => <Text testID="index">index</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+  });
+
+  await act(() => router.push('/secret'));
+
+  expect(mockOpenURL).toHaveBeenCalledWith('https://example.com/login');
+});
+
 it('redirects will override existing routes', async () => {
   mockRedirects.mockReturnValue([
     {
