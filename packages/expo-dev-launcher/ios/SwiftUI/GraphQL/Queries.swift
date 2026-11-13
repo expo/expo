@@ -9,7 +9,6 @@ class Queries {
       meUserActor {
         id
         appCount
-        profilePhoto
         username
         isExpoAdmin
         accounts {
@@ -18,7 +17,7 @@ class Queries {
           ownerUserActor {
             username
             fullName
-            profilePhoto
+            primaryAccountProfileImageUrl
           }
         }
       }
@@ -117,7 +116,9 @@ class Queries {
             updates(offset: $offset, limit: $limit, filter: { platform: $platform }) {
               id
               message
-              runtimeVersion
+              runtime {
+                version
+              }
               createdAt
               manifestPermalink
             }
