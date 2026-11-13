@@ -167,6 +167,13 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       field = value
     }
 
+  internal var sharedAnimationTick: Boolean = false
+    set(value) {
+      field = value
+      firstView.sharedAnimationTick = value
+      secondView.sharedAnimationTick = value
+    }
+
   internal var allowDownscaling: Boolean = true
     set(value) {
       field = value
