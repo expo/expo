@@ -5,11 +5,32 @@ description: Check whether Expo Simulators is available, start a remote device s
 searchRank: 9
 ---
 
+import { AgentPrompt } from '~/ui/components/AgentPrompt';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
+
+<AgentPrompt
+  title="Start an Expo Simulators session with an AI agent"
+  description="Paste this into Claude, Cursor, Codex, or another agent.">
+
+```text wrap
+Start an Expo Simulators session for my Expo project. Use https://docs.expo.dev/eas/simulators/get-started.md as the source for each command.
+
+1. Check that EAS CLI is installed and up to date. If it is not, run `npm install -g eas-cli`.
+2. Check that I am logged in with `eas whoami`. If I am not, stop and ask me to run `eas login` or to set `EXPO_TOKEN`. Do not print a token.
+3. If the project does not have an Expo Services project ID, ask me before you run `eas init`.
+4. Run `eas simulator:availability --json`. If `available` is `false`, stop and tell me. Do not start a session.
+5. Add .env.eas-simulator to .gitignore. Do not print, commit, or share this file.
+6. Ask me for the platform (`ios` or `android`) and the session type (`agent-device`, `argent`, `appium`, or `web-preview-only`). Then run `eas simulator:start --platform <platform> --type <type> --name "<short purpose>" --non-interactive`.
+7. Run `eas simulator:get --json --non-interactive`. Continue only when `status` is `IN_PROGRESS` and `remoteConfig` is present.
+8. Give me the session page link and the browser preview link. Tell me which commands you ran.
+9. The session counts toward my account's usage until it stops. When I say that I am done, run `eas simulator:stop`.
+```
+
+</AgentPrompt>
 
 <Prerequisites>
   <Requirement title="An Expo account with Expo Simulators access">
