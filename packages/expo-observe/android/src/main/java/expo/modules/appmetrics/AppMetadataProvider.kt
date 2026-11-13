@@ -56,7 +56,7 @@ public object AppMetadataProvider {
       deviceName = Build.DEVICE,
       expoSdkVersion = BuildConfig.EXPO_SDK_VERSION,
       reactNativeVersion = BuildConfig.REACT_NATIVE_VERSION,
-      clientVersion = BuildConfig.EXPO_APP_METRICS_VERSION
+      clientVersion = BuildConfig.EXPO_OBSERVE_VERSION
     )
   }
 }

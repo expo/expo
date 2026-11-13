@@ -59,7 +59,6 @@ android {
     buildConfigField "String", "EXPO_OBSERVE_VERSION", "\"${packageJson.version}\""
     buildConfigField "String", "REACT_NATIVE_VERSION",
       "\"${reactNativeVersion.major}.${reactNativeVersion.minor}.${reactNativeVersion.patch}\""
-    buildConfigField "String", "EXPO_APP_METRICS_VERSION", "\"${packageJson.version}\""
     buildConfigField "String", "EXPO_SDK_VERSION", "\"${expoSdkVersion}\""
     buildConfigField "String", "EXPO_EAS_BUILD_ID",
       easBuildId != null ? "\"${easBuildId}\"" : "null"
