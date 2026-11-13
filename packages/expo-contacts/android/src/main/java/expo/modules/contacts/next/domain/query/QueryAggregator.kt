@@ -45,6 +45,18 @@ class QueryAggregator(extractableFields: Collection<ExtractableField<*>>) {
     }
   }
 
+  fun aggregateJoinedRow(cursor: Cursor) {
+    val contactId = cursor.getRequiredString(cursor.getColumnIndexOrThrow(ContactId.COLUMN_IN_DATA_TABLE))
+    val mime = cursor.getRequiredString(cursor.getColumnIndexOrThrow(ContactsContract.Data.MIMETYPE))
+    val builder = contactBuilders.getOrPut(contactId) {
+      ContactModelBuilder(ContactId(contactId))
+    }
+    builder.addModel(dataExtractorsByMimeType[mime]?.extract(cursor))
+    contactsExtractableFields.forEach {
+      builder.addModel(it.extract(cursor))
+    }
+  }
+
   fun aggregateContactsRow(cursor: Cursor) {
     val contactId = cursor.getRequiredString(cursor.getColumnIndexOrThrow(ContactId.COLUMN_IN_CONTACTS_TABLE))
     val builder = contactBuilders.getOrPut(contactId) {

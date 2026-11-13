@@ -9,94 +9,95 @@ class GetContactDetailsMapper {
     self.imageService = imageService
   }
 
-  func map(contact: CNContact) throws -> GetContactDetailsRecord {
+  func map(contact: CNContact, fields: [ContactField]? = nil) throws -> GetContactDetailsRecord {
     let imageMapper = ImageMapper(service: imageService, filename: "\(contact.identifier)-image.png")
     let thumbnailMapper = ThumbnailMapper(service: imageService, filename: "\(contact.identifier)-thumb.png")
+    let isRequested = { (field: ContactField) in fields?.contains(field) != false }
 
     return GetContactDetailsRecord(
       id: contact.identifier,
-      fullName: contact.areKeysAvailable([CNContactFormatter.descriptorForRequiredKeys(for: .fullName)])
+      fullName: isRequested(.FULL_NAME) && contact.areKeysAvailable([CNContactFormatter.descriptorForRequiredKeys(for: .fullName)])
         ? FullNameExtractor.extract(from: contact)
         : nil,
-      givenName: contact.isKeyAvailable(CNContactGivenNameKey)
+      givenName: isRequested(.GIVEN_NAME) && contact.isKeyAvailable(CNContactGivenNameKey)
         ? try StringMapper(descriptor: CNContactGivenNameKey, keyPath: \.givenName).extract(from: contact)
         : nil,
-      middleName: contact.isKeyAvailable(CNContactMiddleNameKey)
+      middleName: isRequested(.MIDDLE_NAME) && contact.isKeyAvailable(CNContactMiddleNameKey)
         ? try StringMapper(descriptor: CNContactMiddleNameKey, keyPath: \.middleName).extract(from: contact)
         : nil,
-      familyName: contact.isKeyAvailable(CNContactFamilyNameKey)
+      familyName: isRequested(.FAMILY_NAME) && contact.isKeyAvailable(CNContactFamilyNameKey)
         ? try StringMapper(descriptor: CNContactFamilyNameKey, keyPath: \.familyName).extract(from: contact)
         : nil,
-      maidenName: contact.isKeyAvailable(CNContactPreviousFamilyNameKey)
+      maidenName: isRequested(.MAIDEN_NAME) && contact.isKeyAvailable(CNContactPreviousFamilyNameKey)
         ? try StringMapper(descriptor: CNContactPreviousFamilyNameKey, keyPath: \.previousFamilyName).extract(from: contact)
         : nil,
-      nickname: contact.isKeyAvailable(CNContactNicknameKey)
+      nickname: isRequested(.NICKNAME) && contact.isKeyAvailable(CNContactNicknameKey)
         ? try StringMapper(descriptor: CNContactNicknameKey, keyPath: \.nickname).extract(from: contact)
         : nil,
-      prefix: contact.isKeyAvailable(CNContactNamePrefixKey)
+      prefix: isRequested(.PREFIX) && contact.isKeyAvailable(CNContactNamePrefixKey)
         ? try StringMapper(descriptor: CNContactNamePrefixKey, keyPath: \.namePrefix).extract(from: contact)
         : nil,
-      suffix: contact.isKeyAvailable(CNContactNameSuffixKey)
+      suffix: isRequested(.SUFFIX) && contact.isKeyAvailable(CNContactNameSuffixKey)
         ? try StringMapper(descriptor: CNContactNameSuffixKey, keyPath: \.nameSuffix).extract(from: contact)
         : nil,
-      phoneticGivenName: contact.isKeyAvailable(CNContactPhoneticGivenNameKey)
+      phoneticGivenName: isRequested(.PHONETIC_GIVEN_NAME) && contact.isKeyAvailable(CNContactPhoneticGivenNameKey)
         ? try StringMapper(descriptor: CNContactPhoneticGivenNameKey, keyPath: \.phoneticGivenName).extract(from: contact)
         : nil,
-      phoneticMiddleName: contact.isKeyAvailable(CNContactPhoneticMiddleNameKey)
+      phoneticMiddleName: isRequested(.PHONETIC_MIDDLE_NAME) && contact.isKeyAvailable(CNContactPhoneticMiddleNameKey)
         ? try StringMapper(descriptor: CNContactPhoneticMiddleNameKey, keyPath: \.phoneticMiddleName).extract(from: contact)
         : nil,
-      phoneticFamilyName: contact.isKeyAvailable(CNContactPhoneticFamilyNameKey)
+      phoneticFamilyName: isRequested(.PHONETIC_FAMILY_NAME) && contact.isKeyAvailable(CNContactPhoneticFamilyNameKey)
         ? try StringMapper(descriptor: CNContactPhoneticFamilyNameKey, keyPath: \.phoneticFamilyName).extract(from: contact)
         : nil,
-      company: contact.isKeyAvailable(CNContactOrganizationNameKey)
+      company: isRequested(.COMPANY) && contact.isKeyAvailable(CNContactOrganizationNameKey)
         ? try StringMapper(descriptor: CNContactOrganizationNameKey, keyPath: \.organizationName).extract(from: contact)
         : nil,
-      department: contact.isKeyAvailable(CNContactDepartmentNameKey)
+      department: isRequested(.DEPARTMENT) && contact.isKeyAvailable(CNContactDepartmentNameKey)
         ? try StringMapper(descriptor: CNContactDepartmentNameKey, keyPath: \.departmentName).extract(from: contact)
         : nil,
-      jobTitle: contact.isKeyAvailable(CNContactJobTitleKey)
+      jobTitle: isRequested(.JOB_TITLE) && contact.isKeyAvailable(CNContactJobTitleKey)
         ? try StringMapper(descriptor: CNContactJobTitleKey, keyPath: \.jobTitle).extract(from: contact)
         : nil,
-      phoneticCompanyName: contact.isKeyAvailable(CNContactPhoneticOrganizationNameKey)
+      phoneticCompanyName: isRequested(.PHONETIC_COMPANY_NAME) && contact.isKeyAvailable(CNContactPhoneticOrganizationNameKey)
         ? try StringMapper(descriptor: CNContactPhoneticOrganizationNameKey, keyPath: \.phoneticOrganizationName).extract(from: contact)
         : nil,
-      note: contact.isKeyAvailable(CNContactNoteKey)
+      note: isRequested(.NOTE) && contact.isKeyAvailable(CNContactNoteKey)
         ? try StringMapper(descriptor: CNContactNoteKey, keyPath: \.note).extract(from: contact)
         : nil,
-      image: contact.isKeyAvailable(CNContactImageDataKey)
+      image: isRequested(.IMAGE) && contact.isKeyAvailable(CNContactImageDataKey)
         ? try imageMapper.extract(from: contact)
         : nil,
-      thumbnail: contact.isKeyAvailable(CNContactThumbnailImageDataKey)
+      thumbnail: isRequested(.THUMBNAIL) && contact.isKeyAvailable(CNContactThumbnailImageDataKey)
         ? try thumbnailMapper.extract(from: contact)
         : nil,
-      birthday: contact.isKeyAvailable(CNContactBirthdayKey)
+      birthday: isRequested(.BIRTHDAY) && contact.isKeyAvailable(CNContactBirthdayKey)
         ? try BirthdayMapper().extract(from: contact)
         : nil,
-      nonGregorianBirthday: contact.isKeyAvailable(CNContactNonGregorianBirthdayKey)
+      nonGregorianBirthday: isRequested(.NON_GREGORIAN_BIRTHDAY) && contact.isKeyAvailable(CNContactNonGregorianBirthdayKey)
         ? try NonGregorianBirthdayMapper().extract(from: contact)
         : nil,
-      emails: contact.isKeyAvailable(CNContactEmailAddressesKey)
+      emails: isRequested(.EMAILS) && contact.isKeyAvailable(CNContactEmailAddressesKey)
         ? contact.emailAddresses.map { EmailMapper().cnLabeledValueToExistingRecord($0) }
         : nil,
-      dates: contact.isKeyAvailable(CNContactDatesKey)
+      dates: isRequested(.DATES) && contact.isKeyAvailable(CNContactDatesKey)
         ? contact.dates.map { DateMapper().cnLabeledValueToExistingRecord($0) }
         : nil,
-      phones: contact.isKeyAvailable(CNContactPhoneNumbersKey)
+      phones: isRequested(.PHONES) && contact.isKeyAvailable(CNContactPhoneNumbersKey)
         ? contact.phoneNumbers.map { PhoneMapper().cnLabeledValueToExistingRecord($0) }
         : nil,
-      addresses: contact.isKeyAvailable(CNContactPostalAddressesKey)
+      addresses: isRequested(.ADDRESSES) && contact.isKeyAvailable(CNContactPostalAddressesKey)
         ? contact.postalAddresses.map { PostalAddressMapper().cnLabeledValueToExistingRecord($0) }
         : nil,
-      relations: contact.isKeyAvailable(CNContactRelationsKey)
+      relations: isRequested(.RELATIONS) && contact.isKeyAvailable(CNContactRelationsKey)
         ? contact.contactRelations.map { RelationMapper().cnLabeledValueToExistingRecord($0) }
         : nil,
-      urlAddresses: contact.isKeyAvailable(CNContactUrlAddressesKey)
+      urlAddresses: isRequested(.URL_ADDRESSES) && contact.isKeyAvailable(CNContactUrlAddressesKey)
         ? contact.urlAddresses.map { UrlAddressMapper().cnLabeledValueToExistingRecord($0) }
         : nil,
-      imAddresses: contact.isKeyAvailable(CNContactInstantMessageAddressesKey)
+      imAddresses: isRequested(.IM_ADDRESSES) && contact.isKeyAvailable(CNContactInstantMessageAddressesKey)
         ? contact.instantMessageAddresses.map { ImAddressMapper().cnLabeledValueToExistingRecord($0) }
         : nil,
-      socialProfiles: contact.isKeyAvailable(CNContactSocialProfilesKey)
+      socialProfiles: isRequested(.SOCIAL_PROFILES) && contact.isKeyAvailable(CNContactSocialProfilesKey)
         ? contact.socialProfiles.map { SocialProfileMapper().cnLabeledValueToExistingRecord($0) }
         : nil
     )
