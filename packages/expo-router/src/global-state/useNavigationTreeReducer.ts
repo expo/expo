@@ -118,6 +118,10 @@ type NavigationTreeReportEventData =
       routeKey: string;
       state: NavigationState;
     }
+  | {
+      type: 'split-view-column-requested';
+      column: string;
+    }
   | BrowserHistoryEvent;
 
 export type NavigationTreeReportEvent = NavigationTreeReportEventData & {
@@ -358,8 +362,10 @@ function reduceTree(
       const nextState = config.routeNode
         ? completeNavigationState(reduction.nextState, config.routeNode)
         : reduction.nextState;
+      // A column request applies even when the state does not change.
+      const columnRequestEvents = getSplitViewColumnRequestEvents(operation.payload.action);
       if (nextState === state) {
-        return result;
+        return appendReportEvents(result, columnRequestEvents);
       }
 
       const removedRoutes = getRemovedRouteKeys(state, nextState);
@@ -403,6 +409,7 @@ function reduceTree(
                 state: committedState,
                 actionId: operation.actionId,
               },
+              ...columnRequestEvents,
             ];
       return appendReportEvents(
         { ...result, state: committedState, browserHistoryAction: reduction.browserHistory },
@@ -449,6 +456,16 @@ function reduceTree(
       return { ...result, report: events.length > 0 ? { events } : undefined };
     }
   }
+}
+
+function getSplitViewColumnRequestEvents(
+  action: NavigationAction
+): NavigationTreeReportEventData[] {
+  const column =
+    action.payload && 'splitViewColumnName' in action.payload
+      ? action.payload.splitViewColumnName
+      : undefined;
+  return typeof column === 'string' ? [{ type: 'split-view-column-requested', column }] : [];
 }
 
 function reportUnhandledAction(

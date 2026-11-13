@@ -26,6 +26,7 @@ export function BaseExpoRouterLink({
   download,
   withAnchor,
   dangerouslySingular: singular,
+  splitViewColumnName,
   prefetch,
   ...rest
 }: LinkProps) {
@@ -53,6 +54,7 @@ export function BaseExpoRouterLink({
     relativeToDirectory,
     withAnchor,
     dangerouslySingular: singular,
+    splitViewColumnName,
   });
 
   const onPress = (e: MouseEvent<HTMLAnchorElement> | GestureResponderEvent) => {

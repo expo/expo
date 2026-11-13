@@ -52,6 +52,21 @@ function warnUnhandledAction(action: NavigationAction) {
   );
 }
 
+function warnUnreceivedSplitViewColumnRequest(column: string) {
+  // The Android and web SplitView ignores the request. A SplitView that was mounted before, for example one that
+  // unmounts because this navigation leaves it, does not need the request.
+  if (
+    process.env.NODE_ENV === 'production' ||
+    process.env.EXPO_OS !== 'ios' ||
+    internalNavigationEvents.hasHadListener('splitViewColumnRequested')
+  ) {
+    return;
+  }
+  console.warn(
+    `No SplitView received the "${column}" column request from splitViewColumnName, because no SplitView is mounted. Remove splitViewColumnName, or navigate to a route inside a SplitView.`
+  );
+}
+
 export function useNavigationTreeReportEvents(
   report: NavigationTreeReport | undefined,
   consumeReportEvents: (eventIds: readonly number[]) => void,
@@ -114,6 +129,13 @@ export function useNavigationTreeReportEvents(
               routeKey: event.routeKey,
               state: event.state,
             });
+            break;
+          case 'split-view-column-requested':
+            if (
+              !internalNavigationEvents.emit('splitViewColumnRequested', { column: event.column })
+            ) {
+              warnUnreceivedSplitViewColumnRequest(event.column);
+            }
             break;
         }
       } catch (error) {

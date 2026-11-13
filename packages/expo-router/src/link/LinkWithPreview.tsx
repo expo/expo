@@ -125,7 +125,10 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
       }}
       onPreviewDidClose={() => {
         if (hasPreview && isPreviewTapped.current && isPad) {
-          router.navigate(rest.href, { __internal__PreviewKey: preloadedScreenId.current });
+          router.navigate(rest.href, {
+            __internal__PreviewKey: preloadedScreenId.current,
+            splitViewColumnName: rest.splitViewColumnName,
+          });
         }
       }}
       onPreviewTapped={({ nativeEvent: { screenId } }) => {
@@ -135,7 +138,10 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
           setOpenPreviewKey(screenId);
         }
         if (!isPad) {
-          router.navigate(rest.href, { __internal__PreviewKey: screenId });
+          router.navigate(rest.href, {
+            __internal__PreviewKey: screenId,
+            splitViewColumnName: rest.splitViewColumnName,
+          });
         }
       }}
       style={{ display: 'contents' }}
