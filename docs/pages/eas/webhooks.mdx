@@ -152,7 +152,52 @@ The submit webhook payload may look as the example below:
 
 ## Webhook server
 
-Here's an example of how you can implement your server:
+A webhook server handles the HTTP POST request and verifies the `expo-signature` header. The examples below show an Expo Router API route and an Express server.
+
+### Expo Router API route
+
+If your project uses Expo Router, you can handle the webhook in an [API route](/router/web/api-routes/) and deploy it with [Expo Hosting](/eas/hosting/introduction/). The following route handles requests to `/webhook`:
+
+```ts src/app/webhook+api.ts
+export async function POST(request: Request) {
+  const expoSignature = request.headers.get('expo-signature') ?? '';
+  const body = await request.text();
+  const encoder = new TextEncoder();
+  // process.env.SECRET_WEBHOOK_KEY has to match SECRET value set with `eas webhook:create` command
+  const key = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(process.env.SECRET_WEBHOOK_KEY),
+    { name: 'HMAC', hash: 'SHA-1' },
+    false,
+    ['verify']
+  );
+  const hexPairs = expoSignature.replace('sha1=', '').match(/../g) ?? [];
+  const signature = new Uint8Array(hexPairs.map(pair => parseInt(pair, 16)));
+  const isValid = await crypto.subtle.verify('HMAC', key, signature, encoder.encode(body));
+
+  if (!isValid) {
+    return new Response("Signatures didn't match!", { status: 500 });
+  }
+
+  // Do something here. For example, send a notification to Slack!
+  // console.log(JSON.parse(body));
+  return new Response('OK!');
+}
+```
+
+Add `SECRET_WEBHOOK_KEY` as a sensitive [environment variable for Expo Hosting](/eas/environment-variables/usage/#using-environment-variables-with-expo-hosting) in the `production` environment. Then export the project and deploy it to production:
+
+<Terminal
+  cmd={['$ npx expo export --platform web', '$ eas deploy --prod --environment production']}
+/>
+
+`eas deploy` uploads Expo Services environment variables only with the `--environment` flag. Without this flag, `SECRET_WEBHOOK_KEY` is undefined in the route.
+
+Use the production URL with the `/webhook` path as the webhook URL, for example, `https://my-app.expo.app/webhook`.
+
+### Express server
+
+Here's an example of how you can implement your server with Express:
 
 ```js server.js
 const crypto = require('crypto');

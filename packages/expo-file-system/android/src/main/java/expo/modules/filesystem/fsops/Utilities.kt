@@ -40,6 +40,11 @@ internal fun copyFileViaChannel(
 ): Boolean {
   val srcPfd = source.openFileDescriptor("r") ?: return false
   return srcPfd.use { src ->
+    // A pipe has no size (statSize is -1) and inCh.size() reports 0, so the channel copy
+    // would succeed with an empty file. Let the stream copy read it to the end instead.
+    if (src.statSize < 0) {
+      return false
+    }
     val dstPfd = dest.openFileDescriptor("w") ?: return false
     dstPfd.use { dst ->
       runCatching {

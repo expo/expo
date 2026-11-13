@@ -16,7 +16,6 @@ query Me {
   meUserActor {
     id
     appCount
-    profilePhoto
     username
     isExpoAdmin
     accounts {
@@ -25,7 +24,7 @@ query Me {
       ownerUserActor {
         username
         fullName
-        profilePhoto
+        primaryAccountProfileImageUrl
       }
     }
   }
@@ -53,7 +52,9 @@ query getBranchesWithCompatibleUpdate(
         ) {
           id
           message
-          runtimeVersion
+          runtime {
+            version
+          }
           createdAt
           manifestPermalink
         }
@@ -95,7 +96,9 @@ query getUpdatesWithFilters(
         updates(offset: ${'$'}offset, limit: ${'$'}limit, filter: { platform: ${'$'}platform }) {
           id
           message
-          runtimeVersion
+          runtime {
+            version
+          }
           createdAt
           manifestPermalink
         }
@@ -132,7 +135,7 @@ data class UserAccount(
   val ownerUserActor: OwnerUserActor? = null
 )
 
-data class OwnerUserActor(val profilePhoto: String? = null)
+data class OwnerUserActor(val primaryAccountProfileImageUrl: String? = null)
 
 // branches (covers both getBranches and getBranchesWithCompatibleUpdate)
 data class BranchesData(val app: BranchesApp? = null) {
@@ -162,10 +165,15 @@ data class UpdateBranchByName(val updates: List<UpdateInfo> = emptyList())
 data class UpdateInfo(
   val id: String,
   val message: String? = null,
-  val runtimeVersion: String? = null,
+  val runtime: UpdateRuntime? = null,
   val createdAt: String? = null,
   val manifestPermalink: String
-)
+) {
+  val runtimeVersion: String?
+    get() = runtime?.version
+}
+
+data class UpdateRuntime(val version: String)
 
 class GraphQLService(
   private val httpClientService: HttpClientService

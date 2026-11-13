@@ -2,6 +2,7 @@ import * as ciInfo from 'ci-info';
 import os from 'os';
 
 import { groupBy } from '../../array';
+import { getParentCommand } from '../../parentCommand';
 
 export function createContext() {
   return {
@@ -9,6 +10,7 @@ export function createContext() {
     device: { arch: os.arch(), memory: summarizeMemory() },
     cpu: summarizeCpuInfo(),
     app: { name: 'expo/cli', version: process.env.__EXPO_VERSION },
+    parent_command: getParentCommand(),
     ci: ciInfo.isCI ? { name: ciInfo.name, isPr: ciInfo.isPR } : undefined,
   };
 }

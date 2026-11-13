@@ -62,6 +62,9 @@
   }
 
   NSNumber *port = _bundleURL.port;
+  if (port == nil && [_bundleURL.scheme isEqualToString:@"https"]) {
+    port = @443;
+  }
   if (port == nil) {
     return host;
   } else if ([host containsString:@":"] && ![host hasPrefix:@"["]) {
