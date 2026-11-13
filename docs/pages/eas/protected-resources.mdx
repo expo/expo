@@ -7,6 +7,10 @@ import { Terminal } from '~/ui/components/Snippet';
 
 You can mark some Expo Services resources as protected. Only members with the Release Manager, Admin, or Owner [role](/accounts/account-types/#manage-access) can take protected actions on these resources. This is similar to the concept of protected branches on Git hosting services like GitHub, where only members with elevated permissions can push to them.
 
+## Expo Workflows and protected resources
+
+Workloads triggered by GitHub events, App Store Connect events, or a schedule act as the [GitHub App robot](/accounts/programmatic-access/#github-app-robot). This robot has the Developer role by default. To let these workloads access protected resources, give the robot the Release Manager role on the [Access tokens](https://expo.dev/accounts/[account]/settings/access-tokens) page.
+
 ## Protected channels
 
 When you protect an [Expo Update](/eas-update/how-it-works/) channel, only Release Managers, Admins, and Owners can:

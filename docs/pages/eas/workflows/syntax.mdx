@@ -776,7 +776,7 @@ permissions:
 - `developer`
 - `release_manager`
 
-The person or robot that starts the run must have the requested role or a higher one in the [role hierarchy](/accounts/account-types/#manage-access). Otherwise, the job fails.
+The person or robot that starts the run must have the requested role or a higher one in the [role hierarchy](/accounts/account-types/#manage-access). Otherwise, the job fails. Runs triggered by GitHub events, [App Store Connect events](#onapp_store_connect), or a schedule act as the [GitHub App robot](/accounts/programmatic-access/#github-app-robot), which has the Developer role by default.
 
 Without `permissions`, jobs act with the role of the person or robot that starts the run, up to Release Manager.
 
