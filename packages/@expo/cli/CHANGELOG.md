@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Internal] Include the parent CLI command in telemetry to distinguish nested command invocations. ([#53393](https://github.com/expo/expo/pull/53393) by [@davidmokos](https://github.com/davidmokos))
+
 ## 57.0.34 — 2026-11-12
 
 ### 🐛 Bug fixes
