@@ -70,7 +70,7 @@ internal struct ObservabilityManager {
     guard let until = state.dispatchAfterDate, until > Date() else {
       return false
     }
-    observeLogger.debug(
+    logger.debug(
       "[EAS Observe] \(signal) dispatch suppressed by retry gate until \(until)"
     )
     return true
@@ -109,7 +109,7 @@ internal struct ObservabilityManager {
           ObserveUserDefaults.lastDispatchedMetricId = highestId
         }
       } catch {
-        observeLogger.warn("[EAS Observe] Failed to read pending metrics: \(error.localizedDescription)")
+        logger.warn("[EAS Observe] Failed to read pending metrics: \(error.localizedDescription)")
       }
       return
     }
@@ -119,7 +119,7 @@ internal struct ObservabilityManager {
       fetchBatch: { cursor, limit in
         let metrics = try AppMetrics.getMetrics(afterId: cursor, limit: limit)
         if metrics.isEmpty {
-          observeLogger.debug("[EAS Observe] No new metrics to dispatch")
+          logger.debug("[EAS Observe] No new metrics to dispatch")
         }
         return metrics
       },
@@ -139,7 +139,7 @@ internal struct ObservabilityManager {
           ObserveUserDefaults.lastDispatchDate = Date.now
         case .partialSuccess(let partial):
           ObserveUserDefaults.lastDispatchDate = Date.now
-          observeLogger.warn(
+          logger.warn(
             "[EAS Observe] Partial success on batch of \(batchCount) metric row(s) past "
               + "id \(highestId): server rejected \(partial.rejectedCount) "
               + "(\(partial.errorMessage ?? "no error message"))"
@@ -147,12 +147,12 @@ internal struct ObservabilityManager {
         case .retryableFailure:
           break
         case .nonRetryableFailure(let reason):
-          observeLogger.warn(
+          logger.warn(
             "[EAS Observe] Dropping batch of \(batchCount) metric row(s) past id "
               + "\(highestId): \(reason)"
           )
         case .payloadTooLarge where batchCount == 1:
-          observeLogger.warn(
+          logger.warn(
             "[EAS Observe] Dropping metric row id \(highestId) because it exceeds the server payload limit"
           )
         case .payloadTooLarge:
@@ -185,7 +185,7 @@ internal struct ObservabilityManager {
           ObserveUserDefaults.lastDispatchedLogId = highestId
         }
       } catch {
-        observeLogger.warn("[EAS Observe] Failed to read pending logs: \(error.localizedDescription)")
+        logger.warn("[EAS Observe] Failed to read pending logs: \(error.localizedDescription)")
       }
       return
     }
@@ -197,7 +197,7 @@ internal struct ObservabilityManager {
       fetchBatch: { cursor, limit in
         let logs = try AppMetrics.getLogs(afterId: cursor, limit: limit)
         if logs.isEmpty {
-          observeLogger.debug("[EAS Observe] No new logs to dispatch")
+          logger.debug("[EAS Observe] No new logs to dispatch")
         }
         return logs
       },
@@ -233,18 +233,18 @@ internal struct ObservabilityManager {
           ObserveUserDefaults.lastDispatchDate = Date.now
         case .partialSuccess(let partial):
           ObserveUserDefaults.lastDispatchDate = Date.now
-          observeLogger.warn(
+          logger.warn(
             "[EAS Observe] Partial success on batch of \(sentCount) log row(s) past "
               + "id \(highestId): server rejected \(partial.rejectedCount) "
               + "(\(partial.errorMessage ?? "no error message"))"
           )
         case .nonRetryableFailure(let reason):
-          observeLogger.warn(
+          logger.warn(
             "[EAS Observe] Dropping batch of \(sentCount) log row(s) past id "
               + "\(highestId): \(reason)"
           )
         case .payloadTooLarge where batchCount == 1:
-          observeLogger.warn(
+          logger.warn(
             "[EAS Observe] Dropping log row id \(highestId) because it exceeds the server payload limit"
           )
         case .payloadTooLarge:
@@ -279,7 +279,7 @@ internal struct ObservabilityManager {
           try AppMetrics.deleteSpans(upToId: maxId)
         }
       } catch {
-        observeLogger.warn("[EAS Observe] Failed to drop undispatched spans: \(error.localizedDescription)")
+        logger.warn("[EAS Observe] Failed to drop undispatched spans: \(error.localizedDescription)")
       }
       return
     }
@@ -306,17 +306,17 @@ internal struct ObservabilityManager {
           ObserveUserDefaults.lastDispatchDate = Date.now
         case .partialSuccess(let partial):
           ObserveUserDefaults.lastDispatchDate = Date.now
-          observeLogger.warn(
+          logger.warn(
             "[EAS Observe] Partial success on batch of \(chunk.count) span(s): "
               + "server rejected \(partial.rejectedCount) "
               + "(\(partial.errorMessage ?? "no error message"))"
           )
         case .nonRetryableFailure(let reason):
-          observeLogger.warn(
+          logger.warn(
             "[EAS Observe] Dropping batch of \(chunk.count) span(s): \(reason)"
           )
         case .payloadTooLarge where chunk.count == 1:
-          observeLogger.warn("[EAS Observe] Dropping a span that exceeds the server payload limit")
+          logger.warn("[EAS Observe] Dropping a span that exceeds the server payload limit")
         case .retryableFailure, .payloadTooLarge:
           break
         }
@@ -333,7 +333,7 @@ internal struct ObservabilityManager {
     do {
       try AppMetrics.deleteSpans(upToId: upToId)
     } catch {
-      observeLogger.warn("[EAS Observe] Failed to delete dispatched spans: \(error.localizedDescription)")
+      logger.warn("[EAS Observe] Failed to delete dispatched spans: \(error.localizedDescription)")
     }
   }
 
@@ -385,7 +385,7 @@ internal struct ObservabilityManager {
     let urlString = urlString ?? defaultUrl
 
     guard let url = URL(string: urlString) else {
-      observeLogger.warn("[EAS Observe] Unable to set the endpoint url with string: \(urlString)")
+      logger.warn("[EAS Observe] Unable to set the endpoint url with string: \(urlString)")
       return
     }
     AppMetricsActor.isolated {
