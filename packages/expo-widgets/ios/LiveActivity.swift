@@ -5,6 +5,7 @@ final class LiveActivity: SharedObject {
   let id: String
   let name: String
   private var pushTokenObserverTask: Task<Void, Never>?
+  private var stateObserverTask: Task<Void, Never>?
 
   init(id: String, name: String) {
     self.id = id
@@ -17,14 +18,7 @@ final class LiveActivity: SharedObject {
       throw LiveActivityNotFoundException(id)
     }
 
-    return switch activity.activityState {
-    case .pending: "pending"
-    case .active: "active"
-    case .stale: "stale"
-    case .ended: "ended"
-    case .dismissed: "dismissed"
-    @unknown default: "unknown"
-    }
+    return Self.stateName(activity.activityState)
   }
 
   func update(props: String?, options: LiveActivityUpdateOptions) async throws {
@@ -74,6 +68,40 @@ final class LiveActivity: SharedObject {
     return tokenData.reduce("") { $0 + String(format: "%02x", $1) }
   }
 
+  func getProps() throws -> [String: Any]? {
+    guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
+      throw LiveActivityNotFoundException(id)
+    }
+
+    return activity.attributes.mergedProps(activity.content.state.props).flatMap(LiveActivityAttributes.jsonObject)
+  }
+
+  private static func stateName(_ state: ActivityState) -> String {
+    switch state {
+    case .pending: "pending"
+    case .active: "active"
+    case .stale: "stale"
+    case .ended: "ended"
+    case .dismissed: "dismissed"
+    @unknown default: "unknown"
+    }
+  }
+
+  func observeStateUpdates(for activity: Activity<LiveActivityAttributes>) {
+    guard stateObserverTask == nil else {
+      return
+    }
+
+    stateObserverTask = Task {
+      for await state in activity.activityStateUpdates {
+        emit(event: onActivityStateChanged, payload: [
+          "activityId": activity.id,
+          "state": Self.stateName(state)
+        ])
+      }
+    }
+  }
+
   func observePushTokenUpdates(for activity: Activity<LiveActivityAttributes>, pushNotificationsEnabled: Bool) {
     guard pushNotificationsEnabled else {
       return
@@ -97,5 +125,7 @@ final class LiveActivity: SharedObject {
   override func sharedObjectWillRelease() {
     pushTokenObserverTask?.cancel()
     pushTokenObserverTask = nil
+    stateObserverTask?.cancel()
+    stateObserverTask = nil
   }
 }

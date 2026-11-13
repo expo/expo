@@ -354,6 +354,37 @@ export type PushTokenEvent = {
 };
 
 /**
+ * Event emitted when the state of a Live Activity changes. Delivered only while the app process
+ * runs.
+ * @platform ios
+ */
+export type LiveActivityStateEvent = {
+  /**
+   * The ID of the Live Activity.
+   */
+  activityId: string;
+  /**
+   * The new state of the Live Activity.
+   */
+  state: LiveActivityState;
+};
+
+/**
+ * Event emitted when a Live Activity starts, including starts by push-to-start.
+ * @platform ios
+ */
+export type LiveActivityStartedEvent = {
+  /**
+   * The ID of the Live Activity.
+   */
+  activityId: string;
+  /**
+   * The name of the Live Activity, as passed to `createLiveActivity`.
+   */
+  name: string;
+};
+
+/**
  * Event emitted when a push-to-start token is received.
  * @platform ios
  */
@@ -400,6 +431,12 @@ export type ExpoWidgetsEvents = {
    * @platform ios
    */
   onExpoWidgetsPushToStartTokenReceived: (event: PushToStartTokenEvent) => void;
+  /**
+   * Function that is invoked when a Live Activity starts.
+   * @param event Start event details.
+   * @platform ios
+   */
+  onExpoWidgetsLiveActivityStarted: (event: LiveActivityStartedEvent) => void;
 };
 
 /**
@@ -411,6 +448,11 @@ export type LiveActivityEvents = {
    * @param event Token event details.
    */
   onExpoWidgetsTokenReceived: (event: PushTokenEvent) => void;
+  /**
+   * Function that is invoked when the state of a Live Activity changes.
+   * @param event State event details.
+   */
+  onExpoWidgetsLiveActivityStateChanged: (event: LiveActivityStateEvent) => void;
 };
 
 export declare class NativeWidgetObject extends SharedObject {
@@ -455,4 +497,5 @@ export declare class NativeLiveActivity extends SharedObject<LiveActivityEvents>
     contentDate?: number
   ): Promise<void>;
   getPushToken(): Promise<string | null>;
+  getProps(): Record<string, any> | null;
 }

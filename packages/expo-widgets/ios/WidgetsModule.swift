@@ -7,15 +7,18 @@ let pushNotificationsEnabledKey: String = "ExpoWidgets_EnablePushNotifications"
 let onUserInteraction = "onExpoWidgetsUserInteraction"
 let onPushToStartTokenReceived = "onExpoWidgetsPushToStartTokenReceived"
 let onTokenReceived = "onExpoWidgetsTokenReceived"
+let onActivityStateChanged = "onExpoWidgetsLiveActivityStateChanged"
+let onLiveActivityStarted = "onExpoWidgetsLiveActivityStarted"
 let onUserInteractionNotification = Notification.Name(onUserInteraction)
 
 public final class WidgetsModule: Module {
   var pushToStartTokenObserverTask: Task<Void, Never>?
+  var liveActivityStartObserverTask: Task<Void, Never>?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoWidgets")
 
-    Events(onPushToStartTokenReceived, onTokenReceived, onUserInteraction)
+    Events(onPushToStartTokenReceived, onTokenReceived, onActivityStateChanged, onLiveActivityStarted, onUserInteraction)
 
     OnStartObserving(onUserInteraction) {
       NotificationCenter.default.addObserver(
@@ -43,6 +46,20 @@ public final class WidgetsModule: Module {
     OnStopObserving(onPushToStartTokenReceived) {
       pushToStartTokenObserverTask?.cancel()
       pushToStartTokenObserverTask = nil
+    }
+
+    OnDestroy {
+      pushToStartTokenObserverTask?.cancel()
+      liveActivityStartObserverTask?.cancel()
+    }
+
+    OnStartObserving(onLiveActivityStarted) {
+      observeLiveActivityStarts()
+    }
+
+    OnStopObserving(onLiveActivityStarted) {
+      liveActivityStartObserverTask?.cancel()
+      liveActivityStartObserverTask = nil
     }
 
     Constant("widgetsDirectory") { () -> String? in
@@ -123,6 +140,10 @@ public final class WidgetsModule: Module {
       AsyncFunction("getPushToken") { (instance: LiveActivity) in
         try instance.getPushToken()
       }
+
+      Function("getProps") { (instance: LiveActivity) in
+        try instance.getProps()
+      }
     }
   }
 
@@ -155,6 +176,18 @@ public final class WidgetsModule: Module {
         if token != initialToken {
           sendPushToStartToken(activityPushToStartToken: token)
         }
+      }
+    }
+  }
+
+  private func observeLiveActivityStarts() {
+    liveActivityStartObserverTask?.cancel()
+    liveActivityStartObserverTask = Task {
+      for await activity in Activity<LiveActivityAttributes>.activityUpdates {
+        sendEvent(onLiveActivityStarted, [
+          "activityId": activity.id,
+          "name": activity.content.state.name
+        ])
       }
     }
   }

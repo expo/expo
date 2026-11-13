@@ -48,6 +48,7 @@ final class LiveActivityFactory: SharedObject {
 
       let instance = LiveActivity(id: activity.id, name: name)
       instance.observePushTokenUpdates(for: activity, pushNotificationsEnabled: LiveActivityFactory.pushNotificationsEnabled)
+      instance.observeStateUpdates(for: activity)
       instances[activity.id] = instance
       return instance
     } catch let error as ScheduledLiveActivitiesNotSupportedException {
@@ -68,11 +69,13 @@ final class LiveActivityFactory: SharedObject {
     return activities.map { activity in
       if let instance = instances[activity.id] {
         instance.observePushTokenUpdates(for: activity, pushNotificationsEnabled: Self.pushNotificationsEnabled)
+        instance.observeStateUpdates(for: activity)
         return instance
       }
 
       let instance = LiveActivity(id: activity.id, name: name)
       instance.observePushTokenUpdates(for: activity, pushNotificationsEnabled: Self.pushNotificationsEnabled)
+      instance.observeStateUpdates(for: activity)
       instances[activity.id] = instance
       return instance
     }

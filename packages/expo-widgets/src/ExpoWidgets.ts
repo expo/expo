@@ -8,6 +8,7 @@ import type {
 import type {
   ExpoTimelineEntry,
   ExpoWidgetsEvents,
+  LiveActivityState,
   NativeLiveActivity,
   NativeLiveActivityFactory,
   NativeLiveActivityStartOptions,
@@ -45,6 +46,12 @@ class LiveActivityStub {
     _contentDate?: number
   ): Promise<void> {}
   async getPushToken(): Promise<string | null> {
+    return null;
+  }
+  getState(): LiveActivityState {
+    return 'dismissed';
+  }
+  getProps(): Record<string, any> | null {
     return null;
   }
   addListener(_eventName: string, _listener: (...args: unknown[]) => void): EventSubscription {

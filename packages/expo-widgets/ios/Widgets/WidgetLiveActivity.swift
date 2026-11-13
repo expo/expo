@@ -7,6 +7,8 @@ struct LiveActivityAttributes: ActivityAttributes {
   // The deep link URL passed to start(). Stored in the static attributes so it is
   // scoped to this activity and survives content updates, unlike ContentState.
   var url: String?
+  // A JSON string set only by push-to-start `attributes`. Content-state props override it key by key.
+  var props: String?
 
   public struct ContentState: Codable, Hashable {
     var name: String
@@ -15,6 +17,17 @@ struct LiveActivityAttributes: ActivityAttributes {
 
   init(url: String? = nil) {
     self.url = url
+  }
+
+  func mergedProps(_ stateProps: String?) -> String? {
+    guard let props, let base = Self.jsonObject(props) else { return stateProps }
+    let merged = base.merging(stateProps.flatMap(Self.jsonObject) ?? [:]) { _, state in state }
+    guard let data = try? JSONSerialization.data(withJSONObject: merged) else { return stateProps }
+    return String(decoding: data, as: UTF8.self)
+  }
+
+  static func jsonObject(_ json: String) -> [String: Any]? {
+    (try? JSONSerialization.jsonObject(with: Data(json.utf8))) as? [String: Any]
   }
 }
 
@@ -29,7 +42,7 @@ public struct WidgetLiveActivity: Widget {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
       let nodes = getLiveActivityNodes(
         forName: context.state.name,
-        props: context.state.props,
+        props: context.attributes.mergedProps(context.state.props),
         environment: getLiveActivityEnvironment(for: env, in: context)
       )
       // Only apply widgetURL when the activity has one: a hierarchy with more than one
@@ -44,7 +57,7 @@ public struct WidgetLiveActivity: Widget {
     } dynamicIsland: { context in
       let nodes = getLiveActivityNodes(
         forName: context.state.name,
-        props: context.state.props,
+        props: context.attributes.mergedProps(context.state.props),
         environment: getLiveActivityEnvironment(for: env, in: context)
       )
       let island = DynamicIsland {
