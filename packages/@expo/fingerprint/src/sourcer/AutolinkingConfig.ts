@@ -1,9 +1,16 @@
 import path from 'path';
 
+import { stringCompareNoLocale } from '../Sort';
 import { toPosixPath } from '../utils/Path';
 
 const NAMED_ARRAY_KEYS = new Set(['modules', 'projects', 'plugins', 'pods', 'extraDependencies']);
-const STRING_ARRAY_KEYS = new Set(['coreFeatures', 'configurations', 'buildTypes']);
+const STRING_ARRAY_KEYS = new Set([
+  'coreFeatures',
+  'configurations',
+  'buildTypes',
+  'packages',
+  'componentDescriptors',
+]);
 
 const FILE_URL_REGEX = /^file:/i;
 const NETWORK_URL_REGEX = /^[a-z][a-z0-9+.-]*:\/\//i;
@@ -82,16 +89,16 @@ function namedMapToSortedArray(
   map: Record<string, Record<string, unknown>>
 ): Record<string, unknown>[] {
   return Object.entries(map)
-    .sort(([left], [right]) => compareStrings(left, right))
+    .sort(([left], [right]) => stringCompareNoLocale(left, right))
     .map(([name, child]) => ({ ...child, name }));
 }
 
 function sortKnownArray(parentKey: string | undefined, items: unknown[]): unknown[] {
   if (parentKey && STRING_ARRAY_KEYS.has(parentKey)) {
-    return [...items].sort((left, right) => compareStrings(String(left), String(right)));
+    return [...items].sort((left, right) => stringCompareNoLocale(String(left), String(right)));
   }
   if (parentKey && NAMED_ARRAY_KEYS.has(parentKey)) {
-    return [...items].sort((left, right) => compareStrings(namedKey(left), namedKey(right)));
+    return [...items].sort((left, right) => stringCompareNoLocale(namedKey(left), namedKey(right)));
   }
   return items;
 }
@@ -107,16 +114,6 @@ function namedKey(value: unknown): string {
     }
   }
   return '';
-}
-
-function compareStrings(left: string, right: string): number {
-  if (left < right) {
-    return -1;
-  }
-  if (left > right) {
-    return 1;
-  }
-  return 0;
 }
 
 /**

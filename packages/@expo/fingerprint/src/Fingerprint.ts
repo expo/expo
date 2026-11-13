@@ -69,7 +69,7 @@ export async function diffFingerprintChangesAsync(
 }
 
 /**
- * Diff two fingerprints. The implementation assumes that the sources are sorted.
+ * Diff two fingerprints.
  *
  * @example
  * ```ts
@@ -88,10 +88,12 @@ export function diffFingerprints(
   fingerprint1: Fingerprint,
   fingerprint2: Fingerprint
 ): FingerprintDiffItem[] {
+  const sources1 = sortSources([...fingerprint1.sources]);
+  const sources2 = sortSources([...fingerprint2.sources]);
   let index1 = 0;
   let index2 = 0;
-  let source1 = fingerprint1.sources[index1];
-  let source2 = fingerprint2.sources[index2];
+  let source1 = sources1[index1];
+  let source2 = sources2[index2];
   const diff: FingerprintDiffItem[] = [];
 
   while (source1 != null && source2 != null) {
@@ -100,24 +102,24 @@ export function diffFingerprints(
       if (source1.hash !== source2.hash) {
         diff.push({ op: 'changed', beforeSource: source1, afterSource: source2 });
       }
-      source1 = fingerprint1.sources[++index1];
-      source2 = fingerprint2.sources[++index2];
+      source1 = sources1[++index1];
+      source2 = sources2[++index2];
     } else if (compareResult < 0) {
       diff.push({ op: 'removed', removedSource: source1 });
-      source1 = fingerprint1.sources[++index1];
+      source1 = sources1[++index1];
     } else {
       diff.push({ op: 'added', addedSource: source2 });
-      source2 = fingerprint2.sources[++index2];
+      source2 = sources2[++index2];
     }
   }
 
   while (source1 != null) {
     diff.push({ op: 'removed', removedSource: source1 });
-    source1 = fingerprint1.sources[++index1];
+    source1 = sources1[++index1];
   }
   while (source2 != null) {
     diff.push({ op: 'added', addedSource: source2 });
-    source2 = fingerprint2.sources[++index2];
+    source2 = sources2[++index2];
   }
 
   return diff;
