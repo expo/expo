@@ -9,7 +9,7 @@ import { useComponent } from '../../fork/useComponent';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
-import { GuardContext, GuardOwnerContext, getResolvedGuard } from '../../layouts/GuardContext';
+import { GuardContext, getResolvedGuard } from '../../layouts/GuardContext';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
@@ -256,9 +256,9 @@ export function useNavigationBuilder<
 ) {
   useRegisterNavigator();
   const routeNode = useRouteNode();
-  const guards = use(GuardContext);
+  const guardState = use(GuardContext);
   // Some navigators render their guard provider below this hook, where the context still holds parent guards.
-  const ownGuards = use(GuardOwnerContext) === routeNode ? guards : null;
+  const ownGuards = guardState?.owner === routeNode ? guardState.guards : null;
   const enqueue = useEnqueueRoutingIntent();
 
   const {

@@ -30,10 +30,17 @@ export type ResolvedGuard =
 // Per route name; a missing entry means the route is unguarded.
 export type ResolvedGuards = Map<string, ResolvedGuard>;
 
-export const GuardContext = createContext<ResolvedGuards | null>(null);
-// The navigator route whose guards `GuardContext` holds.
-export const GuardOwnerContext = createContext<RouteNode | null>(null);
-const GuardFallbackContext = createContext<GuardFallback[]>([]);
+type GuardState = {
+  // The navigator route whose guards this is.
+  owner: RouteNode;
+  guards: ResolvedGuards;
+  // Nearest first. Child navigators inherit them.
+  fallbacks: GuardFallback[];
+};
+
+export const GuardContext = createContext<GuardState | null>(null);
+// Stable, so a root navigator does not recompute its guards on every render.
+const noFallbacks: GuardFallback[] = [];
 
 export function GuardContextProvider({
   node,
@@ -44,21 +51,15 @@ export function GuardContextProvider({
   guardedRedirects: GuardedRedirects;
   children: ReactNode;
 }) {
-  const parentFallbacks = use(GuardFallbackContext);
+  const parentFallbacks = use(GuardContext)?.fallbacks ?? noFallbacks;
   const params = use(LocalRouteParamsContext);
   const guardConfigurationKey = serializeGuardedRedirects(guardedRedirects);
-  const { fallbacks, resolvedGuards } = useMemo(
+  const guardState = useMemo(
     () => computeGuardState(node, guardedRedirects, params, parentFallbacks),
     [node, node?.children, node?.contextKey, params, parentFallbacks, guardConfigurationKey]
   );
 
-  return (
-    <GuardFallbackContext value={fallbacks}>
-      <GuardOwnerContext value={node}>
-        <GuardContext value={resolvedGuards}>{children}</GuardContext>
-      </GuardOwnerContext>
-    </GuardFallbackContext>
-  );
+  return <GuardContext value={guardState}>{children}</GuardContext>;
 }
 
 function computeGuardState(
@@ -66,7 +67,7 @@ function computeGuardState(
   guardedRedirects: GuardedRedirects,
   params: object | undefined,
   parentFallbacks: GuardFallback[]
-) {
+): GuardState {
   if (!node) {
     throw new Error(
       'Expo Router could not find the route of this navigator, so it cannot choose a fallback for protected routes. ' +
@@ -81,11 +82,12 @@ function computeGuardState(
     : inheritedFallbacks;
 
   return {
-    fallbacks,
-    resolvedGuards: resolveGuardRedirects(
+    owner: node,
+    guards: resolveGuardRedirects(
       guardedRedirects,
       getFallbackGuard(navigatorFallback, inheritedFallbacks[0])
     ),
+    fallbacks,
   };
 }
 
@@ -107,7 +109,7 @@ export function useResolvedGuard({
 }: {
   routeName: string | undefined;
 }): ResolvedGuard | undefined {
-  const guards = use(GuardContext);
+  const guards = use(GuardContext)?.guards;
   if (!guards || routeName === undefined) {
     return undefined;
   }
