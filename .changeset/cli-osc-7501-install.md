@@ -2,4 +2,4 @@
 '@expo/cli': patch
 ---
 
-Report installing packages to the terminal with OSC 7501 program status.
+Report OSC 7501 program status while installing packages.
