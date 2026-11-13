@@ -1,6 +1,5 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
 import Foundation
 
 /// Collects the attributes and events of one in-flight span and builds its `SpanRow` when the

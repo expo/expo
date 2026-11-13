@@ -1,6 +1,6 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
+import UIKit
 
 /// A `Sendable` snapshot of the device's power and thermal state. Fields are
 /// optional so missing OS data (Simulator, brief windows where the OS hasn't

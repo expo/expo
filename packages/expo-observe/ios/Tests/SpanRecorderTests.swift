@@ -235,7 +235,7 @@ struct SpanRecorderDatabaseTests {
 struct SpanHandleTests {
   @Test
   func `ending with an unknown status records the span with an unset status`() {
-    let rows = Mutex<[SpanRow]>([])
+    let rows = ExpoObserve.Mutex<[SpanRow]>([])
     let handle = SpanHandle(recorder: makeRecorder()) { row in
       rows.withLock { $0.append(row) }
     }

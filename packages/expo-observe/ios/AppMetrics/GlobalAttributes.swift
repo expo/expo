@@ -1,7 +1,5 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
-
 /// Holds caller-provided global attributes that are merged into every subsequent
 /// metric's `params` and log record's `attributes`. Values live for the
 /// lifetime of the SDK instance and are cleared on app restart — persistent
