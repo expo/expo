@@ -23,7 +23,7 @@ struct SpanClassTests {
 
   @Test
   func `the class is exposed as Span`() throws {
-    // The Swift type is `SpanHandle`; JavaScript sees the `@SharedObject("Span")` name, as on Android.
+    // The Swift type is `SpanObject`; JavaScript sees the `@SharedObject("Span")` name, as on Android.
     #expect(try runtime.eval("typeof expo.modules.ExpoAppMetrics.Span").asString() == "function")
   }
 
