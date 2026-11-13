@@ -17,13 +17,13 @@ let REQUEST_COMPLETED_EVENT = "requestCompleted"
 ///
 /// The class only forwards events — it doesn't store request history. Use `NetworkRequestMonitor`'s
 /// in-process API for that.
-public final class NetworkRequestObserver: SharedObject, NetworkRequestObserverDelegate, @unchecked Sendable {
+final class NetworkRequestObserver: SharedObject, NetworkRequestObserverDelegate, @unchecked Sendable {
   /// The active filter, or `nil` to observe every request. Held in a `Mutex` so the read from the
   /// monitor's fan-out (`shouldObserveRequest`) and the swap from `setFilter` are atomic: a
   /// `setFilter` call never leaves a request evaluated under a half-applied filter.
   private let filter = Mutex<NetworkRequestFilter?>(nil)
 
-  public init(filter: NetworkRequestFilter? = nil) {
+  init(filter: NetworkRequestFilter? = nil) {
     super.init()
     self.filter.withLock { $0 = filter }
     AppMetricsActor.isolated { [weak self] in
@@ -36,11 +36,11 @@ public final class NetworkRequestObserver: SharedObject, NetworkRequestObserverD
 
   /// Replaces the active filter. Pass `nil` to observe every request. The swap is atomic: a request
   /// mid-fan-out is evaluated against either the old or the new filter, never a mix.
-  public func setFilter(_ filter: NetworkRequestFilter?) {
+  func setFilter(_ filter: NetworkRequestFilter?) {
     self.filter.withLock { $0 = filter }
   }
 
-  public override func sharedObjectWillRelease() {
+  override func sharedObjectWillRelease() {
     // The monitor holds delegates weakly, but deregister explicitly so the slot doesn't linger
     // until the next fan-out prunes it — matches the Android `sharedObjectDidRelease` cleanup.
     AppMetricsActor.isolated { [weak self] in
@@ -54,15 +54,15 @@ public final class NetworkRequestObserver: SharedObject, NetworkRequestObserverD
 
   // MARK: - NetworkRequestObserverDelegate
 
-  public func onNetworkRequestStarted(_ request: NetworkRequestStarted) {
+  func onNetworkRequestStarted(_ request: NetworkRequestStarted) {
     emit(event: REQUEST_STARTED_EVENT, payload: NetworkRequestObserver.startedPayload(for: request))
   }
 
-  public func onNetworkRequestCompleted(_ request: NetworkRequest) {
+  func onNetworkRequestCompleted(_ request: NetworkRequest) {
     emit(event: REQUEST_COMPLETED_EVENT, payload: NetworkRequestObserver.completedPayload(for: request))
   }
 
-  public func shouldObserveRequest(url: URL, method: String) -> Bool {
+  func shouldObserveRequest(url: URL, method: String) -> Bool {
     guard let filter = filter.withLock({ $0 }) else {
       return true
     }

@@ -2,11 +2,11 @@ import SystemConfiguration
 import UIKit
 
 /// Provides some basic information about the device.
-public struct DeviceInfo: Codable, Equatable, Sendable {
-  public let modelName: String
-  public let modelIdentifier: String
-  public let systemName: String
-  public let systemVersion: String
+struct DeviceInfo: Codable, Equatable, Sendable {
+  let modelName: String
+  let modelIdentifier: String
+  let systemName: String
+  let systemVersion: String
 
   nonisolated(unsafe) private static var _current: DeviceInfo?
 

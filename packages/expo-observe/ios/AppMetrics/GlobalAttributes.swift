@@ -10,7 +10,7 @@ import ExpoModulesCore
 /// The store is guarded by a `Mutex` so it can be read from the JS thread,
 /// the `AppMetricsActor`-driven persistence path, and the SDK's metric
 /// producers without contention.
-public enum GlobalAttributes {
+enum GlobalAttributes {
   private static let store = Mutex<[String: Any]>([:])
 
   /// Replaces the current set of global attributes. The input is sanitized using
@@ -18,7 +18,7 @@ public enum GlobalAttributes {
   /// rejected, per-record cap).
   ///
   /// Passing an empty map or `nil` clears the store.
-  public static func set(_ attributes: [String: Any]?) {
+  static func set(_ attributes: [String: Any]?) {
     let sanitized = sanitizeLogEventAttributes(attributes)
     store.withLock { state in
       state = sanitized.attributes ?? [:]

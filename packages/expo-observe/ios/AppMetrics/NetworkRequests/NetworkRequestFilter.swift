@@ -16,15 +16,15 @@ import Foundation
 /// through it (an empty allow-list matches no value), so any empty field drops every request. A
 /// filter with no fields set matches every request, matching the no-filter default.
 @Record
-public struct NetworkRequestFilter: Sendable {
-  public var hosts: [String]?
+struct NetworkRequestFilter: Sendable {
+  var hosts: [String]?
 
-  public var methods: [String]?
+  var methods: [String]?
 
   /// Returns whether a request with the given URL and method passes this filter. Host and method
   /// comparisons are case-insensitive. An unset (`nil`) field places no constraint on its
   /// dimension; a field set to an empty array allows nothing through it.
-  public func matches(url: URL, method: String) -> Bool {
+  func matches(url: URL, method: String) -> Bool {
     if let hosts {
       let host = url.host?.lowercased()
       let allowed = hosts.contains { $0.lowercased() == host }
