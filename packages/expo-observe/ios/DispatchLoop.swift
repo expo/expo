@@ -20,7 +20,7 @@ internal enum DispatchLoop {
       do {
         fetchedRows = try fetchBatch(cursor, chunkSize)
       } catch {
-        observeLogger.warn("[EAS Observe] Failed to read pending rows: \(error.localizedDescription)")
+        logger.warn("[EAS Observe] Failed to read pending rows: \(error.localizedDescription)")
         return
       }
       guard !fetchedRows.isEmpty else {
@@ -38,7 +38,7 @@ internal enum DispatchLoop {
         do {
           result = try await send(rows)
         } catch {
-          observeLogger.warn("[EAS Observe] Failed to assemble or send pending rows: \(error.localizedDescription)")
+          logger.warn("[EAS Observe] Failed to assemble or send pending rows: \(error.localizedDescription)")
           return
         }
 
