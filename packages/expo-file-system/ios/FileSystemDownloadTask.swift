@@ -450,7 +450,7 @@ private final class DownloadTaskDelegate: NSObject, NetworkTaskDelegate {
       }
       downloadedFileUri = resolvedUrl
     } catch {
-      saveError = UnableToDownloadException("Failed to move downloaded file: \(describeDownloadError(error))")
+      saveError = UnableToDownloadException("Failed to move downloaded file: \(error.localizedDescriptionWithCode)")
     }
   }
 
@@ -482,6 +482,6 @@ private final class DownloadTaskDelegate: NSObject, NetworkTaskDelegate {
       return
     }
 
-    promise.reject(UnableToDownloadException(describeDownloadError(error)))
+    promise.reject(UnableToDownloadException(error.localizedDescriptionWithCode))
   }
 }
