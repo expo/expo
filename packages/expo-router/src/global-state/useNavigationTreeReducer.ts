@@ -17,12 +17,17 @@ import type {
 import { getChainFromStateKey } from '../react-navigation/routers/stateKeys';
 import useLatestCallback from '../utils/useLatestCallback';
 import {
+  applyReplayedRestore,
   applyRouterHistoryAction,
   createBrowserHistory,
   restoreNavigationFromBrowser,
   updateCurrentHistoryEntry,
 } from './browserHistory';
-import type { BrowserHistory, BrowserHistoryEvent } from './browserHistory.types';
+import type {
+  BrowserHistory,
+  BrowserHistoryEvent,
+  BrowserHistoryProjection,
+} from './browserHistory.types';
 import {
   completeNavigationState,
   createSeededNavigationState,
@@ -251,11 +256,22 @@ function reduceOperation(
   if (next.state === result.state || !next.history) {
     return next;
   }
-  // Structural repairs are not navigations, so they never move the browser.
-  const projected =
-    operation.type === 'NAVIGATOR_UNMOUNTED' || operation.type === 'NAVIGATOR_CHANGED'
-      ? updateCurrentHistoryEntry(next.history, next.state, config)
-      : applyRouterHistoryAction(next.history, next.state, config, next.browserHistoryAction);
+  let projected: BrowserHistoryProjection | undefined;
+  if (operation.type === 'NAVIGATOR_UNMOUNTED' || operation.type === 'NAVIGATOR_CHANGED') {
+    // Structural repairs are not navigations, so they never move the browser.
+    projected = updateCurrentHistoryEntry(next.history, next.state, config);
+  } else {
+    // A replayed browser restore, e.g. `repeat()` from `usePreventRemove`, returns to its entry.
+    if (operation.type === 'ACTION') {
+      projected = applyReplayedRestore(next.history, next.state, config, operation.payload.action);
+    }
+    projected ??= applyRouterHistoryAction(
+      next.history,
+      next.state,
+      config,
+      next.browserHistoryAction
+    );
+  }
   return appendReportEvents({ ...next, history: projected.history }, projected.events);
 }
 
