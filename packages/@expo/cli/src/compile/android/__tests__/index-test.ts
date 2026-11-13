@@ -127,26 +127,37 @@ it('builds a production apk', async () => {
   );
 });
 
-it('refuses the default production store file', async () => {
-  await expect(expoCompileAndroid([])).rejects.toThrow(/EXIT_CALLED/);
+it('builds a production aab by default', async () => {
+  vol.fromJSON({ 'android/app/build/outputs/bundle/release/app-release.aab': '' }, '/app');
 
-  expect(Log.exit).toHaveBeenCalledWith(
-    expect.objectContaining({
-      message: 'Building an aab is not supported yet. Pass --output-type apk to build an apk.',
-    })
+  await expoCompileAndroid([]);
+
+  expect(loadEnvFiles).toHaveBeenCalledWith('/app', { mode: 'production' });
+  expect(spawnAsync).toHaveBeenCalledWith(
+    '/app/android/gradlew',
+    ['app:bundleRelease', '-x', 'lint', '-x', 'test', '--configure-on-demand', '--build-cache'],
+    { cwd: '/app/android', stdio: 'inherit' }
   );
+  expect(Log.log).toHaveBeenCalledWith(
+    expect.stringContaining('Binary: /app/android/app/build/outputs/bundle/release/app-release.aab')
+  );
+  const done = jest.mocked(event.span).mock.results[0]?.value;
+  expect(done).toHaveBeenCalledWith('done', {
+    platform: 'android',
+    mode: 'production',
+    outputType: 'aab',
+    outputPath: '/app/android/app/build/outputs/bundle/release/app-release.aab',
+  });
 });
 
 it('refuses unsupported flags before finding the project', async () => {
   vol.reset();
 
-  await expect(expoCompileAndroid(['--dev', '--output-type', 'aab'])).rejects.toThrow(
-    /EXIT_CALLED/
-  );
+  await expect(expoCompileAndroid(['--device', 'emulator-5554'])).rejects.toThrow(/EXIT_CALLED/);
 
   expect(Log.exit).toHaveBeenCalledWith(
     expect.objectContaining({
-      message: 'Building an aab is not supported yet. Pass --output-type apk to build an apk.',
+      message: 'Device builds are not supported yet. Omit --device to build for all architectures.',
     })
   );
   expect(loadEnvFiles).not.toHaveBeenCalled();
