@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import androidx.glance.action.Action
 import androidx.glance.appwidget.action.actionSendBroadcast
+import androidx.glance.appwidget.action.actionStartActivity
 import expo.modules.widgets.notifications.ExpoWidgetsNotificationReceiver
 
 internal const val WIDGET_INTERACTION_ACTION = "expo.modules.widgets.ACTION_WIDGET_INTERACTION"
@@ -50,6 +51,18 @@ internal fun WidgetInteraction.toGlanceAction(context: Context): Action {
     .putExtra(WIDGET_INTERACTION_SOURCE_EXTRA, source.name)
     .putExtra(WIDGET_INTERACTION_TARGET_EXTRA, target)
   return actionSendBroadcast(intent)
+}
+
+/**
+ * Opens [url] in the app. The view intent is the click's own PendingIntent: a broadcast receiver
+ * cannot start an activity from the background on Android 10+, so a button that opens a deep link
+ * cannot go through the interaction broadcast.
+ */
+internal fun openUrlAction(context: Context, url: String): Action {
+  val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+    .setPackage(context.packageName)
+    .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+  return actionStartActivity(intent)
 }
 
 internal object WidgetsInteraction {
