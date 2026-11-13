@@ -87,6 +87,23 @@ public macro JS(_ jsName: String? = nil, _ options: JSOptions...) =
 public macro JS(_ options: JSOptions...) =
   #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
 
+/// Binds the member under a well-known symbol instead of a name, for example `@JS(symbol: .iterator)` binds
+/// a function as `[Symbol.iterator]`, and `@JS(symbol: .toStringTag)` binds a property as
+/// `[Symbol.toStringTag]`. Applies to a function or property, not to an initializer.
+///
+///     @JS(symbol: .iterator)
+///     func makeIterator() -> JavaScriptObject { ... }
+@attached(peer, names: arbitrary)
+public macro JS(symbol: JavaScriptSymbol.WellKnown, _ options: JSOptions...) =
+  #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
+
+/// Binds the member under the symbol that the global symbol registry holds for the key, like
+/// `Symbol.for(key)` in JavaScript, for example `@JS(symbol: "app.id")`. The key must be a string literal.
+/// Applies to a function or property, not to an initializer.
+@attached(peer, names: arbitrary)
+public macro JS(symbol: String, _ options: JSOptions...) =
+  #externalMacro(module: "ExpoModulesMacros", type: "JSMacro")
+
 /// Options passed to `@Event` after the optional JS name, e.g. `@Event(.inline)` or
 /// `@Event("tick", .blocking)`. The macro reads them from the source, so spell them as `.option`
 /// literals rather than constants. Without an option, the event is scheduled on the JavaScript thread

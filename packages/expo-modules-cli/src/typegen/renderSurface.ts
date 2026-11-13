@@ -575,6 +575,10 @@ function renderProperty(
   { includeStatic }: MemberOptions
 ): string | null {
   const ctx = makeContext(owner.file, `${owner.name}.${property.name}`);
+  const name = symbolMemberName(property, ctx);
+  if (name === null) {
+    return null;
+  }
   if (!names.claimProperty(memberKey(property.jsName, includeStatic && property.static))) {
     ctx.warn('skipped', memberTakenWarning(property.jsName));
     return null;
@@ -587,7 +591,7 @@ function renderProperty(
     type = 'unknown';
   }
   const modifiers = `${includeStatic && property.static ? 'static ' : ''}${property.readonly ? 'readonly ' : ''}`;
-  return `${modifiers}${memberName(property.jsName)}: ${type};`;
+  return `${modifiers}${name}: ${type};`;
 }
 
 /** Renders one function, or `null` when a property already owns its name in the body. */
@@ -599,13 +603,40 @@ function renderFunction(
   { includeStatic }: MemberOptions
 ): string | null {
   const location = `${owner.name}.${fn.name}`;
+  const name = symbolMemberName(fn, makeContext(owner.file, location));
+  if (name === null) {
+    return null;
+  }
   if (!names.claimFunction(memberKey(fn.jsName, includeStatic && fn.static))) {
     makeContext(owner.file, location).warn('skipped', memberTakenWarning(fn.jsName));
     return null;
   }
   const parameters = renderParameters(fn.parameters, owner.file, location, makeContext);
   const returns = renderReturnType(fn.returns, fn.async, makeContext(owner.file, `${location}()`));
-  return `${includeStatic && fn.static ? 'static ' : ''}${memberName(fn.jsName)}(${parameters}): ${returns};`;
+  return `${includeStatic && fn.static ? 'static ' : ''}${name}(${parameters}): ${returns};`;
+}
+
+/**
+ * The name a function or property is declared under: its JS name, or for a member bound under a
+ * well-known symbol, the computed name `[Symbol.iterator]`. `null` for a member bound under a
+ * registered symbol, which TypeScript can't declare in a class: a computed member name needs a
+ * `unique symbol` type, and `Symbol.for()` returns `symbol`.
+ */
+function symbolMemberName(
+  member: ExportedFunction | ExportedProperty,
+  ctx: RenderContext
+): string | null {
+  if (!member.symbol) {
+    return memberName(member.jsName);
+  }
+  if (member.symbol.kind === 'wellKnown') {
+    return `[Symbol.${member.symbol.name}]`;
+  }
+  ctx.warn(
+    'skipped',
+    `TypeScript can't declare a class member under '${member.jsName}', so this one was skipped`
+  );
+  return null;
 }
 
 function renderParameters(

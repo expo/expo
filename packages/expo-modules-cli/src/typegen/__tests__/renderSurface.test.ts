@@ -458,6 +458,104 @@ export declare class M extends NativeModule {
     expect(result.source).toContain('"with\\nnewline": number;');
   });
 
+  it('declares a member bound under a well-known symbol with a computed name', () => {
+    const result = render({
+      ...emptySurface,
+      sharedObjects: [
+        {
+          name: 'Cache',
+          jsName: 'Cache',
+          file: FILE,
+          events: [],
+          properties: [
+            {
+              name: 'tag',
+              jsName: 'Symbol.toStringTag',
+              symbol: { kind: 'wellKnown', name: 'toStringTag' },
+              type: Str,
+              readonly: true,
+              static: false,
+            },
+          ],
+          functions: [
+            {
+              name: 'makeIterator',
+              jsName: 'Symbol.iterator',
+              symbol: { kind: 'wellKnown', name: 'iterator' },
+              parameters: [],
+              returns: Int,
+              async: false,
+              throws: false,
+              static: false,
+            },
+            {
+              name: 'isCache',
+              jsName: 'Symbol.hasInstance',
+              symbol: { kind: 'wellKnown', name: 'hasInstance' },
+              parameters: [{ label: '_', name: 'value', type: Int, optional: false }],
+              returns: Bool,
+              async: false,
+              throws: false,
+              static: true,
+            },
+            // A symbol never takes the name of a member with the same text.
+            {
+              name: 'iterator',
+              jsName: 'iterator',
+              parameters: [],
+              returns: Int,
+              async: false,
+              throws: false,
+              static: false,
+            },
+          ],
+        },
+      ],
+    });
+    expect(result.warnings).toEqual([]);
+    expect(result.source).toContain('readonly [Symbol.toStringTag]: string;');
+    expect(result.source).toContain('[Symbol.iterator](): number;');
+    expect(result.source).toContain('static [Symbol.hasInstance](value: number): boolean;');
+    expect(result.source).toContain('  iterator(): number;');
+  });
+
+  it('skips a member bound under a registered symbol and warns', () => {
+    const result = render({
+      ...emptySurface,
+      sharedObjects: [
+        {
+          name: 'Cache',
+          jsName: 'Cache',
+          file: FILE,
+          events: [],
+          properties: [],
+          functions: [
+            {
+              name: 'id',
+              jsName: 'Symbol.for("app.id")',
+              symbol: { kind: 'registered', name: 'app.id' },
+              parameters: [],
+              returns: Str,
+              async: false,
+              throws: false,
+              static: false,
+            },
+          ],
+        },
+      ],
+    });
+    expect(result.source).not.toContain('app.id');
+    expect(result.warnings).toEqual([
+      {
+        kind: 'skipped',
+        file: FILE,
+        location: 'Cache.id',
+        message:
+          "TypeScript can't declare a class member under 'Symbol.for(\"app.id\")', so this one was skipped",
+      },
+    ]);
+  });
+
   it('skips a member whose JS name is already taken by another member and warns', () => {
     const result = render({
       ...emptySurface,

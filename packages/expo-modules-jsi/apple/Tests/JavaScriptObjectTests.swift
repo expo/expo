@@ -782,6 +782,101 @@ struct JavaScriptObjectTests {
     #expect(array.length == 2)
     #expect(try array.getValue(at: 1).getObject().getProperty("x").getInt() == 2)
   }
+
+  // MARK: - Properties with symbol keys
+
+  @Test
+  func `setProperty with a symbol installs a function named after the symbol`() throws {
+    let object = runtime.createObject()
+    object.setProperty(try JavaScriptSymbol.wellKnown(runtime, .iterator)) { this, arguments in
+      return JavaScriptValue(self.runtime, 42)
+    }
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("obj[Symbol.iterator]()").getInt() == 42)
+    #expect(try runtime.eval("obj[Symbol.iterator].name").getString() == "[Symbol.iterator]")
+    #expect(try runtime.eval("Object.keys(obj).length").getInt() == 0)
+  }
+
+  @Test
+  func `setProperty with a registered symbol and a result slot closure`() throws {
+    let object = runtime.createObject()
+    object.setProperty(try JavaScriptSymbol.for(runtime, "app.greet")) {
+      (
+        this: borrowing JavaScriptUnownedValue,
+        arguments: consuming JavaScriptValuesBuffer,
+        result: borrowing JavaScriptValue.Slot,
+        runtime: borrowing JavaScriptRuntime
+      ) in
+      let name = try String.decode(arguments.unownedValue(at: 0), in: runtime)
+      try String.encode("hello \(name)", into: result, in: runtime)
+    }
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("obj[Symbol.for('app.greet')]('café')").getString() == "hello café")
+    #expect(try runtime.eval("obj[Symbol.for('app.greet')].name").getString() == "[app.greet]")
+  }
+
+  @Test
+  func `setProperty with a symbol and a void closure returns undefined`() throws {
+    let object = runtime.createObject()
+    object.setProperty("calls", value: JavaScriptValue(runtime, 0))
+    object.setProperty(try JavaScriptSymbol.for(runtime, "app.bump")) {
+      [runtime] (this: borrowing JavaScriptUnownedValue, arguments: consuming JavaScriptValuesBuffer) -> Void in
+      let target = try this.asObject(in: runtime)
+      target.setProperty("calls", value: JavaScriptValue(runtime, target.getProperty("calls").getInt() + 1))
+    }
+    runtime.global().setProperty("obj", object)
+    let result = try runtime.eval("[obj[Symbol.for('app.bump')](), obj.calls]").getArray()
+    #expect(result[0].isUndefined() == true)
+    #expect(result[1].getInt() == 1)
+  }
+
+  @Test
+  func `defineProperty with a symbol and a descriptor object defines an accessor`() throws {
+    let object = runtime.createObject()
+    let descriptor = runtime.createObject()
+    descriptor.setProperty("get") { this, arguments in
+      return JavaScriptValue(self.runtime, "Cache")
+    }
+    object.defineProperty(try JavaScriptSymbol.wellKnown(runtime, .toStringTag), descriptor: descriptor)
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("String(obj)").getString() == "[object Cache]")
+  }
+
+  @Test
+  func `defineProperty with a symbol shadows a read-only inherited property`() throws {
+    // `Function.prototype[Symbol.hasInstance]` is read-only, so an assignment can't shadow it.
+    let function = try runtime.eval("(function Cache() {})").getObject()
+    function.defineProperty(
+      try JavaScriptSymbol.wellKnown(runtime, .hasInstance),
+      descriptor: .init(configurable: true, writable: true)
+    )
+    function.setProperty(try JavaScriptSymbol.wellKnown(runtime, .hasInstance)) { this, arguments in
+      return JavaScriptValue(self.runtime, true)
+    }
+    runtime.global().setProperty("Cache", function)
+    #expect(try runtime.eval("({}) instanceof Cache").getBool() == true)
+  }
+
+  @Test
+  func `defineProperty with a symbol and a value applies the options`() throws {
+    let object = runtime.createObject()
+    object.defineProperty(try JavaScriptSymbol.for(runtime, "app.id"), value: 1, options: [.enumerable])
+    object.defineProperty(try JavaScriptSymbol.for(runtime, "app.id"), value: 2)
+    runtime.global().setProperty("obj", object)
+    let descriptor = try runtime.eval("Object.getOwnPropertyDescriptor(obj, Symbol.for('app.id'))").getObject()
+    #expect(descriptor.getProperty("value").getInt() == 1)
+    #expect(descriptor.getProperty("enumerable").getBool() == true)
+    #expect(descriptor.getProperty("writable").getBool() == false)
+    #expect(descriptor.getProperty("configurable").getBool() == false)
+  }
+
+  @Test
+  func `defineProperty with a symbol leaves a frozen object unchanged`() throws {
+    let object = try runtime.eval("Object.freeze({})").getObject()
+    object.defineProperty(try JavaScriptSymbol.wellKnown(runtime, .toStringTag), value: "Cache")
+    runtime.global().setProperty("obj", object)
+    #expect(try runtime.eval("Object.getOwnPropertySymbols(obj).length").getInt() == 0)
+  }
 }
 
 /// Encodes as an array, moving it into the slot with `emplace(_:)`.
