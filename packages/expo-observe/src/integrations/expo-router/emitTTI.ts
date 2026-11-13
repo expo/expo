@@ -1,5 +1,4 @@
-import type { Session } from 'expo-app-metrics';
-
+import type { Session } from '../../app-metrics';
 import type { ObserveIntegrationsConfig } from '../../types';
 import { getNavigationMetricParams } from '../navigationConfig';
 
