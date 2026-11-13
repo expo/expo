@@ -40,7 +40,8 @@ public final class DevLauncherNetworkInterceptor: NSObject, ExpoRequestCdpInterc
 
   private static func createNetworkInspectorUrl(bundleUrl: URL) -> URL {
     let host = bundleUrl.host ?? "localhost"
-    let port = bundleUrl.port ?? 8081
+    // An https URL with no port, such as a tunnel URL, means 443, not Metro's 8081.
+    let port = bundleUrl.port ?? (bundleUrl.scheme == "https" ? 443 : 8081)
     let scheme = bundleUrl.scheme == "https" ? "wss" : "ws"
     let urlString = "\(scheme)://\(host):\(port)/inspector/network"
     guard let url = URL(string: urlString) else {
