@@ -13,6 +13,16 @@ var defaultLocations: [CGFloat] = []
 final class LinearGradientLayer: CAGradientLayer {
   private var uiColors = [UIColor]()
   private var stopLocations = defaultLocations
+  private var requestedStartPoint = defaultStartPoint
+  private var requestedEndPoint = defaultEndPoint
+
+  override var bounds: CGRect {
+    didSet {
+      if bounds.size != oldValue.size {
+        applyPoints()
+      }
+    }
+  }
 
   override init() {
     super.init()
@@ -34,11 +44,13 @@ final class LinearGradientLayer: CAGradientLayer {
   }
 
   func setStartPoint(_ startPoint: CGPoint?) {
-    self.startPoint = startPoint ?? defaultStartPoint
+    requestedStartPoint = startPoint ?? defaultStartPoint
+    applyPoints()
   }
 
   func setEndPoint(_ endPoint: CGPoint?) {
-    self.endPoint = endPoint ?? defaultEndPoint
+    requestedEndPoint = endPoint ?? defaultEndPoint
+    applyPoints()
   }
 
   func setLocations(_ locations: [CGFloat]?) {
@@ -52,6 +64,25 @@ final class LinearGradientLayer: CAGradientLayer {
     let cgColors = uiColors.map { $0.cgColor }
     self.colors = cgColors.count == 1 ? [cgColors[0], cgColors[0]] : cgColors
     applyLocations()
+  }
+
+  // CAGradientLayer keeps color bands perpendicular to the axis in unit space, which tilts them on a
+  // non-square view. Android, web and the previous bitmap keep them perpendicular in points, so the end
+  // point is moved along (width² · dx, height² · dy), which gives every pixel the same color as there.
+  private func applyPoints() {
+    let start = requestedStartPoint
+    let dx = requestedEndPoint.x - start.x
+    let dy = requestedEndPoint.y - start.y
+    let a = bounds.width * bounds.width * dx
+    let b = bounds.height * bounds.height * dy
+    let norm = a * a + b * b
+    self.startPoint = start
+    guard norm > 0 else {
+      self.endPoint = requestedEndPoint
+      return
+    }
+    let scale = (a * dx + b * dy) / norm
+    self.endPoint = CGPoint(x: start.x + a * scale, y: start.y + b * scale)
   }
 
   // Same stops as the stock layer: given locations first, the rest spread evenly by index.
