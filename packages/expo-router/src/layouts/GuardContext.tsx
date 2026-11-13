@@ -77,11 +77,20 @@ function computeGuardState(
 
 export function useResolvedGuard(routeName: string): ResolvedGuard | undefined {
   const guards = use(GuardContext);
-  return guards?.get(routeName) ?? guards?.get(normalizeRouteName(routeName));
+  if (!guards) {
+    return undefined;
+  }
+
+  if (guards.has(routeName)) {
+    return guards.get(routeName);
+  }
+
+  const normalizedRouteName = normalizeRouteName(routeName);
+  return guards.get(normalizedRouteName);
 }
 
 // Replaces by route name, not by URL, because a guarded group can share its URL with the fallback.
-export function replaceWithGuardFallback(
+export function dispatchReplaceWithGuardFallback(
   navigation: Pick<NavigationProp<ParamListBase>, 'getParent'>,
   fallback: GuardFallback
 ) {
