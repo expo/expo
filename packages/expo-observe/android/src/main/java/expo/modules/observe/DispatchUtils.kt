@@ -30,7 +30,7 @@ import kotlin.random.Random
  * milliseconds (or `null` when the server didn't supply one). `NonRetryableFailure.reason`
  * carries a short diagnostic string for the warn log.
  */
-sealed class DispatchResult {
+internal sealed class DispatchResult {
   object Success : DispatchResult()
   data class PartialSuccess(val partial: OTPartialSuccess) : DispatchResult()
   data class RetryableFailure(val retryAfterMs: Long? = null) : DispatchResult()
@@ -43,7 +43,7 @@ sealed class DispatchResult {
  * file mirroring `DispatchUtils.swift` on the iOS side. All functions are pure so they can be
  * unit-tested without instantiating the dispatcher or hitting the network.
  */
-object DispatchUtils {
+internal object DispatchUtils {
   /**
    * Pure classifier that maps an HTTP response into a dispatch outcome. Extracted
    * from the dispatch call site so the OTLP-spec rules can be unit-tested without a real

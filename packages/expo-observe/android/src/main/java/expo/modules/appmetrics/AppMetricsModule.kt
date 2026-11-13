@@ -69,13 +69,13 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
   private val scope: CoroutineScope
     get() = appContext.modulesQueue
 
-  lateinit var memoryMetricsManager: MemoryMetricsManager
-  lateinit var updatesMonitoring: UpdatesMonitoring
+  internal lateinit var memoryMetricsManager: MemoryMetricsManager
+  internal lateinit var updatesMonitoring: UpdatesMonitoring
   private var subscription: UpdatesStateChangeSubscription? = null
 
-  lateinit var sessionManager: SessionManager
+  internal lateinit var sessionManager: SessionManager
 
-  lateinit var mainSession: SessionSharedObject
+  internal lateinit var mainSession: SessionSharedObject
 
   /**
    * The span producer installed on the monitor in `OnCreate`, kept so `setNetworkTracesConfig`
@@ -494,7 +494,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 }
 
 @OptimizedRecord
-data class MetricAttributes(
+internal data class MetricAttributes(
   @Field val routeName: String? = null,
   @Field val params: Map<String, Any>? = null
 ) : Record
@@ -504,27 +504,27 @@ data class MetricAttributes(
  * `Observe.configure`.
  */
 @OptimizedRecord
-data class NetworkTracesConfigParam(
+internal data class NetworkTracesConfigParam(
   @Field val enabled: Boolean = true,
   @Field val filter: NetworkRequestFilter? = null
 ) : Record
 
 @OptimizedRecord
-data class StartSpanOptions(
+internal data class StartSpanOptions(
   @Field val attributes: Map<String, Any?>? = null,
   /** Unix-epoch milliseconds overriding "now" as the span start. */
   @Field val startTime: Double? = null
 ) : Record
 
 @OptimizedRecord
-data class SpanEventOptions(
+internal data class SpanEventOptions(
   @Field val attributes: Map<String, Any?>? = null,
   /** Unix-epoch milliseconds overriding "now" as the event time. */
   @Field val time: Double? = null
 ) : Record
 
 @OptimizedRecord
-data class SpanEndOptions(
+internal data class SpanEndOptions(
   /**
    * `"ok"` or `"error"`. Omitted means UNSET, per the conventions; any other value warns and
    * also means UNSET.
@@ -536,7 +536,7 @@ data class SpanEndOptions(
 ) : Record
 
 @OptimizedRecord
-data class RecordSpanOptions(
+internal data class RecordSpanOptions(
   @Field val startTime: Double? = null,
   @Field val endTime: Double? = null,
   @Field val attributes: Map<String, Any?>? = null

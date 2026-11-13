@@ -8,7 +8,7 @@ import android.app.Activity
  * each tracking its own metrics. Call [start] to begin recording and [stop] to finish
  * and retrieve the accumulated metrics.
  */
-class FrameMetricsRecorder {
+internal class FrameMetricsRecorder {
   // Reassigned from JS thread in stop() while dispatchFrame mutates it on the
   // main thread. @Volatile gives stop() a stable visible reference to swap.
   @Volatile
@@ -65,7 +65,7 @@ class FrameMetricsRecorder {
   }
 }
 
-data class FrameMetricsRecord(
+internal data class FrameMetricsRecord(
   var totalDurationMs: Long = 0,
   var renderedFrames: Long = 0,
   var expectedFrames: Long = 0,

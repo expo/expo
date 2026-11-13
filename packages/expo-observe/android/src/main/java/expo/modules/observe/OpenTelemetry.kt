@@ -22,7 +22,7 @@ import kotlinx.serialization.json.longOrNull
  * is positional in OTLP (no `stringValue` wrapper key on the value side).
  */
 @Serializable
-data class OTStringValue(
+internal data class OTStringValue(
   val stringValue: String
 )
 
@@ -36,7 +36,7 @@ data class OTStringValue(
  * payload.
  */
 @Serializable(with = OTAnyValueSerializer::class)
-sealed class OTAnyValue {
+internal sealed class OTAnyValue {
   data class Str(val value: String) : OTAnyValue()
   data class Int64(val value: Long) : OTAnyValue()
   data class Dbl(val value: Double) : OTAnyValue()
@@ -50,13 +50,13 @@ sealed class OTAnyValue {
  * attributes). Same shape as `OTAttribute` but split out for the recursive case.
  */
 @Serializable
-data class OTKeyValue(
+internal data class OTKeyValue(
   val key: String,
   val value: OTAnyValue
 )
 
 @Serializable
-data class OTAttribute(
+internal data class OTAttribute(
   val key: String,
   val value: OTAnyValue
 ) {
@@ -69,50 +69,50 @@ data class OTAttribute(
 }
 
 @Serializable
-data class OTDataPoint(
+internal data class OTDataPoint(
   val timeUnixNano: Long,
   val asDouble: Double,
   val attributes: List<OTAttribute>
 )
 
 @Serializable
-data class OTGauge(
+internal data class OTGauge(
   val dataPoints: List<OTDataPoint>
 )
 
 @Serializable
-data class OTMetric(
+internal data class OTMetric(
   val unit: String,
   val name: String,
   val gauge: OTGauge
 )
 
 @Serializable
-data class OTMetadata(
+internal data class OTMetadata(
   val attributes: List<OTAttribute>
 )
 
 @Serializable
-data class OTScope(
+internal data class OTScope(
   val name: String,
   val version: String
 )
 
 @Serializable
-data class OTScopeMetrics(
+internal data class OTScopeMetrics(
   val scope: OTScope,
   val metrics: List<OTMetric>
 )
 
 @Serializable
-data class OTEvent(
+internal data class OTEvent(
   val resource: OTMetadata,
   val scopeMetrics: List<OTScopeMetrics>,
   val schemaUrl: String
 )
 
 @Serializable
-data class OTLogRecord(
+internal data class OTLogRecord(
   val timeUnixNano: Long,
   val observedTimeUnixNano: Long,
   val severityNumber: Int,
@@ -123,13 +123,13 @@ data class OTLogRecord(
 )
 
 @Serializable
-data class OTScopeLogs(
+internal data class OTScopeLogs(
   val scope: OTScope,
   val logRecords: List<OTLogRecord>
 )
 
 @Serializable
-data class OTResourceLogs(
+internal data class OTResourceLogs(
   val resource: OTMetadata,
   val scopeLogs: List<OTScopeLogs>,
   val schemaUrl: String
@@ -143,7 +143,7 @@ data class OTResourceLogs(
  * a root span must omit the key entirely rather than send null or "".
  */
 @Serializable
-data class OTSpan(
+internal data class OTSpan(
   val traceId: String,
   val spanId: String,
   val parentSpanId: String? = null,
@@ -159,7 +159,7 @@ data class OTSpan(
 
 /** `Span.Event` per the OTLP proto, used for redirect hops. */
 @Serializable
-data class OTSpanEvent(
+internal data class OTSpanEvent(
   val timeUnixNano: Long,
   val name: String,
   val attributes: List<OTAttribute>
@@ -170,19 +170,19 @@ data class OTSpanEvent(
  * client span stays UNSET by omitting the status entirely, per the semantic conventions.
  */
 @Serializable
-data class OTSpanStatus(
+internal data class OTSpanStatus(
   val code: Int,
   val message: String? = null
 )
 
 @Serializable
-data class OTScopeSpans(
+internal data class OTScopeSpans(
   val scope: OTScope,
   val spans: List<OTSpan>
 )
 
 @Serializable
-data class OTResourceSpans(
+internal data class OTResourceSpans(
   val resource: OTMetadata,
   val scopeSpans: List<OTScopeSpans>,
   val schemaUrl: String
@@ -191,7 +191,7 @@ data class OTResourceSpans(
 // MARK: -- Request body for Open Telemetry events
 
 @Serializable
-data class OTRequestBody(
+internal data class OTRequestBody(
   val resourceMetrics: List<OTEvent>
 ) {
   fun toJson(): String {
@@ -200,7 +200,7 @@ data class OTRequestBody(
 }
 
 @Serializable
-data class OTLogsRequestBody(
+internal data class OTLogsRequestBody(
   val resourceLogs: List<OTResourceLogs>
 ) {
   fun toJson(): String {
@@ -209,7 +209,7 @@ data class OTLogsRequestBody(
 }
 
 @Serializable
-data class OTTracesRequestBody(
+internal data class OTTracesRequestBody(
   val resourceSpans: List<OTResourceSpans>
 ) {
   fun toJson(): String {
@@ -231,7 +231,7 @@ data class OTTracesRequestBody(
  * that case as a success since the records did land.
  */
 @Serializable
-data class OTPartialSuccess(
+internal data class OTPartialSuccess(
   val rejectedDataPoints: Int? = null,
   val rejectedLogRecords: Int? = null,
   val rejectedSpans: Int? = null,
@@ -242,7 +242,7 @@ data class OTPartialSuccess(
 }
 
 @Serializable
-data class OTServiceResponse(
+internal data class OTServiceResponse(
   val partialSuccess: OTPartialSuccess? = null
 )
 
@@ -286,7 +286,7 @@ private val metricNameMap = mapOf(
 internal fun exportedMetricName(category: String, name: String): String =
   metricNameMap[category to name] ?: "expo.unknown.$name"
 
-fun EASMetric.toOTMetric(): OTMetric {
+internal fun EASMetric.toOTMetric(): OTMetric {
   val attributes = mutableListOf(
     OTAttribute.of(key = "session.id", rawValue = sessionId)
   )
@@ -315,7 +315,7 @@ fun EASMetric.toOTMetric(): OTMetric {
   )
 }
 
-fun Event.toOTMetadata(easClientId: String): OTMetadata {
+internal fun Event.toOTMetadata(easClientId: String): OTMetadata {
   val attributes = mutableListOf(
     OTAttribute.of("service.name", metadata.appIdentifier),
     OTAttribute.of("os.type", "linux"),
@@ -376,7 +376,7 @@ fun Event.toOTMetadata(easClientId: String): OTMetadata {
   return OTMetadata(attributes = attributes)
 }
 
-fun Event.toOTEvent(easClientId: String): OTEvent {
+internal fun Event.toOTEvent(easClientId: String): OTEvent {
   return OTEvent(
     resource = toOTMetadata(easClientId),
     scopeMetrics = listOf(
@@ -417,7 +417,7 @@ internal fun otAttributesFromJsonObject(
  * a typed `OTAnyValue`. Returns `null` for `JsonNull` and for any element we
  * cannot represent, so the caller can fold it into `droppedAttributesCount`.
  */
-fun LogEvent.toOTLogRecord(): OTLogRecord {
+internal fun LogEvent.toOTLogRecord(): OTLogRecord {
   val attributes = mutableListOf(
     OTAttribute.of(key = "session.id", rawValue = sessionId),
     OTAttribute.of(key = "event.name", rawValue = name)
@@ -452,7 +452,7 @@ fun LogEvent.toOTLogRecord(): OTLogRecord {
   )
 }
 
-fun Event.toOTResourceLogs(easClientId: String): OTResourceLogs {
+internal fun Event.toOTResourceLogs(easClientId: String): OTResourceLogs {
   return OTResourceLogs(
     resource = toOTMetadata(easClientId),
     scopeLogs = listOf(
@@ -470,7 +470,7 @@ fun Event.toOTResourceLogs(easClientId: String): OTResourceLogs {
  * derived from the event because they come from `spans` rows, which are not part of the `Event`
  * payload shape the metrics/logs signals share.
  */
-fun Event.toOTResourceSpans(easClientId: String, spans: List<OTSpan>): OTResourceSpans {
+internal fun Event.toOTResourceSpans(easClientId: String, spans: List<OTSpan>): OTResourceSpans {
   return OTResourceSpans(
     resource = toOTMetadata(easClientId),
     scopeSpans = listOf(
@@ -507,7 +507,7 @@ private fun spanNanosecondsFromMilliseconds(milliseconds: Long): Long {
  * the session attribute, the event cap, and the JSON-to-`AnyValue` typing. Mirrors the iOS
  * `SpanRow.toOTSpan`.
  */
-fun expo.modules.appmetrics.storage.Span.toOTSpan(): OTSpan {
+internal fun expo.modules.appmetrics.storage.Span.toOTSpan(): OTSpan {
   // Millisecond precision matches the backend's DateTime64(3) storage. A clock adjustment
   // mid-span can invert the two wall-clock timestamps, and the server rejects a span whose end
   // precedes its start, so the end clamps to the start.

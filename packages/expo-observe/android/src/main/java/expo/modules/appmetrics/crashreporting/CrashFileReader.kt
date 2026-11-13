@@ -10,7 +10,7 @@ import java.io.File
  * allocation is safe, so unlike the write path it can parse freely and assemble the structured
  * `PendingJvmCrash`. Decodes the JSON `PendingJvmCrashPayload` defined by `CrashFileFormat`.
  */
-class CrashFileReader(private val directory: File) {
+internal class CrashFileReader(private val directory: File) {
   /**
    * Parses every pending-crash file in the directory. Corrupt or partially
    * written files are skipped (an `AtomicFile` temp that never got committed is
@@ -84,7 +84,7 @@ class CrashFileReader(private val directory: File) {
  * A crash captured by `JvmCrashHandler` in a previous process, parsed back from
  * its pending file on the next launch.
  */
-data class PendingJvmCrash(
+internal data class PendingJvmCrash(
   /** Session that crashed, or `null` when the crash predated the session identity. */
   val sessionId: String?,
   val pid: Int,

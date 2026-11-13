@@ -11,7 +11,7 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
 @Serializable
-data class Metadata(
+internal data class Metadata(
   val appName: String?,
   val appIdentifier: String,
   val appVersion: String?,
@@ -80,7 +80,7 @@ data class Metadata(
 }
 
 @Serializable
-data class EASMetric(
+internal data class EASMetric(
   val sessionId: String,
   val timestamp: String,
   val category: String,
@@ -113,7 +113,7 @@ data class EASMetric(
  * `OTAnyValue`s) and drops storage-only columns like the row id.
  */
 @Serializable
-data class LogEvent(
+internal data class LogEvent(
   val sessionId: String,
   val timestamp: String,
   val name: String,
@@ -143,7 +143,7 @@ data class LogEvent(
 }
 
 @Serializable
-data class Event(
+internal data class Event(
   val metadata: Metadata,
   val metrics: List<EASMetric>,
   val logs: List<LogEvent> = emptyList()
@@ -154,7 +154,7 @@ data class Event(
  * for the traces dispatch. Spans travel separately from `Event` because they aren't part of
  * the payload shape the metrics/logs signals share.
  */
-data class SpanBatch(
+internal data class SpanBatch(
   val event: Event,
   val spans: List<OTSpan>
 )

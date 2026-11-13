@@ -1,6 +1,6 @@
 package expo.modules.appmetrics.updates
 
-data class UpdatesStateEvent(
+internal data class UpdatesStateEvent(
   val type: EventType
 ) {
   enum class EventType(val value: String) {
