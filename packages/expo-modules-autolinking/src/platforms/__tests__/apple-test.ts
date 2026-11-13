@@ -3,6 +3,7 @@ import path from 'path';
 
 import { ExpoModuleConfig } from '../../ExpoModuleConfig';
 import * as iosInlineModules from '../../inlineModules/iosInlineModules';
+import type { ModuleIosConfig } from '../../types';
 import {
   coreSupportsPackagesAsync,
   formatArrayOfReactDelegateHandler,
@@ -17,6 +18,14 @@ afterEach(() => {
   vol.reset();
   jest.resetAllMocks();
 });
+
+function scannedClasses(
+  modules: Record<string, ModuleIosConfig[]>,
+  sharedObjects: Record<string, string[]> = {},
+  views: Record<string, string[]> = {}
+) {
+  return { modules, sharedObjects, views };
+}
 
 describe(formatArrayOfReactDelegateHandler, () => {
   it('should output empty array when no one specify `reactDelegateHandlers`', () => {
@@ -204,12 +213,12 @@ describe(resolveModuleAsync, () => {
         config: new ExpoModuleConfig({ platforms: ['apple'] }),
       },
       {
-        scannedModules: {
+        scannedModules: scannedClasses({
           [name]: [
             { name: null, class: 'ClipboardPasteButtonModule' },
             { name: null, class: 'ClipboardModule' },
           ],
-        },
+        }),
       }
     );
 
@@ -218,6 +227,33 @@ describe(resolveModuleAsync, () => {
       { name: null, class: 'ClipboardPasteButtonModule' },
     ]);
     expect(result?.expoModules).toEqual(result?.modules);
+  });
+
+  it('lists the scanned shared objects and views of the package', async () => {
+    const name = 'expo-audio';
+    const pkgDir = path.join('node_modules', name);
+
+    vol.fromJSON({ [`ios/ExpoAudio.podspec`]: '' }, pkgDir);
+
+    const result = await resolveModuleAsync(
+      name,
+      {
+        name: '',
+        path: pkgDir,
+        version: '0.0.1',
+        config: new ExpoModuleConfig({ platforms: ['apple'] }),
+      },
+      {
+        scannedModules: scannedClasses(
+          { [name]: [{ name: null, class: 'AudioModule' }] },
+          { [name]: ['AudioPlayer'], 'expo-video': ['VideoPlayer'] },
+          { [name]: ['AudioWaveformView'] }
+        ),
+      }
+    );
+
+    expect(result?.expoSharedObjects).toEqual(['AudioPlayer']);
+    expect(result?.expoViews).toEqual(['AudioWaveformView']);
   });
 
   it('orders scanned modules by code unit, independent of the host locale', async () => {
@@ -235,13 +271,13 @@ describe(resolveModuleAsync, () => {
         config: new ExpoModuleConfig({ platforms: ['apple'] }),
       },
       {
-        scannedModules: {
+        scannedModules: scannedClasses({
           [name]: [
             { name: null, class: 'bModule' },
             { name: null, class: 'aModule' },
             { name: null, class: 'BModule' },
           ],
-        },
+        }),
       }
     );
 
@@ -267,9 +303,9 @@ describe(resolveModuleAsync, () => {
         config: new ExpoModuleConfig({ platforms: ['apple'], apple: { modules: [] } }),
       },
       {
-        scannedModules: {
+        scannedModules: scannedClasses({
           [name]: [{ name: null, class: 'ClipboardModule' }],
-        },
+        }),
       }
     );
 
@@ -295,12 +331,12 @@ describe(resolveModuleAsync, () => {
         }),
       },
       {
-        scannedModules: {
+        scannedModules: scannedClasses({
           [name]: [
             { name: null, class: 'ClipboardModule' },
             { name: null, class: 'ClipboardPasteButtonModule' },
           ],
-        },
+        }),
       }
     );
 
@@ -326,9 +362,9 @@ describe(resolveModuleAsync, () => {
         }),
       },
       {
-        scannedModules: {
+        scannedModules: scannedClasses({
           [name]: [{ name: null, class: 'ClipboardModule' }],
-        },
+        }),
       }
     );
 
@@ -357,12 +393,12 @@ describe(resolveModuleAsync, () => {
         }),
       },
       {
-        scannedModules: {
+        scannedModules: scannedClasses({
           [name]: [
             { name: null, class: 'ClipboardModule' },
             { name: null, class: 'PasteModule' },
           ],
-        },
+        }),
       }
     );
 
@@ -663,5 +699,75 @@ describe(generateModulesProviderAsync, () => {
     expect(packages).toContain('modules: [MyLocalModule.self, InlineExpoModule.self]');
     expect(moduleClasses).toContain('(module: InlineDslModule.self, name: nil)');
     expect(moduleClasses).toContain('(module: InlineExpoModule.self, name: nil)');
+  });
+  it('lists the shared objects and views of the packages', async () => {
+    await generateModulesProviderAsync(
+      [
+        {
+          ...descriptor('expo-audio', 'AudioModule'),
+          expoSharedObjects: ['AudioPlayer', 'AudioRecorder'],
+          expoViews: ['AudioWaveformView'],
+        },
+      ],
+      targetPath,
+      null,
+      params
+    );
+
+    expect(readProvider().packages).toContain(
+      [
+        '"expo-audio": ExpoPackage(',
+        '        modules: [AudioModule.self],',
+        '        sharedObjects: [AudioPlayer.self, AudioRecorder.self],',
+        '        views: [AudioWaveformView.self]',
+        '      )',
+      ].join('\n')
+    );
+  });
+
+  it('lists a package that has only shared objects', async () => {
+    await generateModulesProviderAsync(
+      [
+        {
+          ...descriptor('expo-player', 'PlayerModule'),
+          modules: [],
+          expoModules: undefined,
+          expoSharedObjects: ['Player'],
+        },
+      ],
+      targetPath,
+      null,
+      params
+    );
+
+    const { packages, moduleClasses } = readProvider();
+    expect(packages).toContain(
+      '"expo-player": ExpoPackage(\n        sharedObjects: [Player.self]\n      )'
+    );
+    expect(moduleClasses).not.toContain('Player');
+  });
+
+  it('merges the shared objects of the debug-only packages in the debug configuration', async () => {
+    await generateModulesProviderAsync(
+      [
+        { ...descriptor('expo-camera', 'CameraModule'), expoSharedObjects: ['CameraSession'] },
+        {
+          ...descriptor('expo-camera', 'CameraDevModule'),
+          expoSharedObjects: ['CameraDevSession'],
+          debugOnly: true,
+        },
+      ],
+      targetPath,
+      null,
+      params
+    );
+
+    const packages = readProvider().packages!;
+    const [debugBlock, releaseBlock] = packages
+      .slice(packages.indexOf('#if EXPO_CONFIGURATION_DEBUG'), packages.indexOf('#endif'))
+      .split('#else');
+    expect(debugBlock).toContain('sharedObjects: [CameraSession.self, CameraDevSession.self]');
+    expect(releaseBlock).toContain('sharedObjects: [CameraSession.self]');
+    expect(releaseBlock).not.toContain('CameraDevSession');
   });
 });
