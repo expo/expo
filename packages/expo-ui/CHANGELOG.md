@@ -1,5 +1,11 @@
 # Changelog
 
+## 58.0.29
+
+### Patch Changes
+
+- [iOS] Fix text in a community `BottomSheet` without snap points not wrapping beside other views, such as an icon or a button. ([#53401](https://github.com/expo/expo/pull/53401) by [@mazenchami](https://github.com/mazenchami))
+
 ## 58.0.28
 
 ### Patch Changes

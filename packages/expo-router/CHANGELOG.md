@@ -1,5 +1,19 @@
 # Changelog
 
+## 58.0.32
+
+### Patch Changes
+
+- Make the `renderingMode` prop of `NativeTabs.Trigger.Icon` work on Android and for SF Symbols, and accept a separate mode for the selected state. The default and selected icons can now use different rendering modes on iOS. ([#52061](https://github.com/expo/expo/pull/52061) by [@Ubax](https://github.com/Ubax))
+- Accept `backgroundImage` in the `contentStyle` of `NativeTabs` and `NativeTabs.Trigger`. ([#52897](https://github.com/expo/expo/pull/52897) by [@alkhaled](https://github.com/alkhaled))
+- [iOS] Fix a crash when a `NativeTabs.Trigger` `role` changes to or from `"search"` on a mounted tab. ([#52816](https://github.com/expo/expo/pull/52816) by [@Ubax](https://github.com/Ubax))
+- Fix redirects to group tabs when the focused route has no visible tab trigger. ([#52604](https://github.com/expo/expo/pull/52604) by [@Ubax](https://github.com/Ubax))
+- Fix `activityEnabled` not hiding the screens of nested navigators, such as a `Stack` in a `NativeTabs` tab. ([#52967](https://github.com/expo/expo/pull/52967) by [@Ubax](https://github.com/Ubax))
+- Require `react-native-screens` 5.0.0-beta.1 or later with Screens 5. ([#53220](https://github.com/expo/expo/pull/53220) by [@Ubax](https://github.com/Ubax))
+- Screens no longer render again when you navigate to them with the same param values. ([#51984](https://github.com/expo/expo/pull/51984) by [@Ubax](https://github.com/Ubax))
+- Warn in development when `navigation.getState()`, `navigation.canGoBack()`, `router.canGoBack()`, or `router.canDismiss()` are called during render. ([#52848](https://github.com/expo/expo/pull/52848) by [@Ubax](https://github.com/Ubax))
+- Warn when a header toolbar button or menu uses the unsupported `image` prop on iOS. ([#53201](https://github.com/expo/expo/pull/53201) by [@Ubax](https://github.com/Ubax))
+
 ## 58.0.31
 
 ### Patch Changes
