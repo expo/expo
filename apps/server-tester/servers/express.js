@@ -31,7 +31,6 @@ app.all(
   createRequestHandler(
     { build: SERVER_BUILD_DIR },
     {
-      // Each callback records the matched route in a header so tests can assert which callback ran.
       beforeResponse: (response, route) => {
         response.headers.set('custom-all-type', route.type ?? 'unknown');
         response.headers.set('custom-all-route', route.page ?? 'unknown');
