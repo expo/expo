@@ -42,7 +42,8 @@ import expo.modules.appmetrics.storage.JsMetric
 import expo.modules.appmetrics.storage.LogRecord
 import expo.modules.appmetrics.storage.SessionManager
 import expo.modules.appmetrics.storage.SessionMetricInput
-import expo.modules.appmetrics.storage.SessionSharedObject
+import expo.modules.appmetrics.storage.SessionHandle
+import expo.modules.appmetrics.storage.SessionObject
 import expo.modules.appmetrics.updates.UpdatesMonitoring
 import expo.modules.appmetrics.updates.UpdatesStateEvent
 import expo.modules.appmetrics.utils.JsonAny
@@ -80,7 +81,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
 
   internal lateinit var sessionManager: SessionManager
 
-  internal lateinit var mainSession: SessionSharedObject
+  internal lateinit var mainSession: SessionHandle
+
+  // Created once with the session, so `getMainSession` returns the same JS object every time.
+  private lateinit var mainSessionObject: SessionObject
 
   /**
    * The span producer installed on the monitor in `OnCreate`, kept so `setNetworkTracesConfig`
@@ -247,14 +251,14 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         val appSessionStartTimestamp =
           AppStartupManager.metrics.firstOrNull()?.timestamp ?: TimeUtils.getCurrentTimestampInISOFormat()
 
-        mainSession = SessionSharedObject(
+        mainSession = SessionHandle(
           sessionManager = sessionManager,
           scope = scope,
           type = "main",
           customStartTimestamp = appSessionStartTimestamp,
-          metadata = metadata,
-          runtime = appContext.runtime
+          metadata = metadata
         )
+        mainSessionObject = SessionObject(mainSession, appContext.runtime)
 
         JvmCrashHandler.currentSessionId = mainSession.sessionId
 
@@ -422,13 +426,13 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
       }
 
       Function("getMainSession") {
-        mainSession
+        mainSessionObject
       }
 
       // Android has no foreground-session tracking yet, so there's never a session to return.
       // Async to match the `Promise<Session | null>` JS contract.
       AsyncFunction("getForegroundSession") {
-        null as SessionSharedObject?
+        null as SessionObject?
       }
 
       Class(NetworkRequestObserver::class) {
@@ -441,7 +445,7 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         }
       }
 
-      Class("Session", SessionSharedObject::class) {
+      Class("Session", SessionObject::class) {
         // TODO(@ubax): Allow for user session creation from JS
         Constructor { ->
           throw CodedException(
@@ -450,23 +454,23 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
           )
         }
 
-        Property("id", SessionSharedObject::sessionId)
-        Property("type", SessionSharedObject::type)
-        Property("startDate", SessionSharedObject::startDate)
+        Property("id") { ref: SessionObject -> ref.session.sessionId }
+        Property("type") { ref: SessionObject -> ref.session.type }
+        Property("startDate") { ref: SessionObject -> ref.session.startDate }
 
-        AsyncFunction("isActive") Coroutine SessionSharedObject::isActive
-        AsyncFunction("getEndDate") Coroutine SessionSharedObject::getEndDate
+        AsyncFunction("isActive") Coroutine { ref: SessionObject -> ref.session.isActive() }
+        AsyncFunction("getEndDate") Coroutine { ref: SessionObject -> ref.session.getEndDate() }
 
-        AsyncFunction("getMetrics") Coroutine { ref: SessionSharedObject ->
-          ref.getMetrics().map { JsMetric.fromMetric(it) }
+        AsyncFunction("getMetrics") Coroutine { ref: SessionObject ->
+          ref.session.getMetrics().map { JsMetric.fromMetric(it) }
         }
 
-        AsyncFunction("getLogs") Coroutine { ref: SessionSharedObject ->
-          ref.getLogs().map { JsLogRecord.fromLogRecord(it) }
+        AsyncFunction("getLogs") Coroutine { ref: SessionObject ->
+          ref.session.getLogs().map { JsLogRecord.fromLogRecord(it) }
         }
 
-        AsyncFunction("addMetric") Coroutine { ref: SessionSharedObject, metric: SessionMetricInput ->
-          ref.addMetrics(listOf(metric.toMetric(ref.sessionId)))
+        AsyncFunction("addMetric") Coroutine { ref: SessionObject, metric: SessionMetricInput ->
+          ref.session.addMetrics(listOf(metric.toMetric(ref.session.sessionId)))
         }
       }
     }
