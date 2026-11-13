@@ -32,7 +32,7 @@ concurrency:
 jobs:
   ios:
     runs_on: macos-large
-    image: latest
+    image: sdk-57
     steps:
       - name: Install applesimutils
         id: ios_simulator
