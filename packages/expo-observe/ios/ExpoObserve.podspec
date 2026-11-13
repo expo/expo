@@ -40,7 +40,6 @@ Pod::Spec.new do |s|
       "EXPO_OBSERVE_VERSION=\"#{package['version']}\"",
       "REACT_NATIVE_VERSION=\"#{reactNativeVersion}\"",
       "EXPO_SDK_VERSION=\"#{expoSdkVersion}\"",
-      "EXPO_APP_METRICS_VERSION=\"#{package['version']}\"",
       easBuildId ? "EXPO_EAS_BUILD_ID=\"#{easBuildId}\"" : nil
     ].compact
   }
