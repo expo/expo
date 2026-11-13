@@ -693,6 +693,8 @@ export interface ExpoAppMetricsModuleType {
   /**
    * Records user feedback as an `expo.feedback` log event. `expo-observe` validates the feedback
    * before it calls this function.
+   *
+   * @private This API is unstable and may change without notice.
    */
   reportFeedback(feedback: {
     id: string;
