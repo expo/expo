@@ -37,7 +37,10 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
     self.dispatchQueue = dispatchQueue
   }
 
-  func startStreaming() -> Data? {
+  func startStreaming() throws -> Data? {
+    if state == .errorReceived {
+      throw error ?? FetchUnknownException()
+    }
     if isInvalidState(.responseReceived, .bodyCompleted) {
       return nil
     }
