@@ -309,8 +309,12 @@ class SQLiteModule : Module() {
     }
     // Finalize through the wrappers so even a failed close leaves them invalidated.
     // Do not destroy SQLite-internal statements owned by concurrent exec/backup operations.
+    // `finalizeOn` removes its statement from `connection.statements`. Empty the list first,
+    // so that removal does not scan the whole list for each statement.
+    val statements = connection.statements.toList()
+    connection.statements.clear()
     var firstError: Exception? = null
-    for (statement in connection.statements.toList()) {
+    for (statement in statements) {
       try {
         statement.finalizeOn(connection)
       } catch (error: SQLiteErrorException) {

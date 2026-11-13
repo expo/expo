@@ -385,7 +385,11 @@ public final class SQLiteModule: Module, @unchecked Sendable {
     }
     // Finalize through the wrappers so even a failed close leaves them invalidated.
     // Do not destroy SQLite-internal statements owned by concurrent exec/backup operations.
-    for statement in database.statements {
+    // `finalize` removes its statement from `database.statements`. Empty the list first,
+    // so that removal does not scan the whole list for each statement.
+    let statements = database.statements
+    database.statements.removeAll()
+    for statement in statements {
       do {
         try statement.finalize(database: database)
       } catch {
