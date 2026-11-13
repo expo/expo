@@ -9,12 +9,14 @@ import expo.modules.kotlin.types.OptimizedRecord
 
 const val FEEDBACK_LOG_NAME = "expo.feedback"
 
-/** User feedback from `Observe.reportFeedback`. The JS layer validates `id`, `message`, and `rating`. */
+/** User feedback from `Observe.reportFeedback`. The JS layer validates it and adds the scale to every rating. */
 @OptimizedRecord
 data class FeedbackReport(
   @Field val id: String = "",
   @Field val message: String? = null,
-  @Field val rating: Int? = null,
+  @Field val rating: Long? = null,
+  @Field val scaleMin: Long? = null,
+  @Field val scaleMax: Long? = null,
   @Field val attributes: Map<String, Any?>? = null
 ) : Record {
   fun toLogRecord(sessionId: String): LogRecord {
@@ -23,9 +25,9 @@ data class FeedbackReport(
     val attributes = buildMap {
       sanitized.attributes?.let { putAll(it) }
       put("expo.feedback.id", id)
-      if (rating != null) {
-        put("expo.feedback.rating", rating)
-      }
+      rating?.let { put("expo.feedback.rating", it) }
+      scaleMin?.let { put("expo.feedback.scale.min", it) }
+      scaleMax?.let { put("expo.feedback.scale.max", it) }
     }
     return LogRecord(
       sessionId = sessionId,

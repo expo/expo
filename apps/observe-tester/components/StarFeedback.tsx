@@ -5,7 +5,7 @@ const STARS = [1, 2, 3, 4, 5];
 
 export function StarFeedback() {
   function send(stars: number) {
-    Observe.reportFeedback({ id: 'order-rating', rating: stars * 2 });
+    Observe.reportFeedback({ id: 'order-rating', rating: stars, scale: { min: 1, max: 5 } });
   }
 
   return (

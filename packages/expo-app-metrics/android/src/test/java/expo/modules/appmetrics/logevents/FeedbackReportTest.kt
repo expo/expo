@@ -32,24 +32,44 @@ class FeedbackReportTest {
   }
 
   @Test
+  fun `records the rating scale`() {
+    val attributes = attributesOf(FeedbackReport(id = "checkout", rating = 4, scaleMin = 1, scaleMax = 5))
+
+    assertEquals(JsonPrimitive(4), attributes["expo.feedback.rating"])
+    assertEquals(JsonPrimitive(1), attributes["expo.feedback.scale.min"])
+    assertEquals(JsonPrimitive(5), attributes["expo.feedback.scale.max"])
+  }
+
+  @Test
   fun `user attributes cannot overwrite the feedback attributes`() {
     val report = FeedbackReport(
       id = "checkout",
       rating = 3,
-      attributes = mapOf("expo.feedback.id" to "spoofed", "expo.feedback.rating" to 10)
+      scaleMin = 0,
+      scaleMax = 10,
+      attributes = mapOf(
+        "expo.feedback.id" to "spoofed",
+        "expo.feedback.rating" to 10,
+        "expo.feedback.scale.min" to 5,
+        "expo.feedback.scale.max" to 5
+      )
     )
     val attributes = attributesOf(report)
 
     assertEquals(JsonPrimitive("checkout"), attributes["expo.feedback.id"])
     assertEquals(JsonPrimitive(3), attributes["expo.feedback.rating"])
-    assertEquals(2, report.toLogRecord(sessionId = "s").droppedAttributesCount)
+    assertEquals(JsonPrimitive(0), attributes["expo.feedback.scale.min"])
+    assertEquals(JsonPrimitive(10), attributes["expo.feedback.scale.max"])
+    assertEquals(4, report.toLogRecord(sessionId = "s").droppedAttributesCount)
   }
 
   @Test
-  fun `omits the rating attribute when no rating is set`() {
+  fun `omits the rating and scale attributes when no rating is set`() {
     val attributes = attributesOf(FeedbackReport(id = "checkout", message = "Great"))
 
     assertFalse(attributes.containsKey("expo.feedback.rating"))
+    assertFalse(attributes.containsKey("expo.feedback.scale.min"))
+    assertFalse(attributes.containsKey("expo.feedback.scale.max"))
   }
 
   @Test

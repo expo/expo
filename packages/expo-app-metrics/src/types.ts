@@ -700,6 +700,8 @@ export interface ExpoAppMetricsModuleType {
     id: string;
     message?: string;
     rating?: number;
+    scaleMin?: number;
+    scaleMax?: number;
     attributes?: Record<string, LogAttributeValue>;
   }): void;
 
