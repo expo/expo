@@ -70,4 +70,15 @@ describe(setSplashInfoPlist, () => {
     expect(infoPlist.UIUserInterfaceStyle).toBe('Automatic');
     expect(infoPlist.UILaunchStoryboardName).toBe('SplashScreen');
   });
+  it(`turns the launch screen snapshot on and off`, () => {
+    const enabled = setSplashInfoPlist(
+      baseConfig,
+      {},
+      { ...baseSplash, prerender: { snapshot: true } }
+    );
+    expect(enabled.ExpoSplashScreenPrerenderSnapshot).toBe(true);
+
+    const disabled = setSplashInfoPlist(baseConfig, enabled, baseSplash);
+    expect(disabled.ExpoSplashScreenPrerenderSnapshot).not.toBeDefined();
+  });
 });

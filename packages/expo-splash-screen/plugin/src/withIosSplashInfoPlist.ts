@@ -48,5 +48,11 @@ export function setSplashInfoPlist(
     delete infoPlist.UILaunchStoryboardName;
   }
 
+  if (splash.prerender?.snapshot) {
+    infoPlist.ExpoSplashScreenPrerenderSnapshot = true;
+  } else {
+    delete infoPlist.ExpoSplashScreenPrerenderSnapshot;
+  }
+
   return infoPlist;
 }

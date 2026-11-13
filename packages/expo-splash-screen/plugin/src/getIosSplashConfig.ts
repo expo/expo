@@ -16,6 +16,7 @@ export function getIosSplashConfig({ ios = {}, ...rest }: Props): IOSSplashConfi
     image: root.image,
     tabletBackgroundColor: root.tabletBackgroundColor,
     tabletImage: root.tabletImage,
+    prerender: root.prerender,
 
     dark: {
       backgroundColor: dark.backgroundColor,
