@@ -159,7 +159,8 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
     // write race the shutdown. We write it to disk synchronously here (on the JS thread, no actor/DB)
     // and ingest it on the next launch. Non-fatal errors aren't racing termination, so they go through
     // the normal async log path.
-    Function("reportError") { (report: ErrorReport) in
+    Function("reportError") { (record: ErrorReportRecord) in
+      let report = record.toErrorReport()
       if report.isFatal {
         PendingErrorStore.write(report.toPendingError(sessionId: AppMetrics.mainSession.id))
       } else {
@@ -258,6 +259,27 @@ private func storedSession(id: String) throws -> StoredSession? {
 internal struct NetworkTracesConfigParam {
   var enabled: Bool = true
   var filter: NetworkRequestFilter?
+}
+
+@Record
+internal struct ErrorReportRecord {
+  var source: ErrorReport.Source = .global
+  var type: String?
+  var message: String = ""
+  var stacktrace: String?
+  var componentStack: String?
+  var isFatal: Bool = false
+
+  func toErrorReport() -> ErrorReport {
+    return ErrorReport(
+      source: source,
+      type: type,
+      message: message,
+      stacktrace: stacktrace,
+      componentStack: componentStack,
+      isFatal: isFatal
+    )
+  }
 }
 
 internal struct StartSpanOptions: Record {
@@ -429,3 +451,7 @@ struct MetricAttributes: Record {
   @Field var routeName: String?
   @Field var params: [String: Any]?
 }
+
+// The JS bridge converts these enums from strings. `@Record` needs these conformances in the same file.
+extension Severity: Enumerable {}
+extension ErrorReport.Source: Enumerable {}
