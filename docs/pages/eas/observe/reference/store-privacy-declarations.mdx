@@ -40,7 +40,7 @@ The library does not read the device's location, contacts, or files. It does not
 
 ## What Expo stores
 
-Expo Observe stores every record it receives for 90 days, then deletes it. Deletion runs in monthly batches, so a record can remain for up to 120 days. After deletion, Expo keeps only per-app event counts for billing. See [data retention](/eas/observe/reference/metrics/#data-retention).
+Expo Observe stores every record it receives for 3 calendar months, about 90 days, then deletes it. Deletion runs in the background, so a record can remain for up to 93 days. After deletion, Expo keeps only per-app event counts for billing. See [data retention](/eas/observe/reference/metrics/#data-retention).
 
 Expo stores the IP address of each dispatch, and the country derived from it. Expo does not combine Observe data with data from other apps, does not use it for advertising, and does not share it with data brokers. Expo processes it on your behalf, as your service provider, under Expo's data processing agreement. See [privacy explained](https://expo.dev/privacy-explained) for what Expo collects across its services.
 
