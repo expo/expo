@@ -96,9 +96,15 @@ Hinge actions return an error on a device that does not fold.
 
 ## Install an app
 
-`app.install` uploads a file from your computer and installs it on the simulator. Pass a **.tar.gz** or **.tgz** file that contains an iOS Simulator **.app**.
+`app.install` uploads an iOS Simulator app from your computer and installs it on the simulator. With EAS CLI 27.8.0 or later, pass the **.app** folder. EAS CLI compresses the folder before the upload:
 
-The upload accepts a file, not a folder. To install a **.app** folder, compress it first:
+<Terminal
+  cmd={[
+    '$ eas simulator:control app.install ./build/Debug-iphonesimulator/MyApp.app --id <session-id>',
+  ]}
+/>
+
+You can also pass a **.tar.gz** or **.tgz** file that contains the **.app** folder. An earlier version of EAS CLI does not accept a folder, so compress the folder first:
 
 <Terminal
   cmd={[
