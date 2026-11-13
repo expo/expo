@@ -6,6 +6,7 @@ import com.bumptech.glide.load.model.ModelLoader
 import com.bumptech.glide.load.model.ModelLoaderFactory
 import com.bumptech.glide.load.model.MultiModelLoaderFactory
 import com.facebook.react.modules.network.ProgressResponseBody
+import expo.modules.kotlin.devtools.DevToolsRequestId
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import java.io.InputStream
@@ -22,6 +23,19 @@ class GlideUrlWrapperLoader(
     val loader = OkHttpUrlLoader(
       commonClient
         .newBuilder()
+        .apply {
+          // Ahead of the reporter the common client carries, so it reports under this id.
+          model.devToolsRequestId?.let { requestId ->
+            interceptors().add(
+              0,
+              Interceptor { chain ->
+                chain.proceed(
+                  chain.request().newBuilder().tag(DevToolsRequestId::class.java, DevToolsRequestId(requestId)).build()
+                )
+              }
+            )
+          }
+        }
         .addInterceptor(
           Interceptor { chain ->
             val originalResponse = chain.proceed(chain.request())
