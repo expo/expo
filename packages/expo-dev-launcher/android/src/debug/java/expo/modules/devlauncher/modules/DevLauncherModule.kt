@@ -11,6 +11,8 @@ class DevLauncherModule(reactContext: ReactApplicationContext?) : ReactContextBa
 
   override fun getConstants(): Map<String, Any?> {
     val manifestString = try {
+      @Suppress("DEPRECATION")
+      // TODO: migrate away from returning manifest as a string
       controller?.manifest?.getRawJson().toString()
     } catch (_: IllegalStateException) {
       null
