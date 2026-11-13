@@ -9,7 +9,7 @@ import {
 } from '../context';
 import * as initModule from '../init';
 
-jest.mock('expo-app-metrics', () => {
+jest.mock('../../../app-metrics', () => {
   const mainSession = {
     id: 'session-1',
     type: 'main',
@@ -93,7 +93,7 @@ const reactNavigationModule = require('../reactNavigation') as {
   __setOptionalReactNavigation: (value: unknown) => void;
 };
 const mockAddMetric = (
-  require('expo-app-metrics').default as {
+  require('../../../app-metrics').default as {
     getMainSession: () => { addMetric: jest.Mock };
   }
 ).getMainSession().addMetric;
