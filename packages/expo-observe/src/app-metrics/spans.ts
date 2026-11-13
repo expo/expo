@@ -33,9 +33,9 @@ class InertSpan extends SharedObject {
  *
  * @example
  * ```ts
- * import { startSpan } from 'expo-app-metrics';
+ * import { Observe } from 'expo-observe';
  *
- * const span = startSpan('checkout', { attributes: { 'cart.items': 3 } });
+ * const span = Observe.startSpan('checkout', { attributes: { 'cart.items': 3 } });
  * span.addEvent('cart-validated');
  * span.end();
  * ```
@@ -46,7 +46,7 @@ export function startSpan(name: string, options?: StartSpanOptions): Span {
     return AppMetricsModule.startSpan(name, nativeOptions, parent ?? undefined);
   } catch (error) {
     console.warn(
-      '[expo-app-metrics] startSpan could not start the span, so it is not recorded:',
+      '[expo-observe] startSpan could not start the span, so it is not recorded:',
       error
     );
     return new InertSpan();
@@ -73,9 +73,9 @@ export function startSpan(name: string, options?: StartSpanOptions): Span {
  *
  * @example
  * ```ts
- * import { withSpan } from 'expo-app-metrics';
+ * import { Observe } from 'expo-observe';
  *
- * const receipt = await withSpan('checkout', async (span) => {
+ * const receipt = await Observe.withSpan('checkout', async (span) => {
  *   await validateCart();
  *   span.addEvent('cart-validated');
  *   return submitOrder();
@@ -117,7 +117,7 @@ function endSpanQuietly(span: Span, options?: SpanEndOptions): void {
       span.end(options);
     }
   } catch (error) {
-    console.warn('[expo-app-metrics] withSpan could not end the span:', error);
+    console.warn('[expo-observe] withSpan could not end the span:', error);
   }
 }
 
@@ -138,11 +138,11 @@ function endSpanQuietly(span: Span, options?: SpanEndOptions): void {
  *
  * @example
  * ```ts
- * import { recordSpan } from 'expo-app-metrics';
+ * import { Observe } from 'expo-observe';
  *
  * const startTime = Date.now();
  * decodeImage();
- * recordSpan('image-decode', { startTime, endTime: Date.now() });
+ * Observe.recordSpan('image-decode', { startTime, endTime: Date.now() });
  * ```
  */
 export function recordSpan(name: string, options: RecordSpanOptions): void {
@@ -150,6 +150,6 @@ export function recordSpan(name: string, options: RecordSpanOptions): void {
     const { parent, ...nativeOptions } = options;
     AppMetricsModule.recordSpan(name, nativeOptions, parent ?? undefined);
   } catch (error) {
-    console.warn('[expo-app-metrics] recordSpan could not record the span:', error);
+    console.warn('[expo-observe] recordSpan could not record the span:', error);
   }
 }

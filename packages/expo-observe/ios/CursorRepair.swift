@@ -2,8 +2,8 @@
 
 /// Resets a dispatch cursor to `-1` if it has fallen past the largest id currently in its source
 /// table. The cursors live in UserDefaults; their source tables can be wiped from underneath them
-/// (notably on a schema-version mismatch in `expo-app-metrics`). Without this check the cursor would
-/// skip every new row until enough accumulated to pass the stale value.
+/// (notably on a schema-version mismatch in the app metrics database). Without this check the
+/// cursor would skip every new row until enough accumulated to pass the stale value.
 ///
 /// - `signalName`: short human-readable label ("metric" / "log") for log messages.
 /// - `readCursor`: returns the persisted cursor value.
