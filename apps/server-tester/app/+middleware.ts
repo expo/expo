@@ -1,7 +1,6 @@
 import { MiddlewareFunction } from 'expo-router/server';
 import { setResponseHeaders } from 'expo-server';
 
-// The matcher tests serve one exported dist under several matcher combinations, so read these at serve time.
 export const unstable_settings = {
   matcher: {
     methods: parseJsonEnv(process.env.E2E_MIDDLEWARE_MATCHER_METHODS),
@@ -12,7 +11,6 @@ export const unstable_settings = {
 const secret = new TextEncoder().encode(process.env.TEST_SECRET_KEY);
 
 const middleware: MiddlewareFunction = async (request) => {
-  // The matcher tests only check whether the middleware ran.
   if (process.env.E2E_MIDDLEWARE_MATCHER_MODE) {
     return Response.json({ match: true });
   }

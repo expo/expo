@@ -6,8 +6,6 @@ const serverConfig :Workerd.Config = (
   sockets = [ ( name = "http", address = "*:8787", http = (), service = "main" ) ]
 );
 
-# workerd embeds modules by name. Add one entry for every exported API route under `_expo/functions/`,
-# the middleware, and every exported loader under `_expo/loaders/`.
 const server :Workerd.Worker = (
   modules = [
     (name = "worker", esModule = embed "workerd.js"),
