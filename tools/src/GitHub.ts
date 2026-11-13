@@ -232,6 +232,17 @@ export async function getIssueAsync(issue_number: number) {
   return data;
 }
 
+type IssueLabels = Awaited<ReturnType<typeof getIssueAsync>>['labels'];
+
+/**
+ * Returns the label names of an issue. The API returns labels as strings or objects.
+ */
+export function labelNames(labels: IssueLabels): string[] {
+  return labels
+    .map((label) => (typeof label === 'string' ? label : label.name))
+    .filter((name): name is string => Boolean(name));
+}
+
 /**
  * Returns a list of all open issues. Limited to 10 items.
  */
@@ -327,6 +338,43 @@ export async function addIssueLabelsAsync(issue_number: number, labels: string[]
     labels,
   });
   return data;
+}
+
+/**
+ * Returns the names of every label defined in the repository.
+ */
+export async function listRepoLabelNamesAsync(): Promise<string[]> {
+  const labels = await octokit.paginate('GET /repos/{owner}/{repo}/labels', {
+    owner,
+    repo,
+    per_page: 100,
+  });
+  return labels.map((label) => label.name);
+}
+
+export type LabelEvent = { actor: string; label: string; createdAt: string };
+
+/**
+ * Returns every `labeled` event of the issue, oldest first, with the account that applied it.
+ */
+export async function listIssueLabelEventsAsync(issue_number: number): Promise<LabelEvent[]> {
+  const events = await octokit.paginate('GET /repos/{owner}/{repo}/issues/{issue_number}/events', {
+    owner,
+    repo,
+    issue_number,
+    per_page: 100,
+  });
+  const labelEvents: LabelEvent[] = [];
+  for (const event of events) {
+    if (event.event === 'labeled' && 'label' in event && event.label.name) {
+      labelEvents.push({
+        actor: event.actor?.login ?? '',
+        label: event.label.name,
+        createdAt: event.created_at,
+      });
+    }
+  }
+  return labelEvents;
 }
 
 /**
