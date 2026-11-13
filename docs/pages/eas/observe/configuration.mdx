@@ -31,7 +31,7 @@ A few details worth knowing:
 
 ### Sample errors separately
 
-To keep more errors than other events, set `errorSampleRate`. Errors include unhandled JavaScript errors, errors from `reportError` and `ObserveErrorBoundary`, and native crash reports. [Feedback](/eas/observe/feedback/) from `reportFeedback` is sent from every installation. All other events follow `sampleRate`:
+To keep more errors than other events, set `errorSampleRate`. Errors include unhandled JavaScript errors, errors from `reportError` and `ObserveErrorBoundary`, and native crash reports. Every installation sends [feedback](/eas/observe/feedback/) from `reportFeedback`. All other events follow `sampleRate`:
 
 ```tsx
 import { Observe } from 'expo-observe';

@@ -34,6 +34,7 @@ What else is sent depends on the features you use:
 | Navigation integrations for [Expo Router](/eas/observe/integrations/expo-router/) and [React Navigation](/eas/observe/integrations/react-navigation/) | Route names, route parameters, and per-route timings. Remove sensitive parameters with `filteredParams`.                                                                                                           | Opt in  |
 | [Network traces](/eas/observe/configuration/#network-traces)                                                                                          | Request method, URL, status code, request and response sizes, and host. The library redacts credentials and a fixed list of signature parameters, and sends other query values unchanged.                          | Off     |
 | [User-defined events](/eas/observe/events/), global attributes, and custom spans                                                                      | The event names, attribute values, and span timings your code passes                                                                                                                                               | Opt in  |
+| [Feedback](/eas/observe/feedback/)                                                                                                                    | The feedback ID, the message, and the rating your code passes to `reportFeedback`                                                                                                                                  | Opt in  |
 | Package integrations such as [Expo Image](/eas/observe/integrations/expo-image/) and [Reanimated](/eas/observe/integrations/react-native-reanimated/) | Events and errors that the package reports, such as sanitized URLs of oversized images and Reanimated error messages                                                                                               | Opt in  |
 
 The library does not read the device's location, contacts, or files. It does not send a name, email address, or account ID unless your code adds one to an event, attribute, or error message. Route parameters and request URLs can also carry them when you turn on a navigation integration or network traces. Keep personally identifiable information out of those values.
@@ -69,6 +70,7 @@ Select these data types for Expo Observe:
 - **Location > Approximate location**: Google's definition includes location inferred from an IP address. Always collected.
 - **App info and performance > Crash logs**: JavaScript errors and native crashes. Always collected: the library reports native crashes, `Observe.reportError()` calls, and `ObserveErrorBoundary` errors even when JavaScript error handling is off.
 - **App activity > App interactions**: route names and user-defined events. Collected when you use a navigation integration or log events.
+- **App activity > Other user-generated content**: feedback messages and ratings. Collected when you call `reportFeedback`.
 
 ### Data usage and handling
 
@@ -103,6 +105,7 @@ Answer **Yes, we collect data from this app**, then select these data types for 
 - **Location > Coarse Location**: the country derived from the IP address. Always collected.
 - **Diagnostics > Crash Data**: JavaScript errors and native crashes. Always collected: the library reports native crashes, `Observe.reportError()` calls, and `ObserveErrorBoundary` errors even when JavaScript error handling is off.
 - **Usage Data > Product Interaction**: route names and user-defined events. Collected when you use a navigation integration or log events.
+- **User Content > Other User Content**: feedback messages and ratings. Collected when you call `reportFeedback`.
 
 ### Data usage
 
@@ -116,6 +119,7 @@ For each selected data type, use these answers:
 | Device ID             | App Functionality, Analytics | <NoIcon />         | <NoIcon />        |
 | Coarse Location       | Analytics                    | <NoIcon />         | <NoIcon />        |
 | Product Interaction   | Analytics                    | <NoIcon />         | <NoIcon />        |
+| Other User Content    | Analytics                    | <NoIcon />         | <NoIcon />        |
 
 Apple's **App Functionality** purpose covers minimizing app crashes and improving scalability and performance. **Analytics** covers measuring audience size and evaluating product features.
 
@@ -125,7 +129,7 @@ The data is **not used for tracking**. Apple defines tracking as linking app dat
 
 ### Privacy manifest
 
-`expo-observe` ships a [privacy manifest](/guides/apple-privacy/) that declares Crash Data, Performance Data, Other Diagnostic Data, Device ID, and Product Interaction with the purposes above. It declares each type as not linked to the user and not used for tracking. Xcode includes it when you generate a privacy report for an archive, and the report is organized like the App Store privacy details. The manifest does not declare Coarse Location, so add that entry to your answers from this page.
+`expo-observe` ships a [privacy manifest](/guides/apple-privacy/) that declares Crash Data, Performance Data, Other Diagnostic Data, Device ID, and Product Interaction with the purposes above. It declares each type as not linked to the user and not used for tracking. Xcode includes it when you generate a privacy report for an archive, and the report is organized like the App Store privacy details. The manifest does not declare Coarse Location or Other User Content, so add those entries to your answers from this page.
 
 ## Apps that also use Expo Update
 

@@ -111,8 +111,8 @@ export type ObserveConfig = {
    * - If `dispatchingEnabled` is `true` (or unset), metrics are dispatched only when this device
    *   is in-sample.
    *
-   * Errors follow `errorSampleRate` when it is set and higher. Feedback from `reportFeedback` is
-   * sent from every installation.
+   * Errors follow `errorSampleRate` when it is set and higher. Every installation sends feedback
+   * from `reportFeedback`.
    *
    * > Note: Devices that end up out-of-sample drop pending metrics rather than accumulating them.
    *
@@ -125,8 +125,8 @@ export type ObserveConfig = {
    * `errorSampleRate: 1`.
    *
    * Errors include unhandled JavaScript errors, errors from `reportError` and
-   * `ObserveErrorBoundary`, and native crash reports. Feedback from `reportFeedback` is sent from
-   * every installation. All other events follow `sampleRate`.
+   * `ObserveErrorBoundary`, and native crash reports. Every installation sends feedback from
+   * `reportFeedback`. All other events follow `sampleRate`.
    *
    * `errorSampleRate` is a minimum. Installations in-sample for `sampleRate` always send errors. A
    * lower value has no effect, and `configure()` prints a warning. An unset `sampleRate` counts as
@@ -434,9 +434,9 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * `sampleRate` and `errorSampleRate` do not apply to it. `dispatchingEnabled`,
    * `dispatchInDebug`, and `ignoredEvents` apply to it the same way as to other events.
    *
-   * The report is dropped with a warning when `id` is empty, when it has neither `message` nor
-   * `rating` (an empty `message` counts as none), when `rating` is not a whole number from 0 to
-   * 10, or when an argument has the wrong type.
+   * `reportFeedback` drops the report and prints a warning in development when `id` is empty, when
+   * the report has neither `message` nor `rating` (an empty `message` counts as none), when
+   * `rating` is not a whole number from 0 to 10, or when an argument has the wrong type.
    *
    * @param feedback The feedback to report.
    *

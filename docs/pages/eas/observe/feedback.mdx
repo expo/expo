@@ -50,8 +50,8 @@ Every installation sends feedback. [`sampleRate` and `errorSampleRate`](/eas/obs
 Other options apply to feedback the same way as to other events:
 
 - To stop sending feedback, add `expo.feedback` to [`ignoredEvents`](/eas/observe/configuration/#ignore-metrics-and-events).
-- When `dispatchingEnabled` is `false`, feedback is dropped, and no warning is printed. Pending feedback is not kept to send later.
-- In a debug build, feedback is dropped unless `dispatchInDebug` is `true`.
+- When `dispatchingEnabled` is `false`, `expo-observe` drops feedback and prints no warning. It does not keep pending feedback to send later.
+- In a debug build, `expo-observe` drops feedback unless `dispatchInDebug` is `true`.
 
 ## Feedback UI examples
 
@@ -337,9 +337,9 @@ Each event shows the message as its body, and `expo.feedback.id`, `expo.feedback
 
 ## Privacy
 
-Free text from your users can contain personal data, such as names, email addresses, or phone numbers. Expo Observe deletes feedback after 90 days, like all other records. See [data retention](/eas/observe/reference/metrics/#data-retention). Expo Observe also sends feedback to the integrations that you connect to your project, for example, Datadog.
+Free text from your users can contain personal data, such as names, email addresses, or phone numbers. Expo Observe deletes feedback after 90 days, like all other records. See [data retention](/eas/observe/reference/metrics/#data-retention).
 
 Before you collect feedback:
 
 - Tell your users what you collect and how you use it.
-- Declare the data in the App Store privacy details and in the Google Play Data safety form. See [App store privacy declarations](/eas/observe/reference/store-privacy-declarations/).
+- Declare the data in the Google Play Data safety form and in the App Store privacy details. See [App store privacy declarations](/eas/observe/reference/store-privacy-declarations/).
