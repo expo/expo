@@ -76,4 +76,26 @@ struct RecordDecodingTests {
     #expect(report.scale?.max == 5)
     #expect(report.attributes?["plan"] as? String == "pro")
   }
+
+  @Test
+  func `an omitted filter field stays nil and an empty one stays empty`() throws {
+    let runtime = try appContext.runtime
+    let omitted = try NetworkRequestFilterRecord.decode(runtime.eval("({})"), in: runtime).toFilter()
+    #expect(omitted.hosts == nil)
+    #expect(omitted.methods == nil)
+
+    let empty = try NetworkRequestFilterRecord.decode(runtime.eval("({ hosts: [], methods: [] })"), in: runtime)
+      .toFilter()
+    #expect(empty.hosts == [])
+    #expect(empty.methods == [])
+  }
+
+  @Test
+  func `a populated filter keeps its values`() throws {
+    let runtime = try appContext.runtime
+    let value = try runtime.eval("({ hosts: ['expo.dev'], methods: ['GET', 'POST'] })")
+    let filter = try NetworkRequestFilterRecord.decode(value, in: runtime).toFilter()
+    #expect(filter.hosts == ["expo.dev"])
+    #expect(filter.methods == ["GET", "POST"])
+  }
 }

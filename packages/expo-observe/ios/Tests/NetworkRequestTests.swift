@@ -304,7 +304,7 @@ struct NetworkRequestObserverFilterTests {
   func `setFilter swaps the active filter synchronously`() {
     var post = NetworkRequestFilter()
     post.methods = ["POST"]
-    let observer = NetworkRequestObserver(filter: post)
+    let observer = NetworkRequestObserver(filter: post) { _, _ in }
     #expect(observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "POST"))
     #expect(!observer.shouldObserveRequest(url: URL(string: "https://expo.dev/x")!, method: "GET"))
 

@@ -179,13 +179,13 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
     }
 
-    Class(NetworkRequestObserver.self) {
-      Constructor { (filter: NetworkRequestFilter?) in
-        return NetworkRequestObserver(filter: filter)
+    Class("NetworkRequestObserver", NetworkRequestObserverObject.self) {
+      Constructor { (filter: NetworkRequestFilterRecord?) in
+        return NetworkRequestObserverObject(filter: filter?.toFilter())
       }
 
-      Function("setFilter") { (observer: NetworkRequestObserver, filter: NetworkRequestFilter?) in
-        observer.setFilter(filter)
+      Function("setFilter") { (observer: NetworkRequestObserverObject, filter: NetworkRequestFilterRecord?) in
+        observer.setFilter(filter?.toFilter())
       }
     }
 
@@ -267,7 +267,17 @@ private func storedSession(id: String) throws -> StoredSession? {
 @Record
 internal struct NetworkTracesConfigParam {
   var enabled: Bool = true
-  var filter: NetworkRequestFilter?
+  var filter: NetworkRequestFilterRecord?
+}
+
+@Record
+internal struct NetworkRequestFilterRecord {
+  var hosts: [String]?
+  var methods: [String]?
+
+  func toFilter() -> NetworkRequestFilter {
+    return NetworkRequestFilter(hosts: hosts, methods: methods)
+  }
 }
 
 @Record
