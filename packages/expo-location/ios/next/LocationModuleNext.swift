@@ -96,6 +96,40 @@ public final class LocationModuleNext: Module {
       }
     }
 
+    Function("watchHeading") { (filter: Double?) throws -> HeadingWatchHandle in
+      guard CLLocationManager.headingAvailable() else {
+        throw HeadingUnavailable()
+      }
+
+      let source = HeadingUpdatesSource()
+      let watcher = try HeadingWatchHandle(filter: filter, source: source)
+      watcher.start()
+      return watcher
+    }
+
+    Class(HeadingWatchHandle.self) {
+      Function("pause") { (watcher: HeadingWatchHandle) in
+        watcher.pause()
+      }
+
+      Function("resume") { (watcher: HeadingWatchHandle) -> Bool in
+        watcher.resume()
+      }
+
+      Function("withFilter") { (watcher: HeadingWatchHandle, degrees: Double) throws -> HeadingWatchHandle in
+        try watcher.withFilter(degrees)
+        return watcher
+      }
+
+      Function("restart") { (watcher: HeadingWatchHandle) -> Bool in
+        watcher.restart()
+      }
+
+      Function("status") { (watcher: HeadingWatchHandle) -> HeadingWatchStatus in
+        watcher.status()
+      }
+    }
+
     OnAppEntersForeground {
       PositionWatcher.isAppInForeground = true
     }
