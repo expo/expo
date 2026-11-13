@@ -33,6 +33,7 @@ import expo.modules.kotlin.services.Service
 import expo.modules.kotlin.services.ServicesRegistry
 import expo.modules.kotlin.tracing.trace
 import expo.modules.kotlin.types.ConverterContext
+import expo.modules.v2.ExpoModulesV2Context
 import expo.modules.v2.ExpoModulesV2Host
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
@@ -161,7 +162,9 @@ class AppContext(
    */
   fun installJSIInterop() {
     runtime.install()
-    runtime.reactContext?.let { expoModulesV2Host.install(it) }
+    runtime.reactContext?.let { reactContext ->
+      expoModulesV2Host.install(reactContext) { ExpoModulesV2Context(it, this.weak()) }
+    }
   }
 
   /**
