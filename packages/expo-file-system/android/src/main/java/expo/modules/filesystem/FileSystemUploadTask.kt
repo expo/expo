@@ -263,10 +263,13 @@ private class CountingSink(
 
 private fun UnifiedFileInterface.asRequestBody(contentType: String?): RequestBody {
   return object : RequestBody() {
-    // length() is a ContentResolver query for content:// files, and ContentProviderFile
-    // and AssetFile can fall back to reading the whole stream; resolve it once, and
-    // not before OkHttp asks for it.
-    private val resolvedLength: Long by lazy { length() }
+    // For content:// files, length() is the size the provider reports, which can be wrong
+    // (stale, or 0 when unknown), and OkHttp rejects a body that doesn't match its
+    // Content-Length. Prefer the size of the opened file, which is what writeTo() sends.
+    // Resolve it once, and not before OkHttp asks for it.
+    private val resolvedLength: Long by lazy {
+      openFileDescriptor("r")?.use { it.statSize }?.takeIf { it >= 0 } ?: length()
+    }
 
     override fun contentType() = contentType?.toMediaTypeOrNull()
     override fun contentLength() = resolvedLength
