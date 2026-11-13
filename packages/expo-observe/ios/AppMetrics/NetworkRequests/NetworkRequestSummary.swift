@@ -7,18 +7,18 @@ import Foundation
 ///
 /// The summary is intentionally small. Anything that would explode cardinality (per-URL p95s, full
 /// request lists) belongs in a separate metric/table once we ship one — not on the TTI envelope.
-public struct NetworkRequestSummary: Sendable, Equatable {
+struct NetworkRequestSummary: Sendable, Equatable {
   /// Number of requests in the window.
-  public let count: Int
+  let count: Int
 
   /// Requests that errored or returned a non-2xx status.
-  public let failed: Int
+  let failed: Int
 
   /// Sum of `responseBytesReceived` across all requests in the window.
-  public let bytesReceived: Int64
+  let bytesReceived: Int64
 
   /// Sum of `requestBytesSent` across all requests in the window.
-  public let bytesSent: Int64
+  let bytesSent: Int64
 
   /// Sum of `timings.totalDuration` across all requests. Can exceed wall-clock when requests overlap.
   ///
@@ -27,7 +27,7 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   /// spent waiting on a request that never arrived: a window of timeouts reports the seconds they
   /// burned here even though nothing else measures them. The cost is that it can dwarf the other
   /// timings, since a single timeout contributes the client's whole timeout interval.
-  public let totalDuration: TimeInterval
+  let totalDuration: TimeInterval
 
   /// The single longest-running request that completed, or `nil` when the window held none.
   ///
@@ -40,31 +40,31 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   /// slow that wait is often the answer. Only requests that never produced a response are excluded,
   /// because a timeout's duration is the client's own setting rather than a measurement of anything
   /// the server did.
-  public let slowest: SlowestRequest?
+  let slowest: SlowestRequest?
 
   /// Facts about the slowest completed request in a window. See `NetworkRequestSummary.slowest`.
-  public struct SlowestRequest: Sendable, Equatable {
+  struct SlowestRequest: Sendable, Equatable {
     /// Host of the request, or `nil` if the URL had no resolvable host.
-    public let host: String?
+    let host: String?
 
     /// Total wall-clock duration of the request.
-    public let duration: TimeInterval
+    let duration: TimeInterval
 
     /// Response status code. Never `nil` in practice, since a request that never received headers
     /// counts as failed and so isn't a candidate.
     ///
     /// Disambiguates an empty response: a `bytesReceived` of 0 means a cache revalidation on a 304,
     /// an intentionally bodyless reply on a 204, and a broken transfer on a 200.
-    public let statusCode: Int?
+    let statusCode: Int?
 
     /// Time from the start of the fetch until the first response byte arrived, or `nil` if the
     /// request never reported one. Includes server processing time, so it's a proxy for network
     /// quality rather than a measurement of it — see `Timings.timeToFirstByte`.
-    public let timeToFirstByte: TimeInterval?
+    let timeToFirstByte: TimeInterval?
 
     /// Response bytes received on the wire, or `nil` if the OS didn't report a count. Distinguishes
     /// a request that was slow because it moved a lot of data from one that was slow while idle.
-    public let bytesReceived: Int64?
+    let bytesReceived: Int64?
   }
 
   /// Received bytes over the time those bytes were actually moving, in bytes per second, or `nil`
@@ -84,10 +84,10 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   /// almost nothing moves and drags down everything overlapping it. And eviction: when the ring
   /// buffer drops the earliest requests both sides shrink together, so read this as the rate of a
   /// sample of the window rather than all of it.
-  public let throughputBytesPerSecond: Double?
+  let throughputBytesPerSecond: Double?
 
   /// Convenience: returns `nil` when the summary is empty so callers can skip emitting fields.
-  public var isEmpty: Bool {
+  var isEmpty: Bool {
     return count == 0
   }
 

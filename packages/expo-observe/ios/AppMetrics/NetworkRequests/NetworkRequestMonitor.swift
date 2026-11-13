@@ -5,7 +5,7 @@ import Foundation
 /// Receives notifications about HTTP requests observed by `NetworkRequestTaskSwizzling`. Both
 /// methods have default no-op implementations so delegates can opt into either start- or
 /// complete-time notifications without having to implement the other.
-public protocol NetworkRequestObserverDelegate: AnyObject, Sendable {
+protocol NetworkRequestObserverDelegate: AnyObject, Sendable {
   func onNetworkRequestStarted(_ request: NetworkRequestStarted)
   func onNetworkRequestCompleted(_ request: NetworkRequest)
 
@@ -18,10 +18,10 @@ public protocol NetworkRequestObserverDelegate: AnyObject, Sendable {
 }
 
 extension NetworkRequestObserverDelegate {
-  public func onNetworkRequestStarted(_ request: NetworkRequestStarted) {}
-  public func onNetworkRequestCompleted(_ request: NetworkRequest) {}
+  func onNetworkRequestStarted(_ request: NetworkRequestStarted) {}
+  func onNetworkRequestCompleted(_ request: NetworkRequest) {}
 
-  public func shouldObserveRequest(url: URL, method: String) -> Bool {
+  func shouldObserveRequest(url: URL, method: String) -> Bool {
     return true
   }
 }
@@ -36,8 +36,8 @@ extension NetworkRequestObserverDelegate {
 /// Started eagerly at app launch (see `AppMetricsAppDelegateSubscriber.appDelegateWillBeginInitialization`)
 /// so the swizzles run before React Native makes its first fetch.
 @AppMetricsActor
-public final class NetworkRequestMonitor: Sendable {
-  public static let shared = NetworkRequestMonitor()
+final class NetworkRequestMonitor: Sendable {
+  static let shared = NetworkRequestMonitor()
 
   /// Maximum number of recent requests retained for debug surfaces.
   private let recentCapacity = 200
@@ -69,7 +69,7 @@ public final class NetworkRequestMonitor: Sendable {
 
   /// Most recently observed requests, oldest first. Bounded by `recentCapacity`. Intended for
   /// debug surfaces; not for the dispatch path.
-  public var recent: [NetworkRequest] {
+  var recent: [NetworkRequest] {
     return recentRequests
   }
 
@@ -88,12 +88,12 @@ public final class NetworkRequestMonitor: Sendable {
   }
 
   /// Adds a delegate that will be notified for each completed request. Delegates are held weakly.
-  public func addDelegate(_ delegate: NetworkRequestObserverDelegate) {
+  func addDelegate(_ delegate: NetworkRequestObserverDelegate) {
     pruneDelegates()
     delegates.append(WeakDelegate(value: delegate))
   }
 
-  public func removeDelegate(_ delegate: NetworkRequestObserverDelegate) {
+  func removeDelegate(_ delegate: NetworkRequestObserverDelegate) {
     delegates.removeAll { $0.value === delegate || $0.value == nil }
   }
 
