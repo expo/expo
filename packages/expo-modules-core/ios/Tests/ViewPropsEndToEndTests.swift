@@ -75,6 +75,29 @@ struct ViewPropsEndToEndTests {
   }
 
   @Test
+  func `decoded props are freed when the descriptor drops them`() throws {
+    weak var created: DecodedViewProps<EndToEndProps>?
+    weak var updated: DecodedViewProps<EndToEndProps>?
+    try autoreleasepool {
+      created = try update("{ title: 'Card' }")
+      // A value that doesn't decode changes no prop, so the decoder passes `NULL` and the previous props stay.
+      let unchanged = try update("{ title: 5 }")
+      #expect(unchanged === created)
+    }
+    #expect(created != nil)
+
+    try autoreleasepool {
+      updated = try update("{ title: 'New card' }")
+    }
+    // The descriptor keeps only the latest props.
+    #expect(created == nil)
+    #expect(updated != nil)
+
+    descriptor.reset()
+    #expect(updated == nil)
+  }
+
+  @Test
   func `props without a runtime keep the decoded props`() throws {
     let created = try update("{ title: 'Card' }")
     let updated =

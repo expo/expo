@@ -92,6 +92,7 @@ public final class ViewPropsDecoderAdapter: NSObject, ViewPropsDecoding, @unchec
 
 /// The decoded props at an unretained pointer from the component descriptor. Only the adapter of the
 /// view type makes the decoded props of its descriptor, so they're always `DecodedViewProps<Props>`.
+/// `unsafeDowncast` checks that in debug builds and costs nothing in optimized builds.
 @inlinable
 internal func decodedViewProps<Props: AnyViewProps>(
   _ propsType: Props.Type,
@@ -100,7 +101,8 @@ internal func decodedViewProps<Props: AnyViewProps>(
   guard let pointer else {
     return nil
   }
-  return Unmanaged<DecodedViewProps<Props>>.fromOpaque(pointer).takeUnretainedValue()
+  let object = Unmanaged<AnyObject>.fromOpaque(pointer).takeUnretainedValue()
+  return unsafeDowncast(object, to: DecodedViewProps<Props>.self)
 }
 
 /// Passes new decoded props to the component descriptor, which takes over one retain, or `nil` when the

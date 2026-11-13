@@ -18,7 +18,8 @@ NS_SWIFT_NAME(ViewPropsDecoding)
 
  The decoded props cross as raw pointers, which Swift doesn't bridge: `previous` is the unretained
  previous decoded props, or `NULL` before the first decode. Returns new decoded props that the caller
- owns (retained once), or `NULL` when no prop changed and `previous` stays.
+ owns (retained once), or `NULL` when no prop changed and `previous` stays. Returning `previous` retained
+ once also keeps it.
  */
 - (nullable const void *)decodeProps:(const void *)props
                              runtime:(const void *)runtime
