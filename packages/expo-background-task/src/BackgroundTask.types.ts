@@ -44,4 +44,12 @@ export type BackgroundTaskOptions = {
    *
    */
   minimumInterval?: number;
+  /**
+   * Whether the task requires network connectivity to run. Set it to `false` for tasks that do
+   * only local work, so the system can run them while the device is offline.
+   * - Defaults to `true`.
+   * - On Android this maps to the WorkManager `NetworkType.CONNECTED` constraint.
+   * - On iOS this maps to `BGProcessingTaskRequest.requiresNetworkConnectivity`.
+   */
+  requiresNetworkConnectivity?: boolean;
 };
