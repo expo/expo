@@ -1,5 +1,4 @@
-import AppMetrics, { type LogAttributeValue, type LogSeverity } from 'expo-app-metrics';
-import { Observe } from 'expo-observe';
+import { AppMetrics, type LogAttributeValue, type LogSeverity, Observe } from 'expo-observe';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput } from 'react-native';
 

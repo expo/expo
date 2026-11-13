@@ -1,4 +1,4 @@
-import type { LogRecord } from 'expo-app-metrics';
+import type { LogRecord } from 'expo-observe/debug';
 import { useMemo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 

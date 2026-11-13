@@ -1,5 +1,4 @@
-import AppMetrics from 'expo-app-metrics';
-import { Observe } from 'expo-observe';
+import { AppMetrics, Observe } from 'expo-observe';
 import { useState } from 'react';
 import { Platform, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 

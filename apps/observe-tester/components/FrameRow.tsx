@@ -1,4 +1,4 @@
-import type { CallStackFrame } from 'expo-app-metrics';
+import type { CallStackFrame } from 'expo-observe/debug';
 import { StyleSheet, Text } from 'react-native';
 
 import { useTheme } from '@/utils/theme';
