@@ -1102,6 +1102,107 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
       });
     });
 
+    // With `overwrite`, copy and move delete the existing target before they write it.
+    // When that target is the source, or a directory that contains the source,
+    // the delete would destroy the data the caller asked to copy or move.
+    describe('When the copy or move target is the source or contains it', () => {
+      it('refuses to copy a file into its own directory with overwrite', () => {
+        const src = new File(testDirectory, 'file.txt');
+        src.writeSync('keep me');
+        expect(() => src.copySync(new Directory(testDirectory), { overwrite: true })).toThrow();
+        expect(src.textSync()).toBe('keep me');
+      });
+
+      it('refuses to move a file into its own directory with overwrite', () => {
+        const src = new File(testDirectory, 'file.txt');
+        src.writeSync('keep me');
+        expect(() => src.moveSync(new Directory(testDirectory), { overwrite: true })).toThrow();
+        expect(src.textSync()).toBe('keep me');
+      });
+
+      it('refuses to copy a file onto itself with overwrite', () => {
+        const src = new File(testDirectory, 'file.txt');
+        src.writeSync('keep me');
+        expect(() =>
+          src.copySync(new File(testDirectory, 'file.txt'), { overwrite: true })
+        ).toThrow();
+        expect(src.textSync()).toBe('keep me');
+      });
+
+      it('refuses to copy a directory into its own parent with overwrite', () => {
+        const src = new Directory(testDirectory, 'srcDir');
+        src.create();
+        new File(src, 'file.txt').writeSync('keep me');
+        expect(() => src.copySync(new Directory(testDirectory), { overwrite: true })).toThrow();
+        expect(new File(src, 'file.txt').textSync()).toBe('keep me');
+      });
+
+      it('refuses to move a directory into its own parent with overwrite', () => {
+        const src = new Directory(testDirectory, 'srcDir');
+        src.create();
+        new File(src, 'file.txt').writeSync('keep me');
+        expect(() => src.moveSync(new Directory(testDirectory), { overwrite: true })).toThrow();
+        expect(new File(src, 'file.txt').textSync()).toBe('keep me');
+      });
+
+      it('refuses to move a directory onto a directory that contains it', () => {
+        // `same/same` moved into the test directory resolves to `same`, the parent of the source.
+        const outer = new Directory(testDirectory, 'same');
+        outer.create();
+        const src = new Directory(outer, 'same');
+        src.create();
+        new File(src, 'file.txt').writeSync('keep me');
+        expect(() => src.moveSync(new Directory(testDirectory), { overwrite: true })).toThrow();
+        expect(new File(src, 'file.txt').textSync()).toBe('keep me');
+      });
+
+      it('refuses to copy a file onto a directory that contains it', () => {
+        // `same/same` copied into the test directory resolves to `same`, the parent of the source.
+        const outer = new Directory(testDirectory, 'same');
+        outer.create();
+        const src = new File(outer, 'same');
+        src.writeSync('keep me');
+        expect(() => src.copySync(new Directory(testDirectory), { overwrite: true })).toThrow();
+        expect(src.textSync()).toBe('keep me');
+      });
+
+      it('refuses to copy a file onto its own directory passed as a file', () => {
+        const parent = new Directory(testDirectory, 'parent');
+        parent.create();
+        const src = new File(parent, 'file.txt');
+        src.writeSync('keep me');
+        expect(() =>
+          src.copySync(new File(testDirectory, 'parent'), { overwrite: true })
+        ).toThrow();
+        expect(src.textSync()).toBe('keep me');
+      });
+
+      it('still moves a file into an ancestor of its directory with overwrite', () => {
+        const parent = new Directory(testDirectory, 'parent');
+        parent.create();
+        const src = new File(parent, 'file.txt');
+        src.writeSync('moved');
+        src.moveSync(new Directory(testDirectory), { overwrite: true });
+        expect(src.uri).toBe(testDirectory + 'file.txt');
+        expect(src.textSync()).toBe('moved');
+        expect(parent.exists).toBe(true);
+      });
+
+      if (Platform.OS === 'android' && testDirectory.startsWith('file:///data/user/0/')) {
+        it('refuses to copy a file onto itself through a path alias with overwrite', () => {
+          const src = new File(testDirectory, 'file.txt');
+          src.writeSync('keep me');
+          // `/data/data` and `/data/user/0` are two paths to the same app data directory.
+          const aliasDirectory = new Directory(
+            testDirectory.replace('file:///data/user/0/', 'file:///data/data/')
+          );
+          expect(new File(aliasDirectory, 'file.txt').textSync()).toBe('keep me');
+          expect(() => src.copySync(aliasDirectory, { overwrite: true })).toThrow();
+          expect(src.textSync()).toBe('keep me');
+        });
+      }
+    });
+
     if (Platform.OS === 'android') {
       describeWithPermissions('Cross-backend copy/move operations (Android SAF)', () => {
         let originalTimeout: number;
