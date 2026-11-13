@@ -137,14 +137,14 @@ export function reportHomeClick(params: HomeClickParams) {
 
 export function reportSectionView(section: string) {
   if (isAnalyticsConsented()) {
-    window?.gtag?.('event', 'section_view', { section });
+    window?.gtag?.('event', 'home_section_view', { section });
     return;
   }
 
   if (getAnalyticsConsentStatus() === 'pending') {
     enqueueAnalyticsEvent({
       type: 'track',
-      args: ['section_view', { section }],
+      args: ['home_section_view', { section }],
       timestamp: Date.now(),
     });
   }
@@ -189,9 +189,9 @@ setAnalyticsReplayFn((events: QueuedEvent[]) => {
         window?.gtag?.('event', 'home_click', params);
         break;
       }
-      case 'section_view': {
+      case 'home_section_view': {
         const params = data as Record<string, unknown>;
-        window?.gtag?.('event', 'section_view', params);
+        window?.gtag?.('event', 'home_section_view', params);
         break;
       }
     }
