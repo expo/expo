@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 import DocumentationPage from '~/components/DocumentationPage';
-import { reportHomeClick } from '~/providers/Analytics';
+import { reportHomeClick, reportSectionView } from '~/providers/Analytics';
 import { AppJSBanner } from '~/ui/components/AppJSBanner';
 import { DevicesImageMasks } from '~/ui/components/Home/resources';
 import {
@@ -41,12 +41,32 @@ function trackHomeClick(event: MouseEvent) {
   );
 }
 
+function trackSectionViews(entries: IntersectionObserverEntry[], observer: IntersectionObserver) {
+  for (const entry of entries) {
+    const section = (entry.target as HTMLElement).dataset.homeSection;
+    if (entry.isIntersecting && section) {
+      reportSectionView(section);
+      observer.unobserve(entry.target);
+    }
+  }
+}
+
 function Home() {
   useEffect(function didMount() {
     const appRoot = document.getElementById('__next');
     appRoot?.addEventListener('click', trackHomeClick);
     return function didUnmount() {
       appRoot?.removeEventListener('click', trackHomeClick);
+    };
+  }, []);
+
+  useEffect(function didMount() {
+    const observer = new IntersectionObserver(trackSectionViews, { rootMargin: '-25% 0px' });
+    for (const section of document.querySelectorAll('[data-home-section]')) {
+      observer.observe(section);
+    }
+    return function didUnmount() {
+      observer.disconnect();
     };
   }, []);
 
