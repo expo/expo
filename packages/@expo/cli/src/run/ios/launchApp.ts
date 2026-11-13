@@ -35,7 +35,7 @@ export async function launchAppAsync(
   if (!props.isSimulator) {
     const done = event.span();
     if (props.device.osType === 'macOS') {
-      await launchBinaryOnMacAsync(appId, binaryPath);
+      await launchBinaryOnMacAsync(binaryPath);
     } else {
       await profile(installOnDeviceAsync)({
         bundleIdentifier: appId,

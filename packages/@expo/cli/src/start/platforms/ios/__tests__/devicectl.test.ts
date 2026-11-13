@@ -1,11 +1,18 @@
+import spawnAsync from '@expo/spawn-async';
 import { spawn } from 'child_process';
 import { EventEmitter } from 'events';
+import fs from 'fs';
+import { vol } from 'memfs';
 import { PassThrough } from 'stream';
 
 import { xcrunAsync } from '../../../../start/platforms/ios/xcrun';
 import { isInteractive } from '../../../../utils/interactive';
 import * as oraUtils from '../../../../utils/ora';
-import { installAndLaunchAppAsync, launchAppWithDeviceCtl } from '../devicectl';
+import {
+  installAndLaunchAppAsync,
+  launchAppWithDeviceCtl,
+  launchBinaryOnMacAsync,
+} from '../devicectl';
 
 jest.mock('../../../../start/platforms/ios/xcrun');
 jest.mock('../../../../utils/interactive');
@@ -35,6 +42,40 @@ describe(launchAppWithDeviceCtl, () => {
     await expect(() =>
       launchAppWithDeviceCtl('fake-device-id', 'com.exponent.Test')
     ).rejects.toThrow('Device is locked, unlock and try again.');
+  });
+});
+
+describe(launchBinaryOnMacAsync, () => {
+  const productsPath = '/DerivedData/Build/Products/Debug-iphoneos';
+  const appPath = `${productsPath}/MyApp.app`;
+  const wrapperPath = `${productsPath}/MyApp-mac.app`;
+
+  beforeEach(() => {
+    vol.reset();
+    vol.fromJSON({ [`${appPath}/Info.plist`]: '' });
+    jest.mocked(spawnAsync).mockClear();
+  });
+
+  afterAll(() => {
+    vol.reset();
+  });
+
+  it('opens the app in a "Designed for iPad" wrapper bundle', async () => {
+    const symlink = jest.spyOn(fs.promises, 'symlink');
+
+    await launchBinaryOnMacAsync(appPath);
+
+    expect(spawnAsync).toHaveBeenCalledWith('ditto', [appPath, `${wrapperPath}/Wrapper/MyApp.app`]);
+    expect(symlink).toHaveBeenCalledWith('Wrapper/MyApp.app', `${wrapperPath}/WrappedBundle`);
+    expect(spawnAsync).toHaveBeenLastCalledWith('open', [wrapperPath]);
+  });
+
+  it('quits the running build before it opens the new build', async () => {
+    await launchBinaryOnMacAsync(appPath);
+
+    const commands = jest.mocked(spawnAsync).mock.calls.map(([command]) => command);
+    expect(commands).toEqual(['pkill', 'ditto', 'open']);
+    expect(spawnAsync).toHaveBeenCalledWith('pkill', ['-f', '/Wrapper/MyApp.app/']);
   });
 });
 
