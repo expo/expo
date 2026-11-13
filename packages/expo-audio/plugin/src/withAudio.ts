@@ -33,7 +33,7 @@ export type Props = {
   enableBackgroundRecording?: boolean;
   /**
    * Whether to enable background audio playback.
-   * @default true
+   * @default false
    */
   enableBackgroundPlayback?: boolean;
 };
@@ -44,7 +44,7 @@ const withAudio: ConfigPlugin<Props | void> = (
     microphonePermission,
     recordAudioAndroid = true,
     enableBackgroundRecording = false,
-    enableBackgroundPlayback = true,
+    enableBackgroundPlayback = false,
   } = {}
 ) => {
   IOSConfig.Permissions.createPermissionsPlugin({
