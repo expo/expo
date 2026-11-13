@@ -23,6 +23,7 @@ import {
 } from './layouts/GuardContext';
 import { GuardedRoutesCleanupContext } from './layouts/useClearGuardedRoutes';
 import { Redirect } from './link/Redirect';
+import { resolveHref } from './link/href';
 import { useIsPreview } from './link/preview/PreviewRouteContext';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
@@ -51,9 +52,10 @@ import {
 } from './react-navigation/native';
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
 import { getValidInitialRouteName } from './routeNode';
-import type { UnknownOutputParams } from './types';
+import type { Href, UnknownOutputParams } from './types';
 import { useIsFocused } from './useIsFocused';
 import { getSingularId } from './utils/getSingularId';
+import { shouldLinkExternally } from './utils/url';
 import { EmptyRoute } from './views/EmptyRoute';
 import { RouteActivity } from './views/NavigationAwareActivity';
 import {
@@ -482,7 +484,7 @@ function GuardedRouteRedirect({
   navigation: GuardNavigation;
 }) {
   if (guard.redirectTo !== undefined) {
-    return <Redirect href={guard.redirectTo} />;
+    return <GuardRedirect navigation={navigation} href={guard.redirectTo} />;
   }
   if (guard.fallback) {
     return <GuardFallbackReplace navigation={navigation} fallback={guard.fallback} />;
@@ -490,6 +492,16 @@ function GuardedRouteRedirect({
   // With no destination (every candidate is also guarded), render nothing but keep
   // the screen registered so the navigator and its state stay mounted.
   return <AllRoutesProtectedWarning />;
+}
+
+function GuardRedirect({ navigation, href }: { navigation: GuardNavigation; href: Href }) {
+  const cleanupNavigatorId = use(GuardedRoutesCleanupContext);
+  // A stack that removes its blocked routes resolves an internal `redirectTo` itself, after navigation queued with the guard change.
+  const isRedirectedByStack =
+    cleanupNavigatorId !== undefined &&
+    cleanupNavigatorId === navigation.getId() &&
+    !shouldLinkExternally(resolveHref(href));
+  return isRedirectedByStack ? null : <Redirect href={href} />;
 }
 
 function GuardFallbackReplace({

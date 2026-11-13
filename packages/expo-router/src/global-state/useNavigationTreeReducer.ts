@@ -293,10 +293,7 @@ function reduceTree(
         return result;
       }
       if (resolution.status === 'redirect-loop') {
-        throw new Error(
-          `Expo Router could not open "${resolution.hrefs[0]}" because the \`redirectTo\` targets of protected routes form a loop or a chain longer than ${MAX_REDIRECT_CHAIN_LENGTH} routes: ${resolution.hrefs.join(' -> ')}. ` +
-            'Change `redirectTo` on a `Protected` component so that the redirects end at an accessible route.'
-        );
+        throw createRedirectLoopError(resolution.hrefs);
       }
       if (resolution.status === 'blocked') {
         return result;
@@ -320,9 +317,9 @@ function reduceTree(
       );
     }
     case 'COMPUTED_ACTION': {
-      let action: NavigationAction | undefined;
+      let action: ReturnType<typeof operation.payload.compute>;
       try {
-        action = operation.payload.compute(state, config.registry);
+        action = operation.payload.compute(state, config);
       } catch (error) {
         const message =
           typeof error === 'object' && error != null && 'message' in error ? error.message : error;
@@ -334,6 +331,9 @@ function reduceTree(
       }
       if (!action) {
         return result;
+      }
+      if ('status' in action) {
+        throw createRedirectLoopError(action.hrefs);
       }
       return reduceTree(
         result,
@@ -458,6 +458,13 @@ function reduceTree(
       return { ...result, report: events.length > 0 ? { events } : undefined };
     }
   }
+}
+
+function createRedirectLoopError(hrefs: string[]) {
+  return new Error(
+    `Expo Router could not open "${hrefs[0]}" because the \`redirectTo\` targets of protected routes form a loop or a chain longer than ${MAX_REDIRECT_CHAIN_LENGTH} routes: ${hrefs.join(' -> ')}. ` +
+      'Change `redirectTo` on a `Protected` component so that the redirects end at an accessible route.'
+  );
 }
 
 function reportUnhandledAction(

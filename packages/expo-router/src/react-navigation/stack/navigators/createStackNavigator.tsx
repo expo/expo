@@ -44,14 +44,14 @@ function StackNavigatorContent({
   isPreloaded,
   isRemovalPrevented: _isRemovalPrevented,
   pop,
-  removeRoutes,
+  removeRoutes: _removeRoutes,
   restoreRoute,
   subscribePopToTopOnParentTabPress,
   ...rest
 }: StackNavigatorContentProps) {
   const { direction } = useLocale();
 
-  const cleanupNavigatorId = useClearGuardedRoutes(state, removeRoutes);
+  const cleanupNavigatorId = useClearGuardedRoutes();
   React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
 
   if (state.routes.length === 0) {

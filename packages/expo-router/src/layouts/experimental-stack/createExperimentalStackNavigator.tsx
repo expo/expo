@@ -44,7 +44,6 @@ function ExperimentalStackNavigatorContent({
   isPreloaded,
   isRemovalPrevented,
   pop,
-  removeRoutes,
   subscribePopToTopOnParentTabPress,
 }: ExperimentalStackNavigatorContentProps) {
   const { registry, contextValue } = useCompositionRegistry();
@@ -54,7 +53,7 @@ function ExperimentalStackNavigatorContent({
     [descriptors, registry, state]
   );
 
-  const cleanupNavigatorId = useClearGuardedRoutes(state, removeRoutes);
+  const cleanupNavigatorId = useClearGuardedRoutes();
   React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
 
   return (

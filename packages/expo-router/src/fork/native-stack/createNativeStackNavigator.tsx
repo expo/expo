@@ -56,7 +56,6 @@ function NativeStackNavigatorContent({
   isPreloaded,
   isRemovalPrevented,
   pop,
-  removeRoutes,
   subscribePopToTopOnParentTabPress,
   unstable_nativeProps,
 }: ContentArgs) {
@@ -68,7 +67,7 @@ function NativeStackNavigatorContent({
     isPreloaded: isComputedRoutePreloaded,
   } = usePreviewTransition(state, emitter.emit, isPreloaded);
 
-  const cleanupNavigatorId = useClearGuardedRoutes(state, removeRoutes);
+  const cleanupNavigatorId = useClearGuardedRoutes();
   React.useEffect(() => subscribePopToTopOnParentTabPress(), [subscribePopToTopOnParentTabPress]);
 
   // Map internal gesture option to React Navigation's gestureEnabled option

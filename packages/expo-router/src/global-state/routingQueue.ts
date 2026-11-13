@@ -1,6 +1,6 @@
 import { mark } from '../performance';
 import type { NavigationAction, NavigationState } from '../react-navigation/native';
-import type { RouterRegistry } from './routerRegistry';
+import type { NavigateActionConfig, NavigationResolution } from './getNavigationAction';
 import type { LinkToOptions } from './types';
 
 interface NavigateToHrefIntent {
@@ -21,7 +21,14 @@ export type RoutingIntent = (
   | {
       type: 'COMPUTED_ACTION';
       payload: {
-        compute: (state: NavigationState, registry: RouterRegistry) => NavigationAction | undefined;
+        // A redirect loop is returned, not thrown, because the reducer warns about thrown errors.
+        compute: (
+          state: NavigationState,
+          config: NavigateActionConfig
+        ) =>
+          | NavigationAction
+          | Extract<NavigationResolution, { status: 'redirect-loop' }>
+          | undefined;
         originKey?: string;
       };
     }

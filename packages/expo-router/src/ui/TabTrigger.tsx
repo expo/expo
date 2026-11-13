@@ -214,7 +214,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
             type: 'COMPUTED_ACTION',
             payload: {
               originKey: state.key,
-              compute(rootState, registry) {
+              compute(rootState, { registry }) {
                 const currentOwningState = findStateByKey(rootState, owningState.key);
                 if (!currentOwningState) {
                   return;
