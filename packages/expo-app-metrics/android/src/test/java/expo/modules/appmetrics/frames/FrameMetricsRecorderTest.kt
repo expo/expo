@@ -86,6 +86,20 @@ class FrameMetricsRecorderTest {
   }
 
   @Test
+  fun `does not accumulate negative freeze time from fast frames`() {
+    val recorder = FrameMetricsRecorder()
+
+    // Frames shorter than the 17ms target must not subtract from the freeze time.
+    // Freeze time = 0 + 0 + (50 - 17) = 33
+    recorder.processFrame(10)
+    recorder.processFrame(16)
+    recorder.processFrame(50)
+
+    val record = recorder.stop()
+    assertEquals(33, record.freezeTimeMs)
+  }
+
+  @Test
   fun `stop returns metrics and resets`() {
     val recorder = FrameMetricsRecorder()
 

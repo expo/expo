@@ -42,7 +42,7 @@ class FrameMetricsRecorder {
       currentDroppedFrames = 0
     }
 
-    val freezeDurationMs = frameDurationMs - TARGET_FRAME_DURATION_MS
+    val freezeDurationMs = maxOf(0L, frameDurationMs - TARGET_FRAME_DURATION_MS)
 
     record.renderedFrames++
     record.totalDurationMs += frameDurationMs
