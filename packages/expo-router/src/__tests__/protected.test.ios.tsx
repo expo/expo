@@ -259,7 +259,87 @@ it('redirects a guarded route in a nested navigator to that navigator anchor', a
   expect(screen).toHavePathname('/nested/home');
 });
 
-it('uses the innermost failing guard redirectTo for a nested guarded route', async () => {
+it('uses the outer guard redirectTo when both nested guards fail', async () => {
+  await renderRouter(
+    {
+      _layout: function Layout() {
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={false} redirectTo="/login">
+              <Stack.Protected guard={false} redirectTo="/upgrade">
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+            </Stack.Protected>
+            <Stack.Screen name="login" />
+            <Stack.Screen name="upgrade" />
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      login: () => <Text testID="login">login</Text>,
+      upgrade: () => <Text testID="upgrade">upgrade</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/secret' }
+  );
+
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen).toHavePathname('/login');
+});
+
+it('ignores the inner guard redirectTo when the failing outer guard has no redirectTo', async () => {
+  await renderRouter(
+    {
+      _layout: function Layout() {
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={false}>
+              <Stack.Protected guard={false} redirectTo="/upgrade">
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+            </Stack.Protected>
+            <Stack.Screen name="upgrade" />
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      upgrade: () => <Text testID="upgrade">upgrade</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/secret' }
+  );
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+});
+
+it('uses the outer guard redirectTo when the failing inner guard has no redirectTo', async () => {
+  await renderRouter(
+    {
+      _layout: function Layout() {
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={false} redirectTo="/login">
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+            </Stack.Protected>
+            <Stack.Screen name="login" />
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      login: () => <Text testID="login">login</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/secret' }
+  );
+
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen).toHavePathname('/login');
+});
+
+it('uses the inner guard redirectTo when only the inner guard fails', async () => {
   await renderRouter(
     {
       _layout: function Layout() {
