@@ -217,56 +217,6 @@ PODS:
   - ExpoApplication/Tests (58.1.2):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoAppMetrics (58.0.14):
-    - ExpoModulesCore
-    - EXUpdatesInterface
-    - hermes-engine
-    - RCTRequired
-    - RCTTypeSafety
-    - React-bridging
-    - React-Core
-    - React-Core-prebuilt
-    - React-cxxstableapi
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - Yoga
-  - ExpoAppMetrics/Tests (58.0.14):
-    - ExpoModulesCore
-    - EXUpdatesInterface
-    - hermes-engine
-    - RCTRequired
-    - RCTTypeSafety
-    - React-bridging
-    - React-Core
-    - React-Core-prebuilt
-    - React-cxxstableapi
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - Yoga
   - ExpoBackgroundTask (58.0.11):
     - ExpoModulesCore
     - ExpoTaskManager
@@ -413,8 +363,8 @@ PODS:
     - ExpoModulesTestCore
   - ExpoObserve (58.0.16):
     - EASClient
-    - ExpoAppMetrics
     - ExpoModulesCore
+    - EXUpdatesInterface
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -439,8 +389,8 @@ PODS:
     - Yoga
   - ExpoObserve/Tests (58.0.16):
     - EASClient
-    - ExpoAppMetrics
     - ExpoModulesCore
+    - EXUpdatesInterface
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2947,8 +2897,6 @@ DEPENDENCIES:
   - Expo/Tests (from `../../../packages/expo`)
   - ExpoApplication (from `../../../packages/expo-application/ios`)
   - ExpoApplication/Tests (from `../../../packages/expo-application/ios`)
-  - ExpoAppMetrics (from `../../../packages/expo-app-metrics/ios`)
-  - ExpoAppMetrics/Tests (from `../../../packages/expo-app-metrics/ios`)
   - ExpoBackgroundTask (from `../../../packages/expo-background-task/ios`)
   - ExpoBackgroundTask/Tests (from `../../../packages/expo-background-task/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
@@ -3115,9 +3063,6 @@ EXTERNAL SOURCES:
   ExpoApplication:
     inhibit_warnings: false
     :path: "../../../packages/expo-application/ios"
-  ExpoAppMetrics:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-app-metrics/ios"
   ExpoBackgroundTask:
     inhibit_warnings: false
     :path: "../../../packages/expo-background-task/ios"
@@ -3364,7 +3309,6 @@ SPEC CHECKSUMS:
   expo-dev-menu: 6185bd79c69e06398518590588e6eb5a6063ef27
   expo-dev-menu-interface: d304e400271187edf1534704a4a05dcc140076e2
   ExpoApplication: c83355b2f69f996b5d26b64fef39228e7f1e1208
-  ExpoAppMetrics: ca9a0a9fec85aa654fe8502e7840e8c31b4d11c5
   ExpoBackgroundTask: 58850693ca813a3da1f5410ad3dd5e2ef07e2a75
   ExpoClipboard: 244adf0a38b60ec7105e217042dd266a722f5a5e
   ExpoFileSystem: b35d87e5219408a4052ee5adde99962d014efb09
@@ -3376,7 +3320,7 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: ed72b7c5bffe2d5d16cf128c6322c2d1191c1734
   ExpoModulesWorklets: 208e6112a0467df1cc21530e280d650a3adf6261
   ExpoNotifications: d0ab853f324bacf76f0fe32d06eba2e1f8532ca5
-  ExpoObserve: 7be2ac3a9e099c593fd6b93a8fcb12ce28afd300
+  ExpoObserve: 731cdd8ca4bc725316ad258639d6952dbc335167
   ExpoRouter: c5f712d2c761df71f8c9a42739f6ecae38ba8315
   ExpoTaskManager: f109b15d2742a10b0381ba635fddc9ddf9e766cc
   EXStructuredHeaders: d38b81fb2ff838c15bf28135deb247e76293d2b9

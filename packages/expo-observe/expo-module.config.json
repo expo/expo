@@ -1,11 +1,11 @@
 {
   "platforms": ["apple", "android"],
   "apple": {
-    "modules": ["ObserveModule"],
-    "appDelegateSubscribers": ["ObserveAppDelegateSubscriber"]
+    "modules": ["AppMetricsModule", "ObserveModule"],
+    "appDelegateSubscribers": ["AppMetricsAppDelegateSubscriber", "ObserveAppDelegateSubscriber"]
   },
   "android": {
-    "modules": ["expo.modules.observe.ObserveModule"],
+    "modules": ["expo.modules.appmetrics.AppMetricsModule", "expo.modules.observe.ObserveModule"],
     "publication": {
       "groupId": "expo.modules.observe",
       "artifactId": "expo.modules.observe",
