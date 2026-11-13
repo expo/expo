@@ -4973,9 +4973,6 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../expo
-      expo-app-metrics:
-        specifier: workspace:*
-        version: link:../expo-app-metrics
       expo-observe:
         specifier: workspace:*
         version: link:../expo-observe
