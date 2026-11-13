@@ -24,6 +24,9 @@ internal val delegate: ExpoNetworkInspectOkHttpInterceptorsDelegate = ExpoReques
 class ExpoNetworkInspectOkHttpNetworkInterceptor : Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
     val request = chain.request()
+    if (ExpoNetworkReporter.isReported(request)) {
+      return chain.proceed(request)
+    }
     val response = chain.proceed(request)
     try {
       val redirectResponse = request.tag(RedirectResponse::class.java)
