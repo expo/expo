@@ -27,7 +27,7 @@ import {
   completeNavigationState,
   createSeededNavigationState,
 } from './createSeededNavigationState';
-import { getNavigateAction } from './getNavigationAction';
+import { getNavigateAction, MAX_REDIRECT_CHAIN_LENGTH } from './getNavigationAction';
 import { indexNavigationTree, reduceNavigationTree, resolveOrigin } from './reduceNavigationTree';
 import type { RouterRegistry } from './routerRegistry';
 import { markActionEnqueuedAndReturnId, type QueuedRoutingIntent } from './routingQueue';
@@ -290,6 +290,15 @@ function reduceTree(
         console.warn(
           `An error occurred when trying to handle navigation action ${JSON.stringify(operation)}: ${message}`
         );
+        return result;
+      }
+      if (resolution.status === 'redirect-loop') {
+        throw new Error(
+          `Expo Router could not open "${resolution.hrefs[0]}" because the \`redirectTo\` targets of protected routes form a loop or a chain longer than ${MAX_REDIRECT_CHAIN_LENGTH} routes: ${resolution.hrefs.join(' -> ')}. ` +
+            'Change `redirectTo` on a `Protected` component so that the redirects end at an accessible route.'
+        );
+      }
+      if (resolution.status === 'blocked') {
         return result;
       }
       if (resolution.status === 'invalid') {

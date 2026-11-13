@@ -60,7 +60,7 @@ it('redirects a guarded route to the anchor default during the initial load', as
   ]);
 });
 
-it('redirects nested guarded routes to the anchor and unlocks them as guards flip', async () => {
+it('ignores navigation to nested guarded routes and unlocks them as guards flip', async () => {
   let useStateResultA: [boolean, Dispatch<SetStateAction<boolean>>];
   let useStateResultB: [boolean, Dispatch<SetStateAction<boolean>>];
   let useStateResultC: [boolean, Dispatch<SetStateAction<boolean>>];
@@ -121,12 +121,12 @@ it('redirects nested guarded routes to the anchor and unlocks them as guards fli
   expect(screen).toHavePathname('/a');
 
   await act(() => router.replace('/b'));
-  expect(screen.getByTestId('index')).toBeVisible();
-  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
 
   await act(() => router.replace('/c'));
-  expect(screen.getByTestId('index')).toBeVisible();
-  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('a')).toBeVisible();
+  expect(screen).toHavePathname('/a');
 
   // change the guard for route B to true: should make B available and also C
   // should be available now as all its parents guards are true
@@ -994,6 +994,338 @@ it('adds no screens when the guards change repeatedly', async () => {
   ]);
   expect(screen.getByTestId('home')).toBeVisible();
   expect(router.canGoBack()).toBe(false);
+});
+
+it('ignores a push to a blocked route without redirectTo', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Protected guard={false}>
+          <Stack.Screen name="secret" />
+        </Stack.Protected>
+      </Stack>
+    ),
+    index: () => <Text testID="home">home</Text>,
+    settings: () => <Text testID="settings">settings</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+  });
+  await act(() => router.push('/settings'));
+
+  const committedRouteNames: string[][] = [];
+  const unsubscribe = navigationRef.addListener('state', () => {
+    committedRouteNames.push(
+      navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+    );
+  });
+  try {
+    await act(() => router.push('/secret'));
+  } finally {
+    unsubscribe();
+  }
+
+  expect(committedRouteNames).toEqual([]);
+  expect(screen.getByTestId('settings')).toBeVisible();
+  expect(screen).toHavePathname('/settings');
+});
+
+it('ignores a replace to a blocked route without redirectTo', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Protected guard={false}>
+          <Stack.Screen name="secret" />
+        </Stack.Protected>
+      </Stack>
+    ),
+    index: () => <Text testID="home">home</Text>,
+    settings: () => <Text testID="settings">settings</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+  });
+  await act(() => router.push('/settings'));
+
+  const committedRouteNames: string[][] = [];
+  const unsubscribe = navigationRef.addListener('state', () => {
+    committedRouteNames.push(
+      navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+    );
+  });
+  try {
+    await act(() => router.replace('/secret'));
+  } finally {
+    unsubscribe();
+  }
+
+  expect(committedRouteNames).toEqual([]);
+  expect(screen.getByTestId('settings')).toBeVisible();
+  expect(screen).toHavePathname('/settings');
+});
+
+it('pushes the redirectTo target instead of a blocked route', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Protected guard={false} redirectTo="/login">
+          <Stack.Screen name="secret" />
+        </Stack.Protected>
+      </Stack>
+    ),
+    index: () => <Text testID="home">home</Text>,
+    settings: () => <Text testID="settings">settings</Text>,
+    login: () => <Text testID="login">login</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+  });
+  await act(() => router.push('/settings'));
+
+  const committedRouteNames: string[][] = [];
+  const unsubscribe = navigationRef.addListener('state', () => {
+    committedRouteNames.push(
+      navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+    );
+  });
+  try {
+    await act(() => router.push('/secret'));
+  } finally {
+    unsubscribe();
+  }
+
+  expect(committedRouteNames).toEqual([['index', 'settings', 'login']]);
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen).toHavePathname('/login');
+});
+
+it('replaces with the redirectTo target instead of a blocked route', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Protected guard={false} redirectTo="/login">
+          <Stack.Screen name="secret" />
+        </Stack.Protected>
+      </Stack>
+    ),
+    index: () => <Text testID="home">home</Text>,
+    settings: () => <Text testID="settings">settings</Text>,
+    login: () => <Text testID="login">login</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+  });
+  await act(() => router.push('/settings'));
+
+  const committedRouteNames: string[][] = [];
+  const unsubscribe = navigationRef.addListener('state', () => {
+    committedRouteNames.push(
+      navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+    );
+  });
+  try {
+    await act(() => router.replace('/secret'));
+  } finally {
+    unsubscribe();
+  }
+
+  expect(committedRouteNames).toEqual([['index', 'login']]);
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen).toHavePathname('/login');
+});
+
+it('follows a redirectTo chain through blocked routes to the final destination', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Protected guard={false} redirectTo="/vip">
+          <Stack.Screen name="secret" />
+        </Stack.Protected>
+        <Stack.Protected guard={false} redirectTo="/login">
+          <Stack.Screen name="vip" />
+        </Stack.Protected>
+      </Stack>
+    ),
+    index: () => <Text testID="home">home</Text>,
+    login: () => <Text testID="login">login</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+    vip: () => <Text testID="vip">vip</Text>,
+  });
+
+  const committedRouteNames: string[][] = [];
+  const unsubscribe = navigationRef.addListener('state', () => {
+    committedRouteNames.push(
+      navigationRef.getRootState().routes[0]!.state!.routes.map((route) => route.name)
+    );
+  });
+  try {
+    await act(() => router.push('/secret'));
+  } finally {
+    unsubscribe();
+  }
+
+  expect(committedRouteNames).toEqual([['index', 'login']]);
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen).toHavePathname('/login');
+});
+
+it('resolves a relative redirectTo against the blocked route', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard={false} redirectTo="./login">
+            <Stack.Screen name="private/secret" />
+          </Stack.Protected>
+        </Stack>
+      ),
+      index: () => <Text testID="home">home</Text>,
+      'public/home': () => <Text testID="public-home">public home</Text>,
+      'public/login': () => <Text testID="public-login">public login</Text>,
+      'private/login': () => <Text testID="private-login">private login</Text>,
+      'private/secret': () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/public/home' }
+  );
+
+  await act(() => router.push('/private/secret'));
+
+  expect(screen.getByTestId('private-login')).toBeVisible();
+  expect(screen).toHavePathname('/private/login');
+});
+
+it('resolves a relative redirectTo without the relativeToDirectory option of the navigation', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard={false} redirectTo="./login">
+            <Stack.Screen name="private/secret" />
+          </Stack.Protected>
+        </Stack>
+      ),
+      index: () => <Text testID="home">home</Text>,
+      'private/home': () => <Text testID="private-home">private home</Text>,
+      'private/login': () => <Text testID="private-login">private login</Text>,
+      'private/secret': () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/private/home' }
+  );
+
+  await act(() => router.push('/private/secret', { relativeToDirectory: true }));
+
+  expect(screen.getByTestId('private-login')).toBeVisible();
+  expect(screen).toHavePathname('/private/login');
+});
+
+it('opens a shared redirectTo route in the group of the blocked route', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard={false} redirectTo="/login">
+            <Stack.Screen name="(two)/secret" />
+          </Stack.Protected>
+        </Stack>
+      ),
+      '(one)/home': () => <Text testID="one-home">one home</Text>,
+      '(one)/login': () => <Text testID="one-login">one login</Text>,
+      '(two)/login': () => <Text testID="two-login">two login</Text>,
+      '(two)/secret': () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/(one)/home' }
+  );
+
+  await act(() => router.push('/(two)/secret'));
+
+  expect(screen.getByTestId('two-login')).toBeVisible();
+  expect(screen).toHaveSegments(['(two)', 'login']);
+});
+
+it('follows a redirectTo chain back to the same href when it opens a route in another group', async () => {
+  await renderRouter(
+    {
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard={false} redirectTo="/(two)/secret">
+            <Stack.Screen name="(one)/login" />
+          </Stack.Protected>
+          <Stack.Protected guard={false} redirectTo="/login">
+            <Stack.Screen name="(two)/secret" />
+          </Stack.Protected>
+        </Stack>
+      ),
+      '(one)/home': () => <Text testID="one-home">one home</Text>,
+      '(one)/login': () => <Text testID="one-login">one login</Text>,
+      '(two)/login': () => <Text testID="two-login">two login</Text>,
+      '(two)/secret': () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/(one)/home' }
+  );
+
+  await act(() => router.push('/login'));
+
+  expect(screen.getByTestId('two-login')).toBeVisible();
+  expect(screen).toHaveSegments(['(two)', 'login']);
+});
+
+it('throws when the redirectTo targets of blocked routes form a loop', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Protected guard={false} redirectTo="/vip">
+          <Stack.Screen name="secret" />
+        </Stack.Protected>
+        <Stack.Protected guard={false} redirectTo="/secret">
+          <Stack.Screen name="vip" />
+        </Stack.Protected>
+      </Stack>
+    ),
+    index: () => <Text testID="home">home</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+    vip: () => <Text testID="vip">vip</Text>,
+  });
+
+  await expect(async () => {
+    await act(() => router.push('/secret'));
+  }).rejects.toThrow(
+    'Expo Router could not open "/secret" because the `redirectTo` targets of protected routes form a loop or a chain longer than 20 routes: /secret -> /vip -> /secret. ' +
+      'Change `redirectTo` on a `Protected` component so that the redirects end at an accessible route.'
+  );
+});
+
+it('throws when the redirectTo targets of blocked routes form a chain longer than 20 routes', async () => {
+  await renderRouter({
+    _layout: () => (
+      <Stack>
+        <Stack.Protected guard={false} redirectTo="./child/secret">
+          <Stack.Screen name="[...slug]" />
+        </Stack.Protected>
+      </Stack>
+    ),
+    index: () => <Text testID="home">home</Text>,
+    '[...slug]': () => <Text testID="slug">slug</Text>,
+  });
+
+  await expect(async () => {
+    await act(() => router.push('/secret'));
+  }).rejects.toThrow(
+    'Expo Router could not open "/secret" because the `redirectTo` targets of protected routes form a loop or a chain longer than 20 routes: ' +
+      '/secret -> ' +
+      '/child/secret -> ' +
+      '/child/child/secret -> ' +
+      '/child/child/child/secret -> ' +
+      '/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/child/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/secret -> ' +
+      '/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/child/secret. ' +
+      'Change `redirectTo` on a `Protected` component so that the redirects end at an accessible route.'
+  );
 });
 
 describe('all routes guarded', () => {

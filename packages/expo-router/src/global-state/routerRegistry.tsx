@@ -3,6 +3,7 @@
 import { createContext, use } from 'react';
 
 import type { RouteNode } from '../Route';
+import type { ResolvedGuard } from '../layouts/GuardContext';
 import { useClientLayoutEffect } from '../react-navigation/core/useClientLayoutEffect';
 import type {
   NavigationAction,
@@ -25,6 +26,7 @@ export type RouterRegistryEntry = {
     childAction?: RouterBrowserHistoryAction
   ) => RouterBrowserHistoryAction | undefined;
   routeNode?: RouteNode;
+  getGuard?: (routeName: string) => ResolvedGuard | undefined;
 };
 
 // Entries appear after the first commit and state keys can change when navigation state is reset.

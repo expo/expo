@@ -9,6 +9,7 @@ import { useComponent } from '../../fork/useComponent';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import { useEnqueueRoutingIntent } from '../../global-state/routingQueueContext';
 import { findStateByKey, resetNavigatorState } from '../../global-state/stateUtils';
+import { GuardContext, GuardOwnerContext, getResolvedGuard } from '../../layouts/GuardContext';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   type DefaultRouterOptions,
@@ -255,6 +256,9 @@ export function useNavigationBuilder<
 ) {
   useRegisterNavigator();
   const routeNode = useRouteNode();
+  const guards = use(GuardContext);
+  // Some navigators render their guard provider below this hook, where the context still holds parent guards.
+  const ownGuards = use(GuardOwnerContext) === routeNode ? guards : null;
   const enqueue = useEnqueueRoutingIntent();
 
   const {
@@ -442,8 +446,9 @@ export function useNavigationBuilder<
       getBrowserHistoryForRouteFocus: (previous, next, childAction) =>
         router.getBrowserHistoryForRouteFocus?.(previous as State, next as State, childAction),
       routeNode: routeNode ?? undefined,
+      getGuard: ownGuards ? (routeName) => getResolvedGuard(ownGuards, routeName) : undefined,
     }),
-    [reduce, routeNode, router]
+    [ownGuards, reduce, routeNode, router]
   );
 
   useRegisterRouter(committedState.key, registryEntry);

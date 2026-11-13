@@ -672,7 +672,7 @@ describe('prefetch', () => {
     });
   });
 
-  it.each([false, true])('prefetches a protected route when guard is %s', async (guard) => {
+  it('does not prefetch a protected route when guard is false', async () => {
     const result = await renderRouter({
       index: () => {
         return <Link prefetch href="/test" />;
@@ -680,18 +680,45 @@ describe('prefetch', () => {
       test: () => <Text testID="guarded-content">guarded</Text>,
       _layout: () => (
         <Stack>
-          <Stack.Protected guard={guard}>
+          <Stack.Protected guard={false}>
             <Stack.Screen name="test" />
           </Stack.Protected>
         </Stack>
       ),
     });
 
-    // The preloaded guarded route must not leak its content.
     expect(screen.queryByTestId('guarded-content')).toBeNull();
+    const innerState = result.getRouterState()?.routes[0]?.state;
+    if (!innerState) {
+      throw new Error('Expected a stack navigator');
+    }
+    // The complete initial state stays typeless until this navigator dispatches an action.
+    expect((innerState as StackNavigationState<ParamListBase>).routes).toEqual([
+      {
+        key: expect.stringMatching(/^index:/),
+        name: 'index',
+        path: '/',
+      },
+    ]);
+  });
 
-    // Guarded routes stay registered in the navigator, so the prefetch preloads
-    // the route like any other. Its content still renders nothing while guarded.
+  it('prefetches a protected route when guard is true', async () => {
+    const result = await renderRouter({
+      index: () => {
+        return <Link prefetch href="/test" />;
+      },
+      test: () => <Text testID="guarded-content">guarded</Text>,
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard>
+            <Stack.Screen name="test" />
+          </Stack.Protected>
+        </Stack>
+      ),
+    });
+
+    // A preloaded route does not render its content.
+    expect(screen.queryByTestId('guarded-content')).toBeNull();
     const innerState = result.getRouterState()?.routes[0]?.state;
     if (!innerState) {
       throw new Error('Expected a stack navigator');
