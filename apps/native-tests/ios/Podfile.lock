@@ -3320,7 +3320,7 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: ed72b7c5bffe2d5d16cf128c6322c2d1191c1734
   ExpoModulesWorklets: 208e6112a0467df1cc21530e280d650a3adf6261
   ExpoNotifications: d0ab853f324bacf76f0fe32d06eba2e1f8532ca5
-  ExpoObserve: 731cdd8ca4bc725316ad258639d6952dbc335167
+  ExpoObserve: 81ab0dea1f18667c0e45a683ea689d7ccbdae3e4
   ExpoRouter: c5f712d2c761df71f8c9a42739f6ecae38ba8315
   ExpoTaskManager: f109b15d2742a10b0381ba635fddc9ddf9e766cc
   EXStructuredHeaders: d38b81fb2ff838c15bf28135deb247e76293d2b9
