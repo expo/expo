@@ -21,7 +21,7 @@ export function useClearGuardedRoutes(
     fallback?: { name: string; params?: object }
   ) => void
 ) {
-  const guards = use(GuardContext);
+  const guards = use(GuardContext)?.guards;
   const node = useRouteNode();
   const navigatorId = node ? getContextKey(node.contextKey) : undefined;
   const removeRoutes = useEffectEvent(removeRoutesFromState);
