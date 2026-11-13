@@ -1,12 +1,11 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
+import Foundation
 
 let jsExceptionLogName = "js.exception"
 
 /// An unhandled JavaScript error forwarded from the JS-side `global.ErrorUtils` handler. Recorded as
 /// a `js.exception` log event following OpenTelemetry's exception conventions.
-@Record
 struct ErrorReport {
   var source: Source = .global
   var type: String?
@@ -16,7 +15,7 @@ struct ErrorReport {
   var isFatal: Bool = false
 
   /// How the error was captured. A closed set so the `expo.error.source` attribute stays consistent.
-  enum Source: String, Enumerable {
+  enum Source: String, CaseIterable {
     case global
     case errorBoundary
     case reportedByUser
