@@ -62,8 +62,6 @@
   }
 
   NSNumber *port = _bundleURL.port;
-  // An https URL with no port means 443. `RCTPackagerConnection` fills a missing port with Metro's
-  // 8081, so a tunnel URL such as `https://<id>.on.expo.app` would never reach the dev server.
   if (port == nil && [_bundleURL.scheme isEqualToString:@"https"]) {
     port = @443;
   }
