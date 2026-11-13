@@ -106,7 +106,18 @@ export const mdComponentsNoValidation: Components = {
   a: ({ href, children }) => <A href={href}>{children}</A>,
 };
 
-export const APISectionPackageContext = createContext<string[]>([]);
+type APISectionPackageContextValue = {
+  packageNames: string[];
+  typeNames: ReadonlySet<string>;
+};
+
+export const APISectionPackageContext = createContext<APISectionPackageContextValue>({
+  packageNames: [],
+  typeNames: new Set(),
+});
+
+const GLOBAL_TYPE_DOCS_ORIGIN = 'https://developer.mozilla.org/';
+const GLOBAL_TYPE_PACKAGE = 'typescript';
 
 type TypeLinkProps = {
   name: string;
@@ -116,7 +127,7 @@ type TypeLinkProps = {
 };
 
 const TypeLink = ({ name, type, typePackage, sdkVersion }: TypeLinkProps) => {
-  const packageNames = useContext(APISectionPackageContext);
+  const { packageNames, typeNames } = useContext(APISectionPackageContext);
   const skipReplacement = packageNames.some(packageName =>
     packagesWithoutReplaceableTypes.includes(packageName)
   );
@@ -139,10 +150,16 @@ const TypeLink = ({ name, type, typePackage, sdkVersion }: TypeLinkProps) => {
 
   const hardcodedHref =
     sdkVersionHardcodedTypeLinks[sdkVersion]?.[replacedName] ?? hardcodedTypeLinks[replacedName];
+  const isPageTypeNamedLikeGlobal =
+    typeNames.has(name) &&
+    typePackage !== undefined &&
+    typePackage !== GLOBAL_TYPE_PACKAGE &&
+    !!hardcodedHref?.startsWith(GLOBAL_TYPE_DOCS_ORIGIN);
+  const linkHref = isPageTypeNamedLikeGlobal ? undefined : hardcodedHref;
 
-  if (hardcodedHref || !nonLinkableTypes.includes(replacedName)) {
+  if (linkHref || !nonLinkableTypes.includes(replacedName)) {
     return (
-      <A href={hardcodedHref ?? `#${replacedName.toLowerCase()}`} key={`type-link-${replacedName}`}>
+      <A href={linkHref ?? `#${replacedName.toLowerCase()}`} key={`type-link-${replacedName}`}>
         {replacedName}
         {type === 'array' && '[]'}
       </A>
@@ -244,7 +261,7 @@ export const resolveTypeName = (
         return renderWithLink({
           name: elementType.name,
           type,
-          typePackage: typeDefinition.package,
+          typePackage: elementType.package,
           sdkVersion,
         });
       } else if (type === 'array') {
