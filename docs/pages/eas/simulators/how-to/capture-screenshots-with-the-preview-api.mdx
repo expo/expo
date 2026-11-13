@@ -1,12 +1,12 @@
 ---
 title: Capture screenshots with the preview host API
 sidebar_title: Use the screenshot API
-description: Request full-size PNG or smaller JPEG screenshots from an iOS Expo Simulators session over HTTP or the control socket, and reuse connections for repeated captures.
+description: Request full-size PNG or smaller JPEG screenshots from an Expo Simulators session over HTTP or the iOS control socket, and reuse connections for repeated captures.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 
-Use the preview host API when a script, an agent, or a web page takes many screenshots of an iOS session. You can request a smaller image or a JPEG. You can also keep one connection open for repeated captures.
+Use the preview host API when a script, an agent, or a web page takes many screenshots of a session. You can request a smaller image or a JPEG. You can also keep one connection open for repeated captures.
 
 For one screenshot, [`eas simulator:control screenshot.capture`](/eas/simulators/how-to/control-with-eas-cli/#save-a-screenshot-on-your-computer) is simpler. EAS CLI always saves a full-size PNG.
 
@@ -14,7 +14,7 @@ The image options on this page need serve-sim 0.14.0 or later on the session. Ov
 
 ## Get the preview host URL and token
 
-You need the preview host URL and the preview token of a running iOS session. For a session with `--public-link`, copy `remoteConfig.previewApiUrl` from `eas simulator:get --json`. It has the form `https://<preview-host>/?token=<token>`. For a session with private links, get `previewApiUrl` and `webPreviewToken` from the [REST API](/eas/simulators/reference/rest-api/#get-a-session).
+You need the preview host URL and the preview token of a running session. For a session with `--public-link`, copy `remoteConfig.previewApiUrl` from `eas simulator:get --json`. It has the form `https://<preview-host>/?token=<token>`. For a session with private links, get `previewApiUrl` and `webPreviewToken` from the [REST API](/eas/simulators/reference/rest-api/#get-a-session).
 
 Send the token in an `Authorization` header. Anyone who has the token can view and control the simulator, so keep it private. See [Security model](/eas/simulators/how-it-works/security-model/).
 
@@ -36,20 +36,54 @@ Add query parameters to get a smaller image or a JPEG:
   ]}
 />
 
-| Parameter  | Values                    | Description                                                                                                                                  |
-| ---------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `maxWidth` | Integer from 1 to 8192    | Largest width in pixels. The image keeps its aspect ratio after rotation. The API does not make a smaller screen larger.                     |
-| `format`   | `png` (default) or `jpeg` | Image format. JPEG is lossy and does not keep transparency.                                                                                  |
-| `quality`  | Integer from 1 to 100     | JPEG quality. The default is 80.                                                                                                             |
-| `display`  | A positive screen ID      | Captures one screen of a device with more than one screen, such as `1` or `3` on iPhone Duo. By default, the API captures the active screen. |
+| Parameter  | Values                    | Description                                                                                                                                            |
+| ---------- | ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `maxWidth` | Integer from 1 to 8192    | Largest width in pixels. The image keeps its aspect ratio after rotation. The API does not make a smaller screen larger.                               |
+| `format`   | `png` (default) or `jpeg` | Image format. JPEG is lossy and does not keep transparency.                                                                                            |
+| `quality`  | Integer from 1 to 100     | JPEG quality. The default is 80.                                                                                                                       |
+| `display`  | A positive screen ID      | iOS only. Captures one screen of a device with more than one screen, such as `1` or `3` on iPhone Duo. By default, the API captures the active screen. |
 
 An option with a value that is not valid returns `400` before the capture. The `Content-Type` header is `image/png` or `image/jpeg`.
 
 When the session saves screenshots as session artifacts, the artifact is a PNG at the requested size, also when the response is a JPEG.
 
+### Read the image size and rotation
+
+With serve-sim 0.14.2 or later, the response has an `X-Expo-Screenshot-Metadata` header. Its value is JSON:
+
+```json
+{ "width": 402, "height": 874, "displayRotation": "portrait" }
+```
+
+`width` and `height` are the size of the returned image in pixels. `displayRotation` is `portrait`, `portrait-upside-down`, `landscape-left`, or `landscape-right`. On iPhone Duo, `screen` is `inner` or `outer`. A size of `0` or a `null` rotation means that the preview host does not know the value. A web page on an origin that you allow with `--cors-origin` can read this header.
+
+### Take screenshots in the background
+
+On an iOS session, a screenshot counts as session activity, so it resets the [idle timeout](/eas/simulators/how-it-works/session-lifetime/). The session can also save it as a session artifact. For a screenshot that a script takes on a timer, such as a thumbnail, send the JSON body `{"automation": true}`:
+
+<Terminal
+  cmd={[
+    `$ curl -fsS -X POST -H "Authorization: Bearer <token>" -H "Content-Type: application/json" -d '{"automation": true}' -o thumbnail.jpg "https://<preview-host>/api/screenshot?maxWidth=402&format=jpeg"`,
+  ]}
+/>
+
+An automated screenshot does not reset the idle timeout, and the session does not save it as an artifact. The `X-Expo-Screenshot-Artifact` header of the response is `disabled`. A body with other fields, or with a value that is not `true` or `false`, returns `400`. This option needs serve-sim 0.14.0 or later.
+
+## Request a screenshot on Android
+
+On an Android session, add `/vendor/serve-emu` to the preview host URL:
+
+<Terminal
+  cmd={[
+    '$ curl -fsS -X POST -H "Authorization: Bearer <token>" -o screen.png "https://<preview-host>/vendor/serve-emu/api/screenshot"',
+  ]}
+/>
+
+The response is a full-size PNG. With Device Hub 0.23.1 or later, it has the same `X-Expo-Screenshot-Metadata` header. Android sessions ignore the `maxWidth` and `quality` options, the `automation` body, and `format=jpeg`. They do not support `screenshot.capture` over the control socket.
+
 ## Request screenshots over the control socket
 
-The control socket is the WebSocket that EAS CLI uses for `eas simulator:control`. It can return a screenshot as one binary message, without a file on the host.
+On an iOS session, the control socket is the WebSocket that EAS CLI uses for `eas simulator:control`. It can return a screenshot as one binary message, without a file on the host.
 
 Open `wss://<preview-host>/exec-ws` with the WebSocket subprotocol `serve-sim.token.<token>`. Wait for the `{"ready": true}` message. Then send `screenshot.capture` with `output: "binary"`. The image options go in `params`:
 
@@ -67,6 +101,8 @@ Open `wss://<preview-host>/exec-ws` with the WebSocket subprotocol `serve-sim.to
 ```
 
 The host captures the device of the session. The reply is one binary message. Its first four bytes are the request `id` as an unsigned 32-bit integer in big-endian byte order. The remaining bytes are the image. If the capture fails, the reply is a JSON text message with `id` and `error`.
+
+To take a [background screenshot](#take-screenshots-in-the-background) over the socket, add `"automation": true` to `params`.
 
 This example runs in Node.js 22 or later, which includes the `WebSocket` API:
 
@@ -120,6 +156,7 @@ An older serve-sim can ignore `output` and return a file path on the host in JSO
 
 - `screenshot.capture.properties.output.enum` includes `binary` when the session supports binary output.
 - `screenshot.capture.properties.maxWidth` is present when the session supports the image options.
+- `screenshot.capture.properties.automation` is present when the session supports background screenshots.
 
 Without `output: "binary"`, `screenshot.capture` saves a file on the host and returns its path. That mode rejects `maxWidth`, `format`, and `quality`. Only that mode accepts `fileName`. EAS CLI uses this mode, so `eas simulator:control screenshot.capture` cannot use the image options.
 
@@ -181,6 +218,6 @@ The EAS CLI connection helper is a different feature. `eas simulator:control:con
 
 Compare captures that use the same `maxWidth`, `format`, and `quality`. A full-resolution PNG can be many times larger than a smaller JPEG, so it takes longer to encode and to transfer.
 
-A successful HTTP response has a `Server-Timing` header. `total` is the time on the preview host until the response starts. It does not include the response transfer. The other values, such as `capture`, `encode`, and `artifact`, show stages of that time. Some stages overlap, so do not add them.
+A successful HTTP response from an iOS session has a `Server-Timing` header. `total` is the time on the preview host until the response starts. It does not include the response transfer. The other values, such as `capture`, `encode`, and `artifact`, show stages of that time. Some stages overlap, so do not add them.
 
 The time that your client measures minus `total` is the time outside the preview host. It includes the connection setup, the network, the transfer of the image, and the work in your client. It is not only the network transfer time.
