@@ -135,6 +135,21 @@ export function reportHomeClick(params: HomeClickParams) {
   }
 }
 
+export function reportSectionView(section: string) {
+  if (isAnalyticsConsented()) {
+    window?.gtag?.('event', 'section_view', { section });
+    return;
+  }
+
+  if (getAnalyticsConsentStatus() === 'pending') {
+    enqueueAnalyticsEvent({
+      type: 'track',
+      args: ['section_view', { section }],
+      timestamp: Date.now(),
+    });
+  }
+}
+
 // Register the replay function so queued events are dispatched when consent is granted.
 setAnalyticsReplayFn((events: QueuedEvent[]) => {
   for (const event of events) {
@@ -172,6 +187,11 @@ setAnalyticsReplayFn((events: QueuedEvent[]) => {
       case 'home_click': {
         const params = data as Record<string, unknown>;
         window?.gtag?.('event', 'home_click', params);
+        break;
+      }
+      case 'section_view': {
+        const params = data as Record<string, unknown>;
+        window?.gtag?.('event', 'section_view', params);
         break;
       }
     }
