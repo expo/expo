@@ -6,7 +6,7 @@ jest.mock('expo', () => ({
   registerWebModule: (moduleClass: new () => unknown) => new moduleClass(),
 }));
 
-jest.mock('expo-app-metrics', () => ({
+jest.mock('../app-metrics', () => ({
   __esModule: true,
   default: {
     logEvent: jest.fn(),

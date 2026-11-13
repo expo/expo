@@ -5546,9 +5546,6 @@ importers:
 
   packages/expo-observe:
     dependencies:
-      expo-app-metrics:
-        specifier: workspace:~
-        version: link:../expo-app-metrics
       expo-eas-client:
         specifier: workspace:~
         version: link:../expo-eas-client
