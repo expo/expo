@@ -217,7 +217,8 @@ const PedometerSensor = () => {
     const subscribe = async () => {
       const isAvailable = await Sensors.Pedometer.isAvailableAsync();
       setIsPedometerAvailable(String(isAvailable));
-      const isHistoryAvailable = isAvailable && (await Sensors.Pedometer.isRecordingAvailableAsync());
+      const isHistoryAvailable =
+        isAvailable && (await Sensors.Pedometer.isRecordingAvailableAsync());
       setIsPedometerHistoryAvailable(String(isHistoryAvailable));
 
       if (isHistoryAvailable) {

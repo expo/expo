@@ -26,7 +26,7 @@ You can listen for pedometer pause/resume events:
 ```tsx
 import { Pedometer } from 'expo-sensors';
 
-const subscription = Pedometer.watchEventUpdates((event) => {
+const subscription = Pedometer.watchEventUpdates(event => {
   console.log(`Pedometer ${event.type} at`, new Date(event.date));
 });
 
@@ -81,7 +81,7 @@ export default function App() {
     }
 
     if (isAvailable) {
-      return Pedometer.watchStepCount((result) => {
+      return Pedometer.watchStepCount(result => {
         setCurrentStepCount(result.steps);
       });
     }
