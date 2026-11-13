@@ -11,6 +11,8 @@ You can mark some Expo Services resources as protected. Only members with the Re
 
 Builds, submissions, and other workloads that run on [Expo Workflows](/eas/workflows/introduction/) infrastructure get at most Developer-level permissions by default. To let them access protected resources, set [`permissions`](/eas/workflows/syntax/#permissions) in the workflow, or [`permissions`](/eas/json/#permissions) in the build profile.
 
+Furthermore, workloads triggered by the GitHub App or by a schedule are started by the [GitHub App robot](/accounts/programmatic-access/#github-app-robot), which has the Developer role by default. To let these workloads access protected resources, also give the robot the Release Manager role on the [Access tokens](https://expo.dev/accounts/[account]/settings/access-tokens) page.
+
 ## Protected channels
 
 When you protect an [Expo Update](/eas-update/how-it-works/) channel, only Release Managers, Admins, and Owners can:
