@@ -3,8 +3,6 @@
 package expo.modules.appmetrics.networkrequests
 
 import expo.modules.appmetrics.utils.TimeUtils
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.sharedobjects.SharedObject
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 
@@ -13,10 +11,10 @@ internal const val REQUEST_STARTED_EVENT = "requestStarted"
 internal const val REQUEST_COMPLETED_EVENT = "requestCompleted"
 
 /**
- * JS-facing `SharedObject` that bridges per-instance JS subscriptions to the singleton
- * `NetworkRequestMonitor`. Each JS `new NetworkRequestObserver()` allocates one of these and
- * registers it as a delegate right away, whether or not JS has attached listeners yet; the
- * registration is dropped when the shared object is released. This matches the iOS observer.
+ * Bridges one subscriber to the singleton `NetworkRequestMonitor` and reports each matching
+ * request to `onEvent`. It registers as a delegate right away; `stop` drops the registration.
+ * Each JS `new NetworkRequestObserver()` allocates one of these, whether or not JS has attached
+ * listeners yet, and stops it when the JS object is released. This matches the iOS observer.
  *
  * Because registration doesn't track JS listeners, an observer whose listeners were all removed
  * still pays one `emit` per matching request until JS releases it. Gating on listener count would
@@ -28,22 +26,20 @@ internal const val REQUEST_COMPLETED_EVENT = "requestCompleted"
  * `NetworkRequestMonitor.shared.recent` for that.
  */
 internal class NetworkRequestObserver private constructor(
-  appContext: AppContext,
   filter: NetworkRequestFilter?,
-  private val monitor: NetworkRequestMonitor // Set for testing, otherwise default singleton
-) :
-  SharedObject(appContext),
-  NetworkRequestObserverDelegate {
+  private val monitor: NetworkRequestMonitor, // Set for testing, otherwise default singleton
+  private val onEvent: (String, Map<String, Any?>) -> Unit
+) : NetworkRequestObserverDelegate {
 
-  constructor(appContext: AppContext, filter: NetworkRequestFilter? = null) :
-    this(appContext, filter, NetworkRequestMonitor.shared)
+  constructor(filter: NetworkRequestFilter? = null, onEvent: (String, Map<String, Any?>) -> Unit) :
+    this(filter, NetworkRequestMonitor.shared, onEvent)
 
   // The active filter, or null to observe every request. An `AtomicReference` so the read from the
   // monitor's fan-out (`shouldObserveRequest`) and the swap from `setFilter` are atomic: a
   // `setFilter` call never leaves a request observed under a half-applied filter.
   private val filter = AtomicReference(filter)
 
-  // Flipped once on release. The monitor holds delegates weakly and prunes them on the next
+  // Flipped once on `stop`. The monitor holds delegates weakly and prunes them on the next
   // fan-out, so a request evaluated in that window must still be rejected here.
   private val released = AtomicBoolean(false)
 
@@ -51,10 +47,10 @@ internal class NetworkRequestObserver private constructor(
     monitor.addDelegate(this)
   }
 
-  override fun sharedObjectDidRelease() {
+  /** Stops reporting requests. */
+  fun stop() {
     released.set(true)
     monitor.removeDelegate(this)
-    super.sharedObjectDidRelease()
   }
 
   /**
@@ -69,24 +65,22 @@ internal class NetworkRequestObserver private constructor(
   }
 
   override fun onNetworkRequestStarted(request: NetworkRequestStarted) {
-    emit(REQUEST_STARTED_EVENT, startedPayload(request))
+    onEvent(REQUEST_STARTED_EVENT, startedPayload(request))
   }
 
   override fun onNetworkRequestCompleted(request: NetworkRequest) {
-    emit(REQUEST_COMPLETED_EVENT, completedPayload(request))
+    onEvent(REQUEST_COMPLETED_EVENT, completedPayload(request))
   }
 
   companion object {
     internal fun forTesting(
-      appContext: AppContext,
       monitor: NetworkRequestMonitor,
       filter: NetworkRequestFilter? = null
-    ) = NetworkRequestObserver(appContext, filter, monitor)
+    ) = NetworkRequestObserver(filter, monitor) { _, _ -> }
 
     /**
-     * Internal so tests can assert the payload shape without going through `emit`, which needs a
-     * live JS runtime. The keys here are part of the public JS contract — additions are safe but
-     * renames are breaking.
+     * Internal so tests can assert the payload shape without going through `onEvent`. The keys
+     * here are part of the public JS contract — additions are safe but renames are breaking.
      */
     internal fun startedPayload(request: NetworkRequestStarted): Map<String, Any?> = mapOf(
       "id" to request.id.toString(),
