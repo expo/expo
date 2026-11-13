@@ -7,6 +7,7 @@ import { FileNotifier } from '../utils/FileNotifier';
 import { ensureDirectoryAsync, removeAsync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import { ensureProcessExitsAfterDelay } from '../utils/exit';
+import { reportProgramResult, withProgramStatus } from '../utils/programStatus';
 import { exportAppAsync } from './exportApp';
 import type { Options } from './resolveOptions';
 
@@ -25,7 +26,9 @@ export async function exportAsync(projectRoot: string, options: Options) {
   await ensureDirectoryAsync(outputPath);
 
   // Export the app
-  await exportAppAsync(projectRoot, options);
+  await withProgramStatus({ state: 'working', msg: 'Exporting app' }, () =>
+    exportAppAsync(projectRoot, options)
+  );
 
   // Stop any file watchers to prevent the CLI from hanging.
   FileNotifier.stopAll();
@@ -34,6 +37,7 @@ export async function exportAsync(projectRoot: string, options: Options) {
   await waitUntilAtlasExportIsReadyAsync(projectRoot);
 
   // Final notes
+  reportProgramResult({ state: 'done', msg: `Exported: ${options.outputDir}` });
   Log.log(chalk.greenBright`Exported: ${options.outputDir}`);
 
   // Exit the process to stop any hanging processes from reading the app.config.js or server rendering.
