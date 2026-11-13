@@ -8,6 +8,7 @@ import okhttp3.Call
 import okhttp3.CookieJar
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import expo.modules.kotlin.devtools.DevToolsRequestId
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
@@ -56,6 +57,9 @@ internal class NativeRequest(appContext: AppContext, internal val response: Nati
       .headers(headers)
       .method(requestInit.method, reqBody)
       .url(OkHttpFileUrlInterceptor.handleFileUrl(url))
+      .apply {
+        requestInit.devToolsRequestId?.let { tag(DevToolsRequestId::class.java, DevToolsRequestId(it)) }
+      }
       .build()
     this.requestHolder.request = request
 
