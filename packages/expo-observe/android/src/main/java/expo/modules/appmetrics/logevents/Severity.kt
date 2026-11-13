@@ -1,16 +1,11 @@
 package expo.modules.appmetrics.logevents
 
-import expo.modules.kotlin.types.Enumerable
-
 /**
- * Severity of a log event. The `rawValue: String` constructor parameter is the
- * single field Expo's `Enumerable` converter inspects when coercing an incoming
- * JS string, so it must stay the only primary-constructor argument. The
- * matching OpenTelemetry severity number
+ * Severity of a log event. The matching OpenTelemetry severity number
  * (https://opentelemetry.io/docs/specs/otel/logs/data-model/#field-severitynumber)
  * is exposed via the `severityNumber` extension property below.
  */
-internal enum class Severity(val rawValue: String) : Enumerable {
+internal enum class Severity(val rawValue: String) {
   TRACE("trace"),
   DEBUG("debug"),
   INFO("info"),
