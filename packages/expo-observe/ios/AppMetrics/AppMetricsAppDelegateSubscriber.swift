@@ -2,6 +2,8 @@ import ExpoModulesCore
 
 public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func appDelegateWillBeginInitialization() {
+    // Before the main session starts: its session row reads the update info.
+    AppMetrics.configure(AppMetricsHost(updatesInfo: expoUpdatesInfo))
     if ObserveConsent.state == .notGranted {
       AppMetrics.deleteStoredData()
     }
