@@ -22,6 +22,7 @@ import expo.modules.appmetrics.networkrequests.NetworkRequestObserver
 import expo.modules.appmetrics.networkrequests.NetworkRequestPersistence
 import expo.modules.appmetrics.networkrequests.NetworkTracesConfiguration
 import expo.modules.appmetrics.spans.SpanHandle
+import expo.modules.appmetrics.spans.SpanObject
 import expo.modules.appmetrics.spans.SpanRecorder
 import expo.modules.appmetrics.spans.SpanWriter
 import expo.modules.appmetrics.storage.Span
@@ -158,13 +159,13 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         GlobalAttributes.set(attributes)
       }
 
-      Function("startSpan") { name: String, options: StartSpanOptions?, parent: SpanHandle? ->
+      Function("startSpan") { name: String, options: StartSpanOptions?, parent: SpanObject? ->
         val validatedName = validatedSpanName(name)
         val recorder = SpanRecorder(
           name = validatedName ?: name,
           sessionId = mainSession.sessionId,
-          parentTraceId = parent?.recorder?.traceId,
-          parentSpanId = parent?.recorder?.spanId,
+          parentTraceId = parent?.handle?.recorder?.traceId,
+          parentSpanId = parent?.handle?.recorder?.spanId,
           attributes = options?.attributes,
           startTimestampMs = resolvedTimestamp(options?.startTime, "startTime")
         )
@@ -175,10 +176,10 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         } else {
           { _ -> }
         }
-        SpanHandle(recorder = recorder, onEnd = onEnd)
+        SpanObject(SpanHandle(recorder = recorder, onEnd = onEnd))
       }
 
-      Function("recordSpan") { name: String, options: RecordSpanOptions, parent: SpanHandle? ->
+      Function("recordSpan") { name: String, options: RecordSpanOptions, parent: SpanObject? ->
         val validatedName = validatedSpanName(name) ?: return@Function
         val (startTime, endTime) = recordedSpanWindow(options.startTime, options.endTime) ?: return@Function
         // One code path with `startSpan`: an ephemeral recorder validates the attributes and
@@ -186,8 +187,8 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         val recorder = SpanRecorder(
           name = validatedName,
           sessionId = mainSession.sessionId,
-          parentTraceId = parent?.recorder?.traceId,
-          parentSpanId = parent?.recorder?.spanId,
+          parentTraceId = parent?.handle?.recorder?.traceId,
+          parentSpanId = parent?.handle?.recorder?.spanId,
           attributes = options.attributes,
           startTimestampMs = startTime,
           attributeSource = "recordSpan"
@@ -197,28 +198,28 @@ class AppMetricsModule : Module(), UpdatesStateChangeListener {
         }
       }
 
-      Class("Span", SpanHandle::class) {
+      Class("Span", SpanObject::class) {
         Constructor { ->
           throw SpanConstructorUnavailableException()
         }
 
-        Property("traceId") { span: SpanHandle -> span.recorder.traceId }
-        Property("spanId") { span: SpanHandle -> span.recorder.spanId }
+        Property("traceId") { span: SpanObject -> span.handle.recorder.traceId }
+        Property("spanId") { span: SpanObject -> span.handle.recorder.spanId }
 
-        Function("setAttributes") { span: SpanHandle, attributes: Map<String, Any?> ->
-          span.recorder.setAttributes(attributes)
+        Function("setAttributes") { span: SpanObject, attributes: Map<String, Any?> ->
+          span.handle.recorder.setAttributes(attributes)
         }
 
-        Function("addEvent") { span: SpanHandle, name: String, options: SpanEventOptions? ->
-          span.recorder.addEvent(
+        Function("addEvent") { span: SpanObject, name: String, options: SpanEventOptions? ->
+          span.handle.recorder.addEvent(
             name = name,
             attributes = options?.attributes,
             timeMs = resolvedTimestamp(options?.time, "time")
           )
         }
 
-        Function("end") { span: SpanHandle, options: SpanEndOptions? ->
-          span.end(
+        Function("end") { span: SpanObject, options: SpanEndOptions? ->
+          span.handle.end(
             statusCode = spanStatusCode(options?.status),
             statusMessage = options?.message,
             endTimestampMs = resolvedTimestamp(options?.endTime, "endTime")
