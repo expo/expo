@@ -1,6 +1,5 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
 import Foundation
 
 /// Event names emitted by `NetworkRequestObserver`, matching the keys in the JS
@@ -10,22 +9,25 @@ let REQUEST_STARTED_EVENT = "requestStarted"
 // swift-format-ignore: AlwaysUseLowerCamelCase
 let REQUEST_COMPLETED_EVENT = "requestCompleted"
 
-/// JS-facing `SharedObject` that bridges per-instance subscriptions to the singleton
-/// `NetworkRequestMonitor`. Each JS `new NetworkRequestObserver()` allocates one of these and
-/// registers it as a delegate; the native instance is released when JS drops the reference, at
-/// which point `sharedObjectWillRelease` removes the delegate registration.
+/// Bridges one subscription to the singleton `NetworkRequestMonitor`: registers itself as a
+/// delegate and passes each matching request to `onEvent` as an event name and payload.
 ///
 /// The class only forwards events — it doesn't store request history. Use `NetworkRequestMonitor`'s
 /// in-process API for that.
-final class NetworkRequestObserver: SharedObject, NetworkRequestObserverDelegate, @unchecked Sendable {
+final class NetworkRequestObserver: NetworkRequestObserverDelegate, @unchecked Sendable {
   /// The active filter, or `nil` to observe every request. Held in a `Mutex` so the read from the
   /// monitor's fan-out (`shouldObserveRequest`) and the swap from `setFilter` are atomic: a
   /// `setFilter` call never leaves a request evaluated under a half-applied filter.
-  private let filter = Mutex<NetworkRequestFilter?>(nil)
+  private let filter: Mutex<NetworkRequestFilter?>
 
-  init(filter: NetworkRequestFilter? = nil) {
-    super.init()
-    self.filter.withLock { $0 = filter }
+  private let onEvent: @Sendable (_ name: String, _ payload: sending [String: Any?]) -> Void
+
+  init(
+    filter: NetworkRequestFilter? = nil,
+    onEvent: @escaping @Sendable (_ name: String, _ payload: sending [String: Any?]) -> Void
+  ) {
+    self.filter = Mutex(filter)
+    self.onEvent = onEvent
     AppMetricsActor.isolated { [weak self] in
       guard let self else {
         return
@@ -40,26 +42,25 @@ final class NetworkRequestObserver: SharedObject, NetworkRequestObserverDelegate
     self.filter.withLock { $0 = filter }
   }
 
-  override func sharedObjectWillRelease() {
-    // The monitor holds delegates weakly, but deregister explicitly so the slot doesn't linger
-    // until the next fan-out prunes it — matches the Android `sharedObjectDidRelease` cleanup.
+  /// Deregisters from the monitor. The monitor holds delegates weakly, but deregister explicitly so
+  /// the slot doesn't linger until the next fan-out prunes it.
+  func stop() {
     AppMetricsActor.isolated { [weak self] in
       guard let self else {
         return
       }
       NetworkRequestMonitor.shared.removeDelegate(self)
     }
-    super.sharedObjectWillRelease()
   }
 
   // MARK: - NetworkRequestObserverDelegate
 
   func onNetworkRequestStarted(_ request: NetworkRequestStarted) {
-    emit(event: REQUEST_STARTED_EVENT, payload: NetworkRequestObserver.startedPayload(for: request))
+    onEvent(REQUEST_STARTED_EVENT, NetworkRequestObserver.startedPayload(for: request))
   }
 
   func onNetworkRequestCompleted(_ request: NetworkRequest) {
-    emit(event: REQUEST_COMPLETED_EVENT, payload: NetworkRequestObserver.completedPayload(for: request))
+    onEvent(REQUEST_COMPLETED_EVENT, NetworkRequestObserver.completedPayload(for: request))
   }
 
   func shouldObserveRequest(url: URL, method: String) -> Bool {
@@ -69,9 +70,8 @@ final class NetworkRequestObserver: SharedObject, NetworkRequestObserverDelegate
     return filter.matches(url: url, method: method)
   }
 
-  /// Internal so tests can assert the payload shape without going through `emit`, which needs a
-  /// live JS runtime. The keys here are part of the public JS contract — additions are safe but
-  /// renames are breaking.
+  /// Internal so tests can assert the payload shape without a live JS runtime. The keys here are
+  /// part of the public JS contract — additions are safe but renames are breaking.
   static func startedPayload(for request: NetworkRequestStarted) -> [String: Any?] {
     return [
       "id": request.id.uuidString,
